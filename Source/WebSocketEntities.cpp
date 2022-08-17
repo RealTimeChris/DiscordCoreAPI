@@ -285,11 +285,11 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, int32_t currentBaseSocketAgentNew, int32_t currentShardNew,
+	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, int32_t currentShardNew,
 		std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketMessageHandler(&theClient->configManager) {
-		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->configManager = &theClient->configManager;
+		this->thePackage.currentShard = currentShardNew;
 		this->discordCoreClient = theClient;
 		this->shard.emplace_back(currentShardNew);
 		this->doWeQuit = doWeQuitNew;
@@ -424,7 +424,7 @@ namespace DiscordCoreInternal {
 						this->sessionId = payload["d"]["session_id"].get<std::string>();
 						DiscordCoreAPI::UserData theUser{ payload["d"]["user"] };
 						this->discordCoreClient->currentUser =
-							DiscordCoreAPI::BotUser{ theUser, this->discordCoreClient->baseSocketAgentMap[std::to_string(this->currentBaseSocketAgent)].get() };
+							DiscordCoreAPI::BotUser{ theUser, this->discordCoreClient->baseSocketAgentMap[std::to_string(this->shard[0].get<int32_t>())].get() };
 						DiscordCoreAPI::Users::insertUser(std::make_unique<DiscordCoreAPI::UserData>(theUser));
 						this->currentReconnectTries = 0;
 					}
@@ -1241,11 +1241,9 @@ namespace DiscordCoreInternal {
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
 			if (doWeReconnect) {
-				DiscordCoreAPI::ConnectionPackage theData{};
-				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
-				theData.currentReconnectTries = this->currentReconnectTries;
-				theData.currentShard = this->shard[0];
-				this->thePackage = theData;
+				this->thePackage.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
+				this->thePackage.currentReconnectTries = this->currentReconnectTries;
+				this->thePackage.currentShard = this->shard[0];
 			}
 		}
 	}
@@ -1260,11 +1258,9 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew,
-		int32_t currentShardNew) noexcept
-		: WebSocketSSLShard(discordCoreClientNew, currentBaseSocketAgentNew, currentShardNew, doWeQuitNew) {
+	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentShardNew) noexcept
+		: WebSocketSSLShard(discordCoreClientNew, currentShardNew, doWeQuitNew) {
 		this->configManager = &discordCoreClientNew->configManager;
-		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->discordCoreClient = discordCoreClientNew;
 		this->doWeQuit = doWeQuitNew;
 		this->taskThread = std::make_unique<std::jthread>([this](std::stop_token stopToken) {
@@ -1317,6 +1313,7 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
+			this->doWeReconnect.store(true);
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				{ std::unique_lock theLock{ this->theConnectDisconnectMutex };
 					if (this->voiceConnectionsToDisconnect.size() > 0) {
@@ -1336,7 +1333,8 @@ namespace DiscordCoreInternal {
 				if (this->areWeStillConnected()) {
 					this->checkForAndSendHeartBeat();
 				}
-				
+				std::cout << "WERE HERE THIS IS IT!" << std::endl;
+				std::this_thread::sleep_for(1ms);
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1354,7 +1352,9 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::connectInternal() noexcept {
 		try {
-			if (this->doWeReconnect.load() && this->thePackage.currentShard != 0) {
+			std::cout << "WERE HERE THIS IS IT! 0202" << std::endl;
+			if (this->doWeReconnect.load() && this->thePackage.currentShard != -1) {
+				std::cout << "WERE HERE THIS IS IT! 0303" << std::endl;
 				this->currentReconnectTries = thePackage.currentReconnectTries;
 				this->currentReconnectTries++;
 				this->voiceConnectionDataBufferMap = std::move(thePackage.voiceConnectionDataBufferMap);
@@ -1404,7 +1404,7 @@ namespace DiscordCoreInternal {
 					}
 					std::this_thread::sleep_for(1ms);
 				}
-				this->thePackage.currentShard = 0;
+				this->thePackage.currentShard = -1;
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {

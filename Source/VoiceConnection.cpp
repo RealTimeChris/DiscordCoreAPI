@@ -97,8 +97,7 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamTypeNew, StreamInfo streamInfoNew) noexcept
-		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, this->doWeQuit),
-		  DatagramSocketClient(StreamType::None) {
+		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, initDataNew.currentShard, this->doWeQuit), DatagramSocketClient(StreamType::None) {
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->baseSocketAgent = BaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
@@ -264,7 +263,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
-				if (!stopToken.stop_requested() && this->thePackage.currentShard != 0) {
+				if (!stopToken.stop_requested() && this->thePackage.currentShard != -1) {
 					StopWatch theStopWatch{ 10000ms };
 					if (this->activeState.load() == VoiceActiveState::Connecting) {
 						this->lastActiveState.store(VoiceActiveState::Stopped);
@@ -775,7 +774,7 @@ namespace DiscordCoreAPI {
 					});
 					this->streamSocket->connect(this->theStreamInfo.address, this->theStreamInfo.port);
 				}
-				this->thePackage.currentShard = 0;
+				this->thePackage.currentShard = -1;
 				return;
 			}
 		}
@@ -921,6 +920,7 @@ namespace DiscordCoreAPI {
 		this->wantRead = false;
 		this->currentReconnectTries++;
 		this->areWeConnectedBool.store(false);
+		this->thePackage.currentShard = 0;
 	}
 
 	void VoiceConnection::mixAudio() noexcept {

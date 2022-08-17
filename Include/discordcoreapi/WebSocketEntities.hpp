@@ -73,7 +73,7 @@ namespace DiscordCoreInternal {
 		friend class BaseSocketAgent;
 		friend class YouTubeAPI;
 
-		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, int32_t currentBaseSocketAgentNew, int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept;
+		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
@@ -101,7 +101,6 @@ namespace DiscordCoreInternal {
 		std::atomic_bool doWeReconnect{ false };
 		const uint32_t maxReconnectTries{ 10 };
 		std::atomic_bool* doWeQuit{ nullptr };
-		uint32_t currentBaseSocketAgent{ 0 };
 		bool serverUpdateCollected{ false };
 		uint32_t currentReconnectTries{ 0 };
 		bool stateUpdateCollected{ false };
@@ -125,8 +124,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::BotUser;
 		friend class WebSocketSSLShard;
 
-		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew,
-			int32_t currentShardNew) noexcept;
+		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentShardNew) noexcept;
 
 		void connectVoiceChannel(VoiceConnectInitData theData) noexcept;
 
@@ -148,7 +146,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
-		int32_t currentBaseSocketAgent{ 0 };
 		int32_t heartbeatInterval{ 0 };
 
 		void connectVoiceInternal() noexcept;
