@@ -38,14 +38,18 @@ namespace DiscordCoreAPI {
 	};
 
 	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
+		std::cout << "WERE HERE CHECKING FOR AND RUNNING THE COMMAND! (0101)" << std::endl;
 		co_await NewThreadAwaitable<void>();
+		std::cout << "WERE HERE CHECKING FOR AND RUNNING THE COMMAND! (0202)" << std::endl;
 		try {
 			std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
 			if (functionPointer == nullptr) {
 				co_return;
 			}
 			BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
+			std::cout << "WERE HERE CHECKING FOR AND RUNNING THE COMMAND! (0303)" << std::endl;
 			functionPointer->execute(theArgs);
+			std::cout << "WERE HERE CHECKING FOR AND RUNNING THE COMMAND! (0404)" << std::endl;
 			co_return;
 		} catch (...) {
 			reportException("CommandController::checkForAndRunCommand()");
