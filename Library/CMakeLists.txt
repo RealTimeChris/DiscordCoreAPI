@@ -50,31 +50,41 @@ set_target_properties(
 	CXX_EXTENSIONS OFF
 )
 
+find_package(nlohmann_json REQUIRED)
+find_package(OpenSSL MODULE REQUIRED)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(AVFORMAT REQUIRED libavformat)
+pkg_check_modules(AVCODEC REQUIRED libavcodec)
+pkg_check_modules(AVUTIL REQUIRED libavutil)
+pkg_check_modules(SWRESAMPLE REQUIRED libswresample)
+pkg_check_modules(OPUS REQUIRED opus)
+pkg_check_modules(SODIUM REQUIRED libsodium)
+
+target_link_libraries(
+	"${LIB_NAME}" PUBLIC
+	${AVFORMAT_LIBRARIES}
+	${AVCODEC_LIBRARIES}
+	${AVUTIL_LIBRARIES}
+	${SWRESAMPLE_LIBRARIES}
+	${OPENSSL_LIBRARIES}
+	${OPUS_LIBRARIES}
+	${SODIUM_LIBRARIES}
+	nlohmann_json::nlohmann_json
+)
+
 target_include_directories(
 	"${LIB_NAME}" PUBLIC
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-)
-
-find_package(FFMPEG MODULE REQUIRED)
-find_package(NLOHMANN MODULE REQUIRED)
-find_package(OPENSSL MODULE REQUIRED)
-find_package(OPUS MODULE REQUIRED)
-find_package(SODIUM MODULE REQUIRED)
-
-target_link_libraries(
-	"${LIB_NAME}" PUBLIC
-	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
-	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
-	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>
-	$<$<TARGET_EXISTS:FFMPEG::SWResample>:FFMPEG::SWResample>
-	$<$<TARGET_EXISTS:NLOHMANN::Json>:NLOHMANN::Json>
-	$<$<TARGET_EXISTS:OPENSSL::Ssl>:OPENSSL::Ssl>
-	$<$<TARGET_EXISTS:OPENSSL::Crypto>:OPENSSL::Crypto>
-	$<$<TARGET_EXISTS:OPUS::Opus>:OPUS::Opus>
-	$<$<TARGET_EXISTS:SODIUM::Sodium>:SODIUM::Sodium>
-	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
+	${AVFORMAT_INCLUDE_DIRS}
+	${AVCODEC_INCLUDE_DIRS}
+	${AVUTIL_INCLUDE_DIRS}
+	${SWRESAMPLE_INCLUDE_DIRS}
+	${OPENSSL_INCLUDE_DIRS}
+	${OPUS_INCLUDE_DIRS}
+	${SODIUM_INCLUDE_DIRS}
 )
 
 target_compile_features(
