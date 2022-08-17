@@ -1079,6 +1079,12 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::Guilds::voiceStateCache[theKey] = std::make_unique<DiscordCoreAPI::VoiceStateData>(dataPackage->voiceStateData);
 											}
 										}
+										DiscordCoreAPI::GuildMemberId theKey02{};
+										theKey02.guildId = dataPackage->voiceStateData.guildId;
+										theKey02.guildMemberId = dataPackage->voiceStateData.userId;
+										if (DiscordCoreAPI::GuildMembers::cache.contains(theKey02)) {
+											DiscordCoreAPI::GuildMembers::cache[theKey02]->currentVoiceChannel = dataPackage->voiceStateData.channelId;
+										}
 										this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
 										break;
 									}

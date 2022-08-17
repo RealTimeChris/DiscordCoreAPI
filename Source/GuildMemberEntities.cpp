@@ -60,6 +60,7 @@ namespace DiscordCoreAPI {
 
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) {
 		if (this != &other) {
+			this->currentVoiceChannel = other.currentVoiceChannel;
 			this->permissions = std::move(other.permissions);
 			this->userAvatar = std::move(other.userAvatar);
 			this->userName = std::move(other.userName);
@@ -79,6 +80,7 @@ namespace DiscordCoreAPI {
 
 	GuildMember& GuildMember::operator=(GuildMemberData& other) {
 		if (this != &other) {
+			this->currentVoiceChannel = other.currentVoiceChannel;
 			this->permissions = other.permissions;
 			this->userAvatar = other.userAvatar;
 			this->userName = other.userName;
