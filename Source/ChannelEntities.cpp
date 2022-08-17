@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 
 	ModifyChannelData::operator std::string() {
 		nlohmann::json permOws{};
-		for (auto& [key, value]: this->channelData.permissionOverwrites) {
+		for (auto& value: this->channelData.permissionOverwrites) {
 			nlohmann::json newData{};
 			newData["allow"] = value.allow.getCurrentPermissionString();
 			newData["deny"] = value.deny.getCurrentPermissionString();

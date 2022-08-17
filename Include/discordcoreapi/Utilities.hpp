@@ -512,7 +512,7 @@ namespace DiscordCoreAPI {
 	/// Represents a single frame of audio data. \brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
-		uint64_t sampleCount{ -1ull };///< The number of samples per this frame.
+		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
 		std::vector<uint8_t> data{};///< The audio data.
 		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
 
@@ -545,6 +545,20 @@ namespace DiscordCoreAPI {
 		ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
 		ShortTime = 't',///< "16:20" - Short Time
 	};
+
+	uint8_t getUint8(nlohmann::json* jsonData, const char* keyname);
+	
+	uint16_t getUint16(nlohmann::json* jsonData, const char* keyname);
+	
+	uint32_t getUint32(nlohmann::json* jsonData, const char* keyname);
+	
+	uint64_t getUint64(nlohmann::json* jsonData, const char* keyname);
+	
+	bool getBool(nlohmann::json* jsonData, const char* keyname);
+	
+	std::string getString(nlohmann::json& jsonData, const char* keyname);
+
+	uint64_t strtoull(const std::string&& theString);
 
 	template<typename TimeType>
 	/// Class for representing a timestamp, as well as working with time-related values. \brief Class for representing a timestamp, as well as working with time-related values.
@@ -949,7 +963,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
-	class DiscordCoreAPI_Dll Permissions : public StringWrapper {
+	class DiscordCoreAPI_Dll Permissions {
 	  public:
 		Permissions() = default;
 
@@ -969,7 +983,13 @@ namespace DiscordCoreAPI {
 
 		explicit Permissions(std::string& permsNew);
 
-		operator const char*();
+		Permissions& operator=(uint64_t other);
+
+		explicit Permissions(uint64_t permsNew);
+
+		operator uint64_t();
+
+		operator std::unique_ptr<char[]>();
 
 		/// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
 		/// \param guildMember The GuildMember who's Permissions to analyze.
@@ -1010,6 +1030,8 @@ namespace DiscordCoreAPI {
 		static std::string getAllPermissions();
 
 	  protected:
+		uint64_t thePermissions{};
+
 		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
 
 		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);

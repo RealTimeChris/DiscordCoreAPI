@@ -311,9 +311,70 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
+	uint8_t getUint8(nlohmann::json* jsonData, const char* keyname) {
+		auto theResult = jsonData->find(keyname);
+		if (theResult != jsonData->end()) {
+			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint8_t>() : 0;
+		} else {
+			return 0;
+		}
+	}
+
+	uint16_t getUint16(nlohmann::json* jsonData, const char* keyname) {
+		auto theResult = jsonData->find(keyname);
+		if (theResult != jsonData->end()) {
+			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint16_t>() : 0;
+		} else {
+			return 0;
+		}
+	}
+
+	uint32_t getUint32(nlohmann::json* jsonData, const char* keyname) {
+		auto theResult = jsonData->find(keyname);
+		if (theResult != jsonData->end()) {
+			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint32_t>() : 0;
+		} else {
+			return 0;
+		}
+	}
+
+	uint64_t getUint64(nlohmann::json* jsonData, const char* keyname) {
+		auto theResult = jsonData->find(keyname);
+		if (theResult != jsonData->end()) {
+			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint64_t>() : 0;
+		} else {
+			return 0;
+		}
+	}
+
+	bool getBool(nlohmann::json* jsonData, const char* keyname) {
+		auto theResult = jsonData->find(keyname);
+		if (theResult != jsonData->end()) {
+			return !theResult->is_null() && theResult->is_boolean() ? theResult->get<bool>() : 0;
+		} else {
+			return 0;
+		}
+	}
+
+	std::string getString(nlohmann::json& jsonData, const char* keyname) {
+		auto theResult = jsonData.find(keyname);
+		if (theResult != jsonData.end()) {
+			return !theResult->is_null() && theResult->is_string() ? std::string{ std::move(jsonData[keyname]) } : "";
+		} else {
+			return const_cast<char*>("");
+		}
+	}
+
+	uint64_t strtoull(const std::string&& theString) {
+		if (theString != "") {
+			return stoull(theString);
+		} else {
+			return 0;
+		}
+	}
+
 	Permissions& Permissions::operator=(Permission&& other) {
-		StringWrapper theString = StringWrapper{ std::to_string(static_cast<uint32_t>(other)) };
-		*this = theString;
+		this->thePermissions = static_cast<uint64_t>(other);
 		return *this;
 	}
 
@@ -322,8 +383,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(Permission& other) {
-		StringWrapper theString = StringWrapper{ std::to_string(static_cast<uint32_t>(other)) };
-		*this = theString;
+		this->thePermissions = static_cast<uint64_t>(other);
 		return *this;
 	}
 
@@ -332,11 +392,11 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(std::string&& other) {
-		if (other.size() == 0) {
-			this->push_back('0');
+		if (other.size() == 0 || other == "") {
+			this->thePermissions = 0;
 		} else {
 			for (auto& value: other) {
-				this->push_back(value);
+				this->thePermissions = stoull(other);
 			}
 		}
 		other = "";
@@ -348,12 +408,10 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(std::string& other) {
-		if (other.size() == 0) {
-			this->push_back('0');
+		if (other.size() == 0 || other == "") {
+			this->thePermissions = 0;
 		} else {
-			for (auto& value: other) {
-				this->push_back(value);
-			}
+			this->thePermissions = stoull(other);
 		}
 		return *this;
 	}
@@ -362,8 +420,27 @@ namespace DiscordCoreAPI {
 		*this = permsNew;
 	}
 
-	Permissions::operator const char*() {
-		return this->data();
+
+	Permissions& Permissions::operator=(uint64_t other) {
+		this->thePermissions = other;
+		return *this;
+	}
+
+	Permissions::Permissions(uint64_t permsNew) {
+		*this = permsNew;
+	}
+
+	Permissions::operator uint64_t() {
+		return this->thePermissions;
+	}
+
+	Permissions::operator std::unique_ptr<char[]>() {
+		std::string theString{ std::to_string(this->thePermissions) };
+		std::unique_ptr<char[]> thePtr{ std::make_unique<char[]>(theString.size()) };
+		for (int32_t x = 0; x < theString.size(); ++x) {
+			thePtr[x] = theString[x];
+		}
+		return std::move(thePtr);
 	}
 
 	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
@@ -373,7 +450,7 @@ namespace DiscordCoreAPI {
 
 	bool Permissions::checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission) {
 		std::string permissionsString = Permissions::computePermissions(guildMember, channel);
-		if ((stoll(permissionsString) & static_cast<int64_t>(permission)) == static_cast<int64_t>(permission)) {
+		if ((stoll(permissionsString) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
 			return true;
 		} else {
 			return false;
@@ -386,12 +463,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void Permissions::removePermissions(const std::vector<Permission>& permissionsToRemove) {
-		if (*this == "") {
-			this->push_back('0');
-		}
-		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
+		uint64_t permissionsInteger = this->thePermissions;
 		for (auto value: permissionsToRemove) {
-			permissionsInteger &= ~static_cast<int64_t>(value);
+			permissionsInteger &= ~static_cast<uint64_t>(value);
 		}
 		std::stringstream sstream{};
 		sstream << permissionsInteger;
@@ -399,12 +473,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void Permissions::addPermissions(const std::vector<Permission>& permissionsToAdd) {
-		if (*this == "") {
-			this->push_back('0');
-		}
-		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
+		uint64_t permissionsInteger = this->thePermissions;
 		for (auto value: permissionsToAdd) {
-			permissionsInteger |= static_cast<int64_t>(value);
+			permissionsInteger |= static_cast<uint64_t>(value);
 		}
 		std::stringstream sstream{};
 		sstream << permissionsInteger;
@@ -413,12 +484,9 @@ namespace DiscordCoreAPI {
 
 	std::vector<std::string> Permissions::displayPermissions() {
 		std::vector<std::string> returnVector{};
-		if (*this == "") {
-			this->push_back('0');
-		}
-		int64_t permissionsInteger = stoll(static_cast<std::string>(static_cast<StringWrapper>(*this)));
+		uint64_t permissionsInteger = this->thePermissions;
 		if (permissionsInteger & (1ll << 3)) {
-			for (int64_t x = 0; x < 41; ++x) {
+			for (uint64_t x = 0; x < 41; ++x) {
 				permissionsInteger |= 1ll << x;
 			}
 		}
@@ -549,13 +617,13 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::getCurrentPermissionString() {
-		std::string theReturnString = *this;
+		std::string theReturnString = std::to_string(this->thePermissions);
 		return theReturnString;
 	}
 
 	std::string Permissions::getAllPermissions() {
-		int64_t allPerms{ 0 };
-		for (int64_t x = 0; x < 41; ++x) {
+		uint64_t allPerms{ 0 };
+		for (uint64_t x = 0; x < 41; ++x) {
 			allPerms |= 1ll << x;
 		}
 		std::stringstream stream{};
@@ -564,36 +632,45 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel) {
-		if ((stoll(basePermissions) & static_cast<int64_t>(Permission::Administrator)) == static_cast<int64_t>(Permission::Administrator)) {
+		if ((stoll(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) == static_cast<uint64_t>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
 
-		int64_t permissions = stoll(basePermissions);
-		if (channel.permissionOverwrites.contains(guildMember.guildId)) {
-			OverWriteData overWritesEveryone = channel.permissionOverwrites[guildMember.guildId];
-			permissions &= ~stoll(static_cast<std::string>(static_cast<StringWrapper>(overWritesEveryone.deny)));
-			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(overWritesEveryone.allow)));
+		uint64_t permissions = stoll(basePermissions);
+		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+			if (channel.permissionOverwrites[x].id == guildMember.guildId) {
+				OverWriteData currentOverWrites = channel.permissionOverwrites[x];
+				permissions &= ~currentOverWrites.deny;
+				permissions |= currentOverWrites.allow;
+				break;
+			}
 		}
-
 		std::vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRoleAsync({ .guildId = guildMember.guildId, .roleId = value }).get());
 		}
-		int64_t allow{ 0 };
-		int64_t deny{ 0 };
+		uint64_t allow{ 0 };
+		uint64_t deny{ 0 };
 		for (auto& value: guildMemberRoles) {
-			if (channel.permissionOverwrites.contains(value.id)) {
-				OverWriteData currentChannelOverwrites = channel.permissionOverwrites[value.id];
-				allow |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentChannelOverwrites.allow)));
-				deny |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentChannelOverwrites.deny)));
+			for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+				if (channel.permissionOverwrites[x].id == guildMember.guildId) {
+					OverWriteData currentOverWrites = channel.permissionOverwrites[x];
+					allow |= currentOverWrites.allow;
+					deny |= currentOverWrites.deny;
+					break;
+				}
 			}
 		}
 		permissions &= ~deny;
 		permissions |= allow;
-		if (channel.permissionOverwrites.contains(guildMember.id)) {
-			OverWriteData currentOverWrites = channel.permissionOverwrites[guildMember.id];
-			permissions &= ~stoll(static_cast<std::string>(static_cast<StringWrapper>(currentOverWrites.deny)));
-			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(currentOverWrites.allow)));
+		uint32_t theIndex{};
+		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+			if (channel.permissionOverwrites[x].id == guildMember.id){
+				OverWriteData currentOverWrites = channel.permissionOverwrites[x];
+				permissions &= ~currentOverWrites.deny;
+				permissions |= currentOverWrites.allow;
+				break;
+			}
 		}
 		return std::to_string(permissions);
 	}
@@ -619,9 +696,9 @@ namespace DiscordCoreAPI {
 				roleEveryone = value;
 			}
 		}
-		int64_t permissions{};
-		if (roleEveryone.permissions != "") {
-			permissions = stoll(static_cast<std::string>(static_cast<StringWrapper>(roleEveryone.permissions)));
+		uint64_t permissions{};
+		if (roleEveryone.permissions != 0) {
+			permissions = roleEveryone.permissions;
 		}
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
@@ -631,10 +708,10 @@ namespace DiscordCoreAPI {
 			guildMemberRoles.emplace_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
 		}
 		for (auto& value: guildMemberRoles) {
-			permissions |= stoll(static_cast<std::string>(static_cast<StringWrapper>(value.permissions)));
+			permissions |= value.permissions;
 		}
 
-		if ((permissions & static_cast<int64_t>(Permission::Administrator)) == static_cast<int64_t>(Permission::Administrator)) {
+		if ((permissions & static_cast<uint64_t>(Permission::Administrator)) == static_cast<uint64_t>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
 
@@ -737,7 +814,7 @@ namespace DiscordCoreAPI {
 		uint64_t pos = 0;
 
 		while (pos < theString.size()) {
-			theReturnString.push_back(base64_chars_[(theString[static_cast<int64_t>(pos + 0)] & 0xfc) >> 2]);
+			theReturnString.push_back(base64_chars_[(theString[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
 
 			if (static_cast<uint64_t>(pos + 1) < theString.size()) {
 				theReturnString.push_back(base64_chars_[((theString[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((theString[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);

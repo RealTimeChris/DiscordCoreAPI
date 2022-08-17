@@ -76,7 +76,7 @@ namespace DiscordCoreInternal {
 		operator nlohmann::json();
 	};
 
-	enum class SendSpeakingType : int8_t {
+	enum class SendSpeakingType : uint8_t {
 		Microphone = 1 << 0,
 		Soundshare = 1 << 1,
 		Priority = 1 << 2,
@@ -91,9 +91,9 @@ namespace DiscordCoreInternal {
 		operator nlohmann::json();
 	};
 
-	enum class HttpsWorkloadClass : int8_t { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
+	enum class HttpsWorkloadClass : uint8_t { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
 
-	enum class PayloadType : int8_t { Application_Json = 1, Multipart_Form = 2 };
+	enum class PayloadType : uint8_t { Application_Json = 1, Multipart_Form = 2 };
 
 	enum class HttpsWorkloadType : uint8_t {
 		Unset = 0,
@@ -392,7 +392,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Premium types denote the level of premium a user has. \brief Premium types denote the level of premium a user has.
-	enum class PremiumType : int8_t {
+	enum class PremiumType : uint8_t {
 		None = 0,///< None.
 		Nitro_Classic = 1,///< Nitro classic.
 		Nitro = 2///< Nitro.
@@ -451,7 +451,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Sticker format types. \brief Sticker format types.
-	enum class StickerFormatType : int8_t {
+	enum class StickerFormatType : uint8_t {
 		Png = 1,///< Png.
 		Apng = 2,///< Apng.
 		Lottie = 3///< Lottie
@@ -588,7 +588,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Embed types. \brief Embed types.
-	enum class EmbedType : int8_t {
+	enum class EmbedType : uint8_t {
 		Rich = 0,///< Rich.
 		Image = 1,///< Image.
 		Video = 2,///< Video.
@@ -698,7 +698,7 @@ namespace DiscordCoreAPI {
 		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
-	enum class MediaType : int8_t { png = 0, gif = 1, jpeg = 2, mpeg = 3, mp3 = 4 };
+	enum class MediaType : uint8_t { png = 0, gif = 1, jpeg = 2, mpeg = 3, mp3 = 4 };
 
 	/// Data representing a file to be sent via multipart-form data. \brief Data representing a file to be sent via multipart-form data.
 	struct DiscordCoreAPI_Dll File {
@@ -707,7 +707,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Channel types. \brief Channel types.
-	enum class ChannelType : int8_t {
+	enum class ChannelType : uint8_t {
 		Guild_Text = 0,///< Guild text.
 		Dm = 1,///< Direct-Message.
 		Guild_Voice = 2,/// Guild voice.
@@ -781,7 +781,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Thread types. \brief Thread types.
-	enum class ThreadType : int8_t {
+	enum class ThreadType : uint8_t {
 		Guild_News_Thread = 10,///< Guild news Thread.
 		Guild_Public_Thread = 11,///< Guild public Thread.
 		Guild_Private_Thread = 12///< Guild private Thread.
@@ -795,7 +795,7 @@ namespace DiscordCoreAPI {
 		Longest = 10080///< Longest.
 	};
 
-	enum class GuildMemberFlags : int8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
+	enum class GuildMemberFlags : uint8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
 
 	struct DiscordCoreAPI_Dll GuildMemberId {
 		GuildMemberId() = default;
@@ -868,7 +868,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Permission overwrites types. \brief Permission overwrites types.
-	enum class PermissionOverwritesType : int8_t {
+	enum class PermissionOverwritesType : uint8_t {
 		Role = 0,///< Role.
 		User = 1///< User.
 	};
@@ -893,20 +893,22 @@ namespace DiscordCoreAPI {
 		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
-	enum class ChannelFlags : int8_t { NSFW = 1 << 0 };
+	enum class ChannelFlags : uint8_t { NSFW = 1 << 0 };
 
 	/// Data structure representing a single Channel. \brief Data structure representing a single Channel.
 	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity, public DataParser<ChannelData> {
 	  public:
-		std::unordered_map<Snowflake, OverWriteData> permissionOverwrites{};///< Permission overwrites for the given Channel.
+		std::vector<OverWriteData> permissionOverwrites{};
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
+		std::vector<Snowflake> recipients{};///< List of message recipients.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
-		int32_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
+		uint16_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
+		StringWrapper topic{};///< Channel topic.
 		StringWrapper name{};///< Name of the Channel.
 		Snowflake parentId{};///< Id of the Channel's parent Channel/category.
 		Snowflake ownerId{};///< Id of the Channel's owner.
 		Snowflake guildId{};///< Id of the Channel's Guild, if applicable.
-		int8_t flags{ 0 };///< Channel flags combined as a bitfield.
+		uint8_t flags{};///< Flags combined as a bitmask.
 
 		ChannelData() = default;
 
@@ -961,7 +963,7 @@ namespace DiscordCoreAPI {
 		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
-	enum class RoleFlags : int8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
+	enum class RoleFlags : uint8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
 
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
 	class DiscordCoreAPI_Dll RoleData : public DiscordEntity, public DataParser<RoleData> {
@@ -991,7 +993,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Application command-option types. \brief Application command-option types.
-	enum class ApplicationCommandOptionType : int8_t {
+	enum class ApplicationCommandOptionType : uint8_t {
 		Sub_Command = 1,///< Sub-command.
 		Sub_Command_Group = 2,///< Sub-command group.
 		String = 3,///< String.
@@ -1006,19 +1008,19 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Application command permission-types. \brief Application command permission-types.
-	enum class ApplicationCommandPermissionType : int8_t {
+	enum class ApplicationCommandPermissionType : uint8_t {
 		Role = 1,///< Role.
 		User = 2,///< User.
 		Channel = 3///< Channel.
 	};
 
 	/// Event types for auto-moderation. \brief Event types for auto-moderation.
-	enum class EventType : int8_t {
+	enum class EventType : uint8_t {
 		Message_Send = 1,///< When a member sends or edits a message in the guild.
 	};
 
 	/// Trigger types for auto-moderation. \brief Trigger types for auto-moderation.
-	enum class TriggerType : int8_t {
+	enum class TriggerType : uint8_t {
 		Keyword = 1,///< Check if content contains words from a user defined list of keywords.
 		Harmful_Link = 2,///< Check if content contains any harmful links.
 		Spam = 3,///< Check if content represents generic spam.
@@ -1026,14 +1028,14 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Keyword preset types for auto-moderation. \brief Keyword preset types for auto-moderation.
-	enum class KeywordPresetType : int8_t {
+	enum class KeywordPresetType : uint8_t {
 		Profanity = 1,///< Words that may be considered forms of swearing or cursing.
 		Sexual_Content = 2,///< Words that refer to sexually explicit behavior or activity
 		Slurs = 3///< Personal insults or words that may be considered hate speech.
 	};
 
 	/// Action types for auto-moderation. \brief Action types for auto-moderation.
-	enum class ActionType : int8_t {
+	enum class ActionType : uint8_t {
 		Block_Message = 1,///< Blocks the content of a message according to the rule.
 		Send_Alert_Message = 2,///< Logs user content to a specified channel.
 		Timeout = 3///< Timeout user for a specified duration.
@@ -1211,7 +1213,7 @@ namespace DiscordCoreAPI {
 
 	/// For updating/modifying a given Channel's properties. \brief For updating/modifying a given Channel's properties.
 	struct DiscordCoreAPI_Dll UpdateChannelData {
-		std::unordered_map<Snowflake, OverWriteData> permissionOverwrites{};
+		std::vector<OverWriteData> permissionOverwrites{};
 		int32_t defaultAutoArchiveDuration{ 10080 };
 		int32_t videoQualityMode{ 1 };
 		int32_t rateLimitPerUser{ 0 };
@@ -1291,7 +1293,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Message activity types. \brief Message activity types.
-	enum class MessageActivityType : int8_t {
+	enum class MessageActivityType : uint8_t {
 		Join = 1,///< Join.
 		Spectate = 2,///< Spectate.
 		Listen = 3,///< Listen.
@@ -1525,7 +1527,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Widget style options. \brief Widget style options.
-	enum class WidgetStyleOptions : int8_t {
+	enum class WidgetStyleOptions : uint8_t {
 		Shield = 0,///< Shield
 		Banner1 = 1,///< Banner1
 		Banner2 = 2,///< Banner2
@@ -1814,7 +1816,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Activity types. \brief Activity types.
-	enum class ActivityType : int8_t {
+	enum class ActivityType : uint8_t {
 		Game = 0,///< Game.
 		Streaming = 1,///< Streaming.
 		Listening = 2,///< Listening.
@@ -1872,7 +1874,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Premium tier levels. \brief Premium tier levels.
-	enum class PremiumTier : int8_t {
+	enum class PremiumTier : uint8_t {
 		None = 0,///< None.
 		Tier_1 = 1,///< Tier 1.
 		Tier_2 = 2,///< Tier 2.
@@ -1881,26 +1883,26 @@ namespace DiscordCoreAPI {
 
 	/// Default Message notification levels. \brief Default Message notification
 	/// levels.
-	enum class DefaultMessageNotificationLevel : int8_t {
+	enum class DefaultMessageNotificationLevel : uint8_t {
 		All_Messages = 0,///< All messages.
 		Only_Mentions = 1///< Only mentions.
 	};
 
 	/// Explicit content filter levels. \brief Explicit content filter levels.
-	enum class ExplicitContentFilterLevel : int8_t {
+	enum class ExplicitContentFilterLevel : uint8_t {
 		Disabled = 0,///< Disabled.
 		Members_Without_Roles = 1,///< Members without roles.
 		All_Members = 2///< All members.
 	};
 
 	/// MFA levels. \brief MFA levels.
-	enum class MFALevel : int8_t {
+	enum class MFALevel : uint8_t {
 		None = 0,///< None.
 		Elevated = 1///< Elevated.
 	};
 
 	/// Verification levels. \brief/// Verification levels.
-	enum class VerificationLevel : int8_t {
+	enum class VerificationLevel : uint8_t {
 		None = 0,///< None.
 		Low = 1,///< Low.
 		Medium = 2,///< Medium.
@@ -1965,7 +1967,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Stage instance privacy levels. \brief Stage instance privacy levels.
-	enum class StageInstancePrivacyLevel : int8_t {
+	enum class StageInstancePrivacyLevel : uint8_t {
 		Public = 1,///< Public.
 		Guild_Only = 2///< Guild only.
 	};
@@ -1992,12 +1994,12 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Sticker types. \brief Sticker types.
-	enum class StickerType : int8_t {
+	enum class StickerType : uint8_t {
 		Standard = 1,///< Standard.
 		Guild = 2///< Guild.
 	};
 
-	enum class StickerFlags : int8_t { Available = 1 << 0 };
+	enum class StickerFlags : uint8_t { Available = 1 << 0 };
 
 	/// Data representing a single Sticker. \brief Data representing a single Sticker.
 	class DiscordCoreAPI_Dll StickerData : public DiscordEntity, public DataParser<StickerData> {
@@ -2063,7 +2065,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Guild NSFW level. \brief Guild NSFW level.
-	enum class GuildNSFWLevel : int8_t {
+	enum class GuildNSFWLevel : uint8_t {
 		Default = 0,///< Default.
 		Explicit = 1,///< Explicit.
 		Safe = 2,///< Safe.
@@ -2071,7 +2073,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// System channel flags. \brief System channel flags.
-	enum class SystemChannelFlags : int8_t {
+	enum class SystemChannelFlags : uint8_t {
 		Suppress_Join_Notifications = 1 << 0,///< Suppress member join notifications.
 		Suppress_Premium_Subscriptions = 1 << 1,///< Suppress server boost notifications.
 		Suppress_Guild_Reminder_Notifications = 1 << 2,///< Suppress server setup tips.
@@ -2079,7 +2081,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Guild flags. \brief Guild flags.
-	enum class GuildFlags : int8_t {
+	enum class GuildFlags : uint8_t {
 		WidgetEnabled = 1 << 0,///< Widget enabled.
 		Unavailable = 1 << 1,///< Unavailable.
 		Owner = 1 << 2,///< Owner.
@@ -2166,13 +2168,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Guild scheduled event privacy levels. \brief Guild scheduled event privacy levels.
-	enum class GuildScheduledEventPrivacyLevel : int8_t {
+	enum class GuildScheduledEventPrivacyLevel : uint8_t {
 		Public = 1,///< Public.
 		Guild_Only = 2///< Guild only.
 	};
 
 	/// GuildScheduledEventStatus. \brief GuildScheduledEventStatus.
-	enum class GuildScheduledEventStatus : int8_t {
+	enum class GuildScheduledEventStatus : uint8_t {
 		Scheduled = 1,///< Scheduled.
 		Active = 2,///< Active.
 		Completed = 3,///< Completed.
@@ -2180,7 +2182,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Guild scheduled event entity types. \brief Guild scheduled event entity types.
-	enum class GuildScheduledEventEntityType : int8_t {
+	enum class GuildScheduledEventEntityType : uint8_t {
 		None = 0,///< None.
 		State_Instance = 1,///< Stage instance.
 		Voice = 2,///< Voice.
@@ -2365,13 +2367,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Invite target types. \brief Invite target types.
-	enum class InviteTargetTypes : int8_t {
+	enum class InviteTargetTypes : uint8_t {
 		Stream = 1,///< Stream.
 		Embedded_Application = 2///< Embedded application.
 	};
 
 	/// WebHook types. \brief WebHook types.
-	enum class WebHookType : int8_t {
+	enum class WebHookType : uint8_t {
 		Incoming = 1,///< Incoming.
 		Channel_Follower = 2,///< Channel follower.
 		Application = 3///< Application.
@@ -2590,7 +2592,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Application command types. \brief Application command types.
-	enum class ApplicationCommandType : int8_t {
+	enum class ApplicationCommandType : uint8_t {
 		Chat_Input = 1,///< Chat input.
 		User = 2,///< User.
 		Message = 3///< Message.
@@ -2629,7 +2631,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Component types. \brief Component types.
-	enum class ComponentType : int8_t {
+	enum class ComponentType : uint8_t {
 		ActionRow = 1,///< A container for other components.
 		Button = 2,///< A button object.
 		SelectMenu = 3,///< A select menu for picking from choices.
@@ -2695,7 +2697,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Interaction types. \brief Interaction types.
-	enum class InteractionType : int8_t {
+	enum class InteractionType : uint8_t {
 		Ping = 1,///< Ping.
 		Application_Command = 2,///< Application command.
 		Message_Component = 3,///< Message component.
@@ -2725,7 +2727,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Button styles. \brief Button styles.
-	enum class ButtonStyle : int8_t {
+	enum class ButtonStyle : uint8_t {
 		Primary = 1,///< Primary.
 		Success = 3,///< Success.
 		Secondary = 2,///< Secondary.
@@ -2773,7 +2775,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Interaction callback types. \brief Interaction callback types.
-	enum class InteractionCallbackType : int8_t {
+	enum class InteractionCallbackType : uint8_t {
 		Pong = 1,///< ACK a Ping.
 		Channel_Message_With_Source = 4,///< Respond to an interaction with a message.
 		Deferred_Channel_Message_With_Source = 5,///< ACK an interaction and edit a response later, the user sees a loading state.
@@ -2922,7 +2924,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Message types. \brief Message types.
-	enum class MessageType : int8_t {
+	enum class MessageType : uint8_t {
 		Default = 0,///< Default.
 		Recipient_Add = 1,///< Recipient add.
 		Recipient_Remove = 2,///< Recipient remove.
@@ -2961,7 +2963,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Sticker item types. \brief Sticker item types.
-	enum class StickerItemType : int8_t {
+	enum class StickerItemType : uint8_t {
 		Png = 1,///< Png.
 		Apng = 2,///< Apng.
 		Lottie = 3///< Lottie.
@@ -3114,7 +3116,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Connection visibility types. \brief Connection visibility types.
-	enum class ConnectionVisibilityTypes : int8_t {
+	enum class ConnectionVisibilityTypes : uint8_t {
 		None = 0,///< None.
 		Everyone = 1///< Everyone.
 	};
@@ -3292,7 +3294,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Text input style for modals. \brief Text input style for modals.
-	enum class TextInputStyle : int8_t {
+	enum class TextInputStyle : uint8_t {
 		Short = 1,///< A single-line input.
 		Paragraph = 2///< A multi-line input.
 	};
@@ -3687,7 +3689,7 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 	/// Song types. \brief Song types.
-	enum class SongType : int8_t {
+	enum class SongType : uint8_t {
 		YouTube = 0,///< YouTube.
 		SoundCloud = 1///< SoundCloud.
 	};
