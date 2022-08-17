@@ -403,7 +403,7 @@ namespace DiscordCoreInternal {
 							payload = this->parseEtfToJson(this->inputBuffer.substr(offSet, length));
 							theInt.store(theInt.load() + theStopWatch.totalTimePassed());
 							if (DiscordCoreAPI::theCount.load() != 0) {
-								std::cout << "THE TIME TO COMPLETE (AVERAGE): " << theInt.load() / DiscordCoreAPI::theCount.load() << std::endl;
+								//std::cout << "THE TIME TO COMPLETE (AVERAGE): " << theInt.load() / DiscordCoreAPI::theCount.load() << std::endl;
 							}
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
@@ -415,7 +415,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::StopWatch theStopWatch{ 50us };
 						theStopWatch.resetTimer();
 						payload = nlohmann::json::parse(this->inputBuffer.substr(offSet, length));
-						std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
+						//std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
 					}
 				} else {
 					returnValue = true;
