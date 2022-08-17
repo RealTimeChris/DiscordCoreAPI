@@ -196,22 +196,37 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	UserData& UserData::operator=(nlohmann::json&& jsonObjectData) {
+	UserData& UserData::operator=(nlohmann::json&& jsonObjectData) noexcept {
 		this->parseObject(std::move(jsonObjectData));
 		return *this;
 	}
 
-	UserData::UserData(nlohmann::json&& jsonObjectData) {
+	UserData::UserData(nlohmann::json&& jsonObjectData) noexcept {
 		*this = std::move(jsonObjectData);
 	}
 
-	UserData& UserData::operator=(nlohmann::json& jsonObjectData) {
+	UserData& UserData::operator=(nlohmann::json& jsonObjectData) noexcept {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	UserData::UserData(nlohmann::json& jsonObjectData) {
+	UserData::UserData(nlohmann::json& jsonObjectData) noexcept {
 		*this = jsonObjectData;
+	}
+
+	UserData& UserData::operator=(UserData&& other) noexcept {
+		if (this != &other) {
+			this->discriminator = std::move(other.discriminator);
+			this->userName = std::move(other.userName);
+			this->avatar = std::move(other.avatar);
+			this->flags = other.flags;
+			this->id = other.id;
+		}
+		return *this;
+	}
+
+	UserData::UserData(UserData&& other) noexcept {
+		*this = std::move(other);
 	}
 
 	AttachmentData::operator nlohmann::json() {
@@ -474,22 +489,39 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	GuildMemberData& GuildMemberData::operator=(nlohmann::json&& jsonObjectData) {
+	GuildMemberData& GuildMemberData::operator=(nlohmann::json&& jsonObjectData) noexcept {
 		this->parseObject(std::move(jsonObjectData));
 		return *this;
 	}
 
-	GuildMemberData::GuildMemberData(nlohmann::json&& jsonObjectData) {
+	GuildMemberData::GuildMemberData(nlohmann::json&& jsonObjectData) noexcept {
 		*this = std::move(jsonObjectData);
 	}
 
-	GuildMemberData& GuildMemberData::operator=(nlohmann::json& jsonObjectData) {
+	GuildMemberData& GuildMemberData::operator=(nlohmann::json& jsonObjectData) noexcept {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildMemberData::GuildMemberData(nlohmann::json& jsonObjectData) {
+	GuildMemberData::GuildMemberData(nlohmann::json& jsonObjectData) noexcept {
 		*this = jsonObjectData;
+	}
+
+	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
+		this->userAvatar = std::move(other.userAvatar);
+		this->userName = std::move(other.userName);
+		this->joinedAt = std::move(other.joinedAt);
+		this->permissions = other.permissions;
+		this->roles = std::move(other.roles);
+		this->nick = std::move(other.nick);
+		this->guildId = other.guildId;
+		this->flags = other.flags;
+		this->id = other.id;
+		return *this;
+	}
+
+	GuildMemberData::GuildMemberData(GuildMemberData&& other) noexcept {
+		*this = std::move(other);
 	}
 
 	VoiceStateData& VoiceStateData::operator=(nlohmann::json& jsonObjectData) {
@@ -510,22 +542,42 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	ChannelData& ChannelData::operator=(nlohmann::json&& jsonObjectData) {
+	ChannelData& ChannelData::operator=(nlohmann::json&& jsonObjectData) noexcept {
 		this->parseObject(std::move(jsonObjectData));
 		return *this;
 	}
 
-	ChannelData::ChannelData(nlohmann::json&& other) {
+	ChannelData::ChannelData(nlohmann::json&& other) noexcept {
 		*this = std::move(other);
 	}
 
-	ChannelData& ChannelData::operator=(nlohmann::json& jsonObjectData) {
+	ChannelData& ChannelData::operator=(nlohmann::json& jsonObjectData) noexcept {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ChannelData::ChannelData(nlohmann::json& other) {
+	ChannelData::ChannelData(nlohmann::json& other) noexcept {
 		*this = other;
+	}
+
+	ChannelData& ChannelData::operator=(ChannelData&& other) noexcept {
+		this->permissionOverwrites = std::move(other.permissionOverwrites);
+		this->recipients = std::move(other.recipients);
+		this->parentId = std::move(other.parentId);
+		this->guildId = std::move(other.guildId);
+		this->ownerId = std::move(other.ownerId);
+		this->memberCount = other.memberCount;
+		this->topic = std::move(other.topic);
+		this->name = std::move(other.name);
+		this->position = other.position;
+		this->id = std::move(other.id);
+		this->flags = other.flags;
+		this->type = other.type;
+		return *this;
+	}
+
+	ChannelData::ChannelData(ChannelData&& other) noexcept {
+		*this = std::move(other);
 	}
 
 	ActiveThreadsData& ActiveThreadsData::operator=(nlohmann::json& jsonObjectData) {
@@ -546,22 +598,37 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	RoleData& RoleData::operator=(nlohmann::json&& jsonObjectData) {
+	RoleData& RoleData::operator=(nlohmann::json&& jsonObjectData) noexcept {
 		this->parseObject(std::move(jsonObjectData));
 		return *this;
 	}
 
-	RoleData::RoleData(nlohmann::json&& jsonObjectData) {
+	RoleData::RoleData(nlohmann::json&& jsonObjectData) noexcept {
 		*this = std::move(jsonObjectData);
 	}
 
-	RoleData& RoleData::operator=(nlohmann::json& jsonObjectData) {
+	RoleData& RoleData::operator=(nlohmann::json& jsonObjectData) noexcept {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	RoleData::RoleData(nlohmann::json& jsonObjectData) {
+	RoleData::RoleData(nlohmann::json& jsonObjectData) noexcept {
 		*this = jsonObjectData;
+	}
+
+	RoleData& RoleData::operator=(RoleData&& other) noexcept {
+		this->unicodeEmoji = std::move(other.unicodeEmoji);
+		this->permissions = other.permissions;
+		this->name = std::move(other.name);
+		this->position = other.position;
+		this->color = other.color;
+		this->flags = other.flags;
+		this->id = other.id;
+		return *this;
+	}
+
+	RoleData::RoleData(RoleData&& other) noexcept {
+		*this = std::move(other);
 	}
 
 	ActionMetaData& ActionMetaData::operator=(nlohmann::json& jsonObjectData) {
@@ -951,22 +1018,44 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	GuildData& GuildData::operator=(nlohmann::json&& jsonObjectData) {
+	GuildData& GuildData::operator=(nlohmann::json&& jsonObjectData) noexcept {
 		this->parseObject(std::move(jsonObjectData));
 		return *this;
 	}
 
-	GuildData::GuildData(nlohmann::json&& jsonObjectData) {
+	GuildData::GuildData(nlohmann::json&& jsonObjectData) noexcept {
 		*this = std::move(jsonObjectData);
 	}
 
-	GuildData& GuildData::operator=(nlohmann::json& jsonObjectData) {
+	GuildData& GuildData::operator=(nlohmann::json& jsonObjectData) noexcept {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildData::GuildData(nlohmann::json& jsonObjectData) {
+	GuildData::GuildData(nlohmann::json& jsonObjectData) noexcept {
 		*this = jsonObjectData;
+	}
+
+	GuildData& GuildData::operator=(GuildData&& other) noexcept {
+		this->voiceConnectionPtr = other.voiceConnectionPtr;
+		this->discordCoreClient = other.discordCoreClient;
+		this->voiceStates = std::move(other.voiceStates);
+		this->presences = std::move(other.presences);
+		this->channels = std::move(other.channels);
+		this->joinedAt = std::move(other.joinedAt);
+		this->members = std::move(other.members);
+		this->memberCount = other.memberCount;
+		this->roles = std::move(other.roles);
+		this->name = std::move(other.name);
+		this->icon = std::move(other.icon);
+		this->ownerId = other.ownerId;
+		this->flags = other.flags;
+		this->id = other.id;
+		return *this;
+	}
+
+	GuildData::GuildData(GuildData&& other) noexcept {
+		*this = std::move(other);
 	}
 
 	GuildDataVector::operator std::vector<GuildData>() {
@@ -2029,30 +2118,6 @@ namespace DiscordCoreAPI {
 		data["data"]["tts"] = this->data.tts;
 		data["type"] = this->type;
 		return data.dump();
-	}
-
-	AudioFrameData& AudioFrameData::operator=(AudioFrameData&& other) noexcept {
-		this->guildMemberId = other.guildMemberId;
-		this->sampleCount = other.sampleCount;
-		this->data = std::move(other.data);
-		this->type = other.type;
-		return *this;
-	}
-
-	AudioFrameData::AudioFrameData(AudioFrameData&& other) noexcept {
-		*this = std::move(other);
-	}
-
-	AudioFrameData& AudioFrameData::operator=(AudioFrameData& other) noexcept {
-		this->guildMemberId = other.guildMemberId;
-		this->sampleCount = other.sampleCount;
-		this->data = other.data;
-		this->type = other.type;
-		return *this;
-	}
-
-	AudioFrameData::AudioFrameData(AudioFrameData& other) noexcept {
-		*this = other;
 	}
 
 	Song& Song::operator=(nlohmann::json& jsonObjectData) {

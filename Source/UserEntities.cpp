@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::unordered_map<Snowflake, std::unique_ptr<UserData>> Users::cache{};
+	std::map<Snowflake, std::unique_ptr<UserData>> Users::cache{};
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
 	ConfigManager* Users::configManager{ nullptr };
 	std::shared_mutex Users::theMutex{};

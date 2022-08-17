@@ -90,7 +90,7 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
-		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		std::map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState::Connecting };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };

@@ -206,7 +206,6 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient = other.discordCoreClient;
 			this->voiceStates = std::move(other.voiceStates);
 			this->presences = std::move(other.presences);
-			this->features = std::move(other.features);
 			this->channels = std::move(other.channels);
 			this->joinedAt = std::move(other.joinedAt);
 			this->ownerId = std::move(other.ownerId);
@@ -232,7 +231,6 @@ namespace DiscordCoreAPI {
 			this->voiceStates = other.voiceStates;
 			this->memberCount = other.memberCount;
 			this->presences = other.presences;
-			this->features = other.features;
 			this->channels = other.channels;
 			this->joinedAt = other.joinedAt;
 			this->ownerId = other.ownerId;
@@ -850,7 +848,7 @@ namespace DiscordCoreAPI {
 		Guilds::cache.erase(guildId);
 	};
 
-	std::unordered_map<Snowflake, std::unique_ptr<GuildData>> Guilds::cache{};
+	std::map<Snowflake, std::unique_ptr<GuildData>> Guilds::cache{};
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
 	ConfigManager* Guilds::configManager{ nullptr };

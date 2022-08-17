@@ -338,7 +338,7 @@ namespace DiscordCoreAPI {
 	void ChannelVector::parseObject(nlohmann::json& jsonObjectData) {
 		this->theChannels.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
-			DiscordCoreAPI::Channel newData{ value };
+			DiscordCoreAPI::ChannelData newData{ value };
 			this->theChannels.emplace_back(newData);
 		}
 		this->theChannels.shrink_to_fit();
@@ -364,7 +364,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData.contains("icon_hash") && !jsonObjectData["icon_hash"].is_null()) {
-			this->iconHash = jsonObjectData["icon_hash"].get<std::string>();
+			this->icon = jsonObjectData["icon_hash"].get<std::string>();
 		}
 
 		if (jsonObjectData.contains("splash") && !jsonObjectData["splash"].is_null()) {
@@ -583,7 +583,7 @@ namespace DiscordCoreAPI {
 	void GuildVector::parseObject(nlohmann::json& jsonObjectData) {
 		this->theGuilds.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
-			DiscordCoreAPI::Guild newData{ value };
+			DiscordCoreAPI::GuildData newData{ value };
 			this->theGuilds.emplace_back(newData);
 		}
 		this->theGuilds.shrink_to_fit();
@@ -653,7 +653,7 @@ namespace DiscordCoreAPI {
 	void GuildMemberVector::parseObject(nlohmann::json& jsonObjectData) {
 		this->theGuildMembers.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
-			DiscordCoreAPI::GuildMember newData{ value };
+			DiscordCoreAPI::GuildMemberData newData{ value };
 			this->theGuildMembers.emplace_back(newData);
 		}
 		this->theGuildMembers.shrink_to_fit();
@@ -988,7 +988,7 @@ namespace DiscordCoreAPI {
 	void RoleVector::parseObject(nlohmann::json& jsonObjectData) {
 		this->theRoles.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
-			DiscordCoreAPI::Role newData{ value };
+			DiscordCoreAPI::RoleData newData{ value };
 			this->theRoles.emplace_back(newData);
 		}
 		this->theRoles.shrink_to_fit();
@@ -1257,7 +1257,7 @@ namespace DiscordCoreAPI {
 	void UserVector::parseObject(nlohmann::json& jsonObjectData) {
 		this->theUsers.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
-			DiscordCoreAPI::User newData{ value };
+			DiscordCoreAPI::UserData newData{ value };
 			this->theUsers.emplace_back(newData);
 		}
 		this->theUsers.shrink_to_fit();
@@ -1339,9 +1339,7 @@ namespace DiscordCoreAPI {
 
 		this->discriminator = getString(jsonObjectData, "discriminator");
 
-		std::string theString02 = getString(jsonObjectData, "avatar");
-		std::string avatarString = "https://cdn.discordapp.com/avatars/" + std::to_string(this->id) + "/" + std::move(theString02);
-		this->avatar = std::move(avatarString);
+		this->avatar = getString(jsonObjectData, "avatar");
 
 		this->flags = setBool<int32_t, UserFlags>(this->flags, UserFlags::Bot, getBool(&jsonObjectData, "bot"));
 
@@ -1361,9 +1359,7 @@ namespace DiscordCoreAPI {
 
 		this->discriminator = getString(jsonObjectData, "discriminator");
 
-		std::string theString02 = getString(jsonObjectData, "avatar");
-		std::string avatarString = "https://cdn.discordapp.com/avatars/" + std::to_string(this->id) + "/" + std::move(theString02);
-		this->avatar = std::move(avatarString);
+		this->avatar = getString(jsonObjectData, "avatar");
 
 		this->flags = setBool<int32_t, UserFlags>(this->flags, UserFlags::Bot, getBool(&jsonObjectData, "bot"));
 
@@ -1669,7 +1665,7 @@ namespace DiscordCoreAPI {
 		this->guildId = strtoull(getString(jsonObjectData, "guild_id"));
 
 		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-			std::unique_ptr<UserData> theUser = std::make_unique<UserData>(jsonObjectData["user"]);
+			std::unique_ptr<UserData> theUser = std::make_unique<UserData>(std::move(jsonObjectData["user"]));
 			this->id = theUser->id;
 			this->userAvatar = theUser->avatar;
 			this->userName = theUser->userName;
@@ -1700,7 +1696,7 @@ namespace DiscordCoreAPI {
 		this->guildId = strtoull(getString(jsonObjectData, "guild_id"));
 
 		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-			std::unique_ptr<UserData> theUser = std::make_unique<UserData>(jsonObjectData["user"]);
+			std::unique_ptr<UserData> theUser = std::make_unique<UserData>(std::move(jsonObjectData["user"]));
 			this->id = theUser->id;
 			this->userAvatar = theUser->avatar;
 			this->userName = theUser->userName;
@@ -1726,7 +1722,7 @@ namespace DiscordCoreAPI {
 		this->userId = strtoull(getString(jsonObjectData, "user_id"));
 
 		if (jsonObjectData.contains("member") && !jsonObjectData["member"].is_null()) {
-			this->member = jsonObjectData["member"];
+			this->member = std::move(jsonObjectData["member"]);
 		}
 
 		this->sessionId = getString(jsonObjectData, "session_id");
@@ -1761,18 +1757,6 @@ namespace DiscordCoreAPI {
 	void ChannelData::parseObject(nlohmann::json&& jsonObjectData) {
 		this->id = strtoull(getString(jsonObjectData, "id"));
 
-		std::vector<OverWriteData> permissionOverwrites{};
-		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
-		std::vector<Snowflake> recipients{};///< List of message recipients.
-		int32_t memberCount{ 0 };///< Count of members active in the Channel.
-		uint16_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
-		StringWrapper topic{};///< Channel topic.
-		StringWrapper name{};///< Name of the Channel.
-		Snowflake parentId{};///< Id of the Channel's parent Channel/category.
-		Snowflake ownerId{};///< Id of the Channel's owner.
-		Snowflake guildId{};///< Id of the Channel's Guild, if applicable.
-		uint8_t flags{};///< Flags combined as a bitmask.
-
 		this->flags = getUint8(&jsonObjectData, "flags");
 
 		this->type = static_cast<ChannelType>(getUint8(&jsonObjectData, "type"));
@@ -1786,7 +1770,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("permission_overwrites") && !jsonObjectData["permission_overwrites"].is_null()) {
 			for (auto& value: jsonObjectData["permission_overwrites"]) {
 				OverWriteData newData{ value };
-				this->permissionOverwrites.emplace_back(newData);
+				this->permissionOverwrites.emplace_back(std::move(newData));
 			}
 		}
 
@@ -1815,7 +1799,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("permission_overwrites") && !jsonObjectData["permission_overwrites"].is_null()) {
 			for (auto& value: jsonObjectData["permission_overwrites"]) {
 				OverWriteData newData{ value };
-				this->permissionOverwrites[newData.id] = newData;
+				this->permissionOverwrites.emplace_back(newData);
 			}
 		}
 
@@ -2832,29 +2816,21 @@ namespace DiscordCoreAPI {
 	void GuildData::parseObject(nlohmann::json&& jsonObjectData) {
 		this->id = strtoull(getString(jsonObjectData, "id"));
 
-		//std::string iconUrlString = "https://cdn.discordapp.com/";
-		//iconUrlString += "icons/" + std::to_string(this->id) + "/" + getString(jsonObjectData, "icon") + ".png";
-		//this->icon = iconUrlString;
+		this->icon = getString(jsonObjectData, "icon");
 
 		this->name = getString(jsonObjectData, "name");
 
 		this->joinedAt = getString(jsonObjectData, "joined_at");
 
-		//this->flags = setBool<int8_t, GuildFlags>(this->flags, GuildFlags::Owner, getBool(&jsonObjectData, "owner"));
+		this->flags = setBool<int8_t, GuildFlags>(this->flags, GuildFlags::Owner, getBool(&jsonObjectData, "owner"));
 
 		this->ownerId = strtoull(getString(jsonObjectData, "owner_id"));
 
-		//if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
-			//for (auto& value: jsonObjectData["features"]) {
-				//this->features.emplace_back(StringWrapper{ value.get<std::string>() });
-				//	}
-		//}
+		this->flags = setBool<int8_t, GuildFlags>(this->flags, GuildFlags::WidgetEnabled, getBool(&jsonObjectData, "widget_enabled"));
 
-		//this->flags = setBool<int8_t, GuildFlags>(this->flags, GuildFlags::WidgetEnabled, getBool(&jsonObjectData, "widget_enabled"));
+		this->flags = setBool<int8_t, GuildFlags>(this->flags, GuildFlags::Large, getBool(&jsonObjectData, "large"));
 
-		//this->flags = setBool<int8_t, GuildFlags>(this->flags, GuildFlags::Large, getBool(&jsonObjectData, "large"));
-
-		//this->flags = setBool<int8_t, GuildFlags>(this->flags, GuildFlags::Unavailable, getBool(&jsonObjectData, "unavailable"));
+		this->flags = setBool<int8_t, GuildFlags>(this->flags, GuildFlags::Unavailable, getBool(&jsonObjectData, "unavailable"));
 
 		this->memberCount = getUint32(&jsonObjectData, "member_count");
 
@@ -2877,8 +2853,11 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("members") && !jsonObjectData["members"].is_null()) {
 			this->members.clear();
-			for (auto& value: jsonObjectData["members"]) {
-				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(std::move(value)) };
+			for (nlohmann::json& value: jsonObjectData["members"]) {
+				std::cout << "NUICK BEFORE: " << value["nick"].get<std::string>() << std::endl;
+				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>() };
+				newData->parseObject(std::move(value));
+				std::cout << "NUICK AFTER: " << value["nick"].get<std::string>() << std::endl;
 				newData->guildId = this->id;
 				this->members.emplace_back(newData->id);
 				DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(newData));
@@ -2902,14 +2881,13 @@ namespace DiscordCoreAPI {
 				this->presences.emplace(newData.user.id, std::move(newData));
 			}
 		}
+		jsonObjectData.clear();
 	}
 
 	void GuildData::parseObject(nlohmann::json& jsonObjectData) {
 		this->id = strtoull(getString(jsonObjectData, "id"));
 
-		std::string iconUrlString = "https://cdn.discordapp.com/";
-		iconUrlString += "icons/" + std::to_string(this->id) + "/" + getString(jsonObjectData, "icon") + ".png";
-		this->icon = iconUrlString;
+		this->icon = getString(jsonObjectData, "icon");
 
 		this->name = getString(jsonObjectData, "name");
 
@@ -2918,12 +2896,6 @@ namespace DiscordCoreAPI {
 		this->flags = setBool<int8_t, GuildFlags>(this->flags, GuildFlags::Owner, getBool(&jsonObjectData, "owner"));
 
 		this->ownerId = strtoull(getString(jsonObjectData, "owner_id"));
-
-		if (jsonObjectData.contains("features") && !jsonObjectData["features"].is_null()) {
-			for (auto& value: jsonObjectData["features"]) {
-				this->features.emplace_back(StringWrapper{ value.get<std::string>() });
-			}
-		}
 
 		this->flags = setBool<int8_t, GuildFlags>(this->flags, GuildFlags::WidgetEnabled, getBool(&jsonObjectData, "widget_enabled"));
 

@@ -311,6 +311,76 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
+	IconHash::IconHash(uint64_t lowBitsNew, uint64_t highBitsNew) {
+		this->highBits = highBitsNew;
+		this->lowBits = lowBitsNew;
+	}
+
+	void IconHash::set(const std::string& other) {
+		std::string newHash(other);
+		if (other.empty()) {
+			this->lowBits = this->highBits = 0;
+			return;
+		}
+		if (other.length() == 34 && other.substr(0, 2) == "a_") {
+			newHash = other.substr(2);
+		}
+		if (newHash.length() != 32) {
+			throw std::length_error("IconHash must be exactly 32 characters in length, passed value is: '" + newHash + "', in length.");
+		}
+		this->lowBits = fromString<uint64_t>(newHash.substr(0, 16), std::hex);
+		this->highBits = fromString<uint64_t>(newHash.substr(16, 16), std::hex);
+	}
+
+	IconHash& IconHash::operator=(const std::string& other) {
+		set(other);
+		return *this;
+	}
+
+	IconHash::IconHash(const std::string& other) {
+		set(other);
+	}
+
+	bool IconHash::operator==(const IconHash& other) const {
+		return other.lowBits == this->lowBits && other.highBits == this->highBits;
+	}
+
+	IconHash::operator std::string() const {
+		if (this->lowBits == 0 && this->highBits == 0) {
+			return "";
+		} else {
+			return toHex(this->lowBits) + toHex(this->highBits);
+		}
+	}
+
+	AudioFrameData& AudioFrameData::operator=(AudioFrameData&& other) noexcept {
+		if (this != &other) {
+			this->guildMemberId = other.guildMemberId;
+			this->sampleCount = other.sampleCount;
+			this->data = std::move(other.data);
+			this->type = other.type;
+		}
+		return *this;
+	}
+
+	AudioFrameData::AudioFrameData(AudioFrameData&& other) noexcept {
+		*this = std::move(other);
+	}
+
+	AudioFrameData& AudioFrameData::operator=(AudioFrameData& other) noexcept {
+		if (this != &other) {
+			this->guildMemberId = other.guildMemberId;
+			this->sampleCount = other.sampleCount;
+			this->data = std::move(other.data);
+			this->type = other.type;
+		}
+		return *this;
+	}
+
+	AudioFrameData::AudioFrameData(AudioFrameData& other) noexcept {
+		*this = other;
+	}
+
 	uint8_t getUint8(nlohmann::json* jsonData, const char* keyname) {
 		auto theResult = jsonData->find(keyname);
 		if (theResult != jsonData->end()) {

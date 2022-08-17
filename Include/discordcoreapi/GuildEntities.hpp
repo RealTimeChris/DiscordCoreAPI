@@ -268,6 +268,7 @@ namespace DiscordCoreAPI {
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
 		SystemChannelFlags systemChannelFlags{};///< System Channel flags.
 		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
+		std::vector<StringWrapper> features{};///< List of Guild features.
 		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
 		VerificationLevel verificationLevel{};///< Verification level required.
 		int32_t approximateMemberCount{ 0 };///< Approximate member count.
@@ -288,11 +289,11 @@ namespace DiscordCoreAPI {
 		int32_t maxPresences{ 0 };///< Max number of presences allowed.
 		Snowflake afkChannelId{};///< Channel if of the "afk" Channel.
 		int32_t maxMembers{ 0 };///< Max quantity of members.
-		std::string iconHash{};///< Url to the Guild's icon.
 		std::string region{};///< Region of the world where the Guild's servers are.
-		std::string splash{};///< Url to the Guild's splash.
-		std::string banner{};///< Url to the Guild's banner.
 		MFALevel mfaLevel{};///< MFA level.
+		IconHash splash{};///< Url to the Guild's splash.
+		IconHash banner{};///< Url to the Guild's banner.
+		IconHash icon{};///< Url to the Guild's icon.
 
 		Guild() = default;
 
@@ -559,7 +560,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
 	  protected:
-		static std::unordered_map<Snowflake, std::unique_ptr<GuildData>> cache;
+		static std::map<Snowflake, std::unique_ptr<GuildData>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static DiscordCoreClient* discordCoreClient;
 		static ConfigManager* configManager;

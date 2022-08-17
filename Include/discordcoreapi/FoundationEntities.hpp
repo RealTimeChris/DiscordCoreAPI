@@ -323,7 +323,7 @@ namespace DiscordCoreAPI {
 	using Snowflake = uint64_t;
 
 	struct DiscordCoreAPI_Dll ConnectionPackage {
-		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		std::map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		int32_t currentReconnectTries{ 0 };
 		int32_t currentShard{ 0 };
 	};
@@ -401,20 +401,34 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single User. \brief Data structure representing a single User.
 	class DiscordCoreAPI_Dll UserData : public DiscordEntity, public DataParser<UserData> {
 	  public:
+		friend class GuildData;
+
 		StringWrapper discriminator{};///< The user's 4-digit discord-tag	identify.
 		StringWrapper userName{};///< The user's userName, not unique across the platform	identify.
-		StringWrapper avatar{};///< The user's avatar hash.
+		IconHash avatar{};///< The user's avatar hash.
 		int32_t flags{};///< The public flags on a user' s account.
 
 		UserData() = default;
 
-		UserData& operator=(nlohmann::json&& jsonObjectData);
+		UserData& operator=(nlohmann::json&& jsonObjectData) noexcept;
 
-		UserData(nlohmann::json&& jsonObjectData);
+		UserData(nlohmann::json&& jsonObjectData) noexcept;
 
-		UserData& operator=(nlohmann::json& jsonObjectData);
+		UserData& operator=(nlohmann::json& jsonObjectData) noexcept;
 
-		UserData(nlohmann::json& jsonObjectData);
+		UserData(nlohmann::json& jsonObjectData) noexcept;
+
+		UserData& operator=(UserData&& jsonObjectData) noexcept;
+
+		UserData(UserData&& jsonObjectData) noexcept;
+
+		UserData& operator=(const UserData& jsonObjectData) = default;
+
+		UserData(const UserData& jsonObjectData) = default;
+
+		UserData& operator=(UserData& jsonObjectData) = default;
+
+		UserData(UserData& jsonObjectData) = default;
 
 		virtual ~UserData() = default;
 
@@ -811,24 +825,38 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity, public DataParser<GuildMemberData> {
 	  public:
+		friend class GuildData;
+
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
-		StringWrapper userAvatar{};///< This GuildMember's User Avatar.
 		StringWrapper userName{};///< This GuildMember's UserName.
-		Snowflake guildId{};///< The current Guild's id.
+		IconHash userAvatar{};///< This GuildMember's User Avatar.
 		StringWrapper nick{};///< Their nick/display name.
+		Snowflake guildId{};///< The current Guild's id.
 		int8_t flags{ 0 };///< GuildMember flags.
 
 		GuildMemberData() = default;
 
-		GuildMemberData& operator=(nlohmann::json&& jsonObjectData);
+		GuildMemberData& operator=(nlohmann::json&& jsonObjectData) noexcept;
 
-		GuildMemberData(nlohmann::json&& jsonObjectData);
+		GuildMemberData(nlohmann::json&& jsonObjectData) noexcept;
 
-		GuildMemberData& operator=(nlohmann::json& jsonObjectData);
+		GuildMemberData& operator=(nlohmann::json& jsonObjectData) noexcept;
 
-		GuildMemberData(nlohmann::json& jsonObjectData);
+		GuildMemberData(nlohmann::json& jsonObjectData) noexcept;
+
+		GuildMemberData& operator=(GuildMemberData&& jsonObjectData) noexcept;
+		
+		GuildMemberData(GuildMemberData&& jsonObjectData) noexcept;
+
+		GuildMemberData& operator=(const GuildMemberData& jsonObjectData) = default;
+
+		GuildMemberData(const GuildMemberData& jsonObjectData) = default;
+
+		GuildMemberData& operator=(GuildMemberData& jsonObjectData) = default;
+
+		GuildMemberData(GuildMemberData& jsonObjectData) = default;
 
 		void insertUser(std::unique_ptr<UserData> theUser);
 
@@ -898,6 +926,8 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Channel. \brief Data structure representing a single Channel.
 	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity, public DataParser<ChannelData> {
 	  public:
+		friend class GuildData;
+
 		std::vector<OverWriteData> permissionOverwrites{};
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
 		std::vector<Snowflake> recipients{};///< List of message recipients.
@@ -912,13 +942,25 @@ namespace DiscordCoreAPI {
 
 		ChannelData() = default;
 
-		ChannelData& operator=(nlohmann::json&& jsonObjectData);
+		ChannelData& operator=(nlohmann::json&& jsonObjectData) noexcept;
 
-		ChannelData(nlohmann::json&& other);
+		ChannelData(nlohmann::json&& other) noexcept;
 
-		ChannelData& operator=(nlohmann::json& jsonObjectData);
+		ChannelData& operator=(nlohmann::json& jsonObjectData) noexcept;
 
-		ChannelData(nlohmann::json& other);
+		ChannelData(nlohmann::json& other) noexcept;
+
+		ChannelData& operator=(ChannelData&& jsonObjectData) noexcept;
+
+		ChannelData(ChannelData&& other) noexcept;
+
+		ChannelData& operator=(const ChannelData& jsonObjectData) = default;
+
+		ChannelData(const ChannelData& other) = default;
+
+		ChannelData& operator=(ChannelData& jsonObjectData) = default;
+
+		ChannelData(ChannelData& other) = default;
 
 		virtual ~ChannelData() = default;
 
@@ -968,22 +1010,36 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
 	class DiscordCoreAPI_Dll RoleData : public DiscordEntity, public DataParser<RoleData> {
 	  public:
+		friend class GuildData;
+
 		StringWrapper unicodeEmoji{};///< Emoji representing the Role.
 		Permissions permissions{};///< The Role's base Guild Permissions.
-		int32_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
+		int16_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
 		StringWrapper name{};///< The Role's name.
 		int32_t color{ 0 };///< The Role's color.
 		int8_t flags{ 0 };///< Role flags.
 
 		RoleData() = default;
 
-		RoleData& operator=(nlohmann::json&& jsonObjectData);
+		RoleData& operator=(nlohmann::json&& jsonObjectData) noexcept;
 
-		RoleData(nlohmann::json&& jsonObjectData);
+		RoleData(nlohmann::json&& jsonObjectData) noexcept;
 
-		RoleData& operator=(nlohmann::json& jsonObjectData);
+		RoleData& operator=(nlohmann::json& jsonObjectData) noexcept;
+		
+		RoleData(nlohmann::json& jsonObjectData) noexcept;
 
-		RoleData(nlohmann::json& jsonObjectData);
+		RoleData& operator=(RoleData&& jsonObjectData) noexcept;
+		
+		RoleData(RoleData&& jsonObjectData) noexcept;
+		
+		RoleData& operator=(const RoleData& jsonObjectData) = default;
+
+		RoleData(const RoleData& jsonObjectData) = default;
+
+		RoleData& operator=(RoleData& jsonObjectData) = default;
+
+		RoleData(RoleData& jsonObjectData) = default;
 
 		virtual ~RoleData() = default;
 
@@ -2092,30 +2148,41 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity, public DataParser<GuildData> {
 	  public:
-		std::unordered_map<Snowflake, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
-		std::unordered_map<Snowflake, VoiceStateData> voiceStates{};///< Map of Guild-member voice-states.
+		std::map<Snowflake, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
+		std::map<Snowflake, VoiceStateData> voiceStates{};///< Map of Guild-member voice-states.
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
-		std::vector<StringWrapper> features{};///< List of Guild features.
 		std::vector<Snowflake> channels{};///< Array of Guild channels.
 		std::vector<Snowflake> members{};///< Array of GuildMembers.
 		std::vector<Snowflake> roles{};///< Array of Guild roles.
 		int32_t memberCount{ 0 };///< Member count.
-		StringWrapper icon{};///< Url to the Guild's icon.
 		StringWrapper name{};///< The Guild's name.
 		Snowflake ownerId{};///< User id of the Guild's owner.
 		int8_t flags{ 0 };///< Guild flags.
+		IconHash icon{};///< Url to the Guild's icon.
 
 		GuildData() = default;
 
-		GuildData& operator=(nlohmann::json&& jsonObjectData);
+		GuildData& operator=(nlohmann::json&& jsonObjectData) noexcept;
 
-		GuildData(nlohmann::json&& jsonObjectData);
+		GuildData(nlohmann::json&& jsonObjectData) noexcept;
 
-		GuildData& operator=(nlohmann::json& jsonObjectData);
+		GuildData& operator=(nlohmann::json& jsonObjectData) noexcept;
 
-		GuildData(nlohmann::json& jsonObjectData);
+		GuildData(nlohmann::json& jsonObjectData) noexcept;
+
+		GuildData& operator=(GuildData&& jsonObjectData) noexcept;
+
+		GuildData(GuildData&& jsonObjectData) noexcept;
+
+		GuildData& operator=(const GuildData& jsonObjectData) noexcept = default;
+
+		GuildData(const GuildData& jsonObjectData) noexcept = default;
+
+		GuildData& operator=(GuildData& jsonObjectData) noexcept = default;
+
+		GuildData(GuildData& jsonObjectData) noexcept = default;
 
 		/// For connecting to an individual voice channel. \brief For connecting to an individual voice channel.
 		/// \param guildMemberId An id of the guild member who's current voice channel to connect to.
@@ -3067,12 +3134,12 @@ namespace DiscordCoreAPI {
 
 	/// Resolved data. \brief Resolved data.
 	struct DiscordCoreAPI_Dll ResolvedData {
-		std::unordered_map<Snowflake, AttachmentData> attachments{};///< Map of Snowflakes to attachment objects the ids and attachment objects.
-		std::unordered_map<Snowflake, GuildMemberData> members{};///< Map full of GuildMemeberData.
-		std::unordered_map<Snowflake, MessageData> messages{};///< Map full of messageData->
-		std::unordered_map<Snowflake, ChannelData> channels{};///< Map full of ChannelData.
-		std::unordered_map<Snowflake, UserData> users{};///< Map full of UserData.
-		std::unordered_map<Snowflake, RoleData> roles{};///< Map full of RoleData.
+		std::map<Snowflake, AttachmentData> attachments{};///< Map of Snowflakes to attachment objects the ids and attachment objects.
+		std::map<Snowflake, GuildMemberData> members{};///< Map full of GuildMemeberData.
+		std::map<Snowflake, MessageData> messages{};///< Map full of messageData->
+		std::map<Snowflake, ChannelData> channels{};///< Map full of ChannelData.
+		std::map<Snowflake, UserData> users{};///< Map full of UserData.
+		std::map<Snowflake, RoleData> roles{};///< Map full of RoleData.
 	};
 
 	/// Represents a Sticker pack. \brief Represents a Sticker pack.

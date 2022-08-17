@@ -381,7 +381,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Channels::configManager->doWeCacheChannels()) {
-			Channels::cache[channel->id] = std::move(channel);
+			Channels::cache.insert_or_assign(channel->id, std::move(channel));
 		}
 	}
 
@@ -390,7 +390,7 @@ namespace DiscordCoreAPI {
 		Channels::cache.erase(channelId);
 	};
 
-	std::unordered_map<Snowflake, std::unique_ptr<ChannelData>> Channels::cache{};
+	std::map<Snowflake, std::unique_ptr<ChannelData>> Channels::cache{};
 	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
 	ConfigManager* Channels::configManager{ nullptr };
 	std::shared_mutex Channels::theMutex{};

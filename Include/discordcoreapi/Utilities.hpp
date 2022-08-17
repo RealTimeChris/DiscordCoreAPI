@@ -559,17 +559,51 @@ namespace DiscordCoreAPI {
 	std::string getString(nlohmann::json& jsonData, const char* keyname);
 
 	uint64_t strtoull(const std::string&& theString);
+	
+	template<typename ReturnType> ReturnType fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
+		ReturnType theValue{};
+		std::istringstream theStream(string);
+		theStream >> type, theStream >> theValue;
+		return theValue;
+	}
+
+	template<typename ReturnType> std::string toHex(ReturnType inputValue) {
+		std::stringstream theStream{};
+		theStream << std::setfill('0') << std::setw(sizeof(ReturnType) * 2) << std::hex << inputValue;
+		return theStream.str();
+	}
+
+	struct DiscordCoreAPI_Dll IconHash {	
+		IconHash(uint64_t lowBits = 0, uint64_t highBits = 0);
+
+		IconHash(const IconHash&) = default;
+
+		IconHash(const std::string& hash);
+
+		IconHash& operator=(const std::string& assignment);
+
+		bool operator==(const IconHash& other) const;
+
+		void set(const std::string& hash);
+
+		operator std::string() const;
+
+		~IconHash() = default;
+
+	  protected:
+		uint64_t highBits{};
+		uint64_t lowBits{};
+	};
 
 	template<typename TimeType>
 	/// Class for representing a timestamp, as well as working with time-related values. \brief Class for representing a timestamp, as well as working with time-related values.
 	class TimeStamp {
 	  public:
-		explicit TimeStamp(DiscordCoreAPI::TimeFormat theFormatNew = DiscordCoreAPI::TimeFormat::LongDateTime) {
+		explicit TimeStamp(TimeFormat theFormatNew = TimeFormat::LongDateTime) {
 			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
-			this->getISO8601TimeStamp(theFormatNew);
 		}
 
-		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second, DiscordCoreAPI::TimeFormat theFormatNew) {
+		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second, TimeFormat theFormatNew) {
 			this->year = std::stoll(year);
 			this->month = std::stoll(month);
 			this->day = std::stoll(day);
@@ -579,12 +613,12 @@ namespace DiscordCoreAPI {
 			this->getTimeSinceEpoch();
 		}
 
-		void convertTimeStampToTimeUnits(DiscordCoreAPI::TimeFormat theFormatNew) {
+		void convertTimeStampToTimeUnits(TimeFormat theFormatNew, std::string originalTimeStamp) {
 			try {
-				if (this->originalTimeStamp != "") {
-					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(this->originalTimeStamp.substr(0, 4)), stoi(this->originalTimeStamp.substr(5, 6)),
-						stoi(this->originalTimeStamp.substr(8, 9)), stoi(this->originalTimeStamp.substr(11, 12)), stoi(this->originalTimeStamp.substr(14, 15)),
-						stoi(this->originalTimeStamp.substr(17, 18)), theFormatNew };
+				if (originalTimeStamp != "") {
+					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
+						stoi(originalTimeStamp.substr(8, 9)), stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)),
+						stoi(originalTimeStamp.substr(17, 18)), theFormatNew };
 					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) };
 				} else {
 					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch());
@@ -594,7 +628,7 @@ namespace DiscordCoreAPI {
 		}
 
 		operator std::string() {
-			return this->originalTimeStamp;
+			return getISO8601TimeStamp(TimeFormat::LongDateTime);
 		}
 
 		operator uint64_t() {
@@ -602,9 +636,9 @@ namespace DiscordCoreAPI {
 		}
 
 		TimeStamp<TimeType>& operator=(std::string&& originalTimeStampNew) {
-			this->originalTimeStamp = std::move(originalTimeStampNew);
-			this->convertTimeStampToTimeUnits(DiscordCoreAPI::TimeFormat::LongDateTime);
-			this->getISO8601TimeStamp(DiscordCoreAPI::TimeFormat::LongDateTime);
+			std::string theString = originalTimeStampNew;
+			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, theString);
+			this->getISO8601TimeStamp(TimeFormat::LongDateTime);
 			return *this;
 		}
 
@@ -613,9 +647,9 @@ namespace DiscordCoreAPI {
 		}
 
 		TimeStamp<TimeType>& operator=(std::string& originalTimeStampNew) {
-			this->originalTimeStamp = originalTimeStampNew;
-			this->convertTimeStampToTimeUnits(DiscordCoreAPI::TimeFormat::LongDateTime);
-			this->getISO8601TimeStamp(DiscordCoreAPI::TimeFormat::LongDateTime);
+			std::string theString = originalTimeStampNew;
+			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, theString);
+			this->getISO8601TimeStamp(TimeFormat::LongDateTime);
 			return *this;
 		}
 
@@ -625,7 +659,6 @@ namespace DiscordCoreAPI {
 
 		TimeStamp<TimeType>& operator=(const TimeStamp& other) {
 			this->timeStampInTimeUnits = other.timeStampInTimeUnits;
-			this->originalTimeStamp = other.originalTimeStamp;
 			this->minute = other.minute;
 			this->second = other.second;
 			this->month = other.month;
@@ -641,7 +674,6 @@ namespace DiscordCoreAPI {
 
 		TimeStamp<TimeType>& operator=(TimeStamp& other) {
 			this->timeStampInTimeUnits = other.timeStampInTimeUnits;
-			this->originalTimeStamp = other.originalTimeStamp;
 			this->minute = other.minute;
 			this->second = other.second;
 			this->month = other.month;
@@ -655,7 +687,7 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, DiscordCoreAPI::TimeFormat theFormatNew) {
+		TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, TimeFormat theFormatNew) {
 			this->second = second;
 			this->minute = minute;
 			this->month = month;
@@ -665,13 +697,13 @@ namespace DiscordCoreAPI {
 			this->getTimeSinceEpoch();
 		};
 
-		TimeStamp(uint64_t timeInTimeUnits, DiscordCoreAPI::TimeFormat theFormatNew) {
+		TimeStamp(uint64_t timeInTimeUnits, TimeFormat theFormatNew) {
 			this->timeStampInTimeUnits = TimeType{ timeInTimeUnits };
 			this->getISO8601TimeStamp(theFormatNew);
 		}
 
-		void convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd,
-			DiscordCoreAPI::TimeFormat theFormatNew) {
+		std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd,
+			TimeFormat theFormatNew) {
 			std::time_t result = std::time(nullptr);
 			int32_t secondsPerMinute{ 60 };
 			int32_t minutesPerHour{ 60 };
@@ -706,10 +738,10 @@ namespace DiscordCoreAPI {
 				theTimeStamp.getISO8601TimeStamp(theFormatNew);
 				theReturnString = static_cast<std::string>(theTimeStamp);
 			}
-			this->originalTimeStamp = theReturnString;
+			return theReturnString;
 		}
 
-		void convertToCurrentISO8601TimeStamp(DiscordCoreAPI::TimeFormat timeFormat) {
+		std::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
 			std::time_t result = std::time(nullptr);
 			auto resultTwo = std::localtime(&result);
 			std::string theReturnString{};
@@ -732,12 +764,12 @@ namespace DiscordCoreAPI {
 				theTimeStamp.getISO8601TimeStamp(timeFormat);
 				theReturnString = static_cast<std::string>(theTimeStamp);
 			}
-			this->originalTimeStamp = theReturnString;
+			return theReturnString;
 		}
 
 		bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) {
 			if (this->timeStampInTimeUnits.count() == 0) {
-				this->convertTimeStampToTimeUnits(DiscordCoreAPI::TimeFormat::LongDateTime);
+				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 			}
 			uint64_t startTimeRaw = this->timeStampInTimeUnits.count();
 			auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -778,7 +810,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		TimeType timeStampInTimeUnits{};
-		std::string originalTimeStamp{};
 		uint64_t year{ 0 };
 		uint64_t month{ 0 };
 		uint64_t day{ 0 };
@@ -801,9 +832,9 @@ namespace DiscordCoreAPI {
 		const uint32_t secondsPerHour{ 60 * 60 };
 		const uint32_t secondsPerDay{ 60 * 60 * 24 };
 
-		void getISO8601TimeStamp(DiscordCoreAPI::TimeFormat timeFormat) {
+		std::string getISO8601TimeStamp(TimeFormat timeFormat) {
 			if (this->timeStampInTimeUnits.count() == 0) {
-				this->convertTimeStampToTimeUnits(timeFormat);
+				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 			}
 			uint64_t timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(this->timeStampInTimeUnits).count()) / 1000;
 			time_t rawTime(timeValue);
@@ -811,32 +842,32 @@ namespace DiscordCoreAPI {
 			std::string timeStamp{};
 			timeStamp.resize(48);
 			switch (timeFormat) {
-				case DiscordCoreAPI::TimeFormat::LongDate: {
+				case TimeFormat::LongDate: {
 					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
-				case DiscordCoreAPI::TimeFormat::LongDateTime: {
+				case TimeFormat::LongDateTime: {
 					size_t sizeResponse = strftime(timeStamp.data(), 48, "%a %b %d %Y %X", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
-				case DiscordCoreAPI::TimeFormat::LongTime: {
+				case TimeFormat::LongTime: {
 					size_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
-				case DiscordCoreAPI::TimeFormat::ShortDate: {
+				case TimeFormat::ShortDate: {
 					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d/%m/%g", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
-				case DiscordCoreAPI::TimeFormat::ShortDateTime: {
+				case TimeFormat::ShortDateTime: {
 					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G %R", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
-				case DiscordCoreAPI::TimeFormat::ShortTime: {
+				case TimeFormat::ShortTime: {
 					size_t sizeResponse = strftime(timeStamp.data(), 48, "%R", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
@@ -845,7 +876,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 			}
-			this->originalTimeStamp = timeStamp;
+			return timeStamp;
 		}
 
 		void getTimeSinceEpoch() {

@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
 		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
 		std::string topic{};///< The Channel's topic.
-		std::string icon{};///< Icon for the Channel, if applicable.
+		IconHash icon{};///< Icon for the Channel, if applicable.
 
 		Channel() = default;
 
@@ -302,7 +302,7 @@ namespace DiscordCoreAPI {
 		static void removeChannel(const Snowflake channelId);
 
 	  protected:
-		static std::unordered_map<Snowflake, std::unique_ptr<ChannelData>> cache;
+		static std::map<Snowflake, std::unique_ptr<ChannelData>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;

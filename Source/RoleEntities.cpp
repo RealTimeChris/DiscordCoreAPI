@@ -312,9 +312,9 @@ namespace DiscordCoreAPI {
 		std::unique_lock theLock{ Roles::theMutex };
 		Roles::cache.erase(roleId);
 	};
-
-	std::unordered_map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
+	
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
+	std::map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
 	ConfigManager* Roles::configManager{ nullptr };
 	std::shared_mutex Roles::theMutex{};
 }
