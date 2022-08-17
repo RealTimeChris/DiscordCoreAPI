@@ -818,6 +818,7 @@ namespace DiscordCoreInternal {
 												dataPackage->interactionData = *interactionData;
 												std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 												DiscordCoreAPI::CommandData commandDataNew = *commandData;
+												std::cout << "WERE HERE ABOUT TO CHECK FOR AND RUN THE COMMAND!" << std::endl;
 												this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
 												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 												std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
