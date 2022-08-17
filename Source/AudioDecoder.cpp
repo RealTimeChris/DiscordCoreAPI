@@ -19,6 +19,8 @@
 
 #include <discordcoreapi/AudioDecoder.hpp>
 
+#include <libavcodec/avcodec.h>
+
 namespace DiscordCoreInternal {
 
 	void AVFrameWrapper::AVFrameDeleter::operator()(AVFrame* other) {
@@ -306,7 +308,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 
-				this->codec = avcodec_find_decoder(this->audioStream->codecpar->codec_id);
+				this->codec = const_cast<AVCodec*>(avcodec_find_decoder(this->audioStream->codecpar->codec_id));
 				if (!this->codec) {
 					std::string newString = "AudioDecoder::run() Error: Failed to find ";
 					newString += av_get_media_type_string(type);
