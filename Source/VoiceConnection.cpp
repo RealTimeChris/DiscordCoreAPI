@@ -631,7 +631,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::connectInternal() noexcept {
 		std::unique_lock theLock{ this->baseSocketAgent->theConnectionMutex };
-		if (this->thePackage.currentShard == 0) {
+		if (this->thePackage.currentShard == -1) {
 			return;
 		}
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
