@@ -833,6 +833,7 @@ namespace DiscordCoreAPI {
 		friend class GuildData;
 
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
+		Snowflake currentVoiceChannel{};///< The currently held voice channel, if applicable.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		StringWrapper userName{};///< This GuildMember's UserName.
