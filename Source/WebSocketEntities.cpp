@@ -1072,14 +1072,12 @@ namespace DiscordCoreInternal {
 										theKey.guildId = dataPackage->voiceStateData.guildId;
 										theKey.guildMemberId = dataPackage->voiceStateData.userId;
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
-											DiscordCoreAPI::GuildData guild = DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = dataPackage->voiceStateData.guildId }).get();
 											if (DiscordCoreAPI::Guilds::voiceStateCache.contains(theKey)) {
 												*DiscordCoreAPI::Guilds::voiceStateCache[theKey] = dataPackage->voiceStateData;
 											}
 											else {
 												DiscordCoreAPI::Guilds::voiceStateCache[theKey] = std::make_unique<DiscordCoreAPI::VoiceStateData>(dataPackage->voiceStateData);
 											}
-											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(guild));
 										}
 										this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
 										break;
