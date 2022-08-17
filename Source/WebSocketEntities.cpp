@@ -716,10 +716,6 @@ namespace DiscordCoreInternal {
 													guild->members.erase(guild->members.begin() + x);
 												}
 											}
-											if (guild->voiceStates.contains(guildMember->id)) {
-												delete guild->voiceStates.at(guildMember->id);
-												guild->voiceStates.erase(guildMember->id);
-											}
 											guild->memberCount--;
 											this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(*dataPackage);
 										}
@@ -1072,15 +1068,16 @@ namespace DiscordCoreInternal {
 										}
 										std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
 										dataPackage->voiceStateData = &payload["d"];
+										DiscordCoreAPI::VoiceStateId theKey{};
+										theKey.guildId = dataPackage->voiceStateData.guildId;
+										theKey.guildMemberId = dataPackage->voiceStateData.userId;
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
-											DiscordCoreAPI::GuildData guild = DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = dataPackage->voiceStateData.guildId }).get();
-											if (guild.voiceStates.contains(dataPackage->voiceStateData.userId)) {
-												*guild.voiceStates[dataPackage->voiceStateData.userId] = dataPackage->voiceStateData;
+											if (DiscordCoreAPI::Guilds::voiceStateCache.contains(theKey)) {
+												*DiscordCoreAPI::Guilds::voiceStateCache[theKey] = dataPackage->voiceStateData;
 											}
 											else {
-												guild.voiceStates[dataPackage->voiceStateData.userId] = new DiscordCoreAPI::VoiceStateData{ dataPackage->voiceStateData };
+												DiscordCoreAPI::Guilds::voiceStateCache[theKey] = std::make_unique<DiscordCoreAPI::VoiceStateData>(dataPackage->voiceStateData);
 											}
-											DiscordCoreAPI::Guilds::insertGuild(std::make_unique<DiscordCoreAPI::GuildData>(guild));
 										}
 										this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
 										break;

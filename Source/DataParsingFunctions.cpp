@@ -507,7 +507,6 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
-			this->voiceStates.clear();
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
 				std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
 				VoiceStateId theKey{};
@@ -2743,13 +2742,16 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
-			this->voiceStates.clear();
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
-				VoiceStateId theKey{};
-				theKey.guildId = theData->guildId;
-				theKey.guildMemberId = theData->userId;
-				Guilds::voiceStateCache[theKey] = std::move(theData);
+				for (auto& value: (*jsonObjectData)["voice_states"]) {
+					std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
+					VoiceStateId theKey{};
+					theKey.guildId = theData->guildId;
+					std::cout << "GUILD ID: " << theData->guildId << std::endl;
+					theKey.guildMemberId = theData->userId;
+					std::cout << "USER ID: " << theData->userId << std::endl;
+					Guilds::voiceStateCache[theKey] = std::move(theData);
+				}
 			}
 		}
 
