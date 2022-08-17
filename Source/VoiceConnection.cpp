@@ -64,11 +64,11 @@ namespace DiscordCoreAPI {
 			const uint8_t headerSize{ 12 };
 			const uint8_t byteSize{ 8 };
 			std::string header{};
-			store8Bits(header, this->version);
-			store8Bits(header, this->flags);
-			store16Bits(header, this->sequence);
-			store32Bits(header, this->timestamp);
-			store32Bits(header, this->ssrc);
+			storeBits(header, this->version);
+			storeBits(header, this->flags);
+			storeBits(header, this->sequence);
+			storeBits(header, this->timestamp);
+			storeBits(header, this->ssrc);
 			std::unique_ptr<uint8_t[]> nonceForLibSodium{ std::make_unique<uint8_t[]>(nonceSize) };
 			for (uint8_t x = 0; x < headerSize; x++) {
 				nonceForLibSodium[x] = header[x];
@@ -418,8 +418,10 @@ namespace DiscordCoreAPI {
 						}
 						std::this_thread::sleep_for(1ms);
 					}
+					int32_t theIndex{};
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
+						++theIndex;
 						if (!DatagramSocketClient::areWeStillConnected()) {
 							this->areWePlaying.store(false);
 							break;
@@ -465,9 +467,12 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						auto waitTime = targetTime - std::chrono::system_clock::now();
-						nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95f));
+						if (theIndex % 50 == 0) {
+							std::cout << "THE WAIT TIME: " << static_cast<uint64_t>(static_cast<double>(waitTime.count()) * 0.95f) << std::endl;
+						}
+						nanoSleep(static_cast<uint64_t>(static_cast<double>(waitTime.count()) * 0.95f));
 						waitTime = targetTime - std::chrono::system_clock::now();
-						if (waitTime.count() > 0) {
+						if (waitTime.count() > 0 && static_cast<uint64_t>(waitTime.count()) < 20000000) {
 							spinLock(waitTime.count());
 						}
 						startingValue = std::chrono::system_clock::now();

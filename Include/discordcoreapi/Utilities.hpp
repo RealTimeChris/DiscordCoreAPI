@@ -1036,7 +1036,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
 
-	DiscordCoreAPI_Dll void spinLock(int64_t timeInNsToSpinLockFor);
+	DiscordCoreAPI_Dll void spinLock(uint64_t timeInNsToSpinLockFor);
 
 	DiscordCoreAPI_Dll std::string generateBase64EncodedKey();
 
@@ -1054,25 +1054,24 @@ namespace DiscordCoreAPI {
 	/// \returns std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
-	DiscordCoreAPI_Dll uint64_t ntohostlong(const uint64_t net);
+	template<typename ReturnType> ReturnType reverseByteOrder(const ReturnType net) {
+		uint8_t data[8]{};
+		memcpy(&data, &net, sizeof(net));
 
-	DiscordCoreAPI_Dll uint32_t ntohostint(const uint32_t net);
+		ReturnType theValue{};
+		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
+			theValue |= data[x] << 8 * (sizeof(ReturnType) - x - 1);
+		}
+		return theValue;
+	}
 
-	DiscordCoreAPI_Dll uint16_t ntohostshort(const uint16_t net);
-
-	DiscordCoreAPI_Dll uint16_t reverseByteOrder16(uint16_t x);
-
-	DiscordCoreAPI_Dll uint32_t reverseByteOrder32(uint32_t x);
-
-	DiscordCoreAPI_Dll uint64_t reverseByteOrder64(uint64_t x);
-
-	DiscordCoreAPI_Dll void store8Bits(std::string& to, uint8_t num);
-
-	DiscordCoreAPI_Dll void store16Bits(std::string& to, uint16_t num);
-
-	DiscordCoreAPI_Dll void store32Bits(std::string& to, uint32_t num);
-
-	DiscordCoreAPI_Dll void store64Bits(std::string& to, uint64_t num);
+	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
+		const uint8_t byteSize{ 8 };
+		ReturnType newValue = reverseByteOrder(num);
+		for (uint32_t x = 0; x < sizeof(ReturnType); x++) {
+			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+		}
+	}
 
 	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
 		if (enabled) {

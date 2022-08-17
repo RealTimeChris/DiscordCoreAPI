@@ -44,7 +44,7 @@ namespace DiscordCoreInternal {
 	nlohmann::json ErlPacker::parseEtfToJson(std::string&& dataToParse) {
 		this->offSet = 0;
 		this->buffer = dataToParse;
-		uint8_t version = ErlPacker::read8Bits();
+		uint8_t version = ErlPacker::readBits<uint8_t>();
 		return ErlPacker::singleValueETFToJson();
 	}
 
@@ -127,14 +127,14 @@ namespace DiscordCoreInternal {
 	void ErlPacker::appendIntegerExt(uint32_t value) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Integer_Ext) };
 		uint32_t newValue{ 1 };
-		DiscordCoreAPI::store32Bits(bufferNew, value);
+		DiscordCoreAPI::storeBits(bufferNew, value);
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
 	void ErlPacker::appendFloatExt(double value) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Float_Ext) };
 		void* doubleValue{ &value };
-		DiscordCoreAPI::store64Bits(bufferNew, *static_cast<uint64_t*>(doubleValue));
+		DiscordCoreAPI::storeBits(bufferNew, *static_cast<uint64_t*>(doubleValue));
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
@@ -177,57 +177,21 @@ namespace DiscordCoreInternal {
 
 	void ErlPacker::appendBinaryExt(const std::string& bytes, uint32_t size) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Binary_Ext) };
-		DiscordCoreAPI::store32Bits(bufferNew, size);
+		DiscordCoreAPI::storeBits(bufferNew, size);
 		ErlPacker::writeToBuffer(bufferNew);
 		ErlPacker::writeToBuffer(bytes);
 	}
 
 	void ErlPacker::appendListHeader(uint32_t size) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::List_Ext) };
-		DiscordCoreAPI::store32Bits(bufferNew, size);
+		DiscordCoreAPI::storeBits(bufferNew, size);
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
 	void ErlPacker::appendMapHeader(uint32_t size) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Map_Ext) };
-		DiscordCoreAPI::store32Bits(bufferNew, size);
+		DiscordCoreAPI::storeBits(bufferNew, size);
 		ErlPacker::writeToBuffer(bufferNew);
-	}
-
-	uint8_t ErlPacker::read8Bits() {
-		if (this->offSet + sizeof(uint8_t) > this->buffer.size()) {
-			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
-		}
-		uint8_t newValue = *reinterpret_cast<uint8_t*>(this->buffer.data() + this->offSet);
-		this->offSet += sizeof(uint8_t);
-		return newValue;
-	}
-
-	uint16_t ErlPacker::read16Bits() {
-		if (this->offSet + sizeof(uint16_t) > this->buffer.size()) {
-			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
-		}
-		uint16_t newValue = *reinterpret_cast<uint16_t*>(this->buffer.data() + this->offSet);
-		this->offSet += sizeof(uint16_t);
-		return DiscordCoreAPI::ntohostshort(newValue);
-	}
-
-	uint32_t ErlPacker::read32Bits() {
-		if (this->offSet + sizeof(uint32_t) > this->buffer.size()) {
-			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
-		}
-		uint32_t newValue = *reinterpret_cast<uint32_t*>(this->buffer.data() + this->offSet);
-		this->offSet += sizeof(uint32_t);
-		return DiscordCoreAPI::ntohostint(newValue);
-	}
-
-	uint64_t ErlPacker::read64Bits() {
-		if (this->offSet + sizeof(uint64_t) > this->buffer.size()) {
-			throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
-		}
-		uint64_t newValue = *reinterpret_cast<uint64_t*>(this->buffer.data() + this->offSet);
-		this->offSet += sizeof(uint64_t);
-		return DiscordCoreAPI::ntohostlong(newValue);
 	}
 
 	const char* ErlPacker::readString(uint32_t length) {
@@ -243,7 +207,7 @@ namespace DiscordCoreInternal {
 		if (this->offSet >= this->buffer.size()) {
 			throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Read past end of ETF buffer.\n\n" };
 		}
-		uint8_t type = ErlPacker::read8Bits();
+		uint8_t type = ErlPacker::readBits<uint8_t>();
 		switch (static_cast<ETFTokenType>(type)) {
 			case ETFTokenType::Small_Integer_Ext: {
 				return ErlPacker::parseSmallIntegerExt();
@@ -297,19 +261,19 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseSmallIntegerExt() {
-		nlohmann::json theValue = ErlPacker::read8Bits();
+		nlohmann::json theValue = ErlPacker::readBits<uint8_t>();
 		return theValue;
 	}
 
 	nlohmann::json ErlPacker::parseBigint(uint32_t digits) {
-		uint8_t sign = ErlPacker::read8Bits();
+		uint8_t sign = ErlPacker::readBits<uint8_t>();
 		if (digits > 8) {
 			throw ErlPackError{ "ErlPacker::parseBigint() Error: Integers larger than 8 bytes are not supported.\n\n" };
 		}
 		uint64_t value = 0;
 		uint64_t b = 1;
 		for (uint32_t x = 0; x < digits; ++x) {
-			uint8_t digit = ErlPacker::read8Bits();
+			uint8_t digit = ErlPacker::readBits<uint8_t>();
 			uint64_t digitNew = digit;
 			value += digitNew * b;
 			b <<= 8;
@@ -335,7 +299,7 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseIntegerExt() {
-		nlohmann::json theValue = ErlPacker::read32Bits();
+		nlohmann::json theValue = ErlPacker::readBits<uint32_t>();
 		return theValue;
 	}
 
@@ -380,12 +344,12 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseSmallTupleExt() {
-		nlohmann::json theValue = ErlPacker::parseTuple(ErlPacker::read8Bits());
+		nlohmann::json theValue = ErlPacker::parseTuple(ErlPacker::readBits<uint8_t>());
 		return theValue;
 	}
 
 	nlohmann::json ErlPacker::parseLargeTupleExt() {
-		nlohmann::json theValue = ErlPacker::parseTuple(ErlPacker::read32Bits());
+		nlohmann::json theValue = ErlPacker::parseTuple(ErlPacker::readBits<uint32_t>());
 		return theValue;
 	}
 
@@ -394,7 +358,7 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseStringAsList() {
-		uint16_t length = ErlPacker::read16Bits();
+		uint16_t length = ErlPacker::readBits<uint16_t>();
 		nlohmann::json theArray = nlohmann::json::array();
 		if (static_cast<uint64_t>(this->offSet) + length > this->buffer.size()) {
 			throw ErlPackError{ "ErlPacker::parseStringAsList() Error: String list past end of buffer.\n\n" };
@@ -406,9 +370,9 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseListExt() {
-		uint32_t length = ErlPacker::read32Bits();
+		uint32_t length = ErlPacker::readBits<uint32_t>();
 		nlohmann::json::array_t theArray = ErlPacker::parseArray(length);
-		uint8_t theValue = ErlPacker::read8Bits();
+		uint8_t theValue = ErlPacker::readBits<uint8_t>();
 		const ETFTokenType tailMarker = static_cast<ETFTokenType>(theValue);
 		if (tailMarker != ETFTokenType::Nil_Ext) {
 			return nlohmann::json::array_t();
@@ -417,7 +381,7 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseBinaryExt() {
-		uint32_t length = ErlPacker::read32Bits();
+		uint32_t length = ErlPacker::readBits<uint32_t>();
 		auto stringNew = ErlPacker::readString(length);
 		if (stringNew == nullptr) {
 			return nlohmann::json{};
@@ -427,12 +391,12 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseSmallBigExt() {
-		nlohmann::json theValue = ErlPacker::parseBigint(ErlPacker::read8Bits());
+		nlohmann::json theValue = ErlPacker::parseBigint(ErlPacker::readBits<uint8_t>());
 		return theValue;
 	}
 
 	nlohmann::json ErlPacker::parseLargeBigExt() {
-		nlohmann::json theValue = ErlPacker::parseBigint(ErlPacker::read32Bits());
+		nlohmann::json theValue = ErlPacker::parseBigint(ErlPacker::readBits<uint32_t>());
 		return theValue;
 	}
 
@@ -445,7 +409,7 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseMapExt() {
-		uint32_t length = read32Bits();
+		uint32_t length = readBits<uint32_t>();
 		auto map = nlohmann::json::object();
 		for (uint32_t i = 0; i < length; ++i) {
 			auto key = singleValueETFToJson();
@@ -460,14 +424,14 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseAtomUtf8Ext() {
-		uint32_t lengthNew = ErlPacker::read16Bits();
+		uint32_t lengthNew = ErlPacker::readBits<uint16_t>();
 		auto atom = ErlPacker::readString(lengthNew);
 		nlohmann::json theValue = ErlPacker::processAtom(atom, lengthNew);
 		return theValue;
 	}
 
 	nlohmann::json ErlPacker::parseSmallAtomUtf8Ext() {
-		uint8_t length = ErlPacker::read8Bits();
+		uint8_t length = ErlPacker::readBits<uint8_t>();
 		auto atom = ErlPacker::readString(length);
 		nlohmann::json theValue = ErlPacker::processAtom(atom, length);
 		return theValue;

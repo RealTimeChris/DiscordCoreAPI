@@ -21,6 +21,10 @@
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 
+namespace DiscordCoreAPI {
+	extern std::atomic_int32_t theCount;
+}
+
 namespace DiscordCoreInternal {
 
 	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
@@ -382,7 +386,8 @@ namespace DiscordCoreInternal {
 		}
 		return false;
 	}
-
+	
+	std::atomic_uint64_t theInt{};
 	bool WebSocketSSLShard::onMessageReceived(int64_t offSet, int64_t length) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
 			try {
@@ -396,7 +401,10 @@ namespace DiscordCoreInternal {
 							DiscordCoreAPI::StopWatch theStopWatch{ 50us };
 							theStopWatch.resetTimer();
 							payload = this->parseEtfToJson(WebSocketSSLShard::inputBuffer.substr(offSet, length));
-							//std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
+							theInt.store(theInt.load() + theStopWatch.totalTimePassed());
+							if (DiscordCoreAPI::theCount.load() != 0) {
+								std::cout << "THE TIME TO COMPLETE (AVERAGE): " << theInt.load() / DiscordCoreAPI::theCount.load() << std::endl;
+							}
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
 								DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -407,7 +415,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::StopWatch theStopWatch{ 50us };
 						theStopWatch.resetTimer();
 						payload = nlohmann::json::parse(WebSocketSSLShard::inputBuffer.substr(offSet, length));
-						//std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
+						std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
 					}
 				} else {
 					returnValue = true;

@@ -190,6 +190,7 @@ namespace DiscordCoreInternal {
 				if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 					size_t remainingBytes{ dataToWrite.size() };
 					while (remainingBytes > 0) {
+						std::cout << "WERE WRITING TCP SOCKET!" << std::endl;
 						std::string newString{};
 						size_t amountToCollect{};
 						if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
@@ -450,11 +451,11 @@ namespace DiscordCoreInternal {
 		this->rawInputBuffer.resize(this->maxBufferSize);
 		if (this->streamType == DiscordCoreAPI::StreamType::None || this->streamType == DiscordCoreAPI::StreamType::Client) {
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
-			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder16(static_cast<unsigned short>(stoi(portNew)));
+			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_family = AF_INET;
 		} else {
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
-			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder16(static_cast<unsigned short>(stoi(portNew)));
+			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
 			static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_family = AF_INET;
 		}
 		addrinfoWrapper hints{}, address{};
@@ -560,6 +561,7 @@ namespace DiscordCoreInternal {
 			size_t remainingBytes{ dataToWrite.size() };
 			std::unique_lock theLock{ this->theMutex };
 			while (remainingBytes > 0) {
+				std::cout << "WERE WRITING DATAGRAM SOCKET!" << std::endl;
 				std::string newString{};
 				size_t amountToCollect{};
 				if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {

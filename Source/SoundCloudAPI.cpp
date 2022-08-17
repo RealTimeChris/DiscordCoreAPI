@@ -305,6 +305,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				counter++;
+				std::this_thread::sleep_for(1ms);
 			}
 			DiscordCoreAPI::AudioFrameData frameData01{};
 			while (audioDecoder->getFrame(frameData01)) {

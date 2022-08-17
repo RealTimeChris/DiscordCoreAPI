@@ -94,13 +94,14 @@ namespace DiscordCoreInternal {
 
 		void appendMapHeader(uint32_t);
 
-		uint8_t read8Bits();
-
-		uint16_t read16Bits();
-
-		uint32_t read32Bits();
-
-		uint64_t read64Bits();
+		template<typename ReturnType> ReturnType readBits() {
+			if (this->offSet + sizeof(ReturnType) > this->buffer.size()) {
+				throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
+			}
+			ReturnType newValue = *reinterpret_cast<ReturnType*>(this->buffer.data() + this->offSet);
+			this->offSet += sizeof(ReturnType);
+			return DiscordCoreAPI::reverseByteOrder(newValue);
+		}
 
 		const char* readString(uint32_t length);
 
