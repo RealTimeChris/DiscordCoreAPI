@@ -467,9 +467,6 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						auto waitTime = targetTime - std::chrono::system_clock::now();
-						if (theIndex % 50 == 0) {
-							std::cout << "THE WAIT TIME: " << static_cast<uint64_t>(static_cast<double>(waitTime.count()) * 0.95f) << std::endl;
-						}
 						nanoSleep(static_cast<uint64_t>(static_cast<double>(waitTime.count()) * 0.95f));
 						waitTime = targetTime - std::chrono::system_clock::now();
 						if (waitTime.count() > 0 && static_cast<uint64_t>(waitTime.count()) < 20000000) {
