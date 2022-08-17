@@ -113,7 +113,7 @@ namespace DiscordCoreAPI {
 			Snowflake theChannelId{};
 			if (guildMemberId != 0) {
 				if (this->voiceStates.contains(guildMemberId)) {
-					theChannelId = this->voiceStates[guildMemberId].channelId;
+					theChannelId = this->voiceStates[guildMemberId]->channelId;
 				}
 			} else {
 				theChannelId = channelId;
@@ -205,7 +205,6 @@ namespace DiscordCoreAPI {
 			this->voiceConnectionPtr = other.voiceConnectionPtr;
 			this->discordCoreClient = other.discordCoreClient;
 			this->voiceStates = std::move(other.voiceStates);
-			this->presences = std::move(other.presences);
 			this->channels = std::move(other.channels);
 			this->joinedAt = std::move(other.joinedAt);
 			this->ownerId = std::move(other.ownerId);
@@ -230,7 +229,6 @@ namespace DiscordCoreAPI {
 			this->discordCoreClient = other.discordCoreClient;
 			this->voiceStates = other.voiceStates;
 			this->memberCount = other.memberCount;
-			this->presences = other.presences;
 			this->channels = other.channels;
 			this->joinedAt = other.joinedAt;
 			this->ownerId = other.ownerId;
@@ -248,12 +246,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	Guild& Guild::operator=(nlohmann::json& jsonObjectData) {
+	Guild& Guild::operator=(nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	Guild::Guild(nlohmann::json& jsonObjectData) {
+	Guild::Guild(nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -261,12 +259,12 @@ namespace DiscordCoreAPI {
 		return this->theGuilds;
 	}
 
-	GuildVector& GuildVector::operator=(nlohmann::json& jsonObjectData) {
+	GuildVector& GuildVector::operator=(nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildVector::GuildVector(nlohmann::json& jsonObjectData) {
+	GuildVector::GuildVector(nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -837,7 +835,7 @@ namespace DiscordCoreAPI {
 		}
 		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
-			Guilds::cache[guild->id] = std::move(guild);
+			Guilds::cache.insert_or_assign(guild->id, std::move(guild));
 			theCount.store(Guilds::cache.size());
 			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
 		}
@@ -848,8 +846,9 @@ namespace DiscordCoreAPI {
 		Guilds::cache.erase(guildId);
 	};
 
-	std::map<Snowflake, std::unique_ptr<GuildData>> Guilds::cache{};
+	std::map<VoiceStateId, std::unique_ptr<VoiceStateData>> Guilds::voiceStateCache{};
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
+	std::map<Snowflake, std::unique_ptr<GuildData>> Guilds::cache{};
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
 	ConfigManager* Guilds::configManager{ nullptr };
 	std::shared_mutex Guilds::theMutex{};

@@ -56,12 +56,12 @@ namespace DiscordCoreAPI {
 		return data.dump();
 	}
 
-	GuildScheduledEvent& GuildScheduledEvent::operator=(nlohmann::json& jsonObjectData) {
+	GuildScheduledEvent& GuildScheduledEvent::operator=(nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildScheduledEvent::GuildScheduledEvent(nlohmann::json& jsonObjectData) {
+	GuildScheduledEvent::GuildScheduledEvent(nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

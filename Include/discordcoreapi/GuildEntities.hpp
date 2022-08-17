@@ -263,6 +263,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class Guilds;
 
+		std::unordered_map<Snowflake, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
 		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
@@ -305,14 +306,14 @@ namespace DiscordCoreAPI {
 
 		Guild(GuildData&);
 
-		Guild& operator=(nlohmann::json& jsonObjectData);
+		Guild& operator=(nlohmann::json* jsonObjectData);
 
-		Guild(nlohmann::json& jsonObjectData);
+		Guild(nlohmann::json* jsonObjectData);
 
 		virtual ~Guild() = default;
 
 	  protected:
-		void parseObject(nlohmann::json& jsonObjectData);
+		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll GuildVector : public DataParser<GuildVector> {
@@ -323,16 +324,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<Guild>();
 
-		GuildVector& operator=(nlohmann::json& jsonObjectData);
+		GuildVector& operator=(nlohmann::json* jsonObjectData);
 
-		GuildVector(nlohmann::json& jsonObjectData);
+		GuildVector(nlohmann::json* jsonObjectData);
 
 		virtual ~GuildVector() = default;
 
 	  protected:
 		std::vector<Guild> theGuilds{};
 
-		void parseObject(nlohmann::json& jsonObjectData);
+		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
@@ -377,6 +378,8 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreClient;
+		friend class GuildData;
+		friend class Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManager);
 
@@ -560,6 +563,7 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
 	  protected:
+		static std::map<VoiceStateId, std::unique_ptr<VoiceStateData>> voiceStateCache;
 		static std::map<Snowflake, std::unique_ptr<GuildData>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static DiscordCoreClient* discordCoreClient;

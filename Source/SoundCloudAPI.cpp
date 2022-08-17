@@ -40,7 +40,7 @@ namespace DiscordCoreInternal {
 			std::vector<DiscordCoreAPI::Song> results{};
 			if (data.contains("collection") && !data["collection"].is_null()) {
 				for (auto& value: data["collection"]) {
-					DiscordCoreAPI::Song newSong{ value };
+					DiscordCoreAPI::Song newSong{ &value };
 					if (!newSong.doWeGetSaved || newSong.songTitle == "") {
 						continue;
 					}

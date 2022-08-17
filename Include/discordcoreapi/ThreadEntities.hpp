@@ -136,14 +136,14 @@ namespace DiscordCoreAPI {
 	  public:
 		Thread() = default;
 
-		Thread& operator=(nlohmann::json& jsonObjectData);
+		Thread& operator=(nlohmann::json* jsonObjectData);
 
-		Thread(nlohmann::json& jsonObjectData);
+		Thread(nlohmann::json* jsonObjectData);
 
 		virtual ~Thread() = default;
 
 	  protected:
-		void parseObject(nlohmann::json& jsonObjectData);
+		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
 	/**@}*/

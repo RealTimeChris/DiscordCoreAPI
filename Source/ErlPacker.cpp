@@ -43,7 +43,8 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseEtfToJson(std::string&& dataToParse) {
 		this->offSet = 0;
-		this->buffer = dataToParse;
+		this->bufferRef = std::move(dataToParse);
+		this->buffer = this->bufferRef;
 		uint8_t version = ErlPacker::readBits<uint8_t>();
 		return ErlPacker::singleValueETFToJson();
 	}

@@ -426,18 +426,18 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string getString(nlohmann::json& jsonData, const char* keyname) {
-		auto theResult = jsonData.find(keyname);
-		if (theResult != jsonData.end()) {
-			return !theResult->is_null() && theResult->is_string() ? std::string{ std::move(jsonData[keyname]) } : "";
+	std::string getString(nlohmann::json* jsonData, const char* keyname) {
+		auto theResult = jsonData->find(keyname);
+		if (theResult != jsonData->end()) {
+			return !theResult->is_null() && theResult->is_string() ? std::move((*jsonData)[keyname].get<std::string>()) : "";
 		} else {
 			return const_cast<char*>("");
 		}
 	}
 
-	uint64_t strtoull(const std::string&& theString) {
+	uint64_t strtoull(std::string&& theString) {
 		if (theString != "") {
-			return stoull(theString);
+			return stoull(std::move(theString));
 		} else {
 			return 0;
 		}

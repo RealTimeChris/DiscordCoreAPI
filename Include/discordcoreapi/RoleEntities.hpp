@@ -139,14 +139,14 @@ namespace DiscordCoreAPI {
 
 		Role(RoleData& other);
 
-		Role& operator=(nlohmann::json& jsonObjectData);
+		Role& operator=(nlohmann::json* jsonObjectData);
 
-		Role(nlohmann::json& jsonObjectData);
+		Role(nlohmann::json* jsonObjectData);
 
 		virtual ~Role() = default;
 
 	  protected:
-		void parseObject(nlohmann::json& jsonObjectData);
+		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll RoleVector : public DataParser<RoleVector> {
@@ -155,16 +155,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<Role>();
 
-		RoleVector& operator=(nlohmann::json& jsonObjectData);
+		RoleVector& operator=(nlohmann::json* jsonObjectData);
 
-		RoleVector(nlohmann::json& jsonObjectData);
+		RoleVector(nlohmann::json* jsonObjectData);
 
 		virtual ~RoleVector() = default;
 
 	  protected:
 		std::vector<Role> theRoles{};
 
-		void parseObject(nlohmann::json& jsonObjectData);
+		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
 	/**@}*/

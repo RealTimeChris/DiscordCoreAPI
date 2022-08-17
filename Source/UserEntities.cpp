@@ -60,12 +60,12 @@ namespace DiscordCoreAPI {
 		*this = dataNew;
 	}
 
-	User& User::operator=(nlohmann::json& jsonObjectData) {
+	User& User::operator=(nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	User::User(nlohmann::json& jsonObjectData) {
+	User::User(nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -73,12 +73,12 @@ namespace DiscordCoreAPI {
 		return this->theUsers;
 	}
 
-	UserVector& UserVector::operator=(nlohmann::json& jsonObjectData) {
+	UserVector& UserVector::operator=(nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	UserVector::UserVector(nlohmann::json& jsonObjectData) {
+	UserVector::UserVector(nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
 		std::string theString{};
 		if (this->baseSocketAgent) {
 			std::string theString{};
-			this->baseSocketAgent->stringifyJsonData(payload, theString, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent)->dataOpCode);
+			this->baseSocketAgent->stringifyJsonData(&payload, theString, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent)->dataOpCode);
 			this->baseSocketAgent->sendMessage(theString, true);
 		}
 	}
@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 		nlohmann::json payload = dataPackage;
 		if (this->baseSocketAgent) {
 			std::string theString{};
-			this->baseSocketAgent->stringifyJsonData(payload, theString, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent)->dataOpCode);
+			this->baseSocketAgent->stringifyJsonData(&payload, theString, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent)->dataOpCode);
 			this->baseSocketAgent->sendMessage(theString, true);
 		}
 	}

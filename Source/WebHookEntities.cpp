@@ -203,12 +203,12 @@ namespace DiscordCoreAPI {
 		return data.dump();
 	}
 
-	WebHook& WebHook::operator=(nlohmann::json& jsonObjectData) {
+	WebHook& WebHook::operator=(nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	WebHook::WebHook(nlohmann::json& jsonObjectData) {
+	WebHook::WebHook(nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -216,12 +216,12 @@ namespace DiscordCoreAPI {
 		return this->theWebHooks;
 	}
 
-	WebHookVector& WebHookVector::operator=(nlohmann::json& jsonObjectData) {
+	WebHookVector& WebHookVector::operator=(nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	WebHookVector::WebHookVector(nlohmann::json& jsonObjectData) {
+	WebHookVector::WebHookVector(nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

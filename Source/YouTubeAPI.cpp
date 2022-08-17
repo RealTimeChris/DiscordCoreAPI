@@ -51,7 +51,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: partialSearchResultsJson["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
 													  ["contents"]) {
 				if (value.contains("videoRenderer") && !value["videoRenderer"].is_null()) {
-					DiscordCoreAPI::Song searchResult{ value["videoRenderer"] };
+					DiscordCoreAPI::Song searchResult{ &value["videoRenderer"] };
 					searchResult.type = DiscordCoreAPI::SongType::YouTube;
 					searchResult.viewUrl = this->baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
 					searchResults.emplace_back(searchResult);
@@ -90,7 +90,7 @@ namespace DiscordCoreInternal {
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
 			nlohmann::json jsonObject = nlohmann::json::parse(responseData.responseMessage);
-			DiscordCoreAPI::YouTubeFormatVector theVector{ jsonObject };
+			DiscordCoreAPI::YouTubeFormatVector theVector{ &jsonObject };
 			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };
 			for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {
