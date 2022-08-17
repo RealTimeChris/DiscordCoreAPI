@@ -73,10 +73,7 @@ namespace DiscordCoreInternal {
 		friend class BaseSocketAgent;
 		friend class YouTubeAPI;
 
-		WebSocketSSLShard() = default;
-
-		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::queue<DiscordCoreAPI::ConnectionPackage>* connectionsNew, int32_t currentBaseSocketAgentNew,
-			int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept;
+		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, int32_t currentBaseSocketAgentNew, int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
@@ -97,9 +94,11 @@ namespace DiscordCoreInternal {
 		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState::Connecting };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
+		DiscordCoreAPI::ConnectionPackage thePackage{};
 		std::recursive_mutex theConnectionMutex{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
+		std::atomic_bool doWeReconnect{ false };
 		const uint32_t maxReconnectTries{ 10 };
 		std::atomic_bool* doWeQuit{ nullptr };
 		uint32_t currentBaseSocketAgent{ 0 };
@@ -119,14 +118,15 @@ namespace DiscordCoreInternal {
 		Snowflake userId{ 0 };
 	};
 
-	class DiscordCoreAPI_Dll BaseSocketAgent {
+	class DiscordCoreAPI_Dll BaseSocketAgent : public WebSocketSSLShard {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
 		friend class WebSocketSSLShard;
 
-		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept;
+		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew,
+			int32_t currentShardNew) noexcept;
 
 		void connectVoiceChannel(VoiceConnectInitData theData) noexcept;
 
@@ -141,13 +141,11 @@ namespace DiscordCoreInternal {
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 550ms };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
-		std::queue<DiscordCoreAPI::ConnectionPackage> connections{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		std::queue<VoiceConnectInitData> voiceConnections{};
 		std::queue<uint64_t> voiceConnectionsToDisconnect{};
 		std::recursive_mutex theConnectDisconnectMutex{};
 		DiscordCoreAPI::ConfigManager* configManager{};
-		std::unique_ptr<WebSocketSSLShard> sslShard{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentBaseSocketAgent{ 0 };

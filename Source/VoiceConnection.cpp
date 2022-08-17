@@ -97,14 +97,13 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamTypeNew, StreamInfo streamInfoNew) noexcept
-		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->connections, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, this->doWeQuit),
+		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, BaseSocketAgentNew->currentBaseSocketAgent, initDataNew.currentShard, this->doWeQuit),
 		  DatagramSocketClient(StreamType::None) {
-		this->baseShard = BaseSocketAgentNew->sslShard.get();
 		this->activeState.store(VoiceActiveState::Connecting);
-		WebSocketSSLShard::connections = &this->connections;
 		this->baseSocketAgent = BaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->configManager = configManagerNew;
+		this->baseShard = BaseSocketAgentNew;
 		this->theStreamInfo = streamInfoNew;
 		this->streamType = streamTypeNew;
 		this->doWeQuit = doWeQuitNew;
@@ -265,7 +264,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
-				if (!stopToken.stop_requested() && WebSocketSSLShard::connections->size() > 0) {
+				if (!stopToken.stop_requested() && this->thePackage.currentShard != 0) {
 					StopWatch theStopWatch{ 10000ms };
 					if (this->activeState.load() == VoiceActiveState::Connecting) {
 						this->lastActiveState.store(VoiceActiveState::Stopped);
@@ -632,10 +631,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
-		auto thePtr = this->baseSocketAgent->sslShard.get();
-		std::unique_lock theLock{ thePtr->theConnectionMutex };
-		if (this->connections.size() > 0) {
-			this->connections.pop();
+		std::unique_lock theLock{ this->baseSocketAgent->theConnectionMutex };
+		if (this->thePackage.currentShard == 0) {
+			return;
 		}
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
 			this->doWeQuit->store(true);
@@ -777,6 +775,7 @@ namespace DiscordCoreAPI {
 					});
 					this->streamSocket->connect(this->theStreamInfo.address, this->theStreamInfo.port);
 				}
+				this->thePackage.currentShard = 0;
 				return;
 			}
 		}
@@ -973,10 +972,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connect() noexcept {
-		if (this->baseSocketAgent->sslShard) {
+		if (this->baseSocketAgent) {
 			ConnectionPackage dataPackage{};
-			dataPackage.currentShard = 0;
-			this->connections.push(dataPackage);
+			dataPackage.currentShard = 1;
+			this->thePackage = dataPackage;
 			this->activeState.store(VoiceActiveState::Connecting);
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {

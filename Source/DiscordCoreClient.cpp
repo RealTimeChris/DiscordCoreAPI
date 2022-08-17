@@ -217,7 +217,7 @@ namespace DiscordCoreAPI {
 		}
 
 		for (int32_t x = 0; x < this->configManager.getTotalShardCount(); x++) {
-			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x);
+			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x, x);
 			this->baseSocketAgentMap[std::to_string(x)] = std::move(thePtr);
 			if (this->configManager.doWePrintGeneralSuccessMessages()) {
 				cout << shiftToBrightBlue() << "Connecting Shard " + std::to_string(currentShard + 1) << " of " << this->configManager.getShardCountForThisProcess()

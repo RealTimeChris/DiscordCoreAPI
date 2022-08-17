@@ -18,6 +18,7 @@
 /// \file AudioEncoder.cpp
 
 #include <discordcoreapi/AudioEncoder.hpp>
+#include <opus/opus_defines.h>
 
 namespace DiscordCoreAPI {
 
@@ -37,13 +38,7 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	OpusEncoderWrapper::OpusEncoderWrapper() noexcept {
-		int32_t error{};
-		this->thePtr.reset(opus_encoder_create(48000, 2, OPUS_APPLICATION_AUDIO, &error));
-		if (error != OPUS_OK) {
-			std::cout << "Failed to create the Opus Encoder" << std::endl;
-		}
-	}
+	OpusEncoderWrapper::OpusEncoderWrapper() noexcept {}
 
 	OpusEncoderWrapper::operator OpusEncoder*() noexcept {
 		return this->thePtr.get();
@@ -56,6 +51,10 @@ namespace DiscordCoreAPI {
 	AudioEncoder::AudioEncoder() {
 		int32_t error{};
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
+		auto theResult = opus_encoder_ctl(this->encoder, OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
+		if (theResult != OPUS_OK) {
+			std::cout << "Failed th set the Opus signal type." << std::endl;
+		}
 	}
 
 	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(std::vector<opus_int16>& inputFrame) {
@@ -74,10 +73,10 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame) {
 		std::vector<opus_int16> newVector{};
-		for (uint32_t x = 0; x < inputFrame.data.size() / 2; x++) {
+		for (uint64_t x = 0; x < inputFrame.data.size() / 2; x++) {
 			opus_int16 newValue{};
-			newValue |= inputFrame.data[static_cast<uint64_t>(x) * 2] << 0;
-			newValue |= inputFrame.data[static_cast<uint64_t>(x) * 2 + 1] << 8;
+			newValue |= inputFrame.data[x * 2] << 0;
+			newValue |= inputFrame.data[x * 2 + 1] << 8;
 			newVector.emplace_back(newValue);
 		}
 		newVector.shrink_to_fit();

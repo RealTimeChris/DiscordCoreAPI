@@ -138,13 +138,13 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
 		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};
 		std::atomic_bool areWeConnectedBool{ false };
-		std::queue<ConnectionPackage> connections{};
 		std::deque<VoicePayload> theFrameQueue{};
 		std::atomic_bool areWePlaying{ false };
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
+		ConnectionPackage thePackage{};
 		std::string secretKeySend{};
 		std::mutex voiceUserMutex{};
 		uint16_t sequenceIndex{ 0 };
