@@ -396,7 +396,7 @@ namespace DiscordCoreInternal {
 							DiscordCoreAPI::StopWatch theStopWatch{ 50us };
 							theStopWatch.resetTimer();
 							payload = this->parseEtfToJson(WebSocketSSLShard::inputBuffer.substr(offSet, length));
-							std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
+							//std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
 								DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -407,7 +407,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::StopWatch theStopWatch{ 50us };
 						theStopWatch.resetTimer();
 						payload = nlohmann::json::parse(WebSocketSSLShard::inputBuffer.substr(offSet, length));
-						std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
+						//std::cout << "THE TIME TO COMPLETE: " << theStopWatch.totalTimePassed() << std::endl;
 					}
 				} else {
 					returnValue = true;
@@ -1333,7 +1333,6 @@ namespace DiscordCoreInternal {
 				if (this->areWeStillConnected()) {
 					this->checkForAndSendHeartBeat();
 				}
-				std::cout << "WERE HERE THIS IS IT!" << std::endl;
 				std::this_thread::sleep_for(1ms);
 			}
 		} catch (...) {
@@ -1352,9 +1351,7 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::connectInternal() noexcept {
 		try {
-			std::cout << "WERE HERE THIS IS IT! 0202" << std::endl;
 			if (this->doWeReconnect.load() && this->thePackage.currentShard != -1) {
-				std::cout << "WERE HERE THIS IS IT! 0303" << std::endl;
 				this->currentReconnectTries = thePackage.currentReconnectTries;
 				this->currentReconnectTries++;
 				this->voiceConnectionDataBufferMap = std::move(thePackage.voiceConnectionDataBufferMap);

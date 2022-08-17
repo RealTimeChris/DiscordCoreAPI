@@ -840,7 +840,7 @@ namespace DiscordCoreAPI {
 		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
 			Guilds::cache[guild->id] = std::move(guild);
-			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", THE TIME: " << theStopWatch.totalTimePassed() << std::endl;
+			//std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", THE TIME: " << theStopWatch.totalTimePassed() << std::endl;
 		}
 	}
 
