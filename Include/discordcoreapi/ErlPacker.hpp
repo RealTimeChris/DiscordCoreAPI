@@ -60,11 +60,9 @@ namespace DiscordCoreInternal {
 
 		ErlPacker(std::string&);
 
-		~ErlPacker();
-
 	  protected:
 		std::string bufferRef;
-		std::unique_ptr<std::string> buffer{ nullptr };
+		std::string& buffer;
 
 		mutable uint64_t offSet{};
 
