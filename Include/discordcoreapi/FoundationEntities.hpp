@@ -408,6 +408,10 @@ namespace DiscordCoreAPI {
 
 		UserData() = default;
 
+		UserData& operator=(nlohmann::json&& jsonObjectData);
+
+		UserData(nlohmann::json&& jsonObjectData);
+
 		UserData& operator=(nlohmann::json& jsonObjectData);
 
 		UserData(nlohmann::json& jsonObjectData);
@@ -415,6 +419,7 @@ namespace DiscordCoreAPI {
 		virtual ~UserData() = default;
 
 	  protected:
+		void parseObject(nlohmann::json&& jsonObjectData);
 		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
@@ -817,6 +822,10 @@ namespace DiscordCoreAPI {
 
 		GuildMemberData() = default;
 
+		GuildMemberData& operator=(nlohmann::json&& jsonObjectData);
+
+		GuildMemberData(nlohmann::json&& jsonObjectData);
+
 		GuildMemberData& operator=(nlohmann::json& jsonObjectData);
 
 		GuildMemberData(nlohmann::json& jsonObjectData);
@@ -826,6 +835,7 @@ namespace DiscordCoreAPI {
 		virtual ~GuildMemberData() = default;
 
 	  protected:
+		void parseObject(nlohmann::json&& jsonObjectData);
 		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
@@ -900,6 +910,10 @@ namespace DiscordCoreAPI {
 
 		ChannelData() = default;
 
+		ChannelData& operator=(nlohmann::json&& jsonObjectData);
+
+		ChannelData(nlohmann::json&& other);
+
 		ChannelData& operator=(nlohmann::json& jsonObjectData);
 
 		ChannelData(nlohmann::json& other);
@@ -907,6 +921,7 @@ namespace DiscordCoreAPI {
 		virtual ~ChannelData() = default;
 
 	  protected:
+		void parseObject(nlohmann::json&& jsonObjectData);
 		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
@@ -960,6 +975,10 @@ namespace DiscordCoreAPI {
 
 		RoleData() = default;
 
+		RoleData& operator=(nlohmann::json&& jsonObjectData);
+
+		RoleData(nlohmann::json&& jsonObjectData);
+
 		RoleData& operator=(nlohmann::json& jsonObjectData);
 
 		RoleData(nlohmann::json& jsonObjectData);
@@ -967,6 +986,7 @@ namespace DiscordCoreAPI {
 		virtual ~RoleData() = default;
 
 	  protected:
+		void parseObject(nlohmann::json&& jsonObjectData);
 		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
@@ -2087,6 +2107,10 @@ namespace DiscordCoreAPI {
 
 		GuildData() = default;
 
+		GuildData& operator=(nlohmann::json&& jsonObjectData);
+
+		GuildData(nlohmann::json&& jsonObjectData);
+
 		GuildData& operator=(nlohmann::json& jsonObjectData);
 
 		GuildData(nlohmann::json& jsonObjectData);
@@ -2117,6 +2141,7 @@ namespace DiscordCoreAPI {
 		virtual ~GuildData() = default;
 
 	  protected:
+		void parseObject(nlohmann::json&& jsonObjectData);
 		void parseObject(nlohmann::json& jsonObjectData);
 	};
 

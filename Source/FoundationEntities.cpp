@@ -196,6 +196,15 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
+	UserData& UserData::operator=(nlohmann::json&& jsonObjectData) {
+		this->parseObject(std::move(jsonObjectData));
+		return *this;
+	}
+
+	UserData::UserData(nlohmann::json&& jsonObjectData) {
+		*this = std::move(jsonObjectData);
+	}
+
 	UserData& UserData::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
@@ -465,6 +474,15 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	GuildMemberData& GuildMemberData::operator=(nlohmann::json&& jsonObjectData) {
+		this->parseObject(std::move(jsonObjectData));
+		return *this;
+	}
+
+	GuildMemberData::GuildMemberData(nlohmann::json&& jsonObjectData) {
+		*this = std::move(jsonObjectData);
+	}
+
 	GuildMemberData& GuildMemberData::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
@@ -492,6 +510,15 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
+	ChannelData& ChannelData::operator=(nlohmann::json&& jsonObjectData) {
+		this->parseObject(std::move(jsonObjectData));
+		return *this;
+	}
+
+	ChannelData::ChannelData(nlohmann::json&& other) {
+		*this = std::move(other);
+	}
+
 	ChannelData& ChannelData::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
@@ -517,6 +544,15 @@ namespace DiscordCoreAPI {
 
 	ArchivedThreadsData::ArchivedThreadsData(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
+	}
+
+	RoleData& RoleData::operator=(nlohmann::json&& jsonObjectData) {
+		this->parseObject(std::move(jsonObjectData));
+		return *this;
+	}
+
+	RoleData::RoleData(nlohmann::json&& jsonObjectData) {
+		*this = std::move(jsonObjectData);
 	}
 
 	RoleData& RoleData::operator=(nlohmann::json& jsonObjectData) {
@@ -913,6 +949,15 @@ namespace DiscordCoreAPI {
 
 	GuildPreviewData::GuildPreviewData(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
+	}
+
+	GuildData& GuildData::operator=(nlohmann::json&& jsonObjectData) {
+		this->parseObject(std::move(jsonObjectData));
+		return *this;
+	}
+
+	GuildData::GuildData(nlohmann::json&& jsonObjectData) {
+		*this = std::move(jsonObjectData);
 	}
 
 	GuildData& GuildData::operator=(nlohmann::json& jsonObjectData) {
