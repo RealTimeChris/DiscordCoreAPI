@@ -97,7 +97,7 @@ if ("${VCPKG_TARGET_TRIPLET}" STREQUAL "x64-uwp")
 endif()
 
 target_compile_options(
-	"${LIB_NAME}" PUBLIC
+	"${LIB_NAME}" PRIVATE
 	"$<$<NOT:$<PLATFORM_ID:Linux>>:/bigobj>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
