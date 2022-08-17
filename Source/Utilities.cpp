@@ -804,12 +804,7 @@ namespace DiscordCoreAPI {
 	void spinLock(uint64_t timeInNsToSpinLockFor) {
 		uint64_t startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		uint64_t timePassed{ 0 };
-		int32_t theIndex{};
 		while (timePassed < timeInNsToSpinLockFor) {
-			++theIndex;
-			if (theIndex % 50 == 0) {
-				std::cout << "WERE SPINLOCKING!" << std::endl;
-			}
 			timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startTime;
 		}
 	}

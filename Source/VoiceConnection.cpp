@@ -634,7 +634,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
-		std::unique_lock theLock{ this->baseSocketAgent->theConnectionMutex };
+		std::unique_lock theLock{ this->theConnectionMutex };
 		if (this->thePackage.currentShard == -1) {
 			return;
 		}
@@ -643,6 +643,7 @@ namespace DiscordCoreAPI {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				cout << "VoiceConnection::connectInternal() Error: Failed to connect to voice channel!" << endl << endl;
 			}
+			return;
 		}
 		switch (this->connectionState.load()) {
 			case VoiceConnectionState::Collecting_Init_Data: {
