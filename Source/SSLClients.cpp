@@ -190,7 +190,6 @@ namespace DiscordCoreInternal {
 				if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 					size_t remainingBytes{ dataToWrite.size() };
 					while (remainingBytes > 0) {
-						std::cout << "WERE WRITING TCP SOCKET!" << std::endl;
 						std::string newString{};
 						size_t amountToCollect{};
 						if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
@@ -561,7 +560,6 @@ namespace DiscordCoreInternal {
 			size_t remainingBytes{ dataToWrite.size() };
 			std::unique_lock theLock{ this->theMutex };
 			while (remainingBytes > 0) {
-				std::cout << "WERE WRITING DATAGRAM SOCKET!" << std::endl;
 				std::string newString{};
 				size_t amountToCollect{};
 				if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {

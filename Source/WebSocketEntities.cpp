@@ -804,7 +804,6 @@ namespace DiscordCoreInternal {
 										break;
 									}
 									case 34: {
-										std::cout << "WERE HERE INTERACTING!" << std::endl;
 										std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
 										*interactionData = payload["d"];
 										std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
@@ -818,7 +817,6 @@ namespace DiscordCoreInternal {
 												dataPackage->interactionData = *interactionData;
 												std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 												DiscordCoreAPI::CommandData commandDataNew = *commandData;
-												std::cout << "WERE HERE ABOUT TO CHECK FOR AND RUN THE COMMAND!" << std::endl;
 												this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
 												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 												std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
