@@ -2748,9 +2748,7 @@ namespace DiscordCoreAPI {
 					std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
 					VoiceStateId theKey{};
 					theKey.guildId = this->id;
-					std::cout << "GUILD ID: " << theKey.guildId << std::endl;
 					theKey.guildMemberId = theData->userId;
-					std::cout << "USER ID: " << theData->userId << std::endl;
 					Guilds::voiceStateCache[theKey] = std::move(theData);
 				}
 			}
