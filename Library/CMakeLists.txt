@@ -62,7 +62,7 @@ pkg_check_modules(OPUS REQUIRED opus)
 pkg_check_modules(SODIUM REQUIRED libsodium)
 
 target_link_libraries(
-	"${LIB_NAME}" PUBLIC
+	"${LIB_NAME}" PRIVATE
 	${AVFORMAT_LIBRARIES}
 	${AVCODEC_LIBRARIES}
 	${AVUTIL_LIBRARIES}
@@ -78,13 +78,7 @@ target_include_directories(
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-	${AVFORMAT_INCLUDE_DIRS}
-	${AVCODEC_INCLUDE_DIRS}
-	${AVUTIL_INCLUDE_DIRS}
-	${SWRESAMPLE_INCLUDE_DIRS}
-	${OPENSSL_INCLUDE_DIRS}
 	${OPUS_INCLUDE_DIRS}
-	${SODIUM_INCLUDE_DIRS}
 )
 
 target_compile_features(
