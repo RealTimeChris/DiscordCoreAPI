@@ -18,7 +18,10 @@
 /// \file AudioDecoder.cpp
 
 #include <discordcoreapi/AudioDecoder.hpp>
+
+extern "C" {
 #include <libavcodec/avcodec.h>
+}
 
 namespace DiscordCoreInternal {
 
