@@ -64,9 +64,9 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			this->currentVoiceChannel = other.currentVoiceChannel;
 			this->permissions = std::move(other.permissions);
-			this->userAvatar = std::move(other.userAvatar);
 			this->userName = std::move(other.userName);
 			this->joinedAt = std::move(other.joinedAt);
+			this->avatar = std::move(other.avatar);
 			this->roles = std::move(other.roles);
 			this->nick = std::move(other.nick);
 			this->guildId = other.guildId;
@@ -84,10 +84,10 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			this->currentVoiceChannel = other.currentVoiceChannel;
 			this->permissions = other.permissions;
-			this->userAvatar = other.userAvatar;
 			this->userName = other.userName;
 			this->joinedAt = other.joinedAt;
 			this->guildId = other.guildId;
+			this->avatar = other.avatar;
 			this->roles = other.roles;
 			this->flags = other.flags;
 			this->nick = other.nick;

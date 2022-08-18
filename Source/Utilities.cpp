@@ -394,9 +394,9 @@ namespace DiscordCoreAPI {
 		this->set(other);
 		std::string theStringNew{ "https://cdn.discordapp.com/" };
 		if (guildId != 0) {
-			theStringNew += "guilds/" + std::to_string(guildId) + "/users/" + std::to_string(userId) + "/avatars/" + other;
+			theStringNew += "guilds/" + std::to_string(guildId) + "/users/" + std::to_string(userId) + "/avatars/" + IconHash::operator std::string();
 		} else {
-			theStringNew += "avatars/" + std::to_string(userId) + "/" + other;
+			theStringNew += "avatars/" + std::to_string(userId) + "/" + IconHash::operator std::string();
 		}
 		auto theLength = theStringNew.size();
 		this->theString = std::make_unique<char[]>(theLength + 1);

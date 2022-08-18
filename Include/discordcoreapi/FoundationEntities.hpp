@@ -834,7 +834,7 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		StringWrapper userName{};///< This GuildMember's UserName.
-		AvatarUrl userAvatar{};///< This GuildMember's User Avatar.
+		AvatarUrl avatar{};///< This GuildMember's User Avatar.
 		StringWrapper nick{};///< Their nick/display name.
 		Snowflake guildId{};///< The current Guild's id.
 		int8_t flags{ 0 };///< GuildMember flags.
