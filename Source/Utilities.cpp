@@ -333,7 +333,7 @@ namespace DiscordCoreAPI {
 		return other.lowBits == this->lowBits && other.highBits == this->highBits;
 	}
 
-	bool IconHash::areWeSet(){
+	bool IconHash::areWeSet() {
 		if (this->highBits == 0 || this->lowBits == 0) {
 			return false;
 		} else {

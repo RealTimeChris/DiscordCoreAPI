@@ -280,7 +280,8 @@ namespace DiscordCoreInternal {
 					static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.begin() + 4);
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightRed()
-						 << "WebSocket " + static_cast<WebSocketSSLShard*>(theShard)->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Closed; Code: "
+						 << "WebSocket " + static_cast<WebSocketSSLShard*>(theShard)->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) +
+							" Closed; Code: "
 						 << +static_cast<uint16_t>(static_cast<WebSocketSSLShard*>(theShard)->closeCode) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
@@ -361,8 +362,8 @@ namespace DiscordCoreInternal {
 				}
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightBlue()
-						 << "Sending WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string("'s Message: ") << dataToSend
-						 << endl
+						 << "Sending WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string("'s Message: ")
+						 << dataToSend << endl
 						 << DiscordCoreAPI::reset();
 				}
 				ProcessIOResult didWeWrite{ false };

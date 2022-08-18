@@ -618,7 +618,7 @@ namespace DiscordCoreAPI {
 		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 
-	struct DiscordCoreAPI_Dll ChannelIcon: public IconHash {
+	struct DiscordCoreAPI_Dll ChannelIcon : public IconHash {
 		ChannelIcon() = default;
 
 		ChannelIcon& operator=(std::string&&);

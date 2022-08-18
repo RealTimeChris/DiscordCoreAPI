@@ -290,7 +290,7 @@ namespace DiscordCoreAPI {
 				newRole = value;
 			}
 		}
-		
+
 		Roles::insertRole(std::make_unique<RoleData>(newRole));
 		co_return newRole;
 	}
