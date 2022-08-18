@@ -132,8 +132,6 @@ namespace DiscordCoreAPI {
 		/// Updates the bot's current activity status, to be viewed by others in the same server as the bot. \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
 		void updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage);
 
-		std::string getAvatarUrl();
-
 	  protected:
 		BotUser() = default;
 
