@@ -626,6 +626,9 @@ namespace DiscordCoreAPI {
 			this->avatar = (*jsonObjectData)["avatar"].get<std::string>();
 		}
 
+		std::string theAvatarString{ getString(jsonObjectData, "avatar") };
+		this->avatar = AvatarUrl{ theAvatarString, this->id, this->guildId };
+
 		if (jsonObjectData->contains("nick") && !(*jsonObjectData)["nick"].is_null()) {
 			this->nick = (*jsonObjectData)["nick"].get<std::string>();
 		}
@@ -633,7 +636,6 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("user") && !(*jsonObjectData)["user"].is_null()) {
 			std::unique_ptr<User> theUser{ std::make_unique<User>(&(*jsonObjectData)["user"]) };
 			this->id = theUser->id;
-			this->userAvatar = theUser->avatar;
 			this->userName = theUser->userName;
 			this->insertUser(std::move(theUser));
 		}
@@ -1342,7 +1344,6 @@ namespace DiscordCoreAPI {
 
 		auto theString = getString(jsonObjectData, "avatar");
 		this->avatar = AvatarUrl(theString, this->id, 0);
-		std::cout << "THE AVATAR URL: " << ( std::string )this->avatar << std::endl;
 
 		this->flags = setBool<int32_t, UserFlags>(this->flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
 
@@ -1650,10 +1651,12 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("user") && !(*jsonObjectData)["user"].is_null()) {
 			std::unique_ptr<UserData> theUser = std::make_unique<UserData>(&(*jsonObjectData)["user"]);
 			this->id = theUser->id;
-			this->userAvatar = theUser->avatar;
 			this->userName = theUser->userName;
 			this->insertUser(std::move(theUser));
 		}
+
+		std::string theAvatarString{ getString(jsonObjectData, "avatar") };
+		this->avatar = AvatarUrl{ theAvatarString, this->id, this->guildId };
 
 		this->nick = getString(jsonObjectData, "nick");
 
@@ -4347,7 +4350,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("member") && !(*jsonObjectData)["member"].is_null()) {
 			this->member = &(*jsonObjectData)["member"];
-			this->user.avatar = this->member.userAvatar;
+			this->user.avatar = this->member.avatar;
 			this->user.id = this->member.id;
 			this->user.userName = this->member.userName;
 		} else if (jsonObjectData->contains("user") && !(*jsonObjectData)["user"].is_null()) {
