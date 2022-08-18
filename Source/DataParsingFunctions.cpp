@@ -469,8 +469,8 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("widget_enabled") && !(*jsonObjectData)["widget_enabled"].is_null()) {
-			this->flags =
-				DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildFlags>(this->flags, DiscordCoreAPI::GuildFlags::WidgetEnabled, (*jsonObjectData)["widget_enabled"].get<bool>());
+			this->flags = DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::GuildFlags>(this->flags, DiscordCoreAPI::GuildFlags::WidgetEnabled,
+				(*jsonObjectData)["widget_enabled"].get<bool>());
 		}
 
 		if (jsonObjectData->contains("verification_level") && !(*jsonObjectData)["verification_level"].is_null()) {
@@ -1342,6 +1342,7 @@ namespace DiscordCoreAPI {
 
 		auto theString = getString(jsonObjectData, "avatar");
 		this->avatar = AvatarUrl(theString, this->id, 0);
+		std::cout << "THE AVATAR URL: " << ( std::string )this->avatar << std::endl;
 
 		this->flags = setBool<int32_t, UserFlags>(this->flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
 

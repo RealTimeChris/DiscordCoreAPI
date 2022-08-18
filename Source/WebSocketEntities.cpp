@@ -161,7 +161,8 @@ namespace DiscordCoreInternal {
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
 			theVector = this->parseJsonToEtf(*dataToSend);
 		} else {
-			theVector = dataToSend->dump();
+			theVector = dataToSend->dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			;
 		}
 		this->createHeader(header, theVector.size(), theOpCode);
 		std::string theVectorNew{};
@@ -278,7 +279,8 @@ namespace DiscordCoreInternal {
 				static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.erase(static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.begin(),
 					static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.begin() + 4);
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket " + static_cast<WebSocketSSLShard*>(theShard)->shard.dump() + " Closed; Code: "
+					cout << DiscordCoreAPI::shiftToBrightRed()
+						 << "WebSocket " + static_cast<WebSocketSSLShard*>(theShard)->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Closed; Code: "
 						 << +static_cast<uint16_t>(static_cast<WebSocketSSLShard*>(theShard)->closeCode) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
@@ -289,8 +291,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, int32_t currentShardNew,
-		std::atomic_bool* doWeQuitNew) noexcept
+	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketMessageHandler(&theClient->configManager) {
 		this->configManager = &theClient->configManager;
 		this->thePackage.currentShard = currentShardNew;
@@ -359,7 +360,9 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightBlue() << "Sending WebSocket " + this->shard.dump() + std::string("'s Message: ") << dataToSend << endl
+					cout << DiscordCoreAPI::shiftToBrightBlue()
+						 << "Sending WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string("'s Message: ") << dataToSend
+						 << endl
 						 << DiscordCoreAPI::reset();
 				}
 				ProcessIOResult didWeWrite{ false };
@@ -386,7 +389,7 @@ namespace DiscordCoreInternal {
 		}
 		return false;
 	}
-	
+
 	std::atomic_uint64_t theInt{};
 	bool WebSocketSSLShard::onMessageReceived(int64_t offSet, int64_t length) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
@@ -441,10 +444,11 @@ namespace DiscordCoreInternal {
 				if (payload.contains("s") && !payload["s"].is_null()) {
 					this->lastNumberReceived = payload["s"].get<int32_t>();
 				}
-				
+
 				if (this->configManager->doWePrintWebSocketSuccessMessages() && !payload.is_null()) {
-					cout << DiscordCoreAPI::shiftToBrightGreen() << "Message received from WebSocket " + this->shard.dump() + std::string(": ") << payload.dump()
-						 << DiscordCoreAPI::reset() << endl
+					cout << DiscordCoreAPI::shiftToBrightGreen()
+						 << "Message received from WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string(": ")
+						 << payload.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
 
@@ -1074,8 +1078,7 @@ namespace DiscordCoreInternal {
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
 											if (DiscordCoreAPI::Guilds::voiceStateCache.contains(theKey)) {
 												*DiscordCoreAPI::Guilds::voiceStateCache[theKey] = dataPackage->voiceStateData;
-											}
-											else {
+											} else {
 												DiscordCoreAPI::Guilds::voiceStateCache[theKey] = std::make_unique<DiscordCoreAPI::VoiceStateData>(dataPackage->voiceStateData);
 											}
 										}
@@ -1140,7 +1143,10 @@ namespace DiscordCoreInternal {
 						}
 						case 7: {
 							if (this->configManager->doWePrintWebSocketErrorMessages()) {
-								cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 7)!" << DiscordCoreAPI::reset() << endl << endl;
+								cout << DiscordCoreAPI::shiftToBrightBlue()
+									 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 7)!"
+									 << DiscordCoreAPI::reset() << endl
+									 << endl;
 							}
 							this->areWeResuming = true;
 							this->onClosed();
@@ -1148,7 +1154,10 @@ namespace DiscordCoreInternal {
 						}
 						case 9: {
 							if (this->configManager->doWePrintWebSocketErrorMessages()) {
-								cout << DiscordCoreAPI::shiftToBrightBlue() << "Shard " + this->shard.dump() + " Reconnecting (Type 9)!" << DiscordCoreAPI::reset() << endl << endl;
+								cout << DiscordCoreAPI::shiftToBrightBlue()
+									 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 9)!"
+									 << DiscordCoreAPI::reset() << endl
+									 << endl;
 							}
 							std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
 							int32_t numOfMsToWait =
@@ -1214,7 +1223,7 @@ namespace DiscordCoreInternal {
 		}
 		return true;
 	}
-	
+
 	void WebSocketSSLShard::checkForAndSendHeartBeat(bool isImmediate) noexcept {
 		if (this->theWebSocketState.load() == WebSocketSSLShardState::Authenticated) {
 			try {
@@ -1330,7 +1339,8 @@ namespace DiscordCoreInternal {
 		try {
 			this->doWeReconnect.store(true);
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
-				{ std::unique_lock theLock{ this->theConnectDisconnectMutex };
+				{
+					std::unique_lock theLock{ this->theConnectDisconnectMutex };
 					if (this->voiceConnectionsToDisconnect.size() > 0) {
 						this->disconnectVoice();
 					}

@@ -230,7 +230,7 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Role creation event. \brief Data that is received as part of a Role creation event.
 	struct DiscordCoreAPI_Dll OnRoleCreationData {
-		OnRoleCreationData(RoleData* theRole, Snowflake guildId); 
+		OnRoleCreationData(RoleData* theRole, Snowflake guildId);
 		OnRoleCreationData& operator=(const OnRoleCreationData&);
 		OnRoleCreationData(const OnRoleCreationData&);
 		OnRoleCreationData& operator=(OnRoleCreationData&);
@@ -960,5 +960,5 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::Event<CoRoutine<void>, OnWebhookUpdateData> onWebhookUpdateEvent{};
 	};
 	/**@}*/
-	
+
 }// namespace DiscordCoreAPI

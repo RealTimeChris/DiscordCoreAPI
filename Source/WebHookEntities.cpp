@@ -59,7 +59,8 @@ namespace DiscordCoreAPI {
 		}
 		data["flags"] = this->flags;
 		data["tts"] = this->tts;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	ExecuteWebHookData& ExecuteWebHookData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
@@ -200,7 +201,8 @@ namespace DiscordCoreAPI {
 		if (this->content != "") {
 			data["content"] = this->content;
 		}
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	WebHook& WebHook::operator=(nlohmann::json* jsonObjectData) {
@@ -239,7 +241,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.avatar.size() > 0) {
 			responseData.update({ { "avatar", dataPackage.avatar } });
 		}
-		workload.content = responseData.dump();
+		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
 
@@ -294,7 +297,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.channelId != 0) {
 			responseData.update({ { "channel_id", std::to_string(dataPackage.channelId) } });
 		}
-		workload.content = responseData.dump();
+		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		workload.callStack = "WebHooks::modifyWebHookAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
@@ -314,7 +318,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.channelId != 0) {
 			responseData.update({ { "channel_id", std::to_string(dataPackage.channelId) } });
 		}
-		workload.content = responseData.dump();
+		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		workload.callStack = "WebHooks::modifyWebHookWithTokenAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}

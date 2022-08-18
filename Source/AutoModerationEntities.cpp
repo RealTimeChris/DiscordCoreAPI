@@ -45,7 +45,8 @@ namespace DiscordCoreAPI {
 		data["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
 		data["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
 		data["trigger_type"] = this->triggerType;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	AutoModerationActionExecutionEventData& AutoModerationActionExecutionEventData::operator=(nlohmann::json* jsonObjectData) {
@@ -80,7 +81,8 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		data["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
 		data["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	AutoModerationRule& AutoModerationRule::operator=(nlohmann::json* jsonObjectData) {

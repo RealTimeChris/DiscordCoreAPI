@@ -358,10 +358,12 @@ namespace DiscordCoreAPI {
 		if (this != &other && other.theString) {
 			std::stringstream theStringNew{};
 			theStringNew << other.theString;
-			this->theString = std::make_unique<char[]>(theStringNew.str().size());
+			auto theLength = theStringNew.str().size();
+			this->theString = std::make_unique<char[]>(theLength + 1);
 			for (uint32_t x = 0; x < theStringNew.str().size(); ++x) {
 				this->theString[x] = theStringNew.str()[x];
 			}
+			this->theString[theLength] = '\0';
 		}
 		return *this;
 	}
@@ -370,14 +372,16 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	AvatarUrl& AvatarUrl::operator=(AvatarUrl&other) {
+	AvatarUrl& AvatarUrl::operator=(AvatarUrl& other) {
 		if (this != &other && other.theString) {
 			std::stringstream theStringNew{};
 			theStringNew << other.theString;
-			this->theString = std::make_unique<char[]>(theStringNew.str().size());
+			auto theLength = theStringNew.str().size();
+			this->theString = std::make_unique<char[]>(theLength + 1);
 			for (uint32_t x = 0; x < theStringNew.str().size(); ++x) {
 				this->theString[x] = theStringNew.str()[x];
 			}
+			this->theString[theLength] = '\0';
 		}
 		return *this;
 	}
@@ -394,10 +398,12 @@ namespace DiscordCoreAPI {
 		} else {
 			theStringNew += "avatars/" + std::to_string(userId) + "/" + other;
 		}
-		this->theString = std::make_unique<char[]>(theStringNew.size());
+		auto theLength = theStringNew.size();
+		this->theString = std::make_unique<char[]>(theLength + 1);
 		for (uint32_t x = 0; x < theStringNew.size(); ++x) {
 			this->theString[x] = theStringNew[x];
 		}
+		this->theString[theLength] = '\0';
 	}
 
 	AvatarUrl::operator std::string() {
@@ -788,7 +794,7 @@ namespace DiscordCoreAPI {
 		permissions |= allow;
 		uint32_t theIndex{};
 		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.id){
+			if (channel.permissionOverwrites[x].id == guildMember.id) {
 				OverWriteData currentOverWrites = channel.permissionOverwrites[x];
 				permissions &= ~currentOverWrites.deny;
 				permissions |= currentOverWrites.allow;
@@ -887,7 +893,7 @@ namespace DiscordCoreAPI {
 
 		content += "\r\nContent-Type: application/json\r\nContent-Disposition: form-data; "
 				   "name=\"payload_json\"\r\n\r\n";
-		content += theData.dump() + "\r\n";
+		content += theData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + "\r\n";
 		if (files.size() == 1) {
 			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
 			content += files[0].data;

@@ -66,7 +66,8 @@ namespace DiscordCoreAPI {
 		if (this->afkChannelId != 0) {
 			data["afk_channel_id"] = this->afkChannelId;
 		}
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	CreateGuildBanData::operator std::string() {
@@ -74,7 +75,8 @@ namespace DiscordCoreAPI {
 		if (this->deleteMessageDays != 0) {
 			data["delete_message_days"] = this->deleteMessageDays;
 		}
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	BeginGuildPruneData::operator std::string() {
@@ -82,7 +84,8 @@ namespace DiscordCoreAPI {
 		data["compute_prune_count"] = this->computePruneCount;
 		data["include_roles"] = this->includeRoles;
 		data["days"] = this->days;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	ModifyGuildWelcomeScreenData::operator std::string() {
@@ -101,7 +104,8 @@ namespace DiscordCoreAPI {
 		data["description"] = this->description;
 		data["welcome_channels"] = channelsArray;
 		data["enabled"] = this->enabled;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute, StreamType streamTypeNew,
@@ -319,7 +323,8 @@ namespace DiscordCoreAPI {
 		if (this->ownerId != 0) {
 			data["owner_id"] = std::to_string(this->ownerId);
 		}
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
@@ -602,7 +607,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/widget";
 		nlohmann::json responseData = { { "channel_id", std::to_string(dataPackage.widgetData.channelId) }, { "enabled", dataPackage.widgetData.enabled } };
-		workload.content = responseData.dump();
+		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 		workload.callStack = "Guilds::modifyGuildWidgetAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -696,7 +701,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/templates/" + dataPackage.templateCode;
 		nlohmann::json responseData = { { "name", dataPackage.name }, { "icon", dataPackage.imageData } };
-		workload.content = responseData.dump();
+		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		workload.callStack = "Guilds::createGuildFromGuildTemplateAsync()";
 		auto newGuild = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
 		newGuild.discordCoreClient = Guilds::discordCoreClient;
@@ -718,7 +724,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/templates";
 		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name } };
-		workload.content = responseData.dump();
+		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		workload.callStack = "Guilds::createGuildTemplateAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(workload);
 	}
@@ -738,7 +745,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/templates/" + dataPackage.templateCode;
 		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name } };
-		workload.content = responseData.dump();
+		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		workload.callStack = "Guilds::modifyGuildTemplateAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(workload);
 	}

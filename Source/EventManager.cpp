@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnChannelDeletionData::OnChannelDeletionData(std::unique_ptr<ChannelData>oldChannel) {
+	OnChannelDeletionData::OnChannelDeletionData(std::unique_ptr<ChannelData> oldChannel) {
 		this->channel = std::move(oldChannel);
 	}
 
@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnGuildUpdateData::OnGuildUpdateData(GuildData* guildNew,DiscordCoreClient* theClient) {
+	OnGuildUpdateData::OnGuildUpdateData(GuildData* guildNew, DiscordCoreClient* theClient) {
 		this->guild = guildNew;
 		this->guild->discordCoreClient = theClient;
 	}
@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnGuildDeletionData::OnGuildDeletionData(std::unique_ptr<GuildData>theGuild) {
+	OnGuildDeletionData::OnGuildDeletionData(std::unique_ptr<GuildData> theGuild) {
 		this->guild = std::move(theGuild);
 	}
 
@@ -162,7 +162,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnGuildMemberAddData::OnGuildMemberAddData(GuildMemberData*guildMemberNew, DiscordCoreClient*theClient) {
+	OnGuildMemberAddData::OnGuildMemberAddData(GuildMemberData* guildMemberNew, DiscordCoreClient* theClient) {
 		this->discordCoreClient = theClient;
 		this->guildMember = guildMemberNew;
 	}
@@ -209,7 +209,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnGuildMemberRemoveData::OnGuildMemberRemoveData(std::unique_ptr<UserData>theUser, DiscordCoreClient*theClient, Snowflake guildIdNew) {
+	OnGuildMemberRemoveData::OnGuildMemberRemoveData(std::unique_ptr<UserData> theUser, DiscordCoreClient* theClient, Snowflake guildIdNew) {
 		this->discordCoreClient = theClient;
 		this->user = std::move(theUser);
 		this->guildId = guildIdNew;
@@ -264,7 +264,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnRoleUpdateData::OnRoleUpdateData(RoleData*roleNew, Snowflake guildIdNew) {
+	OnRoleUpdateData::OnRoleUpdateData(RoleData* roleNew, Snowflake guildIdNew) {
 		this->guildId = guildIdNew;
 		this->role = roleNew;
 	}
@@ -317,7 +317,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnUserUpdateData::OnUserUpdateData(UserData* userNew) {
-		this->user= userNew;
+		this->user = userNew;
 	}
 
 	OnUserUpdateData& OnUserUpdateData::operator=(const OnUserUpdateData& other) {

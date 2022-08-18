@@ -52,6 +52,8 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class HttpsClient;
 
+		HttpsRnRBuilder(bool doWePrintErrorMessages);
+
 		void updateRateLimitData(RateLimitData& theConnection, std::unordered_map<std::string, std::string>& headers);
 
 		HttpsResponseData finalizeReturnValues(HttpsResponseData& theData, RateLimitData& rateLimitData);
@@ -65,6 +67,7 @@ namespace DiscordCoreInternal {
 		virtual ~HttpsRnRBuilder() = default;
 
 	  protected:
+		bool doWePrintErrorMessages{ false };
 		bool doWeHaveContentSize{ false };
 		bool doWeHaveHeaders{ false };
 		bool isItChunked{ false };
@@ -102,6 +105,8 @@ namespace DiscordCoreInternal {
 		std::string currentBaseUrl{};
 		bool doWeConnect{ true };
 
+		HttpsConnection(bool doWePrintErrorMessages);
+
 		void disconnect(bool) noexcept;
 
 		void resetValues();
@@ -111,6 +116,8 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpsConnectionManager {
 	  public:
+		HttpsConnectionManager(DiscordCoreAPI::ConfigManager*);
+
 		std::unordered_map<std::string, std::unique_ptr<RateLimitData>>& getRateLimitValues();
 
 		std::unordered_map<HttpsWorkloadType, std::string>& getRateLimitValueBuckets();
@@ -123,6 +130,7 @@ namespace DiscordCoreInternal {
 		std::unordered_map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
 		std::unordered_map<int64_t, std::unique_ptr<HttpsConnection>> httpsConnections{};
 		std::unordered_map<HttpsWorkloadType, std::string> rateLimitValueBuckets{};
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		int64_t currentIndex{};
 		std::mutex theMutex{};
 	};
@@ -159,7 +167,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		HttpsConnectionManager connectionManager{};
+		HttpsConnectionManager connectionManager{ nullptr };
 
 		HttpsResponseData executeByRateLimitData(const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
 

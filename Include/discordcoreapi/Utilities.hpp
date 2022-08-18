@@ -549,19 +549,19 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json* jsonData, const char* keyname);
-	
+
 	DiscordCoreAPI_Dll uint16_t getUint16(nlohmann::json* jsonData, const char* keyname);
-	
+
 	DiscordCoreAPI_Dll uint32_t getUint32(nlohmann::json* jsonData, const char* keyname);
-	
+
 	DiscordCoreAPI_Dll uint64_t getUint64(nlohmann::json* jsonData, const char* keyname);
-	
+
 	DiscordCoreAPI_Dll bool getBool(nlohmann::json* jsonData, const char* keyname);
-	
+
 	DiscordCoreAPI_Dll std::string getString(nlohmann::json* jsonData, const char* keyname);
 
 	DiscordCoreAPI_Dll uint64_t strtoull(std::string&& theString);
-	
+
 	template<typename ReturnType> ReturnType fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
 		ReturnType theValue{};
 		std::istringstream theStream(string);
@@ -575,7 +575,7 @@ namespace DiscordCoreAPI {
 		return theStream.str();
 	}
 
-	struct DiscordCoreAPI_Dll IconHash {	
+	struct DiscordCoreAPI_Dll IconHash {
 		IconHash(uint64_t lowBits = 0, uint64_t highBits = 0);
 
 		IconHash(const IconHash&) = default;
@@ -599,7 +599,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll AvatarUrl : public IconHash {
 	  public:
-
 		AvatarUrl& operator=(const AvatarUrl&);
 
 		AvatarUrl(const AvatarUrl&);
@@ -639,9 +638,8 @@ namespace DiscordCoreAPI {
 		void convertTimeStampToTimeUnits(TimeFormat theFormatNew, std::string originalTimeStamp) {
 			try {
 				if (originalTimeStamp != "") {
-					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
-						stoi(originalTimeStamp.substr(8, 9)), stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)),
-						stoi(originalTimeStamp.substr(17, 18)), theFormatNew };
+					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)), stoi(originalTimeStamp.substr(8, 9)),
+						stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)), stoi(originalTimeStamp.substr(17, 18)), theFormatNew };
 					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) };
 				} else {
 					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch());
@@ -725,8 +723,7 @@ namespace DiscordCoreAPI {
 			this->getISO8601TimeStamp(theFormatNew);
 		}
 
-		std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd,
-			TimeFormat theFormatNew) {
+		std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd, TimeFormat theFormatNew) {
 			std::time_t result = std::time(nullptr);
 			int32_t secondsPerMinute{ 60 };
 			int32_t minutesPerHour{ 60 };
@@ -1209,6 +1206,7 @@ namespace DiscordCoreAPI {
 		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
 		void clearContents() {
 			std::unique_lock theLock{ this->accessMutex };
+			this->theQueue.clear();
 			this->theQueue = std::deque<ObjectType>{};
 		}
 

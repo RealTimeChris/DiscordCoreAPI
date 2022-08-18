@@ -36,7 +36,8 @@ namespace DiscordCoreAPI {
 		data["privacy_level"] = this->privacyLevel;
 		data["description"] = this->description;
 		data["name"] = this->name;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	ModifyGuildScheduledEventData::operator std::string() {
@@ -53,7 +54,8 @@ namespace DiscordCoreAPI {
 		data["privacy_level"] = this->privacyLevel;
 		data["description"] = this->description;
 		data["name"] = this->name;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	GuildScheduledEvent& GuildScheduledEvent::operator=(nlohmann::json* jsonObjectData) {

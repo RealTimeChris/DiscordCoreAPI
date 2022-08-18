@@ -138,8 +138,7 @@ namespace DiscordCoreAPI {
 			if (WebSocketSSLShard::inputBuffer.size() > 0) {
 				nlohmann::json payload = payload.parse(WebSocketSSLShard::inputBuffer.substr(offSet, length));
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << payload << reset() << endl
-						 << endl;
+					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << payload << reset() << endl << endl;
 				}
 				if (payload.contains("op") && !payload["op"].is_null()) {
 					switch (payload["op"].get<int32_t>()) {
@@ -482,7 +481,7 @@ namespace DiscordCoreAPI {
 						} else {
 							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Write_Only);
 						}
-						
+
 						this->audioData.data.clear();
 						this->audioData.sampleCount = 0;
 						this->audioData.type = AudioFrameType::Unset;
@@ -560,8 +559,8 @@ namespace DiscordCoreAPI {
 					theBuffer.decodedData.resize(23040);
 					std::unique_lock theLock00{ this->voiceUserMutex };
 					if (this->voiceUsers.contains(speakerSsrc)) {
-						auto sampleCount =
-							opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), static_cast<opus_int32>(theBuffer.theRawData.size()), theBuffer.decodedData.data(), 5760, 0);
+						auto sampleCount = opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), static_cast<opus_int32>(theBuffer.theRawData.size()),
+							theBuffer.decodedData.data(), 5760, 0);
 						if (sampleCount <= 0) {
 							std::cout << "Failed to decode user's voice payload." << std::endl;
 						} else {
@@ -668,8 +667,8 @@ namespace DiscordCoreAPI {
 				}
 				this->theWebSocketState.store(DiscordCoreInternal::WebSocketSSLShardState::Upgrading);
 				std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
-					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
-					generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
+					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + generateBase64EncodedKey() +
+					"\r\nSec-WebSocket-Version: 13\r\n\r\n";
 				this->shard[0] = 0;
 				this->shard[1] = 1;
 				if (!this->sendMessage(sendVector, true)) {
@@ -934,7 +933,7 @@ namespace DiscordCoreAPI {
 					std::unique_lock theLock00{ this->voiceUserMutex };
 					VoicePayload thePayload = value.thePayloads.front();
 					theLock00.unlock();
-					
+
 					if (value.thePayloads.size() > 0) {
 						value.thePayloads.pop();
 					}

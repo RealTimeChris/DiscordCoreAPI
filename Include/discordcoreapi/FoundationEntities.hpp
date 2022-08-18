@@ -846,7 +846,7 @@ namespace DiscordCoreAPI {
 		GuildMemberData(nlohmann::json* jsonObjectData) noexcept;
 
 		GuildMemberData& operator=(GuildMemberData&& jsonObjectData) noexcept;
-		
+
 		GuildMemberData(GuildMemberData&& jsonObjectData) noexcept;
 
 		GuildMemberData& operator=(const GuildMemberData& jsonObjectData) = default;
@@ -1023,13 +1023,13 @@ namespace DiscordCoreAPI {
 		RoleData() = default;
 
 		RoleData& operator=(nlohmann::json* jsonObjectData) noexcept;
-		
+
 		RoleData(nlohmann::json* jsonObjectData) noexcept;
 
 		RoleData& operator=(RoleData&& jsonObjectData) noexcept;
-		
+
 		RoleData(RoleData&& jsonObjectData) noexcept;
-		
+
 		RoleData& operator=(const RoleData& jsonObjectData) = default;
 
 		RoleData(const RoleData& jsonObjectData) = default;

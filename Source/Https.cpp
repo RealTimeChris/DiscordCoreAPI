@@ -26,6 +26,10 @@ namespace DiscordCoreInternal {
 
 	HttpError::HttpError(std::string theMessage) : std::runtime_error(theMessage){};
 
+	HttpsRnRBuilder::HttpsRnRBuilder(bool doWePrintErrorMessagesNew) {
+		this->doWePrintErrorMessages = doWePrintErrorMessagesNew;
+	}
+
 	void HttpsRnRBuilder::updateRateLimitData(RateLimitData& rateLimitData, std::unordered_map<std::string, std::string>& headersNew) {
 		if (headersNew.contains("x-ratelimit-bucket")) {
 			rateLimitData.bucket = headersNew["x-ratelimit-bucket"];
@@ -42,10 +46,16 @@ namespace DiscordCoreInternal {
 	};
 
 	HttpsResponseData HttpsRnRBuilder::finalizeReturnValues(HttpsResponseData& theData, RateLimitData& rateLimitData) {
-		if (theData.responseMessage.size() >= theData.contentSize && theData.contentSize > 0) {
-			if ((theData.responseMessage[0] == '{' && theData.responseMessage[theData.contentSize - 1] == '}') ||
-				(theData.responseMessage[0] == '[' && theData.responseMessage[theData.contentSize - 1] == ']')) {
-				theData.responseData = nlohmann::json::parse(theData.responseMessage.substr(0, theData.contentSize));
+		try {
+			if (theData.responseMessage.size() >= theData.contentSize && theData.contentSize > 0) {
+				if ((theData.responseMessage[0] == '{' && theData.responseMessage[theData.contentSize - 1] == '}') ||
+					(theData.responseMessage[0] == '[' && theData.responseMessage[theData.contentSize - 1] == ']')) {
+					theData.responseData = nlohmann::json::parse(theData.responseMessage.substr(0, theData.contentSize));
+				}
+			}
+		} catch (...) {
+			if (this->doWePrintErrorMessages) {
+				DiscordCoreAPI::reportException("HttpsRnRBuilder::finalizeReturnValues()");
 			}
 		}
 		this->updateRateLimitData(rateLimitData, theData.responseHeaders);
@@ -233,10 +243,12 @@ namespace DiscordCoreInternal {
 		other.erase(other.begin(), other.begin() + theCount);
 	}
 
+	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
+
 	void HttpsConnection::disconnect(bool) noexcept {
 		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			std::unique_lock theLock{ this->connectionMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
+			std::unique_lock theLock{ this->connectionMutex };
 			this->theSocket = SOCKET_ERROR;
 		}
 		this->resetValues();
@@ -270,8 +282,12 @@ namespace DiscordCoreInternal {
 			}
 		}
 		this->currentIndex++;
-		this->httpsConnections[this->currentIndex] = std::make_unique<HttpsConnection>();
+		this->httpsConnections[this->currentIndex] = std::make_unique<HttpsConnection>(this->configManager->doWePrintHttpsErrorMessages());
 		return this->httpsConnections[this->currentIndex].get();
+	}
+
+	HttpsConnectionManager::HttpsConnectionManager(DiscordCoreAPI::ConfigManager* configManagerNew) {
+		this->configManager = configManagerNew;
 	}
 
 	void HttpsConnectionManager::initialize() {
@@ -284,7 +300,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpsClient::HttpsClient(DiscordCoreAPI::ConfigManager* configManagerNew) : configManager(configManagerNew) {
+	HttpsClient::HttpsClient(DiscordCoreAPI::ConfigManager* configManagerNew) : configManager(configManagerNew), connectionManager(configManagerNew) {
 		this->connectionManager.initialize();
 	};
 
@@ -349,80 +365,87 @@ namespace DiscordCoreInternal {
 
 	HttpsResponseData HttpsClient::executeByRateLimitData(const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
 		HttpsResponseData returnData{};
-		int64_t timeRemaining{};
-		int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		if (workload.workloadType == HttpsWorkloadType::Delete_Message_Old) {
-			rateLimitData.msRemain.store(4000);
-		} else if (workload.workloadType == HttpsWorkloadType::Delete_Message || workload.workloadType == HttpsWorkloadType::Patch_Message) {
-			rateLimitData.areWeASpecialBucket.store(true);
-		}
-		if (rateLimitData.areWeASpecialBucket.load()) {
-			rateLimitData.msRemain.store(static_cast<int64_t>(ceil(5000.0f / 4.0f)));
-			int64_t targetTime = rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load();
-			timeRemaining = targetTime - currentTime;
-		} else if (rateLimitData.didWeHitRateLimit.load()) {
-			int64_t targetTime = rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load();
-			timeRemaining = targetTime - currentTime;
-			rateLimitData.didWeHitRateLimit.store(false);
-		} else if (rateLimitData.doWeWait.load()) {
-			int64_t targetTime = rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load();
-			timeRemaining = targetTime - currentTime;
-			rateLimitData.doWeWait.store(false);
-		}
-		if (timeRemaining > 0) {
-			if (this->configManager->doWePrintHttpsSuccessMessages()) {
-				cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << DiscordCoreAPI::reset() << endl << endl;
+		try {
+			int64_t timeRemaining{};
+			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			if (workload.workloadType == HttpsWorkloadType::Delete_Message_Old) {
+				rateLimitData.msRemain.store(4000);
+			} else if (workload.workloadType == HttpsWorkloadType::Delete_Message || workload.workloadType == HttpsWorkloadType::Patch_Message) {
+				rateLimitData.areWeASpecialBucket.store(true);
 			}
-			int64_t targetTime = currentTime + timeRemaining;
-			while (targetTime > currentTime) {
-				currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			if (rateLimitData.areWeASpecialBucket.load()) {
+				rateLimitData.msRemain.store(static_cast<int64_t>(ceil(5000.0f / 4.0f)));
+				int64_t targetTime = rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load();
 				timeRemaining = targetTime - currentTime;
-				if (timeRemaining <= 20) {
-				} else {
-					std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(ceil(static_cast<float>(timeRemaining) * 80.0f / 100.0f)) });
+			} else if (rateLimitData.didWeHitRateLimit.load()) {
+				int64_t targetTime = rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load();
+				timeRemaining = targetTime - currentTime;
+				rateLimitData.didWeHitRateLimit.store(false);
+			} else if (rateLimitData.doWeWait.load()) {
+				int64_t targetTime = rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load();
+				timeRemaining = targetTime - currentTime;
+				rateLimitData.doWeWait.store(false);
+			}
+			if (timeRemaining > 0) {
+				if (this->configManager->doWePrintHttpsSuccessMessages()) {
+					cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << DiscordCoreAPI::reset() << endl << endl;
+				}
+				int64_t targetTime = currentTime + timeRemaining;
+				while (targetTime > currentTime) {
+					currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+					timeRemaining = targetTime - currentTime;
+					if (timeRemaining <= 20) {
+					} else {
+						std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(ceil(static_cast<float>(timeRemaining) * 80.0f / 100.0f)) });
+					}
 				}
 			}
-		}
-		auto httpsConnection = this->connectionManager.getConnection();
-		returnData = HttpsClient::httpRequestInternal(*httpsConnection, workload, rateLimitData);
-		httpsConnection->areWeCheckedOut.store(false);
-		rateLimitData.sampledTimeInMs.store(
-			static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
+			auto httpsConnection = this->connectionManager.getConnection();
+			returnData = HttpsClient::httpRequestInternal(*httpsConnection, workload, rateLimitData);
+			httpsConnection->areWeCheckedOut.store(false);
+			rateLimitData.sampledTimeInMs.store(
+				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 
-		if (rateLimitData.tempBucket != "") {
-			rateLimitData.tempBucket = "";
-		}
-		std::string currentBucket = rateLimitData.bucket;
-		if (!this->connectionManager.getRateLimitValues().contains(rateLimitData.bucket)) {
-			std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
-			this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].swap(rateLimitData);
-			this->connectionManager.getRateLimitValueBuckets()[workload.workloadType] = currentBucket;
-			this->connectionManager.getRateLimitValues()[currentBucket] = std::move(rateLimitData);
-		}
-		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
-			if (this->configManager->doWePrintHttpsSuccessMessages()) {
-				cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage
-					 << DiscordCoreAPI::reset() << endl
-					 << endl;
+			if (rateLimitData.tempBucket != "") {
+				rateLimitData.tempBucket = "";
 			}
-		} else {
-			if (returnData.responseCode == 429) {
-				if (returnData.responseMessage.size() > 0 && nlohmann::json::parse(returnData.responseMessage).contains("retry_after")) {
-					rateLimitData.msRemain.store(static_cast<int64_t>(ceil(nlohmann::json::parse(returnData.responseMessage)["retry_after"].get<double>())) * 1000);
-				}
-				rateLimitData.didWeHitRateLimit.store(true);
-				rateLimitData.sampledTimeInMs.store(
-					static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
-				if (this->configManager->doWePrintHttpsErrorMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
-						 << std::to_string(this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]]->msRemain)
+			std::string currentBucket = rateLimitData.bucket;
+			if (!this->connectionManager.getRateLimitValues().contains(rateLimitData.bucket)) {
+				std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
+				this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].swap(rateLimitData);
+				this->connectionManager.getRateLimitValueBuckets()[workload.workloadType] = currentBucket;
+				this->connectionManager.getRateLimitValues()[currentBucket] = std::move(rateLimitData);
+			}
+			if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
+				if (this->configManager->doWePrintHttpsSuccessMessages()) {
+					cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << returnData.responseCode << ", " << returnData.responseMessage
 						 << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
-				returnData = this->executeByRateLimitData(workload, rateLimitData);
+			} else {
+				if (returnData.responseCode == 429) {
+					if (returnData.responseMessage.size() > 0 && nlohmann::json::parse(returnData.responseMessage).contains("retry_after")) {
+						rateLimitData.msRemain.store(static_cast<int64_t>(ceil(nlohmann::json::parse(returnData.responseMessage)["retry_after"].get<double>())) * 1000);
+					}
+					rateLimitData.didWeHitRateLimit.store(true);
+					rateLimitData.sampledTimeInMs.store(
+						static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
+					if (this->configManager->doWePrintHttpsErrorMessages()) {
+						cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpRequest(), We've hit rate limit! Time Remaining: "
+							 << std::to_string(this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]]->msRemain)
+							 << DiscordCoreAPI::reset() << endl
+							 << endl;
+					}
+					returnData = this->executeByRateLimitData(workload, rateLimitData);
+				}
 			}
+			return returnData;
+		} catch (...) {
+			if (this->configManager->doWePrintHttpsErrorMessages()) {
+				DiscordCoreAPI::reportException("HttpsClient::executeByRateLimitData()");
+			}
+			return returnData;
 		}
-		return returnData;
 	}
 
 	HttpsResponseData HttpsClient::httpRequestInternal(HttpsConnection& httpsConnection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {

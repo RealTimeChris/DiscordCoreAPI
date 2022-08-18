@@ -76,7 +76,8 @@ namespace DiscordCoreAPI {
 		}
 		data["flags"] = this->flags;
 		data["tts"] = this->tts;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	SendDMData::SendDMData(RespondToInputEventData dataPackage) {
@@ -135,13 +136,15 @@ namespace DiscordCoreAPI {
 			data["content"] = this->content;
 		}
 		data["flags"] = this->flags;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	DeleteMessagesBulkData::operator std::string() {
 		nlohmann::json data{};
 		data["messages"] = this->messageIds;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	Message& Message::operator=(nlohmann::json* jsonObjectData) {

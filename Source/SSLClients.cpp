@@ -62,7 +62,6 @@ namespace DiscordCoreInternal {
 	WSADataWrapper::WSADataWrapper() {
 		auto returnValue = WSAStartup(MAKEWORD(2, 2), this->thePtr.get());
 		if (returnValue) {
-
 		}
 	}
 #endif
@@ -128,7 +127,7 @@ namespace DiscordCoreInternal {
 	SOCKETWrapper::operator SOCKET() {
 		return *this->thePtr;
 	}
-	
+
 	sockaddr* sockaddrWrapper::operator->() {
 		return reinterpret_cast<sockaddr*>(&this->thePtr);
 	}
@@ -229,7 +228,7 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
-		
+
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
 			return false;
 		}
@@ -485,8 +484,8 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 
-				int32_t writtenBytes =
-					sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0, this->theStreamTargetAddress, sizeof(this->theStreamTargetAddress));
+				int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0, this->theStreamTargetAddress,
+					sizeof(this->theStreamTargetAddress));
 #ifdef _WIN32
 				int32_t intSize = sizeof(this->theStreamTargetAddress);
 #else
@@ -502,8 +501,8 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-		
-	this->areWeStreamConnected = true;
+
+		this->areWeStreamConnected = true;
 
 #ifdef _WIN32
 		u_long value02{ 1 };

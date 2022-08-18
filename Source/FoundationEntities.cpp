@@ -531,7 +531,7 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 	}
-	
+
 
 	OverWriteData& OverWriteData::operator=(nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
@@ -2088,7 +2088,8 @@ namespace DiscordCoreAPI {
 		data["data"]["flags"] = this->data.flags;
 		data["data"]["tts"] = this->data.tts;
 		data["type"] = this->type;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	Song& Song::operator=(nlohmann::json* jsonObjectData) {

@@ -30,7 +30,8 @@ namespace DiscordCoreAPI {
 		data["deaf"] = this->deaf;
 		data["mute"] = this->mute;
 		data["nick"] = this->nick;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	ModifyGuildMemberData::operator std::string() {
@@ -51,7 +52,8 @@ namespace DiscordCoreAPI {
 			data["mute"] = this->mute;
 			data["deaf"] = this->deaf;
 		}
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	void GuildMemberData::insertUser(std::unique_ptr<UserData> theUser) {
@@ -202,7 +204,8 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/@me";
-		workload.content = nlohmann::json{ { "nick", dataPackage.nick } }.dump();
+		workload.content = nlohmann::json{ { "nick", dataPackage.nick } }.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		workload.callStack = "GuildMembers::modifyCurrentGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

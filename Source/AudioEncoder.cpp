@@ -38,7 +38,8 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	OpusEncoderWrapper::OpusEncoderWrapper() noexcept {}
+	OpusEncoderWrapper::OpusEncoderWrapper() noexcept {
+	}
 
 	OpusEncoderWrapper::operator OpusEncoder*() noexcept {
 		return this->thePtr.get();

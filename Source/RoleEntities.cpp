@@ -39,7 +39,8 @@ namespace DiscordCoreAPI {
 		if (this->unicodeEmoji.size() > 0) {
 			data["unicode_emoji"] = this->unicodeEmoji;
 		}
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	ModifyGuildRolePositionsData::operator std::string() {
@@ -50,7 +51,8 @@ namespace DiscordCoreAPI {
 			data["id"] = std::to_string(value.roleId);
 			dataArray.emplace_back(data);
 		}
-		return dataArray.dump();
+		return dataArray.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	ModifyGuildRoleData::operator std::string() {
@@ -70,7 +72,8 @@ namespace DiscordCoreAPI {
 		if (this->unicodeEmoji.size() > 0) {
 			data["unicode_emoji"] = this->unicodeEmoji;
 		}
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	Role& Role::operator=(RoleData&& other) {
@@ -312,7 +315,7 @@ namespace DiscordCoreAPI {
 		std::unique_lock theLock{ Roles::theMutex };
 		Roles::cache.erase(roleId);
 	};
-	
+
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
 	std::map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
 	ConfigManager* Roles::configManager{ nullptr };

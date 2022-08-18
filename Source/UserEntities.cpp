@@ -27,7 +27,8 @@ namespace DiscordCoreAPI {
 		nlohmann::json data{};
 		data["access_token"] = this->token;
 		data["nick"] = this->nick;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	User& User::operator=(UserData&& other) {
@@ -189,10 +190,12 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Users::modifyCurrentUserAsync()";
 		if (dataPackage.avatar.size() > 0) {
 			nlohmann::json responseData = { { "avatar", dataPackage.avatar }, { "userName", dataPackage.userName } };
-			workload.content = responseData.dump();
+			workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			;
 		} else {
 			nlohmann::json responseData = { { "userName", dataPackage.userName } };
-			workload.content = responseData.dump();
+			workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			;
 		}
 		co_return Users::httpsClient->submitWorkloadAndGetResult<User>(workload);
 	}

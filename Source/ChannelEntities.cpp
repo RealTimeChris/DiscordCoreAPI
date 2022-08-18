@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
 		data["allow"] = this->allow;
 		data["deny"] = this->deny;
 		data["type"] = this->type;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 	}
 
 	CreateChannelInviteData::operator std::string() {
@@ -41,13 +41,13 @@ namespace DiscordCoreAPI {
 		data["max_uses"] = this->maxUses;
 		data["max_age"] = this->maxAge;
 		data["unique"] = this->unique;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 	}
 
 	FollowNewsChannelData::operator std::string() {
 		nlohmann::json data{};
 		data["webhook_channel_id"] = std::to_string(this->targetChannelId);
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 	}
 
 	CreateGuildChannelData::operator std::string() {
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		data["nsfw"] = this->nsfw;
 		data["type"] = this->type;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 	}
 
 	ModifyGuildChannelPositionsData::operator std::string() {
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 			dataNew["id"] = std::to_string(value.id);
 			data.emplace_back(dataNew);
 		}
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 	}
 
 	Channel& Channel::operator=(nlohmann::json* jsonObjectData) {
@@ -193,7 +193,7 @@ namespace DiscordCoreAPI {
 		data["name"] = std::string{ this->channelData.name };
 		data["type"] = this->channelData.type;
 		data["permission_overwrites"] = permOws;
-		return data.dump();
+		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 	}
 
 	void Channels::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
@@ -362,7 +362,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/users/@me/channels";
 		workload.callStack = "Channels::createDMChannelAsync()";
 		nlohmann::json theValue = { { "recipient_id", dataPackage.userId } };
-		workload.content = theValue.dump();
+		workload.content = theValue.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 	}
 
