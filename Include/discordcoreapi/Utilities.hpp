@@ -602,12 +602,19 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll UserAvatar : public IconHash {
+		friend class GuildMemberData;
+		friend class InputEventData;
+		friend class GuildMember;
+		friend class UserData;
+		friend class User;
+
 		UserAvatar() = default;
 
 		UserAvatar& operator=(std::string&&);
 
 		UserAvatar(std::string&&);
 
+	  protected:
 		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 
@@ -622,32 +629,44 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll GuildMemberAvatar : public IconHash {
+		friend class GuildMemberData;
+		friend class GuildMember;
+
 		GuildMemberAvatar() = default;
 
 		GuildMemberAvatar& operator=(std::string&&);
 
 		GuildMemberAvatar(std::string&&);
 
+	  protected:
 		std::string getHashUrl(Snowflake guildMemberId, Snowflake guildId) noexcept;
 	};
 
 	struct DiscordCoreAPI_Dll GuildIcon : public IconHash {
+		friend class GuildData;
+		friend class Guild;
+
 		GuildIcon() = default;
 
 		GuildIcon& operator=(std::string&&);
 
 		GuildIcon(std::string&&);
 
+	  protected:
 		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 
 	struct DiscordCoreAPI_Dll GuildSplash : public IconHash {
+		friend class GuildData;
+		friend class Guild;
+
 		GuildSplash() = default;
 
 		GuildSplash& operator=(std::string&&);
 
 		GuildSplash(std::string&&);
 
+	  protected:
 		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 

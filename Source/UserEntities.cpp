@@ -106,10 +106,6 @@ namespace DiscordCoreAPI {
 		this->baseSocketAgent = baseSocketAgentNew;
 	}
 
-	std::string BotUser::getAvatarUrl() {
-		return this->avatar.getHashUrl(this->id, 0);
-	}
-
 	void Users::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
 		Users::configManager = configManagerNew;
 		Users::httpsClient = theClient;

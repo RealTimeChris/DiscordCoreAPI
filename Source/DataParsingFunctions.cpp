@@ -2752,6 +2752,7 @@ namespace DiscordCoreAPI {
 			this->members.clear();
 			this->members.reserve((*jsonObjectData)["members"].size());
 			for (auto& value: (*jsonObjectData)["members"]) {
+				value.emplace("guild_id", std::to_string(this->id));
 				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(&value) };
 				newData->guildId = this->id;
 				this->members.push_back(newData->id);

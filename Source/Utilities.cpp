@@ -351,7 +351,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string UserAvatar::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
-		if (idOne == 0) {
+		if (idOne == 0 || this->highBits == 0 || this->lowBits == 0) {
 			return {};
 		} else {
 			std::string theStringNew{ "https://cdn.discordapp.com/" };
@@ -371,7 +371,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string GuildMemberAvatar::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
-		if (idOne == 0 || idTwo == 0) {
+		if (idOne == 0 || idTwo == 0 || this->highBits == 0 || this->lowBits == 0) {
 			return {};
 		} else {
 			std::string theStringNew{ "https://cdn.discordapp.com/" };
@@ -391,7 +391,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string GuildIcon::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
-		if (idOne == 0) {
+		if (idOne == 0 || this->highBits == 0 || this->lowBits == 0) {
 			return {};
 		} else {
 			std::string theStringNew{ "https://cdn.discordapp.com/" };
@@ -411,7 +411,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string ChannelIcon::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
-		if (idOne == 0) {
+		if (idOne == 0 || this->highBits == 0 || this->lowBits == 0) {
 			return {};
 		} else {
 			std::string theStringNew{ "https://cdn.discordapp.com/" };
@@ -431,7 +431,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string GuildBanner::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
-		if (idOne == 0) {
+		if (idOne == 0 || this->highBits == 0 || this->lowBits == 0) {
 			return {};
 		} else {
 			std::string theStringNew{ "https://cdn.discordapp.com/" };
@@ -451,7 +451,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string GuildDiscovery::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
-		if (idOne == 0) {
+		if (idOne == 0 || this->highBits == 0 || this->lowBits == 0) {
 			return {};
 		} else {
 			std::string theStringNew{ "https://cdn.discordapp.com/" };
@@ -471,7 +471,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string GuildSplash::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
-		if (idOne == 0 || idTwo == 0) {
+		if (idOne == 0 || idTwo == 0 || this->highBits == 0 || this->lowBits == 0) {
 			return {};
 		} else {
 			std::string theStringNew{ "https://cdn.discordapp.com/" };
