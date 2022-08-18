@@ -212,7 +212,6 @@ namespace DiscordCoreAPI {
 			theData = Channels::getCachedChannelAsync({ .channelId = dataPackage.channelId }).get();
 		}
 		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
-		Channels::insertChannel(std::make_unique<ChannelData>(theData));
 		co_return theData;
 	}
 
@@ -243,7 +242,6 @@ namespace DiscordCoreAPI {
 			theData = Channels::getCachedChannelAsync({ .channelId = dataPackage.channelId }).get();
 		}
 		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
-		Channels::insertChannel(std::make_unique<ChannelData>(theData));
 		co_return theData;
 	}
 
@@ -345,7 +343,6 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		auto channelNew = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
-		Channels::insertChannel(std::make_unique<Channel>(channelNew));
 		co_return channelNew;
 	}
 

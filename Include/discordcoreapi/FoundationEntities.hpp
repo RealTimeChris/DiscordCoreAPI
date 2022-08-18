@@ -2189,12 +2189,6 @@ namespace DiscordCoreAPI {
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
 			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
 
-		void insertGuildMember(std::unique_ptr<GuildMemberData> theData);
-
-		void insertChannel(std::unique_ptr<ChannelData> theData);
-
-		void insertRole(std::unique_ptr<RoleData> theData);
-
 		bool areWeConnected();
 
 		void initialize();

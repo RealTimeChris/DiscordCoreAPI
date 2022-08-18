@@ -180,18 +180,6 @@ namespace DiscordCoreAPI {
 		return this->icon.getHashUrl(this->id, 0);
 	}
 
-	void GuildData::insertChannel(std::unique_ptr<ChannelData> theData) {
-		Channels::insertChannel(std::move(theData));
-	}
-
-	void GuildData::insertRole(std::unique_ptr<RoleData> theData) {
-		Roles::insertRole(std::move(theData));
-	}
-
-	void GuildData::insertGuildMember(std::unique_ptr<GuildMemberData> theData) {
-		GuildMembers::insertGuildMember(std::move(theData));
-	}
-
 	void GuildData::initialize() {
 		if (!getVoiceConnectionMap().contains(this->id)) {
 			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };
@@ -382,7 +370,6 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Guilds::createGuildAsync()";
 		auto theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
 		theData.discordCoreClient = Guilds::discordCoreClient;
-		Guilds::insertGuild(std::make_unique<GuildData>(theData));
 		co_return theData;
 	}
 
@@ -409,7 +396,6 @@ namespace DiscordCoreAPI {
 		}
 		theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theData);
 		theData.discordCoreClient = Guilds::discordCoreClient;
-		Guilds::insertGuild(std::make_unique<GuildData>(theData));
 		co_return theData;
 	}
 
@@ -450,7 +436,6 @@ namespace DiscordCoreAPI {
 		}
 		theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theData);
 		theData.discordCoreClient = Guilds::discordCoreClient;
-		Guilds::insertGuild(std::make_unique<GuildData>(theData));
 		co_return theData;
 	}
 
@@ -460,7 +445,6 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId);
 		workload.callStack = "Guilds::deleteGuildAsync()";
-		Guilds::removeGuild(dataPackage.guildId);
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 

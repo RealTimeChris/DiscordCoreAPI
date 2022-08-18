@@ -186,13 +186,17 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		auto roleNew = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload);
-		Role result{ roleNew };
 		ModifyGuildRolePositionsData newDataPackage{};
 		newDataPackage.guildId = dataPackage.guildId;
 		newDataPackage.newPosition = dataPackage.position;
-		newDataPackage.roleId = result.id;
-		modifyGuildRolePositionsAsync(newDataPackage).get();
-		co_return result;
+		newDataPackage.roleId = roleNew.id;
+		auto results = modifyGuildRolePositionsAsync(newDataPackage).get();
+		for (auto& value: results) {
+			if (value.id == roleNew.id) {
+				roleNew = value;
+			}
+		}
+		co_return roleNew;
 	}
 
 	CoRoutine<std::vector<Role>> Roles::modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage) {
@@ -248,7 +252,6 @@ namespace DiscordCoreAPI {
 			theData = Roles::getCachedRoleAsync({ .guildId = dataPackage.guildId, .roleId = dataPackage.roleId }).get();
 		}
 		theData = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload, &theData);
-		Roles::insertRole(std::make_unique<RoleData>(theData));
 		co_return theData;
 	}
 
@@ -290,8 +293,6 @@ namespace DiscordCoreAPI {
 				newRole = value;
 			}
 		}
-
-		Roles::insertRole(std::make_unique<RoleData>(newRole));
 		co_return newRole;
 	}
 

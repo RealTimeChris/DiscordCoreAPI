@@ -148,7 +148,6 @@ namespace DiscordCoreAPI {
 		}
 		theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &theData);
 		theData.guildId = dataPackage.guildId;
-		GuildMembers::insertGuildMember(std::make_unique<GuildMemberData>(theData));
 		co_return theData;
 	}
 
@@ -243,7 +242,6 @@ namespace DiscordCoreAPI {
 		}
 		theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &theData);
 		theData.guildId = dataPackage.guildId;
-		GuildMembers::insertGuildMember(std::make_unique<GuildMemberData>(theData));
 		co_return theData;
 	}
 
@@ -260,7 +258,6 @@ namespace DiscordCoreAPI {
 		GuildMemberId theKey{};
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
-		GuildMembers::removeGuildMember(theKey);
 		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
