@@ -861,8 +861,6 @@ namespace DiscordCoreAPI {
 
 		GuildMemberData(GuildMemberData& jsonObjectData) = default;
 
-		void insertUser(std::unique_ptr<UserData> theUser);
-
 		std::string getAvatarUrl();
 
 		virtual ~GuildMemberData() = default;

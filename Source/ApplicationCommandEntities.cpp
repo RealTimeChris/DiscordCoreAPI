@@ -127,6 +127,19 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
+	ApplicationCommandVector::operator std::vector<ApplicationCommand>() {
+		return this->theApplicationCommands;
+	}
+
+	ApplicationCommandVector& ApplicationCommandVector::operator=(nlohmann::json* jsonObjectData) {
+		this->parseObject(jsonObjectData);
+		return *this;
+	}
+
+	ApplicationCommandVector::ApplicationCommandVector(nlohmann::json* jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
 	void ApplicationCommands::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		ApplicationCommands::httpsClient = theClient;
 	}
@@ -140,7 +153,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?with_localizations=true";
 		}
 		workload.callStack = "ApplicationCommands::getGlobalApplicationCommandsAsync()";
-		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<std::vector<ApplicationCommand>>(workload);
+		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommandVector>(workload);
 	}
 
 	CoRoutine<ApplicationCommand> ApplicationCommands::createGlobalApplicationCommandAsync(CreateGlobalApplicationCommandData dataPackage) {
@@ -243,7 +256,7 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?with_localizations=true";
 		}
 		workload.callStack = "ApplicationCommands::getGuildApplicationCommandsAsync()";
-		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<std::vector<ApplicationCommand>>(workload);
+		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommandVector>(workload);
 	}
 
 	CoRoutine<ApplicationCommand> ApplicationCommands::createGuildApplicationCommandAsync(CreateGuildApplicationCommandData dataPackage) {
@@ -336,7 +349,7 @@ namespace DiscordCoreAPI {
 		workload.content = dataNew.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 		;
 		workload.callStack = "ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync()";
-		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<std::vector<ApplicationCommand>>(workload);
+		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommandVector>(workload);
 	}
 
 	CoRoutine<std::vector<GuildApplicationCommandPermissionsData>> ApplicationCommands::getGuildApplicationCommandPermissionsAsync(

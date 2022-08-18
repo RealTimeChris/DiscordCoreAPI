@@ -139,7 +139,7 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpsClient(DiscordCoreAPI::ConfigManager* configManager);
 
-		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(const HttpsWorkloadData& workload) {
+		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(const HttpsWorkloadData& workload, ReturnType* theReturnValue = nullptr) {
 			workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com 1.0)";
 			if (workload.payloadType == PayloadType::Application_Json) {
@@ -155,8 +155,13 @@ namespace DiscordCoreInternal {
 				theError.errorCode = returnData.responseCode;
 				throw theError;
 			}
-			ReturnType returnObject{ &returnData.responseData };
-			return returnObject;
+			if (theReturnValue == nullptr) {
+				ReturnType theReturnValueNew{ &returnData.responseData };
+				return std::move(theReturnValueNew);
+			} else {
+				*theReturnValue = ReturnType{ &returnData.responseData };
+				return std::move(*theReturnValue);
+			}
 		}
 
 		template<std::same_as<void> Type> Type submitWorkloadAndGetResult(const HttpsWorkloadData& workload);

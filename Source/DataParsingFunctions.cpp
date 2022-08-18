@@ -98,6 +98,15 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void ApplicationCommandVector::parseObject(nlohmann::json* jsonObjectData) {
+		this->theApplicationCommands.reserve(jsonObjectData->size());
+		for (auto& value: *jsonObjectData) {
+			DiscordCoreAPI::ApplicationCommand newData{ &value };
+			this->theApplicationCommands.emplace_back(newData);
+		}
+		this->theApplicationCommands.shrink_to_fit();
+	}
+
 	void AutoModerationActionExecutionEventData::parseObject(nlohmann::json* jsonObjectData) {
 		if (jsonObjectData->contains("alert_system_message_id") && !(*jsonObjectData)["alert_system_message_id"].is_null()) {
 			this->alertSystemMessageId = stoull((*jsonObjectData)["alert_system_message_id"].get<std::string>());
@@ -627,7 +636,7 @@ namespace DiscordCoreAPI {
 			this->id = theUser->id;
 			this->userAvatar = theUser->avatar;
 			this->userName = theUser->userName;
-			this->insertUser(std::move(theUser));
+			Users::insertUser(std::move(theUser));
 		}
 
 		if (jsonObjectData->contains("pending") && !(*jsonObjectData)["pending"].is_null()) {
@@ -1643,7 +1652,7 @@ namespace DiscordCoreAPI {
 			this->id = theUser->id;
 			this->userAvatar = theUser->avatar;
 			this->userName = theUser->userName;
-			this->insertUser(std::move(theUser));
+			Users::insertUser(std::move(theUser));
 		}
 
 		if (jsonObjectData->contains("avatar") && !(*jsonObjectData)["avatar"].is_null()) {

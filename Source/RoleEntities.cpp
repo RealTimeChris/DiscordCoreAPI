@@ -243,7 +243,13 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload);
+		Role theData{};
+		if (Roles::cache.contains(dataPackage.roleId)) {
+			theData = Roles::getCachedRoleAsync({ .guildId = dataPackage.guildId, .roleId = dataPackage.roleId }).get();
+		}
+		theData = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload, &theData);
+		Roles::insertRole(std::make_unique<RoleData>(theData));
+		co_return theData;
 	}
 
 	CoRoutine<void> Roles::removeGuildRoleAsync(RemoveGuildRoleData dataPackage) {
@@ -284,7 +290,8 @@ namespace DiscordCoreAPI {
 				newRole = value;
 			}
 		}
-		newRole = Roles::getCachedRoleAsync(dataPackage).get();
+		
+		Roles::insertRole(std::make_unique<RoleData>(newRole));
 		co_return newRole;
 	}
 
@@ -294,7 +301,6 @@ namespace DiscordCoreAPI {
 		if (!Roles::cache.contains(dataPackage.roleId)) {
 			theLock.unlock();
 			auto theRole = Roles::getRoleAsync(dataPackage).get();
-			Roles::insertRole(std::make_unique<Role>(theRole));
 			co_return theRole;
 		} else {
 			co_return *Roles::cache[dataPackage.roleId];
@@ -307,13 +313,15 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Roles::configManager->doWeCacheRoles()) {
-			Roles::cache[role->id] = std::move(role);
+			Roles::cache.insert_or_assign(role->id, std::move(role));
 		}
 	}
 
 	void Roles::removeRole(const Snowflake roleId) {
 		std::unique_lock theLock{ Roles::theMutex };
-		Roles::cache.erase(roleId);
+		if (Roles::cache.contains(roleId)) {
+			Roles::cache.erase(roleId);
+		}
 	};
 
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };

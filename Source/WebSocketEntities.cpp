@@ -611,7 +611,7 @@ namespace DiscordCoreInternal {
 											for (auto& value: dataPackage->guild->members) {
 												theKey.guildMemberId = value;
 												DiscordCoreAPI::GuildMemberData* guildMember = DiscordCoreAPI::GuildMembers::cache[theKey].get();
-												DiscordCoreAPI::GuildMembers::removeGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(*guildMember));
+												DiscordCoreAPI::GuildMembers::removeGuildMember(theKey);
 											}
 											for (auto& value: dataPackage->guild->channels) {
 												DiscordCoreAPI::Channels::removeChannel(value);
@@ -707,7 +707,7 @@ namespace DiscordCoreInternal {
 											theKey.guildMemberId = userId;
 											theKey.guildId = guildId;
 											DiscordCoreAPI::GuildMemberData* guildMember = DiscordCoreAPI::GuildMembers::cache[theKey].get();
-											DiscordCoreAPI::GuildMembers::removeGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(*guildMember));
+											DiscordCoreAPI::GuildMembers::removeGuildMember(theKey);
 											DiscordCoreAPI::VoiceStateId theKey02{};
 											theKey02.guildMemberId = userId;
 											theKey02.guildId = guildId;

@@ -207,9 +207,13 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "Channels::getChannelAsync()";
-		Channel channel = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
-		channel = Channels::getCachedChannelAsync(dataPackage).get();
-		co_return channel;
+		Channel theData{};
+		if (Channels::cache.contains(dataPackage.channelId)) {
+			theData = Channels::getCachedChannelAsync({ .channelId = dataPackage.channelId }).get();
+		}
+		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
+		Channels::insertChannel(std::make_unique<ChannelData>(theData));
+		co_return theData;
 	}
 
 	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
@@ -218,7 +222,6 @@ namespace DiscordCoreAPI {
 		if (!Channels::cache.contains(dataPackage.channelId)) {
 			theLock.unlock();
 			auto theChannel = Channels::getChannelAsync(dataPackage).get();
-			Channels::insertChannel(std::make_unique<Channel>(theChannel));
 			co_return theChannel;
 		} else {
 			co_return *Channels::cache[dataPackage.channelId];
@@ -235,9 +238,13 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		auto channelNew = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
-		Channels::insertChannel(std::make_unique<Channel>(channelNew));
-		co_return channelNew;
+		Channel theData{};
+		if (Channels::cache.contains(dataPackage.channelId)) {
+			theData = Channels::getCachedChannelAsync({ .channelId = dataPackage.channelId }).get();
+		}
+		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
+		Channels::insertChannel(std::make_unique<ChannelData>(theData));
+		co_return theData;
 	}
 
 	CoRoutine<void> Channels::deleteOrCloseChannelAsync(DeleteOrCloseChannelData dataPackage) {
@@ -387,7 +394,9 @@ namespace DiscordCoreAPI {
 
 	void Channels::removeChannel(const Snowflake channelId) {
 		std::unique_lock theLock{ Channels::theMutex };
-		Channels::cache.erase(channelId);
+		if (Channels::cache.contains(channelId)) {
+			Channels::cache.erase(channelId);
+		}
 	};
 
 	std::map<Snowflake, std::unique_ptr<ChannelData>> Channels::cache{};

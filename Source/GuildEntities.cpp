@@ -380,10 +380,10 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds";
 		workload.content = dataPackage;
 		workload.callStack = "Guilds::createGuildAsync()";
-		auto guildNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
-		guildNew.discordCoreClient = Guilds::discordCoreClient;
-		Guilds::insertGuild(std::make_unique<GuildData>(guildNew));
-		co_return guildNew;
+		auto theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
+		theData.discordCoreClient = Guilds::discordCoreClient;
+		Guilds::insertGuild(std::make_unique<GuildData>(theData));
+		co_return theData;
 	}
 
 	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
@@ -403,10 +403,14 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "?with_counts=true";
 		workload.callStack = "Guilds::getGuildAsync()";
-		Guild guildNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
-		guildNew = Guilds::getCachedGuildAsync({ .guildId = dataPackage.guildId }).get();
-		guildNew.discordCoreClient = Guilds::discordCoreClient;
-		co_return guildNew;
+		Guild theData{};
+		if (Guilds::cache.contains(dataPackage.guildId)) {
+			theData = Guilds::getCachedGuildAsync({ .guildId = dataPackage.guildId }).get();
+		}
+		theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theData);
+		theData.discordCoreClient = Guilds::discordCoreClient;
+		Guilds::insertGuild(std::make_unique<GuildData>(theData));
+		co_return theData;
 	}
 
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
@@ -415,7 +419,6 @@ namespace DiscordCoreAPI {
 		if (!Guilds::cache.contains(dataPackage.guildId)) {
 			theLock.unlock();
 			auto guildNew = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
-			Guilds::insertGuild(std::make_unique<GuildData>(guildNew));
 			co_return guildNew;
 		} else {
 			co_return *Guilds::cache[dataPackage.guildId];
@@ -441,10 +444,14 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Guild guildNew = Guilds::getCachedGuildAsync({ .guildId = dataPackage.guildId }).get();
-		guildNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
-		guildNew.discordCoreClient = Guilds::discordCoreClient;
-		co_return guildNew;
+		Guild theData{};
+		if (Guilds::cache.contains(dataPackage.guildId)) {
+			theData = Guilds::getCachedGuildAsync({ .guildId = dataPackage.guildId }).get();
+		}
+		theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theData);
+		theData.discordCoreClient = Guilds::discordCoreClient;
+		Guilds::insertGuild(std::make_unique<GuildData>(theData));
+		co_return theData;
 	}
 
 	CoRoutine<void> Guilds::deleteGuildAsync(DeleteGuildData dataPackage) {
@@ -453,6 +460,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId);
 		workload.callStack = "Guilds::deleteGuildAsync()";
+		Guilds::removeGuild(dataPackage.guildId);
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
@@ -487,7 +495,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/bans/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Guilds::getGuildBanAsync()";
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<BanData>(workload);
+		BanData theData{};
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<BanData>(workload, &theData);
 	}
 
 	CoRoutine<void> Guilds::createGuildBanAsync(CreateGuildBanData dataPackage) {
@@ -541,6 +550,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+		GuildPruneCountData theData{};
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildPruneCountData>(workload);
 	}
 
@@ -856,7 +866,9 @@ namespace DiscordCoreAPI {
 
 	void Guilds::removeGuild(const Snowflake guildId) {
 		std::unique_lock theLock{ Guilds::theMutex };
-		Guilds::cache.erase(guildId);
+		if (Guilds::cache.contains(guildId)) {
+			Guilds::cache.erase(guildId);
+		}
 	};
 
 	std::map<VoiceStateId, std::unique_ptr<VoiceStateData>> Guilds::voiceStateCache{};

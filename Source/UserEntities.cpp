@@ -163,7 +163,6 @@ namespace DiscordCoreAPI {
 		if (!Users::cache.contains(dataPackage.userId)) {
 			theLock.unlock();
 			auto theUser = getUserAsync(dataPackage).get();
-			Users::insertUser(std::make_unique<UserData>(theUser));
 			co_return theUser;
 
 		} else {
@@ -177,9 +176,13 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Users::getUserAsync()";
-		User user = Users::httpsClient->submitWorkloadAndGetResult<User>(workload);
-		user = Users::getCachedUserAsync(dataPackage).get();
-		co_return user;
+		User theData{};
+		if (Users::cache.contains(dataPackage.userId)) {
+			theData = Users::getCachedUserAsync({ .userId = dataPackage.userId }).get();
+		}
+		theData = Users::httpsClient->submitWorkloadAndGetResult<User>(workload, &theData);
+		Users::insertUser(std::make_unique<UserData>(theData));
+		co_return theData;
 	}
 
 	CoRoutine<User> Users::modifyCurrentUserAsync(ModifyCurrentUserData dataPackage) {
@@ -195,7 +198,6 @@ namespace DiscordCoreAPI {
 		} else {
 			nlohmann::json responseData = { { "userName", dataPackage.userName } };
 			workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-			;
 		}
 		co_return Users::httpsClient->submitWorkloadAndGetResult<User>(workload);
 	}
@@ -233,7 +235,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Users::configManager->doWeCacheUsers()) {
-			Users::cache[user->id] = std::move(user);
+			Users::cache.insert_or_assign(user->id, std::move(user));
 		}
 	}
 
