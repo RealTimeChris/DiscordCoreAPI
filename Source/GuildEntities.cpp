@@ -111,9 +111,12 @@ namespace DiscordCoreAPI {
 			return this->voiceConnectionPtr;
 		} else if (guildMemberId != 0 || channelId != 0) {
 			Snowflake theChannelId{};
+			VoiceStateId theKey{};
+			theKey.guildId = this->id;
+			theKey.guildMemberId = guildMemberId;
 			if (guildMemberId != 0) {
-				if (this->voiceStates.contains(guildMemberId)) {
-					theChannelId = this->voiceStates[guildMemberId]->channelId;
+				if (Guilds::voiceStateCache.contains(theKey)) {
+					theChannelId = Guilds::voiceStateCache[theKey]->channelId;
 				}
 			} else {
 				theChannelId = channelId;
@@ -204,7 +207,6 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			this->voiceConnectionPtr = other.voiceConnectionPtr;
 			this->discordCoreClient = other.discordCoreClient;
-			this->voiceStates = std::move(other.voiceStates);
 			this->channels = std::move(other.channels);
 			this->joinedAt = std::move(other.joinedAt);
 			this->ownerId = std::move(other.ownerId);
@@ -227,7 +229,6 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			this->voiceConnectionPtr = other.voiceConnectionPtr;
 			this->discordCoreClient = other.discordCoreClient;
-			this->voiceStates = other.voiceStates;
 			this->memberCount = other.memberCount;
 			this->channels = other.channels;
 			this->joinedAt = other.joinedAt;

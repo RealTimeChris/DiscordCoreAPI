@@ -190,6 +190,8 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
+	using Snowflake = uint64_t;
 	using namespace std::literals;
 	using std::cout;
 	using std::endl;
@@ -593,6 +595,27 @@ namespace DiscordCoreAPI {
 	  protected:
 		uint64_t highBits{};
 		uint64_t lowBits{};
+	};
+
+	class DiscordCoreAPI_Dll AvatarUrl : public IconHash {
+	  public:
+
+		AvatarUrl& operator=(const AvatarUrl&);
+
+		AvatarUrl(const AvatarUrl&);
+
+		AvatarUrl& operator=(AvatarUrl&);
+
+		AvatarUrl(AvatarUrl&);
+
+		AvatarUrl() = default;
+
+		AvatarUrl(std::string& other, Snowflake userId, Snowflake guildId) noexcept;
+
+		operator std::string();
+
+	  protected:
+		std::unique_ptr<char[]> theString{};
 	};
 
 	template<typename TimeType>

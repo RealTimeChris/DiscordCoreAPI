@@ -319,9 +319,6 @@ namespace DiscordCoreAPI {
 		virtual ~DataParser() = default;
 	};
 
-	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
-	using Snowflake = uint64_t;
-
 	struct DiscordCoreAPI_Dll ConnectionPackage {
 		std::map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		int32_t currentReconnectTries{ 0 };
@@ -405,7 +402,7 @@ namespace DiscordCoreAPI {
 
 		StringWrapper discriminator{};///< The user's 4-digit discord-tag	identify.
 		StringWrapper userName{};///< The user's userName, not unique across the platform	identify.
-		IconHash avatar{};///< The user's avatar hash.
+		AvatarUrl avatar{};///< The user's avatar hash.
 		int32_t flags{};///< The public flags on a user' s account.
 
 		UserData() = default;
@@ -833,10 +830,11 @@ namespace DiscordCoreAPI {
 		friend class GuildData;
 
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
+		Snowflake currentVoiceChannel{};///< The currently held voice channel, if applicable.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		StringWrapper userName{};///< This GuildMember's UserName.
-		IconHash userAvatar{};///< This GuildMember's User Avatar.
+		AvatarUrl userAvatar{};///< This GuildMember's User Avatar.
 		StringWrapper nick{};///< Their nick/display name.
 		Snowflake guildId{};///< The current Guild's id.
 		int8_t flags{ 0 };///< GuildMember flags.
@@ -2146,7 +2144,6 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity, public DataParser<GuildData> {
 	  public:
-		std::unordered_map<Snowflake, VoiceStateData*> voiceStates{};///< Map of Guild-member voice-states.
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.

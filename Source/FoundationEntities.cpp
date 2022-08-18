@@ -490,6 +490,7 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
+		this->currentVoiceChannel = other.currentVoiceChannel;
 		this->userAvatar = std::move(other.userAvatar);
 		this->userName = std::move(other.userName);
 		this->joinedAt = std::move(other.joinedAt);
@@ -1011,7 +1012,6 @@ namespace DiscordCoreAPI {
 	GuildData& GuildData::operator=(GuildData&& other) noexcept {
 		this->voiceConnectionPtr = other.voiceConnectionPtr;
 		this->discordCoreClient = other.discordCoreClient;
-		this->voiceStates = std::move(other.voiceStates);
 		this->channels = std::move(other.channels);
 		this->joinedAt = std::move(other.joinedAt);
 		this->members = std::move(other.members);
