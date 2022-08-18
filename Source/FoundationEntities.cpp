@@ -494,17 +494,19 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
-		this->currentVoiceChannel = other.currentVoiceChannel;
-		this->userAvatar = std::move(other.userAvatar);
-		this->userName = std::move(other.userName);
-		this->joinedAt = std::move(other.joinedAt);
-		this->avatar = std::move(other.avatar);
-		this->permissions = other.permissions;
-		this->roles = std::move(other.roles);
-		this->nick = std::move(other.nick);
-		this->guildId = other.guildId;
-		this->flags = other.flags;
-		this->id = other.id;
+		if (this != &other) {
+			this->currentVoiceChannel = other.currentVoiceChannel;
+			this->userAvatar = std::move(other.userAvatar);
+			this->userName = std::move(other.userName);
+			this->joinedAt = std::move(other.joinedAt);
+			this->avatar = std::move(other.avatar);
+			this->permissions = other.permissions;
+			this->roles = std::move(other.roles);
+			this->nick = std::move(other.nick);
+			this->guildId = other.guildId;
+			this->flags = other.flags;
+			this->id = other.id;
+		}
 		return *this;
 	}
 
@@ -557,17 +559,19 @@ namespace DiscordCoreAPI {
 	}
 
 	ChannelData& ChannelData::operator=(ChannelData&& other) noexcept {
-		this->permissionOverwrites = std::move(other.permissionOverwrites);
-		this->parentId = std::move(other.parentId);
-		this->guildId = std::move(other.guildId);
-		this->ownerId = std::move(other.ownerId);
-		this->memberCount = other.memberCount;
-		this->topic = std::move(other.topic);
-		this->name = std::move(other.name);
-		this->position = other.position;
-		this->id = std::move(other.id);
-		this->flags = other.flags;
-		this->type = other.type;
+		if (this != &other) {
+			this->permissionOverwrites = std::move(other.permissionOverwrites);
+			this->parentId = std::move(other.parentId);
+			this->guildId = std::move(other.guildId);
+			this->ownerId = std::move(other.ownerId);
+			this->memberCount = other.memberCount;
+			this->topic = std::move(other.topic);
+			this->name = std::move(other.name);
+			this->position = other.position;
+			this->id = std::move(other.id);
+			this->flags = other.flags;
+			this->type = other.type;
+		}
 		return *this;
 	}
 
@@ -603,13 +607,15 @@ namespace DiscordCoreAPI {
 	}
 
 	RoleData& RoleData::operator=(RoleData&& other) noexcept {
-		this->unicodeEmoji = std::move(other.unicodeEmoji);
-		this->permissions = other.permissions;
-		this->name = std::move(other.name);
-		this->position = other.position;
-		this->color = other.color;
-		this->flags = other.flags;
-		this->id = other.id;
+		if (this != &other) {
+			this->unicodeEmoji = std::move(other.unicodeEmoji);
+			this->permissions = other.permissions;
+			this->name = std::move(other.name);
+			this->position = other.position;
+			this->color = other.color;
+			this->flags = other.flags;
+			this->id = other.id;
+		}
 		return *this;
 	}
 
@@ -1014,18 +1020,20 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildData& GuildData::operator=(GuildData&& other) noexcept {
-		this->voiceConnectionPtr = other.voiceConnectionPtr;
-		this->discordCoreClient = other.discordCoreClient;
-		this->channels = std::move(other.channels);
-		this->joinedAt = std::move(other.joinedAt);
-		this->members = std::move(other.members);
-		this->memberCount = other.memberCount;
-		this->roles = std::move(other.roles);
-		this->name = std::move(other.name);
-		this->icon = std::move(other.icon);
-		this->ownerId = other.ownerId;
-		this->flags = other.flags;
-		this->id = other.id;
+		if (this != &other) {
+			this->voiceConnectionPtr = other.voiceConnectionPtr;
+			this->discordCoreClient = other.discordCoreClient;
+			this->channels = std::move(other.channels);
+			this->joinedAt = std::move(other.joinedAt);
+			this->members = std::move(other.members);
+			this->memberCount = other.memberCount;
+			this->roles = std::move(other.roles);
+			this->name = std::move(other.name);
+			this->icon = std::move(other.icon);
+			this->ownerId = other.ownerId;
+			this->flags = other.flags;
+			this->id = other.id;
+		}
 		return *this;
 	}
 
