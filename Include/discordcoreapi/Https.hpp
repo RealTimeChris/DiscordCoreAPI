@@ -174,13 +174,11 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		HttpsConnectionManager connectionManager{ nullptr };
 
-		HttpsResponseData executeByRateLimitData(const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
-
 		HttpsResponseData httpRequestInternal(HttpsConnection& theConnection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
+
+		HttpsResponseData executeByRateLimitData(const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
 
 		HttpsResponseData getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData);
 	};
-
-
 
 }// namespace DiscordCoreInternal

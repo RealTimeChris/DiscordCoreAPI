@@ -340,25 +340,6 @@ namespace DiscordCoreInternal {
 		return returnValueReal;
 	}
 
-	std::string SSLClient::getInputBufferCopy() noexcept {
-		std::unique_lock theLock{ this->connectionMutex };
-		std::string theString = std::move(this->inputBuffer);
-		this->inputBuffer.clear();
-		return theString;
-	}
-
-	std::string& SSLClient::getInputBuffer() noexcept {
-		return this->inputBuffer;
-	}
-
-	bool SSLClient::areWeStillConnected() noexcept {
-		if (static_cast<SOCKET*>(this->theSocket) && this->theSocket != SOCKET_ERROR) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	ProcessIOResult SSLClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0) {
 			this->wantRead = false;
@@ -436,6 +417,25 @@ namespace DiscordCoreInternal {
 			}
 		} while (SSL_pending(this->ssl));
 		return returnValueReal;
+	}
+
+	std::string SSLClient::getInputBufferCopy() noexcept {
+		std::unique_lock theLock{ this->connectionMutex };
+		std::string theString = std::move(this->inputBuffer);
+		this->inputBuffer.clear();
+		return theString;
+	}
+
+	std::string& SSLClient::getInputBuffer() noexcept {
+		return this->inputBuffer;
+	}
+
+	bool SSLClient::areWeStillConnected() noexcept {
+		if (static_cast<SOCKET*>(this->theSocket) && this->theSocket != SOCKET_ERROR) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	int64_t SSLClient::getBytesRead() noexcept {

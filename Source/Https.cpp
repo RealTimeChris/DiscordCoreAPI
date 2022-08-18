@@ -264,6 +264,10 @@ namespace DiscordCoreInternal {
 		this->isItChunked = false;
 	}
 
+	HttpsConnectionManager::HttpsConnectionManager(DiscordCoreAPI::ConfigManager* configManagerNew) {
+		this->configManager = configManagerNew;
+	}
+
 	std::unordered_map<std::string, std::unique_ptr<RateLimitData>>& HttpsConnectionManager::getRateLimitValues() {
 		return this->rateLimitValues;
 	}
@@ -284,10 +288,6 @@ namespace DiscordCoreInternal {
 		this->currentIndex++;
 		this->httpsConnections[this->currentIndex] = std::make_unique<HttpsConnection>(this->configManager->doWePrintHttpsErrorMessages());
 		return this->httpsConnections[this->currentIndex].get();
-	}
-
-	HttpsConnectionManager::HttpsConnectionManager(DiscordCoreAPI::ConfigManager* configManagerNew) {
-		this->configManager = configManagerNew;
 	}
 
 	void HttpsConnectionManager::initialize() {
@@ -361,6 +361,56 @@ namespace DiscordCoreInternal {
 		HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->store(theValue + 1);
 		rateLimitData.theSemaphore.release();
 		return resultData;
+	}
+
+	HttpsResponseData HttpsClient::httpRequestInternal(HttpsConnection& httpsConnection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
+		try {
+			httpsConnection.resetValues();
+			if (httpsConnection.currentReconnectTries >= httpsConnection.maxReconnectTries) {
+				httpsConnection.currentReconnectTries = 0;
+				httpsConnection.disconnect(true);
+				return HttpsResponseData{};
+			}
+			if (workload.baseUrl != httpsConnection.currentBaseUrl || !httpsConnection.areWeStillConnected() || httpsConnection.doWeConnect) {
+				httpsConnection.currentBaseUrl = workload.baseUrl;
+				if (!httpsConnection.connect(workload.baseUrl, "443")) {
+					httpsConnection.currentReconnectTries++;
+					httpsConnection.doWeConnect = true;
+					return this->httpRequestInternal(httpsConnection, workload, rateLimitData);
+				}
+				httpsConnection.doWeConnect = false;
+			}
+			auto theRequest = httpsConnection.buildRequest(workload);
+			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
+			ProcessIOResult theResult{};
+			do {
+				if (theStopWatch.hasTimePassed()) {
+					break;
+				}
+				theResult = httpsConnection.writeData(theRequest, true);
+			} while (theResult == ProcessIOResult::Select_No_Return);
+			if (theResult != ProcessIOResult::No_Error) {
+				httpsConnection.currentReconnectTries++;
+				httpsConnection.doWeConnect = true;
+				return this->httpRequestInternal(httpsConnection, workload, rateLimitData);
+			};
+			auto result = this->getResponse(httpsConnection, rateLimitData);
+			if (result.responseCode == -1) {
+				httpsConnection.currentReconnectTries++;
+				httpsConnection.doWeConnect = true;
+				return this->httpRequestInternal(httpsConnection, workload, rateLimitData);
+			} else {
+				httpsConnection.currentReconnectTries = 0;
+				return result;
+			}
+		} catch (...) {
+			if (this->configManager->doWePrintHttpsErrorMessages()) {
+				DiscordCoreAPI::reportException(workload.callStack + "::HttpsClient::httpRequestInternal()");
+			}
+			httpsConnection.currentReconnectTries++;
+			httpsConnection.doWeConnect = true;
+			return this->httpRequestInternal(httpsConnection, workload, rateLimitData);
+		}
 	}
 
 	HttpsResponseData HttpsClient::executeByRateLimitData(const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
@@ -445,56 +495,6 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::reportException("HttpsClient::executeByRateLimitData()");
 			}
 			return returnData;
-		}
-	}
-
-	HttpsResponseData HttpsClient::httpRequestInternal(HttpsConnection& httpsConnection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
-		try {
-			httpsConnection.resetValues();
-			if (httpsConnection.currentReconnectTries >= httpsConnection.maxReconnectTries) {
-				httpsConnection.currentReconnectTries = 0;
-				httpsConnection.disconnect(true);
-				return HttpsResponseData{};
-			}
-			if (workload.baseUrl != httpsConnection.currentBaseUrl || !httpsConnection.areWeStillConnected() || httpsConnection.doWeConnect) {
-				httpsConnection.currentBaseUrl = workload.baseUrl;
-				if (!httpsConnection.connect(workload.baseUrl, "443")) {
-					httpsConnection.currentReconnectTries++;
-					httpsConnection.doWeConnect = true;
-					return this->httpRequestInternal(httpsConnection, workload, rateLimitData);
-				}
-				httpsConnection.doWeConnect = false;
-			}
-			auto theRequest = httpsConnection.buildRequest(workload);
-			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
-			ProcessIOResult theResult{};
-			do {
-				if (theStopWatch.hasTimePassed()) {
-					break;
-				}
-				theResult = httpsConnection.writeData(theRequest, true);
-			} while (theResult == ProcessIOResult::Select_No_Return);
-			if (theResult != ProcessIOResult::No_Error) {
-				httpsConnection.currentReconnectTries++;
-				httpsConnection.doWeConnect = true;
-				return this->httpRequestInternal(httpsConnection, workload, rateLimitData);
-			};
-			auto result = this->getResponse(httpsConnection, rateLimitData);
-			if (result.responseCode == -1) {
-				httpsConnection.currentReconnectTries++;
-				httpsConnection.doWeConnect = true;
-				return this->httpRequestInternal(httpsConnection, workload, rateLimitData);
-			} else {
-				httpsConnection.currentReconnectTries = 0;
-				return result;
-			}
-		} catch (...) {
-			if (this->configManager->doWePrintHttpsErrorMessages()) {
-				DiscordCoreAPI::reportException(workload.callStack + "::HttpsClient::httpRequestInternal()");
-			}
-			httpsConnection.currentReconnectTries++;
-			httpsConnection.doWeConnect = true;
-			return this->httpRequestInternal(httpsConnection, workload, rateLimitData);
 		}
 	}
 

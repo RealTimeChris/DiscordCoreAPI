@@ -130,8 +130,6 @@ namespace DiscordCoreInternal {
 
 		void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
 
-		void processAMessage(std::string& theMessage);
-
 		std::jthread* getTheTask() noexcept;
 
 		~BaseSocketAgent() noexcept;
