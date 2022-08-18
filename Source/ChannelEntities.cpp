@@ -111,6 +111,7 @@ namespace DiscordCoreAPI {
 			this->position = other.position;
 			this->guildId = other.guildId;
 			this->ownerId = other.ownerId;
+			this->topic = other.topic;
 			this->flags = other.flags;
 			this->type = other.type;
 			this->id = other.id;
@@ -130,9 +131,10 @@ namespace DiscordCoreAPI {
 			this->position = other.position;
 			this->guildId = other.guildId;
 			this->ownerId = other.ownerId;
+			this->topic = other.topic;
 			this->flags = other.flags;
-			this->name = other.name;
 			this->type = other.type;
+			this->name = other.name;
 			this->id = other.id;
 		}
 		return *this;

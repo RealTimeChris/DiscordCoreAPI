@@ -558,7 +558,6 @@ namespace DiscordCoreAPI {
 
 	ChannelData& ChannelData::operator=(ChannelData&& other) noexcept {
 		this->permissionOverwrites = std::move(other.permissionOverwrites);
-		this->recipients = std::move(other.recipients);
 		this->parentId = std::move(other.parentId);
 		this->guildId = std::move(other.guildId);
 		this->ownerId = std::move(other.ownerId);

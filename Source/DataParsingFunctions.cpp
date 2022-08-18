@@ -290,8 +290,7 @@ namespace DiscordCoreAPI {
 			this->recipients.clear();
 			for (auto& value: (*jsonObjectData)["recipients"]) {
 				DiscordCoreAPI::UserData newData{ &value };
-				Snowflake userId = newData.id;
-				this->recipients[userId] = newData;
+				this->recipients[newData.id] = std::move(newData);
 			}
 		}
 
@@ -1144,8 +1143,8 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("recipients") && !(*jsonObjectData)["recipients"].is_null()) {
 			this->recipients.clear();
 			for (auto& value: (*jsonObjectData)["recipients"]) {
-				UserData newData{ &value };
-				this->recipients[newData.id] = newData;
+				DiscordCoreAPI::UserData newData{ &value };
+				this->recipients[newData.id] = std::move(newData);
 			}
 		}
 

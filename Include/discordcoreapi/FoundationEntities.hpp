@@ -940,7 +940,6 @@ namespace DiscordCoreAPI {
 
 		std::vector<OverWriteData> permissionOverwrites{};
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
-		std::vector<Snowflake> recipients{};///< List of message recipients.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
 		uint16_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
 		StringWrapper topic{};///< Channel topic.
