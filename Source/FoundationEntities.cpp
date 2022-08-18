@@ -220,6 +220,10 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
+	std::string UserData::getAvatarUrl() {
+		return this->avatar.getHashUrl(this->id, 0);
+	}
+
 	AttachmentData::operator nlohmann::json() {
 		nlohmann::json newValue{};
 		newValue["content_type"] = this->contentType;

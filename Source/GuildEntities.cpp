@@ -176,6 +176,10 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	std::string GuildData::getIconUrl() {
+		return this->icon.getHashUrl(this->id, 0);
+	}
+
 	void GuildData::insertChannel(std::unique_ptr<ChannelData> theData) {
 		Channels::insertChannel(std::move(theData));
 	}

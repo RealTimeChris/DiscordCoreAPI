@@ -60,6 +60,14 @@ namespace DiscordCoreAPI {
 		Users::insertUser(std::move(theUser));
 	}
 
+	std::string GuildMemberData::getAvatarUrl() {
+		if (this->avatar.getHashUrl(this->id, this->guildId) != "") {
+			return this->avatar.getHashUrl(this->id, this->guildId);
+		} else {
+			return this->userAvatar.getHashUrl(this->id, 0);
+		}
+	}
+
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) {
 		if (this != &other) {
 			this->currentVoiceChannel = other.currentVoiceChannel;

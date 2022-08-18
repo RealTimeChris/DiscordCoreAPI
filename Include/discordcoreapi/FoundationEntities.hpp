@@ -423,6 +423,8 @@ namespace DiscordCoreAPI {
 
 		UserData(UserData& other) = default;
 
+		std::string getAvatarUrl();
+
 		virtual ~UserData() = default;
 
 	  protected:
@@ -860,6 +862,8 @@ namespace DiscordCoreAPI {
 		GuildMemberData(GuildMemberData& jsonObjectData) = default;
 
 		void insertUser(std::unique_ptr<UserData> theUser);
+
+		std::string getAvatarUrl();
 
 		virtual ~GuildMemberData() = default;
 
@@ -2199,6 +2203,8 @@ namespace DiscordCoreAPI {
 		void initialize();
 
 		void disconnect();
+
+		std::string getIconUrl();
 
 		virtual ~GuildData() = default;
 
