@@ -354,9 +354,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("icon") && !(*jsonObjectData)["icon"].is_null()) {
-			std::string iconUrlString = "https://cdn.discordapp.com/";
-			iconUrlString += "icons/" + std::to_string(this->id) + "/" + (*jsonObjectData)["icon"].get<std::string>() + ".png";
-			this->icon = iconUrlString;
+			this->icon = (*jsonObjectData)["icon"].get<std::string>();
 		}
 
 		if (jsonObjectData->contains("name") && !(*jsonObjectData)["name"].is_null()) {
@@ -368,15 +366,11 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("splash") && !(*jsonObjectData)["splash"].is_null()) {
-			std::string iconUrlString = "https://cdn.discordapp.com/";
-			iconUrlString += "splashes/" + std::to_string(this->id) + "/" + (*jsonObjectData)["splash"].get<std::string>() + ".png";
-			this->splash = iconUrlString;
+			this->splash = (*jsonObjectData)["splash"].get<std::string>();
 		}
 
 		if (jsonObjectData->contains("discovery_splash") && !(*jsonObjectData)["discovery_splash"].is_null()) {
-			std::string discordSplashUrlString = "https://cdn.discordapp.com/";
-			discordSplashUrlString += "discovery-splashes/" + std::to_string(this->id) + "/" + (*jsonObjectData)["discovery_splash"].get<std::string>() + ".png";
-			this->discoverySplash = discordSplashUrlString;
+			this->discoverySplash = (*jsonObjectData)["discovery_splash"].get<std::string>();
 		}
 
 		if (jsonObjectData->contains("owner") && !(*jsonObjectData)["owner"].is_null()) {
@@ -404,9 +398,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("banner") && !(*jsonObjectData)["banner"].is_null()) {
-			std::string guildBannerUrl = "https://cdn.discordapp.com/";
-			guildBannerUrl += "banners/" + std::to_string(this->id) + "/" + (*jsonObjectData)["banner"].get<std::string>() + ".png";
-			this->banner = guildBannerUrl;
+			this->banner = (*jsonObjectData)["banner"].get<std::string>();
 		}
 
 		if (jsonObjectData->contains("rule_Channel_id") && !(*jsonObjectData)["rule_Channel_id"].is_null()) {
@@ -626,9 +618,6 @@ namespace DiscordCoreAPI {
 			this->avatar = (*jsonObjectData)["avatar"].get<std::string>();
 		}
 
-		std::string theAvatarString{ getString(jsonObjectData, "avatar") };
-		this->avatar = AvatarUrl{ theAvatarString, this->id, this->guildId };
-
 		if (jsonObjectData->contains("nick") && !(*jsonObjectData)["nick"].is_null()) {
 			this->nick = (*jsonObjectData)["nick"].get<std::string>();
 		}
@@ -636,6 +625,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("user") && !(*jsonObjectData)["user"].is_null()) {
 			std::unique_ptr<User> theUser{ std::make_unique<User>(&(*jsonObjectData)["user"]) };
 			this->id = theUser->id;
+			this->userAvatar = theUser->avatar;
 			this->userName = theUser->userName;
 			this->insertUser(std::move(theUser));
 		}
@@ -1219,8 +1209,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("avatar") && !(*jsonObjectData)["avatar"].is_null()) {
-			auto theString = (*jsonObjectData)["avatar"].get<std::string>();
-			this->avatar = AvatarUrl(theString, this->id, 0);
+			this->avatar = (*jsonObjectData)["avatar"].get<std::string>();
 		}
 
 		if (jsonObjectData->contains("bot") && !(*jsonObjectData)["bot"].is_null()) {
@@ -1342,8 +1331,9 @@ namespace DiscordCoreAPI {
 
 		this->discriminator = getString(jsonObjectData, "discriminator");
 
-		auto theString = getString(jsonObjectData, "avatar");
-		this->avatar = AvatarUrl(theString, this->id, 0);
+		if (jsonObjectData->contains("avatar") && !(*jsonObjectData)["avatar"].is_null()) {
+			this->avatar = getString(jsonObjectData, "avatar");
+		}
 
 		this->flags = setBool<int32_t, UserFlags>(this->flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
 
@@ -1651,12 +1641,14 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("user") && !(*jsonObjectData)["user"].is_null()) {
 			std::unique_ptr<UserData> theUser = std::make_unique<UserData>(&(*jsonObjectData)["user"]);
 			this->id = theUser->id;
+			this->userAvatar = theUser->avatar;
 			this->userName = theUser->userName;
 			this->insertUser(std::move(theUser));
 		}
 
-		std::string theAvatarString{ getString(jsonObjectData, "avatar") };
-		this->avatar = AvatarUrl{ theAvatarString, this->id, this->guildId };
+		if (jsonObjectData->contains("avatar") && !(*jsonObjectData)["avatar"].is_null()) {
+			this->avatar = getString(jsonObjectData, "avatar");
+		}
 
 		this->nick = getString(jsonObjectData, "nick");
 
@@ -4350,7 +4342,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("member") && !(*jsonObjectData)["member"].is_null()) {
 			this->member = &(*jsonObjectData)["member"];
-			this->user.avatar = this->member.avatar;
+			this->user.avatar = this->member.userAvatar;
 			this->user.id = this->member.id;
 			this->user.userName = this->member.userName;
 		} else if (jsonObjectData->contains("user") && !(*jsonObjectData)["user"].is_null()) {

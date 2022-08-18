@@ -401,8 +401,8 @@ namespace DiscordCoreAPI {
 		friend class GuildData;
 
 		StringWrapper discriminator{};///< The user's 4-digit discord-tag	identify.
-		StringWrapper userName{};///< The user's userName, not unique across the platform	identify.
-		AvatarUrl avatar{};///< The user's avatar hash.
+		StringWrapper userName{};///< The user's userName, not unique across the platform identify.
+		UserAvatar avatar{};///< The user's avatar hash.
 		int32_t flags{};///< The public flags on a user' s account.
 
 		UserData() = default;
@@ -415,13 +415,13 @@ namespace DiscordCoreAPI {
 
 		UserData(UserData&& jsonObjectData) noexcept;
 
-		UserData& operator=(const UserData& jsonObjectData) = default;
+		UserData& operator=(const UserData& other) = default;
 
-		UserData(const UserData& jsonObjectData) = default;
+		UserData(const UserData& other) = default;
 
-		UserData& operator=(UserData& jsonObjectData) = default;
+		UserData& operator=(UserData& other) = default;
 
-		UserData(UserData& jsonObjectData) = default;
+		UserData(UserData& other) = default;
 
 		virtual ~UserData() = default;
 
@@ -832,11 +832,13 @@ namespace DiscordCoreAPI {
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
 		Snowflake currentVoiceChannel{};///< The currently held voice channel, if applicable.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
+		GuildMemberAvatar avatar{};///< This GuildMember's Guild Avatar.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		StringWrapper userName{};///< This GuildMember's UserName.
-		AvatarUrl avatar{};///< This GuildMember's User Avatar.
+		UserAvatar userAvatar{};///< This GuildMember's User Avatar.
 		StringWrapper nick{};///< Their nick/display name.
 		Snowflake guildId{};///< The current Guild's id.
+		
 		int8_t flags{ 0 };///< GuildMember flags.
 
 		GuildMemberData() = default;
@@ -2144,6 +2146,7 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity, public DataParser<GuildData> {
 	  public:
+
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild.
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
@@ -2154,7 +2157,7 @@ namespace DiscordCoreAPI {
 		StringWrapper name{};///< The Guild's name.
 		Snowflake ownerId{};///< User id of the Guild's owner.
 		int8_t flags{ 0 };///< Guild flags.
-		IconHash icon{};///< Url to the Guild's icon.
+		GuildIcon icon{};///< Url to the Guild's icon.
 
 		GuildData() = default;
 

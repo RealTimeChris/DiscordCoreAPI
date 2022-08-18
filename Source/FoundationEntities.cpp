@@ -1713,7 +1713,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string InputEventData::getAvatarUrl() {
-		return this->interactionData->user.avatar;
+		return this->interactionData->user.avatar.getHashUrl(this->interactionData->user.id, 0);
 	}
 
 	std::vector<EmbedData> InputEventData::getEmbeds() {

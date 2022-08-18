@@ -312,104 +312,173 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
-	IconHash::IconHash(uint64_t lowBitsNew, uint64_t highBitsNew) {
-		this->highBits = highBitsNew;
-		this->lowBits = lowBitsNew;
-	}
-
-	void IconHash::set(const std::string& other) {
+	void IconHash::setHash(const std::string& other) {
 		std::string newHash(other);
 		if (other.empty()) {
-			this->lowBits = this->highBits = 0;
+			this->highBits = 0;
+			this->lowBits = 0;
 			return;
 		}
 		if (other.length() == 34 && other.substr(0, 2) == "a_") {
 			newHash = other.substr(2);
 		}
 		if (newHash.length() != 32) {
-			throw std::length_error("IconHash must be exactly 32 characters in length, passed value is: '" + newHash + "', in length.");
+			throw std::length_error("IconHash must be exactly 32 characters in length, passed value is: '" + std::to_string(newHash.size()) + "', in length.");
 		}
 		this->lowBits = fromString<uint64_t>(newHash.substr(0, 16), std::hex);
 		this->highBits = fromString<uint64_t>(newHash.substr(16, 16), std::hex);
 	}
 
-	IconHash& IconHash::operator=(const std::string& other) {
-		set(other);
-		return *this;
-	}
-
-	IconHash::IconHash(const std::string& other) {
-		set(other);
-	}
-
-	bool IconHash::operator==(const IconHash& other) const {
+	bool IconHash::operator==(const IconHash& other) {
 		return other.lowBits == this->lowBits && other.highBits == this->highBits;
 	}
 
-	IconHash::operator std::string() const {
-		if (this->lowBits == 0 && this->highBits == 0) {
-			return "";
+	bool IconHash::areWeSet(){
+		if (this->highBits == 0 || this->lowBits == 0) {
+			return false;
 		} else {
-			return toHex(this->lowBits) + toHex(this->highBits);
+			return true;
 		}
 	}
 
-	AvatarUrl& AvatarUrl::operator=(const AvatarUrl& other) {
-		if (this != &other && other.theString) {
-			std::stringstream theStringNew{};
-			theStringNew << other.theString;
-			auto theLength = theStringNew.str().size();
-			this->theString = std::make_unique<char[]>(theLength + 1);
-			for (uint32_t x = 0; x < theStringNew.str().size(); ++x) {
-				this->theString[x] = theStringNew.str()[x];
-			}
-			this->theString[theLength] = '\0';
-		}
+	UserAvatar& UserAvatar::operator=(std::string&& other) {
+		this->setHash(other);
 		return *this;
 	}
 
-	AvatarUrl::AvatarUrl(const AvatarUrl& other) {
-		*this = other;
+	UserAvatar::UserAvatar(std::string&& other) {
+		*this = std::move(other);
 	}
 
-	AvatarUrl& AvatarUrl::operator=(AvatarUrl& other) {
-		if (this != &other && other.theString) {
-			std::stringstream theStringNew{};
-			theStringNew << other.theString;
-			auto theLength = theStringNew.str().size();
-			this->theString = std::make_unique<char[]>(theLength + 1);
-			for (uint32_t x = 0; x < theStringNew.str().size(); ++x) {
-				this->theString[x] = theStringNew.str()[x];
-			}
-			this->theString[theLength] = '\0';
+	std::string UserAvatar::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
+		if (idOne == 0) {
+			return {};
+		} else {
+			std::string theStringNew{ "https://cdn.discordapp.com/" };
+			std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
+			theStringNew += "avatars/" + std::to_string(idOne) + "/" + theIconHash;
+			return theStringNew;
 		}
+	}
+
+	GuildMemberAvatar& GuildMemberAvatar::operator=(std::string&& other) {
+		this->setHash(other);
 		return *this;
 	}
 
-	AvatarUrl::AvatarUrl(AvatarUrl& other) {
-		*this = other;
+	GuildMemberAvatar::GuildMemberAvatar(std::string&& other) {
+		*this = std::move(other);
 	}
 
-	AvatarUrl::AvatarUrl(std::string& other, DiscordCoreAPI::Snowflake userId, DiscordCoreAPI::Snowflake guildId) noexcept {
-		this->set(other);
-		std::string theStringNew{ "https://cdn.discordapp.com/" };
-		if (guildId != 0) {
-			theStringNew += "guilds/" + std::to_string(guildId) + "/users/" + std::to_string(userId) + "/avatars/" + IconHash::operator std::string();
+	std::string GuildMemberAvatar::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
+		if (idOne == 0 || idTwo == 0) {
+			return {};
 		} else {
-			theStringNew += "avatars/" + std::to_string(userId) + "/" + IconHash::operator std::string();
+			std::string theStringNew{ "https://cdn.discordapp.com/" };
+			std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
+			theStringNew += "guilds/" + std::to_string(idTwo) + "/users/" + std::to_string(idOne) + "/avatars/" + theIconHash;
+			return theStringNew;
 		}
-		auto theLength = theStringNew.size();
-		this->theString = std::make_unique<char[]>(theLength + 1);
-		for (uint32_t x = 0; x < theStringNew.size(); ++x) {
-			this->theString[x] = theStringNew[x];
-		}
-		this->theString[theLength] = '\0';
 	}
 
-	AvatarUrl::operator std::string() {
-		std::stringstream theString{};
-		theString << this->theString;
-		return theString.str();
+	GuildIcon& GuildIcon::operator=(std::string&& other) {
+		this->setHash(other);
+		return *this;
+	}
+
+	GuildIcon::GuildIcon(std::string&& other) {
+		*this = std::move(other);
+	}
+
+	std::string GuildIcon::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
+		if (idOne == 0) {
+			return {};
+		} else {
+			std::string theStringNew{ "https://cdn.discordapp.com/" };
+			std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
+			theStringNew += "icons/" + std::to_string(idOne) + "/" + theIconHash + ".png";
+			return theStringNew;
+		}
+	}
+
+	ChannelIcon& ChannelIcon::operator=(std::string&& other) {
+		this->setHash(other);
+		return *this;
+	}
+
+	ChannelIcon::ChannelIcon(std::string&& other) {
+		*this = std::move(other);
+	}
+
+	std::string ChannelIcon::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
+		if (idOne == 0) {
+			return {};
+		} else {
+			std::string theStringNew{ "https://cdn.discordapp.com/" };
+			std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
+			theStringNew += "splashes/" + std::to_string(idOne) + "/" + theIconHash + ".png";
+			return theStringNew;
+		}
+	}
+
+	GuildBanner& GuildBanner::operator=(std::string&& other) {
+		this->setHash(other);
+		return *this;
+	}
+
+	GuildBanner::GuildBanner(std::string&& other) {
+		*this = std::move(other);
+	}
+
+	std::string GuildBanner::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
+		if (idOne == 0) {
+			return {};
+		} else {
+			std::string theStringNew{ "https://cdn.discordapp.com/" };
+			std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
+			theStringNew += "banners/" + std::to_string(idOne) + "/" + theIconHash + ".png";
+			return theStringNew;
+		}
+	}
+
+	GuildDiscovery& GuildDiscovery::operator=(std::string&& other) {
+		this->setHash(other);
+		return *this;
+	}
+
+	GuildDiscovery::GuildDiscovery(std::string&& other) {
+		*this = std::move(other);
+	}
+
+	std::string GuildDiscovery::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
+		if (idOne == 0) {
+			return {};
+		} else {
+			std::string theStringNew{ "https://cdn.discordapp.com/" };
+			std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
+			theStringNew += "discovery-splashes/" + std::to_string(idOne) + "/" + theIconHash + ".png";
+			return theStringNew;
+		}
+	}
+
+	GuildSplash& GuildSplash::operator=(std::string&& other) {
+		this->setHash(other);
+		return *this;
+	}
+
+	GuildSplash::GuildSplash(std::string&& other) {
+		*this = std::move(other);
+	}
+
+	std::string GuildSplash::getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept {
+		if (idOne == 0 || idTwo == 0) {
+			return {};
+		} else {
+			std::string theStringNew{ "https://cdn.discordapp.com/" };
+			std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
+			theStringNew += "splashes/" + std::to_string(idOne) + "/" + theIconHash + ".png";
+			return theStringNew;
+		}
 	}
 
 	AudioFrameData& AudioFrameData::operator=(AudioFrameData&& other) noexcept {

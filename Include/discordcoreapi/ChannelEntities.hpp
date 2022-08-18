@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
 		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
 		std::string topic{};///< The Channel's topic.
-		IconHash icon{};///< Icon for the Channel, if applicable.
+		ChannelIcon icon{};///< Icon for the Channel, if applicable.
 
 		Channel() = default;
 

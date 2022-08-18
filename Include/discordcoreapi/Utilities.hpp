@@ -576,19 +576,23 @@ namespace DiscordCoreAPI {
 	}
 
 	struct DiscordCoreAPI_Dll IconHash {
-		IconHash(uint64_t lowBits = 0, uint64_t highBits = 0);
+		IconHash() = default;
+
+		IconHash& operator=(const IconHash&) = default;
 
 		IconHash(const IconHash&) = default;
 
-		IconHash(const std::string& hash);
+		IconHash& operator=(IconHash&) = default;
 
-		IconHash& operator=(const std::string& assignment);
+		IconHash(IconHash&) = default;
 
-		bool operator==(const IconHash& other) const;
+		bool operator==(const IconHash& other);
 
-		void set(const std::string& hash);
+		virtual std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept = 0;
 
-		operator std::string() const;
+		void setHash(const std::string& hash);
+
+		bool areWeSet();
 
 		~IconHash() = default;
 
@@ -597,24 +601,74 @@ namespace DiscordCoreAPI {
 		uint64_t lowBits{};
 	};
 
-	class DiscordCoreAPI_Dll AvatarUrl : public IconHash {
-	  public:
-		AvatarUrl& operator=(const AvatarUrl&);
+	struct DiscordCoreAPI_Dll UserAvatar : public IconHash {
+		UserAvatar() = default;
 
-		AvatarUrl(const AvatarUrl&);
+		UserAvatar& operator=(std::string&&);
 
-		AvatarUrl& operator=(AvatarUrl&);
+		UserAvatar(std::string&&);
 
-		AvatarUrl(AvatarUrl&);
+		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
+	};
 
-		AvatarUrl() = default;
+	struct DiscordCoreAPI_Dll ChannelIcon: public IconHash {
+		ChannelIcon() = default;
 
-		AvatarUrl(std::string& other, Snowflake userId, Snowflake guildId) noexcept;
+		ChannelIcon& operator=(std::string&&);
 
-		operator std::string();
+		ChannelIcon(std::string&&);
 
-	  protected:
-		std::unique_ptr<char[]> theString{};
+		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
+	};
+
+	struct DiscordCoreAPI_Dll GuildMemberAvatar : public IconHash {
+		GuildMemberAvatar() = default;
+
+		GuildMemberAvatar& operator=(std::string&&);
+
+		GuildMemberAvatar(std::string&&);
+
+		std::string getHashUrl(Snowflake guildMemberId, Snowflake guildId) noexcept;
+	};
+
+	struct DiscordCoreAPI_Dll GuildIcon : public IconHash {
+		GuildIcon() = default;
+
+		GuildIcon& operator=(std::string&&);
+
+		GuildIcon(std::string&&);
+
+		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
+	};
+
+	struct DiscordCoreAPI_Dll GuildSplash : public IconHash {
+		GuildSplash() = default;
+
+		GuildSplash& operator=(std::string&&);
+
+		GuildSplash(std::string&&);
+
+		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
+	};
+
+	struct DiscordCoreAPI_Dll GuildBanner : public IconHash {
+		GuildBanner() = default;
+
+		GuildBanner& operator=(std::string&&);
+
+		GuildBanner(std::string&&);
+
+		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
+	};
+
+	struct DiscordCoreAPI_Dll GuildDiscovery : public IconHash {
+		GuildDiscovery() = default;
+
+		GuildDiscovery& operator=(std::string&&);
+
+		GuildDiscovery(std::string&&);
+
+		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 
 	template<typename TimeType>

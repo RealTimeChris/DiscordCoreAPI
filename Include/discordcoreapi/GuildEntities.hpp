@@ -291,10 +291,9 @@ namespace DiscordCoreAPI {
 		Snowflake afkChannelId{};///< Channel if of the "afk" Channel.
 		int32_t maxMembers{ 0 };///< Max quantity of members.
 		std::string region{};///< Region of the world where the Guild's servers are.
+		GuildBanner banner{};///< Url to the Guild's banner.
+		GuildSplash splash{};///< Url to the Guild's splash.
 		MFALevel mfaLevel{};///< MFA level.
-		IconHash splash{};///< Url to the Guild's splash.
-		IconHash banner{};///< Url to the Guild's banner.
-		IconHash icon{};///< Url to the Guild's icon.
 
 		Guild() = default;
 
