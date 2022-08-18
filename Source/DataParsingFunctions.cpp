@@ -2740,13 +2740,11 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				for (auto& value: (*jsonObjectData)["voice_states"]) {
-					std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
-					VoiceStateId theKey{};
-					theKey.guildId = this->id;
-					theKey.guildMemberId = theData->userId;
-					Guilds::voiceStateCache[theKey] = std::move(theData);
-				}
+				std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
+				VoiceStateId theKey{};
+				theKey.guildId = this->id;
+				theKey.guildMemberId = theData->userId;
+				Guilds::voiceStateCache[theKey] = std::move(theData);
 			}
 		}
 
