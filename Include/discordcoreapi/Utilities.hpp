@@ -37,6 +37,7 @@
 	#ifndef WINRT_LEAN_AND_MEAN
 		#define WINRT_LEAN_AND_MEAN
 	#endif
+#include <WinSock2.h>
 #else
 	#ifndef DiscordCoreAPI_Dll
 		#define DiscordCoreAPI_Dll
@@ -52,7 +53,6 @@
 #include <source_location>
 #include <unordered_map>
 #include <shared_mutex>
-#include <WinSock2.h>
 #include <functional>
 #include <semaphore>
 #include <concepts>
