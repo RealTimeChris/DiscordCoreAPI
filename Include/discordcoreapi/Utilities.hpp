@@ -42,6 +42,15 @@
 	#ifndef DiscordCoreAPI_Dll
 		#define DiscordCoreAPI_Dll
 	#endif
+	#define ntohll(x) \
+		uint8_t data[8]{}; \
+		memcpy(&data, &net, sizeof(x)); \
+		uint64_t theValue{}; \
+		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) { \
+			theValue |= data[x] << 8 * (sizeof(ReturnType) - x - 1); \
+		}
+		return theValue; \
+	
 	#include <arpa/inet.h>
 	#include <pthread.h>
 	#include <sys/time.h>
