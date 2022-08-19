@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single StageInstance. \brief A single StageInstance.
-	class DiscordCoreAPI_Dll StageInstance : public StageInstanceData, public DataParser<StageInstance> {
+	class DiscordCoreAPI_Dll StageInstance : public StageInstanceData {
 	  public:
 		StageInstance() = default;
 

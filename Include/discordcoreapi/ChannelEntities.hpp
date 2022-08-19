@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A Channel object. \brief A Channel object.
-	class DiscordCoreAPI_Dll Channel : public ChannelData, public DataParser<Channel> {
+	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	  public:
 		TimeStamp<std::chrono::milliseconds> lastPinTimestamp{};///< Timestamp of the last pinned Message.
 		std::unordered_map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
@@ -178,7 +178,7 @@ namespace DiscordCoreAPI {
 		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
-	class DiscordCoreAPI_Dll ChannelVector : public DataParser<ChannelVector> {
+	class DiscordCoreAPI_Dll ChannelVector : public DataParser {
 	  public:
 		ChannelVector() = default;
 

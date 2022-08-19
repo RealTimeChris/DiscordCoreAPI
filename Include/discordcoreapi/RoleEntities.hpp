@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single Role.
-	class DiscordCoreAPI_Dll Role : public RoleData, public DataParser<Role> {
+	class DiscordCoreAPI_Dll Role : public RoleData {
 	  public:
 		RoleTagsData tags{};///< Role tags for the Role.
 		std::string icon{};///< Icon representing the Role.
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
-	class DiscordCoreAPI_Dll RoleVector : public DataParser<RoleVector> {
+	class DiscordCoreAPI_Dll RoleVector : public DataParser {
 	  public:
 		RoleVector() = default;
 

@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents a single Thread. \brief Represents a single Thread.
-	class DiscordCoreAPI_Dll Thread : public Channel, public DataParser<Thread> {
+	class DiscordCoreAPI_Dll Thread : public Channel {
 	  public:
 		Thread() = default;
 

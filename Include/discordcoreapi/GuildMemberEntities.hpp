@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single GuildMember. \brief A single GuildMember.
-	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData, public DataParser<GuildMember> {
+	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	  public:
 		TimeStamp<std::chrono::milliseconds> communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
-	class DiscordCoreAPI_Dll GuildMemberVector : public DataParser<GuildMemberVector> {
+	class DiscordCoreAPI_Dll GuildMemberVector : public DataParser {
 	  public:
 		GuildMemberVector() = default;
 

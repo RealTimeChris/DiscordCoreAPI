@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single ApplicationCommand. \brief A single ApplicationCommand.
-	class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData, public DataParser<ApplicationCommand> {
+	class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData {
 	  public:
 		ApplicationCommand() = default;
 
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
-	class DiscordCoreAPI_Dll ApplicationCommandVector : public DataParser<ApplicationCommandVector> {
+	class DiscordCoreAPI_Dll ApplicationCommandVector : public DataParser {
 	  public:
 		friend class ApplicationCommands;
 

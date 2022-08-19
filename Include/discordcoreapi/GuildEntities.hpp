@@ -259,7 +259,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A discord Guild. Used to connect to/disconnect from voice. \brief A discord Guild. Used to connect to/disconnect from voice.
-	class DiscordCoreAPI_Dll Guild : public GuildData, public DataParser<Guild> {
+	class DiscordCoreAPI_Dll Guild : public GuildData {
 	  public:
 		friend class Guilds;
 
@@ -315,7 +315,7 @@ namespace DiscordCoreAPI {
 		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
-	class DiscordCoreAPI_Dll GuildVector : public DataParser<GuildVector> {
+	class DiscordCoreAPI_Dll GuildVector : public DataParser {
 	  public:
 		friend class Guilds;
 

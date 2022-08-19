@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single GuildScheduledEvent responseData structure. \brief A single GuildScheduledEvent responseData structure.
-	class DiscordCoreAPI_Dll GuildScheduledEvent : public GuildScheduledEventData, public DataParser<GuildScheduledEvent> {
+	class DiscordCoreAPI_Dll GuildScheduledEvent : public GuildScheduledEventData {
 	  public:
 		GuildScheduledEvent() = default;
 

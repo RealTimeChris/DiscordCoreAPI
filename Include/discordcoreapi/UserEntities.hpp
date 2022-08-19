@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single User. \brief A single User.
-	class DiscordCoreAPI_Dll User : public UserData, public DataParser<User> {
+	class DiscordCoreAPI_Dll User : public UserData {
 	  public:
 		PremiumType premiumType{};///< The type of Nitro subscription on a user ' s account.
 		int32_t accentColor{ 0 };///< The user 's banner color encoded as an integer representation of hexadecimal color code.
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
-	class DiscordCoreAPI_Dll UserVector : public DataParser<UserVector> {
+	class DiscordCoreAPI_Dll UserVector : public DataParser {
 	  public:
 		UserVector() = default;
 

@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A single Sticker. \brief A single Sticker.
-	class DiscordCoreAPI_Dll Sticker : public StickerData, public DataParser<Sticker> {
+	class DiscordCoreAPI_Dll Sticker : public StickerData {
 	  public:
 		Sticker() = default;
 
@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
-	class DiscordCoreAPI_Dll StickerVector : public DataParser<StickerVector> {
+	class DiscordCoreAPI_Dll StickerVector : public DataParser {
 	  public:
 		StickerVector() = default;
 
