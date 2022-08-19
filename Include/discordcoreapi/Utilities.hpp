@@ -42,6 +42,7 @@
 	#ifndef DiscordCoreAPI_Dll
 		#define DiscordCoreAPI_Dll
 	#endif
+	#include <arpa/inet.h>
 	#include <pthread.h>
 	#include <sys/time.h>
 	#include <time.h>
