@@ -100,7 +100,7 @@ namespace DiscordCoreInternal {
 			}
 			ReturnType newValue = *reinterpret_cast<ReturnType*>(this->buffer.data() + this->offSet);
 			this->offSet += sizeof(ReturnType);
-			return DiscordCoreAPI::reverseByteOrder(newValue);
+			return DiscordCoreAPI::reverseByteOrder<ReturnType>(newValue);
 		}
 
 		const char* readString(uint32_t length);

@@ -1231,7 +1231,7 @@ namespace DiscordCoreAPI {
 
 	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
 		const uint8_t byteSize{ 8 };
-		ReturnType newValue = reverseByteOrder(num);
+		ReturnType newValue = reverseByteOrder<ReturnType>(num);
 		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
 			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
 		}

@@ -450,7 +450,7 @@ namespace DiscordCoreInternal {
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		this->rawInputBuffer.resize(this->maxBufferSize);
 		static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
-		static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder(static_cast<unsigned short>(stoi(portNew)));
+		static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder<uint16_t>(static_cast<unsigned short>(stoi(portNew)));
 		static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_family = AF_INET;
 
 		addrinfoWrapper hints{}, address{};
