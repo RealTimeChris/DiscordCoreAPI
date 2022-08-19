@@ -164,7 +164,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		template<std::same_as<void> Type> Type submitWorkloadAndGetResult(const HttpsWorkloadData& workload);
+		template<std::same_as<void> ReturnType> ReturnType submitWorkloadAndGetResult(const HttpsWorkloadData& workload, ReturnType* theReturnValue = nullptr);
 
 		HttpsResponseData submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew);
 
