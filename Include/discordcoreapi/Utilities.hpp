@@ -52,6 +52,7 @@
 #include <source_location>
 #include <unordered_map>
 #include <shared_mutex>
+#include <WinSock2.h>
 #include <functional>
 #include <semaphore>
 #include <concepts>
@@ -66,6 +67,14 @@
 #include <mutex>
 #include <queue>
 #include <map>
+
+#ifdef max
+	#undef max
+#endif
+
+#ifdef min
+	#undef min
+#endif
 
 /**
  * \defgroup main_endpoints Main Endpoints
@@ -1201,14 +1210,22 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
 	template<typename ReturnType> ReturnType reverseByteOrder(const ReturnType net) {
-		uint8_t data[8]{};
-		memcpy(&data, &net, sizeof(net));
 
-		ReturnType theValue{};
-		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
-			theValue |= data[x] << 8 * (sizeof(ReturnType) - x - 1);
+		switch (sizeof(ReturnType)) {
+			case 1: {
+				return net;
+			}
+			case 2: {
+				return ntohs(static_cast<u_short>(net));
+			}
+			case 4: {
+				return ntohl(static_cast<u_long>(net));
+			}
+			case 8: {
+				return ntohll(static_cast<unsigned long long>(net));
+			}
 		}
-		return theValue;
+		return ReturnType{};
 	}
 
 	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
