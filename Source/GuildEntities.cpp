@@ -830,7 +830,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/users/@me/guilds/" + std::to_string(dataPackage.guildId);
-		workload.callStack = "Users::leaveGuildAsync()";
+		workload.callStack = "Guilds::leaveGuildAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 	std::atomic_int32_t theCount{};
@@ -848,7 +848,7 @@ namespace DiscordCoreAPI {
 				Guilds::cache.insert_or_assign(guild->id, std::move(guild));
 			}
 			theCount.store(Guilds::cache.size());
-			//std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
+			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
 		}
 	}
 

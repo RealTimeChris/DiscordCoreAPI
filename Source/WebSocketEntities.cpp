@@ -407,7 +407,7 @@ namespace DiscordCoreInternal {
 							payload = this->parseEtfToJson(this->inputBuffer.substr(offSet, length));
 							theInt.store(theInt.load() + theStopWatch.totalTimePassed());
 							if (DiscordCoreAPI::theCount.load() != 0) {
-								//std::cout << "THE TIME TO COMPLETE (AVERAGE): " << theInt.load() / DiscordCoreAPI::theCount.load() << std::endl;
+								std::cout << "THE TIME TO COMPLETE (AVERAGE): " << theInt.load() / DiscordCoreAPI::theCount.load() << std::endl;
 							}
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {

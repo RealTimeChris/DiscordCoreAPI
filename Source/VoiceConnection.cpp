@@ -30,7 +30,9 @@ namespace DiscordCoreAPI {
 	}
 
 	OpusDecoderWrapper& OpusDecoderWrapper::operator=(OpusDecoderWrapper&& other) noexcept {
-		this->thePtr.reset(other.thePtr.release());
+		if (this != &other) {
+			this->thePtr.reset(other.thePtr.release());
+		}
 		return *this;
 	}
 

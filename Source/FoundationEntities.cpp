@@ -1658,8 +1658,10 @@ namespace DiscordCoreAPI {
 	}
 
 	InputEventData& InputEventData::operator=(InputEventData&& other) noexcept {
-		*this->interactionData = std::move(*other.interactionData);
-		this->responseType = other.responseType;
+		if (this != &other) {
+			*this->interactionData = std::move(*other.interactionData);
+			this->responseType = other.responseType;
+		}
 		return *this;
 	}
 
