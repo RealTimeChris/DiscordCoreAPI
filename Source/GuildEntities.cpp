@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 			return this->voiceConnectionPtr;
 		} else if (guildMemberId != 0 || channelId != 0) {
 			Snowflake theChannelId{};
-			VoiceStateId theKey{};
+			GuildMemberId theKey{};
 			theKey.guildId = this->id;
 			theKey.guildMemberId = guildMemberId;
 			if (guildMemberId != 0) {
@@ -842,7 +842,11 @@ namespace DiscordCoreAPI {
 		}
 		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
-			Guilds::cache.insert_or_assign(guild->id, std::move(guild));
+			if (!Guilds::cache.contains(guild->id)) {
+				Guilds::cache.emplace(guild->id, std::move(guild));
+			} else {
+				Guilds::cache.insert_or_assign(guild->id, std::move(guild));
+			}
 			theCount.store(Guilds::cache.size());
 			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
 		}
@@ -855,7 +859,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	std::map<VoiceStateId, std::unique_ptr<VoiceStateData>> Guilds::voiceStateCache{};
+	std::map<GuildMemberId, std::unique_ptr<VoiceStateData>> Guilds::voiceStateCache{};
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
 	std::map<Snowflake, std::unique_ptr<GuildData>> Guilds::cache{};
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };

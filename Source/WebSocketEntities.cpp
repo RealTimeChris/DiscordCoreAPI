@@ -693,7 +693,7 @@ namespace DiscordCoreInternal {
 											Snowflake userId{};
 											if (payload["d"].contains("user") && !payload["d"]["user"].is_null()) {
 												userId = stoull(payload["d"]["user"]["id"].get<std::string>());
-											};											
+											};
 											if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											};
@@ -745,11 +745,8 @@ namespace DiscordCoreInternal {
 											theKey.guildId = guildId;
 											DiscordCoreAPI::GuildMemberData* guildMember = DiscordCoreAPI::GuildMembers::cache[theKey].get();
 											DiscordCoreAPI::GuildMembers::removeGuildMember(theKey);
-											DiscordCoreAPI::VoiceStateId theKey02{};
-											theKey02.guildMemberId = userId;
-											theKey02.guildId = guildId;
-											if (DiscordCoreAPI::Guilds::voiceStateCache.contains(theKey02)) {
-												DiscordCoreAPI::Guilds::voiceStateCache.erase(theKey02);
+											if (DiscordCoreAPI::Guilds::voiceStateCache.contains(theKey)) {
+												DiscordCoreAPI::Guilds::voiceStateCache.erase(theKey);
 											}
 											DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->guildId].get();
 											for (uint64_t x = 0; x < guild->members.size(); ++x) {
@@ -1132,7 +1129,7 @@ namespace DiscordCoreInternal {
 										}
 										std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
 										dataPackage->voiceStateData = &payload["d"];
-										DiscordCoreAPI::VoiceStateId theKey{};
+										DiscordCoreAPI::GuildMemberId theKey{};
 										theKey.guildId = dataPackage->voiceStateData.guildId;
 										theKey.guildMemberId = dataPackage->voiceStateData.userId;
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
@@ -1142,11 +1139,8 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::Guilds::voiceStateCache[theKey] = std::make_unique<DiscordCoreAPI::VoiceStateData>(dataPackage->voiceStateData);
 											}
 										}
-										DiscordCoreAPI::GuildMemberId theKey02{};
-										theKey02.guildId = dataPackage->voiceStateData.guildId;
-										theKey02.guildMemberId = dataPackage->voiceStateData.userId;
-										if (DiscordCoreAPI::GuildMembers::cache.contains(theKey02)) {
-											DiscordCoreAPI::GuildMembers::cache[theKey02]->currentVoiceChannel = dataPackage->voiceStateData.channelId;
+										if (DiscordCoreAPI::GuildMembers::cache.contains(theKey)) {
+											DiscordCoreAPI::GuildMembers::cache[theKey]->currentVoiceChannel = dataPackage->voiceStateData.channelId;
 										}
 										this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
 										break;

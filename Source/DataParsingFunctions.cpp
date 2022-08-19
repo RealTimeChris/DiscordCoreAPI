@@ -509,7 +509,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
 				std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
-				VoiceStateId theKey{};
+				GuildMemberId theKey{};
 				theKey.guildId = this->id;
 				theKey.guildMemberId = theData->userId;
 				Guilds::voiceStateCache[theKey] = std::move(theData);
@@ -521,7 +521,7 @@ namespace DiscordCoreAPI {
 			for (auto& value: (*jsonObjectData)["members"]) {
 				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(&value) };
 				newData->guildId = this->id;
-				VoiceStateId theKey{};
+				GuildMemberId theKey{};
 				theKey.guildId = newData->guildId;
 				theKey.guildMemberId = newData->id;
 				if (Guilds::voiceStateCache.contains(theKey)) {
@@ -1107,8 +1107,7 @@ namespace DiscordCoreAPI {
 			this->permissionOverwrites.clear();
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
 				OverWriteData newData{ &value };
-				uint64_t overWriteId = newData.id;
-				this->permissionOverwrites[overWriteId] = newData;
+				this->permissionOverwrites.push_back(std::move(newData));
 			}
 		}
 
@@ -1728,7 +1727,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("permission_overwrites") && !(*jsonObjectData)["permission_overwrites"].is_null()) {
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
 				OverWriteData newData{ &value };
-				this->permissionOverwrites.emplace_back(newData);
+				this->permissionOverwrites.push_back(std::move(newData));
 			}
 		}
 
@@ -2751,7 +2750,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
 				std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
-				VoiceStateId theKey{};
+				GuildMemberId theKey{};
 				theKey.guildId = this->id;
 				theKey.guildMemberId = theData->userId;
 				Guilds::voiceStateCache[theKey] = std::move(theData);
@@ -2763,7 +2762,7 @@ namespace DiscordCoreAPI {
 			for (auto& value: (*jsonObjectData)["members"]) {
 				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(&value) };
 				newData->guildId = this->id;
-				VoiceStateId theKey{};
+				GuildMemberId theKey{};
 				theKey.guildId = newData->guildId;
 				theKey.guildMemberId = newData->id;
 				if (Guilds::voiceStateCache.contains(theKey)) {

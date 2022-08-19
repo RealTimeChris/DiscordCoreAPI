@@ -520,23 +520,6 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	bool operator==(const VoiceStateId& lhs, const VoiceStateId& rhs) {
-		if (lhs.guildMemberId == rhs.guildMemberId && lhs.guildId == rhs.guildId) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	bool operator<(const VoiceStateId& lhs, const VoiceStateId& rhs) {
-		if ((lhs.guildId + lhs.guildMemberId) < (rhs.guildId + rhs.guildMemberId)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-
 	OverWriteData& OverWriteData::operator=(nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;

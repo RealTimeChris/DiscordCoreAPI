@@ -814,16 +814,6 @@ namespace DiscordCoreAPI {
 
 	bool operator<(const GuildMemberId& lhs, const GuildMemberId& rhs);
 
-	struct DiscordCoreAPI_Dll VoiceStateId {
-		VoiceStateId() = default;
-		Snowflake guildMemberId{};
-		Snowflake guildId{};
-	};
-
-	bool operator==(const VoiceStateId lhs, const VoiceStateId rhs);
-
-	bool operator<(const VoiceStateId& lhs, const VoiceStateId& rhs);
-
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity, public DataParser {
@@ -912,7 +902,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll OverWriteData : public DiscordEntity, public DataParser {
 	  public:
 		PermissionOverwritesType type{};///< Role or User type.
-		Snowflake channelId{};///< Channel id for which Channel this overwrite belongs to.
 		Permissions allow{};///< Collection of Permissions to allow.
 		Permissions deny{};///< Collection of Permissions to deny.
 

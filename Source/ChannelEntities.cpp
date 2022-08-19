@@ -61,7 +61,6 @@ namespace DiscordCoreAPI {
 			nlohmann::json newData{};
 			newData["allow"] = value.allow.getCurrentPermissionString();
 			newData["deny"] = value.deny.getCurrentPermissionString();
-			newData["channel_id"] = std::to_string(value.channelId);
 			newData["type"] = value.type;
 			newData["id"] = std::to_string(value.id);
 			overwrites.emplace_back(newData);
@@ -176,7 +175,6 @@ namespace DiscordCoreAPI {
 			nlohmann::json newData{};
 			newData["allow"] = value.allow.getCurrentPermissionString();
 			newData["deny"] = value.deny.getCurrentPermissionString();
-			newData["channel_id"] = value.channelId;
 			newData["type"] = value.type;
 			newData["id"] = value.id;
 			permOws.emplace_back(newData);
