@@ -693,7 +693,7 @@ namespace DiscordCoreInternal {
 											Snowflake userId{};
 											if (payload["d"].contains("user") && !payload["d"]["user"].is_null()) {
 												userId = stoull(payload["d"]["user"]["id"].get<std::string>());
-											};
+											};											
 											if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											};
@@ -815,7 +815,9 @@ namespace DiscordCoreInternal {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											};
 											std::unique_ptr<DiscordCoreAPI::OnRoleDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleDeletionData>(
-												std::make_unique<DiscordCoreAPI::RoleData>(DiscordCoreAPI::Roles::getCachedRoleAsync({ .roleId = roleId }).get()), guildId) };
+												std::make_unique<DiscordCoreAPI::RoleData>(
+													DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = guildId, .roleId = roleId }).get()),
+												guildId) };
 											DiscordCoreAPI::Roles::removeRole(dataPackage->role->id);
 											DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->guildId].get();
 											for (uint64_t x = 0; x < guild->roles.size(); ++x) {
