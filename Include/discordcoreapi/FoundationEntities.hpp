@@ -870,7 +870,6 @@ namespace DiscordCoreAPI {
 	/// Voice state data. \brief Voice state data.
 	struct DiscordCoreAPI_Dll VoiceStateData : public DataParser {
 		TimeStamp<std::chrono::milliseconds> requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
-		GuildMemberData member{};///< The Guild member id this voice state is for.
 		StringWrapper sessionId{};///< The session id for this voice state.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
 		bool selfVideo{ false };///< Whether this User's camera is enabled.

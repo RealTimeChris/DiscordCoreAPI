@@ -1683,10 +1683,6 @@ namespace DiscordCoreAPI {
 
 		this->userId = strtoull(getString(jsonObjectData, "user_id"));
 
-		if (jsonObjectData->contains("member") && !(*jsonObjectData)["member"].is_null()) {
-			this->member = &(*jsonObjectData)["member"];
-		}
-
 		this->sessionId = getString(jsonObjectData, "session_id");
 
 		this->deaf = getBool(jsonObjectData, "deaf");
