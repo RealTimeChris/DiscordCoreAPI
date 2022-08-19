@@ -38,11 +38,11 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	OpusDecoderWrapper::OpusDecoderWrapper() noexcept {
+	OpusDecoderWrapper::OpusDecoderWrapper() {
 		int32_t error{};
 		this->thePtr.reset(opus_decoder_create(48000, 2, &error));
 		if (error != OPUS_OK) {
-			std::cout << "Failed to create the Opus Decoder" << std::endl;
+			throw std::runtime_error{ "Failed to create the Opus Decoder" };
 		}
 	}
 
@@ -562,7 +562,9 @@ namespace DiscordCoreAPI {
 						auto sampleCount = opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), static_cast<opus_int32>(theBuffer.theRawData.size()),
 							theBuffer.decodedData.data(), 5760, 0);
 						if (sampleCount <= 0) {
-							std::cout << "Failed to decode user's voice payload." << std::endl;
+							if (this->configManager->doWePrintGeneralErrorMessages()) {
+								cout << "Failed to decode user's voice payload." << std::endl;
+							}
 						} else {
 							theBuffer.decodedData.resize(static_cast<uint64_t>(sampleCount) * 2);
 							this->voiceUsers[speakerSsrc].thePayloads.push(std::move(theBuffer));
@@ -962,7 +964,9 @@ namespace DiscordCoreAPI {
 				}
 				auto theEncodedData = this->theEncoder.encodeSingleAudioFrame(theDownsampledVector);
 				if (theEncodedData.data.size() <= 0) {
-					std::cout << "Failed to encode user's voice payload." << std::endl;
+					if (this->configManager->doWePrintGeneralErrorMessages()) {
+						cout << "Failed to encode user's voice payload." << endl;
+					}
 				} else {
 					std::string theFinalString{};
 					theFinalString.insert(theFinalString.begin(), theEncodedData.data.data(), theEncodedData.data.data() + theEncodedData.data.size());

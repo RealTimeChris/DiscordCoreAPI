@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 
 		OpusDecoderWrapper(OpusDecoderWrapper&&) noexcept;
 
-		OpusDecoderWrapper() noexcept;
+		OpusDecoderWrapper();
 
 		operator OpusDecoder*() noexcept;
 
