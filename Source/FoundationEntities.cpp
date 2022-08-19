@@ -168,16 +168,13 @@ namespace DiscordCoreInternal {
 	}
 
 	int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) {
-		std::unique_lock theLock{ HttpsWorkloadData::accessMutex };
-		int64_t theValue{};
-		theValue = HttpsWorkloadData::workloadIdsExternal[workloadType]->load();
+		int64_t theValue{ HttpsWorkloadData::workloadIdsExternal[workloadType]->load() };
 		HttpsWorkloadData::workloadIdsExternal[workloadType]->store(theValue + 1);
 		return theValue;
 	}
 
 	std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsExternal{};
 	std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsInternal{};
-	std::mutex HttpsWorkloadData::accessMutex{};
 }
 
 namespace DiscordCoreAPI {

@@ -693,7 +693,7 @@ namespace DiscordCoreInternal {
 											Snowflake userId{};
 											if (payload["d"].contains("user") && !payload["d"]["user"].is_null()) {
 												userId = stoull(payload["d"]["user"]["id"].get<std::string>());
-											};											
+											};
 											if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											};
