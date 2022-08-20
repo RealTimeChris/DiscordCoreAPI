@@ -721,6 +721,8 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::GuildMembers::insertGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(&payload["d"]));
 											std::unique_ptr<DiscordCoreAPI::OnGuildMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberUpdateData>(
 												DiscordCoreAPI::GuildMembers::cache[theKey].get()) };
+											if (DiscordCoreAPI::Guilds::voiceStateCache.contains(theKey)) {
+												DiscordCoreAPI::GuildMembers::cache[theKey]->currentVoiceChannel = DiscordCoreAPI::Guilds::voiceStateCache[theKey]->channelId;
 											}
 											this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(*dataPackage);
 										}
