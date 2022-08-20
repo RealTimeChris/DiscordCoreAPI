@@ -42,6 +42,8 @@
 	#ifndef DiscordCoreAPI_Dll
 		#define DiscordCoreAPI_Dll
 	#endif
+#include <cstdint>
+#include <cstring>
 inline uint64_t ntohll(uint64_t x) {
 	uint8_t data[8]{};
 	memcpy(&data, &(x), sizeof(x));
