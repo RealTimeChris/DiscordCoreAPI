@@ -1095,8 +1095,8 @@ namespace DiscordCoreInternal {
 										break;
 									}
 									case 51: {
-										if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected &&
-											payload["d"]["member"]["user"]["id"] == std::to_string(this->userId)) {
+										auto userId = stoull(payload["d"]["member"]["user"]["id"].get<std::string>());
+										if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected && userId == this->userId) {
 											this->voiceConnectionData = VoiceConnectionData{};
 											this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
 											this->stateUpdateCollected = true;
@@ -1113,8 +1113,12 @@ namespace DiscordCoreInternal {
 										dataPackage->voiceStateData = &payload["d"];
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->voiceStateData.guildId)) {
-												DiscordCoreAPI::Guilds::cache[dataPackage->voiceStateData.guildId]->voiceStates.insert_or_assign(
-													stoull(payload["d"]["user_id"].get<std::string>()), stoull(payload["d"]["channel_id"].get<std::string>()));
+												if (payload["d"].contains("user_id") && !payload["d"]["user_id"].is_null() && payload["d"].contains("channel_id") &&
+													!payload["d"]["channel_id"].is_null()) {
+													DiscordCoreAPI::Guilds::cache[dataPackage->voiceStateData.guildId]->voiceStates.insert_or_assign(userId,
+														stoull(payload["d"]["channel_id"].get<std::string>()));
+												}
+												
 											}
 										}
 										this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
