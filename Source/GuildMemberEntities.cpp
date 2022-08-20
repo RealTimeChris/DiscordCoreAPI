@@ -161,6 +161,7 @@ namespace DiscordCoreAPI {
 			theLock.unlock();
 			co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
 		} else {
+			std::cout << "GUILD ID: " << theKey.guildId << ", THE USER ID: " << theKey.guildMemberId << std::endl;
 			co_return *Guilds::cache[theKey.guildId]->members[theKey.guildMemberId];
 		}
 	}
