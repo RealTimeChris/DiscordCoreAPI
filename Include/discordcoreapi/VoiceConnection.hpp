@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
-		bool onMessageReceived(int64_t offSet, int64_t length) noexcept;
+		bool onMessageReceived(const std::string& theData) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 

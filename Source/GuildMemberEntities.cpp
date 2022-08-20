@@ -308,7 +308,8 @@ namespace DiscordCoreAPI {
 		}
 		if (GuildMembers::configManager->doWeCacheGuildMembers()) {
 			if (Guilds::cache.contains(guildMember->guildId)) {
-				Guilds::cache[guildMember->guildId]->members.insert_or_assign(guildMember->id, guildMember.release());
+				auto userId = guildMember->id;
+				Guilds::cache[guildMember->guildId]->members.insert_or_assign(userId, guildMember.release());
 			}
 		}
 	}

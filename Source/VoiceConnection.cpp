@@ -134,11 +134,11 @@ namespace DiscordCoreAPI {
 		this->audioDataBuffer.send(std::move(frameData));
 	}
 
-	bool VoiceConnection::onMessageReceived(int64_t offSet, int64_t length) noexcept {
+	bool VoiceConnection::onMessageReceived(const std::string& theData) noexcept {
 		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
 		try {
 			if (WebSocketSSLShard::inputBuffer.size() > 0) {
-				nlohmann::json payload = payload.parse(WebSocketSSLShard::inputBuffer.substr(offSet, length));
+				nlohmann::json payload = payload.parse(theData);
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << payload << reset() << endl << endl;
 				}
@@ -345,7 +345,7 @@ namespace DiscordCoreAPI {
 				return false;
 			}
 			if (WebSocketSSLShard::inputBuffer.size() > 0) {
-				if (!this->parseMessage(this)) {
+				if (!VoiceConnection::parseMessage(this)) {
 					return true;
 				}
 			}
