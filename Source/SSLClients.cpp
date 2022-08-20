@@ -345,7 +345,7 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
 				std::cout << reportError("SSLClient::fcntl()") << std::endl;
-			
+			}
 			return false;
 		}
 #endif
