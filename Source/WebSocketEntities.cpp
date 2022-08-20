@@ -721,6 +721,7 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::GuildMembers::insertGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(&payload["d"]));
 											std::unique_ptr<DiscordCoreAPI::OnGuildMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberUpdateData>(
 												DiscordCoreAPI::GuildMembers::cache[theKey].get()) };
+											}
 											this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(*dataPackage);
 										}
 										break;
