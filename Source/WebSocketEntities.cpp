@@ -215,12 +215,12 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	bool WebSocketMessageHandler::parseMessage(SSLClient* theShard) noexcept {
-		if (static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.size() < 4) {
+	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard) noexcept {
+		if (theShard->inputBuffer.size() < 4) {
 			return true;
 		}
-		static_cast<WebSocketSSLShard*>(theShard)->dataOpCode = static_cast<WebSocketOpCode>(static_cast<WebSocketSSLShard*>(theShard)->inputBuffer[0] & ~webSocketFinishBit);
-		switch (static_cast<WebSocketSSLShard*>(theShard)->dataOpCode) {
+		theShard->dataOpCode = static_cast<WebSocketOpCode>(theShard->inputBuffer[0] & ~webSocketFinishBit);
+		switch (theShard->dataOpCode) {
 			case WebSocketOpCode::Op_Continuation:
 				[[fallthrough]];
 			case WebSocketOpCode::Op_Text:
@@ -230,59 +230,59 @@ namespace DiscordCoreInternal {
 			case WebSocketOpCode::Op_Ping:
 				[[fallthrough]];
 			case WebSocketOpCode::Op_Pong: {
-				uint8_t length01 = static_cast<WebSocketSSLShard*>(theShard)->inputBuffer[1];
-				static_cast<WebSocketSSLShard*>(theShard)->messageOffset = 2;
+				uint8_t length01 = theShard->inputBuffer[1];
+				theShard->messageOffset = 2;
 				if (length01 & webSocketMaskBit) {
 					return true;
 				}
-				static_cast<WebSocketSSLShard*>(theShard)->messageLength = length01;
+				theShard->messageLength = length01;
 				if (length01 == webSocketPayloadLengthMagicLarge) {
-					if (static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.size() < 8) {
+					if (theShard->inputBuffer.size() < 8) {
 						return true;
 					}
-					uint8_t length03 = static_cast<WebSocketSSLShard*>(theShard)->inputBuffer[2];
-					uint8_t length04 = static_cast<WebSocketSSLShard*>(theShard)->inputBuffer[3];
-					static_cast<WebSocketSSLShard*>(theShard)->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
-					static_cast<WebSocketSSLShard*>(theShard)->messageOffset += 2;
+					uint8_t length03 = theShard->inputBuffer[2];
+					uint8_t length04 = theShard->inputBuffer[3];
+					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+					theShard->messageOffset += 2;
 				} else if (length01 == webSocketPayloadLengthMagicHuge) {
-					if (static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.size() < 10) {
+					if (theShard->inputBuffer.size() < 10) {
 						return true;
 					}
-					static_cast<WebSocketSSLShard*>(theShard)->messageLength = 0;
+					theShard->messageLength = 0;
 					for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-						uint8_t lengthNew = static_cast<uint8_t>(static_cast<WebSocketSSLShard*>(theShard)->inputBuffer[x]);
-						static_cast<WebSocketSSLShard*>(theShard)->messageLength |=
+						uint8_t lengthNew = static_cast<uint8_t>(theShard->inputBuffer[x]);
+						theShard->messageLength |=
 							static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
 					}
-					static_cast<WebSocketSSLShard*>(theShard)->messageOffset += 8;
+					theShard->messageOffset += 8;
 				}
-				if (static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.size() > 0 &&
-					static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.size() < static_cast<uint64_t>(static_cast<WebSocketSSLShard*>(theShard)->messageOffset) +
-							static_cast<uint64_t>(static_cast<WebSocketSSLShard*>(theShard)->messageLength)) {
+				if (theShard->inputBuffer.size() > 0 &&
+					theShard->inputBuffer.size() < static_cast<uint64_t>(theShard->messageOffset) +
+							static_cast<uint64_t>(theShard->messageLength)) {
 					return true;
 				} else {
-					auto theValue = this->onMessageReceived(static_cast<WebSocketSSLShard*>(theShard)->messageOffset, static_cast<WebSocketSSLShard*>(theShard)->messageLength);
-					static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.erase(static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.begin(),
-						static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.begin() + static_cast<WebSocketSSLShard*>(theShard)->messageOffset +
-							static_cast<WebSocketSSLShard*>(theShard)->messageLength);
+					auto theValue = this->onMessageReceived(theShard->messageOffset, theShard->messageLength);
+					theShard->inputBuffer.erase(theShard->inputBuffer.begin(),
+						theShard->inputBuffer.begin() + theShard->messageOffset +
+							theShard->messageLength);
 					return false;
 				}
 			}
 			case WebSocketOpCode::Op_Close: {
-				uint16_t close = static_cast<WebSocketSSLShard*>(theShard)->inputBuffer[2] & 0xff;
+				uint16_t close = theShard->inputBuffer[2] & 0xff;
 				close <<= 8;
-				close |= static_cast<WebSocketSSLShard*>(theShard)->inputBuffer[3] & 0xff;
-				static_cast<WebSocketSSLShard*>(theShard)->closeCode = close;
-				if (static_cast<WebSocketSSLShard*>(theShard)->closeCode) {
-					static_cast<WebSocketSSLShard*>(theShard)->areWeResuming = true;
+				close |= theShard->inputBuffer[3] & 0xff;
+				theShard->closeCode = close;
+				if (theShard->closeCode) {
+					theShard->areWeResuming = true;
 				}
-				static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.erase(static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.begin(),
-					static_cast<WebSocketSSLShard*>(theShard)->inputBuffer.begin() + 4);
+				theShard->inputBuffer.erase(theShard->inputBuffer.begin(),
+					theShard->inputBuffer.begin() + 4);
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightRed()
-						 << "WebSocket " + static_cast<WebSocketSSLShard*>(theShard)->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) +
+						 << "WebSocket " + theShard->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) +
 							" Closed; Code: "
-						 << +static_cast<uint16_t>(static_cast<WebSocketSSLShard*>(theShard)->closeCode) << DiscordCoreAPI::reset() << endl
+						 << +static_cast<uint16_t>(theShard->closeCode) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
 				this->onClosed();

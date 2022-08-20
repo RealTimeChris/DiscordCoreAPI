@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 
 		virtual bool onMessageReceived(int64_t offSet, int64_t length) noexcept = 0;
 
-		bool parseMessage(DiscordCoreInternal::SSLClient* theShard) noexcept;
+		bool parseMessage(WebSocketSSLShard* theShard) noexcept;
 
 		virtual void onClosed() noexcept = 0;
 
