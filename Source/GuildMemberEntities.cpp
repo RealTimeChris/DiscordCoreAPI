@@ -161,9 +161,11 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMemberData>();
 		std::shared_lock theLock{ GuildMembers::theMutex };
 		GuildMemberData theData{};
-		for (auto& value: Guilds::cache[dataPackage.guildId]->members) {
-			if (dataPackage.guildMemberId == value->id) {
-				co_return *value;
+		if (Guilds::cache.contains(dataPackage.guildId)) {
+			for (auto& value: Guilds::cache[dataPackage.guildId]->members) {
+				if (dataPackage.guildMemberId == value->id) {
+					co_return *value;
+				}
 			}
 		}
 		co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
@@ -320,7 +322,6 @@ namespace DiscordCoreAPI {
 		}
 		if (GuildMembers::configManager->doWeCacheGuildMembers()) {
 			if (Guilds::cache.contains(guildMember->guildId)) {
-				auto userId = guildMember->id;
 				Guilds::cache[guildMember->guildId]->members.push_back(guildMember.release());
 			}
 		}
