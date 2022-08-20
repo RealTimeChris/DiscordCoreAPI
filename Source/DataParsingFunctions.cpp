@@ -518,8 +518,8 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				if (this->members.contains(stoull(value["userId"].get<std::string>()))) {
-					this->members[stoull(value["userId"].get<std::string>())]->voiceChannelId = value["user_id"];
+				if (this->members.contains(stoull(value["user_id"].get<std::string>()))) {
+					this->members[stoull(value["user_id"].get<std::string>())]->voiceChannelId = value["user_id"];
 				}
 			}
 		}
@@ -2751,8 +2751,8 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				if (this->members.contains(stoull(value["userId"].get<std::string>()))) {
-					this->members[stoull(value["userId"].get<std::string>())]->voiceChannelId = value["user_id"];
+				if (this->members.contains(stoull(value["user_id"].get<std::string>()))) {
+					this->members[stoull(value["user_id"].get<std::string>())]->voiceChannelId = value["user_id"];
 				}
 			}
 		}
