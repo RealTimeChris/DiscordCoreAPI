@@ -323,7 +323,6 @@ namespace DiscordCoreAPI {
 			theKey.guildId = guildMember->guildId;
 			theKey.guildMemberId = guildMember->id;
 			if (Guilds::cache.contains(theKey.guildId)) {
-				std::cout << "YES WE CONTAIN IT!" << std::endl;
 				Guilds::cache[theKey.guildId]->members.insert_or_assign(theKey.guildMemberId, guildMember.release());
 			}
 		}
