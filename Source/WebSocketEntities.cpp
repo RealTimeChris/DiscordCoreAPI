@@ -1448,8 +1448,10 @@ namespace DiscordCoreInternal {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				while (this->areWeConnecting.load()) {
+					this->areWeOkToConnect.store(true);
 					std::this_thread::sleep_for(1ms);
 				}
+				this->areWeOkToConnect.store(false);
 				{
 					std::unique_lock theLock{ this->theConnectDisconnectMutex };
 					if (this->voiceConnectionsToDisconnect.size() > 0) {
