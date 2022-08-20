@@ -36,22 +36,21 @@
 	#endif
 		#ifndef WINRT_LEAN_AND_MEAN
 		#define WINRT_LEAN_AND_MEAN
-	#endif
-#include <WinSock2.h>
+	#endif			
+	#include <WinSock2.h>
 #else
 	#ifndef DiscordCoreAPI_Dll
 		#define DiscordCoreAPI_Dll
 	#endif
-	#define ntohll(x) \
-		{ \
-			uint8_t data[8]{}; \
-			memcpy(&data, &(x), sizeof(x)); \
-			uint64_t theValue{}; \
-			for (uint32_t x = 0; x < sizeof(ReturnType); ++x) { \
-				theValue |= data[x] << 8 * (sizeof(ReturnType) - x - 1); \
-			} \
-			return theValue; \
-		}
+inline uint64_t ntohll(uint64_t x) {
+	uint8_t data[8]{};
+	memcpy(&data, &(x), sizeof(x));
+	uint64_t theValue{};
+	for (uint32_t y = 0; y < sizeof(uint64_t); ++y) {
+		theValue |= data[y] << 8 * (sizeof(uint64_t) - y - 1);
+	}
+	return theValue;
+}
 	#include <arpa/inet.h>
 	#include <pthread.h>
 	#include <sys/time.h>
