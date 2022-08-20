@@ -402,8 +402,8 @@ namespace DiscordCoreAPI {
 					DoubleTimePointNs startingValue{ std::chrono::system_clock::now().time_since_epoch() };
 					DoubleTimePointNs intervalCount{ std::chrono::nanoseconds{ 20000000 } };
 					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
-					int32_t frameCounter{ 0 };
-					DoubleTimePointNs totalTime{ std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::nanoseconds{ 0 }) };
+					int64_t frameCounter{ 0 };
+					DoubleTimePointNs totalTime{ std::chrono::nanoseconds{ 0 } };
 					if (!this->areWePlaying.load()) {
 						this->sendSpeakingMessage(true);
 						this->areWePlaying.store(true);
@@ -419,10 +419,8 @@ namespace DiscordCoreAPI {
 						}
 						std::this_thread::sleep_for(1ms);
 					}
-					int32_t theIndex{};
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
-						++theIndex;
 						if (!DatagramSocketClient::areWeStillConnected()) {
 							this->areWePlaying.store(false);
 							break;
