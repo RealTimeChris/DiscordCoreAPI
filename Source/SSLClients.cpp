@@ -321,7 +321,7 @@ namespace DiscordCoreInternal {
 		/* SNI */
 		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << std::endl;
+				std::cout << reportSSLError("SSLClient::SSL_set_tlsext_host_name()", theResult, this->ssl) << std::endl;
 			}
 			return false;
 		}
@@ -411,14 +411,14 @@ namespace DiscordCoreInternal {
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(true);
 					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::SSL_write_ex()", returnValue, this->ssl) << std::endl;
+						std::cout << reportSSLError("SSLClient::SSL_write_ex()", errorValue, this->ssl) << std::endl;
 					}
 					return ProcessIOResult::SSL_Zero_Return;
 				}
 				default: {
 					this->disconnect(true);
 					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::SSL_write_ex()", returnValue, this->ssl) << std::endl;
+						std::cout << reportSSLError("SSLClient::SSL_write_ex()", errorValue, this->ssl) << std::endl;
 					}
 					return ProcessIOResult::SSL_Error;
 				}
@@ -459,7 +459,7 @@ namespace DiscordCoreInternal {
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(true);
 					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::SSL_read_ex()", returnValue, this->ssl) << std::endl;
+						std::cout << reportSSLError("SSLClient::SSL_read_ex()", errorValue, this->ssl) << std::endl;
 					}
 					returnValueReal = ProcessIOResult::SSL_Zero_Return;
 					break;
@@ -467,7 +467,7 @@ namespace DiscordCoreInternal {
 				default: {
 					this->disconnect(true);
 					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::SSL_read_ex()", returnValue, this->ssl) << std::endl;
+						std::cout << reportSSLError("SSLClient::SSL_read_ex()", errorValue, this->ssl) << std::endl;
 					}
 					returnValueReal = ProcessIOResult::SSL_Error;
 					break;
