@@ -142,8 +142,8 @@ namespace DiscordCoreInternal {
 		std::queue<uint64_t> voiceConnectionsToDisconnect{};
 		std::recursive_mutex theConnectDisconnectMutex{};
 		DiscordCoreAPI::ConfigManager* configManager{};
+		const uint32_t maxReconnectTries{ 10 };
 		std::atomic_bool* doWeQuit{ nullptr };
-		const int32_t maxReconnectTries{ 10 };
 		int32_t heartbeatInterval{ 0 };
 
 		void connectVoiceInternal() noexcept;

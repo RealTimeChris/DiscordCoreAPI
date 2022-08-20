@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 			}
-		} catch (SIGINTError& e) {
+		} catch (SIGINTError&) {
 			reportException("signalHandler()");
 			std::exit(EXIT_SUCCESS);
 		} catch (...) {

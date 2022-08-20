@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(std::vector<opus_int16>& inputFrame) {
 		std::vector<uint8_t> newBuffer{};
 		newBuffer.resize(this->maxBufferSize);
-		int32_t count = opus_encode(this->encoder, inputFrame.data(), inputFrame.size() / 2, newBuffer.data(), this->maxBufferSize);
+		int32_t count = opus_encode(this->encoder, inputFrame.data(), static_cast<int32_t>(inputFrame.size() / 2), newBuffer.data(), this->maxBufferSize);
 		if (count <= 0 || count > newBuffer.size()) {
 			return DiscordCoreAPI::AudioFrameData();
 		}
