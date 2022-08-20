@@ -25,26 +25,22 @@ namespace DiscordCoreInternal {
 
 	ErlPacker::ErlPacker() : buffer(bufferRef){};
 
-	ErlPacker& ErlPacker::operator=(std::string& theBuffer) {
-		this->buffer = theBuffer;
+	ErlPacker& ErlPacker::operator=(const std::string& theBuffer) {
 		return *this;
 	}
 
-	ErlPacker::ErlPacker(std::string& theBuffer) : buffer(( std::string& )theBuffer){};
+	ErlPacker::ErlPacker(const std::string& theBuffer) : buffer(theBuffer){};
 
 	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
 		std::string theString{};
-		this->buffer = theString;
 		this->offSet = 0;
 		ErlPacker::appendVersion();
 		ErlPacker::singleValueJsonToETF(dataToParse);
-		return this->buffer;
+		return this->bufferRef;
 	}
 
-	nlohmann::json ErlPacker::parseEtfToJson(std::string&& dataToParse) {
+	nlohmann::json ErlPacker::parseEtfToJson(std::string& dataToParse) {
 		this->offSet = 0;
-		this->bufferRef = std::move(dataToParse);
-		this->buffer = this->bufferRef;
 		uint8_t version = ErlPacker::readBits<uint8_t>();
 		return ErlPacker::singleValueETFToJson();
 	}
@@ -109,9 +105,9 @@ namespace DiscordCoreInternal {
 
 	void ErlPacker::writeToBuffer(const std::string& bytes) {
 		if (this->offSet > this->buffer.size()) {
-			this->buffer.resize(this->offSet);
+			this->bufferRef.resize(this->offSet);
 		}
-		this->buffer.insert(this->buffer.begin() + this->offSet, bytes.begin(), bytes.end());
+		this->bufferRef.insert(this->bufferRef.begin() + this->offSet, bytes.begin(), bytes.end());
 		this->offSet += static_cast<uint32_t>(bytes.size());
 	}
 

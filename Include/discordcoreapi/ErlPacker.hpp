@@ -52,17 +52,17 @@ namespace DiscordCoreInternal {
 	  public:
 		std::string parseJsonToEtf(nlohmann::json&);
 
-		nlohmann::json parseEtfToJson(std::string&& dataToParse);
+		nlohmann::json parseEtfToJson(std::string& dataToParse);
 
 		ErlPacker();
 
-		ErlPacker& operator=(std::string&);
+		ErlPacker& operator=(const std::string&);
 
-		ErlPacker(std::string&);
+		ErlPacker(const std::string&);
 
 	  protected:
-		std::string bufferRef;
-		std::string& buffer;
+		const std::string& buffer;
+		std::string bufferRef{};
 
 		mutable uint64_t offSet{};
 
@@ -98,9 +98,9 @@ namespace DiscordCoreInternal {
 			if (this->offSet + sizeof(ReturnType) > this->buffer.size()) {
 				throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
 			}
-			ReturnType newValue = *reinterpret_cast<ReturnType*>(this->buffer.data() + this->offSet);
+			const ReturnType newValue = *reinterpret_cast<const ReturnType*>(this->buffer.data() + this->offSet);
 			this->offSet += sizeof(ReturnType);
-			return DiscordCoreAPI::reverseByteOrder<ReturnType>(newValue);
+			return DiscordCoreAPI::reverseByteOrder<const ReturnType>(newValue);
 		}
 
 		const char* readString(uint32_t length);

@@ -2133,12 +2133,12 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity, public DataParser {
 	  public:
-		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild.
+		std::unordered_map<Snowflake, GuildMemberData*> members{};
+		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild;
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
 		std::vector<Snowflake> channels{};///< Array of Guild channels.
-		std::vector<Snowflake> members{};///< Array of GuildMembers.
-		std::vector<Snowflake> roles{};///< Array of Guild roles.
+		std::vector<Snowflake> roles{};///< Array of Guild roles;
 		int32_t memberCount{ 0 };///< Member count.
 		StringWrapper name{};///< The Guild's name.
 		Snowflake ownerId{};///< User id of the Guild's owner.

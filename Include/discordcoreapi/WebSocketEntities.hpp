@@ -51,7 +51,7 @@ namespace DiscordCoreInternal {
 
 		bool parseConnectionHeaders(DiscordCoreInternal::WebSocketSSLShard* theShard) noexcept;
 
-		virtual bool onMessageReceived(int64_t offSet, int64_t length) noexcept = 0;
+		virtual bool onMessageReceived(const std::string& theMessage) noexcept = 0;
 
 		bool parseMessage(WebSocketSSLShard* theShard) noexcept;
 
@@ -79,7 +79,7 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		bool onMessageReceived(int64_t offSet, int64_t length) noexcept;
+		bool onMessageReceived(const std::string& theMessage) noexcept;
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 

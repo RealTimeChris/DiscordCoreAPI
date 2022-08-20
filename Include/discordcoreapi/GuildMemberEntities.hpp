@@ -210,7 +210,6 @@ namespace DiscordCoreAPI {
 		static void removeGuildMember(GuildMemberId guildMemberId);
 
 	  protected:
-		static std::map<GuildMemberId, std::unique_ptr<GuildMemberData>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;

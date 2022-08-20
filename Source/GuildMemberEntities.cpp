@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
 		GuildMember theData{};
-		if (GuildMembers::cache.contains(theKey)) {
+		if (Guilds::cache[theKey.guildId]->members.contains(theKey.guildMemberId)) {
 			theData = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = theKey.guildMemberId, .guildId = theKey.guildId }).get();
 		}
 		theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &theData);
@@ -157,11 +157,11 @@ namespace DiscordCoreAPI {
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
 		std::shared_lock theLock{ GuildMembers::theMutex };
-		if (!GuildMembers::cache.contains(theKey)) {
+		if (!Guilds::cache[theKey.guildId]->members.contains(theKey.guildMemberId)) {
 			theLock.unlock();
 			co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
 		} else {
-			co_return *GuildMembers::cache[theKey];
+			co_return *Guilds::cache[theKey.guildId]->members[theKey.guildMemberId];
 		}
 	}
 
@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
 		GuildMember theData{};
-		if (GuildMembers::cache.contains(theKey)) {
+		if (Guilds::cache[theKey.guildId]->members.contains(theKey.guildMemberId)) {
 			theData = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = theKey.guildMemberId, .guildId = theKey.guildId }).get();
 		}
 		theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &theData);
@@ -318,22 +318,27 @@ namespace DiscordCoreAPI {
 		if (guildMember->id == 0) {
 			return;
 		}
-		GuildMemberId theKey{};
 		if (GuildMembers::configManager->doWeCacheGuildMembers()) {
+			GuildMemberId theKey{};
 			theKey.guildId = guildMember->guildId;
 			theKey.guildMemberId = guildMember->id;
-			GuildMembers::cache.insert_or_assign(theKey, std::move(guildMember));
+			if (Guilds::cache.contains(theKey.guildId)) {
+				std::cout << "YES WE CONTAIN IT!" << std::endl;
+				Guilds::cache[theKey.guildId]->members.insert_or_assign(theKey.guildMemberId, guildMember.release());
+			}
 		}
 	}
 
 	void GuildMembers::removeGuildMember(GuildMemberId guildMemberId) {
 		std::unique_lock theLock{ GuildMembers::theMutex };
-		if (GuildMembers::cache.contains(guildMemberId)) {
-			GuildMembers::cache.erase(guildMemberId);
+		if (Guilds::cache.contains(guildMemberId.guildId)) {
+			if (Guilds::cache[guildMemberId.guildId]->members.contains(guildMemberId.guildMemberId)) {
+				delete Guilds::cache[guildMemberId.guildId]->members[guildMemberId.guildMemberId];
+				Guilds::cache[guildMemberId.guildId]->members.erase(guildMemberId.guildMemberId);
+			}
 		}
 	};
 
-	std::map<GuildMemberId, std::unique_ptr<GuildMemberData>> GuildMembers::cache{};
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
 	ConfigManager* GuildMembers::configManager{ nullptr };
 	std::shared_mutex GuildMembers::theMutex{};

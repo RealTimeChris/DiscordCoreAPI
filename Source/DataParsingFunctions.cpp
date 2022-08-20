@@ -527,8 +527,7 @@ namespace DiscordCoreAPI {
 				if (Guilds::voiceStateCache.contains(theKey)) {
 					newData->currentVoiceChannel = Guilds::voiceStateCache[theKey]->channelId;
 				}
-				this->members.emplace_back(newData->id);
-				DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(newData));
+				this->members.insert_or_assign(theKey.guildMemberId, newData.get());
 			}
 		}
 
@@ -2768,8 +2767,7 @@ namespace DiscordCoreAPI {
 				if (Guilds::voiceStateCache.contains(theKey)) {
 					newData->currentVoiceChannel = Guilds::voiceStateCache[theKey]->channelId;
 				}
-				this->members.emplace_back(newData->id);
-				DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(newData));
+				this->members.insert_or_assign(theKey.guildMemberId, newData.get());
 			}
 		}
 
