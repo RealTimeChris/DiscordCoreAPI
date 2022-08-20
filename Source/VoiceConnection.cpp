@@ -324,7 +324,6 @@ namespace DiscordCoreAPI {
 				this->parseIncomingVoiceData();
 				this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
 				this->mixAudio();
-				std::cout << "WERE HERE THIS IS IT!" << std::endl;
 			}
 			if (timeTakesToSleep == 0) {
 				theStopWatch.resetTimer();
@@ -515,7 +514,6 @@ namespace DiscordCoreAPI {
 			VoicePayload theBuffer = this->theFrameQueue.front();
 			this->theFrameQueue.pop_front();
 			if (theBuffer.theRawData.size() > 0 && this->secretKeySend.size() > 0) {
-				std::cout << "THE BUFFER'S SIZE: " << theBuffer.theRawData.size() << std::endl;
 				std::vector<uint8_t> packet{};
 				packet.insert(packet.begin(), theBuffer.theRawData.begin(), theBuffer.theRawData.end());
 				theBuffer.theRawData.clear();
