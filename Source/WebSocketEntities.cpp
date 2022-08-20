@@ -697,13 +697,11 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::GuildMemberId theKey{};
 											theKey.guildMemberId = userId;
 											theKey.guildId = guildId;
-											if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
-												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
-												DiscordCoreAPI::GuildMembers::insertGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(&payload["d"]));
-												std::unique_ptr<DiscordCoreAPI::OnGuildMemberAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberAddData>(
-													DiscordCoreAPI::Guilds::cache[theKey.guildId]->members[theKey.guildMemberId], this->discordCoreClient) };
-												this->discordCoreClient->eventManager.onGuildMemberAddEvent(*dataPackage);
-											}
+											DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
+											DiscordCoreAPI::GuildMembers::insertGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(&payload["d"]));
+											std::unique_ptr<DiscordCoreAPI::OnGuildMemberAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberAddData>(
+												DiscordCoreAPI::Guilds::cache[theKey.guildId]->members[theKey.guildMemberId], this->discordCoreClient) };
+											this->discordCoreClient->eventManager.onGuildMemberAddEvent(*dataPackage);
 										}
 									}
 									case 25: {
@@ -720,15 +718,13 @@ namespace DiscordCoreInternal {
 											theKey.guildMemberId = userId;
 											theKey.guildId = guildId;
 											DiscordCoreAPI::GuildMembers::insertGuildMember(std::make_unique<DiscordCoreAPI::GuildMemberData>(&payload["d"]));
-											if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
-												std::unique_ptr<DiscordCoreAPI::OnGuildMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberUpdateData>(
-													DiscordCoreAPI::Guilds::cache[theKey.guildId]->members[theKey.guildMemberId]) };
-												if (DiscordCoreAPI::Guilds::voiceStateCache.contains(theKey)) {
-													DiscordCoreAPI::Guilds::cache[theKey.guildId]->members[theKey.guildMemberId]->currentVoiceChannel =
-														DiscordCoreAPI::Guilds::voiceStateCache[theKey]->channelId;
-												}
-												this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(*dataPackage);
+											std::unique_ptr<DiscordCoreAPI::OnGuildMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberUpdateData>(
+												DiscordCoreAPI::Guilds::cache[theKey.guildId]->members[theKey.guildMemberId]) };
+											if (DiscordCoreAPI::Guilds::voiceStateCache.contains(theKey)) {
+												DiscordCoreAPI::Guilds::cache[theKey.guildId]->members[theKey.guildMemberId]->currentVoiceChannel =
+													DiscordCoreAPI::Guilds::voiceStateCache[theKey]->channelId;
 											}
+											this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(*dataPackage);
 										}
 										break;
 									}
@@ -747,16 +743,14 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::GuildMemberId theKey{};
 											theKey.guildMemberId = userId;
 											theKey.guildId = guildId;
-											if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
-												DiscordCoreAPI::GuildMemberData* guildMember = DiscordCoreAPI::Guilds::cache[theKey.guildId]->members[theKey.guildMemberId];
-												DiscordCoreAPI::GuildMembers::removeGuildMember(theKey);
-												if (DiscordCoreAPI::Guilds::voiceStateCache.contains(theKey)) {
-													DiscordCoreAPI::Guilds::voiceStateCache.erase(theKey);
-												}
-												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->guildId].get();
-												guild->memberCount--;
-												this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(*dataPackage);
+											DiscordCoreAPI::GuildMemberData* guildMember = DiscordCoreAPI::Guilds::cache[theKey.guildId]->members[theKey.guildMemberId];
+											DiscordCoreAPI::GuildMembers::removeGuildMember(theKey);
+											if (DiscordCoreAPI::Guilds::voiceStateCache.contains(theKey)) {
+												DiscordCoreAPI::Guilds::voiceStateCache.erase(theKey);
 											}
+											DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->guildId].get();
+											guild->memberCount--;
+											this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(*dataPackage);
 										}
 										break;
 									}
