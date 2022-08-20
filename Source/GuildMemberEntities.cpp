@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 		theKey.guildId = dataPackage.guildId;
 		theKey.guildMemberId = dataPackage.guildMemberId;
 		std::shared_lock theLock{ GuildMembers::theMutex };
-		if (!Guilds::cache[theKey.guildId]->members.contains(theKey.guildMemberId)) {
+		if (!Guilds::cache[theKey.guildId]->members.contains(theKey.guildMemberId) || !Guilds::cache.contains(theKey.guildId)) {
 			theLock.unlock();
 			co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
 		} else {
