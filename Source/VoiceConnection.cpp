@@ -663,7 +663,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Initializing_WebSocket: {
-				if (!WebSocketSSLShard::connect(this->baseUrl, "443")) {
+				if (!WebSocketSSLShard::connect(this->baseUrl, "443", this->configManager->doWePrintWebSocketErrorMessages())) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					this->connectInternal();

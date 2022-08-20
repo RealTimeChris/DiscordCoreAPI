@@ -1442,7 +1442,8 @@ namespace DiscordCoreInternal {
 					return;
 				}
 
-				if (!WebSocketSSLShard::connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort())) {
+				if (!WebSocketSSLShard::connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort(),
+						this->configManager->doWePrintWebSocketErrorMessages())) {
 					this->onClosed();
 					return;
 				}

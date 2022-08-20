@@ -373,7 +373,7 @@ namespace DiscordCoreInternal {
 			}
 			if (workload.baseUrl != httpsConnection.currentBaseUrl || !httpsConnection.areWeStillConnected() || httpsConnection.doWeConnect) {
 				httpsConnection.currentBaseUrl = workload.baseUrl;
-				if (!httpsConnection.connect(workload.baseUrl, "443")) {
+				if (!httpsConnection.connect(workload.baseUrl, "443", this->configManager->doWePrintHttpsErrorMessages())) {
 					httpsConnection.currentReconnectTries++;
 					httpsConnection.doWeConnect = true;
 					return this->httpRequestInternal(httpsConnection, workload, rateLimitData);
