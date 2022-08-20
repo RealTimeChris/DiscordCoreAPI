@@ -140,13 +140,14 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
-		StopWatch<std::chrono::milliseconds> theStopWatch{ 5100ms };
+		StopWatch<std::chrono::milliseconds> theConnectionStopWatch{ 5100ms };
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
+		std::deque<ConnectionPackage> theConnections{};
 		CommandController commandController{ this };
-		std::atomic_int32_t theBaseShardCount{};
 		ConfigManager configManager{};
+		std::mutex connectionMutex{};
 		EventManager eventManager{};
 		BotUser currentUser{};
 

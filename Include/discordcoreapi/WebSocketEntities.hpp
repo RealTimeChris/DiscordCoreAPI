@@ -94,11 +94,9 @@ namespace DiscordCoreInternal {
 		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState::Connecting };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
-		DiscordCoreAPI::ConnectionPackage thePackage{};
 		std::recursive_mutex theConnectionMutex{};
 		VoiceConnectionData voiceConnectionData{};
 		bool haveWeReceivedHeartbeatAck{ true };
-		std::atomic_bool doWeReconnect{ false };
 		const uint32_t maxReconnectTries{ 10 };
 		std::atomic_bool* doWeQuit{ nullptr };
 		bool serverUpdateCollected{ false };
@@ -137,13 +135,12 @@ namespace DiscordCoreInternal {
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 550ms };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
+		std::queue<Snowflake> voiceConnectionsToDisconnect{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		std::queue<VoiceConnectInitData> voiceConnections{};
-		std::queue<uint64_t> voiceConnectionsToDisconnect{};
 		std::recursive_mutex theConnectDisconnectMutex{};
 		DiscordCoreAPI::ConfigManager* configManager{};
-		const uint32_t maxReconnectTries{ 10 };
-		std::atomic_bool* doWeQuit{ nullptr };
+		std::atomic_bool areWeConnecting{ true };
 		int32_t heartbeatInterval{ 0 };
 
 		void connectVoiceInternal() noexcept;
