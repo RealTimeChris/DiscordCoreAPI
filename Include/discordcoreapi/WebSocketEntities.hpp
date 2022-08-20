@@ -140,6 +140,7 @@ namespace DiscordCoreInternal {
 		std::queue<VoiceConnectInitData> voiceConnections{};
 		std::recursive_mutex theConnectDisconnectMutex{};
 		DiscordCoreAPI::ConfigManager* configManager{};
+		std::atomic_bool areWeOkToConnect{ false };
 		std::atomic_bool areWeConnecting{ true };
 		int32_t heartbeatInterval{ 0 };
 
