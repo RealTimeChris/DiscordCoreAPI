@@ -794,6 +794,45 @@ namespace DiscordCoreAPI {
 		Guild_Private_Thread = 12///< Guild private Thread.
 	};
 
+	/// Voice state data. \brief Voice state data.
+	struct DiscordCoreAPI_Dll VoiceStateData : public DataParser {
+		TimeStamp<std::chrono::milliseconds> requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
+		StringWrapper sessionId{};///< The session id for this voice state.
+		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
+		bool selfVideo{ false };///< Whether this User's camera is enabled.
+		bool selfDeaf{ false };///< Whether this User is locally deafened.
+		bool selfMute{ false };///< Whether this User is locally muted.
+		bool suppress{ false };///< Whether this User is muted by the current User.
+		Snowflake channelId{};///< The Channel id this User is connected to.
+		bool deaf{ false };///< Whether this User is deafened by the server.
+		bool mute{ false };///< Whether this User is muted by the server.
+		Snowflake guildId{};///< The Guild id this voice state is for.
+		Snowflake userId{};///< The User id this voice state is for.
+
+		VoiceStateData() = default;
+
+		VoiceStateData& operator=(nlohmann::json* jsonObjectData);
+
+		VoiceStateData(nlohmann::json* jsonObjectData);
+
+		VoiceStateData& operator=(VoiceStateData&& jsonObjectData) = default;
+
+		VoiceStateData(VoiceStateData&& jsonObjectData) = default;
+
+		VoiceStateData& operator=(const VoiceStateData& jsonObjectData) = default;
+
+		VoiceStateData(const VoiceStateData& jsonObjectData) = default;
+
+		VoiceStateData& operator=(VoiceStateData& jsonObjectData) = default;
+
+		VoiceStateData(VoiceStateData& jsonObjectData) = default;
+
+		virtual ~VoiceStateData() = default;
+
+	  protected:
+		void parseObject(nlohmann::json* jsonObjectData);
+	};
+
 	/// Automatic Thread archiving durations. \brief Automatic Thread archiving durations.
 	enum class ThreadAutoArchiveDuration : int16_t {
 		Shortest = 60,///< Shortest.
@@ -804,25 +843,15 @@ namespace DiscordCoreAPI {
 
 	enum class GuildMemberFlags : uint8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
 
-	struct DiscordCoreAPI_Dll GuildMemberId {
-		GuildMemberId() = default;
-		Snowflake guildMemberId{};
-		Snowflake guildId{};
-	};
-
-	bool operator==(const GuildMemberId& lhs, const GuildMemberId& rhs);
-
-	bool operator<(const GuildMemberId& lhs, const GuildMemberId& rhs);
-
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity, public DataParser {
 	  public:
 		friend class GuildData;
-
+		
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
-		Snowflake currentVoiceChannel{};///< The currently held voice channel, if applicable.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
+		Snowflake voiceChannelId{};///< The voice state, where applicable, for this guild member.
 		GuildMemberAvatar avatar{};///< This GuildMember's Guild Avatar.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		StringWrapper userName{};///< This GuildMember's UserName.
@@ -852,41 +881,6 @@ namespace DiscordCoreAPI {
 		std::string getAvatarUrl();
 
 		virtual ~GuildMemberData() = default;
-
-	  protected:
-		void parseObject(nlohmann::json* jsonObjectData);
-	};
-
-	/// Voice state data. \brief Voice state data.
-	struct DiscordCoreAPI_Dll VoiceStateData : public DataParser {
-		TimeStamp<std::chrono::milliseconds> requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
-		StringWrapper sessionId{};///< The session id for this voice state.
-		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
-		bool selfVideo{ false };///< Whether this User's camera is enabled.
-		bool selfDeaf{ false };///< Whether this User is locally deafened.
-		bool selfMute{ false };///< Whether this User is locally muted.
-		bool suppress{ false };///< Whether this User is muted by the current User.
-		Snowflake channelId{};///< The Channel id this User is connected to.
-		bool deaf{ false };///< Whether this User is deafened by the server.
-		bool mute{ false };///< Whether this User is muted by the server.
-		Snowflake guildId{};///< The Guild id this voice state is for.
-		Snowflake userId{};///< The User id this voice state is for.
-
-		VoiceStateData() = default;
-
-		VoiceStateData& operator=(nlohmann::json* jsonObjectData);
-
-		VoiceStateData(nlohmann::json* jsonObjectData);
-
-		VoiceStateData& operator=(VoiceStateData&& jsonObjectData) = default;
-
-		VoiceStateData(VoiceStateData&& jsonObjectData) = default;
-
-		VoiceStateData& operator=(VoiceStateData& jsonObjectData) = default;
-
-		VoiceStateData(VoiceStateData& jsonObjectData) = default;
-
-		virtual ~VoiceStateData() = default;
 
 	  protected:
 		void parseObject(nlohmann::json* jsonObjectData);
@@ -2133,7 +2127,7 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity, public DataParser {
 	  public:
-		std::unordered_map<Snowflake, GuildMemberData*> members{};
+		std::unordered_map<Snowflake, GuildMemberData*> members{};///< The guild members.
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild;
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.

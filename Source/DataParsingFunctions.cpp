@@ -506,28 +506,21 @@ namespace DiscordCoreAPI {
 			this->memberCount = (*jsonObjectData)["member_count"].get<int32_t>();
 		}
 
-		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
-			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
-				GuildMemberId theKey{};
-				theKey.guildId = this->id;
-				theKey.guildMemberId = theData->userId;
-				Guilds::voiceStateCache[theKey] = std::move(theData);
-			}
-		}
-
 		if (jsonObjectData->contains("members") && !(*jsonObjectData)["members"].is_null()) {
 			this->members.clear();
 			for (auto& value: (*jsonObjectData)["members"]) {
 				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(&value) };
 				newData->guildId = this->id;
-				GuildMemberId theKey{};
-				theKey.guildId = newData->guildId;
-				theKey.guildMemberId = newData->id;
-				if (Guilds::voiceStateCache.contains(theKey)) {
-					newData->currentVoiceChannel = Guilds::voiceStateCache[theKey]->channelId;
+				auto userId = newData->id;
+				this->members.insert_or_assign(userId, newData.release());
+			}
+		}
+
+		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
+			for (auto& value: (*jsonObjectData)["voice_states"]) {
+				if (this->members.contains(stoull(value["userId"].get<std::string>()))) {
+					this->members[stoull(value["userId"].get<std::string>())]->voiceChannelId = value["user_id"];
 				}
-				this->members.insert_or_assign(theKey.guildMemberId, newData.release());
 			}
 		}
 
@@ -2746,28 +2739,21 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
-			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				std::unique_ptr<VoiceStateData> theData{ std::make_unique<VoiceStateData>(&value) };
-				GuildMemberId theKey{};
-				theKey.guildId = this->id;
-				theKey.guildMemberId = theData->userId;
-				Guilds::voiceStateCache[theKey] = std::move(theData);
-			}
-		}
-
 		if (jsonObjectData->contains("members") && !(*jsonObjectData)["members"].is_null()) {
 			this->members.clear();
 			for (auto& value: (*jsonObjectData)["members"]) {
 				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(&value) };
 				newData->guildId = this->id;
-				GuildMemberId theKey{};
-				theKey.guildId = newData->guildId;
-				theKey.guildMemberId = newData->id;
-				if (Guilds::voiceStateCache.contains(theKey)) {
-					newData->currentVoiceChannel = Guilds::voiceStateCache[theKey]->channelId;
+				auto userId = newData->id;
+				this->members.insert_or_assign(userId, newData.release());
+			}
+		}
+
+		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
+			for (auto& value: (*jsonObjectData)["voice_states"]) {
+				if (this->members.contains(stoull(value["userId"].get<std::string>()))) {
+					this->members[stoull(value["userId"].get<std::string>())]->voiceChannelId = value["user_id"];
 				}
-				this->members.insert_or_assign(theKey.guildMemberId, newData.release());
 			}
 		}
 

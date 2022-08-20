@@ -465,22 +465,6 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	bool operator==(const GuildMemberId lhs, const GuildMemberId rhs) {
-		if (lhs.guildMemberId == rhs.guildMemberId && lhs.guildId == rhs.guildId) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	bool operator<(const GuildMemberId& lhs, const GuildMemberId& rhs) {
-		if ((lhs.guildId + lhs.guildMemberId) < (rhs.guildId + rhs.guildMemberId)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	GuildMemberData& GuildMemberData::operator=(nlohmann::json* jsonObjectData) noexcept {
 		this->parseObject(jsonObjectData);
 		return *this;
@@ -492,8 +476,8 @@ namespace DiscordCoreAPI {
 
 	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
 		if (this != &other) {
-			this->currentVoiceChannel = other.currentVoiceChannel;
 			this->userAvatar = std::move(other.userAvatar);
+			this->voiceChannelId = other.voiceChannelId;
 			this->userName = std::move(other.userName);
 			this->joinedAt = std::move(other.joinedAt);
 			this->avatar = std::move(other.avatar);

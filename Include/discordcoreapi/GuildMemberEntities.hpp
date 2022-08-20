@@ -207,7 +207,7 @@ namespace DiscordCoreAPI {
 
 		static void insertGuildMember(std::unique_ptr<GuildMemberData> guildMember);
 
-		static void removeGuildMember(GuildMemberId guildMemberId);
+		static void removeGuildMember(GuildMemberData guildMemberId);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
