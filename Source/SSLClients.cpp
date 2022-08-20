@@ -210,7 +210,8 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::Nothing_To_Write;
 	}
 
-	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew) noexcept {
+	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew) noexcept {
+		this->doWePrintErrorMessages = doWePrintErrorsNew;
 		this->rawInputBuffer.resize(this->maxBufferSize);
 		std::string stringNew{};
 		auto httpsFind = baseUrl.find("https://");
@@ -230,6 +231,9 @@ namespace DiscordCoreInternal {
 		hints->ai_protocol = IPPROTO_TCP;
 
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::SSL_CTX_new()") << std::endl;
+			}
 			return false;
 		}
 
@@ -240,66 +244,108 @@ namespace DiscordCoreInternal {
 #ifdef SSL_OP_IGNORE_UNEXPECTED_EOF
 		auto originalOptions{ SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
 		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::SSL_CTX_set_options()") << std::endl;
+			}
 			return false;
 		}
 #endif
 
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::getaddrinfo()") << std::endl;
+			}
 			return false;
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::socket()") << std::endl;
+			}
 			return false;
 		}
 
 		int32_t value{ this->maxBufferSize + 1 };
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&value), sizeof(value))) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::setsockopt()") << std::endl;
+			}
 			return false;
 		}
 
 		const char optionValue{ true };
 		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::setsockopt()") << std::endl;
+			}
 			return false;
 		}
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::setsockopt()") << std::endl;
+			}
 			return false;
 		}
 
 		linger optionValue02{};
 		optionValue02.l_onoff = 0;
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger))) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::setsockopt()") << std::endl;
+			}
 			return false;
 		}
 
 		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::connect()") << std::endl;
+			}
 			return false;
 		}
 
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::SSL_new()") << std::endl;
+			}
 			return false;
 		}
 
-		if (SSL_set_fd(this->ssl, this->theSocket) != 1) {
+		if (auto theResult = SSL_set_fd(this->ssl, this->theSocket);theResult != 1) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::SSL_set_fd()", theResult, this->ssl) << std::endl;
+			}
 			return false;
 		}
 
 		/* SNI */
-		if (SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()) != 1) {
+		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); theResult != 1) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << std::endl;
+			}
 			return false;
 		}
 
-		if (SSL_connect(this->ssl) != 1) {
+		if (auto theResult = SSL_connect(this->ssl); theResult != 1) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << std::endl;
+			}
 			return false;
 		}
 
 #ifdef _WIN32
 		u_long value02{ 1 };
 		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::ioctlsocket()") << std::endl;
+			}
 			return false;
 		}
 #else
 		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::fcntl()") << std::endl;
+			
 			return false;
 		}
 #endif
@@ -364,10 +410,16 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(true);
+					if (this->doWePrintErrorMessages) {
+						std::cout << reportSSLError("SSLClient::SSL_write_ex()", returnValue, this->ssl) << std::endl;
+					}
 					return ProcessIOResult::SSL_Zero_Return;
 				}
 				default: {
 					this->disconnect(true);
+					if (this->doWePrintErrorMessages) {
+						std::cout << reportSSLError("SSLClient::SSL_write_ex()", returnValue, this->ssl) << std::endl;
+					}
 					return ProcessIOResult::SSL_Error;
 				}
 			}
@@ -406,11 +458,17 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(true);
+					if (this->doWePrintErrorMessages) {
+						std::cout << reportSSLError("SSLClient::SSL_read_ex()", returnValue, this->ssl) << std::endl;
+					}
 					returnValueReal = ProcessIOResult::SSL_Zero_Return;
 					break;
 				}
 				default: {
 					this->disconnect(true);
+					if (this->doWePrintErrorMessages) {
+						std::cout << reportSSLError("SSLClient::SSL_read_ex()", returnValue, this->ssl) << std::endl;
+					}
 					returnValueReal = ProcessIOResult::SSL_Error;
 					break;
 				}

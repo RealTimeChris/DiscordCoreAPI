@@ -168,7 +168,7 @@ namespace DiscordCoreInternal {
 	  public:
 		SSLConnectionInterface() noexcept = default;
 
-		virtual bool connect(const std::string& baseUrl, const std::string& portNew) = 0;
+		virtual bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages) = 0;
 
 		virtual void disconnect(bool doWeReconnect) noexcept = 0;
 
@@ -218,7 +218,7 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
-		bool connect(const std::string& baseUrl, const std::string& portNew) noexcept;
+		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages) noexcept;
 
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
@@ -235,6 +235,9 @@ namespace DiscordCoreInternal {
 		int64_t getBytesRead() noexcept;
 
 		virtual ~SSLClient() noexcept = default;
+
+	  protected:
+		bool doWePrintErrorMessages{ false };
 	};
 
 	enum class ProcessIOType { Both = 0, Read_Only = 1, Write_Only = 2 };
