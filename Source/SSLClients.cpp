@@ -232,7 +232,7 @@ namespace DiscordCoreInternal {
 
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::SSL_CTX_new()") << std::endl;
+				cout << reportSSLError("SSLClient::SSL_CTX_new()") << endl;
 			}
 			return false;
 		}
@@ -245,7 +245,7 @@ namespace DiscordCoreInternal {
 		auto originalOptions{ SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
 		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::SSL_CTX_set_options()") << std::endl;
+				cout << reportSSLError("SSLClient::SSL_CTX_set_options()") << endl;
 			}
 			return false;
 		}
@@ -253,14 +253,14 @@ namespace DiscordCoreInternal {
 
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::getaddrinfo()") << std::endl;
+				cout << reportError("SSLClient::getaddrinfo()") << endl;
 			}
 			return false;
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::socket()") << std::endl;
+				cout << reportError("SSLClient::socket()") << endl;
 			}
 			return false;
 		}
@@ -268,7 +268,7 @@ namespace DiscordCoreInternal {
 		int32_t value{ this->maxBufferSize + 1 };
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&value), sizeof(value))) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::setsockopt()") << std::endl;
+				cout << reportError("SSLClient::setsockopt()") << endl;
 			}
 			return false;
 		}
@@ -276,14 +276,14 @@ namespace DiscordCoreInternal {
 		const char optionValue{ true };
 		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::setsockopt()") << std::endl;
+				cout << reportError("SSLClient::setsockopt()") << endl;
 			}
 			return false;
 		}
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::setsockopt()") << std::endl;
+				cout << reportError("SSLClient::setsockopt()") << endl;
 			}
 			return false;
 		}
@@ -292,28 +292,28 @@ namespace DiscordCoreInternal {
 		optionValue02.l_onoff = 0;
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger))) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::setsockopt()") << std::endl;
+				cout << reportError("SSLClient::setsockopt()") << endl;
 			}
 			return false;
 		}
 
 		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::connect()") << std::endl;
+				cout << reportError("SSLClient::connect()") << endl;
 			}
 			return false;
 		}
 
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::SSL_new()") << std::endl;
+				cout << reportError("SSLClient::SSL_new()") << endl;
 			}
 			return false;
 		}
 
 		if (auto theResult = SSL_set_fd(this->ssl, this->theSocket);theResult != 1) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::SSL_set_fd()", theResult, this->ssl) << std::endl;
+				cout << reportSSLError("SSLClient::SSL_set_fd()", theResult, this->ssl) << endl;
 			}
 			return false;
 		}
@@ -321,14 +321,14 @@ namespace DiscordCoreInternal {
 		/* SNI */
 		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::SSL_set_tlsext_host_name()", theResult, this->ssl) << std::endl;
+				cout << reportSSLError("SSLClient::SSL_set_tlsext_host_name()", theResult, this->ssl) << endl;
 			}
 			return false;
 		}
 
 		if (auto theResult = SSL_connect(this->ssl); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << std::endl;
+				cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << endl;
 			}
 			return false;
 		}
@@ -337,14 +337,14 @@ namespace DiscordCoreInternal {
 		u_long value02{ 1 };
 		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::ioctlsocket()") << std::endl;
+				cout << reportError("SSLClient::ioctlsocket()") << endl;
 			}
 			return false;
 		}
 #else
 		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::fcntl()") << std::endl;
+				cout << reportError("SSLClient::fcntl()") << endl;
 			}
 			return false;
 		}
@@ -415,7 +415,7 @@ namespace DiscordCoreInternal {
 				default: {
 					this->disconnect(true);
 					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::SSL_write_ex()", errorValue, this->ssl) << std::endl;
+						cout << reportSSLError("SSLClient::SSL_write_ex()", errorValue, this->ssl) << endl;
 					}
 					return ProcessIOResult::SSL_Error;
 				}
@@ -461,7 +461,7 @@ namespace DiscordCoreInternal {
 				default: {
 					this->disconnect(true);
 					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::SSL_read_ex()", errorValue, this->ssl) << std::endl;
+						cout << reportSSLError("SSLClient::SSL_read_ex()", errorValue, this->ssl) << endl;
 					}
 					returnValueReal = ProcessIOResult::SSL_Error;
 					break;
