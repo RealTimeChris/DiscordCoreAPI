@@ -410,9 +410,6 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(true);
-					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::SSL_write_ex()", errorValue, this->ssl) << std::endl;
-					}
 					return ProcessIOResult::SSL_Zero_Return;
 				}
 				default: {
@@ -458,9 +455,6 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(true);
-					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::SSL_read_ex()", errorValue, this->ssl) << std::endl;
-					}
 					returnValueReal = ProcessIOResult::SSL_Zero_Return;
 					break;
 				}
