@@ -324,6 +324,7 @@ namespace DiscordCoreAPI {
 				this->parseIncomingVoiceData();
 				this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
 				this->mixAudio();
+				std::cout << "WERE HERE THIS IS IT!" << std::endl;
 			}
 			if (timeTakesToSleep == 0) {
 				theStopWatch.resetTimer();
@@ -512,8 +513,9 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::parseIncomingVoiceData() noexcept {
 		while (this->theFrameQueue.size() > 0) {
 			VoicePayload theBuffer = this->theFrameQueue.front();
-			this->theFrameQueue.pop_back();
+			this->theFrameQueue.pop_front();
 			if (theBuffer.theRawData.size() > 0 && this->secretKeySend.size() > 0) {
+				std::cout << "THE BUFFER'S SIZE: " << theBuffer.theRawData.size() << std::endl;
 				std::vector<uint8_t> packet{};
 				packet.insert(packet.begin(), theBuffer.theRawData.begin(), theBuffer.theRawData.end());
 				theBuffer.theRawData.clear();
@@ -577,6 +579,7 @@ namespace DiscordCoreAPI {
 		}
 
 		std::string theBuffer = this->streamSocket->getInputBuffer();
+		this->streamSocket->getInputBuffer().clear();
 
 		AudioFrameData theFrame{};
 		theFrame.data.insert(theFrame.data.begin(), theBuffer.begin(), theBuffer.end());
@@ -613,12 +616,16 @@ namespace DiscordCoreAPI {
 			this->taskThread02.reset(nullptr);
 		}
 		if (this->taskThread03) {
+			if (this->streamSocket) {
+				this->streamSocket->disconnect();
+			}
 			this->taskThread03->request_stop();
 			if (this->taskThread03->joinable()) {
 				this->taskThread03->join();
 			}
 			this->taskThread03.reset(nullptr);
 		}
+		
 		DatagramSocketClient::disconnect();
 		WebSocketSSLShard::disconnect(false);
 		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
