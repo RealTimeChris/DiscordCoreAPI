@@ -163,8 +163,8 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		while (!Globals::doWeQuit.load()) {
-			std::unique_lock theLock{ this->connectionMutex };
 			if (this->theConnections.size() > 0 && this->theConnectionStopWatch.hasTimePassed()) {
+				std::unique_lock theLock{ this->connectionMutex };
 				this->theConnectionStopWatch.resetTimer();
 				auto theData = this->theConnections.front();
 				this->theConnections.pop_front();
@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 				this->baseSocketAgentMap[std::to_string(theData.currentShard)]->connect(theData);
 				if (this->theConnections.size() == 0 && this->configManager.doWePrintGeneralSuccessMessages()) {
 					cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << endl << endl;
-				}
+				} 
 			}
 			std::this_thread::sleep_for(1ms);
 		}
