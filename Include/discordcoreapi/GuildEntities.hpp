@@ -377,6 +377,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreClient;
+		friend class GuildMemberData;
 		friend class GuildMembers;
 		friend class GuildData;
 		friend class Guild;

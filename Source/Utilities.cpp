@@ -168,6 +168,7 @@ namespace DiscordCoreAPI {
 
 	StringWrapper& StringWrapper::operator=(StringWrapper&& other) noexcept {
 		if (this != &other) {
+			this->thePtr.reset(nullptr);
 			this->thePtr = std::move(other.thePtr);
 		}
 		return *this;
@@ -179,6 +180,7 @@ namespace DiscordCoreAPI {
 
 	StringWrapper& StringWrapper::operator=(const StringWrapper& other) {
 		if (this != &other) {
+			this->thePtr.reset(nullptr);
 			std::stringstream theStream{};
 			if (other.thePtr) {
 				theStream << other.thePtr;
@@ -199,6 +201,7 @@ namespace DiscordCoreAPI {
 
 	StringWrapper& StringWrapper::operator=(StringWrapper& other) noexcept {
 		if (this != &other) {
+			this->thePtr.reset(nullptr);
 			std::stringstream theStream{};
 			if (other.thePtr) {
 				theStream << other.thePtr;
@@ -219,6 +222,7 @@ namespace DiscordCoreAPI {
 
 	StringWrapper& StringWrapper::operator=(const std::string& theString) {
 		auto theLength = theString.size();
+		this->thePtr.reset(nullptr);
 		this->thePtr = std::make_unique<char[]>(theLength + 1);
 		for (int32_t x = 0; x < theLength; ++x) {
 			this->thePtr[x] = theString[x];
@@ -233,6 +237,7 @@ namespace DiscordCoreAPI {
 
 	StringWrapper& StringWrapper::operator=(std::string& theString) {
 		auto theLength = theString.size();
+		this->thePtr.reset(nullptr);
 		this->thePtr = std::make_unique<char[]>(theLength + 1);
 		for (int32_t x = 0; x < theLength; ++x) {
 			this->thePtr[x] = theString[x];
@@ -247,6 +252,7 @@ namespace DiscordCoreAPI {
 
 	StringWrapper& StringWrapper::operator=(const char* theString) {
 		if (theString) {
+			this->thePtr.reset(nullptr);
 			std::stringstream theStream{};
 			theStream << theString;
 			int64_t theLength = theStream.str().size();

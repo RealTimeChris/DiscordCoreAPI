@@ -74,6 +74,7 @@ namespace DiscordCoreInternal {
 	}
 
 	SSL_CTXWrapper& SSL_CTXWrapper::operator=(SSL_CTX* other) {
+		this->thePtr.reset(nullptr);
 		this->thePtr.reset(other);
 		SSL_CTX_up_ref(other);
 		return *this;
@@ -92,6 +93,7 @@ namespace DiscordCoreInternal {
 	}
 
 	SSLWrapper& SSLWrapper::operator=(SSL* other) {
+		this->thePtr.reset(nullptr);
 		this->thePtr.reset(other);
 		SSL_up_ref(other);
 		return *this;
@@ -116,6 +118,7 @@ namespace DiscordCoreInternal {
 	}
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) {
+		this->thePtr.reset(nullptr);
 		this->thePtr.reset(new SOCKET{ other });
 		return *this;
 	}

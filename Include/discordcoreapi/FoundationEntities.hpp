@@ -851,12 +851,11 @@ namespace DiscordCoreAPI {
 		
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
-		Snowflake voiceChannelId{};///< The voice state, where applicable, for this guild member.
 		GuildMemberAvatar avatar{};///< This GuildMember's Guild Avatar.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
-		StringWrapper userName{};///< This GuildMember's UserName.
+		std::string  userName{};///< This GuildMember's UserName.
 		UserAvatar userAvatar{};///< This GuildMember's User Avatar.
-		StringWrapper nick{};///< Their nick/display name.
+		std::string  nick{};///< Their nick/display name.
 		Snowflake guildId{};///< The current Guild's id.
 		int8_t flags{ 0 };///< GuildMember flags.
 
@@ -877,6 +876,8 @@ namespace DiscordCoreAPI {
 		GuildMemberData& operator=(GuildMemberData& jsonObjectData) = default;
 
 		GuildMemberData(GuildMemberData& jsonObjectData) = default;
+
+		Snowflake getVoiceChannelId();
 
 		std::string getAvatarUrl();
 
@@ -2127,14 +2128,15 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity, public DataParser {
 	  public:
-		std::unordered_map<Snowflake, GuildMemberData*> members{};///< The guild members.
+		std::unordered_map<Snowflake, Snowflake> voiceStates{};///< The guild members.
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild;
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
+		std::vector<GuildMemberData*> members{};///< The guild members.
 		std::vector<Snowflake> channels{};///< Array of Guild channels.
 		std::vector<Snowflake> roles{};///< Array of Guild roles;
 		int32_t memberCount{ 0 };///< Member count.
-		StringWrapper name{};///< The Guild's name.
+		std::string  name{};///< The Guild's name.
 		Snowflake ownerId{};///< User id of the Guild's owner.
 		int8_t flags{ 0 };///< Guild flags.
 		GuildIcon icon{};///< Url to the Guild's icon.

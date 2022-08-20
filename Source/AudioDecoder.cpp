@@ -30,6 +30,7 @@ namespace DiscordCoreInternal {
 	}
 
 	AVFrameWrapper& AVFrameWrapper::operator=(AVFrame* other) {
+		this->thePtr.reset(nullptr);
 		this->thePtr.reset(other);
 		return *this;
 	}
@@ -53,6 +54,7 @@ namespace DiscordCoreInternal {
 	}
 
 	AVCodecContextWrapper& AVCodecContextWrapper::operator=(AVCodecContext* other) {
+		this->thePtr.reset(nullptr);
 		this->thePtr.reset(other);
 		return *this;
 	}
@@ -107,6 +109,7 @@ namespace DiscordCoreInternal {
 	}
 
 	SwrContextWrapper& SwrContextWrapper::operator=(SwrContext* other) {
+		this->thePtr.reset(nullptr);
 		this->thePtr.reset(other);
 		return *this;
 	}
@@ -129,6 +132,7 @@ namespace DiscordCoreInternal {
 	}
 
 	AVIOContextWrapper& AVIOContextWrapper::operator=(AVIOContext* other) {
+		this->thePtr.reset(nullptr);
 		this->thePtr.reset(other);
 		return *this;
 	}
@@ -152,6 +156,7 @@ namespace DiscordCoreInternal {
 	}
 
 	AVPacketWrapper& AVPacketWrapper::operator=(AVPacket* other) {
+		this->thePtr.reset(nullptr);
 		this->thePtr.reset(other);
 		return *this;
 	}

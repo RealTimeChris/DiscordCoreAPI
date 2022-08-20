@@ -31,6 +31,7 @@ namespace DiscordCoreAPI {
 
 	OpusDecoderWrapper& OpusDecoderWrapper::operator=(OpusDecoderWrapper&& other) noexcept {
 		if (this != &other) {
+			this->thePtr.reset(nullptr);
 			this->thePtr.reset(other.thePtr.release());
 		}
 		return *this;
@@ -42,6 +43,7 @@ namespace DiscordCoreAPI {
 
 	OpusDecoderWrapper::OpusDecoderWrapper() {
 		int32_t error{};
+		this->thePtr.reset(nullptr);
 		this->thePtr.reset(opus_decoder_create(48000, 2, &error));
 		if (error != OPUS_OK) {
 			throw std::runtime_error{ "Failed to create the Opus Decoder" };

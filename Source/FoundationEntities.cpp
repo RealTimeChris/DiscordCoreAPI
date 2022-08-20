@@ -477,7 +477,6 @@ namespace DiscordCoreAPI {
 	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
 		if (this != &other) {
 			this->userAvatar = std::move(other.userAvatar);
-			this->voiceChannelId = other.voiceChannelId;
 			this->userName = std::move(other.userName);
 			this->joinedAt = std::move(other.joinedAt);
 			this->avatar = std::move(other.avatar);

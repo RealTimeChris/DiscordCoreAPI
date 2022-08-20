@@ -407,8 +407,8 @@ namespace DiscordCoreInternal {
 							payload = thePacker.parseEtfToJson(( std::string& )theData);
 							theInt.store(theInt.load() + theStopWatch.totalTimePassed());
 							if (DiscordCoreAPI::theCount.load() != 0) {
-								//std::cout << "THE STRING LENGTH: " << this->inputBuffer.substr(offSet, length).size() << std::endl;
-								//std::cout << "THE TIME TO COMPLETE (AVERAGE): " << theInt.load() / DiscordCoreAPI::theCount.load() << std::endl;
+								std::cout << "THE STRING LENGTH: " << theData.size() << std::endl;
+								std::cout << "THE TIME TO COMPLETE (AVERAGE): " << theInt.load() / DiscordCoreAPI::theCount.load() << std::endl;
 							}
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
@@ -623,7 +623,7 @@ namespace DiscordCoreInternal {
 											};
 											std::unique_ptr<DiscordCoreAPI::OnGuildDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildDeletionData>(
 												std::make_unique<DiscordCoreAPI::GuildData>(DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = guildId }).get())) };
-											for (auto& [key, value]: dataPackage->guild->members) {
+											for (auto&  value: dataPackage->guild->members) {
 												DiscordCoreAPI::GuildMembers::removeGuildMember(*value);
 											}
 											for (auto& value: dataPackage->guild->channels) {
@@ -1107,11 +1107,8 @@ namespace DiscordCoreInternal {
 										dataPackage->voiceStateData = &payload["d"];
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->voiceStateData.guildId)) {
-												if (DiscordCoreAPI::Guilds::cache[dataPackage->voiceStateData.guildId]->members.contains(dataPackage->voiceStateData.userId)) {
-													DiscordCoreAPI::Guilds::cache[dataPackage->voiceStateData.guildId]
-														->members[dataPackage->voiceStateData.userId]
-														->voiceChannelId = dataPackage->voiceStateData.channelId;
-												}
+												DiscordCoreAPI::Guilds::cache[dataPackage->voiceStateData.guildId]->voiceStates.insert_or_assign(payload["d"]["user_id"],
+													payload["d"]["channel_id"]);
 											}
 										}
 										this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);

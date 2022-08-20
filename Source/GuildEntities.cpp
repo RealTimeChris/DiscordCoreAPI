@@ -117,8 +117,8 @@ namespace DiscordCoreAPI {
 			Snowflake theChannelId{};
 			if (guildMemberId != 0) {
 				auto guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = guildMemberId, .guildId = this->id }).get();
-				if (guildMember.voiceChannelId != 0) {
-					theChannelId = guildMember.voiceChannelId;
+				if (guildMember.getVoiceChannelId() != 0) {
+					theChannelId = guildMember.getVoiceChannelId();
 				}
 			} else {
 				theChannelId = channelId;
@@ -846,7 +846,7 @@ namespace DiscordCoreAPI {
 				Guilds::cache.insert_or_assign(guild->id, std::move(guild));
 			}
 			theCount.store(Guilds::cache.size());
-			//std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
+			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
 		}
 	}
 

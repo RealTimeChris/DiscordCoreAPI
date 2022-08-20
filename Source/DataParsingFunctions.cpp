@@ -453,9 +453,10 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("roles") && !(*jsonObjectData)["roles"].is_null()) {
 			this->roles.clear();
+			this->roles.reserve((*jsonObjectData)["roles"].size());
 			for (auto& value: (*jsonObjectData)["roles"]) {
 				std::unique_ptr<DiscordCoreAPI::RoleData> newData{ std::make_unique<RoleData>(&value) };
-				this->roles.emplace_back(newData->id);
+				this->roles.push_back(newData->id);
 				DiscordCoreAPI::Roles::insertRole(std::move(newData));
 			}
 		}
@@ -508,28 +509,29 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("members") && !(*jsonObjectData)["members"].is_null()) {
 			this->members.clear();
+			this->members.reserve((*jsonObjectData)["members"].size());
 			for (auto& value: (*jsonObjectData)["members"]) {
 				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(&value) };
 				newData->guildId = this->id;
 				auto userId = newData->id;
-				this->members.insert_or_assign(userId, newData.release());
+				this->members.push_back(newData.release());
 			}
 		}
 
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				if (this->members.contains(stoull(value["user_id"].get<std::string>()))) {
-					this->members[stoull(value["user_id"].get<std::string>())]->voiceChannelId = stoull(value["channel_id"].get<std::string>());
-				}
+				auto userId = stoull(value["user_id"].get<std::string>());
+				this->voiceStates.insert_or_assign(userId, stoull(value["channel_id"].get<std::string>()));
 			}
 		}
 
 		if (jsonObjectData->contains("channels") && !(*jsonObjectData)["channels"].is_null()) {
 			this->channels.clear();
+			this->channels.reserve((*jsonObjectData)["channels"].size());
 			for (auto& value: (*jsonObjectData)["channels"]) {
 				std::unique_ptr<DiscordCoreAPI::ChannelData> newData{ std::make_unique<DiscordCoreAPI::ChannelData>(&value) };
 				newData->guildId = this->id;
-				this->channels.emplace_back(newData->id);
+				this->channels.push_back(newData->id);
 				DiscordCoreAPI::Channels::insertChannel(std::move(newData));
 			}
 		}
@@ -1633,8 +1635,11 @@ namespace DiscordCoreAPI {
 
 	void GuildMemberData::parseObject(nlohmann::json* jsonObjectData) {
 		if (jsonObjectData->contains("roles") && !(*jsonObjectData)["roles"].is_null()) {
-			for (auto& value: (*jsonObjectData)["roles"])
+			this->roles.clear();
+			this->roles.reserve((*jsonObjectData)["roles"].size());
+			for (auto& value: (*jsonObjectData)["roles"]) {
 				this->roles.emplace_back(stoull(value.get<std::string>()));
+			}
 		}
 
 		this->permissions = getString(jsonObjectData, "permissions");
@@ -1717,6 +1722,8 @@ namespace DiscordCoreAPI {
 		this->position = getUint32(jsonObjectData, "position");
 
 		if (jsonObjectData->contains("permission_overwrites") && !(*jsonObjectData)["permission_overwrites"].is_null()) {
+			this->permissionOverwrites.clear();
+			this->permissionOverwrites.reserve((*jsonObjectData)["permission_overwrites"].size());
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
 				OverWriteData newData{ &value };
 				this->permissionOverwrites.push_back(std::move(newData));
@@ -2731,39 +2738,36 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("roles") && !(*jsonObjectData)["roles"].is_null()) {
 			this->roles.clear();
-			this->roles.reserve((*jsonObjectData)["roles"].size());
 			for (auto& value: (*jsonObjectData)["roles"]) {
 				std::unique_ptr<DiscordCoreAPI::RoleData> newData{ std::make_unique<RoleData>(&value) };
 				this->roles.push_back(newData->id);
 				DiscordCoreAPI::Roles::insertRole(std::move(newData));
 			}
 		}
-
+		
 		if (jsonObjectData->contains("members") && !(*jsonObjectData)["members"].is_null()) {
 			this->members.clear();
 			for (auto& value: (*jsonObjectData)["members"]) {
-				std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(&value) };
+				DiscordCoreAPI::GuildMemberData* newData{ new DiscordCoreAPI::GuildMemberData{ &value } };
 				newData->guildId = this->id;
 				auto userId = newData->id;
-				this->members.insert_or_assign(userId, newData.release());
+				this->members.push_back(newData);
 			}
 		}
-
+		
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				if (this->members.contains(stoull(value["user_id"].get<std::string>()))) {
-					this->members[stoull(value["user_id"].get<std::string>())]->voiceChannelId = stoull(value["channel_id"].get<std::string>());
-				}
+				auto userId = stoull(value["user_id"].get<std::string>());
+				this->voiceStates.insert_or_assign(userId, stoull(value["channel_id"].get<std::string>()));
 			}
 		}
-
+		
 		if (jsonObjectData->contains("channels") && !(*jsonObjectData)["channels"].is_null()) {
 			this->channels.clear();
-			this->channels.reserve((*jsonObjectData)["channels"].size());
 			for (auto& value: (*jsonObjectData)["channels"]) {
 				std::unique_ptr<DiscordCoreAPI::ChannelData> newData{ std::make_unique<DiscordCoreAPI::ChannelData>(&value) };
 				newData->guildId = this->id;
-				this->channels.emplace_back(newData->id);
+				this->channels.push_back(newData->id);
 				DiscordCoreAPI::Channels::insertChannel(std::move(newData));
 			}
 		}
@@ -2774,7 +2778,7 @@ namespace DiscordCoreAPI {
 		this->theGuildDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::GuildData newData{ &value };
-			this->theGuildDatas.emplace_back(newData);
+			this->theGuildDatas.push_back(newData);
 		}
 		this->theGuildDatas.shrink_to_fit();
 	}
@@ -2865,7 +2869,7 @@ namespace DiscordCoreAPI {
 		this->theGuildScheduledEventUserDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::GuildScheduledEventUserData newData{ &value };
-			this->theGuildScheduledEventUserDatas.emplace_back(newData);
+			this->theGuildScheduledEventUserDatas.push_back(newData);
 		}
 		this->theGuildScheduledEventUserDatas.shrink_to_fit();
 	}
@@ -2950,7 +2954,7 @@ namespace DiscordCoreAPI {
 		this->theInviteDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::InviteData newData{ &value };
-			this->theInviteDatas.emplace_back(newData);
+			this->theInviteDatas.push_back(newData);
 		}
 		this->theInviteDatas.shrink_to_fit();
 	}
@@ -3005,7 +3009,7 @@ namespace DiscordCoreAPI {
 		this->theGuildTemplateDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::GuildTemplateData newData{ &value };
-			this->theGuildTemplateDatas.emplace_back(newData);
+			this->theGuildTemplateDatas.push_back(newData);
 		}
 		this->theGuildTemplateDatas.shrink_to_fit();
 	}
@@ -3064,7 +3068,7 @@ namespace DiscordCoreAPI {
 		this->theWebHookDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::WebHookData newData{ &value };
-			this->theWebHookDatas.emplace_back(newData);
+			this->theWebHookDatas.push_back(newData);
 		}
 		this->theWebHookDatas.shrink_to_fit();
 	}
@@ -3072,57 +3076,64 @@ namespace DiscordCoreAPI {
 	void AuditLogData::parseObject(nlohmann::json* jsonObjectData) {
 		if (jsonObjectData->contains("webhooks") && !(*jsonObjectData)["webhooks"].is_null()) {
 			this->webhooks.clear();
+			this->webhooks.reserve((*jsonObjectData)["webhooks"].size());
 			for (auto& value: (*jsonObjectData)["webhooks"]) {
 				WebHookData newData{ &value };
-				this->webhooks.emplace_back(newData);
+				this->webhooks.push_back(newData);
 			}
 		}
 
 		if (jsonObjectData->contains("guild_scheduled_events") && !(*jsonObjectData)["guild_scheduled_events"].is_null()) {
-			this->webhooks.clear();
+			this->guildScheduledEvents.clear();
+			this->guildScheduledEvents.reserve((*jsonObjectData)["guild_scheduled_events"].size());
 			for (auto& value: (*jsonObjectData)["guild_scheduled_events"]) {
 				GuildScheduledEventData newData{ &value };
-				this->guildScheduledEvents.emplace_back(newData);
+				this->guildScheduledEvents.push_back(newData);
 			}
 		}
 
 		if (jsonObjectData->contains("auto_moderation_rules") && !(*jsonObjectData)["auto_moderation_rules"].is_null()) {
-			this->users.clear();
+			this->autoModerationRules.clear();
+			this->autoModerationRules.reserve((*jsonObjectData)["auto_moderation_rules"].size());
 			for (auto& value: (*jsonObjectData)["auto_moderation_rules"]) {
 				AutoModerationRuleData newData{ &value };
-				this->autoModerationRules.emplace_back(newData);
+				this->autoModerationRules.push_back(newData);
 			}
 		}
 
 		if (jsonObjectData->contains("users") && !(*jsonObjectData)["users"].is_null()) {
 			this->users.clear();
+			this->users.reserve((*jsonObjectData)["users"].size());
 			for (auto& value: (*jsonObjectData)["users"]) {
 				UserData newData{ &value };
-				this->users.emplace_back(newData);
+				this->users.push_back(newData);
 			}
 		}
 
 		if (jsonObjectData->contains("audit_log_entries") && !(*jsonObjectData)["audit_log_entries"].is_null()) {
 			this->auditLogEntries.clear();
+			this->auditLogEntries.reserve((*jsonObjectData)["audit_log_entries"].size());
 			for (auto& value: (*jsonObjectData)["audit_log_entries"]) {
 				AuditLogEntryData newData{ &value };
-				this->auditLogEntries.emplace_back(newData);
+				this->auditLogEntries.push_back(newData);
 			}
 		}
 
 		if (jsonObjectData->contains("integrations") && !(*jsonObjectData)["integrations"].is_null()) {
 			this->integrations.clear();
+			this->integrations.reserve((*jsonObjectData)["integrations"].size());
 			for (auto& value: (*jsonObjectData)["integrations"]) {
 				IntegrationData newData{ &value };
-				this->integrations.emplace_back(newData);
+				this->integrations.push_back(newData);
 			}
 		}
 
 		if (jsonObjectData->contains("threads") && !(*jsonObjectData)["threads"].is_null()) {
 			this->threads.clear();
+			this->threads.reserve((*jsonObjectData)["threads"].size());
 			for (auto& value: (*jsonObjectData)["threads"]) {
 				ChannelData newData{ &value };
-				this->threads.emplace_back(newData);
+				this->threads.push_back(newData);
 			}
 		}
 	}
@@ -3200,8 +3211,9 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("channel_types") && !(*jsonObjectData)["channel_types"].is_null()) {
 			this->channelTypes.clear();
+			this->channelTypes.reserve((*jsonObjectData)["channel_types"].size());
 			for (auto& value: (*jsonObjectData)["channel_types"]) {
-				this->channelTypes.emplace_back(value);
+				this->channelTypes.push_back(value);
 			}
 		}
 

@@ -31,6 +31,7 @@ namespace DiscordCoreAPI {
 
 	OpusEncoderWrapper& OpusEncoderWrapper::operator=(OpusEncoderWrapper&& other) noexcept {
 		if (this != &other) {
+			this->thePtr.reset(nullptr);
 			this->thePtr.reset(other.thePtr.release());
 		}
 		return *this;
@@ -48,6 +49,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OpusEncoderWrapper::OpusEncoderWrapper(OpusEncoder* other) noexcept {
+		this->thePtr.reset(nullptr);
 		this->thePtr.reset(other);
 	}
 
