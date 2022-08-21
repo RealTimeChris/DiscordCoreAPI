@@ -1666,7 +1666,7 @@ namespace DiscordCoreAPI {
 			jsonObjectData["user"].get_to(*theUser);
 			guildMember.id = theUser->id;
 			guildMember.userAvatar = theUser->avatar;
-			guildMember.getUserData().userName = theUser->getUserData().userName;
+			guildMember.getUserData().getUserData().userName = theUser->getUserData().getUserData().userName;
 			Users::insertUser(std::move(theUser));
 		}
 		*/
