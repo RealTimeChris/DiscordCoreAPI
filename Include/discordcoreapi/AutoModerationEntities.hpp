@@ -35,28 +35,17 @@ namespace DiscordCoreAPI {
 	  public:
 		AutoModerationRule() = default;
 
-		AutoModerationRule& operator=(const nlohmann::json* jsonObjectData);
-
-		AutoModerationRule(const nlohmann::json* jsonObjectData);
-
 		virtual ~AutoModerationRule() = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll AutoModerationRuleVector {
 	  public:
+		template<typename R> friend void parseObject(const nlohmann::json*, R&);
 		AutoModerationRuleVector() = default;
 
 		operator std::vector<AutoModerationRule>();
 
-		AutoModerationRuleVector& operator=(const nlohmann::json* jsonObjectData);
-
-		AutoModerationRuleVector(const nlohmann::json* jsonObjectData);
-
 		virtual ~AutoModerationRuleVector() = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 
 	  protected:
 		std::vector<AutoModerationRule> theAutoModerationRules{};
@@ -104,13 +93,7 @@ namespace DiscordCoreAPI {
 
 		AutoModerationActionExecutionEventData() = default;
 
-		AutoModerationActionExecutionEventData& operator=(const nlohmann::json* jsonObjectData);
-
-		AutoModerationActionExecutionEventData(const nlohmann::json* jsonObjectData);
-
 		virtual ~AutoModerationActionExecutionEventData() = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.

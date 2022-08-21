@@ -20,6 +20,7 @@
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
+#include <discordcoreapi/FromJson.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -102,26 +103,8 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	GuildMember& GuildMember::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildMember::GuildMember(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	GuildMemberVector::operator std::vector<GuildMember>() {
 		return this->theGuildMembers;
-	}
-
-	GuildMemberVector& GuildMemberVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildMemberVector::GuildMemberVector(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {

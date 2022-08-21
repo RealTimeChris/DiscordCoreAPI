@@ -20,6 +20,7 @@
 #pragma once
 
 #include <discordcoreapi/SSLClients.hpp>
+#include <discordcoreapi/FromJson.hpp>
 
 namespace DiscordCoreInternal {
 
@@ -157,10 +158,10 @@ namespace DiscordCoreInternal {
 			}
 			if (theReturnValue == nullptr) {
 				ReturnType theReturnValueNew{};
-				theReturnValueNew.parseObject(&returnData.responseData);
+				parseObject(&returnData.responseData, theReturnValueNew);
 				return std::move(theReturnValueNew);
 			} else {
-				theReturnValue->parseObject(&returnData.responseData);
+				parseObject(&returnData.responseData, *theReturnValue);
 				return std::move(*theReturnValue);
 			}
 		}

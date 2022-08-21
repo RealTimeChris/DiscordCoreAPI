@@ -118,26 +118,8 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	ApplicationCommand& ApplicationCommand::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	ApplicationCommand::ApplicationCommand(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	ApplicationCommandVector::operator std::vector<ApplicationCommand>() {
 		return this->theApplicationCommands;
-	}
-
-	ApplicationCommandVector& ApplicationCommandVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	ApplicationCommandVector::ApplicationCommandVector(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void ApplicationCommands::initialize(DiscordCoreInternal::HttpsClient* theClient) {

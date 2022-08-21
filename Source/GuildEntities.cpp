@@ -245,26 +245,8 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	Guild& Guild::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	Guild::Guild(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	GuildVector::operator std::vector<Guild>() {
 		return this->theGuilds;
-	}
-
-	GuildVector& GuildVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildVector::GuildVector(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	ModifyGuildData::ModifyGuildData(Guild dataPackage) {
@@ -851,7 +833,7 @@ namespace DiscordCoreAPI {
 				Guilds::cache.insert_or_assign(guild->id, std::move(guild));
 			}
 			theCount.store(Guilds::cache.size());
-			//std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
+			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
 		}
 	}
 

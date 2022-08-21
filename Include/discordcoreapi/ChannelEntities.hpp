@@ -160,10 +160,6 @@ namespace DiscordCoreAPI {
 
 		Channel() = default;
 
-		Channel& operator=(const nlohmann::json* jsonObjectData);
-
-		Channel(const nlohmann::json* jsonObjectData);
-
 		Channel& operator=(ChannelData&&);
 
 		Channel(ChannelData&&);
@@ -173,23 +169,17 @@ namespace DiscordCoreAPI {
 		Channel(ChannelData&);
 
 		~Channel() = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll ChannelVector {
 	  public:
+		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+
 		ChannelVector() = default;
 
 		operator std::vector<Channel>();
 
-		ChannelVector& operator=(const nlohmann::json* jsonObjectData);
-
-		ChannelVector(const nlohmann::json* jsonObjectData);
-
 		virtual ~ChannelVector() = default;
-		
-		void parseObject(const nlohmann::json* jsonObjectData);
 
 	  protected:
 		std::vector<Channel> theChannels{};

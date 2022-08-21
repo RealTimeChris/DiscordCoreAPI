@@ -58,26 +58,8 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	GuildScheduledEvent& GuildScheduledEvent::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildScheduledEvent::GuildScheduledEvent(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	GuildScheduledEventVector::operator std::vector<GuildScheduledEvent>() {
 		return this->theGuildScheduledEvents;
-	}
-
-	GuildScheduledEventVector& GuildScheduledEventVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildScheduledEventVector::GuildScheduledEventVector(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void GuildScheduledEvents::initialize(DiscordCoreInternal::HttpsClient* theClient) {
