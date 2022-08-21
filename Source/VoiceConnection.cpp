@@ -492,14 +492,10 @@ namespace DiscordCoreAPI {
 						intervalCount = DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew) } };
 						targetTime = std::chrono::system_clock::now().time_since_epoch() + intervalCount;
 					}
-
 					break;
 				}
 				case VoiceActiveState::Exiting: {
 					return;
-				}
-				default: {
-					break;
 				}
 			}
 			if (stopToken.stop_requested()) {
@@ -941,11 +937,10 @@ namespace DiscordCoreAPI {
 				if (value.thePayloads.size() > 0) {
 					std::unique_lock theLock00{ this->voiceUserMutex };
 					VoicePayload thePayload = value.thePayloads.front();
-					theLock00.unlock();
-
 					if (value.thePayloads.size() > 0) {
 						value.thePayloads.pop();
 					}
+					theLock00.unlock();
 					if (thePayload.decodedData.size() > 0) {
 						voiceUserCount++;
 						if (theUpsampledVector.size() == 0) {

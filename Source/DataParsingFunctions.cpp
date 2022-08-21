@@ -1341,25 +1341,28 @@ namespace DiscordCoreAPI {
 	}
 
 	void from_json(const nlohmann::json& jsonObjectData, UserData& theUser) {
-		theUser.userName = getString(&jsonObjectData, "username");
-
-		theUser.id = strtoull(getString(&jsonObjectData, "id"));
-
-		theUser.discriminator = getString(&jsonObjectData, "discriminator");
-
-		if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
-			theUser.avatar = getString(&jsonObjectData, "avatar");
-		}
-
-		theUser.flags = setBool<int32_t, UserFlags>(theUser.flags, UserFlags::Bot, getBoolReal(&jsonObjectData, "bot"));
-
-		theUser.flags = setBool<int32_t, UserFlags>(theUser.flags, UserFlags::System, getBoolReal(&jsonObjectData, "system"));
 
 		theUser.flags = setBool<int32_t, UserFlags>(theUser.flags, UserFlags::MFAEnabled, getBoolReal(&jsonObjectData, "mfa_enabled"));
 
 		theUser.flags = setBool<int32_t, UserFlags>(theUser.flags, UserFlags::Verified, getBoolReal(&jsonObjectData, "verified"));
 
+		theUser.flags = setBool<int32_t, UserFlags>(theUser.flags, UserFlags::System, getBoolReal(&jsonObjectData, "system"));
+
+		theUser.flags = setBool<int32_t, UserFlags>(theUser.flags, UserFlags::Bot, getBoolReal(&jsonObjectData, "bot"));
+
+		theUser.discriminator = getString(&jsonObjectData, "discriminator");
+
 		theUser.flags = getUint32(&jsonObjectData, "public_flags");
+
+		theUser.userName = getString(&jsonObjectData, "username");
+
+		theUser.id = strtoull(getString(&jsonObjectData, "id"));
+
+		theUser.avatar = getString(&jsonObjectData, "avatar");
+	}
+
+	void UserData::parseObject(const nlohmann::json&& jsonObjectData) {
+		jsonObjectData.get_to(*this);
 	}
 
 	void UserData::parseObject(const nlohmann::json* jsonObjectData) {
@@ -1647,40 +1650,34 @@ namespace DiscordCoreAPI {
 
 	void from_json(const nlohmann::json& jsonObjectData, GuildMemberData& guildMember) {
 		
-		if (jsonObjectData.contains("roles") && !jsonObjectData["roles"].is_null()) {
-			guildMember.roles.clear();
-			guildMember.roles.reserve(jsonObjectData["roles"].size());
-			for (auto& value: jsonObjectData["roles"]) {
-				guildMember.roles.emplace_back(stoull(value.get<std::string>()));
-			}
-		}
-
-		guildMember.permissions = getUint64(&jsonObjectData, "permissions");
-
-		guildMember.joinedAt = TimeStamp<std::chrono::milliseconds>(getString(&jsonObjectData, "joined_at"));
-
-		guildMember.guildId = strtoull(getString(&jsonObjectData, "guild_id"));
-		
-		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-			std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
-			theUser->parseObject(&jsonObjectData["user"]);
-			guildMember.id = theUser->id;
-			Users::insertUser(std::move(theUser));
-		}
-		
-		if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
-			guildMember.avatar = getString(&jsonObjectData, "avatar");
-		}
-
-		guildMember.nick = getString(&jsonObjectData, "nick");
-
-		guildMember.flags = getUint8(&jsonObjectData, "flags");
-
 		guildMember.flags = setBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Pending, getBoolReal(&jsonObjectData, "pending"));
 
 		guildMember.flags = setBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Mute, getBoolReal(&jsonObjectData, "mute"));
 
 		guildMember.flags = setBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Deaf, getBoolReal(&jsonObjectData, "deaf"));
+
+		guildMember.joinedAt = TimeStamp<std::chrono::milliseconds>(getString(&jsonObjectData, "joined_at"));
+
+		guildMember.guildId = strtoull(getString(&jsonObjectData, "guild_id"));
+
+		guildMember.roles.clear();
+		guildMember.roles.reserve(jsonObjectData["roles"].size());
+		for (auto& value: getVector<std::string>(&jsonObjectData, "roles")) {
+			guildMember.roles.emplace_back(stoull(value.get<std::string>()));
+		}
+
+		guildMember.permissions = getUint64(&jsonObjectData, "permissions");
+
+		std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
+		theUser->parseObject(getObject(&jsonObjectData, "user"));
+		guildMember.id = theUser->id;
+		Users::insertUser(std::move(theUser));
+		
+		guildMember.avatar = getString(&jsonObjectData, "avatar");
+
+		guildMember.flags = getUint8(&jsonObjectData, "flags");
+
+		guildMember.nick = getString(&jsonObjectData, "nick");
 	}
 
 	void GuildMemberData::parseObject(const nlohmann::json* jsonObjectData) {
@@ -1688,29 +1685,29 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceStateData::parseObject(const nlohmann::json* jsonObjectData) {
-		this->guildId = strtoull(getString(jsonObjectData, "guild_id"));
+		this->requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
 
 		this->channelId = strtoull(getString(jsonObjectData, "channel_id"));
 
+		this->guildId = strtoull(getString(jsonObjectData, "guild_id"));
+
+		this->selfStream = getBoolReal(jsonObjectData, "self_stream");
+
 		this->userId = strtoull(getString(jsonObjectData, "user_id"));
 
+		this->selfVideo = getBoolReal(jsonObjectData, "self_video");
+
 		this->sessionId = getString(jsonObjectData, "session_id");
-
-		this->deaf = getBoolReal(jsonObjectData, "deaf");
-
-		this->mute = getBoolReal(jsonObjectData, "mute");
 
 		this->selfDeaf = getBoolReal(jsonObjectData, "self_deaf");
 
 		this->selfMute = getBoolReal(jsonObjectData, "self_mute");
 
-		this->selfStream = getBoolReal(jsonObjectData, "self_stream");
-
-		this->selfVideo = getBoolReal(jsonObjectData, "self_video");
-
 		this->suppress = getBoolReal(jsonObjectData, "suppress");
 
-		this->requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
+		this->deaf = getBoolReal(jsonObjectData, "deaf");
+
+		this->mute = getBoolReal(jsonObjectData, "mute");
 	}
 
 	void OverWriteData::parseObject(const nlohmann::json* jsonObjectData) {

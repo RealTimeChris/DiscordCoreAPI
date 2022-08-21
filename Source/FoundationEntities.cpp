@@ -137,25 +137,6 @@ namespace DiscordCoreInternal {
 		*this = other;
 	}
 
-	HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadData& other) {
-		if (this != &other) {
-			this->thisWorkerId.store(this->thisWorkerId.load());
-			this->headersToInsert = other.headersToInsert;
-			this->workloadClass = other.workloadClass;
-			this->workloadType = other.workloadType;
-			this->relativePath = other.relativePath;
-			this->payloadType = other.payloadType;
-			this->callStack = other.callStack;
-			this->baseUrl = other.baseUrl;
-			this->content = other.content;
-		}
-		return *this;
-	}
-
-	HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadData& other) {
-		*this = other;
-	}
-
 	HttpsWorkloadData::HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType) {
 		if (!HttpsWorkloadData::workloadIdsExternal.contains(theType)) {
 			std::unique_ptr<std::atomic_int64_t> theInt{ std::make_unique<std::atomic_int64_t>() };
@@ -1642,24 +1623,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	InputEventData& InputEventData::operator=(InputEventData& other) noexcept {
-		if (this != &other) {
-			*this->interactionData = *other.interactionData;
-			this->responseType = other.responseType;
-		}
-		return *this;
-	}
-
-	InputEventData::InputEventData(InputEventData& other) noexcept {
-		*this = other;
-	}
-
-	InputEventData& InputEventData::operator=(InteractionData& other) noexcept {
+	InputEventData& InputEventData::operator=(const InteractionData& other) noexcept {
 		*this->interactionData = other;
 		return *this;
 	}
 
-	InputEventData::InputEventData(InteractionData& interactionData) noexcept {
+	InputEventData::InputEventData(const InteractionData& interactionData) noexcept {
 		*this = interactionData;
 	}
 

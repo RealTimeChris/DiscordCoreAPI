@@ -328,7 +328,7 @@ namespace DiscordCoreAPI {
 		if (Guilds::cache.contains(guildMemberId.guildId)) {
 			for (int32_t x = 0; x < Guilds::cache[guildMemberId.guildId]->members.size(); ++x) {
 				if (guildMemberId.id == Guilds::cache[guildMemberId.guildId]->members[x]->id) {
-					delete Guilds::cache[guildMemberId.guildId]->members[guildMemberId.id];
+					delete Guilds::cache[guildMemberId.guildId]->members[x];
 					Guilds::cache[guildMemberId.guildId]->members.erase(Guilds::cache[guildMemberId.guildId]->members.begin() + x);
 				}
 			}

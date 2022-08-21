@@ -703,15 +703,14 @@ namespace DiscordCoreInternal {
 												auto theGuildMember = std::make_unique<DiscordCoreAPI::GuildMemberData>();
 												theGuildMember->parseObject(&payload["d"]);
 												DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-												int32_t theIndex{};
 												for (int32_t x = 0; x < DiscordCoreAPI::Guilds::cache[guildId]->members.size(); ++x) {
 													if (DiscordCoreAPI::Guilds::cache[guildId]->members[x]->id == userId) {
-														theIndex = x;
+														std::unique_ptr<DiscordCoreAPI::OnGuildMemberAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberAddData>(
+															DiscordCoreAPI::Guilds::cache[guildId]->members[x], this->discordCoreClient) };
+														this->discordCoreClient->eventManager.onGuildMemberAddEvent(*dataPackage);
 													}
 												}
-												std::unique_ptr<DiscordCoreAPI::OnGuildMemberAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberAddData>(
-													DiscordCoreAPI::Guilds::cache[guildId]->members[theIndex], this->discordCoreClient) };
-												this->discordCoreClient->eventManager.onGuildMemberAddEvent(*dataPackage);
+												
 											}
 										}
 									}
@@ -728,15 +727,14 @@ namespace DiscordCoreInternal {
 											auto theGuildMemberNew = std::make_unique<DiscordCoreAPI::GuildMemberData>();
 											theGuildMemberNew->parseObject(&payload["d"]);
 											DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMemberNew));
-											DiscordCoreAPI::GuildMemberData* theGuildMember{};
 											for (int32_t x = 0; x < DiscordCoreAPI::Guilds::cache[guildId]->members.size(); ++x) {
 												if (DiscordCoreAPI::Guilds::cache[guildId]->members[x]->id == userId) {
-													theGuildMember = DiscordCoreAPI::Guilds::cache[guildId]->members[x];
+													std::unique_ptr<DiscordCoreAPI::OnGuildMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberUpdateData>(
+														DiscordCoreAPI::Guilds::cache[guildId]->members[x]) };
+													this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(*dataPackage);
 												}
 											}
-											std::unique_ptr<DiscordCoreAPI::OnGuildMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberUpdateData>(
-												theGuildMember) };
-											this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(*dataPackage);
+											
 										}
 										break;
 									}
@@ -754,11 +752,16 @@ namespace DiscordCoreInternal {
 											theUser->parseObject(&payload["d"]["user"]);
 											std::unique_ptr<DiscordCoreAPI::OnGuildMemberRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberRemoveData>(
 												std::move(theUser), this->discordCoreClient, guildId) };
-											DiscordCoreAPI::GuildMemberData* guildMember = DiscordCoreAPI::Guilds::cache[guildId]->members[userId];
-											DiscordCoreAPI::GuildMembers::removeGuildMember(*guildMember);
-											DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->guildId].get();
-											guild->memberCount--;
-											this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(*dataPackage);
+											for (int32_t x = 0; x < DiscordCoreAPI::Guilds::cache[guildId]->members.size(); ++x) {
+												if (DiscordCoreAPI::Guilds::cache[guildId]->members[x]->id == userId) {
+													DiscordCoreAPI::GuildMemberData* guildMember = DiscordCoreAPI::Guilds::cache[guildId]->members[x];
+													DiscordCoreAPI::GuildMembers::removeGuildMember(*guildMember);
+													DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->guildId].get();
+													guild->memberCount--;
+													this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(*dataPackage);
+												}
+											}
+											
 										}
 										break;
 									}

@@ -446,17 +446,9 @@ namespace DiscordCoreAPI {
 
 		StringWrapper(const StringWrapper& other);
 
-		StringWrapper& operator=(StringWrapper& other) noexcept;
-
-		StringWrapper(StringWrapper& other) noexcept;
-
 		StringWrapper& operator=(const std::string& theString);
 
 		explicit StringWrapper(const std::string& theString);
-
-		StringWrapper& operator=(std::string& theString);
-
-		explicit StringWrapper(std::string& theString);
 
 		StringWrapper& operator=(const char* theString);
 
@@ -543,9 +535,9 @@ namespace DiscordCoreAPI {
 
 		AudioFrameData(AudioFrameData&&) noexcept;
 
-		AudioFrameData& operator=(AudioFrameData&) noexcept;
+		AudioFrameData& operator=(const AudioFrameData&) noexcept;
 
-		AudioFrameData(AudioFrameData&) noexcept;
+		AudioFrameData(const AudioFrameData&) noexcept;
 
 		AudioFrameData() noexcept = default;
 
@@ -568,6 +560,17 @@ namespace DiscordCoreAPI {
 		ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
 		ShortTime = 't',///< "16:20" - Short Time
 	};
+
+	template<typename ReturnType> nlohmann::json getVector(const nlohmann::json* jsonData, const char* keyname) {
+		auto theResult = jsonData->find(keyname);
+		if (theResult != jsonData->end()) {
+			return !theResult->is_null() && theResult->is_array() ? theResult->get<std::vector<ReturnType>>() : std::vector<ReturnType>{};
+		} else {
+			return std::vector<ReturnType>{};
+		}
+	}
+
+	DiscordCoreAPI_Dll nlohmann::json getObject(const nlohmann::json* jsonData, const char* keyname);
 
 	DiscordCoreAPI_Dll uint8_t getUint8(const nlohmann::json* jsonData, const char* keyname);
 
@@ -602,10 +605,6 @@ namespace DiscordCoreAPI {
 		IconHash& operator=(const IconHash&) = default;
 
 		IconHash(const IconHash&) = default;
-
-		IconHash& operator=(IconHash&) = default;
-
-		IconHash(IconHash&) = default;
 
 		bool operator==(const IconHash& other);
 
@@ -784,21 +783,6 @@ namespace DiscordCoreAPI {
 		}
 
 		TimeStamp(const TimeStamp& other) {
-			*this = other;
-		}
-
-		TimeStamp<TimeType>& operator=(TimeStamp& other) {
-			this->timeStampInTimeUnits = other.timeStampInTimeUnits;
-			this->minute = other.minute;
-			this->second = other.second;
-			this->month = other.month;
-			this->hour = other.hour;
-			this->year = other.year;
-			this->day = other.day;
-			return *this;
-		}
-
-		TimeStamp(TimeStamp& other) {
 			*this = other;
 		}
 
@@ -1116,21 +1100,21 @@ namespace DiscordCoreAPI {
 
 		Permissions(Permission&& permsNew);
 
-		Permissions& operator=(Permission& other);
+		Permissions& operator=(const Permission& other);
 
-		explicit Permissions(Permission& permsNew);
+		explicit Permissions(const Permission& permsNew);
 
 		Permissions& operator=(std::string&& other);
 
 		explicit Permissions(std::string&& permsNew);
 
-		Permissions& operator=(std::string& other);
+		Permissions& operator=(const std::string& other);
 
-		explicit Permissions(std::string& permsNew);
+		explicit Permissions(const std::string& permsNew);
 
-		Permissions& operator=(uint64_t other);
+		Permissions& operator=(const uint64_t other);
 
-		explicit Permissions(uint64_t permsNew);
+		explicit Permissions(const uint64_t permsNew);
 
 		operator uint64_t();
 
@@ -1285,10 +1269,6 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock(const UnboundedMessageBlock<ObjectType>&) = delete;
 
-		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&) = delete;
-
-		UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&) = delete;
-
 		UnboundedMessageBlock() = default;
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
@@ -1358,18 +1338,6 @@ namespace DiscordCoreAPI {
 		}
 
 		StopWatch(const StopWatch<TimeType>& other) noexcept {
-			*this = other;
-		}
-
-		StopWatch<TimeType>& operator=(StopWatch<TimeType>& other) noexcept {
-			if (this != &other) {
-				this->maxNumberOfMs = other.maxNumberOfMs;
-				this->startTime = other.startTime;
-			}
-			return *this;
-		}
-
-		StopWatch(StopWatch<TimeType>& other) noexcept {
 			*this = other;
 		}
 

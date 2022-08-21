@@ -255,11 +255,6 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				bytesSubmittedPrevious = bytesReadTotal;
-				if (stopToken.stop_requested()) {
-					audioDecoder.reset(nullptr);
-					streamSocket->disconnect(false);
-					return;
-				}
 				if (audioDecoder->haveWeFailed()) {
 					audioDecoder.reset(nullptr);
 					streamSocket->disconnect(false);
@@ -272,13 +267,8 @@ namespace DiscordCoreInternal {
 					return;
 				} else {
 					if (!areWeDoneHeaders) {
-						if (stopToken.stop_requested()) {
-							audioDecoder.reset(nullptr);
-							streamSocket->disconnect(false);
-							return;
-						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
-						streamSocket->processIO(1000000);
+						streamSocket->processIO(100000);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							streamSocket->disconnect(false);
@@ -291,11 +281,6 @@ namespace DiscordCoreInternal {
 								std::string streamBuffer = streamSocket->getInputBufferCopy();
 								headerSize = static_cast<int32_t>(streamBuffer.size());
 							}
-						}
-						if (stopToken.stop_requested()) {
-							audioDecoder.reset(nullptr);
-							streamSocket->disconnect(false);
-							return;
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
 						areWeDoneHeaders = true;
@@ -329,11 +314,6 @@ namespace DiscordCoreInternal {
 						}
 						audioDecoder->startMe();
 					} else if (counter > 0) {
-						if (stopToken.stop_requested()) {
-							audioDecoder.reset(nullptr);
-							streamSocket->disconnect(false);
-							return;
-						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
 						streamSocket->processIO(10000);
 						if (!streamSocket->areWeStillConnected()) {
@@ -364,22 +344,17 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						std::vector<DiscordCoreAPI::AudioFrameData> frames{};
-						bool doWeBreak{ false };
-						while (!doWeBreak) {
+						bool doWeContinue{ true };
+						while (doWeContinue) {
 							DiscordCoreAPI::AudioFrameData rawFrame{};
-							doWeBreak = !audioDecoder->getFrame(rawFrame);
+							doWeContinue = audioDecoder->getFrame(rawFrame);
 							if (rawFrame.sampleCount == -5) {
-								doWeBreak = true;
+								doWeContinue = false;
 								break;
 							}
 							if (rawFrame.data.size() != 0) {
 								frames.emplace_back(std::move(rawFrame));
 							}
-						}
-						if (stopToken.stop_requested()) {
-							audioDecoder.reset(nullptr);
-							streamSocket->disconnect(false);
-							return;
 						}
 						for (auto& value: frames) {
 							auto encodedFrame = audioEncoder.encodeSingleAudioFrame(value);

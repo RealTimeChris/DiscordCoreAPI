@@ -199,27 +199,6 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	StringWrapper& StringWrapper::operator=(StringWrapper& other) noexcept {
-		if (this != &other) {
-			this->thePtr.reset(nullptr);
-			std::stringstream theStream{};
-			if (other.thePtr) {
-				theStream << other.thePtr;
-			}
-			auto theLength = theStream.str().size();
-			this->thePtr = std::make_unique<char[]>(theLength + 1);
-			for (uint64_t x = 0; x < theLength; ++x) {
-				this->thePtr[x] = other.thePtr[x];
-			}
-			this->thePtr[theLength] = '\0';
-		}
-		return *this;
-	}
-
-	StringWrapper::StringWrapper(StringWrapper& other) noexcept {
-		*this = other;
-	}
-
 	StringWrapper& StringWrapper::operator=(const std::string& theString) {
 		auto theLength = theString.size();
 		this->thePtr.reset(nullptr);
@@ -232,21 +211,6 @@ namespace DiscordCoreAPI {
 	}
 
 	StringWrapper::StringWrapper(const std::string& theString) {
-		*this = theString;
-	}
-
-	StringWrapper& StringWrapper::operator=(std::string& theString) {
-		auto theLength = theString.size();
-		this->thePtr.reset(nullptr);
-		this->thePtr = std::make_unique<char[]>(theLength + 1);
-		for (int32_t x = 0; x < theLength; ++x) {
-			this->thePtr[x] = theString[x];
-		}
-		this->thePtr[theLength] = '\0';
-		return *this;
-	}
-
-	StringWrapper::StringWrapper(std::string& theString) {
 		*this = theString;
 	}
 
@@ -501,7 +465,7 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	AudioFrameData& AudioFrameData::operator=(AudioFrameData& other) noexcept {
+	AudioFrameData& AudioFrameData::operator=(const AudioFrameData& other) noexcept {
 		if (this != &other) {
 			this->guildMemberId = other.guildMemberId;
 			this->sampleCount = other.sampleCount;
@@ -511,8 +475,17 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	AudioFrameData::AudioFrameData(AudioFrameData& other) noexcept {
+	AudioFrameData::AudioFrameData(const AudioFrameData& other) noexcept {
 		*this = other;
+	}
+
+	nlohmann::json getObject(const nlohmann::json* jsonData, const char* keyname) {
+		auto theResult = jsonData->find(keyname);
+		if (theResult != jsonData->end()) {
+			return !theResult->is_null() && theResult->is_object() ? theResult->get<nlohmann::json>() : nlohmann::json{};
+		} else {
+			return nlohmann::json{};
+		}
 	}
 
 	uint8_t getUint8(const nlohmann::json* jsonData, const char* keyname) {
@@ -586,12 +559,12 @@ namespace DiscordCoreAPI {
 		*this = std::move(permsNew);
 	}
 
-	Permissions& Permissions::operator=(Permission& other) {
+	Permissions& Permissions::operator=(const Permission& other) {
 		this->thePermissions = static_cast<uint64_t>(other);
 		return *this;
 	}
 
-	Permissions::Permissions(Permission& permsNew) {
+	Permissions::Permissions(const Permission& permsNew) {
 		*this = permsNew;
 	}
 
@@ -611,7 +584,7 @@ namespace DiscordCoreAPI {
 		*this = std::move(permsNew);
 	}
 
-	Permissions& Permissions::operator=(std::string& other) {
+	Permissions& Permissions::operator=(const std::string& other) {
 		if (other.size() == 0 || other == "") {
 			this->thePermissions = 0;
 		} else {
@@ -620,7 +593,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Permissions::Permissions(std::string& permsNew) {
+	Permissions::Permissions(const std::string& permsNew) {
 		*this = permsNew;
 	}
 

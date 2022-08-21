@@ -289,10 +289,6 @@ namespace DiscordCoreInternal {
 
 		HttpsWorkloadData(const HttpsWorkloadData& other);
 
-		HttpsWorkloadData& operator=(HttpsWorkloadData& other);
-
-		HttpsWorkloadData(HttpsWorkloadData& other);
-
 		HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType);
 
 	  protected:
@@ -406,11 +402,9 @@ namespace DiscordCoreAPI {
 
 		UserData(const UserData& other) = default;
 
-		UserData& operator=(UserData& other) = default;
-
-		UserData(UserData& other) = default;
-
 		std::string getAvatarUrl();
+
+		void parseObject(const nlohmann::json&& jsonObjectData);
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -910,10 +904,6 @@ namespace DiscordCoreAPI {
 		ChannelData& operator=(const ChannelData& jsonObjectData) = default;
 
 		ChannelData(const ChannelData& other) = default;
-
-		ChannelData& operator=(ChannelData& jsonObjectData) = default;
-
-		ChannelData(ChannelData& other) = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -3322,13 +3312,9 @@ namespace DiscordCoreAPI {
 
 		InputEventData(const InputEventData& other) noexcept;
 
-		InputEventData& operator=(InputEventData& other) noexcept;
+		InputEventData& operator=(const InteractionData& other) noexcept;
 
-		InputEventData(InputEventData& other) noexcept;
-
-		InputEventData& operator=(InteractionData& other) noexcept;
-
-		InputEventData(InteractionData& interactionData) noexcept;
+		InputEventData(const InteractionData& interactionData) noexcept;
 
 		InputEventData() = default;
 
