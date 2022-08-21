@@ -264,6 +264,7 @@ namespace DiscordCoreAPI {
 	class Guilds;
 	class Guild;
 	class Roles;
+	class Users;
 
 	template<typename ReturnType, typename... ArgTypes> class EventDelegate;
 	template<typename ReturnType, typename... ArgTypes> class Event;
