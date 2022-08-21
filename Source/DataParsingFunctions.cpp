@@ -17,6 +17,7 @@
 /// https://discordcoreapi.com
 /// \file DataParsingFunctions.cpp
 
+#include <discordcoreapi/FromJson.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
 #include <discordcoreapi/AutoModerationEntities.hpp>
@@ -33,7 +34,6 @@
 #include <discordcoreapi/ThreadEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
-#include <discordcoreapi/FromJson.hpp>
 
 namespace DiscordCoreAPI {
 

@@ -16,8 +16,10 @@
 /// Aug 08, 2022
 /// https://discordcoreapi.com
 /// \file FromJson.hpp
-/// 
+
 #pragma once
+
+#include <nlohmann/json.hpp>
 
 namespace DiscordCoreAPI {
 
