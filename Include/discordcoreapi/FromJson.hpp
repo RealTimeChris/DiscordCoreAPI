@@ -21,7 +21,7 @@
 
 namespace DiscordCoreAPI {
 
-	template<typename ReturnType> inline void parseObject(const nlohmann::json* jsonData, ReturnType& object) {
+	template<typename ReturnType> void parseObject(const nlohmann::json* jsonData, ReturnType& object) {
 		return;
 	}
 
