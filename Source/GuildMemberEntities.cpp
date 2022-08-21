@@ -66,10 +66,10 @@ namespace DiscordCoreAPI {
 
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) {
 		if (this != &other) {
+			this->permissions = std::move(other.permissions);
 			this->voiceChannelId = other.voiceChannelId;
 			this->joinedAt = std::move(other.joinedAt);
 			this->avatar = std::move(other.avatar);
-			this->permissions = other.permissions;
 			this->roles = std::move(other.roles);
 			this->nick = std::move(other.nick);
 			this->guildId = other.guildId;
@@ -90,9 +90,9 @@ namespace DiscordCoreAPI {
 			this->joinedAt = other.joinedAt;
 			this->guildId = other.guildId;
 			this->avatar = other.avatar;
-			this->flags = other.flags;
 			this->roles = other.roles;
-			this->nick = other.nick;			
+			this->flags = other.flags;
+			this->nick = other.nick;
 			this->id = other.id;
 		}
 		return *this;
@@ -102,8 +102,26 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
+	GuildMember& GuildMember::operator=(const nlohmann::json* jsonObjectData) {
+		this->parseObject(jsonObjectData);
+		return *this;
+	}
+
+	GuildMember::GuildMember(const nlohmann::json* jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
 	GuildMemberVector::operator std::vector<GuildMember>() {
 		return this->theGuildMembers;
+	}
+
+	GuildMemberVector& GuildMemberVector::operator=(const nlohmann::json* jsonObjectData) {
+		this->parseObject(jsonObjectData);
+		return *this;
+	}
+
+	GuildMemberVector::GuildMemberVector(const nlohmann::json* jsonObjectData) {
+		*this = jsonObjectData;
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {

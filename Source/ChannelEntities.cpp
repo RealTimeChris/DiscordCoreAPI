@@ -92,6 +92,15 @@ namespace DiscordCoreAPI {
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 	}
 
+	Channel& Channel::operator=(const nlohmann::json* jsonObjectData) {
+		this->parseObject(jsonObjectData);
+		return *this;
+	}
+
+	Channel::Channel(const nlohmann::json* jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
 	Channel& Channel::operator=(ChannelData&& other) {
 		if (this != &other) {
 			this->permissionOverwrites = std::move(other.permissionOverwrites);
@@ -136,6 +145,15 @@ namespace DiscordCoreAPI {
 
 	ChannelVector::operator std::vector<Channel>() {
 		return this->theChannels;
+	}
+
+	ChannelVector& ChannelVector::operator=(const nlohmann::json* jsonObjectData) {
+		this->parseObject(jsonObjectData);
+		return *this;
+	}
+
+	ChannelVector::ChannelVector(const nlohmann::json* jsonObjectData) {
+		*this = jsonObjectData;
 	}
 
 	ModifyChannelData::ModifyChannelData(Channel newData) {

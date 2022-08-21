@@ -70,18 +70,28 @@ namespace DiscordCoreAPI {
 	  public:
 		Sticker() = default;
 
+		Sticker& operator=(const nlohmann::json* jsonObjectData);
+
+		Sticker(const nlohmann::json* jsonObjectData);
+
 		virtual ~Sticker() = default;
+
+		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll StickerVector {
 	  public:
-		friend void parseObject(const nlohmann::json* jsonObjectData, StickerVector& theObject);
-
 		StickerVector() = default;
 
 		operator std::vector<Sticker>();
 
+		StickerVector& operator=(const nlohmann::json* jsonObjectData);
+
+		StickerVector(const nlohmann::json* jsonObjectData);
+
 		virtual ~StickerVector() = default;
+
+		void parseObject(const nlohmann::json* jsonObjectData);
 
 	  protected:
 		std::vector<Sticker> theStickers{};
