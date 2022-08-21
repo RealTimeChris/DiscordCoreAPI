@@ -1660,16 +1660,14 @@ namespace DiscordCoreAPI {
 		guildMember.joinedAt = TimeStamp<std::chrono::milliseconds>(getString(&jsonObjectData, "joined_at"));
 
 		guildMember.guildId = strtoull(getString(&jsonObjectData, "guild_id"));
-		/*
+		
 		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-			std::unique_ptr<UserData> theUser = std::make_unique<Us>();
-			jsonObjectData["user"].get_to(*theUser);
+			std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
+			theUser->parseObject(&jsonObjectData["user"]);
 			guildMember.id = theUser->id;
-			guildMember.userAvatar = theUser->avatar;
-			guildMember.getUserData().getUserData().userName = theUser->getUserData().getUserData().userName;
 			Users::insertUser(std::move(theUser));
 		}
-		*/
+		
 		if (jsonObjectData.contains("avatar") && !jsonObjectData["avatar"].is_null()) {
 			guildMember.avatar = getString(&jsonObjectData, "avatar");
 		}
