@@ -49,7 +49,7 @@ inline uint64_t ntohll(uint64_t x) {
 	memcpy(&data, &(x), sizeof(x));
 	uint64_t theValue{};
 	for (uint32_t y = 0; y < sizeof(uint64_t); ++y) {
-		theValue |= data[y] << 8 * (sizeof(uint64_t) - y - 1);
+		theValue |= static_cast<uint64_t>(data[y]) << 8 * (sizeof(uint64_t) - y - 1);
 	}
 	return theValue;
 }
