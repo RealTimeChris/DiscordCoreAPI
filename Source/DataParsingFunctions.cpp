@@ -33,6 +33,7 @@
 #include <discordcoreapi/ThreadEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
+#include <discordcoreapi/FromJson.hpp>
 
 namespace DiscordCoreAPI {
 

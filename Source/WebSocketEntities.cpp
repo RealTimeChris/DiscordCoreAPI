@@ -20,6 +20,7 @@
 #include <discordcoreapi/WebSocketEntities.hpp>
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
+#include <discordcoreapi/FromJson.hpp>
 
 namespace DiscordCoreAPI {
 	extern std::atomic_int32_t theCount;
