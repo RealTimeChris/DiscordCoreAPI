@@ -492,7 +492,7 @@ namespace DiscordCoreAPI {
 		onGuildUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData*> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData> handler) {
 		return this->onGuildDeletionEvent.add(std::move(handler));
 	}
 
