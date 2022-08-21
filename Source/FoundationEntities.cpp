@@ -472,15 +472,6 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	OverWriteData& OverWriteData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	OverWriteData::OverWriteData(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	ChannelData& ChannelData::operator=(ChannelData&& other) noexcept {
 		if (this != &other) {
 			this->permissionOverwrites = std::move(other.permissionOverwrites);

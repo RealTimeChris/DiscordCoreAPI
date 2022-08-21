@@ -573,7 +573,14 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	DiscordCoreAPI_Dll nlohmann::json getObject(const nlohmann::json* jsonData, const char* keyname);
+	template<typename ReturnType> ReturnType getObject(const nlohmann::json* jsonData, const char* keyname) {
+		auto theResult = jsonData->find(keyname);
+		if (theResult != jsonData->end()) {
+			return !theResult->is_null() && theResult->is_object() ? theResult->get<ReturnType>() : ReturnType{};
+		} else {
+			return ReturnType{};
+		}
+	}
 
 	DiscordCoreAPI_Dll uint8_t getUint8(const nlohmann::json* jsonData, const char* keyname);
 

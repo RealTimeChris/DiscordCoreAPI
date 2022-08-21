@@ -479,15 +479,6 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	nlohmann::json getObject(const nlohmann::json* jsonData, const char* keyname) {
-		auto theResult = jsonData->find(keyname);
-		if (theResult != jsonData->end()) {
-			return !theResult->is_null() && theResult->is_object() ? theResult->get<nlohmann::json>() : nlohmann::json{};
-		} else {
-			return nlohmann::json{};
-		}
-	}
-
 	uint8_t getUint8(const nlohmann::json* jsonData, const char* keyname) {
 		auto theResult = jsonData->find(keyname);
 		if (theResult != jsonData->end()) {

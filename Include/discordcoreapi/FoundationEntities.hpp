@@ -404,9 +404,7 @@ namespace DiscordCoreAPI {
 
 		std::string getAvatarUrl();
 
-		void parseObject(const nlohmann::json&& jsonObjectData);
-
-		void parseObject(const nlohmann::json* jsonObjectData);
+		void parseObject(const nlohmann::json*);
 
 		virtual ~UserData() = default;
 	};
@@ -834,10 +832,6 @@ namespace DiscordCoreAPI {
 
 		GuildMemberData(const GuildMemberData& jsonObjectData) = default;
 
-		GuildMemberData& operator=(GuildMemberData& jsonObjectData) = default;
-
-		GuildMemberData(GuildMemberData& jsonObjectData) = default;
-
 		Snowflake getVoiceChannelId();
 
 		std::string getAvatarUrl();
@@ -868,13 +862,7 @@ namespace DiscordCoreAPI {
 
 		OverWriteData() = default;
 
-		OverWriteData& operator=(const nlohmann::json* jsonObjectData);
-
-		OverWriteData(const nlohmann::json* jsonObjectData);
-
 		virtual ~OverWriteData() = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	enum class ChannelFlags : uint8_t { NSFW = 1 << 0 };
@@ -969,10 +957,6 @@ namespace DiscordCoreAPI {
 		RoleData& operator=(const RoleData& jsonObjectData) = default;
 
 		RoleData(const RoleData& jsonObjectData) = default;
-
-		RoleData& operator=(RoleData& jsonObjectData) = default;
-
-		RoleData(RoleData& jsonObjectData) = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -2070,10 +2054,6 @@ namespace DiscordCoreAPI {
 		GuildData& operator=(const GuildData& jsonObjectData) noexcept = default;
 
 		GuildData(const GuildData& jsonObjectData) noexcept = default;
-
-		GuildData& operator=(GuildData& jsonObjectData) noexcept = default;
-
-		GuildData(GuildData& jsonObjectData) noexcept = default;
 
 		/// For connecting to an individual voice channel. \brief For connecting to an individual voice channel.
 		/// \param guildMemberId An id of the guild member who's current voice channel to connect to.
