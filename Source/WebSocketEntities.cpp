@@ -636,7 +636,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::Roles::removeRole(value);
 											}
 											DiscordCoreAPI::Guilds::removeGuild(dataPackage->guild->id);
-											this->discordCoreClient->eventManager.onGuildDeletionEvent(dataPackage.get());
+											this->discordCoreClient->eventManager.onGuildDeletionEvent(*dataPackage);
 										}
 										break;
 									}
