@@ -193,6 +193,10 @@ namespace DiscordCoreAPI {
 		return this->avatar.getHashUrl(this->id, 0);
 	}
 
+	void UserData::insertUser(std::unique_ptr<UserData> other) {
+		Users::insertUser(std::move(other));
+	}
+
 	AttachmentData::operator nlohmann::json() {
 		nlohmann::json newValue{};
 		newValue["content_type"] = this->contentType;
@@ -455,6 +459,10 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
+	void GuildMemberData::insertGuildMember(std::unique_ptr<GuildMemberData> other) {
+		GuildMembers::insertGuildMember(std::move(other));
+	}
+
 	UserData GuildMemberData::getUserData() {
 		return Users::getCachedUserAsync({ .userId = this->id }).get();
 	}
@@ -493,6 +501,10 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
+	void ChannelData::insertChannel(std::unique_ptr<ChannelData> other) {
+		Channels::insertChannel(std::move(other));
+	}
+
 	ActiveThreadsData& ActiveThreadsData::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
@@ -526,6 +538,10 @@ namespace DiscordCoreAPI {
 
 	RoleData::RoleData(RoleData&& other) noexcept {
 		*this = std::move(other);
+	}
+
+	void RoleData::insertRole(std::unique_ptr<RoleData>theRole) {
+		Roles::insertRole(std::move(theRole));
 	}
 
 	ActionMetaData& ActionMetaData::operator=(const nlohmann::json* jsonObjectData) {
