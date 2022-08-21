@@ -242,6 +242,7 @@ namespace DiscordCoreAPI {
 	class VoiceConnection;
 	class EditMessageData;
 	class ButtonCollector;
+	class GuildMemberData;
 	class InteractionData;
 	class ModalCollector;
 	class ActionRowData;

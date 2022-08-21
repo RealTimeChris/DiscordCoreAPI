@@ -144,7 +144,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll RoleVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json* jsonObjectData, RoleVector& theObject);
 
 		RoleVector() = default;
 

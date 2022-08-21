@@ -310,7 +310,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json* jsonObjectData, GuildVector& theObject);
 
 		friend class Guilds;
 

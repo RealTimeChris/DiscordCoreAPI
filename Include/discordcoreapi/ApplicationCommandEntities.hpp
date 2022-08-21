@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 
 		friend class ApplicationCommands;
 
-		template<typename R> friend void parseObject(const nlohmann::json*, typename R&);
+		friend void parseObject(const nlohmann::json* jsonObjectData, ApplicationCommandVector& theObject);
 
 		ApplicationCommandVector() = default;
 

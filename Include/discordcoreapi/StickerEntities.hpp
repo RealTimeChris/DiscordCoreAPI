@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll StickerVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json* jsonObjectData, StickerVector& theObject);
 
 		StickerVector() = default;
 

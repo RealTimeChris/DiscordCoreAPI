@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ChannelVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json* jsonObjectData, ChannelVector& theObject);
 
 		ChannelVector() = default;
 

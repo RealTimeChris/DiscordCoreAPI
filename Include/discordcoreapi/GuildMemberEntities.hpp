@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildMemberVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json* jsonObjectData, GuildMemberVector& theVector);
 
 		GuildMemberVector() = default;
 

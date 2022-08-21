@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildScheduledEventVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, GuildScheduledEventVector&);
 
 		GuildScheduledEventVector() = default;
 

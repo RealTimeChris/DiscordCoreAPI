@@ -40,7 +40,8 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll AutoModerationRuleVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json* jsonObjectData, AutoModerationRuleVector& theObject);
+
 		AutoModerationRuleVector() = default;
 
 		operator std::vector<AutoModerationRule>();

@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll MessageVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, MessageVector&);
 
 		MessageVector() = default;
 

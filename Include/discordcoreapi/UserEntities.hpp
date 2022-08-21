@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll UserVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, UserVector&);
 
 		UserVector() = default;
 

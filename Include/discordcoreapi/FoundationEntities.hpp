@@ -661,7 +661,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ThreadMemberDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, ThreadMemberDataVector&);
 
 		ThreadMemberDataVector() = default;
 
@@ -982,7 +982,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildApplicationCommandPermissionsDataVector {
 	  public:
-		template<typename R> friend void DiscordCoreAPI::parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json* jsonObjectData, GuildApplicationCommandPermissionsDataVector& theObject);
 
 		operator std::vector<GuildApplicationCommandPermissionsData>();
 
@@ -1013,7 +1013,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll EmojiDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, EmojiDataVector&);
 
 		std::vector<EmojiData> theEmojiDatas{};
 
@@ -1071,7 +1071,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll VoiceRegionDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, VoiceRegionDataVector&);
 
 		VoiceRegionDataVector() = default;
 
@@ -1116,7 +1116,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll BanDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, BanDataVector&);
 
 		BanDataVector() = default;
 
@@ -1296,7 +1296,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll IntegrationDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, IntegrationDataVector&);
 
 		IntegrationDataVector() = default;
 
@@ -1737,7 +1737,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, GuildDataVector&);
 
 		friend class Guilds;
 
@@ -1818,7 +1818,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildScheduledEventUserDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, GuildScheduledEventUserDataVector&);
 
 		GuildScheduledEventUserDataVector() = default;
 
@@ -1832,7 +1832,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildScheduledEventDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, GuildScheduledEventDataVector&);
 
 		GuildScheduledEventDataVector() = default;
 
@@ -1872,7 +1872,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll InviteDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, InviteDataVector&);
 
 		InviteDataVector() = default;
 
@@ -1905,7 +1905,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildTemplateDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, GuildTemplateDataVector&);
 
 		GuildTemplateDataVector() = default;
 
@@ -1953,7 +1953,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll WebHookDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, WebHookDataVector&);
 
 		WebHookDataVector() = default;
 
@@ -2082,7 +2082,7 @@ namespace DiscordCoreAPI {
 	/// YouTube format data. \brief YouTube format data.
 	class DiscordCoreAPI_Dll YouTubeFormatVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, YouTubeFormatVector&);
 
 		YouTubeFormatVector() = default;
 
@@ -2483,7 +2483,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll StickerPackDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, StickerPackDataVector&);
 
 		StickerPackDataVector() = default;
 
@@ -2520,7 +2520,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ConnectionDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, ConnectionDataVector&);
 
 		ConnectionDataVector() = default;
 
@@ -3011,7 +3011,8 @@ namespace DiscordCoreAPI {
 	/// A song from the various platforms. \brief A song from the various platforms.
 	class DiscordCoreAPI_Dll Song {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
+		friend void parseObject(const nlohmann::json*, Song&);
+
 		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
 		friend class DiscordCoreInternal::YouTubeRequestBuilder;
 		friend class DiscordCoreInternal::SoundCloudAPI;
