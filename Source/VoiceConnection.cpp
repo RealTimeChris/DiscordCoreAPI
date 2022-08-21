@@ -896,7 +896,9 @@ namespace DiscordCoreAPI {
 		newFrame.data.push_back(0xff);
 		newFrame.data.push_back(0xfe);
 		auto theFrame = this->encryptSingleAudioFrame(newFrame);
-		this->sendVoiceData(theFrame);
+		if (theFrame.size() > 0) {
+			this->sendVoiceData(theFrame);
+		}
 	}
 
 	void VoiceConnection::pauseToggle() noexcept {
