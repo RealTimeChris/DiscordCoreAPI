@@ -1165,19 +1165,19 @@ namespace DiscordCoreAPI {
 		/// \param guildMember The GuildMember who's Permissions to analyze.
 		/// \param channel The Channel withint which to check for Permissions.
 		/// \returns std::string A string containing the final Permission's value for a given Channel.
-		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
+		static std::string getCurrentChannelPermissions(const GuildMemberData& guildMember, const ChannelData& channel);
 
 		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
 		/// \param guildMember The GuildMember who to check the Permissions of.
 		/// \param channel The Channel within which to check for the Permission's presence.
 		/// \param permission A Permission to check the current Channel for.
 		/// \returns bool A bool suggesting the presence of the chosen Permission.
-		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
+		bool checkForPermission(const GuildMemberData& guildMember, const ChannelData& channel, const Permission permission);
 
 		/// Returns a string containing the currently held Permissions in a given Guild. \brief Returns a string containing the currently held Permissions in a given Guild.
 		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
 		/// \returns std::string A string containing the current Permissions.
-		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
+		static std::string getCurrentGuildPermissions(const GuildMemberData& guildMember);
 
 		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
 		/// \param permissionsToRemove A vector containing the Permissions you wish to remove.
@@ -1202,11 +1202,11 @@ namespace DiscordCoreAPI {
 	  protected:
 		uint64_t thePermissions{};
 
-		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
+		static std::string computeOverwrites(const std::string& basePermissions, const GuildMemberData& guildMember, const ChannelData& channel);
 
-		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
+		static std::string computePermissions(const GuildMemberData& guildMember, const ChannelData& channel);
 
-		static std::string computeBasePermissions(const GuildMember& guildMember);
+		static std::string computeBasePermissions(const GuildMemberData& guildMember);
 	};
 
 	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
