@@ -887,7 +887,7 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildUpdateData> onGuildUpdateEvent{};
 
-		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildDeletionData*> onGuildDeletionEvent{};
+		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildDeletionData> onGuildDeletionEvent{};
 
 		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildBanAddData> onGuildBanAddEvent{};
 
