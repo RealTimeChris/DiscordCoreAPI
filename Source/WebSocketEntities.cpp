@@ -293,13 +293,14 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept
+	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>*theConnectionsNew,int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketMessageHandler(&theClient->configManager) {
 		this->configManager = &theClient->configManager;
+		this->theConnections = theConnectionsNew;
 		this->discordCoreClient = theClient;
 		this->shard.emplace_back(currentShardNew);
 		this->doWeQuit = doWeQuitNew;
-		if (theClient) {
+		if (this->discordCoreClient) {
 			this->shard.emplace_back(this->discordCoreClient->configManager.getTotalShardCount());
 			if (this->discordCoreClient->configManager.getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 				this->dataOpCode = WebSocketOpCode::Op_Binary;
@@ -408,7 +409,7 @@ namespace DiscordCoreInternal {
 							theInt.store(theInt.load() + theStopWatch.totalTimePassed());
 							if (DiscordCoreAPI::theCount.load() != 0) {
 								//std::cout << "THE STRING LENGTH: " << theData.size() << std::endl;
-								std::cout << "THE TIME TO COMPLETE (AVERAGE): " << theInt.load() / DiscordCoreAPI::theCount.load() << std::endl;
+								//std::cout << "THE TIME TO COMPLETE (AVERAGE): " << theInt.load() / DiscordCoreAPI::theCount.load() << std::endl;
 							}
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
@@ -1114,7 +1115,10 @@ namespace DiscordCoreInternal {
 										break;
 									}
 									case 51: {
-										auto userId = stoull(payload["d"]["user_id"].get<std::string>());
+										Snowflake userId{}; 
+										if (payload["d"].contains("user_id") && !payload["d"]["user_id"].is_null()) {
+											userId = stoull(payload["d"]["user_id"].get<std::string>());
+										}
 										if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected && userId == this->userId) {
 											this->voiceConnectionData = VoiceConnectionData{};
 											this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
@@ -1122,7 +1126,6 @@ namespace DiscordCoreInternal {
 										} else if (this->areWeCollectingData && !this->stateUpdateCollected) {
 											this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
 											if (this->voiceConnectionDataBufferMap.contains(stoull(payload["d"]["guild_id"].get<std::string>()))) {
-												std::cout << "IT CONTAINS THE VOICE UPDATE STATE DATA ONE!" << std::endl;
 												this->voiceConnectionDataBufferMap[stoull(payload["d"]["guild_id"].get<std::string>())]->send(this->voiceConnectionData);
 											}
 											this->serverUpdateCollected = false;
@@ -1130,13 +1133,17 @@ namespace DiscordCoreInternal {
 											this->areWeCollectingData = false;
 										}
 										std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
-										dataPackage->voiceStateData = &payload["d"];
+										dataPackage->voiceStateData = payload["d"].get<DiscordCoreAPI::VoiceStateData>();
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->voiceStateData.guildId)) {
 												if (payload["d"].contains("user_id") && !payload["d"]["user_id"].is_null() && payload["d"].contains("channel_id") &&
 													!payload["d"]["channel_id"].is_null()) {
-													DiscordCoreAPI::Guilds::cache[dataPackage->voiceStateData.guildId]->voiceStates.insert_or_assign(userId,
-														stoull(payload["d"]["channel_id"].get<std::string>()));
+													for (int32_t x = 0; x < DiscordCoreAPI::Guilds::cache[dataPackage->voiceStateData.guildId]->members.size(); ++x) {
+														if (DiscordCoreAPI::Guilds::cache[dataPackage->voiceStateData.guildId]->members[x]->id == userId) {
+															DiscordCoreAPI::Guilds::cache[dataPackage->voiceStateData.guildId]->members[x]->voiceChannelId =
+																stoull(payload["d"]["channel_id"].get<std::string>());
+														}
+													}
 												}
 												
 											}
@@ -1154,7 +1161,6 @@ namespace DiscordCoreInternal {
 											this->voiceConnectionData.endPoint = payload["d"]["endpoint"].get<std::string>();
 											this->voiceConnectionData.token = payload["d"]["token"].get<std::string>();
 											if (this->voiceConnectionDataBufferMap.contains(stoull(payload["d"]["guild_id"].get<std::string>()))) {
-												std::cout << "IT CONTAINS THE VOICE UPDATE SERVER DATA ONE!" << std::endl;
 												this->voiceConnectionDataBufferMap[stoull(payload["d"]["guild_id"].get<std::string>())]->send(this->voiceConnectionData);
 											}
 											this->serverUpdateCollected = false;
@@ -1320,13 +1326,13 @@ namespace DiscordCoreInternal {
 			this->wantRead = false;
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
-			if (doWeReconnect) {
+			if (doWeReconnect && this->theConnections) {
 				DiscordCoreAPI::ConnectionPackage theData{};
 				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
 				theData.currentReconnectTries = this->currentReconnectTries;
 				theData.currentShard = this->shard[0];
 				std::unique_lock theLock{ this->discordCoreClient->connectionMutex };
-				this->discordCoreClient->theConnections.push_back(theData);
+				this->theConnections->push_back(theData);
 			}
 		}
 	}
@@ -1342,7 +1348,7 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentShardNew) noexcept
-		: WebSocketSSLShard(discordCoreClientNew, currentShardNew, doWeQuitNew) {
+		: WebSocketSSLShard(discordCoreClientNew, &discordCoreClientNew->theConnections, currentShardNew, doWeQuitNew) {
 		this->configManager = &discordCoreClientNew->configManager;
 		this->discordCoreClient = discordCoreClientNew;
 		this->doWeQuit = doWeQuitNew;

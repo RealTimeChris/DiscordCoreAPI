@@ -447,6 +447,10 @@ namespace DiscordCoreAPI {
 
 		StringWrapper(const StringWrapper& other);
 
+		StringWrapper& operator=(StringWrapper& other);
+
+		StringWrapper(StringWrapper& other);
+
 		StringWrapper& operator=(const std::string& theString);
 
 		explicit StringWrapper(const std::string& theString);
@@ -610,7 +614,8 @@ namespace DiscordCoreAPI {
 		return theStream.str();
 	}
 
-	struct DiscordCoreAPI_Dll IconHash {
+	class DiscordCoreAPI_Dll IconHash {
+	  public:
 		IconHash() = default;
 
 		IconHash& operator=(const IconHash&) = default;
@@ -632,7 +637,8 @@ namespace DiscordCoreAPI {
 		uint64_t lowBits{};
 	};
 
-	struct DiscordCoreAPI_Dll UserAvatar : public IconHash {
+	class DiscordCoreAPI_Dll UserAvatar : public IconHash {
+	  public:
 		friend class GuildMemberData;
 		friend class InputEventData;
 		friend class GuildMember;
@@ -649,17 +655,20 @@ namespace DiscordCoreAPI {
 		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 
-	struct DiscordCoreAPI_Dll ChannelIcon : public IconHash {
+	class DiscordCoreAPI_Dll ChannelIcon : public IconHash {
+	  public:
 		ChannelIcon() = default;
 
 		ChannelIcon& operator=(std::string&&);
 
 		ChannelIcon(std::string&&);
 
+	  protected:
 		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 
-	struct DiscordCoreAPI_Dll GuildMemberAvatar : public IconHash {
+	class DiscordCoreAPI_Dll GuildMemberAvatar : public IconHash {
+	  public:
 		friend class GuildMemberData;
 		friend class GuildMember;
 
@@ -673,7 +682,8 @@ namespace DiscordCoreAPI {
 		std::string getHashUrl(Snowflake guildMemberId, Snowflake guildId) noexcept;
 	};
 
-	struct DiscordCoreAPI_Dll GuildIcon : public IconHash {
+	class DiscordCoreAPI_Dll GuildIcon : public IconHash {
+	  public:
 		friend class GuildData;
 		friend class Guild;
 
@@ -687,7 +697,8 @@ namespace DiscordCoreAPI {
 		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 
-	struct DiscordCoreAPI_Dll GuildSplash : public IconHash {
+	class DiscordCoreAPI_Dll GuildSplash : public IconHash {
+	  public:
 		friend class GuildData;
 		friend class Guild;
 
@@ -701,23 +712,27 @@ namespace DiscordCoreAPI {
 		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 
-	struct DiscordCoreAPI_Dll GuildBanner : public IconHash {
+	class DiscordCoreAPI_Dll GuildBanner : public IconHash {
+	  public:
 		GuildBanner() = default;
 
 		GuildBanner& operator=(std::string&&);
 
 		GuildBanner(std::string&&);
 
+	  protected:
 		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 
-	struct DiscordCoreAPI_Dll GuildDiscovery : public IconHash {
+	class DiscordCoreAPI_Dll GuildDiscovery : public IconHash {
+	  public:
 		GuildDiscovery() = default;
 
 		GuildDiscovery& operator=(std::string&&);
 
 		GuildDiscovery(std::string&&);
 
+	  protected:
 		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 
@@ -794,6 +809,21 @@ namespace DiscordCoreAPI {
 		}
 
 		TimeStamp(const TimeStamp& other) {
+			*this = other;
+		}
+
+		TimeStamp<TimeType>& operator=(TimeStamp& other) {
+			this->timeStampInTimeUnits = other.timeStampInTimeUnits;
+			this->minute = other.minute;
+			this->second = other.second;
+			this->month = other.month;
+			this->hour = other.hour;
+			this->year = other.year;
+			this->day = other.day;
+			return *this;
+		}
+
+		TimeStamp(TimeStamp& other) {
 			*this = other;
 		}
 

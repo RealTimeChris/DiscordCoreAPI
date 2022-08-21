@@ -56,15 +56,6 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	Snowflake GuildMemberData::getVoiceChannelId() {
-		if (Guilds::cache.contains(this->guildId)) {
-			if (Guilds::cache[this->guildId]->voiceStates.contains(this->id)) {
-				return Guilds::cache[this->guildId]->voiceStates[this->id];
-			}
-		}
-		return Snowflake{};
-	}
-
 	std::string GuildMemberData::getAvatarUrl() {
 		if (this->avatar.getHashUrl(this->id, this->guildId) != "") {
 			return this->avatar.getHashUrl(this->id, this->guildId);
@@ -76,6 +67,7 @@ namespace DiscordCoreAPI {
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) {
 		if (this != &other) {
 			this->permissions = std::move(other.permissions);
+			this->voiceChannelId = other.voiceChannelId;
 			this->joinedAt = std::move(other.joinedAt);
 			this->avatar = std::move(other.avatar);
 			this->roles = std::move(other.roles);
@@ -93,6 +85,7 @@ namespace DiscordCoreAPI {
 
 	GuildMember& GuildMember::operator=(GuildMemberData& other) {
 		if (this != &other) {
+			this->voiceChannelId = other.voiceChannelId;
 			this->permissions = other.permissions;
 			this->joinedAt = other.joinedAt;
 			this->guildId = other.guildId;

@@ -256,4 +256,11 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
+	DiscordCoreClient::~DiscordCoreClient() noexcept {
+		for (auto& [key, value]: Guilds::cache) {
+			for (auto& value02: value->members) {
+				delete value02;
+			}
+		}
+	}
 }

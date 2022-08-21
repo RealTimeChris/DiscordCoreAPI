@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
 		void runBot();
 
-		~DiscordCoreClient() = default;
+		~DiscordCoreClient() noexcept;
 
 	  protected:
 		std::unordered_map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};

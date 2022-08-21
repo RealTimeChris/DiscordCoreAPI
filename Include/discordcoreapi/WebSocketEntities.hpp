@@ -73,7 +73,7 @@ namespace DiscordCoreInternal {
 		friend class BaseSocketAgent;
 		friend class YouTubeAPI;
 
-		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept;
+		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections, int32_t currentShardNew, std::atomic_bool* doWeQuitNew) noexcept;
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
@@ -93,6 +93,7 @@ namespace DiscordCoreInternal {
 		std::map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState::Connecting };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
+		std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::recursive_mutex theConnectionMutex{};
 		VoiceConnectionData voiceConnectionData{};

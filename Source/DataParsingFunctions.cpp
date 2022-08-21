@@ -519,7 +519,11 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
 				auto userId = stoull(value["user_id"].get<std::string>());
-				this->voiceStates.insert_or_assign(userId, stoull(value["channel_id"].get<std::string>()));
+				for (auto& value02: this->members) {
+					if (value02->id == userId) {
+						value02->voiceChannelId = stoull(value["channel_id"].get<std::string>());
+					}
+				}
 			}
 		}
 
@@ -1627,29 +1631,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceStateData::parseObject(const nlohmann::json* jsonObjectData) {
-		this->requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
-
-		this->channelId = strtoull(getString(jsonObjectData, "channel_id"));
-
-		this->guildId = strtoull(getString(jsonObjectData, "guild_id"));
-
-		this->selfStream = getBoolReal(jsonObjectData, "self_stream");
-
-		this->userId = strtoull(getString(jsonObjectData, "user_id"));
-
-		this->selfVideo = getBoolReal(jsonObjectData, "self_video");
-
-		this->sessionId = getString(jsonObjectData, "session_id");
-
-		this->selfDeaf = getBoolReal(jsonObjectData, "self_deaf");
-
-		this->selfMute = getBoolReal(jsonObjectData, "self_mute");
-
-		this->suppress = getBoolReal(jsonObjectData, "suppress");
-
-		this->deaf = getBoolReal(jsonObjectData, "deaf");
-
-		this->mute = getBoolReal(jsonObjectData, "mute");
+		*this = jsonObjectData->get<VoiceStateData>();
 	}
 
 	void ActiveThreadsData::parseObject(const nlohmann::json* jsonObjectData) {

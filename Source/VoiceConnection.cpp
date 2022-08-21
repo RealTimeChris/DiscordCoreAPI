@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
 		ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamTypeNew, StreamInfo streamInfoNew) noexcept
-		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, initDataNew.currentShard, this->doWeQuit), DatagramSocketClient(StreamType::None) {
+		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->theConnections, initDataNew.currentShard, this->doWeQuit), DatagramSocketClient(StreamType::None) {
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->baseSocketAgent = BaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
@@ -266,7 +266,8 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
-				if (!stopToken.stop_requested() && this->thePackage.currentShard != -1) {
+				if (!stopToken.stop_requested() && this->theConnections.size() > 0) {
+					this->theConnections.pop_front();
 					StopWatch theStopWatch{ 10000ms };
 					if (this->activeState.load() == VoiceActiveState::Connecting) {
 						this->lastActiveState.store(VoiceActiveState::Stopped);
@@ -650,7 +651,6 @@ namespace DiscordCoreAPI {
 
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
-					std::cout << "WERE HERE THIS IS IT!" << std::endl;
 					this->onClosed();
 					this->connectInternal();
 					return;
@@ -829,7 +829,7 @@ namespace DiscordCoreAPI {
 		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
 			this->reconnect();
 		} else if (this->currentReconnectTries >= this->maxReconnectTries) {
-			this->disconnect();
+			VoiceConnection::disconnect();
 		}
 	}
 
@@ -979,9 +979,8 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::connect() noexcept {
 		if (this->baseSocketAgent) {
-			ConnectionPackage dataPackage{};
-			dataPackage.currentShard = 1;
-			this->thePackage = dataPackage;
+			this->thePackage.currentShard = 1;
+			this->theConnections.push_back(this->thePackage);
 			this->activeState.store(VoiceActiveState::Connecting);
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {

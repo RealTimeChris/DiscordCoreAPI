@@ -443,6 +443,7 @@ namespace DiscordCoreAPI {
 
 	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
 		if (this != &other) {
+			this->voiceChannelId = other.voiceChannelId;
 			this->joinedAt = std::move(other.joinedAt);
 			this->avatar = std::move(other.avatar);
 			this->permissions = other.permissions;
@@ -465,19 +466,6 @@ namespace DiscordCoreAPI {
 
 	UserData GuildMemberData::getUserData() {
 		return Users::getCachedUserAsync({ .userId = this->id }).get();
-	}
-
-	UserData GuildMemberData::getUserData() const {
-		return Users::getCachedUserAsync({ .userId = this->id }).get();
-	}
-
-	VoiceStateData& VoiceStateData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	VoiceStateData::VoiceStateData(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	ChannelData& ChannelData::operator=(ChannelData&& other) noexcept {

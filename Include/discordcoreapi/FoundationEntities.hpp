@@ -780,10 +780,6 @@ namespace DiscordCoreAPI {
 
 		VoiceStateData() = default;
 
-		VoiceStateData& operator=(const nlohmann::json* jsonObjectData);
-
-		VoiceStateData(const nlohmann::json* jsonObjectData);
-
 		VoiceStateData& operator=(VoiceStateData&& jsonObjectData) = default;
 
 		VoiceStateData(VoiceStateData&& jsonObjectData) = default;
@@ -817,6 +813,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
+		Snowflake voiceChannelId{};///< Currently held voice channel, if applicable.
 		GuildMemberAvatar avatar{};///< This GuildMember's Guild Avatar.
 		uint64_t permissions{};///< Their base-level Permissions in the Guild.
 		StringWrapper nick{};///< Their nick/display name.
@@ -834,11 +831,7 @@ namespace DiscordCoreAPI {
 
 		GuildMemberData(const GuildMemberData& jsonObjectData) = default;
 
-		Snowflake getVoiceChannelId();
-
 		std::string getAvatarUrl();
-
-		UserData getUserData() const;
 		
 		UserData getUserData();
 
@@ -2042,7 +2035,6 @@ namespace DiscordCoreAPI {
 	  public:
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
-		std::map<Snowflake, Snowflake> voiceStates{};///< The guild members.
 		std::vector<GuildMemberData*> members{};///< The guild members.
 		std::vector<Snowflake> channels{};///< Array of Guild channels.
 		std::vector<Snowflake> roles{};///< Array of Guild roles.
@@ -3890,9 +3882,10 @@ namespace nlohmann {
 
 			guildMember.permissions = DiscordCoreAPI::getUint64(&j, "permissions");
 
-			std::unique_ptr<DiscordCoreAPI::UserData> theUser = std::make_unique<DiscordCoreAPI::UserData>(DiscordCoreAPI::getObject<DiscordCoreAPI::UserData>(&j, "user"));
+			std::unique_ptr<DiscordCoreAPI::UserData> theUser = std::make_unique<DiscordCoreAPI::UserData>(j["user"].get<DiscordCoreAPI::UserData>());
 			guildMember.id = theUser->id;
-			theUser->insertUser(std::move(theUser));
+			auto theUserNew = theUser.get();
+			theUserNew->insertUser(std::move(theUser));
 
 			guildMember.avatar = DiscordCoreAPI::getString(&j, "avatar");
 
@@ -3900,6 +3893,37 @@ namespace nlohmann {
 
 			guildMember.nick = DiscordCoreAPI::getString(&j, "nick");
 			return guildMember;
+		}
+	};
+
+	template<> struct adl_serializer<DiscordCoreAPI::VoiceStateData> {
+		static DiscordCoreAPI::VoiceStateData from_json(const json& j) {
+			DiscordCoreAPI::VoiceStateData theVoiceState{};
+
+			theVoiceState.requestToSpeakTimestamp = DiscordCoreAPI::getString(&j, "request_to_speak_timestamp");
+
+			theVoiceState.channelId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&j, "channel_id"));
+
+			theVoiceState.guildId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&j, "guild_id"));
+
+			theVoiceState.selfStream = DiscordCoreAPI::getBoolReal(&j, "self_stream");
+
+			theVoiceState.userId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&j, "user_id"));
+
+			theVoiceState.selfVideo = DiscordCoreAPI::getBoolReal(&j, "self_video");
+
+			theVoiceState.sessionId = DiscordCoreAPI::getString(&j, "session_id");
+
+			theVoiceState.selfDeaf = DiscordCoreAPI::getBoolReal(&j, "self_deaf");
+
+			theVoiceState.selfMute = DiscordCoreAPI::getBoolReal(&j, "self_mute");
+
+			theVoiceState.suppress = DiscordCoreAPI::getBoolReal(&j, "suppress");
+
+			theVoiceState.deaf = DiscordCoreAPI::getBoolReal(&j, "deaf");
+
+			theVoiceState.mute = DiscordCoreAPI::getBoolReal(&j, "mute");
+			return theVoiceState;
 		}
 	};
 
@@ -3932,7 +3956,8 @@ namespace nlohmann {
 				for (auto& value: j["roles"]) {
 					std::unique_ptr<DiscordCoreAPI::RoleData> newData{ std::make_unique<DiscordCoreAPI::RoleData>(value.get<DiscordCoreAPI::RoleData>()) };
 					theGuild.roles.push_back(newData->id);
-					newData->insertRole(std::move(newData));
+					auto theRole = newData.get();
+					theRole->insertRole(std::move(newData));
 				}
 			}
 
@@ -3941,14 +3966,18 @@ namespace nlohmann {
 				for (auto& value: j["members"]) {
 					std::unique_ptr<DiscordCoreAPI::GuildMemberData> newData{ std::make_unique<DiscordCoreAPI::GuildMemberData>(value.get<DiscordCoreAPI::GuildMemberData>()) };
 					newData->guildId = theGuild.id;
-					newData->insertGuildMember(std::move(newData));
+					theGuild.members.push_back(newData.release());
 				}
 			}
 
 			if (j.contains("voice_states") && !j["voice_states"].is_null()) {
 				for (auto& value: j["voice_states"]) {
-					auto userId = stoull(value["user_id"].get<std::string>());
-					theGuild.voiceStates.insert_or_assign(userId, stoull(value["channel_id"].get<std::string>()));
+					auto userId = DiscordCoreAPI::strtoull(value["user_id"].get<std::string>());
+					for (auto& value02: theGuild.members) {
+						if (value02->id == userId) {
+							value02->voiceChannelId = DiscordCoreAPI::strtoull(value["channel_id"].get<std::string>());
+						}
+					}
 				}
 			}
 
@@ -3958,7 +3987,8 @@ namespace nlohmann {
 					std::unique_ptr<DiscordCoreAPI::ChannelData> newData{ std::make_unique<DiscordCoreAPI::ChannelData>(value.get<DiscordCoreAPI::ChannelData>()) };
 					newData->guildId = theGuild.id;
 					theGuild.channels.push_back(newData->id);
-					newData->insertChannel(std::move(newData));
+					auto theChannel = newData.get();
+					theChannel->insertChannel(std::move(newData));
 				}
 			}
 			return theGuild;
