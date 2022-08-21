@@ -34,6 +34,90 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 
+namespace nlohmann {
+	template<> struct adl_serializer<DiscordCoreAPI::GuildData> {
+		static DiscordCoreAPI::GuildData from_json(const json& j) {
+			DiscordCoreAPI::GuildData theGuild{};
+			theGuild.id = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&j, "id"));
+
+			theGuild.icon = DiscordCoreAPI::getString(&j, "icon");
+
+			theGuild.name = DiscordCoreAPI::getString(&j, "name");
+
+			theGuild.joinedAt = DiscordCoreAPI::TimeStamp<std::chrono::milliseconds>(DiscordCoreAPI::getString(&j, "joined_at"));
+
+			theGuild.flags = setBool<int8_t, DiscordCoreAPI::GuildFlags>(theGuild.flags, DiscordCoreAPI::GuildFlags::Owner, DiscordCoreAPI::getBoolReal(&j, "owner"));
+
+			theGuild.ownerId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&j, "owner_id"));
+
+			theGuild.flags =
+				setBool<int8_t, DiscordCoreAPI::GuildFlags>(theGuild.flags, DiscordCoreAPI::GuildFlags::WidgetEnabled, DiscordCoreAPI::getBoolReal(&j, "widget_enabled"));
+
+			theGuild.flags = setBool<int8_t, DiscordCoreAPI::GuildFlags>(theGuild.flags, DiscordCoreAPI::GuildFlags::Large, DiscordCoreAPI::getBoolReal(&j, "large"));
+
+			theGuild.flags = setBool<int8_t, DiscordCoreAPI::GuildFlags>(theGuild.flags, DiscordCoreAPI::GuildFlags::Unavailable, DiscordCoreAPI::getBoolReal(&j, "unavailable"));
+
+			theGuild.memberCount = DiscordCoreAPI::getUint32(&j, "member_count");
+
+			if (j.contains("roles") && !j["roles"].is_null()) {
+				theGuild.roles.clear();
+				for (auto& value: j["roles"]) {
+					std::unique_ptr<DiscordCoreAPI::RoleData> newData{ std::make_unique<DiscordCoreAPI::RoleData>() };
+					value.get_to(*newData);
+					theGuild.roles.push_back(newData->id);
+					DiscordCoreAPI::Roles::insertRole(std::move(newData));
+				}
+			}
+
+			if (j.contains("members") && !j["members"].is_null()) {
+				theGuild.members.clear();
+				for (auto& value: j["members"]) {
+					DiscordCoreAPI::GuildMemberData* newData{ new DiscordCoreAPI::GuildMemberData{} };
+					value.get_to(*newData);
+					newData->guildId = theGuild.id;
+					auto userId = newData->id;
+					theGuild.members.push_back(newData);
+				}
+			}
+
+			if (j.contains("voice_states") && !j["voice_states"].is_null()) {
+				for (auto& value: j["voice_states"]) {
+					auto userId = stoull(value["user_id"].get<std::string>());
+					theGuild.voiceStates.insert_or_assign(userId, stoull(value["channel_id"].get<std::string>()));
+				}
+			}
+
+			if (j.contains("channels") && !j["channels"].is_null()) {
+				theGuild.channels.clear();
+				for (auto& value: j["channels"]) {
+					std::unique_ptr<DiscordCoreAPI::ChannelData> newData{ std::make_unique<DiscordCoreAPI::ChannelData>() };
+					newData->parseObject(&value);
+					newData->guildId = theGuild.id;
+					theGuild.channels.push_back(newData->id);
+					DiscordCoreAPI::Channels::insertChannel(std::move(newData));
+				}
+			}
+			return theGuild;
+		}
+	};
+
+	struct SnowflakeWrapper {
+		DiscordCoreAPI::Snowflake theSnowflake{};
+		operator DiscordCoreAPI::Snowflake() {
+			return this->theSnowflake;
+		}
+	};
+
+	template<> struct adl_serializer<SnowflakeWrapper> {
+		static SnowflakeWrapper from_json(const json& j) {
+			SnowflakeWrapper theData{};
+			theData.theSnowflake = stoull(j.get<std::string>());
+			return theData;
+		}
+	};
+}// namespace nlohmann
+
+
 namespace DiscordCoreAPI {
 
 	void ApplicationCommand::parseObject(const nlohmann::json* jsonObjectData) {
@@ -1659,11 +1743,10 @@ namespace DiscordCoreAPI {
 		guildMember.joinedAt = TimeStamp<std::chrono::milliseconds>(getString(&jsonObjectData, "joined_at"));
 
 		guildMember.guildId = strtoull(getString(&jsonObjectData, "guild_id"));
-
-		guildMember.roles.clear();
-		guildMember.roles.reserve(jsonObjectData["roles"].size());
-		for (auto& value: getVector<std::string>(&jsonObjectData, "roles")) {
-			guildMember.roles.emplace_back(stoull(value.get<std::string>()));
+		std::vector<std::string> theVector{};
+		getVector(&jsonObjectData, "roles", theVector);
+		for (auto& value: theVector) {
+			guildMember.roles.push_back(stoull(std::move(value)));
 		}
 
 		guildMember.permissions = getUint64(&jsonObjectData, "permissions");
@@ -2735,7 +2818,7 @@ namespace DiscordCoreAPI {
 			this->id = stoull((*jsonObjectData)["id"].get<std::string>());
 		}
 	}
-
+	/*
 	void from_json(const nlohmann::json& jsonObjectData, DiscordCoreAPI::GuildData& theGuild) {
 		theGuild.id = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&jsonObjectData, "id"));
 
@@ -2798,9 +2881,9 @@ namespace DiscordCoreAPI {
 			}
 		}
 	}
-
+	*/
 	void GuildData::parseObject(const nlohmann::json* jsonObjectData) {
-		jsonObjectData->get_to(*this);
+		*this = jsonObjectData->get<GuildData>();
 	}
 
 	void GuildDataVector::parseObject(const nlohmann::json* jsonObjectData) {

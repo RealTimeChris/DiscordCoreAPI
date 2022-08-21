@@ -408,7 +408,7 @@ namespace DiscordCoreInternal {
 							theInt.store(theInt.load() + theStopWatch.totalTimePassed());
 							if (DiscordCoreAPI::theCount.load() != 0) {
 								//std::cout << "THE STRING LENGTH: " << theData.size() << std::endl;
-								//std::cout << "THE TIME TO COMPLETE (AVERAGE): " << theInt.load() / DiscordCoreAPI::theCount.load() << std::endl;
+								std::cout << "THE TIME TO COMPLETE (AVERAGE): " << theInt.load() / DiscordCoreAPI::theCount.load() << std::endl;
 							}
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
@@ -1125,7 +1125,7 @@ namespace DiscordCoreInternal {
 										break;
 									}
 									case 51: {
-										auto userId = stoull(payload["d"]["member"]["user"]["id"].get<std::string>());
+										auto userId = stoull(payload["d"]["user_id"].get<std::string>());
 										if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected && userId == this->userId) {
 											this->voiceConnectionData = VoiceConnectionData{};
 											this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
@@ -1133,6 +1133,7 @@ namespace DiscordCoreInternal {
 										} else if (this->areWeCollectingData && !this->stateUpdateCollected) {
 											this->voiceConnectionData.sessionId = payload["d"]["session_id"].get<std::string>();
 											if (this->voiceConnectionDataBufferMap.contains(stoull(payload["d"]["guild_id"].get<std::string>()))) {
+												std::cout << "IT CONTAINS THE VOICE UPDATE STATE DATA ONE!" << std::endl;
 												this->voiceConnectionDataBufferMap[stoull(payload["d"]["guild_id"].get<std::string>())]->send(this->voiceConnectionData);
 											}
 											this->serverUpdateCollected = false;
@@ -1164,6 +1165,7 @@ namespace DiscordCoreInternal {
 											this->voiceConnectionData.endPoint = payload["d"]["endpoint"].get<std::string>();
 											this->voiceConnectionData.token = payload["d"]["token"].get<std::string>();
 											if (this->voiceConnectionDataBufferMap.contains(stoull(payload["d"]["guild_id"].get<std::string>()))) {
+												std::cout << "IT CONTAINS THE VOICE UPDATE SERVER DATA ONE!" << std::endl;
 												this->voiceConnectionDataBufferMap[stoull(payload["d"]["guild_id"].get<std::string>())]->send(this->voiceConnectionData);
 											}
 											this->serverUpdateCollected = false;
@@ -1439,10 +1441,6 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::connectVoiceInternal() noexcept {
-		while (!this->theVCStopWatch.hasTimePassed()) {
-			std::this_thread::sleep_for(1ms);
-		}
-		this->theVCStopWatch.resetTimer();
 		while (!this->theVCStopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
 		}

@@ -423,10 +423,6 @@ namespace DiscordCoreAPI {
 					}
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
-						if (!DatagramSocketClient::areWeStillConnected()) {
-							this->areWePlaying.store(false);
-							break;
-						}
 						this->audioDataBuffer.tryReceive(this->audioData);
 						if (!this->streamSocket) {
 							while (this->theFrameQueue.size() > 0) {
@@ -654,6 +650,7 @@ namespace DiscordCoreAPI {
 
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
+					std::cout << "WERE HERE THIS IS IT!" << std::endl;
 					this->onClosed();
 					this->connectInternal();
 					return;

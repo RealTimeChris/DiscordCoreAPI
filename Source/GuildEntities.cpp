@@ -822,7 +822,7 @@ namespace DiscordCoreAPI {
 		}
 		co_return guildVector;
 	}
-
+	 
 	CoRoutine<void> Guilds::leaveGuildAsync(LeaveGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Leave_Guild };
 		co_await NewThreadAwaitable<void>();
@@ -838,6 +838,7 @@ namespace DiscordCoreAPI {
 		if (guild->id == 0) {
 			return;
 		}
+		guild->discordCoreClient = Guilds::discordCoreClient;
 		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
 			if (!Guilds::cache.contains(guild->id)) {
@@ -846,7 +847,7 @@ namespace DiscordCoreAPI {
 				Guilds::cache.insert_or_assign(guild->id, std::move(guild));
 			}
 			theCount.store(Guilds::cache.size());
-			//std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
+			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
 		}
 	}
 
