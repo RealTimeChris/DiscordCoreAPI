@@ -68,15 +68,6 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	Thread& Thread::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	Thread::Thread(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	void Threads::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		Threads::httpsClient = theClient;
 	}

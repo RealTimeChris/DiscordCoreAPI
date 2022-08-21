@@ -20,7 +20,6 @@
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/FromJson.hpp>
 
 namespace DiscordCoreAPI {
 

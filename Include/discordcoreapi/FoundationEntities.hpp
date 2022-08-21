@@ -20,6 +20,7 @@
 #pragma once
 
 #include <discordcoreapi/Utilities.hpp>
+#include <discordcoreapi/FromJson.hpp>
 
 namespace DiscordCoreInternal {
 
@@ -981,15 +982,16 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildApplicationCommandPermissionsDataVector {
 	  public:
-		template<typename R> friend void parseObject(const nlohmann::json*, R&);
-
-		std::vector<GuildApplicationCommandPermissionsData> theGuildApplicationCommandPermissionsDatas{};
-
-		GuildApplicationCommandPermissionsDataVector() = default;
+		template<typename R> friend void DiscordCoreAPI::parseObject(const nlohmann::json*, R&);
 
 		operator std::vector<GuildApplicationCommandPermissionsData>();
 
+		GuildApplicationCommandPermissionsDataVector() = default;
+
 		virtual ~GuildApplicationCommandPermissionsDataVector() = default;
+
+	  protected:
+		std::vector<GuildApplicationCommandPermissionsData> theGuildApplicationCommandPermissionsDatas{};
 	};
 
 	/// Data structure representing a single emoji. \brief Data structure representing a single emoji.
