@@ -3794,9 +3794,9 @@ namespace nlohmann {
 
 			theOverWrite.id = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&j, "id"));
 
-			theOverWrite.allow = stoull(DiscordCoreAPI::getString(&j, "allow"));
+			theOverWrite.allow = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&j, "allow"));
 
-			theOverWrite.deny = stoull(DiscordCoreAPI::getString(&j, "deny"));
+			theOverWrite.deny = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&j, "deny"));
 
 			theOverWrite.type = static_cast<DiscordCoreAPI::PermissionOverwritesType>(DiscordCoreAPI::getUint8(&j, "type"));
 
