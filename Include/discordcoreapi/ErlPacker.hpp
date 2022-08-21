@@ -61,10 +61,10 @@ namespace DiscordCoreInternal {
 		ErlPacker(const std::string&);
 
 	  protected:
-		const std::string& buffer;
-		std::string bufferRef{};
-
-		mutable uint64_t offSet{};
+		std::string bufferString{};
+		char* buffer{ nullptr };
+		uint64_t offSet{};
+		uint64_t size{};
 
 		void singleValueJsonToETF(nlohmann::json&);
 
@@ -95,10 +95,10 @@ namespace DiscordCoreInternal {
 		void appendMapHeader(uint32_t);
 
 		template<typename ReturnType> ReturnType readBits() {
-			if (this->offSet + sizeof(ReturnType) > this->buffer.size()) {
+			if (this->offSet + sizeof(ReturnType) > this->size) {
 				throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
 			}
-			const ReturnType newValue = *reinterpret_cast<const ReturnType*>(this->buffer.data() + this->offSet);
+			const ReturnType newValue = *reinterpret_cast<const ReturnType*>(this->buffer + this->offSet);
 			this->offSet += sizeof(ReturnType);
 			return DiscordCoreAPI::reverseByteOrder<const ReturnType>(newValue);
 		}

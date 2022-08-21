@@ -223,32 +223,31 @@ namespace DiscordCoreAPI {
 	  public:
 		WebHook() = default;
 
-		WebHook& operator=(nlohmann::json* jsonObjectData);
+		WebHook& operator=(const nlohmann::json* jsonObjectData);
 
-		WebHook(nlohmann::json* jsonObjectData);
+		WebHook(const nlohmann::json* jsonObjectData);
 
 		virtual ~WebHook() = default;
 
-	  protected:
-		void parseObject(nlohmann::json* jsonObjectData);
+		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
-	class DiscordCoreAPI_Dll WebHookVector : public DataParser {
+	class DiscordCoreAPI_Dll WebHookVector {
 	  public:
 		WebHookVector() = default;
 
 		operator std::vector<WebHook>();
 
-		WebHookVector& operator=(nlohmann::json* jsonObjectData);
+		WebHookVector& operator=(const nlohmann::json* jsonObjectData);
 
-		WebHookVector(nlohmann::json* jsonObjectData);
+		WebHookVector(const nlohmann::json* jsonObjectData);
 
 		virtual ~WebHookVector() = default;
 
+		void parseObject(const nlohmann::json* jsonObjectData);
+
 	  protected:
 		std::vector<WebHook> theWebHooks{};
-
-		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
 	/**@}*/

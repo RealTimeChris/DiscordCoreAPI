@@ -110,12 +110,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	Role& Role::operator=(nlohmann::json* jsonObjectData) {
+	Role& Role::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	Role::Role(nlohmann::json* jsonObjectData) {
+	Role::Role(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -123,12 +123,12 @@ namespace DiscordCoreAPI {
 		return this->theRoles;
 	}
 
-	RoleVector& RoleVector::operator=(nlohmann::json* jsonObjectData) {
+	RoleVector& RoleVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	RoleVector::RoleVector(nlohmann::json* jsonObjectData) {
+	RoleVector::RoleVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

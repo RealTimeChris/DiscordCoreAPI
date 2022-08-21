@@ -68,12 +68,12 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	Thread& Thread::operator=(nlohmann::json* jsonObjectData) {
+	Thread& Thread::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	Thread::Thread(nlohmann::json* jsonObjectData) {
+	Thread::Thread(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

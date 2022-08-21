@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		}
 		for (auto& value: this->roles) {
 			nlohmann::json newData{};
-			newData["permissions"] = value.permissions.getCurrentPermissionString();
+			newData["permissions"] = value.permissions;
 			newData["tags"]["premium_subscriber"] = value.tags.premiumSubscriber;
 			newData["tags"]["integration_id"] = value.tags.integrationId;
 			newData["mentionable"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Mentionable);
@@ -241,12 +241,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	Guild& Guild::operator=(nlohmann::json* jsonObjectData) {
+	Guild& Guild::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	Guild::Guild(nlohmann::json* jsonObjectData) {
+	Guild::Guild(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -254,12 +254,12 @@ namespace DiscordCoreAPI {
 		return this->theGuilds;
 	}
 
-	GuildVector& GuildVector::operator=(nlohmann::json* jsonObjectData) {
+	GuildVector& GuildVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildVector::GuildVector(nlohmann::json* jsonObjectData) {
+	GuildVector::GuildVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -846,7 +846,7 @@ namespace DiscordCoreAPI {
 				Guilds::cache.insert_or_assign(guild->id, std::move(guild));
 			}
 			theCount.store(Guilds::cache.size());
-			//std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
+			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
 		}
 	}
 

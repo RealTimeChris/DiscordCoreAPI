@@ -61,12 +61,12 @@ namespace DiscordCoreAPI {
 		*this = dataNew;
 	}
 
-	User& User::operator=(nlohmann::json* jsonObjectData) {
+	User& User::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	User::User(nlohmann::json* jsonObjectData) {
+	User::User(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -74,12 +74,12 @@ namespace DiscordCoreAPI {
 		return this->theUsers;
 	}
 
-	UserVector& UserVector::operator=(nlohmann::json* jsonObjectData) {
+	UserVector& UserVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	UserVector::UserVector(nlohmann::json* jsonObjectData) {
+	UserVector::UserVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

@@ -160,9 +160,9 @@ namespace DiscordCoreAPI {
 
 		Channel() = default;
 
-		Channel& operator=(nlohmann::json* jsonObjectData);
+		Channel& operator=(const nlohmann::json* jsonObjectData);
 
-		Channel(nlohmann::json* jsonObjectData);
+		Channel(const nlohmann::json* jsonObjectData);
 
 		Channel& operator=(ChannelData&&);
 
@@ -174,26 +174,25 @@ namespace DiscordCoreAPI {
 
 		~Channel() = default;
 
-	  protected:
-		void parseObject(nlohmann::json* jsonObjectData);
+		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
-	class DiscordCoreAPI_Dll ChannelVector : public DataParser {
+	class DiscordCoreAPI_Dll ChannelVector {
 	  public:
 		ChannelVector() = default;
 
 		operator std::vector<Channel>();
 
-		ChannelVector& operator=(nlohmann::json* jsonObjectData);
+		ChannelVector& operator=(const nlohmann::json* jsonObjectData);
 
-		ChannelVector(nlohmann::json* jsonObjectData);
+		ChannelVector(const nlohmann::json* jsonObjectData);
 
 		virtual ~ChannelVector() = default;
+		
+		void parseObject(const nlohmann::json* jsonObjectData);
 
 	  protected:
 		std::vector<Channel> theChannels{};
-
-		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
 	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.

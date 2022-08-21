@@ -23,23 +23,25 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
-	ErlPacker::ErlPacker() : buffer(bufferRef){};
+	ErlPacker::ErlPacker(){};
 
 	ErlPacker& ErlPacker::operator=(const std::string& theBuffer) {
 		return *this;
 	}
 
-	ErlPacker::ErlPacker(const std::string& theBuffer) : buffer(theBuffer){};
+	ErlPacker::ErlPacker(const std::string& theBuffer) : buffer(( char* )theBuffer.data()){};
 
 	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
-		std::string theString{};
+		this->bufferString.clear();
 		this->offSet = 0;
 		ErlPacker::appendVersion();
 		ErlPacker::singleValueJsonToETF(dataToParse);
-		return this->bufferRef;
+		return this->bufferString;
 	}
 
 	nlohmann::json ErlPacker::parseEtfToJson(std::string& dataToParse) {
+		this->buffer = dataToParse.data();
+		this->size = dataToParse.size();
 		this->offSet = 0;
 		uint8_t version = ErlPacker::readBits<uint8_t>();
 		return ErlPacker::singleValueETFToJson();
@@ -104,10 +106,10 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::writeToBuffer(const std::string& bytes) {
-		if (this->offSet > this->buffer.size()) {
-			this->bufferRef.resize(this->offSet);
+		if (this->offSet > this->bufferString.size()) {
+			this->bufferString.resize(this->offSet);
 		}
-		this->bufferRef.insert(this->bufferRef.begin() + this->offSet, bytes.begin(), bytes.end());
+		this->bufferString.insert(this->bufferString.begin() + this->offSet, bytes.begin(), bytes.end());
 		this->offSet += static_cast<uint32_t>(bytes.size());
 	}
 
@@ -192,16 +194,16 @@ namespace DiscordCoreInternal {
 	}
 
 	const char* ErlPacker::readString(uint32_t length) {
-		if (this->offSet + static_cast<uint64_t>(length) > this->buffer.size()) {
+		if (this->offSet + static_cast<uint64_t>(length) > this->size) {
 			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer.\n\n" };
 		}
-		const char* theStringNew = this->buffer.data() + this->offSet;
+		const char* theStringNew = this->buffer + this->offSet;
 		this->offSet += length;
 		return theStringNew;
 	}
 
 	nlohmann::json ErlPacker::singleValueETFToJson() {
-		if (this->offSet >= this->buffer.size()) {
+		if (this->offSet >= this->size) {
 			throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Read past end of ETF buffer.\n\n" };
 		}
 		uint8_t type = ErlPacker::readBits<uint8_t>();
@@ -357,7 +359,7 @@ namespace DiscordCoreInternal {
 	nlohmann::json ErlPacker::parseStringAsList() {
 		uint16_t length = ErlPacker::readBits<uint16_t>();
 		nlohmann::json theArray = nlohmann::json::array();
-		if (static_cast<uint64_t>(this->offSet) + length > this->buffer.size()) {
+		if (static_cast<uint64_t>(this->offSet) + length > this->size) {
 			throw ErlPackError{ "ErlPacker::parseStringAsList() Error: String list past end of buffer.\n\n" };
 		}
 		for (uint16_t x = 0; x < length; ++x) {

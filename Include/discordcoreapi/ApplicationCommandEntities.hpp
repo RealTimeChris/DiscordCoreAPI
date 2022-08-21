@@ -177,17 +177,16 @@ namespace DiscordCoreAPI {
 	  public:
 		ApplicationCommand() = default;
 
-		ApplicationCommand& operator=(nlohmann::json* jsonObjectData);
+		ApplicationCommand& operator=(const nlohmann::json* jsonObjectData);
 
-		ApplicationCommand(nlohmann::json* jsonObjectData);
+		ApplicationCommand(const nlohmann::json* jsonObjectData);
 
 		virtual ~ApplicationCommand() = default;
 
-	  protected:
-		void parseObject(nlohmann::json* jsonObjectData);
+		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
-	class DiscordCoreAPI_Dll ApplicationCommandVector : public DataParser {
+	class DiscordCoreAPI_Dll ApplicationCommandVector {
 	  public:
 		friend class ApplicationCommands;
 
@@ -195,16 +194,16 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<ApplicationCommand>();
 
-		ApplicationCommandVector& operator=(nlohmann::json* jsonObjectData);
+		ApplicationCommandVector& operator=(const nlohmann::json* jsonObjectData);
 
-		ApplicationCommandVector(nlohmann::json* jsonObjectData);
+		ApplicationCommandVector(const nlohmann::json* jsonObjectData);
 
 		virtual ~ApplicationCommandVector() = default;
 
+		void parseObject(const nlohmann::json* jsonObjectData);
+
 	  protected:
 		std::vector<ApplicationCommand> theApplicationCommands{};
-
-		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
 	/**@}*/

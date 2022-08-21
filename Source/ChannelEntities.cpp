@@ -59,8 +59,8 @@ namespace DiscordCoreAPI {
 		nlohmann::json overwrites{};
 		for (auto& value: this->permissionOverwrites) {
 			nlohmann::json newData{};
-			newData["allow"] = value.allow.getCurrentPermissionString();
-			newData["deny"] = value.deny.getCurrentPermissionString();
+			newData["allow"] = value.allow;
+			newData["deny"] = value.deny;
 			newData["type"] = value.type;
 			newData["id"] = std::to_string(value.id);
 			overwrites.emplace_back(newData);
@@ -92,12 +92,12 @@ namespace DiscordCoreAPI {
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 	}
 
-	Channel& Channel::operator=(nlohmann::json* jsonObjectData) {
+	Channel& Channel::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	Channel::Channel(nlohmann::json* jsonObjectData) {
+	Channel::Channel(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -147,12 +147,12 @@ namespace DiscordCoreAPI {
 		return this->theChannels;
 	}
 
-	ChannelVector& ChannelVector::operator=(nlohmann::json* jsonObjectData) {
+	ChannelVector& ChannelVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ChannelVector::ChannelVector(nlohmann::json* jsonObjectData) {
+	ChannelVector::ChannelVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -173,8 +173,8 @@ namespace DiscordCoreAPI {
 		nlohmann::json permOws{};
 		for (auto& value: this->channelData.permissionOverwrites) {
 			nlohmann::json newData{};
-			newData["allow"] = value.allow.getCurrentPermissionString();
-			newData["deny"] = value.deny.getCurrentPermissionString();
+			newData["allow"] = value.allow;
+			newData["deny"] = value.deny;
 			newData["type"] = value.type;
 			newData["id"] = value.id;
 			permOws.emplace_back(newData);

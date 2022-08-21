@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		OnChannelCreationData(const OnChannelCreationData&);
 		OnChannelCreationData& operator=(OnChannelCreationData&);
 		OnChannelCreationData(OnChannelCreationData&);
-		ChannelData* channel{};///< The new Channel.
+		const ChannelData* channel{};///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel update event. \brief Data that is received as part of a Channel update event.
@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 		OnChannelUpdateData(const OnChannelUpdateData&);
 		OnChannelUpdateData& operator=(OnChannelUpdateData&);
 		OnChannelUpdateData(OnChannelUpdateData&);
-		ChannelData* channel{};///< The new Channel.
+		const ChannelData* channel{};///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel deletion event. \brief Data that is received as part of a Channel deletion event.
@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 		OnGuildCreationData(const OnGuildCreationData&);
 		OnGuildCreationData& operator=(OnGuildCreationData&);
 		OnGuildCreationData(OnGuildCreationData&);
-		GuildData* guild{};///< The new Guild.
+		const GuildData* guild{};///< The new Guild.
 	};
 
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 		OnGuildUpdateData(const OnGuildUpdateData&);
 		OnGuildUpdateData& operator=(OnGuildUpdateData&);
 		OnGuildUpdateData(OnGuildUpdateData&);
-		GuildData* guild{};///< The new, updated Guild.
+		const GuildData* guild{};///< The new, updated Guild.
 	};
 
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
@@ -198,7 +198,7 @@ namespace DiscordCoreAPI {
 		OnGuildMemberAddData& operator=(OnGuildMemberAddData&);
 		OnGuildMemberAddData(OnGuildMemberAddData&);
 		DiscordCoreClient* discordCoreClient{ nullptr };
-		GuildMemberData* guildMember{};///< The new GuildMember.
+		const GuildMemberData* guildMember{};///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMember update event. \brief Data that is received as part of a GuildMember update event.
@@ -208,7 +208,7 @@ namespace DiscordCoreAPI {
 		OnGuildMemberUpdateData(const OnGuildMemberUpdateData&);
 		OnGuildMemberUpdateData& operator=(OnGuildMemberUpdateData&);
 		OnGuildMemberUpdateData(OnGuildMemberUpdateData&);
-		GuildMemberData* guildMember{};///< The new GuildMember.
+		const GuildMemberData* guildMember{};///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMember remove event. \brief Data that is received as part of a GuildMember remove event.
@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
 		OnRoleCreationData& operator=(OnRoleCreationData&);
 		OnRoleCreationData(OnRoleCreationData&);
 		Snowflake guildId{};///< The id of the Guild within which the Role was created.
-		RoleData* role{};///< The new Role.
+		const RoleData* role{};///< The new Role.
 	};
 
 	/// Data that is received as part of a Role update event. \brief Data that is received as part of a Role update event.
@@ -247,7 +247,7 @@ namespace DiscordCoreAPI {
 		OnRoleUpdateData& operator=(OnRoleUpdateData&);
 		OnRoleUpdateData(OnRoleUpdateData&);
 		Snowflake guildId{};///< The id of the Guild within which the Role was updated.
-		RoleData* role{};///< The new Role.
+		const RoleData* role{};///< The new Role.
 	};
 
 	/// Data that is received as part of a Role deletion event. \brief Data that is received as part of a Role deletion event.
@@ -378,7 +378,7 @@ namespace DiscordCoreAPI {
 		OnUserUpdateData(const OnUserUpdateData&);
 		OnUserUpdateData& operator=(OnUserUpdateData&);
 		OnUserUpdateData(OnUserUpdateData&);
-		UserData* user{};///< The new User.
+		const UserData* user{};///< The new User.
 	};
 
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.
@@ -564,7 +564,7 @@ namespace DiscordCoreAPI {
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGuildDeletionData structure as an argument
 		/// \returns An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGuildDeletion(const DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData> handler);
+		DiscordCoreInternal::EventDelegateToken onGuildDeletion(const DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData*> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGuildDeletion(DiscordCoreInternal::EventDelegateToken& token);
@@ -887,7 +887,7 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildUpdateData> onGuildUpdateEvent{};
 
-		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildDeletionData> onGuildDeletionEvent{};
+		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildDeletionData*> onGuildDeletionEvent{};
 
 		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildBanAddData> onGuildBanAddEvent{};
 

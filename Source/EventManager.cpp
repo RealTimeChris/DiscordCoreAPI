@@ -94,7 +94,6 @@ namespace DiscordCoreAPI {
 
 	OnGuildCreationData::OnGuildCreationData(GuildData* theGuild, DiscordCoreClient* theClient) {
 		this->guild = theGuild;
-		this->guild->discordCoreClient = theClient;
 	}
 
 	OnGuildCreationData& OnGuildCreationData::operator=(const OnGuildCreationData& other) {
@@ -115,9 +114,8 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnGuildUpdateData::OnGuildUpdateData(GuildData* guildNew, DiscordCoreClient* theClient) {
+	OnGuildUpdateData::OnGuildUpdateData(GuildData* guildNew, DiscordCoreClient* theClient) : guild(guildNew) {
 		this->guild = guildNew;
-		this->guild->discordCoreClient = theClient;
 	}
 
 	OnGuildUpdateData& OnGuildUpdateData::operator=(const OnGuildUpdateData& other) {
@@ -494,7 +492,7 @@ namespace DiscordCoreAPI {
 		onGuildUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData*> handler) {
 		return this->onGuildDeletionEvent.add(std::move(handler));
 	}
 

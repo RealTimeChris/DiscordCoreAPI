@@ -91,32 +91,31 @@ namespace DiscordCoreAPI {
 
 		User(UserData&);
 
-		User& operator=(nlohmann::json* jsonObjectData);
+		User& operator=(const nlohmann::json* jsonObjectData);
 
-		User(nlohmann::json* jsonObjectData);
+		User(const nlohmann::json* jsonObjectData);
 
 		virtual ~User() = default;
 
-	  protected:
-		void parseObject(nlohmann::json* jsonObjectData);
+		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
-	class DiscordCoreAPI_Dll UserVector : public DataParser {
+	class DiscordCoreAPI_Dll UserVector {
 	  public:
 		UserVector() = default;
 
 		operator std::vector<User>();
 
-		UserVector& operator=(nlohmann::json* jsonObjectData);
+		UserVector& operator=(const nlohmann::json* jsonObjectData);
 
-		UserVector(nlohmann::json* jsonObjectData);
+		UserVector(const nlohmann::json* jsonObjectData);
 
 		virtual ~UserVector() = default;
 
+		void parseObject(const nlohmann::json* jsonObjectData);
+
 	  protected:
 		std::vector<User> theUsers{};
-
-		void parseObject(nlohmann::json* jsonObjectData);
 	};
 
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.

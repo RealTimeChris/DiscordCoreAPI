@@ -69,15 +69,13 @@ namespace DiscordCoreAPI {
 		if (this->avatar.getHashUrl(this->id, this->guildId) != "") {
 			return this->avatar.getHashUrl(this->id, this->guildId);
 		} else {
-			return this->userAvatar.getHashUrl(this->id, 0);
+			return {};
 		}
 	}
 
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) {
 		if (this != &other) {
 			this->permissions = std::move(other.permissions);
-			this->userAvatar = std::move(other.userAvatar);
-			this->userName = std::move(other.userName);
 			this->joinedAt = std::move(other.joinedAt);
 			this->avatar = std::move(other.avatar);
 			this->roles = std::move(other.roles);
@@ -96,8 +94,6 @@ namespace DiscordCoreAPI {
 	GuildMember& GuildMember::operator=(GuildMemberData& other) {
 		if (this != &other) {
 			this->permissions = other.permissions;
-			this->userAvatar = other.userAvatar;
-			this->userName = other.userName;
 			this->joinedAt = other.joinedAt;
 			this->guildId = other.guildId;
 			this->avatar = other.avatar;
@@ -113,12 +109,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	GuildMember& GuildMember::operator=(nlohmann::json* jsonObjectData) {
+	GuildMember& GuildMember::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildMember::GuildMember(nlohmann::json* jsonObjectData) {
+	GuildMember::GuildMember(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -126,12 +122,12 @@ namespace DiscordCoreAPI {
 		return this->theGuildMembers;
 	}
 
-	GuildMemberVector& GuildMemberVector::operator=(nlohmann::json* jsonObjectData) {
+	GuildMemberVector& GuildMemberVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildMemberVector::GuildMemberVector(nlohmann::json* jsonObjectData) {
+	GuildMemberVector::GuildMemberVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

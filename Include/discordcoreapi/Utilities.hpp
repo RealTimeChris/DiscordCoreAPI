@@ -569,19 +569,19 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json* jsonData, const char* keyname);
+	DiscordCoreAPI_Dll uint8_t getUint8(const nlohmann::json* jsonData, const char* keyname);
 
-	DiscordCoreAPI_Dll uint16_t getUint16(nlohmann::json* jsonData, const char* keyname);
+	DiscordCoreAPI_Dll uint16_t getUint16(const nlohmann::json* jsonData, const char* keyname);
 
-	DiscordCoreAPI_Dll uint32_t getUint32(nlohmann::json* jsonData, const char* keyname);
+	DiscordCoreAPI_Dll uint32_t getUint32(const nlohmann::json* jsonData, const char* keyname);
 
-	DiscordCoreAPI_Dll uint64_t getUint64(nlohmann::json* jsonData, const char* keyname);
+	DiscordCoreAPI_Dll uint64_t getUint64(const nlohmann::json* jsonData, const char* keyname);
 
-	DiscordCoreAPI_Dll bool getBool(nlohmann::json* jsonData, const char* keyname);
+	DiscordCoreAPI_Dll bool getBoolReal(const nlohmann::json* jsonData, const char* keyname);
 
-	DiscordCoreAPI_Dll std::string getString(nlohmann::json* jsonData, const char* keyname);
+	DiscordCoreAPI_Dll std::string getString(const nlohmann::json* jsonData, const char* keyname);
 
-	DiscordCoreAPI_Dll uint64_t strtoull(std::string&& theString);
+	DiscordCoreAPI_Dll uint64_t strtoull(const std::string&& theString);
 
 	template<typename ReturnType> ReturnType fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
 		ReturnType theValue{};

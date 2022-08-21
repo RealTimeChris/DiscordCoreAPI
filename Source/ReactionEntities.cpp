@@ -49,12 +49,12 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	Reaction& Reaction::operator=(nlohmann::json* jsonObjectData) {
+	Reaction& Reaction::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	Reaction::Reaction(nlohmann::json* jsonObjectData) {
+	Reaction::Reaction(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -62,12 +62,12 @@ namespace DiscordCoreAPI {
 		return this->theReactions;
 	}
 
-	ReactionVector& ReactionVector::operator=(nlohmann::json* jsonObjectData) {
+	ReactionVector& ReactionVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ReactionVector::ReactionVector(nlohmann::json* jsonObjectData) {
+	ReactionVector::ReactionVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

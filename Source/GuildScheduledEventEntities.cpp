@@ -58,12 +58,25 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	GuildScheduledEvent& GuildScheduledEvent::operator=(nlohmann::json* jsonObjectData) {
+	GuildScheduledEvent& GuildScheduledEvent::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildScheduledEvent::GuildScheduledEvent(nlohmann::json* jsonObjectData) {
+	GuildScheduledEvent::GuildScheduledEvent(const nlohmann::json* jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	GuildScheduledEventVector::operator std::vector<GuildScheduledEvent>() {
+		return this->theGuildScheduledEvents;
+	}
+
+	GuildScheduledEventVector& GuildScheduledEventVector::operator=(const nlohmann::json* jsonObjectData) {
+		this->parseObject(jsonObjectData);
+		return *this;
+	}
+
+	GuildScheduledEventVector::GuildScheduledEventVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -77,7 +90,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events";
 		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventAsync()";
-		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<std::vector<GuildScheduledEvent>>(workload);
+		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEventVector>(workload);
 	}
 
 	CoRoutine<GuildScheduledEvent> GuildScheduledEvents::createGuildScheduledEventAsync(CreateGuildScheduledEventData dataPackage) {
