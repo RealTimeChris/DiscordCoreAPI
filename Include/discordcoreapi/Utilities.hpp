@@ -740,17 +740,11 @@ namespace DiscordCoreAPI {
 	class TimeStamp {
 	  public:
 		explicit TimeStamp(TimeFormat theFormatNew = TimeFormat::LongDateTime) {
-			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		}
 
 		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second, TimeFormat theFormatNew) {
-			this->year = std::stoll(year);
-			this->month = std::stoll(month);
-			this->day = std::stoll(day);
-			this->hour = std::stoll(hour);
-			this->minute = std::stoll(minute);
-			this->second = std::stoll(second);
-			this->getTimeSinceEpoch();
+			this->getTimeSinceEpoch(stoull(year), stoull(month), stoull(day), stoull(hour), stoull(minute), stoull(second));
 		}
 
 		void convertTimeStampToTimeUnits(TimeFormat theFormatNew, std::string originalTimeStamp) {
@@ -758,9 +752,9 @@ namespace DiscordCoreAPI {
 				if (originalTimeStamp != "") {
 					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)), stoi(originalTimeStamp.substr(8, 9)),
 						stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)), stoi(originalTimeStamp.substr(17, 18)), theFormatNew };
-					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) };
+					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) }.count();
 				} else {
-					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch());
+					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count();
 				}
 			} catch (...) {
 			}
@@ -771,7 +765,7 @@ namespace DiscordCoreAPI {
 		}
 
 		operator uint64_t() {
-			return this->timeStampInTimeUnits.count();
+			return this->timeStampInTimeUnits;
 		}
 
 		TimeStamp<TimeType>& operator=(std::string&& originalTimeStampNew) {
@@ -798,12 +792,6 @@ namespace DiscordCoreAPI {
 
 		TimeStamp<TimeType>& operator=(const TimeStamp& other) {
 			this->timeStampInTimeUnits = other.timeStampInTimeUnits;
-			this->minute = other.minute;
-			this->second = other.second;
-			this->month = other.month;
-			this->hour = other.hour;
-			this->year = other.year;
-			this->day = other.day;
 			return *this;
 		}
 
@@ -813,12 +801,6 @@ namespace DiscordCoreAPI {
 
 		TimeStamp<TimeType>& operator=(TimeStamp& other) {
 			this->timeStampInTimeUnits = other.timeStampInTimeUnits;
-			this->minute = other.minute;
-			this->second = other.second;
-			this->month = other.month;
-			this->hour = other.hour;
-			this->year = other.year;
-			this->day = other.day;
 			return *this;
 		}
 
@@ -827,17 +809,11 @@ namespace DiscordCoreAPI {
 		}
 
 		TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, TimeFormat theFormatNew) {
-			this->second = second;
-			this->minute = minute;
-			this->month = month;
-			this->year = year;
-			this->hour = hour;
-			this->day = day;
-			this->getTimeSinceEpoch();
+			this->getTimeSinceEpoch(year, month, day, hour, minute, second);
 		};
 
 		TimeStamp(uint64_t timeInTimeUnits, TimeFormat theFormatNew) {
-			this->timeStampInTimeUnits = TimeType{ timeInTimeUnits };
+			this->timeStampInTimeUnits = TimeType{ timeInTimeUnits }.count();
 			this->getISO8601TimeStamp(theFormatNew);
 		}
 
@@ -906,10 +882,10 @@ namespace DiscordCoreAPI {
 		}
 
 		bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) {
-			if (this->timeStampInTimeUnits.count() == 0) {
-				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+			if (this->timeStampInTimeUnits == 0) {
+				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
-			uint64_t startTimeRaw = this->timeStampInTimeUnits.count();
+			uint64_t startTimeRaw = this->timeStampInTimeUnits;
 			auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			uint64_t secondsPerMinute = 60;
 			uint64_t secondsPerHour = secondsPerMinute * 60;
@@ -947,34 +923,13 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		TimeType timeStampInTimeUnits{};
-		uint64_t year{ 0 };
-		uint64_t month{ 0 };
-		uint64_t day{ 0 };
-		uint64_t hour{ 0 };
-		uint64_t minute{ 0 };
-		uint64_t second{ 0 };
-		const uint32_t secondsInJan{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInFeb{ 28 * 24 * 60 * 60 };
-		const uint32_t secondsInMar{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInApr{ 30 * 24 * 60 * 60 };
-		const uint32_t secondsInMay{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInJun{ 30 * 24 * 60 * 60 };
-		const uint32_t secondsInJul{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInAug{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInSep{ 30 * 24 * 60 * 60 };
-		const uint32_t secondsInOct{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsInNov{ 30 * 24 * 60 * 60 };
-		const uint32_t secondsInDec{ 31 * 24 * 60 * 60 };
-		const uint32_t secondsPerMinute{ 60 };
-		const uint32_t secondsPerHour{ 60 * 60 };
-		const uint32_t secondsPerDay{ 60 * 60 * 24 };
+		uint64_t timeStampInTimeUnits{};
 
 		std::string getISO8601TimeStamp(TimeFormat timeFormat) {
-			if (this->timeStampInTimeUnits.count() == 0) {
-				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+			if (this->timeStampInTimeUnits == 0) {
+				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
-			uint64_t timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(this->timeStampInTimeUnits).count()) / 1000;
+			uint64_t timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(TimeType{ this->timeStampInTimeUnits }).count()) / 1000;
 			time_t rawTime(timeValue);
 			tm timeInfo = *localtime(&rawTime);
 			std::string timeStamp{};
@@ -1017,65 +972,80 @@ namespace DiscordCoreAPI {
 			return timeStamp;
 		}
 
-		void getTimeSinceEpoch() {
+		void getTimeSinceEpoch(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second) {
+			const uint32_t secondsInJan{ 31 * 24 * 60 * 60 };
+			const uint32_t secondsInFeb{ 28 * 24 * 60 * 60 };
+			const uint32_t secondsInMar{ 31 * 24 * 60 * 60 };
+			const uint32_t secondsInApr{ 30 * 24 * 60 * 60 };
+			const uint32_t secondsInMay{ 31 * 24 * 60 * 60 };
+			const uint32_t secondsInJun{ 30 * 24 * 60 * 60 };
+			const uint32_t secondsInJul{ 31 * 24 * 60 * 60 };
+			const uint32_t secondsInAug{ 31 * 24 * 60 * 60 };
+			const uint32_t secondsInSep{ 30 * 24 * 60 * 60 };
+			const uint32_t secondsInOct{ 31 * 24 * 60 * 60 };
+			const uint32_t secondsInNov{ 30 * 24 * 60 * 60 };
+			const uint32_t secondsInDec{ 31 * 24 * 60 * 60 };
+			const uint32_t secondsPerMinute{ 60 };
+			const uint32_t secondsPerHour{ 60 * 60 };
+			const uint32_t secondsPerDay{ 60 * 60 * 24 };
 			TimeType theValue{};
-			for (int32_t x = 1970; x < this->year; ++x) {
-				theValue += TimeType{ this->secondsInJan };
-				theValue += TimeType{ this->secondsInFeb };
-				theValue += TimeType{ this->secondsInMar };
-				theValue += TimeType{ this->secondsInApr };
-				theValue += TimeType{ this->secondsInMay };
-				theValue += TimeType{ this->secondsInJun };
-				theValue += TimeType{ this->secondsInJul };
-				theValue += TimeType{ this->secondsInAug };
-				theValue += TimeType{ this->secondsInSep };
-				theValue += TimeType{ this->secondsInOct };
-				theValue += TimeType{ this->secondsInNov };
-				theValue += TimeType{ this->secondsInDec };
+			for (int32_t x = 1970; x < year; ++x) {
+				theValue += TimeType{ secondsInJan };
+				theValue += TimeType{ secondsInFeb };
+				theValue += TimeType{ secondsInMar };
+				theValue += TimeType{ secondsInApr };
+				theValue += TimeType{ secondsInMay };
+				theValue += TimeType{ secondsInJun };
+				theValue += TimeType{ secondsInJul };
+				theValue += TimeType{ secondsInAug };
+				theValue += TimeType{ secondsInSep };
+				theValue += TimeType{ secondsInOct };
+				theValue += TimeType{ secondsInNov };
+				theValue += TimeType{ secondsInDec };
 				if (x % 4 == 0) {
-					theValue += TimeType{ this->secondsPerDay };
+					theValue += TimeType{ secondsPerDay };
 				}
 			}
-			if (this->month > 0) {
-				theValue += TimeType{ static_cast<uint64_t>((this->day - 1) * this->secondsPerDay) };
-				theValue += TimeType{ static_cast<uint64_t>(this->hour * this->secondsPerHour) };
-				theValue += TimeType{ static_cast<uint64_t>(this->minute * this->secondsPerMinute) };
-				theValue += TimeType{ this->second };
+			if (month > 0) {
+				theValue += TimeType{ static_cast<uint64_t>((day - 1) * secondsPerDay) };
+				theValue += TimeType{ static_cast<uint64_t>(hour * secondsPerHour) };
+				theValue += TimeType{ static_cast<uint64_t>(minute * secondsPerMinute) };
+				theValue += TimeType{ second };
 			}
-			if (this->month > 1) {
-				theValue += TimeType{ this->secondsInJan };
+			if (month > 1) {
+				theValue += TimeType{ secondsInJan };
 			}
-			if (this->month > 2) {
-				theValue += TimeType{ this->secondsInFeb };
+			if (month > 2) {
+				theValue += TimeType{ secondsInFeb };
 			}
-			if (this->month > 3) {
-				theValue += TimeType{ this->secondsInMar };
+			if (month > 3) {
+				theValue += TimeType{ secondsInMar };
 			}
-			if (this->month > 4) {
-				theValue += TimeType{ this->secondsInApr };
+			if (month > 4) {
+				theValue += TimeType{ secondsInApr };
 			}
-			if (this->month > 5) {
-				theValue += TimeType{ this->secondsInMay };
+			if (month > 5) {
+				theValue += TimeType{ secondsInMay };
 			}
-			if (this->month > 6) {
-				theValue += TimeType{ this->secondsInJun };
+			if (month > 6) {
+				theValue += TimeType{ secondsInJun };
 			}
-			if (this->month > 7) {
-				theValue += TimeType{ this->secondsInJul };
+			if (month > 7) {
+				theValue += TimeType{ secondsInJul };
 			}
-			if (this->month > 8) {
-				theValue += TimeType{ this->secondsInAug };
+			if (month > 8) {
+				theValue += TimeType{ secondsInAug };
 			}
-			if (this->month > 9) {
-				theValue += TimeType{ this->secondsInSep };
+			if (month > 9) {
+				theValue += TimeType{ secondsInSep };
 			}
-			if (this->month > 10) {
-				theValue += TimeType{ this->secondsInOct };
+			if (month > 10) {
+				theValue += TimeType{ secondsInOct };
 			}
-			if (this->month > 11) {
-				theValue += TimeType{ this->secondsInNov };
+			if (month > 11) {
+				theValue += TimeType{ secondsInNov };
 			}
-			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(theValue) * 1000;
+			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(theValue).count() * 1000;
 		}
 	};
 
