@@ -144,7 +144,6 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMemberData>();
 		std::shared_lock theLock{ GuildMembers::theMutex };
-		GuildMemberData theData{};
 		if (Guilds::cache.contains(dataPackage.guildId)) {
 			for (auto& value: Guilds::cache[dataPackage.guildId]->members) {
 				if (dataPackage.guildMemberId == value->id) {
