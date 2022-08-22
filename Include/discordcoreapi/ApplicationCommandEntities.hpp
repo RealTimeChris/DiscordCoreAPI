@@ -177,14 +177,12 @@ namespace DiscordCoreAPI {
 	  public:
 		ApplicationCommand() = default;
 
-		ApplicationCommand& operator=(const nlohmann::json* jsonObjectData);
-
-		ApplicationCommand(const nlohmann::json* jsonObjectData);
-
 		virtual ~ApplicationCommand() = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
+
+	void parseObject(const nlohmann::json* jsonObjectData, ApplicationCommand& theData);
 
 	class DiscordCoreAPI_Dll ApplicationCommandVector {
 	  public:

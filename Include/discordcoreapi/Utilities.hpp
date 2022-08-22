@@ -565,15 +565,21 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	template<typename ReturnType> void getVector(const nlohmann::json* jsonData, const char* keyname, std::vector<ReturnType>& theVector) {
+	template<typename ReturnType> std::vector<ReturnType> getVector(const nlohmann::json* jsonData, const char* keyname) {
 		auto theResult = jsonData->find(keyname);
 		if (theResult != jsonData->end() && !theResult->is_null() && theResult->is_array()) {
-			theVector.reserve(theResult->get<std::vector<ReturnType>>().size());
-			for (int32_t x = 0; x < theVector.size(); ++x) {
-				theVector.push_back((*theResult)[x]);
-			}
+			return theResult->get<std::vector<ReturnType>>();
 		} else {
-			return;
+			return std::vector<ReturnType>{};
+		}
+	}
+
+	template<typename ReturnType, typename ReturnType02> std::map<ReturnType, ReturnType02> getMap(const nlohmann::json* jsonData, const char* keyname) {
+		auto theResult = jsonData->find(keyname);
+		if (theResult != jsonData->end() && !theResult->is_null() && theResult->is_array()) {
+			return theResult->get<std::map<ReturnType, ReturnType02>>();
+		} else {
+			return std::map<ReturnType, ReturnType02>{};
 		}
 	}
 
