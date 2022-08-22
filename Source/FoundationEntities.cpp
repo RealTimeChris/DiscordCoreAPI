@@ -449,33 +449,20 @@ namespace DiscordCoreAPI {
 		GuildMembers::insertGuildMember(std::move(other));
 	}
 
+	void GuildMemberData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
+	}
+
 	UserData GuildMemberData::getUserData() {
 		return Users::getCachedUserAsync({ .userId = this->id }).get();
 	}
 
-	ChannelData& ChannelData::operator=(ChannelData&& other) noexcept {
-		if (this != &other) {
-			this->permissionOverwrites = std::move(other.permissionOverwrites);
-			this->parentId = std::move(other.parentId);
-			this->guildId = std::move(other.guildId);
-			this->ownerId = std::move(other.ownerId);
-			this->memberCount = other.memberCount;
-			this->topic = std::move(other.topic);
-			this->name = std::move(other.name);
-			this->position = other.position;
-			this->id = std::move(other.id);
-			this->flags = other.flags;
-			this->type = other.type;
-		}
-		return *this;
-	}
-
-	ChannelData::ChannelData(ChannelData&& other) noexcept {
-		*this = std::move(other);
-	}
-
 	void ChannelData::insertChannel(std::unique_ptr<ChannelData> other) {
 		Channels::insertChannel(std::move(other));
+	}
+
+	void ChannelData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
 	}
 
 	ActiveThreadsData& ActiveThreadsData::operator=(const nlohmann::json* jsonObjectData) {
@@ -496,25 +483,12 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	RoleData& RoleData::operator=(RoleData&& other) noexcept {
-		if (this != &other) {
-			this->unicodeEmoji = std::move(other.unicodeEmoji);
-			this->permissions = other.permissions;
-			this->name = std::move(other.name);
-			this->position = other.position;
-			this->color = other.color;
-			this->flags = other.flags;
-			this->id = other.id;
-		}
-		return *this;
-	}
-
-	RoleData::RoleData(RoleData&& other) noexcept {
-		*this = std::move(other);
-	}
-
 	void RoleData::insertRole(std::unique_ptr<RoleData>theRole) {
 		Roles::insertRole(std::move(theRole));
+	}
+
+	void RoleData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
 	}
 
 	ActionMetaData& ActionMetaData::operator=(const nlohmann::json* jsonObjectData) {
@@ -908,26 +882,8 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	GuildData& GuildData::operator=(GuildData&& other) noexcept {
-		if (this != &other) {
-			this->voiceConnectionPtr = other.voiceConnectionPtr;
-			this->discordCoreClient = other.discordCoreClient;
-			this->channels = std::move(other.channels);
-			this->joinedAt = std::move(other.joinedAt);
-			this->members = std::move(other.members);
-			this->memberCount = other.memberCount;
-			this->roles = std::move(other.roles);
-			this->name = std::move(other.name);
-			this->icon = std::move(other.icon);
-			this->ownerId = other.ownerId;
-			this->flags = other.flags;
-			this->id = other.id;
-		}
-		return *this;
-	}
-
-	GuildData::GuildData(GuildData&& other) noexcept {
-		*this = std::move(other);
+	void GuildData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
 	}
 
 	GuildDataVector::operator std::vector<GuildData>() {

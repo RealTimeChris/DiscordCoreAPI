@@ -248,7 +248,9 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("permission_overwrites") && !(*jsonObjectData)["permission_overwrites"].is_null()) {
 			this->permissionOverwrites.clear();
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
-				this->permissionOverwrites[value.get<OverWriteData>().id] = value.get<OverWriteData>();
+				OverWriteData newData{};
+				DiscordCoreAPI::parseObject(&value, newData);
+				this->permissionOverwrites[newData.id] = newData;
 			}
 		}
 
@@ -344,7 +346,7 @@ namespace DiscordCoreAPI {
 	void ChannelVector::parseObject(const nlohmann::json* jsonObjectData) {
 		this->theChannels.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
-			DiscordCoreAPI::ChannelData newData{ value.get<ChannelData>() };
+			DiscordCoreAPI::ChannelData newData{};//{ value.get<ChannelData>() };
 			this->theChannels.emplace_back(newData);
 		}
 		this->theChannels.shrink_to_fit();
@@ -453,7 +455,7 @@ namespace DiscordCoreAPI {
 			this->roles.clear();
 			this->roles.reserve((*jsonObjectData)["roles"].size());
 			for (auto& value: (*jsonObjectData)["roles"]) {
-				std::unique_ptr<DiscordCoreAPI::RoleData> newData{ std::make_unique<RoleData>(value.get<RoleData>()) };
+				std::unique_ptr<DiscordCoreAPI::RoleData> newData;//{ std::make_unique<RoleData>(value.get<RoleData>()) };
 				this->roles.push_back(newData->id);
 				DiscordCoreAPI::Roles::insertRole(std::move(newData));
 			}
@@ -532,7 +534,7 @@ namespace DiscordCoreAPI {
 			this->channels.clear();
 			this->channels.reserve((*jsonObjectData)["channels"].size());
 			for (auto& value: (*jsonObjectData)["channels"]) {
-				std::unique_ptr<DiscordCoreAPI::ChannelData> newData{ std::make_unique<DiscordCoreAPI::ChannelData>(value.get<ChannelData>()) };
+				std::unique_ptr<DiscordCoreAPI::ChannelData> newData{};//{ std::make_unique<DiscordCoreAPI::ChannelData>(value.get<ChannelData>()) };
 				newData->guildId = this->id;
 				this->channels.push_back(newData->id);
 				DiscordCoreAPI::Channels::insertChannel(std::move(newData));
@@ -587,7 +589,7 @@ namespace DiscordCoreAPI {
 	void GuildVector::parseObject(const nlohmann::json* jsonObjectData) {
 		this->theGuilds.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
-			DiscordCoreAPI::GuildData newData{ value.get<GuildData>() };
+			DiscordCoreAPI::GuildData newData{};//{ value.get<GuildData>() };
 			this->theGuilds.emplace_back(newData);
 		}
 		this->theGuilds.shrink_to_fit();
@@ -818,7 +820,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("thread") && !(*jsonObjectData)["thread"].is_null()) {
-			this->thread = (*jsonObjectData)["thread"].get<ChannelData>();
+			//this->thread = (*jsonObjectData)["thread"].get<ChannelData>();
 		}
 	}
 
@@ -932,7 +934,7 @@ namespace DiscordCoreAPI {
 	void RoleVector::parseObject(const nlohmann::json* jsonObjectData) {
 		this->theRoles.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
-			DiscordCoreAPI::RoleData newData{ value.get<RoleData>() };
+			DiscordCoreAPI::RoleData newData{};//{ value.get<RoleData>() };
 			this->theRoles.emplace_back(newData);
 		}
 		this->theRoles.shrink_to_fit();
@@ -1010,22 +1012,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void GuildData::parseObject(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData->get<GuildData>();
-	}
-
-	void ChannelData::parseObject(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData->get<ChannelData>();
-	}
-
-	void RoleData::parseObject(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData->get<RoleData>();
-	}
-
-	void GuildMemberData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
-	}
-
 	void StickerVector::parseObject(const nlohmann::json* jsonObjectData) {
 		this->theStickers.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
@@ -1059,7 +1045,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("permission_overwrites") && !(*jsonObjectData)["permission_overwrites"].is_null()) {
 			this->permissionOverwrites.clear();
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
-				this->permissionOverwrites.push_back(value.get<OverWriteData>());
+				//this->permissionOverwrites.push_back(value.get<OverWriteData>());
 			}
 		}
 
@@ -1196,11 +1182,11 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("source_guild") && !(*jsonObjectData)["source_guild"].is_null()) {
-			this->sourceGuild = (*jsonObjectData)["source_guild"].get<GuildData>();
+			//this->sourceGuild = (*jsonObjectData)["source_guild"].get<GuildData>();
 		}
 
 		if (jsonObjectData->contains("source_channel") && !(*jsonObjectData)["source_channel"].is_null()) {
-			this->sourceChannel = (*jsonObjectData)["source_channel"].get<ChannelData>();
+			//this->sourceChannel = (*jsonObjectData)["source_channel"].get<ChannelData>();
 		}
 
 		if (jsonObjectData->contains("url") && !(*jsonObjectData)["url"].is_null()) {
@@ -1514,7 +1500,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("threads") && !(*jsonObjectData)["threads"].is_null()) {
 			this->threads.clear();
 			for (auto& value: (*jsonObjectData)["threads"]) {
-				this->threads.emplace_back(value.get<ChannelData>());
+				//this->threads.emplace_back(value.get<ChannelData>());
 			}
 		}
 
@@ -1535,7 +1521,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("threads") && !(*jsonObjectData)["threads"].is_null()) {
 			this->threads.clear();
 			for (auto& value: (*jsonObjectData)["threads"]) {
-				this->threads.emplace_back(value.get<ChannelData>());
+				//this->threads.emplace_back(value.get<ChannelData>());
 			}
 		}
 
@@ -1695,7 +1681,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("roles") && !(*jsonObjectData)["roles"].is_null()) {
 			this->roles.clear();
 			for (auto& value: (*jsonObjectData)["roles"]) {
-				this->roles.emplace_back(value.get<RoleData>());
+				//this->roles.emplace_back(value.get<RoleData>());
 			}
 		}
 
@@ -2457,7 +2443,7 @@ namespace DiscordCoreAPI {
 	void GuildDataVector::parseObject(const nlohmann::json* jsonObjectData) {
 		this->theGuildDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
-			this->theGuildDatas.push_back(value.get<GuildData>());
+			//this->theGuildDatas.push_back(value.get<GuildData>());
 		}
 		this->theGuildDatas.shrink_to_fit();
 	}
@@ -2561,11 +2547,11 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("guild") && !(*jsonObjectData)["guild"].is_null()) {
-			this->guild = (*jsonObjectData)["guild"].get<GuildData>();
+			//this->guild = (*jsonObjectData)["guild"].get<GuildData>();
 		}
 
 		if (jsonObjectData->contains("channel") && !(*jsonObjectData)["channel"].is_null()) {
-			this->channel = (*jsonObjectData)["channel"].get<ChannelData>();
+			//this->channel = (*jsonObjectData)["channel"].get<ChannelData>();
 		}
 
 		if (jsonObjectData->contains("inviter") && !(*jsonObjectData)["inviter"].is_null()) {
@@ -2640,7 +2626,7 @@ namespace DiscordCoreAPI {
 
 	void GuildTemplateData::parseObject(const nlohmann::json* jsonObjectData) {
 		if (jsonObjectData->contains("serialized_source_guild") && !(*jsonObjectData)["serialized_source_guild"].is_null()) {
-			this->serializedSourceGuild = (*jsonObjectData)["serialized_source_guild"].get<GuildData>();
+			////this->serializedSourceGuild = (*jsonObjectData)["serialized_source_guild"].get<GuildData>();
 		}
 
 		if (jsonObjectData->contains("creator") && !(*jsonObjectData)["creator"].is_null()) {
@@ -2731,11 +2717,11 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("source_guild") && !(*jsonObjectData)["source_guild"].is_null()) {
-			this->sourceGuild = (*jsonObjectData)["source_guild"].get<GuildData>();
+			//this->sourceGuild = (*jsonObjectData)["source_guild"].get<GuildData>();
 		}
 
 		if (jsonObjectData->contains("source_channel") && !(*jsonObjectData)["source_channel"].is_null()) {
-			this->sourceChannel = (*jsonObjectData)["source_channel"].get<ChannelData>();
+			//this->sourceChannel = (*jsonObjectData)["source_channel"].get<ChannelData>();
 		}
 
 		if (jsonObjectData->contains("url") && !(*jsonObjectData)["url"].is_null()) {
@@ -2810,7 +2796,7 @@ namespace DiscordCoreAPI {
 			this->threads.clear();
 			this->threads.reserve((*jsonObjectData)["threads"].size());
 			for (auto& value: (*jsonObjectData)["threads"]) {
-				this->threads.push_back(value.get<ChannelData>());
+				//this->threads.push_back(value.get<ChannelData>());
 			}
 		}
 	}
@@ -3394,7 +3380,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("threads") && !(*jsonObjectData)["threads"].is_null()) {
 			this->threads.clear();
 			for (auto& value: (*jsonObjectData)["threads"]) {
-				this->threads.emplace_back(value.get<ChannelData>());
+				//this->threads.emplace_back(value.get<ChannelData>());
 			}
 		}
 	}
@@ -3616,7 +3602,7 @@ namespace DiscordCoreAPI {
 			}
 
 			if (jsonObjectData->contains("thread") && !(*jsonObjectData)["thread"].is_null()) {
-				this->thread = (*jsonObjectData)["thread"].get<ChannelData>();
+				//this->thread = (*jsonObjectData)["thread"].get<ChannelData>();
 			}
 		}
 	}
@@ -3773,7 +3759,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("thread") && !(*jsonObjectData)["thread"].is_null()) {
-			this->thread = (*jsonObjectData)["thread"].get<ChannelData>();
+			//this->thread = (*jsonObjectData)["thread"].get<ChannelData>();
 		}
 	}
 
@@ -3953,14 +3939,14 @@ namespace DiscordCoreAPI {
 				this->resolved.channels.clear();
 				auto newMap = value["channels"].get<std::unordered_map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
-					this->resolved.channels[stoull(key)] = newValue.get<ChannelData>();
+					//this->resolved.channels[stoull(key)] = newValue.get<ChannelData>();
 				}
 			}
 			if (value.contains("roles") && !value["roles"].is_null()) {
 				this->resolved.roles.clear();
 				auto newMap = value["roles"].get<std::unordered_map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
-					this->resolved.roles[stoull(key)] = newValue.get<RoleData>();
+					//this->resolved.roles[stoull(key)] = newValue.get<RoleData>();
 				}
 			}
 			if (value.contains("members") && !value["members"].is_null()) {
