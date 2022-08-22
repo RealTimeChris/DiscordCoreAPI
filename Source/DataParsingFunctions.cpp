@@ -458,7 +458,7 @@ namespace DiscordCoreAPI {
 			this->roles.reserve((*jsonObjectData)["roles"].size());
 			for (auto& value: (*jsonObjectData)["roles"]) {
 				std::unique_ptr<DiscordCoreAPI::RoleData> newData{};
-				DiscordCoreAPI::parseObject(&value, newData);
+				DiscordCoreAPI::parseObject(&value, *newData);
 				this->roles.push_back(newData->id);
 				DiscordCoreAPI::Roles::insertRole(std::move(newData));
 			}
@@ -538,7 +538,7 @@ namespace DiscordCoreAPI {
 			this->channels.reserve((*jsonObjectData)["channels"].size());
 			for (auto& value: (*jsonObjectData)["channels"]) {
 				std::unique_ptr<DiscordCoreAPI::ChannelData> newData{};
-				DiscordCoreAPI::parseObject(&value, newData);
+				DiscordCoreAPI::parseObject(&value, *newData);
 				newData->guildId = this->id;
 				this->channels.push_back(newData->id);
 				DiscordCoreAPI::Channels::insertChannel(std::move(newData));
