@@ -76,6 +76,14 @@ namespace DiscordCoreAPI {
 		;
 	}
 
+	void RoleData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
+	}
+
+	void RoleData::insertRole(std::unique_ptr<RoleData> theRole) {
+		Roles::insertRole(std::move(theRole));
+	}
+
 	Role& Role::operator=(RoleData&& other) {
 		if (this != &other) {
 			this->unicodeEmoji = std::move(other.unicodeEmoji);
