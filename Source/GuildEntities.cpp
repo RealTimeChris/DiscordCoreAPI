@@ -174,7 +174,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void GuildData::insertGuild(std::unique_ptr<GuildData>theGuild) {
+	void GuildData::insertGuild(std::unique_ptr<GuildData> theGuild) {
 		Guilds::insertGuild(std::move(theGuild));
 	}
 
@@ -826,7 +826,7 @@ namespace DiscordCoreAPI {
 		}
 		co_return guildVector;
 	}
-	 
+
 	CoRoutine<void> Guilds::leaveGuildAsync(LeaveGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Leave_Guild };
 		co_await NewThreadAwaitable<void>();

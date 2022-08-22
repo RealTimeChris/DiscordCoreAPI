@@ -314,7 +314,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (auto theResult = SSL_set_fd(this->ssl, this->theSocket);theResult != 1) {
+		if (auto theResult = SSL_set_fd(this->ssl, this->theSocket); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("SSLClient::SSL_set_fd()", theResult, this->ssl) << endl;
 			}

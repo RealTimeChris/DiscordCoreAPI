@@ -145,7 +145,8 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("verified") && !(*jsonObjectData)["verified"].is_null()) {
-			theData.flags = DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(theData.flags, DiscordCoreAPI::UserFlags::Verified, (*jsonObjectData)["verified"].get<bool>());
+			theData.flags =
+				DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(theData.flags, DiscordCoreAPI::UserFlags::Verified, (*jsonObjectData)["verified"].get<bool>());
 		}
 
 		if (jsonObjectData->contains("locale") && !(*jsonObjectData)["locale"].is_null()) {

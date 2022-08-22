@@ -34,7 +34,7 @@
 	#ifndef WIN32_LEAN_AND_MEAN
 		#define WIN32_LEAN_AND_MEAN
 	#endif
-		#ifndef WINRT_LEAN_AND_MEAN
+	#ifndef WINRT_LEAN_AND_MEAN
 		#define WINRT_LEAN_AND_MEAN
 	#endif
 	#include <WinSock2.h>
@@ -42,8 +42,8 @@
 	#ifndef DiscordCoreAPI_Dll
 		#define DiscordCoreAPI_Dll
 	#endif
-#include <cstdint>
-#include <cstring>
+	#include <cstdint>
+	#include <cstring>
 inline uint64_t ntohll(uint64_t x) {
 	uint8_t data[8]{};
 	memcpy(&data, &(x), sizeof(x));
@@ -570,7 +570,7 @@ namespace DiscordCoreAPI {
 		auto theResult = jsonData->find(keyname);
 		if (theResult != jsonData->end() && !theResult->is_null() && theResult->is_array()) {
 			theVector.reserve(theResult->get<std::vector<ReturnType>>().size());
-			for (int32_t x = 0; x < theVector.size(); ++x){
+			for (int32_t x = 0; x < theVector.size(); ++x) {
 				theVector.push_back((*theResult)[x]);
 			}
 		} else {
@@ -1247,7 +1247,6 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
 	template<typename ReturnType> ReturnType reverseByteOrder(const ReturnType net) {
-
 		switch (sizeof(ReturnType)) {
 			case 1: {
 				return net;

@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 	  public:
 		TimeStamp<std::chrono::milliseconds> communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
-	
+
 		GuildMember() = default;
 
 		GuildMember& operator=(GuildMemberData&&) noexcept;
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 		GuildMember(GuildMember&&) noexcept = default;
 
 		GuildMember& operator=(const GuildMember&) noexcept = default;
-		
+
 		GuildMember(const GuildMember&) noexcept = default;
 
 		~GuildMember() = default;

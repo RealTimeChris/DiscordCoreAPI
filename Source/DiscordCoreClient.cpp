@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 				this->baseSocketAgentMap[std::to_string(theData.currentShard)]->connect(theData);
 				if (this->theConnections.size() == 0 && this->configManager.doWePrintGeneralSuccessMessages()) {
 					cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << endl << endl;
-				} 
+				}
 			}
 			std::this_thread::sleep_for(1ms);
 		}

@@ -1077,12 +1077,14 @@ namespace DiscordCoreAPI {
 
 		theData.color = DiscordCoreAPI::getUint32(jsonObjectData, "color");
 
-		theData.flags = DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(theData.flags, DiscordCoreAPI::RoleFlags::Hoist, DiscordCoreAPI::getBoolReal(jsonObjectData, "hoist"));
-
-		theData.flags = DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(theData.flags, DiscordCoreAPI::RoleFlags::Managed, DiscordCoreAPI::getBoolReal(jsonObjectData, "managed"));
+		theData.flags =
+			DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(theData.flags, DiscordCoreAPI::RoleFlags::Hoist, DiscordCoreAPI::getBoolReal(jsonObjectData, "hoist"));
 
 		theData.flags =
-			DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(theData.flags, DiscordCoreAPI::RoleFlags::Mentionable, DiscordCoreAPI::getBoolReal(jsonObjectData, "mentionable"));
+			DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(theData.flags, DiscordCoreAPI::RoleFlags::Managed, DiscordCoreAPI::getBoolReal(jsonObjectData, "managed"));
+
+		theData.flags = DiscordCoreAPI::setBool<int8_t, DiscordCoreAPI::RoleFlags>(theData.flags, DiscordCoreAPI::RoleFlags::Mentionable,
+			DiscordCoreAPI::getBoolReal(jsonObjectData, "mentionable"));
 
 		theData.position = DiscordCoreAPI::getUint32(jsonObjectData, "position");
 
@@ -2215,11 +2217,13 @@ namespace DiscordCoreAPI {
 
 		theData.ownerId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(jsonObjectData, "owner_id"));
 
-		theData.flags = setBool<int8_t, DiscordCoreAPI::GuildFlags>(theData.flags, DiscordCoreAPI::GuildFlags::WidgetEnabled, DiscordCoreAPI::getBoolReal(jsonObjectData, "widget_enabled"));
+		theData.flags =
+			setBool<int8_t, DiscordCoreAPI::GuildFlags>(theData.flags, DiscordCoreAPI::GuildFlags::WidgetEnabled, DiscordCoreAPI::getBoolReal(jsonObjectData, "widget_enabled"));
 
 		theData.flags = setBool<int8_t, DiscordCoreAPI::GuildFlags>(theData.flags, DiscordCoreAPI::GuildFlags::Large, DiscordCoreAPI::getBoolReal(jsonObjectData, "large"));
 
-		theData.flags = setBool<int8_t, DiscordCoreAPI::GuildFlags>(theData.flags, DiscordCoreAPI::GuildFlags::Unavailable, DiscordCoreAPI::getBoolReal(jsonObjectData, "unavailable"));
+		theData.flags =
+			setBool<int8_t, DiscordCoreAPI::GuildFlags>(theData.flags, DiscordCoreAPI::GuildFlags::Unavailable, DiscordCoreAPI::getBoolReal(jsonObjectData, "unavailable"));
 
 		theData.memberCount = DiscordCoreAPI::getUint32(jsonObjectData, "member_count");
 

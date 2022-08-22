@@ -483,7 +483,7 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	void RoleData::insertRole(std::unique_ptr<RoleData>theRole) {
+	void RoleData::insertRole(std::unique_ptr<RoleData> theRole) {
 		Roles::insertRole(std::move(theRole));
 	}
 

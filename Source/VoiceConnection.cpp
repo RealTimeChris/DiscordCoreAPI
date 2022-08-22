@@ -616,7 +616,7 @@ namespace DiscordCoreAPI {
 			}
 			this->taskThread03.reset(nullptr);
 		}
-		
+
 		DatagramSocketClient::disconnect();
 		WebSocketSSLShard::disconnect(false);
 		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
