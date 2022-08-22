@@ -394,19 +394,19 @@ namespace DiscordCoreAPI {
 
 		UserData() noexcept = default;
 
-		UserData& operator=(UserData&& jsonObjectData) noexcept;
+		UserData& operator=(UserData&& jsonObjectData) noexcept = default;
 
-		UserData(UserData&& jsonObjectData) noexcept;
+		UserData(UserData&& jsonObjectData) noexcept = default;
 
 		UserData& operator=(const UserData& other) noexcept = default;
 
 		UserData(const UserData& other) noexcept = default;
 
+		void parseObject(const nlohmann::json* jsonObjectData);
+
+		void insertUser(std::unique_ptr<UserData> theUser);
+
 		std::string getAvatarUrl();
-
-		void insertUser(std::unique_ptr<UserData>);
-
-		void parseObject(const nlohmann::json*);
 
 		virtual ~UserData() noexcept = default;
 	};
@@ -839,6 +839,7 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		Snowflake voiceChannelId{};///< Currently held voice channel, if applicable.
 		GuildMemberAvatar avatar{};///< This GuildMember's Guild Avatar.
+		UserAvatar userAvatar{};///< This GuildMember's User Avatar.
 		uint64_t permissions{};///< Their base-level Permissions in the Guild.
 		StringWrapper nick{};///< Their nick/display name.
 		uint64_t joinedAt{};///< When they joined the Guild.
@@ -855,13 +856,13 @@ namespace DiscordCoreAPI {
 
 		GuildMemberData(const GuildMemberData&) noexcept = default;
 
+		void insertGuildMember(std::unique_ptr<GuildMemberData> theGuildMember);
+
+		void parseObject(const nlohmann::json* jsonObjectData);
+
 		std::string getAvatarUrl();
 
 		UserData getUserData();
-
-		void insertGuildMember(std::unique_ptr<GuildMemberData>);
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 
 		virtual ~GuildMemberData() noexcept = default;
 	};
@@ -891,6 +892,7 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
 		parseObject(&(*jsonObjectData)["user"], *theUser);
 		theData.id = theUser->id;
+		theData.userAvatar = theUser->avatar;
 		auto theUserNew = theUser.get();
 		theUserNew->insertUser(std::move(theUser));
 
@@ -914,9 +916,17 @@ namespace DiscordCoreAPI {
 		uint64_t allow{};///< Collection of Permissions to allow.
 		uint64_t deny{};///< Collection of Permissions to deny.
 
-		OverWriteData() = default;
+		OverWriteData() noexcept = default;
 
-		virtual ~OverWriteData() = default;
+		OverWriteData& operator=(OverWriteData&&) noexcept = default;
+
+		OverWriteData(OverWriteData&&) noexcept = default;
+
+		OverWriteData& operator=(const OverWriteData&) noexcept = default;
+
+		OverWriteData(const OverWriteData&) noexcept = default;
+
+		virtual ~OverWriteData() noexcept = default;
 	};
 
 	inline void parseObject(const nlohmann::json* jsonObjectData, OverWriteData& theData) {
@@ -957,9 +967,9 @@ namespace DiscordCoreAPI {
 
 		ChannelData(const ChannelData& other) noexcept = default;
 
-		void insertChannel(std::unique_ptr<ChannelData>);
-
 		void parseObject(const nlohmann::json* jsonObjectData);
+
+		void insertChannel(std::unique_ptr<ChannelData>);
 
 		virtual ~ChannelData() noexcept = default;
 	};
@@ -983,7 +993,7 @@ namespace DiscordCoreAPI {
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
 				OverWriteData theDataNew{};
 				parseObject(&value, theDataNew);
-				theData.permissionOverwrites.push_back(theDataNew);
+				theData.permissionOverwrites.push_back(std::move(theDataNew));
 			}
 		}
 
@@ -2168,7 +2178,7 @@ namespace DiscordCoreAPI {
 		int8_t flags{ 0 };///< Guild flags.
 		GuildIcon icon{};///< Url to the Guild's icon.
 
-		GuildData() = default;
+		GuildData() noexcept = default;
 
 		GuildData& operator=(GuildData&& jsonObjectData) noexcept = default;
 
@@ -2189,19 +2199,19 @@ namespace DiscordCoreAPI {
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
 			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
 
+		void parseObject(const nlohmann::json* jsonObjectData);
+
+		void insertGuild(std::unique_ptr<GuildData>);
+
+		std::string getIconUrl();
+
 		bool areWeConnected();
 
 		void initialize();
 
 		void disconnect();
 
-		void insertGuild(std::unique_ptr<GuildData>);
-
-		std::string getIconUrl();
-
-		void parseObject(const nlohmann::json* jsonObjectData);
-
-		virtual ~GuildData() = default;
+		virtual ~GuildData() noexcept = default;
 	};
 
 	inline void parseObject(const nlohmann::json* jsonObjectData, GuildData& theData) {

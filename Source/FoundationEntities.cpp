@@ -172,34 +172,7 @@ namespace DiscordCoreAPI {
 
 	RoleTagsData::RoleTagsData(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
-	}
-
-	UserData& UserData::operator=(UserData&& other) noexcept {
-		if (this != &other) {
-			this->discriminator = std::move(other.discriminator);
-			this->userName = std::move(other.userName);
-			this->avatar = std::move(other.avatar);
-			this->flags = other.flags;
-			this->id = other.id;
-		}
-		return *this;
-	}
-
-	UserData::UserData(UserData&& other) noexcept {
-		*this = std::move(other);
-	}
-
-	std::string UserData::getAvatarUrl() {
-		return this->avatar.getHashUrl(this->id, 0);
-	}
-
-	void UserData::insertUser(std::unique_ptr<UserData> other) {
-		Users::insertUser(std::move(other));
-	}
-
-	void UserData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
-	}
+	}	
 
 	AttachmentData::operator nlohmann::json() {
 		nlohmann::json newValue{};
@@ -443,26 +416,6 @@ namespace DiscordCoreAPI {
 
 	ThreadMemberDataVector::ThreadMemberDataVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
-	}
-
-	void GuildMemberData::insertGuildMember(std::unique_ptr<GuildMemberData> other) {
-		GuildMembers::insertGuildMember(std::move(other));
-	}
-
-	void GuildMemberData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
-	}
-
-	UserData GuildMemberData::getUserData() {
-		return Users::getCachedUserAsync({ .userId = this->id }).get();
-	}
-
-	void ChannelData::insertChannel(std::unique_ptr<ChannelData> other) {
-		Channels::insertChannel(std::move(other));
-	}
-
-	void ChannelData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
 	}
 
 	ActiveThreadsData& ActiveThreadsData::operator=(const nlohmann::json* jsonObjectData) {
@@ -880,10 +833,6 @@ namespace DiscordCoreAPI {
 
 	GuildPreviewData::GuildPreviewData(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
-	}
-
-	void GuildData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
 	}
 
 	GuildDataVector::operator std::vector<GuildData>() {
