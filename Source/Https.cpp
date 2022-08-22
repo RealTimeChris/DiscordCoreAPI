@@ -30,7 +30,7 @@ namespace DiscordCoreInternal {
 		this->doWePrintErrorMessages = doWePrintErrorMessagesNew;
 	}
 
-	void HttpsRnRBuilder::updateRateLimitData(RateLimitData& rateLimitData, std::unordered_map<std::string, std::string>& headersNew) {
+	void HttpsRnRBuilder::updateRateLimitData(RateLimitData& rateLimitData, std::map<std::string, std::string>& headersNew) {
 		if (headersNew.contains("x-ratelimit-bucket")) {
 			rateLimitData.bucket = headersNew["x-ratelimit-bucket"];
 		}
@@ -268,11 +268,11 @@ namespace DiscordCoreInternal {
 		this->configManager = configManagerNew;
 	}
 
-	std::unordered_map<std::string, std::unique_ptr<RateLimitData>>& HttpsConnectionManager::getRateLimitValues() {
+	std::map<std::string, std::unique_ptr<RateLimitData>>& HttpsConnectionManager::getRateLimitValues() {
 		return this->rateLimitValues;
 	}
 
-	std::unordered_map<HttpsWorkloadType, std::string>& HttpsConnectionManager::getRateLimitValueBuckets() {
+	std::map<HttpsWorkloadType, std::string>& HttpsConnectionManager::getRateLimitValueBuckets() {
 		return this->rateLimitValueBuckets;
 	}
 

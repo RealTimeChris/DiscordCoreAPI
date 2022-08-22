@@ -263,7 +263,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class Guilds;
 
-		std::unordered_map<Snowflake, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
+		std::map<Snowflake, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
 		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.

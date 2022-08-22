@@ -54,12 +54,12 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::unordered_map<std::string, std::jthread> ThreadPool::threads{};
+	std::map<std::string, std::jthread> ThreadPool::threads{};
 }
 
 namespace DiscordCoreInternal {
 
-	void closeFunction(std::unordered_map<int64_t, WorkerThread>& other) {
+	void closeFunction(std::map<int64_t, WorkerThread>& other) {
 		if (other.size() == 0) {
 			return;
 		} else {

@@ -412,11 +412,11 @@ namespace DiscordCoreInternal {
 		auto map = nlohmann::json::object();
 		for (uint32_t i = 0; i < length; ++i) {
 			auto key = singleValueETFToJson();
-			auto value = singleValueETFToJson();
 			if (key.is_number()) {
-				map[std::to_string(key.get<uint64_t>())] = std::move(value);
+				map[std::to_string(key.get<uint64_t>())] = singleValueETFToJson();
+				
 			} else {
-				map[key.get<std::string>()] = std::move(value);
+				map[key.get<std::string>()] = singleValueETFToJson();
 			}
 		}
 		return map;

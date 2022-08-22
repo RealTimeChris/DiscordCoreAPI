@@ -38,7 +38,7 @@ namespace DiscordCoreInternal {
 		friend class HttpsRnRBuilder;
 		friend class HttpsClient;
 
-		std::unordered_map<std::string, std::string> responseHeaders{};
+		std::map<std::string, std::string> responseHeaders{};
 		HttpsState theCurrentState{ HttpsState::Collecting_Code };
 		std::string responseMessage{};
 		nlohmann::json responseData{};
@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 
 		HttpsRnRBuilder(bool doWePrintErrorMessages);
 
-		void updateRateLimitData(RateLimitData& theConnection, std::unordered_map<std::string, std::string>& headers);
+		void updateRateLimitData(RateLimitData& theConnection, std::map<std::string, std::string>& headers);
 
 		HttpsResponseData finalizeReturnValues(HttpsResponseData& theData, RateLimitData& rateLimitData);
 
@@ -118,18 +118,18 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpsConnectionManager(DiscordCoreAPI::ConfigManager*);
 
-		std::unordered_map<std::string, std::unique_ptr<RateLimitData>>& getRateLimitValues();
+		std::map<std::string, std::unique_ptr<RateLimitData>>& getRateLimitValues();
 
-		std::unordered_map<HttpsWorkloadType, std::string>& getRateLimitValueBuckets();
+		std::map<HttpsWorkloadType, std::string>& getRateLimitValueBuckets();
 
 		HttpsConnection* getConnection();
 
 		void initialize();
 
 	  protected:
-		std::unordered_map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
-		std::unordered_map<int64_t, std::unique_ptr<HttpsConnection>> httpsConnections{};
-		std::unordered_map<HttpsWorkloadType, std::string> rateLimitValueBuckets{};
+		std::map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
+		std::map<int64_t, std::unique_ptr<HttpsConnection>> httpsConnections{};
+		std::map<HttpsWorkloadType, std::string> rateLimitValueBuckets{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		int64_t currentIndex{};
 		std::mutex theMutex{};

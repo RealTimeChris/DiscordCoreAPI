@@ -8,7 +8,7 @@ Skip {#Skip}
 namespace DiscordCoreAPI {
 	class Skip : public BaseFunction {
 	  public:
-		static std::unordered_map<uint64_t, int64_t> timeOfLastSkip;
+		static std::map<uint64_t, int64_t> timeOfLastSkip;
 
 		Skip() {
 			this->commandName = "skip";
@@ -207,6 +207,6 @@ namespace DiscordCoreAPI {
 		}
 		~Skip(){};
 	};
-	std::unordered_map<uint64_t, int64_t> Skip::timeOfLastSkip{};
+	std::map<uint64_t, int64_t> Skip::timeOfLastSkip{};
 }
 ```

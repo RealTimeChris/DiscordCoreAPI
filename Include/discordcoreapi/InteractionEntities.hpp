@@ -407,7 +407,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBufferMap;
+		static std::map<std::string, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
@@ -496,7 +496,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
+		static std::map<std::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
@@ -585,7 +585,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBufferMap;
+		static std::map<std::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.

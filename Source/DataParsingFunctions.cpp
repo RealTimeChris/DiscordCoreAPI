@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("name_localizations") && !(*jsonObjectData)["name_localizations"].is_null()) {
 			this->nameLocalizations.clear();
-			auto newMap = (*jsonObjectData)["name_localizations"].get<std::unordered_map<std::string, std::string>>();
+			auto newMap = (*jsonObjectData)["name_localizations"].get<std::map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				this->nameLocalizations[key] = newValue;
 			}
@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("description_localizations") && !(*jsonObjectData)["description_localizations"].is_null()) {
 			this->nameLocalizations.clear();
-			auto newMap = (*jsonObjectData)["description_localizations"].get<std::unordered_map<std::string, std::string>>();
+			auto newMap = (*jsonObjectData)["description_localizations"].get<std::map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				this->descriptionLocalizations[key] = newValue;
 			}
@@ -2840,7 +2840,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("name_localizations") && !(*jsonObjectData)["name_localizations"].is_null()) {
 			this->nameLocalizations.clear();
-			auto newMap = (*jsonObjectData)["name_localizations"].get<std::unordered_map<std::string, std::string>>();
+			auto newMap = (*jsonObjectData)["name_localizations"].get<std::map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				this->nameLocalizations[key] = newValue;
 			}
@@ -2854,7 +2854,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("name_localizations") && !(*jsonObjectData)["name_localizations"].is_null()) {
 			this->nameLocalizations.clear();
-			auto newMap = (*jsonObjectData)["name_localizations"].get<std::unordered_map<std::string, std::string>>();
+			auto newMap = (*jsonObjectData)["name_localizations"].get<std::map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				this->nameLocalizations[key] = newValue;
 			}
@@ -2862,7 +2862,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("description_localizations") && !(*jsonObjectData)["description_localizations"].is_null()) {
 			this->nameLocalizations.clear();
-			auto newMap = (*jsonObjectData)["description_localizations"].get<std::unordered_map<std::string, std::string>>();
+			auto newMap = (*jsonObjectData)["description_localizations"].get<std::map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				this->descriptionLocalizations[key] = newValue;
 			}
@@ -3286,7 +3286,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("name_localizations") && !(*jsonObjectData)["name_localizations"].is_null()) {
 			this->nameLocalizations.clear();
-			auto newMap = (*jsonObjectData)["name_localizations"].get<std::unordered_map<std::string, std::string>>();
+			auto newMap = (*jsonObjectData)["name_localizations"].get<std::map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				this->nameLocalizations[key] = newValue;
 			}
@@ -3294,7 +3294,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("description_localizations") && !(*jsonObjectData)["description_localizations"].is_null()) {
 			this->nameLocalizations.clear();
-			auto newMap = (*jsonObjectData)["description_localizations"].get<std::unordered_map<std::string, std::string>>();
+			auto newMap = (*jsonObjectData)["description_localizations"].get<std::map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				this->descriptionLocalizations[key] = newValue;
 			}
@@ -3921,7 +3921,7 @@ namespace DiscordCoreAPI {
 
 			if (value.contains("attachments") && !value["attachments"].is_null()) {
 				this->resolved.attachments.clear();
-				auto newMap = value["attachments"].get<std::unordered_map<std::string, nlohmann::json>>();
+				auto newMap = value["attachments"].get<std::map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					AttachmentData newData{ &newValue };
 					this->resolved.attachments[stoull(key)] = newData;
@@ -3930,28 +3930,28 @@ namespace DiscordCoreAPI {
 
 			if (value.contains("users") && !value["users"].is_null()) {
 				this->resolved.users.clear();
-				auto newMap = value["users"].get<std::unordered_map<std::string, nlohmann::json>>();
+				auto newMap = value["users"].get<std::map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					//this->resolved.users[stoull(key)] = newValue.get<UserData>();
 				}
 			}
 			if (value.contains("channels") && !value["channels"].is_null()) {
 				this->resolved.channels.clear();
-				auto newMap = value["channels"].get<std::unordered_map<std::string, nlohmann::json>>();
+				auto newMap = value["channels"].get<std::map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					//this->resolved.channels[stoull(key)] = newValue.get<ChannelData>();
 				}
 			}
 			if (value.contains("roles") && !value["roles"].is_null()) {
 				this->resolved.roles.clear();
-				auto newMap = value["roles"].get<std::unordered_map<std::string, nlohmann::json>>();
+				auto newMap = value["roles"].get<std::map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					//this->resolved.roles[stoull(key)] = newValue.get<RoleData>();
 				}
 			}
 			if (value.contains("members") && !value["members"].is_null()) {
 				this->resolved.members.clear();
-				auto newMap = value["members"].get<std::unordered_map<std::string, nlohmann::json>>();
+				auto newMap = value["members"].get<std::map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					GuildMemberData theData{};
 					DiscordCoreAPI::parseObject(&newValue, theData);
@@ -3960,7 +3960,7 @@ namespace DiscordCoreAPI {
 			}
 			if (value.contains("messages") && !value["messages"].is_null()) {
 				this->resolved.messages.clear();
-				auto newMap = value["messages"].get<std::unordered_map<std::string, nlohmann::json>>();
+				auto newMap = value["messages"].get<std::map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					MessageData newData{ &newValue };
 					this->resolved.messages[stoull(key)] = newData;
