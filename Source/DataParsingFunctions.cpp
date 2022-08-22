@@ -49,48 +49,24 @@ namespace DiscordCoreAPI {
 
 		theData.version = getString(&(*jsonObjectData), "version");
 
-		if (jsonObjectData->contains("type") && !(*jsonObjectData)["type"].is_null()) {
-			theData.type = static_cast<ApplicationCommandType>(getUint8(&(*jsonObjectData), "type"));
-		}
+		theData.type = static_cast<ApplicationCommandType>(getUint8(&(*jsonObjectData), "type"));
+		
+		theData.nameLocalizations = getMap<std::string, std::string>(&(*jsonObjectData), "name_localizations");
 
-		if (jsonObjectData->contains("name_localizations") && !(*jsonObjectData)["name_localizations"].is_null()) {
-			theData.nameLocalizations.clear();
-			auto newMap = (*jsonObjectData)["name_localizations"].get<std::map<std::string, std::string>>();
-			for (auto& [key, newValue]: newMap) {
-				theData.nameLocalizations[key] = newValue;
-			}
-		}
+		theData.descriptionLocalizations = getMap<std::string, std::string>(&(*jsonObjectData), "description_localizations");
 
-		if (jsonObjectData->contains("description_localizations") && !(*jsonObjectData)["description_localizations"].is_null()) {
-			theData.nameLocalizations.clear();
-			auto newMap = (*jsonObjectData)["description_localizations"].get<std::map<std::string, std::string>>();
-			for (auto& [key, newValue]: newMap) {
-				theData.descriptionLocalizations[key] = newValue;
-			}
-		}
+		theData.applicationId = strtoull(getString(&(*jsonObjectData), "application_id"));
 
-		if (jsonObjectData->contains("application_id") && !(*jsonObjectData)["application_id"].is_null()) {
-			theData.applicationId = stoull((*jsonObjectData)["application_id"].get<std::string>());
-		}
+		theData.name = getString(&(*jsonObjectData), "name");
 
-		if (jsonObjectData->contains("name") && !(*jsonObjectData)["name"].is_null()) {
-			theData.name = (*jsonObjectData)["name"].get<std::string>();
-		}
+		theData.description = getString(&(*jsonObjectData), "description");
 
-		if (jsonObjectData->contains("description") && !(*jsonObjectData)["description"].is_null()) {
-			theData.description = (*jsonObjectData)["description"].get<std::string>();
-		}
+		theData.version = getString(&(*jsonObjectData), "version");
 
-		if (jsonObjectData->contains("version") && !(*jsonObjectData)["version"].is_null()) {
-			theData.version = (*jsonObjectData)["version"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("options") && !(*jsonObjectData)["options"].is_null()) {
-			theData.options.clear();
-			for (auto& value: (*jsonObjectData)["options"]) {
-				ApplicationCommandOptionData newData{ &value };
-				theData.options.emplace_back(newData);
-			}
+		std::vector<nlohmann::json> theVector = getVector<nlohmann::json>(&(*jsonObjectData), "options");
+		for (auto& value: theVector) {
+			ApplicationCommandOptionData newData{ &value };
+			theData.options.emplace_back(newData);
 		}
 	}
 
@@ -160,7 +136,8 @@ namespace DiscordCoreAPI {
 		theData.permissions = strtoull(getString(jsonObjectData, "permissions"));
 
 		std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
-		parseObject(&(*jsonObjectData)["user"], *theUser);
+		auto theUserObject = getObject(&(*jsonObjectData), "user");
+		DiscordCoreAPI::parseObject(&theUserObject, *theUser);
 		theData.id = theUser->id;
 		theData.userAvatar = theUser->avatar;
 		auto theUserNew = theUser.get();
@@ -201,7 +178,7 @@ namespace DiscordCoreAPI {
 			theData.permissionOverwrites.reserve((*jsonObjectData)["permission_overwrites"].size());
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
 				OverWriteData theDataNew{};
-				parseObject(&value, theDataNew);
+				DiscordCoreAPI::parseObject(&value, theDataNew);
 				theData.permissionOverwrites.push_back(std::move(theDataNew));
 			}
 		}

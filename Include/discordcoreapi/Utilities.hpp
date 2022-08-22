@@ -583,14 +583,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<typename ReturnType> ReturnType getObject(const nlohmann::json* jsonData, const char* keyname) {
-		auto theResult = jsonData->find(keyname);
-		if (theResult != jsonData->end()) {
-			return !theResult->is_null() && theResult->is_object() ? theResult->get<ReturnType>() : ReturnType{};
-		} else {
-			return ReturnType{};
-		}
-	}
+	nlohmann::json getObject(const nlohmann::json* jsonData, const char* keyname);
 
 	DiscordCoreAPI_Dll uint8_t getUint8(const nlohmann::json* jsonData, const char* keyname);
 
@@ -604,7 +597,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll std::string getString(const nlohmann::json* jsonData, const char* keyname);
 
-	DiscordCoreAPI_Dll uint64_t strtoull(const std::string&& theString);
+	DiscordCoreAPI_Dll uint64_t strtoull(std::string&& theString);
 
 	template<typename ReturnType> ReturnType fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
 		ReturnType theValue{};
