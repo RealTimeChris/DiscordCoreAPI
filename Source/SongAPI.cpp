@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake guildId) {
 		SongAPI* returnValue = getSongAPIMap()[guildId].get();
 		returnValue->onSongCompletionEvent.remove(returnValue->eventToken);
-		returnValue->eventToken = returnValue->onSongCompletionEvent.add(DiscordCoreInternal::EventDelegate<CoRoutine<void>, SongCompletionEventData>{ handler });
+		returnValue->eventToken = returnValue->onSongCompletionEvent.add(DiscordCoreInternal::EventDelegate<CoRoutine<void>, SongCompletionEventData>{ });
 	}
 
 	bool SongAPI::sendNextSong() {
@@ -48,10 +48,8 @@ namespace DiscordCoreAPI {
 				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1, this->playlist.songQueue.end());
 				return true;
 			} else if (this->playlist.songQueue.size() > 0 && this->playlist.currentSong.songId == "") {
-				this->playlist.currentSong = this->playlist.currentSong;
 				return true;
 			} else if (this->playlist.currentSong.songId != "" && this->playlist.songQueue.size() == 0) {
-				this->playlist.currentSong = this->playlist.currentSong;
 				return true;
 			} else if (this->playlist.songQueue.size() == 1 && this->playlist.currentSong.songId == "") {
 				this->playlist.currentSong = this->playlist.songQueue[0];
