@@ -436,14 +436,6 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	void RoleData::insertRole(std::unique_ptr<RoleData> theRole) {
-		Roles::insertRole(std::move(theRole));
-	}
-
-	void RoleData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
-	}
-
 	ActionMetaData& ActionMetaData::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
