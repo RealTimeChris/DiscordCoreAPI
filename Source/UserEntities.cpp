@@ -70,6 +70,10 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
+	void User::parseObject(const nlohmann::json* theData) {
+		DiscordCoreAPI::parseObject(theData, *this);
+	}
+
 	UserVector::operator std::vector<User>() {
 		return this->theUsers;
 	}

@@ -197,6 +197,10 @@ namespace DiscordCoreAPI {
 		Users::insertUser(std::move(other));
 	}
 
+	void UserData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
+	}
+
 	AttachmentData::operator nlohmann::json() {
 		nlohmann::json newValue{};
 		newValue["content_type"] = this->contentType;
@@ -439,25 +443,6 @@ namespace DiscordCoreAPI {
 
 	ThreadMemberDataVector::ThreadMemberDataVector(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
-	}
-
-	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
-		if (this != &other) {
-			this->voiceChannelId = other.voiceChannelId;
-			this->joinedAt = std::move(other.joinedAt);
-			this->avatar = std::move(other.avatar);
-			this->permissions = other.permissions;
-			this->roles = std::move(other.roles);
-			this->nick = std::move(other.nick);
-			this->guildId = other.guildId;
-			this->flags = other.flags;
-			this->id = other.id;
-		}
-		return *this;
-	}
-
-	GuildMemberData::GuildMemberData(GuildMemberData&& other) noexcept {
-		*this = std::move(other);
 	}
 
 	void GuildMemberData::insertGuildMember(std::unique_ptr<GuildMemberData> other) {

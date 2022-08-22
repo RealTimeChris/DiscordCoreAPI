@@ -433,7 +433,8 @@ namespace DiscordCoreInternal {
 					if (payload["t"] == "READY") {
 						this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
 						this->sessionId = payload["d"]["session_id"].get<std::string>();
-						DiscordCoreAPI::UserData theUser{ payload["d"]["user"].get<DiscordCoreAPI::UserData>() };
+						DiscordCoreAPI::UserData theUser{};
+						DiscordCoreAPI::parseObject(&payload["d"]["user"], theUser);
 						this->discordCoreClient->currentUser =
 							DiscordCoreAPI::BotUser{ theUser, this->discordCoreClient->baseSocketAgentMap[std::to_string(this->shard[0].get<int32_t>())].get() };
 						DiscordCoreAPI::Users::insertUser(std::make_unique<DiscordCoreAPI::UserData>(theUser));
@@ -696,7 +697,8 @@ namespace DiscordCoreInternal {
 											};
 											if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
 												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
-												auto theGuildMember = std::make_unique<DiscordCoreAPI::GuildMemberData>(payload["d"].get<DiscordCoreAPI::GuildMemberData>());
+												auto theGuildMember = std::make_unique<DiscordCoreAPI::GuildMemberData>();
+												DiscordCoreAPI::parseObject(&payload["d"], *theGuildMember);
 												DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
 												for (int32_t x = 0; x < DiscordCoreAPI::Guilds::cache[guildId]->members.size(); ++x) {
 													if (DiscordCoreAPI::Guilds::cache[guildId]->members[x]->id == userId) {
@@ -719,8 +721,9 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											};
-											auto theGuildMemberNew = std::make_unique<DiscordCoreAPI::GuildMemberData>(payload["d"].get<DiscordCoreAPI::GuildMemberData>());
-											DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMemberNew));
+											auto theGuildMember = std::make_unique<DiscordCoreAPI::GuildMemberData>();
+											DiscordCoreAPI::parseObject(&payload["d"], *theGuildMember);
+											DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
 											for (int32_t x = 0; x < DiscordCoreAPI::Guilds::cache[guildId]->members.size(); ++x) {
 												if (DiscordCoreAPI::Guilds::cache[guildId]->members[x]->id == userId) {
 													std::unique_ptr<DiscordCoreAPI::OnGuildMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberUpdateData>(
@@ -742,7 +745,8 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											};
-											auto theUser = std::make_unique<DiscordCoreAPI::UserData>(payload["d"]["user"].get<DiscordCoreAPI::UserData>());
+											auto theUser = std::make_unique<DiscordCoreAPI::UserData>();
+											DiscordCoreAPI::parseObject(&payload["d"]["user"], *theUser);
 											std::unique_ptr<DiscordCoreAPI::OnGuildMemberRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberRemoveData>(
 												std::move(theUser), this->discordCoreClient, guildId) };
 											for (int32_t x = 0; x < DiscordCoreAPI::Guilds::cache[guildId]->members.size(); ++x) {
@@ -1106,7 +1110,8 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 												userId = stoull(payload["d"]["id"].get<std::string>());
 											}
-											auto theUser = std::make_unique<DiscordCoreAPI::UserData>(payload["d"].get<DiscordCoreAPI::UserData>());
+											auto theUser = std::make_unique<DiscordCoreAPI::UserData>();
+											DiscordCoreAPI::parseObject(&payload["d"], *theUser);
 											DiscordCoreAPI::Users::insertUser(std::move(theUser));
 											std::unique_ptr<DiscordCoreAPI::OnUserUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnUserUpdateData>(
 												DiscordCoreAPI::Users::cache[userId].get()) };

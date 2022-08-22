@@ -106,25 +106,89 @@ namespace DiscordCoreAPI {
 	  public:
 		TimeStamp<std::chrono::milliseconds> communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
-
-		GuildMember& operator=(GuildMemberData&&);
-
-		GuildMember(GuildMemberData&&);
-
-		GuildMember& operator=(GuildMemberData&);
-
-		GuildMember(GuildMemberData&);
-
+	
 		GuildMember() = default;
 
-		GuildMember& operator=(const nlohmann::json* jsonObjectData);
+		GuildMember& operator=(GuildMemberData&&) noexcept;
 
-		GuildMember(const nlohmann::json* jsonObjectData);
+		GuildMember(GuildMemberData&&) noexcept;
+
+		GuildMember& operator=(GuildMemberData&) noexcept;
+
+		GuildMember(GuildMemberData&) noexcept;
+
+		GuildMember& operator=(GuildMember&&) noexcept = default;
+
+		GuildMember(GuildMember&&) noexcept = default;
+
+		GuildMember& operator=(const GuildMember&) noexcept = default;
+		
+		GuildMember(const GuildMember&) noexcept = default;
 
 		~GuildMember() = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
+
+	inline void parseObject(const nlohmann::json* jsonObjectData, DiscordCoreAPI::GuildMember& theGuildMember) {
+		if (jsonObjectData->contains("communication_disabled_until") && !(*jsonObjectData)["communication_disabled_until"].is_null()) {
+			theGuildMember.communicationDisabledUntil = (*jsonObjectData)["communication_disabled_until"].get<std::string>();
+		}
+
+		if (jsonObjectData->contains("roles") && !(*jsonObjectData)["roles"].is_null()) {
+			theGuildMember.roles.clear();
+			for (auto& value: (*jsonObjectData)["roles"].get<std::vector<std::string>>()) {
+				theGuildMember.roles.emplace_back(stoull(value));
+			}
+		}
+
+		if (jsonObjectData->contains("flags") && !(*jsonObjectData)["flags"].is_null()) {
+			theGuildMember.flags = (*jsonObjectData)["flags"].get<int8_t>();
+		}
+
+		if (jsonObjectData->contains("premium_since") && !(*jsonObjectData)["premium_since"].is_null()) {
+			theGuildMember.premiumSince = (*jsonObjectData)["premium_since"].get<std::string>();
+		}
+
+		if (jsonObjectData->contains("permissions") && !(*jsonObjectData)["permissions"].is_null()) {
+			theGuildMember.permissions = Permissions{ (*jsonObjectData)["permissions"].get<std::string>() };
+		}
+
+		if (jsonObjectData->contains("joined_at") && !(*jsonObjectData)["joined_at"].is_null()) {
+			theGuildMember.joinedAt = TimeStamp<std::chrono::milliseconds>((*jsonObjectData)["joined_at"].get<std::string>());
+		}
+
+		if (jsonObjectData->contains("guild_id") && !(*jsonObjectData)["guild_id"].is_null()) {
+			theGuildMember.guildId = stoull((*jsonObjectData)["guild_id"].get<std::string>());
+		}
+
+		if (jsonObjectData->contains("avatar") && !(*jsonObjectData)["avatar"].is_null()) {
+			theGuildMember.avatar = (*jsonObjectData)["avatar"].get<std::string>();
+		}
+
+		if (jsonObjectData->contains("nick") && !(*jsonObjectData)["nick"].is_null()) {
+			theGuildMember.nick = (*jsonObjectData)["nick"].get<std::string>();
+		}
+
+		if (jsonObjectData->contains("user") && !(*jsonObjectData)["user"].is_null()) {
+			std::unique_ptr<User> theUser{ std::make_unique<User>() };
+			DiscordCoreAPI::parseObject(&(*jsonObjectData)["user"], *theUser);
+			theGuildMember.id = theUser->id;
+			Users::insertUser(std::move(theUser));
+		}
+
+		if (jsonObjectData->contains("pending") && !(*jsonObjectData)["pending"].is_null()) {
+			theGuildMember.flags = setBool<int8_t, GuildMemberFlags>(theGuildMember.flags, GuildMemberFlags::Pending, (*jsonObjectData)["pending"].get<bool>());
+		}
+
+		if (jsonObjectData->contains("mute") && !(*jsonObjectData)["mute"].is_null()) {
+			theGuildMember.flags = setBool<int8_t, GuildMemberFlags>(theGuildMember.flags, GuildMemberFlags::Mute, (*jsonObjectData)["mute"].get<bool>());
+		}
+
+		if (jsonObjectData->contains("deaf") && !(*jsonObjectData)["deaf"].is_null()) {
+			theGuildMember.flags = setBool<int8_t, GuildMemberFlags>(theGuildMember.flags, GuildMemberFlags::Deaf, (*jsonObjectData)["deaf"].get<bool>());
+		}
+	}
 
 	class DiscordCoreAPI_Dll GuildMemberVector {
 	  public:

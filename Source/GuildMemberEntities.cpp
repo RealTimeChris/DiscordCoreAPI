@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	GuildMember& GuildMember::operator=(GuildMemberData&& other) {
+	GuildMember& GuildMember::operator=(GuildMemberData&& other) noexcept {
 		if (this != &other) {
 			this->permissions = std::move(other.permissions);
 			this->voiceChannelId = other.voiceChannelId;
@@ -79,11 +79,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	};
 
-	GuildMember::GuildMember(GuildMemberData&& other) {
+	GuildMember::GuildMember(GuildMemberData&& other) noexcept {
 		*this = std::move(other);
 	}
 
-	GuildMember& GuildMember::operator=(GuildMemberData& other) {
+	GuildMember& GuildMember::operator=(GuildMemberData& other) noexcept {
 		if (this != &other) {
 			this->voiceChannelId = other.voiceChannelId;
 			this->permissions = other.permissions;
@@ -98,17 +98,12 @@ namespace DiscordCoreAPI {
 		return *this;
 	};
 
-	GuildMember::GuildMember(GuildMemberData& other) {
+	GuildMember::GuildMember(GuildMemberData& other) noexcept {
 		*this = other;
 	}
 
-	GuildMember& GuildMember::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildMember::GuildMember(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
+	void GuildMember::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
 	}
 
 	GuildMemberVector::operator std::vector<GuildMember>() {
