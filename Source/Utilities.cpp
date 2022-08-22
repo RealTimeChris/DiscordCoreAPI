@@ -623,13 +623,8 @@ namespace DiscordCoreAPI {
 		return this->thePermissions;
 	}
 
-	Permissions::operator std::unique_ptr<char[]>() {
-		std::string theString{ std::to_string(this->thePermissions) };
-		std::unique_ptr<char[]> thePtr{ std::make_unique<char[]>(theString.size()) };
-		for (int32_t x = 0; x < theString.size(); ++x) {
-			thePtr[x] = theString[x];
-		}
-		return std::move(thePtr);
+	Permissions::operator std::string() {
+		return std::string{ std::to_string(this->thePermissions) };
 	}
 
 	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
@@ -639,7 +634,7 @@ namespace DiscordCoreAPI {
 
 	bool Permissions::checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission) {
 		std::string permissionsString = Permissions::computePermissions(guildMember, channel);
-		if ((stoll(permissionsString) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
+		if ((stoull(permissionsString) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
 			return true;
 		} else {
 			return false;
@@ -821,16 +816,15 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel) {
-		if ((stoll(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) == static_cast<uint64_t>(Permission::Administrator)) {
+		if ((stoull(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) == static_cast<uint64_t>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
 
-		uint64_t permissions = stoll(basePermissions);
+		uint64_t permissions = stoull(basePermissions);
 		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
 			if (channel.permissionOverwrites[x].id == guildMember.guildId) {
-				OverWriteData currentOverWrites = channel.permissionOverwrites[x];
-				permissions &= ~currentOverWrites.deny;
-				permissions |= currentOverWrites.allow;
+				permissions &= ~channel.permissionOverwrites[x].deny;
+				permissions |= channel.permissionOverwrites[x].allow;
 				break;
 			}
 		}
@@ -842,22 +836,18 @@ namespace DiscordCoreAPI {
 		uint64_t deny{ 0 };
 		for (auto& value: guildMemberRoles) {
 			for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-				if (channel.permissionOverwrites[x].id == guildMember.guildId) {
-					OverWriteData currentOverWrites = channel.permissionOverwrites[x];
-					allow |= currentOverWrites.allow;
-					deny |= currentOverWrites.deny;
-					break;
+				if (channel.permissionOverwrites[x].id == value.id) {
+					allow |= channel.permissionOverwrites[x].allow;
+					deny |= channel.permissionOverwrites[x].deny;
 				}
 			}
 		}
 		permissions &= ~deny;
 		permissions |= allow;
-		uint32_t theIndex{};
 		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
 			if (channel.permissionOverwrites[x].id == guildMember.id) {
-				OverWriteData currentOverWrites = channel.permissionOverwrites[x];
-				permissions &= ~currentOverWrites.deny;
-				permissions |= currentOverWrites.allow;
+				permissions &= ~channel.permissionOverwrites[x].deny;
+				permissions |= channel.permissionOverwrites[x].allow;
 				break;
 			}
 		}

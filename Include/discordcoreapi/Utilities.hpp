@@ -1159,7 +1159,7 @@ namespace DiscordCoreAPI {
 
 		operator uint64_t();
 
-		operator std::unique_ptr<char[]>();
+		operator std::string();
 
 		/// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
 		/// \param guildMember The GuildMember who's Permissions to analyze.
