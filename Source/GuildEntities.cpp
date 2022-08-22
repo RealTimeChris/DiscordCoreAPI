@@ -150,8 +150,39 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void GuildData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
+	}
+
+	void GuildData::insertGuild(std::unique_ptr<GuildData> theGuild) {
+		Guilds::insertGuild(std::move(theGuild));
+	}
+
+	std::string GuildData::getIconUrl() {
+		return this->icon.getHashUrl(this->id, 0);
+	}
+
 	bool GuildData::areWeConnected() {
 		return getVoiceConnectionMap()[this->id]->areWeConnected();
+	}
+
+	void GuildData::initialize() {
+		if (!getVoiceConnectionMap().contains(this->id)) {
+			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };
+			getVoiceConnectionMap()[this->id] = nullptr;
+		}
+		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+		if (!getYouTubeAPIMap().contains(this->id)) {
+			getYouTubeAPIMap()[this->id] =
+				std::make_unique<DiscordCoreInternal::YouTubeAPI>(&this->discordCoreClient->configManager, this->discordCoreClient->httpsClient.get(), this->id);
+		}
+		if (!getSoundCloudAPIMap().contains(this->id)) {
+			getSoundCloudAPIMap()[this->id] =
+				std::make_unique<DiscordCoreInternal::SoundCloudAPI>(&this->discordCoreClient->configManager, this->discordCoreClient->httpsClient.get(), this->id);
+		}
+		if (!getSongAPIMap().contains(this->id)) {
+			getSongAPIMap()[this->id] = std::make_unique<SongAPI>(this->id);
+		}
 	}
 
 	void GuildData::disconnect() {
@@ -171,33 +202,6 @@ namespace DiscordCoreAPI {
 				}
 			}
 			this->voiceConnectionPtr = nullptr;
-		}
-	}
-
-	void GuildData::insertGuild(std::unique_ptr<GuildData> theGuild) {
-		Guilds::insertGuild(std::move(theGuild));
-	}
-
-	std::string GuildData::getIconUrl() {
-		return this->icon.getHashUrl(this->id, 0);
-	}
-
-	void GuildData::initialize() {
-		if (!getVoiceConnectionMap().contains(this->id)) {
-			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };
-			getVoiceConnectionMap()[this->id] = nullptr;
-		}
-		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
-		if (!getYouTubeAPIMap().contains(this->id)) {
-			getYouTubeAPIMap()[this->id] =
-				std::make_unique<DiscordCoreInternal::YouTubeAPI>(&this->discordCoreClient->configManager, this->discordCoreClient->httpsClient.get(), this->id);
-		}
-		if (!getSoundCloudAPIMap().contains(this->id)) {
-			getSoundCloudAPIMap()[this->id] =
-				std::make_unique<DiscordCoreInternal::SoundCloudAPI>(&this->discordCoreClient->configManager, this->discordCoreClient->httpsClient.get(), this->id);
-		}
-		if (!getSongAPIMap().contains(this->id)) {
-			getSongAPIMap()[this->id] = std::make_unique<SongAPI>(this->id);
 		}
 	}
 
