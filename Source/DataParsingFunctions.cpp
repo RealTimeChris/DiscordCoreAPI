@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 		this->theApplicationCommands.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::ApplicationCommand newData{ &value };
-			this->theApplicationCommands.emplace_back(newData);
+			this->theApplicationCommands.push_back(newData);
 		}
 		this->theApplicationCommands.shrink_to_fit();
 	}
@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 		this->theAutoModerationRules.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::AutoModerationRule newData{ &value };
-			this->theAutoModerationRules.emplace_back(newData);
+			this->theAutoModerationRules.push_back(newData);
 		}
 		this->theAutoModerationRules.shrink_to_fit();
 	}
@@ -349,7 +349,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::ChannelData newData{};
 			DiscordCoreAPI::parseObject(&value, newData);
-			this->theChannels.emplace_back(newData);
+			this->theChannels.push_back(newData);
 		}
 		this->theChannels.shrink_to_fit();
 	}
@@ -595,7 +595,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::GuildData newData{};
 			DiscordCoreAPI::parseObject(&value, newData);
-			this->theGuilds.emplace_back(newData);
+			this->theGuilds.push_back(newData);
 		}
 		this->theGuilds.shrink_to_fit();
 	}
@@ -605,7 +605,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::GuildMemberData newData{};
 			DiscordCoreAPI::parseObject(&value, newData);
-			this->theGuildMembers.emplace_back(newData);
+			this->theGuildMembers.push_back(newData);
 		}
 		this->theGuildMembers.shrink_to_fit();
 	}
@@ -834,7 +834,7 @@ namespace DiscordCoreAPI {
 		this->theMessages.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::Message newData{ &value };
-			this->theMessages.emplace_back(newData);
+			this->theMessages.push_back(newData);
 		}
 		this->theMessages.shrink_to_fit();
 	}
@@ -877,7 +877,7 @@ namespace DiscordCoreAPI {
 		this->theReactions.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::Reaction newData{ &value };
-			this->theReactions.emplace_back(newData);
+			this->theReactions.push_back(newData);
 		}
 		this->theReactions.shrink_to_fit();
 	}
@@ -942,7 +942,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::RoleData newData{};
 			DiscordCoreAPI::parseObject(&value, newData);
-			this->theRoles.emplace_back(newData);
+			this->theRoles.push_back(newData);
 		}
 		this->theRoles.shrink_to_fit();
 	}
@@ -1208,7 +1208,7 @@ namespace DiscordCoreAPI {
 		this->theWebHooks.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::WebHook newData{ &value };
-			this->theWebHooks.emplace_back(newData);
+			this->theWebHooks.push_back(newData);
 		}
 		this->theWebHooks.shrink_to_fit();
 	}
@@ -1497,7 +1497,7 @@ namespace DiscordCoreAPI {
 		this->theThreadMemberDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::ThreadMemberData newData{ &value };
-			this->theThreadMemberDatas.emplace_back(newData);
+			this->theThreadMemberDatas.push_back(newData);
 		}
 		this->theThreadMemberDatas.shrink_to_fit();
 	}
@@ -1726,7 +1726,7 @@ namespace DiscordCoreAPI {
 		this->theEmojiDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::EmojiData newData{ &value };
-			this->theEmojiDatas.emplace_back(newData);
+			this->theEmojiDatas.push_back(newData);
 		}
 		this->theEmojiDatas.shrink_to_fit();
 	}
@@ -1791,7 +1791,7 @@ namespace DiscordCoreAPI {
 		this->theVoiceRegionDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::VoiceRegionData newData{ &value };
-			this->theVoiceRegionDatas.emplace_back(newData);
+			this->theVoiceRegionDatas.push_back(newData);
 		}
 		this->theVoiceRegionDatas.shrink_to_fit();
 	}
@@ -1820,7 +1820,7 @@ namespace DiscordCoreAPI {
 		this->theBanDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::BanData newData{ &value };
-			this->theBanDatas.emplace_back(newData);
+			this->theBanDatas.push_back(newData);
 		}
 		this->theBanDatas.shrink_to_fit();
 	}
@@ -2073,7 +2073,7 @@ namespace DiscordCoreAPI {
 		this->theIntegrationDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::IntegrationData newData{ &value };
-			this->theIntegrationDatas.emplace_back(newData);
+			this->theIntegrationDatas.push_back(newData);
 		}
 		this->theIntegrationDatas.shrink_to_fit();
 	}
@@ -3829,7 +3829,7 @@ namespace DiscordCoreAPI {
 		this->theStickerPackDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::StickerPackData newData{ &value };
-			this->theStickerPackDatas.emplace_back(newData);
+			this->theStickerPackDatas.push_back(newData);
 		}
 		this->theStickerPackDatas.shrink_to_fit();
 	}
@@ -3880,7 +3880,7 @@ namespace DiscordCoreAPI {
 		this->theConnectionDatas.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::ConnectionData newData{ &value };
-			this->theConnectionDatas.emplace_back(newData);
+			this->theConnectionDatas.push_back(newData);
 		}
 		this->theConnectionDatas.shrink_to_fit();
 	}
@@ -4328,7 +4328,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::GuildScheduledEvent newData{};
 			newData.parseObject(&value);
-			this->theGuildScheduledEvents.emplace_back(newData);
+			this->theGuildScheduledEvents.push_back(newData);
 		}
 		this->theGuildScheduledEvents.shrink_to_fit();
 	}
@@ -4338,7 +4338,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: *jsonObjectData) {
 			DiscordCoreAPI::GuildScheduledEventData newData{};
 			newData.parseObject(&value);
-			this->theGuildScheduledEventDatas.emplace_back(newData);
+			this->theGuildScheduledEventDatas.push_back(newData);
 		}
 		this->theGuildScheduledEventDatas.shrink_to_fit();
 	}
