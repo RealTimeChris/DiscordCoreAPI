@@ -56,12 +56,26 @@ namespace DiscordCoreAPI {
 		;
 	}
 
+	void GuildMemberData::insertGuildMember(std::unique_ptr<GuildMemberData> other) {
+		GuildMembers::insertGuildMember(std::move(other));
+	}
+
+	void GuildMemberData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
+	}
+
 	std::string GuildMemberData::getAvatarUrl() {
 		if (this->avatar.getHashUrl(this->id, this->guildId) != "") {
 			return this->avatar.getHashUrl(this->id, this->guildId);
-		} else {
+		} else if (this->userAvatar.getHashUrl(this->id, 0) != "") {
+			return this->userAvatar.getHashUrl(this->id, 0);
+		} else{
 			return {};
 		}
+	}
+
+	UserData GuildMemberData::getUserData() {
+		return Users::getCachedUserAsync({ .userId = this->id }).get();
 	}
 
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) noexcept {

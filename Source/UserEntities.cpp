@@ -31,6 +31,18 @@ namespace DiscordCoreAPI {
 		;
 	}
 
+	void UserData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
+	}
+
+	void UserData::insertUser(std::unique_ptr<UserData> other) {
+		Users::insertUser(std::move(other));
+	}
+
+	std::string UserData::getAvatarUrl() {
+		return this->avatar.getHashUrl(this->id, 0);
+	}
+
 	User& User::operator=(UserData&& other) {
 		if (this != &other) {
 			this->discriminator = std::move(other.discriminator);
