@@ -168,7 +168,8 @@ namespace DiscordCoreAPI {
 				this->theConnectionStopWatch.resetTimer();
 				auto theData = this->theConnections.front();
 				this->theConnections.pop_front();
-				this->baseSocketAgentMap[theData.currentShard/this->configManager.getTotalShardCount()]->connect(theData);
+				this->baseSocketAgentMap[static_cast<int32_t>(ceil(static_cast<float>(theData.currentShard) / static_cast<float>(this->configManager.getTotalShardCount())))]
+					->connect(theData);
 				if (this->theConnections.size() == 0 && this->configManager.doWePrintGeneralSuccessMessages()) {
 					cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << endl << endl;
 				}
@@ -199,20 +200,12 @@ namespace DiscordCoreAPI {
 
 	std::vector<uint32_t> collectWorkerDimensions(uint32_t shardCount, uint32_t threadCount) {
 		std::vector<uint32_t> theVector{};
-		uint32_t extraShards{};
-		if (shardCount % threadCount != 0) {
-			extraShards = shardCount % threadCount;
+		uint32_t theWorkerCount = shardCount <= threadCount ? shardCount : threadCount;
+		for (uint32_t x = 0; x < theWorkerCount; ++x) {
+			theVector.push_back(static_cast<uint32_t>(static_cast<float>(shardCount) / static_cast<float>(threadCount)));
+			std::cout << "TOTAL COUNT 01: " << static_cast<uint32_t>(static_cast<float>(shardCount) / static_cast<float>(threadCount)) << std::endl;
 		}
-		for (uint32_t x = 0; x < threadCount; ++x) {
-			theVector.push_back(shardCount / threadCount);
-		}
-		for (uint32_t x = 1; x < extraShards + 1; ++x) {
-			theVector.push_back(theVector[theVector.size() % x] + 1);
-		}
-		int32_t totalCount{};
-		for (auto& value: theVector) {
-			totalCount += value;
-		}
+		std::cout << "TOTAL COUNT 01: " << theVector.size() << std::endl;
 		return theVector;
 	}
 
@@ -236,10 +229,12 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		std::vector<uint32_t> theDimensions = collectWorkerDimensions(this->configManager.getTotalShardCount(), std::thread::hardware_concurrency());
 		uint32_t baseSocketCount = this->configManager.getTotalShardCount() > std::thread::hardware_concurrency()
 			? collectWorkerDimensions(this->configManager.getTotalShardCount(), std::thread::hardware_concurrency()).size()
-			: std::thread::hardware_concurrency();
+			: this->configManager.getTotalShardCount();
+		std::vector<uint32_t> theDimensions = collectWorkerDimensions(this->configManager.getTotalShardCount(), baseSocketCount);
+		
+		std::cout << "THE TOTAL COUNT: " << baseSocketCount << std::endl;
 		if (this->configManager.getConnectionAddress() == "") {
 			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
 		}

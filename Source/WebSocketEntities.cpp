@@ -291,9 +291,9 @@ namespace DiscordCoreInternal {
 		std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketMessageHandler(&theClient->configManager) {
 		this->configManager = &theClient->configManager;
+		this->shard.emplace_back(currentShardNew);
 		this->theConnections = theConnectionsNew;
 		this->discordCoreClient = theClient;
-		this->shard.emplace_back(currentShardNew);
 		this->doWeQuit = doWeQuitNew;
 		if (this->discordCoreClient) {
 			this->shard.emplace_back(this->discordCoreClient->configManager.getTotalShardCount());
@@ -431,7 +431,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::UserData theUser{};
 						DiscordCoreAPI::parseObject(&payload["d"]["user"], theUser);
 						this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser,
-							this->discordCoreClient->baseSocketAgentMap[this->shard[0].get<int32_t>() / this->discordCoreClient->configManager.getTotalShardCount()].get() };
+							this->discordCoreClient->baseSocketAgentMap[static_cast<int32_t>(ceil(static_cast<float>(this->shard[0].get<int32_t>()) / static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount())))].get() };
 						DiscordCoreAPI::Users::insertUser(std::make_unique<DiscordCoreAPI::UserData>(theUser));
 						this->currentReconnectTries = 0;
 					}
