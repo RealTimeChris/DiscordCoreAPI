@@ -129,21 +129,21 @@ namespace DiscordCoreAPI {
 		RoleTagsData tags{};///< Role tags for the Role.
 		std::string icon{};///< Icon representing the Role.
 
-		Role() = default;
+		Role() noexcept = default;
 
-		Role& operator=(RoleData&& other);
+		Role& operator=(RoleData&& other) noexcept;
 
-		Role(RoleData&& other);
+		Role(RoleData&& other) noexcept;
 
-		Role& operator=(RoleData& other);
+		Role& operator=(RoleData& other) noexcept;
 
-		Role(RoleData& other);
+		Role(RoleData& other) noexcept;
 
 		Role& operator=(const nlohmann::json* jsonObjectData);
 
 		Role(const nlohmann::json* jsonObjectData);
 
-		virtual ~Role() = default;
+		virtual ~Role() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};

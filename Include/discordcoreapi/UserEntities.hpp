@@ -83,21 +83,21 @@ namespace DiscordCoreAPI {
 		std::string locale{};///< The user' s chosen language option.
 		std::string email{};///< The user's email.
 
-		User() = default;
+		User() noexcept = default;
 
-		User& operator=(UserData&& other);
+		User& operator=(UserData&& other) noexcept;
 
-		User(UserData&&);
+		User(UserData&&) noexcept;
 
-		User& operator=(UserData& other);
+		User& operator=(UserData& other) noexcept;
 
-		User(UserData&);
+		User(UserData&) noexcept;
 
 		User& operator=(const nlohmann::json* jsonObjectData);
 
 		User(const nlohmann::json* jsonObjectData);
 
-		virtual ~User() = default;
+		virtual ~User() noexcept = default;
 
 		inline void parseObject(const nlohmann::json* jsonObjectData);
 	};

@@ -383,7 +383,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing a single User. \brief Data structure representing a single User.
-	class DiscordCoreAPI_Dll UserData : public DiscordEntity, public NewBase {
+	class DiscordCoreAPI_Dll UserData : public DiscordEntity {
 	  public:
 		friend class GuildData;
 
@@ -405,6 +405,8 @@ namespace DiscordCoreAPI {
 		void insertUser(std::unique_ptr<UserData> theUser);
 
 		std::string getAvatarUrl();
+
+		void parseObject(const nlohmann::json* theData);
 
 		virtual ~UserData() noexcept = default;
 	};
@@ -801,7 +803,7 @@ namespace DiscordCoreAPI {
 
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
-	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity, public NewBase {
+	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
 	  public:
 		friend class GuildData;
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
@@ -841,7 +843,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A Permission overwrite, for a given Channel. \brief A Permission overwrite, for a given Channel.
-	class DiscordCoreAPI_Dll OverWriteData : public DiscordEntity, public NewBase {
+	class DiscordCoreAPI_Dll OverWriteData : public DiscordEntity {
 	  public:
 		PermissionOverwritesType type{};///< Role or User type.
 		uint64_t allow{};///< Collection of Permissions to allow.
@@ -865,7 +867,7 @@ namespace DiscordCoreAPI {
 	enum class ChannelFlags : uint8_t { NSFW = 1 << 0 };
 
 	/// Data structure representing a single Channel. \brief Data structure representing a single Channel.
-	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity, public NewBase {
+	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
 	  public:
 		friend class GuildData;
 
@@ -934,7 +936,7 @@ namespace DiscordCoreAPI {
 	enum class RoleFlags : uint8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
 
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
-	class DiscordCoreAPI_Dll RoleData : public DiscordEntity, public NewBase {
+	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
 	  public:
 		friend class GuildData;
 
@@ -2026,7 +2028,7 @@ namespace DiscordCoreAPI {
 
 
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
-	class DiscordCoreAPI_Dll GuildData : public DiscordEntity, public NewBase {
+	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.

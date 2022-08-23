@@ -40,7 +40,11 @@ namespace DiscordCoreAPI {
 		return this->avatar.getHashUrl(this->id, 0);
 	}
 
-	User& User::operator=(UserData&& other) {
+	void UserData::parseObject(const nlohmann::json* theData) {
+		DiscordCoreAPI::parseObject(theData, *this);
+	}
+
+	User& User::operator=(UserData&& other) noexcept {
 		if (this != &other) {
 			this->discriminator = std::move(other.discriminator);
 			this->userName = std::move(other.userName);
@@ -51,11 +55,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	User::User(UserData&& other) {
+	User::User(UserData&& other) noexcept {
 		*this = std::move(other);
 	}
 
-	User& User::operator=(UserData& other) {
+	User& User::operator=(UserData& other) noexcept {
 		if (this != &other) {
 			this->discriminator = other.discriminator;
 			this->userName = other.userName;
@@ -66,7 +70,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	User::User(UserData& dataNew) {
+	User::User(UserData& dataNew) noexcept {
 		*this = dataNew;
 	}
 

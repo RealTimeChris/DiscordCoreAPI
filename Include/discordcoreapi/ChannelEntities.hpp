@@ -158,21 +158,21 @@ namespace DiscordCoreAPI {
 		std::string topic{};///< The Channel's topic.
 		ChannelIcon icon{};///< Icon for the Channel, if applicable.
 
-		Channel() = default;
+		Channel() noexcept = default;
 
 		Channel& operator=(const nlohmann::json* jsonObjectData);
 
 		Channel(const nlohmann::json* jsonObjectData);
 
-		Channel& operator=(ChannelData&&);
+		Channel& operator=(ChannelData&&) noexcept;
 
-		Channel(ChannelData&&);
+		Channel(ChannelData&&) noexcept;
 
-		Channel& operator=(ChannelData&);
+		Channel& operator=(ChannelData&) noexcept;
 
-		Channel(ChannelData&);
+		Channel(ChannelData&) noexcept;
 
-		~Channel() = default;
+		~Channel() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};

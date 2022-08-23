@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 		Roles::insertRole(std::move(theRole));
 	}
 
-	Role& Role::operator=(RoleData&& other) {
+	Role& Role::operator=(RoleData&& other) noexcept {
 		if (this != &other) {
 			this->unicodeEmoji = std::move(other.unicodeEmoji);
 			this->permissions = std::move(other.permissions);
@@ -93,11 +93,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Role::Role(RoleData&& other) {
+	Role::Role(RoleData&& other) noexcept {
 		*this = std::move(other);
 	}
 
-	Role& Role::operator=(RoleData& other) {
+	Role& Role::operator=(RoleData& other) noexcept {
 		if (this != &other) {
 			this->unicodeEmoji = other.unicodeEmoji;
 			this->permissions = other.permissions;
@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Role::Role(RoleData& other) {
+	Role::Role(RoleData& other) noexcept {
 		*this = other;
 	}
 
@@ -194,12 +194,12 @@ namespace DiscordCoreAPI {
 		newDataPackage.guildId = dataPackage.guildId;
 		newDataPackage.newPosition = dataPackage.position;
 		newDataPackage.roleId = roleNew.id;
-		//auto results = modifyGuildRolePositionsAsync(newDataPackage).get();
-		//for (auto& value: results) {
-		//if (value.id == roleNew.id) {
-		//roleNew = value;
-		//}
-		//}
+		auto results = modifyGuildRolePositionsAsync(newDataPackage).get();
+		for (auto& value: results) {
+			if (value.id == roleNew.id) {
+				roleNew = value;
+			}
+		}
 		co_return roleNew;
 	}
 
@@ -207,7 +207,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Role_Positions };
 		co_await NewThreadAwaitable<std::vector<Role>>();
 		std::vector<Role> currentRoles = Roles::getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
-		Role newRole = Roles::getCachedRoleAsync({ .roleId = dataPackage.roleId }).get();
+		RoleData newRole = Roles::getCachedRoleAsync({ .roleId = dataPackage.roleId }).get();
 		for (auto& value: currentRoles) {
 			if (value.id == newRole.id) {
 				continue;

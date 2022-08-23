@@ -295,21 +295,21 @@ namespace DiscordCoreAPI {
 		GuildSplash splash{};///< Url to the Guild's splash.
 		MFALevel mfaLevel{};///< MFA level.
 
-		Guild() = default;
+		Guild() noexcept = default;
 
-		Guild& operator=(GuildData&&);
+		Guild& operator=(GuildData&&) noexcept;
 
-		Guild(GuildData&&);
+		Guild(GuildData&&) noexcept;
 
-		Guild& operator=(GuildData&);
+		Guild& operator=(GuildData&) noexcept;
 
-		Guild(GuildData&);
+		Guild(GuildData&) noexcept;
 
 		Guild& operator=(const nlohmann::json* jsonObjectData);
 
 		Guild(const nlohmann::json* jsonObjectData);
 
-		virtual ~Guild() = default;
+		virtual ~Guild() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};

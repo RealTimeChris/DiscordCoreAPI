@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	Channel& Channel::operator=(ChannelData&& other) {
+	Channel& Channel::operator=(ChannelData&& other) noexcept {
 		if (this != &other) {
 			this->permissionOverwrites = std::move(other.permissionOverwrites);
 			this->memberCount = other.memberCount;
@@ -122,11 +122,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Channel::Channel(ChannelData&& other) {
+	Channel::Channel(ChannelData&& other) noexcept {
 		*this = std::move(other);
 	}
 
-	Channel& Channel::operator=(ChannelData& other) {
+	Channel& Channel::operator=(ChannelData& other) noexcept {
 		if (this != &other) {
 			this->permissionOverwrites = other.permissionOverwrites;
 			this->memberCount = other.memberCount;
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Channel::Channel(ChannelData& other) {
+	Channel::Channel(ChannelData& other) noexcept {
 		*this = other;
 	}
 

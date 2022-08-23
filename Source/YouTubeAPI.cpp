@@ -180,7 +180,7 @@ namespace DiscordCoreInternal {
 
 	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		currentReconnectTries++;
-		DiscordCoreAPI::GuildMember guildMember =
+		DiscordCoreAPI::GuildMemberData guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
 		DiscordCoreAPI::Song newerSong = newSong;
 		if (currentReconnectTries > 9) {

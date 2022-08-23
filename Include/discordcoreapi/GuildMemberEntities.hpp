@@ -117,15 +117,7 @@ namespace DiscordCoreAPI {
 
 		GuildMember(GuildMemberData&) noexcept;
 
-		GuildMember& operator=(GuildMember&&) noexcept = default;
-
-		GuildMember(GuildMember&&) noexcept = default;
-
-		GuildMember& operator=(const GuildMember&) noexcept = default;
-
-		GuildMember(const GuildMember&) noexcept = default;
-
-		~GuildMember() = default;
+		virtual ~GuildMember() = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
