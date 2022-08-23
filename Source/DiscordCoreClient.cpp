@@ -203,9 +203,7 @@ namespace DiscordCoreAPI {
 		uint32_t theWorkerCount = shardCount <= threadCount ? shardCount : threadCount;
 		for (uint32_t x = 0; x < theWorkerCount; ++x) {
 			theVector.push_back(static_cast<uint32_t>(static_cast<float>(shardCount) / static_cast<float>(threadCount)));
-			std::cout << "TOTAL COUNT 01: " << static_cast<uint32_t>(static_cast<float>(shardCount) / static_cast<float>(threadCount)) << std::endl;
 		}
-		std::cout << "TOTAL COUNT 01: " << theVector.size() << std::endl;
 		return theVector;
 	}
 
@@ -233,8 +231,6 @@ namespace DiscordCoreAPI {
 			? collectWorkerDimensions(this->configManager.getTotalShardCount(), std::thread::hardware_concurrency()).size()
 			: this->configManager.getTotalShardCount();
 		std::vector<uint32_t> theDimensions = collectWorkerDimensions(this->configManager.getTotalShardCount(), baseSocketCount);
-		
-		std::cout << "THE TOTAL COUNT: " << baseSocketCount << std::endl;
 		if (this->configManager.getConnectionAddress() == "") {
 			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
 		}
