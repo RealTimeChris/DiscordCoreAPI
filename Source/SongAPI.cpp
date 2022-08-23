@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake guildId) {
 		SongAPI* returnValue = getSongAPIMap()[guildId].get();
 		returnValue->onSongCompletionEvent.remove(returnValue->eventToken);
-		returnValue->eventToken = returnValue->onSongCompletionEvent.add(DiscordCoreInternal::EventDelegate<CoRoutine<void>, SongCompletionEventData>{ });
+		returnValue->eventToken = returnValue->onSongCompletionEvent.add(DiscordCoreInternal::EventDelegate<CoRoutine<void>, SongCompletionEventData>{ handler });
 	}
 
 	bool SongAPI::sendNextSong() {
@@ -247,12 +247,24 @@ namespace DiscordCoreAPI {
 		getSongAPIMap()[guildMember.guildId]->cancelCurrentSong();
 		if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::SoundCloud) {
 			Song newerSong = getSoundCloudAPIMap()[guildMember.guildId]->collectFinalSong(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
+			if (getSongAPIMap()[this->guildId]->taskThread) {
+				getSongAPIMap()[this->guildId]->taskThread->request_stop();
+				if (getSongAPIMap()[this->guildId]->taskThread->joinable()) {
+					getSongAPIMap()[this->guildId]->taskThread->join();
+				}
+			}
 			getSongAPIMap()[this->guildId]->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
 				getSoundCloudAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, eventToken, 0);
 			});
 
 		} else if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::YouTube) {
 			Song newerSong = getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
+			if (getSongAPIMap()[this->guildId]->taskThread) {
+				getSongAPIMap()[this->guildId]->taskThread->request_stop();
+				if (getSongAPIMap()[this->guildId]->taskThread->joinable()) {
+					getSongAPIMap()[this->guildId]->taskThread->join();
+				}
+			}
 			getSongAPIMap()[this->guildId]->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
 				getYouTubeAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, eventToken, 0);
 			});
