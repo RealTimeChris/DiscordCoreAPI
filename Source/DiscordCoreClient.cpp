@@ -204,20 +204,17 @@ namespace DiscordCoreAPI {
 		uint32_t theWorkerCount = shardCount <= threadCount ? shardCount : threadCount;
 		uint32_t extraShards = static_cast<uint32_t>(shardCount % theWorkerCount);
 		for (uint32_t x = 0; x < theWorkerCount; ++x) {
-			theVector.push_back(static_cast<uint32_t>(floor((static_cast<float>(shardCount) / static_cast<float>(threadCount)))));
+			auto theValue = static_cast<uint32_t>(floor((static_cast<float>(shardCount) / static_cast<float>(threadCount))));
+			if (theValue == 0) {
+				theValue = 1;
+			}
+			theVector.push_back(theValue);
 		}
 		uint32_t theIndex{};
 		while (extraShards > 0) {
 			theVector[theIndex % theVector.size()] += 1;
 			extraShards--;
 			theIndex++;
-		}
-		int32_t totalCount{};
-		for (auto& value: theVector) {
-			totalCount += value;
-		}
-		if (totalCount== 0) {
-			theVector[0] = 1;
 		}
 		return theVector;
 	}
