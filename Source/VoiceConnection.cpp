@@ -633,7 +633,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
-		std::unique_lock theLock{ this->theConnectionMutex };
 		if (this->thePackage.currentShard == -1) {
 			return;
 		}
@@ -1007,10 +1006,5 @@ namespace DiscordCoreAPI {
 		this->activeState.store(VoiceActiveState::Playing);
 		return true;
 	}
-
-	VoiceConnection::~VoiceConnection() noexcept {
-		std::unique_lock theLock2{ WebSocketSSLShard::theConnectionMutex };
-		std::unique_lock theLock{ DatagramSocketClient::theMutex };
-	};
 
 };

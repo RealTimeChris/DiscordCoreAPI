@@ -99,7 +99,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
-		std::recursive_mutex theConnectionMutex{};
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic_bool areWeConnecting{ true };
 		bool haveWeReceivedHeartbeatAck{ true };
@@ -135,7 +134,7 @@ namespace DiscordCoreInternal {
 
 		std::jthread* getTheTask() noexcept;
 
-		~BaseSocketAgent() noexcept;
+		~BaseSocketAgent() noexcept = default;
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 550ms };

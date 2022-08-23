@@ -1516,6 +1516,4 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::getVoiceConnectionMap()[theDCData]->disconnectInternal();
 	}
 
-	BaseSocketAgent::~BaseSocketAgent() noexcept {
-	}
 }
