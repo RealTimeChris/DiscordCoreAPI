@@ -1369,7 +1369,7 @@ namespace DiscordCoreInternal {
 			if (thePackageNew.currentShard != -1) {
 				if (!this->theShardMap.contains(thePackageNew.currentShard)) {
 					this->theShardMap[thePackageNew.currentShard] =
-						std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->connections, thePackageNew.currentShard, this->doWeQuit);
+						std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->discordCoreClient->theConnections, thePackageNew.currentShard, this->doWeQuit);
 					
 				}
 				this->theShardMap[thePackageNew.currentShard]->areWeConnecting.store(true);

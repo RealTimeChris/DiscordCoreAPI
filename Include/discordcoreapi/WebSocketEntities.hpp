@@ -140,7 +140,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 550ms };
 		std::map<uint32_t, std::unique_ptr<WebSocketSSLShard>> theShardMap{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
-		std::deque<DiscordCoreAPI::ConnectionPackage> connections{};
 		std::deque<Snowflake> voiceConnectionsToDisconnect{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		std::deque<VoiceConnectInitData> voiceConnections{};
