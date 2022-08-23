@@ -565,8 +565,8 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	template<typename ReturnType> std::vector<ReturnType> getVector(const nlohmann::json* jsonData, const char* keyname) {
-		auto theResult = jsonData->find(keyname);
+	template<typename ReturnType> std::vector<ReturnType> getVector(const nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
 		if (theResult != jsonData->end() && !theResult->is_null() && theResult->is_array()) {
 			return theResult->get<std::vector<ReturnType>>();
 		} else {
@@ -574,8 +574,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<typename ReturnType01, typename ReturnType02> std::map<ReturnType01, ReturnType02> getMap(const nlohmann::json* jsonData, const char* keyname) {
-		auto theResult = jsonData->find(keyname);
+	template<typename ReturnType01, typename ReturnType02> std::map<ReturnType01, ReturnType02> getMap(const nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
 		if (theResult != jsonData->end() && !theResult->is_null() && theResult->is_array()) {
 			return theResult->get<std::map<ReturnType01, ReturnType02>>();
 		} else {
@@ -583,19 +583,34 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	DiscordCoreAPI_Dll uint8_t getUint8(const nlohmann::json* jsonData, const char* keyname);
+	template<typename ReturnType> void parseObject(const nlohmann::json* jsonObjectData, ReturnType& theData);
 
-	DiscordCoreAPI_Dll uint16_t getUint16(const nlohmann::json* jsonData, const char* keyname);
+	template<typename ReturnType> bool getObject(const nlohmann::json* jsonData, const char* keyName, ReturnType* returnObject) {
+		auto theResult = jsonData->find(keyName);
+		if (theResult != jsonData->end() && !theResult->is_null() && theResult->is_object()) {
+			DiscordCoreAPI::parseObject(jsonData, *returnObject);
+			nlohmann::json theData{};
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-	DiscordCoreAPI_Dll uint32_t getUint32(const nlohmann::json* jsonData, const char* keyname);
+	DiscordCoreAPI_Dll uint8_t getUint8(const nlohmann::json* jsonData, const char* keyName);
 
-	DiscordCoreAPI_Dll uint64_t getUint64(const nlohmann::json* jsonData, const char* keyname);
+	DiscordCoreAPI_Dll uint16_t getUint16(const nlohmann::json* jsonData, const char* keyName);
 
-	DiscordCoreAPI_Dll bool getBoolReal(const nlohmann::json* jsonData, const char* keyname);
+	DiscordCoreAPI_Dll uint32_t getUint32(const nlohmann::json* jsonData, const char* keyName);
 
-	DiscordCoreAPI_Dll std::string getString(const nlohmann::json* jsonData, const char* keyname);
+	DiscordCoreAPI_Dll uint64_t getUint64(const nlohmann::json* jsonData, const char* keyName);
+
+	DiscordCoreAPI_Dll bool getBoolReal(const nlohmann::json* jsonData, const char* keyName);
+
+	DiscordCoreAPI_Dll std::string getString(const nlohmann::json* jsonData, const char* keyName);
 
 	DiscordCoreAPI_Dll uint64_t strtoull(std::string&& theString);
+
+	DiscordCoreAPI_Dll nlohmann::json* getObject(const nlohmann::json* jsonData, const char* keyName);
 
 	template<typename ReturnType> ReturnType fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
 		ReturnType theValue{};

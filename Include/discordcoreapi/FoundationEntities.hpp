@@ -408,7 +408,25 @@ namespace DiscordCoreAPI {
 		virtual ~UserData() noexcept = default;
 	};
 
-	void parseObject(const nlohmann::json* jsonObjectData, UserData& theData) ;
+	template<> inline void parseObject(const nlohmann::json* jsonObjectData, UserData& theData) {
+		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::MFAEnabled, getBoolReal(jsonObjectData, "mfa_enabled"));
+
+		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::Verified, getBoolReal(jsonObjectData, "verified"));
+
+		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::System, getBoolReal(jsonObjectData, "system"));
+
+		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::Bot, getBoolReal(jsonObjectData, "bot"));
+
+		theData.discriminator = getString(jsonObjectData, "discriminator");
+
+		theData.flags = getUint32(jsonObjectData, "public_flags");
+
+		theData.userName = getString(jsonObjectData, "username");
+
+		theData.id = strtoull(getString(jsonObjectData, "id"));
+
+		theData.avatar = getString(jsonObjectData, "avatar");
+	}
 
 	/// Attachment data. \brief Attachment data.
 	class DiscordCoreAPI_Dll AttachmentData : public DiscordEntity {

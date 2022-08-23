@@ -472,8 +472,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	uint8_t getUint8(const nlohmann::json* jsonData, const char* keyname) {
-		auto theResult = jsonData->find(keyname);
+	uint8_t getUint8(const nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
 		if (theResult != jsonData->end()) {
 			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint8_t>() : 0;
 		} else {
@@ -481,8 +481,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	uint16_t getUint16(const nlohmann::json* jsonData, const char* keyname) {
-		auto theResult = jsonData->find(keyname);
+	uint16_t getUint16(const nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
 		if (theResult != jsonData->end()) {
 			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint16_t>() : 0;
 		} else {
@@ -490,8 +490,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	uint32_t getUint32(const nlohmann::json* jsonData, const char* keyname) {
-		auto theResult = jsonData->find(keyname);
+	uint32_t getUint32(const nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
 		if (theResult != jsonData->end()) {
 			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint32_t>() : 0;
 		} else {
@@ -499,8 +499,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	uint64_t getUint64(const nlohmann::json* jsonData, const char* keyname) {
-		auto theResult = jsonData->find(keyname);
+	uint64_t getUint64(const nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
 		if (theResult != jsonData->end()) {
 			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint64_t>() : 0;
 		} else {
@@ -508,8 +508,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool getBoolReal(const nlohmann::json* jsonData, const char* keyname) {
-		auto theResult = jsonData->find(keyname);
+	bool getBoolReal(const nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
 		if (theResult != jsonData->end()) {
 			return !theResult->is_null() && theResult->is_boolean() ? theResult->get<bool>() : 0;
 		} else {
@@ -517,10 +517,10 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string getString(const nlohmann::json* jsonData, const char* keyname) {
-		auto theResult = jsonData->find(keyname);
+	std::string getString(const nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
 		if (theResult != jsonData->end()) {
-			return !theResult->is_null() && theResult->is_string() ? std::move((*jsonData)[keyname].get<std::string>()) : "";
+			return !theResult->is_null() && theResult->is_string() ? std::move((*jsonData)[keyName].get<std::string>()) : "";
 		} else {
 			return const_cast<char*>("");
 		}

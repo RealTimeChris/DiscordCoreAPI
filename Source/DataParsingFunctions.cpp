@@ -188,26 +188,6 @@ namespace DiscordCoreAPI {
 		theData.permissions = strtoull(getString(jsonObjectData, "permissions"));
 	}
 
-	void parseObject(const nlohmann::json* jsonObjectData, UserData& theData) {
-		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::MFAEnabled, getBoolReal(jsonObjectData, "mfa_enabled"));
-
-		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::Verified, getBoolReal(jsonObjectData, "verified"));
-
-		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::System, getBoolReal(jsonObjectData, "system"));
-
-		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::Bot, getBoolReal(jsonObjectData, "bot"));
-
-		theData.discriminator = getString(jsonObjectData, "discriminator");
-
-		theData.flags = getUint32(jsonObjectData, "public_flags");
-
-		theData.userName = getString(jsonObjectData, "username");
-
-		theData.id = strtoull(getString(jsonObjectData, "id"));
-
-		theData.avatar = getString(jsonObjectData, "avatar");
-	}
-
 	void parseObject(const nlohmann::json* jsonObjectData, GuildMemberData& theData) {
 		theData.flags = setBool<int8_t, GuildMemberFlags>(theData.flags, GuildMemberFlags::Pending, getBoolReal(jsonObjectData, "pending"));
 
@@ -226,9 +206,8 @@ namespace DiscordCoreAPI {
 
 		theData.permissions = strtoull(getString(jsonObjectData, "permissions"));
 		
-		if (jsonObjectData->contains("user") && !(*jsonObjectData)["user"].is_null()) {
-			std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
-			DiscordCoreAPI::parseObject(&(*jsonObjectData)["user"], *theUser);
+		std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
+		if (getObject(&(*jsonObjectData), "user", theUser.get())) {
 			theData.id = theUser->id;
 			auto theUserNew = theUser.get();
 			theUserNew->insertUser(std::move(theUser));
