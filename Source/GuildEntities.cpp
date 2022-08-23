@@ -843,7 +843,6 @@ namespace DiscordCoreAPI {
 	std::atomic_int32_t theCount{};
 	StopWatch theStopWatch{ 5s };
 	void Guilds::insertGuild(std::unique_ptr<GuildData> guild) {
-		std::cout << "THREAD ID (02): " << std::this_thread::get_id() << std::endl;
 		std::unique_lock theLock{ Guilds::theMutex };
 		if (guild->id == 0) {
 			return;
