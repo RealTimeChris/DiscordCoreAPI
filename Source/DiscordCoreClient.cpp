@@ -281,7 +281,6 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() noexcept {
-		std::unique_lock theLock01{ this->connectionMutex };
 		for (auto& [key01, value01]: Guilds::cache) {
 			for (auto& value02: value01->members) {
 				delete value02;

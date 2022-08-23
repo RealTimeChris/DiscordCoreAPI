@@ -194,8 +194,6 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
 
-		virtual std::string getInputBufferCopy() noexcept = 0;
-
 		virtual std::string& getInputBuffer() noexcept = 0;
 
 		virtual int64_t getBytesRead() noexcept = 0;
@@ -216,9 +214,9 @@ namespace DiscordCoreInternal {
 	  public:
 		SSLClient() noexcept = default;
 
-		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
-
 		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages) noexcept;
+
+		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
 		static void processIO(std::vector<SSLClient*>&) noexcept;
 
@@ -227,8 +225,6 @@ namespace DiscordCoreInternal {
 		ProcessIOResult writeDataProcess() noexcept;
 
 		ProcessIOResult readDataProcess() noexcept;
-
-		std::string getInputBufferCopy() noexcept;
 
 		std::string& getInputBuffer() noexcept;
 

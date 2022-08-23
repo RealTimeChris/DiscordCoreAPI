@@ -507,13 +507,6 @@ namespace DiscordCoreInternal {
 		return returnValueReal;
 	}
 
-	std::string SSLClient::getInputBufferCopy() noexcept {
-		std::unique_lock theLock{ this->connectionMutex };
-		std::string theString = std::move(this->inputBuffer);
-		this->inputBuffer.clear();
-		return theString;
-	}
-
 	std::string& SSLClient::getInputBuffer() noexcept {
 		return this->inputBuffer;
 	}
