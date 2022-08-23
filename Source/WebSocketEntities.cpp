@@ -1398,7 +1398,7 @@ namespace DiscordCoreInternal {
 							 << this->configManager->getShardCountForThisProcess()
 							 << std::string(" Shards for this process. (") + std::to_string(thePackageNew.currentShard + 1) + " of " +
 								std::to_string(this->configManager->getTotalShardCount()) + std::string(" Shards total across all processes)")
-							 << std::this_thread::get_id() << DiscordCoreAPI::reset() << endl
+							 << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
 					if (!isItFirstIteraion) {
