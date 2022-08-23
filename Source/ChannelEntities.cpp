@@ -393,7 +393,8 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Channels::configManager->doWeCacheChannels()) {
-			Channels::cache.insert_or_assign(channel->id, std::move(channel));
+			auto channelId = channel->id;
+			Channels::cache.insert_or_assign(channelId, std::move(channel));
 		}
 	}
 

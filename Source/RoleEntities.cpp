@@ -198,12 +198,12 @@ namespace DiscordCoreAPI {
 		newDataPackage.guildId = dataPackage.guildId;
 		newDataPackage.newPosition = dataPackage.position;
 		newDataPackage.roleId = roleNew.id;
-		auto results = modifyGuildRolePositionsAsync(newDataPackage).get();
-		for (auto& value: results) {
-			if (value.id == roleNew.id) {
-				roleNew = value;
-			}
-		}
+		//auto results = modifyGuildRolePositionsAsync(newDataPackage).get();
+		//for (auto& value: results) {
+		//if (value.id == roleNew.id) {
+		//roleNew = value;
+		//}
+		//}
 		co_return roleNew;
 	}
 
@@ -311,8 +311,8 @@ namespace DiscordCoreAPI {
 			theLock.unlock();
 			auto theRole = Roles::getRoleAsync(dataPackage).get();
 			co_return theRole;
-		} else {
-			co_return *Roles::cache[dataPackage.roleId];
+		} else if (Roles::cache.contains(dataPackage.roleId)) {
+			co_return *Roles::cache[dataPackage.roleId].get();
 		}
 	}
 
@@ -322,7 +322,8 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Roles::configManager->doWeCacheRoles()) {
-			Roles::cache.insert_or_assign(role->id, std::move(role));
+			auto roleId = role->id;
+			Roles::cache.insert_or_assign(roleId, std::move(role));
 		}
 	}
 
@@ -334,7 +335,7 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
-	std::map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
+	std::unordered_map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
 	ConfigManager* Roles::configManager{ nullptr };
 	std::shared_mutex Roles::theMutex{};
 }

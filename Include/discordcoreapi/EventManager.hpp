@@ -73,8 +73,6 @@ namespace DiscordCoreAPI {
 		OnChannelCreationData(ChannelData*);
 		OnChannelCreationData& operator=(const OnChannelCreationData&);
 		OnChannelCreationData(const OnChannelCreationData&);
-		OnChannelCreationData& operator=(OnChannelCreationData&);
-		OnChannelCreationData(OnChannelCreationData&);
 		ChannelData* channel{};///< The new Channel.
 	};
 
@@ -83,8 +81,6 @@ namespace DiscordCoreAPI {
 		OnChannelUpdateData(ChannelData*);
 		OnChannelUpdateData& operator=(const OnChannelUpdateData&);
 		OnChannelUpdateData(const OnChannelUpdateData&);
-		OnChannelUpdateData& operator=(OnChannelUpdateData&);
-		OnChannelUpdateData(OnChannelUpdateData&);
 		ChannelData* channel{};///< The new Channel.
 	};
 
@@ -93,8 +89,6 @@ namespace DiscordCoreAPI {
 		OnChannelDeletionData(std::unique_ptr<ChannelData>);
 		OnChannelDeletionData& operator=(const OnChannelDeletionData&);
 		OnChannelDeletionData(const OnChannelDeletionData&);
-		OnChannelDeletionData& operator=(OnChannelDeletionData&);
-		OnChannelDeletionData(OnChannelDeletionData&);
 		std::unique_ptr<ChannelData> channel{};///< The deleted Channel.
 	};
 
@@ -138,8 +132,6 @@ namespace DiscordCoreAPI {
 		OnGuildCreationData(GuildData*, DiscordCoreClient*);
 		OnGuildCreationData& operator=(const OnGuildCreationData&);
 		OnGuildCreationData(const OnGuildCreationData&);
-		OnGuildCreationData& operator=(OnGuildCreationData&);
-		OnGuildCreationData(OnGuildCreationData&);
 		GuildData* guild{};///< The new Guild.
 	};
 
@@ -148,8 +140,6 @@ namespace DiscordCoreAPI {
 		OnGuildUpdateData(GuildData*, DiscordCoreClient*);
 		OnGuildUpdateData& operator=(const OnGuildUpdateData&);
 		OnGuildUpdateData(const OnGuildUpdateData&);
-		OnGuildUpdateData& operator=(OnGuildUpdateData&);
-		OnGuildUpdateData(OnGuildUpdateData&);
 		GuildData* guild{};///< The new, updated Guild.
 	};
 
@@ -158,8 +148,6 @@ namespace DiscordCoreAPI {
 		OnGuildDeletionData(std::unique_ptr<GuildData>);
 		OnGuildDeletionData& operator=(const OnGuildDeletionData&);
 		OnGuildDeletionData(const OnGuildDeletionData&);
-		OnGuildDeletionData& operator=(OnGuildDeletionData&);
-		OnGuildDeletionData(OnGuildDeletionData&);
 		std::unique_ptr<GuildData> guild{};///< The deleted Guild.
 	};
 
@@ -195,8 +183,6 @@ namespace DiscordCoreAPI {
 		OnGuildMemberAddData(GuildMemberData*, DiscordCoreClient*);
 		OnGuildMemberAddData& operator=(const OnGuildMemberAddData&);
 		OnGuildMemberAddData(const OnGuildMemberAddData&);
-		OnGuildMemberAddData& operator=(OnGuildMemberAddData&);
-		OnGuildMemberAddData(OnGuildMemberAddData&);
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		GuildMemberData* guildMember{};///< The new GuildMember.
 	};
@@ -206,8 +192,6 @@ namespace DiscordCoreAPI {
 		OnGuildMemberUpdateData(GuildMemberData*);
 		OnGuildMemberUpdateData& operator=(const OnGuildMemberUpdateData&);
 		OnGuildMemberUpdateData(const OnGuildMemberUpdateData&);
-		OnGuildMemberUpdateData& operator=(OnGuildMemberUpdateData&);
-		OnGuildMemberUpdateData(OnGuildMemberUpdateData&);
 		GuildMemberData* guildMember{};///< The new GuildMember.
 	};
 
@@ -216,8 +200,6 @@ namespace DiscordCoreAPI {
 		OnGuildMemberRemoveData(std::unique_ptr<UserData>, DiscordCoreClient*, Snowflake);
 		OnGuildMemberRemoveData& operator=(const OnGuildMemberRemoveData&);
 		OnGuildMemberRemoveData(const OnGuildMemberRemoveData&);
-		OnGuildMemberRemoveData& operator=(OnGuildMemberRemoveData&);
-		OnGuildMemberRemoveData(OnGuildMemberRemoveData&);
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		std::unique_ptr<UserData> user{};///< The User responseData of the removed GuildMember.
 		Snowflake guildId{};///< The id of the Guild from which they were removed.
@@ -233,8 +215,6 @@ namespace DiscordCoreAPI {
 		OnRoleCreationData(RoleData* theRole, Snowflake guildId);
 		OnRoleCreationData& operator=(const OnRoleCreationData&);
 		OnRoleCreationData(const OnRoleCreationData&);
-		OnRoleCreationData& operator=(OnRoleCreationData&);
-		OnRoleCreationData(OnRoleCreationData&);
 		Snowflake guildId{};///< The id of the Guild within which the Role was created.
 		RoleData* role{};///< The new Role.
 	};
@@ -244,8 +224,6 @@ namespace DiscordCoreAPI {
 		OnRoleUpdateData(RoleData*, Snowflake);
 		OnRoleUpdateData& operator=(const OnRoleUpdateData&);
 		OnRoleUpdateData(const OnRoleUpdateData&);
-		OnRoleUpdateData& operator=(OnRoleUpdateData&);
-		OnRoleUpdateData(OnRoleUpdateData&);
 		Snowflake guildId{};///< The id of the Guild within which the Role was updated.
 		RoleData* role{};///< The new Role.
 	};
@@ -255,8 +233,6 @@ namespace DiscordCoreAPI {
 		OnRoleDeletionData(std::unique_ptr<RoleData>, Snowflake);
 		OnRoleDeletionData& operator=(const OnRoleDeletionData&);
 		OnRoleDeletionData(const OnRoleDeletionData&);
-		OnRoleDeletionData& operator=(OnRoleDeletionData&);
-		OnRoleDeletionData(OnRoleDeletionData&);
 		std::unique_ptr<RoleData> role{};///< The deleted Role.
 		Snowflake guildId{};///< The id of the Guild from which the Role was deleted.
 	};
@@ -376,8 +352,6 @@ namespace DiscordCoreAPI {
 		OnUserUpdateData(UserData*);
 		OnUserUpdateData& operator=(const OnUserUpdateData&);
 		OnUserUpdateData(const OnUserUpdateData&);
-		OnUserUpdateData& operator=(OnUserUpdateData&);
-		OnUserUpdateData(OnUserUpdateData&);
 		UserData* user{};///< The new User.
 	};
 

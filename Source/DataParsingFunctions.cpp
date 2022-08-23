@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
 				DiscordCoreAPI::parseObject(&value, *newData);
 				theData.roles.push_back(newData->id);
 				auto theRole = newData.get();
-				theRole->insertRole(std::move(newData));
+				Roles::insertRole(std::move(newData));
 			}
 		}
 

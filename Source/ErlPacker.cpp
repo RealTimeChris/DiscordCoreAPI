@@ -214,6 +214,9 @@ namespace DiscordCoreInternal {
 			case ETFTokenType::Integer_Ext: {
 				return ErlPacker::parseIntegerExt();
 			}
+			case ETFTokenType::New_Float_Ext: {
+				[[fallthrough]];
+			}
 			case ETFTokenType::Float_Ext: {
 				return ErlPacker::parseFloatExt();
 			}

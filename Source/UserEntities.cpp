@@ -251,7 +251,8 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Users::configManager->doWeCacheUsers()) {
-			Users::cache.insert_or_assign(user->id, std::move(user));
+			auto userId = user->id;
+			Users::cache.insert_or_assign(userId, std::move(user));
 		}
 	}
 

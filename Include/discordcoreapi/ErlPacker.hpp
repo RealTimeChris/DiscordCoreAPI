@@ -31,6 +31,7 @@ namespace DiscordCoreInternal {
 	constexpr uint8_t formatVersion{ 131 };
 
 	enum class ETFTokenType : uint8_t {
+		New_Float_Ext = 70,
 		Small_Integer_Ext = 97,
 		Integer_Ext = 98,
 		Float_Ext = 99,
