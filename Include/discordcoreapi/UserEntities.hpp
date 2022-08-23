@@ -102,69 +102,7 @@ namespace DiscordCoreAPI {
 		inline void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
-	inline void parseObject(const nlohmann::json* jsonObjectData, User& theData) {
-		if (jsonObjectData->contains("username") && !(*jsonObjectData)["username"].is_null()) {
-			theData.userName = (*jsonObjectData)["username"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("id") && !(*jsonObjectData)["id"].is_null()) {
-			if ((*jsonObjectData)["id"].is_string()) {
-				theData.id = stoull((*jsonObjectData)["id"].get<std::string>());
-			} else {
-				theData.id = (*jsonObjectData)["id"].get<int64_t>();
-			}
-		}
-
-		if (jsonObjectData->contains("accent_color") && !(*jsonObjectData)["accent_color"].is_null()) {
-			theData.accentColor = (*jsonObjectData)["accent_color"].get<int32_t>();
-		}
-
-		if (jsonObjectData->contains("banner") && !(*jsonObjectData)["banner"].is_null()) {
-			theData.banner = (*jsonObjectData)["banner"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("discriminator") && !(*jsonObjectData)["discriminator"].is_null()) {
-			theData.discriminator = (*jsonObjectData)["discriminator"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("avatar") && !(*jsonObjectData)["avatar"].is_null()) {
-			theData.avatar = (*jsonObjectData)["avatar"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("bot") && !(*jsonObjectData)["bot"].is_null()) {
-			theData.flags = DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(theData.flags, DiscordCoreAPI::UserFlags::Bot, (*jsonObjectData)["bot"].get<bool>());
-		}
-
-		if (jsonObjectData->contains("system") && !(*jsonObjectData)["system"].is_null()) {
-			theData.flags = DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(theData.flags, DiscordCoreAPI::UserFlags::System, (*jsonObjectData)["system"].get<bool>());
-		}
-
-		if (jsonObjectData->contains("mfa_enabled") && !(*jsonObjectData)["mfa_enabled"].is_null()) {
-			theData.flags =
-				DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(theData.flags, DiscordCoreAPI::UserFlags::MFAEnabled, (*jsonObjectData)["mfa_enabled"].get<bool>());
-		}
-
-		if (jsonObjectData->contains("verified") && !(*jsonObjectData)["verified"].is_null()) {
-			theData.flags =
-				DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(theData.flags, DiscordCoreAPI::UserFlags::Verified, (*jsonObjectData)["verified"].get<bool>());
-		}
-
-		if (jsonObjectData->contains("locale") && !(*jsonObjectData)["locale"].is_null()) {
-			theData.locale = (*jsonObjectData)["locale"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("email") && !(*jsonObjectData)["email"].is_null()) {
-			theData.email = (*jsonObjectData)["email"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("premium_type") && !(*jsonObjectData)["premium_type"].is_null()) {
-			theData.premiumType = (*jsonObjectData)["premium_type"].get<DiscordCoreAPI::PremiumType>();
-		}
-
-		if (jsonObjectData->contains("public_flags") && !(*jsonObjectData)["public_flags"].is_null()) {
-			theData.flags = (*jsonObjectData)["public_flags"].get<int32_t>();
-		}
-	}
+	void parseObject(const nlohmann::json* jsonObjectData, User& theData);
 
 	class DiscordCoreAPI_Dll UserVector {
 	  public:
@@ -240,7 +178,7 @@ namespace DiscordCoreAPI {
 
 		/// Collects the Bot's current User responseData. \brief Collects the Bot's current User responseData.
 		/// \returns A CoRoutine containing a User.
-		static CoRoutine<UserData> getCurrentUserAsync();
+		static CoRoutine<User> getCurrentUserAsync();
 
 		/// Collects a given User from the library's cache. \brief Collects a given User from the library's cache.
 		/// \param dataPackage A GetUserData structure.

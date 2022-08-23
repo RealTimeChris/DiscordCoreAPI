@@ -134,13 +134,17 @@ namespace DiscordCoreInternal {
 		int64_t currentIndex{};
 		std::mutex theMutex{};
 	};
+
 	template<typename ReturnType>
 	concept DerivedFromNewBase = std::derived_from<ReturnType, DiscordCoreAPI::NewBase>;
+
 	class DiscordCoreAPI_Dll HttpsClient {
 	  public:
 		HttpsClient(DiscordCoreAPI::ConfigManager* configManager);
 
-		template<DerivedFromNewBase ReturnType> ReturnType submitWorkloadAndGetResult(const HttpsWorkloadData& workload, ReturnType* theReturnValue = nullptr) {
+		template<DerivedFromNewBase ReturnType>
+		requires std::derived_from<ReturnType, DiscordCoreAPI::NewBase> ReturnType submitWorkloadAndGetResult(const HttpsWorkloadData& workload,
+			ReturnType* theReturnValue = nullptr) {
 			workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com 1.0)";
 			if (workload.payloadType == PayloadType::Application_Json) {
