@@ -807,7 +807,6 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		Snowflake voiceChannelId{};///< Currently held voice channel, if applicable.
 		GuildMemberAvatar avatar{};///< This GuildMember's Guild Avatar.
-		UserAvatar userAvatar{};///< This GuildMember's User Avatar.
 		uint64_t permissions{};///< Their base-level Permissions in the Guild.
 		StringWrapper nick{};///< Their nick/display name.
 		uint64_t joinedAt{};///< When they joined the Guild.
