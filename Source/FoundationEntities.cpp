@@ -118,7 +118,7 @@ namespace DiscordCoreInternal {
 		return data;
 	}
 
-	HttpsWorkloadData& HttpsWorkloadData::operator=(const HttpsWorkloadData& other) {
+	HttpsWorkloadData& HttpsWorkloadData::operator=(const HttpsWorkloadData& other) noexcept {
 		if (this != &other) {
 			this->thisWorkerId.store(this->thisWorkerId.load());
 			this->headersToInsert = other.headersToInsert;
@@ -133,11 +133,11 @@ namespace DiscordCoreInternal {
 		return *this;
 	}
 
-	HttpsWorkloadData::HttpsWorkloadData(const HttpsWorkloadData& other) {
+	HttpsWorkloadData::HttpsWorkloadData(const HttpsWorkloadData& other) noexcept {
 		*this = other;
 	}
 
-	HttpsWorkloadData::HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType) {
+	HttpsWorkloadData::HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType) noexcept {
 		if (!HttpsWorkloadData::workloadIdsExternal.contains(theType)) {
 			std::unique_ptr<std::atomic_int64_t> theInt{ std::make_unique<std::atomic_int64_t>() };
 			std::unique_ptr<std::atomic_int64_t> theInt02{ std::make_unique<std::atomic_int64_t>() };
@@ -148,7 +148,7 @@ namespace DiscordCoreInternal {
 		this->workloadType = theType;
 	}
 
-	int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) {
+	int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept {
 		int64_t theValue{ HttpsWorkloadData::workloadIdsExternal[workloadType]->load() };
 		HttpsWorkloadData::workloadIdsExternal[workloadType]->store(theValue + 1);
 		return theValue;
@@ -165,15 +165,6 @@ namespace DiscordCoreAPI {
 		return timeStamp;
 	}
 
-	RoleTagsData& RoleTagsData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	RoleTagsData::RoleTagsData(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}	
-
 	AttachmentData::operator nlohmann::json() {
 		nlohmann::json newValue{};
 		newValue["content_type"] = this->contentType;
@@ -186,15 +177,6 @@ namespace DiscordCoreAPI {
 		newValue["size"] = this->size;
 		newValue["url"] = this->url;
 		return newValue;
-	}
-
-	AttachmentData& AttachmentData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	AttachmentData::AttachmentData(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	EmbedFooterData& EmbedFooterData::operator=(const nlohmann::json* jsonObjectData) {
@@ -1110,7 +1092,7 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	void AudioFrameData::clearData() {
+	void AudioFrameData::clearData() noexcept {
 		this->type = AudioFrameType::Unset;
 		this->guildMemberId = 0;
 		this->sampleCount = -1;

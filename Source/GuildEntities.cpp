@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 			}
 			uint64_t theShardId{ (this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount() };
 			size_t currentBaseCount = this->discordCoreClient->baseSocketAgentMap.size();
-			auto theBaseSocketAgentIndex{ static_cast<int32_t>(ceil(static_cast<float>(theShardId) /
+			auto theBaseSocketAgentIndex{ static_cast<int32_t>(floor(static_cast<float>(theShardId) /
 				static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount()) * this->discordCoreClient->baseSocketAgentMap.size())) };
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.currentShard = theShardId;
@@ -853,7 +853,8 @@ namespace DiscordCoreAPI {
 			auto guildId = guild->id;
 			Guilds::cache.insert_or_assign(guildId, std::move(guild));
 			theCount.store(Guilds::cache.size());
-			//std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
+			//std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", THREAD ID: " << std::this_thread::get_id() << ", AVERAGE TIME: " << theStopWatch.totalTimePassed()
+				//	  << std::endl;
 		}
 	}
 

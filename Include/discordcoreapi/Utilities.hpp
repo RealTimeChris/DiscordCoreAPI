@@ -535,17 +535,17 @@ namespace DiscordCoreAPI {
 		std::vector<uint8_t> data{};///< The audio data.
 		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
 
-		AudioFrameData& operator=(AudioFrameData&&) noexcept;
-
-		AudioFrameData(AudioFrameData&&) noexcept;
-
-		AudioFrameData& operator=(const AudioFrameData&) noexcept;
-
-		AudioFrameData(const AudioFrameData&) noexcept;
-
 		AudioFrameData() noexcept = default;
 
-		void clearData();
+		AudioFrameData& operator=(AudioFrameData&&) noexcept = default;
+		
+		AudioFrameData(AudioFrameData&&) noexcept = default;
+
+		AudioFrameData& operator=(const AudioFrameData&) noexcept = default;
+
+		AudioFrameData(const AudioFrameData&) noexcept = default;
+
+		void clearData() noexcept;
 	};
 
 	/**@}*/
@@ -574,12 +574,12 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<typename ReturnType, typename ReturnType02> std::map<ReturnType, ReturnType02> getMap(const nlohmann::json* jsonData, const char* keyname) {
+	template<typename ReturnType01, typename ReturnType02> std::map<ReturnType01, ReturnType02> getMap(const nlohmann::json* jsonData, const char* keyname) {
 		auto theResult = jsonData->find(keyname);
 		if (theResult != jsonData->end() && !theResult->is_null() && theResult->is_array()) {
-			return theResult->get<std::map<ReturnType, ReturnType02>>();
+			return theResult->get<std::map<ReturnType01, ReturnType02>>();
 		} else {
-			return std::map<ReturnType, ReturnType02>{};
+			return std::map<ReturnType01, ReturnType02>{};
 		}
 	}
 

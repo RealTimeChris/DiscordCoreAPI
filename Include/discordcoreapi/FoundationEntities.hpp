@@ -285,14 +285,14 @@ namespace DiscordCoreInternal {
 		std::string callStack{};
 		std::string content{};
 
-		HttpsWorkloadData& operator=(const HttpsWorkloadData& other);
+		HttpsWorkloadData& operator=(const HttpsWorkloadData& other) noexcept;
 
-		HttpsWorkloadData(const HttpsWorkloadData& other);
+		HttpsWorkloadData(const HttpsWorkloadData& other) noexcept;
 
-		HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType);
+		HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType) noexcept;
 
 	  protected:
-		static int64_t incrementAndGetWorkloadId(HttpsWorkloadType workloadType);
+		static int64_t incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept;
 
 		HttpsWorkloadType workloadType{};
 	};
@@ -342,16 +342,12 @@ namespace DiscordCoreAPI {
 		std::string integrationId{};///< What is the integration id?
 		std::string botId{};///< What is the bot id?
 
-		RoleTagsData() = default;
+		RoleTagsData() noexcept = default;
 
-		RoleTagsData& operator=(const nlohmann::json* jsonObjectData);
-
-		RoleTagsData(const nlohmann::json* jsonObjectData);
-
-		virtual ~RoleTagsData() = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
+		virtual ~RoleTagsData() noexcept = default;
 	};
+
+	void parseObject(const nlohmann::json* jsonObjectData, RoleTagsData& theData);
 
 	/// User flags. \brief User flags.
 	enum class UserFlags : int32_t {
@@ -426,18 +422,14 @@ namespace DiscordCoreAPI {
 		int32_t size{ 0 };///< The size of the attachment.
 		std::string url{};///< The url for the attachment.
 
-		AttachmentData() = default;
+		AttachmentData() noexcept = default;
 
 		operator nlohmann::json();
 
-		AttachmentData& operator=(const nlohmann::json* jsonObjectData);
-
-		AttachmentData(const nlohmann::json* jsonObjectData);
-
-		virtual ~AttachmentData() = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
+		virtual ~AttachmentData() noexcept = default;
 	};
+
+	void parseObject(const nlohmann::json* jsonObjectData, AttachmentData& theData);
 
 	/// Sticker format types. \brief Sticker format types.
 	enum class StickerFormatType : uint8_t {

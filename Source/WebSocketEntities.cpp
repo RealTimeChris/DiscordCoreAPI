@@ -432,7 +432,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::parseObject(&payload["d"]["user"], theUser);
 						this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser,
 							this->discordCoreClient
-								->baseSocketAgentMap[static_cast<int32_t>(ceil(static_cast<float>(this->shard[0]) /
+								->baseSocketAgentMap[static_cast<int32_t>(floor(static_cast<float>(this->shard[0]) /
 									static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount()) * this->discordCoreClient->baseSocketAgentMap.size()))]
 								.get() };
 						DiscordCoreAPI::Users::insertUser(std::make_unique<DiscordCoreAPI::UserData>(theUser));

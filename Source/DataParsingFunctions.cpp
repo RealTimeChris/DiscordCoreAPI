@@ -258,6 +258,44 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void parseObject(const nlohmann::json* jsonObjectData, AttachmentData& theData) {
+		theData.id = strtoull(getString(&(*jsonObjectData), "id"));
+
+		theData.filename = getString(&(*jsonObjectData), "filename");
+
+		if (jsonObjectData->contains("content_type") && !(*jsonObjectData)["content_type"].is_null()) {
+			theData.contentType = getString(&(*jsonObjectData),"content_type");
+		}
+
+		if (jsonObjectData->contains("ephemeral") && !(*jsonObjectData)["ephemeral"].is_null()) {
+			theData.ephemeral = (*jsonObjectData)["ephemeral"].get<bool>();
+		}
+
+		if (jsonObjectData->contains("description") && !(*jsonObjectData)["description"].is_null()) {
+			theData.description = (*jsonObjectData)["description"].get<std::string>();
+		}
+
+		if (jsonObjectData->contains("size") && !(*jsonObjectData)["size"].is_null()) {
+			theData.size = (*jsonObjectData)["size"].get<int32_t>();
+		}
+
+		if (jsonObjectData->contains("url") && !(*jsonObjectData)["url"].is_null()) {
+			theData.url = (*jsonObjectData)["url"].get<std::string>();
+		}
+
+		if (jsonObjectData->contains("proxy_url") && !(*jsonObjectData)["proxy_url"].is_null()) {
+			theData.proxyUrl = (*jsonObjectData)["proxy_url"].get<std::string>();
+		}
+
+		if (jsonObjectData->contains("width") && !(*jsonObjectData)["width"].is_null()) {
+			theData.width = (*jsonObjectData)["width"].get<int32_t>();
+		}
+
+		if (jsonObjectData->contains("height") && !(*jsonObjectData)["height"].is_null()) {
+			theData.height = (*jsonObjectData)["height"].get<int32_t>();
+		}
+	}
+
 	void ApplicationCommandVector::parseObject(const nlohmann::json* jsonObjectData) {
 		this->theApplicationCommands.reserve(jsonObjectData->size());
 		for (auto& value: *jsonObjectData) {
@@ -901,7 +939,8 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("attachments") && !(*jsonObjectData)["attachments"].is_null()) {
 			this->attachments.clear();
 			for (auto& value: (*jsonObjectData)["attachments"]) {
-				AttachmentData newData{ &value };
+				AttachmentData newData{};
+				DiscordCoreAPI::parseObject(&value, newData);
 				this->attachments.emplace_back(newData);
 			}
 		}
@@ -1094,7 +1133,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("tags") && !(*jsonObjectData)["tags"].is_null()) {
-			this->tags = &(*jsonObjectData)["tags"];
+			DiscordCoreAPI::parseObject(&(*jsonObjectData)["tags"], this->tags);
 		}
 	}
 
@@ -1374,56 +1413,10 @@ namespace DiscordCoreAPI {
 		this->theWebHooks.shrink_to_fit();
 	}
 
-	void RoleTagsData::parseObject(const nlohmann::json* jsonObjectData) {
-		if (jsonObjectData->contains("bot_id") && !(*jsonObjectData)["bot_id"].is_null()) {
-			this->botId = (*jsonObjectData)["bot_id"].get<std::string>();
-		}
+	void parseObject(const nlohmann::json* jsonObjectData, RoleTagsData& theData) {
+		theData.botId = getString(&(*jsonObjectData), "bot_id");
 
-		if (jsonObjectData->contains("integration_id") && !(*jsonObjectData)["integration_id"].is_null()) {
-			this->integrationId = (*jsonObjectData)["integration_id"].get<std::string>();
-		}
-	}
-
-	void AttachmentData::parseObject(const nlohmann::json* jsonObjectData) {
-		if (jsonObjectData->contains("id") && !(*jsonObjectData)["id"].is_null()) {
-			this->id = stoull((*jsonObjectData)["id"].get<std::string>());
-		}
-
-		if (jsonObjectData->contains("filename") && !(*jsonObjectData)["filename"].is_null()) {
-			this->filename = (*jsonObjectData)["filename"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("content_type") && !(*jsonObjectData)["content_type"].is_null()) {
-			this->contentType = (*jsonObjectData)["content_type"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("ephemeral") && !(*jsonObjectData)["ephemeral"].is_null()) {
-			this->ephemeral = (*jsonObjectData)["ephemeral"].get<bool>();
-		}
-
-		if (jsonObjectData->contains("description") && !(*jsonObjectData)["description"].is_null()) {
-			this->description = (*jsonObjectData)["description"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("size") && !(*jsonObjectData)["size"].is_null()) {
-			this->size = (*jsonObjectData)["size"].get<int32_t>();
-		}
-
-		if (jsonObjectData->contains("url") && !(*jsonObjectData)["url"].is_null()) {
-			this->url = (*jsonObjectData)["url"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("proxy_url") && !(*jsonObjectData)["proxy_url"].is_null()) {
-			this->proxyUrl = (*jsonObjectData)["proxy_url"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("width") && !(*jsonObjectData)["width"].is_null()) {
-			this->width = (*jsonObjectData)["width"].get<int32_t>();
-		}
-
-		if (jsonObjectData->contains("height") && !(*jsonObjectData)["height"].is_null()) {
-			this->height = (*jsonObjectData)["height"].get<int32_t>();
-		}
+		theData.integrationId = getString(&(*jsonObjectData), "integration_id");
 	}
 
 	void EmbedFooterData::parseObject(const nlohmann::json* jsonObjectData) {
@@ -3703,7 +3696,8 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData->contains("attachments") && !(*jsonObjectData)["attachments"].is_null()) {
 				this->attachments.clear();
 				for (auto& value: (*jsonObjectData)["attachments"]) {
-					AttachmentData newData{ &value };
+					AttachmentData newData{};
+					DiscordCoreAPI::parseObject(&value, newData);
 					this->attachments.emplace_back(newData);
 				}
 			}
@@ -3862,7 +3856,8 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("attachments") && !(*jsonObjectData)["attachments"].is_null()) {
 			this->attachments.clear();
 			for (auto& value: (*jsonObjectData)["attachments"]) {
-				AttachmentData newData{ &value };
+				AttachmentData newData{};
+				DiscordCoreAPI::parseObject(&value, newData);
 				this->attachments.emplace_back(newData);
 			}
 		}
@@ -4112,7 +4107,8 @@ namespace DiscordCoreAPI {
 				this->resolved.attachments.clear();
 				auto newMap = value["attachments"].get<std::map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
-					AttachmentData newData{ &newValue };
+					AttachmentData newData{};
+					DiscordCoreAPI::parseObject(&newValue, newData);
 					this->resolved.attachments[stoull(key)] = newData;
 				}
 			}

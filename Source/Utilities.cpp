@@ -472,34 +472,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	AudioFrameData& AudioFrameData::operator=(AudioFrameData&& other) noexcept {
-		if (this != &other) {
-			this->guildMemberId = other.guildMemberId;
-			this->sampleCount = other.sampleCount;
-			this->data = std::move(other.data);
-			this->type = other.type;
-		}
-		return *this;
-	}
-
-	AudioFrameData::AudioFrameData(AudioFrameData&& other) noexcept {
-		*this = std::move(other);
-	}
-
-	AudioFrameData& AudioFrameData::operator=(const AudioFrameData& other) noexcept {
-		if (this != &other) {
-			this->guildMemberId = other.guildMemberId;
-			this->sampleCount = other.sampleCount;
-			this->data = std::move(other.data);
-			this->type = other.type;
-		}
-		return *this;
-	}
-
-	AudioFrameData::AudioFrameData(const AudioFrameData& other) noexcept {
-		*this = other;
-	}
-
 	uint8_t getUint8(const nlohmann::json* jsonData, const char* keyname) {
 		auto theResult = jsonData->find(keyname);
 		if (theResult != jsonData->end()) {
