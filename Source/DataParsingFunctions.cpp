@@ -161,12 +161,14 @@ namespace DiscordCoreAPI {
 		}
 
 		theData.permissions = strtoull(getString(jsonObjectData, "permissions"));
-
-		std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
-		DiscordCoreAPI::parseObject(&(*jsonObjectData)["user"], *theUser);
-		theData.id = theUser->id;
-		auto theUserNew = theUser.get();
-		theUserNew->insertUser(std::move(theUser));
+		
+		if (jsonObjectData->contains("user") && !(*jsonObjectData)["user"].is_null()) {
+			std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
+			DiscordCoreAPI::parseObject(&(*jsonObjectData)["user"], *theUser);
+			theData.id = theUser->id;
+			auto theUserNew = theUser.get();
+			theUserNew->insertUser(std::move(theUser));
+		}
 
 		theData.avatar = getString(jsonObjectData, "avatar");
 
