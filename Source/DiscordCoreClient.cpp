@@ -257,8 +257,8 @@ namespace DiscordCoreAPI {
 				theData.currentReconnectTries = 0;
 				this->baseSocketAgentMap[x]->theShardMap[currentShard] =
 					std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, &this->theConnections, currentShard, &Globals::doWeQuit);
-				this->baseSocketAgentMap[x]->connect(theData);
 				theData.voiceConnectionDataBufferMap = std::move(this->baseSocketAgentMap[x]->theShardMap[currentShard]->voiceConnectionDataBufferMap);
+				this->theConnections.push_back(theData);
 				std::unique_lock theLock{ this->connectionMutex };
 				currentShard++;
 			}
