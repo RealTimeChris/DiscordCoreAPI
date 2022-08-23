@@ -125,7 +125,8 @@ namespace DiscordCoreAPI {
 			}
 			uint64_t theShardId{ (this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount() };
 			size_t currentBaseCount = this->discordCoreClient->baseSocketAgentMap.size();
-			auto theBaseSocketAgentIndex{ static_cast<int32_t>(floor(static_cast<float>(theShardId) / static_cast<float>(currentBaseCount))) };
+			auto theBaseSocketAgentIndex{ static_cast<int32_t>(
+				ceil(static_cast<float>(theShardId) / static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount()))) };
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.currentShard = theShardId;
 			voiceConnectInitData.streamType = streamTypeNew;
@@ -136,7 +137,7 @@ namespace DiscordCoreAPI {
 			voiceConnectInitData.selfDeaf = selfDeaf;
 			voiceConnectInitData.selfMute = selfMute;
 			StopWatch theStopWatch{ 10000ms };
-			this->discordCoreClient->baseSocketAgentMap[std::to_string(theBaseSocketAgentIndex)]->connectVoiceChannel(voiceConnectInitData);
+			this->discordCoreClient->baseSocketAgentMap[theBaseSocketAgentIndex]->connectVoiceChannel(voiceConnectInitData);
 			while (!getVoiceConnectionMap()[this->id]->areWeConnected()) {
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {
@@ -842,6 +843,7 @@ namespace DiscordCoreAPI {
 	std::atomic_int32_t theCount{};
 	StopWatch theStopWatch{ 5s };
 	void Guilds::insertGuild(std::unique_ptr<GuildData> guild) {
+		std::cout << "THREAD ID (02): " << std::this_thread::get_id() << std::endl;
 		std::unique_lock theLock{ Guilds::theMutex };
 		if (guild->id == 0) {
 			return;
@@ -849,11 +851,8 @@ namespace DiscordCoreAPI {
 		guild->discordCoreClient = Guilds::discordCoreClient;
 		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
-			if (!Guilds::cache.contains(guild->id)) {
-				Guilds::cache.emplace(guild->id, std::move(guild));
-			} else {
-				Guilds::cache.insert_or_assign(guild->id, std::move(guild));
-			}
+			auto guildId = guild->id;
+			Guilds::cache.insert_or_assign(guildId, std::move(guild));
 			theCount.store(Guilds::cache.size());
 			//std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TIME: " << theStopWatch.totalTimePassed() << std::endl;
 		}
