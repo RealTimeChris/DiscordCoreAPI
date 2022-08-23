@@ -307,7 +307,6 @@ namespace DiscordCoreAPI {
 	 * @{
 	*/
 
-
 	class NewBase {};
 
 	struct DiscordCoreAPI_Dll ConnectionPackage {
@@ -405,8 +404,6 @@ namespace DiscordCoreAPI {
 		void insertUser(std::unique_ptr<UserData> theUser);
 
 		std::string getAvatarUrl();
-
-		void parseObject(const nlohmann::json* theData);
 
 		virtual ~UserData() noexcept = default;
 	};
@@ -762,7 +759,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Voice state data. \brief Voice state data.
-	struct DiscordCoreAPI_Dll VoiceStateData : public NewBase {
+	struct DiscordCoreAPI_Dll VoiceStateData {
 		TimeStamp<std::chrono::milliseconds> requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
 		StringWrapper sessionId{};///< The session id for this voice state.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".

@@ -40,10 +40,6 @@ namespace DiscordCoreAPI {
 		return this->avatar.getHashUrl(this->id, 0);
 	}
 
-	void UserData::parseObject(const nlohmann::json* theData) {
-		DiscordCoreAPI::parseObject(theData, *this);
-	}
-
 	User& User::operator=(UserData&& other) noexcept {
 		if (this != &other) {
 			this->discriminator = std::move(other.discriminator);
@@ -169,13 +165,13 @@ namespace DiscordCoreAPI {
 		co_return Users::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<UserData> Users::getCurrentUserAsync() {
+	CoRoutine<User> Users::getCurrentUserAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Current_User };
-		co_await NewThreadAwaitable<UserData>();
+		co_await NewThreadAwaitable<User>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/@me";
 		workload.callStack = "Users::getCurrentUserAsync()";
-		co_return Users::httpsClient->submitWorkloadAndGetResult<UserData>(workload);
+		co_return Users::httpsClient->submitWorkloadAndGetResult<User>(workload);
 	}
 
 	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
