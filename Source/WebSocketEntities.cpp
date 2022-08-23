@@ -1372,10 +1372,6 @@ namespace DiscordCoreInternal {
 						std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->connections, thePackageNew.currentShard, this->doWeQuit);
 					
 				}
-				while (!this->discordCoreClient->theConnectionStopWatch.hasTimePassed()) {
-					std::this_thread::sleep_for(1ms);
-				}
-				this->discordCoreClient->theConnectionStopWatch.resetTimer();
 				this->theShardMap[thePackageNew.currentShard]->areWeConnecting.store(true);
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries = thePackageNew.currentReconnectTries;
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries++;
@@ -1421,8 +1417,7 @@ namespace DiscordCoreInternal {
 				}
 
 				while (!this->doWeQuit->load()) {
-					if (this->theShardMap[thePackageNew.currentShard]->theWebSocketState.load() == WebSocketSSLShardState::Collecting_Hello ||
-						theShardMap[thePackageNew.currentShard]->theWebSocketState.load() == WebSocketSSLShardState::Authenticated) {
+					if (this->theShardMap[thePackageNew.currentShard]->theWebSocketState.load() == WebSocketSSLShardState::Collecting_Hello) {
 						break;
 					}
 					this->theShardMap[thePackageNew.currentShard]->processIO(1000000);
@@ -1460,13 +1455,9 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]->connect();
 	}
 
-	DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
-		try {
+		try {			
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
-				if (theStopWatch.hasTimePassed()) {
-					theStopWatch.resetTimer();
-				}
 				{
 					std::unique_lock theLock{ this->theConnectDisconnectMutex };
 					if (this->voiceConnectionsToDisconnect.size() > 0) {
