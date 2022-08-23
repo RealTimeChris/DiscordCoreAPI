@@ -237,9 +237,8 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		std::vector<uint32_t> theDimensions = collectWorkerDimensions(this->configManager.getTotalShardCount(), std::thread::hardware_concurrency());
-		uint32_t baseSocketCount = this->configManager.getTotalShardCount() > std::thread::hardware_concurrency()
-			? collectWorkerDimensions(this->configManager.getTotalShardCount(), std::thread::hardware_concurrency()).size()
-			: std::thread::hardware_concurrency();
+		uint32_t baseSocketCount =
+			this->configManager.getTotalShardCount() > std::thread::hardware_concurrency() ? std::thread::hardware_concurrency() : this->configManager.getTotalShardCount();
 		if (this->configManager.getConnectionAddress() == "") {
 			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
 		}
