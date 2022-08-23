@@ -63,8 +63,8 @@ namespace DiscordCoreAPI {
 	std::string GuildMemberData::getAvatarUrl() {
 		if (this->avatar.getHashUrl(this->id, this->guildId) != "") {
 			return this->avatar.getHashUrl(this->id, this->guildId);
-		} else if (this->userAvatar.getHashUrl(this->id, 0) != "") {
-			return this->userAvatar.getHashUrl(this->id, 0);
+		} else if (this->getUserData().avatar.getHashUrl(this->id, 0) != "") {
+			return this->getUserData().avatar.getHashUrl(this->id, 0);
 		} else{
 			return {};
 		}
@@ -77,7 +77,6 @@ namespace DiscordCoreAPI {
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) noexcept {
 		if (this != &other) {
 			this->permissions = std::move(other.permissions);
-			this->userAvatar = std::move(other.userAvatar);
 			this->voiceChannelId = other.voiceChannelId;
 			this->joinedAt = std::move(other.joinedAt);
 			this->avatar = std::move(other.avatar);
@@ -98,7 +97,6 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			this->voiceChannelId = other.voiceChannelId;
 			this->permissions = other.permissions;
-			this->userAvatar = other.userAvatar;
 			this->joinedAt = other.joinedAt;
 			this->guildId = other.guildId;
 			this->avatar = other.avatar;

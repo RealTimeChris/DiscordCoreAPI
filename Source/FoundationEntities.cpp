@@ -1496,8 +1496,8 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string InputEventData::getAvatarUrl() {
-		if (this->interactionData->member.userAvatar.getHashUrl(this->interactionData->user.id, 0) != "") {
-			return this->interactionData->member.userAvatar.getHashUrl(this->interactionData->user.id, 0);
+		if (this->interactionData->member.getUserData().avatar.getHashUrl(this->interactionData->user.id, 0) != "") {
+			return this->interactionData->member.getUserData().avatar.getHashUrl(this->interactionData->user.id, 0);
 		} else {
 			return this->interactionData->user.avatar.getHashUrl(this->interactionData->user.id, 0);
 		}

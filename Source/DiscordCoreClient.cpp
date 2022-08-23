@@ -212,6 +212,13 @@ namespace DiscordCoreAPI {
 			extraShards--;
 			theIndex++;
 		}
+		int32_t totalCount{};
+		for (auto& value: theVector) {
+			totalCount += value;
+		}
+		if (totalCount== 0) {
+			theVector[0] = 1;
+		}
 		return theVector;
 	}
 

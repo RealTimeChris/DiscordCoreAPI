@@ -146,7 +146,6 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
 		std::deque<ConnectionPackage> theConnections{};
-		std::counting_semaphore<1> theSemaphore{ 1 };
 		CommandController commandController{ this };
 		ConfigManager configManager{};
 		std::mutex connectionMutex{};
