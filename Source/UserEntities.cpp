@@ -87,17 +87,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI::parseObject(theData, *this);
 	}
 
-	UserVector::operator std::vector<User>() {
+	UserVector::operator std::vector<User>() noexcept {
 		return this->theUsers;
-	}
-
-	UserVector& UserVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	UserVector::UserVector(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData& dataPackage) {

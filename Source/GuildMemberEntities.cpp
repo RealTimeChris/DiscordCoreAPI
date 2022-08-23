@@ -122,17 +122,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI::parseObject(jsonObjectData, *this);
 	}
 
-	GuildMemberVector::operator std::vector<GuildMember>() {
+	GuildMemberVector::operator std::vector<GuildMember>() noexcept {
 		return this->theGuildMembers;
-	}
-
-	GuildMemberVector& GuildMemberVector::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildMemberVector::GuildMemberVector(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {

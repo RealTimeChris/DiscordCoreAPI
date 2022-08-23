@@ -192,21 +192,19 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildMemberVector {
 	  public:
-		GuildMemberVector() = default;
+		friend void parseObject(const nlohmann::json* jsonObjectData, GuildMemberVector& theData);
+		
+		GuildMemberVector() noexcept = default;
 
-		operator std::vector<GuildMember>();
+		operator std::vector<GuildMember>() noexcept;
 
-		GuildMemberVector& operator=(const nlohmann::json* jsonObjectData);
-
-		GuildMemberVector(const nlohmann::json* jsonObjectData);
-
-		virtual ~GuildMemberVector() = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
+		virtual ~GuildMemberVector() noexcept = default;
 
 	  protected:
 		std::vector<GuildMember> theGuildMembers{};
 	};
+
+	void parseObject(const nlohmann::json* jsonObjectData, GuildMemberVector& theData);
 
 	/**@}*/
 

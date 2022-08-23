@@ -54,15 +54,9 @@ namespace DiscordCoreAPI {
 	/// A single StageInstance. \brief A single StageInstance.
 	class DiscordCoreAPI_Dll StageInstance : public StageInstanceData {
 	  public:
-		StageInstance() = default;
+		StageInstance() noexcept = default;
 
-		StageInstance& operator=(const nlohmann::json* jsonObjectData);
-
-		StageInstance(const nlohmann::json* jsonObjectData);
-
-		virtual ~StageInstance() = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
+		virtual ~StageInstance() noexcept = default;
 	};
 
 	/**
