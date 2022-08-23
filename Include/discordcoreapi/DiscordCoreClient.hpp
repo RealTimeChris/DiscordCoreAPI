@@ -109,6 +109,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class VoiceConnection;
 		friend class GuildData;
+		friend class BotUser;
 		friend class Guilds;
 
 		/// DiscordCoreClient constructor. \brief DiscordCoreClient constructor.
@@ -138,7 +139,7 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient() noexcept;
 
 	  protected:
-		std::map<std::string, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
+		std::map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theConnectionStopWatch{ 5100ms };
 #ifdef _WIN32

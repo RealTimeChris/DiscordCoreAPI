@@ -67,6 +67,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLClient, public WebSocketMessageHandler {
 	  public:
+		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class WebSocketMessageHandler;
 		friend class DiscordCoreAPI::BotUser;
@@ -98,6 +99,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::recursive_mutex theConnectionMutex{};
 		VoiceConnectionData voiceConnectionData{};
+		std::atomic_bool areWeConnecting{ true };
 		bool haveWeReceivedHeartbeatAck{ true };
 		const uint32_t maxReconnectTries{ 10 };
 		std::atomic_bool* doWeQuit{ nullptr };
@@ -117,14 +119,14 @@ namespace DiscordCoreInternal {
 		Snowflake userId{ 0 };
 	};
 
-	class DiscordCoreAPI_Dll BaseSocketAgent : public WebSocketSSLShard {
+	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
 		friend class WebSocketSSLShard;
 
-		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentShardNew) noexcept;
+		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocket) noexcept;
 
 		void connectVoiceChannel(VoiceConnectInitData theData) noexcept;
 
@@ -136,14 +138,16 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 550ms };
+		std::map<uint32_t, std::unique_ptr<WebSocketSSLShard>> theShardMap{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
-		std::queue<Snowflake> voiceConnectionsToDisconnect{};
+		std::deque<DiscordCoreAPI::ConnectionPackage> connections{};
+		std::deque<Snowflake> voiceConnectionsToDisconnect{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
-		std::queue<VoiceConnectInitData> voiceConnections{};
+		std::deque<VoiceConnectInitData> voiceConnections{};
 		std::recursive_mutex theConnectDisconnectMutex{};
 		DiscordCoreAPI::ConfigManager* configManager{};
-		std::atomic_bool areWeOkToConnect{ false };
-		std::atomic_bool areWeConnecting{ true };
+		std::atomic_bool* doWeQuit{ nullptr };
+		uint32_t currentBaseSocketAgent{};
 		int32_t heartbeatInterval{ 0 };
 
 		void connectVoiceInternal() noexcept;

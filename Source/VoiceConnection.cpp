@@ -99,17 +99,18 @@ namespace DiscordCoreAPI {
 		return {};
 	}
 
-	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, const DiscordCoreInternal::VoiceConnectInitData& initDataNew,
-		ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamTypeNew, StreamInfo streamInfoNew) noexcept
+	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, DiscordCoreInternal::WebSocketSSLShard* baseShard,
+		const DiscordCoreInternal::VoiceConnectInitData& initDataNew, DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamTypeNew,
+		StreamInfo streamInfoNew) noexcept
 		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->theConnections, initDataNew.currentShard, this->doWeQuit), DatagramSocketClient(StreamType::None) {
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->baseSocketAgent = BaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
 		this->configManager = configManagerNew;
-		this->baseShard = BaseSocketAgentNew;
 		this->theStreamInfo = streamInfoNew;
 		this->streamType = streamTypeNew;
 		this->doWeQuit = doWeQuitNew;
+		this->baseShard = baseShard;
 	}
 
 	Snowflake VoiceConnection::getChannelId() noexcept {
@@ -910,7 +911,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::disconnect() noexcept {
 		std::unique_lock theLock{ this->baseSocketAgent->theConnectDisconnectMutex };
-		this->baseSocketAgent->voiceConnectionsToDisconnect.push(this->voiceConnectInitData.guildId);
+		this->baseSocketAgent->voiceConnectionsToDisconnect.push_back(this->voiceConnectInitData.guildId);
 		this->activeState.store(VoiceActiveState::Exiting);
 	}
 

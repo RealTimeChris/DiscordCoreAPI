@@ -356,6 +356,39 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
+	void SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
+		fd_set writeSet{}, readSet{};
+		FD_ZERO(&writeSet);
+		FD_ZERO(&readSet);
+		for (auto& value: theVector) {
+			if (!value->areWeStillConnected()) {
+				value->disconnect(true);
+				continue;
+			}
+			std::unique_lock theLock{ value->connectionMutex };
+			if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
+				FD_SET(value->theSocket, &writeSet);
+			}
+			FD_SET(value->theSocket, &readSet);
+		}
+
+		timeval checkTime{ .tv_usec = 1000 };
+		if (auto returnValue = select(FD_SETSIZE + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+			return;
+		} else if (returnValue == 0) {
+			return;
+		}
+
+		for (auto& value: theVector) {
+			if (FD_ISSET(value->theSocket, &writeSet)) {
+				value->writeDataProcess();
+			}
+			if (FD_ISSET(value->theSocket, &readSet)) {
+				value->readDataProcess();
+			}
+		}
+	}
+
 	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInms) noexcept {
 		if (!this->areWeStillConnected()) {
 			this->disconnect(true);

@@ -310,7 +310,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ConnectionPackage {
 		std::map<Snowflake, UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		int32_t currentReconnectTries{ 0 };
-		int32_t currentShard{ 0 };
+		uint32_t currentShard{ 0 };
 	};
 
 	/// Timeout durations for the timeout command. \brief Timeout durations for the timeout command.

@@ -18,6 +18,7 @@
 /// \file UserEntities.cpp
 
 #include <discordcoreapi/UserEntities.hpp>
+#include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Https.hpp>
 
@@ -102,19 +103,23 @@ namespace DiscordCoreAPI {
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData& dataPackage) {
 		nlohmann::json payload = dataPackage;
 		std::string theString{};
+		uint32_t shardId = (dataPackage.guildId >> 22) % this->baseSocketAgent->configManager->getTotalShardCount();
 		if (this->baseSocketAgent) {
 			std::string theString{};
-			this->baseSocketAgent->stringifyJsonData(&payload, theString, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent)->dataOpCode);
-			this->baseSocketAgent->sendMessage(theString, true);
+			this->baseSocketAgent->theShardMap[shardId]->stringifyJsonData(&payload, theString,
+				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->theShardMap[shardId].get())->dataOpCode);
+			this->baseSocketAgent->theShardMap[shardId]->sendMessage(theString, true);
 		}
 	}
 
 	void BotUser::updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage) {
 		nlohmann::json payload = dataPackage;
+		uint32_t shardId = 0;
 		if (this->baseSocketAgent) {
 			std::string theString{};
-			this->baseSocketAgent->stringifyJsonData(&payload, theString, static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent)->dataOpCode);
-			this->baseSocketAgent->sendMessage(theString, true);
+			this->baseSocketAgent->theShardMap[shardId]->stringifyJsonData(&payload, theString,
+				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->theShardMap[shardId].get())->dataOpCode);
+			this->baseSocketAgent->theShardMap[shardId]->sendMessage(theString, true);
 		}
 	}
 

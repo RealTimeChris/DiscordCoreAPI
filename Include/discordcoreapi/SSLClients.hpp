@@ -220,6 +220,8 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages) noexcept;
 
+		static void processIO(std::vector<SSLClient*>&) noexcept;
+
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
 		ProcessIOResult writeDataProcess() noexcept;
