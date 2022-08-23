@@ -139,7 +139,6 @@ namespace DiscordCoreAPI {
 		auto theUserObject = getObject(&(*jsonObjectData), "user");
 		DiscordCoreAPI::parseObject(&theUserObject, *theUser);
 		theData.id = theUser->id;
-		theData.userAvatar = theUser->avatar;
 		auto theUserNew = theUser.get();
 		theUserNew->insertUser(std::move(theUser));
 
