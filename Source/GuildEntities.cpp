@@ -151,10 +151,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void GuildData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
-	}
-
 	void GuildData::insertGuild(std::unique_ptr<GuildData> theGuild) {
 		Guilds::insertGuild(std::move(theGuild));
 	}

@@ -1656,8 +1656,30 @@ namespace DiscordCoreAPI {
 		this->theThreadMemberDatas.shrink_to_fit();
 	}
 
-	void VoiceStateData::parseObject(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData->get<VoiceStateData>();
+	void parseObject(const nlohmann::json* jsonObjectData, VoiceStateData& theData) {
+		theData.requestToSpeakTimestamp = DiscordCoreAPI::getString(jsonObjectData, "request_to_speak_timestamp");
+
+		theData.channelId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(jsonObjectData, "channel_id"));
+
+		theData.guildId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(jsonObjectData, "guild_id"));
+
+		theData.selfStream = DiscordCoreAPI::getBoolReal(jsonObjectData, "self_stream");
+
+		theData.userId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(jsonObjectData, "user_id"));
+
+		theData.selfVideo = DiscordCoreAPI::getBoolReal(jsonObjectData, "self_video");
+
+		theData.sessionId = DiscordCoreAPI::getString(jsonObjectData, "session_id");
+
+		theData.selfDeaf = DiscordCoreAPI::getBoolReal(jsonObjectData, "self_deaf");
+
+		theData.selfMute = DiscordCoreAPI::getBoolReal(jsonObjectData, "self_mute");
+
+		theData.suppress = DiscordCoreAPI::getBoolReal(jsonObjectData, "suppress");
+
+		theData.deaf = DiscordCoreAPI::getBoolReal(jsonObjectData, "deaf");
+
+		theData.mute = DiscordCoreAPI::getBoolReal(jsonObjectData, "mute");
 	}
 
 	void ActiveThreadsData::parseObject(const nlohmann::json* jsonObjectData) {

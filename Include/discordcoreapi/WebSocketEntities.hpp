@@ -61,6 +61,8 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{};
+		uint64_t messageLength{};
+		uint64_t messageOffset{};
 	};
 
 	enum class WebSocketSSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
@@ -112,8 +114,7 @@ namespace DiscordCoreInternal {
 		WebSocketClose closeCode{ 0 };
 		WebSocketOpCode dataOpCode{};
 		bool areWeResuming{ false };
-		uint64_t messageLength{};
-		uint64_t messageOffset{};
+		std::string resumeUrl{};
 		std::string sessionId{};
 		nlohmann::json shard{};
 		Snowflake userId{ 0 };

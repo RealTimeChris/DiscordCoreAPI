@@ -32,10 +32,6 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	void UserData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
-	}
-
 	void UserData::insertUser(std::unique_ptr<UserData> other) {
 		Users::insertUser(std::move(other));
 	}

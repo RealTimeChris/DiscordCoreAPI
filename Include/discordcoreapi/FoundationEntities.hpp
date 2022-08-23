@@ -307,9 +307,13 @@ namespace DiscordCoreAPI {
 	 * @{
 	*/
 
+
+	class NewBase {};
+
 	struct DiscordCoreAPI_Dll ConnectionPackage {
 		std::map<Snowflake, UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		int32_t currentReconnectTries{ 0 };
+		bool areWeResuming{ false };
 		uint32_t currentShard{ 0 };
 	};
 
@@ -379,7 +383,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Data structure representing a single User. \brief Data structure representing a single User.
-	class DiscordCoreAPI_Dll UserData : public DiscordEntity {
+	class DiscordCoreAPI_Dll UserData : public DiscordEntity, public NewBase {
 	  public:
 		friend class GuildData;
 
@@ -390,15 +394,13 @@ namespace DiscordCoreAPI {
 
 		UserData() noexcept = default;
 
-		UserData& operator=(UserData&& jsonObjectData) noexcept = default;
+		UserData& operator=(UserData&& theData) noexcept = default;
 
-		UserData(UserData&& jsonObjectData) noexcept = default;
+		UserData(UserData&& theData) noexcept = default;
 
 		UserData& operator=(const UserData& other) noexcept = default;
 
 		UserData(const UserData& other) noexcept = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 
 		void insertUser(std::unique_ptr<UserData> theUser);
 
@@ -758,7 +760,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Voice state data. \brief Voice state data.
-	struct DiscordCoreAPI_Dll VoiceStateData {
+	struct DiscordCoreAPI_Dll VoiceStateData : public NewBase {
 		TimeStamp<std::chrono::milliseconds> requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
 		StringWrapper sessionId{};///< The session id for this voice state.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
@@ -774,22 +776,18 @@ namespace DiscordCoreAPI {
 
 		VoiceStateData() = default;
 
-		VoiceStateData& operator=(VoiceStateData&& jsonObjectData) = default;
+		VoiceStateData& operator=(VoiceStateData&& theData) noexcept = default;
 
-		VoiceStateData(VoiceStateData&& jsonObjectData) = default;
+		VoiceStateData(VoiceStateData&& theData) noexcept = default;
 
-		VoiceStateData& operator=(const VoiceStateData& jsonObjectData) = default;
+		VoiceStateData& operator=(const VoiceStateData& theData) noexcept = default;
 
-		VoiceStateData(const VoiceStateData& jsonObjectData) = default;
-
-		VoiceStateData& operator=(VoiceStateData& jsonObjectData) = default;
-
-		VoiceStateData(VoiceStateData& jsonObjectData) = default;
+		VoiceStateData(const VoiceStateData& theData) noexcept = default;
 
 		virtual ~VoiceStateData() = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 	};
+
+	void parseObject(const nlohmann::json* jsonObjectData, VoiceStateData& theData);
 
 	/// Automatic Thread archiving durations. \brief Automatic Thread archiving durations.
 	enum class ThreadAutoArchiveDuration : int16_t {
@@ -803,7 +801,7 @@ namespace DiscordCoreAPI {
 
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
-	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
+	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity, public NewBase {
 	  public:
 		friend class GuildData;
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
@@ -828,8 +826,6 @@ namespace DiscordCoreAPI {
 
 		void insertGuildMember(std::unique_ptr<GuildMemberData> theGuildMember);
 
-		void parseObject(const nlohmann::json* jsonObjectData);
-
 		std::string getAvatarUrl();
 
 		UserData getUserData();
@@ -846,7 +842,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// A Permission overwrite, for a given Channel. \brief A Permission overwrite, for a given Channel.
-	class DiscordCoreAPI_Dll OverWriteData : public DiscordEntity {
+	class DiscordCoreAPI_Dll OverWriteData : public DiscordEntity, public NewBase {
 	  public:
 		PermissionOverwritesType type{};///< Role or User type.
 		uint64_t allow{};///< Collection of Permissions to allow.
@@ -870,7 +866,7 @@ namespace DiscordCoreAPI {
 	enum class ChannelFlags : uint8_t { NSFW = 1 << 0 };
 
 	/// Data structure representing a single Channel. \brief Data structure representing a single Channel.
-	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
+	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity, public NewBase {
 	  public:
 		friend class GuildData;
 
@@ -887,15 +883,13 @@ namespace DiscordCoreAPI {
 
 		ChannelData() noexcept = default;
 
-		ChannelData& operator=(ChannelData&& jsonObjectData) noexcept = default;
+		ChannelData& operator=(ChannelData&& theData) noexcept = default;
 
 		ChannelData(ChannelData&& other) noexcept = default;
 
-		ChannelData& operator=(const ChannelData& jsonObjectData) noexcept = default;
+		ChannelData& operator=(const ChannelData& theData) noexcept = default;
 
 		ChannelData(const ChannelData& other) noexcept = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 
 		void insertChannel(std::unique_ptr<ChannelData>);
 
@@ -941,7 +935,7 @@ namespace DiscordCoreAPI {
 	enum class RoleFlags : uint8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
 
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
-	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
+	class DiscordCoreAPI_Dll RoleData : public DiscordEntity, public NewBase {
 	  public:
 		friend class GuildData;
 
@@ -954,15 +948,13 @@ namespace DiscordCoreAPI {
 
 		RoleData() noexcept = default;
 
-		RoleData& operator=(RoleData&& jsonObjectData) noexcept = default;
+		RoleData& operator=(RoleData&& theData) noexcept = default;
 
-		RoleData(RoleData&& jsonObjectData) noexcept = default;
+		RoleData(RoleData&& theData) noexcept = default;
 
-		RoleData& operator=(const RoleData& jsonObjectData) noexcept = default;
+		RoleData& operator=(const RoleData& theData) noexcept = default;
 
-		RoleData(const RoleData& jsonObjectData) noexcept = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
+		RoleData(const RoleData& theData) noexcept = default;
 
 		void insertRole(std::unique_ptr<RoleData>);
 
@@ -2033,8 +2025,9 @@ namespace DiscordCoreAPI {
 		Premium_Progress_Bar_Enabled = 1 << 4///< Premium progress bar enabled
 	};
 
+
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
-	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
+	class DiscordCoreAPI_Dll GuildData : public DiscordEntity, public NewBase {
 	  public:
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
@@ -2050,13 +2043,13 @@ namespace DiscordCoreAPI {
 
 		GuildData() noexcept = default;
 
-		GuildData& operator=(GuildData&& jsonObjectData) noexcept = default;
+		GuildData& operator=(GuildData&& theData) noexcept = default;
 
-		GuildData(GuildData&& jsonObjectData) noexcept = default;
+		GuildData(GuildData&& theData) noexcept = default;
 
-		GuildData& operator=(const GuildData& jsonObjectData) noexcept = default;
+		GuildData& operator=(const GuildData& theData) noexcept = default;
 
-		GuildData(const GuildData& jsonObjectData) noexcept = default;
+		GuildData(const GuildData& theData) noexcept = default;
 
 		/// For connecting to an individual voice channel. \brief For connecting to an individual voice channel.
 		/// \param guildMemberId An id of the guild member who's current voice channel to connect to.
@@ -2068,8 +2061,6 @@ namespace DiscordCoreAPI {
 		/// \returns VoiceConnection* A pointer to the currently held voice connection, or nullptr if it failed to connect.
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
 			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 
 		void insertGuild(std::unique_ptr<GuildData>);
 
@@ -3746,38 +3737,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 };// namespace DiscordCoreAPI
-
-namespace nlohmann {
-
-	template<> struct adl_serializer<DiscordCoreAPI::VoiceStateData> {
-		static DiscordCoreAPI::VoiceStateData from_json(const json& j) {
-			DiscordCoreAPI::VoiceStateData theVoiceState{};
-
-			theVoiceState.requestToSpeakTimestamp = DiscordCoreAPI::getString(&j, "request_to_speak_timestamp");
-
-			theVoiceState.channelId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&j, "channel_id"));
-
-			theVoiceState.guildId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&j, "guild_id"));
-
-			theVoiceState.selfStream = DiscordCoreAPI::getBoolReal(&j, "self_stream");
-
-			theVoiceState.userId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(&j, "user_id"));
-
-			theVoiceState.selfVideo = DiscordCoreAPI::getBoolReal(&j, "self_video");
-
-			theVoiceState.sessionId = DiscordCoreAPI::getString(&j, "session_id");
-
-			theVoiceState.selfDeaf = DiscordCoreAPI::getBoolReal(&j, "self_deaf");
-
-			theVoiceState.selfMute = DiscordCoreAPI::getBoolReal(&j, "self_mute");
-
-			theVoiceState.suppress = DiscordCoreAPI::getBoolReal(&j, "suppress");
-
-			theVoiceState.deaf = DiscordCoreAPI::getBoolReal(&j, "deaf");
-
-			theVoiceState.mute = DiscordCoreAPI::getBoolReal(&j, "mute");
-			return theVoiceState;
-		}
-	};
-
-}// namespace nlohmann

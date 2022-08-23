@@ -164,9 +164,9 @@ namespace DiscordCoreAPI {
 		}
 		while (!Globals::doWeQuit.load()) {
 			if (this->theConnections.size() > 0 && this->theConnectionStopWatch.hasTimePassed()) {
-				std::unique_lock theLock{ this->connectionMutex };
 				this->theConnectionStopWatch.resetTimer();
 				auto theData = this->theConnections.front();
+				std::unique_lock theLock{ this->connectionMutex };
 				this->theConnections.pop_front();
 				this->baseSocketAgentMap[static_cast<int32_t>(floor(static_cast<float>(theData.currentShard) / static_cast<float>(this->configManager.getTotalShardCount()) *
 											 this->baseSocketAgentMap.size()))]
@@ -254,8 +254,8 @@ namespace DiscordCoreAPI {
 				this->baseSocketAgentMap[x]->theShardMap[currentShard] =
 					std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, &this->theConnections, currentShard, &Globals::doWeQuit);
 				theData.voiceConnectionDataBufferMap = std::move(this->baseSocketAgentMap[x]->theShardMap[currentShard]->voiceConnectionDataBufferMap);
-				this->theConnections.push_back(theData);
 				std::unique_lock theLock{ this->connectionMutex };
+				this->theConnections.push_back(theData);
 				currentShard++;
 			}
 		}

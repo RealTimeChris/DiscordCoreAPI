@@ -428,6 +428,7 @@ namespace DiscordCoreInternal {
 					if (payload["t"] == "READY") {
 						this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
 						this->sessionId = payload["d"]["session_id"].get<std::string>();
+						this->resumeUrl = payload["d"]["resume_gateway_url"].get<std::string>();
 						DiscordCoreAPI::UserData theUser{};
 						DiscordCoreAPI::parseObject(&payload["d"]["user"], theUser);
 						this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser,
@@ -486,6 +487,7 @@ namespace DiscordCoreInternal {
 										};
 										dataPackage->theRule = &payload["d"];
 										this->discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent(*dataPackage);
+										break;
 									}
 									case 5: {
 										std::unique_ptr<DiscordCoreAPI::OnAutoModerationActionExecutionData> dataPackage{
@@ -711,6 +713,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 										}
+										break;
 									}
 									case 25: {
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers()) {
@@ -805,6 +808,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::Roles::cache[roleId].get(), guildId) };
 											this->discordCoreClient->eventManager.onRoleUpdateEvent(*dataPackage);
 										}
+										break;
 									}
 									case 30: {
 										if (this->discordCoreClient->configManager.doWeCacheRoles()) {
@@ -957,6 +961,7 @@ namespace DiscordCoreInternal {
 												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 											}
 										}
+										break;
 									}
 									case 35: {
 										std::unique_ptr<DiscordCoreAPI::OnInviteCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInviteCreationData>() };
@@ -994,6 +999,7 @@ namespace DiscordCoreInternal {
 											this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
 										}
 										std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
+										break;
 									}
 									case 38: {
 										std::unique_ptr<DiscordCoreAPI::OnMessageUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageUpdateData>() };
@@ -1139,7 +1145,7 @@ namespace DiscordCoreInternal {
 											this->areWeCollectingData = false;
 										}
 										std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
-										dataPackage->voiceStateData = payload["d"].get<DiscordCoreAPI::VoiceStateData>();
+										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->voiceStateData);
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->voiceStateData.guildId)) {
 												if (payload["d"].contains("user_id") && !payload["d"]["user_id"].is_null() && payload["d"].contains("channel_id") &&
@@ -1196,8 +1202,6 @@ namespace DiscordCoreInternal {
 										this->discordCoreClient->eventManager.onWebhookUpdateEvent(*dataPackage);
 										break;
 									}
-
-									break;
 								}
 							}
 							break;
@@ -1324,6 +1328,7 @@ namespace DiscordCoreInternal {
 			std::unique_lock theLock{ this->connectionMutex };
 			this->theSSLState.store(SSLConnectionState::Disconnected);
 			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
+			this->areWeConnecting.store(true);
 			this->theSocket = SOCKET_ERROR;
 			this->inputBuffer.clear();
 			this->outputBuffers.clear();
@@ -1335,6 +1340,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::ConnectionPackage theData{};
 				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
 				theData.currentReconnectTries = this->currentReconnectTries;
+				theData.areWeResuming = this->areWeResuming;
 				theData.currentShard = this->shard[0];
 				std::unique_lock theLock{ this->discordCoreClient->connectionMutex };
 				this->theConnections->push_back(theData);
@@ -1375,10 +1381,10 @@ namespace DiscordCoreInternal {
 						std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->discordCoreClient->theConnections, thePackageNew.currentShard, this->doWeQuit);
 					
 				}
-				this->theShardMap[thePackageNew.currentShard]->areWeConnecting.store(true);
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries = thePackageNew.currentReconnectTries;
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries++;
 				this->theShardMap[thePackageNew.currentShard]->voiceConnectionDataBufferMap = std::move(thePackageNew.voiceConnectionDataBufferMap);
+				std::string connectionUrl = thePackageNew.areWeResuming ? this->theShardMap[thePackageNew.currentShard]->resumeUrl : this->configManager->getConnectionAddress();
 				bool isItFirstIteraion{ true };
 				do {
 					if (this->configManager->doWePrintGeneralSuccessMessages()) {
@@ -1386,14 +1392,14 @@ namespace DiscordCoreInternal {
 							 << this->configManager->getShardCountForThisProcess()
 							 << std::string(" Shards for this process. (") + std::to_string(thePackageNew.currentShard + 1) + " of " +
 								std::to_string(this->configManager->getTotalShardCount()) + std::string(" Shards total across all processes)")
-							 << DiscordCoreAPI::reset() << endl
+							 << std::this_thread::get_id() << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
 					if (!isItFirstIteraion) {
 						std::this_thread::sleep_for(5s);
 					}
 					isItFirstIteraion = false;
-				} while (!this->theShardMap[thePackageNew.currentShard]->connect(this->configManager->getConnectionAddress(), this->configManager->getConnectionPort(),
+				} while (!this->theShardMap[thePackageNew.currentShard]->connect(connectionUrl, this->configManager->getConnectionPort(),
 							 this->configManager->doWePrintWebSocketErrorMessages()) &&
 					!this->doWeQuit->load());
 

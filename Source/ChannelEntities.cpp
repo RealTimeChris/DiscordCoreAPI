@@ -92,10 +92,6 @@ namespace DiscordCoreAPI {
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 	}
 
-	void ChannelData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
-	}
-
 	void ChannelData::insertChannel(std::unique_ptr<ChannelData> other) {
 		Channels::insertChannel(std::move(other));
 	}

@@ -60,10 +60,6 @@ namespace DiscordCoreAPI {
 		GuildMembers::insertGuildMember(std::move(other));
 	}
 
-	void GuildMemberData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
-	}
-
 	std::string GuildMemberData::getAvatarUrl() {
 		if (this->avatar.getHashUrl(this->id, this->guildId) != "") {
 			return this->avatar.getHashUrl(this->id, this->guildId);
