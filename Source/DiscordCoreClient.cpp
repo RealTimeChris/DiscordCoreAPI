@@ -213,7 +213,6 @@ namespace DiscordCoreAPI {
 		for (auto& value: theVector) {
 			totalCount += value;
 		}
-		std::cout << "THE TOTAL COUNT: " << totalCount << std::endl;
 		return theVector;
 	}
 

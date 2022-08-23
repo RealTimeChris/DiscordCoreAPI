@@ -1372,10 +1372,10 @@ namespace DiscordCoreInternal {
 						std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->connections, thePackageNew.currentShard, this->doWeQuit);
 					
 				}
+				this->theShardMap[thePackageNew.currentShard]->areWeConnecting.store(true);
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries = thePackageNew.currentReconnectTries;
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries++;
 				this->theShardMap[thePackageNew.currentShard]->voiceConnectionDataBufferMap = std::move(thePackageNew.voiceConnectionDataBufferMap);
-				this->theShardMap[thePackageNew.currentShard]->areWeConnecting.store(true);
 				bool isItFirstIteraion{ true };
 				do {
 					if (this->configManager->doWePrintGeneralSuccessMessages()) {
@@ -1456,7 +1456,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
-		try {
+		try {			
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				{
 					std::unique_lock theLock{ this->theConnectDisconnectMutex };
