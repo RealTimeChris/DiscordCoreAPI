@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 		static void removeRole(const Snowflake roleId);
 
 	  protected:
-		static std::unordered_map<Snowflake, std::unique_ptr<RoleData>> cache;
+		static std::map<Snowflake, std::unique_ptr<RoleData>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;

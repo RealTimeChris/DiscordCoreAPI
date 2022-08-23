@@ -335,7 +335,7 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
-	std::unordered_map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
+	std::map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
 	ConfigManager* Roles::configManager{ nullptr };
 	std::shared_mutex Roles::theMutex{};
 }
