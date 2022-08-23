@@ -158,6 +158,15 @@ namespace DiscordCoreInternal {
 	void WebSocketMessageHandler::stringifyJsonData(nlohmann::json* dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept {
 		std::string theVector{};
 		std::string header{};
+
+		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+			cout << DiscordCoreAPI::shiftToBrightBlue()
+				 << "Sending WebSocket " + static_cast<WebSocketSSLShard*>(this)->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) +
+					std::string("'s Message: ")
+				 << dataToSend->dump() << endl
+				 << endl
+				 << DiscordCoreAPI::reset();
+		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
 			ErlPacker thePacker{};
 			theVector = thePacker.parseJsonToEtf(*dataToSend);
@@ -355,12 +364,6 @@ namespace DiscordCoreInternal {
 				if (dataToSend.size() == 0) {
 					return false;
 				}
-				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightBlue()
-						 << "Sending WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string("'s Message: ")
-						 << dataToSend << endl
-						 << DiscordCoreAPI::reset();
-				}
 				ProcessIOResult didWeWrite{ false };
 				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 				do {
@@ -428,7 +431,10 @@ namespace DiscordCoreInternal {
 					if (payload["t"] == "READY") {
 						this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
 						this->sessionId = payload["d"]["session_id"].get<std::string>();
-						this->resumeUrl = payload["d"]["resume_gateway_url"].get<std::string>();
+						std::string theResumeUrl= payload["d"]["resume_gateway_url"].get<std::string>();
+						theResumeUrl = theResumeUrl.substr(theResumeUrl.find("wss://") + std::string{ "wss://" }.size());
+						theResumeUrl = theResumeUrl.substr(0, theResumeUrl.find("/"));
+						this->resumeUrl = theResumeUrl;
 						DiscordCoreAPI::UserData theUser{};
 						DiscordCoreAPI::parseObject(&payload["d"]["user"], theUser);
 						this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser,
