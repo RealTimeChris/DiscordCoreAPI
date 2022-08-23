@@ -428,7 +428,10 @@ namespace DiscordCoreInternal {
 					if (payload["t"] == "READY") {
 						this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
 						this->sessionId = payload["d"]["session_id"].get<std::string>();
-						this->resumeUrl = payload["d"]["resume_gateway_url"].get<std::string>();
+						std::string theResumeUrl= payload["d"]["resume_gateway_url"].get<std::string>();
+						theResumeUrl = theResumeUrl.substr(theResumeUrl.find("wss://") + std::string{ "wss://" }.size());
+						theResumeUrl = theResumeUrl.substr(0, theResumeUrl.find("/"));
+						this->resumeUrl = theResumeUrl;
 						DiscordCoreAPI::UserData theUser{};
 						DiscordCoreAPI::parseObject(&payload["d"]["user"], theUser);
 						this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ theUser,
