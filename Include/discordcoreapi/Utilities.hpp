@@ -583,8 +583,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	nlohmann::json getObject(const nlohmann::json* jsonData, const char* keyname);
-
 	DiscordCoreAPI_Dll uint8_t getUint8(const nlohmann::json* jsonData, const char* keyname);
 
 	DiscordCoreAPI_Dll uint16_t getUint16(const nlohmann::json* jsonData, const char* keyname);

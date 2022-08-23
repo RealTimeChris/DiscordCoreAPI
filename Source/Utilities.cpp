@@ -534,15 +534,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	nlohmann::json getObject(const nlohmann::json* jsonData, const char* keyname) {
-		auto theResult = jsonData->find(keyname);
-		if (theResult != jsonData->end()) {
-			return !theResult->is_null() && theResult->is_object() ? *theResult : nlohmann::json{};
-		} else {
-			return nlohmann::json{};
-		}
-	}
-
 	Permissions& Permissions::operator=(Permission&& other) {
 		this->thePermissions = static_cast<uint64_t>(other);
 		return *this;
