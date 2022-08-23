@@ -92,20 +92,30 @@ namespace DiscordCoreAPI {
 	/// A single GuildScheduledEvent responseData structure. \brief A single GuildScheduledEvent responseData structure.
 	class DiscordCoreAPI_Dll GuildScheduledEvent : public GuildScheduledEventData {
 	  public:
-		GuildScheduledEvent() noexcept = default;
+		GuildScheduledEvent() = default;
 
-		virtual ~GuildScheduledEvent() noexcept = default;
+		GuildScheduledEvent& operator=(const nlohmann::json* jsonObjectData);
+
+		GuildScheduledEvent(const nlohmann::json* jsonObjectData);
+
+		virtual ~GuildScheduledEvent() = default;
+
+		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll GuildScheduledEventVector {
 	  public:
-		friend void parseObject(const nlohmann::json* jsonObjectData, GuildScheduledEventVector& theData);
+		GuildScheduledEventVector() = default;
 
-		GuildScheduledEventVector() noexcept = default;
+		operator std::vector<GuildScheduledEvent>();
 
-		operator std::vector<GuildScheduledEvent>() noexcept;
+		GuildScheduledEventVector& operator=(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildScheduledEventVector() noexcept = default;
+		GuildScheduledEventVector(const nlohmann::json* jsonObjectData);
+
+		virtual ~GuildScheduledEventVector() = default;
+
+		void parseObject(const nlohmann::json* jsonObjectData);
 
 	  protected:
 		std::vector<GuildScheduledEvent> theGuildScheduledEvents{};

@@ -150,13 +150,17 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll RoleVector {
 	  public:
-		friend void parseObject(const nlohmann::json* jsonObjectData, RoleVector& theData);
+		RoleVector() = default;
 
-		RoleVector() noexcept = default;
+		operator std::vector<Role>();
 
-		operator std::vector<Role>() noexcept;
+		RoleVector& operator=(const nlohmann::json* jsonObjectData);
 
-		virtual ~RoleVector() noexcept = default;
+		RoleVector(const nlohmann::json* jsonObjectData);
+
+		virtual ~RoleVector() = default;
+
+		void parseObject(const nlohmann::json* jsonObjectData);
 
 	  protected:
 		std::vector<Role> theRoles{};

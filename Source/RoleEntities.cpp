@@ -127,8 +127,17 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	RoleVector::operator std::vector<Role>() noexcept {
+	RoleVector::operator std::vector<Role>() {
 		return this->theRoles;
+	}
+
+	RoleVector& RoleVector::operator=(const nlohmann::json* jsonObjectData) {
+		this->parseObject(jsonObjectData);
+		return *this;
+	}
+
+	RoleVector::RoleVector(const nlohmann::json* jsonObjectData) {
+		*this = jsonObjectData;
 	}
 
 	void Roles::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {

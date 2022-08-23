@@ -97,7 +97,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
-		std::atomic_bool areWeOkToConnect{ false };
 		std::recursive_mutex theConnectionMutex{};
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic_bool areWeConnecting{ true };
@@ -116,8 +115,8 @@ namespace DiscordCoreInternal {
 		uint64_t messageLength{};
 		uint64_t messageOffset{};
 		std::string sessionId{};
+		nlohmann::json shard{};
 		Snowflake userId{ 0 };
-		uint32_t shard[2]{};
 	};
 
 	class DiscordCoreAPI_Dll BaseSocketAgent {

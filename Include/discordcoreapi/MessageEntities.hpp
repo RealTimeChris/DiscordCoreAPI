@@ -147,28 +147,34 @@ namespace DiscordCoreAPI {
 	/// A single Message. \brief A single Message.
 	class DiscordCoreAPI_Dll Message : public MessageData {
 	  public:
-		Message() noexcept = default;
+		Message() = default;
 
-		virtual ~Message() noexcept = default;
+		Message& operator=(const nlohmann::json* jsonObjectData);
+
+		Message(const nlohmann::json* jsonObjectData);
+
+		virtual ~Message() = default;
+
+		void parseObject(const nlohmann::json* jsonObjectData);
 	};
-
-	void parseObject(const nlohmann::json* jsonObjectData, Message& theData);
 
 	class DiscordCoreAPI_Dll MessageVector {
 	  public:
-		friend void parseObject(const nlohmann::json* jsonObjectData, MessageVector& theData);
+		MessageVector() = default;
 
-		MessageVector() noexcept = default;
+		operator std::vector<Message>();
 
-		operator std::vector<Message>() noexcept;
+		MessageVector& operator=(const nlohmann::json* jsonObjectData);
 
-		virtual ~MessageVector() noexcept = default;
+		MessageVector(const nlohmann::json* jsonObjectData);
+
+		virtual ~MessageVector() = default;
+
+		void parseObject(const nlohmann::json* jsonObjectData);
 
 	  protected:
 		std::vector<Message> theMessages{};
 	};
-
-	void parseObject(const nlohmann::json* jsonObjectData, MessageVector& theData);
 
 	/**@}*/
 

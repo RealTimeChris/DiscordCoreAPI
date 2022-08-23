@@ -49,8 +49,26 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	ReactionVector::operator std::vector<Reaction>() noexcept {
+	Reaction& Reaction::operator=(const nlohmann::json* jsonObjectData) {
+		this->parseObject(jsonObjectData);
+		return *this;
+	}
+
+	Reaction::Reaction(const nlohmann::json* jsonObjectData) {
+		*this = jsonObjectData;
+	}
+
+	ReactionVector::operator std::vector<Reaction>() {
 		return this->theReactions;
+	}
+
+	ReactionVector& ReactionVector::operator=(const nlohmann::json* jsonObjectData) {
+		this->parseObject(jsonObjectData);
+		return *this;
+	}
+
+	ReactionVector::ReactionVector(const nlohmann::json* jsonObjectData) {
+		*this = jsonObjectData;
 	}
 
 	void Reactions::initialize(DiscordCoreInternal::HttpsClient* theClient) {

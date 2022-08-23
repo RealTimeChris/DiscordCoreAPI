@@ -151,8 +151,17 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	ChannelVector::operator std::vector<Channel>() noexcept {
+	ChannelVector::operator std::vector<Channel>() {
 		return this->theChannels;
+	}
+
+	ChannelVector& ChannelVector::operator=(const nlohmann::json* jsonObjectData) {
+		this->parseObject(jsonObjectData);
+		return *this;
+	}
+
+	ChannelVector::ChannelVector(const nlohmann::json* jsonObjectData) {
+		*this = jsonObjectData;
 	}
 
 	ModifyChannelData::ModifyChannelData(Channel newData) {

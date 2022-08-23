@@ -33,20 +33,30 @@ namespace DiscordCoreAPI {
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
 	class DiscordCoreAPI_Dll AutoModerationRule : public AutoModerationRuleData {
 	  public:
-		AutoModerationRule() noexcept = default;
+		AutoModerationRule() = default;
 
-		virtual ~AutoModerationRule() noexcept = default;
+		AutoModerationRule& operator=(const nlohmann::json* jsonObjectData);
+
+		AutoModerationRule(const nlohmann::json* jsonObjectData);
+
+		virtual ~AutoModerationRule() = default;
+
+		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll AutoModerationRuleVector {
 	  public:
-		friend void parseObject(const nlohmann::json* jsonObjectData, AutoModerationRuleVector& theData);
+		AutoModerationRuleVector() = default;
 
-		AutoModerationRuleVector() noexcept = default;
+		operator std::vector<AutoModerationRule>();
 
-		operator std::vector<AutoModerationRule>() noexcept;
+		AutoModerationRuleVector& operator=(const nlohmann::json* jsonObjectData);
 
-		virtual ~AutoModerationRuleVector() noexcept = default;
+		AutoModerationRuleVector(const nlohmann::json* jsonObjectData);
+
+		virtual ~AutoModerationRuleVector() = default;
+
+		void parseObject(const nlohmann::json* jsonObjectData);
 
 	  protected:
 		std::vector<AutoModerationRule> theAutoModerationRules{};

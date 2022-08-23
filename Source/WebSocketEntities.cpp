@@ -275,7 +275,8 @@ namespace DiscordCoreInternal {
 				}
 				theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + 4);
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket [" + std::to_string(theShard->shard[0]) + "," + std::to_string(theShard->shard[1]) + "] Closed; Code: "
+					cout << DiscordCoreAPI::shiftToBrightRed()
+						 << "WebSocket " + theShard->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Closed; Code: "
 						 << +static_cast<uint16_t>(theShard->closeCode) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
@@ -290,12 +291,12 @@ namespace DiscordCoreInternal {
 		std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketMessageHandler(&theClient->configManager) {
 		this->configManager = &theClient->configManager;
+		this->shard.emplace_back(currentShardNew);
 		this->theConnections = theConnectionsNew;
 		this->discordCoreClient = theClient;
-		this->shard[0] = currentShardNew;
 		this->doWeQuit = doWeQuitNew;
 		if (this->discordCoreClient) {
-			this->shard[1] = this->discordCoreClient->configManager.getTotalShardCount();
+			this->shard.emplace_back(this->discordCoreClient->configManager.getTotalShardCount());
 			if (this->discordCoreClient->configManager.getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 				this->dataOpCode = WebSocketOpCode::Op_Binary;
 			} else {
@@ -356,8 +357,8 @@ namespace DiscordCoreInternal {
 				}
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightBlue()
-						 << "Sending WebSocket [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + std::string("'s Message: ") << dataToSend
-						 << endl
+						 << "Sending WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string("'s Message: ")
+						 << dataToSend << endl
 						 << DiscordCoreAPI::reset();
 				}
 				ProcessIOResult didWeWrite{ false };
@@ -445,7 +446,7 @@ namespace DiscordCoreInternal {
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages() && !payload.is_null()) {
 					cout << DiscordCoreAPI::shiftToBrightGreen()
-						 << "Message received from WebSocket [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + std::string(": ")
+						 << "Message received from WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string(": ")
 						 << payload.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
@@ -459,7 +460,7 @@ namespace DiscordCoreInternal {
 										std::unique_ptr<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData> dataPackage{
 											std::make_unique<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData>()
 										};
-										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->permissionData);
+										dataPackage->permissionData = &payload["d"];
 										this->discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent(*dataPackage);
 										break;
 									}
@@ -467,7 +468,7 @@ namespace DiscordCoreInternal {
 										std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleCreationData> dataPackage{
 											std::make_unique<DiscordCoreAPI::OnAutoModerationRuleCreationData>()
 										};
-										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->theRule);
+										dataPackage->theRule = &payload["d"];
 										this->discordCoreClient->eventManager.onAutoModerationRuleCreationEvent(*dataPackage);
 										break;
 									}
@@ -475,7 +476,7 @@ namespace DiscordCoreInternal {
 										std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleUpdateData> dataPackage{
 											std::make_unique<DiscordCoreAPI::OnAutoModerationRuleUpdateData>()
 										};
-										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->theRule);
+										dataPackage->theRule = &payload["d"];
 										this->discordCoreClient->eventManager.onAutoModerationRuleUpdateEvent(*dataPackage);
 										break;
 									}
@@ -483,7 +484,7 @@ namespace DiscordCoreInternal {
 										std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleDeletionData> dataPackage{
 											std::make_unique<DiscordCoreAPI::OnAutoModerationRuleDeletionData>()
 										};
-										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->theRule);
+										dataPackage->theRule = &payload["d"];
 										this->discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent(*dataPackage);
 									}
 									case 5: {
@@ -578,7 +579,7 @@ namespace DiscordCoreInternal {
 									}
 									case 14: {
 										std::unique_ptr<DiscordCoreAPI::OnThreadMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadMemberUpdateData>() };
-										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->threadMember);
+										dataPackage->threadMember = &payload["d"];
 										this->discordCoreClient->eventManager.onThreadMemberUpdateEvent(*dataPackage);
 										break;
 									}
@@ -959,7 +960,7 @@ namespace DiscordCoreInternal {
 									}
 									case 35: {
 										std::unique_ptr<DiscordCoreAPI::OnInviteCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInviteCreationData>() };
-										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->invite);
+										dataPackage->invite = &payload["d"];
 										this->discordCoreClient->eventManager.onInviteCreationEvent(*dataPackage);
 										break;
 									}
@@ -979,7 +980,7 @@ namespace DiscordCoreInternal {
 									}
 									case 37: {
 										std::unique_ptr<DiscordCoreAPI::Message> message{ std::make_unique<DiscordCoreAPI::Message>() };
-										DiscordCoreAPI::parseObject(&payload["d"], *message);
+										*message = &payload["d"];
 										std::unique_ptr<DiscordCoreAPI::OnMessageCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageCreationData>() };
 										dataPackage->message = *message;
 										for (auto& [key, value]: DiscordCoreAPI::MessageCollector::messagesBufferMap) {
@@ -993,11 +994,10 @@ namespace DiscordCoreInternal {
 											this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
 										}
 										std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{ std::make_unique<DiscordCoreAPI::OnInputEventCreationData>() };
-										break;
 									}
 									case 38: {
 										std::unique_ptr<DiscordCoreAPI::OnMessageUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageUpdateData>() };
-										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->messageNew);
+										dataPackage->messageNew = &payload["d"];
 										for (auto& [key, value]: DiscordCoreAPI::MessageCollector::messagesBufferMap) {
 											value->send(dataPackage->messageNew);
 										}
@@ -1036,7 +1036,7 @@ namespace DiscordCoreInternal {
 									}
 									case 41: {
 										std::unique_ptr<DiscordCoreAPI::OnReactionAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnReactionAddData>() };
-										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->reaction);
+										dataPackage->reaction = &payload["d"];
 										this->discordCoreClient->eventManager.onReactionAddEvent(*dataPackage);
 										break;
 									}
@@ -1071,7 +1071,7 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 										}
-										DiscordCoreAPI::parseObject(&payload["d"]["emoji"], dataPackage->emoji);
+										dataPackage->emoji = &payload["d"]["emoji"];
 										this->discordCoreClient->eventManager.onReactionRemoveEmojiEvent(*dataPackage);
 										break;
 									}
@@ -1139,7 +1139,7 @@ namespace DiscordCoreInternal {
 											this->areWeCollectingData = false;
 										}
 										std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
-										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->voiceStateData);
+										dataPackage->voiceStateData = payload["d"].get<DiscordCoreAPI::VoiceStateData>();
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->voiceStateData.guildId)) {
 												if (payload["d"].contains("user_id") && !payload["d"]["user_id"].is_null() && payload["d"].contains("channel_id") &&
@@ -1209,8 +1209,8 @@ namespace DiscordCoreInternal {
 						case 7: {
 							if (this->configManager->doWePrintWebSocketErrorMessages()) {
 								cout << DiscordCoreAPI::shiftToBrightBlue()
-									 << "Shard [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "] Reconnecting(Type 7) !" << DiscordCoreAPI::reset()
-									 << endl
+									 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 7)!"
+									 << DiscordCoreAPI::reset() << endl
 									 << endl;
 							}
 							this->areWeResuming = true;
@@ -1221,8 +1221,8 @@ namespace DiscordCoreInternal {
 						case 9: {
 							if (this->configManager->doWePrintWebSocketErrorMessages()) {
 								cout << DiscordCoreAPI::shiftToBrightBlue()
-									 << "Shard [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "] Reconnecting (Type 9)!" << DiscordCoreAPI::reset()
-									 << endl
+									 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 9)!"
+									 << DiscordCoreAPI::reset() << endl
 									 << endl;
 							}
 							std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
@@ -1376,9 +1376,6 @@ namespace DiscordCoreInternal {
 					
 				}
 				this->theShardMap[thePackageNew.currentShard]->areWeConnecting.store(true);
-				while (!this->theShardMap[thePackageNew.currentShard]->areWeOkToConnect.load()) {
-					std::this_thread::sleep_for(1ms);
-				}
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries = thePackageNew.currentReconnectTries;
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries++;
 				this->theShardMap[thePackageNew.currentShard]->voiceConnectionDataBufferMap = std::move(thePackageNew.voiceConnectionDataBufferMap);
@@ -1475,29 +1472,19 @@ namespace DiscordCoreInternal {
 				}
 				std::vector<SSLClient*> theVector{};
 				for (auto& [key, value]: this->theShardMap) {
-					while (value->areWeConnecting.load()) {
-						value->areWeOkToConnect.store(true);
-						std::this_thread::sleep_for(1ms);
-					}
-					std::cout << "THE CURRENT SHARD: " << value->shard << std::endl;
-					value->areWeOkToConnect.store(false);
 					if (!static_cast<WebSocketSSLShard*>(value.get())->areWeConnecting.load()) {
 						theVector.push_back(value.get());
 					}
 				}
 				SSLClient::processIO(theVector);
 				for (auto& value: theVector) {
-					while (static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
-						static_cast<WebSocketSSLShard*>(value)->areWeOkToConnect.store(true);
-						std::this_thread::sleep_for(1ms);
-					}
-					static_cast<WebSocketSSLShard*>(value)->areWeOkToConnect.store(false);
-					if (value->areWeStillConnected() && static_cast<WebSocketSSLShard*>(value)->inputBuffer.size() > 0 &&
-						!static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
-						static_cast<WebSocketSSLShard*>(value)->parseMessage(static_cast<WebSocketSSLShard*>(value));
-					}
-					if (value->areWeStillConnected() && !static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
-						static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
+					if (!static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
+						if (value->areWeStillConnected() && static_cast<WebSocketSSLShard*>(value)->inputBuffer.size() > 0) {
+							static_cast<WebSocketSSLShard*>(value)->parseMessage(static_cast<WebSocketSSLShard*>(value));
+						}
+						if (value->areWeStillConnected()) {
+							static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
+						}
 					}
 				}
 				
