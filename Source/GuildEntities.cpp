@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	Guild& Guild::operator=(GuildData&& other) {
+	Guild& Guild::operator=(GuildData&& other) noexcept {
 		if (this != &other) {
 			this->voiceConnectionPtr = other.voiceConnectionPtr;
 			this->discordCoreClient = other.discordCoreClient;
@@ -220,11 +220,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Guild::Guild(GuildData&& other) {
+	Guild::Guild(GuildData&& other) noexcept {
 		*this = std::move(other);
 	}
 
-	Guild& Guild::operator=(GuildData& other) {
+	Guild& Guild::operator=(GuildData& other) noexcept {
 		if (this != &other) {
 			this->voiceConnectionPtr = other.voiceConnectionPtr;
 			this->discordCoreClient = other.discordCoreClient;
@@ -242,7 +242,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Guild::Guild(GuildData& other) {
+	Guild::Guild(GuildData& other) noexcept {
 		*this = other;
 	}
 
