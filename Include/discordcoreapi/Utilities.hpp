@@ -588,8 +588,7 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType> bool getObject(const nlohmann::json* jsonData, const char* keyName, ReturnType* returnObject) {
 		auto theResult = jsonData->find(keyName);
 		if (theResult != jsonData->end() && !theResult->is_null() && theResult->is_object()) {
-			DiscordCoreAPI::parseObject(jsonData, *returnObject);
-			nlohmann::json theData{};
+			DiscordCoreAPI::parseObject(&(*theResult), *returnObject);
 			return true;
 		} else {
 			return false;
