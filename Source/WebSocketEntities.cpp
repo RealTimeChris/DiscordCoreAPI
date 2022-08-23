@@ -164,6 +164,7 @@ namespace DiscordCoreInternal {
 				 << "Sending WebSocket " + static_cast<WebSocketSSLShard*>(this)->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) +
 					std::string("'s Message: ")
 				 << dataToSend->dump() << endl
+				 << endl
 				 << DiscordCoreAPI::reset();
 		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
