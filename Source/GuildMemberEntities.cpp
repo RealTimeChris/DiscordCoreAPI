@@ -315,6 +315,12 @@ namespace DiscordCoreAPI {
 		}
 		if (GuildMembers::configManager->doWeCacheGuildMembers()) {
 			if (Guilds::cache.contains(guildMember->guildId)) {
+				for (int32_t x = 0; x < Guilds::cache[guildMember->guildId]->members.size(); ++x) {
+					if (Guilds::cache[guildMember->guildId]->members[x]->id == guildMember->id) {
+						Guilds::cache[guildMember->guildId]->members.erase(Guilds::cache[guildMember->guildId]->members.begin() + x);
+						break;
+					}
+				}
 				Guilds::cache[guildMember->guildId]->members.push_back(guildMember.release());
 			}
 		}
