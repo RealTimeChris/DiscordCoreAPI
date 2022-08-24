@@ -383,7 +383,7 @@ namespace DiscordCoreAPI {
 				DiscordCoreAPI::parseObject(&value, *newData);
 				theData.roles.push_back(newData->id);
 				auto theRole = newData.get();
-				Roles::insertRole(std::move(newData));
+				theRole->insertRole(std::move(newData));
 			}
 		}
 
@@ -393,7 +393,8 @@ namespace DiscordCoreAPI {
 				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
 				DiscordCoreAPI::parseObject(&value, *newData);
 				newData->guildId = theData.id;
-				theData.members.push_back(newData.release());
+				auto theMember = newData.get();
+				theMember->insertGuildMember(std::move(newData));
 			}
 		}
 
