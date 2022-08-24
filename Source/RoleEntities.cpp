@@ -320,6 +320,7 @@ namespace DiscordCoreAPI {
 		if (Roles::configManager->doWeCacheRoles()) {
 			auto roleId = role->id;
 			Roles::cache.insert_or_assign(roleId, std::move(role));
+			std::cout << "ROLE COUNT: " << Roles::cache.size() << std::endl;
 		}
 	}
 

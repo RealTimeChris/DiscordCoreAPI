@@ -391,6 +391,7 @@ namespace DiscordCoreAPI {
 		if (Channels::configManager->doWeCacheChannels()) {
 			auto channelId = channel->id;
 			Channels::cache.insert_or_assign(channelId, std::move(channel));
+			std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
 		}
 	}
 
