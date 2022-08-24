@@ -280,12 +280,7 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() noexcept {
-		if (this->theTask) {
-			this->theTask->request_stop();
-			if (this->theTask->joinable()) {
-				this->theTask->join();
-			}
-		}
+		std::cout<< "WERE HERE THIS IS IT! "<<std::endl;
 		for (auto& [key01, value01]: Guilds::cache) {
 			for (auto& value02: value01->members) {
 				delete value02;
