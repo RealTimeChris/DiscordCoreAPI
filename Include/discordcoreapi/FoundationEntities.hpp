@@ -350,7 +350,7 @@ namespace DiscordCoreAPI {
 		virtual ~RoleTagsData() noexcept = default;
 	};
 
-	void parseObject(const nlohmann::json* jsonObjectData, RoleTagsData& theData);
+	template<> void parseObject(const nlohmann::json* jsonObjectData, RoleTagsData& theData);
 
 	/// User flags. \brief User flags.
 	enum class UserFlags : int32_t {

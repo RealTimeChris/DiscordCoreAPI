@@ -154,54 +154,33 @@ namespace DiscordCoreAPI {
 
 	template<>
 	void parseObject(const nlohmann::json* jsonObjectData, Role& theData) {
-		if (jsonObjectData->contains("id") && !(*jsonObjectData)["id"].is_null()) {
-			if ((*jsonObjectData)["id"].is_string()) {
-				theData.id = stoull((*jsonObjectData)["id"].get<std::string>());
-			} else {
-				theData.id = (*jsonObjectData)["id"].get<int64_t>();
-			}
-		}
 
-		if (jsonObjectData->contains("icon") && !(*jsonObjectData)["icon"].is_null()) {
-			theData.icon = (*jsonObjectData)["icon"].get<std::string>();
-		}
+		theData.id = strtoull(getString(jsonObjectData, "id"));
 
-		if (jsonObjectData->contains("name") && !(*jsonObjectData)["name"].is_null()) {
-			theData.name = (*jsonObjectData)["name"].get<std::string>();
-		}
+		theData.icon = getString(jsonObjectData, "icon");
 
-		if (jsonObjectData->contains("unicode_emoji") && !(*jsonObjectData)["unicode_emoji"].is_null()) {
-			std::stringstream theStream{};
-			theStream << (*jsonObjectData)["unicode_emoji"] << endl;
-			for (auto& value: theStream.str()) {
-				theData.unicodeEmoji.push_back(value);
-			}
+		theData.name = getString(jsonObjectData, "name");
+
+		std::stringstream theStream{};
+		theStream << getString(jsonObjectData, "unicode_emoji");
+		for (auto& value: theStream.str()) {
+			theData.unicodeEmoji.push_back(value);
+		}
+		if (theData.unicodeEmoji.size() > 3) {
 			theData.unicodeEmoji = static_cast<std::string>(theData.unicodeEmoji).substr(1, theData.unicodeEmoji.size() - 3);
 		}
 
-		if (jsonObjectData->contains("color") && !(*jsonObjectData)["color"].is_null()) {
-			theData.color = (*jsonObjectData)["color"].get<int32_t>();
-		}
+		theData.color = getUint32(jsonObjectData, "color");
 
-		if (jsonObjectData->contains("hoist") && !(*jsonObjectData)["hoist"].is_null()) {
-			theData.flags = setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Hoist, (*jsonObjectData)["hoist"].get<bool>());
-		}
+		theData.flags |= setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Hoist, getBool(jsonObjectData, "hoist"));
 
-		if (jsonObjectData->contains("position") && !(*jsonObjectData)["position"].is_null()) {
-			theData.position = (*jsonObjectData)["position"].get<int32_t>();
-		}
+		theData.position = getUint32(jsonObjectData, "position");
 
-		if (jsonObjectData->contains("permissions") && !(*jsonObjectData)["permissions"].is_null()) {
-			theData.permissions = (*jsonObjectData)["permissions"].get<std::string>();
-		}
+		theData.permissions = getString(jsonObjectData, "permissions");
 
-		if (jsonObjectData->contains("managed") && !(*jsonObjectData)["managed"].is_null()) {
-			theData.flags = setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Managed, (*jsonObjectData)["managed"].get<bool>());
-		}
+		theData.flags |= setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Managed, getBool(jsonObjectData, "managed"));
 
-		if (jsonObjectData->contains("mentionable") && !(*jsonObjectData)["mentionable"].is_null()) {
-			theData.flags = setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Mentionable, (*jsonObjectData)["mentionable"].get<bool>());
-		}
+		theData.flags |= setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
 
 		if (jsonObjectData->contains("tags") && !(*jsonObjectData)["tags"].is_null()) {
 			parseObject(&(*jsonObjectData)["tags"], theData.tags);
@@ -373,52 +352,51 @@ namespace DiscordCoreAPI {
 		theData.flags |= setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Large, getBool(jsonObjectData, "large"));
 
 		theData.flags |= setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
-
+		
 		theData.memberCount = getUint32(jsonObjectData, "member_count");
 
-		if (jsonObjectData->contains("roles") && !(*jsonObjectData)["roles"].is_null()) {
-			theData.roles.clear();
-			for (auto& value: (*jsonObjectData)["roles"]) {
-				std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>() };
-				parseObject(&value, *newData);
-				theData.roles.push_back(newData->id);
-				auto theRole = newData.get();
-				theRole->insertRole(std::move(newData));
-			}
+		auto theRoleMap = getVector<nlohmann::json>(jsonObjectData, "roles");
+		theData.roles.clear();
+		for (auto& value: theRoleMap) {
+			std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>() };
+			parseObject(&value, *newData);
+			theData.roles.push_back(newData->id);
+			auto theRole = newData.get();
+			theRole->insertRole(std::move(newData));
 		}
 
-		if (jsonObjectData->contains("members") && !(*jsonObjectData)["members"].is_null()) {
-			theData.members.clear();
-			for (auto& value: (*jsonObjectData)["members"]) {
-				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
-				parseObject(&value, *newData);
-				newData->guildId = theData.id;
-				auto theMember = newData.get();
-				theMember->insertGuildMember(std::move(newData));
-			}
+		auto theMemberMap = getVector<nlohmann::json>(jsonObjectData, "members");
+		theData.members.clear();
+		for (auto& value: theMemberMap) {
+			std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
+			parseObject(&value, *newData);
+			newData->guildId = theData.id;
+			auto theMember = newData.get();
+			theData.members.push_back(newData.release());
 		}
 
-		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
-			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				auto userId = strtoull(value["user_id"].get<std::string>());
-				for (auto& value02: theData.members) {
-					if (value02->id == userId) {
-						value02->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
-					}
+		std::cout << "THE SIZE: " << jsonObjectData->at("voice_states").size() << std::endl;
+		auto voiceStateMap = getVector<nlohmann::json>(jsonObjectData, "voice_states");
+		for (auto& value: voiceStateMap) {
+			auto userId = strtoull(value["user_id"].get<std::string>());
+			for (auto& value02: theData.members) {
+				std::cout << "THE VOICE USER'S ID: " << value02->id << std::endl;
+				if (value02->id == userId) {
+					std::cout << "THE VOICE USER'S ID: " << value02->id << std::endl;
+					value02->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
 				}
 			}
 		}
 
-		if (jsonObjectData->contains("channels") && !(*jsonObjectData)["channels"].is_null()) {
-			theData.channels.clear();
-			for (auto& value: (*jsonObjectData)["channels"]) {
-				std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>() };
-				parseObject(&value, *newData);
-				newData->guildId = theData.id;
-				theData.channels.push_back(newData->id);
-				auto theChannel = newData.get();
-				theChannel->insertChannel(std::move(newData));
-			}
+		auto theChannelMap = getVector<nlohmann::json>(jsonObjectData, "channels");
+		theData.channels.clear();
+		for (auto& value: (*jsonObjectData)["channels"]) {
+			std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>() };
+			parseObject(&value, *newData);
+			newData->guildId = theData.id;
+			theData.channels.push_back(newData->id);
+			auto theChannel = newData.get();
+			theChannel->insertChannel(std::move(newData));
 		}
 	}
 
@@ -1525,6 +1503,7 @@ namespace DiscordCoreAPI {
 		this->theWebHooks.shrink_to_fit();
 	}
 
+	template<>
 	void parseObject(const nlohmann::json* jsonObjectData, RoleTagsData& theData) {
 		theData.botId = getString(jsonObjectData, "bot_id");
 
