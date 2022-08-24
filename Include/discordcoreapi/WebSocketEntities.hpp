@@ -134,7 +134,7 @@ namespace DiscordCoreInternal {
 
 		std::jthread* getTheTask() noexcept;
 
-		~BaseSocketAgent() noexcept = default;
+		~BaseSocketAgent() noexcept;
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 550ms };
