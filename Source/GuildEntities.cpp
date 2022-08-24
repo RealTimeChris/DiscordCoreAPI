@@ -151,10 +151,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void GuildData::insertGuild(std::unique_ptr<GuildData> theGuild) {
-		Guilds::insertGuild(std::move(theGuild));
-	}
-
 	std::string GuildData::getIconUrl() {
 		return this->icon.getHashUrl(this->id, 0, HashType::Guild_Icon);
 	}

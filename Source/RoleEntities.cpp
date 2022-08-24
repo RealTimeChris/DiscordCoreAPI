@@ -80,9 +80,7 @@ namespace DiscordCoreAPI {
 		Roles::insertRole(std::move(theRole));
 	}
 
-	RoleData::~RoleData() noexcept {
-		std::cout << "(ROLE) WERE LEAVING: THE CACHE SIZE IS: " << Roles::cache.size() << std::endl;
-	}
+	RoleData::~RoleData() noexcept {}
 
 	Role& Role::operator=(RoleData&& other) noexcept {
 		if (this != &other) {

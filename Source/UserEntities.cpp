@@ -40,9 +40,7 @@ namespace DiscordCoreAPI {
 		return this->avatar.getHashUrl(this->id, 0, HashType::User_Avatar);
 	}
 
-	UserData::~UserData() noexcept {
-		std::cout << "(USER) WERE LEAVING: THE CACHE SIZE IS: " << Users::cache.size() << std::endl;
-	}
+	UserData::~UserData() noexcept {}
 
 	User& User::operator=(UserData&& other) noexcept {
 		if (this != &other) {

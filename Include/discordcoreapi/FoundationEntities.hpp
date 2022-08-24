@@ -1990,8 +1990,6 @@ namespace DiscordCoreAPI {
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
 			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
 
-		void insertGuild(std::unique_ptr<GuildData>);
-
 		std::string getIconUrl();
 
 		bool areWeConnected();

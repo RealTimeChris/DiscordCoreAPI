@@ -289,13 +289,8 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() noexcept {
-		for (auto& [key, value]: this->baseSocketAgentMap) {
-			if (value->taskThread->joinable()) {
-				value->taskThread->request_stop();
-				value->taskThread->join();
-			}
-		}
 		if (this->theTask) {
+			this->theTask->request_stop();
 			if (this->theTask->joinable()) {
 				this->theTask->join();
 			}

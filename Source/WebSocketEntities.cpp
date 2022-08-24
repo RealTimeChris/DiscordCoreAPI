@@ -899,6 +899,7 @@ namespace DiscordCoreInternal {
 												};
 												eventCreationData->inputEventData = *eventData;
 												this->discordCoreClient->eventManager.onInputEventCreationEvent(*eventCreationData);
+												break;
 											}
 											case DiscordCoreAPI::InteractionType::Message_Component: {
 												switch (interactionData->data.componentData.componentType) {
@@ -916,6 +917,7 @@ namespace DiscordCoreInternal {
 																->send(*interactionData);
 														}
 														this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
+														break;
 													}
 													case DiscordCoreAPI::ComponentType::SelectMenu: {
 														eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
@@ -931,6 +933,7 @@ namespace DiscordCoreInternal {
 																->send(*interactionData);
 														}
 														this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
+														break;
 													}
 												}
 											}
@@ -950,8 +953,8 @@ namespace DiscordCoreInternal {
 														eventData->getInteractionData());
 												}
 												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
+												break;
 											}
-
 											case DiscordCoreAPI::InteractionType::Application_Command_Autocomplete: {
 												eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 												*eventData->interactionData = *interactionData;
@@ -965,6 +968,7 @@ namespace DiscordCoreInternal {
 												autocompleteEntryData->inputEvent = *eventData;
 												this->discordCoreClient->eventManager.onAutoCompleteEntryEvent(*autocompleteEntryData);
 												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
+												break;
 											}
 										}
 										break;

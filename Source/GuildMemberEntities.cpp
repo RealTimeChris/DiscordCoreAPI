@@ -72,13 +72,7 @@ namespace DiscordCoreAPI {
 		return Users::getCachedUserAsync({ .userId = this->id }).get();
 	}
 
-	GuildMemberData::~GuildMemberData() noexcept {
-		int32_t x{};
-		for (auto& [key, value]: Guilds::cache) {
-			x += value->members.size();
-		}
-		std::cout << "(GUILD MEMBER) WERE LEAVING: THE CACHE SIZE IS: " << x << std::endl;
-	}
+	GuildMemberData::~GuildMemberData() noexcept {}
 
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) noexcept {
 		if (this != &other) {
