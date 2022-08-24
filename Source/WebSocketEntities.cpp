@@ -1526,12 +1526,11 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {
-		for (auto& [key, value]: this->discordCoreClient->baseSocketAgentMap) {
-			if (value->taskThread) {
-				value->taskThread->request_stop();
-				if (value->taskThread->joinable()) {
-					value->taskThread->join();
-				}
+		std::cout << "WERE HERE THIS IS IT!" << std::endl;
+		if (this->taskThread) {
+			this->taskThread->request_stop();
+			if (this->taskThread->joinable()) {
+				this->taskThread->join();
 			}
 		}
 	}
