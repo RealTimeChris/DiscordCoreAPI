@@ -801,7 +801,7 @@ namespace DiscordCoreAPI {
 		virtual ~GuildMemberData() noexcept = default;
 	};
 
-	void parseObject(const nlohmann::json* jsonObjectData, GuildMemberData& theData);
+	template<> void parseObject(const nlohmann::json* jsonObjectData, GuildMemberData& theData);
 
 	/// PermissionTypes overwrites types. \brief PermissionTypes overwrites types.
 	enum class PermissionOverwritesType : uint8_t {
@@ -819,7 +819,7 @@ namespace DiscordCoreAPI {
 		virtual ~OverWriteData() noexcept = default;
 	};
 
-	void parseObject(const nlohmann::json* jsonObjectData, OverWriteData& theData);
+	template<> void parseObject(const nlohmann::json* jsonObjectData, OverWriteData& theData);
 
 	enum class ChannelFlags : uint8_t { NSFW = 1 << 0 };
 

@@ -319,6 +319,7 @@ namespace DiscordCoreAPI {
 		theData.memberCount = getUint32(jsonObjectData, "member_count");
 	}
 
+	template<>
 	void parseObject(const nlohmann::json* jsonObjectData, Guild& theData) {
 		if (jsonObjectData->contains("id") && !(*jsonObjectData)["id"].is_null()) {
 			theData.id = stoull((*jsonObjectData)["id"].get<std::string>());
