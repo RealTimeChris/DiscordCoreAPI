@@ -135,35 +135,9 @@ namespace DiscordCoreInternal {
 		std::mutex theMutex{};
 	};
 
-	template<typename ReturnType>
-	concept DerivedFromNewBase = std::derived_from<ReturnType, DiscordCoreAPI::NewBase>;
-
 	class DiscordCoreAPI_Dll HttpsClient {
 	  public:
 		HttpsClient(DiscordCoreAPI::ConfigManager* configManager);
-
-		template<DerivedFromNewBase ReturnType>
-		requires std::derived_from<ReturnType, DiscordCoreAPI::NewBase> ReturnType submitWorkloadAndGetResult(const HttpsWorkloadData& workload,
-			ReturnType* theReturnValue = nullptr) {
-			workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
-			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com 1.0)";
-			if (workload.payloadType == PayloadType::Application_Json) {
-				workload.headersToInsert["Content-Type"] = "application/json";
-			} else if (workload.payloadType == PayloadType::Multipart_Form) {
-				workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
-			}
-			HttpsResponseData returnData = this->httpRequest(workload);
-			if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
-				std::string theErrorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error; Code: " + std::to_string(returnData.responseCode) +
-					", Message: " + returnData.responseMessage + DiscordCoreAPI::reset() + "\n\n" };
-				HttpError theError{ theErrorMessage };
-				theError.errorCode = returnData.responseCode;
-				throw theError;
-			}
-			ReturnType theReturnValueNew{};
-			DiscordCoreAPI::parseObject(&returnData.responseData, theReturnValueNew);
-			return std::move(theReturnValueNew);
-		}
 
 		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(const HttpsWorkloadData& workload, ReturnType* theReturnValue = nullptr) {
 			workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();

@@ -145,6 +145,7 @@ namespace DiscordCoreAPI {
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
+		std::unique_ptr<std::jthread> theTask{ nullptr };
 		std::deque<ConnectionPackage> theConnections{};
 		CommandController commandController{ this };
 		ConfigManager configManager{};

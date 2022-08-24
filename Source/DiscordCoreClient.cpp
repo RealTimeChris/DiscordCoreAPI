@@ -139,6 +139,9 @@ namespace DiscordCoreAPI {
 		Threads::initialize(this->httpsClient.get());
 		Users::initialize(this->httpsClient.get(), &this->configManager);
 		WebHooks::initialize(this->httpsClient.get());
+		this->theTask = std::make_unique<std::jthread>([this]() {
+			this->runBot();
+		});
 	}
 
 	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
@@ -281,6 +284,11 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() noexcept {
+		if (this->theTask) {
+			if (this->theTask->joinable()) {
+				this->theTask->join();
+			}
+		}
 		for (auto& [key01, value01]: Guilds::cache) {
 			for (auto& value02: value01->members) {
 				delete value02;
