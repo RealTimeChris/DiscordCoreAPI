@@ -329,7 +329,6 @@ namespace DiscordCoreAPI {
 			for (auto& value: (*jsonObjectData)["threads"]) {
 				StickerData newData{};
 				parseObject(&value, newData);
-				std::cout << "THREAD ID: " << newData.id << std::endl;
 				theData.threads.push_back(newData.id);
 			}
 		}
@@ -339,7 +338,6 @@ namespace DiscordCoreAPI {
 			for (auto& value: (*jsonObjectData)["stickers"]) {
 				StickerData newData{};
 				parseObject(&value, newData);
-				std::cout << "STICKER ID: " << newData.id << std::endl;
 				theData.stickers.push_back(newData.id);
 			}
 		}
@@ -349,7 +347,6 @@ namespace DiscordCoreAPI {
 			for (auto& value: (*jsonObjectData)["guild_scheduled_events"]) {
 				GuildScheduledEventData newData{};
 				parseObject(&value, newData);
-				std::cout << "GUILD SCHEDULED EVENT ID: " << newData.id << std::endl;
 				theData.guildScheduledEvents.push_back(newData.id);
 			}
 		}
@@ -359,7 +356,6 @@ namespace DiscordCoreAPI {
 			for (auto& value: (*jsonObjectData)["stage_instance"]) {
 				StageInstanceData newData{};
 				parseObject(&value, newData);
-				std::cout << "STAGE INSTANCE ID: " << newData.id << std::endl;
 				theData.stageInstances.push_back(newData.id);
 			}
 		}
@@ -369,7 +365,6 @@ namespace DiscordCoreAPI {
 			for (auto& value: (*jsonObjectData)["emoji"]) {
 				EmojiData newData{};
 				parseObject(&value, newData);
-				std::cout << "EMOJI ID: " << newData.id << std::endl;
 				theData.emoji.push_back(newData.id);
 			}
 		}
@@ -431,7 +426,6 @@ namespace DiscordCoreAPI {
 		for (auto& value: theThreadsVector) {
 			Channel newData{};
 			parseObject(&value, newData);
-			std::cout << "THREAD ID: " << newData.id << std::endl;
 			theData.threads.push_back(newData);
 		}
 
@@ -440,7 +434,6 @@ namespace DiscordCoreAPI {
 		for (auto& value: theStickerVector) {
 			Sticker newData{};
 			parseObject(&value, newData);
-			std::cout << "STICKER ID: " << newData.id<< std::endl;
 			theData.stickers.push_back(newData);
 		}
 
@@ -449,7 +442,6 @@ namespace DiscordCoreAPI {
 		for (auto& value: theGuildScheduledEventsVector) {
 			GuildScheduledEvent newData{};
 			parseObject(&value, newData);
-			std::cout << "GUILD SCHEDULED EVENT ID: " << newData.id << std::endl;
 			theData.guildScheduledEvents.push_back(newData);
 		}
 
@@ -458,7 +450,6 @@ namespace DiscordCoreAPI {
 		for (auto& value: theStageInstanceVector) {
 			StageInstance newData{};
 			parseObject(&value, newData);
-			std::cout << "STAGE INSTANCE ID: " << newData.id << std::endl;
 			theData.stageInstances.push_back(newData);
 		}
 

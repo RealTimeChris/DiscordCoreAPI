@@ -1375,12 +1375,6 @@ namespace DiscordCoreInternal {
 		this->taskThread = std::make_unique<std::jthread>([this](std::stop_token stopToken) {
 			this->run(stopToken);
 		});
-		if (this->currentBaseSocketAgent != 0) {
-			if (this->taskThread->joinable()) {
-				std::cout << "JOINABLE!" << std::endl;
-				this->taskThread->detach();
-			}
-		}
 	}
 
 	void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
@@ -1526,7 +1520,6 @@ namespace DiscordCoreInternal {
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {
-		std::cout << "WERE HERE THIS IS IT!" << std::endl;
 		if (this->taskThread) {
 			this->taskThread->request_stop();
 			if (this->taskThread->joinable()) {
