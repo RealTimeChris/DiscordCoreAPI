@@ -25,6 +25,7 @@
 extern "C" {
 #include <libavformat/avformat.h>
 #include <libswresample/swresample.h>
+#include <libavcodec/avcodec.h>
 }
 
 namespace DiscordCoreInternal {

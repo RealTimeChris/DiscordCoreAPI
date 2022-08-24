@@ -35,7 +35,6 @@ if (WIN32)
 	add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
 elseif (UNIX)
 	add_library("${LIB_NAME}" STATIC "${SOURCES}")
-	find_package(Threads REQUIRED)
 endif()
 
 add_library("${PROJECT_NAME}::${LIB_NAME}" ALIAS "${LIB_NAME}")
@@ -50,31 +49,55 @@ set_target_properties(
 	CXX_EXTENSIONS OFF
 )
 
+find_package(Threads REQUIRED)
+find_package(nlohmann_json REQUIRED)
+find_package(OpenSSL MODULE REQUIRED)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(AVFORMAT REQUIRED libavformat)
+pkg_check_modules(AVCODEC REQUIRED libavcodec)
+pkg_check_modules(AVUTIL REQUIRED libavutil)
+pkg_check_modules(SWRESAMPLE REQUIRED libswresample)
+pkg_check_modules(OPUS REQUIRED opus)
+
+if (EXISTS "${VCPKG_ROOT}")
+	find_package(unofficial-sodium CONFIG REQUIRED)
+
+	target_link_libraries(
+		"${LIB_NAME}" PRIVATE
+		${AVFORMAT_LIBRARIES}
+		${AVCODEC_LIBRARIES}
+		${AVUTIL_LIBRARIES}
+		${SWRESAMPLE_LIBRARIES}
+		${OPENSSL_LIBRARIES}
+		${OPUS_LIBRARIES}
+		unofficial-sodium::sodium
+		nlohmann_json::nlohmann_json
+		Threads::Threads
+	)
+else ()
+	pkg_check_modules(SODIUM REQUIRED libsodium)
+
+	target_link_libraries(
+		"${LIB_NAME}" PRIVATE
+		${AVFORMAT_LIBRARIES}
+		${AVCODEC_LIBRARIES}
+		${AVUTIL_LIBRARIES}
+		${SWRESAMPLE_LIBRARIES}
+		${OPENSSL_LIBRARIES}
+		${OPUS_LIBRARIES}
+		${SODIUM_LIBRARIES}
+		nlohmann_json::nlohmann_json
+		Threads::Threads
+	)
+endif ()
+
 target_include_directories(
 	"${LIB_NAME}" PUBLIC
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-)
-
-find_package(FFMPEG MODULE REQUIRED)
-find_package(NLOHMANN MODULE REQUIRED)
-find_package(OPENSSL MODULE REQUIRED)
-find_package(OPUS MODULE REQUIRED)
-find_package(SODIUM MODULE REQUIRED)
-
-target_link_libraries(
-	"${LIB_NAME}" PUBLIC
-	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
-	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
-	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>
-	$<$<TARGET_EXISTS:FFMPEG::SWResample>:FFMPEG::SWResample>
-	$<$<TARGET_EXISTS:NLOHMANN::Json>:NLOHMANN::Json>
-	$<$<TARGET_EXISTS:OPENSSL::Ssl>:OPENSSL::Ssl>
-	$<$<TARGET_EXISTS:OPENSSL::Crypto>:OPENSSL::Crypto>
-	$<$<TARGET_EXISTS:OPUS::Opus>:OPUS::Opus>
-	$<$<TARGET_EXISTS:SODIUM::Sodium>:SODIUM::Sodium>
-	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
+	${OPUS_INCLUDE_DIR}
 )
 
 target_compile_features(
