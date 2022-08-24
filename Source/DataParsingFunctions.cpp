@@ -134,14 +134,14 @@ namespace DiscordCoreAPI {
 
 		theData.avatar = getString(jsonObjectData, "avatar");
 
-		theData.flags |= DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(theData.flags, DiscordCoreAPI::UserFlags::Bot, getBool(jsonObjectData, "bot"));
+		theData.flags |= setBool<int32_t, UserFlags>(theData.flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
 
-		theData.flags |= DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(theData.flags, DiscordCoreAPI::UserFlags::System, getBool(jsonObjectData, "system"));
+		theData.flags |= setBool<int32_t, UserFlags>(theData.flags, UserFlags::System, getBool(jsonObjectData, "system"));
 
 		theData.flags |=
-			DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(theData.flags, DiscordCoreAPI::UserFlags::MFAEnabled, getBool(jsonObjectData, "mfa_enabled"));
+			setBool<int32_t, UserFlags>(theData.flags, UserFlags::MFAEnabled, getBool(jsonObjectData, "mfa_enabled"));
 
-		theData.flags |= DiscordCoreAPI::setBool<int32_t, DiscordCoreAPI::UserFlags>(theData.flags, DiscordCoreAPI::UserFlags::Verified, getBool(jsonObjectData, "verified"));
+		theData.flags |= setBool<int32_t, UserFlags>(theData.flags, UserFlags::Verified, getBool(jsonObjectData, "verified"));
 
 		theData.locale = getString(jsonObjectData, "locale");
 
@@ -204,7 +204,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("tags") && !(*jsonObjectData)["tags"].is_null()) {
-			DiscordCoreAPI::parseObject(&(*jsonObjectData)["tags"], theData.tags);
+			parseObject(&(*jsonObjectData)["tags"], theData.tags);
 		}
 	}
 
@@ -242,7 +242,7 @@ namespace DiscordCoreAPI {
 	}
 
 	template<>
-	void parseObject(const nlohmann::json* jsonObjectData, DiscordCoreAPI::GuildMember& theData) {
+	void parseObject(const nlohmann::json* jsonObjectData, GuildMember& theData) {
 		theData.flags |= setBool<int8_t, GuildMemberFlags>(theData.flags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
 
 		theData.flags |= setBool<int8_t, GuildMemberFlags>(theData.flags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
@@ -308,7 +308,7 @@ namespace DiscordCoreAPI {
 			theData.permissionOverwrites.reserve((*jsonObjectData)["permission_overwrites"].size());
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
 				OverWriteData theDataNew{};
-				DiscordCoreAPI::parseObject(&value, theDataNew);
+				parseObject(&value, theDataNew);
 				theData.permissionOverwrites.push_back(std::move(theDataNew));
 			}
 		}
@@ -341,7 +341,7 @@ namespace DiscordCoreAPI {
 			theData.permissionOverwrites.reserve((*jsonObjectData)["permission_overwrites"].size());
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
 				OverWriteData theDataNew{};
-				DiscordCoreAPI::parseObject(&value, theDataNew);
+				parseObject(&value, theDataNew);
 				theData.permissionOverwrites.push_back(std::move(theDataNew));
 			}
 		}
@@ -380,7 +380,7 @@ namespace DiscordCoreAPI {
 			theData.roles.clear();
 			for (auto& value: (*jsonObjectData)["roles"]) {
 				std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>() };
-				DiscordCoreAPI::parseObject(&value, *newData);
+				parseObject(&value, *newData);
 				theData.roles.push_back(newData->id);
 				auto theRole = newData.get();
 				theRole->insertRole(std::move(newData));
@@ -391,7 +391,7 @@ namespace DiscordCoreAPI {
 			theData.members.clear();
 			for (auto& value: (*jsonObjectData)["members"]) {
 				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
-				DiscordCoreAPI::parseObject(&value, *newData);
+				parseObject(&value, *newData);
 				newData->guildId = theData.id;
 				auto theMember = newData.get();
 				theMember->insertGuildMember(std::move(newData));
@@ -413,7 +413,7 @@ namespace DiscordCoreAPI {
 			theData.channels.clear();
 			for (auto& value: (*jsonObjectData)["channels"]) {
 				std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>() };
-				DiscordCoreAPI::parseObject(&value, *newData);
+				parseObject(&value, *newData);
 				newData->guildId = theData.id;
 				theData.channels.push_back(newData->id);
 				auto theChannel = newData.get();
@@ -527,7 +527,7 @@ namespace DiscordCoreAPI {
 			theData.roles.reserve((*jsonObjectData)["roles"].size());
 			for (auto& value: (*jsonObjectData)["roles"]) {
 				std::unique_ptr<RoleData> newData{};
-				DiscordCoreAPI::parseObject(&value, *newData);
+				parseObject(&value, *newData);
 				theData.roles.push_back(newData->id);
 				Roles::insertRole(std::move(newData));
 			}
@@ -582,7 +582,7 @@ namespace DiscordCoreAPI {
 			theData.members.reserve((*jsonObjectData)["members"].size());
 			for (auto& value: (*jsonObjectData)["members"]) {
 				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
-				DiscordCoreAPI::parseObject(&value, *newData);
+				parseObject(&value, *newData);
 				newData->guildId = theData.id;
 				auto userId = newData->id;
 				theData.members.push_back(newData.release());
@@ -605,7 +605,7 @@ namespace DiscordCoreAPI {
 			theData.channels.reserve((*jsonObjectData)["channels"].size());
 			for (auto& value: (*jsonObjectData)["channels"]) {
 				std::unique_ptr<ChannelData> newData{};
-				DiscordCoreAPI::parseObject(&value, *newData);
+				parseObject(&value, *newData);
 				newData->guildId = theData.id;
 				theData.channels.push_back(newData->id);
 				Channels::insertChannel(std::move(newData));
@@ -1769,29 +1769,29 @@ namespace DiscordCoreAPI {
 	}
 
 	void parseObject(const nlohmann::json* jsonObjectData, VoiceStateData& theData) {
-		theData.requestToSpeakTimestamp = DiscordCoreAPI::getString(jsonObjectData, "request_to_speak_timestamp");
+		theData.requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
 
-		theData.channelId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(jsonObjectData, "channel_id"));
+		theData.channelId = strtoull(getString(jsonObjectData, "channel_id"));
 
-		theData.guildId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(jsonObjectData, "guild_id"));
+		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
 
-		theData.selfStream = DiscordCoreAPI::getBool(jsonObjectData, "self_stream");
+		theData.selfStream = getBool(jsonObjectData, "self_stream");
 
-		theData.userId = DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(jsonObjectData, "user_id"));
+		theData.userId = strtoull(getString(jsonObjectData, "user_id"));
 
-		theData.selfVideo = DiscordCoreAPI::getBool(jsonObjectData, "self_video");
+		theData.selfVideo = getBool(jsonObjectData, "self_video");
 
-		theData.sessionId = DiscordCoreAPI::getString(jsonObjectData, "session_id");
+		theData.sessionId = getString(jsonObjectData, "session_id");
 
-		theData.selfDeaf = DiscordCoreAPI::getBool(jsonObjectData, "self_deaf");
+		theData.selfDeaf = getBool(jsonObjectData, "self_deaf");
 
-		theData.selfMute = DiscordCoreAPI::getBool(jsonObjectData, "self_mute");
+		theData.selfMute = getBool(jsonObjectData, "self_mute");
 
-		theData.suppress = DiscordCoreAPI::getBool(jsonObjectData, "suppress");
+		theData.suppress = getBool(jsonObjectData, "suppress");
 
-		theData.deaf = DiscordCoreAPI::getBool(jsonObjectData, "deaf");
+		theData.deaf = getBool(jsonObjectData, "deaf");
 
-		theData.mute = DiscordCoreAPI::getBool(jsonObjectData, "mute");
+		theData.mute = getBool(jsonObjectData, "mute");
 	}
 
 	void ActiveThreadsData::parseObject(const nlohmann::json* jsonObjectData) {
