@@ -657,7 +657,7 @@ namespace DiscordCoreInternal {
 											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 										}
 										if (payload["d"].contains("user") && !payload["d"]["user"].is_null()) {
-											dataPackage->user = &payload["d"]["user"];
+											DiscordCoreAPI::parseObject(&payload["d"]["user"], dataPackage->user);
 										}
 										this->discordCoreClient->eventManager.onGuildBanAddEvent(*dataPackage);
 										break;
@@ -668,7 +668,7 @@ namespace DiscordCoreInternal {
 											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 										}
 										if (payload["d"].contains("user") && !payload["d"]["user"].is_null()) {
-											dataPackage->user = &payload["d"]["user"];
+											DiscordCoreAPI::parseObject(&payload["d"]["user"], dataPackage->user);
 										}
 										this->discordCoreClient->eventManager.onGuildBanRemoveEvent(*dataPackage);
 										break;
@@ -1513,6 +1513,17 @@ namespace DiscordCoreInternal {
 		uint64_t theDCData = this->voiceConnectionsToDisconnect.front();
 		this->voiceConnectionsToDisconnect.pop_front();
 		DiscordCoreAPI::getVoiceConnectionMap()[theDCData]->disconnectInternal();
+	}
+
+	BaseSocketAgent::~BaseSocketAgent() {
+		for (auto& [key, value]: this->discordCoreClient->baseSocketAgentMap) {
+			if (value->taskThread) {
+				value->taskThread->request_stop();
+				if (value->taskThread->joinable()) {
+					value->taskThread->join();
+				}
+			}
+		}
 	}
 
 }

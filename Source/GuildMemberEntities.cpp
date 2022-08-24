@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 		for (auto& [key, value]: Guilds::cache) {
 			x += value->members.size();
 		}
-		std::cout << "WERE LEAVING: THE CACHE SIZE IS: " << x << std::endl;
+		std::cout << "(GUILD MEMBER) WERE LEAVING: THE CACHE SIZE IS: " << x << std::endl;
 	}
 
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) noexcept {
