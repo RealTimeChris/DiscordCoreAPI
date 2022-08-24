@@ -242,10 +242,6 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	GuildData::~GuildData() noexcept {
-		std::cout << "(GUILD) WERE LEAVING: THE CACHE SIZE IS: " << Guilds::cache.size() << std::endl;
-	}
-
 	void Guild::parseObject(const nlohmann::json* theData) {
 		DiscordCoreAPI::parseObject(theData, *this);
 	}

@@ -72,8 +72,6 @@ namespace DiscordCoreAPI {
 		return Users::getCachedUserAsync({ .userId = this->id }).get();
 	}
 
-	GuildMemberData::~GuildMemberData() noexcept {}
-
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) noexcept {
 		if (this != &other) {
 			this->permissions = std::move(other.permissions);

@@ -154,17 +154,13 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(1ms);
 		}
 		if (stopToken.stop_requested()) {
+			std::unique_lock theLock{ this->theMutex };
 			for (auto& [key, value]: this->workerThreads) {
 				if (value.theThread.joinable()) {
 					value.theThread.request_stop();
 					value.theThread.detach();
-					value.areWeCurrentlyWorking.store(false);
 				}
 			}
-		}
-		std::cout << "WERE LEAVING FROM INDEX: " << theIndex << std::endl;
-		while (this->workerThreads[theIndex].areWeCurrentlyWorking.load()) {
-			std::this_thread::sleep_for(1ms);
 		}
 		std::unique_lock theLock{ this->theMutex };
 		this->workerThreads.erase(theIndex);

@@ -151,8 +151,6 @@ namespace DiscordCoreAPI {
 		return this->theChannels;
 	}
 
-	ChannelData::~ChannelData() noexcept {}
-
 	ChannelVector& ChannelVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;

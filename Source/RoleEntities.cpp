@@ -80,8 +80,6 @@ namespace DiscordCoreAPI {
 		Roles::insertRole(std::move(theRole));
 	}
 
-	RoleData::~RoleData() noexcept {}
-
 	Role& Role::operator=(RoleData&& other) noexcept {
 		if (this != &other) {
 			this->unicodeEmoji = std::move(other.unicodeEmoji);
