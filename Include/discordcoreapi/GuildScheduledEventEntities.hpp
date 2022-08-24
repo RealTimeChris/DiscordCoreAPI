@@ -103,6 +103,8 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
+	template<> void parseObject(const nlohmann::json* jsonObjectData, GuildScheduledEvent& theData);
+
 	class DiscordCoreAPI_Dll GuildScheduledEventVector {
 	  public:
 		GuildScheduledEventVector() noexcept = default;

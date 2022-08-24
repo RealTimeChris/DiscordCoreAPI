@@ -485,15 +485,6 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	EmojiData& EmojiData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	EmojiData::EmojiData(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	EmojiDataVector& EmojiDataVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
@@ -773,30 +764,20 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
+	void EmojiData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
+	}
+
+	void GuildScheduledEventData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
+	}
+
 	PresenceUpdateData& PresenceUpdateData::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
 	PresenceUpdateData::PresenceUpdateData(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
-	StageInstanceData& StageInstanceData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	StageInstanceData::StageInstanceData(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
-	StickerData& StickerData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	StickerData::StickerData(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -828,15 +809,6 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildScheduledEventMetadata::GuildScheduledEventMetadata(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
-	GuildScheduledEventData& GuildScheduledEventData::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildScheduledEventData::GuildScheduledEventData(const nlohmann::json* jsonObjectData) {
 		*this = jsonObjectData;
 	}
 

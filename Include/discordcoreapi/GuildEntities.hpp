@@ -23,6 +23,9 @@
 #include <discordcoreapi/VoiceConnection.hpp>
 #include <discordcoreapi/RoleEntities.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
+#include <discordcoreapi/StickerEntities.hpp>
+#include <discordcoreapi/GuildScheduledEventEntities.hpp>
+#include <discordcoreapi/StageInstanceEntities.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -264,9 +267,11 @@ namespace DiscordCoreAPI {
 		friend class Guilds;
 
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
+		std::vector<GuildScheduledEvent> guildScheduledEvents{};///< Guild scheduled events of the Guild.
 		std::map<Snowflake, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
 		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
+		std::vector<StageInstance> stageInstances{};///< Stage instaces of the Guild.
 		SystemChannelFlags systemChannelFlags{};///< System Channel flags.
 		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
 		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
@@ -277,6 +282,8 @@ namespace DiscordCoreAPI {
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
 		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channe
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
+		std::vector<Sticker> stickers{};///< Stickers of the Guild.
+		std::vector<Channel> threads{};///< Threads of the Guild.
 		std::string discoverySplash{};///< Link to the discovery image's splash.
 		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
 		Snowflake widgetChannelId{};///< Channel id for the Guild's widget.

@@ -177,6 +177,8 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
+	template<> void parseObject(const nlohmann::json* jsonObjectData, Channel& theData);
+
 	class DiscordCoreAPI_Dll ChannelVector {
 	  public:
 		ChannelVector() noexcept = default;

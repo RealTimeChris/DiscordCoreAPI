@@ -1089,14 +1089,12 @@ namespace DiscordCoreAPI {
 
 		EmojiData() noexcept = default;
 
-		EmojiData& operator=(const nlohmann::json* jsonObjectData);
-
-		EmojiData(const nlohmann::json* jsonObjectData);
-
 		virtual ~EmojiData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
+
+	template<> void parseObject(const nlohmann::json* jsonObjectData, EmojiData& theData);
 
 	class DiscordCoreAPI_Dll EmojiDataVector {
 	  public:
@@ -1860,14 +1858,10 @@ namespace DiscordCoreAPI {
 
 		StageInstanceData() noexcept = default;
 
-		StageInstanceData& operator=(const nlohmann::json* jsonObjectData);
-
-		StageInstanceData(const nlohmann::json* jsonObjectData);
-
 		virtual ~StageInstanceData() noexcept = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 	};
+
+	template<> void parseObject(const nlohmann::json* jsonObjectData, StageInstanceData& theData);
 
 	/// Sticker types. \brief Sticker types.
 	enum class StickerType : uint8_t {
@@ -1895,14 +1889,10 @@ namespace DiscordCoreAPI {
 
 		StickerData() noexcept = default;
 
-		StickerData& operator=(const nlohmann::json* jsonObjectData);
-
-		StickerData(const nlohmann::json* jsonObjectData);
-
 		virtual ~StickerData() noexcept = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 	};
+
+	template<> void parseObject(const nlohmann::json* jsonObjectData, StickerData& theData);
 
 	/// Data representing a single Guild preview. \brief Data representing a single Guild preview.
 	struct DiscordCoreAPI_Dll GuildPreviewData {
@@ -1963,19 +1953,23 @@ namespace DiscordCoreAPI {
 		Premium_Progress_Bar_Enabled = 1 << 4///< Premium progress bar enabled
 	};
 
-
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
-		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
-		std::vector<GuildMemberData*> members{};///< The guild members.
-		std::vector<Snowflake> channels{};///< Array of Guild channels.
-		std::vector<Snowflake> roles{};///< Array of Guild roles.
-		int32_t memberCount{ 0 };///< Member count.
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild.
-		std::string name{};///< The Guild's name.
+		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
+		std::vector<Snowflake> guildScheduledEvents{};///< Array of Guild channels.
+		std::vector<GuildMemberData*> members{};///< The guild members.
+		std::vector<Snowflake> stageInstances{};///< Array of Guild channels.
+		std::vector<Snowflake> stickers{};///< Array of Guild channels.
+		std::vector<Snowflake> channels{};///< Array of Guild channels.
+		std::vector<Snowflake> threads{};///< Array of Guild channels.
+		std::vector<Snowflake> roles{};///< Array of Guild roles.
+		std::vector<Snowflake> emoji{};///< Array of Guild channels.
+		int32_t memberCount{ 0 };///< Member count.
 		Snowflake ownerId{};///< User id of the Guild's owner.
+		std::string name{};///< The Guild's name.
 		int8_t flags{ 0 };///< Guild flags.
 		IconHash icon{};///< Url to the Guild's icon.
 
@@ -2080,14 +2074,12 @@ namespace DiscordCoreAPI {
 
 		GuildScheduledEventData() noexcept = default;
 
-		GuildScheduledEventData& operator=(const nlohmann::json* jsonObjectData);
-
-		GuildScheduledEventData(const nlohmann::json* jsonObjectData);
-
 		virtual ~GuildScheduledEventData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
+
+	template<> void parseObject(const nlohmann::json* jsonObjectData, GuildScheduledEventData& theData);
 
 	/// Data representing a single GuildScheduledEventUser. \brief Data representing a single GuildScheduledEventUser.
 	struct DiscordCoreAPI_Dll GuildScheduledEventUserData {

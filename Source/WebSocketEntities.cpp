@@ -1087,7 +1087,7 @@ namespace DiscordCoreInternal {
 										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 											dataPackage->guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 										}
-										dataPackage->emoji = &payload["d"]["emoji"];
+										DiscordCoreAPI::parseObject(&payload["d"]["emoji"], dataPackage->emoji);
 										this->discordCoreClient->eventManager.onReactionRemoveEmojiEvent(*dataPackage);
 										break;
 									}
@@ -1099,19 +1099,19 @@ namespace DiscordCoreInternal {
 									}
 									case 46: {
 										std::unique_ptr<DiscordCoreAPI::OnStageInstanceCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnStageInstanceCreationData>() };
-										dataPackage->stageInstance = &payload["d"];
+										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->stageInstance);
 										this->discordCoreClient->eventManager.onStageInstanceCreationEvent(*dataPackage);
 										break;
 									}
 									case 47: {
 										std::unique_ptr<DiscordCoreAPI::OnStageInstanceUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnStageInstanceUpdateData>() };
-										dataPackage->stageInstance = &payload["d"];
+										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->stageInstance);
 										this->discordCoreClient->eventManager.onStageInstanceUpdateEvent(*dataPackage);
 										break;
 									}
 									case 48: {
 										std::unique_ptr<DiscordCoreAPI::OnStageInstanceDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnStageInstanceDeletionData>() };
-										dataPackage->stageInstance = &payload["d"];
+										DiscordCoreAPI::parseObject(&payload["d"], dataPackage->stageInstance);
 										this->discordCoreClient->eventManager.onStageInstanceDeletionEvent(*dataPackage);
 										break;
 									}

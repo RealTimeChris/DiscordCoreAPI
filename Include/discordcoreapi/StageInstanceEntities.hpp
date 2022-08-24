@@ -65,6 +65,8 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
+	template<> void parseObject(const nlohmann::json* jsonObjectData, StageInstance& theData);
+
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
