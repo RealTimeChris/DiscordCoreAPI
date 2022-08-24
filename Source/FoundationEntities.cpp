@@ -764,14 +764,6 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	void EmojiData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
-	}
-
-	void GuildScheduledEventData::parseObject(const nlohmann::json* jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
-	}
-
 	PresenceUpdateData& PresenceUpdateData::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;

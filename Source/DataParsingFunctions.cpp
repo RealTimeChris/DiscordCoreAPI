@@ -3102,6 +3102,14 @@ namespace DiscordCoreAPI {
 		this->theWebHookDatas.shrink_to_fit();
 	}
 
+	void EmojiData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
+	}
+
+	void GuildScheduledEventData::parseObject(const nlohmann::json* jsonObjectData) {
+		DiscordCoreAPI::parseObject(jsonObjectData, *this);
+	}
+
 	void AuditLogData::parseObject(const nlohmann::json* jsonObjectData) {
 		if (jsonObjectData->contains("webhooks") && !(*jsonObjectData)["webhooks"].is_null()) {
 			this->webhooks.clear();
