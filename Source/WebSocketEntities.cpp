@@ -213,7 +213,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
-		if (theShard->theSSLState.load() == SSLConnectionState::Connected && theShard->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
+		if (theShard->areWeStillConnected() && theShard->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
 			std::string newVector = theShard->getInputBuffer();
 			auto theFindValue = newVector.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
@@ -359,7 +359,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketSSLShard::sendMessage(std::string& dataToSend, bool priority) noexcept {
-		if (this->theSSLState.load() == SSLConnectionState::Connected) {
+		if (this->areWeStillConnected()) {
 			try {
 				if (dataToSend.size() == 0) {
 					return false;
@@ -391,7 +391,7 @@ namespace DiscordCoreInternal {
 
 	std::atomic_uint64_t theInt{};
 	bool WebSocketSSLShard::onMessageReceived(const std::string& theData) noexcept {
-		if (this->theSSLState.load() == SSLConnectionState::Connected) {
+		if (this->areWeStillConnected()) {
 			try {
 				bool returnValue{ true };
 				nlohmann::json payload{};
@@ -1330,12 +1330,11 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
-		if (this->theSSLState.load() == SSLConnectionState::Connected) {
+		if (this->theSocket != SOCKET_ERROR) {
 			std::unique_lock theLock{ this->connectionMutex };
-			this->theSSLState.store(SSLConnectionState::Disconnected);
+			this->theSocket = SOCKET_ERROR;
 			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
 			this->areWeConnecting.store(true);
-			this->theSocket = SOCKET_ERROR;
 			this->inputBuffer.clear();
 			this->outputBuffers.clear();
 			this->wantWrite = true;

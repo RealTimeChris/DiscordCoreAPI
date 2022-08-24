@@ -104,7 +104,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
-		if (other) {
+		if (other && *other != SOCKET_ERROR) {
 #ifdef _WIN32
 			shutdown(*other, SD_BOTH);
 			closesocket(*other);
@@ -170,9 +170,6 @@ namespace DiscordCoreInternal {
 
 	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
 		std::unique_lock theLock{ this->connectionMutex };
-		if (!this->areWeStillConnected()) {
-			return ProcessIOResult::Disconnected;
-		}
 		if (dataToWrite.size() > 0 && this->ssl) {
 			if (priority && dataToWrite.size() < static_cast<size_t>(16 * 1024)) {
 				fd_set writeSet{};
@@ -182,9 +179,9 @@ namespace DiscordCoreInternal {
 				timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
 				if (auto returnValue = select(FD_SETSIZE + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
-					return ProcessIOResult::Select_Failure;
+					return ProcessIOResult::Disconnected;
 				} else if (returnValue == 0) {
-					return ProcessIOResult::Select_No_Return;
+					return ProcessIOResult::No_Return;
 				}
 				this->outputBuffers.emplace_back(dataToWrite);
 				return this->writeDataProcess();
@@ -352,7 +349,6 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 #endif
-		this->theSSLState.store(SSLConnectionState::Connected);
 		return true;
 	}
 
@@ -410,7 +406,7 @@ namespace DiscordCoreInternal {
 			this->disconnect(true);
 			returnValueReal = ProcessIOResult::Select_Failure;
 		} else if (returnValue == 0) {
-			returnValueReal = ProcessIOResult::Select_No_Return;
+			returnValueReal = ProcessIOResult::No_Return;
 		}
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
@@ -457,7 +453,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 		} else {
-			return ProcessIOResult::Nothing_To_Write;
+			return ProcessIOResult::No_Error;
 		}
 	}
 

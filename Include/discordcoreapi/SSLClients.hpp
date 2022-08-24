@@ -162,8 +162,6 @@ namespace DiscordCoreInternal {
 		bool doWeClearAddrInfo{ false };
 	};
 
-	enum class SSLConnectionState { Connected = 1, Disconnected = 2 };
-
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
 	  public:
 		SSLConnectionInterface() noexcept = default;
@@ -177,14 +175,13 @@ namespace DiscordCoreInternal {
 		virtual ~SSLConnectionInterface() noexcept;
 
 	  protected:
-		std::atomic<SSLConnectionState> theSSLState{ SSLConnectionState::Disconnected };
 		std::recursive_mutex connectionMutex{};
 		SOCKETWrapper theSocket{};
 		SSL_CTXWrapper context{};
 		SSLWrapper ssl{};
 	};
 
-	enum class ProcessIOResult : int8_t { No_Error = 0, Disconnected = 1, SSL_Error = 2, SSL_Zero_Return = 3, Select_Failure = 4, Select_No_Return = 5, Nothing_To_Write = 6 };
+	enum class ProcessIOResult : int8_t { No_Error = 0, Disconnected = 1, SSL_Error = 2, SSL_Zero_Return = 3, Select_Failure = 4, No_Return = 5, Nothing_To_Write = 6 };
 
 	class DiscordCoreAPI_Dll SSLDataInterface {
 	  public:

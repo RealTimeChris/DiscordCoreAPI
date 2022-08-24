@@ -246,8 +246,7 @@ namespace DiscordCoreInternal {
 	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
 
 	void HttpsConnection::disconnect(bool) noexcept {
-		if (this->theSSLState.load() == SSLConnectionState::Connected) {
-			this->theSSLState.store(SSLConnectionState::Disconnected);
+		if (this->theSocket != SOCKET_ERROR) {
 			std::unique_lock theLock{ this->connectionMutex };
 			this->theSocket = SOCKET_ERROR;
 		}
@@ -388,7 +387,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				theResult = httpsConnection.writeData(theRequest, true);
-			} while (theResult == ProcessIOResult::Select_No_Return);
+			} while (theResult == ProcessIOResult::No_Return);
 			if (theResult != ProcessIOResult::No_Error) {
 				httpsConnection.currentReconnectTries++;
 				httpsConnection.doWeConnect = true;
@@ -509,7 +508,7 @@ namespace DiscordCoreInternal {
 				auto theResult = theConnection.processIO(1000);
 				if (theResult == ProcessIOResult::SSL_Zero_Return) {
 					doWeReturn = true;
-				} else if (theResult != ProcessIOResult::No_Error && theResult != ProcessIOResult::Select_No_Return) {
+				} else if (theResult != ProcessIOResult::No_Error && theResult != ProcessIOResult::No_Return) {
 					theData.responseCode = -1;
 					doWeReturn = true;
 				}
