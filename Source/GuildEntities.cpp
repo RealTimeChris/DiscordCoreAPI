@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		}
 		for (auto& value: this->roles) {
 			nlohmann::json newData{};
-			newData["permissions"] = value.permissions;
+			newData["permissions"] = static_cast<uint64_t>(value.permissions);
 			newData["tags"]["premium_subscriber"] = value.tags.premiumSubscriber;
 			newData["tags"]["integration_id"] = value.tags.integrationId;
 			newData["mentionable"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Mentionable);
@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string GuildData::getIconUrl() {
-		return this->icon.getHashUrl(this->id, 0);
+		return this->icon.getHashUrl(this->id, 0, HashType::Guild_Icon);
 	}
 
 	bool GuildData::areWeConnected() {
@@ -246,13 +246,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	Guild& Guild::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
+	GuildData::~GuildData() noexcept {
+		std::cout << "(GUILD) WERE LEAVING: THE CACHE SIZE IS: " << Guilds::cache.size() << std::endl;
 	}
 
-	Guild::Guild(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
+	void Guild::parseObject(const nlohmann::json* theData) {
+		DiscordCoreAPI::parseObject(theData, *this);
 	}
 
 	GuildVector::operator std::vector<Guild>() {

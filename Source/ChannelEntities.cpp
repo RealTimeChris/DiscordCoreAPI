@@ -151,6 +151,10 @@ namespace DiscordCoreAPI {
 		return this->theChannels;
 	}
 
+	ChannelData::~ChannelData() noexcept {
+		std::cout << "WERE LEAVING: THE CACHE SIZE IS: " << Channels::cache.size() << std::endl;
+	}
+
 	ChannelVector& ChannelVector::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;

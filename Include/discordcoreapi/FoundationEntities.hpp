@@ -395,7 +395,7 @@ namespace DiscordCoreAPI {
 
 		std::string getAvatarUrl();
 
-		virtual ~UserData() noexcept = default;
+		virtual ~UserData() noexcept;
 	};
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, UserData& theData);
@@ -798,7 +798,7 @@ namespace DiscordCoreAPI {
 
 		UserData getUserData();
 
-		virtual ~GuildMemberData() noexcept = default;
+		virtual ~GuildMemberData() noexcept;
 	};
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, GuildMemberData& theData);
@@ -841,7 +841,7 @@ namespace DiscordCoreAPI {
 
 		void insertChannel(std::unique_ptr<ChannelData>);
 
-		virtual ~ChannelData() noexcept = default;
+		virtual ~ChannelData() noexcept;
 	};
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, ChannelData& theData);
@@ -896,7 +896,7 @@ namespace DiscordCoreAPI {
 
 		void insertRole(std::unique_ptr<RoleData>);
 
-		virtual ~RoleData() noexcept = default;
+		virtual ~RoleData() noexcept;
 	};
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, RoleData& theData);
@@ -2000,7 +2000,7 @@ namespace DiscordCoreAPI {
 
 		void disconnect();
 
-		virtual ~GuildData() noexcept = default;
+		virtual ~GuildData() noexcept;
 	};
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, GuildData& theData);
