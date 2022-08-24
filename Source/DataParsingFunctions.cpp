@@ -154,54 +154,33 @@ namespace DiscordCoreAPI {
 
 	template<>
 	void parseObject(const nlohmann::json* jsonObjectData, Role& theData) {
-		if (jsonObjectData->contains("id") && !(*jsonObjectData)["id"].is_null()) {
-			if ((*jsonObjectData)["id"].is_string()) {
-				theData.id = stoull((*jsonObjectData)["id"].get<std::string>());
-			} else {
-				theData.id = (*jsonObjectData)["id"].get<int64_t>();
-			}
-		}
 
-		if (jsonObjectData->contains("icon") && !(*jsonObjectData)["icon"].is_null()) {
-			theData.icon = (*jsonObjectData)["icon"].get<std::string>();
-		}
+		theData.id = strtoull(getString(jsonObjectData, "id"));
 
-		if (jsonObjectData->contains("name") && !(*jsonObjectData)["name"].is_null()) {
-			theData.name = (*jsonObjectData)["name"].get<std::string>();
-		}
+		theData.icon = getString(jsonObjectData, "icon");
 
-		if (jsonObjectData->contains("unicode_emoji") && !(*jsonObjectData)["unicode_emoji"].is_null()) {
-			std::stringstream theStream{};
-			theStream << (*jsonObjectData)["unicode_emoji"] << endl;
-			for (auto& value: theStream.str()) {
-				theData.unicodeEmoji.push_back(value);
-			}
+		theData.name = getString(jsonObjectData, "name");
+
+		std::stringstream theStream{};
+		theStream << getString(jsonObjectData, "unicode_emoji");
+		for (auto& value: theStream.str()) {
+			theData.unicodeEmoji.push_back(value);
+		}
+		if (theData.unicodeEmoji.size() > 3) {
 			theData.unicodeEmoji = static_cast<std::string>(theData.unicodeEmoji).substr(1, theData.unicodeEmoji.size() - 3);
 		}
 
-		if (jsonObjectData->contains("color") && !(*jsonObjectData)["color"].is_null()) {
-			theData.color = (*jsonObjectData)["color"].get<int32_t>();
-		}
+		theData.color = getUint32(jsonObjectData, "color");
 
-		if (jsonObjectData->contains("hoist") && !(*jsonObjectData)["hoist"].is_null()) {
-			theData.flags = setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Hoist, (*jsonObjectData)["hoist"].get<bool>());
-		}
+		theData.flags |= setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Hoist, getBool(jsonObjectData, "hoist"));
 
-		if (jsonObjectData->contains("position") && !(*jsonObjectData)["position"].is_null()) {
-			theData.position = (*jsonObjectData)["position"].get<int32_t>();
-		}
+		theData.position = getUint32(jsonObjectData, "position");
 
-		if (jsonObjectData->contains("permissions") && !(*jsonObjectData)["permissions"].is_null()) {
-			theData.permissions = (*jsonObjectData)["permissions"].get<std::string>();
-		}
+		theData.permissions = getString(jsonObjectData, "permissions");
 
-		if (jsonObjectData->contains("managed") && !(*jsonObjectData)["managed"].is_null()) {
-			theData.flags = setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Managed, (*jsonObjectData)["managed"].get<bool>());
-		}
+		theData.flags |= setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Managed, getBool(jsonObjectData, "managed"));
 
-		if (jsonObjectData->contains("mentionable") && !(*jsonObjectData)["mentionable"].is_null()) {
-			theData.flags = setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Mentionable, (*jsonObjectData)["mentionable"].get<bool>());
-		}
+		theData.flags |= setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
 
 		if (jsonObjectData->contains("tags") && !(*jsonObjectData)["tags"].is_null()) {
 			parseObject(&(*jsonObjectData)["tags"], theData.tags);
@@ -1525,6 +1504,7 @@ namespace DiscordCoreAPI {
 		this->theWebHooks.shrink_to_fit();
 	}
 
+	template<>
 	void parseObject(const nlohmann::json* jsonObjectData, RoleTagsData& theData) {
 		theData.botId = getString(jsonObjectData, "bot_id");
 
