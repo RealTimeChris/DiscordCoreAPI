@@ -386,20 +386,10 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 
-		StringWrapper discriminator{};///< The user's 4-digit discord-tag	identify.
-		StringWrapper userName{};///< The user's userName, not unique across the platform identify.
-		UserAvatar avatar{};///< The user's avatar hash.
+		std::string discriminator{};///< The user's 4-digit discord-tag	identify.
+		std::string userName{};///< The user's userName, not unique across the platform identify.
+		IconHash avatar{};///< The user's avatar hash.
 		int32_t flags{};///< The public flags on a user' s account.
-
-		UserData() noexcept = default;
-
-		UserData& operator=(UserData&& theData) noexcept = default;
-
-		UserData(UserData&& theData) noexcept = default;
-
-		UserData& operator=(const UserData& other) noexcept = default;
-
-		UserData(const UserData& other) noexcept = default;
 
 		void insertUser(std::unique_ptr<UserData> theUser);
 
@@ -408,25 +398,7 @@ namespace DiscordCoreAPI {
 		virtual ~UserData() noexcept = default;
 	};
 
-	template<> inline void parseObject(const nlohmann::json* jsonObjectData, UserData& theData) {
-		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::MFAEnabled, getBoolReal(jsonObjectData, "mfa_enabled"));
-
-		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::Verified, getBoolReal(jsonObjectData, "verified"));
-
-		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::System, getBoolReal(jsonObjectData, "system"));
-
-		theData.flags = setBool<int32_t, UserFlags>(theData.flags, UserFlags::Bot, getBoolReal(jsonObjectData, "bot"));
-
-		theData.discriminator = getString(jsonObjectData, "discriminator");
-
-		theData.flags = getUint32(jsonObjectData, "public_flags");
-
-		theData.userName = getString(jsonObjectData, "username");
-
-		theData.id = strtoull(getString(jsonObjectData, "id"));
-
-		theData.avatar = getString(jsonObjectData, "avatar");
-	}
+	template<> void parseObject(const nlohmann::json* jsonObjectData, UserData& theData);
 
 	/// Attachment data. \brief Attachment data.
 	class DiscordCoreAPI_Dll AttachmentData : public DiscordEntity {
@@ -440,8 +412,6 @@ namespace DiscordCoreAPI {
 		int32_t width{ 0 };///< The width of the attachment.
 		int32_t size{ 0 };///< The size of the attachment.
 		std::string url{};///< The url for the attachment.
-
-		AttachmentData() noexcept = default;
 
 		operator nlohmann::json();
 
@@ -462,13 +432,14 @@ namespace DiscordCoreAPI {
 		std::string proxyIconUrl{};///< Proxy icon url.
 		std::string iconUrl{};///< Icon url.
 		std::string text{};///< Footer text.
-		EmbedFooterData() = default;
+
+		EmbedFooterData() noexcept = default;
 
 		EmbedFooterData& operator=(const nlohmann::json* jsonObjectData);
 
 		EmbedFooterData(const nlohmann::json* jsonObjectData);
 
-		virtual ~EmbedFooterData() = default;
+		virtual ~EmbedFooterData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -480,13 +451,13 @@ namespace DiscordCoreAPI {
 		int32_t width{ 0 };///< Image width.
 		std::string url{};///< Image url.
 
-		EmbedImageData() = default;
+		EmbedImageData() noexcept = default;
 
 		EmbedImageData& operator=(const nlohmann::json* jsonObjectData);
 
 		EmbedImageData(const nlohmann::json* jsonObjectData);
 
-		virtual ~EmbedImageData() = default;
+		virtual ~EmbedImageData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -498,13 +469,13 @@ namespace DiscordCoreAPI {
 		int32_t width{ 0 };///< Image width.
 		std::string url{};///< Image url.
 
-		EmbedThumbnailData() = default;
+		EmbedThumbnailData() noexcept = default;
 
 		EmbedThumbnailData& operator=(const nlohmann::json* jsonObjectData);
 
 		EmbedThumbnailData(const nlohmann::json* jsonObjectData);
 
-		virtual ~EmbedThumbnailData() = default;
+		virtual ~EmbedThumbnailData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -516,13 +487,13 @@ namespace DiscordCoreAPI {
 		int32_t width{ 0 };///< Image width.
 		std::string url{};///< Image url.
 
-		EmbedVideoData() = default;
+		EmbedVideoData() noexcept = default;
 
 		EmbedVideoData& operator=(const nlohmann::json* jsonObjectData);
 
 		EmbedVideoData(const nlohmann::json* jsonObjectData);
 
-		virtual ~EmbedVideoData() = default;
+		virtual ~EmbedVideoData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -532,13 +503,13 @@ namespace DiscordCoreAPI {
 		std::string name{};///< Name.
 		std::string url{};///< Url.
 
-		EmbedProviderData() = default;
+		EmbedProviderData() noexcept = default;
 
 		EmbedProviderData& operator=(const nlohmann::json* jsonObjectData);
 
 		EmbedProviderData(const nlohmann::json* jsonObjectData);
 
-		virtual ~EmbedProviderData() = default;
+		virtual ~EmbedProviderData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -550,13 +521,13 @@ namespace DiscordCoreAPI {
 		std::string name{};///< Name.
 		std::string url{};///< Url.
 
-		EmbedAuthorData() = default;
+		EmbedAuthorData() noexcept = default;
 
 		EmbedAuthorData& operator=(const nlohmann::json* jsonObjectData);
 
 		EmbedAuthorData(const nlohmann::json* jsonObjectData);
 
-		virtual ~EmbedAuthorData() = default;
+		virtual ~EmbedAuthorData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -567,7 +538,7 @@ namespace DiscordCoreAPI {
 		std::string value{};///< The text on the field.
 		std::string name{};///< The title of the field.
 
-		EmbedFieldData() = default;
+		EmbedFieldData() noexcept = default;
 
 		operator nlohmann::json();
 
@@ -575,7 +546,7 @@ namespace DiscordCoreAPI {
 
 		EmbedFieldData(const nlohmann::json* jsonObjectData);
 
-		virtual ~EmbedFieldData() = default;
+		virtual ~EmbedFieldData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -607,7 +578,7 @@ namespace DiscordCoreAPI {
 		std::string type{};///< Type of the embed.
 		std::string url{};///< Url for the embed.
 
-		EmbedData() = default;
+		EmbedData() noexcept = default;
 
 		operator nlohmann::json();
 
@@ -664,7 +635,7 @@ namespace DiscordCoreAPI {
 		/// \returns EmbedData& A reference to this embed.
 		EmbedData& setImage(const std::string& imageUrl);
 
-		virtual ~EmbedData() = default;
+		virtual ~EmbedData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -676,7 +647,7 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< Id of the Channel that the referenced Message was sent in.
 		Snowflake guildId{};///< Id of the Guild that the referenced Message was sent in.
 
-		MessageReferenceData() = default;
+		MessageReferenceData() noexcept = default;
 
 		operator nlohmann::json();
 
@@ -684,7 +655,7 @@ namespace DiscordCoreAPI {
 
 		MessageReferenceData(const nlohmann::json* jsonObjectData);
 
-		virtual ~MessageReferenceData() = default;
+		virtual ~MessageReferenceData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -716,19 +687,19 @@ namespace DiscordCoreAPI {
 
 	/// Meta data for a Thread type of Channel. \brief Meta data for a Thread type of Channel.
 	struct DiscordCoreAPI_Dll ThreadMetadataData {
+		TimeStamp<std::chrono::milliseconds> archiveTimestamp{};///< (Where applicable) the time at which this Thread was archived.
 		int32_t autoArchiveDuration{ 0 };///< How int64_t before archiving this Thread.
-		uint64_t archiveTimestamp{};///< (Where applicable) the time at which this Thread was archived.
 		bool invitable{ false };///< The id of the individual who archived this Thread.
 		bool archived{ false };///< Whether or not this Thread is currently archived.
 		bool locked{ false };///< Whether or not this Thread is currently locked.
 
-		ThreadMetadataData() = default;
+		ThreadMetadataData() noexcept = default;
 
 		ThreadMetadataData& operator=(const nlohmann::json* jsonObjectData);
 
 		ThreadMetadataData(nlohmann::json* other);
 
-		virtual ~ThreadMetadataData() = default;
+		virtual ~ThreadMetadataData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -736,24 +707,24 @@ namespace DiscordCoreAPI {
 	/// Data for a single member of a Thread. \brief Data for a single member of a Thread.
 	class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
 	  public:
-		uint64_t joinTimestamp{};///< The time at which the member joined this Thread.
+		TimeStamp<std::chrono::milliseconds> joinTimestamp{};///< The time at which the member joined this Thread.
 		int32_t flags{ 0 };///< Flags.
 		Snowflake userId{};///< The User's id.
 
-		ThreadMemberData() = default;
+		ThreadMemberData() noexcept = default;
 
 		ThreadMemberData& operator=(const nlohmann::json* jsonObjectData);
 
 		ThreadMemberData(const nlohmann::json* other);
 
-		virtual ~ThreadMemberData() = default;
+		virtual ~ThreadMemberData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll ThreadMemberDataVector {
 	  public:
-		ThreadMemberDataVector() = default;
+		ThreadMemberDataVector() noexcept = default;
 
 		operator std::vector<ThreadMemberData>();
 
@@ -761,7 +732,7 @@ namespace DiscordCoreAPI {
 
 		ThreadMemberDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~ThreadMemberDataVector() = default;
+		virtual ~ThreadMemberDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -779,7 +750,7 @@ namespace DiscordCoreAPI {
 	/// Voice state data. \brief Voice state data.
 	struct DiscordCoreAPI_Dll VoiceStateData {
 		TimeStamp<std::chrono::milliseconds> requestToSpeakTimestamp{ "" };///< The time at which the User requested to speak.
-		StringWrapper sessionId{};///< The session id for this voice state.
+		std::string sessionId{};///< The session id for this voice state.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
 		bool selfVideo{ false };///< Whether this User's camera is enabled.
 		bool selfDeaf{ false };///< Whether this User is locally deafened.
@@ -791,17 +762,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild id this voice state is for.
 		Snowflake userId{};///< The User id this voice state is for.
 
-		VoiceStateData() = default;
-
-		VoiceStateData& operator=(VoiceStateData&& theData) noexcept = default;
-
-		VoiceStateData(VoiceStateData&& theData) noexcept = default;
-
-		VoiceStateData& operator=(const VoiceStateData& theData) noexcept = default;
-
-		VoiceStateData(const VoiceStateData& theData) noexcept = default;
-
-		virtual ~VoiceStateData() = default;
+		virtual ~VoiceStateData() noexcept = default;
 	};
 
 	void parseObject(const nlohmann::json* jsonObjectData, VoiceStateData& theData);
@@ -821,24 +782,15 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
 	  public:
 		friend class GuildData;
+
+		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		Snowflake voiceChannelId{};///< Currently held voice channel, if applicable.
-		GuildMemberAvatar avatar{};///< This GuildMember's Guild Avatar.
-		uint64_t permissions{};///< Their base-level Permissions in the Guild.
-		StringWrapper nick{};///< Their nick/display name.
-		uint64_t joinedAt{};///< When they joined the Guild.
+		Permissions permissions{};///< Their base-level Permissions in the Guild
 		Snowflake guildId{};///< The current Guild's id.
+		std::string nick{};///< Their nick/display name.
+		IconHash avatar{};///< This GuildMember's Guild Avatar.
 		int8_t flags{ 0 };///< GuildMember flags.
-
-		GuildMemberData() = default;
-
-		GuildMemberData& operator=(GuildMemberData&&) noexcept = default;
-
-		GuildMemberData(GuildMemberData&&) noexcept = default;
-
-		GuildMemberData& operator=(const GuildMemberData&) noexcept = default;
-
-		GuildMemberData(const GuildMemberData&) noexcept = default;
 
 		void insertGuildMember(std::unique_ptr<GuildMemberData> theGuildMember);
 
@@ -851,28 +803,18 @@ namespace DiscordCoreAPI {
 
 	void parseObject(const nlohmann::json* jsonObjectData, GuildMemberData& theData);
 
-	/// Permission overwrites types. \brief Permission overwrites types.
+	/// PermissionTypes overwrites types. \brief PermissionTypes overwrites types.
 	enum class PermissionOverwritesType : uint8_t {
 		Role = 0,///< Role.
 		User = 1///< User.
 	};
 
-	/// A Permission overwrite, for a given Channel. \brief A Permission overwrite, for a given Channel.
+	/// A PermissionTypes overwrite, for a given Channel. \brief A PermissionTypes overwrite, for a given Channel.
 	class DiscordCoreAPI_Dll OverWriteData : public DiscordEntity {
 	  public:
 		PermissionOverwritesType type{};///< Role or User type.
 		uint64_t allow{};///< Collection of Permissions to allow.
 		uint64_t deny{};///< Collection of Permissions to deny.
-
-		OverWriteData() noexcept = default;
-
-		OverWriteData& operator=(OverWriteData&&) noexcept = default;
-
-		OverWriteData(OverWriteData&&) noexcept = default;
-
-		OverWriteData& operator=(const OverWriteData&) noexcept = default;
-
-		OverWriteData(const OverWriteData&) noexcept = default;
 
 		virtual ~OverWriteData() noexcept = default;
 	};
@@ -890,29 +832,19 @@ namespace DiscordCoreAPI {
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
 		uint16_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
-		StringWrapper topic{};///< Channel topic.
-		StringWrapper name{};///< Name of the Channel.
 		Snowflake parentId{};///< Id of the Channel's parent Channel/category.
+		std::string topic{};///< Channel topic.
 		Snowflake ownerId{};///< Id of the Channel's owner.
 		Snowflake guildId{};///< Id of the Channel's Guild, if applicable.
+		std::string name{};///< Name of the Channel.
 		uint8_t flags{};///< Flags combined as a bitmask.
-
-		ChannelData() noexcept = default;
-
-		ChannelData& operator=(ChannelData&& theData) noexcept = default;
-
-		ChannelData(ChannelData&& other) noexcept = default;
-
-		ChannelData& operator=(const ChannelData& theData) noexcept = default;
-
-		ChannelData(const ChannelData& other) noexcept = default;
 
 		void insertChannel(std::unique_ptr<ChannelData>);
 
 		virtual ~ChannelData() noexcept = default;
 	};
 
-	void parseObject(const nlohmann::json* jsonObjectData, ChannelData& theData);
+	template<> void parseObject(const nlohmann::json* jsonObjectData, ChannelData& theData);
 
 	/// Data representing an active Thread. \brief Data representing an active Thread.
 	struct DiscordCoreAPI_Dll ActiveThreadsData {
@@ -920,13 +852,13 @@ namespace DiscordCoreAPI {
 		std::vector<ChannelData> threads{};
 		bool hasMore{ false };
 
-		ActiveThreadsData() = default;
+		ActiveThreadsData() noexcept = default;
 
 		ActiveThreadsData& operator=(const nlohmann::json* jsonObjectData);
 
 		ActiveThreadsData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ActiveThreadsData() = default;
+		virtual ~ActiveThreadsData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -937,13 +869,13 @@ namespace DiscordCoreAPI {
 		std::vector<ChannelData> threads{};
 		bool hasMore{ false };
 
-		ArchivedThreadsData() = default;
+		ArchivedThreadsData() noexcept = default;
 
 		ArchivedThreadsData& operator=(const nlohmann::json* jsonObjectData);
 
 		ArchivedThreadsData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ArchivedThreadsData() = default;
+		virtual ~ArchivedThreadsData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -955,29 +887,19 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 
-		StringWrapper unicodeEmoji{};///< Emoji representing the Role.
-		uint64_t permissions{};///< The Role's base Guild Permissions.
+		std::string unicodeEmoji{};///< Emoji representing the Role.
+		Permissions permissions{};///< The Role's base Guild Permissions.
 		int16_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
-		StringWrapper name{};///< The Role's name.
+		std::string name{};///< The Role's name.
 		int32_t color{ 0 };///< The Role's color.
 		int8_t flags{ 0 };///< Role flags.
-
-		RoleData() noexcept = default;
-
-		RoleData& operator=(RoleData&& theData) noexcept = default;
-
-		RoleData(RoleData&& theData) noexcept = default;
-
-		RoleData& operator=(const RoleData& theData) noexcept = default;
-
-		RoleData(const RoleData& theData) noexcept = default;
 
 		void insertRole(std::unique_ptr<RoleData>);
 
 		virtual ~RoleData() noexcept = default;
 	};
 
-	void parseObject(const nlohmann::json* jsonObjectData, RoleData& theData);
+	template<> void parseObject(const nlohmann::json* jsonObjectData, RoleData& theData);
 
 	/// Application command-option types. \brief Application command-option types.
 	enum class ApplicationCommandOptionType : uint8_t {
@@ -1033,13 +955,13 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< Channel to which user content should be logged.
 		int64_t durationSeconds{};///< Timeout duration in seconds.
 
-		ActionMetaData() = default;
+		ActionMetaData() noexcept = default;
 
 		ActionMetaData& operator=(const nlohmann::json* jsonObjectData);
 
 		ActionMetaData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ActionMetaData() = default;
+		virtual ~ActionMetaData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1049,13 +971,13 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> keywordFilter{};///< Substrings which will be searched for in content.
 		std::vector<KeywordPresetType> presets{};///< The internally pre-defined wordsets which will be searched for in content.
 
-		TriggerMetaData() = default;
+		TriggerMetaData() noexcept = default;
 
 		TriggerMetaData& operator=(const nlohmann::json* jsonObjectData);
 
 		TriggerMetaData(const nlohmann::json* jsonObjectData);
 
-		virtual ~TriggerMetaData() = default;
+		virtual ~TriggerMetaData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1065,13 +987,13 @@ namespace DiscordCoreAPI {
 		ActionType type{};///< The type of action.
 		ActionMetaData metadata{};///< Additional metadata needed during execution for this specific action type.
 
-		ActionData() = default;
+		ActionData() noexcept = default;
 
 		ActionData& operator=(const nlohmann::json* jsonObjectData);
 
 		ActionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ActionData() = default;
+		virtual ~ActionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1090,13 +1012,13 @@ namespace DiscordCoreAPI {
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled.
 
-		AutoModerationRuleData() = default;
+		AutoModerationRuleData() noexcept = default;
 
 		AutoModerationRuleData& operator=(const nlohmann::json* jsonObjectData);
 
 		AutoModerationRuleData(const nlohmann::json* jsonObjectData);
 
-		virtual ~AutoModerationRuleData() = default;
+		virtual ~AutoModerationRuleData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1104,16 +1026,16 @@ namespace DiscordCoreAPI {
 	/// Permissions data for an ApplicationCommand. \brief Permissions data for an ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommandPermissionData : public DiscordEntity {
 	  public:
-		ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role };///< The type of Permission.
-		bool permission{ false };///< Whether the Permission is active or not.
+		ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role };///< The type of PermissionTypes.
+		bool permission{ false };///< Whether the PermissionTypes is active or not.
 
-		ApplicationCommandPermissionData() = default;
+		ApplicationCommandPermissionData() noexcept = default;
 
 		ApplicationCommandPermissionData& operator=(const nlohmann::json* jsonObjectData);
 
 		ApplicationCommandPermissionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ApplicationCommandPermissionData() = default;
+		virtual ~ApplicationCommandPermissionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1125,13 +1047,13 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< The application's id.
 		Snowflake guildId{};///< The Guild's id.
 
-		GuildApplicationCommandPermissionsData() = default;
+		GuildApplicationCommandPermissionsData() noexcept = default;
 
 		GuildApplicationCommandPermissionsData& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildApplicationCommandPermissionsData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildApplicationCommandPermissionsData() = default;
+		virtual ~GuildApplicationCommandPermissionsData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1140,7 +1062,7 @@ namespace DiscordCoreAPI {
 	  public:
 		std::vector<GuildApplicationCommandPermissionsData> theGuildApplicationCommandPermissionsDatas{};
 
-		GuildApplicationCommandPermissionsDataVector() = default;
+		GuildApplicationCommandPermissionsDataVector() noexcept = default;
 
 		operator std::vector<GuildApplicationCommandPermissionsData>();
 
@@ -1148,7 +1070,7 @@ namespace DiscordCoreAPI {
 
 		GuildApplicationCommandPermissionsDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildApplicationCommandPermissionsDataVector() = default;
+		virtual ~GuildApplicationCommandPermissionsDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1162,16 +1084,16 @@ namespace DiscordCoreAPI {
 		bool available{ true };///< Is it available to be used?
 		bool animated{ false };///< Is it animated?
 		bool managed{ false };///< Is it managed?
-		StringWrapper name{};///< What is its name?
+		std::string name{};///< What is its name?
 		UserData user{};///< User that created this emoji.
 
-		EmojiData() = default;
+		EmojiData() noexcept = default;
 
 		EmojiData& operator=(const nlohmann::json* jsonObjectData);
 
 		EmojiData(const nlohmann::json* jsonObjectData);
 
-		virtual ~EmojiData() = default;
+		virtual ~EmojiData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1180,13 +1102,13 @@ namespace DiscordCoreAPI {
 	  public:
 		std::vector<EmojiData> theEmojiDatas{};
 
-		EmojiDataVector() = default;
+		EmojiDataVector() noexcept = default;
 
 		EmojiDataVector& operator=(const nlohmann::json* jsonObjectData);
 
 		EmojiDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~EmojiDataVector() = default;
+		virtual ~EmojiDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1220,13 +1142,13 @@ namespace DiscordCoreAPI {
 		Snowflake userId{};///< The id of the User who placed the reaction.
 		bool me{ false };///< Whether or not I (The bot) placed it.
 
-		ReactionData() = default;
+		ReactionData() noexcept = default;
 
 		ReactionData& operator=(const nlohmann::json* jsonObjectData);
 
 		ReactionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ReactionData() = default;
+		virtual ~ReactionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1239,20 +1161,20 @@ namespace DiscordCoreAPI {
 		std::string name{};///< Name of the region.
 		Snowflake id{};///< Unique ID for the region.
 
-		VoiceRegionData() = default;
+		VoiceRegionData() noexcept = default;
 
 		VoiceRegionData& operator=(const nlohmann::json* jsonObjectData);
 
 		VoiceRegionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~VoiceRegionData() = default;
+		virtual ~VoiceRegionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll VoiceRegionDataVector {
 	  public:
-		VoiceRegionDataVector() = default;
+		VoiceRegionDataVector() noexcept = default;
 
 		operator std::vector<VoiceRegionData>() {
 			return this->theVoiceRegionDatas;
@@ -1262,7 +1184,7 @@ namespace DiscordCoreAPI {
 
 		VoiceRegionDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~VoiceRegionDataVector() = default;
+		virtual ~VoiceRegionDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -1283,13 +1205,13 @@ namespace DiscordCoreAPI {
 		MessageActivityType type{ MessageActivityType::Join };///< Message activity type.
 		std::string partyId{};///< Party id.
 
-		MessageActivityData() = default;
+		MessageActivityData() noexcept = default;
 
 		MessageActivityData& operator=(const nlohmann::json* jsonObjectData);
 
 		MessageActivityData(const nlohmann::json* jsonObjectData);
 
-		virtual ~MessageActivityData() = default;
+		virtual ~MessageActivityData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1300,20 +1222,20 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< Reason for the ban.
 		UserData user{};///< User that was banned.
 
-		BanData() = default;
+		BanData() noexcept = default;
 
 		BanData& operator=(const nlohmann::json* jsonObjectData);
 
 		BanData(const nlohmann::json* jsonObjectData);
 
-		virtual ~BanData() = default;
+		virtual ~BanData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll BanDataVector {
 	  public:
-		BanDataVector() = default;
+		BanDataVector() noexcept = default;
 
 		operator std::vector<BanData>();
 
@@ -1321,7 +1243,7 @@ namespace DiscordCoreAPI {
 
 		BanDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~BanDataVector() = default;
+		virtual ~BanDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -1336,13 +1258,13 @@ namespace DiscordCoreAPI {
 		std::string teamId{};///< Id of the current team.
 		UserData user{};///< User data of the current User.
 
-		TeamMembersObjectData() = default;
+		TeamMembersObjectData() noexcept = default;
 
 		TeamMembersObjectData& operator=(const nlohmann::json* jsonObjectData);
 
 		TeamMembersObjectData(const nlohmann::json* jsonObjectData);
 
-		virtual ~TeamMembersObjectData() = default;
+		virtual ~TeamMembersObjectData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1364,13 +1286,13 @@ namespace DiscordCoreAPI {
 		std::string ownerUserId{};///< User id of the team owner.
 		std::string icon{};///< Icon for the team.
 
-		TeamObjectData() = default;
+		TeamObjectData() noexcept = default;
 
 		TeamObjectData& operator=(const nlohmann::json* jsonObjectData);
 
 		TeamObjectData(const nlohmann::json* jsonObjectData);
 
-		virtual ~TeamObjectData() = default;
+		virtual ~TeamObjectData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1390,15 +1312,15 @@ namespace DiscordCoreAPI {
 	/// Install params data, for application data. \brief Install params data, for application data.
 	struct DiscordCoreAPI_Dll InstallParamsData {
 		std::vector<std::string> scopes{};///< The scopes to add the application to the server with.
-		std::string permissions{};///< The permissions to request for the bot role.
+		Permissions permissions{};///< The permissions to request for the bot role.
 
-		InstallParamsData() = default;
+		InstallParamsData() noexcept = default;
 
 		InstallParamsData& operator=(const nlohmann::json* jsonObjectData);
 
 		InstallParamsData(const nlohmann::json* jsonObjectData);
 
-		virtual ~InstallParamsData() = default;
+		virtual ~InstallParamsData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1426,13 +1348,13 @@ namespace DiscordCoreAPI {
 		std::string icon{};///< Application's icon.
 		UserData owner{};///< Application's owner.
 
-		ApplicationData() = default;
+		ApplicationData() noexcept = default;
 
 		ApplicationData& operator=(const nlohmann::json* jsonObjectData);
 
 		ApplicationData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ApplicationData() = default;
+		virtual ~ApplicationData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1444,13 +1366,13 @@ namespace DiscordCoreAPI {
 		std::string expires{};///< When the access token expires.
 		UserData user{};/// The User who has authorized, if the User has authorized with the identify scope.
 
-		AuthorizationInfoData() = default;
+		AuthorizationInfoData() noexcept = default;
 
 		AuthorizationInfoData& operator=(const nlohmann::json* jsonObjectData);
 
 		AuthorizationInfoData(const nlohmann::json* jsonObjectData);
 
-		virtual ~AuthorizationInfoData() = default;
+		virtual ~AuthorizationInfoData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1460,13 +1382,13 @@ namespace DiscordCoreAPI {
 	  public:
 		std::string name{};///< Name of the account.
 
-		AccountData() = default;
+		AccountData() noexcept = default;
 
 		AccountData& operator=(const nlohmann::json* jsonObjectData);
 
 		AccountData(const nlohmann::json* jsonObjectData);
 
-		virtual ~AccountData() = default;
+		virtual ~AccountData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1476,13 +1398,13 @@ namespace DiscordCoreAPI {
 		bool enabled{ false };///< Whether the widget is enabled.
 		Snowflake channelId{};///< The widget Channel id.
 
-		GuildWidgetData() = default;
+		GuildWidgetData() noexcept = default;
 
 		GuildWidgetData& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildWidgetData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildWidgetData() = default;
+		virtual ~GuildWidgetData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1509,13 +1431,13 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GuildWidgetImageData {
 		std::string url{};
 
-		GuildWidgetImageData() = default;
+		GuildWidgetImageData() noexcept = default;
 
 		GuildWidgetImageData& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildWidgetImageData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildWidgetImageData() = default;
+		virtual ~GuildWidgetImageData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1538,20 +1460,20 @@ namespace DiscordCoreAPI {
 		Snowflake roleId{};///< Role Id.
 		UserData user{};///< User data for the integration.
 
-		IntegrationData() = default;
+		IntegrationData() noexcept = default;
 
 		IntegrationData& operator=(const nlohmann::json* jsonObjectData);
 
 		IntegrationData(const nlohmann::json* jsonObjectData);
 
-		virtual ~IntegrationData() = default;
+		virtual ~IntegrationData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll IntegrationDataVector {
 	  public:
-		IntegrationDataVector() = default;
+		IntegrationDataVector() noexcept = default;
 
 		operator std::vector<IntegrationData>() {
 			return this->theIntegrationDatas;
@@ -1561,7 +1483,7 @@ namespace DiscordCoreAPI {
 
 		IntegrationDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~IntegrationDataVector() = default;
+		virtual ~IntegrationDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -1637,13 +1559,13 @@ namespace DiscordCoreAPI {
 		std::string count{};///< Count.
 		std::string type{};///< Type.
 
-		OptionalAuditEntryInfoData() = default;
+		OptionalAuditEntryInfoData() noexcept = default;
 
 		OptionalAuditEntryInfoData& operator=(const nlohmann::json* jsonObjectData);
 
 		OptionalAuditEntryInfoData(const nlohmann::json* jsonObjectData);
 
-		virtual ~OptionalAuditEntryInfoData() = default;
+		virtual ~OptionalAuditEntryInfoData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1654,13 +1576,13 @@ namespace DiscordCoreAPI {
 		nlohmann::json oldValue{};///< Old value.
 		std::string key{};///< The key of the audit log change.
 
-		AuditLogChangeData() = default;
+		AuditLogChangeData() noexcept = default;
 
 		AuditLogChangeData& operator=(const nlohmann::json* jsonObjectData);
 
 		AuditLogChangeData(const nlohmann::json* jsonObjectData);
 
-		virtual ~AuditLogChangeData() = default;
+		virtual ~AuditLogChangeData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1669,13 +1591,13 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GuildPruneCountData {
 		int32_t count{ 0 };
 
-		GuildPruneCountData() = default;
+		GuildPruneCountData() noexcept = default;
 
 		GuildPruneCountData& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildPruneCountData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildPruneCountData() = default;
+		virtual ~GuildPruneCountData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1691,13 +1613,13 @@ namespace DiscordCoreAPI {
 		Snowflake targetId{};///< Id of the target User.
 		Snowflake userId{};///< Id of the executing User.
 
-		AuditLogEntryData() = default;
+		AuditLogEntryData() noexcept = default;
 
 		AuditLogEntryData& operator=(const nlohmann::json* jsonObjectData);
 
 		AuditLogEntryData(const nlohmann::json* jsonObjectData);
 
-		virtual ~AuditLogEntryData() = default;
+		virtual ~AuditLogEntryData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1707,48 +1629,48 @@ namespace DiscordCoreAPI {
 	  public:
 		std::vector<int32_t> size{ 0, 0 };///< The size of the party.
 
-		PartyData() = default;
+		PartyData() noexcept = default;
 
 		PartyData& operator=(const nlohmann::json* jsonObjectData);
 
 		PartyData(const nlohmann::json* jsonObjectData);
 
-		virtual ~PartyData() = default;
+		virtual ~PartyData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	/// Assets data. \brief Party data.
 	struct DiscordCoreAPI_Dll AssetsData {
-		StringWrapper largeImage{};///< Keyname of an asset to display.
-		StringWrapper smallImage{};///< Keyname of an asset to display.
-		StringWrapper largeText{};///< Hover text for the large image.
-		StringWrapper smallText{};///< Hover text for the small image.
+		std::string largeImage{};///< Keyname of an asset to display.
+		std::string smallImage{};///< Keyname of an asset to display.
+		std::string largeText{};///< Hover text for the large image.
+		std::string smallText{};///< Hover text for the small image.
 
-		AssetsData() = default;
+		AssetsData() noexcept = default;
 
 		AssetsData& operator=(const nlohmann::json* jsonObjectData);
 
 		AssetsData(const nlohmann::json* jsonObjectData);
 
-		virtual ~AssetsData() = default;
+		virtual ~AssetsData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	/// Secrets data. \brief Secrets data.
 	struct DiscordCoreAPI_Dll SecretsData {
-		StringWrapper spectate{};///< Unique hash for the given match context.
-		StringWrapper match{};///< Unique hash for Spectate button.
-		StringWrapper join{};///< Unique hash for chat invitesand Ask to Join.
+		std::string spectate{};///< Unique hash for the given match context.
+		std::string match{};///< Unique hash for Spectate button.
+		std::string join{};///< Unique hash for chat invitesand Ask to Join.
 
-		SecretsData() = default;
+		SecretsData() noexcept = default;
 
 		SecretsData& operator=(const nlohmann::json* jsonObjectData);
 
 		SecretsData(const nlohmann::json* jsonObjectData);
 
-		virtual ~SecretsData() = default;
+		virtual ~SecretsData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1758,21 +1680,21 @@ namespace DiscordCoreAPI {
 		int64_t start{ 0 };///< Unix timestamp - Send this to have an "elapsed" timer.
 		int64_t end{ 0 };///< Unix timestamp - send this to have a "remaining" timer.
 
-		TimestampData() = default;
+		TimestampData() noexcept = default;
 
 		TimestampData& operator=(const nlohmann::json* jsonObjectData);
 
 		TimestampData(const nlohmann::json* jsonObjectData);
 
-		virtual ~TimestampData() = default;
+		virtual ~TimestampData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	/// Button data. \brief Button data.
 	struct DiscordCoreAPI_Dll ButtonData {
-		StringWrapper label{};///< Visible label of the button.
-		StringWrapper url{};///< Url to display on the button.
+		std::string label{};///< Visible label of the button.
+		std::string url{};///< Url to display on the button.
 	};
 
 	/// Activity types. \brief Activity types.
@@ -1789,44 +1711,44 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ActivityData {
 		TimestampData timestamps{};///< Timestamp data.
 		Snowflake applicationId{};///< Application id for the current application.
-		StringWrapper details{};///< Details about the activity.
+		std::string details{};///< Details about the activity.
 		int32_t createdAt{ 0 };///< Timestamp of when the activity began.
 		bool instance{ false };///< Whether this activity is an instanced context, like a match.
-		StringWrapper state{};///< The player's current party status.
+		std::string state{};///< The player's current party status.
 		SecretsData secrets{};///< Secrets data.
 		ButtonData buttons{};///< Button Data.
-		StringWrapper name{};///< Name of the activity.
+		std::string name{};///< Name of the activity.
 		ActivityType type{};///< Activity data.
 		AssetsData assets{};///< Assets data.
-		StringWrapper url{};///< Url associated with the activity.
+		std::string url{};///< Url associated with the activity.
 		int32_t flags{ 0 };///< Flags.
 		EmojiData emoji{};///< Emoji associated with the activity.
 		PartyData party{};///< Party data.
 
-		ActivityData() = default;
+		ActivityData() noexcept = default;
 
 		ActivityData& operator=(const nlohmann::json* jsonObjectData);
 
 		ActivityData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ActivityData() = default;
+		virtual ~ActivityData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	/// Client status data. \brief Client status data.
 	struct DiscordCoreAPI_Dll ClientStatusData {
-		StringWrapper desktop{};///< Desktop name.
-		StringWrapper mobile{};///< Mobile name.
-		StringWrapper web{};///< Web link.
+		std::string desktop{};///< Desktop name.
+		std::string mobile{};///< Mobile name.
+		std::string web{};///< Web link.
 
-		ClientStatusData() = default;
+		ClientStatusData() noexcept = default;
 
 		ClientStatusData& operator=(const nlohmann::json* jsonObjectData);
 
 		ClientStatusData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ClientStatusData() = default;
+		virtual ~ClientStatusData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1875,13 +1797,13 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< Id of the welcome Channel.
 		Snowflake emojiId{};///< Emoji id for the Channel.
 
-		WelcomeScreenChannelData() = default;
+		WelcomeScreenChannelData() noexcept = default;
 
 		WelcomeScreenChannelData& operator=(const nlohmann::json* jsonObjectData);
 
 		WelcomeScreenChannelData(const nlohmann::json* jsonObjectData);
 
-		virtual ~WelcomeScreenChannelData() = default;
+		virtual ~WelcomeScreenChannelData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1891,13 +1813,13 @@ namespace DiscordCoreAPI {
 		std::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome screen Channel data.
 		std::string description{};///< Description of the welcome screen.
 
-		WelcomeScreenData() = default;
+		WelcomeScreenData() noexcept = default;
 
 		WelcomeScreenData& operator=(const nlohmann::json* jsonObjectData);
 
 		WelcomeScreenData(const nlohmann::json* jsonObjectData);
 
-		virtual ~WelcomeScreenData() = default;
+		virtual ~WelcomeScreenData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1906,17 +1828,17 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll PresenceUpdateData {
 		std::vector<ActivityData> activities{};///< Array of activities.
 		ClientStatusData clientStatus{};///< Current client status.
-		StringWrapper status{};///< Status of the current presence.
+		std::string status{};///< Status of the current presence.
 		Snowflake guildId{};///< Guild id for the current presence.
 		UserData user{};///< User data for the current presence.
 
-		PresenceUpdateData() = default;
+		PresenceUpdateData() noexcept = default;
 
 		PresenceUpdateData& operator=(const nlohmann::json* jsonObjectData);
 
 		PresenceUpdateData(const nlohmann::json* jsonObjectData);
 
-		virtual ~PresenceUpdateData() = default;
+		virtual ~PresenceUpdateData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1936,13 +1858,13 @@ namespace DiscordCoreAPI {
 		std::string topic{};///< The topic of the StageInstance.
 		Snowflake guildId{};///< The Guild id for which the Channel exists in.
 
-		StageInstanceData() = default;
+		StageInstanceData() noexcept = default;
 
 		StageInstanceData& operator=(const nlohmann::json* jsonObjectData);
 
 		StageInstanceData(const nlohmann::json* jsonObjectData);
 
-		virtual ~StageInstanceData() = default;
+		virtual ~StageInstanceData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1971,13 +1893,13 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild id for which the Sticker exists in.
 		UserData user{};///< The User that uploaded the Guild Sticker.
 
-		StickerData() = default;
+		StickerData() noexcept = default;
 
 		StickerData& operator=(const nlohmann::json* jsonObjectData);
 
 		StickerData(const nlohmann::json* jsonObjectData);
 
-		virtual ~StickerData() = default;
+		virtual ~StickerData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -1996,13 +1918,13 @@ namespace DiscordCoreAPI {
 		std::string icon{};
 		Snowflake id{};
 
-		GuildPreviewData() = default;
+		GuildPreviewData() noexcept = default;
 
 		GuildPreviewData& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildPreviewData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildPreviewData() = default;
+		virtual ~GuildPreviewData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2051,21 +1973,11 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> channels{};///< Array of Guild channels.
 		std::vector<Snowflake> roles{};///< Array of Guild roles.
 		int32_t memberCount{ 0 };///< Member count.
-		uint64_t joinedAt{};///< When the bot joined this Guild.
+		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild.
 		std::string name{};///< The Guild's name.
 		Snowflake ownerId{};///< User id of the Guild's owner.
 		int8_t flags{ 0 };///< Guild flags.
-		GuildIcon icon{};///< Url to the Guild's icon.
-
-		GuildData() noexcept = default;
-
-		GuildData& operator=(GuildData&& theData) noexcept = default;
-
-		GuildData(GuildData&& theData) noexcept = default;
-
-		GuildData& operator=(const GuildData& theData) noexcept = default;
-
-		GuildData(const GuildData& theData) noexcept = default;
+		IconHash icon{};///< Url to the Guild's icon.
 
 		/// For connecting to an individual voice channel. \brief For connecting to an individual voice channel.
 		/// \param guildMemberId An id of the guild member who's current voice channel to connect to.
@@ -2091,13 +2003,13 @@ namespace DiscordCoreAPI {
 		virtual ~GuildData() noexcept = default;
 	};
 
-	void parseObject(const nlohmann::json* jsonObjectData, GuildData& theData);
+	template<> void parseObject(const nlohmann::json* jsonObjectData, GuildData& theData);
 
 	class DiscordCoreAPI_Dll GuildDataVector {
 	  public:
 		friend class Guilds;
 
-		GuildDataVector() = default;
+		GuildDataVector() noexcept = default;
 
 		operator std::vector<GuildData>();
 
@@ -2105,7 +2017,7 @@ namespace DiscordCoreAPI {
 
 		GuildDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildDataVector() = default;
+		virtual ~GuildDataVector() noexcept = default;
 
 	  protected:
 		std::vector<GuildData> theGuildDatas{};
@@ -2139,13 +2051,13 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GuildScheduledEventMetadata {
 		std::string location{};
 
-		GuildScheduledEventMetadata() = default;
+		GuildScheduledEventMetadata() noexcept = default;
 
 		GuildScheduledEventMetadata& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildScheduledEventMetadata(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildScheduledEventMetadata() = default;
+		virtual ~GuildScheduledEventMetadata() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2168,13 +2080,13 @@ namespace DiscordCoreAPI {
 		std::string name{};///< The name of the scheduled event(1 - 100 characters).
 		UserData creator{};///< The User that created the scheduled event.
 
-		GuildScheduledEventData() = default;
+		GuildScheduledEventData() noexcept = default;
 
 		GuildScheduledEventData& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildScheduledEventData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildScheduledEventData() = default;
+		virtual ~GuildScheduledEventData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2185,20 +2097,20 @@ namespace DiscordCoreAPI {
 		GuildMemberData member{};///< Guild member data for this User for the Guild which this event belongs to, if any.
 		UserData user{};///< User which subscribed to an event.
 
-		GuildScheduledEventUserData() = default;
+		GuildScheduledEventUserData() noexcept = default;
 
 		GuildScheduledEventUserData& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildScheduledEventUserData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildScheduledEventUserData() = default;
+		virtual ~GuildScheduledEventUserData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll GuildScheduledEventUserDataVector {
 	  public:
-		GuildScheduledEventUserDataVector() = default;
+		GuildScheduledEventUserDataVector() noexcept = default;
 
 		operator std::vector<GuildScheduledEventUserData>();
 
@@ -2206,7 +2118,7 @@ namespace DiscordCoreAPI {
 
 		GuildScheduledEventUserDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildScheduledEventUserDataVector() = default;
+		virtual ~GuildScheduledEventUserDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -2216,7 +2128,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildScheduledEventDataVector {
 	  public:
-		GuildScheduledEventDataVector() = default;
+		GuildScheduledEventDataVector() noexcept = default;
 
 		operator std::vector<GuildScheduledEventData>();
 
@@ -2224,7 +2136,7 @@ namespace DiscordCoreAPI {
 
 		GuildScheduledEventDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildScheduledEventDataVector() = default;
+		virtual ~GuildScheduledEventDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -2234,6 +2146,8 @@ namespace DiscordCoreAPI {
 
 	/// Invite data. \brief Invite data.
 	struct DiscordCoreAPI_Dll InviteData {
+		TimeStamp<std::chrono::milliseconds> expiresAt{};///< When the invite expires.
+		TimeStamp<std::chrono::milliseconds> createdAt{};///< Time it was created at.
 		GuildScheduledEventData guildScheduledEvent{};///< Scheduled Guild event.
 		int32_t approximatePresenceCount{ 0 };///< Approximate presence count.
 		ApplicationData targetApplication{};///< Application data.
@@ -2243,8 +2157,6 @@ namespace DiscordCoreAPI {
 		bool temporary{ false };///< Is it temporary?
 		UserData targetUser{};///< Target User of the invite.
 		ChannelData channel{};///< Channel data of the Channel that the invite is for.
-		uint64_t createdAt{};///< Time it was created at.
-		uint64_t expiresAt{};///< When the invite expires.
 		int32_t maxUses{ 0 };///< Max number of uses.
 		int32_t maxAge{ 0 };///< Maximum age of the invite.
 		Snowflake guildId{};///< The Guild this invite is for.
@@ -2253,20 +2165,20 @@ namespace DiscordCoreAPI {
 		GuildData guild{};///< Guild data of the Channel that the invite is for.
 		int32_t uses{ 0 };///< The current number of uses.
 
-		InviteData() = default;
+		InviteData() noexcept = default;
 
 		InviteData& operator=(const nlohmann::json* jsonObjectData);
 
 		InviteData(const nlohmann::json* jsonObjectData);
 
-		virtual ~InviteData() = default;
+		virtual ~InviteData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll InviteDataVector {
 	  public:
-		InviteDataVector() = default;
+		InviteDataVector() noexcept = default;
 
 		operator std::vector<InviteData>();
 
@@ -2274,7 +2186,7 @@ namespace DiscordCoreAPI {
 
 		InviteDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~InviteDataVector() = default;
+		virtual ~InviteDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -2296,20 +2208,20 @@ namespace DiscordCoreAPI {
 		std::string name{};///< Template name.
 		UserData creator{};///< The User who created the template.
 
-		GuildTemplateData() = default;
+		GuildTemplateData() noexcept = default;
 
 		GuildTemplateData& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildTemplateData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildTemplateData() = default;
+		virtual ~GuildTemplateData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll GuildTemplateDataVector {
 	  public:
-		GuildTemplateDataVector() = default;
+		GuildTemplateDataVector() noexcept = default;
 
 		operator std::vector<GuildTemplateData>();
 
@@ -2317,7 +2229,7 @@ namespace DiscordCoreAPI {
 
 		GuildTemplateDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildTemplateDataVector() = default;
+		virtual ~GuildTemplateDataVector() noexcept = default;
 
 
 		void parseObject(const nlohmann::json* jsonObjectData);
@@ -2354,20 +2266,20 @@ namespace DiscordCoreAPI {
 		std::string url{};///< Url of the WebHook.
 		UserData user{};///< User which create the WebHook.
 
-		WebHookData() = default;
+		WebHookData() noexcept = default;
 
 		WebHookData& operator=(const nlohmann::json* jsonObjectData);
 
 		WebHookData(const nlohmann::json* jsonObjectData);
 
-		virtual ~WebHookData() = default;
+		virtual ~WebHookData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll WebHookDataVector {
 	  public:
-		WebHookDataVector() = default;
+		WebHookDataVector() noexcept = default;
 
 		operator std::vector<WebHookData>();
 
@@ -2375,7 +2287,7 @@ namespace DiscordCoreAPI {
 
 		WebHookDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~WebHookDataVector() = default;
+		virtual ~WebHookDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -2398,13 +2310,13 @@ namespace DiscordCoreAPI {
 
 		auto getAuditLogData(AuditLogEvent auditLogType, const Snowflake userIdOfTarget);
 
-		AuditLogData() = default;
+		AuditLogData() noexcept = default;
 
 		AuditLogData& operator=(const nlohmann::json* jsonObjectData);
 
 		AuditLogData(const nlohmann::json* jsonObjectData);
 
-		virtual ~AuditLogData() = default;
+		virtual ~AuditLogData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2417,13 +2329,13 @@ namespace DiscordCoreAPI {
 		Snowflake userId{};
 		EmojiData emoji{};
 
-		ReactionRemoveData() = default;
+		ReactionRemoveData() noexcept = default;
 
 		ReactionRemoveData& operator=(const nlohmann::json* jsonObjectData);
 
 		ReactionRemoveData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ReactionRemoveData() = default;
+		virtual ~ReactionRemoveData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2448,7 +2360,7 @@ namespace DiscordCoreAPI {
 		nlohmann::json value{};///< The value of the option.
 		std::string name{};///< The name of the current choice.
 
-		ApplicationCommandOptionChoiceData() = default;
+		ApplicationCommandOptionChoiceData() noexcept = default;
 
 		operator nlohmann::json();
 
@@ -2456,7 +2368,7 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandOptionChoiceData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ApplicationCommandOptionChoiceData() = default;
+		virtual ~ApplicationCommandOptionChoiceData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2476,7 +2388,7 @@ namespace DiscordCoreAPI {
 		int32_t maxValue{ 0 };///< If the option is an INTEGER or NUMBER type, the maximum value permitted.
 		std::string name{};///< Name of the current ApplicationCommand option.
 
-		ApplicationCommandOptionData() = default;
+		ApplicationCommandOptionData() noexcept = default;
 
 		operator nlohmann::json();
 
@@ -2484,7 +2396,7 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandOptionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ApplicationCommandOptionData() = default;
+		virtual ~ApplicationCommandOptionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2497,13 +2409,13 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};
 		Snowflake userId{};
 
-		TypingStartData() = default;
+		TypingStartData() noexcept = default;
 
 		TypingStartData& operator=(const nlohmann::json* jsonObjectData);
 
 		TypingStartData(const nlohmann::json* jsonObjectData);
 
-		virtual ~TypingStartData() = default;
+		virtual ~TypingStartData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2529,7 +2441,7 @@ namespace DiscordCoreAPI {
 
 	/// YouTube format data. \brief YouTube format data.
 	struct DiscordCoreAPI_Dll YouTubeFormatVector {
-		YouTubeFormatVector() = default;
+		YouTubeFormatVector() noexcept = default;
 
 		operator std::vector<YouTubeFormat>();
 
@@ -2537,7 +2449,7 @@ namespace DiscordCoreAPI {
 
 		YouTubeFormatVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~YouTubeFormatVector() = default;
+		virtual ~YouTubeFormatVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -2556,13 +2468,13 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll UserCommandInteractionData {
 		Snowflake targetId{};///< The target User's id.
 
-		UserCommandInteractionData() = default;
+		UserCommandInteractionData() noexcept = default;
 
 		UserCommandInteractionData& operator=(const nlohmann::json* jsonObjectData);
 
 		UserCommandInteractionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~UserCommandInteractionData() = default;
+		virtual ~UserCommandInteractionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2571,13 +2483,13 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll MessageCommandInteractionData {
 		Snowflake targetId{};///< The target Message's id.
 
-		MessageCommandInteractionData() = default;
+		MessageCommandInteractionData() noexcept = default;
 
 		MessageCommandInteractionData& operator=(const nlohmann::json* jsonObjectData);
 
 		MessageCommandInteractionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~MessageCommandInteractionData() = default;
+		virtual ~MessageCommandInteractionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2596,13 +2508,13 @@ namespace DiscordCoreAPI {
 		ComponentType componentType{};///< The type of component.
 		std::string customId{};///< The custom id of the Interaction entity.
 
-		ComponentInteractionData() = default;
+		ComponentInteractionData() noexcept = default;
 
 		ComponentInteractionData& operator=(const nlohmann::json* jsonObjectData);
 
 		ComponentInteractionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ComponentInteractionData() = default;
+		virtual ~ComponentInteractionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2613,13 +2525,13 @@ namespace DiscordCoreAPI {
 		std::string customId{};///< The custom id of the Interaction entity.
 		std::string value{};///< The input value of the modal.
 
-		ModalInteractionData() = default;
+		ModalInteractionData() noexcept = default;
 
 		ModalInteractionData& operator=(const nlohmann::json* jsonObjectData);
 
 		ModalInteractionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ModalInteractionData() = default;
+		virtual ~ModalInteractionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2632,7 +2544,7 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> users{};///< Array of user_ids to mention (Max size of 100)
 		bool repliedUser{ false };///< For replies, whether to mention the author of the Message being replied to (default false).
 
-		AllowedMentionsData() = default;
+		AllowedMentionsData() noexcept = default;
 
 		operator nlohmann::json();
 
@@ -2640,7 +2552,7 @@ namespace DiscordCoreAPI {
 
 		AllowedMentionsData(const nlohmann::json* jsonObjectData);
 
-		virtual ~AllowedMentionsData() = default;
+		virtual ~AllowedMentionsData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2663,13 +2575,13 @@ namespace DiscordCoreAPI {
 		std::string value{};///< A value for identifying the option.
 		EmojiData emoji{};///< An optional emoji to put on it.
 
-		SelectOptionData() = default;
+		SelectOptionData() noexcept = default;
 
 		SelectOptionData& operator=(const nlohmann::json* jsonObjectData);
 
 		SelectOptionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~SelectOptionData() = default;
+		virtual ~SelectOptionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2708,7 +2620,7 @@ namespace DiscordCoreAPI {
 	  public:
 		std::vector<ComponentData> components{};///< Array of components to make up the action-row.
 
-		ActionRowData() = default;
+		ActionRowData() noexcept = default;
 
 		ActionRowData& operator=(const nlohmann::json* jsonObjectData);
 
@@ -2716,7 +2628,7 @@ namespace DiscordCoreAPI {
 
 		ActionRowData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ActionRowData() = default;
+		virtual ~ActionRowData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2753,7 +2665,7 @@ namespace DiscordCoreAPI {
 		std::map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
 		std::map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
 		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand.
-		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set all
+		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set all
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app, only for globally - scoped commands.
 		std::string description{};///< A description of the current ApplicationCommand.
@@ -2762,13 +2674,13 @@ namespace DiscordCoreAPI {
 		std::string name{};///< Name of the current ApplicationCommand.
 		Snowflake guildId{};///< (Where applicable) a Guild id for which guild to assign this ApplicationCommand to.
 
-		ApplicationCommandData() = default;
+		ApplicationCommandData() noexcept = default;
 
 		ApplicationCommandData& operator=(const nlohmann::json* jsonObjectData);
 
 		ApplicationCommandData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ApplicationCommandData() = default;
+		virtual ~ApplicationCommandData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2780,30 +2692,30 @@ namespace DiscordCoreAPI {
 		std::string name{};///< The name of the Channel that was mentioned.
 		ChannelType type{};///< The type of Channel that was mentioned.
 
-		ChannelMentionData() = default;
+		ChannelMentionData() noexcept = default;
 
 		ChannelMentionData& operator=(const nlohmann::json* jsonObjectData);
 
 		ChannelMentionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ChannelMentionData() = default;
+		virtual ~ChannelMentionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	/// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
 	struct DiscordCoreAPI_Dll ChannelPinsUpdateEventData {
-		uint64_t lastPinTimestamp{};///< The time of the last pinned Message.
+		TimeStamp<std::chrono::milliseconds> lastPinTimeStamp{};///< The time of the last pinned Message.
 		Snowflake channelId{};///< The id of the Channel within which the Message was pinned.
 		Snowflake guildId{};///< The id of the Guild within which the Message was pinned.
 
-		ChannelPinsUpdateEventData() = default;
+		ChannelPinsUpdateEventData() noexcept = default;
 
 		ChannelPinsUpdateEventData& operator=(const nlohmann::json* jsonObjectData);
 
 		ChannelPinsUpdateEventData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ChannelPinsUpdateEventData() = default;
+		virtual ~ChannelPinsUpdateEventData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2815,13 +2727,13 @@ namespace DiscordCoreAPI {
 		std::vector<ChannelData> threads{};///< All active threads in the given channels that the current User can access.
 		Snowflake guildId{};///< The id of the Guild for which the threads are being synced.
 
-		ThreadListSyncData() = default;
+		ThreadListSyncData() noexcept = default;
 
 		ThreadListSyncData& operator=(const nlohmann::json* jsonObjectData);
 
 		ThreadListSyncData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ThreadListSyncData() = default;
+		virtual ~ThreadListSyncData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2834,13 +2746,13 @@ namespace DiscordCoreAPI {
 		int32_t memberCount{ 0 };///< Number of Guild-members in the Thread.
 		Snowflake guildId{};///< Guild id of the Thread.
 
-		ThreadMembersUpdateData() = default;
+		ThreadMembersUpdateData() noexcept = default;
 
 		ThreadMembersUpdateData& operator=(const nlohmann::json* jsonObjectData);
 
 		ThreadMembersUpdateData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ThreadMembersUpdateData() = default;
+		virtual ~ThreadMembersUpdateData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2853,13 +2765,13 @@ namespace DiscordCoreAPI {
 		std::string name{};
 		UserData user{};
 
-		MessageInteractionData() = default;
+		MessageInteractionData() noexcept = default;
 
 		MessageInteractionData& operator=(const nlohmann::json* jsonObjectData);
 
 		MessageInteractionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~MessageInteractionData() = default;
+		virtual ~MessageInteractionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2928,13 +2840,13 @@ namespace DiscordCoreAPI {
 		StickerItemType formatType{};///< Message Sticker item type.
 		std::string name{};///< The name of the Sticker.
 
-		StickerItemData() = default;
+		StickerItemData() noexcept = default;
 
 		StickerItemData& operator=(const nlohmann::json* jsonObjectData);
 
 		StickerItemData(const nlohmann::json* jsonObjectData);
 
-		virtual ~StickerItemData() = default;
+		virtual ~StickerItemData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2972,13 +2884,13 @@ namespace DiscordCoreAPI {
 		UserData author{};///< The author's User data.
 		bool tts{ false };///< Is it a text-to-speech Message?
 
-		MessageDataOld() = default;
+		MessageDataOld() noexcept = default;
 
 		MessageDataOld& operator=(const nlohmann::json* jsonObjectData);
 
 		MessageDataOld(const nlohmann::json* jsonObjectData);
 
-		virtual ~MessageDataOld() = default;
+		virtual ~MessageDataOld() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -2992,13 +2904,13 @@ namespace DiscordCoreAPI {
 
 		MessageData(const MessageData& other);
 
-		MessageData() = default;
+		MessageData() noexcept = default;
 
 		MessageData& operator=(const nlohmann::json* jsonObjectData);
 
 		MessageData(const nlohmann::json* jsonObjectData);
 
-		virtual ~MessageData() = default;
+		virtual ~MessageData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -3023,20 +2935,20 @@ namespace DiscordCoreAPI {
 		std::string name{};///< Name of the Sticker pack.
 		std::string Id{};///< Id of the Sticker pack.
 
-		StickerPackData() = default;
+		StickerPackData() noexcept = default;
 
 		StickerPackData& operator=(const nlohmann::json* jsonObjectData);
 
 		StickerPackData(const nlohmann::json* jsonObjectData);
 
-		virtual ~StickerPackData() = default;
+		virtual ~StickerPackData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll StickerPackDataVector {
 	  public:
-		StickerPackDataVector() = default;
+		StickerPackDataVector() noexcept = default;
 
 		operator std::vector<StickerPackData>();
 
@@ -3044,7 +2956,7 @@ namespace DiscordCoreAPI {
 
 		StickerPackDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~StickerPackDataVector() = default;
+		virtual ~StickerPackDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -3070,20 +2982,20 @@ namespace DiscordCoreAPI {
 		std::string type{};///< The service of the connection(twitch, youtube).
 		Snowflake id{};///< Id of the connection account.
 
-		ConnectionData() = default;
+		ConnectionData() noexcept = default;
 
 		ConnectionData& operator=(const nlohmann::json* jsonObjectData);
 
 		ConnectionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ConnectionData() = default;
+		virtual ~ConnectionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll ConnectionDataVector {
 	  public:
-		ConnectionDataVector() = default;
+		ConnectionDataVector() noexcept = default;
 
 		operator std::vector<ConnectionData>();
 
@@ -3091,7 +3003,7 @@ namespace DiscordCoreAPI {
 
 		ConnectionDataVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~ConnectionDataVector() = default;
+		virtual ~ConnectionDataVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -3109,13 +3021,13 @@ namespace DiscordCoreAPI {
 		bool focused{ false };///< 	True if this option is the currently focused option for autocomplete.
 		std::string name{};///< The name of the current option.
 
-		ApplicationCommandInteractionDataOption() = default;
+		ApplicationCommandInteractionDataOption() noexcept = default;
 
 		ApplicationCommandInteractionDataOption& operator=(const nlohmann::json* jsonObjectData);
 
 		ApplicationCommandInteractionDataOption(const nlohmann::json* jsonObjectData);
 
-		virtual ~ApplicationCommandInteractionDataOption() = default;
+		virtual ~ApplicationCommandInteractionDataOption() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -3129,13 +3041,13 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The guild that the command took place in.
 		std::string name{};///< The name of the command.
 
-		ApplicationCommandInteractionData() = default;
+		ApplicationCommandInteractionData() noexcept = default;
 
 		ApplicationCommandInteractionData& operator=(const nlohmann::json* jsonObjectData);
 
 		ApplicationCommandInteractionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~ApplicationCommandInteractionData() = default;
+		virtual ~ApplicationCommandInteractionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -3148,13 +3060,13 @@ namespace DiscordCoreAPI {
 		ComponentInteractionData componentData{};///< Component Interaction data.
 		ModalInteractionData modalData{};///< Modal Interaction data.
 
-		InteractionDataData() = default;
+		InteractionDataData() noexcept = default;
 
 		InteractionDataData& operator=(const nlohmann::json* jsonObjectData);
 
 		InteractionDataData(const nlohmann::json* jsonObjectData);
 
-		virtual ~InteractionDataData() = default;
+		virtual ~InteractionDataData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -3162,7 +3074,7 @@ namespace DiscordCoreAPI {
 	/// Interaction data. \brief Interaction data.
 	class DiscordCoreAPI_Dll InteractionData : public DiscordEntity {
 	  public:
-		std::string appPermissions{};///< Bitwise set of permissions the app or bot has within the channel the interaction was sent from.
+		Permissions appPermissions{};///< Bitwise set of permissions the app or bot has within the channel the interaction was sent from.
 		InteractionDataData data{};///< The Interaction's data.
 		std::string guildLocale{};///< The guild's preferred locale, if invoked in a guild.
 		Snowflake applicationId{};///< The application's id.
@@ -3177,13 +3089,13 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild id of the Guild it was sent in.
 		UserData user{};///< The User data of the sender of the Interaction.
 
-		InteractionData() = default;
+		InteractionData() noexcept = default;
 
 		InteractionData& operator=(const nlohmann::json* jsonObjectData);
 
 		InteractionData(const nlohmann::json* jsonObjectData);
 
-		virtual ~InteractionData() = default;
+		virtual ~InteractionData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -3195,13 +3107,13 @@ namespace DiscordCoreAPI {
 		uint32_t remaining{ 0 };///< The remaining number of session starts the current User is allowed.
 		uint32_t total{ 0 };///< The total number of session starts the current User is allowed.
 
-		SessionStartData() = default;
+		SessionStartData() noexcept = default;
 
 		SessionStartData& operator=(const nlohmann::json* jsonObjectData);
 
 		SessionStartData(const nlohmann::json* jsonObjectData);
 
-		virtual ~SessionStartData() = default;
+		virtual ~SessionStartData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -3212,13 +3124,13 @@ namespace DiscordCoreAPI {
 		uint32_t shards{ 0 };///< The recommended number of shards to use when connecting.
 		std::string url{};///< The WSS Url that can be used for connecting to the gateway.
 
-		GatewayBotData() = default;
+		GatewayBotData() noexcept = default;
 
 		GatewayBotData& operator=(const nlohmann::json* jsonObjectData);
 
 		GatewayBotData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GatewayBotData() = default;
+		virtual ~GatewayBotData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -3234,13 +3146,13 @@ namespace DiscordCoreAPI {
 		std::vector<EmojiData> emojis{};
 		Snowflake guildId{};
 
-		GuildEmojisUpdateEventData() = default;
+		GuildEmojisUpdateEventData() noexcept = default;
 
 		GuildEmojisUpdateEventData& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildEmojisUpdateEventData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildEmojisUpdateEventData() = default;
+		virtual ~GuildEmojisUpdateEventData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -3250,13 +3162,13 @@ namespace DiscordCoreAPI {
 		std::vector<StickerData> stickers{};
 		Snowflake guildId{};
 
-		GuildStickersUpdateEventData() = default;
+		GuildStickersUpdateEventData() noexcept = default;
 
 		GuildStickersUpdateEventData& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildStickersUpdateEventData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildStickersUpdateEventData() = default;
+		virtual ~GuildStickersUpdateEventData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -3270,13 +3182,13 @@ namespace DiscordCoreAPI {
 		std::string nonce{};
 		Snowflake guildId{};
 
-		GuildMembersChunkEventData() = default;
+		GuildMembersChunkEventData() noexcept = default;
 
 		GuildMembersChunkEventData& operator=(const nlohmann::json* jsonObjectData);
 
 		GuildMembersChunkEventData(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildMembersChunkEventData() = default;
+		virtual ~GuildMembersChunkEventData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -3308,7 +3220,7 @@ namespace DiscordCoreAPI {
 
 		InputEventData(const InteractionData& interactionData) noexcept;
 
-		InputEventData() = default;
+		InputEventData() noexcept = default;
 
 		/// Returns the userName of the last User to trigger this input-event. \brief Returns the userName of the last User to trigger this input-event.
 		/// \returns std::string A string containing the User name.
@@ -3362,7 +3274,7 @@ namespace DiscordCoreAPI {
 		/// \returns MessageData A MessageData structure.
 		MessageData getMessageData();
 
-		virtual ~InputEventData() = default;
+		virtual ~InputEventData() noexcept = default;
 
 	  protected:
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
@@ -3591,7 +3503,7 @@ namespace DiscordCoreAPI {
 
 		InteractionResponseData(const RespondToInputEventData& other);
 
-		InteractionResponseData() = default;
+		InteractionResponseData() noexcept = default;
 
 		operator std::string();
 
@@ -3606,7 +3518,7 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};
 		Snowflake guildId{};
 
-		virtual ~GuildApplicationCommandPermissionData() = default;
+		virtual ~GuildApplicationCommandPermissionData() noexcept = default;
 	};
 
 	/**@}*/
@@ -3654,13 +3566,13 @@ namespace DiscordCoreAPI {
 		std::string viewUrl{};///< The url for listening to this Song through a browser.
 		std::string songId{};
 
-		Song() = default;
+		Song() noexcept = default;
 
 		Song& operator=(const nlohmann::json* jsonObjectData);
 
 		Song(const nlohmann::json* jsonObjectData);
 
-		virtual ~Song() = default;
+		virtual ~Song() noexcept = default;
 
 	  protected:
 		std::string trackAuthorization{};
@@ -3702,7 +3614,7 @@ namespace DiscordCoreAPI {
 		InputEventData eventData{};
 		std::string commandName{};
 
-		CommandData() = default;
+		CommandData() noexcept = default;
 
 		CommandData(InputEventData inputEventData);
 
@@ -3710,7 +3622,7 @@ namespace DiscordCoreAPI {
 
 		CommandData(const nlohmann::json* jsonObjectData);
 
-		virtual ~CommandData() = default;
+		virtual ~CommandData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -3719,11 +3631,11 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll BaseFunctionArguments : public CommandData {
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the instance of DiscordCoreClient.
 
-		BaseFunctionArguments() = default;
+		BaseFunctionArguments() noexcept = default;
 
 		BaseFunctionArguments(CommandData commandData, DiscordCoreClient* discordCoreClientNew);
 
-		virtual ~BaseFunctionArguments() = default;
+		virtual ~BaseFunctionArguments() noexcept = default;
 	};
 
 	/// Base class for the command classes. \brief Base class for the command classes.
@@ -3732,13 +3644,13 @@ namespace DiscordCoreAPI {
 		std::string commandName{};///< Name of the command for calling purposes.
 		EmbedData helpEmbed{};///< A Message embed for displaying the command via the Help command.
 
-		BaseFunction() = default;
+		BaseFunction() noexcept = default;
 
 		/// The base function for the command's execute function. \brief The base function for the command's execute function.
 		/// \param args A reference to an instance of BaseFunctionArguments.
 		virtual void execute(BaseFunctionArguments& args) = 0;
 		virtual std::unique_ptr<BaseFunction> create() = 0;
-		virtual ~BaseFunction() = default;
+		virtual ~BaseFunction() noexcept = default;
 	};
 
 	struct DiscordCoreAPI_Dll MoveThroughMessagePagesData {

@@ -64,7 +64,7 @@ namespace DiscordCoreInternal {
 
 		bool parseChunk(HttpsResponseData& theData, std::string&);
 
-		virtual ~HttpsRnRBuilder() = default;
+		virtual ~HttpsRnRBuilder() noexcept = default;
 
 	  protected:
 		bool doWePrintErrorMessages{ false };
@@ -111,7 +111,7 @@ namespace DiscordCoreInternal {
 
 		void resetValues();
 
-		virtual ~HttpsConnection() = default;
+		virtual ~HttpsConnection() noexcept = default;
 	};
 
 	class DiscordCoreAPI_Dll HttpsConnectionManager {

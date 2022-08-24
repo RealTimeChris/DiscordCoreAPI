@@ -33,20 +33,20 @@ namespace DiscordCoreAPI {
 	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
 	class DiscordCoreAPI_Dll AutoModerationRule : public AutoModerationRuleData {
 	  public:
-		AutoModerationRule() = default;
+		AutoModerationRule() noexcept = default;
 
 		AutoModerationRule& operator=(const nlohmann::json* jsonObjectData);
 
 		AutoModerationRule(const nlohmann::json* jsonObjectData);
 
-		virtual ~AutoModerationRule() = default;
+		virtual ~AutoModerationRule() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll AutoModerationRuleVector {
 	  public:
-		AutoModerationRuleVector() = default;
+		AutoModerationRuleVector() noexcept = default;
 
 		operator std::vector<AutoModerationRule>();
 
@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 
 		AutoModerationRuleVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~AutoModerationRuleVector() = default;
+		virtual ~AutoModerationRuleVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -102,13 +102,13 @@ namespace DiscordCoreAPI {
 		uint64_t ruleId{};///< The id of the rule which action belongs to.
 		Snowflake userId{};///< The id of the user which generated the content which triggered the rule.
 
-		AutoModerationActionExecutionEventData() = default;
+		AutoModerationActionExecutionEventData() noexcept = default;
 
 		AutoModerationActionExecutionEventData& operator=(const nlohmann::json* jsonObjectData);
 
 		AutoModerationActionExecutionEventData(const nlohmann::json* jsonObjectData);
 
-		virtual ~AutoModerationActionExecutionEventData() = default;
+		virtual ~AutoModerationActionExecutionEventData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};

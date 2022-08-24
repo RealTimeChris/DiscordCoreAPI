@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 
 		ThreadPool(ThreadPool&) = delete;
 
-		ThreadPool() = default;
+		ThreadPool() noexcept = default;
 
 		static std::string storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval);
 
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 
 		void stopThread(const std::string& theKey);
 
-		~ThreadPool() = default;
+		~ThreadPool() noexcept = default;
 
 	  protected:
 		static std::map<std::string, std::jthread> threads;
@@ -93,9 +93,9 @@ namespace DiscordCoreInternal {
 
 		WorkerThread(WorkerThread&&) noexcept;
 
-		WorkerThread() = default;
+		WorkerThread() noexcept = default;
 
-		~WorkerThread() = default;
+		~WorkerThread() noexcept = default;
 
 		std::atomic_bool areWeCurrentlyWorking{ false };
 		std::jthread theThread{};

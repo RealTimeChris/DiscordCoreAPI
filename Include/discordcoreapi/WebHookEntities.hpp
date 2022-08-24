@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
 
-		ExecuteWebHookData() = default;
+		ExecuteWebHookData() noexcept = default;
 
 		ExecuteWebHookData(WebHookData dataNew);
 
@@ -146,7 +146,7 @@ namespace DiscordCoreAPI {
 
 		ExecuteWebHookData& setTTSStatus(bool) = delete;
 
-		EditWebHookData() = default;
+		EditWebHookData() noexcept = default;
 
 		EditWebHookData(WebHookData dataNew);
 
@@ -221,20 +221,20 @@ namespace DiscordCoreAPI {
 	/// A single WebHook. \brief A single WebHook.
 	class DiscordCoreAPI_Dll WebHook : public WebHookData {
 	  public:
-		WebHook() = default;
+		WebHook() noexcept = default;
 
 		WebHook& operator=(const nlohmann::json* jsonObjectData);
 
 		WebHook(const nlohmann::json* jsonObjectData);
 
-		virtual ~WebHook() = default;
+		virtual ~WebHook() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll WebHookVector {
 	  public:
-		WebHookVector() = default;
+		WebHookVector() noexcept = default;
 
 		operator std::vector<WebHook>();
 
@@ -242,7 +242,7 @@ namespace DiscordCoreAPI {
 
 		WebHookVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~WebHookVector() = default;
+		virtual ~WebHookVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 

@@ -101,7 +101,7 @@ Helper Functions {#HelperFunctions}
 
 	bool doWeHaveAdminPermissions(BaseFunctionArguments args, InputEventData eventData, DiscordGuild discordGuild, Channel channel, GuildMember guildMember,
 								  bool displayResponse = true) {
-		bool doWeHaveAdmin = guildMember.permissions.checkForPermission(guildMember, channel, Permission::Administrator);
+		bool doWeHaveAdmin = guildMember.permissions.checkForPermission(guildMember, channel, PermissionTypes::Administrator);
 
 		if (doWeHaveAdmin) {
 			return true;

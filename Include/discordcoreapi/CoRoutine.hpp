@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 	  public:
 		static DiscordCoreInternal::CoRoutineThreadPool threadPool;
 
-		virtual ~CoRoutineBase() = default;
+		virtual ~CoRoutineBase() noexcept = default;
 	};
 
 	/// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.

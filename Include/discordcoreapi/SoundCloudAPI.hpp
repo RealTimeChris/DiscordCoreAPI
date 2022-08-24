@@ -27,7 +27,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
 	  public:
-		SoundCloudRequestBuilder() = default;
+		SoundCloudRequestBuilder() noexcept = default;
 
 	  protected:
 		static std::string clientId;

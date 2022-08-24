@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Role : public RoleData {
 	  public:
 		RoleTagsData tags{};///< Role tags for the Role.
-		std::string icon{};///< Icon representing the Role.
+		IconHash icon{};///< Icon representing the Role.
 
 		Role() noexcept = default;
 
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll RoleVector {
 	  public:
-		RoleVector() = default;
+		RoleVector() noexcept = default;
 
 		operator std::vector<Role>();
 
@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 
 		RoleVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~RoleVector() = default;
+		virtual ~RoleVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 

@@ -27,7 +27,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll YouTubeRequestBuilder {
 	  public:
-		YouTubeRequestBuilder() = default;
+		YouTubeRequestBuilder() noexcept = default;
 
 	  protected:
 		static std::string apiKey;

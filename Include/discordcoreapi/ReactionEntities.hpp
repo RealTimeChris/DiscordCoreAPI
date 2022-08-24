@@ -131,20 +131,20 @@ namespace DiscordCoreAPI {
 	/// A single Reaction. \brief A single Reaction.
 	class DiscordCoreAPI_Dll Reaction : public ReactionData {
 	  public:
-		Reaction() = default;
+		Reaction() noexcept = default;
 
 		Reaction& operator=(const nlohmann::json* jsonObjectData);
 
 		Reaction(const nlohmann::json* jsonObjectData);
 
-		virtual ~Reaction() = default;
+		virtual ~Reaction() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll ReactionVector {
 	  public:
-		ReactionVector() = default;
+		ReactionVector() noexcept = default;
 
 		operator std::vector<Reaction>();
 
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 
 		ReactionVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~ReactionVector() = default;
+		virtual ~ReactionVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 

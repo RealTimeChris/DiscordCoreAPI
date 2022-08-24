@@ -29,8 +29,6 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<typename ReturnType> void parseObject(const nlohmann::json*, ReturnType&);
-
 	/// For adding a user to a group Dm. \brief For adding a user to a group Dm.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
 		Snowflake channelId{};///< The Channel Id of the Dm.
@@ -79,9 +77,9 @@ namespace DiscordCoreAPI {
 	  public:
 		PremiumType premiumType{};///< The type of Nitro subscription on a user ' s account.
 		int32_t accentColor{ 0 };///< The user 's banner color encoded as an integer representation of hexadecimal color code.
-		std::string banner{};///< The user's banner hash.
 		std::string locale{};///< The user' s chosen language option.
 		std::string email{};///< The user's email.
+		IconHash banner{};///< The user's banner hash.
 
 		User() noexcept = default;
 
@@ -106,7 +104,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll UserVector {
 	  public:
-		UserVector() = default;
+		UserVector() noexcept = default;
 
 		operator std::vector<User>();
 
@@ -114,7 +112,7 @@ namespace DiscordCoreAPI {
 
 		UserVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~UserVector() = default;
+		virtual ~UserVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -136,7 +134,7 @@ namespace DiscordCoreAPI {
 		void updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage);
 
 	  protected:
-		BotUser() = default;
+		BotUser() noexcept = default;
 
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 	};

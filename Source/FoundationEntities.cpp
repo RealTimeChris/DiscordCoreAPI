@@ -1146,7 +1146,7 @@ namespace DiscordCoreAPI {
 			if (valueNew.type == ComponentType::Button) {
 				nlohmann::json component{};
 				component["emoji"]["animated"] = valueNew.emoji.animated;
-				StringWrapper theString = valueNew.emoji.name;
+				std::string theString = valueNew.emoji.name;
 				component["emoji"]["name"] = static_cast<std::string>(theString);
 				if (valueNew.emoji.id != 0) {
 					component["emoji"]["id"] = valueNew.emoji.id;
@@ -1496,10 +1496,10 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string InputEventData::getAvatarUrl() {
-		if (this->interactionData->member.getUserData().avatar.getHashUrl(this->interactionData->user.id, 0) != "") {
-			return this->interactionData->member.getUserData().avatar.getHashUrl(this->interactionData->user.id, 0);
+		if (this->interactionData->member.getUserData().avatar.getHashUrl(this->interactionData->user.id, 0, HashType::User_Avatar) != "") {
+			return this->interactionData->member.getUserData().avatar.getHashUrl(this->interactionData->user.id, 0, HashType::User_Avatar);
 		} else {
-			return this->interactionData->user.avatar.getHashUrl(this->interactionData->user.id, 0);
+			return this->interactionData->user.avatar.getHashUrl(this->interactionData->user.id, 0, HashType::User_Avatar);
 		}
 	}
 

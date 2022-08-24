@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 
 		InteractionResponseData getInteractionResponseData();
 
-		virtual ~InteractionResponseBase() = default;
+		virtual ~InteractionResponseBase() noexcept = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 
 		CreateEphemeralInteractionResponseData(RespondToInputEventData& dataPackage);
 
-		virtual ~CreateEphemeralInteractionResponseData() = default;
+		virtual ~CreateEphemeralInteractionResponseData() noexcept = default;
 	};
 
 	/// For creating a deferred Interaction response. \brief For creating a deferred Interaction response.
@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 
 		CreateDeferredInteractionResponseData(const RespondToInputEventData& dataPackage);
 
-		virtual ~CreateDeferredInteractionResponseData() = default;
+		virtual ~CreateDeferredInteractionResponseData() noexcept = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
@@ -162,7 +162,7 @@ namespace DiscordCoreAPI {
 
 		CreateInteractionResponseData(InteractionData& dataPackage);
 
-		virtual ~CreateInteractionResponseData() = default;
+		virtual ~CreateInteractionResponseData() noexcept = default;
 	};
 
 	/// For getting an Interaction response. \brief For getting an Interaction response.
@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 
 		EditInteractionResponseData(RespondToInputEventData& dataPackage);
 
-		virtual ~EditInteractionResponseData() = default;
+		virtual ~EditInteractionResponseData() noexcept = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 
 		CreateEphemeralFollowUpMessageData(RespondToInputEventData& dataPackage);
 
-		virtual ~CreateEphemeralFollowUpMessageData() = default;
+		virtual ~CreateEphemeralFollowUpMessageData() noexcept = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 
 		CreateFollowUpMessageData(RespondToInputEventData& dataPackage);
 
-		virtual ~CreateFollowUpMessageData() = default;
+		virtual ~CreateFollowUpMessageData() noexcept = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
@@ -256,7 +256,7 @@ namespace DiscordCoreAPI {
 
 		EditFollowUpMessageData(RespondToInputEventData& dataPackage);
 
-		virtual ~EditFollowUpMessageData() = default;
+		virtual ~EditFollowUpMessageData() noexcept = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
@@ -280,9 +280,9 @@ namespace DiscordCoreAPI {
 	/// A single Interaction.
 	struct DiscordCoreAPI_Dll Interaction : public InteractionData {
 	  public:
-		Interaction() = default;
+		Interaction() noexcept = default;
 
-		virtual ~Interaction() = default;
+		virtual ~Interaction() noexcept = default;
 	};
 
 	/**@}*/
@@ -390,7 +390,7 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		SelectMenuResponseData() = default;
+		SelectMenuResponseData() noexcept = default;
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::vector<std::string> values{};///< A vector of the chosen values.
@@ -481,7 +481,7 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		ButtonResponseData() = default;
+		ButtonResponseData() noexcept = default;
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string emojiName{};///< The emoji name, if applicable.
@@ -570,7 +570,7 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		ModalResponseData() = default;
+		ModalResponseData() noexcept = default;
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		std::string customIdSmall{};///< The customId of the particular input.

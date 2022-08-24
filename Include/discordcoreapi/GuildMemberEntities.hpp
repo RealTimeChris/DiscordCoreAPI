@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 		TimeStamp<std::chrono::milliseconds> communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
 
-		GuildMember() = default;
+		GuildMember() noexcept = default;
 
 		GuildMember& operator=(GuildMemberData&&) noexcept;
 
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 
 		GuildMember(GuildMemberData&) noexcept;
 
-		virtual ~GuildMember() = default;
+		virtual ~GuildMember() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildMemberVector {
 	  public:
-		GuildMemberVector() = default;
+		GuildMemberVector() noexcept = default;
 
 		operator std::vector<GuildMember>();
 
@@ -192,7 +192,7 @@ namespace DiscordCoreAPI {
 
 		GuildMemberVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildMemberVector() = default;
+		virtual ~GuildMemberVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 

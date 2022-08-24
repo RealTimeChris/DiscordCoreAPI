@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 		/// \param guildId The id for which Guild to set the current Song of.
 		static void setCurrentSong(const Song& song, const Snowflake guildId);
 
-		~SongAPI() = default;
+		~SongAPI() noexcept = default;
 
 	  protected:
 		static std::mutex accessMutex;

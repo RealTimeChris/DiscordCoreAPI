@@ -38,7 +38,7 @@ namespace DiscordCoreInternal {
 
 		friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-		EventDelegateToken() = default;
+		EventDelegateToken() noexcept = default;
 
 	  protected:
 		std::string handlerId{};
@@ -106,7 +106,7 @@ namespace DiscordCoreInternal {
 			*this = theFunctionNew;
 		}
 
-		EventDelegate() = default;
+		EventDelegate() noexcept = default;
 
 	  protected:
 		std::function<ReturnType(ArgTypes...)> theFunction{};

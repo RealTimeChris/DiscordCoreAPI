@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		virtual ~Test() = default;
+		virtual ~Test() noexcept = default;
 	};
 }
 ```

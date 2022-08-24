@@ -371,7 +371,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ConfigManager {
 	  public:
-		ConfigManager() = default;
+		ConfigManager() noexcept = default;
 
 		explicit ConfigManager(const DiscordCoreClientConfig&);
 
@@ -436,7 +436,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll StringWrapper {
 	  public:
-		StringWrapper() = default;
+		StringWrapper() noexcept = default;
 
 		StringWrapper& operator=(StringWrapper&& other) noexcept;
 
@@ -585,10 +585,10 @@ namespace DiscordCoreAPI {
 
 	template<typename ReturnType> void parseObject(const nlohmann::json* jsonObjectData, ReturnType& theData);
 
-	template<typename ReturnType> bool getObject(const nlohmann::json* jsonData, const char* keyName, ReturnType* returnObject) {
+	template<typename ReturnType> bool getObject(const nlohmann::json* jsonData, const char* keyName, ReturnType& returnObject) {
 		auto theResult = jsonData->find(keyName);
 		if (theResult != jsonData->end() && !theResult->is_null() && theResult->is_object()) {
-			DiscordCoreAPI::parseObject(&(*jsonData)[keyName], *returnObject);
+			DiscordCoreAPI::parseObject(&(*jsonData)[keyName], returnObject);
 			return true;
 		} else {
 			return false;
@@ -603,13 +603,11 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll uint64_t getUint64(const nlohmann::json* jsonData, const char* keyName);
 
-	DiscordCoreAPI_Dll bool getBoolReal(const nlohmann::json* jsonData, const char* keyName);
+	DiscordCoreAPI_Dll bool getBool(const nlohmann::json* jsonData, const char* keyName);
 
 	DiscordCoreAPI_Dll std::string getString(const nlohmann::json* jsonData, const char* keyName);
 
 	DiscordCoreAPI_Dll uint64_t strtoull(std::string&& theString);
-
-	DiscordCoreAPI_Dll nlohmann::json* getObject(const nlohmann::json* jsonData, const char* keyName);
 
 	template<typename ReturnType> ReturnType fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
 		ReturnType theValue{};
@@ -624,126 +622,33 @@ namespace DiscordCoreAPI {
 		return theStream.str();
 	}
 
+	enum class HashType { User_Avatar = 0, Channel_Icon = 1, GuildMember_Avatar = 2, Guild_Icon = 3, Guild_Splash = 4, Guild_Banner = 5, Guild_Discovery = 6 };
+
 	class DiscordCoreAPI_Dll IconHash {
 	  public:
-		IconHash() = default;
+		IconHash() noexcept = default;
 
-		IconHash& operator=(const IconHash&) = default;
+		IconHash& operator=(std::string& theString) noexcept;
 
-		IconHash(const IconHash&) = default;
+		IconHash(std::string& theString) noexcept;
+
+		IconHash& operator=(std::string theString) noexcept;
+
+		IconHash(std::string theString) noexcept;
 
 		bool operator==(const IconHash& other);
 
-		virtual std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept = 0;
+		std::string getHashUrl(Snowflake idOne, Snowflake idTwo, HashType hashType) noexcept;
 
 		void setHash(const std::string& hash);
 
 		bool areWeSet();
 
-		~IconHash() = default;
+		~IconHash() noexcept = default;
 
 	  protected:
 		uint64_t highBits{};
 		uint64_t lowBits{};
-	};
-
-	class DiscordCoreAPI_Dll UserAvatar : public IconHash {
-	  public:
-		friend class GuildMemberData;
-		friend class InputEventData;
-		friend class GuildMember;
-		friend class UserData;
-		friend class User;
-
-		UserAvatar() = default;
-
-		UserAvatar& operator=(std::string&&);
-
-		UserAvatar(std::string&&);
-
-	  protected:
-		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
-	};
-
-	class DiscordCoreAPI_Dll ChannelIcon : public IconHash {
-	  public:
-		ChannelIcon() = default;
-
-		ChannelIcon& operator=(std::string&&);
-
-		ChannelIcon(std::string&&);
-
-	  protected:
-		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
-	};
-
-	class DiscordCoreAPI_Dll GuildMemberAvatar : public IconHash {
-	  public:
-		friend class GuildMemberData;
-		friend class GuildMember;
-
-		GuildMemberAvatar() = default;
-
-		GuildMemberAvatar& operator=(std::string&&);
-
-		GuildMemberAvatar(std::string&&);
-
-	  protected:
-		std::string getHashUrl(Snowflake guildMemberId, Snowflake guildId) noexcept;
-	};
-
-	class DiscordCoreAPI_Dll GuildIcon : public IconHash {
-	  public:
-		friend class GuildData;
-		friend class Guild;
-
-		GuildIcon() = default;
-
-		GuildIcon& operator=(std::string&&);
-
-		GuildIcon(std::string&&);
-
-	  protected:
-		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
-	};
-
-	class DiscordCoreAPI_Dll GuildSplash : public IconHash {
-	  public:
-		friend class GuildData;
-		friend class Guild;
-
-		GuildSplash() = default;
-
-		GuildSplash& operator=(std::string&&);
-
-		GuildSplash(std::string&&);
-
-	  protected:
-		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
-	};
-
-	class DiscordCoreAPI_Dll GuildBanner : public IconHash {
-	  public:
-		GuildBanner() = default;
-
-		GuildBanner& operator=(std::string&&);
-
-		GuildBanner(std::string&&);
-
-	  protected:
-		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
-	};
-
-	class DiscordCoreAPI_Dll GuildDiscovery : public IconHash {
-	  public:
-		GuildDiscovery() = default;
-
-		GuildDiscovery& operator=(std::string&&);
-
-		GuildDiscovery(std::string&&);
-
-	  protected:
-		std::string getHashUrl(Snowflake idOne, Snowflake idTwo) noexcept;
 	};
 
 	template<typename TimeType>
@@ -756,19 +661,6 @@ namespace DiscordCoreAPI {
 
 		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second, TimeFormat theFormatNew) {
 			this->getTimeSinceEpoch(stoull(year), stoull(month), stoull(day), stoull(hour), stoull(minute), stoull(second));
-		}
-
-		void convertTimeStampToTimeUnits(TimeFormat theFormatNew, std::string originalTimeStamp) {
-			try {
-				if (originalTimeStamp != "") {
-					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)), stoi(originalTimeStamp.substr(8, 9)),
-						stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)), stoi(originalTimeStamp.substr(17, 18)), theFormatNew };
-					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) }.count();
-				} else {
-					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count();
-				}
-			} catch (...) {
-			}
 		}
 
 		operator std::string() {
@@ -828,7 +720,8 @@ namespace DiscordCoreAPI {
 			this->getISO8601TimeStamp(theFormatNew);
 		}
 
-		std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd, TimeFormat theFormatNew) {
+		static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd,
+			TimeFormat theFormatNew) {
 			std::time_t result = std::time(nullptr);
 			int32_t secondsPerMinute{ 60 };
 			int32_t minutesPerHour{ 60 };
@@ -866,7 +759,7 @@ namespace DiscordCoreAPI {
 			return theReturnString;
 		}
 
-		std::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
+		static std::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
 			std::time_t result = std::time(nullptr);
 			auto resultTwo = std::localtime(&result);
 			std::string theReturnString{};
@@ -910,7 +803,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		std::string convertMsToDurationString(uint64_t durationInMs) {
+		static std::string convertMsToDurationString(uint64_t durationInMs) {
 			std::string newString{};
 			uint64_t msPerSecond{ 1000 };
 			uint64_t secondsPerMinute{ 60 };
@@ -935,53 +828,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		uint64_t timeStampInTimeUnits{};
-
-		std::string getISO8601TimeStamp(TimeFormat timeFormat) {
-			if (this->timeStampInTimeUnits == 0) {
-				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			}
-			uint64_t timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(TimeType{ this->timeStampInTimeUnits }).count()) / 1000;
-			time_t rawTime(timeValue);
-			tm timeInfo = *localtime(&rawTime);
-			std::string timeStamp{};
-			timeStamp.resize(48);
-			switch (timeFormat) {
-				case TimeFormat::LongDate: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G", &timeInfo);
-					timeStamp.resize(sizeResponse);
-					break;
-				}
-				case TimeFormat::LongDateTime: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%a %b %d %Y %X", &timeInfo);
-					timeStamp.resize(sizeResponse);
-					break;
-				}
-				case TimeFormat::LongTime: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &timeInfo);
-					timeStamp.resize(sizeResponse);
-					break;
-				}
-				case TimeFormat::ShortDate: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d/%m/%g", &timeInfo);
-					timeStamp.resize(sizeResponse);
-					break;
-				}
-				case TimeFormat::ShortDateTime: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G %R", &timeInfo);
-					timeStamp.resize(sizeResponse);
-					break;
-				}
-				case TimeFormat::ShortTime: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%R", &timeInfo);
-					timeStamp.resize(sizeResponse);
-					break;
-				}
-				default: {
-					break;
-				}
-			}
-			return timeStamp;
-		}
 
 		void getTimeSinceEpoch(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second) {
 			const uint32_t secondsInJan{ 31 * 24 * 60 * 60 };
@@ -1058,6 +904,66 @@ namespace DiscordCoreAPI {
 			}
 			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(theValue).count() * 1000;
 		}
+
+		void convertTimeStampToTimeUnits(TimeFormat theFormatNew, std::string originalTimeStamp) {
+			try {
+				if (originalTimeStamp != "") {
+					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)), stoi(originalTimeStamp.substr(8, 9)),
+						stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)), stoi(originalTimeStamp.substr(17, 18)), theFormatNew };
+					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) }.count();
+				} else {
+					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count();
+				}
+			} catch (...) {
+			}
+		}
+
+		std::string getISO8601TimeStamp(TimeFormat timeFormat) {
+			if (this->timeStampInTimeUnits == 0) {
+				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			}
+			uint64_t timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(TimeType{ this->timeStampInTimeUnits }).count()) / 1000;
+			time_t rawTime(timeValue);
+			tm timeInfo = *localtime(&rawTime);
+			std::string timeStamp{};
+			timeStamp.resize(48);
+			switch (timeFormat) {
+				case TimeFormat::LongDate: {
+					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G", &timeInfo);
+					timeStamp.resize(sizeResponse);
+					break;
+				}
+				case TimeFormat::LongDateTime: {
+					size_t sizeResponse = strftime(timeStamp.data(), 48, "%a %b %d %Y %X", &timeInfo);
+					timeStamp.resize(sizeResponse);
+					break;
+				}
+				case TimeFormat::LongTime: {
+					size_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &timeInfo);
+					timeStamp.resize(sizeResponse);
+					break;
+				}
+				case TimeFormat::ShortDate: {
+					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d/%m/%g", &timeInfo);
+					timeStamp.resize(sizeResponse);
+					break;
+				}
+				case TimeFormat::ShortDateTime: {
+					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G %R", &timeInfo);
+					timeStamp.resize(sizeResponse);
+					break;
+				}
+				case TimeFormat::ShortTime: {
+					size_t sizeResponse = strftime(timeStamp.data(), 48, "%R", &timeInfo);
+					timeStamp.resize(sizeResponse);
+					break;
+				}
+				default: {
+					break;
+				}
+			}
+			return timeStamp;
+		}
 	};
 
 	/**@}*/
@@ -1115,7 +1021,7 @@ namespace DiscordCoreAPI {
 	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
 	class DiscordCoreAPI_Dll Permissions {
 	  public:
-		Permissions() = default;
+		Permissions() noexcept = default;
 
 		Permissions& operator=(Permission&& other);
 
@@ -1289,7 +1195,7 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock(const UnboundedMessageBlock<ObjectType>&) = delete;
 
-		UnboundedMessageBlock() = default;
+		UnboundedMessageBlock() noexcept = default;
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
@@ -1361,7 +1267,7 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		StopWatch() = default;
+		StopWatch() noexcept = default;
 
 		StopWatch<TimeType>& operator=(TimeType maxNumberOfMsNew) {
 			std::unique_lock theLock{ this->theMutex };

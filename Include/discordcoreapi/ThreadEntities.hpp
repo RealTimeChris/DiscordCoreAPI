@@ -134,13 +134,13 @@ namespace DiscordCoreAPI {
 	/// Represents a single Thread. \brief Represents a single Thread.
 	class DiscordCoreAPI_Dll Thread : public Channel {
 	  public:
-		Thread() = default;
+		Thread() noexcept = default;
 
 		Thread& operator=(const nlohmann::json* jsonObjectData);
 
 		Thread(const nlohmann::json* jsonObjectData);
 
-		virtual ~Thread() = default;
+		virtual ~Thread() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};

@@ -41,7 +41,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
 	  public:
-		WebSocketMessageHandler() = default;
+		WebSocketMessageHandler() noexcept = default;
 
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
 
@@ -57,7 +57,7 @@ namespace DiscordCoreInternal {
 
 		virtual void onClosed() noexcept = 0;
 
-		virtual ~WebSocketMessageHandler() = default;
+		virtual ~WebSocketMessageHandler() noexcept = default;
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{};

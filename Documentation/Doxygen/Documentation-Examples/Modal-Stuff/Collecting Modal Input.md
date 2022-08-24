@@ -48,7 +48,7 @@ Collecting Modal Input {#collectingmodalinput}
 				reportException("Test::execute()");
 			}
 		}
-		virtual ~Test() = default;
+		virtual ~Test() noexcept = default;
 	};
 }
 ```

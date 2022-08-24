@@ -175,9 +175,9 @@ namespace DiscordCoreAPI {
 	/// A single ApplicationCommand. \brief A single ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData {
 	  public:
-		ApplicationCommand() = default;
+		ApplicationCommand() noexcept = default;
 
-		virtual ~ApplicationCommand() = default;
+		virtual ~ApplicationCommand() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
@@ -188,7 +188,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class ApplicationCommands;
 
-		ApplicationCommandVector() = default;
+		ApplicationCommandVector() noexcept = default;
 
 		operator std::vector<ApplicationCommand>();
 
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~ApplicationCommandVector() = default;
+		virtual ~ApplicationCommandVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 

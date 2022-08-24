@@ -577,7 +577,7 @@ namespace DiscordCoreAPI {
 					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
 					auto embedData = std::make_unique<EmbedData>();
 					embedData->setColor("FEFEFE");
-					embedData->setTitle("__**Permission Issue:**__");
+					embedData->setTitle("__**PermissionTypes Issue:**__");
 					embedData->setTimeStamp(getTimeAndDate());
 					embedData->setDescription("Sorry, but that menu can only be selected by <@" + std::to_string(this->userId) + ">!");
 					createResponseData->data.data.embeds.emplace_back(*embedData);
@@ -703,7 +703,7 @@ namespace DiscordCoreAPI {
 					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
 					auto embedData = std::make_unique<EmbedData>();
 					embedData->setColor("FEFEFE");
-					embedData->setTitle("__**Permission Issue:**__");
+					embedData->setTitle("__**PermissionTypes Issue:**__");
 					embedData->setTimeStamp(getTimeAndDate());
 					embedData->setDescription("Sorry, but that button can only be pressed by <@" + std::to_string(this->userId) + ">!");
 					createResponseData->data.data.embeds.emplace_back(*embedData);

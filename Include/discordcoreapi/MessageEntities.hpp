@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 
 		Snowflake channelId{};
 
-		CreateMessageData() = default;
+		CreateMessageData() noexcept = default;
 
 		operator std::string();
 
@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};
 		int32_t flags{ 0 };
 
-		EditMessageData() = default;
+		EditMessageData() noexcept = default;
 	};
 
 	/// For deleting a Message. \brief For deleting a Message.
@@ -147,20 +147,20 @@ namespace DiscordCoreAPI {
 	/// A single Message. \brief A single Message.
 	class DiscordCoreAPI_Dll Message : public MessageData {
 	  public:
-		Message() = default;
+		Message() noexcept = default;
 
 		Message& operator=(const nlohmann::json* jsonObjectData);
 
 		Message(const nlohmann::json* jsonObjectData);
 
-		virtual ~Message() = default;
+		virtual ~Message() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	class DiscordCoreAPI_Dll MessageVector {
 	  public:
-		MessageVector() = default;
+		MessageVector() noexcept = default;
 
 		operator std::vector<Message>();
 
@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 
 		MessageVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~MessageVector() = default;
+		virtual ~MessageVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 	  public:
 		static std::map<std::string, UnboundedMessageBlock<Message>*> messagesBufferMap;
 
-		MessageCollector() = default;
+		MessageCollector() noexcept = default;
 
 		/// Begin waiting for Messages. \brief Begin waiting for Messages.
 		/// \param quantityToCollect Maximum quantity of Messages to collect before returning the results.

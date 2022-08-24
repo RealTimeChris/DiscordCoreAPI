@@ -263,15 +263,15 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class Guilds;
 
-		std::map<Snowflake, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
+		std::map<Snowflake, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
 		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
 		SystemChannelFlags systemChannelFlags{};///< System Channel flags.
 		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
-		std::vector<StringWrapper> features{};///< List of Guild features.
 		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
 		VerificationLevel verificationLevel{};///< Verification level required.
+		std::vector<std::string> features{};///< List of Guild features.
 		int32_t approximateMemberCount{ 0 };///< Approximate member count.
 		Snowflake publicUpdatesChannelId{};///< Id of the public updates Channel.
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
@@ -291,9 +291,9 @@ namespace DiscordCoreAPI {
 		Snowflake afkChannelId{};///< Channel if of the "afk" Channel.
 		int32_t maxMembers{ 0 };///< Max quantity of members.
 		std::string region{};///< Region of the world where the Guild's servers are.
-		GuildBanner banner{};///< Url to the Guild's banner.
-		GuildSplash splash{};///< Url to the Guild's splash.
 		MFALevel mfaLevel{};///< MFA level.
+		IconHash banner{};///< Url to the Guild's banner.
+		IconHash splash{};///< Url to the Guild's splash.
 
 		Guild() noexcept = default;
 
@@ -305,20 +305,19 @@ namespace DiscordCoreAPI {
 
 		Guild(GuildData&) noexcept;
 
-		Guild& operator=(const nlohmann::json* jsonObjectData);
-
-		Guild(const nlohmann::json* jsonObjectData);
+		void parseObject(const nlohmann::json* jsonObjectData);
 
 		virtual ~Guild() noexcept = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
+		
 	};
+
+	template<> void parseObject(const nlohmann::json* jsonObjectData, Guild& theData);
 
 	class DiscordCoreAPI_Dll GuildVector {
 	  public:
 		friend class Guilds;
 
-		GuildVector() = default;
+		GuildVector() noexcept = default;
 
 		operator std::vector<Guild>();
 
@@ -326,7 +325,7 @@ namespace DiscordCoreAPI {
 
 		GuildVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~GuildVector() = default;
+		virtual ~GuildVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 

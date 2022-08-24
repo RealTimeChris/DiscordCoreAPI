@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< The reason for deleting/closing the Channel.
 	};
 
-	/// For editing the Permission overwrites of a given Channel, for a given Role or User. \brief For editing the Permission overwrites of a given Channel, for a given Role or User.
+	/// For editing the PermissionTypes overwrites of a given Channel, for a given Role or User. \brief For editing the PermissionTypes overwrites of a given Channel, for a given Role or User.
 	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
 		PermissionOverwritesType type{};///< The type of overwrite.
 		Snowflake roleOrUserId{};///< The Role or User Id to modify the permissions for.
@@ -72,9 +72,9 @@ namespace DiscordCoreAPI {
 		operator std::string();
 	};
 
-	/// For deleting the Permission overwrites of a given Channel for a given Role or User. \brief For deleting the Permission overwrites of a given Channel for a given Role or User.
+	/// For deleting the PermissionTypes overwrites of a given Channel for a given Role or User. \brief For deleting the PermissionTypes overwrites of a given Channel for a given Role or User.
 	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
-		Snowflake roleOrUserId{};///< The Role or User id for whom to delete the Permission overwrites.
+		Snowflake roleOrUserId{};///< The Role or User id for whom to delete the PermissionTypes overwrites.
 		Snowflake channelId{};///< The id of the Channel to modify permissions for.
 		std::string reason{};///< Reason for deleting these permission overwrites.
 	};
@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
 		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
 		std::string topic{};///< The Channel's topic.
-		ChannelIcon icon{};///< Icon for the Channel, if applicable.
+		IconHash icon{};///< Icon for the Channel, if applicable.
 
 		Channel() noexcept = default;
 
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ChannelVector {
 	  public:
-		ChannelVector() = default;
+		ChannelVector() noexcept = default;
 
 		operator std::vector<Channel>();
 
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 
 		ChannelVector(const nlohmann::json* jsonObjectData);
 
-		virtual ~ChannelVector() = default;
+		virtual ~ChannelVector() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
 
