@@ -51,41 +51,41 @@
 
 namespace DiscordCoreAPI {
 
-	class SIGTERMError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGTERMError : public std::runtime_error {
 	  public:
 		SIGTERMError(std::string theString);
 	};
 
-	class SIGSEGVError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGSEGVError : public std::runtime_error {
 	  public:
 		SIGSEGVError(std::string theString);
 	};
 
-	class SIGINTError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGINTError : public std::runtime_error {
 	  public:
 		SIGINTError(std::string theString);
 	};
 
-	class SIGILLError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGILLError : public std::runtime_error {
 	  public:
 		SIGILLError(std::string theString);
 	};
 
-	class SIGABRTError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGABRTError : public std::runtime_error {
 	  public:
 		SIGABRTError(std::string theString);
 	};
 
-	class SIGFPEError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGFPEError : public std::runtime_error {
 	  public:
 		SIGFPEError(std::string theString);
 	};
 
-	using VoiceConnectionMap = std::map<uint64_t, std::unique_ptr<VoiceConnection>>;
-
 	using SoundCloudAPIMap = std::map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
 
 	using YouTubeAPIMap = std::map<uint64_t, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
+
+	using VoiceConnectionMap = std::map<uint64_t, std::unique_ptr<VoiceConnection>>;
 
 	using SongAPIMap = std::map<uint64_t, std::unique_ptr<SongAPI>>;
 
