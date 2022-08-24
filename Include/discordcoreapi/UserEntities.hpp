@@ -91,16 +91,12 @@ namespace DiscordCoreAPI {
 
 		User(UserData&) noexcept;
 
-		User& operator=(const nlohmann::json* jsonObjectData);
-
-		User(const nlohmann::json* jsonObjectData);
-
 		virtual ~User() noexcept = default;
 
-		inline void parseObject(const nlohmann::json* jsonObjectData);
+		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
-	void parseObject(const nlohmann::json* jsonObjectData, User& theData);
+	template<> void parseObject(const nlohmann::json* jsonObjectData, User& theData);
 
 	class DiscordCoreAPI_Dll UserVector {
 	  public:

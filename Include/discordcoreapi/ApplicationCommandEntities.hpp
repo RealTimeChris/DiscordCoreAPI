@@ -182,6 +182,7 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
+	template<>
 	void parseObject(const nlohmann::json* jsonObjectData, ApplicationCommand& theData);
 
 	class DiscordCoreAPI_Dll ApplicationCommandVector {

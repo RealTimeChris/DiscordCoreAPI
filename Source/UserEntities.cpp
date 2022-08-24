@@ -70,15 +70,6 @@ namespace DiscordCoreAPI {
 		*this = dataNew;
 	}
 
-	User& User::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	User::User(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	void User::parseObject(const nlohmann::json* theData) {
 		DiscordCoreAPI::parseObject(theData, *this);
 	}
