@@ -840,7 +840,7 @@ namespace DiscordCoreAPI {
 			auto guildId = guild->id;
 			Guilds::cache.insert_or_assign(guildId, std::move(guild));
 			theCount.store(Guilds::cache.size());
-			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", THREAD ID: " << std::this_thread::get_id() << ", AVERAGE TIME: " << theStopWatch.totalTimePassed()
+			std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed()
 					  << std::endl;
 		}
 	}

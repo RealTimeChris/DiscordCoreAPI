@@ -245,7 +245,6 @@ namespace DiscordCoreAPI {
 		if (Users::configManager->doWeCacheUsers()) {
 			auto userId = user->id;
 			Users::cache.insert_or_assign(userId, std::move(user));
-			std::cout << "USER COUNT: " << Users::cache.size() << std::endl;
 		}
 	}
 

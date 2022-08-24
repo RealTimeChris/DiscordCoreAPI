@@ -324,90 +324,99 @@ namespace DiscordCoreAPI {
 
 		theData.name = getString(jsonObjectData, "name");
 
-		auto theThreadsVector = getVector<nlohmann::json>(jsonObjectData, "threads");
-		theData.stickers.clear();
-		for (auto& value: theThreadsVector) {
-			StickerData newData{};
-			parseObject(&value, newData);
-			std::cout << "THREAD ID: " << newData.id << std::endl;
-			theData.threads.push_back(newData.id);
+		if (jsonObjectData->contains("threads") && !(*jsonObjectData)["threads"].is_null()) {
+			theData.stickers.clear();
+			for (auto& value: (*jsonObjectData)["threads"]) {
+				StickerData newData{};
+				parseObject(&value, newData);
+				std::cout << "THREAD ID: " << newData.id << std::endl;
+				theData.threads.push_back(newData.id);
+			}
 		}
 
-		auto theStickerVector = getVector<nlohmann::json>(jsonObjectData, "stickers");
-		theData.stickers.clear();
-		for (auto& value: theStickerVector) {
-			StickerData newData{};
-			parseObject(&value, newData);
-			std::cout << "STICKER ID: " << newData.id<< std::endl;
-			theData.stickers.push_back(newData.id);
+		if (jsonObjectData->contains("stickers") && !(*jsonObjectData)["stickers"].is_null()) {
+			theData.stickers.clear();
+			for (auto& value: (*jsonObjectData)["stickers"]) {
+				StickerData newData{};
+				parseObject(&value, newData);
+				std::cout << "STICKER ID: " << newData.id << std::endl;
+				theData.stickers.push_back(newData.id);
+			}
 		}
 
-		auto theGuildScheduledEventsVector= getVector<nlohmann::json>(jsonObjectData, "guild_scheduled_events");
-		theData.guildScheduledEvents.clear();
-		for (auto& value: theGuildScheduledEventsVector) {
-			GuildScheduledEventData newData{};
-			parseObject(&value, newData);
-			std::cout << "GUILD SCHEDULED EVENT ID: " << newData.id << std::endl;
-			theData.guildScheduledEvents.push_back(newData.id);
+		if (jsonObjectData->contains("guild_scheduled_events") && !(*jsonObjectData)["guild_scheduled_events"].is_null()) {
+			theData.guildScheduledEvents.clear();
+			for (auto& value: (*jsonObjectData)["guild_scheduled_events"]) {
+				GuildScheduledEventData newData{};
+				parseObject(&value, newData);
+				std::cout << "GUILD SCHEDULED EVENT ID: " << newData.id << std::endl;
+				theData.guildScheduledEvents.push_back(newData.id);
+			}
 		}
 
-		auto theStageInstanceVector = getVector<nlohmann::json>(jsonObjectData, "stage_instances");
-		theData.stageInstances.clear();
-		for (auto& value: theStageInstanceVector) {
-			StageInstanceData newData{};
-			parseObject(&value, newData);
-			std::cout << "STAGE INSTANCE ID: " << newData.id << std::endl;
-			theData.stageInstances.push_back(newData.id);
+		if (jsonObjectData->contains("stage_instance") && !(*jsonObjectData)["stage_instance"].is_null()) {
+			theData.stageInstances.clear();
+			for (auto& value: (*jsonObjectData)["stage_instance"]) {
+				StageInstanceData newData{};
+				parseObject(&value, newData);
+				std::cout << "STAGE INSTANCE ID: " << newData.id << std::endl;
+				theData.stageInstances.push_back(newData.id);
+			}
 		}
 
-		auto theEmojiVector = getVector<nlohmann::json>(jsonObjectData, "emoji");
-		theData.emoji.clear();
-		for (auto& value: theEmojiVector) {
-			EmojiData newData{};
-			parseObject(&value, newData);
-			std::cout << "EMOJI ID: " << newData.id << std::endl;
-			theData.emoji.push_back(newData.id);
+		if (jsonObjectData->contains("emoji") && !(*jsonObjectData)["emoji"].is_null()) {
+			theData.emoji.clear();
+			for (auto& value: (*jsonObjectData)["emoji"]) {
+				EmojiData newData{};
+				parseObject(&value, newData);
+				std::cout << "EMOJI ID: " << newData.id << std::endl;
+				theData.emoji.push_back(newData.id);
+			}
 		}
 
-		auto theRoleVector = getVector<nlohmann::json>(jsonObjectData, "roles");
-		theData.roles.clear();
-		for (auto& value: theRoleVector) {
-			std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>() };
-			parseObject(&value, *newData);
-			theData.roles.push_back(newData->id);
-			auto theRole = newData.get();
-			theRole->insertRole(std::move(newData));
+		if (jsonObjectData->contains("roles") && !(*jsonObjectData)["roles"].is_null()) {
+			theData.roles.clear();
+			for (auto& value: (*jsonObjectData)["roles"]) {
+				std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>() };
+				parseObject(&value, *newData);
+				theData.roles.push_back(newData->id);
+				auto theRole = newData.get();
+				theRole->insertRole(std::move(newData));
+			}
 		}
 
-		auto theMemberVector = getVector<nlohmann::json>(jsonObjectData, "members");
-		theData.members.clear();
-		for (auto& value: theMemberVector) {
-			std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
-			parseObject(&value, *newData);
-			newData->guildId = theData.id;
-			auto theMember = newData.get();
-			theData.members.push_back(newData.release());
+		if (jsonObjectData->contains("members") && !(*jsonObjectData)["members"].is_null()) {
+			theData.members.clear();
+			for (auto& value: (*jsonObjectData)["members"]) {
+				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
+				parseObject(&value, *newData);
+				newData->guildId = theData.id;
+				auto theMember = newData.get();
+				theData.members.push_back(newData.release());
+			}
 		}
 
-		auto voiceStateVector = getVector<nlohmann::json>(jsonObjectData, "voice_states");
-		for (auto& value: voiceStateVector) {
-			auto userId = strtoull(value["user_id"].get<std::string>());
-			for (auto& value02: theData.members) {
-				if (value02->id == userId) {
-					value02->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
+		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
+			for (auto& value: (*jsonObjectData)["voice_states"]) {
+				auto userId = strtoull(value["user_id"].get<std::string>());
+				for (auto& value02: theData.members) {
+					if (value02->id == userId) {
+						value02->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
+					}
 				}
 			}
 		}
 
-		auto theChannelVector = getVector<nlohmann::json>(jsonObjectData, "channels");
-		theData.channels.clear();
-		for (auto& value: (*jsonObjectData)["channels"]) {
-			std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>() };
-			parseObject(&value, *newData);
-			newData->guildId = theData.id;
-			theData.channels.push_back(newData->id);
-			auto theChannel = newData.get();
-			theChannel->insertChannel(std::move(newData));
+		if (jsonObjectData->contains("channels") && !(*jsonObjectData)["channels"].is_null()) {
+			theData.channels.clear();
+			for (auto& value: (*jsonObjectData)["channels"]) {
+				std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>() };
+				parseObject(&value, *newData);
+				newData->guildId = theData.id;
+				theData.channels.push_back(newData->id);
+				auto theChannel = newData.get();
+				theChannel->insertChannel(std::move(newData));
+			}
 		}
 	}
 
