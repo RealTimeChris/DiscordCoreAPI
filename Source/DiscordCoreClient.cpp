@@ -139,9 +139,6 @@ namespace DiscordCoreAPI {
 		Threads::initialize(this->httpsClient.get());
 		Users::initialize(this->httpsClient.get(), &this->configManager);
 		WebHooks::initialize(this->httpsClient.get());
-		this->theTask = std::make_unique<std::jthread>([this]() {
-			this->runBotInternal();
-		});
 	}
 
 	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
@@ -160,7 +157,7 @@ namespace DiscordCoreAPI {
 		return this->currentUser;
 	}
 
-	void DiscordCoreClient::runBotInternal() {
+	void DiscordCoreClient::runBot() {
 		if (!this->instantiateWebSockets()) {
 			Globals::doWeQuit.store(true);
 			return;
@@ -184,12 +181,6 @@ namespace DiscordCoreAPI {
 			if (this->baseSocketAgentMap[this->configManager.getStartingShard()]->getTheTask()->joinable()) {
 				this->baseSocketAgentMap[this->configManager.getStartingShard()]->getTheTask()->join();
 			}
-		}
-	}
-
-	void DiscordCoreClient::runBot() {
-		if (this->theTask && this->theTask->joinable()) {
-			this->theTask->join();
 		}
 	}
 

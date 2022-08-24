@@ -303,11 +303,18 @@ namespace DiscordCoreAPI {
 
 	template<>
 	void parseObject(const nlohmann::json* jsonObjectData, ChannelData& theData) {
+
+		theData.flags |= setBool<int8_t, ChannelFlags>(theData.flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
+
+		theData.type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
+
+		theData.memberCount = getUint32(jsonObjectData, "member_count");
+
+		theData.ownerId = strtoull(getString(jsonObjectData, "owner_id"));
+
 		theData.id = strtoull(getString(jsonObjectData, "id"));
 
 		theData.flags |= getUint8(jsonObjectData, "flags");
-
-		theData.type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
 
 		theData.parentId = strtoull(getString(jsonObjectData, "parent_id"));
 
@@ -326,34 +333,29 @@ namespace DiscordCoreAPI {
 		}
 
 		theData.name = getString(jsonObjectData, "name");
-
-		theData.flags |= setBool<int8_t, ChannelFlags>(theData.flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
-
-		theData.ownerId = strtoull(getString(jsonObjectData, "owner_id"));
-
-		theData.memberCount = getUint32(jsonObjectData, "member_count");
 	}
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, GuildData& theData) {
-		theData.id = strtoull(getString(jsonObjectData, "id"));
-
-		theData.icon = getString(jsonObjectData, "icon");
-
-		theData.name = getString(jsonObjectData, "name");
-
-		theData.joinedAt = getString(jsonObjectData, "joined_at");
-
-		theData.flags |= setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
-
-		theData.ownerId = strtoull(getString(jsonObjectData, "owner_id"));
 
 		theData.flags |= setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::WidgetEnabled, getBool(jsonObjectData, "widget_enabled"));
 
+		theData.flags |= setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
+
+		theData.flags |= setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
+
 		theData.flags |= setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Large, getBool(jsonObjectData, "large"));
 
-		theData.flags |= setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
+		theData.ownerId = strtoull(getString(jsonObjectData, "owner_id"));
 		
 		theData.memberCount = getUint32(jsonObjectData, "member_count");
+
+		theData.joinedAt = getString(jsonObjectData, "joined_at");
+
+		theData.id = strtoull(getString(jsonObjectData, "id"));
+		
+		theData.icon = getString(jsonObjectData, "icon");
+
+		theData.name = getString(jsonObjectData, "name");
 
 		auto theRoleMap = getVector<nlohmann::json>(jsonObjectData, "roles");
 		theData.roles.clear();
@@ -375,14 +377,11 @@ namespace DiscordCoreAPI {
 			theData.members.push_back(newData.release());
 		}
 
-		std::cout << "THE SIZE: " << jsonObjectData->at("voice_states").size() << std::endl;
 		auto voiceStateMap = getVector<nlohmann::json>(jsonObjectData, "voice_states");
 		for (auto& value: voiceStateMap) {
 			auto userId = strtoull(value["user_id"].get<std::string>());
 			for (auto& value02: theData.members) {
-				std::cout << "THE VOICE USER'S ID: " << value02->id << std::endl;
 				if (value02->id == userId) {
-					std::cout << "THE VOICE USER'S ID: " << value02->id << std::endl;
 					value02->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
 				}
 			}
