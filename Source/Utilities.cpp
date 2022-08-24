@@ -320,81 +320,11 @@ namespace DiscordCoreAPI {
 		this->highBits = fromString<uint64_t>(newHash.substr(16, 16), std::hex);
 	}
 
-	std::string IconHash::getHashUrl(Snowflake idOne, Snowflake idTwo, HashType hashType) noexcept {
-		switch (hashType) {
-			case HashType::User_Avatar: {
-				if (idOne == 0 || this->highBits == 0 || this->lowBits == 0) {
-					return {};
-				} else {
-					std::string theStringNew{ "https://cdn.discordapp.com/" };
-					std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
-					theStringNew += "avatars/" + std::to_string(idOne) + "/" + theIconHash;
-					return theStringNew;
-				}
-			}
-			case HashType::GuildMember_Avatar: {
-				if (idOne == 0 || idTwo == 0 || this->highBits == 0 || this->lowBits == 0) {
-					return {};
-				} else {
-					std::string theStringNew{ "https://cdn.discordapp.com/" };
-					std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
-					theStringNew += "guilds/" + std::to_string(idTwo) + "/users/" + std::to_string(idOne) + "/avatars/" + theIconHash;
-					return theStringNew;
-				}
-			}
-			case HashType::Guild_Icon: {
-				if (idOne == 0 || this->highBits == 0 || this->lowBits == 0) {
-					return {};
-				} else {
-					std::string theStringNew{ "https://cdn.discordapp.com/" };
-					std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
-					theStringNew += "icons/" + std::to_string(idOne) + "/" + theIconHash + ".png";
-					return theStringNew;
-				}
-			}
-			case HashType::Channel_Icon: {
-				if (idOne == 0 || this->highBits == 0 || this->lowBits == 0) {
-					return {};
-				} else {
-					std::string theStringNew{ "https://cdn.discordapp.com/" };
-					std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
-					theStringNew += "splashes/" + std::to_string(idOne) + "/" + theIconHash + ".png";
-					return theStringNew;
-				}
-			}
-			case HashType::Guild_Banner: {
-				if (idOne == 0 || this->highBits == 0 || this->lowBits == 0) {
-					return {};
-				} else {
-					std::string theStringNew{ "https://cdn.discordapp.com/" };
-					std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
-					theStringNew += "banners/" + std::to_string(idOne) + "/" + theIconHash + ".png";
-					return theStringNew;
-				}
-			}
-			case HashType::Guild_Discovery: {
-				if (idOne == 0 || this->highBits == 0 || this->lowBits == 0) {
-					return {};
-				} else {
-					std::string theStringNew{ "https://cdn.discordapp.com/" };
-					std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
-					theStringNew += "discovery-splashes/" + std::to_string(idOne) + "/" + theIconHash + ".png";
-					return theStringNew;
-				}
-			}
-			case HashType::Guild_Splash: {
-				if (idOne == 0 || idTwo == 0 || this->highBits == 0 || this->lowBits == 0) {
-					return {};
-				} else {
-					std::string theStringNew{ "https://cdn.discordapp.com/" };
-					std::string theIconHash{ toHex(this->lowBits) + toHex(this->highBits) };
-					theStringNew += "splashes/" + std::to_string(idOne) + "/" + theIconHash + ".png";
-					return theStringNew;
-				}
-			}
-			default: {
-				return std::string{};
-			}
+	std::string IconHash::getIconHash() noexcept {
+		if (this->highBits == 0 || this->lowBits == 0) {
+			return {};
+		} else {
+			return std::string{ toHex(this->lowBits) + toHex(this->highBits) };
 		}
 	}
 

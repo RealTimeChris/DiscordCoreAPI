@@ -37,7 +37,9 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string UserData::getAvatarUrl() {
-		return this->avatar.getHashUrl(this->id, 0, HashType::User_Avatar);
+		std::string theStringNew{ "https://cdn.discordapp.com/" };
+		theStringNew += "avatars/" + std::to_string(this->id) + "/" + this->avatar.getIconHash();
+		return theStringNew;
 	}
 
 	User& User::operator=(UserData&& other) noexcept {

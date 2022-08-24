@@ -284,11 +284,11 @@ namespace DiscordCoreAPI {
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
 		std::vector<Sticker> stickers{};///< Stickers of the Guild.
 		std::vector<Channel> threads{};///< Threads of the Guild.
-		std::string discoverySplash{};///< Link to the discovery image's splash.
 		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
 		Snowflake widgetChannelId{};///< Channel id for the Guild's widget.
 		Snowflake systemChannelId{};///< Channel id for the Guild's system Channel.
 		std::string vanityUrlCode{};///< Vanity Url code, if applicable.
+		IconHash discoverySplash{};///< Link to the discovery image's splash.
 		Snowflake rulesChannelId{};///< Channel id for the Guild's rules Channel.
 		Snowflake applicationId{};///< The current application id.
 		std::string description{};///< Description of the Guild.
@@ -313,6 +313,12 @@ namespace DiscordCoreAPI {
 		Guild(GuildData&) noexcept;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
+
+		std::string getDiscoverySplashUrl() noexcept;
+
+		std::string getBannerUrl() noexcept;
+
+		std::string getSplashUrl() noexcept;
 
 		virtual ~Guild() noexcept = default;
 		

@@ -151,8 +151,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string GuildData::getIconUrl() {
-		return this->icon.getHashUrl(this->id, 0, HashType::Guild_Icon);
+	std::string GuildData::getIconUrl() noexcept {
+		std::string theStringNew{ "https://cdn.discordapp.com/" };
+		theStringNew += "icons/" + std::to_string(this->id) + "/" + this->icon.getIconHash() + ".png";
+		return theStringNew;
+		
 	}
 
 	bool GuildData::areWeConnected() {
@@ -244,6 +247,24 @@ namespace DiscordCoreAPI {
 
 	void Guild::parseObject(const nlohmann::json* theData) {
 		DiscordCoreAPI::parseObject(theData, *this);
+	}
+
+	std::string Guild::getDiscoverySplashUrl() noexcept {
+		std::string theStringNew{ "https://cdn.discordapp.com/" };
+		theStringNew += "discovery-splashes/" + std::to_string(this->id) + "/" + this->discoverySplash.getIconHash() + ".png";
+		return theStringNew;
+	}
+
+	std::string Guild::getBannerUrl() noexcept{
+		std::string theStringNew{ "https://cdn.discordapp.com/" };
+		theStringNew += "banners/" + std::to_string(this->id) + "/" + this->banner.getIconHash() + ".png";
+		return theStringNew;
+	}
+
+	std::string Guild::getSplashUrl() noexcept {
+		std::string theStringNew{ "https://cdn.discordapp.com/" };
+		theStringNew += "splashes/" + std::to_string(this->id) + "/" + this->splash.getIconHash() + ".png";
+		return theStringNew;
 	}
 
 	GuildVector::operator std::vector<Guild>() {

@@ -638,9 +638,9 @@ namespace DiscordCoreAPI {
 
 		bool operator==(const IconHash& other);
 
-		std::string getHashUrl(Snowflake idOne, Snowflake idTwo, HashType hashType) noexcept;
-
 		void setHash(const std::string& hash);
+
+		std::string getIconHash() noexcept;
 
 		bool areWeSet();
 

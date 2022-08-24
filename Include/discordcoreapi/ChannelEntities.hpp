@@ -175,6 +175,8 @@ namespace DiscordCoreAPI {
 		~Channel() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
+
+		std::string getIconUrl() noexcept;
 	};
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, Channel& theData);

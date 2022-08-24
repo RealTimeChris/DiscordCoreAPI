@@ -147,6 +147,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
+	std::string Channel::getIconUrl() noexcept {
+		std::string theStringNew{ "https://cdn.discordapp.com/" };
+		theStringNew += "splashes/" + std::to_string(this->id) + "/" + this->icon.getIconHash() + ".png";
+		return theStringNew;
+	}
+
 	ChannelVector::operator std::vector<Channel>() {
 		return this->theChannels;
 	}

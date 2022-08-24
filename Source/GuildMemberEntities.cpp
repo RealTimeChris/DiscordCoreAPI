@@ -61,10 +61,12 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string GuildMemberData::getAvatarUrl() {
-		if (this->avatar.getHashUrl(this->id, this->guildId, HashType::GuildMember_Avatar) != "") {
-			return this->avatar.getHashUrl(this->id, this->guildId, HashType::GuildMember_Avatar);
+		if (this->avatar.getIconHash() != "") {
+			std::string theStringNew{ "https://cdn.discordapp.com/" };
+			theStringNew += "guilds/" + std::to_string(this->guildId) + "/users/" + std::to_string(this->id) + "/avatars/" + this->avatar.getIconHash();
+			return theStringNew;
 		} else {
-			return this->getUserData().avatar.getHashUrl(this->id, 0, HashType::User_Avatar);
+			return this->getUserData().getAvatarUrl();
 		}
 	}
 

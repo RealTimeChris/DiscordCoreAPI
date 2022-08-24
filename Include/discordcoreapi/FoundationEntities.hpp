@@ -1984,7 +1984,9 @@ namespace DiscordCoreAPI {
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
 			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
 
-		std::string getIconUrl();
+		std::string getBannerUrl() noexcept;
+
+		std::string getIconUrl() noexcept;
 
 		bool areWeConnected();
 
