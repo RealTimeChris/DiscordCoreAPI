@@ -3616,6 +3616,8 @@ namespace DiscordCoreAPI {
 
 		virtual ~CommandData() noexcept = default;
 
+		void parseOptions(const nlohmann::json* jsonObjectData);
+
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 

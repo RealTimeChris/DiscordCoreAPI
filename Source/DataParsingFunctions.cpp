@@ -4546,6 +4546,25 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void CommandData::parseOptions(const nlohmann::json* jsonObjectData) {
+		for (auto theOptionIterator = jsonObjectData->begin(); theOptionIterator != jsonObjectData->end(); ++theOptionIterator) {
+			if (theOptionIterator->contains("value") && theOptionIterator->contains("name")) {
+				nlohmann::json newValueNew = theOptionIterator->at("value");
+				nlohmann::json newKeyNew = theOptionIterator->at("name");
+				if (newValueNew.is_string()) {
+					this->optionsArgs.emplace(newKeyNew.get<std::string>(), newValueNew.get<std::string>());
+				} else if (newValueNew.is_number()) {
+					this->optionsArgs.emplace(newKeyNew.get<std::string>(), std::to_string(newValueNew.get<uint64_t>()));
+				} else if (newValueNew.is_boolean()) {
+					this->optionsArgs.emplace(newKeyNew.get<std::string>(), std::to_string(newValueNew.get<bool>()));
+				}
+			}
+			if (theOptionIterator->contains("options")) {
+				this->parseOptions(&(*theOptionIterator));
+			}
+		}
+	}
+
 	void CommandData::parseObject(const nlohmann::json* jsonObjectData) {
 		for (auto theIterator = jsonObjectData->begin(); theIterator != jsonObjectData->end(); ++theIterator) {
 			if (theIterator->contains("type") && theIterator->at("type") == 1) {
@@ -4557,20 +4576,8 @@ namespace DiscordCoreAPI {
 					this->subCommandGroupName = theIterator->get<std::string>();
 				}
 			}
-			if (jsonObjectData->contains("options")) {
-				for (auto theOptionIterator = jsonObjectData->at("options").begin(); theOptionIterator != jsonObjectData->at("options").end(); ++theOptionIterator) {
-					if (theOptionIterator->contains("value") && theOptionIterator->contains("name")) {
-						nlohmann::json newValueNew = theOptionIterator->at("value");
-						nlohmann::json newKeyNew = theOptionIterator->at("name");
-						if (newValueNew.is_string()) {
-							this->optionsArgs.emplace(newKeyNew.get<std::string>(), newValueNew.get<std::string>());
-						} else if (newValueNew.is_number()) {
-							this->optionsArgs.emplace(newKeyNew.get<std::string>(), std::to_string(newValueNew.get<uint64_t>()));
-						} else if (newValueNew.is_boolean()) {
-							this->optionsArgs.emplace(newKeyNew.get<std::string>(), std::to_string(newValueNew.get<bool>()));
-						}
-					}
-				}
+			if (theIterator->contains("options")) {
+				this->parseOptions(&(*theIterator)["options"]);
 			}
 		}
 
