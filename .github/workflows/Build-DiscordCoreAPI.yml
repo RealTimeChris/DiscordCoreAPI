@@ -64,9 +64,6 @@ jobs:
                 sudo git commit -m "Updates!"  &&
                 sudo /usr/local/share/vcpkg/vcpkg x-add-version --overwrite-version --all --skip-version-format-check &&
                 cd ${GITHUB_WORKSPACE}/DiscordCoreAPI &&
-                sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
-                sudo cp -v -R /usr/local/share/vcpkg/versions/baseline.json ./Vcpkg/versions/baseline.json &&
-                sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json &&
                 sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux || true &&
                 sudo cat /usr/local/share/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log &&
                 sudo cat /usr/local/share/vcpkg/buildtrees/discordcoreapi/install-x64-linux-rel-out.log &&
@@ -77,6 +74,11 @@ jobs:
                 sudo git commit -m "Updates! [skip ci]" &&
                 sudo git config pull.rebase false &&
                 sudo git pull &&
+                sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
+                sudo cp -v -R /usr/local/share/vcpkg/versions/baseline.json ./Vcpkg/versions/baseline.json &&
+                sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json &&
+                sudo git add .
+                sudo git commit -m "Updates! [skip ci]" &&
                 sudo git push origin main 
                 
          - name: Download, install, and run a template-bot.
