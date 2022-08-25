@@ -48,8 +48,6 @@ jobs:
                 sudo bash -c "echo $'' >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                 sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                 sudo touch ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
-                sudo cp -v -R ./Vcpkg/* /usr/local/share/vcpkg &&
                 cd /usr/local/share/vcpkg &&
                 sudo git add . &&
                 sudo git commit -m "Updates!"  &&
@@ -65,6 +63,7 @@ jobs:
                 sudo git commit -m "Updates! [skip ci]" &&
                 sudo git config pull.rebase false &&
                 sudo git pull &&
+                sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
                 sudo cp -v -R /usr/local/share/vcpkg/versions/baseline.json ./Vcpkg/versions/baseline.json &&
                 sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json &&
