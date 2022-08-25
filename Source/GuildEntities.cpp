@@ -124,7 +124,6 @@ namespace DiscordCoreAPI {
 				theChannelId = channelId;
 			}
 			uint64_t theShardId{ (this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount() };
-			size_t currentBaseCount = this->discordCoreClient->baseSocketAgentMap.size();
 			auto theBaseSocketAgentIndex{ static_cast<int32_t>(floor(static_cast<float>(theShardId) /
 				static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount()) * this->discordCoreClient->baseSocketAgentMap.size())) };
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
