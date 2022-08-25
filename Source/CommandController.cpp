@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		try {
 			std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
-			if (functionPointer == nullptr) {
+			if (!functionPointer) {
 				co_return;
 			}
 			BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
