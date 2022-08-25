@@ -111,13 +111,10 @@ namespace DiscordCoreInternal {
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
 
-	CoRoutineThreadPool::~CoRoutineThreadPool() {
-		this->doWeQuit.store(true);
-		closeFunction(this->workerThreads);
-	}
+	CoRoutineThreadPool::~CoRoutineThreadPool() {}
 
 	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
-		while (!stopToken.stop_requested() && !this->doWeQuit.load()) {
+		while (!stopToken.stop_requested()) {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 				if (theLock01.try_lock()) {
@@ -146,29 +143,8 @@ namespace DiscordCoreInternal {
 			}
 			std::this_thread::sleep_for(1ms);
 		}
-		if (this->doWeQuit.load()) {
-			std::unique_lock theLock{ this->theMutex };
-			for (auto& [key, value]: this->workerThreads) {
-				if (value.theThread.joinable()) {
-					value.theThread.request_stop();
-					value.theThread.detach();
-				}
-			}
-		}
 		std::unique_lock theLock{ this->theMutex };
 		this->workerThreads.erase(theIndex);
-	}
-
-	void CoRoutineThreadPool::closeFunction(std::map<int64_t, WorkerThread>& other) {
-		if (other.size() == 0) {
-			return;
-		} else {
-			for (auto& [key, value]: other) {
-				other.erase(key);
-				break;
-			}
-		}
-		return closeFunction(other);
 	}
 
 }

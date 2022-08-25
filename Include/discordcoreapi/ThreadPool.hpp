@@ -103,6 +103,8 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll CoRoutineThreadPool {
 	  public:
+		friend class DiscordCoreAPI::DiscordCoreClient;
+
 		CoRoutineThreadPool();
 
 		void submitTask(std::coroutine_handle<> coro) noexcept;
@@ -116,12 +118,9 @@ namespace DiscordCoreInternal {
 		std::atomic_int64_t currentCount{ 0 };
 		std::atomic_int64_t currentIndex{ 0 };
 		std::atomic_uint32_t threadCount{};
-		std::atomic_bool doWeQuit{};
 		std::mutex theMutex{};
 
 		void threadFunction(std::stop_token stopToken, int64_t theIndex);
-
-		void closeFunction(std::map<int64_t, WorkerThread>& other);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
