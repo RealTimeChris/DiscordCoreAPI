@@ -304,8 +304,7 @@ namespace DiscordCoreAPI {
 		std::shared_lock theLock{ Roles::theMutex };
 		if (!Roles::cache.contains(dataPackage.roleId)) {
 			theLock.unlock();
-			auto theRole = Roles::getRoleAsync(dataPackage).get();
-			co_return theRole;
+			co_return Roles::getRoleAsync(dataPackage).get();
 		} else if (Roles::cache.contains(dataPackage.roleId)) {
 			co_return *Roles::cache[dataPackage.roleId].get();
 		}
