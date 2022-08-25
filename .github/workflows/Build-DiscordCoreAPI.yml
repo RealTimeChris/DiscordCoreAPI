@@ -70,6 +70,9 @@ jobs:
                 sudo rm -rf InstallOutput.txt &&
                 sudo rm -rf ./CMake/Raw-Files/Portfile-The-First.cmake &&
                 sudo rm -rf ./CMake/Raw-Files/Portfile-The-Second.cmake &&
+                sudo rm -rf ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
+                sudo rm -rf ./Vcpkg/versions/baseline.json &&
+                sudo rm -rf ./Vcpkg/versions/d-/discordcoreapi.json &&
                 sudo git add . &&
                 sudo git commit -m "Updates! [skip ci]" &&
                 sudo git config pull.rebase false &&
