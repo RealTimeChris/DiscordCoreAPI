@@ -144,7 +144,7 @@ namespace DiscordCoreAPI {
 	void DiscordCoreClient::registerFunctionsInternal() {
 		auto theCommands = ApplicationCommands::getGlobalApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get();
 		while (this->commandsToRegister.size() > 0) {
-			auto theData = this->commandsToRegister.front();
+			CreateApplicationCommandData theData = this->commandsToRegister.front();
 			this->commandsToRegister.pop_front();
 			theData.applicationId = this->getBotUser().id;
 			if (theData.alwaysRegister) {
