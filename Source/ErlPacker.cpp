@@ -298,8 +298,8 @@ namespace DiscordCoreInternal {
 			throw ErlPackError{ "ErlPacker::parseBigint() Error: Parse big integer failed.\n\n" };
 		}
 		const uint8_t length = static_cast<uint8_t>(res);
-		nlohmann::json theValue = std::string{ outBuffer, length };
-		return theValue;
+		nlohmann::json theReturnValue = std::string{ outBuffer, length };
+		return theReturnValue;
 	}
 
 	nlohmann::json ErlPacker::parseIntegerExt() {
