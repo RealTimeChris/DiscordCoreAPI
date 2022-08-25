@@ -18,6 +18,7 @@
 /// \file ErlPacker.cpp
 
 #include <discordcoreapi/ErlPacker.hpp>
+#include <xmmintrin.h>
 
 namespace DiscordCoreInternal {
 

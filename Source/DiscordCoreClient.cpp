@@ -177,11 +177,6 @@ namespace DiscordCoreAPI {
 			}
 			std::this_thread::sleep_for(1ms);
 		}
-		if (this->baseSocketAgentMap.contains(this->configManager.getStartingShard()) && this->baseSocketAgentMap[this->configManager.getStartingShard()]->getTheTask()) {
-			if (this->baseSocketAgentMap[this->configManager.getStartingShard()]->getTheTask()->joinable()) {
-				this->baseSocketAgentMap[this->configManager.getStartingShard()]->getTheTask()->join();
-			}
-		}
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
