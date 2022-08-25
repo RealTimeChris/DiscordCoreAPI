@@ -82,7 +82,7 @@ jobs:
                 sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json &&
                 sudo git add . &&
                 sudo git commit -m "Updates! [skip ci]" &&
-                sudo git push origin main
+                sudo git push origin main 
                 
          - name: Download, install, and run a template-bot.
            run: sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1 &&
