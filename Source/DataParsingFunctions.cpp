@@ -4547,7 +4547,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void CommandData::parseOptions(const nlohmann::json* jsonObjectData) {
-		for (auto theOptionIterator = jsonObjectData->begin(); theOptionIterator != jsonObjectData->end(); ++theOptionIterator) {
+		for (auto theOptionIterator = jsonObjectData->at("options").begin(); theOptionIterator != jsonObjectData->at("options").end(); ++theOptionIterator) {
 			if (theOptionIterator->contains("value") && theOptionIterator->contains("name")) {
 				nlohmann::json newValueNew = theOptionIterator->at("value");
 				nlohmann::json newKeyNew = theOptionIterator->at("name");
@@ -4576,9 +4576,9 @@ namespace DiscordCoreAPI {
 					this->subCommandGroupName = theIterator->get<std::string>();
 				}
 			}
-			if (theIterator->contains("options")) {
-				this->parseOptions(&(*theIterator)["options"]);
-			}
+		}
+		if (jsonObjectData->contains("options")) {
+			this->parseOptions(jsonObjectData);
 		}
 
 		if (jsonObjectData->contains("name") && !(*jsonObjectData)["name"].is_null()) {
