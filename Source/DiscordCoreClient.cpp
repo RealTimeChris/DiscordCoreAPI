@@ -154,7 +154,12 @@ namespace DiscordCoreAPI {
 					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();
 				}
 			} else {
-				auto theGuildCommands = ApplicationCommands::getGuildApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get();
+				std::vector<ApplicationCommand> theGuildCommands{};
+				if (theData.guildId != 0) {
+					theGuildCommands =
+						ApplicationCommands::getGuildApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id, .guildId = theData.guildId })
+							.get();
+				}
 				bool doesItExist{ false };
 				for (auto& value: theCommands) {
 					if (value.name == theData.name) {
