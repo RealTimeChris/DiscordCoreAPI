@@ -269,7 +269,7 @@ namespace DiscordCoreInternal {
 					theShard->inputBuffer.size() < static_cast<uint64_t>(theShard->messageOffset) + static_cast<uint64_t>(theShard->messageLength)) {
 					return true;
 				} else {
-					auto theValue = this->onMessageReceived(theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength));
+					this->onMessageReceived(theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength));
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
 					return false;
 				}
