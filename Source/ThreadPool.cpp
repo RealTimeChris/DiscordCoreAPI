@@ -154,11 +154,11 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(1ms);
 		}
 		if (this->doWeQuit.load()) {
-			std::unique_lock theLock{ this->theMutex };
+			//std::unique_lock theLock{ this->theMutex };
 			for (auto& [key, value]: this->workerThreads) {
 				if (value.theThread.joinable()) {
 					value.theThread.request_stop();
-					value.theThread.detach();
+					value.theThread.join();
 				}
 			}
 		}
