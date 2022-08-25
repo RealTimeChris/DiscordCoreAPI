@@ -32,17 +32,30 @@ jobs:
 
          - name: Attempt to install the library, to collect the SHA512 value.
            run: cd ./DiscordCoreAPI &&
-                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-First.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake 
-                #sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
+                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-First.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
+                sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
 
          - name: Update the portfile and download/install the library.
            run: cd ./DiscordCoreAPI &&
+                sudo sed -i '/Actual hash/,$!d' InstallOutput.txt &&
+                sudo sed -i 's/^.....................//' InstallOutput.txt &&
+                sudo sed -i '2,250d' InstallOutput.txt &&
+                sudo truncate -s -3 InstallOutput.txt &&
+                sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                sudo git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-Second.cmake -a &&
+                sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                sudo bash -c "cat InstallOutput.txt >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                sudo bash -c "echo $'' >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
+                sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                 sudo touch ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 cd /usr/local/share/vcpkg &&
                 sudo git add . &&
                 sudo git commit -m "Updates!"  &&
                 sudo /usr/local/share/vcpkg/vcpkg x-add-version --overwrite-version --all --skip-version-format-check &&
                 cd ${GITHUB_WORKSPACE}/DiscordCoreAPI &&
+                sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux || true &&
+                sudo cat /usr/local/share/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log &&
+                sudo cat /usr/local/share/vcpkg/buildtrees/discordcoreapi/install-x64-linux-rel-out.log &&
                 sudo rm -rf InstallOutput.txt &&
                 sudo rm -rf ./CMake/Raw-Files/Portfile-The-First.cmake &&
                 sudo rm -rf ./CMake/Raw-Files/Portfile-The-Second.cmake &&
