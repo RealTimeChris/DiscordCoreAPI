@@ -99,8 +99,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating a single Guild ApplicationCommand. \brief For creating a single Guild ApplicationCommand.
-	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateApplicationCommandData {		
-		Snowflake guildId{};///< The guild's id.
+	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateApplicationCommandData {
 
 		operator std::string();
 	};

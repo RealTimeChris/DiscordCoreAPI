@@ -133,8 +133,10 @@ namespace DiscordCoreInternal {
 				if (theLock01.try_lock()) {
 					for (auto& [key, value]: this->workerThreads) {
 						if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {
+							std::cout << "THE SIZE 0101: " << this->workerThreads.size() << std::endl;
 							value.theThread.request_stop();
 							value.theThread.detach();
+							this->workerThreads.erase(key);
 							this->currentCount.store(this->currentCount.load() - 1);
 							break;
 						}
@@ -143,8 +145,6 @@ namespace DiscordCoreInternal {
 			}
 			std::this_thread::sleep_for(1ms);
 		}
-		std::unique_lock theLock{ this->theMutex };
-		this->workerThreads.erase(theIndex);
 	}
 
 }
