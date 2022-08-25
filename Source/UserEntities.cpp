@@ -94,7 +94,6 @@ namespace DiscordCoreAPI {
 			nlohmann::json payload = dataPackage;
 			std::string theString{};
 			uint32_t shardId = (dataPackage.guildId >> 22) % this->baseSocketAgent->configManager->getTotalShardCount();
-			std::string theString{};
 			this->baseSocketAgent->theShardMap[shardId]->stringifyJsonData(&payload, theString,
 				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->theShardMap[shardId].get())->dataOpCode);
 			this->baseSocketAgent->theShardMap[shardId]->sendMessage(theString, true);
