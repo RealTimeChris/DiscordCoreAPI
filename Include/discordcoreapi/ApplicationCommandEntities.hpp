@@ -43,6 +43,8 @@ namespace DiscordCoreAPI {
 
 	/// For creating an application command.
 	struct DiscordCoreAPI_Dll CreateApplicationCommandData {
+		friend class DiscordCoreClient;
+
 		std::map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
 		std::map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
@@ -53,6 +55,8 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< Application id.
 		Snowflake guildId{};///< Set this to a guild id to create a command specific to that guild.
 		std::string name{};///< A name for the new command.
+	  protected:
+		bool alwaysRegister{ false };
 	}; 
 
 	/// For creating a single global ApplicationCommand. \brief For creating a single global ApplicationCommand.

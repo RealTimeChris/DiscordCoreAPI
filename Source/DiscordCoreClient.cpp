@@ -135,13 +135,45 @@ namespace DiscordCoreAPI {
 		WebHooks::initialize(this->httpsClient.get());
 	}
 
-	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData) {
-		if (commandData.guildId != 0) {
-			ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&commandData)).get();
-		} else {
-			ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&commandData)).get();
-		}
+	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData, bool alwaysRegister) {
+		commandData.alwaysRegister = alwaysRegister;
+		this->commandsToRegister.push_back(commandData);
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
+	}
+
+	void DiscordCoreClient::registerFunctionsInternal() {
+		auto theCommands = ApplicationCommands::getGlobalApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get();
+		while (this->commandsToRegister.size() > 0) {
+			auto theData = this->commandsToRegister.front();
+			this->commandsToRegister.pop_front();
+			if (theData.alwaysRegister) {
+				if (theData.guildId != 0) {
+					ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&theData)).get();
+				} else {
+					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();
+				}
+			} else {
+				auto theGuildCommands = ApplicationCommands::getGuildApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get();
+				bool doesItExist{ false };
+				for (auto& value: theCommands) {
+					if (value.name == theData.name) {
+						doesItExist = true;
+					}
+				}
+				for (auto& value: theGuildCommands) {
+					if (value.name == theData.name) {
+						doesItExist = true;
+					}
+				}
+				if (!doesItExist) {
+					if (theData.guildId != 0) {
+						ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&theData)).get();
+					} else {
+						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();
+					}
+				}
+			}
+		}
 	}
 
 	CommandController& DiscordCoreClient::getCommandController() {
@@ -172,6 +204,7 @@ namespace DiscordCoreAPI {
 					->connect(theData);
 				if (this->theConnections.size() == 0 && this->configManager.doWePrintGeneralSuccessMessages()) {
 					cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << endl << endl;
+					this->registerFunctionsInternal();
 				}
 			}
 			std::this_thread::sleep_for(1ms);

@@ -119,7 +119,8 @@ namespace DiscordCoreAPI {
 		/// For registering a function with the CommandController. \brief For registering a function with the CommandController.
 		/// \param functionNames A vector containing the possible names for activating this command/function.
 		/// \param baseFunction A unique_ptr to the command to be registered.
-		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData);
+		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+			bool alwaysRegister = false);
 
 		/// For collecting a reference to the CommandController. \brief For collecting a reference to the CommandController.
 		/// \returns CommandController& A reference to the CommandController.
@@ -142,6 +143,7 @@ namespace DiscordCoreAPI {
 		std::map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theConnectionStopWatch{ 5100ms };
+		std::deque<CreateApplicationCommandData> commandsToRegister{};
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
@@ -151,11 +153,13 @@ namespace DiscordCoreAPI {
 		std::mutex connectionMutex{};
 		EventManager eventManager{};
 		BotUser currentUser{};
-
+		
 		std::vector<uint32_t> collectWorkerDimensions(uint32_t shardCount, uint32_t threadCount);
 
-		GatewayBotData getGateWayBot();
+		void registerFunctionsInternal();
 
+		GatewayBotData getGateWayBot();
+		
 		bool instantiateWebSockets();
 	};
 	/**@}*/
