@@ -409,8 +409,7 @@ namespace DiscordCoreInternal {
 							cout << DiscordCoreAPI::shiftToBrightRed() << newString << DiscordCoreAPI::reset() << endl << endl;
 						}
 						return;
-					}
-					if (returnValue >= 0) {
+					} else {
 						returnValue = avcodec_receive_frame(this->audioDecodeContext, this->frame);
 						if (returnValue < 0) {
 							std::string newString = "AudioDecoder::run() Error: Issue during decoding (" + std::to_string(returnValue) + ")";
