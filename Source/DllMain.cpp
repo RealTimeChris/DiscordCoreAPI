@@ -23,18 +23,20 @@
 bool __stdcall DllMain(void*, unsigned long fdwReason, void*) {
 	switch (fdwReason) {
 		case DLL_PROCESS_ATTACH: {
-			break;
+			[[fallthrough]];
 		}
 		case DLL_THREAD_ATTACH: {
-			break;
+			[[fallthrough]];
 		}
 		case DLL_THREAD_DETACH: {
-			break;
+			[[fallthrough]];
 		}
 		case DLL_PROCESS_DETACH: {
-			break;
+			[[fallthrough]];
+		}
+		default: {
+			return TRUE;
 		}
 	}
-	return TRUE;
 }
 #endif
