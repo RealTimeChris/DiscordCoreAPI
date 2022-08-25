@@ -321,23 +321,54 @@ namespace DiscordCoreInternal {
 		return theValue;
 	}
 
+	bool compareString(const char* theString,const char*theString02, size_t theSize) {
+		for (size_t x = 0; x < theSize; ++x) {
+			if (!(theString[x] & theString02[x])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	nlohmann::json ErlPacker::processAtom(const char* atom, uint32_t length) {
 		if (atom == nullptr) {
 			return nlohmann::json{};
 		}
+		static const char* atom_null = "null";
+		static const char* atom_true = "true";
+		const char atom_nil_raw[4]{};
+		std::bitset<24> atom_nil{};
+		for (size_t x = 0; x < length; ++x) {
+			atom_nil[x] = atom_nil_raw[x];
+		}
+		std::bitset<40> atom_false{};
+		const char atom_false_raw[6]{ "false" };
+		for (size_t x = 0; x < length; ++x) {
+			atom_false[x] = atom_false_raw[x];
+		}
+		
+		std::bitset<24> atom_nil_new{};
+		for (size_t x = 0; x < length; ++x) {
+			atom_nil_new[x] = atom[x];
+		}
+		std::bitset<40> atom_false_new{};
+		for (size_t x = 0; x < length; ++x) {
+			atom_false_new[x] = atom[x];
+		}
 		if (length >= 3 && length <= 5) {
-			if (length == 3 && strncmp(atom, "nil", 3) == 0) {
+			if (length == 4 && reinterpret_cast<const uint32_t*>(atom) == reinterpret_cast<const uint32_t*>(atom_null)) {// "null"
 				return nlohmann::json{};
-			} else if (length == 4 && strncmp(atom, "null", 4) == 0) {
-				return nlohmann::json{};
-			} else if (length == 4 && strncmp(atom, "true", 4) == 0) {
+			} else if (length == 4 && reinterpret_cast<const uint32_t*>(atom) == reinterpret_cast<const uint32_t*>(atom_true)) {// "true"
 				return true;
-			} else if (length == 5 && strncmp(atom, "false", 5) == 0) {
+			} else if (length == 3 && atom_nil_new == atom_nil) {// "nil"
+				return nlohmann::json{};
+			} else if (length == 5 && atom_false_new == atom_false){
 				return false;
 			}
 		}
-		nlohmann::json theValue = std::string{ atom, length };
-		return theValue;
+
+		nlohmann::json j = std::string(atom, length);
+		return j;
 	}
 
 	nlohmann::json ErlPacker::parseTuple(const uint32_t length) {
@@ -412,14 +443,14 @@ namespace DiscordCoreInternal {
 
 	nlohmann::json ErlPacker::parseMapExt() {
 		uint32_t length = readBits<uint32_t>();
-		auto map = nlohmann::json::object();
+		nlohmann::json map{};
 		for (uint32_t i = 0; i < length; ++i) {
 			auto key = singleValueETFToJson();
 			if (key.is_number()) {
-				map[std::to_string(key.get<uint64_t>())] = singleValueETFToJson();
+				map.emplace(std::to_string(key.get<uint64_t>()), singleValueETFToJson());
 				
 			} else {
-				map[key.get<std::string>()] = singleValueETFToJson();
+				map.emplace(key.get<std::string>(), singleValueETFToJson());
 			}
 		}
 		return map;
