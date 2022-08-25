@@ -3600,8 +3600,8 @@ namespace DiscordCoreAPI {
 	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.
 	class DiscordCoreAPI_Dll CommandData {
 	  public:
-		std::vector<std::string> optionsArgs{};
 		std::string subCommandGroupName{};
+		nlohmann::json optionsArgs{};
 		std::string subCommandName{};
 		InputEventData eventData{};
 		std::string commandName{};

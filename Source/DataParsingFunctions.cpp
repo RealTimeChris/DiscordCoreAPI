@@ -4549,27 +4549,27 @@ namespace DiscordCoreAPI {
 	void CommandData::parseObject(const nlohmann::json* jsonObjectData) {
 		if (jsonObjectData->contains("options") && !(*jsonObjectData)["options"].is_null()) {
 			this->optionsArgs.clear();
-			for (auto& value: (*jsonObjectData)["options"]) {
-				if (value.contains("type") && value["type"] == 1) {
-					if (value.contains("name")) {
-						this->subCommandName = value["name"];
+			for (auto theIterator = jsonObjectData->begin(); theIterator != jsonObjectData->end(); ++theIterator) {
+				if (theIterator->contains("type") && theIterator->at("type") == 1) {
+					if (theIterator->contains("name")) {
+						this->subCommandName = theIterator->get<std::string>();
 					}
-				} else if (value.contains("type") && value["type"] == 2) {
-					if (value.contains("name")) {
-						this->subCommandGroupName = value["name"];
+				} else if (theIterator->contains("type") && theIterator->at("type") == 2) {
+					if (theIterator->contains("name")) {
+						this->subCommandGroupName = theIterator->get<std::string>();
 					}
 				}
-				if (value.contains("options")) {
-					parseObject(&value);
+				if (theIterator->contains("options")) {
+					parseObject(&(*theIterator));
 				}
-				if (value.contains("value") && !value["value"].is_null()) {
-					auto& newValueNew = value["value"];
+				if (theIterator->contains("value") && !theIterator->at("value").is_null()) {
+					nlohmann::json newValueNew = theIterator->at("value");
 					if (newValueNew.is_string()) {
-						this->optionsArgs.emplace_back(newValueNew);
+						this->optionsArgs.emplace(theIterator.key(), newValueNew.get<std::string>());
 					} else if (newValueNew.is_number()) {
-						this->optionsArgs.emplace_back(std::to_string(newValueNew.get<int64_t>()));
+						this->optionsArgs.emplace(theIterator.key(), std::to_string(newValueNew.get<uint64_t>()));
 					} else if (newValueNew.is_boolean()) {
-						this->optionsArgs.emplace_back(std::to_string(newValueNew.get<bool>()));
+						this->optionsArgs.emplace(theIterator.key(), std::to_string(newValueNew.get<bool>()));
 					}
 				}
 			}
