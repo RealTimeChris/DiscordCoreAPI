@@ -137,6 +137,7 @@ namespace DiscordCoreAPI {
 
 	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData, bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
+		commandData.applicationId = this->getBotUser().id;
 		this->commandsToRegister.push_back(commandData);
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 	}
