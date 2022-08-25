@@ -542,7 +542,7 @@ namespace DiscordCoreAPI {
 				std::string decryptedDataString{};
 				decryptedDataString.insert(decryptedDataString.begin(), decryptedData.begin(), decryptedData.end());
 
-				if (const bool usesExtension = (packet[0] >> 4) & 0b0001) {
+				if ((packet[0] >> 4) & 0b0001) {
 					size_t extLen = 0;
 					uint16_t extLengthInWords{ *reinterpret_cast<uint16_t*>(decryptedDataString.data() + 2) };
 					extLengthInWords = ntohs(extLengthInWords);
