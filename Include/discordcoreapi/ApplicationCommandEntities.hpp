@@ -41,8 +41,7 @@ namespace DiscordCoreAPI {
 		std::string commandId{};///< The id of the command which you would like to collect.
 	};
 
-	/// For creating a single global ApplicationCommand. \brief For creating a single global ApplicationCommand.
-	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData {
+	struct DiscordCoreAPI_Dll CreateApplicationCommandData {
 		std::map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
 		std::map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
@@ -51,7 +50,12 @@ namespace DiscordCoreAPI {
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
 		std::string description{};///< A description of the command.
 		Snowflake applicationId{};///< Application id.
+		Snowflake guildId{};
 		std::string name{};///< A name for the new command.
+	};
+
+	/// For creating a single global ApplicationCommand. \brief For creating a single global ApplicationCommand.
+	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData : public CreateApplicationCommandData {
 
 		operator std::string();
 	};
@@ -90,17 +94,8 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating a single Guild ApplicationCommand. \brief For creating a single Guild ApplicationCommand.
-	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData {
-		std::map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
-		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
-		std::string defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		ApplicationCommandType type{};///< The type of ApplicationCommand.
-		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
-		std::string description{};///< A description of the command.
-		Snowflake applicationId{};///< Application id.
+	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateApplicationCommandData {		
 		Snowflake guildId{};///< The guild's id.
-		std::string name{};///< A name for the new command.
 
 		operator std::string();
 	};

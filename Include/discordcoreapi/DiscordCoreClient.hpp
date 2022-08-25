@@ -119,7 +119,7 @@ namespace DiscordCoreAPI {
 		/// For registering a function with the CommandController. \brief For registering a function with the CommandController.
 		/// \param functionNames A vector containing the possible names for activating this command/function.
 		/// \param baseFunction A unique_ptr to the command to be registered.
-		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction);
+		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData);
 
 		/// For collecting a reference to the CommandController. \brief For collecting a reference to the CommandController.
 		/// \returns CommandController& A reference to the CommandController.

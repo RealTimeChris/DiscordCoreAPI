@@ -1460,10 +1460,10 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string InputEventData::getAvatarUrl() {
-		if (this->interactionData->user.getAvatarUrl() != "") {
-			return this->interactionData->user.getAvatarUrl();
-		} else {
+		if (this->interactionData->member.getUserData().getAvatarUrl()  != "") {
 			return this->interactionData->member.getUserData().getAvatarUrl();
+		} else {
+			return this->interactionData->user.getAvatarUrl();
 		}
 	}
 

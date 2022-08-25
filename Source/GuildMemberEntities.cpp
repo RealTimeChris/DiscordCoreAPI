@@ -71,7 +71,11 @@ namespace DiscordCoreAPI {
 	}
 
 	UserData GuildMemberData::getUserData() {
-		return Users::getCachedUserAsync({ .userId = this->id }).get();
+		if (this->id != 0) {
+			return Users::getCachedUserAsync({ .userId = this->id }).get();
+		} else {
+			return {};
+		}
 	}
 
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) noexcept {

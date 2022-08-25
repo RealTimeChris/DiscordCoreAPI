@@ -135,7 +135,12 @@ namespace DiscordCoreAPI {
 		WebHooks::initialize(this->httpsClient.get());
 	}
 
-	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
+	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData) {
+		if (commandData.guildId != 0) {
+			ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&commandData)).get();
+		} else {
+			ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&commandData)).get();
+		}
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 	}
 
