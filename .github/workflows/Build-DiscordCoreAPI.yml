@@ -59,8 +59,6 @@ jobs:
                 sudo rm -rf InstallOutput.txt &&
                 sudo rm -rf ./CMake/Raw-Files/Portfile-The-First.cmake &&
                 sudo rm -rf ./CMake/Raw-Files/Portfile-The-Second.cmake &&
-                sudo git add . &&
-                sudo git commit -m "Updates! [skip ci]" &&
                 sudo git config pull.rebase false &&
                 sudo git pull &&
                 sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
