@@ -453,16 +453,6 @@ namespace DiscordCoreInternal {
 							rawFrame02.sampleCount = newFrame->nb_samples;
 							this->outDataBuffer.send(std::move(rawFrame02));
 						}
-						if (returnValue < 0 || newFrame->nb_samples == 0) {
-							this->haveWeFailedBool.store(true);
-							if (this->configManager->doWePrintFFMPEGErrorMessages()) {
-								cout << DiscordCoreAPI::shiftToBrightRed() << "AudioDecoder::run() Error: Return value is less than zero!" << DiscordCoreAPI::reset() << endl
-									 << endl;
-							}
-							return;
-						}
-					} else {
-						break;
 					}
 				} else {
 					break;
