@@ -172,8 +172,7 @@ namespace DiscordCoreAPI {
 		std::shared_lock theLock{ Users::theMutex };
 		if (!Users::cache.contains(dataPackage.userId)) {
 			theLock.unlock();
-			auto theUser = getUserAsync(dataPackage).get();
-			co_return theUser;
+			co_return getUserAsync(dataPackage).get();
 
 		} else {
 			co_return *Users::cache[dataPackage.userId];
