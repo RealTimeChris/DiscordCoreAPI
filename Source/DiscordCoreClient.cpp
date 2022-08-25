@@ -68,27 +68,21 @@ namespace DiscordCoreAPI {
 			switch (theValue) {
 				case SIGTERM: {
 					throw SIGTERMError{ "Exiting for: SIGTERM.\n" };
-					break;
 				}
 				case SIGSEGV: {
 					throw SIGSEGVError{ "Exiting for: SIGSEGV.\n" };
-					break;
 				}
 				case SIGINT: {
 					throw SIGINTError{ "Exiting for: SIGINT.\n" };
-					break;
 				}
 				case SIGILL: {
 					throw SIGILLError{ "Exiting for: SIGILL.\n" };
-					break;
 				}
 				case SIGABRT: {
 					throw SIGABRTError{ "Exiting for: SIGABRT.\n" };
-					break;
 				}
 				case SIGFPE: {
 					throw SIGFPEError{ "Exiting for: SIGFPE.\n" };
-					break;
 				}
 			}
 		} catch (SIGINTError&) {
