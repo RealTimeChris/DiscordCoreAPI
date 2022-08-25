@@ -62,6 +62,10 @@ namespace DiscordCoreInternal {
 		ErlPacker(const std::string&);
 
 	  protected:
+		std::string comparisongStringFalse{ "false" };
+		std::string comparisongStringNil{ "nil" };
+		std::string falseString{ "false" };
+		std::string nilString{ "nil" };
 		std::string bufferString{};
 		char* buffer{ nullptr };
 		uint64_t offSet{};
