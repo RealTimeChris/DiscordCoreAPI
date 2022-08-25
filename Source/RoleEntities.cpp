@@ -291,13 +291,12 @@ namespace DiscordCoreAPI {
 		if (dataPackage.guildId == 0) {
 			throw std::runtime_error{ "Roles::getAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
 		}
-		Role newRole{};
 		for (auto& value: roles) {
 			if (value.id == dataPackage.roleId) {
-				newRole = value;
+				co_return value;
 			}
 		}
-		co_return newRole;
+		co_return {};
 	}
 
 	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
