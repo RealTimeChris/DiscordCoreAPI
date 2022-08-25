@@ -223,20 +223,20 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?before=" + std::to_string(dataPackage.beforeThisId);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
-			} else if (dataPackage.limit == 0) {
+			} else  {
 				workload.relativePath += "&limit=1";
 			}
 		} else if (dataPackage.afterThisId != 0) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.afterThisId);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
-			} else if (dataPackage.limit == 0) {
+			} else  {
 				workload.relativePath += "&limit=1";
 			}
 		} else {
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
-			} else if (dataPackage.limit == 0) {
+			} else {
 				workload.relativePath += "&limit=1";
 			}
 		}

@@ -419,8 +419,7 @@ namespace DiscordCoreAPI {
 		std::shared_lock theLock{ Guilds::theMutex };
 		if (!Guilds::cache.contains(dataPackage.guildId)) {
 			theLock.unlock();
-			auto guildNew = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
-			co_return guildNew;
+			co_return Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
 		} else {
 			co_return *Guilds::cache[dataPackage.guildId];
 		}
