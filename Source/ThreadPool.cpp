@@ -132,7 +132,7 @@ namespace DiscordCoreInternal {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 				if (theLock01.try_lock()) {
 					for (auto& [key, value]: this->workerThreads) {
-						if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {
+						if (value.theThread.joinable()) {
 							value.theThread.request_stop();
 							value.theThread.detach();
 							this->workerThreads.erase(key);
