@@ -44,7 +44,9 @@ namespace DiscordCoreInternal {
 		this->buffer = dataToParse.data();
 		this->size = dataToParse.size();
 		this->offSet = 0;
-		uint8_t version = ErlPacker::readBits<uint8_t>();
+		if (ErlPacker::readBits<uint8_t>() != formatVersion) {
+			throw ErlPackError{ "ErlPacker::parseEtfToJson() Error: Incorrect format version specified." };
+		}
 		return ErlPacker::singleValueETFToJson();
 	}
 
