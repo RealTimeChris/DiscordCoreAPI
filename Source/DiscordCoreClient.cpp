@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	std::vector<uint32_t> collectWorkerDimensions(uint32_t shardCount, uint32_t threadCount) {
+	std::vector<uint32_t> DiscordCoreClient::collectWorkerDimensions(uint32_t shardCount, uint32_t threadCount) {
 		std::vector<uint32_t> theVector{};
 		uint32_t theWorkerCount = shardCount <= threadCount ? shardCount : threadCount;
 		uint32_t extraShards = static_cast<uint32_t>(shardCount % theWorkerCount);
