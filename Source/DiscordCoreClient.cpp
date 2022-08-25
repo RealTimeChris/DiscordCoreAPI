@@ -269,6 +269,12 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() noexcept {
+		for (auto& [key, value]: CoRoutineBase::threadPool.workerThreads) {
+			if (value.theThread.joinable()) {
+				value.theThread.request_stop();
+				value.theThread.join();
+			}
+		}
 		for (auto& [key01, value01]: Guilds::cache) {
 			for (auto& value02: value01->members) {
 				delete value02;
