@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< Application id.
 		Snowflake guildId{};///< Set this to a guild id to create a command specific to that guild.
 		std::string name{};///< A name for the new command.
-	};
+	}; 
 
 	/// For creating a single global ApplicationCommand. \brief For creating a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData : public CreateApplicationCommandData {
