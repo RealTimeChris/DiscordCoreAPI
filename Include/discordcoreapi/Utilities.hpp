@@ -479,7 +479,7 @@ namespace DiscordCoreAPI {
 		return lhs;
 	}
 
-	inline std::basic_string<char> operator+(std::basic_string<char, std::char_traits<char>, std::allocator<char>> lhs, StringWrapper rhs) {
+	inline std::basic_string<char> operator+(const std::basic_string<char, std::char_traits<char>, std::allocator<char>>& lhs, StringWrapper rhs) {
 		std::stringstream theStream{};
 		theStream << lhs << rhs;
 		return theStream.str();
