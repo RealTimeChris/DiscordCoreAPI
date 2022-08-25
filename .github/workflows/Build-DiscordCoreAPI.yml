@@ -43,7 +43,6 @@ jobs:
                 sudo git commit -m "Updates!"  &&
                 sudo /usr/local/share/vcpkg/vcpkg x-add-version --overwrite-version --all --skip-version-format-check &&
                 cd ${GITHUB_WORKSPACE}/DiscordCoreAPI &&
-                sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux || true &&
                 sudo cat /usr/local/share/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log &&
                 sudo cat /usr/local/share/vcpkg/buildtrees/discordcoreapi/install-x64-linux-rel-out.log &&
                 sudo rm -rf InstallOutput.txt &&
