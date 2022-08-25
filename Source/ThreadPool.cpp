@@ -133,7 +133,6 @@ namespace DiscordCoreInternal {
 				if (theLock01.try_lock()) {
 					for (auto& [key, value]: this->workerThreads) {
 						if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {
-							std::cout << "THE SIZE 0101: " << this->workerThreads.size() << std::endl;
 							value.theThread.request_stop();
 							value.theThread.detach();
 							this->workerThreads.erase(key);
