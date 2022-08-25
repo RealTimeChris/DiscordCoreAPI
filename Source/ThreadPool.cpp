@@ -59,18 +59,6 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	void closeFunction(std::map<int64_t, WorkerThread>& other) {
-		if (other.size() == 0) {
-			return;
-		} else {
-			for (auto& [key, value]: other) {
-				other.erase(key);
-				break;
-			}
-		}
-		return closeFunction(other);
-	}
-
 	WorkerThread& WorkerThread::operator=(WorkerThread&& other) noexcept {
 		if (this != &other) {
 			this->areWeCurrentlyWorking.store(other.areWeCurrentlyWorking.load());
@@ -123,6 +111,11 @@ namespace DiscordCoreInternal {
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
 
+	CoRoutineThreadPool::~CoRoutineThreadPool() {
+		this->doWeQuit.store(true);
+		closeFunction(this->workerThreads);
+	}
+
 	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
 		while (!stopToken.stop_requested() && !this->doWeQuit.load()) {
 			if (this->coroHandleCount.load() > 0) {
@@ -166,9 +159,16 @@ namespace DiscordCoreInternal {
 		this->workerThreads.erase(theIndex);
 	}
 
-	CoRoutineThreadPool::~CoRoutineThreadPool() {
-		this->doWeQuit.store(true);
-		closeFunction(this->workerThreads);
+	void CoRoutineThreadPool::closeFunction(std::map<int64_t, WorkerThread>& other) {
+		if (other.size() == 0) {
+			return;
+		} else {
+			for (auto& [key, value]: other) {
+				other.erase(key);
+				break;
+			}
+		}
+		return closeFunction(other);
 	}
 
 }

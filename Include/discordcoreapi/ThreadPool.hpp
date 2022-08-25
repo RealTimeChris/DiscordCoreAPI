@@ -109,7 +109,7 @@ namespace DiscordCoreInternal {
 
 		~CoRoutineThreadPool();
 
-	  private:
+	  protected:
 		std::deque<std::coroutine_handle<>> theCoroutineHandles{};
 		std::map<int64_t, WorkerThread> workerThreads{};
 		std::atomic_int64_t coroHandleCount{ 0 };
@@ -120,6 +120,8 @@ namespace DiscordCoreInternal {
 		std::mutex theMutex{};
 
 		void threadFunction(std::stop_token stopToken, int64_t theIndex);
+
+		void closeFunction(std::map<int64_t, WorkerThread>& other);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
