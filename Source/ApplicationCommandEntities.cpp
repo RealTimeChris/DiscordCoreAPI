@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 
 	CreateGuildApplicationCommandData::operator std::string() {
 		nlohmann::json data{};
-		if (this->defaultMemberPermissions != "") {
+		if (this->defaultMemberPermissions != 0) {
 			data["default_member_permissions"] = this->defaultMemberPermissions;
 		}
 		data["description_localizations"] = this->descriptionLocalizations;
