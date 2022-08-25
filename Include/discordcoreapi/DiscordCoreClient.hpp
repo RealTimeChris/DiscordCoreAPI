@@ -152,6 +152,8 @@ namespace DiscordCoreAPI {
 		EventManager eventManager{};
 		BotUser currentUser{};
 
+		std::vector<uint32_t> collectWorkerDimensions(uint32_t shardCount, uint32_t threadCount);
+
 		GatewayBotData getGateWayBot();
 
 		bool instantiateWebSockets();
