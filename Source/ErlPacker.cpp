@@ -334,37 +334,27 @@ namespace DiscordCoreInternal {
 		if (atom == nullptr) {
 			return nlohmann::json{};
 		}
-		static const char* atom_null = "null";
-		static const char* atom_true = "true";
-		const char atom_nil_raw[4]{};
-		std::bitset<24> atom_nil{};
-		for (size_t x = 0; x < length; ++x) {
-			atom_nil[x] = atom_nil_raw[x];
-		}
-		std::bitset<40> atom_false{};
-		const char atom_false_raw[6]{ "false" };
-		for (size_t x = 0; x < length; ++x) {
-			atom_false[x] = atom_false_raw[x];
-		}
-		
-		std::bitset<24> atom_nil_new{};
-		for (size_t x = 0; x < length; ++x) {
-			atom_nil_new[x] = atom[x];
-		}
-		std::bitset<40> atom_false_new{};
-		for (size_t x = 0; x < length; ++x) {
-			atom_false_new[x] = atom[x];
-		}
-		if (length >= 3 && length <= 5) {
-			if (length == 4 && reinterpret_cast<const uint32_t*>(atom) == reinterpret_cast<const uint32_t*>(atom_null)) {// "null"
+		static const char* atom_null{ "null" };
+		static const char* atom_true{ "true" };
+		if (length == 3) {
+			for (size_t x = 0; x < length; ++x) {
+				this->comparisongStringNil[x] = atom[x];
+			}
+			if (this->comparisongStringNil == this->nilString) {
 				return nlohmann::json{};
-			} else if (length == 4 && reinterpret_cast<const uint32_t*>(atom) == reinterpret_cast<const uint32_t*>(atom_true)) {// "true"
-				return true;
-			} else if (length == 3 && atom_nil_new == atom_nil) {// "nil"
-				return nlohmann::json{};
-			} else if (length == 5 && atom_false_new == atom_false){
+			}
+		} else if (length == 5) {
+			for (size_t x = 0; x < length; ++x) {
+				this->comparisongStringFalse[x] = atom[x];
+			}
+			if (this->comparisongStringFalse == this->falseString) {
 				return false;
 			}
+		}
+		else if (length == 4 && reinterpret_cast<const uint32_t*>(atom) == reinterpret_cast<const uint32_t*>(atom_null)) {// "null"
+			return nlohmann::json{};
+		} else if (length == 4 && reinterpret_cast<const uint32_t*>(atom) == reinterpret_cast<const uint32_t*>(atom_true)) {// "true"
+			return true;
 		}
 
 		nlohmann::json j = std::string(atom, length);
