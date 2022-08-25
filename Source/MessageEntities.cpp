@@ -265,8 +265,7 @@ namespace DiscordCoreAPI {
 			workload.content = dataPackage;
 		}
 		workload.callStack = "Messages::createMessageAsync()";
-		auto result = Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
-		co_return result;
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
 	CoRoutine<Message> Messages::crosspostMessageAsync(CrosspostMessageData dataPackage) {
@@ -290,8 +289,7 @@ namespace DiscordCoreAPI {
 			workload.content = dataPackage;
 		}
 		workload.callStack = "Messages::editMessageAsync()";
-		auto result = Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
-		co_return result;
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
 	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
