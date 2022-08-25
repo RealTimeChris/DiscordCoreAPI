@@ -51,60 +51,69 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::singleValueJsonToETF(nlohmann::json& jsonData) {
-		if (jsonData.is_array()) {
-			uint32_t length = static_cast<uint32_t>(jsonData.size());
-			if (length == 0) {
+		switch (jsonData.type()) {
+			case nlohmann::json::value_t::array: {
+				uint32_t length = static_cast<uint32_t>(jsonData.size());
+				if (length == 0) {
+					ErlPacker::appendNilExt();
+				} else {
+					if (length > std::numeric_limits<uint32_t>::max() - 1) {
+						throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: List too large for ETF.\n\n" };
+					}
+				}
+				ErlPacker::appendListHeader(length);
+				for (uint64_t index = 0; index < length; ++index) {
+					ErlPacker::singleValueJsonToETF(jsonData[index]);
+				}
 				ErlPacker::appendNilExt();
-			} else {
+			}
+			case nlohmann::json::value_t::object: {
+				uint32_t length = static_cast<uint32_t>(jsonData.size());
 				if (length > std::numeric_limits<uint32_t>::max() - 1) {
-					throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: List too large for ETF.\n\n" };
+					throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: Map too large for ETF.\n\n" };
+				}
+				ErlPacker::appendMapHeader(length);
+				for (auto n = jsonData.begin(); n != jsonData.end(); ++n) {
+					nlohmann::json jstr = n.key();
+					ErlPacker::singleValueJsonToETF(jstr);
+					ErlPacker::singleValueJsonToETF(n.value());
 				}
 			}
-			ErlPacker::appendListHeader(length);
-			for (uint64_t index = 0; index < length; ++index) {
-				ErlPacker::singleValueJsonToETF(jsonData[index]);
+			case nlohmann::json::value_t::number_integer: {
+				uint64_t numberOld = jsonData.get<uint64_t>();
+				if (numberOld <= 127) {
+					uint8_t number = jsonData.get<uint8_t>();
+					ErlPacker::appendSmallIntegerExt(number);
+				} else if (jsonData.is_number_unsigned() && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
+					uint64_t number = jsonData.get<uint64_t>();
+					ErlPacker::appendUnsignedLongLong(number);
+				} else {
+					uint32_t number = jsonData.get<uint32_t>();
+					ErlPacker::appendIntegerExt(number);
+				}
 			}
-			ErlPacker::appendNilExt();
-		} else if (jsonData.is_object()) {
-			uint32_t length = static_cast<uint32_t>(jsonData.size());
-			if (length > std::numeric_limits<uint32_t>::max() - 1) {
-				throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: Map too large for ETF.\n\n" };
-			}
-			ErlPacker::appendMapHeader(length);
-			for (auto n = jsonData.begin(); n != jsonData.end(); ++n) {
-				nlohmann::json jstr = n.key();
-				ErlPacker::singleValueJsonToETF(jstr);
-				ErlPacker::singleValueJsonToETF(n.value());
-			}
-		} else if (jsonData.is_number_integer()) {
-			uint64_t numberOld = jsonData.get<uint64_t>();
-			if (numberOld <= 127) {
-				uint8_t number = jsonData.get<uint8_t>();
-				ErlPacker::appendSmallIntegerExt(number);
-			} else if (jsonData.is_number_unsigned() && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
-				uint64_t number = jsonData.get<uint64_t>();
-				ErlPacker::appendUnsignedLongLong(number);
-			} else {
-				uint32_t number = jsonData.get<uint32_t>();
-				ErlPacker::appendIntegerExt(number);
-			}
-		} else if (jsonData.is_boolean()) {
-			if (jsonData.get<bool>()) {
+			case nlohmann::json::value_t::boolean: {
+				if (jsonData.get<bool>()) {
 				ErlPacker::appendTrue();
-			} else {
-				ErlPacker::appendFalse();
+				}
+				else {
+					ErlPacker::appendFalse();
+				}
 			}
-		} else if (jsonData.is_string()) {
-			std::string newString = jsonData.get<std::string>();
-			std::string newVector{};
-			newVector.insert(newVector.begin(), newString.begin(), newString.end());
-			uint32_t newValue = static_cast<uint32_t>(newVector.size());
-			ErlPacker::appendBinaryExt(newVector, newValue);
-		} else if (jsonData.is_number_float()) {
-			double newValue = jsonData.get<double>();
-			ErlPacker::appendFloatExt(newValue);
-		} else if (jsonData.is_null()) {
-			ErlPacker::appendNil();
+			case nlohmann::json::value_t::string: {
+				std::string newString = jsonData.get<std::string>();
+				std::string newVector{};
+				newVector.insert(newVector.begin(), newString.begin(), newString.end());
+				uint32_t newValue = static_cast<uint32_t>(newVector.size());
+				ErlPacker::appendBinaryExt(newVector, newValue);
+			}
+			case nlohmann::json::value_t::number_float: {
+				double newValue = jsonData.get<double>();
+				ErlPacker::appendFloatExt(newValue);
+			}
+			case nlohmann::json::value_t::null: {
+				ErlPacker::appendNil();
+			}
 		}
 	}
 
