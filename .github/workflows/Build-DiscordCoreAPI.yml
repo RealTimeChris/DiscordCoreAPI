@@ -48,7 +48,7 @@ jobs:
                 sudo bash -c "cat InstallOutput.txt >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                 sudo bash -c "echo $'' >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
                 sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-Second.cmake" &&
-                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake&&
+                sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo touch ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 cd /usr/local/share/vcpkg &&
                 sudo git add . &&
