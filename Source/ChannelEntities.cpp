@@ -230,8 +230,7 @@ namespace DiscordCoreAPI {
 		std::shared_lock theLock{ Channels::theMutex };
 		if (!Channels::cache.contains(dataPackage.channelId)) {
 			theLock.unlock();
-			auto theChannel = Channels::getChannelAsync(dataPackage).get();
-			co_return theChannel;
+			co_return Channels::getChannelAsync(dataPackage).get();
 		} else {
 			co_return *Channels::cache[dataPackage.channelId];
 		}
@@ -352,8 +351,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		auto channelNew = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
-		co_return channelNew;
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 	}
 
 	CoRoutine<void> Channels::modifyGuildChannelPositionsAsync(ModifyGuildChannelPositionsData dataPackage) {
