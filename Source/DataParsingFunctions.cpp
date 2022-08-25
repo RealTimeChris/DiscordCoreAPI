@@ -4547,29 +4547,28 @@ namespace DiscordCoreAPI {
 	}
 
 	void CommandData::parseObject(const nlohmann::json* jsonObjectData) {
-		if (jsonObjectData->contains("options") && !(*jsonObjectData)["options"].is_null()) {
-			this->optionsArgs.clear();
-			for (auto theIterator = jsonObjectData->begin(); theIterator != jsonObjectData->end(); ++theIterator) {
-				if (theIterator->contains("type") && theIterator->at("type") == 1) {
-					if (theIterator->contains("name")) {
-						this->subCommandName = theIterator->get<std::string>();
-					}
-				} else if (theIterator->contains("type") && theIterator->at("type") == 2) {
-					if (theIterator->contains("name")) {
-						this->subCommandGroupName = theIterator->get<std::string>();
-					}
+		for (auto theIterator = jsonObjectData->begin(); theIterator != jsonObjectData->end(); ++theIterator) {
+			if (theIterator->contains("type") && theIterator->at("type") == 1) {
+				if (theIterator->contains("name")) {
+					this->subCommandName = theIterator->get<std::string>();
 				}
-				if (theIterator->contains("options")) {
-					parseObject(&(*theIterator));
+			} else if (theIterator->contains("type") && theIterator->at("type") == 2) {
+				if (theIterator->contains("name")) {
+					this->subCommandGroupName = theIterator->get<std::string>();
 				}
-				if (theIterator->contains("value") && !theIterator->at("value").is_null()) {
-					nlohmann::json newValueNew = theIterator->at("value");
-					if (newValueNew.is_string()) {
-						this->optionsArgs.emplace(theIterator.key(), newValueNew.get<std::string>());
-					} else if (newValueNew.is_number()) {
-						this->optionsArgs.emplace(theIterator.key(), std::to_string(newValueNew.get<uint64_t>()));
-					} else if (newValueNew.is_boolean()) {
-						this->optionsArgs.emplace(theIterator.key(), std::to_string(newValueNew.get<bool>()));
+			}
+			if (jsonObjectData->contains("options")) {
+				for (auto theOptionIterator = jsonObjectData->at("options").begin(); theOptionIterator != jsonObjectData->at("options").end(); ++theOptionIterator) {
+					if (theOptionIterator->contains("value") && theOptionIterator->contains("name")) {
+						nlohmann::json newValueNew = theOptionIterator->at("value");
+						nlohmann::json newKeyNew = theOptionIterator->at("name");
+						if (newValueNew.is_string()) {
+							this->optionsArgs.emplace(newKeyNew.get<std::string>(), newValueNew.get<std::string>());
+						} else if (newValueNew.is_number()) {
+							this->optionsArgs.emplace(newKeyNew.get<std::string>(), std::to_string(newValueNew.get<uint64_t>()));
+						} else if (newValueNew.is_boolean()) {
+							this->optionsArgs.emplace(newKeyNew.get<std::string>(), std::to_string(newValueNew.get<bool>()));
+						}
 					}
 				}
 			}
