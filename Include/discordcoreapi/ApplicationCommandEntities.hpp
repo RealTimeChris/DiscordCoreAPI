@@ -41,6 +41,7 @@ namespace DiscordCoreAPI {
 		std::string commandId{};///< The id of the command which you would like to collect.
 	};
 
+	/// For creating an application command.
 	struct DiscordCoreAPI_Dll CreateApplicationCommandData {
 		std::map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
 		std::map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
@@ -50,7 +51,7 @@ namespace DiscordCoreAPI {
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
 		std::string description{};///< A description of the command.
 		Snowflake applicationId{};///< Application id.
-		Snowflake guildId{};
+		Snowflake guildId{};///< Set this to a guild id to create a command specific to that guild.
 		std::string name{};///< A name for the new command.
 	};
 
