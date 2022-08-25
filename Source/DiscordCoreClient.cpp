@@ -173,20 +173,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	GatewayBotData DiscordCoreClient::getGateWayBot() {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Gateway_Bot };
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/gateway/bot";
-		workload.callStack = "DiscordCoreClient::getGateWayBot()";
-		GatewayBotData theData{};
-		try {
-			theData = this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
-		} catch (...) {
-			return theData;
-		}
-		return theData;
-	}
-
 	std::vector<uint32_t> DiscordCoreClient::collectWorkerDimensions(uint32_t shardCount, uint32_t threadCount) {
 		std::vector<uint32_t> theVector{};
 		uint32_t theWorkerCount = shardCount <= threadCount ? shardCount : threadCount;
@@ -205,6 +191,20 @@ namespace DiscordCoreAPI {
 			theIndex++;
 		}
 		return theVector;
+	}
+
+	GatewayBotData DiscordCoreClient::getGateWayBot() {
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Gateway_Bot };
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
+		workload.relativePath = "/gateway/bot";
+		workload.callStack = "DiscordCoreClient::getGateWayBot()";
+		GatewayBotData theData{};
+		try {
+			theData = this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
+		} catch (...) {
+			return theData;
+		}
+		return theData;
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
