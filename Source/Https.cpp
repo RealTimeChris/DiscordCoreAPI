@@ -551,7 +551,7 @@ namespace DiscordCoreInternal {
 						if ((theData.responseMessage.size() >= theData.contentSize && !theResult) || stopWatch.hasTimePassed() || !theResult ||
 							(theData.responseCode == -5 && theData.contentSize == -5)) {
 							doWeReturn = true;
-						} else if (theResult) {
+						} else {
 							stopWatch.resetTimer();
 						}
 					}
