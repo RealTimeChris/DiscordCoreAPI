@@ -66,6 +66,7 @@ namespace DiscordCoreInternal {
 					ErlPacker::singleValueJsonToETF(jsonData[index]);
 				}
 				ErlPacker::appendNilExt();
+				break;
 			}
 			case nlohmann::json::value_t::object: {
 				uint32_t length = static_cast<uint32_t>(jsonData.size());
@@ -78,6 +79,7 @@ namespace DiscordCoreInternal {
 					ErlPacker::singleValueJsonToETF(jstr);
 					ErlPacker::singleValueJsonToETF(n.value());
 				}
+				break;
 			}
 			case nlohmann::json::value_t::number_integer: {
 				uint64_t numberOld = jsonData.get<uint64_t>();
@@ -91,14 +93,16 @@ namespace DiscordCoreInternal {
 					uint32_t number = jsonData.get<uint32_t>();
 					ErlPacker::appendIntegerExt(number);
 				}
+				break;
 			}
 			case nlohmann::json::value_t::boolean: {
 				if (jsonData.get<bool>()) {
-				ErlPacker::appendTrue();
+					ErlPacker::appendTrue();
 				}
 				else {
 					ErlPacker::appendFalse();
 				}
+				break;
 			}
 			case nlohmann::json::value_t::string: {
 				std::string newString = jsonData.get<std::string>();
@@ -106,13 +110,18 @@ namespace DiscordCoreInternal {
 				newVector.insert(newVector.begin(), newString.begin(), newString.end());
 				uint32_t newValue = static_cast<uint32_t>(newVector.size());
 				ErlPacker::appendBinaryExt(newVector, newValue);
+				break;
 			}
 			case nlohmann::json::value_t::number_float: {
 				double newValue = jsonData.get<double>();
 				ErlPacker::appendFloatExt(newValue);
+				break;
 			}
 			case nlohmann::json::value_t::null: {
 				ErlPacker::appendNil();
+				break;
+			}
+			default: {
 			}
 		}
 	}
