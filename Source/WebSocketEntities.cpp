@@ -1393,6 +1393,7 @@ namespace DiscordCoreInternal {
 				this->theShardMap[thePackageNew.currentShard]->voiceConnectionDataBufferMap = std::move(thePackageNew.voiceConnectionDataBufferMap);
 				std::string connectionUrl = thePackageNew.areWeResuming ? this->theShardMap[thePackageNew.currentShard]->resumeUrl : this->configManager->getConnectionAddress();
 				bool isItFirstIteraion{ true };
+				bool didWeConnect{ false };
 				do {
 					if (this->configManager->doWePrintGeneralSuccessMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightBlue() << "Connecting Shard " + std::to_string(thePackageNew.currentShard + 1) << " of "
@@ -1406,10 +1407,15 @@ namespace DiscordCoreInternal {
 						std::this_thread::sleep_for(5s);
 					}
 					isItFirstIteraion = false;
-				} while (!this->theShardMap[thePackageNew.currentShard]->connect(connectionUrl, this->configManager->getConnectionPort(),
-							 this->configManager->doWePrintWebSocketErrorMessages()) &&
-					!this->doWeQuit->load());
-
+					try {
+						didWeConnect = this->theShardMap[thePackageNew.currentShard]->connect(connectionUrl, this->configManager->getConnectionPort(),
+							this->configManager->doWePrintWebSocketErrorMessages());
+					} catch (...) {
+						std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed... reconnecting in 5 seconds." << DiscordCoreAPI::reset() << std::endl << std::endl;
+					}
+						
+				} while (!didWeConnect && !this->doWeQuit->load());
+				
 				this->theShardMap[thePackageNew.currentShard]->theWebSocketState.store(WebSocketSSLShardState::Upgrading);
 				std::string sendString{};
 				sendString = "GET /?v=10&encoding=";

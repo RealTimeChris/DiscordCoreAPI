@@ -211,7 +211,7 @@ namespace DiscordCoreInternal {
 	  public:
 		SSLClient() noexcept = default;
 
-		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages) noexcept;
+		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages);
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 

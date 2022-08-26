@@ -210,7 +210,7 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::Nothing_To_Write;
 	}
 
-	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew) noexcept {
+	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew) {
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
 		this->rawInputBuffer.resize(this->maxBufferSize);
 		std::string stringNew{};
@@ -231,122 +231,77 @@ namespace DiscordCoreInternal {
 		hints->ai_protocol = IPPROTO_TCP;
 
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("SSLClient::SSL_CTX_new()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportSSLError("SSLClient::SSL_CTX_new()") };
 		}
 
 		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
-			return false;
+			throw ConnectionError{ reportSSLError("SSLClient::SSL_CTX_set_min_proto_version()") };
 		}
 
 #ifdef SSL_OP_IGNORE_UNEXPECTED_EOF
 		auto originalOptions{ SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
 		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("SSLClient::SSL_CTX_set_options()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportSSLError("SSLClient::SSL_CTX_set_options()") };
 		}
 #endif
 
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::getaddrinfo()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportError("SSLClient::getaddrinfo()") };
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::socket()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportError("SSLClient::socket()") };
 		}
 
 		int32_t value{ this->maxBufferSize + 1 };
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&value), sizeof(value))) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::setsockopt()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportError("SSLClient::setsockopt()") };
 		}
 
 		const char optionValue{ true };
 		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::setsockopt()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportError("SSLClient::setsockopt()") };
 		}
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::setsockopt()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportError("SSLClient::setsockopt()") };
 		}
 
 		linger optionValue02{};
 		optionValue02.l_onoff = 0;
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger))) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::setsockopt()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportError("SSLClient::setsockopt()") };
 		}
 
 		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::connect()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportError("SSLClient::connect()") };
 		}
 
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::SSL_new()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportSSLError("SSLClient::SSL_new()") };
 		}
 
 		if (auto theResult = SSL_set_fd(this->ssl, this->theSocket); theResult != 1) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("SSLClient::SSL_set_fd()", theResult, this->ssl) << endl;
-			}
-			return false;
+			throw ConnectionError{ reportSSLError("SSLClient::SSL_set_fd()", theResult, this->ssl) };
 		}
 
 		/* SNI */
 		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); theResult != 1) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("SSLClient::SSL_set_tlsext_host_name()", theResult, this->ssl) << endl;
-			}
-			return false;
+			throw ConnectionError{ reportSSLError("SSLClient::SSL_set_tlsext_host_name()", theResult, this->ssl) };
 		}
 
 		if (auto theResult = SSL_connect(this->ssl); theResult != 1) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << endl;
-			}
-			return false;
+			throw ConnectionError{ reportSSLError("SSLClient::SSL_connect()", theResult, this->ssl) };
 		}
 
 #ifdef _WIN32
 		u_long value02{ 1 };
 		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::ioctlsocket()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportError("SSLClient::ioctlsocket()") };
 		}
 #else
 		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::fcntl()") << endl;
-			}
-			return false;
+			throw ConnectionError{ reportError("SSLClient::fcntl()") };
 		}
 #endif
 		return true;
