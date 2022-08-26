@@ -478,7 +478,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("owner") && !(*jsonObjectData)["owner"].is_null()) {
-			theData.flags = setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Owner, (*jsonObjectData)["owner"].get<bool>());
+			theData.flags = setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Owner, getBool(&(*jsonObjectData), "owner"));
 		}
 
 		if (jsonObjectData->contains("owner_id") && !(*jsonObjectData)["owner_id"].is_null()) {
@@ -573,11 +573,11 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("owner") && !(*jsonObjectData)["owner"].is_null()) {
-			theData.flags = setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Owner, (*jsonObjectData)["owner"].get<bool>());
+			theData.flags = setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Owner, getBool(&(*jsonObjectData), "owner"));
 		}
 
 		if (jsonObjectData->contains("widget_enabled") && !(*jsonObjectData)["widget_enabled"].is_null()) {
-			theData.flags = setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::WidgetEnabled, (*jsonObjectData)["widget_enabled"].get<bool>());
+			theData.flags = setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::WidgetEnabled, getBool(&(*jsonObjectData), "widget_enabled"));
 		}
 
 		if (jsonObjectData->contains("verification_level") && !(*jsonObjectData)["verification_level"].is_null()) {
@@ -601,11 +601,11 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("large") && !(*jsonObjectData)["large"].is_null()) {
-			theData.flags = setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Large, (*jsonObjectData)["large"].get<bool>());
+			theData.flags = setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Large, getBool(&(*jsonObjectData), "large"));
 		}
 
 		if (jsonObjectData->contains("unavailable") && !(*jsonObjectData)["unavailable"].is_null()) {
-			theData.flags = setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Unavailable, (*jsonObjectData)["unavailable"].get<bool>());
+			theData.flags = setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Unavailable, getBool(&(*jsonObjectData), "unavailable"));
 		}
 
 		if (jsonObjectData->contains("member_count") && !(*jsonObjectData)["member_count"].is_null()) {
@@ -701,9 +701,7 @@ namespace DiscordCoreAPI {
 			theData.contentType = getString(jsonObjectData,"content_type");
 		}
 
-		if (jsonObjectData->contains("ephemeral") && !(*jsonObjectData)["ephemeral"].is_null()) {
-			theData.ephemeral = (*jsonObjectData)["ephemeral"].get<bool>();
-		}
+		theData.ephemeral = getBool(&(*jsonObjectData), "ephemeral");
 
 		if (jsonObjectData->contains("description") && !(*jsonObjectData)["description"].is_null()) {
 			theData.description = (*jsonObjectData)["description"].get<std::string>();
@@ -795,9 +793,7 @@ namespace DiscordCoreAPI {
 			this->id = stoull((*jsonObjectData)["id"].get<std::string>());
 		}
 
-		if (jsonObjectData->contains("enabled") && !(*jsonObjectData)["enabled"].is_null()) {
-			this->enabled = (*jsonObjectData)["enabled"].get<bool>();
-		}
+		this->enabled = getBool(&(*jsonObjectData), "enabled");
 
 		if (jsonObjectData->contains("trigger_type") && !(*jsonObjectData)["trigger_type"].is_null()) {
 			this->triggerType = static_cast<TriggerType>((*jsonObjectData)["trigger_type"].get<uint64_t>());
@@ -904,7 +900,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("nsfw") && !(*jsonObjectData)["nsfw"].is_null()) {
-			theData.flags = setBool<int8_t, ChannelFlags>(theData.flags, ChannelFlags::NSFW, (*jsonObjectData)["nsfw"].get<bool>());
+			theData.flags = setBool<int8_t, ChannelFlags>(theData.flags, ChannelFlags::NSFW, getBool(&(*jsonObjectData), "nsfw"));
 		}
 
 		if (jsonObjectData->contains("last_message_id") && !(*jsonObjectData)["last_message_id"].is_null()) {
@@ -1108,13 +1104,9 @@ namespace DiscordCoreAPI {
 			this->editedTimestamp = (*jsonObjectData)["edited_timestamp"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("tts") && !(*jsonObjectData)["tts"].is_null()) {
-			this->tts = (*jsonObjectData)["tts"].get<bool>();
-		}
+		this->tts = getBool(&(*jsonObjectData), "tts");
 
-		if (jsonObjectData->contains("mention_everyone") && !(*jsonObjectData)["mention_everyone"].is_null()) {
-			this->mentionEveryone = (*jsonObjectData)["mention_everyone"].get<bool>();
-		}
+		this->mentionEveryone = getBool(&(*jsonObjectData), "mention_everyone");
 		
 		if (jsonObjectData->contains("mentions") && !(*jsonObjectData)["mentions"].is_null()) {
 			this->mentions.clear();
@@ -1169,9 +1161,7 @@ namespace DiscordCoreAPI {
 			this->nonce = (*jsonObjectData)["nonce"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("pinned") && !(*jsonObjectData)["pinned"].is_null()) {
-			this->pinned = (*jsonObjectData)["pinned"].get<bool>();
-		}
+		this->pinned = getBool(&(*jsonObjectData), "pinned");
 
 		if (jsonObjectData->contains("webhook_id") && !(*jsonObjectData)["webhook_id"].is_null()) {
 			this->webHookId = stoull((*jsonObjectData)["webhook_id"].get<std::string>());
@@ -1249,9 +1239,7 @@ namespace DiscordCoreAPI {
 			this->count = (*jsonObjectData)["count"].get<int32_t>();
 		}
 
-		if (jsonObjectData->contains("me") && !(*jsonObjectData)["me"].is_null()) {
-			this->me = (*jsonObjectData)["me"].get<bool>();
-		}
+		this->me = getBool(&(*jsonObjectData), "me");
 
 		if (jsonObjectData->contains("emoji") && !(*jsonObjectData)["emoji"].is_null()) {
 			DiscordCoreAPI::parseObject(&(*jsonObjectData)["emoji"], this->emoji);
@@ -1326,9 +1314,7 @@ namespace DiscordCoreAPI {
 			theData.privacyLevel = (*jsonObjectData)["privacy_level"].get<StageInstancePrivacyLevel>();
 		}
 
-		if (jsonObjectData->contains("discoverable_disabled") && !(*jsonObjectData)["discoverable_disabled"].is_null()) {
-			theData.discoverableDisabled = (*jsonObjectData)["discoverable_disabled"].get<bool>();
-		}
+		theData.discoverableDisabled = getBool(&(*jsonObjectData), "discoverable_disabled");
 	}
 
 	void Sticker::parseObject(const nlohmann::json* jsonObjectData) {
@@ -1349,7 +1335,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("available") && !(*jsonObjectData)["available"].is_null()) {
-			theData.stickerFlags = setBool<int32_t, StickerFlags>(theData.stickerFlags, StickerFlags::Available, (*jsonObjectData)["available"].get<bool>());
+			theData.stickerFlags = setBool<int32_t, StickerFlags>(theData.stickerFlags, StickerFlags::Available, getBool(&(*jsonObjectData), "available"));
 		}
 
 		if (jsonObjectData->contains("guild_id") && !(*jsonObjectData)["guild_id"].is_null()) {
@@ -1429,7 +1415,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("nsfw") && !(*jsonObjectData)["nsfw"].is_null()) {
-			this->flags = setBool<int8_t, ChannelFlags>(this->flags, ChannelFlags::NSFW, (*jsonObjectData)["nsfw"].get<bool>());
+			this->flags = setBool<int8_t, ChannelFlags>(this->flags, ChannelFlags::NSFW, getBool(&(*jsonObjectData), "nsfw"));
 		}
 
 		if (jsonObjectData->contains("last_message_id") && !(*jsonObjectData)["last_message_id"].is_null()) {
@@ -1774,19 +1760,13 @@ namespace DiscordCoreAPI {
 			this->guildId = stoull((*jsonObjectData)["guild_id"].get<std::string>());
 		}
 
-		if (jsonObjectData->contains("fail_if_not_exists") && !(*jsonObjectData)["fail_if_not_exists"].is_null()) {
-			this->failIfNotExists = (*jsonObjectData)["fail_if_not_exists"].get<bool>();
-		}
+		this->failIfNotExists = getBool(&(*jsonObjectData), "fail_if_not_exists");
 	}
 
 	void ThreadMetadataData::parseObject(const nlohmann::json* jsonObjectData) {
-		if (jsonObjectData->contains("archived") && !(*jsonObjectData)["archived"].is_null()) {
-			this->archived = (*jsonObjectData)["archived"].get<bool>();
-		}
+		this->archived = getBool(&(*jsonObjectData), "archived");
 
-		if (jsonObjectData->contains("invitable") && !(*jsonObjectData)["invitable"].is_null()) {
-			this->invitable = (*jsonObjectData)["invitable"].get<bool>();
-		}
+		this->invitable = getBool(&(*jsonObjectData), "invitable");
 
 		if (jsonObjectData->contains("auto_archive_duration") && !(*jsonObjectData)["auto_archive_duration"].is_null()) {
 			this->autoArchiveDuration = (*jsonObjectData)["auto_archive_duration"].get<int32_t>();
@@ -1796,9 +1776,7 @@ namespace DiscordCoreAPI {
 			this->archiveTimestamp = (*jsonObjectData)["archive_timestamp"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("locked") && !(*jsonObjectData)["locked"].is_null()) {
-			this->locked = (*jsonObjectData)["locked"].get<bool>();
-		}
+		this->locked = getBool(&(*jsonObjectData), "locked");
 	}
 
 	void ThreadMemberData::parseObject(const nlohmann::json* jsonObjectData) {
@@ -1872,9 +1850,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (jsonObjectData->contains("has_more") && !(*jsonObjectData)["has_more"].is_null()) {
-			this->hasMore = (*jsonObjectData)["has_more"].get<bool>();
-		}
+		this->hasMore = getBool(&(*jsonObjectData), "has_more");
 	}
 
 	void ArchivedThreadsData::parseObject(const nlohmann::json* jsonObjectData) {
@@ -1895,9 +1871,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (jsonObjectData->contains("has_more") && !(*jsonObjectData)["has_more"].is_null()) {
-			this->hasMore = (*jsonObjectData)["has_more"].get<bool>();
-		}
+		this->hasMore = getBool(&(*jsonObjectData), "has_more");
 	}
 
 	void ActionMetaData::parseObject(const nlohmann::json* jsonObjectData) {
@@ -1943,9 +1917,7 @@ namespace DiscordCoreAPI {
 			this->id = stoull((*jsonObjectData)["id"].get<std::string>());
 		}
 
-		if (jsonObjectData->contains("enabled") && !(*jsonObjectData)["enabled"].is_null()) {
-			this->enabled = (*jsonObjectData)["enabled"].get<bool>();
-		}
+		this->enabled = getBool(&(*jsonObjectData), "enabled");
 
 		if (jsonObjectData->contains("trigger_type") && !(*jsonObjectData)["trigger_type"].is_null()) {
 			this->triggerType = static_cast<TriggerType>((*jsonObjectData)["trigger_type"].get<uint64_t>());
@@ -1992,9 +1964,7 @@ namespace DiscordCoreAPI {
 			this->id = stoull((*jsonObjectData)["id"].get<std::string>());
 		}
 
-		if (jsonObjectData->contains("permission") && !(*jsonObjectData)["permission"].is_null()) {
-			this->permission = (*jsonObjectData)["permission"].get<bool>();
-		}
+		this->permission = getBool(&(*jsonObjectData), "permission");
 
 		if (jsonObjectData->contains("type") && !(*jsonObjectData)["type"].is_null()) {
 			this->type = (*jsonObjectData)["type"].get<ApplicationCommandPermissionType>();
@@ -2070,9 +2040,7 @@ namespace DiscordCoreAPI {
 			this->count = (*jsonObjectData)["count"].get<int32_t>();
 		}
 
-		if (jsonObjectData->contains("me") && !(*jsonObjectData)["me"].is_null()) {
-			this->me = (*jsonObjectData)["me"].get<bool>();
-		}
+		this->me = getBool(&(*jsonObjectData), "me");
 
 		if (jsonObjectData->contains("emoji") && !(*jsonObjectData)["emoji"].is_null()) {
 			DiscordCoreAPI::parseObject(&(*jsonObjectData)["emoji"], this->emoji);
@@ -2104,17 +2072,11 @@ namespace DiscordCoreAPI {
 			this->id = stoull((*jsonObjectData)["id"].get<std::string>());
 		}
 
-		if (jsonObjectData->contains("custom") && !(*jsonObjectData)["custom"].is_null()) {
-			this->custom = (*jsonObjectData)["custom"].get<bool>();
-		}
+		this->custom = getBool(&(*jsonObjectData), "custom");
 
-		if (jsonObjectData->contains("deprecated") && !(*jsonObjectData)["deprecated"].is_null()) {
-			this->deprecated = (*jsonObjectData)["deprecated"].get<bool>();
-		}
+		this->deprecated = getBool(&(*jsonObjectData), "deprecated");
 
-		if (jsonObjectData->contains("optimal") && !(*jsonObjectData)["optimal"].is_null()) {
-			this->optimal = (*jsonObjectData)["optimal"].get<bool>();
-		}
+		this->optimal = getBool(&(*jsonObjectData), "optimal");
 
 		if (jsonObjectData->contains("name") && !(*jsonObjectData)["name"].is_null()) {
 			this->name = (*jsonObjectData)["name"].get<std::string>();
@@ -2244,13 +2206,9 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (jsonObjectData->contains("bot_public") && !(*jsonObjectData)["bot_public"].is_null()) {
-			this->botPublic = (*jsonObjectData)["bot_public"].get<bool>();
-		}
+		this->botPublic = getBool(&(*jsonObjectData), "bot_public");
 
-		if (jsonObjectData->contains("bot_require_code_grant") && !(*jsonObjectData)["bot_require_code_grant"].is_null()) {
-			this->botRequireCodeGrant = (*jsonObjectData)["bot_require_code_grant"].get<bool>();
-		}
+		this->botRequireCodeGrant = getBool(&(*jsonObjectData), "bot_require_code_grant");
 
 		if (jsonObjectData->contains("terms_of_service_url") && !(*jsonObjectData)["terms_of_service_url"].is_null()) {
 			this->termsOfServiceUrl = (*jsonObjectData)["terms_of_service_url"].get<std::string>();
@@ -2326,9 +2284,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildWidgetData::parseObject(const nlohmann::json* jsonObjectData) {
-		if (jsonObjectData->contains("enabled") && !(*jsonObjectData)["enabled"].is_null()) {
-			this->enabled = (*jsonObjectData)["enabled"].get<bool>();
-		}
+		this->enabled = getBool(&(*jsonObjectData), "enabled");
 
 		if (jsonObjectData->contains("channel_id") && !(*jsonObjectData)["channel_id"].is_null()) {
 			this->channelId = stoull((*jsonObjectData)["channel_id"].get<std::string>());
@@ -2354,21 +2310,15 @@ namespace DiscordCoreAPI {
 			this->type = (*jsonObjectData)["type"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("enabled") && !(*jsonObjectData)["enabled"].is_null()) {
-			this->enabled = (*jsonObjectData)["enabled"].get<bool>();
-		}
+		this->enabled = getBool(&(*jsonObjectData), "enabled");
 
-		if (jsonObjectData->contains("syncing") && !(*jsonObjectData)["syncing"].is_null()) {
-			this->syncing = (*jsonObjectData)["syncing"].get<bool>();
-		}
+		this->syncing = getBool(&(*jsonObjectData), "syncing");
 
 		if (jsonObjectData->contains("role_id") && !(*jsonObjectData)["role_id"].is_null()) {
 			this->roleId = stoull((*jsonObjectData)["role_id"].get<std::string>());
 		}
 
-		if (jsonObjectData->contains("enable_emoticons") && !(*jsonObjectData)["enable_emoticons"].is_null()) {
-			this->enableEmoticons = (*jsonObjectData)["enable_emoticons"].get<bool>();
-		}
+		this->enableEmoticons = getBool(&(*jsonObjectData), "enable_emoticons");
 
 		if (jsonObjectData->contains("expire_behavior") && !(*jsonObjectData)["expire_behavior"].is_null()) {
 			this->expireBehavior = (*jsonObjectData)["expire_behavior"].get<int32_t>();
@@ -2394,9 +2344,7 @@ namespace DiscordCoreAPI {
 			this->subscriberCount = (*jsonObjectData)["subscriber_count"].get<int32_t>();
 		}
 
-		if (jsonObjectData->contains("revoked") && !(*jsonObjectData)["revoked"].is_null()) {
-			this->revoked = (*jsonObjectData)["revoked"].get<bool>();
-		}
+		this->revoked = getBool(&(*jsonObjectData), "revoked");
 
 		if (jsonObjectData->contains("application") && !(*jsonObjectData)["application"].is_null()) {
 			this->application = &(*jsonObjectData)["application"];
@@ -2587,9 +2535,7 @@ namespace DiscordCoreAPI {
 			this->secrets = &(*jsonObjectData)["ActivitySecrets"];
 		}
 
-		if (jsonObjectData->contains("Instance") && !(*jsonObjectData)["Instance"].is_null()) {
-			this->instance = (*jsonObjectData)["Instance"].get<bool>();
-		}
+		this->instance = getBool(&(*jsonObjectData), "Instance");
 	}
 
 	void ClientStatusData::parseObject(const nlohmann::json* jsonObjectData) {
@@ -2686,9 +2632,7 @@ namespace DiscordCoreAPI {
 			theData.privacyLevel = (*jsonObjectData)["privacy_level"].get<StageInstancePrivacyLevel>();
 		}
 
-		if (jsonObjectData->contains("discoverable_disabled") && !(*jsonObjectData)["discoverable_disabled"].is_null()) {
-			theData.discoverableDisabled = (*jsonObjectData)["discoverable_disabled"].get<bool>();
-		}
+		theData.discoverableDisabled = getBool(&(*jsonObjectData), "discoverable_disabled");
 	}
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, StickerData& theData) {
@@ -2908,9 +2852,7 @@ namespace DiscordCoreAPI {
 			this->maxAge = (*jsonObjectData)["max_age"].get<int32_t>();
 		}
 
-		if (jsonObjectData->contains("temporary") && !(*jsonObjectData)["temporary"].is_null()) {
-			this->temporary = (*jsonObjectData)["temporary"].get<bool>();
-		}
+		this->temporary = getBool(&(*jsonObjectData), "temporary");
 
 		if (jsonObjectData->contains("created_at") && !(*jsonObjectData)["created_at"].is_null()) {
 			this->createdAt = (*jsonObjectData)["created_at"].get<std::string>();
@@ -2959,9 +2901,7 @@ namespace DiscordCoreAPI {
 			this->updatedAt = (*jsonObjectData)["updated_at"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("is_dirty") && !(*jsonObjectData)["is_dirty"].is_null()) {
-			this->isDirty = (*jsonObjectData)["is_dirty"].get<bool>();
-		}
+		this->isDirty = getBool(&(*jsonObjectData), "is_dirty");
 
 		if (jsonObjectData->contains("code") && !(*jsonObjectData)["code"].is_null()) {
 			this->code = (*jsonObjectData)["code"].get<std::string>();
@@ -3195,13 +3135,9 @@ namespace DiscordCoreAPI {
 			this->maxValue = (*jsonObjectData)["max_value"].get<int32_t>();
 		}
 
-		if (jsonObjectData->contains("required") && !(*jsonObjectData)["required"].is_null()) {
-			this->required = (*jsonObjectData)["required"].get<bool>();
-		}
+		this->required = getBool(&(*jsonObjectData), "required");
 
-		if (jsonObjectData->contains("autocomplete") && !(*jsonObjectData)["autocomplete"].is_null()) {
-			this->autocomplete = (*jsonObjectData)["autocomplete"].get<bool>();
-		}
+		this->autocomplete = getBool(&(*jsonObjectData), "autocomplete");
 
 		if (jsonObjectData->contains("type") && !(*jsonObjectData)["type"].is_null()) {
 			this->type = (*jsonObjectData)["type"].get<ApplicationCommandOptionType>();
@@ -3470,9 +3406,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (jsonObjectData->contains("replied_user") && !(*jsonObjectData)["replied_user"].is_null()) {
-			this->repliedUser = (*jsonObjectData)["replied_user"].get<bool>();
-		}
+		this->repliedUser = getBool(&(*jsonObjectData), "replied_user");
 	}
 
 	void SelectOptionData::parseObject(const nlohmann::json* jsonObjectData) {
@@ -3492,9 +3426,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreAPI::parseObject(&(*jsonObjectData)["emoji"], this->emoji);
 		}
 
-		if (jsonObjectData->contains("default") && !(*jsonObjectData)["default"].is_null()) {
-			this->_default = (*jsonObjectData)["default"].get<bool>();
-		}
+		this->_default = getBool(&(*jsonObjectData), "default");
 	}
 
 	void ActionRowData::parseObject(const nlohmann::json* jsonObjectData) {
@@ -3515,7 +3447,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (value.contains("disabled") && !value["disabled"].is_null()) {
-					newData.disabled = value["disabled"].get<bool>();
+					newData.disabled = getBool(&value, "disabled");
 				}
 
 				if (value.contains("style") && !value["style"].is_null()) {
@@ -3539,7 +3471,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (value.contains("required") && !value["required"].is_null()) {
-					newData.required = value["required"].get<bool>();
+					newData.required = getBool(&value, "required");
 				}
 
 				if (value.contains("emoji") && !value["emoji"].is_null()) {
@@ -3579,9 +3511,7 @@ namespace DiscordCoreAPI {
 			this->defaultMemberPermissions = (*jsonObjectData)["default_member_permissions"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("dm_permission") && !(*jsonObjectData)["dm_permission"].is_null()) {
-			this->dmPermission = (*jsonObjectData)["dm_permission"].get<bool>();
-		}
+		this->dmPermission = getBool(&(*jsonObjectData), "dm_permission");
 
 		if (jsonObjectData->contains("version") && !(*jsonObjectData)["version"].is_null()) {
 			this->version = (*jsonObjectData)["version"].get<std::string>();
@@ -3792,13 +3722,9 @@ namespace DiscordCoreAPI {
 			this->editedTimestamp = (*jsonObjectData)["edited_timestamp"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("tts") && !(*jsonObjectData)["tts"].is_null()) {
-			this->tts = (*jsonObjectData)["tts"].get<bool>();
-		}
+		this->tts = getBool(&(*jsonObjectData), "tts");
 
-		if (jsonObjectData->contains("mention_everyone") && !(*jsonObjectData)["mention_everyone"].is_null()) {
-			this->mentionEveryone = (*jsonObjectData)["mention_everyone"].get<bool>();
-		}
+		this->mentionEveryone = getBool(&(*jsonObjectData), "mention_everyone");
 
 		if (jsonObjectData->contains("mentions") && !(*jsonObjectData)["mentions"].is_null()) {
 			this->mentions.clear();
@@ -3853,9 +3779,7 @@ namespace DiscordCoreAPI {
 			this->nonce = (*jsonObjectData)["nonce"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("pinned") && !(*jsonObjectData)["pinned"].is_null()) {
-			this->pinned = (*jsonObjectData)["pinned"].get<bool>();
-		}
+		this->pinned = getBool(&(*jsonObjectData), "pinned");
 
 		if (jsonObjectData->contains("webhook_id") && !(*jsonObjectData)["webhook_id"].is_null()) {
 			this->webHookId = stoull((*jsonObjectData)["webhook_id"].get<std::string>());
@@ -3952,13 +3876,9 @@ namespace DiscordCoreAPI {
 			this->editedTimestamp = (*jsonObjectData)["edited_timestamp"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("tts") && !(*jsonObjectData)["tts"].is_null()) {
-			this->tts = (*jsonObjectData)["tts"].get<bool>();
-		}
+		this->tts = getBool(&(*jsonObjectData), "tts");
 
-		if (jsonObjectData->contains("mention_everyone") && !(*jsonObjectData)["mention_everyone"].is_null()) {
-			this->mentionEveryone = (*jsonObjectData)["mention_everyone"].get<bool>();
-		}
+		this->mentionEveryone = getBool(&(*jsonObjectData), "mention_everyone");
 
 		if (jsonObjectData->contains("mentions") && !(*jsonObjectData)["mentions"].is_null()) {
 			this->mentions.clear();
@@ -4013,9 +3933,7 @@ namespace DiscordCoreAPI {
 			this->nonce = (*jsonObjectData)["nonce"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("pinned") && !(*jsonObjectData)["pinned"].is_null()) {
-			this->pinned = (*jsonObjectData)["pinned"].get<bool>();
-		}
+		this->pinned = getBool(&(*jsonObjectData), "pinned");
 
 		if (jsonObjectData->contains("webhook_id") && !(*jsonObjectData)["webhook_id"].is_null()) {
 			this->webHookId = stoull((*jsonObjectData)["webhook_id"].get<std::string>());
@@ -4136,21 +4054,13 @@ namespace DiscordCoreAPI {
 			this->type = (*jsonObjectData)["type"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("show_activity") && !(*jsonObjectData)["show_activity"].is_null()) {
-			this->showActivity = (*jsonObjectData)["show_activity"].get<bool>();
-		}
+		this->showActivity = getBool(&(*jsonObjectData), "show_activity");
 
-		if (jsonObjectData->contains("friend_sync") && !(*jsonObjectData)["friend_sync"].is_null()) {
-			this->friendSync = (*jsonObjectData)["friend_sync"].get<bool>();
-		}
+		this->friendSync = getBool(&(*jsonObjectData), "friend_sync");
 
-		if (jsonObjectData->contains("revoked") && !(*jsonObjectData)["revoked"].is_null()) {
-			this->revoked = (*jsonObjectData)["revoked"].get<bool>();
-		}
+		this->revoked = getBool(&(*jsonObjectData), "revoked");
 
-		if (jsonObjectData->contains("verified") && !(*jsonObjectData)["verified"].is_null()) {
-			this->verified = (*jsonObjectData)["verified"].get<bool>();
-		}
+		this->verified = getBool(&(*jsonObjectData), "verified");
 
 		if (jsonObjectData->contains("visibility") && !(*jsonObjectData)["visibility"].is_null()) {
 			this->visibility = (*jsonObjectData)["visibility"].get<ConnectionVisibilityTypes>();
@@ -4183,13 +4093,11 @@ namespace DiscordCoreAPI {
 			this->type = (*jsonObjectData)["type"].get<ApplicationCommandOptionType>();
 		}
 
-		if (jsonObjectData->contains("focused") && !(*jsonObjectData)["focused"].is_null()) {
-			this->focused = (*jsonObjectData)["focused"].get<bool>();
-		}
+		this->focused = getBool(&(*jsonObjectData), "focused");
 
 		if (jsonObjectData->contains("value") && !(*jsonObjectData)["value"].is_null()) {
 			if ((*jsonObjectData)["value"].is_boolean()) {
-				this->valueBool = (*jsonObjectData)["value"].get<bool>();
+				this->valueBool = getBool(&(*jsonObjectData), "value");
 			}
 			if ((*jsonObjectData)["value"].is_string()) {
 				this->valueString = (*jsonObjectData)["value"].get<std::string>();
@@ -4485,7 +4393,7 @@ namespace DiscordCoreAPI {
 				} else if (newValueNew.is_number()) {
 					this->optionsArgs.emplace(newKeyNew.get<std::string>(), std::to_string(newValueNew.get<uint64_t>()));
 				} else if (newValueNew.is_boolean()) {
-					this->optionsArgs.emplace(newKeyNew.get<std::string>(), std::to_string(newValueNew.get<bool>()));
+					this->optionsArgs.emplace(newKeyNew.get<std::string>(), newValueNew.get<bool>());
 				}
 			}
 			if (theOptionIterator->contains("options")) {
