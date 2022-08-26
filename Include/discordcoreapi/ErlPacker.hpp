@@ -55,11 +55,11 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseEtfToJson(std::string& dataToParse);
 
-		ErlPacker();
+		ErlPacker() noexcept = default;
 
-		ErlPacker& operator=(std::string&);
+		ErlPacker& operator=(std::string&) noexcept;
 
-		ErlPacker(std::string&);
+		ErlPacker(std::string&) noexcept;
 
 	  protected:
 		std::string comparisongStringFalse{ "false" };

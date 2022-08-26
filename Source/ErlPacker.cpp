@@ -22,16 +22,14 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
-	ErlPacker::ErlPacker(){};
-
-	ErlPacker& ErlPacker::operator=(std::string& theBuffer) {
+	ErlPacker& ErlPacker::operator=(std::string& theBuffer) noexcept {
 		this->buffer = theBuffer.data();
 		this->size = theBuffer.size();
 		this->offSet = 0;
 		return *this;
 	}
 
-	ErlPacker::ErlPacker(std::string& theBuffer) {
+	ErlPacker::ErlPacker(std::string& theBuffer) noexcept {
 		*this = theBuffer;
 	};
 
