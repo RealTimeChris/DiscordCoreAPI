@@ -68,6 +68,7 @@ namespace DiscordCoreInternal {
 	using SOCKET = int32_t;
 
 	struct ConnectionError : public std::runtime_error {
+		int32_t shardNumber{};
 		explicit ConnectionError(const std::string& theString);
 	};
 
@@ -215,7 +216,7 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
-		static void processIO(std::vector<SSLClient*>&);
+		static std::vector<ConnectionError> processIO(std::vector<SSLClient*>&);
 
 		ProcessIOResult processIO(int32_t msToWait);
 

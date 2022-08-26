@@ -1412,7 +1412,9 @@ namespace DiscordCoreInternal {
 							this->configManager->doWePrintWebSocketErrorMessages());
 					} catch (...) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed... reconnecting in 5 seconds." << DiscordCoreAPI::reset() << std::endl
+							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed for WebSocket [" << thePackageNew.currentShard << ","
+									  << this->configManager->getTotalShardCount() << "]"
+									  << " reconnecting in 5 seconds." << DiscordCoreAPI::reset() << std::endl
 									  << std::endl;
 						}
 					}
@@ -1449,8 +1451,9 @@ namespace DiscordCoreInternal {
 						this->theShardMap[thePackageNew.currentShard]->processIO(1000000);
 					} catch (...) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							std::cout << "WERE HERE THIS SI IT!" << std::endl;
-							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost... reconnecting." << DiscordCoreAPI::reset() << std::endl << std::endl;
+							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost on WebSocket [" + thePackageNew.currentShard << ","
+									  << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << std::endl
+									  << std::endl;
 						}
 						break;
 					}
@@ -1507,13 +1510,13 @@ namespace DiscordCoreInternal {
 						theVector.push_back(value.get());
 					}
 				}
-				try {
-					SSLClient::processIO(theVector);
-				} catch (...) {
-					if (this->configManager->doWePrintWebSocketErrorMessages()) {
-						std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost... reconnecting." << DiscordCoreAPI::reset() << std::endl << std::endl;
+				auto theResult = SSLClient::processIO(theVector);
+				if (theResult.size() > 0) {
+					for (auto& value: theResult) {
+						std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << value.shardNumber << ","
+								  << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << std::endl
+								  << std::endl;
 					}
-					continue;
 				}
 				
 				for (auto& value: theVector) {

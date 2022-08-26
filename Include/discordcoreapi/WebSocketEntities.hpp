@@ -75,6 +75,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::BotUser;
 		friend class BaseSocketAgent;
 		friend class YouTubeAPI;
+		friend class SSLClient;
 
 		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections, int32_t currentShardNew,
 			std::atomic_bool* doWeQuitNew) noexcept;

@@ -307,10 +307,12 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	void SSLClient::processIO(std::vector<SSLClient*>& theVector) {
-		fd_set writeSet{}, readSet{};
+	std::vector<ConnectionError> SSLClient::processIO(std::vector<SSLClient*>& theVector) {
+		std::vector<ConnectionError> theReturnValue{};
+		fd_set writeSet{}, readSet{}, errorSet{};
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
+		FD_ZERO(&errorSet);
 		for (auto& value: theVector) {
 			if (!value->areWeStillConnected()) {
 				value->disconnect(true);
@@ -321,27 +323,49 @@ namespace DiscordCoreInternal {
 				FD_SET(value->theSocket, &writeSet);
 			}
 			FD_SET(value->theSocket, &readSet);
+			FD_SET(value->theSocket, &errorSet);
 		}
 
 		if (readSet.fd_count == 0 && writeSet.fd_count == 0) {
-			return;
+			theReturnValue;
 		}
 
 		timeval checkTime{ .tv_usec = 1000 };
-		if (auto returnValue = select(FD_SETSIZE + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			throw ConnectionError{ reportError("SSLClient::processIO") };
+		if (auto returnValue = select(FD_SETSIZE + 1, &readSet, &writeSet, &errorSet, &checkTime); returnValue == SOCKET_ERROR) {
+			for (auto& value: theVector) {
+				if (FD_ISSET(value->theSocket, &errorSet)) {
+					ConnectionError theError{ reportError("SSLClient::processIO") };
+					theError.shardNumber = static_cast<WebSocketSSLShard*>(value)->shard[0].get<uint32_t>();
+					theReturnValue.push_back(theError);
+				}
+			}
+			return theReturnValue;
+			
 		} else if (returnValue == 0) {
-			return;
+			return theReturnValue;
 		}
 
 		for (auto& value: theVector) {
 			if (FD_ISSET(value->theSocket, &writeSet)) {
-				value->writeDataProcess();
+				try {
+					value->writeDataProcess();
+				} catch (...) {
+					ConnectionError theError{ reportError("SSLClient::processIO") };
+					theError.shardNumber = static_cast<WebSocketSSLShard*>(value)->shard[0].get<uint32_t>();
+					theReturnValue.push_back(theError);
+				}
 			}
 			if (FD_ISSET(value->theSocket, &readSet)) {
-				value->readDataProcess();
+				try {
+					value->readDataProcess();
+				} catch (...) {
+					ConnectionError theError{ reportError("SSLClient::processIO") };
+					theError.shardNumber = static_cast<WebSocketSSLShard*>(value)->shard[0].get<uint32_t>();
+					theReturnValue.push_back(theError);
+				}
 			}
 		}
+		return theReturnValue;
 	}
 
 	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInms) {
