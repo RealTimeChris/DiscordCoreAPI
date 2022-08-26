@@ -3580,7 +3580,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("dm_permission") && !(*jsonObjectData)["dm_permission"].is_null()) {
-			this->dmPermission = (*jsonObjectData)["dm_permission"].get<std::string>();
+			this->dmPermission = (*jsonObjectData)["dm_permission"].get<bool>();
 		}
 
 		if (jsonObjectData->contains("version") && !(*jsonObjectData)["version"].is_null()) {
