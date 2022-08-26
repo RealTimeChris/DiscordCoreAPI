@@ -1395,6 +1395,9 @@ namespace DiscordCoreInternal {
 				bool isItFirstIteraion{ true };
 				bool didWeConnect{ false };
 				do {
+					if (!isItFirstIteraion) {
+						std::this_thread::sleep_for(5s);
+					}
 					if (this->configManager->doWePrintGeneralSuccessMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightBlue() << "Connecting Shard " + std::to_string(thePackageNew.currentShard + 1) << " of "
 							 << this->configManager->getShardCountForThisProcess()
@@ -1402,9 +1405,6 @@ namespace DiscordCoreInternal {
 								std::to_string(this->configManager->getTotalShardCount()) + std::string(" Shards total across all processes)")
 							 << DiscordCoreAPI::reset() << endl
 							 << endl;
-					}
-					if (!isItFirstIteraion) {
-						std::this_thread::sleep_for(5s);
 					}
 					isItFirstIteraion = false;
 					try {
