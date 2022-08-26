@@ -1088,7 +1088,7 @@ namespace DiscordCoreAPI {
 		UserData user{};///< User that created this emoji.
 
 		EmojiData() noexcept = default;
-
+		
 		virtual ~EmojiData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);
@@ -2047,14 +2047,10 @@ namespace DiscordCoreAPI {
 
 		GuildScheduledEventMetadata() noexcept = default;
 
-		GuildScheduledEventMetadata& operator=(const nlohmann::json* jsonObjectData);
-
-		GuildScheduledEventMetadata(const nlohmann::json* jsonObjectData);
-
 		virtual ~GuildScheduledEventMetadata() noexcept = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 	};
+
+	template<> void parseObject(const nlohmann::json* jsonObjectData, GuildScheduledEventMetadata& theData);
 
 	/// Data representing a Guild Scheduled Event. \brief Data representing a Guild Scheduled Event.
 	class DiscordCoreAPI_Dll GuildScheduledEventData : public DiscordEntity {
@@ -2077,8 +2073,6 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventData() noexcept = default;
 
 		virtual ~GuildScheduledEventData() noexcept = default;
-
-		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, GuildScheduledEventData& theData);

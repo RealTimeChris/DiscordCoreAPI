@@ -795,18 +795,13 @@ namespace DiscordCoreAPI {
 		*this = jsonObjectData;
 	}
 
-	GuildScheduledEventMetadata& GuildScheduledEventMetadata::operator=(const nlohmann::json* jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildScheduledEventMetadata::GuildScheduledEventMetadata(const nlohmann::json* jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	GuildScheduledEventUserData& GuildScheduledEventUserData::operator=(const nlohmann::json* jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
+	}
+
+	void EmojiData::parseObject(const nlohmann::json* theData) {
+		DiscordCoreAPI::parseObject(theData, *this);
 	}
 
 	GuildScheduledEventUserData::GuildScheduledEventUserData(const nlohmann::json* jsonObjectData) {
