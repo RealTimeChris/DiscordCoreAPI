@@ -207,7 +207,7 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr) };
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
-				if (!streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages())) {
+				if (streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages()) != ConnectionResult::No_Error) {
 					return;
 				}
 			} else {
@@ -218,7 +218,7 @@ namespace DiscordCoreInternal {
 			uint64_t bytesToRead{ static_cast<uint64_t>(this->maxBufferSize) };
 			uint64_t bytesSubmittedPrevious{ 0 };
 			uint64_t bytesReadTotal{ 0 };
-			const uint8_t maxReruns{ 35 };
+			const uint8_t maxReruns{ 200 };
 			uint8_t currentReruns{ 0 };
 			uint32_t counter{ 0 };
 			uint32_t headerSize{ 0 };
@@ -292,7 +292,7 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (counter == 0) {
-						streamSocket->processIO(10000);
+						streamSocket->processIO(100000);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							streamSocket->disconnect(false);

@@ -372,7 +372,7 @@ namespace DiscordCoreInternal {
 			}
 			if (workload.baseUrl != httpsConnection.currentBaseUrl || !httpsConnection.areWeStillConnected() || httpsConnection.doWeConnect) {
 				httpsConnection.currentBaseUrl = workload.baseUrl;
-				if (!httpsConnection.connect(workload.baseUrl, "443", this->configManager->doWePrintHttpsErrorMessages())) {
+				if (httpsConnection.connect(workload.baseUrl, "443", this->configManager->doWePrintHttpsErrorMessages()) != ConnectionResult::No_Error) {
 					httpsConnection.currentReconnectTries++;
 					httpsConnection.doWeConnect = true;
 					return this->httpRequestInternal(httpsConnection, workload, rateLimitData);
@@ -387,7 +387,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				theResult = httpsConnection.writeData(theRequest, true);
-			} while (theResult == ProcessIOResult::No_Return);
+			} while (theResult == ProcessIOResult::Error);
 			if (theResult != ProcessIOResult::No_Error) {
 				httpsConnection.currentReconnectTries++;
 				httpsConnection.doWeConnect = true;
@@ -505,10 +505,8 @@ namespace DiscordCoreInternal {
 			theConnection.resetValues();
 			bool doWeReturn{ false };
 			while (true) {
-				auto theResult = theConnection.processIO(1000);
-				if (theResult == ProcessIOResult::SSL_Zero_Return) {
-					doWeReturn = true;
-				} else if (theResult != ProcessIOResult::No_Error && theResult != ProcessIOResult::No_Return) {
+				auto theResult = theConnection.processIO(100000);
+				if (theResult != ProcessIOResult::No_Error) {
 					theData.responseCode = -1;
 					doWeReturn = true;
 				}
@@ -563,6 +561,7 @@ namespace DiscordCoreInternal {
 			}
 			return theConnection.finalizeReturnValues(theData, rateLimitData);
 		} catch (...) {
+			DiscordCoreAPI::reportException("httpsclient::getReturnData()");
 			theData.responseCode = -1;
 			return theConnection.finalizeReturnValues(theData, rateLimitData);
 		}

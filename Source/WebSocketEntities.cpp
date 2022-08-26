@@ -1396,7 +1396,7 @@ namespace DiscordCoreInternal {
 				this->theShardMap[thePackageNew.currentShard]->voiceConnectionDataBufferMap = std::move(thePackageNew.voiceConnectionDataBufferMap);
 				std::string connectionUrl = thePackageNew.areWeResuming ? this->theShardMap[thePackageNew.currentShard]->resumeUrl : this->configManager->getConnectionAddress();
 				bool isItFirstIteraion{ true };
-				bool didWeConnect{ false };
+				ConnectionResult didWeConnect{};
 				do {
 					if (!isItFirstIteraion) {
 						std::this_thread::sleep_for(5s);
@@ -1411,10 +1411,9 @@ namespace DiscordCoreInternal {
 							 << endl;
 					}
 					isItFirstIteraion = false;
-					try {
-						didWeConnect = this->theShardMap[thePackageNew.currentShard]->connect(connectionUrl, this->configManager->getConnectionPort(),
-							this->configManager->doWePrintWebSocketErrorMessages());
-					} catch (...) {
+					didWeConnect = this->theShardMap[thePackageNew.currentShard]->connect(connectionUrl, this->configManager->getConnectionPort(),
+						this->configManager->doWePrintWebSocketErrorMessages());
+					if (didWeConnect == ConnectionResult::Error) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
 							std::unique_lock theLock{ this->discordCoreClient->coutMutex };
 							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed for WebSocket [" << thePackageNew.currentShard << ","
@@ -1424,7 +1423,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 						
-				} while (!didWeConnect && !this->doWeQuit->load());
+				} while (didWeConnect != ConnectionResult::No_Error && !this->doWeQuit->load());
 				
 				this->theShardMap[thePackageNew.currentShard]->theWebSocketState.store(WebSocketSSLShardState::Upgrading);
 				std::string sendString{};
@@ -1452,9 +1451,8 @@ namespace DiscordCoreInternal {
 					if (this->theShardMap[thePackageNew.currentShard]->theWebSocketState.load() == WebSocketSSLShardState::Collecting_Hello) {
 						break;
 					}
-					try {
-						this->theShardMap[thePackageNew.currentShard]->processIO(1000000);
-					} catch (...) {
+					auto theResult = this->theShardMap[thePackageNew.currentShard]->processIO(1000000);
+					if (theResult != ProcessIOResult::No_Error) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
 							std::unique_lock theLock{ this->discordCoreClient->coutMutex };
 							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + thePackageNew.currentShard << ","
