@@ -307,7 +307,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	void SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
+	void SSLClient::processIO(std::vector<SSLClient*>& theVector) {
 		fd_set writeSet{}, readSet{};
 		FD_ZERO(&writeSet);
 		FD_ZERO(&readSet);
@@ -323,9 +323,13 @@ namespace DiscordCoreInternal {
 			FD_SET(value->theSocket, &readSet);
 		}
 
+		if (readSet.fd_count == 0 && writeSet.fd_count == 0) {
+			return;
+		}
+
 		timeval checkTime{ .tv_usec = 1000 };
 		if (auto returnValue = select(FD_SETSIZE + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
-			return;
+			throw ConnectionError{ reportError("SSLClient::processIO") };
 		} else if (returnValue == 0) {
 			return;
 		}
@@ -340,7 +344,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInms) noexcept {
+	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInms) {
 		if (!this->areWeStillConnected()) {
 			this->disconnect(true);
 			return ProcessIOResult::Disconnected;
@@ -355,11 +359,15 @@ namespace DiscordCoreInternal {
 		}
 		FD_SET(this->theSocket, &readSet);
 
+		if (readSet.fd_count == 0 && writeSet.fd_count == 0) {
+			return ProcessIOResult::No_Error;
+		}
+
 		timeval checkTime{ .tv_usec = theWaitTimeInms };
 		ProcessIOResult returnValueReal{};
 		if (auto returnValue = select(FD_SETSIZE + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
-			returnValueReal = ProcessIOResult::Select_Failure;
+			throw ConnectionError{ reportError("SSLClient::processIO") };
 		} else if (returnValue == 0) {
 			returnValueReal = ProcessIOResult::No_Return;
 		}
@@ -373,7 +381,19 @@ namespace DiscordCoreInternal {
 		return returnValueReal;
 	}
 
-	ProcessIOResult SSLClient::writeDataProcess() noexcept {
+	std::string& SSLClient::getInputBuffer() noexcept {
+		return this->inputBuffer;
+	}
+
+	bool SSLClient::areWeStillConnected() noexcept {
+		if (static_cast<SOCKET*>(this->theSocket) && this->theSocket != SOCKET_ERROR) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	ProcessIOResult SSLClient::writeDataProcess() {
 		if (this->outputBuffers.size() > 0) {
 			this->wantRead = false;
 			this->wantWrite = false;
@@ -397,14 +417,11 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(true);
-					return ProcessIOResult::SSL_Zero_Return;
+					throw ConnectionError{ reportError("SSLClient::writeDataProcess()") };
 				}
 				default: {
 					this->disconnect(true);
-					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("SSLClient::SSL_write_ex()", errorValue, this->ssl) << endl;
-					}
-					return ProcessIOResult::SSL_Error;
+					throw ConnectionError{ reportError("SSLClient::writeDataProcess()") };
 				}
 			}
 		} else {
@@ -412,7 +429,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	ProcessIOResult SSLClient::readDataProcess() noexcept {
+	ProcessIOResult SSLClient::readDataProcess() {
 		this->wantRead = false;
 		this->wantWrite = false;
 		ProcessIOResult returnValueReal{};
@@ -442,32 +459,15 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(true);
-					returnValueReal = ProcessIOResult::SSL_Zero_Return;
-					break;
+					throw ConnectionError{ reportError("SSLClient::readDataProcess()") };
 				}
 				default: {
 					this->disconnect(true);
-					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("SSLClient::SSL_read_ex()", errorValue, this->ssl) << endl;
-					}
-					returnValueReal = ProcessIOResult::SSL_Error;
-					break;
+					throw ConnectionError{ reportError("SSLClient::readDataProcess()") };
 				}
 			}
 		} while (SSL_pending(this->ssl));
 		return returnValueReal;
-	}
-
-	std::string& SSLClient::getInputBuffer() noexcept {
-		return this->inputBuffer;
-	}
-
-	bool SSLClient::areWeStillConnected() noexcept {
-		if (static_cast<SOCKET*>(this->theSocket) && this->theSocket != SOCKET_ERROR) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	int64_t SSLClient::getBytesRead() noexcept {

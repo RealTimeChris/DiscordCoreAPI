@@ -215,17 +215,17 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
-		static void processIO(std::vector<SSLClient*>&) noexcept;
+		static void processIO(std::vector<SSLClient*>&);
 
-		ProcessIOResult processIO(int32_t msToWait) noexcept;
-
-		ProcessIOResult writeDataProcess() noexcept;
-
-		ProcessIOResult readDataProcess() noexcept;
+		ProcessIOResult processIO(int32_t msToWait);
 
 		std::string& getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
+
+		ProcessIOResult writeDataProcess();
+
+		ProcessIOResult readDataProcess();
 
 		int64_t getBytesRead() noexcept;
 

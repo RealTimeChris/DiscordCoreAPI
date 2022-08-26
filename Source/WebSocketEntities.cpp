@@ -1411,7 +1411,10 @@ namespace DiscordCoreInternal {
 						didWeConnect = this->theShardMap[thePackageNew.currentShard]->connect(connectionUrl, this->configManager->getConnectionPort(),
 							this->configManager->doWePrintWebSocketErrorMessages());
 					} catch (...) {
-						std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed... reconnecting in 5 seconds." << DiscordCoreAPI::reset() << std::endl << std::endl;
+						if (this->configManager->doWePrintWebSocketErrorMessages()) {
+							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed... reconnecting in 5 seconds." << DiscordCoreAPI::reset() << std::endl
+									  << std::endl;
+						}
 					}
 						
 				} while (!didWeConnect && !this->doWeQuit->load());
@@ -1442,7 +1445,16 @@ namespace DiscordCoreInternal {
 					if (this->theShardMap[thePackageNew.currentShard]->theWebSocketState.load() == WebSocketSSLShardState::Collecting_Hello) {
 						break;
 					}
-					this->theShardMap[thePackageNew.currentShard]->processIO(1000000);
+					try {
+						this->theShardMap[thePackageNew.currentShard]->processIO(1000000);
+					} catch (...) {
+						if (this->configManager->doWePrintWebSocketErrorMessages()) {
+							std::cout << "WERE HERE THIS SI IT!" << std::endl;
+							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost... reconnecting." << DiscordCoreAPI::reset() << std::endl << std::endl;
+						}
+						break;
+					}
+					
 					if (this->theShardMap[thePackageNew.currentShard]->areWeStillConnected()) {
 						this->theShardMap[thePackageNew.currentShard]->parseConnectionHeaders(this->theShardMap[thePackageNew.currentShard].get());
 					}
@@ -1495,7 +1507,15 @@ namespace DiscordCoreInternal {
 						theVector.push_back(value.get());
 					}
 				}
-				SSLClient::processIO(theVector);
+				try {
+					SSLClient::processIO(theVector);
+				} catch (...) {
+					if (this->configManager->doWePrintWebSocketErrorMessages()) {
+						std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost... reconnecting." << DiscordCoreAPI::reset() << std::endl << std::endl;
+					}
+					continue;
+				}
+				
 				for (auto& value: theVector) {
 					if (!static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
 						if (value->areWeStillConnected() && static_cast<WebSocketSSLShard*>(value)->inputBuffer.size() > 0) {
