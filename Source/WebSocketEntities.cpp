@@ -457,7 +457,6 @@ namespace DiscordCoreInternal {
 						 << payload.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
-
 				if (payload.contains("op") && !payload["op"].is_null()) {
 					switch (payload["op"].get<int32_t>()) {
 						case 0: {

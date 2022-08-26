@@ -4385,6 +4385,15 @@ namespace DiscordCoreAPI {
 
 	void CommandData::parseOptions(const nlohmann::json* jsonObjectData) {
 		for (auto theOptionIterator = jsonObjectData->at("options").begin(); theOptionIterator != jsonObjectData->at("options").end(); ++theOptionIterator) {
+			if (theOptionIterator->contains("type") && theOptionIterator->at("type") == 1) {
+				if (theOptionIterator->contains("name")) {
+					this->subCommandName = theOptionIterator->at("name").get<std::string>();
+				}
+			} else if (theOptionIterator->contains("type") && theOptionIterator->at("type") == 2) {
+				if (theOptionIterator->contains("name")) {
+					this->subCommandGroupName = theOptionIterator->at("name").get<std::string>();
+				}
+			}
 			if (theOptionIterator->contains("value") && theOptionIterator->contains("name")) {
 				nlohmann::json newValueNew = theOptionIterator->at("value");
 				nlohmann::json newKeyNew = theOptionIterator->at("name");

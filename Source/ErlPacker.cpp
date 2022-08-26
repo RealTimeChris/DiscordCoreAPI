@@ -1,8 +1,6 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
-
 	Copyright 2021, 2022 Chris M. (RealTimeChris)
-
 	This file is part of DiscordCoreAPI.
 	DiscordCoreAPI is free software: you can redistribute it and/or modify it under the terms of the GNU
 	General Public License as published by the Free Software Foundation, either version 3 of the License,
@@ -51,78 +49,60 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::singleValueJsonToETF(nlohmann::json& jsonData) {
-		switch (jsonData.type()) {
-			case nlohmann::json::value_t::array: {
-				uint32_t length = static_cast<uint32_t>(jsonData.size());
-				if (length == 0) {
-					ErlPacker::appendNilExt();
-				} else {
-					if (length > std::numeric_limits<uint32_t>::max() - 1) {
-						throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: List too large for ETF.\n\n" };
-					}
-				}
-				ErlPacker::appendListHeader(length);
-				for (uint64_t index = 0; index < length; ++index) {
-					ErlPacker::singleValueJsonToETF(jsonData[index]);
-				}
+		if (jsonData.is_array()) {
+			uint32_t length = static_cast<uint32_t>(jsonData.size());
+			if (length == 0) {
 				ErlPacker::appendNilExt();
-				break;
-			}
-			case nlohmann::json::value_t::object: {
-				uint32_t length = static_cast<uint32_t>(jsonData.size());
+			} else {
 				if (length > std::numeric_limits<uint32_t>::max() - 1) {
-					throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: Map too large for ETF.\n\n" };
+					throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: List too large for ETF.\n\n" };
 				}
-				ErlPacker::appendMapHeader(length);
-				for (auto n = jsonData.begin(); n != jsonData.end(); ++n) {
-					nlohmann::json jstr = n.key();
-					ErlPacker::singleValueJsonToETF(jstr);
-					ErlPacker::singleValueJsonToETF(n.value());
-				}
-				break;
 			}
-			case nlohmann::json::value_t::number_integer: {
-				uint64_t numberOld = jsonData.get<uint64_t>();
-				if (numberOld <= 127) {
-					uint8_t number = jsonData.get<uint8_t>();
-					ErlPacker::appendSmallIntegerExt(number);
-				} else if (jsonData.is_number_unsigned() && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
-					uint64_t number = jsonData.get<uint64_t>();
-					ErlPacker::appendUnsignedLongLong(number);
-				} else {
-					uint32_t number = jsonData.get<uint32_t>();
-					ErlPacker::appendIntegerExt(number);
-				}
-				break;
+			ErlPacker::appendListHeader(length);
+			for (uint64_t index = 0; index < length; ++index) {
+				ErlPacker::singleValueJsonToETF(jsonData[index]);
 			}
-			case nlohmann::json::value_t::boolean: {
-				if (jsonData.get<bool>()) {
-					ErlPacker::appendTrue();
-				}
-				else {
-					ErlPacker::appendFalse();
-				}
-				break;
+			ErlPacker::appendNilExt();
+		} else if (jsonData.is_object()) {
+			uint32_t length = static_cast<uint32_t>(jsonData.size());
+			if (length > std::numeric_limits<uint32_t>::max() - 1) {
+				throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: Map too large for ETF.\n\n" };
 			}
-			case nlohmann::json::value_t::string: {
-				std::string newString = jsonData.get<std::string>();
-				std::string newVector{};
-				newVector.insert(newVector.begin(), newString.begin(), newString.end());
-				uint32_t newValue = static_cast<uint32_t>(newVector.size());
-				ErlPacker::appendBinaryExt(newVector, newValue);
-				break;
+			ErlPacker::appendMapHeader(length);
+			for (auto n = jsonData.begin(); n != jsonData.end(); ++n) {
+				nlohmann::json jstr = n.key();
+				ErlPacker::singleValueJsonToETF(jstr);
+				ErlPacker::singleValueJsonToETF(n.value());
 			}
-			case nlohmann::json::value_t::number_float: {
-				double newValue = jsonData.get<double>();
-				ErlPacker::appendFloatExt(newValue);
-				break;
+		} else if (jsonData.is_number_integer()) {
+			uint64_t numberOld = jsonData.get<uint64_t>();
+			if (numberOld <= 127) {
+				uint8_t number = jsonData.get<uint8_t>();
+				ErlPacker::appendSmallIntegerExt(number);
+			} else if (jsonData.is_number_unsigned() && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
+				uint64_t number = jsonData.get<uint64_t>();
+				ErlPacker::appendUnsignedLongLong(number);
+			} else {
+				uint32_t number = jsonData.get<uint32_t>();
+				ErlPacker::appendIntegerExt(number);
 			}
-			case nlohmann::json::value_t::null: {
-				ErlPacker::appendNil();
-				break;
+		} else if (jsonData.is_boolean()) {
+			if (jsonData.get<bool>()) {
+				ErlPacker::appendTrue();
+			} else {
+				ErlPacker::appendFalse();
 			}
-			default: {
-			}
+		} else if (jsonData.is_string()) {
+			std::string newString = jsonData.get<std::string>();
+			std::string newVector{};
+			newVector.insert(newVector.begin(), newString.begin(), newString.end());
+			uint32_t newValue = static_cast<uint32_t>(newVector.size());
+			ErlPacker::appendBinaryExt(newVector, newValue);
+		} else if (jsonData.is_number_float()) {
+			double newValue = jsonData.get<double>();
+			ErlPacker::appendFloatExt(newValue);
+		} else if (jsonData.is_null()) {
+			ErlPacker::appendNil();
 		}
 	}
 
@@ -343,7 +323,7 @@ namespace DiscordCoreInternal {
 		return theValue;
 	}
 
-	bool compareString(const char* theString,const char*theString02, size_t theSize) {
+	bool compareString(const char* theString, const char* theString02, size_t theSize) {
 		for (size_t x = 0; x < theSize; ++x) {
 			if (!(theString[x] & theString02[x])) {
 				return false;
@@ -372,8 +352,7 @@ namespace DiscordCoreInternal {
 			if (this->comparisongStringFalse == this->falseString) {
 				return false;
 			}
-		}
-		else if (length == 4 && reinterpret_cast<const uint32_t*>(atom) == reinterpret_cast<const uint32_t*>(atom_null)) {// "null"
+		} else if (length == 4 && reinterpret_cast<const uint32_t*>(atom) == reinterpret_cast<const uint32_t*>(atom_null)) {// "null"
 			return nlohmann::json{};
 		} else if (length == 4 && reinterpret_cast<const uint32_t*>(atom) == reinterpret_cast<const uint32_t*>(atom_true)) {// "true"
 			return true;
@@ -460,7 +439,7 @@ namespace DiscordCoreInternal {
 			auto key = singleValueETFToJson();
 			if (key.is_number()) {
 				map.emplace(std::to_string(key.get<uint64_t>()), singleValueETFToJson());
-				
+
 			} else {
 				map.emplace(key.get<std::string>(), singleValueETFToJson());
 			}
