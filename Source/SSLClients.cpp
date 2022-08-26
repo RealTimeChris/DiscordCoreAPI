@@ -326,8 +326,12 @@ namespace DiscordCoreInternal {
 			FD_SET(value->theSocket, &errorSet);
 		}
 
+#ifdef WIN32
 		if (readSet.fd_count == 0 && writeSet.fd_count == 0) {
-			theReturnValue;
+#else
+		if (readSet.fds_bits == 0 && writeSet.fds_bits == 0) {
+#endif
+			return theReturnValue;
 		}
 
 		timeval checkTime{ .tv_usec = 1000 };
@@ -382,8 +386,11 @@ namespace DiscordCoreInternal {
 			FD_SET(this->theSocket, &writeSet);
 		}
 		FD_SET(this->theSocket, &readSet);
-
+#ifdef WIN32
 		if (readSet.fd_count == 0 && writeSet.fd_count == 0) {
+#else
+		if (readSet.fds_bits == 0 && writeSet.fds_bits == 0) {
+#endif
 			return ProcessIOResult::No_Error;
 		}
 
