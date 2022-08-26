@@ -168,8 +168,7 @@ namespace DiscordCoreInternal {
 				 << DiscordCoreAPI::reset();
 		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
-			ErlPacker thePacker{};
-			theVector = thePacker.parseJsonToEtf(*dataToSend);
+			theVector = ErlPacker::parseJsonToEtf(*dataToSend);
 		} else {
 			theVector = dataToSend->dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 			;
@@ -400,10 +399,10 @@ namespace DiscordCoreInternal {
 
 					if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 						try {
+							auto theDataNew = const_cast<std::string&>(theData);
 							DiscordCoreAPI::StopWatch theStopWatch{ 50us };
 							theStopWatch.resetTimer();
-							ErlPacker thePacker{ theData };
-							payload = thePacker.parseEtfToJson(( std::string& )theData);
+							payload = ErlPacker::parseEtfToJson(theDataNew);
 							theInt.store(theInt.load() + theStopWatch.totalTimePassed());
 							if (DiscordCoreAPI::theCount.load() != 0) {
 								//std::cout << "THE STRING LENGTH: " << theData.size() << std::endl;

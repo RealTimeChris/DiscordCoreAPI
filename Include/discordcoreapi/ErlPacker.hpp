@@ -57,9 +57,9 @@ namespace DiscordCoreInternal {
 
 		ErlPacker();
 
-		ErlPacker& operator=(const std::string&);
+		ErlPacker& operator=(std::string&);
 
-		ErlPacker(const std::string&);
+		ErlPacker(std::string&);
 
 	  protected:
 		std::string comparisongStringFalse{ "false" };

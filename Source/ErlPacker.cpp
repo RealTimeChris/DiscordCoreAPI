@@ -24,11 +24,16 @@ namespace DiscordCoreInternal {
 
 	ErlPacker::ErlPacker(){};
 
-	ErlPacker& ErlPacker::operator=(const std::string& theBuffer) {
+	ErlPacker& ErlPacker::operator=(std::string& theBuffer) {
+		this->buffer = theBuffer.data();
+		this->size = theBuffer.size();
+		this->offSet = 0;
 		return *this;
 	}
 
-	ErlPacker::ErlPacker(const std::string& theBuffer) : buffer(( char* )theBuffer.data()){};
+	ErlPacker::ErlPacker(std::string& theBuffer) {
+		*this = theBuffer;
+	};
 
 	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
 		this->bufferString.clear();
@@ -39,9 +44,7 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseEtfToJson(std::string& dataToParse) {
-		this->buffer = dataToParse.data();
-		this->size = dataToParse.size();
-		this->offSet = 0;
+		*this = dataToParse;
 		if (ErlPacker::readBits<uint8_t>() != formatVersion) {
 			throw ErlPackError{ "ErlPacker::parseEtfToJson() Error: Incorrect format version specified." };
 		}
