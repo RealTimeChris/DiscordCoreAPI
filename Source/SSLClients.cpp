@@ -357,6 +357,7 @@ namespace DiscordCoreInternal {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
 					theError.shardNumber = static_cast<WebSocketSSLShard*>(value)->shard[0].get<uint32_t>();
 					theReturnValue.push_back(theError);
+					continue;
 				}
 			}
 			if (FD_ISSET(value->theSocket, &readSet)) {
@@ -366,6 +367,7 @@ namespace DiscordCoreInternal {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
 					theError.shardNumber = static_cast<WebSocketSSLShard*>(value)->shard[0].get<uint32_t>();
 					theReturnValue.push_back(theError);
+					continue;
 				}
 			}
 		}
