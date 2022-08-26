@@ -152,6 +152,7 @@ namespace DiscordCoreAPI {
 		ConfigManager configManager{};
 		std::mutex connectionMutex{};
 		EventManager eventManager{};
+		std::mutex coutMutex{};
 		BotUser currentUser{};
 		
 		std::vector<uint32_t> collectWorkerDimensions(uint32_t shardCount, uint32_t threadCount);
