@@ -1451,7 +1451,7 @@ namespace DiscordCoreInternal {
 						this->theShardMap[thePackageNew.currentShard]->processIO(1000000);
 					} catch (...) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost on WebSocket [" + thePackageNew.currentShard << ","
+							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + thePackageNew.currentShard << ","
 									  << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << std::endl
 									  << std::endl;
 						}
@@ -1513,6 +1513,7 @@ namespace DiscordCoreInternal {
 				auto theResult = SSLClient::processIO(theVector);
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {
+						std::unique_lock theLock{ this->discordCoreClient->connectionMutex };
 						std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << value.shardNumber << ","
 								  << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << std::endl
 								  << std::endl;
