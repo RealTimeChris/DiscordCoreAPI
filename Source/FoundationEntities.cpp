@@ -1857,9 +1857,9 @@ namespace DiscordCoreAPI {
 			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
 		}
 		if (inputEventData.interactionData->data.messageInteractionData.targetId != 0) {
-			this->optionsArgs.emplace_back(std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId));
+			this->optionsArgs.emplace_back("target_id", std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId));
 		} else if (inputEventData.interactionData->data.userInteractionData.targetId != 0) {
-			this->optionsArgs.emplace_back(std::to_string(inputEventData.interactionData->data.userInteractionData.targetId));
+			this->optionsArgs.emplace_back("target_id", std::to_string(inputEventData.interactionData->data.userInteractionData.targetId));
 		}
 		this->eventData = inputEventData;
 		auto theData = inputEventData.getInteractionData().rawData;
