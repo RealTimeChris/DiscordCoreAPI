@@ -245,6 +245,9 @@ namespace DiscordCoreInternal {
 			case ETFTokenType::Atom_Utf8_Ext: {
 				return ErlPacker::parseAtomUtf8Ext();
 			}
+			case ETFTokenType::Small_Atom_Ext: {
+				[[fallthrough]];
+			}
 			case ETFTokenType::Small_Atom_Utf8_Ext: {
 				return ErlPacker::parseSmallAtomUtf8Ext();
 			}

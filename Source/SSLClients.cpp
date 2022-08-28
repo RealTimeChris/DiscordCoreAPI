@@ -190,7 +190,7 @@ namespace DiscordCoreInternal {
 					return ProcessIOResult::No_Error;
 				}
 			} else {
-				if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
+				if (dataToWrite.size() >= static_cast<size_t>(16 * 1024)) {
 					size_t remainingBytes{ dataToWrite.size() };
 					while (remainingBytes > 0) {
 						std::string newString{};

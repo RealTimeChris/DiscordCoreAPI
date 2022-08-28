@@ -213,10 +213,9 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
 		if (theShard->areWeStillConnected() && theShard->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
-			std::string newVector = theShard->getInputBuffer();
-			auto theFindValue = newVector.find("\r\n\r\n");
+			auto theFindValue = theShard->getInputBuffer().find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
-				theShard->inputBuffer.clear();
+				theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theFindValue + 4);
 				theShard->theWebSocketState.store(WebSocketSSLShardState::Collecting_Hello);
 				return true;
 			}
@@ -266,8 +265,7 @@ namespace DiscordCoreInternal {
 					}
 					theShard->messageOffset += 8;
 				}
-				if (theShard->inputBuffer.size() > 0 &&
-					theShard->inputBuffer.size() < static_cast<uint64_t>(theShard->messageOffset) + static_cast<uint64_t>(theShard->messageLength)) {
+				if (theShard->inputBuffer.size() < theShard->messageOffset + theShard->messageLength) {
 					return true;
 				} else {
 					this->onMessageReceived(theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength));

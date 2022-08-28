@@ -44,6 +44,7 @@ namespace DiscordCoreInternal {
 		Binary_Ext = 109,
 		Small_Big_Ext = 110,
 		Large_Big_Ext = 111,
+		Small_Atom_Ext = 115,
 		Map_Ext = 116,
 		Atom_Utf8_Ext = 118,
 		Small_Atom_Utf8_Ext = 119
