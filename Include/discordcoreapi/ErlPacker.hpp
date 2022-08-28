@@ -57,10 +57,6 @@ namespace DiscordCoreInternal {
 
 		ErlPacker() noexcept = default;
 
-		ErlPacker& operator=(std::string&) noexcept;
-
-		ErlPacker(std::string&) noexcept;
-
 	  protected:
 		std::string comparisongStringFalse{ "false" };
 		std::string comparisongStringNil{ "nil" };

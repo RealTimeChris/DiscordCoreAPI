@@ -229,6 +229,8 @@ namespace DiscordCoreInternal {
 			return true;
 		}
 		theShard->dataOpCode = static_cast<WebSocketOpCode>(theShard->inputBuffer[0] & ~webSocketFinishBit);
+		this->messageLength = 0;
+		this->messageOffset = 0;
 		switch (theShard->dataOpCode) {
 			case WebSocketOpCode::Op_Continuation:
 				[[fallthrough]];
@@ -394,15 +396,14 @@ namespace DiscordCoreInternal {
 			try {
 				bool returnValue{ true };
 				nlohmann::json payload{};
-				if (this->inputBuffer.size() > 0) {
+				if (theData.size() > 0) {
 					returnValue = true;
 
 					if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
-						try {
-							auto theDataNew = const_cast<std::string&>(theData);
+						try {;
 							DiscordCoreAPI::StopWatch theStopWatch{ 50us };
 							theStopWatch.resetTimer();
-							payload = ErlPacker::parseEtfToJson(theDataNew);
+							payload = ErlPacker::parseEtfToJson(( std::string& )(theData));
 							theInt.store(theInt.load() + theStopWatch.totalTimePassed());
 							if (DiscordCoreAPI::theCount.load() != 0) {
 								//std::cout << "THE STRING LENGTH: " << theData.size() << std::endl;
@@ -411,6 +412,9 @@ namespace DiscordCoreInternal {
 						} catch (...) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
 								DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
+								this->inputBuffer.clear();
+								this->messageLength = 0;
+								this->messageOffset = 0;
 							}
 							returnValue = true;
 						}
@@ -1299,7 +1303,6 @@ namespace DiscordCoreInternal {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 				}
-				this->onClosed();
 				return true;
 			}
 		}

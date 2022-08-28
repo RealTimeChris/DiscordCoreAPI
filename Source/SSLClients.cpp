@@ -452,7 +452,6 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					this->disconnect(true);
 					return false;
 				}
 				default: {

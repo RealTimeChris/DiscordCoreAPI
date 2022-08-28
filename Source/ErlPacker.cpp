@@ -22,27 +22,20 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
-	ErlPacker& ErlPacker::operator=(std::string& theBuffer) noexcept {
-		this->buffer = theBuffer.data();
-		this->size = theBuffer.size();
-		this->offSet = 0;
-		return *this;
-	}
-
-	ErlPacker::ErlPacker(std::string& theBuffer) noexcept {
-		*this = theBuffer;
-	};
-
 	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
 		this->bufferString.clear();
 		this->offSet = 0;
+		this->size = 0;
 		ErlPacker::appendVersion();
 		ErlPacker::singleValueJsonToETF(dataToParse);
 		return this->bufferString;
 	}
 
 	nlohmann::json ErlPacker::parseEtfToJson(std::string& dataToParse) {
-		*this = dataToParse;
+		this->bufferString.clear();
+		this->offSet = 0;
+		this->buffer = dataToParse.data();
+		this->size = dataToParse.size();
 		if (ErlPacker::readBits<uint8_t>() != formatVersion) {
 			throw ErlPackError{ "ErlPacker::parseEtfToJson() Error: Incorrect format version specified." };
 		}
@@ -108,15 +101,13 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::writeToBuffer(const std::string& bytes) {
-		if (this->offSet > this->bufferString.size()) {
-			this->bufferString.resize(this->offSet);
-		}
-		this->bufferString.insert(this->bufferString.begin() + this->offSet, bytes.begin(), bytes.end());
-		this->offSet += static_cast<uint32_t>(bytes.size());
+		this->bufferString.insert(this->bufferString.end(), bytes.begin(), bytes.end());
+		this->offSet += bytes.size();
 	}
 
 	void ErlPacker::appendVersion() {
-		std::string bufferNew{ static_cast<char>(formatVersion) };
+		std::string bufferNew{};
+		bufferNew.push_back(static_cast<char>(formatVersion));
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
@@ -127,7 +118,6 @@ namespace DiscordCoreInternal {
 
 	void ErlPacker::appendIntegerExt(uint32_t value) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Integer_Ext) };
-		uint32_t newValue{ 1 };
 		DiscordCoreAPI::storeBits(bufferNew, value);
 		ErlPacker::writeToBuffer(bufferNew);
 	}
@@ -176,22 +166,22 @@ namespace DiscordCoreInternal {
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
-	void ErlPacker::appendBinaryExt(const std::string& bytes, uint32_t size) {
+	void ErlPacker::appendBinaryExt(const std::string& bytes, uint32_t sizeNew) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Binary_Ext) };
-		DiscordCoreAPI::storeBits(bufferNew, size);
+		DiscordCoreAPI::storeBits(bufferNew, sizeNew);
 		ErlPacker::writeToBuffer(bufferNew);
 		ErlPacker::writeToBuffer(bytes);
 	}
 
-	void ErlPacker::appendListHeader(uint32_t size) {
+	void ErlPacker::appendListHeader(uint32_t sizeNew) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::List_Ext) };
-		DiscordCoreAPI::storeBits(bufferNew, size);
+		DiscordCoreAPI::storeBits(bufferNew, sizeNew);
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
-	void ErlPacker::appendMapHeader(uint32_t size) {
+	void ErlPacker::appendMapHeader(uint32_t sizeNew) {
 		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Map_Ext) };
-		DiscordCoreAPI::storeBits(bufferNew, size);
+		DiscordCoreAPI::storeBits(bufferNew, sizeNew);
 		ErlPacker::writeToBuffer(bufferNew);
 	}
 
