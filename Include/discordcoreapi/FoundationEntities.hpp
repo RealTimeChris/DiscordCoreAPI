@@ -386,8 +386,8 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 
-		std::string discriminator{};///< The user's 4-digit discord-tag	identify.
-		std::string userName{};///< The user's userName, not unique across the platform identify.
+		StringWrapper discriminator{};///< The user's 4-digit discord-tag	identify.
+		StringWrapper userName{};///< The user's userName, not unique across the platform identify.
 		IconHash avatar{};///< The user's avatar hash.
 		int32_t flags{};///< The public flags on a user' s account.
 
@@ -788,7 +788,7 @@ namespace DiscordCoreAPI {
 		Snowflake voiceChannelId{};///< Currently held voice channel, if applicable.
 		Permissions permissions{};///< Their base-level Permissions in the Guild
 		Snowflake guildId{};///< The current Guild's id.
-		std::string nick{};///< Their nick/display name.
+		StringWrapper nick{};///< Their nick/display name.
 		IconHash avatar{};///< This GuildMember's Guild Avatar.
 		int8_t flags{ 0 };///< GuildMember flags.
 
@@ -833,10 +833,10 @@ namespace DiscordCoreAPI {
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
 		uint16_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
 		Snowflake parentId{};///< Id of the Channel's parent Channel/category.
-		std::string topic{};///< Channel topic.
+		StringWrapper topic{};///< Channel topic.
 		Snowflake ownerId{};///< Id of the Channel's owner.
 		Snowflake guildId{};///< Id of the Channel's Guild, if applicable.
-		std::string name{};///< Name of the Channel.
+		StringWrapper name{};///< Name of the Channel.
 		uint8_t flags{};///< Flags combined as a bitmask.
 
 		void insertChannel(std::unique_ptr<ChannelData>);
@@ -887,10 +887,10 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 
-		std::string unicodeEmoji{};///< Emoji representing the Role.
+		StringWrapper unicodeEmoji{};///< Emoji representing the Role.
 		Permissions permissions{};///< The Role's base Guild Permissions.
 		int16_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
-		std::string name{};///< The Role's name.
+		StringWrapper name{};///< The Role's name.
 		int32_t color{ 0 };///< The Role's color.
 		int8_t flags{ 0 };///< Role flags.
 
@@ -1969,7 +1969,7 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> emoji{};///< Array of Guild channels.
 		int32_t memberCount{ 0 };///< Member count.
 		Snowflake ownerId{};///< User id of the Guild's owner.
-		std::string name{};///< The Guild's name.
+		StringWrapper name{};///< The Guild's name.
 		int8_t flags{ 0 };///< Guild flags.
 		IconHash icon{};///< Url to the Guild's icon.
 
