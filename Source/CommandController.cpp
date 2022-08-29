@@ -39,6 +39,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
 		co_await NewThreadAwaitable<void>();
+		/*
 		try {
 			std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
 			if (!functionPointer) {
@@ -50,6 +51,7 @@ namespace DiscordCoreAPI {
 		} catch (...) {
 			reportException("CommandController::checkForAndRunCommand()");
 		}
+		*/
 		co_return;
 	}
 
