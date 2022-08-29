@@ -260,7 +260,7 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		uint32_t theWorkerCount =
-			this->configManager.getTotalShardCount() <= std::thread::hardware_concurrency() ? this->configManager.getTotalShardCount() : this->configManager.getTotalShardCount();
+			this->configManager.getTotalShardCount() <= std::thread::hardware_concurrency() ? this->configManager.getTotalShardCount() : std::thread::hardware_concurrency();
 		if (this->configManager.getConnectionAddress() == "") {
 			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
 		}
@@ -276,7 +276,6 @@ namespace DiscordCoreAPI {
 			theData.currentReconnectTries = 0;
 			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x] =
 				std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, &this->theConnections, x, &Globals::doWeQuit);
-			theData.voiceConnectionDataBufferMap = std::move(this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x]->voiceConnectionDataBufferMap);
 			std::unique_lock theLock{ this->connectionMutex };
 			this->theConnections.push_back(theData);
 		}

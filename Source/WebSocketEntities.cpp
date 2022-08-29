@@ -1328,7 +1328,6 @@ namespace DiscordCoreInternal {
 			this->areWeHeartBeating = false;
 			if (doWeReconnect && this->theConnections) {
 				DiscordCoreAPI::ConnectionPackage theData{};
-				theData.voiceConnectionDataBufferMap = std::move(this->voiceConnectionDataBufferMap);
 				theData.currentReconnectTries = this->currentReconnectTries;
 				theData.areWeResuming = this->areWeResuming;
 				theData.currentShard = this->shard[0];
@@ -1371,7 +1370,6 @@ namespace DiscordCoreInternal {
 				}
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries = thePackageNew.currentReconnectTries;
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries++;
-				this->theShardMap[thePackageNew.currentShard]->voiceConnectionDataBufferMap = std::move(thePackageNew.voiceConnectionDataBufferMap);
 				std::string connectionUrl = thePackageNew.areWeResuming ? this->theShardMap[thePackageNew.currentShard]->resumeUrl : this->configManager->getConnectionAddress();
 				bool isItFirstIteraion{ true };
 				ConnectionResult didWeConnect{};
