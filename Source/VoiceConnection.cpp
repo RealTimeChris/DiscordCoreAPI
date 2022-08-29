@@ -909,7 +909,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::disconnect() noexcept {
-		std::unique_lock theLock{ this->baseSocketAgent->theConnectDisconnectMutex };
 		this->baseSocketAgent->voiceConnectionsToDisconnect.push_back(this->voiceConnectInitData.guildId);
 		this->activeState.store(VoiceActiveState::Exiting);
 	}

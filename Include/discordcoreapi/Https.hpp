@@ -107,8 +107,10 @@ namespace DiscordCoreInternal {
 
 		HttpsConnection(bool doWePrintErrorMessages);
 
-		void disconnect(bool) noexcept;
+		void handleBuffer(SSLClient* theClient) noexcept;
 
+		void disconnect(bool) noexcept;
+		
 		void resetValues();
 
 		virtual ~HttpsConnection() noexcept = default;

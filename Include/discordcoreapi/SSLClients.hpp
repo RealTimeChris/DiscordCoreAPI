@@ -178,7 +178,6 @@ namespace DiscordCoreInternal {
 		virtual ~SSLConnectionInterface() noexcept;
 
 	  protected:
-		std::recursive_mutex connectionMutex{};
 		SOCKETWrapper theSocket{};
 		SSL_CTXWrapper context{};
 		SSLWrapper ssl{};
@@ -221,6 +220,8 @@ namespace DiscordCoreInternal {
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
+
+		virtual void handleBuffer(SSLClient*) noexcept = 0;
 
 		std::string& getInputBuffer() noexcept;
 
@@ -273,7 +274,6 @@ namespace DiscordCoreInternal {
 		std::deque<std::string> outputBuffers{};
 		DiscordCoreAPI::StreamType streamType{};
 		bool areWeStreamConnected{ false };
-		std::recursive_mutex theMutex{};
 		std::string rawInputBuffer{};
 		SOCKETWrapper theSocket{};
 		std::string inputBuffer{};

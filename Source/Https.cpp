@@ -245,9 +245,10 @@ namespace DiscordCoreInternal {
 
 	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
 
+	void HttpsConnection::handleBuffer(SSLClient* theClient) noexcept {}
+
 	void HttpsConnection::disconnect(bool) noexcept {
 		if (this->theSocket != SOCKET_ERROR) {
-			std::unique_lock theLock{ this->connectionMutex };
 			this->theSocket = SOCKET_ERROR;
 		}
 		this->resetValues();

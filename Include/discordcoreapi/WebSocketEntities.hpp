@@ -53,6 +53,8 @@ namespace DiscordCoreInternal {
 
 		virtual bool onMessageReceived(const std::string& theMessage) noexcept = 0;
 
+		virtual void handleBuffer(SSLClient* theClient) noexcept = 0;
+
 		bool parseMessage(WebSocketSSLShard* theShard) noexcept;
 
 		virtual void onClosed() noexcept = 0;
@@ -87,6 +89,8 @@ namespace DiscordCoreInternal {
 		bool onMessageReceived(const std::string& theMessage) noexcept;
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
+
+		void handleBuffer(SSLClient* theClient) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
 
@@ -144,7 +148,6 @@ namespace DiscordCoreInternal {
 		std::deque<Snowflake> voiceConnectionsToDisconnect{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		std::deque<VoiceConnectInitData> voiceConnections{};
-		std::recursive_mutex theConnectDisconnectMutex{};
 		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		uint32_t currentBaseSocketAgent{};

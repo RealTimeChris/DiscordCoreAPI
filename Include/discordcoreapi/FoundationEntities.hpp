@@ -1994,10 +1994,10 @@ namespace DiscordCoreAPI {
 
 		void disconnect();
 
+		void parseObject(const nlohmann::json* jsonObjectData);
+
 		virtual ~GuildData() noexcept = default;
 	};
-
-	template<> void parseObject(const nlohmann::json* jsonObjectData, GuildData& theData);
 
 	class DiscordCoreAPI_Dll GuildDataVector {
 	  public:
