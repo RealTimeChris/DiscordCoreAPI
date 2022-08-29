@@ -44,8 +44,8 @@ namespace DiscordCoreAPI {
 			if (!functionPointer.get()) {
 				co_return;
 			}
-			BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
-			functionPointer->execute(theArgs);
+			//BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
+			//functionPointer->execute(theArgs);
 			co_return;
 		} catch (...) {
 			reportException("CommandController::checkForAndRunCommand()");
