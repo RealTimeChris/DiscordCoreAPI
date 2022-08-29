@@ -303,21 +303,55 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
-	void IconHash::setHash(const std::string& other) {
-		std::string newHash(other);
-		if (other.empty()) {
+	ColorValue::ColorValue(uint32_t theColorValue) {
+		this->theColor = theColorValue;
+	}
+
+	ColorValue::ColorValue(std::string theHexColorValue) {
+		this->theColor = stoull(theHexColorValue, nullptr, 16);
+	}
+
+	RGBColorValue ColorValue::getRgbColorValue() {
+		uint8_t red = static_cast<uint8_t>(this->theColor >> 16);
+		uint8_t green = static_cast<uint8_t>(this->theColor >> 8);
+		uint8_t blue = static_cast<uint8_t>(this->theColor);
+		RGBColorValue theColor{};
+		theColor.blue = blue;
+		theColor.green = green;
+		theColor.red = red;
+		return theColor;
+	}
+
+	HexColorValue ColorValue::getHexColorValue() {
+		std::stringstream theStream{};
+		theStream << std::hex << this->theColor;
+		return theStream.str();
+	}
+
+	uint32_t ColorValue::getIntColorValue() {
+		return this->theColor;
+	}
+
+	IconHash& IconHash::operator=(const std::string theString) {
+		std::string newHash{ theString };
+		if (newHash.empty()) {
 			this->highBits = 0;
 			this->lowBits = 0;
-			return;
+			return *this;
 		}
-		if (other.length() == 34 && other.substr(0, 2) == "a_") {
-			newHash = other.substr(2);
+		if (newHash.length() == 34 && newHash.substr(0, 2) == "a_") {
+			newHash = newHash.substr(2);
 		}
 		if (newHash.length() != 32) {
 			throw std::length_error("IconHash must be exactly 32 characters in length, passed value is: '" + std::to_string(newHash.size()) + "', in length.");
 		}
 		this->lowBits = fromString<uint64_t>(newHash.substr(0, 16), std::hex);
 		this->highBits = fromString<uint64_t>(newHash.substr(16, 16), std::hex);
+		return *this;
+	}
+
+	IconHash::IconHash(const std::string theString) noexcept {
+		*this = theString;
 	}
 
 	std::string IconHash::getIconHash() noexcept {
@@ -330,14 +364,6 @@ namespace DiscordCoreAPI {
 
 	bool IconHash::operator==(const IconHash& other) {
 		return other.lowBits == this->lowBits && other.highBits == this->highBits;
-	}
-
-	bool IconHash::areWeSet() {
-		if (this->highBits == 0 || this->lowBits == 0) {
-			return false;
-		} else {
-			return true;
-		}
 	}
 
 	uint8_t getUint8(const nlohmann::json* jsonData, const char* keyName) {
@@ -400,24 +426,6 @@ namespace DiscordCoreAPI {
 		} else {
 			return 0;
 		}
-	}
-
-	IconHash& IconHash::operator=(std::string& theString) noexcept {
-		this->setHash(theString);
-		return *this;
-	}
-
-	IconHash::IconHash(std::string& theString) noexcept {
-		*this = static_cast<std::string>(theString);
-	}
-
-	IconHash& IconHash::operator=(std::string theString) noexcept {
-		this->setHash(theString);
-		return *this;
-	}
-
-	IconHash::IconHash(std::string theString) noexcept {
-		*this = static_cast<std::string>(theString);
 	}
 
 	Permissions& Permissions::operator=(Permission&& other) {

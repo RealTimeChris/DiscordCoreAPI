@@ -1693,10 +1693,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("color") && !(*jsonObjectData)["color"].is_null()) {
-			int32_t colorValInt = (*jsonObjectData)["color"].get<int32_t>();
-			std::stringstream stream{};
-			stream << std::setbase(16) << colorValInt;
-			this->hexColorValue = stream.str();
+			this->hexColorValue = (*jsonObjectData)["color"].get<int32_t>();
 		}
 
 		if (jsonObjectData->contains("footer") && !(*jsonObjectData)["footer"].is_null()) {

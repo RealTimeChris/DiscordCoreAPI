@@ -564,9 +564,9 @@ namespace DiscordCoreAPI {
 	/// Embed data. \brief Embed data.
 	class DiscordCoreAPI_Dll EmbedData {
 	  public:
-		std::string hexColorValue{ "000000" };///< Hex color value of the embed.
 		std::vector<EmbedFieldData> fields{};///< Array of embed fields.
 		EmbedThumbnailData thumbnail{};///< Embed thumbnail data.
+		ColorValue hexColorValue{ 0 };///< Hex color value of the embed.
 		EmbedProviderData provider{};///< Embed provider data.
 		std::string description{};///< Description of the embed.
 		EmbedFooterData footer{};///< Embed footer data.
@@ -891,7 +891,7 @@ namespace DiscordCoreAPI {
 		Permissions permissions{};///< The Role's base Guild Permissions.
 		int16_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
 		StringWrapper name{};///< The Role's name.
-		int32_t color{ 0 };///< The Role's color.
+		ColorValue color{ 0 };///< The Role's color.
 		int8_t flags{ 0 };///< Role flags.
 
 		void insertRole(std::unique_ptr<RoleData>);

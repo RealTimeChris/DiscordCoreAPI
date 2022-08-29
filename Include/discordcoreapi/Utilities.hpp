@@ -622,27 +622,44 @@ namespace DiscordCoreAPI {
 		return theStream.str();
 	}
 
+	class DiscordCoreAPI_Dll RGBColorValue {
+	  public:
+		uint8_t green{};
+		uint8_t blue{};
+		uint8_t red{};
+	};
+
+	using HexColorValue = std::string;
+
+	class DiscordCoreAPI_Dll ColorValue {
+	  public:
+		ColorValue(std::string theHexColorValue);
+
+		ColorValue(uint32_t theColorValue);
+
+		RGBColorValue getRgbColorValue();
+
+		HexColorValue getHexColorValue();
+
+		uint32_t getIntColorValue();
+
+	  protected:
+		uint32_t theColor{};
+	};
+
 	enum class HashType { User_Avatar = 0, Channel_Icon = 1, GuildMember_Avatar = 2, Guild_Icon = 3, Guild_Splash = 4, Guild_Banner = 5, Guild_Discovery = 6 };
 
 	class DiscordCoreAPI_Dll IconHash {
 	  public:
 		IconHash() noexcept = default;
 
-		IconHash& operator=(std::string& theString) noexcept;
+		IconHash& operator=(const std::string theString);
 
-		IconHash(std::string& theString) noexcept;
-
-		IconHash& operator=(std::string theString) noexcept;
-
-		IconHash(std::string theString) noexcept;
+		IconHash(const std::string theString) noexcept;
 
 		bool operator==(const IconHash& other);
 
-		void setHash(const std::string& hash);
-
 		std::string getIconHash() noexcept;
-
-		bool areWeSet();
 
 		~IconHash() noexcept = default;
 

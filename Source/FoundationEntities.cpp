@@ -255,10 +255,7 @@ namespace DiscordCoreAPI {
 		for (auto& value2: this->fields) {
 			fields.emplace_back(value2);
 		}
-		int32_t colorValInt = stol(this->hexColorValue, 0, 16);
-		std::stringstream stream;
-		stream << std::setbase(10) << colorValInt;
-		std::string realColorVal = stream.str();
+		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
 		nlohmann::json embed{};
 		embed["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
 		embed["author"]["proxy_icon_url"] = this->author.proxyIconUrl;
