@@ -1088,7 +1088,7 @@ namespace DiscordCoreAPI {
 		UserData user{};///< User that created this emoji.
 
 		EmojiData() noexcept = default;
-		
+
 		virtual ~EmojiData() noexcept = default;
 
 		void parseObject(const nlohmann::json* jsonObjectData);

@@ -321,7 +321,6 @@ namespace DiscordCoreAPI {
 		std::string getSplashUrl() noexcept;
 
 		virtual ~Guild() noexcept = default;
-		
 	};
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, Guild& theData);

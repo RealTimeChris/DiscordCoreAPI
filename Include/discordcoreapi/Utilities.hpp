@@ -538,7 +538,7 @@ namespace DiscordCoreAPI {
 		AudioFrameData() noexcept = default;
 
 		AudioFrameData& operator=(AudioFrameData&&) noexcept = default;
-		
+
 		AudioFrameData(AudioFrameData&&) noexcept = default;
 
 		AudioFrameData& operator=(const AudioFrameData&) noexcept = default;

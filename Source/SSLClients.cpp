@@ -348,7 +348,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			return theReturnValue;
-			
+
 		} else if (returnValue == 0) {
 			return theReturnValue;
 		}
@@ -405,7 +405,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (FD_ISSET(this->theSocket, &writeSet)) {
-			if (!this->writeDataProcess()){
+			if (!this->writeDataProcess()) {
 				return ProcessIOResult::Error;
 			};
 		}
@@ -432,7 +432,7 @@ namespace DiscordCoreInternal {
 	bool SSLClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0) {
 			this->wantRead = false;
-			this->wantWrite = false;			
+			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffers.front().data(), this->outputBuffers.front().size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };

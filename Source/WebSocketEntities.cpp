@@ -398,7 +398,8 @@ namespace DiscordCoreInternal {
 					returnValue = true;
 
 					if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
-						try {;
+						try {
+							;
 							DiscordCoreAPI::StopWatch theStopWatch{ 50us };
 							theStopWatch.resetTimer();
 							payload = ErlPacker::parseEtfToJson(( std::string& )(theData));
@@ -432,7 +433,7 @@ namespace DiscordCoreInternal {
 					if (payload["t"] == "READY") {
 						this->theWebSocketState.store(WebSocketSSLShardState::Authenticated);
 						this->sessionId = payload["d"]["session_id"].get<std::string>();
-						std::string theResumeUrl= payload["d"]["resume_gateway_url"].get<std::string>();
+						std::string theResumeUrl = payload["d"]["resume_gateway_url"].get<std::string>();
 						theResumeUrl = theResumeUrl.substr(theResumeUrl.find("wss://") + std::string{ "wss://" }.size());
 						theResumeUrl = theResumeUrl.substr(0, theResumeUrl.find("/"));
 						this->resumeUrl = theResumeUrl;
@@ -1390,7 +1391,6 @@ namespace DiscordCoreInternal {
 				if (!this->theShardMap.contains(thePackageNew.currentShard)) {
 					this->theShardMap[thePackageNew.currentShard] =
 						std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->discordCoreClient->theConnections, thePackageNew.currentShard, this->doWeQuit);
-					
 				}
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries = thePackageNew.currentReconnectTries;
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries++;
@@ -1423,9 +1423,9 @@ namespace DiscordCoreInternal {
 									  << std::endl;
 						}
 					}
-						
+
 				} while (didWeConnect != ConnectionResult::No_Error && !this->doWeQuit->load());
-				
+
 				this->theShardMap[thePackageNew.currentShard]->theWebSocketState.store(WebSocketSSLShardState::Upgrading);
 				std::string sendString{};
 				sendString = "GET /?v=10&encoding=";
@@ -1462,7 +1462,7 @@ namespace DiscordCoreInternal {
 						}
 						break;
 					}
-					
+
 					if (this->theShardMap[thePackageNew.currentShard]->areWeStillConnected()) {
 						this->theShardMap[thePackageNew.currentShard]->parseConnectionHeaders(this->theShardMap[thePackageNew.currentShard].get());
 					}
@@ -1498,7 +1498,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
-		try {			
+		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				{
 					std::unique_lock theLock{ this->theConnectDisconnectMutex };
@@ -1526,7 +1526,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				
+
 				for (auto& value: theVector) {
 					if (!static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
 						if (value->areWeStillConnected() && static_cast<WebSocketSSLShard*>(value)->inputBuffer.size() > 0) {

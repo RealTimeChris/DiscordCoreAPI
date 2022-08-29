@@ -57,11 +57,10 @@ namespace DiscordCoreAPI {
 		std::string name{};///< A name for the new command.
 	  protected:
 		bool alwaysRegister{ false };
-	}; 
+	};
 
 	/// For creating a single global ApplicationCommand. \brief For creating a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData : public CreateApplicationCommandData {
-
 		operator std::string();
 	};
 
@@ -100,7 +99,6 @@ namespace DiscordCoreAPI {
 
 	/// For creating a single Guild ApplicationCommand. \brief For creating a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateApplicationCommandData {
-
 		operator std::string();
 	};
 
@@ -181,8 +179,7 @@ namespace DiscordCoreAPI {
 		void parseObject(const nlohmann::json* jsonObjectData);
 	};
 
-	template<>
-	void parseObject(const nlohmann::json* jsonObjectData, ApplicationCommand& theData);
+	template<> void parseObject(const nlohmann::json* jsonObjectData, ApplicationCommand& theData);
 
 	class DiscordCoreAPI_Dll ApplicationCommandVector {
 	  public:

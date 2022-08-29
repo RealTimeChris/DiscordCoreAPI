@@ -339,7 +339,7 @@ namespace DiscordCoreAPI {
 			return true;
 		}
 	}
-	
+
 	uint8_t getUint8(const nlohmann::json* jsonData, const char* keyName) {
 		auto theResult = jsonData->find(keyName);
 		if (theResult != jsonData->end()) {
