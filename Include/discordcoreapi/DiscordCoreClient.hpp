@@ -155,8 +155,6 @@ namespace DiscordCoreAPI {
 		std::mutex coutMutex{};
 		BotUser currentUser{};
 
-		std::vector<uint32_t> collectWorkerDimensions(uint32_t shardCount, uint32_t threadCount);
-
 		void registerFunctionsInternal();
 
 		GatewayBotData getGateWayBot();

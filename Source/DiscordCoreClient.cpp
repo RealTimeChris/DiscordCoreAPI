@@ -225,26 +225,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::vector<uint32_t> DiscordCoreClient::collectWorkerDimensions(uint32_t shardCount, uint32_t threadCount) {
-		std::vector<uint32_t> theVector{};
-		uint32_t theWorkerCount = shardCount <= threadCount ? shardCount : threadCount;
-		uint32_t extraShards = static_cast<uint32_t>(shardCount % theWorkerCount);
-		for (uint32_t x = 0; x < theWorkerCount; ++x) {
-			auto theValue = static_cast<uint32_t>(floor((static_cast<float>(shardCount) / static_cast<float>(threadCount))));
-			if (theValue == 0) {
-				theValue = 1;
-			}
-			theVector.push_back(theValue);
-		}
-		uint32_t theIndex{};
-		while (extraShards > 0) {
-			theVector[theIndex % theVector.size()] += 1;
-			extraShards--;
-			theIndex++;
-		}
-		return theVector;
-	}
-
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Gateway_Bot };
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -279,29 +259,27 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		std::vector<uint32_t> theDimensions = collectWorkerDimensions(this->configManager.getTotalShardCount(), std::thread::hardware_concurrency());
-		uint32_t baseSocketCount = theDimensions.size();
+		uint32_t theWorkerCount =
+			this->configManager.getTotalShardCount() <= std::thread::hardware_concurrency() ? this->configManager.getTotalShardCount() : std::thread::hardware_concurrency();
 		if (this->configManager.getConnectionAddress() == "") {
 			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
 		}
 		if (this->configManager.getConnectionPort() == "") {
 			this->configManager.setConnectionPort("443");
 		}
-		uint32_t currentShard{};
-		for (int32_t x = 0; x < theDimensions.size(); ++x) {
-			auto thePtr = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x);
-			this->baseSocketAgentMap[x] = std::move(thePtr);
-			for (uint32_t y = 0; y < theDimensions[x]; ++y) {
-				ConnectionPackage theData{};
-				theData.currentShard = currentShard;
-				theData.currentReconnectTries = 0;
-				this->baseSocketAgentMap[x]->theShardMap[currentShard] =
-					std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, &this->theConnections, currentShard, &Globals::doWeQuit);
-				theData.voiceConnectionDataBufferMap = std::move(this->baseSocketAgentMap[x]->theShardMap[currentShard]->voiceConnectionDataBufferMap);
-				std::unique_lock theLock{ this->connectionMutex };
-				this->theConnections.push_back(theData);
-				currentShard++;
+		for (int32_t x = 0; x < this->configManager.getTotalShardCount(); ++x) {
+			if (!this->baseSocketAgentMap.contains(x % theWorkerCount)) {
+				this->baseSocketAgentMap[x % theWorkerCount] = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);
+				std::cout << "THE CURRENT BASE SOCKET INDEX: " << x % theWorkerCount << std::endl;
 			}
+			ConnectionPackage theData{};
+			theData.currentShard = x;
+			theData.currentReconnectTries = 0;
+			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x] =
+				std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, &this->theConnections, x, &Globals::doWeQuit);
+			theData.voiceConnectionDataBufferMap = std::move(this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x]->voiceConnectionDataBufferMap);
+			std::unique_lock theLock{ this->connectionMutex };
+			this->theConnections.push_back(theData);
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[this->configManager.getStartingShard()].get() };
 		for (auto& value: this->configManager.getFunctionsToExecute()) {
