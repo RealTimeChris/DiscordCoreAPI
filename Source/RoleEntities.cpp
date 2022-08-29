@@ -317,7 +317,14 @@ namespace DiscordCoreAPI {
 		}
 		if (Roles::configManager->doWeCacheRoles()) {
 			auto roleId = role->id;
-			Roles::cache.insert_or_assign(roleId, std::move(role));
+			if (!Roles::cache.contains(roleId)) {
+				Roles::cache.emplace(roleId, std::move(role));
+			} else {
+				Roles::cache[roleId] = std::move(role);
+			}
+			if (Roles::cache.size() % 1000 == 0) {
+				std::cout << "THE ROLE COUNT: " << Roles::cache.size() << std::endl;
+			}
 		}
 	}
 
@@ -328,8 +335,8 @@ namespace DiscordCoreAPI {
 		}
 	};
 
+	std::unordered_map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
-	std::map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
 	ConfigManager* Roles::configManager{ nullptr };
 	std::shared_mutex Roles::theMutex{};
 }

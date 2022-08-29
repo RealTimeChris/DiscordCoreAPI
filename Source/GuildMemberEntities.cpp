@@ -324,11 +324,13 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::configManager->doWeCacheGuildMembers()) {
 			auto guildMemberId = guildMember->id;
 			auto guildId = guildMember->guildId;
-			if (GuildMembers::cache.contains(guildId)) {
+			if (!GuildMembers::cache.contains(guildId)) {
+				GuildMembers::cache.emplace(guildId, GuildMemberHolder{});
+			}
+			if (!GuildMembers::cache[guildId].cache.contains(guildMemberId)) {
 				GuildMembers::cache[guildId].cache.emplace(guildMemberId, std::move(guildMember));
 			} else {
-				GuildMembers::cache.emplace(guildId, GuildMemberHolder{});
-				GuildMembers::cache[guildId].cache.emplace(guildMemberId, std::move(guildMember));
+				GuildMembers::cache[guildId].cache[guildMemberId] = std::move(guildMember);
 			}
 		}
 	}

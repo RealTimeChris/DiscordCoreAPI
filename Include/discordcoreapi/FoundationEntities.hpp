@@ -816,10 +816,10 @@ namespace DiscordCoreAPI {
 		uint64_t allow{};///< Collection of Permissions to allow.
 		uint64_t deny{};///< Collection of Permissions to deny.
 
+		void parseObject(const nlohmann::json* jsonObjectData);
+
 		virtual ~OverWriteData() noexcept = default;
 	};
-
-	template<> void parseObject(const nlohmann::json* jsonObjectData, OverWriteData& theData);
 
 	enum class ChannelFlags : uint8_t { NSFW = 1 << 0 };
 
@@ -841,10 +841,10 @@ namespace DiscordCoreAPI {
 
 		void insertChannel(std::unique_ptr<ChannelData>);
 
-		virtual ~ChannelData() noexcept = default;
-	};
+		void parseObject(const nlohmann::json* jsonObjectData);
 
-	template<> void parseObject(const nlohmann::json* jsonObjectData, ChannelData& theData);
+		virtual ~ChannelData() noexcept = default;
+	};	
 
 	/// Data representing an active Thread. \brief Data representing an active Thread.
 	struct DiscordCoreAPI_Dll ActiveThreadsData {
@@ -896,10 +896,10 @@ namespace DiscordCoreAPI {
 
 		void insertRole(std::unique_ptr<RoleData>);
 
+		void parseObject(const nlohmann::json* jsonObjectData);
+
 		virtual ~RoleData() noexcept = default;
 	};
-
-	template<> void parseObject(const nlohmann::json* jsonObjectData, RoleData& theData);
 
 	/// Application command-option types. \brief Application command-option types.
 	enum class ApplicationCommandOptionType : uint8_t {

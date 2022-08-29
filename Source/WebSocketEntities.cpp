@@ -503,7 +503,7 @@ namespace DiscordCoreInternal {
 									}
 									case 6: {
 										auto theChannel = std::make_unique<DiscordCoreAPI::ChannelData>();
-										DiscordCoreAPI::parseObject(&payload["d"], *theChannel);
+										theChannel->parseObject(&payload["d"]);
 										Snowflake channelId{};
 										Snowflake guildId{};
 										if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
@@ -526,7 +526,7 @@ namespace DiscordCoreInternal {
 											channelId = stoull(payload["d"]["id"].get<std::string>());
 										}
 										auto theChannel = std::make_unique<DiscordCoreAPI::ChannelData>();
-										DiscordCoreAPI::parseObject(&payload["d"], *theChannel);
+										theChannel->parseObject(&payload["d"]);
 										DiscordCoreAPI::Channels::insertChannel(std::move(theChannel));
 										std::unique_ptr<DiscordCoreAPI::OnChannelUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelUpdateData>(
 											DiscordCoreAPI::Channels::cache[channelId].get()) };
@@ -765,7 +765,7 @@ namespace DiscordCoreInternal {
 											guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 										};
 										std::unique_ptr<DiscordCoreAPI::RoleData> theRole = std::make_unique<DiscordCoreAPI::RoleData>();
-										DiscordCoreAPI::parseObject(&payload["d"]["role"], *theRole);
+										theRole->parseObject(&payload["d"]["role"]);
 										DiscordCoreAPI::Roles::insertRole(std::move(theRole));
 										std::unique_ptr<DiscordCoreAPI::OnRoleCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleCreationData>(
 											DiscordCoreAPI::Roles::cache[roleId].get(), guildId) };
@@ -784,7 +784,7 @@ namespace DiscordCoreInternal {
 											guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 										};
 										std::unique_ptr<DiscordCoreAPI::RoleData> theRole = std::make_unique<DiscordCoreAPI::RoleData>();
-										DiscordCoreAPI::parseObject(&payload["d"]["role"], *theRole);
+										theRole->parseObject(&payload["d"]["role"]);
 										DiscordCoreAPI::Roles::insertRole(std::move(theRole));
 										std::unique_ptr<DiscordCoreAPI::OnRoleUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleUpdateData>(
 											DiscordCoreAPI::Roles::cache[roleId].get(), guildId) };

@@ -90,31 +90,31 @@ namespace DiscordCoreAPI {
 		theData.avatar = getString(jsonObjectData, "avatar");
 	}
 
-	template<> void parseObject(const nlohmann::json* jsonObjectData, RoleData& theData) {
-		theData.id = strtoull(getString(jsonObjectData, "id"));
+	void RoleData::parseObject(const nlohmann::json* jsonObjectData) {
+		this->id = strtoull(getString(jsonObjectData, "id"));
 
-		theData.name = getString(jsonObjectData, "name");
+		this->name = getString(jsonObjectData, "name");
 
 		std::stringstream theStream{};
 		theStream << getString(jsonObjectData, "unicode_emoji");
 		for (auto& value: theStream.str()) {
-			theData.unicodeEmoji.push_back(value);
+			this->unicodeEmoji.push_back(value);
 		}
-		if (theData.unicodeEmoji.size() > 3) {
-			theData.unicodeEmoji = static_cast<std::string>(theData.unicodeEmoji).substr(1, theData.unicodeEmoji.size() - 3);
+		if (this->unicodeEmoji.size() > 3) {
+			this->unicodeEmoji = static_cast<std::string>(this->unicodeEmoji).substr(1, this->unicodeEmoji.size() - 3);
 		}
 
-		theData.color = getUint32(jsonObjectData, "color");
+		this->color = getUint32(jsonObjectData, "color");
 
-		theData.flags |= setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Hoist, getBool(jsonObjectData, "hoist"));
+		this->flags |= setBool<int8_t, RoleFlags>(this->flags, RoleFlags::Hoist, getBool(jsonObjectData, "hoist"));
 
-		theData.flags |= setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Managed, getBool(jsonObjectData, "managed"));
+		this->flags |= setBool<int8_t, RoleFlags>(this->flags, RoleFlags::Managed, getBool(jsonObjectData, "managed"));
 
-		theData.flags |= setBool<int8_t, RoleFlags>(theData.flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
+		this->flags |= setBool<int8_t, RoleFlags>(this->flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
 
-		theData.position = getUint32(jsonObjectData, "position");
+		this->position = getUint32(jsonObjectData, "position");
 
-		theData.permissions = getString(jsonObjectData, "permissions");
+		this->permissions = getString(jsonObjectData, "permissions");
 	}
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, User& theData) {
@@ -248,46 +248,46 @@ namespace DiscordCoreAPI {
 		theData.premiumSince = getString(jsonObjectData, "premium_since");
 	}
 
-	template<> void parseObject(const nlohmann::json* jsonObjectData, OverWriteData& theData) {
-		theData.id = strtoull(getString(jsonObjectData, "id"));
+	void OverWriteData::parseObject(const nlohmann::json* jsonObjectData) {
+		this->id = strtoull(getString(jsonObjectData, "id"));
 
-		theData.allow = strtoull(getString(jsonObjectData, "allow"));
+		this->allow = strtoull(getString(jsonObjectData, "allow"));
 
-		theData.deny = strtoull(getString(jsonObjectData, "deny"));
+		this->deny = strtoull(getString(jsonObjectData, "deny"));
 
-		theData.type = static_cast<PermissionOverwritesType>(getUint8(jsonObjectData, "type"));
+		this->type = static_cast<PermissionOverwritesType>(getUint8(jsonObjectData, "type"));
 	}
 
-	template<> void parseObject(const nlohmann::json* jsonObjectData, ChannelData& theData) {
-		theData.flags |= setBool<int8_t, ChannelFlags>(theData.flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
+	void ChannelData::parseObject(const nlohmann::json* jsonObjectData) {
+		this->flags |= setBool<int8_t, ChannelFlags>(this->flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
 
-		theData.type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
+		this->type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
 
-		theData.memberCount = getUint32(jsonObjectData, "member_count");
+		this->memberCount = getUint32(jsonObjectData, "member_count");
 
-		theData.ownerId = strtoull(getString(jsonObjectData, "owner_id"));
+		this->ownerId = strtoull(getString(jsonObjectData, "owner_id"));
 
-		theData.id = strtoull(getString(jsonObjectData, "id"));
+		this->id = strtoull(getString(jsonObjectData, "id"));
 
-		theData.flags |= getUint8(jsonObjectData, "flags");
+		this->flags |= getUint8(jsonObjectData, "flags");
 
-		theData.parentId = strtoull(getString(jsonObjectData, "parent_id"));
+		this->parentId = strtoull(getString(jsonObjectData, "parent_id"));
 
-		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
+		this->guildId = strtoull(getString(jsonObjectData, "guild_id"));
 
-		theData.position = getUint32(jsonObjectData, "position");
+		this->position = getUint32(jsonObjectData, "position");
 
 		if (jsonObjectData->contains("permission_overwrites") && !(*jsonObjectData)["permission_overwrites"].is_null()) {
-			theData.permissionOverwrites.clear();
-			theData.permissionOverwrites.reserve((*jsonObjectData)["permission_overwrites"].size());
+			this->permissionOverwrites.clear();
+			this->permissionOverwrites.reserve((*jsonObjectData)["permission_overwrites"].size());
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
 				OverWriteData theDataNew{};
-				parseObject(&value, theDataNew);
-				theData.permissionOverwrites.push_back(std::move(theDataNew));
+				theDataNew.parseObject(&value);
+				this->permissionOverwrites.push_back(std::move(theDataNew));
 			}
 		}
 
-		theData.name = getString(jsonObjectData, "name");
+		this->name = getString(jsonObjectData, "name");
 	}
 
 	template<> void parseObject(const nlohmann::json* jsonObjectData, GuildData& theData) {
@@ -311,39 +311,137 @@ namespace DiscordCoreAPI {
 
 		theData.name = getString(jsonObjectData, "name");
 
+		auto theThreads = getVector<nlohmann::json>(jsonObjectData, "threads");
+		theData.threads.clear();
+		for (auto& value: theThreads) {
+			ChannelData newData{};
+			newData.parseObject(&value);
+			theData.threads.push_back(newData.id);
+		}
+
+		auto theStickers = getVector<nlohmann::json>(jsonObjectData, "stickers");
+		theData.stickers.clear();
+		for (auto& value: theStickers) {
+			StickerData newData{};
+			parseObject(&value, newData);
+			theData.stickers.push_back(newData.id);
+		}
+
+		auto theGuildScheduledEvents = getVector<nlohmann::json>(jsonObjectData, "guild_scheduled_events");
+		theData.guildScheduledEvents.clear();
+		for (auto& value: theGuildScheduledEvents) {
+			GuildScheduledEventData newData{};
+			parseObject(&value, newData);
+			theData.guildScheduledEvents.push_back(newData.id);
+		}
+
+		auto theStageInstaces = getVector<nlohmann::json>(jsonObjectData, "stage_instances");
+		theData.stageInstances.clear();
+		for (auto& value: theStageInstaces) {
+			StageInstanceData newData{};
+			parseObject(&value, newData);
+			theData.stageInstances.push_back(newData.id);
+		}
+
+		auto theEmoji = getVector<nlohmann::json>(jsonObjectData, "emoji");
+		theData.emoji.clear();
+		for (auto& value: theEmoji) {
+			EmojiData newData{};
+			parseObject(&value, newData);
+			theData.emoji.push_back(newData.id);
+		}
+
+		if (Guilds::configManager->doWeCacheRoles()) {
+			theData.roles.clear();
+			auto theRoles = getVector<nlohmann::json>(jsonObjectData, "roles");
+			for (auto& value: theRoles) {
+				std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>() };
+				newData->parseObject(&value);
+				theData.roles.push_back(newData->id);
+				auto theRole = newData.get();
+				theRole->insertRole(std::move(newData));
+			}
+		}
+
+		if (Guilds::configManager->doWeCacheGuildMembers()) {
+			theData.members.clear();
+			auto theMembers = getVector<nlohmann::json>(jsonObjectData, "members");
+			for (auto& value: theMembers) {
+				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
+				parseObject(&value, *newData);
+				newData->guildId = theData.id;
+				auto theMember = newData.get();
+				theData.members.push_back(newData->id);
+			}
+		}
+		
+		if (Guilds::configManager->doWeCacheGuildMembers()) {
+			auto theVoiceStates = getVector<nlohmann::json>(jsonObjectData, "voice_states");
+			for (auto& value: theVoiceStates) {
+				auto userId = strtoull(value["user_id"].get<std::string>());
+				if (!GuildMembers::cache.contains(theData.id)) {
+					GuildMembers::cache[theData.id] = GuildMemberHolder{};
+				}
+				if (!GuildMembers::cache[theData.id].cache.contains(userId)) {
+					GuildMembers::cache[theData.id].cache[userId] = std::make_unique<GuildMemberData>();
+				}
+				GuildMembers::cache[theData.id].cache[userId]->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
+			}
+		}
+
+		if (Guilds::configManager->doWeCacheChannels()) {
+			theData.channels.clear();
+			auto theChannels = getVector<nlohmann::json>(jsonObjectData, "channels");
+			for (auto& value: theChannels) {
+				std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>() };
+				newData->parseObject(&value);
+				newData->guildId = theData.id;
+				theData.channels.push_back(newData->id);
+				auto theChannel = newData.get();
+				theChannel->insertChannel(std::move(newData));
+			}
+		}
+	}
+
+	template<> void parseObject(const nlohmann::json* jsonObjectData, Guild& theData) {
+		if (jsonObjectData->contains("id") && !(*jsonObjectData)["id"].is_null()) {
+			theData.id = stoull((*jsonObjectData)["id"].get<std::string>());
+		}
+
+		auto theThreads = getVector<nlohmann::json>(jsonObjectData, "threads");
 		if (jsonObjectData->contains("threads") && !(*jsonObjectData)["threads"].is_null()) {
 			theData.stickers.clear();
 			for (auto& value: (*jsonObjectData)["threads"]) {
 				ChannelData newData{};
-				parseObject(&value, newData);
-				theData.threads.push_back(newData.id);
+				newData.parseObject(&value);
+				theData.threads.push_back(newData);
 			}
 		}
 
 		if (jsonObjectData->contains("stickers") && !(*jsonObjectData)["stickers"].is_null()) {
 			theData.stickers.clear();
 			for (auto& value: (*jsonObjectData)["stickers"]) {
-				StickerData newData{};
+				Sticker newData{};
 				parseObject(&value, newData);
-				theData.stickers.push_back(newData.id);
+				theData.stickers.push_back(newData);
 			}
 		}
 
 		if (jsonObjectData->contains("guild_scheduled_events") && !(*jsonObjectData)["guild_scheduled_events"].is_null()) {
 			theData.guildScheduledEvents.clear();
 			for (auto& value: (*jsonObjectData)["guild_scheduled_events"]) {
-				GuildScheduledEventData newData{};
+				GuildScheduledEvent newData{};
 				parseObject(&value, newData);
-				theData.guildScheduledEvents.push_back(newData.id);
+				theData.guildScheduledEvents.push_back(newData);
 			}
 		}
 
 		if (jsonObjectData->contains("stage_instance") && !(*jsonObjectData)["stage_instance"].is_null()) {
 			theData.stageInstances.clear();
 			for (auto& value: (*jsonObjectData)["stage_instance"]) {
-				StageInstanceData newData{};
+				StageInstance newData{};
 				parseObject(&value, newData);
-				theData.stageInstances.push_back(newData.id);
+				theData.stageInstances.push_back(newData);
 			}
 		}
 
@@ -361,7 +459,7 @@ namespace DiscordCoreAPI {
 			if (Guilds::configManager->doWeCacheRoles()) {
 				for (auto& value: (*jsonObjectData)["roles"]) {
 					std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>() };
-					parseObject(&value, *newData);
+					newData->parseObject(&value);
 					theData.roles.push_back(newData->id);
 					auto theRole = newData.get();
 					theRole->insertRole(std::move(newData));
@@ -400,7 +498,7 @@ namespace DiscordCoreAPI {
 			if (Guilds::configManager->doWeCacheChannels()) {
 				for (auto& value: (*jsonObjectData)["channels"]) {
 					std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>() };
-					parseObject(&value, *newData);
+					newData->parseObject(&value);
 					newData->guildId = theData.id;
 					theData.channels.push_back(newData->id);
 					auto theChannel = newData.get();
@@ -408,43 +506,13 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
-	}
 
-	template<> void parseObject(const nlohmann::json* jsonObjectData, Guild& theData) {
-		if (jsonObjectData->contains("id") && !(*jsonObjectData)["id"].is_null()) {
-			theData.id = stoull((*jsonObjectData)["id"].get<std::string>());
-		}
-
-		auto theThreadsVector = getVector<nlohmann::json>(jsonObjectData, "threads");
-		theData.stickers.clear();
-		for (auto& value: theThreadsVector) {
-			Channel newData{};
-			parseObject(&value, newData);
-			theData.threads.push_back(newData);
-		}
-
-		auto theStickerVector = getVector<nlohmann::json>(jsonObjectData, "stickers");
-		theData.stickers.clear();
-		for (auto& value: theStickerVector) {
-			Sticker newData{};
-			parseObject(&value, newData);
-			theData.stickers.push_back(newData);
-		}
-
-		auto theGuildScheduledEventsVector = getVector<nlohmann::json>(jsonObjectData, "guild_scheduled_events");
-		theData.guildScheduledEvents.clear();
-		for (auto& value: theGuildScheduledEventsVector) {
-			GuildScheduledEvent newData{};
-			parseObject(&value, newData);
-			theData.guildScheduledEvents.push_back(newData);
-		}
-
-		auto theStageInstanceVector = getVector<nlohmann::json>(jsonObjectData, "stage_instances");
-		theData.stageInstances.clear();
-		for (auto& value: theStageInstanceVector) {
-			StageInstance newData{};
-			parseObject(&value, newData);
-			theData.stageInstances.push_back(newData);
+		if (jsonObjectData->contains("presences") && !(*jsonObjectData)["presences"].is_null()) {
+			theData.presences.clear();
+			for (auto& value: (*jsonObjectData)["presences"]) {
+				PresenceUpdateData newData{ &value };
+				theData.presences[newData.user.id] = newData;
+			}
 		}
 
 		if (jsonObjectData->contains("afk_channel_id") && !(*jsonObjectData)["afk_channel_id"].is_null()) {
@@ -541,27 +609,6 @@ namespace DiscordCoreAPI {
 			theData.permissions = (*jsonObjectData)["permissions"].get<std::string>();
 		}
 
-		if (jsonObjectData->contains("emoji") && !(*jsonObjectData)["emoji"].is_null()) {
-			theData.roles.clear();
-			theData.roles.reserve((*jsonObjectData)["emoji"].size());
-			for (auto& value: (*jsonObjectData)["emoji"]) {
-				EmojiData newData{};
-				parseObject(&value, newData);
-				theData.emoji.push_back(newData.id);
-			}
-		}
-
-		if (jsonObjectData->contains("roles") && !(*jsonObjectData)["roles"].is_null()) {
-			theData.roles.clear();
-			theData.roles.reserve((*jsonObjectData)["roles"].size());
-			for (auto& value: (*jsonObjectData)["roles"]) {
-				std::unique_ptr<Role> newData{ std::make_unique<Role>() };
-				parseObject(&value, *newData);
-				theData.roles.push_back(newData->id);
-				Roles::insertRole(std::move(newData));
-			}
-		}
-
 		if (jsonObjectData->contains("afk_timeout") && !(*jsonObjectData)["afk_timeout"].is_null()) {
 			theData.afkTimeOut = (*jsonObjectData)["afk_timeout"].get<AfkTimeOutDurations>();
 		}
@@ -604,51 +651,6 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("member_count") && !(*jsonObjectData)["member_count"].is_null()) {
 			theData.memberCount = (*jsonObjectData)["member_count"].get<int32_t>();
-		}
-
-		if (jsonObjectData->contains("members") && !(*jsonObjectData)["members"].is_null()) {
-			theData.members.clear();
-			theData.members.reserve((*jsonObjectData)["members"].size());
-			for (auto& value: (*jsonObjectData)["members"]) {
-				std::unique_ptr<GuildMember> newData{ std::make_unique<GuildMember>() };
-				parseObject(&value, *newData);
-				newData->guildId = theData.id;
-				auto userId = newData->id;
-				theData.members.push_back(newData->id);
-			}
-		}
-
-		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
-			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				auto userId = strtoull(value["user_id"].get<std::string>());
-				if (!GuildMembers::cache.contains(theData.id)) {
-					GuildMembers::cache[theData.id] = GuildMemberHolder{};
-				}
-				if (!GuildMembers::cache[theData.id].cache.contains(userId)) {
-					GuildMembers::cache[theData.id].cache[userId] = std::make_unique<GuildMemberData>();
-				}
-				GuildMembers::cache[theData.id].cache[userId]->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
-			}
-		}
-
-		if (jsonObjectData->contains("channels") && !(*jsonObjectData)["channels"].is_null()) {
-			theData.channels.clear();
-			theData.channels.reserve((*jsonObjectData)["channels"].size());
-			for (auto& value: (*jsonObjectData)["channels"]) {
-				std::unique_ptr<Channel> newData{ std::make_unique<Channel>() };
-				parseObject(&value, *newData);
-				newData->guildId = theData.id;
-				theData.channels.push_back(newData->id);
-				Channels::insertChannel(std::move(newData));
-			}
-		}
-
-		if (jsonObjectData->contains("presences") && !(*jsonObjectData)["presences"].is_null()) {
-			theData.presences.clear();
-			for (auto& value: (*jsonObjectData)["presences"]) {
-				PresenceUpdateData newData{ &value };
-				theData.presences[newData.user.id] = newData;
-			}
 		}
 
 		if (jsonObjectData->contains("max_presences") && !(*jsonObjectData)["max_presences"].is_null()) {
@@ -878,7 +880,7 @@ namespace DiscordCoreAPI {
 			theData.permissionOverwrites.clear();
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
 				OverWriteData newData{};
-				DiscordCoreAPI::parseObject(&value, newData);
+				newData.parseObject(&value);
 				theData.permissionOverwrites[newData.id] = newData;
 			}
 		}
@@ -1217,7 +1219,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("thread") && !(*jsonObjectData)["thread"].is_null()) {
-			DiscordCoreAPI::parseObject(&(*jsonObjectData)["thread"], this->thread);
+			this->thread.parseObject(&(*jsonObjectData)["thread"]);
 		}
 	}
 
@@ -1397,7 +1399,7 @@ namespace DiscordCoreAPI {
 			this->permissionOverwrites.clear();
 			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
 				OverWriteData newData{};
-				DiscordCoreAPI::parseObject(&value, newData);
+				newData.parseObject(&value);
 				this->permissionOverwrites.push_back(newData);
 			}
 		}
@@ -1540,7 +1542,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("source_channel") && !(*jsonObjectData)["source_channel"].is_null()) {
-			DiscordCoreAPI::parseObject(&(*jsonObjectData)["source_channel"], this->sourceChannel);
+			this->sourceChannel.parseObject(&(*jsonObjectData)["source_channel"]);
 		}
 
 		if (jsonObjectData->contains("url") && !(*jsonObjectData)["url"].is_null()) {
@@ -1829,7 +1831,7 @@ namespace DiscordCoreAPI {
 			this->threads.clear();
 			for (auto& value: (*jsonObjectData)["threads"]) {
 				ChannelData newData{};
-				DiscordCoreAPI::parseObject(&value, newData);
+				newData.parseObject(&value);
 				this->threads.emplace_back(newData);
 			}
 		}
@@ -1850,7 +1852,7 @@ namespace DiscordCoreAPI {
 			this->threads.clear();
 			for (auto& value: (*jsonObjectData)["threads"]) {
 				ChannelData newData{};
-				DiscordCoreAPI::parseObject(&value, newData);
+				newData.parseObject(&value);
 				this->threads.emplace_back(newData);
 			}
 		}
@@ -2001,7 +2003,7 @@ namespace DiscordCoreAPI {
 		auto theVector = getVector<nlohmann::json>(jsonObjectData, "roles");
 		for (auto& value: theVector) {
 			RoleData newData{};
-			DiscordCoreAPI::parseObject(&value, newData);
+			newData.parseObject(&value);
 			theData.roles.emplace_back(newData);
 		}
 
@@ -2786,7 +2788,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("channel") && !(*jsonObjectData)["channel"].is_null()) {
-			DiscordCoreAPI::parseObject(&(*jsonObjectData)["channel"], this->channel);
+			this->channel.parseObject(&(*jsonObjectData)["channel"]);
 		}
 
 		if (jsonObjectData->contains("inviter") && !(*jsonObjectData)["inviter"].is_null()) {
@@ -2952,7 +2954,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("source_channel") && !(*jsonObjectData)["source_channel"].is_null()) {
-			DiscordCoreAPI::parseObject(&(*jsonObjectData)["source_channel"], this->sourceChannel);
+			this->sourceChannel.parseObject(&(*jsonObjectData)["source_channel"]);
 		}
 
 		if (jsonObjectData->contains("url") && !(*jsonObjectData)["url"].is_null()) {
@@ -3031,7 +3033,7 @@ namespace DiscordCoreAPI {
 			this->threads.reserve((*jsonObjectData)["threads"].size());
 			for (auto& value: (*jsonObjectData)["threads"]) {
 				ChannelData newData{};
-				DiscordCoreAPI::parseObject(&value, newData);
+				newData.parseObject(&value);
 				this->threads.push_back(newData);
 			}
 		}
@@ -3607,7 +3609,7 @@ namespace DiscordCoreAPI {
 			this->threads.clear();
 			for (auto& value: (*jsonObjectData)["threads"]) {
 				ChannelData newData{};
-				DiscordCoreAPI::parseObject(&value, newData);
+				newData.parseObject(&value);
 				this->threads.push_back(newData);
 			}
 		}
@@ -3828,7 +3830,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("thread") && !(*jsonObjectData)["thread"].is_null()) {
-			DiscordCoreAPI::parseObject(&(*jsonObjectData)["thread"], this->thread);
+			this->thread.parseObject(&(*jsonObjectData)["thread"]);
 		}
 	}
 
@@ -3982,7 +3984,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData->contains("thread") && !(*jsonObjectData)["thread"].is_null()) {
-			DiscordCoreAPI::parseObject(&(*jsonObjectData)["thread"], this->thread);
+			this->thread.parseObject(&(*jsonObjectData)["thread"]);
 		}
 	}
 
@@ -4157,7 +4159,7 @@ namespace DiscordCoreAPI {
 				auto newMap = value["channels"].get<std::map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					ChannelData newData{};
-					DiscordCoreAPI::parseObject(&value, newData);
+					newData.parseObject(&value);
 					this->resolved.channels[newData.id] = newData;
 				}
 			}
@@ -4166,7 +4168,7 @@ namespace DiscordCoreAPI {
 				auto newMap = value["roles"].get<std::map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					RoleData newData{};
-					DiscordCoreAPI::parseObject(&value, newData);
+					newData.parseObject(&value);
 					this->resolved.roles[newData.id] = newData;
 				}
 			}
