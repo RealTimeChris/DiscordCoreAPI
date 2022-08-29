@@ -330,7 +330,7 @@ namespace DiscordCoreAPI {
 			if (!GuildMembers::cache[guildId].cache.contains(guildMemberId)) {
 				GuildMembers::cache[guildId].cache.emplace(guildMemberId, std::move(guildMember));
 			} else {
-				GuildMembers::cache[guildId].cache[guildMemberId] = std::move(guildMember);
+				GuildMembers::cache[guildId].cache.insert_or_assign(guildMemberId, std::move(guildMember));
 			}
 		}
 	}

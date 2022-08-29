@@ -320,10 +320,7 @@ namespace DiscordCoreAPI {
 			if (!Roles::cache.contains(roleId)) {
 				Roles::cache.emplace(roleId, std::move(role));
 			} else {
-				Roles::cache[roleId] = std::move(role);
-			}
-			if (Roles::cache.size() % 1000 == 0) {
-				std::cout << "THE ROLE COUNT: " << Roles::cache.size() << std::endl;
+				Roles::cache.insert_or_assign(roleId, std::move(role));
 			}
 		}
 	}

@@ -270,7 +270,6 @@ namespace DiscordCoreAPI {
 		for (int32_t x = 0; x < this->configManager.getTotalShardCount(); ++x) {
 			if (!this->baseSocketAgentMap.contains(x % theWorkerCount)) {
 				this->baseSocketAgentMap[x % theWorkerCount] = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);
-				std::cout << "THE CURRENT BASE SOCKET INDEX: " << x % theWorkerCount << std::endl;
 			}
 			ConnectionPackage theData{};
 			theData.currentShard = x;

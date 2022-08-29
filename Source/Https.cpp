@@ -507,7 +507,7 @@ namespace DiscordCoreInternal {
 			while (true) {
 				auto theResult = theConnection.processIO(100000);
 				if (theResult != ProcessIOResult::No_Error) {
-					theData.responseCode = -1;
+					theConnection.doWeConnect = true;
 					doWeReturn = true;
 				}
 				switch (theData.theCurrentState) {

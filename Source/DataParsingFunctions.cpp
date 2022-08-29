@@ -372,6 +372,7 @@ namespace DiscordCoreAPI {
 				newData->guildId = theData.id;
 				auto theMember = newData.get();
 				theData.members.push_back(newData->id);
+				GuildMembers::insertGuildMember(std::move(newData));
 			}
 		}
 		
