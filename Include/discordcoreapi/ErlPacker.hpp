@@ -46,8 +46,7 @@ namespace DiscordCoreInternal {
 		Large_Big_Ext = 111,
 		Small_Atom_Ext = 115,
 		Map_Ext = 116,
-		Atom_Utf8_Ext = 118,
-		Small_Atom_Utf8_Ext = 119
+		Atom_Utf8_Ext = 118
 	};
 
 	class DiscordCoreAPI_Dll ErlPacker {
@@ -139,10 +138,10 @@ namespace DiscordCoreInternal {
 
 		nlohmann::json parseArray(uint32_t);
 
+		nlohmann::json parseSmallAtomExt();
+
 		nlohmann::json parseMapExt();
 
 		nlohmann::json parseAtomUtf8Ext();
-
-		nlohmann::json parseSmallAtomUtf8Ext();
 	};
 }// namespace DiscordCoreInternal
