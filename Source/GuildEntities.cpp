@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 			newData["managed"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Managed);
 			newData["position"] = value.position;
 			newData["hoist"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
-			newData["color"] = value.color;
+			newData["color"] = value.color.getIntColorValue();
 			newData["name"] = value.name;
 			data["roles"].emplace_back(newData);
 		}
@@ -154,7 +154,6 @@ namespace DiscordCoreAPI {
 		std::string theStringNew{ "https://cdn.discordapp.com/" };
 		theStringNew += "icons/" + std::to_string(this->id) + "/" + this->icon.getIconHash() + ".png";
 		return theStringNew;
-		
 	}
 
 	bool GuildData::areWeConnected() {
@@ -254,7 +253,7 @@ namespace DiscordCoreAPI {
 		return theStringNew;
 	}
 
-	std::string Guild::getBannerUrl() noexcept{
+	std::string Guild::getBannerUrl() noexcept {
 		std::string theStringNew{ "https://cdn.discordapp.com/" };
 		theStringNew += "banners/" + std::to_string(this->id) + "/" + this->banner.getIconHash() + ".png";
 		return theStringNew;
