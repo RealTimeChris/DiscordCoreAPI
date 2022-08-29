@@ -71,7 +71,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
    
 ## A Unified "Input-Event" System
 - User interactions (Application Commands, Message Commands, User Commands) are accepted via the `DiscordCoreAPI::EventManager::onInputEventCreation` event.
-- They can all be responded to using the `DiscordCoreAPI::InputEvents::respondToInputEvent()` function.
+- They can all be responded to using the `DiscordCoreAPI::InputEvents::respondToInputEventAsync()` function.
 - Alternatively you can implement your own input-event handling by using the raw `DiscordCoreAPI::EventManager::onInteractionCreation` or `DiscordCoreAPI::EventManager::onMessageCreation` events.
 ```cpp
 DiscordCoreAPI::EmbedData newEmbed{};
