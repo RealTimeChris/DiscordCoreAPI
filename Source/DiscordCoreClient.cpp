@@ -140,7 +140,6 @@ namespace DiscordCoreAPI {
 		commandData.alwaysRegister = alwaysRegister;
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 		this->commandsToRegister.push_back(commandData);
-		std::cout << "THE FUNCTION NAME: " << functionNames[0] << std::endl;
 	}
 
 	void DiscordCoreClient::registerFunctionsInternal() {
