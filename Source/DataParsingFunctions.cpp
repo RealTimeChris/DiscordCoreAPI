@@ -358,46 +358,54 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("roles") && !(*jsonObjectData)["roles"].is_null()) {
 			theData.roles.clear();
-			for (auto& value: (*jsonObjectData)["roles"]) {
-				std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>() };
-				parseObject(&value, *newData);
-				theData.roles.push_back(newData->id);
-				auto theRole = newData.get();
-				theRole->insertRole(std::move(newData));
+			if (Guilds::configManager->doWeCacheRoles()) {
+				for (auto& value: (*jsonObjectData)["roles"]) {
+					std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>() };
+					parseObject(&value, *newData);
+					theData.roles.push_back(newData->id);
+					auto theRole = newData.get();
+					theRole->insertRole(std::move(newData));
+				}
 			}
 		}
 
 		if (jsonObjectData->contains("members") && !(*jsonObjectData)["members"].is_null()) {
 			theData.members.clear();
-			for (auto& value: (*jsonObjectData)["members"]) {
-				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
-				parseObject(&value, *newData);
-				newData->guildId = theData.id;
-				auto theMember = newData.get();
-				theData.members.push_back(newData.release());
+			if (Guilds::configManager->doWeCacheGuildMembers()) {
+				for (auto& value: (*jsonObjectData)["members"]) {
+					std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
+					parseObject(&value, *newData);
+					newData->guildId = theData.id;
+					auto theMember = newData.get();
+					theData.members.push_back(newData->id);
+				}
 			}
 		}
 
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
 				auto userId = strtoull(value["user_id"].get<std::string>());
-				for (auto& value02: theData.members) {
-					if (value02->id == userId) {
-						value02->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
-					}
+				if (!GuildMembers::cache.contains(theData.id)) {
+					GuildMembers::cache[theData.id] = GuildMemberHolder{};
 				}
+				if (!GuildMembers::cache[theData.id].cache.contains(userId)) {
+					GuildMembers::cache[theData.id].cache[userId] = std::make_unique<GuildMemberData>();
+				}
+				GuildMembers::cache[theData.id].cache[userId]->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
 			}
 		}
 
 		if (jsonObjectData->contains("channels") && !(*jsonObjectData)["channels"].is_null()) {
 			theData.channels.clear();
-			for (auto& value: (*jsonObjectData)["channels"]) {
-				std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>() };
-				parseObject(&value, *newData);
-				newData->guildId = theData.id;
-				theData.channels.push_back(newData->id);
-				auto theChannel = newData.get();
-				theChannel->insertChannel(std::move(newData));
+			if (Guilds::configManager->doWeCacheChannels()) {
+				for (auto& value: (*jsonObjectData)["channels"]) {
+					std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>() };
+					parseObject(&value, *newData);
+					newData->guildId = theData.id;
+					theData.channels.push_back(newData->id);
+					auto theChannel = newData.get();
+					theChannel->insertChannel(std::move(newData));
+				}
 			}
 		}
 	}
@@ -606,18 +614,20 @@ namespace DiscordCoreAPI {
 				parseObject(&value, *newData);
 				newData->guildId = theData.id;
 				auto userId = newData->id;
-				theData.members.push_back(newData.release());
+				theData.members.push_back(newData->id);
 			}
 		}
 
 		if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				auto userId = stoull(value["user_id"].get<std::string>());
-				for (auto& value02: theData.members) {
-					if (value02->id == userId) {
-						value02->voiceChannelId = stoull(value["channel_id"].get<std::string>());
-					}
+				auto userId = strtoull(value["user_id"].get<std::string>());
+				if (!GuildMembers::cache.contains(theData.id)) {
+					GuildMembers::cache[theData.id] = GuildMemberHolder{};
 				}
+				if (!GuildMembers::cache[theData.id].cache.contains(userId)) {
+					GuildMembers::cache[theData.id].cache[userId] = std::make_unique<GuildMemberData>();
+				}
+				GuildMembers::cache[theData.id].cache[userId]->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
 			}
 		}
 

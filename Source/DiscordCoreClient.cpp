@@ -140,6 +140,7 @@ namespace DiscordCoreAPI {
 		commandData.alwaysRegister = alwaysRegister;
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 		this->commandsToRegister.push_back(commandData);
+		std::cout << "THE FUNCTION NAME: " << functionNames[0] << std::endl;
 	}
 
 	void DiscordCoreClient::registerFunctionsInternal() {
@@ -214,8 +215,10 @@ namespace DiscordCoreAPI {
 				this->baseSocketAgentMap[static_cast<int32_t>(floor(static_cast<float>(theData.currentShard) / static_cast<float>(this->configManager.getTotalShardCount()) *
 											 this->baseSocketAgentMap.size()))]
 					->connect(theData);
-				if (this->theConnections.size() == 0 && this->configManager.doWePrintGeneralSuccessMessages()) {
-					cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << endl << endl;
+				if (this->theConnections.size() == 0){
+					if (this->configManager.doWePrintGeneralSuccessMessages()) {
+						cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << endl << endl;
+					}
 					this->registerFunctionsInternal();
 				}
 			}
@@ -323,11 +326,6 @@ namespace DiscordCoreAPI {
 			if (value.theThread.joinable()) {
 				value.theThread.request_stop();
 				value.theThread.join();
-			}
-		}
-		for (auto& [key01, value01]: Guilds::cache) {
-			for (auto& value02: value01->members) {
-				delete value02;
 			}
 		}
 	}

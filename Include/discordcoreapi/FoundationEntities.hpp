@@ -1960,16 +1960,16 @@ namespace DiscordCoreAPI {
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
 		std::vector<Snowflake> guildScheduledEvents{};///< Array of Guild channels.
-		std::vector<GuildMemberData*> members{};///< The guild members.
 		std::vector<Snowflake> stageInstances{};///< Array of Guild channels.
 		std::vector<Snowflake> stickers{};///< Array of Guild channels.
 		std::vector<Snowflake> channels{};///< Array of Guild channels.
 		std::vector<Snowflake> threads{};///< Array of Guild channels.
+		std::vector<Snowflake> members{};///< The guild members.
 		std::vector<Snowflake> roles{};///< Array of Guild roles.
 		std::vector<Snowflake> emoji{};///< Array of Guild channels.
 		int32_t memberCount{ 0 };///< Member count.
-		Snowflake ownerId{};///< User id of the Guild's owner.
 		StringWrapper name{};///< The Guild's name.
+		Snowflake ownerId{};///< User id of the Guild's owner.
 		int8_t flags{ 0 };///< Guild flags.
 		IconHash icon{};///< Url to the Guild's icon.
 

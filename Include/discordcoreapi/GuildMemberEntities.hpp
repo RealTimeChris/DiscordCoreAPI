@@ -142,6 +142,11 @@ namespace DiscordCoreAPI {
 		std::vector<GuildMember> theGuildMembers{};
 	};
 
+	struct GuildMemberHolder {
+		std::map<Snowflake, std::unique_ptr<GuildMemberData>> cache{};
+		Snowflake guildId{};
+	};
+
 	/**@}*/
 
 	/**
@@ -151,6 +156,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
+		template<typename ReturnType> friend void parseObject(const nlohmann::json* jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class GuildMemberData;
@@ -209,6 +215,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static std::map<Snowflake, GuildMemberHolder> cache;
 		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;
 	};
