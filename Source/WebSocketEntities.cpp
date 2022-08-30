@@ -642,7 +642,7 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 												guildId = stoull(payload["d"]["id"].get<std::string>());
 											}
-											DiscordCoreAPI::parseObject(payload, *theGuild);
+											DiscordCoreAPI::parseObject(payload["d"], *theGuild);
 											if (DiscordCoreAPI::Guilds::configManager->doWeCacheGuilds() ||
 												this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };

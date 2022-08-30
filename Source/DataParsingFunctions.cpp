@@ -885,7 +885,7 @@ namespace DiscordCoreAPI {
 			for (auto& value: jsonObjectData["permission_overwrites"]) {
 				OverWriteData newData{};
 				DiscordCoreAPI::parseObject(value, newData);
-				theData.permissionOverwrites[newData.id] = newData;
+				theData.permissionOverwrites.emplace_back(newData);
 			}
 		}
 
