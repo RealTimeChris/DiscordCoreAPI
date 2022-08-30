@@ -290,8 +290,7 @@ namespace DiscordCoreAPI {
 		theData.name = getString(jsonObjectData, "name");
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectDataNew, GuildData& theData) {
-		nlohmann::json& jsonObjectData = jsonObjectDataNew["d"];
+	template<> void parseObject(nlohmann::json& jsonObjectData, GuildData& theData) {
 		theData.flags |= setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::WidgetEnabled, DiscordCoreAPI::getBool(jsonObjectData, "widget_enabled"));
 
 		theData.flags |= setBool<int8_t, GuildFlags>(theData.flags, GuildFlags::Unavailable, DiscordCoreAPI::getBool(jsonObjectData, "unavailable"));

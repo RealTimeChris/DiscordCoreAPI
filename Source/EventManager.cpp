@@ -208,6 +208,18 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
+	template<> void parseObject(nlohmann::json& theJsonData, OnVoiceServerUpdateData& theData) {
+		if (theJsonData["d"].contains("endpoint") && !theJsonData["d"]["endpoint"].is_null()) {
+			theData.endpoint = theJsonData["d"]["endpoint"].get<std::string>();
+		}
+		if (theJsonData["d"].contains("guild_id") && !theJsonData["d"]["guild_id"].is_null()) {
+			theData.guildId = stoull(theJsonData["d"]["guild_id"].get<std::string>());
+		}
+		if (theJsonData["d"].contains("token") && !theJsonData["d"]["token"].is_null()) {
+			theData.token = theJsonData["d"]["token"].get<std::string>();
+		}
+	};
+
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnApplicationCommandPermissionsUpdateData> handler) {
 		return this->onApplicationCommandPermissionsUpdateEvent.add(std::move(handler));

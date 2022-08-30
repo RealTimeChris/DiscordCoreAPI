@@ -212,7 +212,8 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::No_Error;
 	}
 
-	ConnectionResult SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew) noexcept {
+	ConnectionResult SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
+		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
 		this->rawInputBuffer.resize(this->maxBufferSize);
 		std::string stringNew{};
@@ -471,7 +472,9 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						this->inputBuffer.append(this->rawInputBuffer.data(), this->rawInputBuffer.data() + readBytes);
 						this->bytesRead += readBytes;
-						this->handleBuffer(this);
+						if (!this->areWeAStandaloneSocket) {
+							this->handleBuffer(this);
+						}
 					}
 					returnValueFinal = true;
 					break;
