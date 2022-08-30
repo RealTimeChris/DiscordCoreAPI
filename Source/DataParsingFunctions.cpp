@@ -317,7 +317,7 @@ namespace DiscordCoreAPI {
 
 		this->name = getString(jsonObjectData, "name");
 
-		/*
+		
 		auto theThreads = getVector<nlohmann::json>(jsonObjectData, "threads");
 		this->threads.clear();
 		this->threads.reserve(theThreads.size());
@@ -362,7 +362,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreAPI::parseObject(value, newData);
 			this->emoji.push_back(newData.id);
 		}
-		*/
+		
 		if (Guilds::configManager->doWeCacheRoles()) {
 			this->roles.clear();
 			for (auto& value: jsonObjectData["roles"]) {
@@ -372,7 +372,7 @@ namespace DiscordCoreAPI {
 				Roles::insertRole(std::move(newData));
 			}
 		}
-		/*
+		
 		if (Guilds::configManager->doWeCacheGuildMembers()) {
 			this->members.clear();
 			auto theMembers = getVector<nlohmann::json>(jsonObjectData, "members");
@@ -400,7 +400,7 @@ namespace DiscordCoreAPI {
 				GuildMembers::cache[this->id].cache[userId]->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
 			}
 		}
-		*/
+		
 		if (Guilds::configManager->doWeCacheChannels()) {
 			this->channels.clear();
 			for (auto& value: jsonObjectData["channels"]) {
