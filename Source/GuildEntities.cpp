@@ -243,7 +243,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void Guild::parseObject(const nlohmann::json* theData) {
+	void Guild::parseObject(nlohmann::json& theData) {
 		DiscordCoreAPI::parseObject(theData, *this);
 	}
 
@@ -269,12 +269,12 @@ namespace DiscordCoreAPI {
 		return this->theGuilds;
 	}
 
-	GuildVector& GuildVector::operator=(const nlohmann::json* jsonObjectData) {
+	GuildVector& GuildVector::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	GuildVector::GuildVector(const nlohmann::json* jsonObjectData) {
+	GuildVector::GuildVector(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -848,13 +848,13 @@ namespace DiscordCoreAPI {
 
 	StopWatch theStopWatch{ 5s };
 	void Guilds::insertGuild(std::unique_ptr<GuildData> guild) {
-		std::unique_lock theLock{ Guilds::theMutex };
 		if (guild->id == 0) {
 			return;
 		}
-		guild->discordCoreClient = Guilds::discordCoreClient;
-		guild->initialize();
 		if (Guilds::configManager->doWeCacheGuilds()) {
+			guild->discordCoreClient = Guilds::discordCoreClient;
+			std::unique_lock theLock{ Guilds::theMutex };
+			guild->initialize();
 			auto guildId = guild->id;
 			if (!Guilds::cache.contains(guildId)) {
 				Guilds::cache.emplace(guildId, std::move(guild));
@@ -862,7 +862,7 @@ namespace DiscordCoreAPI {
 				Guilds::cache.insert_or_assign(guildId, std::move(guild));
 			}
 			if (Guilds::cache.size() % 1000 == 0) {
-				//std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
+				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 			}
 		}
 	}

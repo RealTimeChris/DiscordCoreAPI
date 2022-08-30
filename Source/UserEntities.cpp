@@ -72,7 +72,7 @@ namespace DiscordCoreAPI {
 		*this = dataNew;
 	}
 
-	void User::parseObject(const nlohmann::json* theData) {
+	void User::parseObject(nlohmann::json& theData) {
 		DiscordCoreAPI::parseObject(theData, *this);
 	}
 
@@ -80,12 +80,12 @@ namespace DiscordCoreAPI {
 		return this->theUsers;
 	}
 
-	UserVector& UserVector::operator=(const nlohmann::json* jsonObjectData) {
+	UserVector& UserVector::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	UserVector::UserVector(const nlohmann::json* jsonObjectData) {
+	UserVector::UserVector(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -94,7 +94,7 @@ namespace DiscordCoreAPI {
 			nlohmann::json payload = dataPackage;
 			std::string theString{};
 			uint32_t shardId = (dataPackage.guildId >> 22) % this->baseSocketAgent->configManager->getTotalShardCount();
-			this->baseSocketAgent->theShardMap[shardId]->stringifyJsonData(&payload, theString,
+			this->baseSocketAgent->theShardMap[shardId]->stringifyJsonData(payload, theString,
 				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->theShardMap[shardId].get())->dataOpCode);
 			this->baseSocketAgent->theShardMap[shardId]->sendMessage(theString, true);
 		}
@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
 			nlohmann::json payload = dataPackage;
 			std::string theString{};
 			uint32_t shardId = 0;
-			this->baseSocketAgent->theShardMap[shardId]->stringifyJsonData(&payload, theString,
+			this->baseSocketAgent->theShardMap[shardId]->stringifyJsonData(payload, theString,
 				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->theShardMap[shardId].get())->dataOpCode);
 			this->baseSocketAgent->theShardMap[shardId]->sendMessage(theString, true);
 		}
@@ -248,6 +248,9 @@ namespace DiscordCoreAPI {
 				Users::cache.emplace(userId, std::move(user));
 			} else {
 				Users::cache.insert_or_assign(userId, std::move(user));
+			}
+			if (Users::cache.size() % 1000 == 0) {
+				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
 			}
 		}
 	}

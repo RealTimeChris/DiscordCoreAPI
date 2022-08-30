@@ -114,12 +114,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	Role& Role::operator=(const nlohmann::json* jsonObjectData) {
+	Role& Role::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	Role::Role(const nlohmann::json* jsonObjectData) {
+	Role::Role(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -127,12 +127,12 @@ namespace DiscordCoreAPI {
 		return this->theRoles;
 	}
 
-	RoleVector& RoleVector::operator=(const nlohmann::json* jsonObjectData) {
+	RoleVector& RoleVector::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	RoleVector::RoleVector(const nlohmann::json* jsonObjectData) {
+	RoleVector::RoleVector(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -311,16 +311,21 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::insertRole(std::unique_ptr<RoleData> role) {
-		std::unique_lock theLock{ Roles::theMutex };
 		if (role->id == 0) {
 			return;
 		}
 		if (Roles::configManager->doWeCacheRoles()) {
 			auto roleId = role->id;
-			if (!Roles::cache.contains(roleId)) {
+			auto theResult = Roles::cache.find(roleId);
+			if (theResult == Roles::cache.end()) {
+				std::unique_lock theLock{ Roles::theMutex };
 				Roles::cache.emplace(roleId, std::move(role));
 			} else {
+				std::unique_lock theLock{ Roles::theMutex };
 				Roles::cache.insert_or_assign(roleId, std::move(role));
+			}
+			if (Roles::cache.size() % 1000 == 0) {
+				std::cout << "ROLE COUNT: " << Roles::cache.size() << std::endl;
 			}
 		}
 	}

@@ -96,12 +96,12 @@ namespace DiscordCoreAPI {
 		Channels::insertChannel(std::move(other));
 	}
 
-	Channel& Channel::operator=(const nlohmann::json* jsonObjectData) {
+	Channel& Channel::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	Channel::Channel(const nlohmann::json* jsonObjectData) {
+	Channel::Channel(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -157,12 +157,12 @@ namespace DiscordCoreAPI {
 		return this->theChannels;
 	}
 
-	ChannelVector& ChannelVector::operator=(const nlohmann::json* jsonObjectData) {
+	ChannelVector& ChannelVector::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	ChannelVector::ChannelVector(const nlohmann::json* jsonObjectData) {
+	ChannelVector::ChannelVector(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -388,16 +388,21 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::insertChannel(std::unique_ptr<ChannelData> channel) {
-		std::unique_lock theLock{ Channels::theMutex };
 		if (channel->id == 0) {
 			return;
 		}
 		if (Channels::configManager->doWeCacheChannels()) {
 			auto channelId = channel->id;
-			if (!Channels::cache.contains(channelId)) {
+			auto theResult = Channels::cache.find(channelId);
+			if (theResult == Channels::cache.end()) {
+				std::unique_lock theLock{ Channels::theMutex };
 				Channels::cache.emplace(channelId, std::move(channel));
 			} else {
+				std::unique_lock theLock{ Channels::theMutex };
 				Channels::cache.insert_or_assign(channelId, std::move(channel));
+			}
+			if (Channels::cache.size() % 1000 == 0) {
+				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
 			}
 		}
 	}
