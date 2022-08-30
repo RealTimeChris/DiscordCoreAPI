@@ -35,32 +35,26 @@ namespace DiscordCoreAPI {
 	  public:
 		AutoModerationRule() noexcept = default;
 
-		AutoModerationRule& operator=(nlohmann::json& jsonObjectData);
-
-		AutoModerationRule(nlohmann::json& jsonObjectData);
-
 		virtual ~AutoModerationRule() noexcept = default;
-
-		void parseObject(nlohmann::json& jsonObjectData);
 	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, AutoModerationRule& theData);
 
 	class DiscordCoreAPI_Dll AutoModerationRuleVector {
 	  public:
+		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
+
 		AutoModerationRuleVector() noexcept = default;
 
 		operator std::vector<AutoModerationRule>();
 
-		AutoModerationRuleVector& operator=(nlohmann::json& jsonObjectData);
-
-		AutoModerationRuleVector(nlohmann::json& jsonObjectData);
-
 		virtual ~AutoModerationRuleVector() noexcept = default;
-
-		void parseObject(nlohmann::json& jsonObjectData);
 
 	  protected:
 		std::vector<AutoModerationRule> theAutoModerationRules{};
 	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, AutoModerationRuleVector& theData);
 
 	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild .
 	struct DiscordCoreAPI_Dll ListAutoModerationRulesForGuildData {
@@ -104,14 +98,10 @@ namespace DiscordCoreAPI {
 
 		AutoModerationActionExecutionEventData() noexcept = default;
 
-		AutoModerationActionExecutionEventData& operator=(nlohmann::json& jsonObjectData);
-
-		AutoModerationActionExecutionEventData(nlohmann::json& jsonObjectData);
-
 		virtual ~AutoModerationActionExecutionEventData() noexcept = default;
-
-		void parseObject(nlohmann::json& jsonObjectData);
 	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData& theData);
 
 	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.
 	struct DiscordCoreAPI_Dll ModifyAutoModerationRuleData {

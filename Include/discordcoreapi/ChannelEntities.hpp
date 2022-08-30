@@ -160,10 +160,6 @@ namespace DiscordCoreAPI {
 
 		Channel() noexcept = default;
 
-		Channel& operator=(nlohmann::json& jsonObjectData);
-
-		Channel(nlohmann::json& jsonObjectData);
-
 		Channel& operator=(ChannelData&&) noexcept;
 
 		Channel(ChannelData&&) noexcept;
@@ -174,30 +170,26 @@ namespace DiscordCoreAPI {
 
 		~Channel() noexcept = default;
 
-		void parseObject(nlohmann::json& jsonObjectData);
-
 		std::string getIconUrl() noexcept;
 	};
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, Channel& theData);
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, Channel& theData);
 
 	class DiscordCoreAPI_Dll ChannelVector {
 	  public:
+		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
+
 		ChannelVector() noexcept = default;
 
 		operator std::vector<Channel>();
 
-		ChannelVector& operator=(nlohmann::json& jsonObjectData);
-
-		ChannelVector(nlohmann::json& jsonObjectData);
-
 		virtual ~ChannelVector() noexcept = default;
-
-		void parseObject(nlohmann::json& jsonObjectData);
 
 	  protected:
 		std::vector<Channel> theChannels{};
 	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ChannelVector& theData);
 
 	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {

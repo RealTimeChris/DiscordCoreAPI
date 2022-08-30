@@ -60,7 +60,6 @@ namespace DiscordCoreAPI {
 		data["flags"] = this->flags;
 		data["tts"] = this->tts;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	ExecuteWebHookData& ExecuteWebHookData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
@@ -205,26 +204,8 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	WebHook& WebHook::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	WebHook::WebHook(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	WebHookVector::operator std::vector<WebHook>() {
 		return this->theWebHooks;
-	}
-
-	WebHookVector& WebHookVector::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	WebHookVector::WebHookVector(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void WebHooks::initialize(DiscordCoreInternal::HttpsClient* theClient) {

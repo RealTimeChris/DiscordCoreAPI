@@ -243,10 +243,6 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void Guild::parseObject(nlohmann::json& theData) {
-		DiscordCoreAPI::parseObject(theData, *this);
-	}
-
 	std::string Guild::getDiscoverySplashUrl() noexcept {
 		std::string theStringNew{ "https://cdn.discordapp.com/" };
 		theStringNew += "discovery-splashes/" + std::to_string(this->id) + "/" + this->discoverySplash.getIconHash() + ".png";
@@ -267,15 +263,6 @@ namespace DiscordCoreAPI {
 
 	GuildVector::operator std::vector<Guild>() {
 		return this->theGuilds;
-	}
-
-	GuildVector& GuildVector::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildVector::GuildVector(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	ModifyGuildData::ModifyGuildData(Guild dataPackage) {

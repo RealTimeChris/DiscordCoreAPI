@@ -32,10 +32,6 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	void UserData::insertUser(std::unique_ptr<UserData> other) {
-		Users::insertUser(std::move(other));
-	}
-
 	std::string UserData::getAvatarUrl() {
 		std::string theStringNew{ "https://cdn.discordapp.com/" };
 		theStringNew += "avatars/" + std::to_string(this->id) + "/" + this->avatar.getIconHash();
@@ -72,21 +68,8 @@ namespace DiscordCoreAPI {
 		*this = dataNew;
 	}
 
-	void User::parseObject(nlohmann::json& theData) {
-		DiscordCoreAPI::parseObject(theData, *this);
-	}
-
 	UserVector::operator std::vector<User>() {
 		return this->theUsers;
-	}
-
-	UserVector& UserVector::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	UserVector::UserVector(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData& dataPackage) {

@@ -22,15 +22,6 @@
 
 namespace DiscordCoreAPI {
 
-	StageInstance& StageInstance::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	StageInstance::StageInstance(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	void StageInstances::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		StageInstances::httpsClient = theClient;
 	}

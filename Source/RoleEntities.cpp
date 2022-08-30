@@ -76,10 +76,6 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	void RoleData::insertRole(std::unique_ptr<RoleData> theRole) {
-		Roles::insertRole(std::move(theRole));
-	}
-
 	Role& Role::operator=(RoleData&& other) noexcept {
 		if (this != &other) {
 			this->unicodeEmoji = std::move(other.unicodeEmoji);
@@ -116,26 +112,8 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	Role& Role::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	Role::Role(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	RoleVector::operator std::vector<Role>() {
 		return this->theRoles;
-	}
-
-	RoleVector& RoleVector::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	RoleVector::RoleVector(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void Roles::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {

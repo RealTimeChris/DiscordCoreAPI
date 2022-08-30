@@ -56,10 +56,6 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	void GuildMemberData::insertGuildMember(std::unique_ptr<GuildMemberData> other) {
-		GuildMembers::insertGuildMember(std::move(other));
-	}
-
 	std::string GuildMemberData::getAvatarUrl() {
 		if (this->avatar.getIconHash() != "") {
 			std::string theStringNew{ "https://cdn.discordapp.com/" };
@@ -116,21 +112,8 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	void GuildMember::parseObject(nlohmann::json& jsonObjectData) {
-		DiscordCoreAPI::parseObject(jsonObjectData, *this);
-	}
-
 	GuildMemberVector::operator std::vector<GuildMember>() {
 		return this->theGuildMembers;
-	}
-
-	GuildMemberVector& GuildMemberVector::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	GuildMemberVector::GuildMemberVector(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {

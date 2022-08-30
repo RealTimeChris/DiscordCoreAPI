@@ -49,26 +49,8 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	Reaction& Reaction::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	Reaction::Reaction(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	ReactionVector::operator std::vector<Reaction>() {
 		return this->theReactions;
-	}
-
-	ReactionVector& ReactionVector::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	ReactionVector::ReactionVector(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void Reactions::initialize(DiscordCoreInternal::HttpsClient* theClient) {

@@ -49,15 +49,6 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	AutoModerationActionExecutionEventData& AutoModerationActionExecutionEventData::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	AutoModerationActionExecutionEventData::AutoModerationActionExecutionEventData(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	ModifyAutoModerationRuleData::operator std::string() {
 		nlohmann::json data{};
 		data["actions"];
@@ -85,26 +76,8 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	AutoModerationRule& AutoModerationRule::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	AutoModerationRule::AutoModerationRule(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	AutoModerationRuleVector::operator std::vector<AutoModerationRule>() {
 		return this->theAutoModerationRules;
-	}
-
-	AutoModerationRuleVector& AutoModerationRuleVector::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	AutoModerationRuleVector::AutoModerationRuleVector(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void AutoModerationRules::initialize(DiscordCoreInternal::HttpsClient* HttpsClientNew) {

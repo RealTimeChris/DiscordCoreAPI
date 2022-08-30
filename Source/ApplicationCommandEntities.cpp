@@ -115,20 +115,10 @@ namespace DiscordCoreAPI {
 			newDataArray.emplace_back(newData);
 		}
 		return newDataArray.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	ApplicationCommandVector::operator std::vector<ApplicationCommand>() {
 		return this->theApplicationCommands;
-	}
-
-	ApplicationCommandVector& ApplicationCommandVector::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	ApplicationCommandVector::ApplicationCommandVector(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void ApplicationCommands::initialize(DiscordCoreInternal::HttpsClient* theClient) {

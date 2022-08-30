@@ -139,32 +139,26 @@ namespace DiscordCoreAPI {
 
 		Role(const RoleData& other) noexcept;
 
-		Role& operator=(nlohmann::json& jsonObjectData);
-
-		Role(nlohmann::json& jsonObjectData);
-
 		virtual ~Role() noexcept = default;
-
-		void parseObject(nlohmann::json& jsonObjectData);
 	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, Role& theData);
 
 	class DiscordCoreAPI_Dll RoleVector {
 	  public:
+		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
+
 		RoleVector() noexcept = default;
 
 		operator std::vector<Role>();
 
-		RoleVector& operator=(nlohmann::json& jsonObjectData);
-
-		RoleVector(nlohmann::json& jsonObjectData);
-
 		virtual ~RoleVector() noexcept = default;
-
-		void parseObject(nlohmann::json& jsonObjectData);
 
 	  protected:
 		std::vector<Role> theRoles{};
 	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, RoleVector& theData);
 
 	/**@}*/
 

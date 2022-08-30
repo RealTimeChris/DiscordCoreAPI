@@ -118,29 +118,25 @@ namespace DiscordCoreAPI {
 		GuildMember(const GuildMemberData&) noexcept;
 
 		virtual ~GuildMember() noexcept = default;
-
-		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, DiscordCoreAPI::GuildMember& theGuildMember);
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, DiscordCoreAPI::GuildMember& theGuildMember);
 
 	class DiscordCoreAPI_Dll GuildMemberVector {
 	  public:
+		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
+
 		GuildMemberVector() noexcept = default;
 
 		operator std::vector<GuildMember>();
 
-		GuildMemberVector& operator=(nlohmann::json& jsonObjectData);
-
-		GuildMemberVector(nlohmann::json& jsonObjectData);
-
 		virtual ~GuildMemberVector() noexcept = default;
-
-		void parseObject(nlohmann::json& jsonObjectData);
 
 	  protected:
 		std::vector<GuildMember> theGuildMembers{};
 	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, GuildMemberVector& theGuildMember);
 
 	struct GuildMemberHolder {
 		std::map<Snowflake, std::unique_ptr<GuildMemberData>> cache{};
@@ -156,7 +152,8 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		template<typename ReturnType> friend void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class GuildMemberData;

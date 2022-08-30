@@ -312,8 +312,6 @@ namespace DiscordCoreAPI {
 
 		Guild(const GuildData&) noexcept;
 
-		void parseObject(nlohmann::json& jsonObjectData);
-
 		std::string getDiscoverySplashUrl() noexcept;
 
 		std::string getBannerUrl() noexcept;
@@ -323,27 +321,25 @@ namespace DiscordCoreAPI {
 		virtual ~Guild() noexcept = default;
 	};
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, Guild& theData);
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, Guild& theData);
 
 	class DiscordCoreAPI_Dll GuildVector {
 	  public:
+		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
+
 		friend class Guilds;
 
 		GuildVector() noexcept = default;
 
 		operator std::vector<Guild>();
 
-		GuildVector& operator=(nlohmann::json& jsonObjectData);
-
-		GuildVector(nlohmann::json& jsonObjectData);
-
 		virtual ~GuildVector() noexcept = default;
-
-		void parseObject(nlohmann::json& jsonObjectData);
 
 	  protected:
 		std::vector<Guild> theGuilds{};
 	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, GuildVector& theData);
 
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildData {
@@ -384,7 +380,8 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		template<typename ReturnType> friend void DiscordCoreAPI::parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
+		friend DiscordCoreAPI_Dll void DiscordCoreAPI::parseObject(nlohmann::json& jsonObjectData, GuildData& theData);
+		friend DiscordCoreAPI_Dll void DiscordCoreAPI::parseObject(nlohmann::json& jsonObjectData, Guild& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreClient;

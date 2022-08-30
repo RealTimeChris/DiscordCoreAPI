@@ -147,26 +147,8 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	Message& Message::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	Message::Message(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	MessageVector::operator std::vector<Message>() {
 		return this->theMessages;
-	}
-
-	MessageVector& MessageVector::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	MessageVector::MessageVector(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	CoRoutine<MessageCollectorReturnData> MessageCollector::collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, MessageFilter filteringFunctionNew) {

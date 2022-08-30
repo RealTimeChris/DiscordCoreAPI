@@ -561,17 +561,7 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	template<typename ReturnType> void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
-
-	template<typename ReturnType> bool getObject(nlohmann::json& jsonData, const char* keyName, ReturnType& returnObject) {
-		auto theResult = jsonData.find(keyName);
-		if (theResult != jsonData.end() && !theResult->is_null() && theResult->is_object()) {
-			DiscordCoreAPI::parseObject(jsonData[keyName], returnObject);
-			return true;
-		} else {
-			return false;
-		}
-	}
+	template<typename ReturnType> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
 
 	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json& jsonData, const char* keyName);
 

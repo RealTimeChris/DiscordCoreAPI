@@ -57,6 +57,10 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, int32_t& theData){
+		return;
+	}
+
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void )) {
 		outputSttream << theFunction();
 		return outputSttream;

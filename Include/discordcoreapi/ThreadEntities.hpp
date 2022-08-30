@@ -136,14 +136,10 @@ namespace DiscordCoreAPI {
 	  public:
 		Thread() noexcept = default;
 
-		Thread& operator=(nlohmann::json& jsonObjectData);
-
-		Thread(nlohmann::json& jsonObjectData);
-
 		virtual ~Thread() noexcept = default;
-
-		void parseObject(nlohmann::json& jsonObjectData);
 	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, Thread& theData);
 
 	/**@}*/
 

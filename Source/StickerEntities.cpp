@@ -22,26 +22,8 @@
 
 namespace DiscordCoreAPI {
 
-	Sticker& Sticker::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	Sticker::Sticker(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
-	}
-
 	StickerVector::operator std::vector<Sticker>() {
 		return this->theStickers;
-	}
-
-	StickerVector& StickerVector::operator=(nlohmann::json& jsonObjectData) {
-		this->parseObject(jsonObjectData);
-		return *this;
-	}
-
-	StickerVector::StickerVector(nlohmann::json& jsonObjectData) {
-		*this = jsonObjectData;
 	}
 
 	void Stickers::initialize(DiscordCoreInternal::HttpsClient* theClient) {
