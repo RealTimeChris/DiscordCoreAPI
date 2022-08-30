@@ -516,7 +516,7 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											}
-											*theChannel = DiscordCoreAPI::ChannelData{}.parseObject(payload["d"]);
+											DiscordCoreAPI::parseObject(payload["d"], *theChannel);
 											if (DiscordCoreAPI::Channels::configManager->doWeCacheChannels()) {
 												DiscordCoreAPI::Channels::insertChannel(std::move(theChannel));
 												theChannelPtr = DiscordCoreAPI::Channels::cache[channelId].get();
@@ -548,7 +548,7 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											}
-											*theChannel = DiscordCoreAPI::ChannelData{}.parseObject(payload["d"]);
+											DiscordCoreAPI::parseObject(payload["d"], *theChannel);
 											if (DiscordCoreAPI::Channels::configManager->doWeCacheChannels()) {
 												DiscordCoreAPI::Channels::insertChannel(std::move(theChannel));
 												theChannelPtr = DiscordCoreAPI::Channels::cache[channelId].get();
@@ -575,7 +575,7 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											}
-											theChannelReal = DiscordCoreAPI::ChannelData{}.parseObject(payload["d"]);
+											DiscordCoreAPI::parseObject(payload["d"], theChannelReal);
 											if (DiscordCoreAPI::Channels::configManager->doWeCacheChannels()) {
 												DiscordCoreAPI::Channels::removeChannel(theChannel->id);
 												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
@@ -648,7 +648,7 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 												guildId = stoull(payload["d"]["id"].get<std::string>());
 											}
-											*theGuild = DiscordCoreAPI::GuildData{}.parseObject(payload);
+											DiscordCoreAPI::parseObject(payload, *theGuild);
 											if (DiscordCoreAPI::Guilds::configManager->doWeCacheGuilds()) {
 												DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
 												theGuildPtr = DiscordCoreAPI::Guilds::cache[guildId].get();
@@ -672,7 +672,7 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 												guildId = stoull(payload["d"]["id"].get<std::string>());
 											}
-											*theGuild = DiscordCoreAPI::GuildData{}.parseObject(payload);
+											DiscordCoreAPI::parseObject(payload, *theGuild);
 											if (DiscordCoreAPI::Guilds::configManager->doWeCacheGuilds()) {
 												DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
 												theGuildPtr = DiscordCoreAPI::Guilds::cache[guildId].get();
@@ -695,7 +695,7 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 												guildId = stoull(payload["d"]["id"].get<std::string>());
 											}
-											theGuildReal = DiscordCoreAPI::GuildData{}.parseObject(payload);
+											DiscordCoreAPI::parseObject(payload, theGuildReal);
 											if (DiscordCoreAPI::Guilds::configManager->doWeCacheGuilds()) {
 												DiscordCoreAPI::Guilds::removeGuild(theGuild->id);
 												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
@@ -899,7 +899,7 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											}
-											*theRole = DiscordCoreAPI::RoleData{}.parseObject(payload["d"]);
+											DiscordCoreAPI::parseObject(payload["d"], *theRole);
 											if (DiscordCoreAPI::Roles::configManager->doWeCacheRoles()) {
 												DiscordCoreAPI::Roles::insertRole(std::move(theRole));
 												theRolePtr = DiscordCoreAPI::Roles::cache[roleId].get();
@@ -930,7 +930,7 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											}
-											*theRole = DiscordCoreAPI::RoleData{}.parseObject(payload["d"]);
+											DiscordCoreAPI::parseObject(payload["d"], *theRole);
 											if (DiscordCoreAPI::Roles::configManager->doWeCacheRoles()) {
 												DiscordCoreAPI::Roles::insertRole(std::move(theRole));
 												theRolePtr = DiscordCoreAPI::Roles::cache[roleId].get();
@@ -957,7 +957,7 @@ namespace DiscordCoreInternal {
 											if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 												guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 											}
-											theRoleReal = DiscordCoreAPI::RoleData{}.parseObject(payload["d"]);
+											DiscordCoreAPI::parseObject(payload["d"], theRoleReal);
 											if (DiscordCoreAPI::Roles::configManager->doWeCacheRoles()) {
 												DiscordCoreAPI::Roles::removeRole(theRole->id);
 												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
