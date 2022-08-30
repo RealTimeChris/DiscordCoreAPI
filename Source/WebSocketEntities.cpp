@@ -1451,7 +1451,6 @@ namespace DiscordCoreInternal {
 				theData.currentReconnectTries = this->currentReconnectTries;
 				theData.areWeResuming = this->areWeResuming;
 				theData.currentShard = this->shard[0];
-				std::unique_lock theLock{ this->discordCoreClient->connectionMutex };
 				this->theConnections->push_back(theData);
 			}
 		}
