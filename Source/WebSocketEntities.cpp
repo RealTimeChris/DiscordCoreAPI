@@ -1268,20 +1268,20 @@ namespace DiscordCoreInternal {
 											this->areWeCollectingData = false;
 										}
 										std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
+										DiscordCoreAPI::parseObject(payload["d"], dataPackage->voiceStateData);
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->voiceStateData.guildId)) {
-												if (payload["d"].contains("user_id") && !payload["d"]["user_id"].is_null() && payload["d"].contains("channel_id") &&
-													!payload["d"]["channel_id"].is_null()) {
+												if (dataPackage->voiceStateData.userId != 0 && dataPackage->voiceStateData.channelId != 0) {
 													if (DiscordCoreAPI::GuildMembers::cache.contains(dataPackage->voiceStateData.guildId)) {
 														if (DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId].cache.contains(userId)) {
 															DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId].cache[userId]->voiceChannelId =
-																stoull(payload["d"]["channel_id"].get<std::string>());
+																dataPackage->voiceStateData.channelId;
 														}
 													}
 												}
 											}
 										}
-										DiscordCoreAPI::parseObject(payload["d"], dataPackage->voiceStateData);
+										
 										this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
 										break;
 									}
