@@ -412,8 +412,8 @@ namespace DiscordCoreAPI {
 		co_return theData;
 	}
 
-	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
-		co_await NewThreadAwaitable<GuildData>();
+	CoRoutine<Guild> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
+		co_await NewThreadAwaitable<Guild>();
 		std::shared_lock theLock{ Guilds::theMutex };
 		if (!Guilds::cache.contains(dataPackage.guildId)) {
 			theLock.unlock();

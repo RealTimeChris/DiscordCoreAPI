@@ -86,6 +86,7 @@ namespace DiscordCoreAPI {
 			this->permissions = std::move(other.permissions);
 			this->name = std::move(other.name);
 			this->position = other.position;
+			this->guildId = other.guildId;
 			this->flags = other.flags;
 			this->color = other.color;
 			this->id = other.id;
@@ -102,6 +103,7 @@ namespace DiscordCoreAPI {
 			this->unicodeEmoji = other.unicodeEmoji;
 			this->permissions = other.permissions;
 			this->position = other.position;
+			this->guildId = other.guildId;
 			this->flags = other.flags;
 			this->color = other.color;
 			this->name = other.name;
@@ -299,8 +301,8 @@ namespace DiscordCoreAPI {
 		co_return {};
 	}
 
-	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
-		co_await NewThreadAwaitable<RoleData>();
+	CoRoutine<Role> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
+		co_await NewThreadAwaitable<Role>();
 		std::shared_lock theLock{ Roles::theMutex };
 		if (!Roles::cache.contains(dataPackage.roleId)) {
 			theLock.unlock();

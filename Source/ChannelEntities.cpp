@@ -225,8 +225,8 @@ namespace DiscordCoreAPI {
 		co_return theData;
 	}
 
-	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
-		co_await NewThreadAwaitable<ChannelData>();
+	CoRoutine<Channel> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
+		co_await NewThreadAwaitable<Channel>();
 		std::shared_lock theLock{ Channels::theMutex };
 		if (!Channels::cache.contains(dataPackage.channelId)) {
 			theLock.unlock();

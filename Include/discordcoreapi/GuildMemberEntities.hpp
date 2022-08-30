@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 		/// Collects a GuildMember from the library's cache. \brief Collects a GuildMember from the library's cache.
 		/// \param dataPackage A GetGuildMemberData structure.
 		/// \returns A CoRoutine containing a GuildMember.
-		static CoRoutine<GuildMemberData> getCachedGuildMemberAsync(GetGuildMemberData dataPackage);
+		static CoRoutine<GuildMember> getCachedGuildMemberAsync(GetGuildMemberData dataPackage);
 
 		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.

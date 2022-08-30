@@ -170,8 +170,8 @@ namespace DiscordCoreAPI {
 		co_return Users::httpsClient->submitWorkloadAndGetResult<User>(workload);
 	}
 
-	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
-		co_await NewThreadAwaitable<UserData>();
+	CoRoutine<User> Users::getCachedUserAsync(GetUserData dataPackage) {
+		co_await NewThreadAwaitable<User>();
 		std::shared_lock theLock{ Users::theMutex };
 		if (!Users::cache.contains(dataPackage.userId)) {
 			theLock.unlock();

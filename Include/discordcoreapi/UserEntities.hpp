@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 		/// Collects a given User from the library's cache. \brief Collects a given User from the library's cache.
 		/// \param dataPackage A GetUserData structure.
 		/// \returns A CoRoutine containing a User.
-		static CoRoutine<UserData> getCachedUserAsync(GetUserData dataPackage);
+		static CoRoutine<User> getCachedUserAsync(GetUserData dataPackage);
 
 		/// Collects a given User from the Discord servers. \brief Collects a given User from the Discord servers.
 		/// \param dataPackage A GetUserData structure.

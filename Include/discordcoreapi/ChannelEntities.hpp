@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 		/// Collects a Channel from the library's cache. \brief Collects a Channel from the library's cache.
 		/// \param dataPackage A GetChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
-		static CoRoutine<ChannelData> getCachedChannelAsync(GetChannelData dataPackage);
+		static CoRoutine<Channel> getCachedChannelAsync(GetChannelData dataPackage);
 
 		/// Modifies a Channel's properties. \brief Modifies a Channel's properties.
 		/// \param dataPackage A ModifyChannelData structure.
