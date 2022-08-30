@@ -309,8 +309,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	DiscordCoreAPI::StopWatch theStopWatchTwo{ 5us };
 	void WebSocketSSLShard::handleBuffer(SSLClient* theClient) noexcept {
+		theStopWatchTwo.resetTimer();
 		this->parseMessage(static_cast<WebSocketSSLShard*>(theClient));
+		//std::cout << "EXECUTION TIME FOR PARSE MESSAGE: " << theStopWatchTwo.totalTimePassed() << std::endl;
 	}
 
 	void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
@@ -388,6 +391,8 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
+	DiscordCoreAPI::StopWatch theStopWatch{ 5s };
+	std::atomic_int32_t theInt{};
 	bool WebSocketSSLShard::onMessageReceived(const std::string& theData) noexcept {
 		if (this->areWeStillConnected()) {
 			try {
@@ -629,6 +634,11 @@ namespace DiscordCoreInternal {
 										break;
 									}
 									case 16: {
+										if (theInt.load() % 1000 == 0) {
+											std::cout << "THE GUILD COUNT: " << theInt.load() << ", TOTAL TIME: " << theStopWatch.totalTimePassed()
+													  << std::endl;
+										}
+										theInt.store(theInt.load() + 1);
 										DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
 										auto theGuild = std::make_unique<DiscordCoreAPI::GuildData>();
 										Snowflake guildId{};
@@ -1258,7 +1268,6 @@ namespace DiscordCoreInternal {
 											this->areWeCollectingData = false;
 										}
 										std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
-										DiscordCoreAPI::parseObject(payload["d"], dataPackage->voiceStateData);
 										if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->voiceStateData.guildId)) {
 												if (payload["d"].contains("user_id") && !payload["d"]["user_id"].is_null() && payload["d"].contains("channel_id") &&
@@ -1272,6 +1281,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 										}
+										DiscordCoreAPI::parseObject(payload["d"], dataPackage->voiceStateData);
 										this->discordCoreClient->eventManager.onVoiceStateUpdateEvent(*dataPackage);
 										break;
 									}
