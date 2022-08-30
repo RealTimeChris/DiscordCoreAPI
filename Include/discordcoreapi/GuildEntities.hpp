@@ -312,7 +312,7 @@ namespace DiscordCoreAPI {
 
 		Guild(GuildData&) noexcept;
 
-		void parseObject(const nlohmann::json* jsonObjectData);
+		void parseObject(nlohmann::json& jsonObjectData);
 
 		std::string getDiscoverySplashUrl() noexcept;
 
@@ -323,7 +323,7 @@ namespace DiscordCoreAPI {
 		virtual ~Guild() noexcept = default;
 	};
 
-	template<> void parseObject(const nlohmann::json* jsonObjectData, Guild& theData);
+	template<> void parseObject(nlohmann::json& jsonObjectData, Guild& theData);
 
 	class DiscordCoreAPI_Dll GuildVector {
 	  public:
@@ -333,13 +333,13 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<Guild>();
 
-		GuildVector& operator=(const nlohmann::json* jsonObjectData);
+		GuildVector& operator=(nlohmann::json& jsonObjectData);
 
-		GuildVector(const nlohmann::json* jsonObjectData);
+		GuildVector(nlohmann::json& jsonObjectData);
 
 		virtual ~GuildVector() noexcept = default;
 
-		void parseObject(const nlohmann::json* jsonObjectData);
+		void parseObject(nlohmann::json& jsonObjectData);
 
 	  protected:
 		std::vector<Guild> theGuilds{};
@@ -384,7 +384,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		template<typename ReturnType> friend void DiscordCoreAPI::parseObject(const nlohmann::json* jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void DiscordCoreAPI::parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreClient;

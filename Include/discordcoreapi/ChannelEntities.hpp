@@ -160,9 +160,9 @@ namespace DiscordCoreAPI {
 
 		Channel() noexcept = default;
 
-		Channel& operator=(const nlohmann::json* jsonObjectData);
+		Channel& operator=(nlohmann::json& jsonObjectData);
 
-		Channel(const nlohmann::json* jsonObjectData);
+		Channel(nlohmann::json& jsonObjectData);
 
 		Channel& operator=(ChannelData&&) noexcept;
 
@@ -174,12 +174,12 @@ namespace DiscordCoreAPI {
 
 		~Channel() noexcept = default;
 
-		void parseObject(const nlohmann::json* jsonObjectData);
+		void parseObject(nlohmann::json& jsonObjectData);
 
 		std::string getIconUrl() noexcept;
 	};
 
-	template<> void parseObject(const nlohmann::json* jsonObjectData, Channel& theData);
+	template<> void parseObject(nlohmann::json& jsonObjectData, Channel& theData);
 
 	class DiscordCoreAPI_Dll ChannelVector {
 	  public:
@@ -187,13 +187,13 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<Channel>();
 
-		ChannelVector& operator=(const nlohmann::json* jsonObjectData);
+		ChannelVector& operator=(nlohmann::json& jsonObjectData);
 
-		ChannelVector(const nlohmann::json* jsonObjectData);
+		ChannelVector(nlohmann::json& jsonObjectData);
 
 		virtual ~ChannelVector() noexcept = default;
 
-		void parseObject(const nlohmann::json* jsonObjectData);
+		void parseObject(nlohmann::json& jsonObjectData);
 
 	  protected:
 		std::vector<Channel> theChannels{};

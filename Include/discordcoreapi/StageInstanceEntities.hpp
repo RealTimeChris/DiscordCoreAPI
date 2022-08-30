@@ -56,16 +56,16 @@ namespace DiscordCoreAPI {
 	  public:
 		StageInstance() noexcept = default;
 
-		StageInstance& operator=(const nlohmann::json* jsonObjectData);
+		StageInstance& operator=(nlohmann::json& jsonObjectData);
 
-		StageInstance(const nlohmann::json* jsonObjectData);
+		StageInstance(nlohmann::json& jsonObjectData);
 
 		virtual ~StageInstance() noexcept = default;
 
-		void parseObject(const nlohmann::json* jsonObjectData);
+		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
-	template<> void parseObject(const nlohmann::json* jsonObjectData, StageInstance& theData);
+	template<> void parseObject(nlohmann::json& jsonObjectData, StageInstance& theData);
 
 	/**
 	 * \addtogroup main_endpoints

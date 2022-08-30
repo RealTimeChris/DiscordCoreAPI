@@ -40,7 +40,7 @@ namespace DiscordCoreInternal {
 			std::vector<DiscordCoreAPI::Song> results{};
 			if (data.contains("collection") && !data["collection"].is_null()) {
 				for (auto& value: data["collection"]) {
-					DiscordCoreAPI::Song newSong{ &value };
+					DiscordCoreAPI::Song newSong{ value };
 					if (!newSong.doWeGetSaved || newSong.songTitle == "") {
 						continue;
 					}
@@ -216,8 +216,8 @@ namespace DiscordCoreInternal {
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
 			dataPackage.configManager = this->configManager;
+			std::unique_ptr<DiscordCoreAPI::AudioEncoder> audioEncoder{ std::make_unique<DiscordCoreAPI::AudioEncoder>() };
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
-			DiscordCoreAPI::AudioEncoder audioEncoder{};
 			bool didWeGetZero{ true };
 			while (counter < newSong.finalDownloadUrls.size()) {
 				if (counter == newSong.finalDownloadUrls.size() && didWeGetZero) {
@@ -293,7 +293,7 @@ namespace DiscordCoreInternal {
 					return;
 				} else {
 					for (auto& value: frames) {
-						auto encodedFrame = audioEncoder.encodeSingleAudioFrame(value);
+						auto encodedFrame = audioEncoder->encodeSingleAudioFrame(value);
 						encodedFrame.guildMemberId = newSong.addedByUserId;
 						DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(encodedFrame));
 					}

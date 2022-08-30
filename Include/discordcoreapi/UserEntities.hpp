@@ -93,10 +93,10 @@ namespace DiscordCoreAPI {
 
 		virtual ~User() noexcept = default;
 
-		void parseObject(const nlohmann::json* jsonObjectData);
+		void parseObject(nlohmann::json& jsonObjectData);
 	};
 
-	template<> void parseObject(const nlohmann::json* jsonObjectData, User& theData);
+	template<> void parseObject(nlohmann::json& jsonObjectData, User& theData);
 
 	class DiscordCoreAPI_Dll UserVector {
 	  public:
@@ -104,13 +104,13 @@ namespace DiscordCoreAPI {
 
 		operator std::vector<User>();
 
-		UserVector& operator=(const nlohmann::json* jsonObjectData);
+		UserVector& operator=(nlohmann::json& jsonObjectData);
 
-		UserVector(const nlohmann::json* jsonObjectData);
+		UserVector(nlohmann::json& jsonObjectData);
 
 		virtual ~UserVector() noexcept = default;
 
-		void parseObject(const nlohmann::json* jsonObjectData);
+		void parseObject(nlohmann::json& jsonObjectData);
 
 	  protected:
 		std::vector<User> theUsers{};

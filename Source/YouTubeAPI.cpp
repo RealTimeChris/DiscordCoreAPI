@@ -51,7 +51,7 @@ namespace DiscordCoreInternal {
 			for (auto& value: partialSearchResultsJson["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
 													  ["contents"]) {
 				if (value.contains("videoRenderer") && !value["videoRenderer"].is_null()) {
-					DiscordCoreAPI::Song searchResult{ &value["videoRenderer"] };
+					DiscordCoreAPI::Song searchResult{ value["videoRenderer"] };
 					searchResult.type = DiscordCoreAPI::SongType::YouTube;
 					searchResult.viewUrl = this->baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
 					searchResults.emplace_back(searchResult);
@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
 			nlohmann::json jsonObject = nlohmann::json::parse(responseData.responseMessage);
-			DiscordCoreAPI::YouTubeFormatVector theVector{ &jsonObject };
+			DiscordCoreAPI::YouTubeFormatVector theVector{ jsonObject };
 			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };
 			for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {
@@ -227,8 +227,8 @@ namespace DiscordCoreInternal {
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
 			dataPackage.configManager = this->configManager;
+			std::unique_ptr<DiscordCoreAPI::AudioEncoder> audioEncoder{ std::make_unique<DiscordCoreAPI::AudioEncoder>() };
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
-			DiscordCoreAPI::AudioEncoder audioEncoder{};
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
 			streamSocket->writeData(theString, false);
 			streamSocket->processIO(1000000);
@@ -360,7 +360,7 @@ namespace DiscordCoreInternal {
 							}
 						}
 						for (auto& value: frames) {
-							auto encodedFrame = audioEncoder.encodeSingleAudioFrame(value);
+							auto encodedFrame = audioEncoder->encodeSingleAudioFrame(value);
 							encodedFrame.guildMemberId = newSong.addedByUserId;
 							DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(encodedFrame));
 						}

@@ -116,6 +116,8 @@ namespace DiscordCoreInternal {
 
 	template<typename ReturnType, typename... ArgTypes> class Event {
 	  public:
+		std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
+
 		Event<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) noexcept {
 			if (this != &other) {
 				this->theFunctions.swap(other.theFunctions);
@@ -156,14 +158,13 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		void operator()(ArgTypes... args) {
+		void operator()(ArgTypes&... args) {
 			for (auto& [key, value]: this->theFunctions) {
 				value.theFunction(args...);
 			}
 		}
 
 	  protected:
-		std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
 		std::string eventId{};
 	};
 

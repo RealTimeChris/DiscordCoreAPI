@@ -24,12 +24,12 @@
 
 namespace DiscordCoreAPI {
 
-	OnChannelCreationData::OnChannelCreationData(ChannelData* theChannel) {
-		this->channel = theChannel;
+	OnChannelCreationData::OnChannelCreationData(std::unique_ptr<ChannelData> theChannel) {
+		this->channel = std::move(theChannel);
 	}
 
 	OnChannelCreationData& OnChannelCreationData::operator=(const OnChannelCreationData& other) {
-		this->channel = other.channel;
+		*this->channel = *other.channel;
 		return *this;
 	}
 
@@ -37,12 +37,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnChannelUpdateData::OnChannelUpdateData(ChannelData* channelNew) {
-		this->channel = channelNew;
+	OnChannelUpdateData::OnChannelUpdateData(std::unique_ptr<ChannelData> channelNew) {
+		this->channel = std::move(channelNew);
 	}
 
 	OnChannelUpdateData& OnChannelUpdateData::operator=(const OnChannelUpdateData& other) {
-		this->channel = other.channel;
+		*this->channel = *other.channel;
 		return *this;
 	}
 
@@ -55,7 +55,6 @@ namespace DiscordCoreAPI {
 	}
 
 	OnChannelDeletionData& OnChannelDeletionData::operator=(const OnChannelDeletionData& other) {
-		this->channel = std::make_unique<ChannelData>();
 		*this->channel = *other.channel;
 		return *this;
 	}
@@ -64,12 +63,13 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnGuildCreationData::OnGuildCreationData(GuildData* theGuild, DiscordCoreClient* theClient) {
-		this->guild = theGuild;
+	OnGuildCreationData::OnGuildCreationData(std::unique_ptr<GuildData> theGuild, DiscordCoreClient* theClient) {
+		this->guild = std::move(theGuild);
+		this->guild->discordCoreClient = theClient;
 	}
 
 	OnGuildCreationData& OnGuildCreationData::operator=(const OnGuildCreationData& other) {
-		this->guild = other.guild;
+		*this->guild = *other.guild;
 		return *this;
 	}
 
@@ -77,12 +77,13 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnGuildUpdateData::OnGuildUpdateData(GuildData* guildNew, DiscordCoreClient* theClient) : guild(guildNew) {
-		this->guild = guildNew;
+	OnGuildUpdateData::OnGuildUpdateData(std::unique_ptr<GuildData> guildNew, DiscordCoreClient* theClient) {
+		this->guild = std::move(guildNew);
+		this->guild->discordCoreClient = theClient;
 	}
 
 	OnGuildUpdateData& OnGuildUpdateData::operator=(const OnGuildUpdateData& other) {
-		this->guild = other.guild;
+		*this->guild = *other.guild;
 		return *this;
 	}
 
@@ -95,7 +96,6 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildDeletionData& OnGuildDeletionData::operator=(const OnGuildDeletionData& other) {
-		this->guild = std::make_unique<GuildData>();
 		*this->guild = *other.guild;
 		return *this;
 	}
@@ -104,14 +104,14 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnGuildMemberAddData::OnGuildMemberAddData(GuildMemberData* guildMemberNew, DiscordCoreClient* theClient) {
+	OnGuildMemberAddData::OnGuildMemberAddData(std::unique_ptr<GuildMemberData> guildMemberNew, DiscordCoreClient* theClient) {
 		this->discordCoreClient = theClient;
-		this->guildMember = guildMemberNew;
+		this->guildMember = std::move(guildMemberNew);
 	}
 
 	OnGuildMemberAddData& OnGuildMemberAddData::operator=(const OnGuildMemberAddData& other) {
 		this->discordCoreClient = other.discordCoreClient;
-		this->guildMember = other.guildMember;
+		*this->guildMember = *other.guildMember;
 		return *this;
 	}
 
@@ -119,12 +119,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnGuildMemberUpdateData::OnGuildMemberUpdateData(GuildMemberData* newGuildMemberNew) {
-		this->guildMember = newGuildMemberNew;
+	OnGuildMemberUpdateData::OnGuildMemberUpdateData(std::unique_ptr<GuildMemberData> newGuildMemberNew) {
+		this->guildMember = std::move(newGuildMemberNew);
 	}
 
 	OnGuildMemberUpdateData& OnGuildMemberUpdateData::operator=(const OnGuildMemberUpdateData& other) {
-		this->guildMember = other.guildMember;
+		*this->guildMember = *other.guildMember;
 		return *this;
 	}
 
@@ -140,7 +140,6 @@ namespace DiscordCoreAPI {
 
 	OnGuildMemberRemoveData& OnGuildMemberRemoveData::operator=(const OnGuildMemberRemoveData& other) {
 		this->discordCoreClient = other.discordCoreClient;
-		this->user = std::make_unique<UserData>();
 		this->guildId = other.guildId;
 		*this->user = *other.user;
 		return *this;
@@ -150,14 +149,14 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnRoleCreationData::OnRoleCreationData(RoleData* theRoleNew, Snowflake guildIdNew) {
+	OnRoleCreationData::OnRoleCreationData(std::unique_ptr<RoleData> theRoleNew, Snowflake guildIdNew) {
 		this->guildId = guildIdNew;
-		this->role = theRoleNew;
+		this->role = std::move(theRoleNew);
 	}
 
 	OnRoleCreationData& OnRoleCreationData::operator=(const OnRoleCreationData& other) {
 		this->guildId = other.guildId;
-		this->role = other.role;
+		*this->role = *other.role;
 		return *this;
 	}
 
@@ -165,14 +164,14 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnRoleUpdateData::OnRoleUpdateData(RoleData* roleNew, Snowflake guildIdNew) {
+	OnRoleUpdateData::OnRoleUpdateData(std::unique_ptr<RoleData> roleNew, Snowflake guildIdNew) {
 		this->guildId = guildIdNew;
-		this->role = roleNew;
+		this->role = std::move(roleNew);
 	}
 
 	OnRoleUpdateData& OnRoleUpdateData::operator=(const OnRoleUpdateData& other) {
 		this->guildId = other.guildId;
-		this->role = other.role;
+		*this->role = *other.role;
 		return *this;
 	}
 
@@ -196,12 +195,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnUserUpdateData::OnUserUpdateData(UserData* userNew) {
-		this->user = userNew;
+	OnUserUpdateData::OnUserUpdateData(std::unique_ptr<UserData> userNew) {
+		this->user = std::move(userNew);
 	}
 
 	OnUserUpdateData& OnUserUpdateData::operator=(const OnUserUpdateData& other) {
-		this->user = other.user;
+		*this->user = *other.user;
 		return *this;
 	}
 

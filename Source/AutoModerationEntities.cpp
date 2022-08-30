@@ -49,12 +49,12 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	AutoModerationActionExecutionEventData& AutoModerationActionExecutionEventData::operator=(const nlohmann::json* jsonObjectData) {
+	AutoModerationActionExecutionEventData& AutoModerationActionExecutionEventData::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AutoModerationActionExecutionEventData::AutoModerationActionExecutionEventData(const nlohmann::json* jsonObjectData) {
+	AutoModerationActionExecutionEventData::AutoModerationActionExecutionEventData(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -85,12 +85,12 @@ namespace DiscordCoreAPI {
 		;
 	}
 
-	AutoModerationRule& AutoModerationRule::operator=(const nlohmann::json* jsonObjectData) {
+	AutoModerationRule& AutoModerationRule::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AutoModerationRule::AutoModerationRule(const nlohmann::json* jsonObjectData) {
+	AutoModerationRule::AutoModerationRule(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
@@ -98,12 +98,12 @@ namespace DiscordCoreAPI {
 		return this->theAutoModerationRules;
 	}
 
-	AutoModerationRuleVector& AutoModerationRuleVector::operator=(const nlohmann::json* jsonObjectData) {
+	AutoModerationRuleVector& AutoModerationRuleVector::operator=(nlohmann::json& jsonObjectData) {
 		this->parseObject(jsonObjectData);
 		return *this;
 	}
 
-	AutoModerationRuleVector::AutoModerationRuleVector(const nlohmann::json* jsonObjectData) {
+	AutoModerationRuleVector::AutoModerationRuleVector(nlohmann::json& jsonObjectData) {
 		*this = jsonObjectData;
 	}
 
