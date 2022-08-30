@@ -311,47 +311,41 @@ namespace DiscordCoreAPI {
 
 		theData.name = getString(jsonObjectData, "name");
 
-		
-		auto theThreads = getVector<nlohmann::json>(jsonObjectData, "threads");
 		theData.threads.clear();
-		theData.threads.reserve(theThreads.size());
-		for (auto& value: theThreads) {
+		theData.threads.reserve(jsonObjectData["threads"].size());
+		for (auto& value: jsonObjectData["threads"]) {
 			ChannelData newData{};
 			DiscordCoreAPI::parseObject(value, newData);
 			theData.threads.push_back(newData.id);
 		}
 
-		auto theStickers = getVector<nlohmann::json>(jsonObjectData, "stickers");
 		theData.stickers.clear();
-		theData.stickers.reserve(theStickers.size());
-		for (auto& value: theStickers) {
+		theData.stickers.reserve(jsonObjectData["stickers"].size());
+		for (auto& value: jsonObjectData["stickers"]) {
 			StickerData newData{};
 			DiscordCoreAPI::parseObject(value, newData);
 			theData.stickers.push_back(newData.id);
 		}
 
-		auto theGuildScheduledEvents = getVector<nlohmann::json>(jsonObjectData, "guild_scheduled_events");
 		theData.guildScheduledEvents.clear();
-		theData.guildScheduledEvents.reserve(theGuildScheduledEvents.size());
-		for (auto& value: theGuildScheduledEvents) {
+		theData.guildScheduledEvents.reserve(jsonObjectData["guild_scheduled_events"].size());
+		for (auto& value: jsonObjectData["guild_scheduled_events"]) {
 			GuildScheduledEventData newData{};
 			DiscordCoreAPI::parseObject(value, newData);
 			theData.guildScheduledEvents.push_back(newData.id);
 		}
 
-		auto theStageInstances = getVector<nlohmann::json>(jsonObjectData, "stage_instances");
 		theData.stageInstances.clear();
-		theData.stageInstances.reserve(theStageInstances.size());
-		for (auto& value: theStageInstances) {
+		theData.stageInstances.reserve(jsonObjectData["stage_instances"].size());
+		for (auto& value: jsonObjectData["stage_instances"]) {
 			StageInstanceData newData{};
 			DiscordCoreAPI::parseObject(value, newData);
 			theData.stageInstances.push_back(newData.id);
 		}
 
-		auto theEmoji = getVector<nlohmann::json>(jsonObjectData, "emoji");
 		theData.emoji.clear();
-		theData.emoji.reserve(theEmoji.size());
-		for (auto& value: theEmoji) {
+		theData.emoji.reserve(jsonObjectData["emoji"].size());
+		for (auto& value: jsonObjectData["emoji"]) {
 			EmojiData newData{};
 			DiscordCoreAPI::parseObject(value, newData);
 			theData.emoji.push_back(newData.id);
@@ -359,6 +353,7 @@ namespace DiscordCoreAPI {
 		
 		if (Guilds::configManager->doWeCacheRoles()) {
 			theData.roles.clear();
+			theData.roles.reserve(jsonObjectData["roles"].size());
 			for (auto& value: jsonObjectData["roles"]) {
 				std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>() };
 				DiscordCoreAPI::parseObject(value, *newData);
@@ -369,9 +364,8 @@ namespace DiscordCoreAPI {
 		
 		if (Guilds::configManager->doWeCacheGuildMembers()) {
 			theData.members.clear();
-			auto theMembers = getVector<nlohmann::json>(jsonObjectData, "members");
-			theData.members.reserve(theMembers.size());
-			for (auto& value: theMembers) {
+			theData.members.reserve(jsonObjectData["members"].size());
+			for (auto& value: jsonObjectData["members"]) {
 				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
 				DiscordCoreAPI::parseObject(value, *newData);
 				newData->guildId = theData.id;
@@ -382,8 +376,7 @@ namespace DiscordCoreAPI {
 		}
 		
 		if (Guilds::configManager->doWeCacheGuildMembers()) {
-			auto theVoiceStates = getVector<nlohmann::json>(jsonObjectData, "voice_states");
-			for (auto& value: theVoiceStates) {
+			for (auto& value: jsonObjectData["voice_states"]) {
 				auto userId = strtoull(value["user_id"].get<std::string>());
 				if (!GuildMembers::cache.contains(theData.id)) {
 					GuildMembers::cache[theData.id] = GuildMemberHolder{};
@@ -397,6 +390,7 @@ namespace DiscordCoreAPI {
 		
 		if (Guilds::configManager->doWeCacheChannels()) {
 			theData.channels.clear();
+			theData.channels.reserve(jsonObjectData["channels"].size());
 			for (auto& value: jsonObjectData["channels"]) {
 				std::unique_ptr<ChannelData> newData{ std::make_unique<ChannelData>() };
 				DiscordCoreAPI::parseObject(value, *newData);
