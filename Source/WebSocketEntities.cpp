@@ -636,7 +636,7 @@ namespace DiscordCoreInternal {
 									}
 									case 16: {
 										if (theInt.load() % 1000 == 0) {
-											std::cout << "THE GUILD COUNT: " << DiscordCoreAPI::Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed()
+											std::cout << "THE GUILD COUNT: " << theInt.load() << ", TOTAL TIME: " << theStopWatch.totalTimePassed()
 													  << std::endl;
 										}
 										theInt.store(theInt.load() + 1);
