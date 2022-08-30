@@ -209,14 +209,14 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(nlohmann::json& theJsonData, OnVoiceServerUpdateData& theData) {
-		if (theJsonData["d"].contains("endpoint") && !theJsonData["d"]["endpoint"].is_null()) {
-			theData.endpoint = theJsonData["d"]["endpoint"].get<std::string>();
+		if (theJsonData.contains("endpoint") && !theJsonData["endpoint"].is_null()) {
+			theData.endpoint = theJsonData["endpoint"].get<std::string>();
 		}
-		if (theJsonData["d"].contains("guild_id") && !theJsonData["d"]["guild_id"].is_null()) {
-			theData.guildId = stoull(theJsonData["d"]["guild_id"].get<std::string>());
+		if (theJsonData.contains("guild_id") && !theJsonData["guild_id"].is_null()) {
+			theData.guildId = stoull(theJsonData["guild_id"].get<std::string>());
 		}
-		if (theJsonData["d"].contains("token") && !theJsonData["d"]["token"].is_null()) {
-			theData.token = theJsonData["d"]["token"].get<std::string>();
+		if (theJsonData.contains("token") && !theJsonData["token"].is_null()) {
+			theData.token = theJsonData["token"].get<std::string>();
 		}
 	};
 
