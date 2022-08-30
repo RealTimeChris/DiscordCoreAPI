@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	Role& Role::operator=(RoleData& other) noexcept {
+	Role& Role::operator=(const RoleData& other) noexcept {
 		if (this != &other) {
 			this->unicodeEmoji = other.unicodeEmoji;
 			this->permissions = other.permissions;
@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Role::Role(RoleData& other) noexcept {
+	Role::Role(const RoleData& other) noexcept {
 		*this = other;
 	}
 
@@ -323,6 +323,9 @@ namespace DiscordCoreAPI {
 			} else {
 				std::unique_lock theLock{ Roles::theMutex };
 				Roles::cache.insert_or_assign(roleId, std::move(role));
+			}
+			if (Roles::cache.size() % 1000 == 0) {
+				std::cout << "ROLE COUNT: " << Roles::cache.size() << std::endl;
 			}
 		}
 	}

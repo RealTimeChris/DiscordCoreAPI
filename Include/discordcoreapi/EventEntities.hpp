@@ -82,10 +82,6 @@ namespace DiscordCoreInternal {
 
 		EventDelegate(const EventDelegate<ReturnType, ArgTypes...>& other) = delete;
 
-		EventDelegate<ReturnType, ArgTypes...>& operator=(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
-
-		EventDelegate(EventDelegate<ReturnType, ArgTypes...>& other) = delete;
-
 		EventDelegate<ReturnType, ArgTypes...>& operator=(std::function<ReturnType(ArgTypes...)> theFunctionNew) {
 			this->theFunction = theFunctionNew;
 			return *this;
@@ -135,10 +131,6 @@ namespace DiscordCoreInternal {
 		Event<ReturnType, ArgTypes...>& operator=(const Event<ReturnType, ArgTypes...>&) = delete;
 
 		Event(const Event<ReturnType, ArgTypes...>&) = delete;
-
-		Event<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&) = delete;
-
-		Event(Event<ReturnType, ArgTypes...>&) = delete;
 
 		Event() {
 			this->eventId = std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());

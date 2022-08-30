@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	Channel& Channel::operator=(ChannelData& other) noexcept {
+	Channel& Channel::operator=(const ChannelData& other) noexcept {
 		if (this != &other) {
 			this->permissionOverwrites = other.permissionOverwrites;
 			this->memberCount = other.memberCount;
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Channel::Channel(ChannelData& other) noexcept {
+	Channel::Channel(const ChannelData& other) noexcept {
 		*this = other;
 	}
 
@@ -400,6 +400,9 @@ namespace DiscordCoreAPI {
 			} else {
 				std::unique_lock theLock{ Channels::theMutex };
 				Channels::cache.insert_or_assign(channelId, std::move(channel));
+			}
+			if (Channels::cache.size() % 1000 == 0) {
+				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
 			}
 		}
 	}

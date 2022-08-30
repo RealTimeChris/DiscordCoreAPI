@@ -446,10 +446,6 @@ namespace DiscordCoreAPI {
 
 		StringWrapper(const StringWrapper& other);
 
-		StringWrapper& operator=(StringWrapper& other);
-
-		StringWrapper(StringWrapper& other);
-
 		StringWrapper& operator=(const std::string& theString);
 
 		explicit StringWrapper(const std::string& theString);
@@ -716,15 +712,6 @@ namespace DiscordCoreAPI {
 		}
 
 		TimeStamp(const TimeStamp& other) {
-			*this = other;
-		}
-
-		TimeStamp<TimeType>& operator=(TimeStamp& other) {
-			this->timeStampInTimeUnits = other.timeStampInTimeUnits;
-			return *this;
-		}
-
-		TimeStamp(TimeStamp& other) {
 			*this = other;
 		}
 

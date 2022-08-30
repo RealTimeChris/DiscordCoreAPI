@@ -276,7 +276,7 @@ namespace DiscordCoreAPI {
 		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
 		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
 		VerificationLevel verificationLevel{};///< Verification level required.
-		std::vector<std::string> features{};///< List of Guild features.
+		std::vector<StringWrapper> features{};///< List of Guild features.
 		int32_t approximateMemberCount{ 0 };///< Approximate member count.
 		Snowflake publicUpdatesChannelId{};///< Id of the public updates Channel.
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
@@ -284,20 +284,20 @@ namespace DiscordCoreAPI {
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
 		std::vector<Sticker> stickers{};///< Stickers of the Guild.
 		std::vector<Channel> threads{};///< Threads of the Guild.
-		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
+		StringWrapper preferredLocale{};///< Preferred locale, for voice chat servers.
+		StringWrapper vanityUrlCode{};///< Vanity Url code, if applicable.
+		StringWrapper description{};///< Description of the Guild.
 		Snowflake widgetChannelId{};///< Channel id for the Guild's widget.
 		Snowflake systemChannelId{};///< Channel id for the Guild's system Channel.
-		std::string vanityUrlCode{};///< Vanity Url code, if applicable.
 		IconHash discoverySplash{};///< Link to the discovery image's splash.
 		Snowflake rulesChannelId{};///< Channel id for the Guild's rules Channel.
 		Snowflake applicationId{};///< The current application id.
-		std::string description{};///< Description of the Guild.
 		Permissions permissions{};///< Current Permissions for the bot in the Guild.
 		PremiumTier premiumTier{};///< What is the premium tier?
 		int32_t maxPresences{ 0 };///< Max number of presences allowed.
 		Snowflake afkChannelId{};///< Channel if of the "afk" Channel.
 		int32_t maxMembers{ 0 };///< Max quantity of members.
-		std::string region{};///< Region of the world where the Guild's servers are.
+		StringWrapper region{};///< Region of the world where the Guild's servers are.
 		MFALevel mfaLevel{};///< MFA level.
 		IconHash banner{};///< Url to the Guild's banner.
 		IconHash splash{};///< Url to the Guild's splash.
@@ -308,9 +308,9 @@ namespace DiscordCoreAPI {
 
 		Guild(GuildData&&) noexcept;
 
-		Guild& operator=(GuildData&) noexcept;
+		Guild& operator=(const GuildData&) noexcept;
 
-		Guild(GuildData&) noexcept;
+		Guild(const GuildData&) noexcept;
 
 		void parseObject(nlohmann::json& jsonObjectData);
 

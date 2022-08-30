@@ -135,9 +135,9 @@ namespace DiscordCoreAPI {
 
 		Role(RoleData&& other) noexcept;
 
-		Role& operator=(RoleData& other) noexcept;
+		Role& operator=(const RoleData& other) noexcept;
 
-		Role(RoleData& other) noexcept;
+		Role(const RoleData& other) noexcept;
 
 		Role& operator=(nlohmann::json& jsonObjectData);
 

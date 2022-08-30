@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	GuildMember& GuildMember::operator=(GuildMemberData& other) noexcept {
+	GuildMember& GuildMember::operator=(const GuildMemberData& other) noexcept {
 		if (this != &other) {
 			this->voiceChannelId = other.voiceChannelId;
 			this->permissions = other.permissions;
@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	};
 
-	GuildMember::GuildMember(GuildMemberData& other) noexcept {
+	GuildMember::GuildMember(const GuildMemberData& other) noexcept {
 		*this = other;
 	}
 

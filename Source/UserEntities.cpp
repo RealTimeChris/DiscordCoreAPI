@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	User& User::operator=(UserData& other) noexcept {
+	User& User::operator=(const UserData& other) noexcept {
 		if (this != &other) {
 			this->discriminator = other.discriminator;
 			this->userName = other.userName;
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	User::User(UserData& dataNew) noexcept {
+	User::User(const UserData& dataNew) noexcept {
 		*this = dataNew;
 	}
 
@@ -94,9 +94,11 @@ namespace DiscordCoreAPI {
 			nlohmann::json payload = dataPackage;
 			std::string theString{};
 			uint32_t shardId = (dataPackage.guildId >> 22) % this->baseSocketAgent->configManager->getTotalShardCount();
-			this->baseSocketAgent->theShardMap[shardId]->stringifyJsonData(payload, theString,
-				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->theShardMap[shardId].get())->dataOpCode);
-			this->baseSocketAgent->theShardMap[shardId]->sendMessage(theString, true);
+			uint32_t basesocketAgentIndex{ shardId % this->baseSocketAgent->configManager->getTotalShardCount() };
+			this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->stringifyJsonData(payload, theString,
+				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId].get())
+					->dataOpCode);
+			this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->sendMessage(theString, true);
 		}
 	}
 
@@ -105,9 +107,11 @@ namespace DiscordCoreAPI {
 			nlohmann::json payload = dataPackage;
 			std::string theString{};
 			uint32_t shardId = 0;
-			this->baseSocketAgent->theShardMap[shardId]->stringifyJsonData(payload, theString,
-				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->theShardMap[shardId].get())->dataOpCode);
-			this->baseSocketAgent->theShardMap[shardId]->sendMessage(theString, true);
+			uint32_t basesocketAgentIndex{ 0 };
+			this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->stringifyJsonData(payload, theString,
+				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId].get())
+					->dataOpCode);
+			this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->sendMessage(theString, true);
 		}
 	}
 
@@ -248,6 +252,9 @@ namespace DiscordCoreAPI {
 				Users::cache.emplace(userId, std::move(user));
 			} else {
 				Users::cache.insert_or_assign(userId, std::move(user));
+			}
+			if (Users::cache.size() % 1000 == 0) {
+				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
 			}
 		}
 	}

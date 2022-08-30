@@ -113,9 +113,9 @@ namespace DiscordCoreAPI {
 
 		GuildMember(GuildMemberData&&) noexcept;
 
-		GuildMember& operator=(GuildMemberData&) noexcept;
+		GuildMember& operator=(const GuildMemberData&) noexcept;
 
-		GuildMember(GuildMemberData&) noexcept;
+		GuildMember(const GuildMemberData&) noexcept;
 
 		virtual ~GuildMember() noexcept = default;
 

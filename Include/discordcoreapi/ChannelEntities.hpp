@@ -142,20 +142,20 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	  public:
 		TimeStamp<std::chrono::milliseconds> lastPinTimestamp{};///< Timestamp of the last pinned Message.
-		std::map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
+		std::map<Snowflake, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
 		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		int32_t videoQualityMode{ 0 };///< Video quality mode.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
-		std::string lastMessageId{};///< Id of the last Message.
+		StringWrapper lastMessageId{};///< Id of the last Message.
+		StringWrapper permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
 		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
 		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
-		std::string permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
 		Snowflake applicationId{};///< Application id of the current application.
-		std::string rtcRegion{};///< Real-time clock region.
+		StringWrapper rtcRegion{};///< Real-time clock region.
 		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
+		StringWrapper topic{};///< The Channel's topic.
 		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
-		std::string topic{};///< The Channel's topic.
 		IconHash icon{};///< Icon for the Channel, if applicable.
 
 		Channel() noexcept = default;
@@ -168,9 +168,9 @@ namespace DiscordCoreAPI {
 
 		Channel(ChannelData&&) noexcept;
 
-		Channel& operator=(ChannelData&) noexcept;
+		Channel& operator=(const ChannelData&) noexcept;
 
-		Channel(ChannelData&) noexcept;
+		Channel(const ChannelData&) noexcept;
 
 		~Channel() noexcept = default;
 

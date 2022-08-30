@@ -87,9 +87,9 @@ namespace DiscordCoreAPI {
 
 		User(UserData&&) noexcept;
 
-		User& operator=(UserData& other) noexcept;
+		User& operator=(const UserData& other) noexcept;
 
-		User(UserData&) noexcept;
+		User(const UserData&) noexcept;
 
 		virtual ~User() noexcept = default;
 
@@ -121,6 +121,10 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
+		BotUser& operator=(const BotUser& other) noexcept = default;
+
+		BotUser(const BotUser& other) noexcept = default;
+
 		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
 		/// Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes.
@@ -130,6 +134,7 @@ namespace DiscordCoreAPI {
 		void updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage);
 
 	  protected:
+
 		BotUser() noexcept = default;
 
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };

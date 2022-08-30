@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	Guild& Guild::operator=(GuildData& other) noexcept {
+	Guild& Guild::operator=(const GuildData& other) noexcept {
 		if (this != &other) {
 			this->voiceConnectionPtr = other.voiceConnectionPtr;
 			this->discordCoreClient = other.discordCoreClient;
@@ -239,7 +239,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Guild::Guild(GuildData& other) noexcept {
+	Guild::Guild(const GuildData& other) noexcept {
 		*this = other;
 	}
 
@@ -417,9 +417,13 @@ namespace DiscordCoreAPI {
 		std::shared_lock theLock{ Guilds::theMutex };
 		if (!Guilds::cache.contains(dataPackage.guildId)) {
 			theLock.unlock();
-			co_return Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
+			auto theGuild = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
+			theGuild.discordCoreClient = Guilds::discordCoreClient;
+			co_return theGuild;
 		} else {
-			co_return *Guilds::cache[dataPackage.guildId];
+			auto theGuild = *Guilds::cache[dataPackage.guildId];
+			theGuild.discordCoreClient = Guilds::discordCoreClient;
+			co_return theGuild;
 		}
 	}
 
@@ -860,6 +864,9 @@ namespace DiscordCoreAPI {
 				Guilds::cache.emplace(guildId, std::move(guild));
 			} else {
 				Guilds::cache.insert_or_assign(guildId, std::move(guild));
+			}
+			if (Guilds::cache.size() % 1000 == 0) {
+				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 			}
 		}
 	}
