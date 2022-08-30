@@ -245,6 +245,10 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void VoiceConnection::handleBuffer(SSLClient* theClient) noexcept {
+		this->parseMessage(this);
+	}
+
 	void VoiceConnection::sendSpeakingMessage(const bool isSpeaking) noexcept {
 		DiscordCoreInternal::SendSpeakingData theData{};
 		if (!isSpeaking) {
@@ -294,9 +298,6 @@ namespace DiscordCoreAPI {
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected()) {
 					WebSocketSSLShard::processIO(10000);
-				}
-				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected() && WebSocketSSLShard::inputBuffer.size() > 0) {
-					this->parseMessage(this);
 				}
 
 				std::this_thread::sleep_for(1ms);
@@ -691,11 +692,9 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Collecting_Hello: {
-				if (!this->collectAndProcessAMessage(VoiceConnectionState::Sending_Identify)) {
-					this->currentReconnectTries++;
-					this->onClosed();
-					this->connectInternal();
-					return;
+				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify){
+					WebSocketSSLShard::processIO(10000);
+					std::this_thread::sleep_for(1ms);
 				}
 				this->currentReconnectTries = 0;
 				this->connectInternal();
@@ -720,11 +719,9 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Collecting_Ready: {
-				if (!this->collectAndProcessAMessage(VoiceConnectionState::Initializing_DatagramSocket)) {
-					this->currentReconnectTries++;
-					this->onClosed();
-					this->connectInternal();
-					return;
+				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
+					WebSocketSSLShard::processIO(10000);
+					std::this_thread::sleep_for(1ms);
 				}
 				this->connectInternal();
 				break;
@@ -759,11 +756,9 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Collecting_Session_Description: {
-				if (!this->collectAndProcessAMessage(VoiceConnectionState::Collecting_Init_Data)) {
-					this->currentReconnectTries++;
-					this->onClosed();
-					this->connectInternal();
-					return;
+				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
+					WebSocketSSLShard::processIO(10000);
+					std::this_thread::sleep_for(1ms);
 				}
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
