@@ -150,9 +150,7 @@ namespace DiscordCoreAPI {
 		std::deque<ConnectionPackage> theConnections{};
 		CommandController commandController{ this };
 		ConfigManager configManager{};
-		std::mutex connectionMutex{};
 		EventManager eventManager{};
-		std::mutex coutMutex{};
 		BotUser currentUser{};
 
 		void registerFunctionsInternal();

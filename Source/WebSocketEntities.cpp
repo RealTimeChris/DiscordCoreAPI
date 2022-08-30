@@ -452,7 +452,6 @@ namespace DiscordCoreInternal {
 				}
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages() && !payload.is_null()) {
-					//std::unique_lock theLock{ this->discordCoreClient->coutMutex };
 					cout << DiscordCoreAPI::shiftToBrightGreen()
 						 << "Message received from WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string(": ")
 						 << payload.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) << DiscordCoreAPI::reset() << endl
@@ -1336,7 +1335,6 @@ namespace DiscordCoreInternal {
 						}
 						case 7: {
 							if (this->configManager->doWePrintWebSocketErrorMessages()) {
-								//std::unique_lock theLock{ this->discordCoreClient->coutMutex };
 								cout << DiscordCoreAPI::shiftToBrightBlue()
 									 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 7)!"
 									 << DiscordCoreAPI::reset() << endl
@@ -1349,7 +1347,6 @@ namespace DiscordCoreInternal {
 						}
 						case 9: {
 							if (this->configManager->doWePrintWebSocketErrorMessages()) {
-								//std::unique_lock theLock{ this->discordCoreClient->coutMutex };
 								cout << DiscordCoreAPI::shiftToBrightBlue()
 									 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 9)!"
 									 << DiscordCoreAPI::reset() << endl
@@ -1511,7 +1508,6 @@ namespace DiscordCoreInternal {
 						std::this_thread::sleep_for(5s);
 					}
 					if (this->configManager->doWePrintGeneralSuccessMessages()) {
-						//std::unique_lock theLock{ this->discordCoreClient->coutMutex };
 						cout << DiscordCoreAPI::shiftToBrightBlue() << "Connecting Shard " + std::to_string(thePackageNew.currentShard + 1) << " of "
 							 << this->configManager->getShardCountForThisProcess()
 							 << std::string(" Shards for this process. (") + std::to_string(thePackageNew.currentShard + 1) + " of " +
@@ -1524,7 +1520,6 @@ namespace DiscordCoreInternal {
 						this->configManager->doWePrintWebSocketErrorMessages());
 					if (didWeConnect == ConnectionResult::Error) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							//std::unique_lock theLock{ this->discordCoreClient->coutMutex };
 							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed for WebSocket [" << thePackageNew.currentShard << ","
 									  << this->configManager->getTotalShardCount() << "]"
 									  << " reconnecting in 5 seconds." << DiscordCoreAPI::reset() << std::endl
@@ -1563,7 +1558,6 @@ namespace DiscordCoreInternal {
 					auto theResult = this->theShardMap[thePackageNew.currentShard]->processIO(1000000);
 					if (theResult != ProcessIOResult::No_Error) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							//std::unique_lock theLock{ this->discordCoreClient->coutMutex };
 							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + thePackageNew.currentShard << ","
 									  << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << std::endl
 									  << std::endl;
@@ -1633,7 +1627,6 @@ namespace DiscordCoreInternal {
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							//std::unique_lock theLock{ this->discordCoreClient->coutMutex };
 							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << value.shardNumber << ","
 									  << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << std::endl
 									  << std::endl;

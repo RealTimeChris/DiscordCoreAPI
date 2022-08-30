@@ -209,7 +209,6 @@ namespace DiscordCoreAPI {
 			if (this->theConnections.size() > 0 && this->theConnectionStopWatch.hasTimePassed()) {
 				this->theConnectionStopWatch.resetTimer();
 				auto theData = this->theConnections.front();
-				//std::unique_lock theLock{ this->connectionMutex };
 				this->theConnections.pop_front();
 				this->baseSocketAgentMap[static_cast<int32_t>(floor(static_cast<float>(theData.currentShard) / static_cast<float>(this->configManager.getTotalShardCount()) *
 											 this->baseSocketAgentMap.size()))]
@@ -276,7 +275,6 @@ namespace DiscordCoreAPI {
 			theData.currentReconnectTries = 0;
 			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x] =
 				std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, &this->theConnections, x, &Globals::doWeQuit);
-			//std::unique_lock theLock{ this->connectionMutex };
 			this->theConnections.push_back(theData);
 		}
 		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[this->configManager.getStartingShard()].get() };
