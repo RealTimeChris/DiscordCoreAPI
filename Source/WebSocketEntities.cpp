@@ -852,32 +852,6 @@ namespace DiscordCoreInternal {
 												this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(dataPackage);
 											}
 										}
-										Snowflake guildId{};
-										Snowflake userId{};
-										if (payload["d"].contains("user") && !payload["d"]["user"].is_null()) {
-											userId = stoull(payload["d"]["user"]["id"].get<std::string>());
-										};
-										if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
-											guildId = stoull(payload["d"]["guild_id"].get<std::string>());
-										};
-										auto theUser = std::make_unique<DiscordCoreAPI::UserData>();
-										DiscordCoreAPI::parseObject(payload["d"]["user"], *theUser);
-										std::unique_ptr<DiscordCoreAPI::OnGuildMemberRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMemberRemoveData>(
-											std::move(theUser), this->discordCoreClient, guildId) };
-										if (DiscordCoreAPI::GuildMembers::cache.contains(guildId)) {
-											if (DiscordCoreAPI::GuildMembers::cache[guildId].cache.contains(userId)) {
-												DiscordCoreAPI::GuildMemberData* guildMember = DiscordCoreAPI::GuildMembers::cache[guildId].cache[userId].get();
-												DiscordCoreAPI::GuildMembers::removeGuildMember(*guildMember);
-												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->guildId].get();
-												for (int32_t x = 0; x < guild->members.size(); ++x) {
-													if (guild->members[x] == userId) {
-														guild->members.erase(guild->members.begin() + x);
-													}
-													guild->memberCount--;
-												}
-											}
-										}
-										this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(*dataPackage);
 										break;
 									}
 									case 27: {
