@@ -840,33 +840,6 @@ namespace DiscordCoreInternal {
 										}
 										case 27: {
 											if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers ||
-												this->discordCoreClient->eventManager.onGuildMemberUpdateEvent.theFunctions.size() > 0) {
-												DiscordCoreAPI::GuildMemberData* theGuildMemberPtr{ nullptr };
-												auto theGuildMember = std::make_unique<DiscordCoreAPI::GuildMemberData>();
-												Snowflake userId{};
-												Snowflake guildId{};
-												if (payload["d"]["user"].contains("id") && !payload["d"]["user"]["id"].is_null()) {
-													userId = stoull(payload["d"]["user"]["id"].get<std::string>());
-												}
-												if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
-													guildId = stoull(payload["d"]["guild_id"].get<std::string>());
-												}
-												DiscordCoreAPI::parseObject(payload["d"], *theGuildMember);
-												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
-													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													theGuildMemberPtr = DiscordCoreAPI::GuildMembers::cache[guildId].cache[userId].get();
-												} else {
-													theGuildMemberPtr = theGuildMember.get();
-												}
-												if (this->discordCoreClient->eventManager.onGuildMemberUpdateEvent.theFunctions.size() > 0) {
-													DiscordCoreAPI::OnGuildMemberUpdateData dataPackage{ std::make_unique<DiscordCoreAPI::GuildMemberData>(*theGuildMemberPtr) };
-													this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(dataPackage);
-												}
-											}
-											break;
-										}
-										case 28: {
-											if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers ||
 												this->discordCoreClient->eventManager.onGuildMemberRemoveEvent.theFunctions.size() > 0) {
 												Snowflake userId{};
 												Snowflake guildId{};
@@ -895,6 +868,33 @@ namespace DiscordCoreInternal {
 																											 DiscordCoreAPI::Users::getCachedUserAsync({ .userId = userId }).get()),
 														this->discordCoreClient, userId };
 													this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(dataPackage);
+												}
+											}
+											break;
+										}
+										case 28: {
+											if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers ||
+												this->discordCoreClient->eventManager.onGuildMemberUpdateEvent.theFunctions.size() > 0) {
+												DiscordCoreAPI::GuildMemberData* theGuildMemberPtr{ nullptr };
+												auto theGuildMember = std::make_unique<DiscordCoreAPI::GuildMemberData>();
+												Snowflake userId{};
+												Snowflake guildId{};
+												if (payload["d"]["user"].contains("id") && !payload["d"]["user"]["id"].is_null()) {
+													userId = stoull(payload["d"]["user"]["id"].get<std::string>());
+												}
+												if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
+													guildId = stoull(payload["d"]["guild_id"].get<std::string>());
+												}
+												DiscordCoreAPI::parseObject(payload["d"], *theGuildMember);
+												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
+													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
+													theGuildMemberPtr = DiscordCoreAPI::GuildMembers::cache[guildId].cache[userId].get();
+												} else {
+													theGuildMemberPtr = theGuildMember.get();
+												}
+												if (this->discordCoreClient->eventManager.onGuildMemberUpdateEvent.theFunctions.size() > 0) {
+													DiscordCoreAPI::OnGuildMemberUpdateData dataPackage{ std::make_unique<DiscordCoreAPI::GuildMemberData>(*theGuildMemberPtr) };
+													this->discordCoreClient->eventManager.onGuildMemberUpdateEvent(dataPackage);
 												}
 											}
 											break;

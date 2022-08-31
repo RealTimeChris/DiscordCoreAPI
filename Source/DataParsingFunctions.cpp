@@ -381,6 +381,22 @@ namespace DiscordCoreAPI {
 			}
 		}
 
+		if (GuildMembers::doWeCacheGuildMembers) {
+			for (auto& value: jsonObjectData["presences"]) {
+				auto userId = strtoull(value["user"]["id"].get<std::string>());
+				if (!GuildMembers::cache.contains(theData.id)) {
+					GuildMembers::cache[theData.id] = GuildMemberHolder{};
+				}
+				if (!GuildMembers::cache[theData.id].cache.contains(userId)) {
+					GuildMembers::cache[theData.id].cache[userId] = std::make_unique<GuildMemberData>();
+				}
+				PresenceUpdateData theDataNew{};
+				DiscordCoreAPI::parseObject(value, theDataNew);
+				theDataNew.guildId = theData.id;
+				GuildMembers::cache[theData.id].cache[userId]->presenceData = std::move(theDataNew);
+			}
+		}
+
 		if (Channels::doWeCacheChannels) {
 			theData.channels.clear();
 			theData.channels.reserve(jsonObjectData["channels"].size());
@@ -500,12 +516,14 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (jsonObjectData.contains("presences") && !jsonObjectData["presences"].is_null()) {
-			theData.presences.clear();
-			for (auto& value: jsonObjectData["presences"]) {
-				PresenceUpdateData newData{};
-				DiscordCoreAPI::parseObject(value, newData);
-				theData.presences[newData.user.id] = newData;
+		if (GuildMembers::doWeCacheGuildMembers) {
+			if (jsonObjectData.contains("presences") && !jsonObjectData["presences"].is_null()) {
+				theData.presences.clear();
+				for (auto& value: jsonObjectData["presences"]) {
+					PresenceUpdateData newData{};
+					DiscordCoreAPI::parseObject(value, newData);
+					theData.presences[strtoull(value["user"]["id"].get<std::string>())] = newData;
+				}
 			}
 		}
 
@@ -2578,11 +2596,8 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(nlohmann::json& jsonObjectData, PresenceUpdateData& theData) {
-		if (jsonObjectData.contains("user") && !jsonObjectData["user"].is_null()) {
-			DiscordCoreAPI::parseObject(jsonObjectData["user"], theData.user);
-		}
 
-		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null() && jsonObjectData["guild_id"].get<std::string>() != "") {
+		if (jsonObjectData.contains("guild_id") && !jsonObjectData["guild_id"].is_null()) {
 			theData.guildId = stoull(jsonObjectData["guild_id"].get<std::string>());
 		}
 

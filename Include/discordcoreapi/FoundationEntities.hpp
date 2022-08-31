@@ -734,6 +734,164 @@ namespace DiscordCoreAPI {
 		Longest = 10080///< Longest.
 	};
 
+	/// Party data. \brief Party data.
+	class DiscordCoreAPI_Dll PartyData : public DiscordEntity {
+	  public:
+		std::vector<int32_t> size{ 0, 0 };///< The size of the party.
+
+		PartyData() noexcept = default;
+
+		virtual ~PartyData() noexcept = default;
+	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, PartyData& theData);
+
+	enum class RoleFlags : uint8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
+
+	/// Data structure representing a single Role. \brief Data structure representing a single Role.
+	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
+	  public:
+		friend class GuildData;
+
+		StringWrapper unicodeEmoji{};///< Emoji representing the Role.
+		Permissions permissions{};///< The Role's base Guild Permissions.
+		int16_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
+		ColorValue color{ 0 };///< The Role's color.
+		StringWrapper name{};///< The Role's name.
+		Snowflake guildId{};///< The id of the Guild that this Role is from.
+		int8_t flags{ 0 };///< Role flags.
+
+		virtual ~RoleData() noexcept = default;
+	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, RoleData& theData);
+
+	/// Data structure representing a single emoji. \brief Data structure representing a single emoji.
+	class DiscordCoreAPI_Dll EmojiData : public DiscordEntity {
+	  public:
+		std::wstring unicodeName{ L"" };///< What is its unicode name?
+		std::vector<RoleData> roles{};///< Roles that are allowed to use this emoji.
+		bool requireColons{ false };///< Require colons to render it?
+		bool available{ true };///< Is it available to be used?
+		bool animated{ false };///< Is it animated?
+		bool managed{ false };///< Is it managed?
+		StringWrapper name{};///< What is its name?
+		UserData user{};///< User that created this emoji.
+
+		EmojiData() noexcept = default;
+
+		virtual ~EmojiData() noexcept = default;
+	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, EmojiData& theData);
+
+	/// Assets data. \brief Party data.
+	struct DiscordCoreAPI_Dll AssetsData {
+		StringWrapper largeImage{};///< Keyname of an asset to display.
+		StringWrapper smallImage{};///< Keyname of an asset to display.
+		StringWrapper largeText{};///< Hover text for the large image.
+		StringWrapper smallText{};///< Hover text for the small image.
+
+		AssetsData() noexcept = default;
+
+		virtual ~AssetsData() noexcept = default;
+	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, AssetsData& theData);
+
+	/// Secrets data. \brief Secrets data.
+	struct DiscordCoreAPI_Dll SecretsData {
+		StringWrapper spectate{};///< Unique hash for the given match context.
+		StringWrapper match{};///< Unique hash for Spectate button.
+		StringWrapper join{};///< Unique hash for chat invitesand Ask to Join.
+
+		SecretsData() noexcept = default;
+
+		virtual ~SecretsData() noexcept = default;
+	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, SecretsData& theData);
+
+	/// Timestamp data. \brief Timestamp data.
+	struct DiscordCoreAPI_Dll TimestampData {
+		int64_t start{ 0 };///< Unix timestamp - Send this to have an "elapsed" timer.
+		int64_t end{ 0 };///< Unix timestamp - send this to have a "remaining" timer.
+
+		TimestampData() noexcept = default;
+
+		virtual ~TimestampData() noexcept = default;
+	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, TimestampData& theData);
+
+	/// Button data. \brief Button data.
+	struct DiscordCoreAPI_Dll ButtonData {
+		StringWrapper label{};///< Visible label of the button.
+		StringWrapper url{};///< Url to display on the button.
+	};
+
+	/// Activity types. \brief Activity types.
+	enum class ActivityType : uint8_t {
+		Game = 0,///< Game.
+		Streaming = 1,///< Streaming.
+		Listening = 2,///< Listening.
+		Watching = 3,///< Watching.
+		Custom = 4,///< Custom.
+		Competing = 5///< Competing.
+	};
+
+	/// Activity data. \brief Activity data.
+	struct DiscordCoreAPI_Dll ActivityData {
+		TimestampData timestamps{};///< Timestamp data.
+		Snowflake applicationId{};///< Application id for the current application.
+		StringWrapper details{};///< Details about the activity.
+		int32_t createdAt{ 0 };///< Timestamp of when the activity began.
+		bool instance{ false };///< Whether this activity is an instanced context, like a match.
+		StringWrapper state{};///< The player's current party status.
+		SecretsData secrets{};///< Secrets data.
+		ButtonData buttons{};///< Button Data.
+		StringWrapper name{};///< Name of the activity.
+		ActivityType type{};///< Activity data.
+		AssetsData assets{};///< Assets data.
+		StringWrapper url{};///< Url associated with the activity.
+		int32_t flags{ 0 };///< Flags.
+		EmojiData emoji{};///< Emoji associated with the activity.
+		PartyData party{};///< Party data.
+
+		ActivityData() noexcept = default;
+
+		virtual ~ActivityData() noexcept = default;
+	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ActivityData& theData);
+
+	/// Client status data. \brief Client status data.
+	struct DiscordCoreAPI_Dll ClientStatusData {
+		StringWrapper desktop{};///< Desktop name.
+		StringWrapper mobile{};///< Mobile name.
+		StringWrapper web{};///< Web link.
+
+		ClientStatusData() noexcept = default;
+
+		virtual ~ClientStatusData() noexcept = default;
+	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ClientStatusData& theData);
+
+	/// Presence update data. \brief Presence update data.
+	struct DiscordCoreAPI_Dll PresenceUpdateData {
+		std::vector<ActivityData> activities{};///< Array of activities.
+		ClientStatusData clientStatus{};///< Current client status.
+		StringWrapper status{};///< Status of the current presence.
+		Snowflake guildId{};///< Guild id for the current presence.
+
+		PresenceUpdateData() noexcept = default;
+
+		virtual ~PresenceUpdateData() noexcept = default;
+	};
+
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, PresenceUpdateData& theData);
+
 	enum class GuildMemberFlags : uint8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
 
 	/// Data structure representing a single GuildMember. \brief Data structure representing a single GuildMember.
@@ -741,8 +899,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
 	  public:
 		friend class GuildData;
-
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
+		PresenceUpdateData presenceData{};///< Presence data for the current GuildMember.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		Snowflake voiceChannelId{};///< Currently held voice channel, if applicable.
 		Permissions permissions{};///< Their base-level Permissions in the Guild
@@ -826,26 +984,6 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ArchivedThreadsData& theData);
-
-	enum class RoleFlags : uint8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
-
-	/// Data structure representing a single Role. \brief Data structure representing a single Role.
-	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
-	  public:
-		friend class GuildData;
-
-		StringWrapper unicodeEmoji{};///< Emoji representing the Role.
-		Permissions permissions{};///< The Role's base Guild Permissions.
-		int16_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
-		ColorValue color{ 0 };///< The Role's color.
-		StringWrapper name{};///< The Role's name.
-		Snowflake guildId{};///< The id of the Guild that this Role is from.
-		int8_t flags{ 0 };///< Role flags.
-
-		virtual ~RoleData() noexcept = default;
-	};
-
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, RoleData& theData);
 
 	/// Application command-option types. \brief Application command-option types.
 	enum class ApplicationCommandOptionType : uint8_t {
@@ -995,25 +1133,6 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, GuildApplicationCommandPermissionsDataVector& theData);
-
-	/// Data structure representing a single emoji. \brief Data structure representing a single emoji.
-	class DiscordCoreAPI_Dll EmojiData : public DiscordEntity {
-	  public:
-		std::wstring unicodeName{ L"" };///< What is its unicode name?
-		std::vector<RoleData> roles{};///< Roles that are allowed to use this emoji.
-		bool requireColons{ false };///< Require colons to render it?
-		bool available{ true };///< Is it available to be used?
-		bool animated{ false };///< Is it animated?
-		bool managed{ false };///< Is it managed?
-		std::string name{};///< What is its name?
-		UserData user{};///< User that created this emoji.
-
-		EmojiData() noexcept = default;
-
-		virtual ~EmojiData() noexcept = default;
-	};
-
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, EmojiData& theData);
 
 	class DiscordCoreAPI_Dll EmojiDataVector {
 	  public:
@@ -1462,111 +1581,6 @@ namespace DiscordCoreAPI {
 
 	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, AuditLogEntryData& theData);
 
-	/// Party data. \brief Party data.
-	class DiscordCoreAPI_Dll PartyData : public DiscordEntity {
-	  public:
-		std::vector<int32_t> size{ 0, 0 };///< The size of the party.
-
-		PartyData() noexcept = default;
-
-		virtual ~PartyData() noexcept = default;
-	};
-
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, PartyData& theData);
-
-	/// Assets data. \brief Party data.
-	struct DiscordCoreAPI_Dll AssetsData {
-		std::string largeImage{};///< Keyname of an asset to display.
-		std::string smallImage{};///< Keyname of an asset to display.
-		std::string largeText{};///< Hover text for the large image.
-		std::string smallText{};///< Hover text for the small image.
-
-		AssetsData() noexcept = default;
-
-		virtual ~AssetsData() noexcept = default;
-	};
-
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, AssetsData& theData);
-
-	/// Secrets data. \brief Secrets data.
-	struct DiscordCoreAPI_Dll SecretsData {
-		std::string spectate{};///< Unique hash for the given match context.
-		std::string match{};///< Unique hash for Spectate button.
-		std::string join{};///< Unique hash for chat invitesand Ask to Join.
-
-		SecretsData() noexcept = default;
-
-		virtual ~SecretsData() noexcept = default;
-	};
-
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, SecretsData& theData);
-
-	/// Timestamp data. \brief Timestamp data.
-	struct DiscordCoreAPI_Dll TimestampData {
-		int64_t start{ 0 };///< Unix timestamp - Send this to have an "elapsed" timer.
-		int64_t end{ 0 };///< Unix timestamp - send this to have a "remaining" timer.
-
-		TimestampData() noexcept = default;
-
-		virtual ~TimestampData() noexcept = default;
-	};
-
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, TimestampData& theData);
-
-	/// Button data. \brief Button data.
-	struct DiscordCoreAPI_Dll ButtonData {
-		std::string label{};///< Visible label of the button.
-		std::string url{};///< Url to display on the button.
-	};
-
-	/// Activity types. \brief Activity types.
-	enum class ActivityType : uint8_t {
-		Game = 0,///< Game.
-		Streaming = 1,///< Streaming.
-		Listening = 2,///< Listening.
-		Watching = 3,///< Watching.
-		Custom = 4,///< Custom.
-		Competing = 5///< Competing.
-	};
-
-	/// Activity data. \brief Activity data.
-	struct DiscordCoreAPI_Dll ActivityData {
-		TimestampData timestamps{};///< Timestamp data.
-		Snowflake applicationId{};///< Application id for the current application.
-		std::string details{};///< Details about the activity.
-		int32_t createdAt{ 0 };///< Timestamp of when the activity began.
-		bool instance{ false };///< Whether this activity is an instanced context, like a match.
-		std::string state{};///< The player's current party status.
-		SecretsData secrets{};///< Secrets data.
-		ButtonData buttons{};///< Button Data.
-		std::string name{};///< Name of the activity.
-		ActivityType type{};///< Activity data.
-		AssetsData assets{};///< Assets data.
-		std::string url{};///< Url associated with the activity.
-		int32_t flags{ 0 };///< Flags.
-		EmojiData emoji{};///< Emoji associated with the activity.
-		PartyData party{};///< Party data.
-
-		ActivityData() noexcept = default;
-
-		virtual ~ActivityData() noexcept = default;
-	};
-
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ActivityData& theData);
-
-	/// Client status data. \brief Client status data.
-	struct DiscordCoreAPI_Dll ClientStatusData {
-		std::string desktop{};///< Desktop name.
-		std::string mobile{};///< Mobile name.
-		std::string web{};///< Web link.
-
-		ClientStatusData() noexcept = default;
-
-		virtual ~ClientStatusData() noexcept = default;
-	};
-
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ClientStatusData& theData);
-
 	/// Premium tier levels. \brief Premium tier levels.
 	enum class PremiumTier : uint8_t {
 		None = 0,///< None.
@@ -1629,21 +1643,6 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, WelcomeScreenData& theData);
-
-	/// Presence update data. \brief Presence update data.
-	struct DiscordCoreAPI_Dll PresenceUpdateData {
-		std::vector<ActivityData> activities{};///< Array of activities.
-		ClientStatusData clientStatus{};///< Current client status.
-		std::string status{};///< Status of the current presence.
-		Snowflake guildId{};///< Guild id for the current presence.
-		UserData user{};///< User data for the current presence.
-
-		PresenceUpdateData() noexcept = default;
-
-		virtual ~PresenceUpdateData() noexcept = default;
-	};
-
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, PresenceUpdateData& theData);
 
 	/// Stage instance privacy levels. \brief Stage instance privacy levels.
 	enum class StageInstancePrivacyLevel : uint8_t {
