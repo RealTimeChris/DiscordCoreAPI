@@ -243,6 +243,35 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild from which the Role was deleted.
 	};
 
+	/// Data that is received as part of a GuildScheduledEvent creation event. \brief Data that is received as part of a GuildScheduledEvent creation event.
+	struct DiscordCoreAPI_Dll OnGuildScheduledEventCreationData {
+		GuildScheduledEventData guildScheduledEvent{};
+	};
+
+	/// Data that is received as part of a GuildScheduledEvent update event. \brief Data that is received as part of a GuildScheduledEvent update event.
+	struct DiscordCoreAPI_Dll OnGuildScheduledEventUpdateData {
+		GuildScheduledEventData guildScheduledEvent{};
+	};
+
+	/// Data that is received as part of a GuildScheduledEvent delete event. \brief Data that is received as part of a GuildScheduledEvent delete event.
+	struct DiscordCoreAPI_Dll OnGuildScheduledEventDeletionData {
+		GuildScheduledEventData guildScheduledEvent{};
+	};
+
+	/// Data that is received as part of a GuildScheduledEvent User add event. \brief Data that is received as part of a GuildScheduledEvent User add event.
+	struct DiscordCoreAPI_Dll OnGuildScheduledEventUserAddData {
+		Snowflake guildScheduledEventId{};
+		Snowflake guildId{};
+		Snowflake userId{};
+	};
+
+	/// Data that is received as part of a GuildScheduledEvent User remove event. \brief Data that is received as part of a GuildScheduledEvent User remove event.
+	struct DiscordCoreAPI_Dll OnGuildScheduledEventUserRemoveData {
+		Snowflake guildScheduledEventId{};
+		Snowflake guildId{};
+		Snowflake userId{};
+	};
+
 	/// Data that is received as part of an Integration creation event. \brief Data that is received as part of an Integration creation event.
 	struct DiscordCoreAPI_Dll OnIntegrationCreationData {
 		IntegrationData integrationData{};///< The new IntegrationData structure.
@@ -648,6 +677,47 @@ namespace DiscordCoreAPI {
 		void onRoleDeletion(DiscordCoreInternal::EventDelegateToken& token);
 
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
+		/// \param handler A delegate taking an OnGuildScheduledEventCreationData structure as an argument.
+		/// \returns An event_token for later de-registering the event.
+		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventCreation(const DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventCreationData> handler);
+		/// For removing a function from handling this event. \brief For removing a function from handling this event.
+		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
+		void onGuildScheduledEventCreation(DiscordCoreInternal::EventDelegateToken& token);
+		
+		/// For adding a function to handle this event. \brief For adding a function to handle this event.
+		/// \param handler A delegate taking an OnGuildScheduledEventUpdateData structure as an argument.
+		/// \returns An event_token for later de-registering the event.
+		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventUpdate(const DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUpdateData> handler);
+		/// For removing a function from handling this event. \brief For removing a function from handling this event.
+		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
+		void onGuildScheduledEventUpdate(DiscordCoreInternal::EventDelegateToken& token);
+
+		/// For adding a function to handle this event. \brief For adding a function to handle this event.
+		/// \param handler A delegate taking an OnGuildScheduledEventDeletionData structure as an argument.
+		/// \returns An event_token for later de-registering the event.
+		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventDeletion(const DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventDeletionData> handler);
+		/// For removing a function from handling this event. \brief For removing a function from handling this event.
+		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
+		void onGuildScheduledEventDeletion(DiscordCoreInternal::EventDelegateToken& token);
+
+		/// For adding a function to handle this event. \brief For adding a function to handle this event.
+		/// \param handler A delegate taking an OnGuildScheduledEventUserAddData structure as an argument.
+		/// \returns An event_token for later de-registering the event.
+		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventUserAdd(const DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserAddData> handler);
+		/// For removing a function from handling this event. \brief For removing a function from handling this event.
+		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
+		void onGuildScheduledEventUserAdd(DiscordCoreInternal::EventDelegateToken& token);
+
+		/// For adding a function to handle this event. \brief For adding a function to handle this event.
+		/// \param handler A delegate taking an OnGuildScheduledEventUserRemoveData structure as an argument.
+		/// \returns An event_token for later de-registering the event.
+		DiscordCoreInternal::EventDelegateToken onGuildScheduledEventUserRemove(const DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserRemoveData> handler);
+		/// For removing a function from handling this event. \brief For removing a function from handling this event.
+		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
+		void onGuildScheduledEventUserRemove(DiscordCoreInternal::EventDelegateToken& token);
+
+
+		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnIntegrationCreationData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
 		DiscordCoreInternal::EventDelegateToken onIntegrationCreation(const DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationCreationData> handler);
@@ -894,6 +964,16 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::Event<CoRoutine<void>, OnRoleUpdateData> onRoleUpdateEvent{};
 
 		DiscordCoreInternal::Event<CoRoutine<void>, OnRoleDeletionData> onRoleDeletionEvent{};
+
+		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildScheduledEventCreationData> onGuildScheduledEventCreationEvent{};
+
+		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildScheduledEventUpdateData> onGuildScheduledEventUpdateEvent{};
+
+		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildScheduledEventDeletionData> onGuildScheduledEventDeletionEvent{};
+
+		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildScheduledEventUserAddData> onGuildScheduledEventUserAddEvent{};
+
+		DiscordCoreInternal::Event<CoRoutine<void>, OnGuildScheduledEventUserRemoveData> onGuildScheduledEventUserRemoveEvent{};
 
 		DiscordCoreInternal::Event<CoRoutine<void>, OnIntegrationCreationData> onIntegrationCreationEvent{};
 

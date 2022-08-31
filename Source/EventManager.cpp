@@ -486,6 +486,47 @@ namespace DiscordCoreAPI {
 		onRoleDeletionEvent.remove(token);
 	}
 
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventCreation(
+		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventCreationData> handler) {
+		return this->onGuildScheduledEventCreationEvent.add(std::move(handler));
+	}
+
+	void EventManager::onGuildScheduledEventCreation(DiscordCoreInternal::EventDelegateToken& token) {
+		onGuildScheduledEventCreationEvent.remove(token);
+	}
+
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUpdateData> handler) {
+		return this->onGuildScheduledEventUpdateEvent.add(std::move(handler));
+	}
+
+	void EventManager::onGuildScheduledEventUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+		onGuildScheduledEventUpdateEvent.remove(token);
+	}
+
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventDeletionData> handler) {
+		return this->onGuildScheduledEventDeletionEvent.add(std::move(handler));
+	}
+
+	void EventManager::onGuildScheduledEventDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+		onGuildScheduledEventDeletionEvent.remove(token);
+	}
+
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUserAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserAddData> handler) {
+		return this->onGuildScheduledEventUserAddEvent.add(std::move(handler));
+	}
+
+	void EventManager::onGuildScheduledEventUserAdd(DiscordCoreInternal::EventDelegateToken& token) {
+		onGuildScheduledEventUserAddEvent.remove(token);
+	}
+
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUserRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserRemoveData> handler) {
+		return this->onGuildScheduledEventUserRemoveEvent.add(std::move(handler));
+	}
+
+	void EventManager::onGuildScheduledEventUserRemove(DiscordCoreInternal::EventDelegateToken& token) {
+		onGuildScheduledEventUserRemoveEvent.remove(token);
+	}
+
 	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationCreationData> handler) {
 		return this->onIntegrationCreationEvent.add(std::move(handler));
 	}
