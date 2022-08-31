@@ -102,7 +102,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed() noexcept;
 
-		~WebSocketSSLShard() noexcept = default;
+		~WebSocketSSLShard() noexcept;
 
 	  protected:
 		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};

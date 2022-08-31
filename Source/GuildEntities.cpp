@@ -302,8 +302,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
+		Guilds::doWeCacheGuilds = configManagerNew->doWeCacheGuilds();
 		Guilds::discordCoreClient = discordCoreClientNew;
-		Guilds::configManager = configManagerNew;
 		Guilds::httpsClient = theClient;
 	}
 
@@ -821,7 +821,7 @@ namespace DiscordCoreAPI {
 		if (!guild || guild->id == 0) {
 			return;
 		}
-		if (Guilds::configManager->doWeCacheGuilds()) {
+		if (Guilds::doWeCacheGuilds) {
 			guild->discordCoreClient = Guilds::discordCoreClient;
 			std::unique_lock theLock{ Guilds::theMutex };
 			auto guildId = guild->id;
@@ -846,7 +846,7 @@ namespace DiscordCoreAPI {
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
 	std::unordered_map<Snowflake, std::unique_ptr<GuildData>> Guilds::cache{};
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
-	ConfigManager* Guilds::configManager{ nullptr };
+	bool Guilds::doWeCacheGuilds{ false };
 	std::shared_mutex Guilds::theMutex{};
 
 }

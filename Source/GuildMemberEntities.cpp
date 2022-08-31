@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
-		GuildMembers::configManager = configManagerNew;
+		GuildMembers::doWeCacheGuildMembers = configManagerNew->doWeCacheGuildMembers();
 		GuildMembers::httpsClient = theClient;
 	}
 
@@ -303,11 +303,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::insertGuildMember(std::unique_ptr<GuildMemberData> guildMember) {
-		std::unique_lock theLock{ GuildMembers::theMutex };
 		if (!guildMember || guildMember->id == 0) {
 			return;
 		}
-		if (GuildMembers::configManager->doWeCacheGuildMembers()) {
+		if (GuildMembers::doWeCacheGuildMembers) {
+			std::unique_lock theLock{ GuildMembers::theMutex };
 			auto guildMemberId = guildMember->id;
 			auto guildId = guildMember->guildId;
 			if (!GuildMembers::cache.contains(guildId)) {
@@ -332,6 +332,6 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
 	std::unordered_map<Snowflake, GuildMemberHolder> GuildMembers::cache{};
-	ConfigManager* GuildMembers::configManager{ nullptr };
+	bool GuildMembers::doWeCacheGuildMembers{ false };
 	std::shared_mutex GuildMembers::theMutex{};
 };

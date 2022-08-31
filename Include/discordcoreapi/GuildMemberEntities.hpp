@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static std::unordered_map<Snowflake, GuildMemberHolder> cache;
-		static ConfigManager* configManager;
+		static bool doWeCacheGuildMembers;
 		static std::shared_mutex theMutex;
 	};
 	/**@}*/

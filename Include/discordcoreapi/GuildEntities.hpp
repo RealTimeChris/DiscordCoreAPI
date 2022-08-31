@@ -578,8 +578,8 @@ namespace DiscordCoreAPI {
 		static std::unordered_map<Snowflake, std::unique_ptr<GuildData>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static DiscordCoreClient* discordCoreClient;
-		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;
+		static bool doWeCacheGuilds;
 
 		static void insertGuild(std::unique_ptr<GuildData> guild);
 

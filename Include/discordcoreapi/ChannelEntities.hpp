@@ -217,6 +217,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	  public:
+		template<typename ReturnType> DiscordCoreAPI_Dll friend void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class ChannelData;
@@ -306,8 +307,8 @@ namespace DiscordCoreAPI {
 	  protected:
 		static std::unordered_map<Snowflake, std::unique_ptr<ChannelData>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;
+		static bool doWeCacheChannels;
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

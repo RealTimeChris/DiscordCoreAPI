@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
-		Roles::configManager = configManagerNew;
+		Roles::doWeCacheRoles = configManagerNew->doWeCacheRoles();
 		Roles::httpsClient = theClient;
 	}
 
@@ -297,14 +297,13 @@ namespace DiscordCoreAPI {
 		if (!role || role->id == 0) {
 			return;
 		}
-		if (Roles::configManager->doWeCacheRoles()) {
+		if (Roles::doWeCacheRoles) {
+			std::unique_lock theLock{ Roles::theMutex };
 			auto roleId = role->id;
 			auto theResult = Roles::cache.find(roleId);
 			if (theResult == Roles::cache.end()) {
-				std::unique_lock theLock{ Roles::theMutex };
 				Roles::cache.emplace(roleId, std::move(role));
 			} else {
-				std::unique_lock theLock{ Roles::theMutex };
 				Roles::cache.insert_or_assign(roleId, std::move(role));
 			}
 			if (Roles::cache.size() % 1000 == 0) {
@@ -322,6 +321,6 @@ namespace DiscordCoreAPI {
 
 	std::unordered_map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
-	ConfigManager* Roles::configManager{ nullptr };
+	bool Roles::doWeCacheRoles{ false };
 	std::shared_mutex Roles::theMutex{};
 }

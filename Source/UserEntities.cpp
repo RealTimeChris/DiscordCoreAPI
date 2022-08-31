@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Users::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
-		Users::configManager = configManagerNew;
+		Users::doWeCacheUsers = configManagerNew->doWeCacheUsers();
 		Users::httpsClient = theClient;
 	}
 
@@ -229,11 +229,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void Users::insertUser(std::unique_ptr<UserData> user) {
-		std::unique_lock theLock{ Users::theMutex };
 		if (!user || user->id == 0) {
 			return;
 		}
-		if (Users::configManager->doWeCacheUsers()) {
+		if (Users::doWeCacheUsers) {
+			std::unique_lock theLock{ Users::theMutex };
 			auto userId = user->id;
 			if (!Users::cache.contains(userId)) {
 				Users::cache.emplace(userId, std::move(user));
@@ -248,6 +248,6 @@ namespace DiscordCoreAPI {
 
 	std::unordered_map<Snowflake, std::unique_ptr<UserData>> Users::cache{};
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
-	ConfigManager* Users::configManager{ nullptr };
+	bool Users::doWeCacheUsers{ false };
 	std::shared_mutex Users::theMutex{};
 }

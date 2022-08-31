@@ -175,6 +175,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	  public:
+		template<typename ReturnType> DiscordCoreAPI_Dll friend void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class RoleData;
@@ -239,8 +240,8 @@ namespace DiscordCoreAPI {
 	  protected:
 		static std::unordered_map<Snowflake, std::unique_ptr<RoleData>> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ConfigManager* configManager;
 		static std::shared_mutex theMutex;
+		static bool doWeCacheRoles;
 	};
 	/**@}*/
 

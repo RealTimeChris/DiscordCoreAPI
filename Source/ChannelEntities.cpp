@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
-		Channels::configManager = configManagerNew;
+		Channels::doWeCacheChannels = configManagerNew->doWeCacheChannels();
 		Channels::httpsClient = theClient;
 	}
 
@@ -375,14 +375,13 @@ namespace DiscordCoreAPI {
 		if (!channel || channel->id == 0) {
 			return;
 		}
-		if (Channels::configManager->doWeCacheChannels()) {
+		if (Channels::doWeCacheChannels) {
+			std::unique_lock theLock{ Channels::theMutex };
 			auto channelId = channel->id;
 			auto theResult = Channels::cache.find(channelId);
 			if (theResult == Channels::cache.end()) {
-				std::unique_lock theLock{ Channels::theMutex };
 				Channels::cache.emplace(channelId, std::move(channel));
 			} else {
-				std::unique_lock theLock{ Channels::theMutex };
 				Channels::cache.insert_or_assign(channelId, std::move(channel));
 			}
 			if (Channels::cache.size() % 1000 == 0) {
@@ -400,6 +399,6 @@ namespace DiscordCoreAPI {
 
 	std::unordered_map<Snowflake, std::unique_ptr<ChannelData>> Channels::cache{};
 	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
-	ConfigManager* Channels::configManager{ nullptr };
+	bool Channels::doWeCacheChannels{ false };
 	std::shared_mutex Channels::theMutex{};
 }
