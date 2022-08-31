@@ -320,14 +320,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	DiscordCoreAPI::StopWatch theStopWatchTwo{ 5us };
 	bool WebSocketSSLShard::handleBuffer(SSLClient* theClient) noexcept {
-		theStopWatchTwo.resetTimer();
 		if (static_cast<WebSocketSSLShard*>(theClient)->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
 			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
 		}
 		return this->parseMessage(static_cast<WebSocketSSLShard*>(theClient));
-		//std::cout << "EXECUTION TIME FOR PARSE MESSAGE: " << theStopWatchTwo.totalTimePassed() << std::endl;
 	}
 
 	void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
@@ -1478,9 +1475,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLShard::~WebSocketSSLShard() {
-		std::cout << "WERE LEAVING LEAVING LEAVIN!" << std::endl;
-	}
+	WebSocketSSLShard::~WebSocketSSLShard() {}
 
 	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
 		this->configManager = &discordCoreClientNew->configManager;
