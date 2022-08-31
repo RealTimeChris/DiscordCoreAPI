@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 
 		void sendVoiceData(std::string& responseData) noexcept;
 
-		void handleBuffer(SSLClient* theClient) noexcept;
+		bool handleBuffer(SSLClient* theClient) noexcept;
 
 		void runWebSocket(std::stop_token) noexcept;
 

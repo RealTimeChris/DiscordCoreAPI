@@ -136,6 +136,7 @@ namespace DiscordCoreAPI {
 		void updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage);
 
 	  protected:
+
 		BotUser() noexcept = default;
 
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };

@@ -316,9 +316,12 @@ namespace DiscordCoreInternal {
 	}
 
 	DiscordCoreAPI::StopWatch theStopWatchTwo{ 5us };
-	void WebSocketSSLShard::handleBuffer(SSLClient* theClient) noexcept {
+	bool WebSocketSSLShard::handleBuffer(SSLClient* theClient) noexcept {
 		theStopWatchTwo.resetTimer();
-		this->parseMessage(static_cast<WebSocketSSLShard*>(theClient));
+		if (static_cast<WebSocketSSLShard*>(theClient)->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
+			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
+		}
+		return this->parseMessage(static_cast<WebSocketSSLShard*>(theClient));
 		//std::cout << "EXECUTION TIME FOR PARSE MESSAGE: " << theStopWatchTwo.totalTimePassed() << std::endl;
 	}
 
@@ -1564,7 +1567,7 @@ namespace DiscordCoreInternal {
 					}
 					DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
 					if (this->theShardMap[thePackageNew.currentShard]->areWeStillConnected()) {
-						while (!this->theShardMap[thePackageNew.currentShard]->parseConnectionHeaders(this->theShardMap[thePackageNew.currentShard].get())) {
+						while (this->theShardMap[thePackageNew.currentShard]->theWebSocketState.load() == WebSocketSSLShardState::Upgrading) {
 							if (theStopWatch.hasTimePassed()) {
 								this->theShardMap[thePackageNew.currentShard]->onClosed();
 								return;

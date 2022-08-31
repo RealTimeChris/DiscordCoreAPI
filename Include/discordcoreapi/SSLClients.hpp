@@ -227,7 +227,7 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
-		virtual void handleBuffer(SSLClient*) noexcept = 0;
+		virtual bool handleBuffer(SSLClient*) noexcept = 0;
 
 		std::string& getInputBuffer() noexcept;
 

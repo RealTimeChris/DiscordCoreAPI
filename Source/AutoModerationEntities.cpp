@@ -52,6 +52,7 @@ namespace DiscordCoreAPI {
 		data["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
 		data["trigger_type"] = this->triggerType;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	ModifyAutoModerationRuleData::operator std::string() {
@@ -78,6 +79,7 @@ namespace DiscordCoreAPI {
 		data["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
 		data["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	AutoModerationRuleVector::operator std::vector<AutoModerationRule>() {

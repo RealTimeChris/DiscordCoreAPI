@@ -52,6 +52,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		uint64_t contentSize{ 0 };
+		bool isItChunked{ false };
 	};
 
 	class DiscordCoreAPI_Dll HttpsRnRBuilder {
@@ -113,10 +114,10 @@ namespace DiscordCoreInternal {
 
 		HttpsConnection(bool doWePrintErrorMessages);
 
-		void handleBuffer(SSLClient* theClient) noexcept;
+		bool handleBuffer(SSLClient* theClient) noexcept;
 
 		void disconnect(bool) noexcept;
-
+		
 		void resetValues();
 
 		virtual ~HttpsConnection() noexcept = default;

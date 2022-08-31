@@ -251,8 +251,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::handleBuffer(SSLClient* theClient) noexcept {
-		this->parseMessage(this);
+	bool VoiceConnection::handleBuffer(SSLClient* theClient) noexcept {
+		return this->parseMessage(this);
 	}
 
 	void VoiceConnection::sendSpeakingMessage(const bool isSpeaking) noexcept {
@@ -350,6 +350,7 @@ namespace DiscordCoreAPI {
 
 	bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
 		StopWatch theStopWatch{ 2500ms };
+		theStopWatch.resetTimer();
 		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor) {
 			WebSocketSSLShard::processIO(10000);
 			if (!WebSocketSSLShard::areWeStillConnected()) {
@@ -603,14 +604,14 @@ namespace DiscordCoreAPI {
 		if (this->taskThread01) {
 			this->taskThread01->request_stop();
 			if (this->taskThread01->joinable()) {
-				this->taskThread01->detach();
+				this->taskThread01->join();
 			}
 			this->taskThread01.reset(nullptr);
 		}
 		if (this->taskThread02) {
 			this->taskThread02->request_stop();
 			if (this->taskThread02->joinable()) {
-				this->taskThread02->detach();
+				this->taskThread02->join();
 			}
 			this->taskThread02.reset(nullptr);
 		}
@@ -620,7 +621,7 @@ namespace DiscordCoreAPI {
 			}
 			this->taskThread03->request_stop();
 			if (this->taskThread03->joinable()) {
-				this->taskThread03->detach();
+				this->taskThread03->join();
 			}
 			this->taskThread03.reset(nullptr);
 		}
@@ -640,6 +641,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
+		StopWatch theStopWatch{ 5000ms };
 		if (this->thePackage.currentShard == -1) {
 			return;
 		}
@@ -699,7 +701,12 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Collecting_Hello: {
+				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify){
+					if (theStopWatch.hasTimePassed()) {
+						this->onClosed();
+						return;
+					}
 					WebSocketSSLShard::processIO(10000);
 					std::this_thread::sleep_for(1ms);
 				}
@@ -727,6 +734,10 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceConnectionState::Collecting_Ready: {
 				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
+					if (theStopWatch.hasTimePassed()) {
+						this->onClosed();
+						return;
+					}
 					WebSocketSSLShard::processIO(10000);
 					std::this_thread::sleep_for(1ms);
 				}
@@ -764,6 +775,10 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceConnectionState::Collecting_Session_Description: {
 				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
+					if (theStopWatch.hasTimePassed()) {
+						this->onClosed();
+						return;
+					}
 					WebSocketSSLShard::processIO(10000);
 					std::this_thread::sleep_for(1ms);
 				}

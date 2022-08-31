@@ -478,8 +478,11 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						this->inputBuffer.append(this->rawInputBuffer.data(), this->rawInputBuffer.data() + readBytes);
 						this->bytesRead += readBytes;
-						if (!this->areWeAStandaloneSocket) {
-							this->handleBuffer(this);
+						
+					}
+					if (!this->areWeAStandaloneSocket) {
+						while (this->handleBuffer(this)) {
+							std::cout << "INPUT BUFFER: " << this->inputBuffer << std::endl;
 						}
 					}
 					returnValueFinal = true;
