@@ -1269,7 +1269,6 @@ namespace DiscordCoreInternal {
 												this->stateUpdateCollected = false;
 												this->areWeCollectingData = false;
 											}
-											std::cout << "USER ID: " << dataPackage->voiceStateData.userId << ", GUILD ID:" << dataPackage->voiceStateData.guildId << std::endl;
 											if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
 												if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->voiceStateData.guildId)) {
 													if (dataPackage->voiceStateData.userId != 0 && dataPackage->voiceStateData.guildId != 0) {
