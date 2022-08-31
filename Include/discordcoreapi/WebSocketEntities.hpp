@@ -141,6 +141,8 @@ namespace DiscordCoreInternal {
 
 		void connectVoiceChannel(VoiceConnectInitData theData) noexcept;
 
+		WebSocketSSLShard* getSSLShard(uint64_t theShardId) noexcept;
+
 		void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
 
 		std::jthread* getTheTask() noexcept;

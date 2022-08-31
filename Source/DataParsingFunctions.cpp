@@ -209,6 +209,7 @@ namespace DiscordCoreAPI {
 
 		std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
 		DiscordCoreAPI::parseObject(jsonObjectData["user"], *theUser);
+		theData.id = theUser->id;
 		Users::insertUser(std::move(theUser));
 
 		theData.avatar = getString(jsonObjectData, "avatar");
@@ -239,6 +240,7 @@ namespace DiscordCoreAPI {
 
 		std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
 		DiscordCoreAPI::parseObject(jsonObjectData["user"], *theUser);
+		theData.id = theUser->id;
 		Users::insertUser(std::move(theUser));
 
 		theData.avatar = getString(jsonObjectData, "avatar");
@@ -361,7 +363,7 @@ namespace DiscordCoreAPI {
 				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
 				DiscordCoreAPI::parseObject(value, *newData);
 				newData->guildId = theData.id;
-				auto theMember = newData.get();
+				std::cout << "THE USER ID: " << newData->id << std::endl;
 				theData.members.push_back(newData->id);
 				GuildMembers::insertGuildMember(std::move(newData));
 			}

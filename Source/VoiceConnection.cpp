@@ -252,7 +252,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::handleBuffer(SSLClient* theClient) noexcept {
-		this->parseMessage(this);
+		VoiceConnection::parseMessage(this);
+		std::cout << "THE INPUT BUFFER: " << WebSocketSSLShard::inputBuffer << std::endl;
 	}
 
 	void VoiceConnection::sendSpeakingMessage(const bool isSpeaking) noexcept {
@@ -287,6 +288,7 @@ namespace DiscordCoreAPI {
 					}
 					this->activeState.store(VoiceActiveState::Connecting);
 					this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+					theStopWatch.resetTimer();
 					while (!stopToken.stop_requested() && this->baseShard->theWebSocketState.load() != DiscordCoreInternal::WebSocketSSLShardState::Authenticated) {
 						if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
 							return;
@@ -346,26 +348,6 @@ namespace DiscordCoreAPI {
 				timeTakesToSleep = theStopWatch.totalTimePassed();
 			}
 		}
-	}
-
-	bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
-		StopWatch theStopWatch{ 2500ms };
-		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor) {
-			WebSocketSSLShard::processIO(10000);
-			if (!WebSocketSSLShard::areWeStillConnected()) {
-				return false;
-			}
-			if (WebSocketSSLShard::inputBuffer.size() > 0) {
-				if (!VoiceConnection::parseMessage(this)) {
-					return true;
-				}
-			}
-			if (theStopWatch.hasTimePassed()) {
-				return false;
-			}
-			std::this_thread::sleep_for(1ms);
-		}
-		return false;
 	}
 
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
@@ -463,7 +445,7 @@ namespace DiscordCoreAPI {
 											.get();
 								}
 								completionEventData.wasItAFail = false;
-								getSongAPIMap()[this->voiceConnectInitData.guildId]->onSongCompletionEvent(completionEventData);
+								getSongAPI(this->voiceConnectInitData.guildId).onSongCompletionEvent(completionEventData);
 								this->areWePlaying.store(false);
 								doWeBreak = true;
 								break;
@@ -600,43 +582,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::disconnectInternal() noexcept {
-		if (this->taskThread01) {
-			this->taskThread01->request_stop();
-			if (this->taskThread01->joinable()) {
-				this->taskThread01->join();
-			}
-			this->taskThread01.reset(nullptr);
-		}
-		if (this->taskThread02) {
-			this->taskThread02->request_stop();
-			if (this->taskThread02->joinable()) {
-				this->taskThread02->join();
-			}
-			this->taskThread02.reset(nullptr);
-		}
-		if (this->taskThread03) {
-			if (this->streamSocket) {
-				this->streamSocket->disconnect();
-			}
-			this->taskThread03->request_stop();
-			if (this->taskThread03->joinable()) {
-				this->taskThread03->join();
-			}
-			this->taskThread03.reset(nullptr);
-		}
-
-		DatagramSocketClient::disconnect();
-		WebSocketSSLShard::disconnect(false);
-		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
-			this->streamSocket->disconnect();
-		}
-		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
-		if (thePtr) {
-			thePtr->onSongCompletionEvent.remove(thePtr->eventToken);
-		}
-		this->areWeConnectedBool.store(false);
-		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-		this->activeState.store(VoiceActiveState::Connecting);
+		
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
@@ -662,6 +608,7 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
+
 				this->baseUrl = this->voiceConnectionData.endPoint.substr(0, this->voiceConnectionData.endPoint.find(":"));
 				this->connectionState.store(VoiceConnectionState::Initializing_WebSocket);
 				this->connectInternal();
@@ -675,6 +622,8 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
+
+				std::cout << "THE GUILD INSERTED ID: 0101" << this->voiceConnectInitData.guildId << std::endl;
 				this->theWebSocketState.store(DiscordCoreInternal::WebSocketSSLShardState::Upgrading);
 				std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + generateBase64EncodedKey() +
@@ -695,6 +644,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Hello);
+				std::cout << "THE GUILD INSERTED ID: 0202" << this->voiceConnectInitData.guildId << std::endl;
 				this->connectInternal();
 				break;
 			}
@@ -704,6 +654,7 @@ namespace DiscordCoreAPI {
 					std::this_thread::sleep_for(1ms);
 				}
 				this->currentReconnectTries = 0;
+				std::cout << "THE GUILD INSERTED ID: 0303" << this->voiceConnectInitData.guildId << std::endl;
 				this->connectInternal();
 				break;
 			}
@@ -721,6 +672,7 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
+				std::cout << "THE GUILD INSERTED ID: 0404" << this->voiceConnectInitData.guildId << std::endl;
 				this->connectionState.store(VoiceConnectionState::Collecting_Ready);
 				this->connectInternal();
 				break;
@@ -730,6 +682,7 @@ namespace DiscordCoreAPI {
 					WebSocketSSLShard::processIO(10000);
 					std::this_thread::sleep_for(1ms);
 				}
+				std::cout << "THE GUILD INSERTED ID: 0505" << this->voiceConnectInitData.guildId << std::endl;
 				this->connectInternal();
 				break;
 			}
@@ -740,6 +693,7 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
+				std::cout << "THE GUILD INSERTED ID: 0606" << this->voiceConnectInitData.guildId << std::endl;
 				this->connectionState.store(VoiceConnectionState::Sending_Select_Protocol);
 				this->connectInternal();
 				break;
@@ -752,20 +706,20 @@ namespace DiscordCoreAPI {
 				nlohmann::json protocolPayloadSelectString = protocolPayloadData;
 				std::string sendVector{};
 				this->stringifyJsonData(protocolPayloadSelectString, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				if (!this->sendMessage(sendVector, true)) {
+				if (!this->sendMessage(sendVector, false)) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					this->connectInternal();
 					return;
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Session_Description);
+				std::cout << "THE GUILD INSERTED ID: 0707" << this->voiceConnectInitData.guildId << std::endl;
 				this->connectInternal();
 				break;
 			}
 			case VoiceConnectionState::Collecting_Session_Description: {
 				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
-					WebSocketSSLShard::processIO(10000);
-					std::this_thread::sleep_for(1ms);
+					WebSocketSSLShard::processIO(100000);
 				}
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
@@ -779,6 +733,7 @@ namespace DiscordCoreAPI {
 					});
 					this->streamSocket->connect(this->theStreamInfo.address, this->theStreamInfo.port);
 				}
+				std::cout << "THE GUILD INSERTED ID: 0808" << this->voiceConnectInitData.guildId << std::endl;
 				this->thePackage.currentShard = -1;
 				return;
 			}
@@ -911,8 +866,42 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::disconnect() noexcept {
-		this->baseSocketAgent->voiceConnectionsToDisconnect.push_back(this->voiceConnectInitData.guildId);
-		this->activeState.store(VoiceActiveState::Exiting);
+		if (this->taskThread01) {
+			this->taskThread01->request_stop();
+			if (this->taskThread01->joinable()) {
+				this->taskThread01->detach();
+			}
+			this->taskThread01.reset(nullptr);
+		}
+		if (this->taskThread02) {
+			this->taskThread02->request_stop();
+			if (this->taskThread02->joinable()) {
+				this->taskThread02->detach();
+			}
+			this->taskThread02.reset(nullptr);
+		}
+		if (this->taskThread03) {
+			if (this->streamSocket) {
+				this->streamSocket->disconnect();
+			}
+			this->taskThread03->request_stop();
+			if (this->taskThread03->joinable()) {
+				this->taskThread03->detach();
+			}
+			this->taskThread03.reset(nullptr);
+		}
+		DatagramSocketClient::disconnect();
+		WebSocketSSLShard::disconnect(false);
+		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
+			this->streamSocket->disconnect();
+		}
+		auto thePtr = &getSongAPI(this->voiceConnectInitData.guildId);
+		if (thePtr) {
+			thePtr->onSongCompletionEvent.remove(thePtr->eventToken);
+		}
+		this->areWeConnectedBool.store(false);
+		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+		this->activeState.store(VoiceActiveState::Connecting);
 	}
 
 	void VoiceConnection::reconnect() noexcept {

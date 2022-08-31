@@ -134,7 +134,11 @@ namespace DiscordCoreInternal {
 	}
 
 	SOCKETWrapper::operator SOCKET() {
-		return *this->thePtr;
+		if (this->thePtr) {
+			return *this->thePtr;
+		} else {
+			return SOCKET_ERROR;
+		}
 	}
 
 	sockaddr* sockaddrWrapper::operator->() {
@@ -478,9 +482,9 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						this->inputBuffer.append(this->rawInputBuffer.data(), this->rawInputBuffer.data() + readBytes);
 						this->bytesRead += readBytes;
-						if (!this->areWeAStandaloneSocket) {
-							this->handleBuffer(this);
-						}
+					}
+					if (!this->areWeAStandaloneSocket) {
+						this->handleBuffer(this);
 					}
 					returnValueFinal = true;
 					break;

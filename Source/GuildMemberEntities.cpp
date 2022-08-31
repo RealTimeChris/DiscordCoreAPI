@@ -153,6 +153,7 @@ namespace DiscordCoreAPI {
 				co_return *GuildMembers::cache[dataPackage.guildId].cache[dataPackage.guildMemberId];
 			}
 		}
+		theLock.unlock();
 		co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
 	}
 

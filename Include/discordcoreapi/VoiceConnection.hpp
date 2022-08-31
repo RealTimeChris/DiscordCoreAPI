@@ -167,8 +167,6 @@ namespace DiscordCoreAPI {
 		uint32_t audioSSRC{};
 		std::string port{};
 
-		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
-
 		std::string encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;

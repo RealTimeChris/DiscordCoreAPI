@@ -198,17 +198,17 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Song newerSong = newSong;
 		if (currentReconnectTries > 9) {
 			DiscordCoreAPI::AudioFrameData frameData{};
-			while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.tryReceive(frameData)) {
+			while (DiscordCoreAPI::getVoiceConnection(this->guildId).audioDataBuffer.tryReceive(frameData)) {
 			};
 			DiscordCoreAPI::SongCompletionEventData eventData{};
-			auto returnValue = DiscordCoreAPI::getSongAPIMap()[this->guildId].get();
+			auto returnValue = &DiscordCoreAPI::getSongAPI(this->guildId);
 			if (returnValue) {
 				eventData.previousSong = returnValue->getCurrentSong(this->guildId);
 			}
 			eventData.wasItAFail = true;
 			eventData.guildMember = guildMember;
 			eventData.guild = DiscordCoreAPI::Guilds::getGuildAsync({ .guildId = this->guildId }).get();
-			DiscordCoreAPI::getSongAPIMap()[this->guildId]->onSongCompletionEvent(eventData);
+			DiscordCoreAPI::getSongAPI(this->guildId).onSongCompletionEvent(eventData);
 		} else {
 			newerSong = this->collectFinalSong(newerSong);
 			SoundCloudAPI::downloadAndStreamAudio(newerSong, stopToken, currentReconnectTries);
@@ -302,7 +302,7 @@ namespace DiscordCoreInternal {
 					for (auto& value: frames) {
 						auto encodedFrame = audioEncoder->encodeSingleAudioFrame(value);
 						encodedFrame.guildMemberId = newSong.addedByUserId;
-						DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(encodedFrame));
+						DiscordCoreAPI::getVoiceConnection(this->guildId).audioDataBuffer.send(std::move(encodedFrame));
 					}
 				}
 				if (stopToken.stop_requested()) {
@@ -319,13 +319,13 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::AudioFrameData frameData{};
 			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
 			frameData.sampleCount = 0;
-			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(frameData));
+			DiscordCoreAPI::getVoiceConnection(this->guildId).audioDataBuffer.send(std::move(frameData));
 		} catch (...) {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {
 				DiscordCoreAPI::reportException("SoundCloudAPI::downloadAndStreamAudio()");
 			}
 			currentReconnectTries++;
-			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->clearAudioData();
+			DiscordCoreAPI::getVoiceConnection(this->guildId).clearAudioData();
 			this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 		}
 	};

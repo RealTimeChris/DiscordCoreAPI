@@ -1790,8 +1790,6 @@ namespace DiscordCoreAPI {
 
 		bool areWeConnected();
 
-		void initialize();
-
 		void disconnect();
 
 		virtual ~GuildData() noexcept = default;

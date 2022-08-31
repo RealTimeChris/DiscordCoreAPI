@@ -112,8 +112,8 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute, StreamType streamTypeNew,
 		StreamInfo streamInfoNew) {
-		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id] && getVoiceConnectionMap()[this->id]->areWeConnected()) {
-			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+		if (getVoiceConnection(this->id).areWeConnected()) {
+			this->voiceConnectionPtr = &getVoiceConnection(this->id);
 			return this->voiceConnectionPtr;
 		} else if (guildMemberId != 0 || channelId != 0) {
 			Snowflake theChannelId{};
@@ -139,13 +139,13 @@ namespace DiscordCoreAPI {
 			voiceConnectInitData.selfMute = selfMute;
 			StopWatch theStopWatch{ 10000ms };
 			this->discordCoreClient->baseSocketAgentMap[theBaseSocketAgentIndex]->connectVoiceChannel(voiceConnectInitData);
-			while (!getVoiceConnectionMap()[this->id]->areWeConnected()) {
+			while (!getVoiceConnection(this->id).areWeConnected()) {
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {
 					break;
 				}
 			}
-			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+			this->voiceConnectionPtr = &getVoiceConnection(this->id);
 			return this->voiceConnectionPtr;
 		} else {
 			return nullptr;
@@ -159,46 +159,25 @@ namespace DiscordCoreAPI {
 	}
 
 	bool GuildData::areWeConnected() {
-		return getVoiceConnectionMap()[this->id]->areWeConnected();
-	}
-
-	void GuildData::initialize() {
-		if (!getVoiceConnectionMap().contains(this->id)) {
-			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };
-			getVoiceConnectionMap()[this->id] = nullptr;
-		}
-		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
-		if (!getYouTubeAPIMap().contains(this->id)) {
-			getYouTubeAPIMap()[this->id] =
-				std::make_unique<DiscordCoreInternal::YouTubeAPI>(&this->discordCoreClient->configManager, this->discordCoreClient->httpsClient.get(), this->id);
-		}
-		if (!getSoundCloudAPIMap().contains(this->id)) {
-			getSoundCloudAPIMap()[this->id] =
-				std::make_unique<DiscordCoreInternal::SoundCloudAPI>(&this->discordCoreClient->configManager, this->discordCoreClient->httpsClient.get(), this->id);
-		}
-		if (!getSongAPIMap().contains(this->id)) {
-			getSongAPIMap()[this->id] = std::make_unique<SongAPI>(this->id);
-		}
+		return getVoiceConnection(this->id).areWeConnected();
 	}
 
 	void GuildData::disconnect() {
-		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id].get()) {
-			UpdateVoiceStateData updateVoiceData{};
-			updateVoiceData.channelId = 0;
-			updateVoiceData.selfDeaf = false;
-			updateVoiceData.selfMute = false;
-			updateVoiceData.guildId = this->id;
-			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
-			getVoiceConnectionMap()[this->id]->disconnect();
-			StopWatch theStopWatch{ 10000ms };
-			while (getVoiceConnectionMap()[this->id]->areWeConnectedBool.load()) {
-				std::this_thread::sleep_for(1ms);
-				if (theStopWatch.hasTimePassed()) {
-					break;
-				}
+		UpdateVoiceStateData updateVoiceData{};
+		updateVoiceData.channelId = 0;
+		updateVoiceData.selfDeaf = false;
+		updateVoiceData.selfMute = false;
+		updateVoiceData.guildId = this->id;
+		this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
+		getVoiceConnection(this->id).disconnect();
+		StopWatch theStopWatch{ 10000ms };
+		while (getVoiceConnection(this->id).areWeConnectedBool.load()) {
+			std::this_thread::sleep_for(1ms);
+			if (theStopWatch.hasTimePassed()) {
+				break;
 			}
-			this->voiceConnectionPtr = nullptr;
 		}
+		this->voiceConnectionPtr = nullptr;
 	}
 
 	Guild& Guild::operator=(GuildData&& other) noexcept {
@@ -843,7 +822,6 @@ namespace DiscordCoreAPI {
 		if (Guilds::configManager->doWeCacheGuilds()) {
 			guild->discordCoreClient = Guilds::discordCoreClient;
 			std::unique_lock theLock{ Guilds::theMutex };
-			guild->initialize();
 			auto guildId = guild->id;
 			if (!Guilds::cache.contains(guildId)) {
 				Guilds::cache.emplace(guildId, std::move(guild));
