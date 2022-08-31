@@ -363,7 +363,6 @@ namespace DiscordCoreAPI {
 				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
 				DiscordCoreAPI::parseObject(value, *newData);
 				newData->guildId = theData.id;
-				std::cout << "THE USER ID: " << newData->id << std::endl;
 				theData.members.push_back(newData->id);
 				GuildMembers::insertGuildMember(std::move(newData));
 			}

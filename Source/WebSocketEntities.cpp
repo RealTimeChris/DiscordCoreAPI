@@ -1272,18 +1272,13 @@ namespace DiscordCoreInternal {
 												this->stateUpdateCollected = false;
 												this->areWeCollectingData = false;
 											}
-											std::cout << "USER ID: " << dataPackage->voiceStateData.userId << ", GUILD ID:" << dataPackage->voiceStateData.guildId << std::endl;
 											if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
-												if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->voiceStateData.guildId)) {
-													if (dataPackage->voiceStateData.userId != 0 && dataPackage->voiceStateData.guildId != 0) {
-														if (DiscordCoreAPI::GuildMembers::cache.contains(dataPackage->voiceStateData.guildId)) {
-															if (DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId].cache.contains(
-																	dataPackage->voiceStateData.userId)) {
-																DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId]
-																	.cache[dataPackage->voiceStateData.userId]
-																	->voiceChannelId = dataPackage->voiceStateData.channelId;
-															}
-														}
+												if (DiscordCoreAPI::GuildMembers::cache.contains(dataPackage->voiceStateData.guildId)) {
+													if (DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId].cache.contains(
+															dataPackage->voiceStateData.userId)) {
+														DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId]
+															.cache[dataPackage->voiceStateData.userId]
+															->voiceChannelId = dataPackage->voiceStateData.channelId;
 													}
 												}
 											}

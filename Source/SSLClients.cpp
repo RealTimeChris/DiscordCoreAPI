@@ -481,7 +481,6 @@ namespace DiscordCoreInternal {
 					}
 					if (!this->areWeAStandaloneSocket) {
 						while (this->handleBuffer(this)) {
-							std::cout << "INPUT BUFFER: " << this->inputBuffer << std::endl;
 						}
 					}
 					returnValueFinal = true;
