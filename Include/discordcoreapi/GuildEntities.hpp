@@ -386,8 +386,8 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		friend DiscordCoreAPI_Dll void DiscordCoreAPI::parseObject(nlohmann::json& jsonObjectData, GuildData& theData);
-		friend DiscordCoreAPI_Dll void DiscordCoreAPI::parseObject(nlohmann::json& jsonObjectData, Guild& theData);
+		friend DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, GuildData& theData);
+		friend DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, Guild& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreClient;
