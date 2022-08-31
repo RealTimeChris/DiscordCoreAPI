@@ -37,20 +37,42 @@ namespace DiscordCoreAPI {
 		std::atomic_bool doWeQuit{ false };
 	}
 
-	VoiceConnectionMap& getVoiceConnectionMap() {
-		return Globals::voiceConnectionMap;
+	DiscordCoreInternal::SoundCloudAPI* DiscordCoreClient::getSoundCloudAPI(Snowflake guildId) {
+		GuildData* theGuild = Guilds::cache[guildId].get();
+		if (!Globals::soundCloudAPIMap.contains(guildId)) {
+			Globals::soundCloudAPIMap[guildId] =
+				std::make_unique<DiscordCoreInternal::SoundCloudAPI>(&theGuild->discordCoreClient->configManager, theGuild->discordCoreClient->httpsClient.get(), guildId);
+		}
+		return Globals::soundCloudAPIMap[guildId].get();
 	}
 
-	SoundCloudAPIMap& getSoundCloudAPIMap() {
-		return Globals::soundCloudAPIMap;
+	DiscordCoreInternal::YouTubeAPI* DiscordCoreClient::getYouTubeAPI(Snowflake guildId) {
+		GuildData* theGuild = Guilds::cache[guildId].get();
+		if (!Globals::youtubeAPIMap.contains(guildId)) {
+			Globals::youtubeAPIMap[guildId] =
+				std::make_unique<DiscordCoreInternal::YouTubeAPI>(&theGuild->discordCoreClient->configManager, theGuild->discordCoreClient->httpsClient.get(), guildId);
+		}
+		return Globals::youtubeAPIMap[guildId].get();
 	}
 
-	YouTubeAPIMap& getYouTubeAPIMap() {
-		return Globals::youtubeAPIMap;
+	VoiceConnection* DiscordCoreClient::getVoiceConnection(Snowflake guildId) {
+		GuildData* theGuild = Guilds::cache[guildId].get();
+		if (!Globals::voiceConnectionMap.contains(guildId)) {
+			uint64_t theShardId{ (guildId >> 22) % theGuild->discordCoreClient->configManager.getTotalShardCount() };
+			uint64_t baseSocketIndex{ theShardId % theGuild->discordCoreClient->baseSocketAgentMap.size() };
+			auto baseSocketAgent = theGuild->discordCoreClient->baseSocketAgentMap[baseSocketIndex].get();
+			Globals::voiceConnectionMap[guildId] = std::make_unique<VoiceConnection>(baseSocketAgent, baseSocketAgent->theShardMap[theShardId].get(),
+				DiscordCoreInternal::VoiceConnectInitData{}, &theGuild->discordCoreClient->configManager, &Globals::doWeQuit, StreamType::None);
+		}
+		theGuild->voiceConnectionPtr = Globals::voiceConnectionMap[guildId].get();
+		return theGuild->voiceConnectionPtr;
 	}
 
-	SongAPIMap& getSongAPIMap() {
-		return Globals::songAPIMap;
+	SongAPI* DiscordCoreClient::getSongAPI(Snowflake guildId) {
+		if (!Globals::songAPIMap.contains(guildId)) {
+			Globals::songAPIMap[guildId] = std::make_unique<SongAPI>(guildId);
+		}
+		return Globals::songAPIMap[guildId].get();
 	}
 
 	void atexitHandler() {

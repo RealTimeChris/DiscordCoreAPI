@@ -27,6 +27,12 @@
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 
+namespace DiscordCoreAPI {
+	namespace Globals {
+		extern VoiceConnectionMap voiceConnectionMap;
+	}
+}
+
 namespace DiscordCoreInternal {
 
 	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
@@ -1595,10 +1601,10 @@ namespace DiscordCoreInternal {
 		this->theVCStopWatch.resetTimer();
 		VoiceConnectInitData theConnectionData = this->voiceConnections.front();
 		this->voiceConnections.pop_front();
-		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId] =
+		DiscordCoreAPI::Globals::voiceConnectionMap[theConnectionData.guildId] =
 			std::make_unique<DiscordCoreAPI::VoiceConnection>(this, this->theShardMap[theConnectionData.currentShard].get(), theConnectionData,
 				&this->discordCoreClient->configManager, this->doWeQuit, theConnectionData.streamType, theConnectionData.streamInfo);
-		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]->connect();
+		DiscordCoreAPI::Globals::voiceConnectionMap[theConnectionData.guildId]->connect();
 	}
 
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
@@ -1650,7 +1656,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::disconnectVoice() noexcept {
 		uint64_t theDCData = this->voiceConnectionsToDisconnect.front();
 		this->voiceConnectionsToDisconnect.pop_front();
-		DiscordCoreAPI::getVoiceConnectionMap()[theDCData]->disconnectInternal();
+		DiscordCoreAPI::Globals::voiceConnectionMap[theDCData]->disconnectInternal();
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {

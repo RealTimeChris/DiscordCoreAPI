@@ -464,7 +464,7 @@ namespace DiscordCoreAPI {
 											.get();
 								}
 								completionEventData.wasItAFail = false;
-								getSongAPIMap()[this->voiceConnectInitData.guildId]->onSongCompletionEvent(completionEventData);
+								DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->onSongCompletionEvent(completionEventData);
 								this->areWePlaying.store(false);
 								doWeBreak = true;
 								break;
@@ -631,9 +631,9 @@ namespace DiscordCoreAPI {
 		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
 			this->streamSocket->disconnect();
 		}
-		auto thePtr = getSongAPIMap()[this->voiceConnectInitData.guildId].get();
-		if (thePtr) {
-			thePtr->onSongCompletionEvent.remove(thePtr->eventToken);
+		if (DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)) {
+			DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)
+				->onSongCompletionEvent.remove(DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->eventToken);
 		}
 		this->areWeConnectedBool.store(false);
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);

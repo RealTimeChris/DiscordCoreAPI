@@ -95,14 +95,6 @@ namespace DiscordCoreAPI {
 
 	using SongAPIMap = std::map<uint64_t, std::unique_ptr<SongAPI>>;
 
-	DiscordCoreAPI_Dll VoiceConnectionMap& getVoiceConnectionMap();
-
-	DiscordCoreAPI_Dll SoundCloudAPIMap& getSoundCloudAPIMap();
-
-	DiscordCoreAPI_Dll YouTubeAPIMap& getYouTubeAPIMap();
-
-	DiscordCoreAPI_Dll SongAPIMap& getSongAPIMap();
-
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
@@ -110,6 +102,10 @@ namespace DiscordCoreAPI {
 	/// DiscordCoreClient - The main class for this library. \brief DiscordCoreClient - The main class for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
+		friend DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudAPI* getSoundCloudAPI(Snowflake guildId);
+		friend DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeAPI* getYouTubeAPI(Snowflake guildId);
+		friend DiscordCoreAPI_Dll VoiceConnection* getVoiceConnection(Snowflake guildId);
+		friend DiscordCoreAPI_Dll SongAPI* getSongAPI(Snowflake guildId);
 		friend class DiscordCoreInternal::WebSocketMessageHandler;
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
@@ -117,6 +113,14 @@ namespace DiscordCoreAPI {
 		friend class GuildData;
 		friend class BotUser;
 		friend class Guilds;
+
+		static DiscordCoreInternal::SoundCloudAPI* getSoundCloudAPI(Snowflake guildId);
+
+		static DiscordCoreInternal::YouTubeAPI* getYouTubeAPI(Snowflake guildId);
+
+		static VoiceConnection* getVoiceConnection(Snowflake guildId);
+
+		static SongAPI* getSongAPI(Snowflake guildId);
 
 		/// DiscordCoreClient constructor. \brief DiscordCoreClient constructor.
 		/// \param configData A DiscordCoreClientConfig structure to select various library options.
