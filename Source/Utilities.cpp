@@ -679,9 +679,9 @@ namespace DiscordCoreAPI {
 
 		uint64_t permissions = stoull(basePermissions);
 		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.guildId) {
-				permissions &= ~channel.permissionOverwrites[x].deny;
-				permissions |= channel.permissionOverwrites[x].allow;
+			if (channel.permissionOverwrites[x]->id == guildMember.guildId) {
+				permissions &= ~channel.permissionOverwrites[x]->deny;
+				permissions |= channel.permissionOverwrites[x]->allow;
 				break;
 			}
 		}
@@ -693,18 +693,18 @@ namespace DiscordCoreAPI {
 		uint64_t deny{ 0 };
 		for (auto& value: guildMemberRoles) {
 			for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-				if (channel.permissionOverwrites[x].id == value.id) {
-					allow |= channel.permissionOverwrites[x].allow;
-					deny |= channel.permissionOverwrites[x].deny;
+				if (channel.permissionOverwrites[x]->id == value.id) {
+					allow |= channel.permissionOverwrites[x]->allow;
+					deny |= channel.permissionOverwrites[x]->deny;
 				}
 			}
 		}
 		permissions &= ~deny;
 		permissions |= allow;
 		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.id) {
-				permissions &= ~channel.permissionOverwrites[x].deny;
-				permissions |= channel.permissionOverwrites[x].allow;
+			if (channel.permissionOverwrites[x]->id == guildMember.id) {
+				permissions &= ~channel.permissionOverwrites[x]->deny;
+				permissions |= channel.permissionOverwrites[x]->allow;
 				break;
 			}
 		}

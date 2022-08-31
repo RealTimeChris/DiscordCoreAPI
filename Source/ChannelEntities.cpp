@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 
 	ModifyChannelData::ModifyChannelData(Channel newData) {
 		this->channelData.nsfw = getBool<int8_t, ChannelFlags>(newData.flags, ChannelFlags::NSFW);
-		this->channelData.permissionOverwrites = newData.permissionOverwrites;
+		this->channelData.permissionOverwrites = std::move(newData.permissionOverwrites);
 		this->channelData.rateLimitPerUser = newData.rateLimitPerUser;
 		this->channelData.userLimit = newData.userLimit;
 		this->channelData.rtcRgion = newData.rtcRegion;
@@ -167,10 +167,10 @@ namespace DiscordCoreAPI {
 		nlohmann::json permOws{};
 		for (auto& value: this->channelData.permissionOverwrites) {
 			nlohmann::json newData{};
-			newData["allow"] = value.allow;
-			newData["deny"] = value.deny;
-			newData["type"] = value.type;
-			newData["id"] = value.id;
+			newData["allow"] = value->allow;
+			newData["deny"] = value->deny;
+			newData["type"] = value->type;
+			newData["id"] = value->id;
 			permOws.emplace_back(newData);
 		}
 		nlohmann::json data{};
@@ -393,6 +393,9 @@ namespace DiscordCoreAPI {
 	void Channels::removeChannel(const Snowflake channelId) {
 		std::unique_lock theLock{ Channels::theMutex };
 		if (Channels::cache.contains(channelId)) {
+			for (auto& key: Channels::cache[channelId]->permissionOverwrites) {
+				delete key;
+			}
 			Channels::cache.erase(channelId);
 		}
 	};

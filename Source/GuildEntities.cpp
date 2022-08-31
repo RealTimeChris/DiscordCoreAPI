@@ -830,7 +830,7 @@ namespace DiscordCoreAPI {
 			} else {
 				Guilds::cache.insert_or_assign(guildId, std::move(guild));
 			}
-			if (Guilds::cache.size() % 1000 == 0) {
+			if (Guilds::cache.size() % 500 == 0) {
 				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 			}
 		}

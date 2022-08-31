@@ -396,6 +396,16 @@ namespace DiscordCoreAPI {
 		IconHash avatar{};///< The user's avatar hash.
 		int32_t flags{};///< The public flags on a user' s account.
 
+		UserData() noexcept = default;
+
+		UserData& operator=(UserData&&) noexcept = default;
+
+		UserData(UserData&&) noexcept = default;
+
+		UserData& operator=(const UserData&) noexcept = default;
+
+		UserData(const UserData&) noexcept = default;
+
 		void insertUser(std::unique_ptr<UserData> theUser);
 
 		std::string getAvatarUrl();
@@ -761,6 +771,16 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild that this Role is from.
 		int8_t flags{ 0 };///< Role flags.
 
+		RoleData() noexcept = default;
+
+		RoleData& operator=(RoleData&&) noexcept = default;
+
+		RoleData(RoleData&&) noexcept = default;
+
+		RoleData& operator=(const RoleData&) noexcept = default;
+
+		RoleData(const RoleData&) noexcept = default;
+
 		virtual ~RoleData() noexcept = default;
 	};
 
@@ -865,25 +885,36 @@ namespace DiscordCoreAPI {
 
 	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ActivityData& theData);
 
-	/// Client status data. \brief Client status data.
-	struct DiscordCoreAPI_Dll ClientStatusData {
-		StringWrapper desktop{};///< Desktop name.
-		StringWrapper mobile{};///< Mobile name.
-		StringWrapper web{};///< Web link.
-
-		ClientStatusData() noexcept = default;
-
-		virtual ~ClientStatusData() noexcept = default;
+	enum class PresenceUpdateFlags : uint8_t {
+		Desktop_Online = 0b00000001,
+		Desktop_Idle = 0b00000010,
+		Desktop_Dnd = 0b000000011,
+		Mobile_Online = 0b00000010,
+		Mobile_Idle = 0b00000100,
+		Mobile_Dnd = 0b00000110,
+		Web_Online = 0b00000100,
+		Web_Idle = 0b00001000,
+		Web_Dnd = 0b00001100,
+		Status_Online = 0b00001000,
+		Status_Idle = 0b00010000,
+		Status_Dnd = 0b00011000
 	};
 
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ClientStatusData& theData);
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, PresenceUpdateFlags& theData);
 
 	/// Presence update data. \brief Presence update data.
 	struct DiscordCoreAPI_Dll PresenceUpdateData {
 		std::vector<ActivityData> activities{};///< Array of activities.
-		ClientStatusData clientStatus{};///< Current client status.
-		StringWrapper status{};///< Status of the current presence.
+		uint8_t theStatus{};///< Current client status.
 		Snowflake guildId{};///< Guild id for the current presence.
+
+		PresenceUpdateData& operator=(PresenceUpdateData&&) noexcept = default;
+
+		PresenceUpdateData(PresenceUpdateData&&) noexcept = default;
+
+		PresenceUpdateData& operator=(const PresenceUpdateData&) noexcept = default;
+
+		PresenceUpdateData(const PresenceUpdateData&) noexcept = default;
 
 		PresenceUpdateData() noexcept = default;
 
@@ -900,7 +931,6 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
-		PresenceUpdateData presenceData{};///< Presence data for the current GuildMember.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		Snowflake voiceChannelId{};///< Currently held voice channel, if applicable.
 		Permissions permissions{};///< Their base-level Permissions in the Guild
@@ -908,6 +938,16 @@ namespace DiscordCoreAPI {
 		StringWrapper nick{};///< Their nick/display name.
 		IconHash avatar{};///< This GuildMember's Guild Avatar.
 		int8_t flags{ 0 };///< GuildMember flags.
+
+		GuildMemberData() noexcept = default;
+
+		GuildMemberData& operator=(GuildMemberData&&) noexcept = default;
+
+		GuildMemberData(GuildMemberData&&) noexcept = default;
+
+		GuildMemberData& operator=(const GuildMemberData&) noexcept = default;
+
+		GuildMemberData(const GuildMemberData&) noexcept = default;
 
 		std::string getAvatarUrl();
 
@@ -943,7 +983,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 
-		std::vector<OverWriteData> permissionOverwrites{};
+		std::vector<OverWriteData*> permissionOverwrites{};
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
 		uint16_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
@@ -953,6 +993,16 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< Id of the Channel's Guild, if applicable.
 		StringWrapper name{};///< Name of the Channel.
 		uint8_t flags{};///< Flags combined as a bitmask.
+
+		ChannelData() noexcept = default;
+
+		ChannelData& operator=(ChannelData&&) noexcept = default;
+
+		ChannelData(ChannelData&&) noexcept = default;
+
+		ChannelData& operator=(const ChannelData&) noexcept;
+
+		ChannelData(const ChannelData&) noexcept;
 
 		virtual ~ChannelData() noexcept = default;
 	};
@@ -1150,7 +1200,7 @@ namespace DiscordCoreAPI {
 
 	/// For updating/modifying a given Channel's properties. \brief For updating/modifying a given Channel's properties.
 	struct DiscordCoreAPI_Dll UpdateChannelData {
-		std::vector<OverWriteData> permissionOverwrites{};
+		std::vector<OverWriteData*> permissionOverwrites{};
 		int32_t defaultAutoArchiveDuration{ 10080 };
 		int32_t videoQualityMode{ 1 };
 		int32_t rateLimitPerUser{ 0 };
@@ -1755,7 +1805,8 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
-		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
+		std::map<Snowflake, PresenceUpdateData*> presences{};///< Presences for the GuildMembers.		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
+		DiscordCoreClient* discordCoreClient{ nullptr };
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
 		std::vector<Snowflake> guildScheduledEvents{};///< Array of Guild channels.
@@ -1771,6 +1822,16 @@ namespace DiscordCoreAPI {
 		Snowflake ownerId{};///< User id of the Guild's owner.
 		int8_t flags{ 0 };///< Guild flags.
 		IconHash icon{};///< Url to the Guild's icon.
+
+		GuildData() noexcept = default;
+
+		GuildData& operator=(GuildData&&) noexcept = default;
+
+		GuildData(GuildData&&) noexcept = default;
+
+		GuildData& operator=(const GuildData&) noexcept = default;
+
+		GuildData(const GuildData&) noexcept = default;
 
 		/// For connecting to an individual voice channel. \brief For connecting to an individual voice channel.
 		/// \param guildMemberId An id of the guild member who's current voice channel to connect to.

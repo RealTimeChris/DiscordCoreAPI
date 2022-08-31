@@ -231,6 +231,27 @@ namespace DiscordCoreAPI {
 		return embed;
 	}
 
+	ChannelData& ChannelData::operator=(const ChannelData&other) noexcept {
+		this->flags = other.flags;
+		this->guildId = other.guildId;
+		this->id = other.id;
+		this->memberCount = other.memberCount;
+		this->name = other.name;
+		this->ownerId = other.ownerId;
+		this->parentId = other.parentId;
+		this->position = other.position;
+		this->topic = other.topic;
+		this->type = other.type;
+		for (auto& value: other.permissionOverwrites) {
+			this->permissionOverwrites.push_back(std::move(value));
+		}
+		return *this;
+	}
+
+	ChannelData::ChannelData(const ChannelData& other) noexcept {
+		*this = other;
+	}
+
 	EmbedData& EmbedData::setAuthor(const std::string& authorName, const std::string& authorAvatarUrl) {
 		this->author.name = authorName;
 		this->author.iconUrl = authorAvatarUrl;
