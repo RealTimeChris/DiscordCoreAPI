@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 
 	class Play : public BaseFunction {
 	  public:
-		static std::map<int64_t, int64_t> timeOfLastPlay;
+		static std::unordered_map<int64_t, int64_t> timeOfLastPlay;
 
 		Play() {
 			this->commandName = "play";
@@ -441,7 +441,7 @@ namespace DiscordCoreAPI {
 		};
 		~Play(){};
 	};
-	std::map<int64_t, int64_t> Play::timeOfLastPlay{};
+	std::unordered_map<int64_t, int64_t> Play::timeOfLastPlay{};
 
 };
 ```

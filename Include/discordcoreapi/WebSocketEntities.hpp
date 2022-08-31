@@ -105,7 +105,7 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
-		std::map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		std::atomic<WebSocketSSLShardState> theWebSocketState{ WebSocketSSLShardState::Connecting };
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
@@ -149,7 +149,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 550ms };
-		std::map<uint32_t, std::unique_ptr<WebSocketSSLShard>> theShardMap{};
+		std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>> theShardMap{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::deque<Snowflake> voiceConnectionsToDisconnect{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };

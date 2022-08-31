@@ -294,7 +294,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::insertRole(std::unique_ptr<RoleData> role) {
-		if (role->id == 0) {
+		if (!role || role->id == 0) {
 			return;
 		}
 		if (Roles::configManager->doWeCacheRoles()) {

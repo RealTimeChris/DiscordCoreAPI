@@ -372,7 +372,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::insertChannel(std::unique_ptr<ChannelData> channel) {
-		if (channel->id == 0) {
+		if (!channel || channel->id == 0) {
 			return;
 		}
 		if (Channels::configManager->doWeCacheChannels()) {

@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::map<std::string, std::jthread> ThreadPool::threads{};
+	std::unordered_map<std::string, std::jthread> ThreadPool::threads{};
 }
 
 namespace DiscordCoreInternal {

@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 		~ThreadPool() noexcept = default;
 
 	  protected:
-		static std::map<std::string, std::jthread> threads;
+		static std::unordered_map<std::string, std::jthread> threads;
 	};
 }
 
@@ -119,7 +119,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::deque<std::coroutine_handle<>> theCoroutineHandles{};
-		std::map<int64_t, WorkerThread> workerThreads{};
+		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::atomic_int64_t coroHandleCount{ 0 };
 		std::atomic_int64_t currentCount{ 0 };
 		std::atomic_int64_t currentIndex{ 0 };

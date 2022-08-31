@@ -53,11 +53,11 @@ namespace DiscordCoreAPI {
 
 		theData.type = static_cast<ApplicationCommandType>(getUint8(jsonObjectData, "type"));
 
-		for (auto& [key, value]: jsonObjectData["name_localizations"].get<std::map<std::string, std::string>>()) {
+		for (auto& [key, value]: jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>()) {
 			theData.nameLocalizations.emplace(key, value);
 		}
 
-		for (auto& [key, value]: jsonObjectData["description_localizations"].get<std::map<std::string, std::string>>()) {
+		for (auto& [key, value]: jsonObjectData["description_localizations"].get<std::unordered_map<std::string, std::string>>()) {
 			theData.descriptionLocalizations.emplace(key, value);
 		}
 
@@ -3080,7 +3080,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("name_localizations") && !jsonObjectData["name_localizations"].is_null()) {
 			theData.nameLocalizations.clear();
-			auto newMap = jsonObjectData["name_localizations"].get<std::map<std::string, std::string>>();
+			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				theData.nameLocalizations[key] = newValue;
 			}
@@ -3094,7 +3094,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("name_localizations") && !jsonObjectData["name_localizations"].is_null()) {
 			theData.nameLocalizations.clear();
-			auto newMap = jsonObjectData["name_localizations"].get<std::map<std::string, std::string>>();
+			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				theData.nameLocalizations[key] = newValue;
 			}
@@ -3102,7 +3102,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("description_localizations") && !jsonObjectData["description_localizations"].is_null()) {
 			theData.nameLocalizations.clear();
-			auto newMap = jsonObjectData["description_localizations"].get<std::map<std::string, std::string>>();
+			auto newMap = jsonObjectData["description_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				theData.descriptionLocalizations[key] = newValue;
 			}
@@ -3519,7 +3519,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("name_localizations") && !jsonObjectData["name_localizations"].is_null()) {
 			theData.nameLocalizations.clear();
-			auto newMap = jsonObjectData["name_localizations"].get<std::map<std::string, std::string>>();
+			auto newMap = jsonObjectData["name_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				theData.nameLocalizations[key] = newValue;
 			}
@@ -3527,7 +3527,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData.contains("description_localizations") && !jsonObjectData["description_localizations"].is_null()) {
 			theData.nameLocalizations.clear();
-			auto newMap = jsonObjectData["description_localizations"].get<std::map<std::string, std::string>>();
+			auto newMap = jsonObjectData["description_localizations"].get<std::unordered_map<std::string, std::string>>();
 			for (auto& [key, newValue]: newMap) {
 				theData.descriptionLocalizations[key] = newValue;
 			}
@@ -4160,7 +4160,7 @@ namespace DiscordCoreAPI {
 
 			if (value.contains("attachments") && !value["attachments"].is_null()) {
 				theData.resolved.attachments.clear();
-				auto newMap = value["attachments"].get<std::map<std::string, nlohmann::json>>();
+				auto newMap = value["attachments"].get<std::unordered_map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					AttachmentData newData{};
 					DiscordCoreAPI::parseObject(newValue, newData);
@@ -4170,7 +4170,7 @@ namespace DiscordCoreAPI {
 
 			if (value.contains("users") && !value["users"].is_null()) {
 				theData.resolved.users.clear();
-				auto newMap = value["users"].get<std::map<std::string, nlohmann::json>>();
+				auto newMap = value["users"].get<std::unordered_map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					UserData newData{};
 					DiscordCoreAPI::parseObject(value, newData);
@@ -4179,7 +4179,7 @@ namespace DiscordCoreAPI {
 			}
 			if (value.contains("channels") && !value["channels"].is_null()) {
 				theData.resolved.channels.clear();
-				auto newMap = value["channels"].get<std::map<std::string, nlohmann::json>>();
+				auto newMap = value["channels"].get<std::unordered_map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					ChannelData newData{};
 					DiscordCoreAPI::parseObject(value, newData);
@@ -4188,7 +4188,7 @@ namespace DiscordCoreAPI {
 			}
 			if (value.contains("roles") && !value["roles"].is_null()) {
 				theData.resolved.roles.clear();
-				auto newMap = value["roles"].get<std::map<std::string, nlohmann::json>>();
+				auto newMap = value["roles"].get<std::unordered_map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					RoleData newData{};
 					DiscordCoreAPI::parseObject(value, newData);
@@ -4197,7 +4197,7 @@ namespace DiscordCoreAPI {
 			}
 			if (value.contains("members") && !value["members"].is_null()) {
 				theData.resolved.members.clear();
-				auto newMap = value["members"].get<std::map<std::string, nlohmann::json>>();
+				auto newMap = value["members"].get<std::unordered_map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					GuildMemberData theDataNew{};
 					DiscordCoreAPI::parseObject(newValue, theDataNew);
@@ -4206,7 +4206,7 @@ namespace DiscordCoreAPI {
 			}
 			if (value.contains("messages") && !value["messages"].is_null()) {
 				theData.resolved.messages.clear();
-				auto newMap = value["messages"].get<std::map<std::string, nlohmann::json>>();
+				auto newMap = value["messages"].get<std::unordered_map<std::string, nlohmann::json>>();
 				for (auto& [key, newValue]: newMap) {
 					MessageData newData{};
 					DiscordCoreAPI::parseObject(newValue, newData);

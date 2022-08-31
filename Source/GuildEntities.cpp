@@ -818,7 +818,7 @@ namespace DiscordCoreAPI {
 
 	StopWatch theStopWatch{ 5s };
 	void Guilds::insertGuild(std::unique_ptr<GuildData> guild) {
-		if (guild->id == 0) {
+		if (!guild || guild->id == 0) {
 			return;
 		}
 		if (Guilds::configManager->doWeCacheGuilds()) {
@@ -844,7 +844,7 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
-	std::map<Snowflake, std::unique_ptr<GuildData>> Guilds::cache{};
+	std::unordered_map<Snowflake, std::unique_ptr<GuildData>> Guilds::cache{};
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
 	ConfigManager* Guilds::configManager{ nullptr };
 	std::shared_mutex Guilds::theMutex{};

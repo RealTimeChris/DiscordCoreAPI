@@ -230,7 +230,7 @@ namespace DiscordCoreAPI {
 
 	void Users::insertUser(std::unique_ptr<UserData> user) {
 		std::unique_lock theLock{ Users::theMutex };
-		if (user->id == 0) {
+		if (!user || user->id == 0) {
 			return;
 		}
 		if (Users::configManager->doWeCacheUsers()) {
@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::map<Snowflake, std::unique_ptr<UserData>> Users::cache{};
+	std::unordered_map<Snowflake, std::unique_ptr<UserData>> Users::cache{};
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
 	ConfigManager* Users::configManager{ nullptr };
 	std::shared_mutex Users::theMutex{};

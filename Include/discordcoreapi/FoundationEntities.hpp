@@ -279,10 +279,10 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class HttpsClient;
 
-		static std::map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> workloadIdsExternal;
-		static std::map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> workloadIdsInternal;
+		static std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> workloadIdsExternal;
+		static std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> workloadIdsInternal;
 
-		mutable std::map<std::string, std::string> headersToInsert{};
+		mutable std::unordered_map<std::string, std::string> headersToInsert{};
 		PayloadType payloadType{ PayloadType::Application_Json };
 		std::atomic_int64_t thisWorkerId{ 0 };
 		HttpsWorkloadClass workloadClass{};
@@ -2103,7 +2103,7 @@ namespace DiscordCoreAPI {
 	/// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
 	class DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
 	  public:
-		std::map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		nlohmann::json value{};///< The value of the option.
 		std::string name{};///< The name of the current choice.
 
@@ -2118,8 +2118,8 @@ namespace DiscordCoreAPI {
 
 	/// Data structure representing an ApplicationCommand's option. \brief Data structure representing an ApplicationCommand's option.
 	struct DiscordCoreAPI_Dll ApplicationCommandOptionData {
-		std::map<std::string, std::string> descriptionLocalizations{};///< Dictionary for the description localizations field.
-		std::map<std::string, std::string> nameLocalizations{};///< Dictionary for the name localizations field.
+		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary for the description localizations field.
+		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary for the name localizations field.
 		std::vector<ApplicationCommandOptionChoiceData> choices{};///< A vector of possible choices for the current ApplicationCommand option.
 		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand option.
 		std::vector<ChannelType> channelTypes{};///< Set when the ApplicationCommand option type is set to Channel.
@@ -2368,8 +2368,8 @@ namespace DiscordCoreAPI {
 	/// Data structure representing an ApplicationCommand. \brief Data structure representing an ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {
 	  public:
-		std::map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
-		std::map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
+		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
+		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
 		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set all
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
@@ -2587,12 +2587,12 @@ namespace DiscordCoreAPI {
 
 	/// Resolved data. \brief Resolved data.
 	struct DiscordCoreAPI_Dll ResolvedData {
-		std::map<Snowflake, AttachmentData> attachments{};///< Map of Snowflakes to attachment objects the ids and attachment objects.
-		std::map<Snowflake, GuildMemberData> members{};///< Map full of GuildMemeberData.
-		std::map<Snowflake, MessageData> messages{};///< Map full of messageData->
-		std::map<Snowflake, ChannelData> channels{};///< Map full of ChannelData.
-		std::map<Snowflake, UserData> users{};///< Map full of UserData.
-		std::map<Snowflake, RoleData> roles{};///< Map full of RoleData.
+		std::unordered_map<Snowflake, AttachmentData> attachments{};///< Map of Snowflakes to attachment objects the ids and attachment objects.
+		std::unordered_map<Snowflake, GuildMemberData> members{};///< Map full of GuildMemeberData.
+		std::unordered_map<Snowflake, MessageData> messages{};///< Map full of messageData->
+		std::unordered_map<Snowflake, ChannelData> channels{};///< Map full of ChannelData.
+		std::unordered_map<Snowflake, UserData> users{};///< Map full of UserData.
+		std::unordered_map<Snowflake, RoleData> roles{};///< Map full of RoleData.
 	};
 
 	/// Represents a Sticker pack. \brief Represents a Sticker pack.
@@ -3005,10 +3005,10 @@ namespace DiscordCoreAPI {
 		/// For setting the choices of an autocomplete response. \brief For setting the choices of an autocomplete response.
 		/// \param theValue An nlohmann::json value that is either a float, int32_t or a string.
 		/// \param theName A string for the name of the choice.
-		/// \param theNameLocalizations A std::map<std::string, std::string> for the name localizations.
+		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		RespondToInputEventData& setAutoCompleteChoice(nlohmann::json theValue, const std::string& theName,
-			std::map<std::string, std::string> theNameLocalizations = std::map<std::string, std::string>{});
+			std::unordered_map<std::string, std::string> theNameLocalizations = std::unordered_map<std::string, std::string>{});
 
 		/// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.
 		/// \param targetUserIdNew A string, containing the target User's id.

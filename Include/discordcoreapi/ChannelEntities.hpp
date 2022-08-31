@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	  public:
 		TimeStamp<std::chrono::milliseconds> lastPinTimestamp{};///< Timestamp of the last pinned Message.
-		std::map<Snowflake, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
+		std::unordered_map<Snowflake, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
 		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		int32_t videoQualityMode{ 0 };///< Video quality mode.

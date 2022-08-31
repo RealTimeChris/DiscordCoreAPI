@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.
 	class DiscordCoreAPI_Dll MessageCollector {
 	  public:
-		static std::map<std::string, UnboundedMessageBlock<Message>*> messagesBufferMap;
+		static std::unordered_map<std::string, UnboundedMessageBlock<Message>*> messagesBufferMap;
 
 		MessageCollector() noexcept = default;
 

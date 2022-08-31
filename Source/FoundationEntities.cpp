@@ -160,8 +160,8 @@ namespace DiscordCoreInternal {
 		return theValue;
 	}
 
-	std::map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsExternal{};
-	std::map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsInternal{};
+	std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsExternal{};
+	std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsInternal{};
 }
 
 namespace DiscordCoreAPI {
@@ -782,7 +782,7 @@ namespace DiscordCoreAPI {
 	}
 
 	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(nlohmann::json theValue, const std::string& theName,
-		std::map<std::string, std::string> theNameLocalizations) {
+		std::unordered_map<std::string, std::string> theNameLocalizations) {
 		ApplicationCommandOptionChoiceData choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.value = theValue;

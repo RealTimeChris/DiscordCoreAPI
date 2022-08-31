@@ -87,13 +87,13 @@ namespace DiscordCoreAPI {
 		SIGFPEError(std::string theString);
 	};
 
-	using SoundCloudAPIMap = std::map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
+	using SoundCloudAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
 
-	using YouTubeAPIMap = std::map<uint64_t, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
+	using YouTubeAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
 
-	using VoiceConnectionMap = std::map<uint64_t, std::unique_ptr<VoiceConnection>>;
+	using VoiceConnectionMap = std::unordered_map<uint64_t, std::unique_ptr<VoiceConnection>>;
 
-	using SongAPIMap = std::map<uint64_t, std::unique_ptr<SongAPI>>;
+	using SongAPIMap = std::unordered_map<uint64_t, std::unique_ptr<SongAPI>>;
 
 	/**
 	 * \addtogroup main_endpoints
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient() noexcept;
 
 	  protected:
-		std::map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
+		std::unordered_map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theConnectionStopWatch{ 5100ms };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
