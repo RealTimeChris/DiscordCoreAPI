@@ -702,7 +702,7 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceConnectionState::Collecting_Hello: {
 				theStopWatch.resetTimer();
-				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify){
+				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify) {
 					if (theStopWatch.hasTimePassed()) {
 						this->onClosed();
 						return;

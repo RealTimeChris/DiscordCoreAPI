@@ -40,7 +40,6 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		data["roles"] = rolesArray;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	ModifyGuildEmojiData::operator std::string() {
@@ -52,7 +51,6 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		data["roles"] = rolesArray;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	ReactionVector::operator std::vector<Reaction>() {

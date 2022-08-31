@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 		bool handleBuffer(SSLClient* theClient) noexcept;
 
 		void disconnect(bool) noexcept;
-		
+
 		void resetValues();
 
 		virtual ~HttpsConnection() noexcept = default;

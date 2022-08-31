@@ -478,7 +478,6 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						this->inputBuffer.append(this->rawInputBuffer.data(), this->rawInputBuffer.data() + readBytes);
 						this->bytesRead += readBytes;
-						
 					}
 					if (!this->areWeAStandaloneSocket) {
 						while (this->handleBuffer(this)) {
@@ -701,6 +700,7 @@ namespace DiscordCoreInternal {
 		this->inputBuffer.clear();
 	}
 
-	DatagramSocketClient::~DatagramSocketClient() noexcept {}
+	DatagramSocketClient::~DatagramSocketClient() noexcept {
+	}
 
 }

@@ -35,7 +35,6 @@ namespace DiscordCoreAPI {
 		data["access_token"] = this->token;
 		data["nick"] = this->nick;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	std::string UserData::getAvatarUrl() {
@@ -195,7 +194,6 @@ namespace DiscordCoreAPI {
 		if (dataPackage.avatar.size() > 0) {
 			nlohmann::json responseData = { { "avatar", dataPackage.avatar }, { "userName", dataPackage.userName } };
 			workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-			;
 		} else {
 			nlohmann::json responseData = { { "userName", dataPackage.userName } };
 			workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);

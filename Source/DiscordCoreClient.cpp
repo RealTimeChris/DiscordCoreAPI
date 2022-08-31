@@ -217,7 +217,7 @@ namespace DiscordCoreAPI {
 				auto theData = this->theConnections.front();
 				this->theConnections.pop_front();
 				this->baseSocketAgentMap[theData.currentShard % this->baseSocketAgentMap.size()]->connect(theData);
-				if (this->theConnections.size() == 0){
+				if (this->theConnections.size() == 0) {
 					if (this->configManager.doWePrintGeneralSuccessMessages()) {
 						cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << endl << endl;
 					}

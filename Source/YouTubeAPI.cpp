@@ -88,7 +88,6 @@ namespace DiscordCoreInternal {
 			dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
 			dataPackage02.relativePath = "/youtubei/v1/player?key=" + YouTubeRequestBuilder::apiKey;
 			dataPackage02.content = theRequest.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-			;
 			dataPackage02.workloadClass = HttpsWorkloadClass::Post;
 			HttpsResponseData responseData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
@@ -215,7 +214,8 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr) };
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
-				if (streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true) != ConnectionResult::No_Error) {
+				if (streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true) !=
+					ConnectionResult::No_Error) {
 					return;
 				}
 			} else {

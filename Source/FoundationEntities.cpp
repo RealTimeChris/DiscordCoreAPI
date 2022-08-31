@@ -968,7 +968,6 @@ namespace DiscordCoreAPI {
 		data["data"]["tts"] = this->data.tts;
 		data["type"] = this->type;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	CommandData::CommandData(InputEventData inputEventData) {

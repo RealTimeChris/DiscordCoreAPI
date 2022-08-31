@@ -40,7 +40,6 @@ namespace DiscordCoreAPI {
 		workload.callStack = "StageInstances::createStageInstanceAsync()";
 		nlohmann::json responseData = { { "topic", dataPackage.topic }, { "privacy_level", dataPackage.privacyLevel }, { "channel_id", dataPackage.channelId } };
 		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
@@ -63,7 +62,6 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		nlohmann::json responseData = { { "privacy_level", dataPackage.privacyLevel }, { "topic", dataPackage.topic } };
 		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 		workload.callStack = "StageInstances::modifyStageInstanceAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

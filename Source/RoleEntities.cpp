@@ -46,7 +46,6 @@ namespace DiscordCoreAPI {
 			data["unicode_emoji"] = this->unicodeEmoji;
 		}
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	ModifyGuildRolePositionsData::operator std::string() {
@@ -58,7 +57,6 @@ namespace DiscordCoreAPI {
 			dataArray.emplace_back(data);
 		}
 		return dataArray.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	ModifyGuildRoleData::operator std::string() {
@@ -79,7 +77,6 @@ namespace DiscordCoreAPI {
 			data["unicode_emoji"] = this->unicodeEmoji;
 		}
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	Role& Role::operator=(RoleData&& other) noexcept {
