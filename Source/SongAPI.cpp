@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake guildId) {
-		SongAPI* returnValue = &getSongAPI(guildId);
+		SongAPI* returnValue = getSongAPIMap()[guildId].get();
 		returnValue->onSongCompletionEvent.remove(returnValue->eventToken);
 		returnValue->eventToken = returnValue->onSongCompletionEvent.add(DiscordCoreInternal::EventDelegate<CoRoutine<void>, SongCompletionEventData>{ handler });
 	}
@@ -114,53 +114,52 @@ namespace DiscordCoreAPI {
 	}
 
 	bool SongAPI::play(const Snowflake guildId) {
-		return getVoiceConnection(guildId).play();
+		return getVoiceConnectionMap()[guildId]->play();
 	}
 
 	void SongAPI::pauseToggle(const Snowflake guildId) {
-		return getVoiceConnection(guildId).pauseToggle();
+		getVoiceConnectionMap()[guildId]->pauseToggle();
 	}
 
 	bool SongAPI::areWeCurrentlyPlaying(const Snowflake guildId) {
-		return getVoiceConnection(guildId).areWeCurrentlyPlaying();
+		return getVoiceConnectionMap()[guildId]->areWeCurrentlyPlaying();
 	}
 
 	void SongAPI::skip(const GuildMember& guildMember) {
-		auto guildId = guildMember.guildId;
-		getSongAPI(guildId).cancelCurrentSong();
+		getSongAPIMap()[guildMember.guildId]->cancelCurrentSong();
 		if (SongAPI::isLoopAllEnabled(guildMember.guildId) || SongAPI::isLoopSongEnabled(guildMember.guildId)) {
-			getSongAPI(guildId).playlist.songQueue.emplace_back(getSongAPI(guildId).playlist.currentSong);
+			getSongAPIMap()[guildMember.guildId]->playlist.songQueue.emplace_back(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
 		} else {
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
 		}
 		AudioFrameData frameData{};
-		while (getVoiceConnection(guildId).audioDataBuffer.tryReceive(frameData)) {
+		while (getVoiceConnectionMap()[guildMember.guildId]->audioDataBuffer.tryReceive(frameData)) {
 		};
 		frameData.type = AudioFrameType::Skip;
 		frameData.guildMemberId = guildMember.id;
-		getVoiceConnection(guildId).audioDataBuffer.send(frameData);
+		getVoiceConnectionMap()[guildMember.guildId]->audioDataBuffer.send(frameData);
 	}
 
 	void SongAPI::stop(const Snowflake guildId) {
-		getVoiceConnection(guildId).stop();
-		getSongAPI(guildId).cancelCurrentSong();
+		getVoiceConnectionMap()[guildId]->stop();
+		getSongAPIMap()[guildId]->cancelCurrentSong();
 		std::vector<Song> newVector02;
-		newVector02.emplace_back(getSongAPI(guildId).playlist.currentSong);
-		for (auto& value: getSongAPI(guildId).playlist.songQueue) {
+		newVector02.emplace_back(getSongAPIMap()[guildId]->playlist.currentSong);
+		for (auto& value: getSongAPIMap()[guildId]->playlist.songQueue) {
 			newVector02.emplace_back(value);
 		}
-		getSongAPI(guildId).playlist.songQueue = newVector02;
-		auto returnValue = &getSongAPI(guildId);
+		getSongAPIMap()[guildId]->playlist.songQueue = newVector02;
+		auto returnValue = getSongAPIMap()[guildId].get();
 		if (returnValue) {
-			getSongAPI(guildId).onSongCompletionEvent.remove(getSongAPI(guildId).eventToken);
-			getSongAPI(guildId).eventToken = DiscordCoreInternal::EventDelegateToken{};
+			getSongAPIMap()[guildId]->onSongCompletionEvent.remove(getSongAPIMap()[guildId]->eventToken);
+			getSongAPIMap()[guildId]->eventToken = DiscordCoreInternal::EventDelegateToken{};
 		}
 	}
 
 	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery, const Snowflake guildId) {
-		auto vector01 = getSoundCloudAPI(guildId).searchForSong(searchQuery);
-		auto vector02 = getYouTubeAPI(guildId).searchForSong(searchQuery);
+		auto vector01 = getSoundCloudAPIMap()[guildId]->searchForSong(searchQuery);
+		auto vector02 = getYouTubeAPIMap()[guildId]->searchForSong(searchQuery);
 		int32_t totalLength = static_cast<int32_t>(vector01.size() + vector02.size());
 		std::vector<Song> newVector{};
 		int32_t vector01Used{ 0 };
@@ -180,30 +179,33 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::setLoopAllStatus(bool enabled, const Snowflake guildId) {
-		getSongAPI(guildId).playlist.isLoopAllEnabled = enabled;
+		getSongAPIMap()[guildId]->playlist.isLoopAllEnabled = enabled;
 	}
 
 	bool SongAPI::isLoopAllEnabled(const Snowflake guildId) {
-		return getSongAPI(guildId).playlist.isLoopAllEnabled;
+		return getSongAPIMap()[guildId]->playlist.isLoopAllEnabled;
 	}
 
 	void SongAPI::setLoopSongStatus(bool enabled, const Snowflake guildId) {
-		getSongAPI(guildId).playlist.isLoopSongEnabled = enabled;
+		getSongAPIMap()[guildId]->playlist.isLoopSongEnabled = enabled;
 	}
 
 	bool SongAPI::isLoopSongEnabled(const Snowflake guildId) {
-		return getSongAPI(guildId).playlist.isLoopSongEnabled;
+		return getSongAPIMap()[guildId]->playlist.isLoopSongEnabled;
 	}
 
 	bool SongAPI::isThereAnySongs(const Snowflake guildId) {
-		if (getSongAPI(guildId).playlist.isLoopAllEnabled || getSongAPI(guildId).playlist.isLoopSongEnabled) {
-			if (getSongAPI(guildId).playlist.songQueue.size() == 0 && getSongAPI(guildId).playlist.currentSong.songId == "") {
+		if (!getSongAPIMap().contains(guildId)) {
+			getSongAPIMap()[guildId] = std::make_unique<SongAPI>(guildId);
+		}
+		if (getSongAPIMap()[guildId]->playlist.isLoopAllEnabled || getSongAPIMap()[guildId]->playlist.isLoopSongEnabled) {
+			if (getSongAPIMap()[guildId]->playlist.songQueue.size() == 0 && getSongAPIMap()[guildId]->playlist.currentSong.songId == "") {
 				return false;
 			} else {
 				return true;
 			}
 		} else {
-			if (getSongAPI(guildId).playlist.songQueue.size() == 0) {
+			if (getSongAPIMap()[guildId]->playlist.songQueue.size() == 0) {
 				return false;
 			} else {
 				return true;
@@ -212,79 +214,79 @@ namespace DiscordCoreAPI {
 	}
 
 	Song SongAPI::addSongToQueue(const GuildMember& guildMember, Song& song) {
-		auto guildId = guildMember.guildId;
 		song.addedByUserId = guildMember.id;
 		std::string theString{ (( GuildMember& )guildMember).getUserData().userName };
 		song.addedByUserName = theString;
-		getSongAPI(guildId).playlist.songQueue.emplace_back(song);
+		getSongAPIMap()[guildMember.guildId]->playlist.songQueue.emplace_back(song);
 		return song;
 	}
 
 	void SongAPI::setPlaylist(const Playlist& playlistNew, const Snowflake guildId) {
-		getSongAPI(guildId).playlist = playlistNew;
+		getSongAPIMap()[guildId]->playlist = playlistNew;
 	}
 
 	Playlist SongAPI::getPlaylist(const Snowflake guildId) {
-		return getSongAPI(guildId).playlist;
+		return getSongAPIMap()[guildId]->playlist;
 	}
 
 	void SongAPI::modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, const Snowflake guildId) {
-		Song tempSong = getSongAPI(guildId).playlist.songQueue[firstSongPosition];
-		getSongAPI(guildId).playlist.songQueue[firstSongPosition] = getSongAPI(guildId).playlist.songQueue[secondSongPosition];
-		getSongAPI(guildId).playlist.songQueue[secondSongPosition] = tempSong;
+		Song tempSong = getSongAPIMap()[guildId]->playlist.songQueue[firstSongPosition];
+		getSongAPIMap()[guildId]->playlist.songQueue[firstSongPosition] = getSongAPIMap()[guildId]->playlist.songQueue[secondSongPosition];
+		getSongAPIMap()[guildId]->playlist.songQueue[secondSongPosition] = tempSong;
 	}
 
 	Song SongAPI::getCurrentSong(const Snowflake guildId) {
-		auto theGuild = Guilds::getCachedGuildAsync({ .guildId = guildId }).get();
-		if (getSongAPI(guildId).playlist.currentSong.songId != "") {
-			return getSongAPI(guildId).playlist.currentSong;
-		} else if (getSongAPI(guildId).playlist.songQueue.size() > 0) {
-			return getSongAPI(guildId).playlist.songQueue[0];
+		if (getSongAPIMap()[guildId]->playlist.currentSong.songId != "") {
+			return getSongAPIMap()[guildId]->playlist.currentSong;
+		} else if (getSongAPIMap()[guildId]->playlist.songQueue.size() > 0) {
+			return getSongAPIMap()[guildId]->playlist.songQueue[0];
 		} else {
 			return Song();
 		};
 	}
 
 	void SongAPI::setCurrentSong(const Song& song, const Snowflake guildId) {
-		getSongAPI(guildId).playlist.currentSong = song;
+		getSongAPIMap()[guildId]->playlist.currentSong = song;
 	}
 
 	void SongAPI::sendNextSongFinal(const GuildMember& guildMember) {
-		getSongAPI(guildId).cancelCurrentSong();
-		if (getSongAPI(guildId).playlist.currentSong.type == SongType::SoundCloud) {
-			Song newerSong = getSoundCloudAPI(guildId).collectFinalSong(getSongAPI(guildId).playlist.currentSong);
-			if (getSongAPI(guildId).taskThread) {
-				getSongAPI(guildId).taskThread->request_stop();
-				if (getSongAPI(guildId).taskThread->joinable()) {
-					getSongAPI(guildId).taskThread->join();
+		getSongAPIMap()[guildMember.guildId]->cancelCurrentSong();
+		if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::SoundCloud) {
+			Song newerSong = getSoundCloudAPIMap()[guildMember.guildId]->collectFinalSong(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
+			if (getSongAPIMap()[this->guildId]->taskThread) {
+				getSongAPIMap()[this->guildId]->taskThread->request_stop();
+				if (getSongAPIMap()[this->guildId]->taskThread->joinable()) {
+					getSongAPIMap()[this->guildId]->taskThread->join();
 				}
 			}
-			getSongAPI(guildId).taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
-				getSoundCloudAPI(guildId).downloadAndStreamAudio(newerSong, eventToken, 0);
+			getSongAPIMap()[this->guildId]->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
+				getSoundCloudAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, eventToken, 0);
 			});
 
-		} else if (getSongAPI(guildId).playlist.currentSong.type == SongType::YouTube) {
-			Song newerSong = getYouTubeAPI(guildId).collectFinalSong(getSongAPI(guildId).playlist.currentSong);
-			if (getSongAPI(guildId).taskThread) {
-				getSongAPI(guildId).taskThread->request_stop();
-				if (getSongAPI(guildId).taskThread->joinable()) {
-					getSongAPI(guildId).taskThread->join();
+		} else if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.type == SongType::YouTube) {
+			Song newerSong = getYouTubeAPIMap()[guildMember.guildId]->collectFinalSong(getSongAPIMap()[guildMember.guildId]->playlist.currentSong);
+			if (getSongAPIMap()[this->guildId]->taskThread) {
+				getSongAPIMap()[this->guildId]->taskThread->request_stop();
+				if (getSongAPIMap()[this->guildId]->taskThread->joinable()) {
+					getSongAPIMap()[this->guildId]->taskThread->join();
 				}
 			}
-			getSongAPI(guildId).taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
-				getYouTubeAPI(guildId).downloadAndStreamAudio(newerSong, eventToken, 0);
+			getSongAPIMap()[this->guildId]->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
+				getYouTubeAPIMap()[this->guildId]->downloadAndStreamAudio(newerSong, eventToken, 0);
 			});
 		};
 	}
 
 	bool SongAPI::sendNextSong(const GuildMember& guildMember) {
-		auto guildId = guildMember.guildId;
 		std::unique_lock accessLock{ SongAPI::accessMutex };
-		getSongAPI(guildId).sendNextSong();
-		if (getSongAPI(guildId).playlist.currentSong.songId == "") {
-			getSongAPI(guildId).sendNextSong();
+		if (!getSongAPIMap().contains(guildMember.guildId)) {
+			getSongAPIMap()[guildMember.guildId] = std::make_unique<SongAPI>(guildMember.guildId);
 		}
-		getSongAPI(guildId).sendNextSongFinal(guildMember);
+		getSongAPIMap()[guildMember.guildId]->sendNextSong();
+		if (getSongAPIMap()[guildMember.guildId]->playlist.currentSong.songId == "") {
+			getSongAPIMap()[guildMember.guildId]->sendNextSong();
+		}
+		getSongAPIMap()[guildMember.guildId]->sendNextSongFinal(guildMember);
 		return true;
 	}
 
@@ -297,8 +299,10 @@ namespace DiscordCoreAPI {
 			this->taskThread.reset(nullptr);
 		}
 		DiscordCoreAPI::AudioFrameData dataFrame{};
-		while (DiscordCoreAPI::getVoiceConnection(guildId).audioDataBuffer.tryReceive(dataFrame)) {
-		};
+		if (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]) {
+			while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.tryReceive(dataFrame)) {
+			};
+		}
 	}
 
 	std::mutex SongAPI::accessMutex{};

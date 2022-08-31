@@ -251,8 +251,7 @@ namespace DiscordCoreInternal {
 
 	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
 
-	void HttpsConnection::handleBuffer(SSLClient* theClient) noexcept {
-	}
+	void HttpsConnection::handleBuffer(SSLClient* theClient) noexcept {}
 
 	void HttpsConnection::disconnect(bool) noexcept {
 		if (this->theSocket != SOCKET_ERROR) {
@@ -380,7 +379,7 @@ namespace DiscordCoreInternal {
 			}
 			if (workload.baseUrl != httpsConnection.currentBaseUrl || !httpsConnection.areWeStillConnected() || httpsConnection.doWeConnect) {
 				httpsConnection.currentBaseUrl = workload.baseUrl;
-				if (httpsConnection.connect(workload.baseUrl, "443", this->configManager->doWePrintHttpsErrorMessages(), true) != ConnectionResult::No_Error) {
+				if (httpsConnection.connect(workload.baseUrl, "443", this->configManager->doWePrintHttpsErrorMessages(),false) != ConnectionResult::No_Error) {
 					httpsConnection.currentReconnectTries++;
 					httpsConnection.doWeConnect = true;
 					return this->httpRequestInternal(httpsConnection, workload, rateLimitData);

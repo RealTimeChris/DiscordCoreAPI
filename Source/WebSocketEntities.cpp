@@ -27,12 +27,6 @@
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 
-namespace DiscordCoreAPI {
-	namespace Globals {
-		extern VoiceConnectionMap voiceConnectionMap;
-	}
-}
-
 namespace DiscordCoreInternal {
 
 	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
@@ -179,6 +173,7 @@ namespace DiscordCoreInternal {
 			theVector = ErlPacker::parseJsonToEtf(dataToSend);
 		} else {
 			theVector = dataToSend.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			;
 		}
 		this->createHeader(header, theVector.size(), theOpCode);
 		std::string theVectorNew{};
@@ -357,7 +352,6 @@ namespace DiscordCoreInternal {
 				}
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
 				while (this->areWeCollectingData) {
-					std::cout << "WERE COLLECTING DATA" << std::endl;
 					if (theStopWatch.hasTimePassed()) {
 						break;
 					}
@@ -991,7 +985,6 @@ namespace DiscordCoreInternal {
 										case 34: {
 											std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
 											DiscordCoreAPI::parseObject(payload["d"], *interactionData);
-											std::cout << "THE INTERACTION ID: " << interactionData->id << std::endl;
 											std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
 											switch (interactionData->type) {
 												case DiscordCoreAPI::InteractionType::Application_Command: {
@@ -1271,21 +1264,23 @@ namespace DiscordCoreInternal {
 											} else if (this->areWeCollectingData && !this->stateUpdateCollected) {
 												this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 												if (this->voiceConnectionDataBufferMap.contains(dataPackage->voiceStateData.guildId)) {
-													std::cout << "WERE SENDING THE DATA 0101" << std::endl;
 													this->voiceConnectionDataBufferMap[dataPackage->voiceStateData.guildId]->send(this->voiceConnectionData);
 												}
 												this->serverUpdateCollected = false;
 												this->stateUpdateCollected = false;
 												this->areWeCollectingData = false;
 											}
+											std::cout << "USER ID: " << dataPackage->voiceStateData.userId << ", GUILD ID:" << dataPackage->voiceStateData.guildId << std::endl;
 											if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
-												if (dataPackage->voiceStateData.userId != 0 && dataPackage->voiceStateData.guildId != 0) {
-													if (DiscordCoreAPI::GuildMembers::cache.contains(dataPackage->voiceStateData.guildId)) {
-														if (DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId].cache.contains(
-																dataPackage->voiceStateData.userId)) {
-															DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId]
-																.cache[dataPackage->voiceStateData.userId]
-																->voiceChannelId = dataPackage->voiceStateData.channelId;
+												if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->voiceStateData.guildId)) {
+													if (dataPackage->voiceStateData.userId != 0 && dataPackage->voiceStateData.guildId != 0) {
+														if (DiscordCoreAPI::GuildMembers::cache.contains(dataPackage->voiceStateData.guildId)) {
+															if (DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId].cache.contains(
+																	dataPackage->voiceStateData.userId)) {
+																DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId]
+																	.cache[dataPackage->voiceStateData.userId]
+																	->voiceChannelId = dataPackage->voiceStateData.channelId;
+															}
 														}
 													}
 												}
@@ -1306,14 +1301,13 @@ namespace DiscordCoreInternal {
 												this->voiceConnectionData.endPoint = dataPackage->endpoint;
 												this->voiceConnectionData.token = dataPackage->token;
 												if (this->voiceConnectionDataBufferMap.contains(dataPackage->guildId)) {
-													std::cout << "WERE SENDING THE DATA" << std::endl;
 													this->voiceConnectionDataBufferMap[dataPackage->guildId]->send(this->voiceConnectionData);
 												}
 												this->serverUpdateCollected = false;
 												this->stateUpdateCollected = false;
 												this->areWeCollectingData = false;
 											}
-
+											
 											this->discordCoreClient->eventManager.onVoiceServerUpdateEvent(*dataPackage);
 											break;
 										}
@@ -1451,7 +1445,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
-		if (this->theSocket && this->theSocket != SOCKET_ERROR) {
+		if (this->theSocket != SOCKET_ERROR) {
 			this->theSocket = SOCKET_ERROR;
 			this->theWebSocketState.store(WebSocketSSLShardState::Disconnected);
 			this->areWeConnecting.store(true);
@@ -1604,13 +1598,10 @@ namespace DiscordCoreInternal {
 		this->theVCStopWatch.resetTimer();
 		VoiceConnectInitData theConnectionData = this->voiceConnections.front();
 		this->voiceConnections.pop_front();
-		DiscordCoreAPI::getVoiceConnection(theConnectionData.guildId).disconnect();
-		DiscordCoreAPI::getVoiceConnection(theConnectionData.guildId).voiceConnectInitData = theConnectionData;
-		DiscordCoreAPI::Globals::voiceConnectionMap[theConnectionData.guildId]->connect();
-	}
-	 
-	WebSocketSSLShard* BaseSocketAgent::getSSLShard(uint64_t shardId) noexcept {
-		return this->theShardMap[shardId].get();
+		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId] =
+			std::make_unique<DiscordCoreAPI::VoiceConnection>(this, this->theShardMap[theConnectionData.currentShard].get(), theConnectionData,
+				&this->discordCoreClient->configManager, this->doWeQuit, theConnectionData.streamType, theConnectionData.streamInfo);
+		DiscordCoreAPI::getVoiceConnectionMap()[theConnectionData.guildId]->connect();
 	}
 
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
@@ -1662,7 +1653,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::disconnectVoice() noexcept {
 		uint64_t theDCData = this->voiceConnectionsToDisconnect.front();
 		this->voiceConnectionsToDisconnect.pop_front();
-		DiscordCoreAPI::getVoiceConnection(theDCData).disconnectInternal();
+		DiscordCoreAPI::getVoiceConnectionMap()[theDCData]->disconnectInternal();
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {

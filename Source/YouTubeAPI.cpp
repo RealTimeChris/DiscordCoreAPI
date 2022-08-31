@@ -88,6 +88,7 @@ namespace DiscordCoreInternal {
 			dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
 			dataPackage02.relativePath = "/youtubei/v1/player?key=" + YouTubeRequestBuilder::apiKey;
 			dataPackage02.content = theRequest.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			;
 			dataPackage02.workloadClass = HttpsWorkloadClass::Post;
 			HttpsResponseData responseData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
@@ -192,17 +193,17 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Song newerSong = newSong;
 		if (currentReconnectTries > 9) {
 			DiscordCoreAPI::AudioFrameData frameData{};
-			while (DiscordCoreAPI::getVoiceConnection(this->guildId).audioDataBuffer.tryReceive(frameData)) {
+			while (DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.tryReceive(frameData)) {
 			};
 			DiscordCoreAPI::SongCompletionEventData eventData{};
-			auto returnValue = &DiscordCoreAPI::getSongAPI(this->guildId);
+			auto returnValue = DiscordCoreAPI::getSongAPIMap()[this->guildId].get();
 			if (returnValue) {
 				eventData.previousSong = returnValue->getCurrentSong(this->guildId);
 			}
 			eventData.wasItAFail = true;
 			eventData.guildMember = guildMember;
 			eventData.guild = DiscordCoreAPI::Guilds::getGuildAsync({ .guildId = this->guildId }).get();
-			DiscordCoreAPI::getSongAPI(this->guildId).onSongCompletionEvent(eventData);
+			DiscordCoreAPI::getSongAPIMap()[this->guildId]->onSongCompletionEvent(eventData);
 		} else {
 			newerSong = this->collectFinalSong(newerSong);
 			YouTubeAPI::downloadAndStreamAudio(newerSong, stopToken, currentReconnectTries);
@@ -214,8 +215,7 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr) };
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
-				if (streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true) !=
-					ConnectionResult::No_Error) {
+				if (streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true) != ConnectionResult::No_Error) {
 					return;
 				}
 			} else {
@@ -257,7 +257,7 @@ namespace DiscordCoreInternal {
 					DiscordCoreAPI::AudioFrameData frameData{};
 					frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
 					frameData.sampleCount = 0;
-					DiscordCoreAPI::getVoiceConnection(this->guildId).audioDataBuffer.send(std::move(frameData));
+					DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(frameData));
 					audioDecoder.reset(nullptr);
 					streamSocket->disconnect(false);
 					return;
@@ -370,7 +370,7 @@ namespace DiscordCoreInternal {
 						for (auto& value: frames) {
 							auto encodedFrame = audioEncoder->encodeSingleAudioFrame(value);
 							encodedFrame.guildMemberId = newSong.addedByUserId;
-							DiscordCoreAPI::getVoiceConnection(this->guildId).audioDataBuffer.send(std::move(encodedFrame));
+							DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(encodedFrame));
 						}
 					}
 					if (remainingDownloadContentLength >= this->maxBufferSize) {
@@ -388,7 +388,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::AudioFrameData frameData{};
 			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
 			frameData.sampleCount = 0;
-			DiscordCoreAPI::getVoiceConnection(this->guildId).audioDataBuffer.send(std::move(frameData));
+			DiscordCoreAPI::getVoiceConnectionMap()[this->guildId]->audioDataBuffer.send(std::move(frameData));
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");

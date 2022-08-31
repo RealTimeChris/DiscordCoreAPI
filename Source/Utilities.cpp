@@ -63,7 +63,7 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, int32_t& theData) {
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, int32_t& theData){
 		return;
 	}
 

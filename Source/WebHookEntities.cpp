@@ -207,6 +207,7 @@ namespace DiscordCoreAPI {
 			data["content"] = this->content;
 		}
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	WebHookVector::operator std::vector<WebHook>() {
@@ -228,6 +229,7 @@ namespace DiscordCoreAPI {
 			responseData.update({ { "avatar", dataPackage.avatar } });
 		}
 		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
 
@@ -283,6 +285,7 @@ namespace DiscordCoreAPI {
 			responseData.update({ { "channel_id", std::to_string(dataPackage.channelId) } });
 		}
 		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		workload.callStack = "WebHooks::modifyWebHookAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
@@ -303,6 +306,7 @@ namespace DiscordCoreAPI {
 			responseData.update({ { "channel_id", std::to_string(dataPackage.channelId) } });
 		}
 		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		workload.callStack = "WebHooks::modifyWebHookWithTokenAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}

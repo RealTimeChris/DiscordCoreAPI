@@ -43,6 +43,7 @@ namespace DiscordCoreAPI {
 		data["description"] = this->description;
 		data["name"] = this->name;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	ModifyGuildScheduledEventData::operator std::string() {
@@ -60,6 +61,7 @@ namespace DiscordCoreAPI {
 		data["description"] = this->description;
 		data["name"] = this->name;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	GuildScheduledEventVector::operator std::vector<GuildScheduledEvent>() {

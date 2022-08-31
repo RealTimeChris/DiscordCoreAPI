@@ -797,7 +797,7 @@ namespace DiscordCoreAPI {
 		uint8_t flags{};///< Flags combined as a bitmask.
 
 		virtual ~ChannelData() noexcept = default;
-	};
+	};	
 
 	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ChannelData& theData);
 
@@ -927,7 +927,7 @@ namespace DiscordCoreAPI {
 
 		ActionData() noexcept = default;
 
-		virtual ~ActionData() noexcept = default;
+		virtual ~ActionData() noexcept = default;		
 	};
 
 	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ActionData& theData);
@@ -1789,6 +1789,8 @@ namespace DiscordCoreAPI {
 		std::string getIconUrl() noexcept;
 
 		bool areWeConnected();
+
+		void initialize();
 
 		void disconnect();
 

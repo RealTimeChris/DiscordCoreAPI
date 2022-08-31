@@ -73,6 +73,7 @@ namespace DiscordCoreAPI {
 			data["afk_channel_id"] = this->afkChannelId;
 		}
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	CreateGuildBanData::operator std::string() {
@@ -81,6 +82,7 @@ namespace DiscordCoreAPI {
 			data["delete_message_days"] = this->deleteMessageDays;
 		}
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	BeginGuildPruneData::operator std::string() {
@@ -89,6 +91,7 @@ namespace DiscordCoreAPI {
 		data["include_roles"] = this->includeRoles;
 		data["days"] = this->days;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	ModifyGuildWelcomeScreenData::operator std::string() {
@@ -108,12 +111,13 @@ namespace DiscordCoreAPI {
 		data["welcome_channels"] = channelsArray;
 		data["enabled"] = this->enabled;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute, StreamType streamTypeNew,
 		StreamInfo streamInfoNew) {
-		if (getVoiceConnection(this->id).areWeConnected()) {
-			this->voiceConnectionPtr = &getVoiceConnection(this->id);
+		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id] && getVoiceConnectionMap()[this->id]->areWeConnected()) {
+			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			return this->voiceConnectionPtr;
 		} else if (guildMemberId != 0 || channelId != 0) {
 			Snowflake theChannelId{};
@@ -139,13 +143,13 @@ namespace DiscordCoreAPI {
 			voiceConnectInitData.selfMute = selfMute;
 			StopWatch theStopWatch{ 10000ms };
 			this->discordCoreClient->baseSocketAgentMap[theBaseSocketAgentIndex]->connectVoiceChannel(voiceConnectInitData);
-			while (!getVoiceConnection(this->id).areWeConnected()) {
+			while (!getVoiceConnectionMap()[this->id]->areWeConnected()) {
 				std::this_thread::sleep_for(1ms);
 				if (theStopWatch.hasTimePassed()) {
 					break;
 				}
 			}
-			this->voiceConnectionPtr = &getVoiceConnection(this->id);
+			this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
 			return this->voiceConnectionPtr;
 		} else {
 			return nullptr;
@@ -159,25 +163,46 @@ namespace DiscordCoreAPI {
 	}
 
 	bool GuildData::areWeConnected() {
-		return getVoiceConnection(this->id).areWeConnected();
+		return getVoiceConnectionMap()[this->id]->areWeConnected();
+	}
+
+	void GuildData::initialize() {
+		if (!getVoiceConnectionMap().contains(this->id)) {
+			std::string theShardId{ std::to_string((this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount()) };
+			getVoiceConnectionMap()[this->id] = nullptr;
+		}
+		this->voiceConnectionPtr = getVoiceConnectionMap()[this->id].get();
+		if (!getYouTubeAPIMap().contains(this->id)) {
+			getYouTubeAPIMap()[this->id] =
+				std::make_unique<DiscordCoreInternal::YouTubeAPI>(&this->discordCoreClient->configManager, this->discordCoreClient->httpsClient.get(), this->id);
+		}
+		if (!getSoundCloudAPIMap().contains(this->id)) {
+			getSoundCloudAPIMap()[this->id] =
+				std::make_unique<DiscordCoreInternal::SoundCloudAPI>(&this->discordCoreClient->configManager, this->discordCoreClient->httpsClient.get(), this->id);
+		}
+		if (!getSongAPIMap().contains(this->id)) {
+			getSongAPIMap()[this->id] = std::make_unique<SongAPI>(this->id);
+		}
 	}
 
 	void GuildData::disconnect() {
-		UpdateVoiceStateData updateVoiceData{};
-		updateVoiceData.channelId = 0;
-		updateVoiceData.selfDeaf = false;
-		updateVoiceData.selfMute = false;
-		updateVoiceData.guildId = this->id;
-		this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
-		getVoiceConnection(this->id).disconnect();
-		StopWatch theStopWatch{ 10000ms };
-		while (getVoiceConnection(this->id).areWeConnectedBool.load()) {
-			std::this_thread::sleep_for(1ms);
-			if (theStopWatch.hasTimePassed()) {
-				break;
+		if (getVoiceConnectionMap().contains(this->id) && getVoiceConnectionMap()[this->id].get()) {
+			UpdateVoiceStateData updateVoiceData{};
+			updateVoiceData.channelId = 0;
+			updateVoiceData.selfDeaf = false;
+			updateVoiceData.selfMute = false;
+			updateVoiceData.guildId = this->id;
+			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
+			getVoiceConnectionMap()[this->id]->disconnect();
+			StopWatch theStopWatch{ 10000ms };
+			while (getVoiceConnectionMap()[this->id]->areWeConnectedBool.load()) {
+				std::this_thread::sleep_for(1ms);
+				if (theStopWatch.hasTimePassed()) {
+					break;
+				}
 			}
+			this->voiceConnectionPtr = nullptr;
 		}
-		this->voiceConnectionPtr = nullptr;
 	}
 
 	Guild& Guild::operator=(GuildData&& other) noexcept {
@@ -297,6 +322,7 @@ namespace DiscordCoreAPI {
 			data["owner_id"] = std::to_string(this->ownerId);
 		}
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 	}
 
 	void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
@@ -683,6 +709,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/templates/" + dataPackage.templateCode;
 		nlohmann::json responseData = { { "name", dataPackage.name }, { "icon", dataPackage.imageData } };
 		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		workload.callStack = "Guilds::createGuildFromGuildTemplateAsync()";
 		auto newGuild = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
 		newGuild.discordCoreClient = Guilds::discordCoreClient;
@@ -705,6 +732,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/templates";
 		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name } };
 		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		workload.callStack = "Guilds::createGuildTemplateAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(workload);
 	}
@@ -725,6 +753,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/templates/" + dataPackage.templateCode;
 		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name } };
 		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		;
 		workload.callStack = "Guilds::modifyGuildTemplateAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(workload);
 	}
@@ -822,6 +851,7 @@ namespace DiscordCoreAPI {
 		if (Guilds::configManager->doWeCacheGuilds()) {
 			guild->discordCoreClient = Guilds::discordCoreClient;
 			std::unique_lock theLock{ Guilds::theMutex };
+			guild->initialize();
 			auto guildId = guild->id;
 			if (!Guilds::cache.contains(guildId)) {
 				Guilds::cache.emplace(guildId, std::move(guild));
