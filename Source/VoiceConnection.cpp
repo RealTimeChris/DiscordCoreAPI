@@ -699,7 +699,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Collecting_Hello: {
-				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify){
+				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify) {
 					WebSocketSSLShard::processIO(10000);
 					std::this_thread::sleep_for(1ms);
 				}

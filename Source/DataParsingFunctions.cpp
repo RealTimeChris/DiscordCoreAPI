@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 		theData.avatar = getString(jsonObjectData, "avatar");
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, RoleData&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, RoleData& theData) {
 		theData.id = strtoull(getString(jsonObjectData, "id"));
 
 		theData.name = getString(jsonObjectData, "name");
@@ -252,7 +252,7 @@ namespace DiscordCoreAPI {
 		theData.premiumSince = getString(jsonObjectData, "premium_since");
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, OverWriteData&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, OverWriteData& theData) {
 		theData.id = strtoull(getString(jsonObjectData, "id"));
 
 		theData.allow = strtoull(getString(jsonObjectData, "allow"));
@@ -342,7 +342,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: jsonObjectData["emoji"]) {
 			theData.emoji.push_back(strtoull(value["id"].get<std::string>()));
 		}
-		
+
 		if (Guilds::configManager->doWeCacheRoles()) {
 			theData.roles.clear();
 			theData.roles.reserve(jsonObjectData["roles"].size());
@@ -353,7 +353,7 @@ namespace DiscordCoreAPI {
 				Roles::insertRole(std::move(newData));
 			}
 		}
-		
+
 		if (Guilds::configManager->doWeCacheGuildMembers()) {
 			theData.members.clear();
 			theData.members.reserve(jsonObjectData["members"].size());
@@ -366,7 +366,7 @@ namespace DiscordCoreAPI {
 				GuildMembers::insertGuildMember(std::move(newData));
 			}
 		}
-		
+
 		if (Guilds::configManager->doWeCacheGuildMembers()) {
 			for (auto& value: jsonObjectData["voice_states"]) {
 				auto userId = strtoull(value["user_id"].get<std::string>());
@@ -379,7 +379,7 @@ namespace DiscordCoreAPI {
 				GuildMembers::cache[theData.id].cache[userId]->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
 			}
 		}
-		
+
 		if (Guilds::configManager->doWeCacheChannels()) {
 			theData.channels.clear();
 			theData.channels.reserve(jsonObjectData["channels"].size());
@@ -683,7 +683,7 @@ namespace DiscordCoreAPI {
 	template<> void parseObject(nlohmann::json& jsonObjectData, GuildScheduledEventMetadata& theData) {
 		theData.location = getString(jsonObjectData, "location");
 	}
-	
+
 	template<> void parseObject(nlohmann::json& jsonObjectData, AttachmentData& theData) {
 		theData.id = strtoull(getString(jsonObjectData, "id"));
 
@@ -720,7 +720,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, ApplicationCommandVector&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, ApplicationCommandVector& theData) {
 		theData.theApplicationCommands.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			ApplicationCommand newData{};
@@ -730,7 +730,7 @@ namespace DiscordCoreAPI {
 		theData.theApplicationCommands.shrink_to_fit();
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, AutoModerationActionExecutionEventData& theData) {
 		if (jsonObjectData.contains("alert_system_message_id") && !jsonObjectData["alert_system_message_id"].is_null()) {
 			theData.alertSystemMessageId = stoull(jsonObjectData["alert_system_message_id"].get<std::string>());
 		}
@@ -829,7 +829,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, AutoModerationRuleVector&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, AutoModerationRuleVector& theData) {
 		theData.theAutoModerationRules.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			AutoModerationRule newData{};
@@ -967,7 +967,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, ChannelVector&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, ChannelVector& theData) {
 		theData.theChannels.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			Channel newData{};
@@ -977,7 +977,7 @@ namespace DiscordCoreAPI {
 		theData.theChannels.shrink_to_fit();
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, GuildVector&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, GuildVector& theData) {
 		theData.theGuilds.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			Guild newData{};
@@ -1216,7 +1216,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, MessageVector&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, MessageVector& theData) {
 		theData.theMessages.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			Message newData{};
@@ -1258,7 +1258,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, ReactionVector&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, ReactionVector& theData) {
 		theData.theReactions.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			Reaction newData{};
@@ -1268,7 +1268,7 @@ namespace DiscordCoreAPI {
 		theData.theReactions.shrink_to_fit();
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, RoleVector&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, RoleVector& theData) {
 		theData.theRoles.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			Role newData{};
@@ -1348,7 +1348,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, StickerVector&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, StickerVector& theData) {
 		theData.theStickers.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			Sticker newData{};
@@ -1534,7 +1534,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, WebHookVector&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, WebHookVector& theData) {
 		theData.theWebHooks.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			WebHook newData{};
@@ -2337,7 +2337,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> void parseObject(nlohmann::json& jsonObjectData, IntegrationDataVector&theData) {
+	template<> void parseObject(nlohmann::json& jsonObjectData, IntegrationDataVector& theData) {
 		theData.theIntegrationDatas.reserve(jsonObjectData.size());
 		for (auto& value: jsonObjectData) {
 			IntegrationData newData{};
@@ -3478,7 +3478,7 @@ namespace DiscordCoreAPI {
 
 				if (value.contains("options") && !value["options"].is_null()) {
 					for (auto& value02: value["options"]) {
-						SelectOptionData newerData {};
+						SelectOptionData newerData{};
 						DiscordCoreAPI::parseObject(value, newerData);
 						newData.options.emplace_back(newerData);
 					}
@@ -4473,7 +4473,6 @@ namespace DiscordCoreAPI {
 					newString = newString.substr(0, 256);
 				}
 				theData.songTitle = utf8MakeValid(newString);
-				;
 			} else if (jsonObjectData["title"].contains("simpleText")) {
 				std::string newString = jsonObjectData["title"]["simpleText"].get<std::string>();
 				if (newString.size() > 256) {

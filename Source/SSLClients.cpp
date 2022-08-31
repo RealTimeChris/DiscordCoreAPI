@@ -698,6 +698,7 @@ namespace DiscordCoreInternal {
 		this->inputBuffer.clear();
 	}
 
-	DatagramSocketClient::~DatagramSocketClient() noexcept {}
+	DatagramSocketClient::~DatagramSocketClient() noexcept {
+	}
 
 }

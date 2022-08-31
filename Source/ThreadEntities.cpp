@@ -34,7 +34,6 @@ namespace DiscordCoreAPI {
 		data["rate_limit_per_user"] = this->rateLimitPerUser;
 		data["name"] = this->threadName;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	StartThreadWithoutMessageData::operator std::string() {
@@ -45,7 +44,6 @@ namespace DiscordCoreAPI {
 		data["name"] = this->threadName;
 		data["type"] = this->type;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	StartThreadInForumChannelData::operator std::string() {
@@ -71,7 +69,6 @@ namespace DiscordCoreAPI {
 		data["auto_archive_duration"] = this->autoArchiveDuration;
 		data["rate_limit_per_user"] = this->rateLimitPerUser;
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-		;
 	}
 
 	void Threads::initialize(DiscordCoreInternal::HttpsClient* theClient) {

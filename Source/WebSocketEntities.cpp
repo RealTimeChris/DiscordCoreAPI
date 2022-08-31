@@ -173,7 +173,6 @@ namespace DiscordCoreInternal {
 			theVector = ErlPacker::parseJsonToEtf(dataToSend);
 		} else {
 			theVector = dataToSend.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
-			;
 		}
 		this->createHeader(header, theVector.size(), theOpCode);
 		std::string theVectorNew{};
@@ -1307,7 +1306,7 @@ namespace DiscordCoreInternal {
 												this->stateUpdateCollected = false;
 												this->areWeCollectingData = false;
 											}
-											
+
 											this->discordCoreClient->eventManager.onVoiceServerUpdateEvent(*dataPackage);
 											break;
 										}
