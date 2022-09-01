@@ -514,7 +514,7 @@ namespace DiscordCoreInternal {
 			theConnection.resetValues();
 			bool doWeReturn{ false };
 			while (true) {
-				auto theResult = theConnection.processIO(100000);
+				auto theResult = theConnection.processIO(1000);
 				if (theResult != ProcessIOResult::No_Error) {
 					theConnection.doWeConnect = true;
 					doWeReturn = true;

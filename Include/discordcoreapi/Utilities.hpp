@@ -1235,6 +1235,7 @@ namespace DiscordCoreAPI {
 
 		StopWatch(StopWatch<TimeType>&& other) noexcept {
 			*this = std::move(other);
+			this->resetTimer();
 		}
 
 		StopWatch<TimeType>& operator=(const StopWatch<TimeType>& other) noexcept {
@@ -1247,9 +1248,12 @@ namespace DiscordCoreAPI {
 
 		StopWatch(const StopWatch<TimeType>& other) noexcept {
 			*this = other;
+			this->resetTimer();
 		}
 
-		StopWatch() noexcept = default;
+		StopWatch() noexcept {
+			this->resetTimer();
+		}
 
 		StopWatch<TimeType>& operator=(TimeType maxNumberOfMsNew) {
 			std::unique_lock theLock{ this->theMutex };
@@ -1260,6 +1264,7 @@ namespace DiscordCoreAPI {
 
 		explicit StopWatch(TimeType maxNumberOfMsNew) {
 			*this = maxNumberOfMsNew;
+			this->resetTimer();
 		}
 
 		uint64_t totalTimePassed() {

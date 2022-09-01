@@ -146,7 +146,7 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::onMessageReceived(const std::string& theData) noexcept {
 		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
 		try {
-			if (WebSocketSSLShard::inputBuffer.size() > 0) {
+			if (theData.size() > 0) {
 				nlohmann::json payload = payload.parse(theData);
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << payload << reset() << endl << endl;
@@ -214,8 +214,9 @@ namespace DiscordCoreAPI {
 						}
 					}
 				}
+			} else {
+				return false;
 			}
-			return false;
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				reportException("VoiceConnection::onMessageReceived()");
@@ -223,6 +224,7 @@ namespace DiscordCoreAPI {
 			this->onClosed();
 			return false;
 		}
+		return false;
 	}
 
 	void VoiceConnection::reconnectStream() noexcept {
@@ -239,8 +241,6 @@ namespace DiscordCoreAPI {
 			} else {
 				if (DatagramSocketClient::areWeStillConnected()) {
 					DatagramSocketClient::writeData(std::move(responseData));
-				} else {
-					this->onClosed();
 				}
 			}
 		} catch (...) {
@@ -255,7 +255,7 @@ namespace DiscordCoreAPI {
 		if (static_cast<WebSocketSSLShard*>(theClient)->currentState.load() == DiscordCoreInternal::SSLShardState::Upgrading) {
 			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
 		}
-		return this->parseMessage(this);
+		return VoiceConnection::parseMessage(this);
 	}
 
 	void VoiceConnection::sendSpeakingMessage(const bool isSpeaking) noexcept {
@@ -272,6 +272,7 @@ namespace DiscordCoreAPI {
 			std::string theString{};
 			this->stringifyJsonData(newString, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			if (!this->sendMessage(theString, true)) {
+				std::cout << "WERE DCING 010101" << std::endl;
 				this->onClosed();
 			}
 		}
@@ -706,6 +707,7 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify) {
 					if (theStopWatch.hasTimePassed()) {
+						std::cout << "WERE DCING 020202" << std::endl;
 						this->onClosed();
 						return;
 					}
@@ -736,12 +738,14 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Collecting_Ready: {
+				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
 					if (theStopWatch.hasTimePassed()) {
+						std::cout << "WERE DCING 030303" << std::endl;
 						this->onClosed();
 						return;
 					}
-					WebSocketSSLShard::processIO(10000);
+					WebSocketSSLShard::processIO(1000);
 					std::this_thread::sleep_for(1ms);
 				}
 				this->connectInternal();
@@ -770,6 +774,7 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "WERE DCING 030303" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -778,12 +783,14 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Collecting_Session_Description: {
+				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
 					if (theStopWatch.hasTimePassed()) {
+						std::cout << "WERE DCING 040404" << std::endl;
 						this->onClosed();
 						return;
 					}
-					WebSocketSSLShard::processIO(10000);
+					WebSocketSSLShard::processIO(1001);
 					std::this_thread::sleep_for(1ms);
 				}
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
@@ -846,6 +853,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::onClosed() noexcept {
+		std::cout << "WERE BEING CALLED!" << std::endl;
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
 			this->reconnect();
@@ -943,6 +951,10 @@ namespace DiscordCoreAPI {
 		this->areWeHeartBeating = false;
 		this->wantWrite = true;
 		this->wantRead = false;
+		WebSocketSSLShard::inputBuffer.clear();
+		DatagramSocketClient::inputBuffer.clear();
+		DatagramSocketClient::outputBuffers.clear();
+		WebSocketSSLShard::outputBuffers.clear();
 		this->currentReconnectTries++;
 		this->areWeConnectedBool.store(false);
 		this->thePackage.currentShard = 0;

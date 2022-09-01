@@ -212,9 +212,9 @@ namespace DiscordCoreInternal {
 		virtual ~SSLDataInterface() noexcept = default;
 
 	  protected:
+		std::array<char, 1024 * 16> rawInputBuffer{};
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::deque<std::string> outputBuffers{};
-		char rawInputBuffer[1024 * 16]{};
 		std::string inputBuffer{};
 		bool wantWrite{ true };
 		bool wantRead{ false };
@@ -286,11 +286,11 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const int32_t maxBufferSize{ (1024 * 16) - 1 };
+		std::array<char, 1024 * 16> rawInputBuffer{};
 		std::deque<std::string> outputBuffers{};
 		DiscordCoreAPI::StreamType streamType{};
 		sockaddr_in theStreamTargetAddress{};
 		bool areWeStreamConnected{ false };
-		char rawInputBuffer[1024 * 16]{};
 		SOCKETWrapper theSocket{};
 		std::string inputBuffer{};
 		int64_t bytesRead{};

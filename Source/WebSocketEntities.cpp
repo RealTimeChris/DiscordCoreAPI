@@ -289,9 +289,9 @@ namespace DiscordCoreInternal {
 				if (theShard->inputBuffer.size() < theShard->messageOffset + theShard->messageLength) {
 					return false;
 				} else {
-					auto returnValue = this->onMessageReceived(theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength));
+					this->onMessageReceived(theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength));
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
-					return returnValue;
+					return true;
 				}
 			}
 			case WebSocketOpCode::Op_Close: {
@@ -393,12 +393,16 @@ namespace DiscordCoreInternal {
 				}
 				ProcessIOResult didWeWrite{ false };
 				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
+				theStopWatch.resetTimer();
 				do {
 					if (theStopWatch.hasTimePassed()) {
 						this->onClosed();
 						return false;
 					}
 					didWeWrite = this->writeData(dataToSend, priority);
+					if (this->outputBuffers.size() > 0) {
+						std::cout << "OUTPUT BUFFERS: " << this->outputBuffers[0] << std::endl;
+					}
 				} while (didWeWrite != ProcessIOResult::No_Error);
 				if (didWeWrite != ProcessIOResult::No_Error) {
 					this->onClosed();
@@ -1382,14 +1386,13 @@ namespace DiscordCoreInternal {
 											this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 											if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected && userId == this->userId) {
 												this->voiceConnectionData = VoiceConnectionData{};
+												this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 												this->stateUpdateCollected = true;
 											} else if (this->areWeCollectingData && !this->stateUpdateCollected) {
+												this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 												if (this->voiceConnectionDataBufferMap.contains(dataPackage->voiceStateData.guildId)) {
 													this->voiceConnectionDataBufferMap[dataPackage->voiceStateData.guildId]->send(this->voiceConnectionData);
 												}
-												this->serverUpdateCollected = false;
-												this->stateUpdateCollected = false;
-												this->areWeCollectingData = false;
 											}
 											if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
 												if (DiscordCoreAPI::GuildMembers::cache.contains(dataPackage->voiceStateData.guildId)) {

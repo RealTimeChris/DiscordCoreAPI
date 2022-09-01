@@ -184,7 +184,8 @@ namespace DiscordCoreInternal {
 					this->disconnect(true);
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
-					return ProcessIOResult::No_Error;
+					return ProcessIOResult::Error;
+					std::cout << "WERE LEAVING LEAVING!" << std::endl;
 				}
 				this->outputBuffers.emplace_back(dataToWrite);
 				if (readWriteSet.revents & POLLWRNORM) {
@@ -423,20 +424,33 @@ namespace DiscordCoreInternal {
 		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->theSocket;
-		readWriteSet.events = POLLIN | POLLOUT;
+		if (this->outputBuffers.size() > 0 || this->wantWrite) {
+			readWriteSet.events = POLLIN | POLLOUT;
+		} else {
+			readWriteSet.events = POLLIN;
+		}
 
 		if (auto returnValue = poll(&readWriteSet, 1, theWaitTimeInMs); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::processIO()") << std::endl;
+			}
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
 			return ProcessIOResult::No_Error;
 		} else {
-			if (readWriteSet.revents & POLLRDNORM) {
+			if (readWriteSet.revents & POLLERR) {
+				if (this->doWePrintErrorMessages) {
+					std::cout << reportError("SSLClient::processIO()") << std::endl;
+				}
+				return ProcessIOResult::Error;
+			}
+			if (static_cast<SHORT>(readWriteSet.revents) & static_cast<SHORT>(POLLRDNORM)) {
 				if (!this->readDataProcess()) {
 					return ProcessIOResult::Error;
 				}
-			} 
-			if (readWriteSet.revents & POLLWRNORM) {
+			}
+			if (static_cast<SHORT>(readWriteSet.revents) & static_cast<SHORT>(POLLWRNORM)) {
 				if (!this->writeDataProcess()) {
 					return ProcessIOResult::Error;
 				}
@@ -480,9 +494,15 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
+					if (this->doWePrintErrorMessages) {
+						std::cout << reportSSLError("SSLClient::writeDataProcess()") << std::endl;
+					}
 					return false;
 				}
 				default: {
+					if (this->doWePrintErrorMessages) {
+						std::cout << reportSSLError("SSLClient::writeDataProcess()") << std::endl;
+					}
 					this->disconnect(true);
 					return false;
 				}
@@ -496,17 +516,13 @@ namespace DiscordCoreInternal {
 		this->wantWrite = false;
 		do {
 			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer, this->maxBufferSize, &readBytes) };
+			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_NONE: {
 					if (readBytes > 0) {
-						this->inputBuffer.append(this->rawInputBuffer, this->rawInputBuffer + readBytes);
+						this->inputBuffer.append(this->rawInputBuffer.data(), this->rawInputBuffer.data() + readBytes);
 						this->bytesRead += readBytes;
-					}
-					if (!this->areWeAStandaloneSocket) {
-						while (this->handleBuffer(this)) {
-						}
 					}
 					break;
 				}
@@ -519,17 +535,25 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
+					if (this->doWePrintErrorMessages) {
+						std::cout << reportSSLError("SSLClient::readDataProcess()") << std::endl;
+					}
 					this->disconnect(true);
-					std::cout << reportSSLError("SSLClient::readDataProcess()") << std::endl;
 					return false;
 				}
 				default: {
+					if (this->doWePrintErrorMessages) {
+						std::cout << reportSSLError("SSLClient::readDataProcess()") << std::endl;
+					}
 					this->disconnect(true);
-					std::cout << reportSSLError("SSLClient::readDataProcess()") << std::endl;
 					return false;
 				}
 			}
 		} while (SSL_pending(this->ssl));
+		if (!this->areWeAStandaloneSocket) {
+			while (this->handleBuffer(this)) {
+			}
+		}
 		return true;
 	}
 
@@ -683,13 +707,14 @@ namespace DiscordCoreInternal {
 #else
 			socklen_t intSize = sizeof(this->theStreamTargetAddress);
 #endif
-			int32_t readBytes = recvfrom(this->theSocket, this->rawInputBuffer, static_cast<int32_t>(this->maxBufferSize), 0, (sockaddr*) & this->theStreamTargetAddress, &intSize);
+			int32_t readBytes =
+				recvfrom(this->theSocket, this->rawInputBuffer.data(), static_cast<int32_t>(this->maxBufferSize), 0, ( sockaddr* )&this->theStreamTargetAddress, &intSize);
 
 			if (readBytes < 0) {
 				this->disconnect();
 				return;
 			} else {
-				this->inputBuffer.append(rawInputBuffer, rawInputBuffer + readBytes);
+				this->inputBuffer.append(rawInputBuffer.data(), rawInputBuffer.data() + readBytes);
 				this->bytesRead += readBytes;
 			}
 		}
