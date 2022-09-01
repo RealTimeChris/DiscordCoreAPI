@@ -231,25 +231,20 @@ namespace DiscordCoreAPI {
 		return embed;
 	}
 
-	ChannelData& ChannelData::operator=(const ChannelData&other) noexcept {
-		this->flags = other.flags;
-		this->guildId = other.guildId;
-		this->id = other.id;
-		this->memberCount = other.memberCount;
-		this->name = other.name;
-		this->ownerId = other.ownerId;
-		this->parentId = other.parentId;
-		this->position = other.position;
-		this->topic = other.topic;
-		this->type = other.type;
-		for (auto& value: other.permissionOverwrites) {
-			this->permissionOverwrites.push_back(std::move(value));
-		}
+	OverWriteData& OverWriteData::operator=(nlohmann::json& theJsonData) {
+		this->allow = strtoull(getString(theJsonData, "allow"));
+
+		this->deny = strtoull(getString(theJsonData, "deny"));
+
+		this->id = strtoull(getString(theJsonData, "id"));
+		
+		this->type = static_cast<PermissionOverwritesType>(getUint8(theJsonData, "type"));
+
 		return *this;
 	}
 
-	ChannelData::ChannelData(const ChannelData& other) noexcept {
-		*this = other;
+	OverWriteData::OverWriteData(nlohmann::json& theJsonData) {
+		*this = theJsonData;
 	}
 
 	EmbedData& EmbedData::setAuthor(const std::string& authorName, const std::string& authorAvatarUrl) {

@@ -406,8 +406,6 @@ namespace DiscordCoreAPI {
 
 		UserData(const UserData&) noexcept = default;
 
-		void insertUser(std::unique_ptr<UserData> theUser);
-
 		std::string getAvatarUrl();
 
 		virtual ~UserData() noexcept = default;
@@ -904,17 +902,8 @@ namespace DiscordCoreAPI {
 
 	/// Presence update data. \brief Presence update data.
 	struct DiscordCoreAPI_Dll PresenceUpdateData {
-		std::vector<ActivityData> activities{};///< Array of activities.
 		uint8_t theStatus{};///< Current client status.
 		Snowflake guildId{};///< Guild id for the current presence.
-
-		PresenceUpdateData& operator=(PresenceUpdateData&&) noexcept = default;
-
-		PresenceUpdateData(PresenceUpdateData&&) noexcept = default;
-
-		PresenceUpdateData& operator=(const PresenceUpdateData&) noexcept = default;
-
-		PresenceUpdateData(const PresenceUpdateData&) noexcept = default;
 
 		PresenceUpdateData() noexcept = default;
 
@@ -971,6 +960,10 @@ namespace DiscordCoreAPI {
 		uint64_t allow{};///< Collection of Permissions to allow.
 		uint64_t deny{};///< Collection of Permissions to deny.
 
+		OverWriteData& operator=(nlohmann::json& theJsonData);
+
+		OverWriteData(nlohmann::json& theJsonData);
+
 		virtual ~OverWriteData() noexcept = default;
 	};
 
@@ -983,7 +976,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 
-		std::vector<OverWriteData*> permissionOverwrites{};
+		std::vector<OverWriteData> permissionOverwrites{};
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
 		int32_t memberCount{ 0 };///< Count of members active in the Channel.
 		uint16_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
@@ -1000,9 +993,9 @@ namespace DiscordCoreAPI {
 
 		ChannelData(ChannelData&&) noexcept = default;
 
-		ChannelData& operator=(const ChannelData&) noexcept;
+		ChannelData& operator=(const ChannelData&) noexcept = default;
 
-		ChannelData(const ChannelData&) noexcept;
+		ChannelData(const ChannelData&) noexcept = default;
 
 		virtual ~ChannelData() noexcept = default;
 	};
@@ -1200,7 +1193,7 @@ namespace DiscordCoreAPI {
 
 	/// For updating/modifying a given Channel's properties. \brief For updating/modifying a given Channel's properties.
 	struct DiscordCoreAPI_Dll UpdateChannelData {
-		std::vector<OverWriteData*> permissionOverwrites{};
+		std::vector<OverWriteData> permissionOverwrites{};
 		int32_t defaultAutoArchiveDuration{ 10080 };
 		int32_t videoQualityMode{ 1 };
 		int32_t rateLimitPerUser{ 0 };
@@ -1805,11 +1798,11 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Guild. \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
-		std::map<Snowflake, PresenceUpdateData*> presences{};///< Presences for the GuildMembers.		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
 		std::vector<Snowflake> guildScheduledEvents{};///< Array of Guild channels.
+		std::vector<PresenceUpdateData> presences{};///< Presence states for each of the GuildMembers.
 		std::vector<Snowflake> stageInstances{};///< Array of Guild channels.
 		std::vector<Snowflake> stickers{};///< Array of Guild channels.
 		std::vector<Snowflake> channels{};///< Array of Guild channels.

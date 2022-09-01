@@ -63,10 +63,6 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, int32_t& theData) {
-		return;
-	}
-
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void )) {
 		outputSttream << theFunction();
 		return outputSttream;
@@ -352,7 +348,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool IconHash::operator==(const IconHash& other) {
-		return other.lowBits == this->lowBits && other.highBits == this->highBits;
+		return this->lowBits == other.lowBits && this->highBits == other.highBits;
 	}
 
 	uint8_t getUint8(nlohmann::json& jsonData, const char* keyName) {
@@ -394,9 +390,9 @@ namespace DiscordCoreAPI {
 	bool getBool(nlohmann::json& jsonData, const char* keyName) {
 		auto theResult = jsonData.find(keyName);
 		if (theResult != jsonData.end()) {
-			return !theResult->is_null() && theResult->is_boolean() ? theResult->get<bool>() : 0;
+			return !theResult->is_null() && theResult->is_boolean() ? theResult->get<bool>() : false;
 		} else {
-			return 0;
+			return false;
 		}
 	}
 
@@ -679,9 +675,9 @@ namespace DiscordCoreAPI {
 
 		uint64_t permissions = stoull(basePermissions);
 		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x]->id == guildMember.guildId) {
-				permissions &= ~channel.permissionOverwrites[x]->deny;
-				permissions |= channel.permissionOverwrites[x]->allow;
+			if (channel.permissionOverwrites[x].id == guildMember.guildId) {
+				permissions &= ~channel.permissionOverwrites[x].deny;
+				permissions |= channel.permissionOverwrites[x].allow;
 				break;
 			}
 		}
@@ -693,18 +689,18 @@ namespace DiscordCoreAPI {
 		uint64_t deny{ 0 };
 		for (auto& value: guildMemberRoles) {
 			for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-				if (channel.permissionOverwrites[x]->id == value.id) {
-					allow |= channel.permissionOverwrites[x]->allow;
-					deny |= channel.permissionOverwrites[x]->deny;
+				if (channel.permissionOverwrites[x].id == value.id) {
+					allow |= channel.permissionOverwrites[x].allow;
+					deny |= channel.permissionOverwrites[x].deny;
 				}
 			}
 		}
 		permissions &= ~deny;
 		permissions |= allow;
 		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x]->id == guildMember.id) {
-				permissions &= ~channel.permissionOverwrites[x]->deny;
-				permissions |= channel.permissionOverwrites[x]->allow;
+			if (channel.permissionOverwrites[x].id == guildMember.id) {
+				permissions &= ~channel.permissionOverwrites[x].deny;
+				permissions |= channel.permissionOverwrites[x].allow;
 				break;
 			}
 		}

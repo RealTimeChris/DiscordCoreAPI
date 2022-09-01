@@ -207,10 +207,10 @@ namespace DiscordCoreAPI {
 
 		theData.permissions = getString(jsonObjectData, "permissions");
 
-		std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
-		DiscordCoreAPI::parseObject(jsonObjectData["user"], *theUser);
-		theData.id = theUser->id;
-		Users::insertUser(std::move(theUser));
+		UserData theUser{};
+		DiscordCoreAPI::parseObject(jsonObjectData["user"], theUser);
+		theData.id = theUser.id;
+		Users::insertUser(std::make_unique<UserData>(std::move(theUser)));
 
 		theData.avatar = getString(jsonObjectData, "avatar");
 
@@ -238,10 +238,10 @@ namespace DiscordCoreAPI {
 
 		theData.permissions = getString(jsonObjectData, "permissions");
 
-		std::unique_ptr<UserData> theUser = std::make_unique<UserData>();
-		DiscordCoreAPI::parseObject(jsonObjectData["user"], *theUser);
-		theData.id = theUser->id;
-		Users::insertUser(std::move(theUser));
+		UserData theUser{};
+		DiscordCoreAPI::parseObject(jsonObjectData["user"], theUser);
+		theData.id = theUser.id;
+		Users::insertUser(std::make_unique<UserData>(std::move(theUser)));
 
 		theData.avatar = getString(jsonObjectData, "avatar");
 
@@ -285,9 +285,7 @@ namespace DiscordCoreAPI {
 
 		theData.permissionOverwrites = {};
 		for (auto& value: jsonObjectData["permission_overwrites"]) {
-			OverWriteData* theDataNew{ new OverWriteData{} };
-			DiscordCoreAPI::parseObject(value, *theDataNew);
-			theData.permissionOverwrites.emplace_back(std::move(theDataNew));
+			theData.permissionOverwrites.emplace_back(value);
 		}
 
 		theData.name = getString(jsonObjectData, "name");
@@ -347,30 +345,29 @@ namespace DiscordCoreAPI {
 		if (Roles::doWeCacheRoles) {
 			theData.roles.clear();
 			theData.roles.reserve(jsonObjectData["roles"].size());
+			RoleData newData{};
 			for (auto& value: jsonObjectData["roles"]) {
-				std::unique_ptr<RoleData> newData{ std::make_unique<RoleData>() };
-				DiscordCoreAPI::parseObject(value, *newData);
-				theData.roles.emplace_back(newData->id);
-				Roles::insertRole(std::move(newData));
+				DiscordCoreAPI::parseObject(value, newData);
+				theData.roles.push_back(newData.id);
+				Roles::insertRole(std::make_unique<RoleData>(std::move(newData)));
 			}
 		}
 
 		if (GuildMembers::doWeCacheGuildMembers) {
 			theData.members.clear();
 			theData.members.reserve(jsonObjectData["members"].size());
+			GuildMemberData newData{};
 			for (auto& value: jsonObjectData["members"]) {
-				std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
-				DiscordCoreAPI::parseObject(value, *newData);
-				newData->guildId = theData.id;
-				theData.members.push_back(newData->id);
-				GuildMembers::insertGuildMember(std::move(newData));
+				DiscordCoreAPI::parseObject(value, newData);
+				newData.guildId = theData.id;
+				theData.members.push_back(newData.id);
+				GuildMembers::insertGuildMember(std::make_unique<GuildMemberData>(std::move(newData)));
 			}
 		}
 
 		if (GuildMembers::doWeCacheGuildMembers) {
 			for (auto& value: jsonObjectData["voice_states"]) {
 				auto userId = strtoull(value["user_id"].get<std::string>());
-				std::unique_lock theLock{ GuildMembers::theMutex };
 				if (!GuildMembers::cache.contains(theData.id)) {
 					GuildMembers::cache[theData.id] = GuildMemberHolder{};
 				}
@@ -382,23 +379,23 @@ namespace DiscordCoreAPI {
 		}
 
 		if (GuildMembers::doWeCacheGuildMembers) {
+			theData.presences.clear();
+			theData.presences.reserve(jsonObjectData["presences"].size());
+			PresenceUpdateData newData{};
 			for (auto& value: jsonObjectData["presences"]) {
-				auto userId = strtoull(value["user"]["id"].get<std::string>());
-				PresenceUpdateData* theDataNew{ new PresenceUpdateData{} };
-				DiscordCoreAPI::parseObject(value, *theDataNew);
-				theDataNew->guildId = theData.id;
-				theData.presences[userId] = std::move(theDataNew);
+				DiscordCoreAPI::parseObject(value, newData);
+				theData.presences.push_back(newData);
 			}
 		}
 
 		if (Channels::doWeCacheChannels) {
 			theData.channels.clear();
 			theData.channels.reserve(jsonObjectData["channels"].size());
+			ChannelData newData{};
 			for (auto& value: jsonObjectData["channels"]) {
-				ChannelData newData{};
 				DiscordCoreAPI::parseObject(value, newData);
 				newData.guildId = theData.id;
-				theData.channels.emplace_back(newData.id);
+				theData.channels.push_back(newData.id);
 				Channels::insertChannel(std::make_unique<ChannelData>(std::move(newData)));
 			}
 		}
@@ -514,9 +511,9 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.contains("presences") && !jsonObjectData["presences"].is_null()) {
 				theData.presences.clear();
 				for (auto& value: jsonObjectData["presences"]) {
-					PresenceUpdateData* newData{ new PresenceUpdateData{} };
-					DiscordCoreAPI::parseObject(value, *newData);
-					theData.presences[strtoull(value["user"]["id"].get<std::string>())] = std::move(newData);
+					PresenceUpdateData newData{};
+					DiscordCoreAPI::parseObject(value, newData);
+					theData.presences[strtoull(value["user"]["id"].get<std::string>())] = newData;
 				}
 			}
 		}
@@ -887,9 +884,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("permission_overwrites") && !jsonObjectData["permission_overwrites"].is_null()) {
 			theData.permissionOverwrites.clear();
 			for (auto& value: jsonObjectData["permission_overwrites"]) {
-				OverWriteData* newData{ new OverWriteData{} };
-				DiscordCoreAPI::parseObject(value, *newData);
-				theData.permissionOverwrites.emplace_back(newData);
+				theData.permissionOverwrites.emplace_back(value);
 			}
 		}
 
@@ -1398,9 +1393,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.contains("permission_overwrites") && !jsonObjectData["permission_overwrites"].is_null()) {
 			theData.permissionOverwrites.clear();
 			for (auto& value: jsonObjectData["permission_overwrites"]) {
-				OverWriteData* newData{ new OverWriteData{} };
-				DiscordCoreAPI::parseObject(value, *newData);
-				theData.permissionOverwrites.push_back(newData);
+				theData.permissionOverwrites.emplace_back(value);
 			}
 		}
 
@@ -2624,17 +2617,10 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (jsonObjectData.contains("activities") && !jsonObjectData["activities"].is_null()) {
-			theData.activities.clear();
-			for (auto& value: jsonObjectData["activities"]) {
-				ActivityData newData{};
-				DiscordCoreAPI::parseObject(value, newData);
-				theData.activities.emplace_back(newData);
-			}
-		}
 		PresenceUpdateFlags theFlags{};
 		if (jsonObjectData.contains("client_status") && !jsonObjectData["client_status"].is_null()) {
 			DiscordCoreAPI::parseObject(jsonObjectData["client_status"], theFlags);
+
 		}
 		theData.theStatus |= static_cast<uint8_t>(theFlags);
 	}

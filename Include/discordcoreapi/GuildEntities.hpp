@@ -274,6 +274,7 @@ namespace DiscordCoreAPI {
 
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
 		std::vector<GuildScheduledEvent> guildScheduledEvents{};///< Guild scheduled events of the Guild.
+		std::unordered_map<Snowflake, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
 		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
 		std::vector<StageInstance> stageInstances{};///< Stage instaces of the Guild.
