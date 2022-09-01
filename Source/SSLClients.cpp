@@ -216,7 +216,7 @@ namespace DiscordCoreInternal {
 					return ProcessIOResult::Error;
 				}
 				
-				if (readWriteSet.revents & POLLWRNORM) {
+				if (readWriteSet.revents & POLLOUT) {
 					std::cout << "WERE WRITING THE DATA!" << std::endl;
 					this->outputBuffers.emplace_back(dataToWrite);
 					if (!this->writeDataProcess()) {
@@ -424,7 +424,7 @@ namespace DiscordCoreInternal {
 		}
 
 		for (uint32_t x = 0; x < readWriteSet.theIndices.size(); ++x) {
-			if (readWriteSet.thePolls[x].revents & POLLWRNORM) {
+			if (readWriteSet.thePolls[x].revents & POLLOUT) {
 				if (!theVector[readWriteSet.theIndices[x]]->writeDataProcess()) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
 					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
@@ -432,7 +432,7 @@ namespace DiscordCoreInternal {
 					continue;
 				}
 			}
-			if (readWriteSet.thePolls[x].revents & POLLRDNORM) {
+			if (readWriteSet.thePolls[x].revents & POLLIN) {
 				if (!theVector[readWriteSet.theIndices[x]]->readDataProcess()) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
 					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
@@ -484,13 +484,13 @@ namespace DiscordCoreInternal {
 				}
 				return ProcessIOResult::Error;
 			}
-			if (readWriteSet.revents & POLLRDNORM) {
+			if (readWriteSet.revents & POLLIN) {
 				std::cout << "RETURNED READ! REAL" << std::endl;
 				if (!this->readDataProcess()) {
 					return ProcessIOResult::Error;
 				}
 			}
-			if (readWriteSet.revents & POLLWRNORM) {
+			if (readWriteSet.revents & POLLOUT) {
 				std::cout << "RETURNED WRITE! REAL" << std::endl;
 				if (!this->writeDataProcess()) {
 					return ProcessIOResult::Error;
