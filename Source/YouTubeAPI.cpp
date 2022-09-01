@@ -238,8 +238,8 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<DiscordCoreAPI::AudioEncoder> audioEncoder{ std::make_unique<DiscordCoreAPI::AudioEncoder>() };
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
-			streamSocket->writeData(theString, false);
-			streamSocket->processIO(1000000);
+			streamSocket->writeData(theString, true);
+			streamSocket->processIO(-1);
 			if (!streamSocket->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
 				streamSocket->disconnect(false);
@@ -276,7 +276,7 @@ namespace DiscordCoreInternal {
 				} else {
 					if (!areWeDoneHeaders) {
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
-						streamSocket->processIO(100000);
+						streamSocket->processIO(-1);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							streamSocket->disconnect(false);
@@ -300,7 +300,7 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (counter == 0) {
-						streamSocket->processIO(100000);
+						streamSocket->processIO(-1);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							streamSocket->disconnect(false);
@@ -308,6 +308,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						std::string streamBuffer = streamSocket->getInputBuffer();
+						std::cout << "THE BUFFER: " << streamBuffer << std::endl;
 						streamSocket->getInputBuffer().clear();
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
@@ -325,7 +326,7 @@ namespace DiscordCoreInternal {
 						audioDecoder->startMe();
 					} else if (counter > 0) {
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
-						streamSocket->processIO(10000);
+						streamSocket->processIO(-1);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
 							streamSocket->disconnect(false);

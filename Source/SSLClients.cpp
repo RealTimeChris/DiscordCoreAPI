@@ -237,72 +237,117 @@ namespace DiscordCoreInternal {
 		hints->ai_protocol = IPPROTO_TCP;
 
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 #ifdef SSL_OP_IGNORE_UNEXPECTED_EOF
 		auto originalOptions{ SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
 		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 #endif
 
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 		int32_t value{ this->maxBufferSize + 1 };
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&value), sizeof(value))) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 		const char optionValue{ true };
 		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 		linger optionValue02{};
 		optionValue02.l_onoff = 0;
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger))) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 		if (auto theResult = SSL_set_fd(this->ssl, this->theSocket); theResult != 1) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 		/* SNI */
 		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); theResult != 1) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 		if (auto theResult = SSL_connect(this->ssl); theResult != 1) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 
 #ifdef _WIN32
 		u_long value02{ 1 };
 		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
+			if (this->doWePrintErrorMessages) {
+				std::cout << reportError("SSLClient::connect()") << std::endl;
+			}
 			return ConnectionResult::Error;
 		}
 #else
@@ -371,20 +416,16 @@ namespace DiscordCoreInternal {
 		return theReturnValue;
 	}
 
-	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInms) noexcept {
+	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInMs) noexcept {
 		if (!this->areWeStillConnected()) {
 			this->disconnect(true);
 			return ProcessIOResult::Error;
 		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->theSocket;
-		if (this->outputBuffers.size() > 0) {
-			readWriteSet.events = POLLIN | POLLOUT;
-		} else {
-			readWriteSet.events = POLLIN | POLLOUT;
-		}
+		readWriteSet.events = POLLIN | POLLOUT;
 
-		if (auto returnValue = poll(&readWriteSet, 1, theWaitTimeInms); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = poll(&readWriteSet, 1, theWaitTimeInMs); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
@@ -453,7 +494,6 @@ namespace DiscordCoreInternal {
 	bool SSLClient::readDataProcess() noexcept {
 		this->wantRead = false;
 		this->wantWrite = false;
-		bool returnValueFinal{ true };
 		do {
 			size_t readBytes{ 0 };
 			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->rawInputBuffer.size(), &readBytes) };
@@ -468,32 +508,29 @@ namespace DiscordCoreInternal {
 						while (this->handleBuffer(this)) {
 						}
 					}
-					returnValueFinal = true;
 					break;
 				}
 				case SSL_ERROR_WANT_READ: {
 					this->wantRead = true;
-					returnValueFinal = true;
 					break;
 				}
 				case SSL_ERROR_WANT_WRITE: {
 					this->wantWrite = true;
-					returnValueFinal = true;
 					break;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(true);
-					returnValueFinal = false;
-					break;
+					std::cout << reportSSLError("SSLClient::readDataProcess()") << std::endl;
+					return false;
 				}
 				default: {
 					this->disconnect(true);
-					returnValueFinal = false;
-					break;
+					std::cout << reportSSLError("SSLClient::readDataProcess()") << std::endl;
+					return false;
 				}
 			}
 		} while (SSL_pending(this->ssl));
-		return returnValueFinal;
+		return true;
 	}
 
 	int64_t SSLClient::getBytesRead() noexcept {
@@ -506,9 +543,9 @@ namespace DiscordCoreInternal {
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		this->rawInputBuffer.resize(this->maxBufferSize);
-		static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
-		static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_port = DiscordCoreAPI::reverseByteOrder<uint16_t>(static_cast<unsigned short>(stoi(portNew)));
-		static_cast<sockaddr_in*>(this->theStreamTargetAddress)->sin_family = AF_INET;
+		this->theStreamTargetAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
+		this->theStreamTargetAddress.sin_port = DiscordCoreAPI::reverseByteOrder<uint16_t>(static_cast<unsigned short>(stoi(portNew)));
+		this->theStreamTargetAddress.sin_family = AF_INET;
 
 		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
@@ -533,12 +570,12 @@ namespace DiscordCoreInternal {
 				std::string clientToServerString{};
 				clientToServerString = "test string";
 
-				if (auto theResult = bind(this->theSocket, this->theStreamTargetAddress, sizeof(sockaddr)); theResult != 0) {
+				if (auto theResult = bind(this->theSocket,(sockaddr*) &this->theStreamTargetAddress, sizeof(sockaddr)); theResult != 0) {
 					return false;
 				}
 
-				int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0, this->theStreamTargetAddress,
-					sizeof(this->theStreamTargetAddress));
+				int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
+					( sockaddr* )&this->theStreamTargetAddress, sizeof(this->theStreamTargetAddress));
 #ifdef _WIN32
 				int32_t intSize = sizeof(this->theStreamTargetAddress);
 #else
@@ -629,8 +666,8 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0 && this->areWeStreamConnected) {
 			std::string clientToServerString = this->outputBuffers.front();
-			int32_t writtenBytes =
-				sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0, this->theStreamTargetAddress, sizeof(sockaddr));
+			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
+				( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr));
 			if (writtenBytes < 0) {
 				this->disconnect();
 				return;
@@ -647,7 +684,7 @@ namespace DiscordCoreInternal {
 #else
 			socklen_t intSize = sizeof(this->theStreamTargetAddress);
 #endif
-			int32_t readBytes = recvfrom(this->theSocket, this->rawInputBuffer.data(), static_cast<int32_t>(rawInputBuffer.size()), 0, this->theStreamTargetAddress, &intSize);
+			int32_t readBytes = recvfrom(this->theSocket, this->rawInputBuffer.data(), static_cast<int32_t>(rawInputBuffer.size()), 0, (sockaddr*) & this->theStreamTargetAddress, &intSize);
 
 			if (readBytes < 0) {
 				this->disconnect();

@@ -282,9 +282,9 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const int32_t maxBufferSize{ (1024 * 16) - 1 };
-		sockaddrWrapper theStreamTargetAddress{};
 		std::deque<std::string> outputBuffers{};
 		DiscordCoreAPI::StreamType streamType{};
+		sockaddr_in theStreamTargetAddress{};
 		bool areWeStreamConnected{ false };
 		std::string rawInputBuffer{};
 		SOCKETWrapper theSocket{};

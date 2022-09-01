@@ -1379,12 +1379,11 @@ namespace DiscordCoreInternal {
 										case 58: {
 											std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
 											DiscordCoreAPI::parseObject(&payload["d"], dataPackage->voiceStateData);
+											this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 											if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected && userId == this->userId) {
 												this->voiceConnectionData = VoiceConnectionData{};
-												this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 												this->stateUpdateCollected = true;
 											} else if (this->areWeCollectingData && !this->stateUpdateCollected) {
-												this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 												if (this->voiceConnectionDataBufferMap.contains(dataPackage->voiceStateData.guildId)) {
 													this->voiceConnectionDataBufferMap[dataPackage->voiceStateData.guildId]->send(this->voiceConnectionData);
 												}
@@ -1409,14 +1408,12 @@ namespace DiscordCoreInternal {
 										case 59: {
 											std::unique_ptr<DiscordCoreAPI::OnVoiceServerUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceServerUpdateData>() };
 											DiscordCoreAPI::parseObject(&payload["d"], *dataPackage);
+											this->voiceConnectionData.endPoint = dataPackage->endpoint;
+											this->voiceConnectionData.token = dataPackage->token;
 											if (this->areWeCollectingData && !this->serverUpdateCollected && !this->stateUpdateCollected) {
 												this->voiceConnectionData = VoiceConnectionData{};
-												this->voiceConnectionData.endPoint = dataPackage->endpoint;
-												this->voiceConnectionData.token = dataPackage->token;
 												this->serverUpdateCollected = true;
 											} else if (this->areWeCollectingData && !this->serverUpdateCollected) {
-												this->voiceConnectionData.endPoint = dataPackage->endpoint;
-												this->voiceConnectionData.token = dataPackage->token;
 												if (this->voiceConnectionDataBufferMap.contains(dataPackage->guildId)) {
 													this->voiceConnectionDataBufferMap[dataPackage->guildId]->send(this->voiceConnectionData);
 												}
