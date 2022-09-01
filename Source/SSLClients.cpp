@@ -206,18 +206,14 @@ namespace DiscordCoreInternal {
 				pollfd readWriteSet{};
 				readWriteSet.fd = this->theSocket;
 				readWriteSet.events = POLLOUT;
-				std::cout << "WERE WRITING THE DATA!" << std::endl;
 				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
-					std::cout << "WERE ERRORING FROM WRITING THE DATA!" << std::endl;
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
-					std::cout << "WERE RETURNING FROM WRITING THE DATA!" << std::endl;
 					return ProcessIOResult::Error;
 				}
 				
 				if (readWriteSet.revents & POLLOUT) {
-					std::cout << "WERE WRITING THE DATA!" << std::endl;
 					this->outputBuffers.emplace_back(dataToWrite);
 					if (!this->writeDataProcess()) {
 						return ProcessIOResult::Error;
@@ -244,7 +240,6 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-		std::cout << "WERE RETURNIGN NO ERROR!" << std::endl;
 		return ProcessIOResult::No_Error;
 	}
 
@@ -455,10 +450,8 @@ namespace DiscordCoreInternal {
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->theSocket;
 		if (this->outputBuffers.size() > 0) {
-			std::cout << "POLLIN POLLOUT!" << std::endl;
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
-			std::cout << "POLLIN!" << std::endl;
 			readWriteSet.events = POLLIN;
 		}
 
@@ -467,10 +460,8 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("SSLClient::processIO()") << endl;
 			}
-			std::cout << "RETURNED ERROR!" << std::endl;
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
-			std::cout << "RETURNED 0!" << std::endl;
 			if (!this->areWeAStandaloneSocket) {
 				while (this->handleBuffer(this)) {
 				}
@@ -478,20 +469,17 @@ namespace DiscordCoreInternal {
 			return ProcessIOResult::No_Error;
 		} else {
 			if (readWriteSet.revents & POLLERR) {
-				std::cout << "RETURNED ERROR!REAL" << std::endl;
 				if (this->doWePrintErrorMessages) {
 					cout << reportError("SSLClient::processIO()") << endl;
 				}
 				return ProcessIOResult::Error;
 			}
 			if (readWriteSet.revents & POLLIN) {
-				std::cout << "RETURNED READ! REAL" << std::endl;
 				if (!this->readDataProcess()) {
 					return ProcessIOResult::Error;
 				}
 			}
 			if (readWriteSet.revents & POLLOUT) {
-				std::cout << "RETURNED WRITE! REAL" << std::endl;
 				if (!this->writeDataProcess()) {
 					return ProcessIOResult::Error;
 				}
@@ -521,7 +509,6 @@ namespace DiscordCoreInternal {
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffers.front().data(), this->outputBuffers.front().size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			std::cout << "THE WRITTEN BYTES: " << this->outputBuffers[0] << std::endl;
 			switch (errorValue) {
 				case SSL_ERROR_WANT_READ: {
 					[[fallthrough]];
