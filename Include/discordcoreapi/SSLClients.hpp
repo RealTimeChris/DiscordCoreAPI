@@ -72,11 +72,14 @@ namespace DiscordCoreInternal {
 
 	constexpr int32_t SOCKET_ERROR{ -1 };
 
-	using SOCKET = int32_t;
-
 	struct ConnectionError : public std::runtime_error {
 		int32_t shardNumber{};
 		explicit ConnectionError(const std::string& theString);
+	};
+
+	struct PollFDWrapper {
+		std::vector<uint32_t> theIndices{};
+		std::vector<pollfd> thePolls{};
 	};
 
 #ifdef _WIN32

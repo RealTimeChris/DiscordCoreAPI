@@ -317,33 +317,29 @@ namespace DiscordCoreInternal {
 
 	std::vector<ConnectionError> SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
 		std::vector<ConnectionError> theReturnValue{};
-		std::vector<pollfd> readWriteSet{};
-		for (auto& value: theVector) {
-			if (!value->areWeStillConnected()) {
-				value->disconnect(true);
+		PollFDWrapper readWriteSet{};
+		for (uint32_t x = 0; x < theVector.size(); ++x){
+			if (!theVector[x]->areWeStillConnected()) {
+				theVector[x]->disconnect(true);
 				continue;
 			}
-			readWriteSet.push_back(pollfd{ .fd = static_cast<uint64_t>(value->theSocket), .events = POLLIN | POLLOUT });
+			pollfd theWrapper{};
+			theWrapper.fd = theVector[x]->theSocket;
+			theWrapper.events = POLLIN | POLLOUT;
+			readWriteSet.theIndices.push_back(x);
+			readWriteSet.thePolls.push_back(theWrapper);
 		}
 
-#ifdef WIN32
-		if (readWriteSet.size() == 0) {
-#else
-		if (readSet.fds_bits == 0 && writeSet.fds_bits == 0) {
-#endif
+		if (readWriteSet.theIndices.size() == 0) {
 			return theReturnValue;
 		}
 
-		if (auto returnValue = poll(readWriteSet.data(), readWriteSet.size(), 1000); returnValue == SOCKET_ERROR) {
-			for (auto& value: readWriteSet) {
-				if (value.revents == POLLERR) {
+		if (auto returnValue = poll(readWriteSet.thePolls.data(), readWriteSet.theIndices.size(), 1000); returnValue == SOCKET_ERROR) {
+			for (uint32_t x = 0; x < readWriteSet.thePolls.size();++x) {
+				if (readWriteSet.thePolls[x].revents == POLLERR) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
-					for (auto& value02: theVector) {
-						if (value02->theSocket == value.fd) {
-							theError.shardNumber = static_cast<WebSocketSSLShard*>(value02)->shard[0].get<uint32_t>();
-							theReturnValue.push_back(theError);
-						}
-					}
+					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
+					theReturnValue.push_back(theError);
 				}
 			}
 			return theReturnValue;
@@ -352,31 +348,23 @@ namespace DiscordCoreInternal {
 			return theReturnValue;
 		}
 
-		for (auto& value: readWriteSet) {
-			if (value.revents & POLLWRNORM) {
-				for (auto& value02: theVector) {
-					if (value02->theSocket == value.fd) {
-						if (!value02->writeDataProcess()) {
-							ConnectionError theError{ reportError("SSLClient::processIO") };
-							theError.shardNumber = static_cast<WebSocketSSLShard*>(value02)->shard[0].get<uint32_t>();
-							theReturnValue.push_back(theError);
-							continue;
-						}
-					}
+		for (uint32_t x = 0; x < readWriteSet.theIndices.size(); ++x) {
+			if (readWriteSet.thePolls[x].revents & POLLWRNORM) {
+				if (!theVector[readWriteSet.theIndices[x]]->writeDataProcess()) {
+					ConnectionError theError{ reportError("SSLClient::processIO") };
+					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
+					theReturnValue.push_back(theError);
+					continue;
 				}
 			} 
-			if (value.revents & POLLRDNORM) {
-				for (auto& value02: theVector) {
-					if (value02->theSocket == value.fd) {
-						if (!value02->readDataProcess()) {
-							ConnectionError theError{ reportError("SSLClient::processIO") };
-							theError.shardNumber = static_cast<WebSocketSSLShard*>(value02)->shard[0].get<uint32_t>();
-							theReturnValue.push_back(theError);
-							continue;
-						}
-					}
+			if (readWriteSet.thePolls[x].revents & POLLRDNORM) {
+				if (!theVector[readWriteSet.theIndices[x]]->readDataProcess()) {
+					ConnectionError theError{ reportError("SSLClient::processIO") };
+					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
+					theReturnValue.push_back(theError);
+					continue;
 				}
-			}
+			} 
 		}
 		return theReturnValue;
 	}
@@ -580,35 +568,20 @@ namespace DiscordCoreInternal {
 		if (!this->areWeStillConnected() || !this->areWeStreamConnected) {
 			return;
 		}
-		fd_set readSet{}, writeSet{};
-		switch (theType) {
-			case ProcessIOType::Both: {
-				FD_ZERO(&writeSet);
-				FD_SET(this->theSocket, &writeSet);
-			}
-			case ProcessIOType::Read_Only: {
-				FD_ZERO(&readSet);
-				FD_SET(this->theSocket, &readSet);
-				break;
-			}
-			case ProcessIOType::Write_Only: {
-				FD_ZERO(&writeSet);
-				FD_SET(this->theSocket, &writeSet);
-				break;
-			}
-		}
+		pollfd readWriteSet{};
+		readWriteSet.fd = this->theSocket;
+		readWriteSet.events = POLLIN | POLLOUT;
 
-		timeval checkTime{ .tv_sec = 0, .tv_usec = 500000 };
-		if (auto returnValue = select(FD_SETSIZE, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 			this->disconnect();
 			return;
 		} else if (returnValue == 0) {
 			return;
 		} else {
-			if (FD_ISSET(this->theSocket, &readSet)) {
+			if (readWriteSet.revents & POLLRDNORM) {
 				this->readDataProcess();
 			}
-			if (FD_ISSET(this->theSocket, &writeSet)) {
+			if (readWriteSet.revents & POLLWRNORM) {
 				this->writeDataProcess();
 			}
 		}
