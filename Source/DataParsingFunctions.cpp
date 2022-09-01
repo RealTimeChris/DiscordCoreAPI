@@ -349,7 +349,7 @@ namespace DiscordCoreAPI {
 
 		if (GuildMembers::doWeCacheGuildMembers) {
 			theData.members.clear();
-			GuildMemberData newData{};
+			GuildMember newData{};
 			for (auto& value: (*jsonObjectData)["members"]) {
 				DiscordCoreAPI::parseObject(&value, newData);
 				newData.guildId = theData.id;
@@ -360,14 +360,14 @@ namespace DiscordCoreAPI {
 
 		if (GuildMembers::doWeCacheGuildMembers) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				auto userId = strtoull(value["user_id"].get<std::string>());
-				if (!GuildMembers::cache.contains(theData.id)) {
-					GuildMembers::cache[theData.id] = GuildMemberHolder{};
+				auto userId = strtoull(getString(&value, "user_id"));
+				auto guildId = strtoull(getString(&value, "guild_id"));
+				for (auto iterator = GuildMembers::cache.begin(); iterator != GuildMembers::cache.end(); ++iterator) {
+					if (userId == iterator->second.id && guildId == iterator->second.guildId) {
+						iterator->second.voiceChannelId = strtoull(getString(&value, "channel_id"));
+						break;
+					}
 				}
-				if (!GuildMembers::cache[theData.id].cache.contains(userId)) {
-					GuildMembers::cache[theData.id].cache[userId] = GuildMemberData{};
-				}
-				GuildMembers::cache[theData.id].cache[userId].voiceChannelId = strtoull(getString(&value, "channel_id"));
 			}
 		}
 
@@ -382,12 +382,11 @@ namespace DiscordCoreAPI {
 
 		if (Channels::doWeCacheChannels) {
 			theData.channels.clear();
-			theData.channels.reserve((*jsonObjectData)["channels"].size());
 			ChannelData newData{};
 			for (auto& value: (*jsonObjectData)["channels"]) {
 				DiscordCoreAPI::parseObject(&value, newData);
 				newData.guildId = theData.id;
-				theData.channels.push_back(newData.id);
+				theData.channels.emplace_back(newData.id);
 				Channels::insertChannel(std::move(newData));
 			}
 		}
@@ -409,30 +408,6 @@ namespace DiscordCoreAPI {
 		}
 
 		if (GuildMembers::doWeCacheGuildMembers) {
-			theData.members.clear();
-			GuildMember newData{};
-			for (auto& value: (*jsonObjectData)["members"]) {
-				DiscordCoreAPI::parseObject(&value, newData);
-				newData.guildId = theData.id;
-				theData.members.emplace_back(newData.id);
-				GuildMembers::insertGuildMember(std::move(newData));
-			}
-		}
-
-		if (GuildMembers::doWeCacheGuildMembers) {
-			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				auto userId = strtoull(value["user_id"].get<std::string>());
-				if (!GuildMembers::cache.contains(theData.id)) {
-					GuildMembers::cache[theData.id] = GuildMemberHolder{};
-				}
-				if (!GuildMembers::cache[theData.id].cache.contains(userId)) {
-					GuildMembers::cache[theData.id].cache[userId] = GuildMember{};
-				}
-				GuildMembers::cache[theData.id].cache[userId].voiceChannelId = strtoull(getString(&value, "channel_id"));
-			}
-		}
-
-		if (GuildMembers::doWeCacheGuildMembers) {
 			theData.presences.clear();
 			PresenceUpdateData newData{};
 			for (auto& value: (*jsonObjectData)["presences"]) {
@@ -444,85 +419,77 @@ namespace DiscordCoreAPI {
 
 		if (Channels::doWeCacheChannels) {
 			theData.channels.clear();
-			theData.channels.reserve((*jsonObjectData)["channels"].size());
 			Channel newData{};
 			for (auto& value: (*jsonObjectData)["channels"]) {
 				DiscordCoreAPI::parseObject(&value, newData);
 				newData.guildId = theData.id;
-				theData.channels.push_back(newData.id);
+				theData.channels.emplace_back(newData.id);
 				Channels::insertChannel(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData->contains("threads") && !(*jsonObjectData)["threads"].is_null()) {
 			theData.stickers.clear();
+			ChannelData newData{};
 			for (auto& value: (*jsonObjectData)["threads"]) {
-				ChannelData newData{};
 				DiscordCoreAPI::parseObject(&value, newData);
-				theData.threads.push_back(newData);
+				theData.threads.push_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData->contains("stickers") && !(*jsonObjectData)["stickers"].is_null()) {
 			theData.stickers.clear();
+			Sticker newData{};
 			for (auto& value: (*jsonObjectData)["stickers"]) {
-				Sticker newData{};
 				parseObject(&value, newData);
-				theData.stickers.push_back(newData);
+				theData.stickers.push_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData->contains("guild_scheduled_events") && !(*jsonObjectData)["guild_scheduled_events"].is_null()) {
 			theData.guildScheduledEvents.clear();
+			GuildScheduledEvent newData{};
 			for (auto& value: (*jsonObjectData)["guild_scheduled_events"]) {
-				GuildScheduledEvent newData{};
 				parseObject(&value, newData);
-				theData.guildScheduledEvents.push_back(newData);
+				theData.guildScheduledEvents.push_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData->contains("stage_instance") && !(*jsonObjectData)["stage_instance"].is_null()) {
 			theData.stageInstances.clear();
+			StageInstance newData{};
 			for (auto& value: (*jsonObjectData)["stage_instance"]) {
-				StageInstance newData{};
 				parseObject(&value, newData);
-				theData.stageInstances.push_back(newData);
+				theData.stageInstances.push_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData->contains("emoji") && !(*jsonObjectData)["emoji"].is_null()) {
 			theData.emoji.clear();
+			EmojiData newData{};
 			for (auto& value: (*jsonObjectData)["emoji"]) {
-				EmojiData newData{};
 				parseObject(&value, newData);
 				theData.emoji.push_back(newData.id);
 			}
 		}
 
 		if (GuildMembers::doWeCacheGuildMembers) {
-			if (jsonObjectData->contains("members") && !(*jsonObjectData)["members"].is_null()) {
-				theData.members.clear();
-				for (auto& value: (*jsonObjectData)["members"]) {
-					std::unique_ptr<GuildMemberData> newData{ std::make_unique<GuildMemberData>() };
-					parseObject(&value, *newData);
-					newData->guildId = theData.id;
-					auto theMember = newData.get();
-					theData.members.push_back(newData->id);
-				}
+			theData.members.clear();
+			GuildMember newData{};
+			for (auto& value: (*jsonObjectData)["members"]) {
+				DiscordCoreAPI::parseObject(&value, newData);
+				newData.guildId = theData.id;
+				theData.members.emplace_back(std::move(newData));
 			}
 		}
 
 		if (GuildMembers::doWeCacheGuildMembers) {
-			if (jsonObjectData->contains("voice_states") && !(*jsonObjectData)["voice_states"].is_null()) {
-				for (auto& value: (*jsonObjectData)["voice_states"]) {
-					auto userId = strtoull(value["user_id"].get<std::string>());
-					if (!GuildMembers::cache.contains(theData.id)) {
-						GuildMembers::cache[theData.id] = GuildMemberHolder{};
+			for (auto& value: (*jsonObjectData)["voice_states"]) {
+				auto userId = strtoull(value["user_id"].get<std::string>());
+				for (int32_t x = 0; x < theData.members.size(); ++x) {
+					if (userId == theData.members[x].id) {
+						theData.members[x].voiceChannelId = strtoull(getString(&value, "channel_id"));
 					}
-					if (!GuildMembers::cache[theData.id].cache.contains(userId)) {
-						GuildMembers::cache[theData.id].cache[userId] = GuildMemberData{};
-					}
-					GuildMembers::cache[theData.id].cache[userId].voiceChannelId = strtoull(value["channel_id"].get<std::string>());
 				}
 			}
 		}
@@ -1676,7 +1643,7 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, EmbedFieldData& theData) {
 		if (jsonObjectData->contains("inline") && !(*jsonObjectData)["inline"].is_null()) {
-			auto theString = (*jsonObjectData)["inline"];
+			auto& theString = (*jsonObjectData)["inline"];
 			if ((*jsonObjectData)["inline"].is_string()) {
 				if (theString == "true") {
 					theData.Inline = true;

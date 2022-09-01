@@ -449,7 +449,7 @@ namespace DiscordCoreInternal {
 		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->theSocket;
-		if (this->outputBuffers.size() > 0 || this->wantWrite) {
+		if (this->outputBuffers.size() > 0) {
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
 			readWriteSet.events = POLLIN;
@@ -506,31 +506,27 @@ namespace DiscordCoreInternal {
 
 	bool SSLClient::writeDataProcess() noexcept {
 		if (this->outputBuffers.size() > 0) {
-			this->wantRead = false;
-			this->wantWrite = false;
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffers.front().data(), this->outputBuffers.front().size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
+				case SSL_ERROR_WANT_READ: {
+					[[fallthrough]];
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					[[fallthrough]];
+				}
 				case SSL_ERROR_NONE: {
 					if (writtenBytes > 0) {
 						this->outputBuffers.erase(this->outputBuffers.begin());
 					}
 					return true;
 				}
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
-					return true;
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					this->wantWrite = true;
-					return true;
-				}
 				case SSL_ERROR_ZERO_RETURN: {
 					if (this->doWePrintErrorMessages) {
 						cout << reportSSLError("SSLClient::writeDataProcess()") << endl;
 					}
-					return false;
+					[[fallthrough]];
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
@@ -545,13 +541,17 @@ namespace DiscordCoreInternal {
 	}
 
 	bool SSLClient::readDataProcess() noexcept {
-		this->wantRead = false;
-		this->wantWrite = false;
 		do {
 			size_t readBytes{ 0 };
 			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
+				case SSL_ERROR_WANT_READ: {
+					[[fallthrough]];
+				}
+				case SSL_ERROR_WANT_WRITE: {
+					[[fallthrough]];
+				}
 				case SSL_ERROR_NONE: {
 					if (readBytes > 0) {
 						this->inputBuffer.append(this->rawInputBuffer.data(), this->rawInputBuffer.data() + readBytes);
@@ -559,24 +559,15 @@ namespace DiscordCoreInternal {
 					}
 					break;
 				}
-				case SSL_ERROR_WANT_READ: {
-					this->wantRead = true;
-					break;
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					this->wantWrite = true;
-					break;
-				}
 				case SSL_ERROR_ZERO_RETURN: {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("SSLClient::readDataProcess()") << endl;
+						cout << reportSSLError("SSLClient::writeDataProcess()") << endl;
 					}
-					this->disconnect(true);
-					return false;
+					[[fallthrough]];
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("SSLClient::readDataProcess()") << endl;
+						cout << reportSSLError("SSLClient::writeDataProcess()") << endl;
 					}
 					this->disconnect(true);
 					return false;

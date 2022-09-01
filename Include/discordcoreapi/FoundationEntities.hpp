@@ -1806,8 +1806,8 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> stageInstances{};///< Array of Guild channels.
 		std::vector<Snowflake> stickers{};///< Array of Guild channels.
 		std::vector<Snowflake> channels{};///< Array of Guild channels.
+		std::vector<Snowflake> members{};///< Array of GuildMembers.
 		std::vector<Snowflake> threads{};///< Array of Guild channels.
-		std::vector<Snowflake> members{};///< The guild members.
 		std::vector<Snowflake> roles{};///< Array of Guild roles.
 		std::vector<Snowflake> emoji{};///< Array of Guild channels.
 		int32_t memberCount{ 0 };///< Member count.

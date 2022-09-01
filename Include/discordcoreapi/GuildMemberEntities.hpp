@@ -144,11 +144,6 @@ namespace DiscordCoreAPI {
 
 	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, GuildMemberVector& theGuildMember);
 
-	struct GuildMemberHolder {
-		std::unordered_map<Snowflake, GuildMemberData> cache{};
-		Snowflake guildId{};
-	};
-
 	/**@}*/
 
 	/**
@@ -218,8 +213,8 @@ namespace DiscordCoreAPI {
 		static void removeGuildMember(GuildMemberData guildMemberId);
 
 	  protected:
+		static std::multimap<Snowflake, GuildMemberData> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static std::unordered_map<Snowflake, GuildMemberHolder> cache;
 		static bool doWeCacheGuildMembers;
 		static std::shared_mutex theMutex;
 	};

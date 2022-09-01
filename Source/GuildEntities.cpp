@@ -189,7 +189,6 @@ namespace DiscordCoreAPI {
 			this->channels = std::move(other.channels);
 			this->joinedAt = std::move(other.joinedAt);
 			this->ownerId = std::move(other.ownerId);
-			this->members = std::move(other.members);
 			this->memberCount = other.memberCount;
 			this->roles = std::move(other.roles);
 			this->icon = std::move(other.icon);
@@ -212,7 +211,6 @@ namespace DiscordCoreAPI {
 			this->channels = other.channels;
 			this->joinedAt = other.joinedAt;
 			this->ownerId = other.ownerId;
-			this->members = other.members;
 			this->flags = other.flags;
 			this->roles = other.roles;
 			this->icon = other.icon;
@@ -359,7 +357,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<GuildData>>();
 		std::shared_lock theLock{ Guilds::theMutex };
 		GuildDataVector guildVector{};
-		for (auto& [key, value]: Guilds::cache) {
+		for (auto [key, value]: Guilds::cache) {
 			value.discordCoreClient = Guilds::discordCoreClient;
 			guildVector.theGuildDatas.emplace_back(std::move(value));
 		}
@@ -391,7 +389,7 @@ namespace DiscordCoreAPI {
 			theGuild.discordCoreClient = Guilds::discordCoreClient;
 			co_return theGuild;
 		} else {
-			auto theGuild = Guilds::cache[dataPackage.guildId];
+			auto& theGuild = Guilds::cache[dataPackage.guildId];
 			theGuild.discordCoreClient = Guilds::discordCoreClient;
 			co_return theGuild;
 		}

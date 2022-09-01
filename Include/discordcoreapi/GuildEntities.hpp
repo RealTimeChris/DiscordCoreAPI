@@ -273,8 +273,8 @@ namespace DiscordCoreAPI {
 		friend class Guilds;
 
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
-		std::vector<GuildScheduledEvent> guildScheduledEvents{};///< Guild scheduled events of the Guild.
 		std::unordered_map<Snowflake, PresenceUpdateData> presences{};///< Map of presences for each GuildMember.
+		std::vector<GuildScheduledEvent> guildScheduledEvents{};///< Guild scheduled events of the Guild.
 		GuildNSFWLevel nsfwLevel{ GuildNSFWLevel::Default };///< NSFW warning level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
 		std::vector<StageInstance> stageInstances{};///< Stage instaces of the Guild.
@@ -284,13 +284,14 @@ namespace DiscordCoreAPI {
 		VerificationLevel verificationLevel{};///< Verification level required.
 		std::vector<StringWrapper> features{};///< List of Guild features.
 		int32_t approximateMemberCount{ 0 };///< Approximate member count.
+		std::vector<GuildMember> members{};///< Stickers of the Guild.
 		Snowflake publicUpdatesChannelId{};///< Id of the public updates Channel.
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
-		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channe
+		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
+		StringWrapper preferredLocale{};///< Preferred locale, for voice chat servers.
 		std::vector<Sticker> stickers{};///< Stickers of the Guild.
 		std::vector<Channel> threads{};///< Threads of the Guild.
-		StringWrapper preferredLocale{};///< Preferred locale, for voice chat servers.
 		StringWrapper vanityUrlCode{};///< Vanity Url code, if applicable.
 		StringWrapper description{};///< Description of the Guild.
 		Snowflake widgetChannelId{};///< Channel id for the Guild's widget.
@@ -390,6 +391,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreClient;
+		friend class GuildMembers;
 		friend class GuildData;
 		friend class Guild;
 

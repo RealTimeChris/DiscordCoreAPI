@@ -818,11 +818,16 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"], theGuildMember);
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache[guildId].cache[userId];
+													for (auto iterator = DiscordCoreAPI::GuildMembers::cache.begin(); iterator != DiscordCoreAPI::GuildMembers::cache.end();
+														 ++iterator) {
+														if (userId == iterator->second.id && guildId == iterator->second.guildId) {
+															theGuildMemberPtr = &iterator->second;
+															break;
+														}
+													}
 													if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
 														DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[guildId];
 														guild->memberCount++;
-														guild->members.emplace_back(userId);
 													}
 												} else {
 													theGuildMemberPtr = &theGuildMember;
@@ -885,7 +890,13 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"], theGuildMember);
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache[guildId].cache[userId];
+													for (auto iterator = DiscordCoreAPI::GuildMembers::cache.begin(); iterator != DiscordCoreAPI::GuildMembers::cache.end();
+														 ++iterator) {
+														if (userId == iterator->second.id && guildId == iterator->second.guildId) {
+															theGuildMemberPtr = &iterator->second;
+															break;
+														}
+													}
 												} else {
 													theGuildMemberPtr = &theGuildMember;
 												}
@@ -1090,10 +1101,8 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
 											DiscordCoreAPI::parseObject(&payload["d"], *interactionData);
 											std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
-											std::cout << "INTERACTION 0101" << std::endl;
 											switch (interactionData->type) {
 												case DiscordCoreAPI::InteractionType::Application_Command: {
-													std::cout << "INTERACTION 0202" << std::endl;
 													eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 													*eventData->interactionData = *interactionData;
 													std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
@@ -1102,9 +1111,7 @@ namespace DiscordCoreInternal {
 													dataPackage->interactionData = *interactionData;
 													std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 													DiscordCoreAPI::CommandData commandDataNew = *commandData;
-													std::cout << "INTERACTION 0303" << std::endl;
 													this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
-													std::cout << "INTERACTION 0404" << std::endl;
 													this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 													std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
 														std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
@@ -1388,12 +1395,12 @@ namespace DiscordCoreInternal {
 												}
 											}
 											if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
-												if (DiscordCoreAPI::GuildMembers::cache.contains(dataPackage->voiceStateData.guildId)) {
-													if (DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId].cache.contains(
-															dataPackage->voiceStateData.userId)) {
-														DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId]
-															.cache[dataPackage->voiceStateData.userId]
-															.voiceChannelId = dataPackage->voiceStateData.channelId;
+												for (auto iterator = DiscordCoreAPI::GuildMembers::cache.begin(); iterator != DiscordCoreAPI::GuildMembers::cache.end();
+													 ++iterator) {
+													if (dataPackage->voiceStateData.userId == iterator->second.id &&
+														dataPackage->voiceStateData.guildId == iterator->second.guildId) {
+														iterator->second.voiceChannelId = dataPackage->voiceStateData.channelId;
+														break;
 													}
 												}
 											}
@@ -1561,8 +1568,6 @@ namespace DiscordCoreInternal {
 			this->areWeConnecting.store(true);
 			this->inputBuffer.clear();
 			this->outputBuffers.clear();
-			this->wantWrite = true;
-			this->wantRead = false;
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
 			if (doWeReconnect && this->theConnections) {

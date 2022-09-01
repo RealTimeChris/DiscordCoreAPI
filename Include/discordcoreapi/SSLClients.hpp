@@ -228,8 +228,6 @@ namespace DiscordCoreInternal {
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::deque<std::string> outputBuffers{};
 		std::string inputBuffer{};
-		bool wantWrite{ true };
-		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
 	};
 
