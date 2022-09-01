@@ -57,6 +57,7 @@
 	#include <netinet/tcp.h>
 	#include <stdint.h>
 	#include <sys/epoll.h>
+	#include <poll.h>
 	#include <arpa/inet.h>
 	#include <sys/socket.h>
 	#include <sys/types.h>
