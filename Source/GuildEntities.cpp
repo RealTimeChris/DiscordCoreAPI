@@ -372,6 +372,7 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Guilds::getGuildAsync()";
 		Guild* theData{};
 		if (!Guilds::cache.contains(dataPackage.guildId)) {
+			std::unique_lock theLock{ Guilds::theMutex };
 			Guilds::cache[dataPackage.guildId] = GuildData{};
 		}
 		theData = static_cast<Guild*>(&Guilds::cache[dataPackage.guildId]);
@@ -380,8 +381,8 @@ namespace DiscordCoreAPI {
 		co_return *theData;
 	}
 
-	CoRoutine<Guild> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
-		co_await NewThreadAwaitable<Guild>();
+	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
+		co_await NewThreadAwaitable<GuildData>();
 		std::shared_lock theLock{ Guilds::theMutex };
 		if (!Guilds::cache.contains(dataPackage.guildId)) {
 			theLock.unlock();

@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 		/// Collects a given Role from the library's cache. \brief Collects a given Role from the library's cache.
 		/// \param dataPackage A GetRoleData structure.
 		/// \returns A CoRoutine containing a Role.
-		static CoRoutine<Role> getCachedRoleAsync(GetRoleData dataPackage);
+		static CoRoutine<RoleData> getCachedRoleAsync(GetRoleData dataPackage);
 
 		static void insertRole(RoleData role);
 

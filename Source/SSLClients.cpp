@@ -561,13 +561,13 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("SSLClient::writeDataProcess()") << endl;
+						cout << reportSSLError("SSLClient::readDataProcess()") << endl;
 					}
 					[[fallthrough]];
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("SSLClient::writeDataProcess()") << endl;
+						cout << reportSSLError("SSLClient::readDataProcess()") << endl;
 					}
 					this->disconnect(true);
 					return false;

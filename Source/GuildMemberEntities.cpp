@@ -132,11 +132,6 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
 		workload.callStack = "GuildMembers::getGuildMemberAsync()";
 		std::unique_ptr<GuildMember> theData{ std::make_unique<GuildMember>() };
-		if (!Guilds::cache.contains(dataPackage.guildId)) {
-			std::unique_lock theLock{ GuildMembers::theMutex };
-			Guilds::cache[dataPackage.guildId] = GuildData{};
-		}
-		bool isItFound{ false };
 		for (auto iterator = GuildMembers::cache.begin(); iterator != GuildMembers::cache.end(); ++iterator) {
 			if (dataPackage.guildMemberId == iterator->second.id && dataPackage.guildId == iterator->second.guildId) {
 				*theData = iterator->second;
@@ -149,8 +144,8 @@ namespace DiscordCoreAPI {
 		co_return *theData;
 	}
 
-	CoRoutine<GuildMember> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
-		co_await NewThreadAwaitable<GuildMember>();
+	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
+		co_await NewThreadAwaitable<GuildMemberData>();
 		std::shared_lock theLock{ GuildMembers::theMutex };
 		for (auto iterator = GuildMembers::cache.begin(); iterator != GuildMembers::cache.end(); ++iterator) {
 			if (dataPackage.guildMemberId == iterator->second.id && dataPackage.guildId == iterator->second.guildId) {
@@ -229,7 +224,6 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		std::unique_ptr<GuildMember> theData{ std::make_unique<GuildMember>() };
-		bool isItFound{ false };
 		for (auto iterator = GuildMembers::cache.begin(); iterator != GuildMembers::cache.end(); ++iterator) {
 			if (dataPackage.guildMemberId == iterator->second.id && dataPackage.guildId == iterator->second.guildId) {
 				*theData = iterator->second;
@@ -316,9 +310,12 @@ namespace DiscordCoreAPI {
 			auto guildMemberId = guildMember.id;
 			auto guildId = guildMember.guildId;
 			if (GuildMembers::cache.contains(guildMemberId)) {
-				for (auto iterator = GuildMembers::cache.begin(); iterator != GuildMembers::cache.end(); ++iterator) {
+				for (auto iterator = GuildMembers::cache.begin(); iterator != GuildMembers::cache.end();) {
 					if (iterator->second.id == guildMemberId && iterator->second.guildId == guildId) {
 						GuildMembers::cache.erase(iterator);
+						break;
+					} else {
+						++iterator;
 					}
 				}
 			}
@@ -331,9 +328,12 @@ namespace DiscordCoreAPI {
 
 	void GuildMembers::removeGuildMember(GuildMemberData guildMember) {
 		std::unique_lock theLock{ GuildMembers::theMutex };
-		for (auto iterator = GuildMembers::cache.begin(); iterator != GuildMembers::cache.end(); ++iterator) {
+		for (auto iterator = GuildMembers::cache.begin(); iterator != GuildMembers::cache.end();) {
 			if (iterator->second.id == guildMember.id && iterator->second.guildId == guildMember.guildId) {
 				GuildMembers::cache.erase(iterator);
+				break;
+			} else {
+				++iterator;
 			}
 		}
 	};

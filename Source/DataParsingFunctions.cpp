@@ -361,9 +361,8 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::doWeCacheGuildMembers) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
 				auto userId = strtoull(getString(&value, "user_id"));
-				auto guildId = strtoull(getString(&value, "guild_id"));
 				for (auto iterator = GuildMembers::cache.begin(); iterator != GuildMembers::cache.end(); ++iterator) {
-					if (userId == iterator->second.id && guildId == iterator->second.guildId) {
+					if (userId == iterator->second.id && theData.id == iterator->second.guildId) {
 						iterator->second.voiceChannelId = strtoull(getString(&value, "channel_id"));
 						break;
 					}
