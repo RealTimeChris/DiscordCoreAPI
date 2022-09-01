@@ -265,7 +265,13 @@ namespace DiscordCoreAPI {
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
-		GatewayBotData gatewayData = this->getGateWayBot();
+		GatewayBotData gatewayData{}; 
+		try {
+			gatewayData = this->getGateWayBot();
+		} catch (...) {
+			reportException("DiscordCoreClient::instantiateWebSockets()");
+		}
+		
 		if (gatewayData.url == "") {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {
 				cout << shiftToBrightRed()
@@ -303,7 +309,12 @@ namespace DiscordCoreAPI {
 				std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, &this->theConnections, x, &Globals::doWeQuit);
 			this->theConnections.push_back(theData);
 		}
-		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[this->configManager.getStartingShard()].get() };
+		try {
+			this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[this->configManager.getStartingShard()].get() };
+		} catch (...) {
+			reportException("DiscordCoreClient::instantiateWebSockets()");
+		}
+		
 		for (auto& value: this->configManager.getFunctionsToExecute()) {
 			if (value.repeated) {
 				TimeElapsedHandlerNoArgs onSend = [=, this]() -> void {

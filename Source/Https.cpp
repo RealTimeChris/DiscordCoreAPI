@@ -252,7 +252,62 @@ namespace DiscordCoreInternal {
 	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
 
 	bool HttpsConnection::handleBuffer(SSLClient* theClient) noexcept {
-		return true;
+		DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
+		auto theConnection = static_cast<HttpsConnection*>(theClient);
+		while (true) {
+			switch (this->theData.theCurrentState) {
+				case HttpsState::Collecting_Code: {
+					if (stopWatch.hasTimePassed()) {
+						this->areWeDoneTheRequest = true;
+						return false;
+					}
+					theConnection->parseCode(this->theData, theConnection->getInputBuffer());
+					stopWatch.resetTimer();
+					if (this->theData.responseCode == 204) {
+						this->areWeDoneTheRequest = true;
+						return false;
+					}
+					return false;
+				}
+				case HttpsState::Collecting_Headers: {
+					if (stopWatch.hasTimePassed()) {
+						this->areWeDoneTheRequest = true;
+						return false;
+					}
+					if (!theConnection->doWeHaveHeaders) {
+						theConnection->parseHeaders(this->theData, theConnection->getInputBuffer());
+						stopWatch.resetTimer();
+					}
+					return false;
+				}
+				case HttpsState::Collecting_Size: {
+					if (stopWatch.hasTimePassed()) {
+						this->areWeDoneTheRequest = true;
+						return false;
+					}
+					if (!theConnection->doWeHaveContentSize) {
+						theConnection->clearCRLF(theConnection->getInputBuffer());
+						theConnection->parseSize(this->theData, theConnection->getInputBuffer());
+						theConnection->clearCRLF(theConnection->getInputBuffer());
+						stopWatch.resetTimer();
+					}
+					return false;
+				}
+				case HttpsState::Collecting_Contents: {
+					auto theResult = theConnection->parseChunk(this->theData, theConnection->getInputBuffer());
+					if ((this->theData.responseMessage.size() >= this->theData.contentSize && !theResult) || stopWatch.hasTimePassed() || !theResult ||
+						(this->theData.responseCode == -5 && this->theData.contentSize == -5)) {
+						this->areWeDoneTheRequest = true;
+						return false;
+					} else {
+						stopWatch.resetTimer();
+					}
+					return false;
+				}
+			}
+			std::this_thread::sleep_for(1ms);
+		}
+		return false;
 	}
 
 	void HttpsConnection::disconnect(bool) noexcept {
@@ -266,7 +321,9 @@ namespace DiscordCoreInternal {
 		SSLDataInterface::maxBufferSize = (1024 * 16) - 1;
 		SSLDataInterface::outputBuffers.clear();
 		SSLDataInterface::inputBuffer.clear();
+		this->theData = HttpsResponseData{};
 		this->doWeHaveContentSize = false;
+		this->areWeDoneTheRequest = false;
 		SSLDataInterface::bytesRead = 0;
 		this->doWeHaveHeaders = false;
 		this->isItChunked = false;
@@ -381,7 +438,7 @@ namespace DiscordCoreInternal {
 			}
 			if (workload.baseUrl != httpsConnection.currentBaseUrl || !httpsConnection.areWeStillConnected() || httpsConnection.doWeConnect) {
 				httpsConnection.currentBaseUrl = workload.baseUrl;
-				if (httpsConnection.connect(workload.baseUrl, "443", this->configManager->doWePrintHttpsErrorMessages(), true) != ConnectionResult::No_Error) {
+				if (httpsConnection.connect(workload.baseUrl, "443", this->configManager->doWePrintHttpsErrorMessages(),false) != ConnectionResult::No_Error) {
 					httpsConnection.currentReconnectTries++;
 					httpsConnection.doWeConnect = true;
 					return this->httpRequestInternal(httpsConnection, workload, rateLimitData);
@@ -460,6 +517,7 @@ namespace DiscordCoreInternal {
 			}
 			auto httpsConnection = this->connectionManager.getConnection();
 			returnData = HttpsClient::httpRequestInternal(*httpsConnection, workload, rateLimitData);
+
 			httpsConnection->areWeCheckedOut.store(false);
 			rateLimitData.sampledTimeInMs.store(
 				static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
@@ -507,72 +565,18 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseData HttpsClient::getResponse(HttpsConnection& theConnection, RateLimitData& rateLimitData) {
-		HttpsResponseData theData{};
 		try {
-			DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
 			theConnection.getInputBuffer().clear();
 			theConnection.resetValues();
-			bool doWeReturn{ false };
-			while (true) {
-				auto theResult = theConnection.processIO(1000);
-				if (theResult != ProcessIOResult::No_Error) {
-					theConnection.doWeConnect = true;
-					doWeReturn = true;
-				}
-				switch (theData.theCurrentState) {
-					case HttpsState::Collecting_Code: {
-						if (stopWatch.hasTimePassed()) {
-							doWeReturn = true;
-						}
-						theConnection.parseCode(theData, theConnection.getInputBuffer());
-						stopWatch.resetTimer();
-						if (theData.responseCode == 204) {
-							doWeReturn = true;
-						}
-						break;
-					}
-					case HttpsState::Collecting_Headers: {
-						if (stopWatch.hasTimePassed()) {
-							doWeReturn = true;
-						}
-						if (!theConnection.doWeHaveHeaders) {
-							theConnection.parseHeaders(theData, theConnection.getInputBuffer());
-							stopWatch.resetTimer();
-						}
-						break;
-					}
-					case HttpsState::Collecting_Size: {
-						if (stopWatch.hasTimePassed()) {
-							doWeReturn = true;
-						}
-						if (!theConnection.doWeHaveContentSize) {
-							theConnection.clearCRLF(theConnection.getInputBuffer());
-							theConnection.parseSize(theData, theConnection.getInputBuffer());
-							theConnection.clearCRLF(theConnection.getInputBuffer());
-							stopWatch.resetTimer();
-						}
-						break;
-					}
-					case HttpsState::Collecting_Contents: {
-						auto theResult = theConnection.parseChunk(theData, theConnection.getInputBuffer());
-						if ((theData.responseMessage.size() >= theData.contentSize && !theResult) || stopWatch.hasTimePassed() || !theResult ||
-							(theData.responseCode == -5 && theData.contentSize == -5)) {
-							doWeReturn = true;
-						} else {
-							stopWatch.resetTimer();
-						}
-					}
-				}
-				if (doWeReturn) {
-					break;
-				}
-				std::this_thread::sleep_for(1ms);
+			ProcessIOResult theResult{};
+			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error) {
+				theResult = theConnection.processIO(1);
 			}
-			return theConnection.finalizeReturnValues(theData, rateLimitData);
+			return theConnection.finalizeReturnValues(theConnection.theData, rateLimitData);
 		} catch (...) {
 			DiscordCoreAPI::reportException("httpsclient::getReturnData()");
-			theData.responseCode = -1;
-			return theConnection.finalizeReturnValues(theData, rateLimitData);
+			theConnection.theData.responseCode = -1;
+			return theConnection.finalizeReturnValues(theConnection.theData, rateLimitData);
 		}
 	}
 }

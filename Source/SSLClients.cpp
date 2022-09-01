@@ -180,7 +180,7 @@ namespace DiscordCoreInternal {
 				readWriteSet.fd = this->theSocket;
 				readWriteSet.events = POLLOUT;
 
-				if (auto returnValue = poll(&readWriteSet, 1, 10000); returnValue == SOCKET_ERROR) {
+				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
@@ -362,10 +362,6 @@ namespace DiscordCoreInternal {
 		std::vector<ConnectionError> theReturnValue{};
 		PollFDWrapper readWriteSet{};
 		for (uint32_t x = 0; x < theVector.size(); ++x) {
-			if (!theVector[x]->areWeStillConnected()) {
-				theVector[x]->disconnect(true);
-				continue;
-			}
 			pollfd theWrapper{};
 			theWrapper.fd = theVector[x]->theSocket;
 			if (theVector[x]->outputBuffers.size() > 0) {
@@ -383,7 +379,7 @@ namespace DiscordCoreInternal {
 
 		if (auto returnValue = poll(readWriteSet.thePolls.data(), readWriteSet.theIndices.size(), 1000); returnValue == SOCKET_ERROR) {
 			for (uint32_t x = 0; x < readWriteSet.thePolls.size(); ++x) {
-				if (readWriteSet.thePolls[x].revents == POLLERR) {
+				if (readWriteSet.thePolls[x].revents & POLLERR) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
 					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
 					theReturnValue.push_back(theError);
@@ -412,6 +408,9 @@ namespace DiscordCoreInternal {
 					continue;
 				}
 			}
+
+			while (theVector[readWriteSet.theIndices[x]]->handleBuffer(theVector[readWriteSet.theIndices[x]])) {
+			}
 		}
 		return theReturnValue;
 	}
@@ -436,6 +435,10 @@ namespace DiscordCoreInternal {
 			}
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
+			if (!this->areWeAStandaloneSocket) {
+				while (this->handleBuffer(this)) {
+				}
+			}
 			return ProcessIOResult::No_Error;
 		} else {
 			if (readWriteSet.revents & POLLERR) {
@@ -444,15 +447,19 @@ namespace DiscordCoreInternal {
 				}
 				return ProcessIOResult::Error;
 			}
-			if (static_cast<short>(readWriteSet.revents) & static_cast<short>(POLLRDNORM)) {
+			if (readWriteSet.revents & POLLRDNORM) {
 				if (!this->readDataProcess()) {
 					return ProcessIOResult::Error;
 				}
 			}
-			if (static_cast<short>(readWriteSet.revents) & static_cast<short>(POLLWRNORM)) {
+			if (readWriteSet.revents & POLLWRNORM) {
 				if (!this->writeDataProcess()) {
 					return ProcessIOResult::Error;
 				}
+			}
+		}
+		if (!this->areWeAStandaloneSocket) {
+			while (this->handleBuffer(this)) {
 			}
 		}
 		return ProcessIOResult::No_Error;
@@ -549,10 +556,6 @@ namespace DiscordCoreInternal {
 				}
 			}
 		} while (SSL_pending(this->ssl));
-		if (!this->areWeAStandaloneSocket) {
-			while (this->handleBuffer(this)) {
-			}
-		}
 		return true;
 	}
 

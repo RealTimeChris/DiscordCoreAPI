@@ -42,6 +42,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll HttpsResponseData {
 		friend class HttpsRnRBuilder;
+		friend class HttpsConnection;
 		friend class HttpsClient;
 
 		std::unordered_map<std::string, std::string> responseHeaders{};
@@ -109,7 +110,9 @@ namespace DiscordCoreInternal {
 		std::atomic_bool areWeCheckedOut{ false };
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };
+		bool areWeDoneTheRequest{ false };
 		std::string currentBaseUrl{};
+		HttpsResponseData theData{};
 		bool doWeConnect{ true };
 
 		HttpsConnection(bool doWePrintErrorMessages);
