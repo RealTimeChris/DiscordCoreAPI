@@ -317,37 +317,33 @@ namespace DiscordCoreInternal {
 
 	std::vector<ConnectionError> SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
 		std::vector<ConnectionError> theReturnValue{};
-		fd_set writeSet{}, readSet{}, errorSet{};
-		FD_ZERO(&writeSet);
-		FD_ZERO(&readSet);
-		FD_ZERO(&errorSet);
+		std::vector<pollfd> readWriteSet{};
 		for (auto& value: theVector) {
 			if (!value->areWeStillConnected()) {
 				value->disconnect(true);
 				continue;
 			}
-			if ((value->outputBuffers.size() > 0 || value->wantWrite) && !value->wantRead) {
-				FD_SET(value->theSocket, &writeSet);
-			}
-			FD_SET(value->theSocket, &readSet);
-			FD_SET(value->theSocket, &errorSet);
+			readWriteSet.push_back(pollfd{ .fd = static_cast<uint64_t>(value->theSocket), .events = POLLIN | POLLOUT });
 		}
 
 #ifdef WIN32
-		if (readSet.fd_count == 0 && writeSet.fd_count == 0) {
+		if (readWriteSet.size() == 0) {
 #else
 		if (readSet.fds_bits == 0 && writeSet.fds_bits == 0) {
 #endif
 			return theReturnValue;
 		}
 
-		timeval checkTime{ .tv_usec = 1000 };
-		if (auto returnValue = select(FD_SETSIZE + 1, &readSet, &writeSet, &errorSet, &checkTime); returnValue == SOCKET_ERROR) {
-			for (auto& value: theVector) {
-				if (FD_ISSET(value->theSocket, &errorSet)) {
+		if (auto returnValue = poll(readWriteSet.data(), readWriteSet.size(), 1000); returnValue == SOCKET_ERROR) {
+			for (auto& value: readWriteSet) {
+				if (value.revents == POLLERR) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
-					theError.shardNumber = static_cast<WebSocketSSLShard*>(value)->shard[0].get<uint32_t>();
-					theReturnValue.push_back(theError);
+					for (auto& value02: theVector) {
+						if (value02->theSocket == value.fd) {
+							theError.shardNumber = static_cast<WebSocketSSLShard*>(value02)->shard[0].get<uint32_t>();
+							theReturnValue.push_back(theError);
+						}
+					}
 				}
 			}
 			return theReturnValue;
@@ -356,21 +352,29 @@ namespace DiscordCoreInternal {
 			return theReturnValue;
 		}
 
-		for (auto& value: theVector) {
-			if (FD_ISSET(value->theSocket, &writeSet)) {
-				if (!value->writeDataProcess()) {
-					ConnectionError theError{ reportError("SSLClient::processIO") };
-					theError.shardNumber = static_cast<WebSocketSSLShard*>(value)->shard[0].get<uint32_t>();
-					theReturnValue.push_back(theError);
-					continue;
+		for (auto& value: readWriteSet) {
+			if (value.revents & POLLWRNORM) {
+				for (auto& value02: theVector) {
+					if (value02->theSocket == value.fd) {
+						if (!value02->writeDataProcess()) {
+							ConnectionError theError{ reportError("SSLClient::processIO") };
+							theError.shardNumber = static_cast<WebSocketSSLShard*>(value02)->shard[0].get<uint32_t>();
+							theReturnValue.push_back(theError);
+							continue;
+						}
+					}
 				}
-			}
-			if (FD_ISSET(value->theSocket, &readSet)) {
-				if (!value->readDataProcess()) {
-					ConnectionError theError{ reportError("SSLClient::processIO") };
-					theError.shardNumber = static_cast<WebSocketSSLShard*>(value)->shard[0].get<uint32_t>();
-					theReturnValue.push_back(theError);
-					continue;
+			} 
+			if (value.revents & POLLRDNORM) {
+				for (auto& value02: theVector) {
+					if (value02->theSocket == value.fd) {
+						if (!value02->readDataProcess()) {
+							ConnectionError theError{ reportError("SSLClient::processIO") };
+							theError.shardNumber = static_cast<WebSocketSSLShard*>(value02)->shard[0].get<uint32_t>();
+							theReturnValue.push_back(theError);
+							continue;
+						}
+					}
 				}
 			}
 		}
@@ -382,39 +386,26 @@ namespace DiscordCoreInternal {
 			this->disconnect(true);
 			return ProcessIOResult::Error;
 		}
-		fd_set writeSet{}, readSet{};
-		FD_ZERO(&writeSet);
-		FD_ZERO(&readSet);
+		pollfd readWriteSet{};
+		readWriteSet.fd = this->theSocket;
+		readWriteSet.events = POLLIN | POLLOUT;
 
-		if ((this->outputBuffers.size() > 0 || this->wantWrite) && !this->wantRead) {
-			FD_SET(this->theSocket, &writeSet);
-		}
-		FD_SET(this->theSocket, &readSet);
-#ifdef WIN32
-		if (readSet.fd_count == 0 && writeSet.fd_count == 0) {
-#else
-		if (readSet.fds_bits == 0 && writeSet.fds_bits == 0) {
-#endif
-			return ProcessIOResult::No_Error;
-		}
-
-		timeval checkTime{ .tv_usec = theWaitTimeInms };
-		if (auto returnValue = select(FD_SETSIZE + 1, &readSet, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = poll(&readWriteSet, 1, theWaitTimeInms); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
 			return ProcessIOResult::No_Error;
-		}
-
-		if (FD_ISSET(this->theSocket, &writeSet)) {
-			if (!this->writeDataProcess()) {
-				return ProcessIOResult::Error;
-			};
-		}
-		if (FD_ISSET(this->theSocket, &readSet)) {
-			if (!this->readDataProcess()) {
-				return ProcessIOResult::Error;
-			};
+		} else {
+			if (readWriteSet.revents & POLLRDNORM) {
+				if (!this->readDataProcess()) {
+					return ProcessIOResult::Error;
+				}
+			} 
+			if (readWriteSet.revents & POLLWRNORM) {
+				if (!this->writeDataProcess()) {
+					return ProcessIOResult::Error;
+				}
+			}
 		}
 		return ProcessIOResult::No_Error;
 	}

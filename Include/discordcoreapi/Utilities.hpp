@@ -567,19 +567,19 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	template<typename ReturnType> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
+	template<typename ReturnType> DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
 
-	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json& jsonData, const char* keyName);
+	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json* jsonData, const char* keyName);
 
-	DiscordCoreAPI_Dll uint16_t getUint16(nlohmann::json& jsonData, const char* keyName);
+	DiscordCoreAPI_Dll uint16_t getUint16(nlohmann::json* jsonData, const char* keyName);
 
-	DiscordCoreAPI_Dll uint32_t getUint32(nlohmann::json& jsonData, const char* keyName);
+	DiscordCoreAPI_Dll uint32_t getUint32(nlohmann::json* jsonData, const char* keyName);
 
-	DiscordCoreAPI_Dll uint64_t getUint64(nlohmann::json& jsonData, const char* keyName);
+	DiscordCoreAPI_Dll uint64_t getUint64(nlohmann::json* jsonData, const char* keyName);
 
-	DiscordCoreAPI_Dll bool getBool(nlohmann::json& jsonData, const char* keyName);
+	DiscordCoreAPI_Dll bool getBool(nlohmann::json* jsonData, const char* keyName);
 
-	DiscordCoreAPI_Dll std::string getString(nlohmann::json& jsonData, const char* keyName);
+	DiscordCoreAPI_Dll std::string getString(nlohmann::json* jsonData, const char* keyName);
 
 	DiscordCoreAPI_Dll uint64_t strtoull(std::string&& theString);
 
@@ -811,7 +811,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		uint64_t timeStampInTimeUnits{};
 
-		void getTimeSinceEpoch(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second) {
+		void getTimeSinceEpoch(int64_t year, int64_t month, int64_t day, int64_t hour, int64_t minute, int64_t second) {
 			const uint32_t secondsInJan{ 31 * 24 * 60 * 60 };
 			const uint32_t secondsInFeb{ 28 * 24 * 60 * 60 };
 			const uint32_t secondsInMar{ 31 * 24 * 60 * 60 };

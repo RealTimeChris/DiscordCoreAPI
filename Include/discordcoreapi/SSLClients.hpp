@@ -42,7 +42,7 @@
 	#pragma comment(lib, "Ws2_32.lib")
 	#include <WinSock2.h>
 	#include <WS2tcpip.h>
-
+	#define poll(fd_set,fd_count,timeout) WSAPoll(fd_set, fd_count, timeout)
 	#ifdef max
 		#undef max
 	#endif

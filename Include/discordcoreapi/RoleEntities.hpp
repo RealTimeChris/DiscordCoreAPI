@@ -148,11 +148,11 @@ namespace DiscordCoreAPI {
 		virtual ~Role() noexcept = default;
 	};
 
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, Role& theData);
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, Role& theData);
 
 	class DiscordCoreAPI_Dll RoleVector {
 	  public:
-		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
 
 		RoleVector() noexcept = default;
 
@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 		std::vector<Role> theRoles{};
 	};
 
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, RoleVector& theData);
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, RoleVector& theData);
 
 	/**@}*/
 
@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	  public:
-		template<typename ReturnType> DiscordCoreAPI_Dll friend void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> DiscordCoreAPI_Dll friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class RoleData;

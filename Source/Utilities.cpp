@@ -351,56 +351,56 @@ namespace DiscordCoreAPI {
 		return this->lowBits == other.lowBits && this->highBits == other.highBits;
 	}
 
-	uint8_t getUint8(nlohmann::json& jsonData, const char* keyName) {
-		auto theResult = jsonData.find(keyName);
-		if (theResult != jsonData.end()) {
+	uint8_t getUint8(nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
+		if (theResult != jsonData->end()) {
 			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint8_t>() : 0;
 		} else {
 			return 0;
 		}
 	}
 
-	uint16_t getUint16(nlohmann::json& jsonData, const char* keyName) {
-		auto theResult = jsonData.find(keyName);
-		if (theResult != jsonData.end()) {
+	uint16_t getUint16(nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
+		if (theResult != jsonData->end()) {
 			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint16_t>() : 0;
 		} else {
 			return 0;
 		}
 	}
 
-	uint32_t getUint32(nlohmann::json& jsonData, const char* keyName) {
-		auto theResult = jsonData.find(keyName);
-		if (theResult != jsonData.end()) {
+	uint32_t getUint32(nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
+		if (theResult != jsonData->end()) {
 			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint32_t>() : 0;
 		} else {
 			return 0;
 		}
 	}
 
-	uint64_t getUint64(nlohmann::json& jsonData, const char* keyName) {
-		auto theResult = jsonData.find(keyName);
-		if (theResult != jsonData.end()) {
+	uint64_t getUint64(nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
+		if (theResult != jsonData->end()) {
 			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint64_t>() : 0;
 		} else {
 			return 0;
 		}
 	}
 
-	bool getBool(nlohmann::json& jsonData, const char* keyName) {
-		auto theResult = jsonData.find(keyName);
-		if (theResult != jsonData.end()) {
+	bool getBool(nlohmann::json* jsonData, const char* keyName) {
+		auto theResult = jsonData->find(keyName);
+		if (theResult != jsonData->end()) {
 			return !theResult->is_null() && theResult->is_boolean() ? theResult->get<bool>() : false;
 		} else {
 			return false;
 		}
 	}
 
-	std::string getString(nlohmann::json& theJsonData, const char* theKey) {
-		auto theResult = theJsonData.find(theKey);
+	std::string getString(nlohmann::json* jsonData, const char* theKey) {
+		auto theResult = jsonData->find(theKey);
 		std::string returnString{};
-		if (theResult != theJsonData.end() && !theResult->is_null() && theResult->is_string()) {
-			theJsonData[theKey].swap(returnString);
+		if (theResult != jsonData->end() && !theResult->is_null() && theResult->is_string()) {
+			(*jsonData)[theKey].swap(returnString);
 			return returnString;
 		} else {
 			return const_cast<char*>("");

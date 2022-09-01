@@ -232,13 +232,13 @@ namespace DiscordCoreAPI {
 	}
 
 	OverWriteData& OverWriteData::operator=(nlohmann::json& theJsonData) {
-		this->allow = strtoull(getString(theJsonData, "allow"));
+		this->allow = strtoull(getString(&theJsonData, "allow"));
 
-		this->deny = strtoull(getString(theJsonData, "deny"));
+		this->deny = strtoull(getString(&theJsonData, "deny"));
 
-		this->id = strtoull(getString(theJsonData, "id"));
+		this->id = strtoull(getString(&theJsonData, "id"));
 		
-		this->type = static_cast<PermissionOverwritesType>(getUint8(theJsonData, "type"));
+		this->type = static_cast<PermissionOverwritesType>(getUint8(&theJsonData, "type"));
 
 		return *this;
 	}
@@ -997,7 +997,7 @@ namespace DiscordCoreAPI {
 		}
 		this->eventData = inputEventData;
 		auto theData = inputEventData.getInteractionData().rawData;
-		DiscordCoreAPI::parseObject(theData, *this);
+		DiscordCoreAPI::parseObject(&theData, *this);
 	}
 
 	BaseFunctionArguments::BaseFunctionArguments(CommandData commandDataNew, DiscordCoreClient* discordCoreClientNew) : CommandData(commandDataNew) {

@@ -145,7 +145,7 @@ namespace DiscordCoreAPI {
 		virtual ~Thread() noexcept = default;
 	};
 
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& jsonObjectData, Thread& theData);
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, Thread& theData);
 
 	/**@}*/
 

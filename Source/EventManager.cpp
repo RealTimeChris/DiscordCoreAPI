@@ -214,15 +214,15 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json& theJsonData, OnVoiceServerUpdateData& theData) {
-		if (theJsonData.contains("endpoint") && !theJsonData["endpoint"].is_null()) {
-			theData.endpoint = theJsonData["endpoint"].get<std::string>();
+	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json* theJsonData, OnVoiceServerUpdateData& theData) {
+		if (theJsonData->contains("endpoint") && !(*theJsonData)["endpoint"].is_null()) {
+			theData.endpoint = (*theJsonData)["endpoint"].get<std::string>();
 		}
-		if (theJsonData.contains("guild_id") && !theJsonData["guild_id"].is_null()) {
-			theData.guildId = stoull(theJsonData["guild_id"].get<std::string>());
+		if (theJsonData->contains("guild_id") && !(*theJsonData)["guild_id"].is_null()) {
+			theData.guildId = stoull((*theJsonData)["guild_id"].get<std::string>());
 		}
-		if (theJsonData.contains("token") && !theJsonData["token"].is_null()) {
-			theData.token = theJsonData["token"].get<std::string>();
+		if (theJsonData->contains("token") && !(*theJsonData)["token"].is_null()) {
+			theData.token = (*theJsonData)["token"].get<std::string>();
 		}
 	};
 

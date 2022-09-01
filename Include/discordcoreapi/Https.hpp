@@ -166,10 +166,10 @@ namespace DiscordCoreInternal {
 			}
 			if (theReturnValue == nullptr) {
 				ReturnType theReturnValueNew{};
-				DiscordCoreAPI::parseObject(returnData.responseData, theReturnValueNew);
+				DiscordCoreAPI::parseObject(&returnData.responseData, theReturnValueNew);
 				return std::move(theReturnValueNew);
 			} else {
-				DiscordCoreAPI::parseObject(returnData.responseData, *theReturnValue);
+				DiscordCoreAPI::parseObject(&returnData.responseData, *theReturnValue);
 				return std::move(*theReturnValue);
 			}
 		}
