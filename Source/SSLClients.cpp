@@ -473,17 +473,20 @@ namespace DiscordCoreInternal {
 			return ProcessIOResult::No_Error;
 		} else {
 			if (readWriteSet.revents & POLLERR) {
+				std::cout << "RETURNED ERROR!REAL" << std::endl;
 				if (this->doWePrintErrorMessages) {
 					cout << reportError("SSLClient::processIO()") << endl;
 				}
 				return ProcessIOResult::Error;
 			}
 			if (readWriteSet.revents & POLLRDNORM) {
+				std::cout << "RETURNED READ! REAL" << std::endl;
 				if (!this->readDataProcess()) {
 					return ProcessIOResult::Error;
 				}
 			}
 			if (readWriteSet.revents & POLLWRNORM) {
+				std::cout << "RETURNED WRITE! REAL" << std::endl;
 				if (!this->writeDataProcess()) {
 					return ProcessIOResult::Error;
 				}
