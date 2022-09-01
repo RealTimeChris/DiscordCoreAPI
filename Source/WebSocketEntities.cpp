@@ -112,7 +112,7 @@ namespace DiscordCoreInternal {
 			return 31;
 		} else if (this->theEvent == "GUILD_ROLE_DELETE") {
 			return 32;
-		} else if (this->theEvent == "GUILD_SCHEDULED_EVENT_CREATE"){
+		} else if (this->theEvent == "GUILD_SCHEDULED_EVENT_CREATE") {
 			return 33;
 		} else if (this->theEvent == "GUILD_SCHEDULED_EVENT_UPDATE") {
 			return 34;
@@ -400,9 +400,6 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					didWeWrite = this->writeData(dataToSend, priority);
-					if (this->outputBuffers.size() > 0) {
-						std::cout << "OUTPUT BUFFERS: " << this->outputBuffers[0] << std::endl;
-					}
 				} while (didWeWrite != ProcessIOResult::No_Error);
 				if (didWeWrite != ProcessIOResult::No_Error) {
 					this->onClosed();
@@ -560,8 +557,7 @@ namespace DiscordCoreInternal {
 											break;
 										}
 										case 9: {
-											if (DiscordCoreAPI::Channels::doWeCacheChannels ||
-												this->discordCoreClient->eventManager.onChannelUpdateEvent.theFunctions.size() > 0) {
+											if (DiscordCoreAPI::Channels::doWeCacheChannels || this->discordCoreClient->eventManager.onChannelUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::ChannelData* theChannelPtr{ nullptr };
 												std::unique_ptr<DiscordCoreAPI::ChannelData> theChannel = std::make_unique<DiscordCoreAPI::ChannelData>();
 												Snowflake channelId{};
@@ -682,8 +678,7 @@ namespace DiscordCoreInternal {
 												guildId = stoull(payload["d"]["id"].get<std::string>());
 											}
 											DiscordCoreAPI::parseObject(&payload["d"], *theGuild);
-											if (DiscordCoreAPI::Guilds::doWeCacheGuilds ||
-												this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
+											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 													DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
@@ -700,8 +695,7 @@ namespace DiscordCoreInternal {
 											break;
 										}
 										case 19: {
-											if (DiscordCoreAPI::Guilds::doWeCacheGuilds ||
-												this->discordCoreClient->eventManager.onGuildUpdateEvent.theFunctions.size() > 0) {
+											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
 												Snowflake guildId{};
 												if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
@@ -724,8 +718,7 @@ namespace DiscordCoreInternal {
 											break;
 										}
 										case 20: {
-											if (DiscordCoreAPI::Guilds::doWeCacheGuilds ||
-												this->discordCoreClient->eventManager.onGuildDeletionEvent.theFunctions.size() > 0) {
+											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildDeletionEvent.theFunctions.size() > 0) {
 												Snowflake guildId{};
 												if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 													guildId = stoull(payload["d"]["id"].get<std::string>());
@@ -910,8 +903,7 @@ namespace DiscordCoreInternal {
 											break;
 										}
 										case 30: {
-											if (DiscordCoreAPI::Roles::doWeCacheRoles ||
-												this->discordCoreClient->eventManager.onRoleCreationEvent.theFunctions.size() > 0) {
+											if (DiscordCoreAPI::Roles::doWeCacheRoles || this->discordCoreClient->eventManager.onRoleCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::RoleData* theRolePtr{ nullptr };
 												auto theRole = std::make_unique<DiscordCoreAPI::RoleData>();
 												Snowflake roleId{};
@@ -941,8 +933,7 @@ namespace DiscordCoreInternal {
 											break;
 										}
 										case 31: {
-											if (DiscordCoreAPI::Roles::doWeCacheRoles ||
-												this->discordCoreClient->eventManager.onRoleUpdateEvent.theFunctions.size() > 0) {
+											if (DiscordCoreAPI::Roles::doWeCacheRoles || this->discordCoreClient->eventManager.onRoleUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::RoleData* theRolePtr{ nullptr };
 												auto theRole = std::make_unique<DiscordCoreAPI::RoleData>();
 												Snowflake roleId{};
@@ -968,8 +959,7 @@ namespace DiscordCoreInternal {
 											break;
 										}
 										case 32: {
-											if (DiscordCoreAPI::Roles::doWeCacheRoles ||
-												this->discordCoreClient->eventManager.onRoleDeletionEvent.theFunctions.size() > 0) {
+											if (DiscordCoreAPI::Roles::doWeCacheRoles || this->discordCoreClient->eventManager.onRoleDeletionEvent.theFunctions.size() > 0) {
 												Snowflake roleId{};
 												Snowflake guildId{};
 												if (payload["d"].contains("role_id") && !payload["d"]["role_id"].is_null()) {
@@ -1359,8 +1349,7 @@ namespace DiscordCoreInternal {
 										}
 										case 57: {
 											DiscordCoreAPI::UserData* theUserPtr{ nullptr };
-											if (DiscordCoreAPI::Users::doWeCacheUsers ||
-												this->discordCoreClient->eventManager.onUserUpdateEvent.theFunctions.size() > 0) {
+											if (DiscordCoreAPI::Users::doWeCacheUsers || this->discordCoreClient->eventManager.onUserUpdateEvent.theFunctions.size() > 0) {
 												auto theUser = std::make_unique<DiscordCoreAPI::UserData>();
 												Snowflake userId{};
 												if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
@@ -1592,7 +1581,8 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLShard::~WebSocketSSLShard() {}
+	WebSocketSSLShard::~WebSocketSSLShard() {
+	}
 
 	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
 		this->configManager = &discordCoreClientNew->configManager;
@@ -1637,10 +1627,10 @@ namespace DiscordCoreInternal {
 						this->configManager->doWePrintWebSocketErrorMessages(), false);
 					if (didWeConnect == ConnectionResult::Error) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed for WebSocket [" << thePackageNew.currentShard << ","
-									  << this->configManager->getTotalShardCount() << "]"
-									  << " reconnecting in 5 seconds." << DiscordCoreAPI::reset() << std::endl
-									  << std::endl;
+							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed for WebSocket [" << thePackageNew.currentShard << ","
+								 << this->configManager->getTotalShardCount() << "]"
+								 << " reconnecting in 5 seconds." << DiscordCoreAPI::reset() << endl
+								 << endl;
 						}
 					}
 
@@ -1675,9 +1665,9 @@ namespace DiscordCoreInternal {
 					auto theResult = this->theShardMap[thePackageNew.currentShard]->processIO(10000);
 					if (theResult != ProcessIOResult::No_Error) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + thePackageNew.currentShard << ","
-									  << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << std::endl
-									  << std::endl;
+							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + thePackageNew.currentShard << ","
+								 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
+								 << endl;
 						}
 						break;
 					}
@@ -1744,9 +1734,9 @@ namespace DiscordCoreInternal {
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << value.shardNumber << ","
-									  << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << std::endl
-									  << std::endl;
+							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << value.shardNumber << "," << this->configManager->getTotalShardCount()
+								 << "]... reconnecting." << DiscordCoreAPI::reset() << endl
+								 << endl;
 						}
 					}
 				}

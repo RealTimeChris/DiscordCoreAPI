@@ -185,7 +185,6 @@ namespace DiscordCoreInternal {
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
 					return ProcessIOResult::Error;
-					std::cout << "WERE LEAVING LEAVING!" << std::endl;
 				}
 				this->outputBuffers.emplace_back(dataToWrite);
 				if (readWriteSet.revents & POLLWRNORM) {
@@ -238,14 +237,14 @@ namespace DiscordCoreInternal {
 
 		if (this->context = SSL_CTX_new(TLS_client_method()); this->context == nullptr) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::connect()") << std::endl;
+				cout << reportSSLError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
 
 		if (!SSL_CTX_set_min_proto_version(this->context, TLS1_2_VERSION)) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::connect()") << std::endl;
+				cout << reportSSLError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
@@ -254,7 +253,7 @@ namespace DiscordCoreInternal {
 		auto originalOptions{ SSL_CTX_get_options(this->context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
 		if (SSL_CTX_set_options(this->context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::connect()") << std::endl;
+				cout << reportSSLError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
@@ -262,14 +261,14 @@ namespace DiscordCoreInternal {
 
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::connect()") << std::endl;
+				cout << reportError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::connect()") << std::endl;
+				cout << reportError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
@@ -277,7 +276,7 @@ namespace DiscordCoreInternal {
 		int32_t value{ this->maxBufferSize + 1 };
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&value), sizeof(value))) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::connect()") << std::endl;
+				cout << reportError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
@@ -285,14 +284,14 @@ namespace DiscordCoreInternal {
 		const char optionValue{ true };
 		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::connect()") << std::endl;
+				cout << reportError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::connect()") << std::endl;
+				cout << reportError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
@@ -301,28 +300,28 @@ namespace DiscordCoreInternal {
 		optionValue02.l_onoff = 0;
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger))) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::connect()") << std::endl;
+				cout << reportError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
 
 		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::connect()") << std::endl;
+				cout << reportError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
 
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::connect()") << std::endl;
+				cout << reportSSLError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
 
 		if (auto theResult = SSL_set_fd(this->ssl, this->theSocket); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << std::endl;
+				cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << endl;
 			}
 			return ConnectionResult::Error;
 		}
@@ -330,14 +329,14 @@ namespace DiscordCoreInternal {
 		/* SNI */
 		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << std::endl;
+				cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << endl;
 			}
 			return ConnectionResult::Error;
 		}
 
 		if (auto theResult = SSL_connect(this->ssl); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << std::endl;
+				cout << reportSSLError("SSLClient::connect()", theResult, this->ssl) << endl;
 			}
 			return ConnectionResult::Error;
 		}
@@ -346,7 +345,7 @@ namespace DiscordCoreInternal {
 		u_long value02{ 1 };
 		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::connect()") << std::endl;
+				cout << reportError("SSLClient::connect()") << endl;
 			}
 			return ConnectionResult::Error;
 		}
@@ -362,7 +361,7 @@ namespace DiscordCoreInternal {
 	std::vector<ConnectionError> SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
 		std::vector<ConnectionError> theReturnValue{};
 		PollFDWrapper readWriteSet{};
-		for (uint32_t x = 0; x < theVector.size(); ++x){
+		for (uint32_t x = 0; x < theVector.size(); ++x) {
 			if (!theVector[x]->areWeStillConnected()) {
 				theVector[x]->disconnect(true);
 				continue;
@@ -383,7 +382,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (auto returnValue = poll(readWriteSet.thePolls.data(), readWriteSet.theIndices.size(), 1000); returnValue == SOCKET_ERROR) {
-			for (uint32_t x = 0; x < readWriteSet.thePolls.size();++x) {
+			for (uint32_t x = 0; x < readWriteSet.thePolls.size(); ++x) {
 				if (readWriteSet.thePolls[x].revents == POLLERR) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
 					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
@@ -404,7 +403,7 @@ namespace DiscordCoreInternal {
 					theReturnValue.push_back(theError);
 					continue;
 				}
-			} 
+			}
 			if (readWriteSet.thePolls[x].revents & POLLRDNORM) {
 				if (!theVector[readWriteSet.theIndices[x]]->readDataProcess()) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
@@ -412,7 +411,7 @@ namespace DiscordCoreInternal {
 					theReturnValue.push_back(theError);
 					continue;
 				}
-			} 
+			}
 		}
 		return theReturnValue;
 	}
@@ -433,7 +432,7 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = poll(&readWriteSet, 1, theWaitTimeInMs); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
 			if (this->doWePrintErrorMessages) {
-				std::cout << reportError("SSLClient::processIO()") << std::endl;
+				cout << reportError("SSLClient::processIO()") << endl;
 			}
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
@@ -441,7 +440,7 @@ namespace DiscordCoreInternal {
 		} else {
 			if (readWriteSet.revents & POLLERR) {
 				if (this->doWePrintErrorMessages) {
-					std::cout << reportError("SSLClient::processIO()") << std::endl;
+					cout << reportError("SSLClient::processIO()") << endl;
 				}
 				return ProcessIOResult::Error;
 			}
@@ -495,13 +494,13 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::writeDataProcess()") << std::endl;
+						cout << reportSSLError("SSLClient::writeDataProcess()") << endl;
 					}
 					return false;
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::writeDataProcess()") << std::endl;
+						cout << reportSSLError("SSLClient::writeDataProcess()") << endl;
 					}
 					this->disconnect(true);
 					return false;
@@ -536,14 +535,14 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::readDataProcess()") << std::endl;
+						cout << reportSSLError("SSLClient::readDataProcess()") << endl;
 					}
 					this->disconnect(true);
 					return false;
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
-						std::cout << reportSSLError("SSLClient::readDataProcess()") << std::endl;
+						cout << reportSSLError("SSLClient::readDataProcess()") << endl;
 					}
 					this->disconnect(true);
 					return false;
@@ -593,7 +592,7 @@ namespace DiscordCoreInternal {
 				std::string clientToServerString{};
 				clientToServerString = "test string";
 
-				if (auto theResult = bind(this->theSocket,(sockaddr*) &this->theStreamTargetAddress, sizeof(sockaddr)); theResult != 0) {
+				if (auto theResult = bind(this->theSocket, ( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr)); theResult != 0) {
 					return false;
 				}
 

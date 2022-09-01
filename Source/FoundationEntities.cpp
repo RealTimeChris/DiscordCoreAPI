@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 		this->deny = strtoull(getString(&theJsonData, "deny"));
 
 		this->id = strtoull(getString(&theJsonData, "id"));
-		
+
 		this->type = static_cast<PermissionOverwritesType>(getUint8(&theJsonData, "type"));
 
 		return *this;

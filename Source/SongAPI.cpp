@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake guildId) {
-		SongAPI* returnValue = DiscordCoreClient::getSongAPI(guildId);		
+		SongAPI* returnValue = DiscordCoreClient::getSongAPI(guildId);
 		returnValue->onSongCompletionEvent.remove(returnValue->eventToken);
 		returnValue->eventToken = returnValue->onSongCompletionEvent.add(DiscordCoreInternal::EventDelegate<CoRoutine<void>, SongCompletionEventData>{ handler });
 	}

@@ -315,7 +315,7 @@ namespace DiscordCoreAPI {
 		theData.threads.clear();
 		theData.threads.reserve((*jsonObjectData)["threads"].size());
 		for (auto& value: (*jsonObjectData)["threads"]) {
-			theData.threads.push_back(strtoull(getString(&value,"id")));
+			theData.threads.push_back(strtoull(getString(&value, "id")));
 		}
 
 		theData.stickers.clear();
@@ -2602,7 +2602,6 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, PresenceUpdateData& theData) {
-
 		if (jsonObjectData->contains("guild_id") && !(*jsonObjectData)["guild_id"].is_null()) {
 			theData.guildId = stoull((*jsonObjectData)["guild_id"].get<std::string>());
 		}
@@ -2612,7 +2611,7 @@ namespace DiscordCoreAPI {
 				theData.theStatus = setBool(theData.theStatus, PresenceUpdateFlags::Status_Online, true);
 			} else if ((*jsonObjectData)["status"].get<std::string>() == "idle") {
 				theData.theStatus = setBool(theData.theStatus, PresenceUpdateFlags::Status_Idle, true);
-			}else if ((*jsonObjectData)["status"].get<std::string>() == "dnd") {
+			} else if ((*jsonObjectData)["status"].get<std::string>() == "dnd") {
 				theData.theStatus = setBool(theData.theStatus, PresenceUpdateFlags::Status_Dnd, true);
 			}
 		}
@@ -2620,7 +2619,6 @@ namespace DiscordCoreAPI {
 		PresenceUpdateFlags theFlags{};
 		if (jsonObjectData->contains("client_status") && !(*jsonObjectData)["client_status"].is_null()) {
 			DiscordCoreAPI::parseObject(&(*jsonObjectData)["client_status"], theFlags);
-
 		}
 		theData.theStatus |= static_cast<uint8_t>(theFlags);
 	}

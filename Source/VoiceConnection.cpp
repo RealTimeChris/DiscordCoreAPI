@@ -272,7 +272,6 @@ namespace DiscordCoreAPI {
 			std::string theString{};
 			this->stringifyJsonData(newString, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			if (!this->sendMessage(theString, true)) {
-				std::cout << "WERE DCING 010101" << std::endl;
 				this->onClosed();
 			}
 		}
@@ -665,7 +664,6 @@ namespace DiscordCoreAPI {
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "DC 0101" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -679,11 +677,10 @@ namespace DiscordCoreAPI {
 					DiscordCoreInternal::ConnectionResult::No_Error) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "DC 0202" << std::endl;
 					this->connectInternal();
 					return;
 				}
-				
+
 				std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + generateBase64EncodedKey() +
 					"\r\nSec-WebSocket-Version: 13\r\n\r\n";
@@ -692,7 +689,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "DC 0303" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -707,7 +703,6 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify) {
 					if (theStopWatch.hasTimePassed()) {
-						std::cout << "WERE DCING 020202" << std::endl;
 						this->onClosed();
 						return;
 					}
@@ -729,7 +724,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "DC 0505" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -741,7 +735,6 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
 					if (theStopWatch.hasTimePassed()) {
-						std::cout << "WERE DCING 030303" << std::endl;
 						this->onClosed();
 						return;
 					}
@@ -755,7 +748,6 @@ namespace DiscordCoreAPI {
 				if (!this->voiceConnect()) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "DC 0606" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -774,7 +766,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "WERE DCING 030303" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -786,7 +777,6 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
 					if (theStopWatch.hasTimePassed()) {
-						std::cout << "WERE DCING 040404" << std::endl;
 						this->onClosed();
 						return;
 					}
@@ -853,7 +843,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::onClosed() noexcept {
-		std::cout << "WERE BEING CALLED!" << std::endl;
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
 			this->reconnect();

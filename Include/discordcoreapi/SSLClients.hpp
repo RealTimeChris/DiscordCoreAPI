@@ -42,7 +42,7 @@
 	#pragma comment(lib, "Ws2_32.lib")
 	#include <WinSock2.h>
 	#include <WS2tcpip.h>
-	#define poll(fd_set,fd_count,timeout) WSAPoll(fd_set, fd_count, timeout)
+	#define poll(fd_set, fd_count, timeout) WSAPoll(fd_set, fd_count, timeout)
 	#ifdef max
 		#undef max
 	#endif
@@ -221,7 +221,7 @@ namespace DiscordCoreInternal {
 		int64_t bytesRead{ 0 };
 	};
 
-	
+
 	enum class SSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {

@@ -142,9 +142,10 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string SoundCloudRequestBuilder::collectClientId() {
-		std::unordered_map<std::string, std::string> theHeaders{ std::pair("User-Agent",
-														   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"),
-			std::pair("Path", "/search?q=testValue") };
+		std::unordered_map<std::string, std::string> theHeaders{
+			std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"),
+			std::pair("Path", "/search?q=testValue")
+		};
 		HttpsWorkloadData dataPackage02{ HttpsWorkloadType::SoundCloudGetSearchResults };
 		dataPackage02.baseUrl = this->baseUrl;
 		dataPackage02.relativePath = "/search?q=testValue";

@@ -308,7 +308,6 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						std::string streamBuffer = streamSocket->getInputBuffer();
-						std::cout << "THE BUFFER: " << streamBuffer << std::endl;
 						streamSocket->getInputBuffer().clear();
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
