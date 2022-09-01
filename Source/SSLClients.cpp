@@ -450,8 +450,10 @@ namespace DiscordCoreInternal {
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->theSocket;
 		if (this->outputBuffers.size() > 0) {
+			std::cout << "POLLIN POLLOUT!" << std::endl;
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
+			std::cout << "POLLIN!" << std::endl;
 			readWriteSet.events = POLLIN;
 		}
 
@@ -460,8 +462,10 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("SSLClient::processIO()") << endl;
 			}
+			std::cout << "RETURNED ERROR!" << std::endl;
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
+			std::cout << "RETURNED 0!" << std::endl;
 			if (!this->areWeAStandaloneSocket) {
 				while (this->handleBuffer(this)) {
 				}
