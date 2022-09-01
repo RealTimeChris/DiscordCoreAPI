@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Roles };
 		co_await NewThreadAwaitable<std::vector<Role>>();
 		if (dataPackage.guildId == 0) {
-			throw std::runtime_error{ "Roles::getRoleAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
+			throw std::runtime_error{ "Roles::getGuildRolesAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles";
@@ -272,7 +272,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Role>();
 		auto roles = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
 		if (dataPackage.guildId == 0) {
-			throw std::runtime_error{ "Roles::getAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
+			throw std::runtime_error{ "Roles::getRoleAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
 		}
 		for (auto& value: roles) {
 			if (value.id == dataPackage.roleId) {
@@ -289,7 +289,7 @@ namespace DiscordCoreAPI {
 			theLock.unlock();
 			co_return Roles::getRoleAsync(dataPackage).get();
 		} else if (Roles::cache.contains(dataPackage.roleId)) {
-			co_return *Roles::cache[dataPackage.roleId].get();
+			co_return Roles::cache[dataPackage.roleId];
 		}
 	}
 
@@ -302,9 +302,9 @@ namespace DiscordCoreAPI {
 			auto roleId = role->id;
 			auto theResult = Roles::cache.find(roleId);
 			if (theResult == Roles::cache.end()) {
-				Roles::cache.emplace(roleId, std::move(role));
+				Roles::cache.emplace(roleId, std::move(*role));
 			} else {
-				Roles::cache.insert_or_assign(roleId, std::move(role));
+				Roles::cache.insert_or_assign(roleId, std::move(*role));
 			}
 			if (Roles::cache.size() % 1000 == 0) {
 				std::cout << "ROLE COUNT: " << Roles::cache.size() << std::endl;
@@ -319,8 +319,8 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	std::unordered_map<Snowflake, std::unique_ptr<RoleData>> Roles::cache{};
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
+	std::unordered_map<Snowflake, RoleData> Roles::cache{};
 	bool Roles::doWeCacheRoles{ false };
 	std::shared_mutex Roles::theMutex{};
 }

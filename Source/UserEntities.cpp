@@ -166,7 +166,7 @@ namespace DiscordCoreAPI {
 			co_return getUserAsync(dataPackage).get();
 
 		} else {
-			co_return *Users::cache[dataPackage.userId];
+			co_return Users::cache[dataPackage.userId];
 		}
 	}
 
@@ -176,13 +176,13 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Users::getUserAsync()";
-		User theData{};
-		if (Users::cache.contains(dataPackage.userId)) {
-			theData = Users::getCachedUserAsync({ .userId = dataPackage.userId }).get();
+		User* theData{};
+		if (!Users::cache.contains(dataPackage.userId)) {
+			Users::cache[dataPackage.userId] = UserData{};
 		}
-		theData = Users::httpsClient->submitWorkloadAndGetResult<User>(workload, &theData);
-		Users::insertUser(std::make_unique<UserData>(theData));
-		co_return theData;
+		theData = static_cast<User*>(&Users::cache[dataPackage.userId]);
+		*theData = Users::httpsClient->submitWorkloadAndGetResult<User>(workload, theData);
+		co_return *theData;
 	}
 
 	CoRoutine<User> Users::modifyCurrentUserAsync(ModifyCurrentUserData dataPackage) {
@@ -236,9 +236,9 @@ namespace DiscordCoreAPI {
 			std::unique_lock theLock{ Users::theMutex };
 			auto userId = user->id;
 			if (!Users::cache.contains(userId)) {
-				Users::cache.emplace(userId, std::move(user));
+				Users::cache.emplace(userId, std::move(*user));
 			} else {
-				Users::cache.insert_or_assign(userId, std::move(user));
+				Users::cache.insert_or_assign(userId, std::move(*user));
 			}
 			if (Users::cache.size() % 1000 == 0) {
 				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
@@ -246,8 +246,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::unordered_map<Snowflake, std::unique_ptr<UserData>> Users::cache{};
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
+	std::unordered_map<Snowflake, UserData> Users::cache{};
 	bool Users::doWeCacheUsers{ false };
 	std::shared_mutex Users::theMutex{};
 }

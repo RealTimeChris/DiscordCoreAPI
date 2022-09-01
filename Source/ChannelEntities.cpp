@@ -201,12 +201,13 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "Channels::getChannelAsync()";
-		Channel theData{};
-		if (Channels::cache.contains(dataPackage.channelId)) {
-			theData = Channels::getCachedChannelAsync({ .channelId = dataPackage.channelId }).get();
+		Channel* theData{};
+		if (!Channels::cache.contains(dataPackage.channelId)) {
+			Channels::cache[dataPackage.channelId] = ChannelData{};
 		}
-		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
-		co_return theData;
+		theData = static_cast<Channel*>(&Channels::cache[dataPackage.channelId]);
+		*theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, theData);
+		co_return *theData;
 	}
 
 	CoRoutine<Channel> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
@@ -216,7 +217,7 @@ namespace DiscordCoreAPI {
 			theLock.unlock();
 			co_return Channels::getChannelAsync(dataPackage).get();
 		} else {
-			co_return *Channels::cache[dataPackage.channelId];
+			co_return Channels::cache[dataPackage.channelId];
 		}
 	}
 
@@ -380,9 +381,9 @@ namespace DiscordCoreAPI {
 			auto channelId = channel->id;
 			auto theResult = Channels::cache.find(channelId);
 			if (theResult == Channels::cache.end()) {
-				Channels::cache.emplace(channelId, std::move(channel));
+				Channels::cache.emplace(channelId, std::move(*channel));
 			} else {
-				Channels::cache.insert_or_assign(channelId, std::move(channel));
+				Channels::cache.insert_or_assign(channelId, std::move(*channel));
 			}
 			if (Channels::cache.size() % 1000 == 0) {
 				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
@@ -397,8 +398,8 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	std::unordered_map<Snowflake, std::unique_ptr<ChannelData>> Channels::cache{};
 	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
+	std::unordered_map<Snowflake, ChannelData> Channels::cache{};
 	bool Channels::doWeCacheChannels{ false };
 	std::shared_mutex Channels::theMutex{};
 }

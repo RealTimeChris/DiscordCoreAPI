@@ -540,12 +540,12 @@ namespace DiscordCoreInternal {
 												}
 												DiscordCoreAPI::parseObject(&payload["d"], *theChannel);
 												if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
-													DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
+													DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[guildId];
 													guild->channels.emplace_back(channelId);
 												}
 												if (DiscordCoreAPI::Channels::doWeCacheChannels) {
 													DiscordCoreAPI::Channels::insertChannel(std::move(theChannel));
-													theChannelPtr = DiscordCoreAPI::Channels::cache[channelId].get();
+													theChannelPtr = &DiscordCoreAPI::Channels::cache[channelId];
 												} else {
 													theChannelPtr = theChannel.get();
 												}
@@ -571,7 +571,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"], *theChannel);
 												if (DiscordCoreAPI::Channels::doWeCacheChannels) {
 													DiscordCoreAPI::Channels::insertChannel(std::move(theChannel));
-													theChannelPtr = DiscordCoreAPI::Channels::cache[channelId].get();
+													theChannelPtr = &DiscordCoreAPI::Channels::cache[channelId];
 												} else {
 													theChannelPtr = theChannel.get();
 												}
@@ -596,7 +596,7 @@ namespace DiscordCoreInternal {
 												}
 												DiscordCoreAPI::parseObject(&payload["d"], *theChannel);
 												if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
-													DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
+													DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[guildId];
 													for (uint64_t x = 0; x < guild->channels.size(); ++x) {
 														if (guild->channels[x] == channelId) {
 															guild->channels.erase(guild->channels.begin() + x);
@@ -623,7 +623,7 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnThreadCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadCreationData>() };
 											DiscordCoreAPI::parseObject(&payload["d"], dataPackage->thread);
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->thread.guildId)) {
-												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->thread.guildId].get();
+												DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[dataPackage->thread.guildId];
 												guild->threads.emplace_back(dataPackage->thread.id);
 											}
 											this->discordCoreClient->eventManager.onThreadCreationEvent(*dataPackage);
@@ -639,7 +639,7 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnThreadDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadDeletionData>() };
 											DiscordCoreAPI::parseObject(&payload["d"], dataPackage->thread);
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->thread.guildId)) {
-												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->thread.guildId].get();
+												DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[dataPackage->thread.guildId];
 												for (uint64_t x = 0; x < guild->threads.size(); ++x) {
 													if (guild->threads[x] == dataPackage->thread.id) {
 														guild->threads.erase(guild->threads.begin() + x);
@@ -682,7 +682,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 													DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
-													theGuildPtr = DiscordCoreAPI::Guilds::cache[guildId].get();
+													theGuildPtr = &DiscordCoreAPI::Guilds::cache[guildId];
 												} else {
 													theGuildPtr = theGuild.get();
 												}
@@ -705,7 +705,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"], *theGuild);
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 													DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
-													theGuildPtr = DiscordCoreAPI::Guilds::cache[guildId].get();
+													theGuildPtr = &DiscordCoreAPI::Guilds::cache[guildId];
 												} else {
 													theGuildPtr = theGuild.get();
 												}
@@ -772,9 +772,9 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnGuildEmojisUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildEmojisUpdateData>() };
 											DiscordCoreAPI::parseObject(&payload["d"], dataPackage->updateData);
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->updateData.guildId)) {
-												DiscordCoreAPI::Guilds::cache[dataPackage->updateData.guildId]->emoji.clear();
+												DiscordCoreAPI::Guilds::cache[dataPackage->updateData.guildId].emoji.clear();
 												for (auto& value: dataPackage->updateData.emojis) {
-													DiscordCoreAPI::Guilds::cache[dataPackage->updateData.guildId]->emoji.push_back(value.id);
+													DiscordCoreAPI::Guilds::cache[dataPackage->updateData.guildId].emoji.push_back(value.id);
 												}
 											}
 											this->discordCoreClient->eventManager.onGuildEmojisUpdateEvent(*dataPackage);
@@ -784,9 +784,9 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnGuildStickersUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildStickersUpdateData>() };
 											DiscordCoreAPI::parseObject(&payload["d"], dataPackage->updateData);
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->updateData.guildId)) {
-												DiscordCoreAPI::Guilds::cache[dataPackage->updateData.guildId]->stickers.clear();
+												DiscordCoreAPI::Guilds::cache[dataPackage->updateData.guildId].stickers.clear();
 												for (auto& value: dataPackage->updateData.stickers) {
-													DiscordCoreAPI::Guilds::cache[dataPackage->updateData.guildId]->stickers.push_back(value.id);
+													DiscordCoreAPI::Guilds::cache[dataPackage->updateData.guildId].stickers.push_back(value.id);
 												}
 											}
 											this->discordCoreClient->eventManager.onGuildStickersUpdateEvent(*dataPackage);
@@ -818,9 +818,9 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"], *theGuildMember);
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													theGuildMemberPtr = DiscordCoreAPI::GuildMembers::cache[guildId].cache[userId].get();
+													theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache[guildId].cache[userId];
 													if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
-														DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
+														DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[guildId];
 														guild->memberCount++;
 														guild->members.emplace_back(userId);
 													}
@@ -851,7 +851,7 @@ namespace DiscordCoreInternal {
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::removeGuildMember(theGuildMemberReal);
 													if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
-														DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
+														DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[guildId];
 														for (uint64_t x = 0; x < guild->members.size(); ++x) {
 															if (guild->members[x] == userId) {
 																guild->memberCount--;
@@ -885,7 +885,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"], *theGuildMember);
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													theGuildMemberPtr = DiscordCoreAPI::GuildMembers::cache[guildId].cache[userId].get();
+													theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache[guildId].cache[userId];
 												} else {
 													theGuildMemberPtr = theGuildMember.get();
 												}
@@ -916,12 +916,12 @@ namespace DiscordCoreInternal {
 												}
 												DiscordCoreAPI::parseObject(&payload["d"]["role"], *theRole);
 												if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
-													DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
+													DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[guildId];
 													guild->roles.emplace_back(roleId);
 												}
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
 													DiscordCoreAPI::Roles::insertRole(std::move(theRole));
-													theRolePtr = DiscordCoreAPI::Roles::cache[roleId].get();
+													theRolePtr = &DiscordCoreAPI::Roles::cache[roleId];
 												} else {
 													theRolePtr = theRole.get();
 												}
@@ -947,7 +947,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"]["role"], *theRole);
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
 													DiscordCoreAPI::Roles::insertRole(std::move(theRole));
-													theRolePtr = DiscordCoreAPI::Roles::cache[roleId].get();
+													theRolePtr = &DiscordCoreAPI::Roles::cache[roleId];
 												} else {
 													theRolePtr = theRole.get();
 												}
@@ -972,7 +972,7 @@ namespace DiscordCoreInternal {
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
 													DiscordCoreAPI::Roles::removeRole(roleId);
 													if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
-														DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[guildId].get();
+														DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[guildId];
 														for (uint64_t x = 0; x < guild->roles.size(); ++x) {
 															if (guild->roles[x] == roleId) {
 																guild->roles.erase(guild->roles.begin() + x);
@@ -993,7 +993,7 @@ namespace DiscordCoreInternal {
 											};
 											DiscordCoreAPI::parseObject(&payload["d"], dataPackage->guildScheduledEvent);
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->guildScheduledEvent.guildId)) {
-												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->guildScheduledEvent.guildId].get();
+												DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[dataPackage->guildScheduledEvent.guildId];
 												guild->guildScheduledEvents.emplace_back(dataPackage->guildScheduledEvent.id);
 											}
 											this->discordCoreClient->eventManager.onGuildScheduledEventCreationEvent(*dataPackage);
@@ -1011,7 +1011,7 @@ namespace DiscordCoreInternal {
 											};
 											DiscordCoreAPI::parseObject(&payload["d"], dataPackage->guildScheduledEvent);
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->guildScheduledEvent.guildId)) {
-												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->guildScheduledEvent.guildId].get();
+												DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[dataPackage->guildScheduledEvent.guildId];
 												for (uint64_t x = 0; x < guild->guildScheduledEvents.size(); ++x) {
 													if (guild->guildScheduledEvents[x] == dataPackage->guildScheduledEvent.id) {
 														guild->guildScheduledEvents.erase(guild->guildScheduledEvents.begin() + x);
@@ -1313,7 +1313,7 @@ namespace DiscordCoreInternal {
 											};
 											DiscordCoreAPI::parseObject(&payload["d"], dataPackage->stageInstance);
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->stageInstance.guildId)) {
-												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->stageInstance.guildId].get();
+												DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[dataPackage->stageInstance.guildId];
 												guild->stageInstances.emplace_back(dataPackage->stageInstance.id);
 											}
 											this->discordCoreClient->eventManager.onStageInstanceCreationEvent(*dataPackage);
@@ -1331,7 +1331,7 @@ namespace DiscordCoreInternal {
 											};
 											DiscordCoreAPI::parseObject(&payload["d"], dataPackage->stageInstance);
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->stageInstance.guildId)) {
-												DiscordCoreAPI::GuildData* guild = DiscordCoreAPI::Guilds::cache[dataPackage->stageInstance.guildId].get();
+												DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[dataPackage->stageInstance.guildId];
 												for (uint64_t x = 0; x < guild->stageInstances.size(); ++x) {
 													if (guild->stageInstances[x] == dataPackage->stageInstance.id) {
 														guild->stageInstances.erase(guild->stageInstances.begin() + x);
@@ -1358,7 +1358,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"], *theUser);
 												if (DiscordCoreAPI::Users::doWeCacheUsers) {
 													DiscordCoreAPI::Users::insertUser(std::move(theUser));
-													theUserPtr = DiscordCoreAPI::Users::cache[userId].get();
+													theUserPtr = &DiscordCoreAPI::Users::cache[userId];
 												} else {
 													theUserPtr = theUser.get();
 												}
@@ -1389,7 +1389,7 @@ namespace DiscordCoreInternal {
 															dataPackage->voiceStateData.userId)) {
 														DiscordCoreAPI::GuildMembers::cache[dataPackage->voiceStateData.guildId]
 															.cache[dataPackage->voiceStateData.userId]
-															->voiceChannelId = dataPackage->voiceStateData.channelId;
+															.voiceChannelId = dataPackage->voiceStateData.channelId;
 													}
 												}
 											}

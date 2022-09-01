@@ -145,7 +145,7 @@ namespace DiscordCoreAPI {
 	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, GuildMemberVector& theGuildMember);
 
 	struct GuildMemberHolder {
-		std::unordered_map<Snowflake, std::unique_ptr<GuildMemberData>> cache{};
+		std::unordered_map<Snowflake, GuildMemberData> cache{};
 		Snowflake guildId{};
 	};
 

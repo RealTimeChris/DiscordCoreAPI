@@ -131,16 +131,16 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
 		workload.callStack = "GuildMembers::getGuildMemberAsync()";
-		GuildMemberData* theData{};
+		GuildMember* theData{};
 		std::unique_lock theLock{ GuildMembers::theMutex };
 		if (!GuildMembers::cache.contains(dataPackage.guildId)) {
 			GuildMembers::cache[dataPackage.guildId] = GuildMemberHolder{};
 		}
 		if (!GuildMembers::cache[dataPackage.guildId].cache.contains(dataPackage.guildMemberId)) {
-			GuildMembers::cache[dataPackage.guildId].cache[dataPackage.guildMemberId] = std::make_unique<GuildMemberData>();
+			GuildMembers::cache[dataPackage.guildId].cache[dataPackage.guildMemberId] = GuildMemberData{};
 		}
-		theData = GuildMembers::cache[dataPackage.guildId].cache[dataPackage.guildMemberId].get();
-		*theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, static_cast<GuildMember*>(theData));
+		theData = static_cast<GuildMember*>(&GuildMembers::cache[dataPackage.guildId].cache[dataPackage.guildMemberId]);
+		*theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, theData);
 		theData->guildId = dataPackage.guildId;
 		co_return *theData;
 	}
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 		std::shared_lock theLock{ GuildMembers::theMutex };
 		if (GuildMembers::cache.contains(dataPackage.guildId)) {
 			if (GuildMembers::cache[dataPackage.guildId].cache.contains(dataPackage.guildMemberId)) {
-				co_return *GuildMembers::cache[dataPackage.guildId].cache[dataPackage.guildMemberId];
+				co_return GuildMembers::cache[dataPackage.guildId].cache[dataPackage.guildMemberId];
 			}
 		}
 		co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
@@ -223,16 +223,16 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		GuildMemberData* theData{};
+		GuildMember* theData{};
 		std::unique_lock theLock{ GuildMembers::theMutex };
 		if (!GuildMembers::cache.contains(dataPackage.guildId)) {
 			GuildMembers::cache[dataPackage.guildId] = GuildMemberHolder{};
 		}
 		if (!GuildMembers::cache[dataPackage.guildId].cache.contains(dataPackage.guildMemberId)) {
-			GuildMembers::cache[dataPackage.guildId].cache[dataPackage.guildMemberId] = std::make_unique<GuildMemberData>();
+			GuildMembers::cache[dataPackage.guildId].cache[dataPackage.guildMemberId] = GuildMemberData{};
 		}
-		theData = GuildMembers::cache[dataPackage.guildId].cache[dataPackage.guildMemberId].get();
-		*theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, static_cast<GuildMember*>(theData));
+		theData = static_cast<GuildMember*>(&GuildMembers::cache[dataPackage.guildId].cache[dataPackage.guildMemberId]);
+		*theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, theData);
 		theData->guildId = dataPackage.guildId;
 		co_return *theData;
 	}
@@ -314,9 +314,9 @@ namespace DiscordCoreAPI {
 				GuildMembers::cache.emplace(guildId, GuildMemberHolder{});
 			}
 			if (!GuildMembers::cache[guildId].cache.contains(guildMemberId)) {
-				GuildMembers::cache[guildId].cache.emplace(guildMemberId, std::move(guildMember));
+				GuildMembers::cache[guildId].cache.emplace(guildMemberId, std::move(*guildMember));
 			} else {
-				GuildMembers::cache[guildId].cache.insert_or_assign(guildMemberId, std::move(guildMember));
+				GuildMembers::cache[guildId].cache.insert_or_assign(guildMemberId, std::move(*guildMember));
 			}
 		}
 	}

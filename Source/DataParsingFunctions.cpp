@@ -372,9 +372,9 @@ namespace DiscordCoreAPI {
 					GuildMembers::cache[theData.id] = GuildMemberHolder{};
 				}
 				if (!GuildMembers::cache[theData.id].cache.contains(userId)) {
-					GuildMembers::cache[theData.id].cache[userId] = std::make_unique<GuildMemberData>();
+					GuildMembers::cache[theData.id].cache[userId] = GuildMemberData{};
 				}
-				GuildMembers::cache[theData.id].cache[userId]->voiceChannelId = strtoull(getString(&value, "channel_id"));
+				GuildMembers::cache[theData.id].cache[userId].voiceChannelId = strtoull(getString(&value, "channel_id"));
 			}
 		}
 
@@ -486,9 +486,9 @@ namespace DiscordCoreAPI {
 						GuildMembers::cache[theData.id] = GuildMemberHolder{};
 					}
 					if (!GuildMembers::cache[theData.id].cache.contains(userId)) {
-						GuildMembers::cache[theData.id].cache[userId] = std::make_unique<GuildMemberData>();
+						GuildMembers::cache[theData.id].cache[userId] = GuildMemberData{};
 					}
-					GuildMembers::cache[theData.id].cache[userId]->voiceChannelId = strtoull(value["channel_id"].get<std::string>());
+					GuildMembers::cache[theData.id].cache[userId].voiceChannelId = strtoull(value["channel_id"].get<std::string>());
 				}
 			}
 		}
