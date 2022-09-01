@@ -298,7 +298,7 @@ namespace DiscordCoreAPI {
 		if (this->configManager.getConnectionPort() == "") {
 			this->configManager.setConnectionPort("443");
 		}
-		for (int32_t x = 0; x < this->configManager.getTotalShardCount(); ++x) {
+		for (uint32_t x = 0; x < this->configManager.getTotalShardCount(); ++x) {
 			if (!this->baseSocketAgentMap.contains(x % theWorkerCount)) {
 				this->baseSocketAgentMap[x % theWorkerCount] = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);
 			}
