@@ -334,9 +334,9 @@ namespace DiscordCoreAPI {
 
 	/// Sharding options for the library. \brief Sharding options for the library.
 	struct DiscordCoreAPI_Dll ShardingOptions {
-		int32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
-		int32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
-		int32_t startingShard{ 0 };///< The first shard to start on this process.
+		uint32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
+		uint32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
+		uint32_t startingShard{ 0 };///< The first shard to start on this process.
 	};
 
 	/**@}*/
@@ -412,11 +412,11 @@ namespace DiscordCoreAPI {
 
 		const std::string getBotToken();
 
-		const int32_t getTotalShardCount();
+		const uint32_t getTotalShardCount();
 
-		const int32_t getStartingShard();
+		const uint32_t getStartingShard();
 
-		const int32_t getShardCountForThisProcess();
+		const uint32_t getShardCountForThisProcess();
 
 		const std::string getConnectionAddress();
 

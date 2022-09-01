@@ -132,15 +132,15 @@ namespace DiscordCoreAPI {
 		return this->theConfig.botToken;
 	}
 
-	const int32_t ConfigManager::getTotalShardCount() {
+	const uint32_t ConfigManager::getTotalShardCount() {
 		return this->theConfig.shardOptions.totalNumberOfShards;
 	}
 
-	const int32_t ConfigManager::getStartingShard() {
+	const uint32_t ConfigManager::getStartingShard() {
 		return this->theConfig.shardOptions.startingShard;
 	}
 
-	const int32_t ConfigManager::getShardCountForThisProcess() {
+	const uint32_t ConfigManager::getShardCountForThisProcess() {
 		return this->theConfig.shardOptions.numberOfShardsForThisProcess;
 	}
 
