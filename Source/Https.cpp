@@ -570,7 +570,7 @@ namespace DiscordCoreInternal {
 			theConnection.resetValues();
 			ProcessIOResult theResult{};
 			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error) {
-				theResult = theConnection.processIO(10);
+				theResult = theConnection.processIO(100);
 			}
 			return theConnection.finalizeReturnValues(theConnection.theData, rateLimitData);
 		} catch (...) {
