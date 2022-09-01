@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 		/// \returns DiscordCoreAPI::Snowflake A Snowflake containing the Channel's id.
 		Snowflake getChannelId() noexcept;
 
-		~VoiceConnection() noexcept = default;
+		~VoiceConnection() noexcept;
 
 	  protected:
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };

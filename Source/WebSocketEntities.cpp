@@ -478,7 +478,7 @@ namespace DiscordCoreInternal {
 													->baseSocketAgentMap[static_cast<int32_t>(floor(
 														static_cast<int32_t>(this->shard[0]) % static_cast<int32_t>(this->discordCoreClient->configManager.getTotalShardCount())))]
 													.get() };
-											DiscordCoreAPI::Users::insertUser(std::make_unique<DiscordCoreAPI::UserData>(theUser));
+											DiscordCoreAPI::Users::insertUser(std::move(theUser));
 											this->currentReconnectTries = 0;
 										}
 										case 2: {
@@ -529,7 +529,7 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Channels::doWeCacheChannels ||
 												this->discordCoreClient->eventManager.onChannelCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::ChannelData* theChannelPtr{ nullptr };
-												std::unique_ptr<DiscordCoreAPI::ChannelData> theChannel = std::make_unique<DiscordCoreAPI::ChannelData>();
+												DiscordCoreAPI::ChannelData theChannel{};
 												Snowflake channelId{};
 												Snowflake guildId{};
 												if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
@@ -538,16 +538,16 @@ namespace DiscordCoreInternal {
 												if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 													guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 												}
-												DiscordCoreAPI::parseObject(&payload["d"], *theChannel);
+												DiscordCoreAPI::parseObject(&payload["d"], theChannel);
 												if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
 													DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[guildId];
 													guild->channels.emplace_back(channelId);
 												}
 												if (DiscordCoreAPI::Channels::doWeCacheChannels) {
-													DiscordCoreAPI::Channels::insertChannel(std::move(theChannel));
+													DiscordCoreAPI::Channels::insertChannel(theChannel);
 													theChannelPtr = &DiscordCoreAPI::Channels::cache[channelId];
 												} else {
-													theChannelPtr = theChannel.get();
+													theChannelPtr = &theChannel;
 												}
 												if (this->discordCoreClient->eventManager.onChannelCreationEvent.theFunctions.size() > 0) {
 													DiscordCoreAPI::OnChannelCreationData dataPackage{ std::make_unique<DiscordCoreAPI::ChannelData>(*theChannelPtr) };
@@ -559,7 +559,7 @@ namespace DiscordCoreInternal {
 										case 9: {
 											if (DiscordCoreAPI::Channels::doWeCacheChannels || this->discordCoreClient->eventManager.onChannelUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::ChannelData* theChannelPtr{ nullptr };
-												std::unique_ptr<DiscordCoreAPI::ChannelData> theChannel = std::make_unique<DiscordCoreAPI::ChannelData>();
+												DiscordCoreAPI::ChannelData theChannel{};
 												Snowflake channelId{};
 												Snowflake guildId{};
 												if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
@@ -568,12 +568,12 @@ namespace DiscordCoreInternal {
 												if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 													guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 												}
-												DiscordCoreAPI::parseObject(&payload["d"], *theChannel);
+												DiscordCoreAPI::parseObject(&payload["d"], theChannel);
 												if (DiscordCoreAPI::Channels::doWeCacheChannels) {
-													DiscordCoreAPI::Channels::insertChannel(std::move(theChannel));
+													DiscordCoreAPI::Channels::insertChannel(theChannel);
 													theChannelPtr = &DiscordCoreAPI::Channels::cache[channelId];
 												} else {
-													theChannelPtr = theChannel.get();
+													theChannelPtr = &theChannel;
 												}
 												if (this->discordCoreClient->eventManager.onChannelUpdateEvent.theFunctions.size() > 0) {
 													DiscordCoreAPI::OnChannelUpdateData dataPackage{ std::make_unique<DiscordCoreAPI::ChannelData>(*theChannelPtr) };
@@ -672,19 +672,19 @@ namespace DiscordCoreInternal {
 												std::cout << "THE GUILD COUNT: " << theInt.load() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 											}
 											theInt.store(theInt.load() + 1);
-											auto theGuild = std::make_unique<DiscordCoreAPI::GuildData>();
+											DiscordCoreAPI::GuildData theGuild{};
 											Snowflake guildId{};
 											if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 												guildId = stoull(payload["d"]["id"].get<std::string>());
 											}
-											DiscordCoreAPI::parseObject(&payload["d"], *theGuild);
+											DiscordCoreAPI::parseObject(&payload["d"], theGuild);
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 													DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
 													theGuildPtr = &DiscordCoreAPI::Guilds::cache[guildId];
 												} else {
-													theGuildPtr = theGuild.get();
+													theGuildPtr = &theGuild;
 												}
 												if (this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 													DiscordCoreAPI::OnGuildCreationData dataPackage{ std::make_unique<DiscordCoreAPI::GuildData>(*theGuildPtr),
@@ -701,13 +701,13 @@ namespace DiscordCoreInternal {
 												if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 													guildId = stoull(payload["d"]["id"].get<std::string>());
 												}
-												std::unique_ptr<DiscordCoreAPI::GuildData> theGuild = std::make_unique<DiscordCoreAPI::GuildData>();
-												DiscordCoreAPI::parseObject(&payload["d"], *theGuild);
+												DiscordCoreAPI::GuildData theGuild{};
+												DiscordCoreAPI::parseObject(&payload["d"], theGuild);
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 													DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
 													theGuildPtr = &DiscordCoreAPI::Guilds::cache[guildId];
 												} else {
-													theGuildPtr = theGuild.get();
+													theGuildPtr = &theGuild;
 												}
 												if (this->discordCoreClient->eventManager.onGuildUpdateEvent.theFunctions.size() > 0) {
 													DiscordCoreAPI::OnGuildUpdateData dataPackage{ std::make_unique<DiscordCoreAPI::GuildData>(*theGuildPtr),
@@ -806,7 +806,7 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers ||
 												this->discordCoreClient->eventManager.onGuildMemberAddEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildMemberData* theGuildMemberPtr{ nullptr };
-												std::unique_ptr<DiscordCoreAPI::GuildMemberData> theGuildMember = std::make_unique<DiscordCoreAPI::GuildMemberData>();
+												DiscordCoreAPI::GuildMemberData theGuildMember{};
 												Snowflake userId{};
 												Snowflake guildId{};
 												if (payload["d"]["user"].contains("id") && !payload["d"]["user"]["id"].is_null()) {
@@ -815,7 +815,7 @@ namespace DiscordCoreInternal {
 												if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 													guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 												}
-												DiscordCoreAPI::parseObject(&payload["d"], *theGuildMember);
+												DiscordCoreAPI::parseObject(&payload["d"], theGuildMember);
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
 													theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache[guildId].cache[userId];
@@ -825,7 +825,7 @@ namespace DiscordCoreInternal {
 														guild->members.emplace_back(userId);
 													}
 												} else {
-													theGuildMemberPtr = theGuildMember.get();
+													theGuildMemberPtr = &theGuildMember;
 												}
 												if (this->discordCoreClient->eventManager.onGuildMemberAddEvent.theFunctions.size() > 0) {
 													DiscordCoreAPI::OnGuildMemberAddData dataPackage{ std::make_unique<DiscordCoreAPI::GuildMemberData>(*theGuildMemberPtr),
@@ -873,7 +873,7 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers ||
 												this->discordCoreClient->eventManager.onGuildMemberUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildMemberData* theGuildMemberPtr{ nullptr };
-												auto theGuildMember = std::make_unique<DiscordCoreAPI::GuildMemberData>();
+												DiscordCoreAPI::GuildMemberData theGuildMember{};
 												Snowflake userId{};
 												Snowflake guildId{};
 												if (payload["d"]["user"].contains("id") && !payload["d"]["user"]["id"].is_null()) {
@@ -882,12 +882,12 @@ namespace DiscordCoreInternal {
 												if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 													guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 												}
-												DiscordCoreAPI::parseObject(&payload["d"], *theGuildMember);
+												DiscordCoreAPI::parseObject(&payload["d"], theGuildMember);
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
 													theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache[guildId].cache[userId];
 												} else {
-													theGuildMemberPtr = theGuildMember.get();
+													theGuildMemberPtr = &theGuildMember;
 												}
 												if (this->discordCoreClient->eventManager.onGuildMemberUpdateEvent.theFunctions.size() > 0) {
 													DiscordCoreAPI::OnGuildMemberUpdateData dataPackage{ std::make_unique<DiscordCoreAPI::GuildMemberData>(*theGuildMemberPtr) };
@@ -905,7 +905,7 @@ namespace DiscordCoreInternal {
 										case 30: {
 											if (DiscordCoreAPI::Roles::doWeCacheRoles || this->discordCoreClient->eventManager.onRoleCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::RoleData* theRolePtr{ nullptr };
-												auto theRole = std::make_unique<DiscordCoreAPI::RoleData>();
+												DiscordCoreAPI::RoleData theRole{};
 												Snowflake roleId{};
 												Snowflake guildId{};
 												if (payload["d"]["role"].contains("id") && !payload["d"]["role"]["id"].is_null()) {
@@ -914,7 +914,7 @@ namespace DiscordCoreInternal {
 												if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 													guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 												}
-												DiscordCoreAPI::parseObject(&payload["d"]["role"], *theRole);
+												DiscordCoreAPI::parseObject(&payload["d"]["role"], theRole);
 												if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
 													DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[guildId];
 													guild->roles.emplace_back(roleId);
@@ -923,7 +923,7 @@ namespace DiscordCoreInternal {
 													DiscordCoreAPI::Roles::insertRole(std::move(theRole));
 													theRolePtr = &DiscordCoreAPI::Roles::cache[roleId];
 												} else {
-													theRolePtr = theRole.get();
+													theRolePtr = &theRole;
 												}
 												if (this->discordCoreClient->eventManager.onRoleCreationEvent.theFunctions.size() > 0) {
 													DiscordCoreAPI::OnRoleCreationData dataPackage{ std::make_unique<DiscordCoreAPI::RoleData>(*theRolePtr), guildId };
@@ -935,7 +935,7 @@ namespace DiscordCoreInternal {
 										case 31: {
 											if (DiscordCoreAPI::Roles::doWeCacheRoles || this->discordCoreClient->eventManager.onRoleUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::RoleData* theRolePtr{ nullptr };
-												auto theRole = std::make_unique<DiscordCoreAPI::RoleData>();
+												DiscordCoreAPI::RoleData theRole{};
 												Snowflake roleId{};
 												Snowflake guildId{};
 												if (payload["d"]["role"].contains("id") && !payload["d"]["role"]["id"].is_null()) {
@@ -944,12 +944,12 @@ namespace DiscordCoreInternal {
 												if (payload["d"].contains("guild_id") && !payload["d"]["guild_id"].is_null()) {
 													guildId = stoull(payload["d"]["guild_id"].get<std::string>());
 												}
-												DiscordCoreAPI::parseObject(&payload["d"]["role"], *theRole);
+												DiscordCoreAPI::parseObject(&payload["d"]["role"], theRole);
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
 													DiscordCoreAPI::Roles::insertRole(std::move(theRole));
 													theRolePtr = &DiscordCoreAPI::Roles::cache[roleId];
 												} else {
-													theRolePtr = theRole.get();
+													theRolePtr = &theRole;
 												}
 												if (this->discordCoreClient->eventManager.onRoleUpdateEvent.theFunctions.size() > 0) {
 													DiscordCoreAPI::OnRoleUpdateData dataPackage{ std::make_unique<DiscordCoreAPI::RoleData>(*theRolePtr), guildId };
@@ -1090,8 +1090,10 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
 											DiscordCoreAPI::parseObject(&payload["d"], *interactionData);
 											std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
+											std::cout << "INTERACTION 0101" << std::endl;
 											switch (interactionData->type) {
 												case DiscordCoreAPI::InteractionType::Application_Command: {
+													std::cout << "INTERACTION 0202" << std::endl;
 													eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 													*eventData->interactionData = *interactionData;
 													std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
@@ -1100,7 +1102,9 @@ namespace DiscordCoreInternal {
 													dataPackage->interactionData = *interactionData;
 													std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 													DiscordCoreAPI::CommandData commandDataNew = *commandData;
+													std::cout << "INTERACTION 0303" << std::endl;
 													this->discordCoreClient->commandController.checkForAndRunCommand(commandDataNew);
+													std::cout << "INTERACTION 0404" << std::endl;
 													this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 													std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
 														std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
@@ -1350,17 +1354,17 @@ namespace DiscordCoreInternal {
 										case 57: {
 											DiscordCoreAPI::UserData* theUserPtr{ nullptr };
 											if (DiscordCoreAPI::Users::doWeCacheUsers || this->discordCoreClient->eventManager.onUserUpdateEvent.theFunctions.size() > 0) {
-												auto theUser = std::make_unique<DiscordCoreAPI::UserData>();
+												DiscordCoreAPI::UserData theUser{};
 												Snowflake userId{};
 												if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
 													userId = stoull(payload["d"]["id"].get<std::string>());
 												}
-												DiscordCoreAPI::parseObject(&payload["d"], *theUser);
+												DiscordCoreAPI::parseObject(&payload["d"], theUser);
 												if (DiscordCoreAPI::Users::doWeCacheUsers) {
 													DiscordCoreAPI::Users::insertUser(std::move(theUser));
 													theUserPtr = &DiscordCoreAPI::Users::cache[userId];
 												} else {
-													theUserPtr = theUser.get();
+													theUserPtr = &theUser;
 												}
 												if (this->discordCoreClient->eventManager.onUserUpdateEvent.theFunctions.size() > 0) {
 													DiscordCoreAPI::OnUserUpdateData dataPackage{ std::make_unique<DiscordCoreAPI::UserData>(*theUserPtr) };
@@ -1662,7 +1666,7 @@ namespace DiscordCoreInternal {
 					if (this->theShardMap[thePackageNew.currentShard]->currentState.load() == SSLShardState::Collecting_Hello) {
 						break;
 					}
-					auto theResult = this->theShardMap[thePackageNew.currentShard]->processIO(10000);
+					auto theResult = this->theShardMap[thePackageNew.currentShard]->processIO(10);
 					if (theResult != ProcessIOResult::No_Error) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
 							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + thePackageNew.currentShard << ","
@@ -1678,7 +1682,7 @@ namespace DiscordCoreInternal {
 								this->theShardMap[thePackageNew.currentShard]->onClosed();
 								return;
 							}
-							this->theShardMap[thePackageNew.currentShard]->processIO(10000);
+							this->theShardMap[thePackageNew.currentShard]->processIO(10);
 							std::this_thread::sleep_for(1ms);
 						}
 					}

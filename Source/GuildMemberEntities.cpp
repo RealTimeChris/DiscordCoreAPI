@@ -302,21 +302,21 @@ namespace DiscordCoreAPI {
 		co_return GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
 	}
 
-	void GuildMembers::insertGuildMember(std::unique_ptr<GuildMemberData> guildMember) {
-		if (!guildMember || guildMember->id == 0) {
+	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
+		if ( guildMember.id == 0) {
 			return;
 		}
 		if (GuildMembers::doWeCacheGuildMembers) {
 			std::unique_lock theLock{ GuildMembers::theMutex };
-			auto guildMemberId = guildMember->id;
-			auto guildId = guildMember->guildId;
+			auto guildMemberId = guildMember.id;
+			auto guildId = guildMember.guildId;
 			if (!GuildMembers::cache.contains(guildId)) {
 				GuildMembers::cache.emplace(guildId, GuildMemberHolder{});
 			}
 			if (!GuildMembers::cache[guildId].cache.contains(guildMemberId)) {
-				GuildMembers::cache[guildId].cache.emplace(guildMemberId, std::move(*guildMember));
+				GuildMembers::cache[guildId].cache.emplace(guildMemberId, std::move(guildMember));
 			} else {
-				GuildMembers::cache[guildId].cache.insert_or_assign(guildMemberId, std::move(*guildMember));
+				GuildMembers::cache[guildId].cache.insert_or_assign(guildMemberId, std::move(guildMember));
 			}
 		}
 	}

@@ -581,7 +581,7 @@ namespace DiscordCoreAPI {
 		static std::shared_mutex theMutex;
 		static bool doWeCacheGuilds;
 
-		static void insertGuild(std::unique_ptr<GuildData> guild);
+		static void insertGuild(GuildData guild);
 
 		static void removeGuild(const Snowflake GuildId);
 	};

@@ -818,18 +818,18 @@ namespace DiscordCoreAPI {
 	}
 
 	StopWatch theStopWatch{ 5s };
-	void Guilds::insertGuild(std::unique_ptr<GuildData> guild) {
-		if (!guild || guild->id == 0) {
+	void Guilds::insertGuild(GuildData guild) {
+		if ( guild.id == 0) {
 			return;
 		}
 		if (Guilds::doWeCacheGuilds) {
-			guild->discordCoreClient = Guilds::discordCoreClient;
+			guild.discordCoreClient = Guilds::discordCoreClient;
 			std::unique_lock theLock{ Guilds::theMutex };
-			auto guildId = guild->id;
+			auto guildId = guild.id;
 			if (!Guilds::cache.contains(guildId)) {
-				Guilds::cache.emplace(guildId, std::move(*guild));
+				Guilds::cache.emplace(guildId, std::move(guild));
 			} else {
-				Guilds::cache.insert_or_assign(guildId, std::move(*guild));
+				Guilds::cache.insert_or_assign(guildId, std::move(guild));
 			}
 			if (Guilds::cache.size() % 500 == 0) {
 				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;

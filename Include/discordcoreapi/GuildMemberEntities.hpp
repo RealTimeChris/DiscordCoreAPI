@@ -213,7 +213,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing GuildMember.
 		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
-		static void insertGuildMember(std::unique_ptr<GuildMemberData> guildMember);
+		static void insertGuildMember(GuildMemberData guildMember);
 
 		static void removeGuildMember(GuildMemberData guildMemberId);
 

@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Role.
 		static CoRoutine<Role> getCachedRoleAsync(GetRoleData dataPackage);
 
-		static void insertRole(std::unique_ptr<RoleData> role);
+		static void insertRole(RoleData role);
 
 		static void removeRole(const Snowflake roleId);
 

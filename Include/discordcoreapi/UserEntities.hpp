@@ -209,7 +209,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing an AuthorizationInfoData.
 		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
-		static void insertUser(std::unique_ptr<UserData> user);
+		static void insertUser(UserData user);
 
 	  protected:
 		static std::unordered_map<Snowflake, UserData> cache;

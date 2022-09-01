@@ -109,32 +109,59 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
-		if (other && *other != SOCKET_ERROR) {
+	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET other) {
+		if (other != SOCKET_ERROR) {
 #ifdef _WIN32
-			shutdown(*other, SD_BOTH);
-			closesocket(*other);
+			shutdown(other, SD_BOTH);
+			closesocket(other);
 #else
-			shutdown(*other, SHUT_RDWR);
-			close(*other);
+			shutdown(other, SHUT_RDWR);
+			close(other);
 #endif
-			*other = SOCKET_ERROR;
-			delete other;
-		}
-	}
+			other = SOCKET_ERROR;
+		};
+	};
 
-	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) {
-		this->thePtr.reset(nullptr);
-		this->thePtr.reset(new SOCKET{ other });
+	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) noexcept {
+		if (this->thePtr != SOCKET_ERROR) {
+			SOCKETWrapper::SOCKETDeleter theDeleter{};
+			theDeleter.operator()(this->thePtr);
+		}
+		this->thePtr = other;
 		return *this;
 	}
 
-	SOCKETWrapper::operator SOCKET*() {
-		return this->thePtr.get();
+	SOCKETWrapper::SOCKETWrapper(SOCKET other) noexcept {
+		*this = other;
 	}
 
-	SOCKETWrapper::operator SOCKET() {
-		return *this->thePtr;
+	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper&& other) noexcept {
+		if (this->thePtr != SOCKET_ERROR) {
+			SOCKETWrapper::SOCKETDeleter theDeleter{};
+			theDeleter.operator()(this->thePtr);
+		}
+		this->thePtr = other.thePtr;
+		other.thePtr = SOCKET_ERROR;
+		return *this;
+	}
+
+	SOCKETWrapper::SOCKETWrapper(SOCKETWrapper&& other) noexcept {
+		*this = std::move(other);
+	}
+
+	SOCKETWrapper::operator SOCKET*() noexcept {
+		return &this->thePtr;
+	}
+
+	SOCKETWrapper::operator SOCKET() noexcept {
+		return static_cast<SOCKET>(this->thePtr);
+	}
+
+	SOCKETWrapper::~SOCKETWrapper() noexcept {
+		if (this->thePtr != SOCKET_ERROR) {
+			SOCKETWrapper::SOCKETDeleter theDeleter{};
+			theDeleter.operator()(this->thePtr);
+		}
 	}
 
 	sockaddr* sockaddrWrapper::operator->() {
@@ -377,7 +404,7 @@ namespace DiscordCoreInternal {
 			return theReturnValue;
 		}
 
-		if (auto returnValue = poll(readWriteSet.thePolls.data(), readWriteSet.theIndices.size(), 1000); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = poll(readWriteSet.thePolls.data(), readWriteSet.theIndices.size(), 10); returnValue == SOCKET_ERROR) {
 			for (uint32_t x = 0; x < readWriteSet.thePolls.size(); ++x) {
 				if (readWriteSet.thePolls[x].revents & POLLERR) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };

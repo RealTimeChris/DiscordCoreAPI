@@ -228,17 +228,17 @@ namespace DiscordCoreAPI {
 		co_return Users::httpsClient->submitWorkloadAndGetResult<AuthorizationInfoData>(workload);
 	}
 
-	void Users::insertUser(std::unique_ptr<UserData> user) {
-		if (!user || user->id == 0) {
+	void Users::insertUser(UserData user) {
+		if (user.id == 0) {
 			return;
 		}
 		if (Users::doWeCacheUsers) {
 			std::unique_lock theLock{ Users::theMutex };
-			auto userId = user->id;
+			auto userId = user.id;
 			if (!Users::cache.contains(userId)) {
-				Users::cache.emplace(userId, std::move(*user));
+				Users::cache.emplace(userId, std::move(user));
 			} else {
-				Users::cache.insert_or_assign(userId, std::move(*user));
+				Users::cache.insert_or_assign(userId, std::move(user));
 			}
 			if (Users::cache.size() % 1000 == 0) {
 				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;

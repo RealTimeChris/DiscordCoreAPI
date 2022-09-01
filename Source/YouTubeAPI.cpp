@@ -239,7 +239,7 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			std::string theString = newSong.finalDownloadUrls[1].urlPath;
 			streamSocket->writeData(theString, true);
-			streamSocket->processIO(10);
+			streamSocket->processIO(1000);
 			if (!streamSocket->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
 				streamSocket->disconnect(false);

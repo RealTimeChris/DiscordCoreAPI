@@ -129,19 +129,31 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
-			void operator()(SOCKET* other);
+			void operator()(SOCKET other);
 		};
 
-		SOCKETWrapper& operator=(SOCKET other);
+		SOCKETWrapper& operator=(SOCKETWrapper&&) noexcept;
 
-		operator SOCKET*();
+		SOCKETWrapper(SOCKETWrapper&&) noexcept;
 
-		operator SOCKET();
+		SOCKETWrapper& operator=(const SOCKETWrapper&) noexcept = delete;
+
+		SOCKETWrapper(const SOCKETWrapper&) noexcept = delete;
+
+		SOCKETWrapper& operator=(SOCKET other) noexcept;
+
+		SOCKETWrapper(SOCKET other) noexcept;
+
+		operator SOCKET*() noexcept;
+
+		operator SOCKET() noexcept;
 
 		SOCKETWrapper() noexcept = default;
 
+		~SOCKETWrapper() noexcept;
+
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ nullptr, SOCKETDeleter{} };
+		SOCKET thePtr{ static_cast<SOCKET>(SOCKET_ERROR) };
 	};
 
 	struct DiscordCoreAPI_Dll sockaddrWrapper {

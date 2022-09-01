@@ -306,7 +306,7 @@ namespace DiscordCoreAPI {
 					this->heartBeatStopWatch.resetTimer();
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected()) {
-					WebSocketSSLShard::processIO(10000);
+					WebSocketSSLShard::processIO(10);
 				}
 
 				std::this_thread::sleep_for(1ms);
@@ -355,7 +355,7 @@ namespace DiscordCoreAPI {
 		StopWatch theStopWatch{ 2500ms };
 		theStopWatch.resetTimer();
 		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor) {
-			WebSocketSSLShard::processIO(10000);
+			WebSocketSSLShard::processIO(10);
 			if (!WebSocketSSLShard::areWeStillConnected()) {
 				return false;
 			}
@@ -693,7 +693,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				while (this->currentState.load() != DiscordCoreInternal::SSLShardState::Collecting_Hello) {
-					WebSocketSSLShard::processIO(200000);
+					WebSocketSSLShard::processIO(10);
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Hello);
 				this->connectInternal();
@@ -706,7 +706,7 @@ namespace DiscordCoreAPI {
 						this->onClosed();
 						return;
 					}
-					WebSocketSSLShard::processIO(10000);
+					WebSocketSSLShard::processIO(10);
 					std::this_thread::sleep_for(1ms);
 				}
 				this->currentReconnectTries = 0;
@@ -738,7 +738,7 @@ namespace DiscordCoreAPI {
 						this->onClosed();
 						return;
 					}
-					WebSocketSSLShard::processIO(1000);
+					WebSocketSSLShard::processIO(10);
 					std::this_thread::sleep_for(1ms);
 				}
 				this->connectInternal();
@@ -780,7 +780,7 @@ namespace DiscordCoreAPI {
 						this->onClosed();
 						return;
 					}
-					WebSocketSSLShard::processIO(1001);
+					WebSocketSSLShard::processIO(10);
 					std::this_thread::sleep_for(1ms);
 				}
 				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
@@ -1026,6 +1026,10 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::play() noexcept {
 		this->activeState.store(VoiceActiveState::Playing);
 		return true;
+	}
+
+	VoiceConnection::~VoiceConnection() {
+		this->disconnectInternal();
 	}
 
 };

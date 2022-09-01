@@ -372,18 +372,18 @@ namespace DiscordCoreAPI {
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<VoiceRegionDataVector>(workload);
 	}
 
-	void Channels::insertChannel(std::unique_ptr<ChannelData> channel) {
-		if (!channel || channel->id == 0) {
+	void Channels::insertChannel(ChannelData channel) {
+		if (channel.id == 0) {
 			return;
 		}
 		if (Channels::doWeCacheChannels) {
 			std::unique_lock theLock{ Channels::theMutex };
-			auto channelId = channel->id;
+			auto channelId = channel.id;
 			auto theResult = Channels::cache.find(channelId);
 			if (theResult == Channels::cache.end()) {
-				Channels::cache.emplace(channelId, std::move(*channel));
+				Channels::cache.emplace(channelId, std::move(channel));
 			} else {
-				Channels::cache.insert_or_assign(channelId, std::move(*channel));
+				Channels::cache.insert_or_assign(channelId, std::move(channel));
 			}
 			if (Channels::cache.size() % 1000 == 0) {
 				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
