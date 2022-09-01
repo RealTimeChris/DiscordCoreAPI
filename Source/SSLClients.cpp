@@ -213,8 +213,10 @@ namespace DiscordCoreInternal {
 				} else if (returnValue == 0) {
 					return ProcessIOResult::Error;
 				}
-				this->outputBuffers.emplace_back(dataToWrite);
+				
 				if (readWriteSet.revents & POLLWRNORM) {
+					std::cout << "WERE WRITING THE DATA!" << std::endl;
+					this->outputBuffers.emplace_back(dataToWrite);
 					if (!this->writeDataProcess()) {
 						return ProcessIOResult::Error;
 					}
