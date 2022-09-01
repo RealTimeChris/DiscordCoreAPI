@@ -337,7 +337,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 	};
-	
+
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
 	std::multimap<Snowflake, GuildMemberData> GuildMembers::cache{};
 	bool GuildMembers::doWeCacheGuildMembers{ false };

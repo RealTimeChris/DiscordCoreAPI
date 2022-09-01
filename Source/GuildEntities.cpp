@@ -817,7 +817,7 @@ namespace DiscordCoreAPI {
 
 	StopWatch theStopWatch{ 5s };
 	void Guilds::insertGuild(GuildData guild) {
-		if ( guild.id == 0) {
+		if (guild.id == 0) {
 			return;
 		}
 		if (Guilds::doWeCacheGuilds) {

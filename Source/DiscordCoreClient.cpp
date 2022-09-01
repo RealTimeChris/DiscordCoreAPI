@@ -265,13 +265,13 @@ namespace DiscordCoreAPI {
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
-		GatewayBotData gatewayData{}; 
+		GatewayBotData gatewayData{};
 		try {
 			gatewayData = this->getGateWayBot();
 		} catch (...) {
 			reportException("DiscordCoreClient::instantiateWebSockets()");
 		}
-		
+
 		if (gatewayData.url == "") {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {
 				cout << shiftToBrightRed()
@@ -314,7 +314,7 @@ namespace DiscordCoreAPI {
 		} catch (...) {
 			reportException("DiscordCoreClient::instantiateWebSockets()");
 		}
-		
+
 		for (auto& value: this->configManager.getFunctionsToExecute()) {
 			if (value.repeated) {
 				TimeElapsedHandlerNoArgs onSend = [=, this]() -> void {
