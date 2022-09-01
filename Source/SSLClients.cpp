@@ -521,6 +521,7 @@ namespace DiscordCoreInternal {
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffers.front().data(), this->outputBuffers.front().size(), &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			std::cout << "THE WRITTEN BYTES: " << this->outputBuffers[0] << std::endl;
 			switch (errorValue) {
 				case SSL_ERROR_WANT_READ: {
 					[[fallthrough]];
