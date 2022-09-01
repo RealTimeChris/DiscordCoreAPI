@@ -444,12 +444,12 @@ namespace DiscordCoreInternal {
 				}
 				return ProcessIOResult::Error;
 			}
-			if (static_cast<SHORT>(readWriteSet.revents) & static_cast<SHORT>(POLLRDNORM)) {
+			if (static_cast<short>(readWriteSet.revents) & static_cast<short>(POLLRDNORM)) {
 				if (!this->readDataProcess()) {
 					return ProcessIOResult::Error;
 				}
 			}
-			if (static_cast<SHORT>(readWriteSet.revents) & static_cast<SHORT>(POLLWRNORM)) {
+			if (static_cast<short>(readWriteSet.revents) & static_cast<short>(POLLWRNORM)) {
 				if (!this->writeDataProcess()) {
 					return ProcessIOResult::Error;
 				}
