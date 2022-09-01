@@ -206,11 +206,13 @@ namespace DiscordCoreInternal {
 				pollfd readWriteSet{};
 				readWriteSet.fd = this->theSocket;
 				readWriteSet.events = POLLOUT;
-
+				std::cout << "WERE WRITING THE DATA!" << std::endl;
 				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
+					std::cout << "WERE ERRORING FROM WRITING THE DATA!" << std::endl;
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
+					std::cout << "WERE RETURNING FROM WRITING THE DATA!" << std::endl;
 					return ProcessIOResult::Error;
 				}
 				
