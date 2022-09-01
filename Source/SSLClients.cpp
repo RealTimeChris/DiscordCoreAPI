@@ -180,7 +180,7 @@ namespace DiscordCoreInternal {
 				readWriteSet.fd = this->theSocket;
 				readWriteSet.events = POLLOUT;
 
-				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
+				if (auto returnValue = poll(&readWriteSet, 1, 10000); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
