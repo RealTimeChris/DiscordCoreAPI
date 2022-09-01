@@ -219,7 +219,6 @@ namespace DiscordCoreInternal {
 	ConnectionResult SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
-		this->rawInputBuffer.resize(this->maxBufferSize);
 		std::string stringNew{};
 		auto httpsFind = baseUrl.find("https://");
 		auto comFind = baseUrl.find(".com");
@@ -355,6 +354,7 @@ namespace DiscordCoreInternal {
 			return ConnectionResult::Error;
 		}
 #endif
+		this->currentState.store(DiscordCoreInternal::SSLShardState::Upgrading);
 		return ConnectionResult::No_Error;
 	}
 
@@ -496,12 +496,12 @@ namespace DiscordCoreInternal {
 		this->wantWrite = false;
 		do {
 			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->rawInputBuffer.size(), &readBytes) };
+			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer, this->maxBufferSize, &readBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_NONE: {
 					if (readBytes > 0) {
-						this->inputBuffer.append(this->rawInputBuffer.data(), this->rawInputBuffer.data() + readBytes);
+						this->inputBuffer.append(this->rawInputBuffer, this->rawInputBuffer + readBytes);
 						this->bytesRead += readBytes;
 					}
 					if (!this->areWeAStandaloneSocket) {
@@ -542,7 +542,6 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
-		this->rawInputBuffer.resize(this->maxBufferSize);
 		this->theStreamTargetAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 		this->theStreamTargetAddress.sin_port = DiscordCoreAPI::reverseByteOrder<uint16_t>(static_cast<unsigned short>(stoi(portNew)));
 		this->theStreamTargetAddress.sin_family = AF_INET;
@@ -684,13 +683,13 @@ namespace DiscordCoreInternal {
 #else
 			socklen_t intSize = sizeof(this->theStreamTargetAddress);
 #endif
-			int32_t readBytes = recvfrom(this->theSocket, this->rawInputBuffer.data(), static_cast<int32_t>(rawInputBuffer.size()), 0, (sockaddr*) & this->theStreamTargetAddress, &intSize);
+			int32_t readBytes = recvfrom(this->theSocket, this->rawInputBuffer, static_cast<int32_t>(this->maxBufferSize), 0, (sockaddr*) & this->theStreamTargetAddress, &intSize);
 
 			if (readBytes < 0) {
 				this->disconnect();
 				return;
 			} else {
-				this->inputBuffer.append(rawInputBuffer.data(), rawInputBuffer.data() + readBytes);
+				this->inputBuffer.append(rawInputBuffer, rawInputBuffer + readBytes);
 				this->bytesRead += readBytes;
 			}
 		}

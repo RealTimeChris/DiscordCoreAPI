@@ -214,12 +214,15 @@ namespace DiscordCoreInternal {
 	  protected:
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::deque<std::string> outputBuffers{};
-		std::string rawInputBuffer{};
+		char rawInputBuffer[1024 * 16]{};
 		std::string inputBuffer{};
 		bool wantWrite{ true };
 		bool wantRead{ false };
 		int64_t bytesRead{ 0 };
 	};
+
+	
+	enum class SSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
@@ -248,6 +251,7 @@ namespace DiscordCoreInternal {
 		virtual ~SSLClient() noexcept = default;
 
 	  protected:
+		std::atomic<SSLShardState> currentState{};
 		bool doWePrintErrorMessages{ false };
 		bool areWeAStandaloneSocket{ false };
 	};
@@ -286,7 +290,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StreamType streamType{};
 		sockaddr_in theStreamTargetAddress{};
 		bool areWeStreamConnected{ false };
-		std::string rawInputBuffer{};
+		char rawInputBuffer[1024 * 16]{};
 		SOCKETWrapper theSocket{};
 		std::string inputBuffer{};
 		int64_t bytesRead{};

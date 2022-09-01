@@ -252,7 +252,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::handleBuffer(SSLClient* theClient) noexcept {
-		if (static_cast<WebSocketSSLShard*>(theClient)->theWebSocketState.load() == DiscordCoreInternal::WebSocketSSLShardState::Upgrading) {
+		if (static_cast<WebSocketSSLShard*>(theClient)->currentState.load() == DiscordCoreInternal::SSLShardState::Upgrading) {
 			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
 		}
 		return this->parseMessage(this);
@@ -290,7 +290,7 @@ namespace DiscordCoreAPI {
 					}
 					this->activeState.store(VoiceActiveState::Connecting);
 					this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-					while (!stopToken.stop_requested() && this->baseShard->theWebSocketState.load() != DiscordCoreInternal::WebSocketSSLShardState::Authenticated) {
+					while (!stopToken.stop_requested() && this->baseShard->currentState.load() != DiscordCoreInternal::SSLShardState::Authenticated) {
 						if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
 							return;
 						}
@@ -682,7 +682,7 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
-				this->theWebSocketState.store(DiscordCoreInternal::WebSocketSSLShardState::Upgrading);
+				
 				std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + generateBase64EncodedKey() +
 					"\r\nSec-WebSocket-Version: 13\r\n\r\n";
@@ -695,9 +695,10 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
-				while (this->theWebSocketState.load() != DiscordCoreInternal::WebSocketSSLShardState::Collecting_Hello) {
+				while (this->currentState.load() != DiscordCoreInternal::SSLShardState::Collecting_Hello) {
 					WebSocketSSLShard::processIO(200000);
 				}
+				this->connectionState.store(VoiceConnectionState::Collecting_Hello);
 				this->connectInternal();
 				break;
 			}
