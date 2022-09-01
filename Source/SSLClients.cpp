@@ -244,6 +244,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
+		std::cout << "WERE RETURNIGN NO ERROR!" << std::endl;
 		return ProcessIOResult::No_Error;
 	}
 
