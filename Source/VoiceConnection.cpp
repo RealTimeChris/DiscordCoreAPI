@@ -252,6 +252,9 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::handleBuffer(SSLClient* theClient) noexcept {
+		if (static_cast<WebSocketSSLShard*>(theClient)->theWebSocketState.load() == DiscordCoreInternal::WebSocketSSLShardState::Upgrading) {
+			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
+		}
 		return this->parseMessage(this);
 	}
 
@@ -661,6 +664,7 @@ namespace DiscordCoreAPI {
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "DC 0101" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -674,6 +678,7 @@ namespace DiscordCoreAPI {
 					DiscordCoreInternal::ConnectionResult::No_Error) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "DC 0202" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -686,17 +691,13 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "DC 0303" << std::endl;
 					this->connectInternal();
 					return;
 				}
-				WebSocketSSLShard::processIO(200000);
-				if (!this->parseConnectionHeaders(this)) {
-					this->currentReconnectTries++;
-					this->onClosed();
-					this->connectInternal();
-					return;
+				while (this->theWebSocketState.load() != DiscordCoreInternal::WebSocketSSLShardState::Collecting_Hello) {
+					WebSocketSSLShard::processIO(200000);
 				}
-				this->connectionState.store(VoiceConnectionState::Collecting_Hello);
 				this->connectInternal();
 				break;
 			}
@@ -725,6 +726,7 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "DC 0505" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -748,6 +750,7 @@ namespace DiscordCoreAPI {
 				if (!this->voiceConnect()) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "DC 0606" << std::endl;
 					this->connectInternal();
 					return;
 				}

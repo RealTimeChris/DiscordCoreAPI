@@ -668,7 +668,7 @@ namespace DiscordCoreInternal {
 											break;
 										}
 										case 18: {
-											if (theInt.load() % 500 == 0) {
+											if (theInt.load() % 100 == 0) {
 												std::cout << "THE GUILD COUNT: " << theInt.load() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 											}
 											theInt.store(theInt.load() + 1);
@@ -1672,7 +1672,7 @@ namespace DiscordCoreInternal {
 					if (this->theShardMap[thePackageNew.currentShard]->theWebSocketState.load() == WebSocketSSLShardState::Collecting_Hello) {
 						break;
 					}
-					auto theResult = this->theShardMap[thePackageNew.currentShard]->processIO(1000);
+					auto theResult = this->theShardMap[thePackageNew.currentShard]->processIO(10000);
 					if (theResult != ProcessIOResult::No_Error) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
 							std::cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + thePackageNew.currentShard << ","
@@ -1688,7 +1688,7 @@ namespace DiscordCoreInternal {
 								this->theShardMap[thePackageNew.currentShard]->onClosed();
 								return;
 							}
-							this->theShardMap[thePackageNew.currentShard]->processIO(1000);
+							this->theShardMap[thePackageNew.currentShard]->processIO(10000);
 							std::this_thread::sleep_for(1ms);
 						}
 					}

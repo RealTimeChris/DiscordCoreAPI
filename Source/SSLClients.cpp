@@ -176,22 +176,21 @@ namespace DiscordCoreInternal {
 	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
 		if (dataToWrite.size() > 0 && this->ssl) {
 			if (priority && dataToWrite.size() < static_cast<size_t>(16 * 1024)) {
-				fd_set writeSet{};
-				FD_ZERO(&writeSet);
-				FD_SET(this->theSocket, &writeSet);
+				pollfd readWriteSet{};
+				readWriteSet.fd = this->theSocket;
+				readWriteSet.events = POLLOUT;
 
-				timeval checkTime{ .tv_sec = 1, .tv_usec = 0 };
-				if (auto returnValue = select(FD_SETSIZE + 1, nullptr, &writeSet, nullptr, &checkTime); returnValue == SOCKET_ERROR) {
+				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
 					return ProcessIOResult::No_Error;
 				}
 				this->outputBuffers.emplace_back(dataToWrite);
-				if (!this->writeDataProcess()) {
-					return ProcessIOResult::Error;
-				} else {
-					return ProcessIOResult::No_Error;
+				if (readWriteSet.revents & POLLWRNORM) {
+					if (!this->writeDataProcess()) {
+						return ProcessIOResult::Error;
+					}
 				}
 			} else {
 				if (dataToWrite.size() >= static_cast<size_t>(16 * 1024)) {
@@ -212,7 +211,6 @@ namespace DiscordCoreInternal {
 				} else {
 					this->outputBuffers.emplace_back(dataToWrite);
 				}
-				return ProcessIOResult::No_Error;
 			}
 		}
 		return ProcessIOResult::No_Error;
@@ -325,7 +323,11 @@ namespace DiscordCoreInternal {
 			}
 			pollfd theWrapper{};
 			theWrapper.fd = theVector[x]->theSocket;
-			theWrapper.events = POLLIN | POLLOUT;
+			if (theVector[x]->outputBuffers.size() > 0) {
+				theWrapper.events = POLLIN | POLLOUT;
+			} else {
+				theWrapper.events = POLLIN;
+			}
 			readWriteSet.theIndices.push_back(x);
 			readWriteSet.thePolls.push_back(theWrapper);
 		}
@@ -376,7 +378,11 @@ namespace DiscordCoreInternal {
 		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->theSocket;
-		readWriteSet.events = POLLIN | POLLOUT;
+		if (this->outputBuffers.size() > 0) {
+			readWriteSet.events = POLLIN | POLLOUT;
+		} else {
+			readWriteSet.events = POLLIN | POLLOUT;
+		}
 
 		if (auto returnValue = poll(&readWriteSet, 1, theWaitTimeInms); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
@@ -447,7 +453,7 @@ namespace DiscordCoreInternal {
 	bool SSLClient::readDataProcess() noexcept {
 		this->wantRead = false;
 		this->wantWrite = false;
-		bool returnValueFinal{};
+		bool returnValueFinal{ true };
 		do {
 			size_t readBytes{ 0 };
 			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->rawInputBuffer.size(), &readBytes) };

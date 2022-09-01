@@ -70,6 +70,8 @@ namespace DiscordCoreInternal {
 	#undef SOCKET_ERROR
 #endif
 
+	using SOCKET = uint32_t;
+
 	constexpr int32_t SOCKET_ERROR{ -1 };
 
 	struct ConnectionError : public std::runtime_error {
