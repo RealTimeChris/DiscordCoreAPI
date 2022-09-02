@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 
 	CreateGlobalApplicationCommandData::operator std::string() {
 		nlohmann::json data{};
-		if (this->defaultMemberPermissions) {
+		if (this->defaultMemberPermissions != 0) {
 			data["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
 		data["description_localizations"] = this->descriptionLocalizations;
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 
 	EditGlobalApplicationCommandData::operator std::string() {
 		nlohmann::json data{};
-		if (this->defaultMemberPermissions) {
+		if (this->defaultMemberPermissions != 0) {
 			data["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
 		data["description_localizations"] = this->descriptionLocalizations;
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 
 	CreateGuildApplicationCommandData::operator std::string() {
 		nlohmann::json data{};
-		if (this->defaultMemberPermissions) {
+		if (this->defaultMemberPermissions != 0) {
 			data["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
 		data["description_localizations"] = this->descriptionLocalizations;
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 
 	EditGuildApplicationCommandData::operator std::string() {
 		nlohmann::json data{};
-		if (this->defaultMemberPermissions) {
+		if (this->defaultMemberPermissions != 0) {
 			data["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
 		data["description_localizations"] = this->descriptionLocalizations;

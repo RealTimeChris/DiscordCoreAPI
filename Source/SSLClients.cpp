@@ -123,11 +123,11 @@ namespace DiscordCoreInternal {
 	};
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) noexcept {
-		if (this->theSocket != SOCKET_ERROR) {
+		if (this->thePtr != SOCKET_ERROR) {
 			SOCKETWrapper::SOCKETDeleter theDeleter{};
-			theDeleter.operator()(this->theSocket);
+			theDeleter.operator()(this->thePtr);
 		}
-		this->theSocket = other;
+		this->thePtr = other;
 		return *this;
 	}
 
@@ -136,12 +136,12 @@ namespace DiscordCoreInternal {
 	}
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper&& other) noexcept {
-		if (this->theSocket != SOCKET_ERROR) {
+		if (this->thePtr != SOCKET_ERROR) {
 			SOCKETWrapper::SOCKETDeleter theDeleter{};
-			theDeleter.operator()(this->theSocket);
+			theDeleter.operator()(this->thePtr);
 		}
-		this->theSocket = other.theSocket;
-		other.theSocket = SOCKET_ERROR;
+		this->thePtr = other.thePtr;
+		other.thePtr = SOCKET_ERROR;
 		return *this;
 	}
 
@@ -149,14 +149,18 @@ namespace DiscordCoreInternal {
 		*this = std::move(other);
 	}
 
+	SOCKETWrapper::operator SOCKET*() noexcept {
+		return &this->thePtr;
+	}
+
 	SOCKETWrapper::operator SOCKET() noexcept {
-		return static_cast<SOCKET>(this->theSocket);
+		return static_cast<SOCKET>(this->thePtr);
 	}
 
 	SOCKETWrapper::~SOCKETWrapper() noexcept {
-		if (this->theSocket != SOCKET_ERROR) {
+		if (this->thePtr != SOCKET_ERROR) {
 			SOCKETWrapper::SOCKETDeleter theDeleter{};
-			theDeleter.operator()(this->theSocket);
+			theDeleter.operator()(this->thePtr);
 		}
 	}
 
@@ -223,7 +227,7 @@ namespace DiscordCoreInternal {
 				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 					this->disconnect(true);
 					return ProcessIOResult::Error;
-				} else if (!returnValue) {
+				} else if (returnValue == 0) {
 					return ProcessIOResult::Error;
 				}
 				
@@ -392,7 +396,7 @@ namespace DiscordCoreInternal {
 			readWriteSet.thePolls.push_back(theWrapper);
 		}
 
-		if (!readWriteSet.theIndices.size()) {
+		if (readWriteSet.theIndices.size() == 0) {
 			return theReturnValue;
 		}
 
@@ -406,7 +410,7 @@ namespace DiscordCoreInternal {
 			}
 			return theReturnValue;
 
-		} else if (!returnValue) {
+		} else if (returnValue == 0) {
 			return theReturnValue;
 		}
 
@@ -453,7 +457,7 @@ namespace DiscordCoreInternal {
 				cout << reportError("SSLClient::processIO()") << endl;
 			}
 			return ProcessIOResult::Error;
-		} else if (!returnValue) {
+		} else if (returnValue == 0) {
 			if (!this->areWeAStandaloneSocket) {
 				while (this->handleBuffer(this)) {
 				}
@@ -489,7 +493,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool SSLClient::areWeStillConnected() noexcept {
-		if (this->theSocket != SOCKET_ERROR) {
+		if (static_cast<SOCKET*>(this->theSocket) && this->theSocket != SOCKET_ERROR) {
 			return true;
 		} else {
 			return false;
@@ -599,7 +603,7 @@ namespace DiscordCoreInternal {
 				std::string clientToServerString{};
 				clientToServerString = "test string";
 
-				if (auto theResult = bind(this->theSocket, ( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr)); theResult) {
+				if (auto theResult = bind(this->theSocket, ( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr)); theResult != 0) {
 					return false;
 				}
 
@@ -642,27 +646,14 @@ namespace DiscordCoreInternal {
 		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->theSocket;
-		switch (theType) {
-			case ProcessIOType::Both: {
-				readWriteSet.events = POLLIN | POLLOUT;
-			}
-			case ProcessIOType::Read_Only: {
-				readWriteSet.events = POLLIN;
-			}
-			case ProcessIOType::Write_Only: {
-				readWriteSet.events = POLLOUT;
-			}
-		}
+		readWriteSet.events = POLLIN | POLLOUT;
 
 		if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 			this->disconnect();
 			return;
-		} else if (!returnValue) {
+		} else if (returnValue == 0) {
 			return;
 		} else {
-			if (readWriteSet.revents & POLLERR) {
-				this->disconnect();
-			}
 			if (readWriteSet.revents & POLLRDNORM) {
 				this->readDataProcess();
 			}
@@ -698,7 +689,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::areWeStillConnected() noexcept {
-		if (this->theSocket != SOCKET_ERROR) {
+		if (static_cast<SOCKET*>(this->theSocket) && this->theSocket != SOCKET_ERROR) {
 			return true;
 		} else {
 			return false;

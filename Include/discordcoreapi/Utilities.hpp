@@ -769,7 +769,7 @@ namespace DiscordCoreAPI {
 		}
 
 		bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) {
-			if (!this->timeStampInTimeUnits) {
+			if (this->timeStampInTimeUnits == 0) {
 				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
 			uint64_t startTimeRaw = this->timeStampInTimeUnits;
@@ -842,7 +842,7 @@ namespace DiscordCoreAPI {
 				theValue += TimeType{ secondsInOct };
 				theValue += TimeType{ secondsInNov };
 				theValue += TimeType{ secondsInDec };
-				if (!(x % 4)) {
+				if (x % 4 == 0) {
 					theValue += TimeType{ secondsPerDay };
 				}
 			}
@@ -902,7 +902,7 @@ namespace DiscordCoreAPI {
 		}
 
 		std::string getISO8601TimeStamp(TimeFormat timeFormat) {
-			if (!this->timeStampInTimeUnits) {
+			if (this->timeStampInTimeUnits == 0) {
 				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
 			uint64_t timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(TimeType{ this->timeStampInTimeUnits }).count()) / 1000;
@@ -1287,7 +1287,7 @@ namespace DiscordCoreAPI {
 
 		void resetTimer(uint64_t theNewTime = 0) {
 			std::unique_lock theLock{ this->theMutex };
-			if (theNewTime) {
+			if (theNewTime != 0) {
 				this->maxNumberOfMs = DoubleTimePoint{ TimeType{ theNewTime } };
 			}
 			this->startTime = std::chrono::system_clock::now();

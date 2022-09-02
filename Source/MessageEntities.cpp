@@ -56,10 +56,10 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->attachments) {
 			data["attachments"].emplace_back(value);
 		}
-		if (this->messageReference.messageId) {
+		if (this->messageReference.messageId != 0) {
 			data["message_reference"] = this->messageReference;
 		}
-		if (!this->components.size()) {
+		if (this->components.size() == 0) {
 			data["components"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->components) {
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->stickerIds) {
 			data["sticker_ids"].emplace_back(value);
 		}
-		if (!this->embeds.size()) {
+		if (this->embeds.size() == 0) {
 			data["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->embeds) {
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->attachments) {
 			data["attachments"].emplace_back(value);
 		}
-		if (!this->components.size()) {
+		if (this->components.size() == 0) {
 			data["components"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->components) {
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		data["allowed_mentions"] = this->allowedMentions;
-		if (!this->embeds.size()) {
+		if (this->embeds.size() == 0) {
 			data["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->embeds) {
@@ -197,29 +197,29 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<Message>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
-		if (dataPackage.aroundThisId) {
+		if (dataPackage.aroundThisId != 0) {
 			workload.relativePath += "?around=" + std::to_string(dataPackage.aroundThisId);
-			if (dataPackage.limit) {
+			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
-		} else if (dataPackage.beforeThisId) {
+		} else if (dataPackage.beforeThisId != 0) {
 			workload.relativePath += "?before=" + std::to_string(dataPackage.beforeThisId);
-			if (dataPackage.limit) {
+			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
-		} else if (dataPackage.afterThisId) {
+		} else if (dataPackage.afterThisId != 0) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.afterThisId);
-			if (dataPackage.limit) {
+			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
 		} else {
-			if (dataPackage.limit) {
+			if (dataPackage.limit != 0) {
 				workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";

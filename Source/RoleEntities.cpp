@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<Role>> Roles::getGuildRolesAsync(GetGuildRolesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Roles };
 		co_await NewThreadAwaitable<std::vector<Role>>();
-		if (!dataPackage.guildId) {
+		if (dataPackage.guildId == 0) {
 			throw std::runtime_error{ "Roles::getGuildRolesAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -274,7 +274,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<Role> Roles::getRoleAsync(GetRoleData dataPackage) {
 		co_await NewThreadAwaitable<Role>();
 		auto roles = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
-		if (!dataPackage.guildId) {
+		if (dataPackage.guildId == 0) {
 			throw std::runtime_error{ "Roles::getRoleAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
 		}
 		for (auto& value: roles) {
@@ -297,7 +297,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::insertRole(RoleData role) {
-		if (!role.id) {
+		if (role.id == 0) {
 			return;
 		}
 		if (Roles::doWeCacheRoles) {
@@ -309,7 +309,7 @@ namespace DiscordCoreAPI {
 			} else {
 				Roles::cache.insert_or_assign(roleId, std::move(role));
 			}
-			if (!(Roles::cache.size() % 1000)) {
+			if (Roles::cache.size() % 1000 == 0) {
 				std::cout << "ROLE COUNT: " << Roles::cache.size() << std::endl;
 			}
 		}

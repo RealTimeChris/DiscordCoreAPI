@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 	void ErlPacker::singleValueJsonToETF(nlohmann::json& jsonData) {
 		if (jsonData.is_array()) {
 			uint32_t length = static_cast<uint32_t>(jsonData.size());
-			if (!length) {
+			if (length == 0) {
 				this->appendNilExt();
 			} else {
 				if (length > std::numeric_limits<uint32_t>::max() - 1) {
@@ -281,17 +281,17 @@ namespace DiscordCoreInternal {
 			b <<= 8;
 		}
 		if (digits <= 4) {
-			if (!sign) {
+			if (sign == 0) {
 				return std::to_string(value);
 			}
-			const bool isSignBitAvailable = !(value & 1ull << 31ull);
+			const bool isSignBitAvailable = (value & 1ull << 31ull) == 0;
 			if (isSignBitAvailable) {
 				return std::to_string(-static_cast<int32_t>(value));
 			}
 		}
 		char outBuffer[32] = { 0 };
-		const char* formatString = !sign ? "%llu" : "-%ll";
-		auto theValue = !sign ? static_cast<uint64_t>(value) : static_cast<int64_t>(value);
+		const char* formatString = sign == 0 ? "%llu" : "-%ll";
+		auto theValue = sign == 0 ? static_cast<uint64_t>(value) : static_cast<int64_t>(value);
 		const int32_t res = sprintf(outBuffer, formatString, theValue);
 		if (res < 0) {
 			throw ErlPackError{ "ErlPacker::parseBigint() Error: Parse big integer failed.\n\n" };

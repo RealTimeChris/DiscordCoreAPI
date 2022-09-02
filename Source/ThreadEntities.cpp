@@ -184,10 +184,10 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/threads/archived/public";
 		if (dataPackage.before != "") {
 			workload.relativePath += "?before=" + dataPackage.before;
-			if (dataPackage.limit) {
+			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			}
-		} else if (dataPackage.limit) {
+		} else if (dataPackage.limit != 0) {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Threads::getPublicArchivedThreadsAsync()";
@@ -201,10 +201,10 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/threads/archived/private";
 		if (dataPackage.before != "") {
 			workload.relativePath += "?before=" + dataPackage.before;
-			if (dataPackage.limit) {
+			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			}
-		} else if (dataPackage.limit) {
+		} else if (dataPackage.limit != 0) {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Threads::getPrivateArchivedThreadsAsync()";
@@ -218,10 +218,10 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/users/@me/threads/archived/private";
 		if (dataPackage.before != "") {
 			workload.relativePath += "?before=" + dataPackage.before;
-			if (dataPackage.limit) {
+			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			}
-		} else if (dataPackage.limit) {
+		} else if (dataPackage.limit != 0) {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Threads::getJoinedPrivateArchivedThreadsAsync()";

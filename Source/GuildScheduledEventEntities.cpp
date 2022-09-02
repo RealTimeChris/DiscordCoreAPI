@@ -126,28 +126,28 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<GuildScheduledEventUserData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId) + "/users";
-		if (dataPackage.limit) {
+		if (dataPackage.limit != 0) {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
-			if (dataPackage.after) {
+			if (dataPackage.after != 0) {
 				workload.relativePath += "&after=" + std::to_string(dataPackage.after);
 			}
-			if (dataPackage.before) {
+			if (dataPackage.before != 0) {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";
 			}
 		}
-		if (dataPackage.after) {
+		if (dataPackage.after != 0) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.after);
-			if (dataPackage.before) {
+			if (dataPackage.before != 0) {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";
 			}
 		}
-		if (dataPackage.before) {
+		if (dataPackage.before != 0) {
 			workload.relativePath += "?before=" + std::to_string(dataPackage.before);
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";

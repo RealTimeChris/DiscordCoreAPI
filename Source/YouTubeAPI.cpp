@@ -299,7 +299,7 @@ namespace DiscordCoreInternal {
 						streamSocket->disconnect(false);
 						return;
 					}
-					if (!counter) {
+					if (counter == 0) {
 						streamSocket->processIO(10);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
@@ -363,7 +363,7 @@ namespace DiscordCoreInternal {
 								doWeContinue = false;
 								break;
 							}
-							if (rawFrame.data.size()) {
+							if (rawFrame.data.size() != 0) {
 								frames.emplace_back(std::move(rawFrame));
 							}
 						}

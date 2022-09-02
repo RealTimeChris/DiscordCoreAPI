@@ -340,7 +340,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string IconHash::getIconHash() noexcept {
-		if (!this->highBits || !this->lowBits) {
+		if (this->highBits == 0 || this->lowBits == 0) {
 			return {};
 		} else {
 			return std::string{ toHex(this->lowBits) + toHex(this->highBits) };
@@ -434,7 +434,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(std::string&& other) {
-		if (!other.size() || other == "") {
+		if (other.size() == 0 || other == "") {
 			this->thePermissions = 0;
 		} else {
 			for (auto& value: other) {
@@ -450,7 +450,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(const std::string& other) {
-		if (!other.size() || other == "") {
+		if (other.size() == 0 || other == "") {
 			this->thePermissions = 0;
 		} else {
 			this->thePermissions = stoull(other);
@@ -729,7 +729,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		uint64_t permissions{};
-		if (roleEveryone.permissions) {
+		if (roleEveryone.permissions != 0) {
 			permissions = roleEveryone.permissions;
 		}
 		GetGuildMemberRolesData getRolesData{};

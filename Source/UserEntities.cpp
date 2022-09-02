@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Users::insertUser(UserData user) {
-		if (!user.id) {
+		if (user.id == 0) {
 			return;
 		}
 		if (Users::doWeCacheUsers) {
@@ -242,7 +242,7 @@ namespace DiscordCoreAPI {
 			} else {
 				Users::cache.insert_or_assign(userId, std::move(user));
 			}
-			if (!(Users::cache.size() % 1000)) {
+			if (Users::cache.size() % 1000 == 0) {
 				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
 			}
 		}
