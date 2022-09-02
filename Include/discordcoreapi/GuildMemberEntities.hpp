@@ -146,6 +146,30 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
+	struct GuildMemberKey {
+		GuildMemberKey(Snowflake guildId, Snowflake userId);
+
+		Snowflake guildId{};
+		Snowflake userId{};
+	};
+
+	class GuildMemberCache {
+	  public:
+		GuildMemberCache() noexcept = default;
+
+		GuildMemberData& operator[](GuildMemberKey theData);
+
+		bool contains(Snowflake guildId, Snowflake userId);
+		
+		void erase(Snowflake guildId, Snowflake userId);
+
+		size_t size();
+
+	  protected:
+		std::multimap<Snowflake, GuildMemberData> theMap{};
+		std::mutex theMutex{};
+	};
+
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
@@ -153,7 +177,6 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
 		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
@@ -213,10 +236,9 @@ namespace DiscordCoreAPI {
 		static void removeGuildMember(GuildMemberData guildMemberId);
 
 	  protected:
-		static std::multimap<Snowflake, GuildMemberData> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static bool doWeCacheGuildMembers;
-		static std::shared_mutex theMutex;
+		static GuildMemberCache cache;
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

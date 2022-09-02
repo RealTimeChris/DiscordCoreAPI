@@ -361,11 +361,8 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::doWeCacheGuildMembers) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
 				auto userId = strtoull(getString(&value, "user_id"));
-				for (auto iterator = GuildMembers::cache.begin(); iterator != GuildMembers::cache.end(); ++iterator) {
-					if (userId == iterator->second.id && theData.id == iterator->second.guildId) {
-						iterator->second.voiceChannelId = strtoull(getString(&value, "channel_id"));
-						break;
-					}
+				if (GuildMembers::cache.contains(theData.id, userId)) {
+					GuildMembers::cache[GuildMemberKey{ theData.id, userId }].voiceChannelId = strtoull(getString(&value, "channel_id"));
 				}
 			}
 		}
@@ -478,17 +475,16 @@ namespace DiscordCoreAPI {
 			for (auto& value: (*jsonObjectData)["members"]) {
 				DiscordCoreAPI::parseObject(&value, newData);
 				newData.guildId = theData.id;
-				theData.members.emplace_back(std::move(newData));
+				theData.members.emplace_back(newData);
+				GuildMembers::insertGuildMember(std::move(newData));
 			}
 		}
 
 		if (GuildMembers::doWeCacheGuildMembers) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
-				auto userId = strtoull(value["user_id"].get<std::string>());
-				for (int32_t x = 0; x < theData.members.size(); ++x) {
-					if (userId == theData.members[x].id) {
-						theData.members[x].voiceChannelId = strtoull(getString(&value, "channel_id"));
-					}
+				auto userId = strtoull(getString(&value, "user_id"));
+				if (GuildMembers::cache.contains(theData.id, userId)) {
+					GuildMembers::cache[GuildMemberKey{ theData.id, userId }].voiceChannelId = strtoull(getString(&value, "channel_id"));
 				}
 			}
 		}

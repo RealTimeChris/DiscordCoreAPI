@@ -176,13 +176,15 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Users::getUserAsync()";
-		User* theData{};
+		User theData{};
 		if (!Users::cache.contains(dataPackage.userId)) {
+			std::unique_lock theLock{ Users::theMutex };
 			Users::cache[dataPackage.userId] = UserData{};
 		}
-		theData = static_cast<User*>(&Users::cache[dataPackage.userId]);
-		*theData = Users::httpsClient->submitWorkloadAndGetResult<User>(workload, theData);
-		co_return *theData;
+		theData = Users::cache[dataPackage.userId];
+		theData = Users::httpsClient->submitWorkloadAndGetResult<User>(workload, &theData);
+		Users::insertUser(theData);
+		co_return theData;
 	}
 
 	CoRoutine<User> Users::modifyCurrentUserAsync(ModifyCurrentUserData dataPackage) {

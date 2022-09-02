@@ -201,14 +201,15 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "Channels::getChannelAsync()";
-		Channel* theData{};
-		std::unique_lock theLock{ Channels::theMutex };
+		Channel theData{};
 		if (!Channels::cache.contains(dataPackage.channelId)) {
+			std::unique_lock theLock{ Channels::theMutex };
 			Channels::cache[dataPackage.channelId] = ChannelData{};
 		}
-		theData = static_cast<Channel*>(&Channels::cache[dataPackage.channelId]);
-		*theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, theData);
-		co_return *theData;
+		theData = Channels::cache[dataPackage.channelId];
+		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
+		Channels::insertChannel(theData);
+		co_return theData;
 	}
 
 	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
@@ -232,14 +233,15 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Channel* theData{};
-		std::unique_lock theLock{ Channels::theMutex };
+		Channel theData{};
 		if (!Channels::cache.contains(dataPackage.channelId)) {
+			std::unique_lock theLock{ Channels::theMutex };
 			Channels::cache[dataPackage.channelId] = ChannelData{};
 		}
-		theData = static_cast<Channel*>(&Channels::cache[dataPackage.channelId]);
-		*theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, theData);
-		co_return *theData;
+		theData = Channels::cache[dataPackage.channelId];
+		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
+		Channels::insertChannel(theData);
+		co_return theData;
 	}
 
 	CoRoutine<void> Channels::deleteOrCloseChannelAsync(DeleteOrCloseChannelData dataPackage) {

@@ -370,15 +370,16 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "?with_counts=true";
 		workload.callStack = "Guilds::getGuildAsync()";
-		Guild* theData{};
+		Guild theData{};
 		if (!Guilds::cache.contains(dataPackage.guildId)) {
 			std::unique_lock theLock{ Guilds::theMutex };
 			Guilds::cache[dataPackage.guildId] = GuildData{};
 		}
-		theData = static_cast<Guild*>(&Guilds::cache[dataPackage.guildId]);
-		*theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, theData);
-		theData->discordCoreClient = Guilds::discordCoreClient;
-		co_return *theData;
+		theData = Guilds::cache[dataPackage.guildId];
+		theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theData);
+		theData.discordCoreClient = Guilds::discordCoreClient;
+		Guilds::insertGuild(theData);
+		co_return theData;
 	}
 
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {

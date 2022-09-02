@@ -171,6 +171,25 @@ namespace DiscordCoreAPI {
 		return timeStamp;
 	}
 
+	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
+		if (this != &other) {
+			this->permissions = std::move(other.permissions);
+			this->voiceChannelId = other.voiceChannelId;
+			this->joinedAt = std::move(other.joinedAt);
+			this->avatar = std::move(other.avatar);
+			this->roles = std::move(other.roles);
+			this->flags = std::move(other.flags);
+			this->nick = std::move(other.nick);
+			this->guildId = other.guildId;
+			this->id = other.id;
+		}
+		return *this;
+	}
+
+	GuildMemberData::GuildMemberData(GuildMemberData&& other) noexcept {
+		*this = std::move(other);
+	}
+
 	AttachmentData::operator nlohmann::json() {
 		nlohmann::json newValue{};
 		newValue["content_type"] = this->contentType;

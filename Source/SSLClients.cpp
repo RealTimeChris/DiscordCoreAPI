@@ -563,7 +563,7 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintErrorMessages) {
 						cout << reportSSLError("SSLClient::readDataProcess()") << endl;
 					}
-					[[fallthrough]];
+					break;
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {

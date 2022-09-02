@@ -930,9 +930,9 @@ namespace DiscordCoreAPI {
 
 		GuildMemberData() noexcept = default;
 
-		GuildMemberData& operator=(GuildMemberData&&) noexcept = default;
-
-		GuildMemberData(GuildMemberData&&) noexcept = default;
+		GuildMemberData& operator=(GuildMemberData&&) noexcept;
+	
+		GuildMemberData(GuildMemberData&&) noexcept;
 
 		GuildMemberData& operator=(const GuildMemberData&) noexcept = default;
 

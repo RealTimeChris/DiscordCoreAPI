@@ -235,10 +235,13 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		Role theData{};
-		if (Roles::cache.contains(dataPackage.roleId)) {
-			theData = Roles::getCachedRoleAsync({ .guildId = dataPackage.guildId, .roleId = dataPackage.roleId }).get();
+		if (!Roles::cache.contains(dataPackage.roleId)) {
+			std::unique_lock theLock{ Roles::theMutex };
+			Roles::cache[dataPackage.roleId] = RoleData{};
 		}
+		theData = Roles::cache[dataPackage.roleId];
 		theData = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload, &theData);
+		Roles::insertRole(theData);
 		co_return theData;
 	}
 

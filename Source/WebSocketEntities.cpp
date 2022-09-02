@@ -818,12 +818,8 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"], theGuildMember);
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													for (auto iterator = DiscordCoreAPI::GuildMembers::cache.begin(); iterator != DiscordCoreAPI::GuildMembers::cache.end();
-														 ++iterator) {
-														if (userId == iterator->second.id && guildId == iterator->second.guildId) {
-															theGuildMemberPtr = &iterator->second;
-															break;
-														}
+													if (DiscordCoreAPI::GuildMembers::cache.contains(guildId, userId)) {
+														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache[DiscordCoreAPI::GuildMemberKey{ guildId, userId }];
 													}
 													if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
 														DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache[guildId];
@@ -890,12 +886,8 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"], theGuildMember);
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													for (auto iterator = DiscordCoreAPI::GuildMembers::cache.begin(); iterator != DiscordCoreAPI::GuildMembers::cache.end();
-														 ++iterator) {
-														if (userId == iterator->second.id && guildId == iterator->second.guildId) {
-															theGuildMemberPtr = &iterator->second;
-															break;
-														}
+													if (DiscordCoreAPI::GuildMembers::cache.contains(guildId, userId)) {
+														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache[DiscordCoreAPI::GuildMemberKey{ guildId, userId }];
 													}
 												} else {
 													theGuildMemberPtr = &theGuildMember;
@@ -1395,13 +1387,10 @@ namespace DiscordCoreInternal {
 												}
 											}
 											if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
-												for (auto iterator = DiscordCoreAPI::GuildMembers::cache.begin(); iterator != DiscordCoreAPI::GuildMembers::cache.end();
-													 ++iterator) {
-													if (dataPackage->voiceStateData.userId == iterator->second.id &&
-														dataPackage->voiceStateData.guildId == iterator->second.guildId) {
-														iterator->second.voiceChannelId = dataPackage->voiceStateData.channelId;
-														break;
-													}
+												if (DiscordCoreAPI::GuildMembers::cache.contains(dataPackage->voiceStateData.guildId, dataPackage->voiceStateData.userId)) {
+													DiscordCoreAPI::GuildMembers::cache[DiscordCoreAPI::GuildMemberKey{ dataPackage->voiceStateData.guildId,
+																							dataPackage->voiceStateData.userId }]
+														.voiceChannelId = dataPackage->voiceStateData.channelId;
 												}
 											}
 
