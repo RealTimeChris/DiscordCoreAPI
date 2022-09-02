@@ -291,7 +291,6 @@ namespace DiscordCoreInternal {
 				} else {
 					this->onMessageReceived(theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength));
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
-					static_cast<WebSocketSSLShard*>(theShard)->theStopWatch.resetTimer();
 					return true;
 				}
 			}

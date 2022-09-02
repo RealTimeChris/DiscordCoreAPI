@@ -384,12 +384,7 @@ namespace DiscordCoreAPI {
 		if (Channels::doWeCacheChannels) {
 			std::unique_lock theLock{ Channels::theMutex };
 			auto channelId = channel.id;
-			auto theResult = Channels::cache.find(channelId);
-			if (theResult == Channels::cache.end()) {
-				Channels::cache.emplace(channelId, std::move(channel));
-			} else {
-				Channels::cache.insert_or_assign(channelId, std::move(channel));
-			}
+			Channels::cache.emplace(channelId, std::move(channel));
 			if (Channels::cache.size() % 1000 == 0) {
 				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
 			}

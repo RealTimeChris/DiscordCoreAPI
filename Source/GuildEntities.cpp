@@ -826,11 +826,7 @@ namespace DiscordCoreAPI {
 			guild.discordCoreClient = Guilds::discordCoreClient;
 			std::unique_lock theLock{ Guilds::theMutex };
 			auto guildId = guild.id;
-			if (!Guilds::cache.contains(guildId)) {
-				Guilds::cache.emplace(guildId, std::move(guild));
-			} else {
-				Guilds::cache.insert_or_assign(guildId, std::move(guild));
-			}
+			Guilds::cache.emplace(guildId, std::move(guild));
 			if (Guilds::cache.size() % 500 == 0) {
 				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 			}

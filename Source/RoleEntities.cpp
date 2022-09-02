@@ -303,12 +303,7 @@ namespace DiscordCoreAPI {
 		if (Roles::doWeCacheRoles) {
 			std::unique_lock theLock{ Roles::theMutex };
 			auto roleId = role.id;
-			auto theResult = Roles::cache.find(roleId);
-			if (theResult == Roles::cache.end()) {
-				Roles::cache.emplace(roleId, std::move(role));
-			} else {
-				Roles::cache.insert_or_assign(roleId, std::move(role));
-			}
+			Roles::cache.emplace(roleId, std::move(role));
 			if (Roles::cache.size() % 1000 == 0) {
 				std::cout << "ROLE COUNT: " << Roles::cache.size() << std::endl;
 			}

@@ -237,11 +237,7 @@ namespace DiscordCoreAPI {
 		if (Users::doWeCacheUsers) {
 			std::unique_lock theLock{ Users::theMutex };
 			auto userId = user.id;
-			if (!Users::cache.contains(userId)) {
-				Users::cache.emplace(userId, std::move(user));
-			} else {
-				Users::cache.insert_or_assign(userId, std::move(user));
-			}
+			Users::cache.emplace(userId, std::move(user));
 			if (Users::cache.size() % 1000 == 0) {
 				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
 			}
