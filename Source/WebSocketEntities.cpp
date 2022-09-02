@@ -291,6 +291,7 @@ namespace DiscordCoreInternal {
 				} else {
 					this->onMessageReceived(theShard->inputBuffer.substr(theShard->messageOffset, theShard->messageLength));
 					theShard->inputBuffer.erase(theShard->inputBuffer.begin(), theShard->inputBuffer.begin() + theShard->messageOffset + theShard->messageLength);
+					static_cast<WebSocketSSLShard*>(theShard)->theStopWatch.resetTimer();
 					return true;
 				}
 			}
@@ -358,7 +359,7 @@ namespace DiscordCoreInternal {
 				if (!this->sendMessage(theString, true)) {
 					return;
 				}
-				if (doWeCollect.channelId == 0) {
+				if (!doWeCollect.channelId) {
 					return;
 				}
 				dataPackage.channelId = doWeCollect.channelId;
@@ -388,7 +389,7 @@ namespace DiscordCoreInternal {
 	bool WebSocketSSLShard::sendMessage(std::string& dataToSend, bool priority) noexcept {
 		if (this->areWeStillConnected()) {
 			try {
-				if (dataToSend.size() == 0) {
+				if (!dataToSend.size()) {
 					return false;
 				}
 				ProcessIOResult didWeWrite{ false };
@@ -668,7 +669,7 @@ namespace DiscordCoreInternal {
 											break;
 										}
 										case 18: {
-											if (theInt.load() % 100 == 0) {
+											if (!(theInt.load() % 100)) {
 												std::cout << "THE GUILD COUNT: " << theInt.load() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 											}
 											theInt.store(theInt.load() + 1);
@@ -1669,21 +1670,20 @@ namespace DiscordCoreInternal {
 						}
 						break;
 					}
-					DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
-					if (this->theShardMap[thePackageNew.currentShard]->areWeStillConnected()) {
-						while (this->theShardMap[thePackageNew.currentShard]->currentState.load() == SSLShardState::Upgrading) {
-							if (theStopWatch.hasTimePassed()) {
-								this->theShardMap[thePackageNew.currentShard]->onClosed();
-								return;
-							}
-							this->theShardMap[thePackageNew.currentShard]->processIO(10);
-							std::this_thread::sleep_for(1ms);
-						}
-					}
-					if (this->theShardMap[thePackageNew.currentShard]->areWeStillConnected()) {
-						this->theShardMap[thePackageNew.currentShard]->parseMessage(this->theShardMap[thePackageNew.currentShard].get());
-					}
 					std::this_thread::sleep_for(1ms);
+				}
+				if (this->theShardMap[thePackageNew.currentShard]->areWeStillConnected()) {
+					while (this->theShardMap[thePackageNew.currentShard]->currentState.load() == SSLShardState::Upgrading) {
+						if (theStopWatch.hasTimePassed()) {
+							this->theShardMap[thePackageNew.currentShard]->onClosed();
+							return;
+						}
+						this->theShardMap[thePackageNew.currentShard]->processIO(10);
+						std::this_thread::sleep_for(1ms);
+					}
+				}
+				if (this->theShardMap[thePackageNew.currentShard]->areWeStillConnected()) {
+					this->theShardMap[thePackageNew.currentShard]->parseMessage(this->theShardMap[thePackageNew.currentShard].get());
 				}
 				this->theShardMap[thePackageNew.currentShard]->areWeConnecting.store(false);
 			}
@@ -1746,7 +1746,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				if (theVector.size() == 0) {
+				if (!theVector.size()) {
 					std::this_thread::sleep_for(1ms);
 				}
 			}

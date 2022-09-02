@@ -135,6 +135,11 @@ namespace DiscordCoreAPI {
 		return false;
 	}
 
+	void GuildMemberCache::insert(GuildMemberKey theKey, GuildMemberData theData) {
+		std::unique_lock theLock{ this->theMutex };
+		this->theMap.emplace(theKey.userId, std::move(theData));
+	}
+
 	GuildMemberData& GuildMemberCache::operator[](GuildMemberKey theData) {
 		std::unique_lock theLock{ this->theMutex };
 		for (auto iterator = this->theMap.begin(); iterator != this->theMap.end(); ++iterator) {
@@ -348,10 +353,7 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::doWeCacheGuildMembers) {
 			auto guildMemberId = guildMember.id;
 			auto guildId = guildMember.guildId;
-			if (GuildMembers::cache.contains(guildId,guildMemberId)) {
-				GuildMembers::cache.erase(guildId, guildMemberId);
-			}
-			GuildMembers::cache[GuildMemberKey{ guildId, guildMemberId }] = std::move(guildMember);
+			GuildMembers::cache.insert(GuildMemberKey{ guildId, guildMemberId }, std::move(guildMember));
 			if (GuildMembers::cache.size() % 500 == 0) {
 				std::cout << "THE GUILDMEMBER COUNT: " << GuildMembers::cache.size() << std::endl;
 			}

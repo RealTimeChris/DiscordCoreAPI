@@ -159,6 +159,8 @@ namespace DiscordCoreAPI {
 
 		GuildMemberData& operator[](GuildMemberKey theData);
 
+		void insert(GuildMemberKey theKey, GuildMemberData theData);
+
 		bool contains(Snowflake guildId, Snowflake userId);
 		
 		void erase(Snowflake guildId, Snowflake userId);
