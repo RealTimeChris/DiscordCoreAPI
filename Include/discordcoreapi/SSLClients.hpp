@@ -144,6 +144,8 @@ namespace DiscordCoreInternal {
 
 		SOCKETWrapper(SOCKET other) noexcept;
 
+		operator SOCKET*() noexcept;
+
 		operator SOCKET() noexcept;
 
 		SOCKETWrapper() noexcept = default;
@@ -151,7 +153,7 @@ namespace DiscordCoreInternal {
 		~SOCKETWrapper() noexcept;
 
 	  protected:
-		SOCKET theSocket{ static_cast<SOCKET>(SOCKET_ERROR) };
+		SOCKET thePtr{ static_cast<SOCKET>(SOCKET_ERROR) };
 	};
 
 	struct DiscordCoreAPI_Dll sockaddrWrapper {
