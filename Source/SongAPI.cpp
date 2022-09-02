@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 				return true;
 			} else if (this->playlist.songQueue.size() > 0 && this->playlist.currentSong.songId == "") {
 				return true;
-			} else if (this->playlist.currentSong.songId != "" && this->playlist.songQueue.size() == 0) {
+			} else if (this->playlist.currentSong.songId != "" && !this->playlist.songQueue.size()) {
 				return true;
 			} else if (this->playlist.songQueue.size() == 1 && this->playlist.currentSong.songId == "") {
 				this->playlist.currentSong = this->playlist.songQueue[0];
@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 				}
 				this->playlist.songQueue[this->playlist.songQueue.size() - 1] = tempSong02;
 				return true;
-			} else if (this->playlist.currentSong.songId != "" && this->playlist.songQueue.size() == 0) {
+			} else if (this->playlist.currentSong.songId != "" && !this->playlist.songQueue.size()) {
 				return true;
 			} else if (this->playlist.songQueue.size() == 1 && this->playlist.currentSong.songId == "") {
 				this->playlist.currentSong = this->playlist.songQueue[0];
@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 				}
 				this->playlist.songQueue.erase(this->playlist.songQueue.end() - 1, this->playlist.songQueue.end());
 				return true;
-			} else if (this->playlist.currentSong.songId != "" && this->playlist.songQueue.size() == 0) {
+			} else if (this->playlist.currentSong.songId != "" && !this->playlist.songQueue.size()) {
 				this->playlist.currentSong = Song();
 				return true;
 			} else if (this->playlist.currentSong.songId == "") {
@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 		int32_t vector01Used{ 0 };
 		int32_t vector02Used{ 0 };
 		for (int32_t x = 0; x < totalLength; ++x) {
-			if ((vector01Used < vector01.size() - 1) && (x % 2 == 0) && vector01.size() > 0) {
+			if ((vector01Used < vector01.size() - 1) && !(x % 2) && vector01.size() > 0) {
 				vector01[vector01Used].type = SongType::SoundCloud;
 				newVector.emplace_back(vector01[vector01Used]);
 				vector01Used++;
@@ -196,13 +196,13 @@ namespace DiscordCoreAPI {
 
 	bool SongAPI::isThereAnySongs(const Snowflake guildId) {
 		if (DiscordCoreClient::getSongAPI(guildId)->playlist.isLoopAllEnabled || DiscordCoreClient::getSongAPI(guildId)->playlist.isLoopSongEnabled) {
-			if (DiscordCoreClient::getSongAPI(guildId)->playlist.songQueue.size() == 0 && DiscordCoreClient::getSongAPI(guildId)->playlist.currentSong.songId == "") {
+			if (!DiscordCoreClient::getSongAPI(guildId)->playlist.songQueue.size() && DiscordCoreClient::getSongAPI(guildId)->playlist.currentSong.songId == "") {
 				return false;
 			} else {
 				return true;
 			}
 		} else {
-			if (DiscordCoreClient::getSongAPI(guildId)->playlist.songQueue.size() == 0) {
+			if (!DiscordCoreClient::getSongAPI(guildId)->playlist.songQueue.size()) {
 				return false;
 			} else {
 				return true;

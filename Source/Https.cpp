@@ -160,19 +160,19 @@ namespace DiscordCoreInternal {
 					}
 				}
 				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + other.find("\r\n0\r\n\r\n"));
+				theData.theCurrentState = HttpsState::Complete;
 				return false;
 			} else {
 				return true;
 			}
 		} else {
-			if (!this->doWeHaveContentSize) {
-				this->parseSize(theData, other);
-			}
-			if (theData.contentSize == 0) {
+			if (!theData.contentSize) {
+				theData.theCurrentState = HttpsState::Complete;
 				return false;
 			}
 			if (other.size() >= static_cast<size_t>(theData.contentSize)) {
 				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + theData.contentSize);
+				theData.theCurrentState = HttpsState::Complete;
 				return false;
 			} else {
 				return true;
@@ -192,7 +192,7 @@ namespace DiscordCoreInternal {
 			uint64_t hexIndex{ 0 };
 			bool isThereHexValues{ false };
 			for (uint64_t x = 0; x < other.size(); ++x) {
-				if (isxdigit(other[x]) != 0 && static_cast<int32_t>(other[x]) != EOF) {
+				if (isxdigit(other[x]) && static_cast<int32_t>(other[x]) != EOF) {
 					isThereHexValues = true;
 					theValueString.push_back(other[x]);
 				} else {
@@ -220,10 +220,10 @@ namespace DiscordCoreInternal {
 			uint64_t lastNumberIndex{ 0 };
 			bool haveWeStarted{ false };
 			for (size_t x = other.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < other.size(); ++x) {
-				if (!haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) != 0)) {
+				if (!haveWeStarted && isalnum(static_cast<uint8_t>(other[x]))) {
 					firstNumberIndex = x;
 					haveWeStarted = true;
-				} else if (haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) == 0)) {
+				} else if (haveWeStarted && !isalnum(static_cast<uint8_t>(other[x]))) {
 					lastNumberIndex = x;
 					break;
 				}
@@ -240,7 +240,7 @@ namespace DiscordCoreInternal {
 	void HttpsRnRBuilder::clearCRLF(std::string& other) {
 		uint64_t theCount{ 0 };
 		for (uint64_t x = 0; x < other.size(); ++x) {
-			if (isspace(static_cast<uint8_t>(other[x])) != 0) {
+			if (isspace(static_cast<uint8_t>(other[x]))) {
 				theCount++;
 			} else {
 				break;
@@ -258,21 +258,18 @@ namespace DiscordCoreInternal {
 			switch (this->theData.theCurrentState) {
 				case HttpsState::Collecting_Code: {
 					if (stopWatch.hasTimePassed()) {
-						this->areWeDoneTheRequest = true;
-						return false;
+						this->theData.theCurrentState = HttpsState::Complete;
 					}
 					theConnection->parseCode(this->theData, theConnection->getInputBuffer());
 					stopWatch.resetTimer();
 					if (this->theData.responseCode == 204) {
-						this->areWeDoneTheRequest = true;
-						return false;
+						this->theData.theCurrentState = HttpsState::Complete;
 					}
 					return false;
 				}
 				case HttpsState::Collecting_Headers: {
 					if (stopWatch.hasTimePassed()) {
-						this->areWeDoneTheRequest = true;
-						return false;
+						this->theData.theCurrentState = HttpsState::Complete;
 					}
 					if (!theConnection->doWeHaveHeaders) {
 						theConnection->parseHeaders(this->theData, theConnection->getInputBuffer());
@@ -282,8 +279,7 @@ namespace DiscordCoreInternal {
 				}
 				case HttpsState::Collecting_Size: {
 					if (stopWatch.hasTimePassed()) {
-						this->areWeDoneTheRequest = true;
-						return false;
+						this->theData.theCurrentState = HttpsState::Complete;
 					}
 					if (!theConnection->doWeHaveContentSize) {
 						theConnection->clearCRLF(theConnection->getInputBuffer());
@@ -294,14 +290,14 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 				case HttpsState::Collecting_Contents: {
-					auto theResult = theConnection->parseChunk(this->theData, theConnection->getInputBuffer());
-					if ((this->theData.responseMessage.size() >= this->theData.contentSize && !theResult) || stopWatch.hasTimePassed() || !theResult ||
-						(this->theData.responseCode == -5 && this->theData.contentSize == -5)) {
-						this->areWeDoneTheRequest = true;
-						return false;
-					} else {
-						stopWatch.resetTimer();
+					if (stopWatch.hasTimePassed()) {
+						this->theData.theCurrentState = HttpsState::Complete;
 					}
+					theConnection->parseChunk(this->theData, theConnection->getInputBuffer());
+					return false;
+				}
+				case HttpsState::Complete: {
+					this->areWeDoneTheRequest = true;
 					return false;
 				}
 			}
@@ -413,7 +409,7 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(100ms);
 			rateLimitData.haveWeGoneYet.store(true);
 		}
-		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
+		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() < workload.thisWorkerId.load() && workload.thisWorkerId.load()) {
 			std::this_thread::sleep_for(1ms);
 		}
 

@@ -403,7 +403,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			while (!stopToken.stop_requested() && !this->areWeQuitting.load() && av_read_frame(this->formatContext, this->packet) == 0) {
+			while (!stopToken.stop_requested() && !this->areWeQuitting.load() && !av_read_frame(this->formatContext, this->packet)) {
 				if (this->packet->stream_index == this->audioStreamIndex) {
 					int32_t returnValue = avcodec_send_packet(this->audioDecodeContext, this->packet);
 					if (returnValue < 0) {

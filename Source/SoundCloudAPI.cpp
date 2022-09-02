@@ -254,7 +254,7 @@ namespace DiscordCoreInternal {
 				dataPackage03.relativePath = relativeUrl;
 				dataPackage03.workloadClass = HttpsWorkloadClass::Get;
 				auto result = this->httpsClient->submitWorkloadAndGetResult(dataPackage03);
-				if (result.responseMessage.size() != 0) {
+				if (result.responseMessage.size()) {
 					didWeGetZero = false;
 				}
 				int64_t amountToSubmitRemaining{ static_cast<int64_t>(result.responseMessage.size()) };
@@ -279,7 +279,7 @@ namespace DiscordCoreInternal {
 					}
 					audioDecoder->submitDataForDecoding(newerVector);
 				}
-				if (counter == 0) {
+				if (!counter) {
 					audioDecoder->startMe();
 				}
 				std::vector<DiscordCoreAPI::AudioFrameData> frames{};
@@ -291,7 +291,7 @@ namespace DiscordCoreInternal {
 						doWeBreak = true;
 						break;
 					}
-					if (rawFrame.data.size() != 0) {
+					if (rawFrame.data.size()) {
 						frames.emplace_back(std::move(rawFrame));
 					}
 				}

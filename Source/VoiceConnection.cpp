@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 			for (uint64_t x = 0; x < this->theKeys.size(); ++x) {
 				encryptionKeys[x] = this->theKeys[x];
 			}
-			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, this->audioData.data(), this->audioData.size(), nonceForLibSodium.get(), encryptionKeys.get()) != 0) {
+			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, this->audioData.data(), this->audioData.size(), nonceForLibSodium.get(), encryptionKeys.get())) {
 				return "";
 			};
 			std::string audioDataPacketNew{};
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::sendVoiceData(std::string& responseData) noexcept {
 		try {
-			if (responseData.size() == 0) {
+			if (!responseData.size()) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					cout << shiftToBrightRed() << "Please specify voice data to send" << reset() << endl << endl;
 				}
@@ -339,13 +339,13 @@ namespace DiscordCoreAPI {
 				this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
 				this->mixAudio();
 			}
-			if (timeTakesToSleep == 0) {
+			if (!timeTakesToSleep) {
 				theStopWatch.resetTimer();
 			}
 			if (theStopWatch.totalTimePassed() + timeTakesToSleep <= timeToWaitInMs) {
 				std::this_thread::sleep_for(1ms);
 			}
-			if (timeTakesToSleep == 0) {
+			if (!timeTakesToSleep) {
 				timeTakesToSleep = theStopWatch.totalTimePassed();
 			}
 		}
@@ -443,7 +443,7 @@ namespace DiscordCoreAPI {
 							}
 						}
 						frameCounter++;
-						if (this->audioData.guildMemberId != 0) {
+						if (this->audioData.guildMemberId) {
 							this->currentGuildMemberId = this->audioData.guildMemberId;
 						}
 						std::string newFrame{};
@@ -461,7 +461,7 @@ namespace DiscordCoreAPI {
 							case AudioFrameType::Skip: {
 								SongCompletionEventData completionEventData{};
 								completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
-								if (this->currentGuildMemberId != 0) {
+								if (this->currentGuildMemberId) {
 									completionEventData.guildMember =
 										GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = this->currentGuildMemberId, .guildId = this->voiceConnectInitData.guildId })
 											.get();
@@ -802,7 +802,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::clearAudioData() noexcept {
-		if (this->audioData.data.size() != 0) {
+		if (this->audioData.data.size()) {
 			this->audioData.data.clear();
 			this->audioData = AudioFrameData();
 		}
@@ -961,7 +961,7 @@ namespace DiscordCoreAPI {
 					theLock00.unlock();
 					if (thePayload.decodedData.size() > 0) {
 						voiceUserCount++;
-						if (theUpsampledVector.size() == 0) {
+						if (!theUpsampledVector.size()) {
 							theUpsampledVector.resize(thePayload.decodedData.size());
 						}
 						for (uint32_t x = 0; x < thePayload.decodedData.size(); ++x) {

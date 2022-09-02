@@ -53,12 +53,16 @@ namespace DiscordCoreAPI {
 
 		theData.type = static_cast<ApplicationCommandType>(getUint8(jsonObjectData, "type"));
 
-		for (auto& [key, value]: (*jsonObjectData)["name_localizations"].get<std::unordered_map<std::string, std::string>>()) {
-			theData.nameLocalizations.emplace(key, value);
+		if (jsonObjectData->contains("name_localizations") && !jsonObjectData->at("name_localizations").is_null()) {
+			for (auto& [key, value]: (*jsonObjectData)["name_localizations"].get<std::unordered_map<std::string, std::string>>()) {
+				theData.nameLocalizations.emplace(key, value);
+			}
 		}
 
-		for (auto& [key, value]: (*jsonObjectData)["description_localizations"].get<std::unordered_map<std::string, std::string>>()) {
-			theData.descriptionLocalizations.emplace(key, value);
+		if (jsonObjectData->contains("description_localizations") && !jsonObjectData->at("description_localizations").is_null()) {
+			for (auto& [key, value]: (*jsonObjectData)["description_localizations"].get<std::unordered_map<std::string, std::string>>()) {
+				theData.descriptionLocalizations.emplace(key, value);
+			}
 		}
 
 		theData.applicationId = strtoull(getString(jsonObjectData, "application_id"));

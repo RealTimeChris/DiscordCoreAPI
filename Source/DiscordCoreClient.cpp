@@ -185,42 +185,46 @@ namespace DiscordCoreAPI {
 		} catch (...) {
 			return;
 		}
-		while (this->commandsToRegister.size() > 0) {
-			CreateApplicationCommandData theData = this->commandsToRegister.front();
-			this->commandsToRegister.pop_front();
-			theData.applicationId = this->getBotUser().id;
-			if (theData.alwaysRegister) {
-				if (theData.guildId != 0) {
-					ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&theData)).get();
-				} else {
-					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();
-				}
-			} else {
-				std::vector<ApplicationCommand> theGuildCommands{};
-				if (theData.guildId != 0) {
-					theGuildCommands =
-						ApplicationCommands::getGuildApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id, .guildId = theData.guildId })
-							.get();
-				}
-				bool doesItExist{ false };
-				for (auto& value: theCommands) {
-					if (value.name == theData.name) {
-						doesItExist = true;
-					}
-				}
-				for (auto& value: theGuildCommands) {
-					if (value.name == theData.name) {
-						doesItExist = true;
-					}
-				}
-				if (!doesItExist) {
-					if (theData.guildId != 0) {
+		try {
+			while (this->commandsToRegister.size() > 0) {
+				CreateApplicationCommandData theData = this->commandsToRegister.front();
+				this->commandsToRegister.pop_front();
+				theData.applicationId = this->getBotUser().id;
+				if (theData.alwaysRegister) {
+					if (theData.guildId) {
 						ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&theData)).get();
 					} else {
 						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();
 					}
+				} else {
+					std::vector<ApplicationCommand> theGuildCommands{};
+					if (theData.guildId) {
+						theGuildCommands = ApplicationCommands::getGuildApplicationCommandsAsync(
+							{ .withLocalizations = false, .applicationId = this->getBotUser().id, .guildId = theData.guildId })
+											   .get();
+					}
+					bool doesItExist{ false };
+					for (auto& value: theCommands) {
+						if (value.name == theData.name) {
+							doesItExist = true;
+						}
+					}
+					for (auto& value: theGuildCommands) {
+						if (value.name == theData.name) {
+							doesItExist = true;
+						}
+					}
+					if (!doesItExist) {
+						if (theData.guildId) {
+							ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&theData)).get();
+						} else {
+							ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();
+						}
+					}
 				}
 			}
+		} catch (...) {
+			reportException("DiscordCoreClient::registerFunctionsInternal()");
 		}
 	}
 
@@ -250,7 +254,7 @@ namespace DiscordCoreAPI {
 				auto theData = this->theConnections.front();
 				this->theConnections.pop_front();
 				this->baseSocketAgentMap[theData.currentShard % this->baseSocketAgentMap.size()]->connect(theData);
-				if (this->theConnections.size() == 0) {
+				if (!this->theConnections.size()) {
 					if (this->configManager.doWePrintGeneralSuccessMessages()) {
 						cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << endl << endl;
 					}

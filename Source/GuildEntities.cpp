@@ -66,10 +66,10 @@ namespace DiscordCoreAPI {
 			newData["name"] = value.name;
 			data["roles"].emplace_back(newData);
 		}
-		if (this->systemChannelId != 0) {
+		if (this->systemChannelId) {
 			data["system_channel_id"] = this->systemChannelId;
 		}
-		if (this->afkChannelId != 0) {
+		if (this->afkChannelId) {
 			data["afk_channel_id"] = this->afkChannelId;
 		}
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 
 	CreateGuildBanData::operator std::string() {
 		nlohmann::json data{};
-		if (this->deleteMessageDays != 0) {
+		if (this->deleteMessageDays) {
 			data["delete_message_days"] = this->deleteMessageDays;
 		}
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 			newData["description"] = value.description;
 			newData["channel_id"] = value.channelId;
 			newData["emoji_name"] = value.emojiName;
-			if (value.emojiId != 0) {
+			if (value.emojiId) {
 				newData["emoji_id"] = std::to_string(value.emojiId);
 			}
 			channelsArray.emplace_back(newData);
@@ -115,11 +115,11 @@ namespace DiscordCoreAPI {
 		if (DiscordCoreClient::getVoiceConnection(this->id) && DiscordCoreClient::getVoiceConnection(this->id)->areWeConnected()) {
 			this->voiceConnectionPtr = DiscordCoreClient::getVoiceConnection(this->id);
 			return this->voiceConnectionPtr;
-		} else if (guildMemberId != 0 || channelId != 0) {
+		} else if (guildMemberId || channelId) {
 			Snowflake theChannelId{};
-			if (guildMemberId != 0) {
+			if (guildMemberId) {
 				auto guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = guildMemberId, .guildId = this->id }).get();
-				if (guildMember.voiceChannelId != 0) {
+				if (guildMember.voiceChannelId) {
 					theChannelId = guildMember.voiceChannelId;
 				}
 			} else {
@@ -284,16 +284,16 @@ namespace DiscordCoreAPI {
 		data["banner"] = this->banner;
 		data["name"] = std::string{ this->name };
 		data["icon"] = this->icon;
-		if (this->publicUpdatesChannelId != 0) {
+		if (this->publicUpdatesChannelId) {
 			data["public_updates_channel_id"] = std::to_string(this->publicUpdatesChannelId);
 		}
-		if (this->systemChannelId != 0) {
+		if (this->systemChannelId) {
 			data["system_channel_id"] = std::to_string(this->systemChannelId);
 		}
-		if (this->afkChannelId != 0) {
+		if (this->afkChannelId) {
 			data["afk_channel_id"] = std::to_string(this->afkChannelId);
 		}
-		if (this->ownerId != 0) {
+		if (this->ownerId) {
 			data["owner_id"] = std::to_string(this->ownerId);
 		}
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
@@ -310,31 +310,31 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<AuditLogData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/audit-logs";
-		if (dataPackage.userId != 0) {
+		if (dataPackage.userId) {
 			workload.relativePath += "?user_id=" + std::to_string(dataPackage.userId);
 			if (std::to_string(static_cast<int32_t>(dataPackage.actionType)) != "") {
 				workload.relativePath += "&action_type=" + std::to_string(static_cast<int32_t>(dataPackage.actionType));
 			}
-			if (dataPackage.limit != 0) {
+			if (dataPackage.limit) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			}
-			if (dataPackage.before != 0) {
+			if (dataPackage.before) {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
 		} else if (std::to_string(static_cast<int32_t>(dataPackage.actionType)) != "") {
 			workload.relativePath += "?action_type=" + std::to_string(static_cast<int32_t>(dataPackage.actionType));
-			if (dataPackage.limit != 0) {
+			if (dataPackage.limit) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			}
-			if (dataPackage.before != 0) {
+			if (dataPackage.before) {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
-		} else if (dataPackage.limit != 0) {
+		} else if (dataPackage.limit) {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
-			if (dataPackage.before != 0) {
+			if (dataPackage.before) {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
-		} else if (dataPackage.before != 0) {
+		} else if (dataPackage.before) {
 			workload.relativePath += "?before=" + std::to_string(dataPackage.before);
 		}
 		workload.callStack = "Guilds::getAuditLogDataAsync()";
@@ -439,20 +439,20 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<BanData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/bans";
-		if (dataPackage.after != 0) {
+		if (dataPackage.after) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.after);
-			if (dataPackage.before != 0) {
+			if (dataPackage.before) {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
-			if (dataPackage.limit != 0) {
+			if (dataPackage.limit) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			}
-		} else if (dataPackage.before != 0) {
+		} else if (dataPackage.before) {
 			workload.relativePath += "?before=" + std::to_string(dataPackage.before);
-			if (dataPackage.limit != 0) {
+			if (dataPackage.limit) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			}
-		} else if (dataPackage.limit != 0) {
+		} else if (dataPackage.limit) {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Guilds::getGuildBansAsync()";
@@ -500,7 +500,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/prune";
 		workload.callStack = "Guilds::getGuildPruneCountAsync()";
-		if (dataPackage.days != 0) {
+		if (dataPackage.days) {
 			workload.relativePath += "?days=" + std::to_string(dataPackage.days);
 			if (dataPackage.includeRoles.size() > 0) {
 				workload.relativePath += "&include_roles=";
@@ -751,15 +751,15 @@ namespace DiscordCoreAPI {
 			if (dataPackage.withExpiration) {
 				workload.relativePath += "&with_expiration=true";
 			}
-			if (dataPackage.guildScheduledEventId != 0) {
+			if (dataPackage.guildScheduledEventId) {
 				workload.relativePath += "&guild_scheduled_event_id=" + std::to_string(dataPackage.guildScheduledEventId);
 			}
 		} else if (dataPackage.withExpiration) {
 			workload.relativePath += "?with_expiration=true";
-			if (dataPackage.guildScheduledEventId != 0) {
+			if (dataPackage.guildScheduledEventId) {
 				workload.relativePath += "&guild_scheduled_event_id=" + std::to_string(dataPackage.guildScheduledEventId);
 			}
-		} else if (dataPackage.guildScheduledEventId != 0) {
+		} else if (dataPackage.guildScheduledEventId) {
 			workload.relativePath += "?guild_scheduled_event_id=" + std::to_string(dataPackage.guildScheduledEventId);
 		}
 
@@ -784,20 +784,20 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<Guild>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/@me/guilds";
-		if (dataPackage.after != 0) {
+		if (dataPackage.after) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.after);
-			if (dataPackage.before != 0) {
+			if (dataPackage.before) {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
-			if (dataPackage.limit != 0) {
+			if (dataPackage.limit) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			}
-		} else if (dataPackage.before != 0) {
+		} else if (dataPackage.before) {
 			workload.relativePath += "?before=" + std::to_string(dataPackage.before);
-			if (dataPackage.limit != 0) {
+			if (dataPackage.limit) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			}
-		} else if (dataPackage.limit != 0) {
+		} else if (dataPackage.limit) {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Users::getCurrentUserGuildsAsync()";
@@ -819,7 +819,7 @@ namespace DiscordCoreAPI {
 
 	StopWatch theStopWatch{ 5s };
 	void Guilds::insertGuild(GuildData guild) {
-		if (guild.id == 0) {
+		if (!guild.id) {
 			return;
 		}
 		if (Guilds::doWeCacheGuilds) {
@@ -831,7 +831,7 @@ namespace DiscordCoreAPI {
 			} else {
 				Guilds::cache.insert_or_assign(guildId, std::move(guild));
 			}
-			if (Guilds::cache.size() % 500 == 0) {
+			if (!(Guilds::cache.size() % 500)) {
 				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 			}
 		}

@@ -358,7 +358,7 @@ namespace DiscordCoreInternal {
 				if (!this->sendMessage(theString, true)) {
 					return;
 				}
-				if (doWeCollect.channelId == 0) {
+				if (!doWeCollect.channelId) {
 					return;
 				}
 				dataPackage.channelId = doWeCollect.channelId;
@@ -388,7 +388,7 @@ namespace DiscordCoreInternal {
 	bool WebSocketSSLShard::sendMessage(std::string& dataToSend, bool priority) noexcept {
 		if (this->areWeStillConnected()) {
 			try {
-				if (dataToSend.size() == 0) {
+				if (!dataToSend.size()) {
 					return false;
 				}
 				ProcessIOResult didWeWrite{ false };
@@ -668,7 +668,7 @@ namespace DiscordCoreInternal {
 											break;
 										}
 										case 18: {
-											if (theInt.load() % 100 == 0) {
+											if (!(theInt.load() % 100)) {
 												std::cout << "THE GUILD COUNT: " << theInt.load() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 											}
 											theInt.store(theInt.load() + 1);
@@ -1746,7 +1746,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				if (theVector.size() == 0) {
+				if (!theVector.size()) {
 					std::this_thread::sleep_for(1ms);
 				}
 			}

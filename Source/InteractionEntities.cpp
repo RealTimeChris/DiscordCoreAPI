@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 
 	InteractionResponseBase& InteractionResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
 		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
-		if (this->data.data.components.size() == 0) {
+		if (!this->data.data.components.size()) {
 			ActionRowData actionRowData;
 			this->data.data.components.emplace_back(actionRowData);
 		}
@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 
 	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
 		const std::string& placeholder, int32_t maxValues, int32_t minValues) {
-		if (this->data.data.components.size() == 0) {
+		if (!this->data.data.components.size()) {
 			ActionRowData actionRowData;
 			this->data.data.components.emplace_back(actionRowData);
 		}
@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
 		this->data.data.title = topTitleNew;
 		this->data.data.customId = topCustomIdNew;
-		if (this->data.data.components.size() == 0) {
+		if (!this->data.data.components.size()) {
 			ActionRowData actionRowData;
 			this->data.data.components.emplace_back(actionRowData);
 		}
@@ -541,12 +541,12 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
 		int32_t maxCollectedSelectMenuCountNew, uint64_t targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
-		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
+		if (!targetUser && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;
 		} else {
 			this->getSelectMenuDataForAll = getSelectMenuDataForAllNew;
 		}
-		if (targetUser != 0) {
+		if (targetUser) {
 			this->userId = targetUser;
 		}
 		this->maxCollectedSelectMenuCount = maxCollectedSelectMenuCountNew;
@@ -669,11 +669,11 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
 		uint64_t targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
-		if (targetUser == 0 && !getButtonDataForAllNew) {
+		if (!targetUser && !getButtonDataForAllNew) {
 			throw std::runtime_error{ "ButtonCollector::collectButtonData(), You've failed to "
 									  "properly set the collectButtonData() parameters!\n\n" };
 		}
-		if (targetUser != 0) {
+		if (targetUser) {
 			this->userId = targetUser;
 		}
 		this->maxCollectedButtonCount = maxNumberOfPressesNew;

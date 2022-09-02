@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 
 	CreateChannelInviteData::operator std::string() {
 		nlohmann::json data{};
-		if (this->targetUserId != 0) {
+		if (this->targetUserId) {
 			data["target_application_id"] = this->targetApplicationId;
 			data["target_user_id"] = std::to_string(this->targetUserId);
 			data["target_type"] = this->targetType;
@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->modifyChannelData) {
 			nlohmann::json dataNew{};
 			dataNew["lock_permissions"] = value.lockPermissions;
-			if (value.parentId != 0) {
+			if (value.parentId) {
 				dataNew["parent_id"] = value.parentId;
 			}
 			dataNew["position"] = value.position;
@@ -378,7 +378,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::insertChannel(ChannelData channel) {
-		if (channel.id == 0) {
+		if (!channel.id) {
 			return;
 		}
 		if (Channels::doWeCacheChannels) {
@@ -390,7 +390,7 @@ namespace DiscordCoreAPI {
 			} else {
 				Channels::cache.insert_or_assign(channelId, std::move(channel));
 			}
-			if (Channels::cache.size() % 1000 == 0) {
+			if (!(Channels::cache.size() % 1000)) {
 				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
 			}
 		}
