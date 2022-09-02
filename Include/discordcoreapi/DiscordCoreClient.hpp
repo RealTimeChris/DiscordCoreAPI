@@ -161,6 +161,7 @@ namespace DiscordCoreAPI {
 #endif
 		std::deque<ConnectionPackage> theConnections{};
 		CommandController commandController{ this };
+		bool didWeStartCorrectly{ false };
 		ConfigManager configManager{};
 		EventManager eventManager{};
 		BotUser currentUser{};

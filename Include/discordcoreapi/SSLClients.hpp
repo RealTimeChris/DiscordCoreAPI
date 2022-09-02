@@ -199,11 +199,15 @@ namespace DiscordCoreInternal {
 
 		virtual bool areWeStillConnected() noexcept = 0;
 
+		static bool initialize() noexcept;
+
 		virtual ~SSLConnectionInterface() noexcept;
 
 	  protected:
+		static SSL_CTXWrapper context;
+		static std::mutex theMutex;
+
 		SOCKETWrapper theSocket{};
-		SSL_CTXWrapper context{};
 		SSLWrapper ssl{};
 	};
 

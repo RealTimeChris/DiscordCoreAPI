@@ -130,6 +130,12 @@ namespace DiscordCoreAPI {
 		std::signal(SIGILL, &signalHandler);
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
+		if (!DiscordCoreInternal::SSLConnectionInterface::initialize()) {
+			if (this->configManager.doWePrintGeneralErrorMessages()) {
+				cout << shiftToBrightRed() << "Failed to initialize the SSL_CTX structure!" << reset() << endl << endl;
+			}
+			return;
+		}
 		this->configManager = ConfigManager{ configData };
 		if (this->configManager.doWePrintFFMPEGSuccessMessages()) {
 			av_log_set_level(AV_LOG_INFO);
@@ -144,6 +150,7 @@ namespace DiscordCoreAPI {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {
 				cout << shiftToBrightRed() << "LibSodium failed to initialize!" << reset() << endl << endl;
 			}
+			return;
 		}
 		this->httpsClient = std::make_unique<DiscordCoreInternal::HttpsClient>(&this->configManager);
 		ApplicationCommands::initialize(this->httpsClient.get());
@@ -161,6 +168,7 @@ namespace DiscordCoreAPI {
 		Threads::initialize(this->httpsClient.get());
 		Users::initialize(this->httpsClient.get(), &this->configManager);
 		WebHooks::initialize(this->httpsClient.get());
+		this->didWeStartCorrectly = true;
 	}
 
 	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
@@ -229,6 +237,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
+		if (!this->didWeStartCorrectly) {
+			return;
+		}
 		if (!this->instantiateWebSockets()) {
 			Globals::doWeQuit.store(true);
 			return;
