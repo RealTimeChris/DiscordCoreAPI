@@ -131,8 +131,8 @@ namespace DiscordCoreInternal {
 					newString = tempString;
 				}
 
-				if (theData.responseHeaders.contains("Transfer-Encoding") && DiscordCoreAPI::convertToLowerCase(theData.responseHeaders["Transfer-Encoding"]) == "chunked" ||
-					theData.responseHeaders.contains("transfer-encoding") && DiscordCoreAPI::convertToLowerCase(theData.responseHeaders["transfer-encoding"]) == "chunked") {
+				if (theData.responseHeaders.contains("Transfer-Encoding") && theData.responseHeaders["Transfer-Encoding"] == "chunked" ||
+					theData.responseHeaders.contains("transfer-encoding") && theData.responseHeaders["transfer-encoding"] == "chunked") {
 					this->isItChunked = true;
 				}
 				this->doWeHaveHeaders = true;
@@ -160,19 +160,19 @@ namespace DiscordCoreInternal {
 					}
 				}
 				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + other.find("\r\n0\r\n\r\n"));
-				theData.theCurrentState = HttpsState::Complete;
 				return false;
 			} else {
 				return true;
 			}
 		} else {
-			if (!theData.contentSize) {
-				theData.theCurrentState = HttpsState::Complete;
+			if (!this->doWeHaveContentSize) {
+				this->parseSize(theData, other);
+			}
+			if (theData.contentSize == 0) {
 				return false;
 			}
 			if (other.size() >= static_cast<size_t>(theData.contentSize)) {
 				theData.responseMessage.insert(theData.responseMessage.end(), other.begin(), other.begin() + theData.contentSize);
-				theData.theCurrentState = HttpsState::Complete;
 				return false;
 			} else {
 				return true;
@@ -192,7 +192,7 @@ namespace DiscordCoreInternal {
 			uint64_t hexIndex{ 0 };
 			bool isThereHexValues{ false };
 			for (uint64_t x = 0; x < other.size(); ++x) {
-				if (isxdigit(other[x]) && static_cast<int32_t>(other[x]) != EOF) {
+				if (isxdigit(other[x]) != 0 && static_cast<int32_t>(other[x]) != EOF) {
 					isThereHexValues = true;
 					theValueString.push_back(other[x]);
 				} else {
@@ -220,10 +220,10 @@ namespace DiscordCoreInternal {
 			uint64_t lastNumberIndex{ 0 };
 			bool haveWeStarted{ false };
 			for (size_t x = other.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < other.size(); ++x) {
-				if (!haveWeStarted && isalnum(static_cast<uint8_t>(other[x]))) {
+				if (!haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) != 0)) {
 					firstNumberIndex = x;
 					haveWeStarted = true;
-				} else if (haveWeStarted && !isalnum(static_cast<uint8_t>(other[x]))) {
+				} else if (haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) == 0)) {
 					lastNumberIndex = x;
 					break;
 				}
@@ -240,7 +240,7 @@ namespace DiscordCoreInternal {
 	void HttpsRnRBuilder::clearCRLF(std::string& other) {
 		uint64_t theCount{ 0 };
 		for (uint64_t x = 0; x < other.size(); ++x) {
-			if (isspace(static_cast<uint8_t>(other[x]))) {
+			if (isspace(static_cast<uint8_t>(other[x])) != 0) {
 				theCount++;
 			} else {
 				break;
@@ -253,69 +253,60 @@ namespace DiscordCoreInternal {
 
 	bool HttpsConnection::handleBuffer(SSLClient* theClient) noexcept {
 		DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
-		stopWatch.resetTimer();
 		auto theConnection = static_cast<HttpsConnection*>(theClient);
-		switch (this->theData.theCurrentState) {
-			case HttpsState::Collecting_Code: {
-				std::cout << "WERE HERE THIS IS IT!COLLECTING CODE" << std::endl;
-				if (stopWatch.hasTimePassed()) {
-					this->theData.theCurrentState = HttpsState::Complete;
-					std::cout << "WERE HERE THIS IS IT!COLLECTING CODE-LEAVING" << std::endl;
-				}
-				theConnection->parseCode(this->theData, theConnection->getInputBuffer());
-				stopWatch.resetTimer();
-				if (this->theData.responseCode == 204 || this->theData.responseCode == 404 || this->theData.responseCode == 400) {
-					this->theData.theCurrentState = HttpsState::Complete;
-				}
-				return false;
-			}
-			case HttpsState::Collecting_Headers: {
-				std::cout << "WERE HERE THIS IS IT!COLLECTING HEADERS" << std::endl;
-				if (stopWatch.hasTimePassed()) {
-					std::cout << "WERE HERE THIS IS IT!COLLECTING HEADERS-LEAVING" << std::endl;
-					this->theData.theCurrentState = HttpsState::Complete;
-				}
-				if (!theConnection->doWeHaveHeaders) {
-					std::cout << "WERE HERE THIS IS IT!COLLECTING HEADERS-NOT DONE" << std::endl;
-					theConnection->parseHeaders(this->theData, theConnection->getInputBuffer());
+		while (true) {
+			switch (this->theData.theCurrentState) {
+				case HttpsState::Collecting_Code: {
+					if (stopWatch.hasTimePassed()) {
+						this->areWeDoneTheRequest = true;
+						return false;
+					}
+					theConnection->parseCode(this->theData, theConnection->getInputBuffer());
 					stopWatch.resetTimer();
-				}
-				return false;
-			}
-			case HttpsState::Collecting_Size: {
-				std::cout << "WERE HERE THIS IS IT!COLLECTING SIZE" << std::endl;
-				if (stopWatch.hasTimePassed()) {
-					this->theData.theCurrentState = HttpsState::Complete;
-					std::cout << "WERE HERE THIS IS IT!COLLECTING SIZE_LEAVING" << std::endl;
-				}
-				if (!theConnection->doWeHaveContentSize) {
-					theConnection->clearCRLF(theConnection->getInputBuffer());
-					theConnection->parseSize(this->theData, theConnection->getInputBuffer());
-					theConnection->clearCRLF(theConnection->getInputBuffer());
-					stopWatch.resetTimer();
-				}
-				return false;
-			}
-			case HttpsState::Collecting_Contents: {
-				std::cout << "WERE HERE THIS IS IT!COLLECTING CONTENTS" << std::endl;
-				if (stopWatch.hasTimePassed()) {
-					this->theData.theCurrentState = HttpsState::Complete;
-					std::cout << "WERE HERE THIS IS IT!COLLECTING CONTENTS-LEAVING" << std::endl;
-				}
-				if (!theConnection->parseChunk(this->theData, theConnection->getInputBuffer())) {
-					this->areWeDoneTheRequest = true;
+					if (this->theData.responseCode == 204) {
+						this->areWeDoneTheRequest = true;
+						return false;
+					}
 					return false;
-				} else {
+				}
+				case HttpsState::Collecting_Headers: {
+					if (stopWatch.hasTimePassed()) {
+						this->areWeDoneTheRequest = true;
+						return false;
+					}
+					if (!theConnection->doWeHaveHeaders) {
+						theConnection->parseHeaders(this->theData, theConnection->getInputBuffer());
+						stopWatch.resetTimer();
+					}
+					return false;
+				}
+				case HttpsState::Collecting_Size: {
+					if (stopWatch.hasTimePassed()) {
+						this->areWeDoneTheRequest = true;
+						return false;
+					}
+					if (!theConnection->doWeHaveContentSize) {
+						theConnection->clearCRLF(theConnection->getInputBuffer());
+						theConnection->parseSize(this->theData, theConnection->getInputBuffer());
+						theConnection->clearCRLF(theConnection->getInputBuffer());
+						stopWatch.resetTimer();
+					}
+					return false;
+				}
+				case HttpsState::Collecting_Contents: {
+					auto theResult = theConnection->parseChunk(this->theData, theConnection->getInputBuffer());
+					if ((this->theData.responseMessage.size() >= this->theData.contentSize && !theResult) || stopWatch.hasTimePassed() || !theResult ||
+						(this->theData.responseCode == -5 && this->theData.contentSize == -5)) {
+						this->areWeDoneTheRequest = true;
+						return false;
+					} else {
+						stopWatch.resetTimer();
+					}
 					return false;
 				}
 			}
-			case HttpsState::Complete: {
-				std::cout << "WERE HERE THIS IS IT!LEAVING LEAVING" << std::endl;
-				this->areWeDoneTheRequest = true;
-				return false;
-			}
+			std::this_thread::sleep_for(1ms);
 		}
-		this->areWeDoneTheRequest = true;
 		return false;
 	}
 
@@ -422,7 +413,7 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(100ms);
 			rateLimitData.haveWeGoneYet.store(true);
 		}
-		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() < workload.thisWorkerId.load() && workload.thisWorkerId.load()) {
+		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
 			std::this_thread::sleep_for(1ms);
 		}
 
@@ -525,7 +516,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			auto httpsConnection = this->connectionManager.getConnection();
-			returnData = this->httpRequestInternal(*httpsConnection, workload, rateLimitData);
+			returnData = HttpsClient::httpRequestInternal(*httpsConnection, workload, rateLimitData);
 
 			httpsConnection->areWeCheckedOut.store(false);
 			rateLimitData.sampledTimeInMs.store(
@@ -579,8 +570,7 @@ namespace DiscordCoreInternal {
 			theConnection.resetValues();
 			ProcessIOResult theResult{};
 			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error) {
-				std::cout << "WERE HERE THIS IS IT!" << std::endl;
-				theResult = theConnection.processIO(1);
+				theResult = theConnection.processIO(10);
 			}
 			return theConnection.finalizeReturnValues(theConnection.theData, rateLimitData);
 		} catch (...) {
