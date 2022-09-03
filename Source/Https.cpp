@@ -131,8 +131,8 @@ namespace DiscordCoreInternal {
 					newString = tempString;
 				}
 
-				if (theData.responseHeaders.contains("Transfer-Encoding") && theData.responseHeaders["Transfer-Encoding"] == "chunked" ||
-					theData.responseHeaders.contains("transfer-encoding") && theData.responseHeaders["transfer-encoding"] == "chunked") {
+				if (theData.responseHeaders.contains("Transfer-Encoding") && DiscordCoreAPI::convertToLowerCase(theData.responseHeaders["Transfer-Encoding"]) == "chunked" ||
+					theData.responseHeaders.contains("transfer-encoding") && DiscordCoreAPI::convertToLowerCase(theData.responseHeaders["transfer-encoding"]) == "chunked") {
 					this->isItChunked = true;
 				}
 				this->doWeHaveHeaders = true;
