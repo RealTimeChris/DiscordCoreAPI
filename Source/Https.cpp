@@ -254,55 +254,53 @@ namespace DiscordCoreInternal {
 	bool HttpsConnection::handleBuffer(SSLClient* theClient) noexcept {
 		DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
 		auto theConnection = static_cast<HttpsConnection*>(theClient);
-		while (true) {
-			switch (this->theData.theCurrentState) {
-				case HttpsState::Collecting_Code: {
-					if (stopWatch.hasTimePassed()) {
-						this->theData.theCurrentState = HttpsState::Complete;
-					}
-					theConnection->parseCode(this->theData, theConnection->getInputBuffer());
-					stopWatch.resetTimer();
-					if (this->theData.responseCode == 204) {
-						this->theData.theCurrentState = HttpsState::Complete;
-					}
-					return false;
+		switch (this->theData.theCurrentState) {
+			case HttpsState::Collecting_Code: {
+				if (stopWatch.hasTimePassed()) {
+					this->theData.theCurrentState = HttpsState::Complete;
 				}
-				case HttpsState::Collecting_Headers: {
-					if (stopWatch.hasTimePassed()) {
-						this->theData.theCurrentState = HttpsState::Complete;
-					}
-					if (!theConnection->doWeHaveHeaders) {
-						theConnection->parseHeaders(this->theData, theConnection->getInputBuffer());
-						stopWatch.resetTimer();
-					}
-					return false;
+				theConnection->parseCode(this->theData, theConnection->getInputBuffer());
+				stopWatch.resetTimer();
+				if (this->theData.responseCode == 204) {
+					this->theData.theCurrentState = HttpsState::Complete;
 				}
-				case HttpsState::Collecting_Size: {
-					if (stopWatch.hasTimePassed()) {
-						this->theData.theCurrentState = HttpsState::Complete;
-					}
-					if (!theConnection->doWeHaveContentSize) {
-						theConnection->clearCRLF(theConnection->getInputBuffer());
-						theConnection->parseSize(this->theData, theConnection->getInputBuffer());
-						theConnection->clearCRLF(theConnection->getInputBuffer());
-						stopWatch.resetTimer();
-					}
-					return false;
-				}
-				case HttpsState::Collecting_Contents: {
-					if (stopWatch.hasTimePassed()) {
-						this->theData.theCurrentState = HttpsState::Complete;
-					}
-					theConnection->parseChunk(this->theData, theConnection->getInputBuffer());
-					return false;
-				}
-				case HttpsState::Complete: {
-					this->areWeDoneTheRequest = true;
-					return false;
-				}
+				return false;
 			}
-			std::this_thread::sleep_for(1ms);
+			case HttpsState::Collecting_Headers: {
+				if (stopWatch.hasTimePassed()) {
+					this->theData.theCurrentState = HttpsState::Complete;
+				}
+				if (!theConnection->doWeHaveHeaders) {
+					theConnection->parseHeaders(this->theData, theConnection->getInputBuffer());
+					stopWatch.resetTimer();
+				}
+				return false;
+			}
+			case HttpsState::Collecting_Size: {
+				if (stopWatch.hasTimePassed()) {
+					this->theData.theCurrentState = HttpsState::Complete;
+				}
+				if (!theConnection->doWeHaveContentSize) {
+					theConnection->clearCRLF(theConnection->getInputBuffer());
+					theConnection->parseSize(this->theData, theConnection->getInputBuffer());
+					theConnection->clearCRLF(theConnection->getInputBuffer());
+					stopWatch.resetTimer();
+				}
+				return false;
+			}
+			case HttpsState::Collecting_Contents: {
+				if (stopWatch.hasTimePassed()) {
+					this->theData.theCurrentState = HttpsState::Complete;
+				}
+				theConnection->parseChunk(this->theData, theConnection->getInputBuffer());
+				return false;
+			}
+			case HttpsState::Complete: {
+				this->areWeDoneTheRequest = true;
+				return false;
+			}
 		}
+		std::this_thread::sleep_for(1ms);
 		return false;
 	}
 
