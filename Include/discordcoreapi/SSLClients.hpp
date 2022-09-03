@@ -193,7 +193,7 @@ namespace DiscordCoreInternal {
 
 		static bool initialize() noexcept;
 
-		virtual ~SSLConnectionInterface() noexcept;
+		virtual ~SSLConnectionInterface() noexcept = default;
 
 	  protected:
 		static SSL_CTXWrapper context;

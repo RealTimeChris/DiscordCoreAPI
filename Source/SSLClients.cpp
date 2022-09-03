@@ -120,19 +120,6 @@ namespace DiscordCoreInternal {
 		};
 	};
 
-	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) noexcept {
-		if (this->thePtr != SOCKET_ERROR) {
-			SOCKETWrapper::SOCKETDeleter theDeleter{};
-			theDeleter.operator()(this->thePtr);
-		}
-		this->thePtr = other;
-		return *this;
-	}
-
-	SOCKETWrapper::SOCKETWrapper(SOCKET other) noexcept {
-		*this = other;
-	}
-
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper&& other) noexcept {
 		if (this->thePtr != SOCKET_ERROR) {
 			SOCKETWrapper::SOCKETDeleter theDeleter{};
@@ -145,6 +132,19 @@ namespace DiscordCoreInternal {
 
 	SOCKETWrapper::SOCKETWrapper(SOCKETWrapper&& other) noexcept {
 		*this = std::move(other);
+	}
+
+	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) noexcept {
+		if (this->thePtr != SOCKET_ERROR) {
+			SOCKETWrapper::SOCKETDeleter theDeleter{};
+			theDeleter.operator()(this->thePtr);
+		}
+		this->thePtr = other;
+		return *this;
+	}
+
+	SOCKETWrapper::SOCKETWrapper(SOCKET other) noexcept {
+		*this = other;
 	}
 
 	SOCKETWrapper::operator SOCKET*() noexcept {
@@ -211,52 +211,6 @@ namespace DiscordCoreInternal {
 		}
 #endif
 		return true;
-	}
-
-	SSLConnectionInterface::~SSLConnectionInterface() noexcept {
-	}
-
-	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
-		if (dataToWrite.size() > 0 && this->ssl) {
-			if (priority && dataToWrite.size() < static_cast<size_t>(16 * 1024)) {
-				pollfd readWriteSet{};
-				readWriteSet.fd = this->theSocket;
-				readWriteSet.events = POLLOUT;
-				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
-					this->disconnect(true);
-					return ProcessIOResult::Error;
-				} else if (returnValue == 0) {
-					return ProcessIOResult::Error;
-				}
-
-				if (readWriteSet.revents & POLLOUT) {
-					this->outputBuffers.emplace_back(dataToWrite);
-					if (!this->processWriteData()) {
-						return ProcessIOResult::Error;
-					}
-				}
-			} else {
-				if (dataToWrite.size() >= static_cast<size_t>(16 * 1024)) {
-					size_t remainingBytes{ dataToWrite.size() };
-					while (remainingBytes > 0) {
-						std::string newString{};
-						size_t amountToCollect{};
-						if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
-							amountToCollect = static_cast<size_t>(1024 * 16);
-						} else {
-							amountToCollect = dataToWrite.size();
-						}
-						newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
-						this->outputBuffers.emplace_back(newString);
-						dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
-						remainingBytes = dataToWrite.size();
-					}
-				} else {
-					this->outputBuffers.emplace_back(dataToWrite);
-				}
-			}
-		}
-		return ProcessIOResult::No_Error;
 	}
 
 	ConnectionResult SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
@@ -411,6 +365,49 @@ namespace DiscordCoreInternal {
 			}
 		}
 		return theReturnValue;
+	}
+
+	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
+		if (dataToWrite.size() > 0 && this->ssl) {
+			if (priority && dataToWrite.size() < static_cast<size_t>(16 * 1024)) {
+				pollfd readWriteSet{};
+				readWriteSet.fd = this->theSocket;
+				readWriteSet.events = POLLOUT;
+				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
+					this->disconnect(true);
+					return ProcessIOResult::Error;
+				} else if (returnValue == 0) {
+					return ProcessIOResult::Error;
+				}
+
+				if (readWriteSet.revents & POLLOUT) {
+					this->outputBuffers.emplace_back(dataToWrite);
+					if (!this->processWriteData()) {
+						return ProcessIOResult::Error;
+					}
+				}
+			} else {
+				if (dataToWrite.size() >= static_cast<size_t>(16 * 1024)) {
+					size_t remainingBytes{ dataToWrite.size() };
+					while (remainingBytes > 0) {
+						std::string newString{};
+						size_t amountToCollect{};
+						if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
+							amountToCollect = static_cast<size_t>(1024 * 16);
+						} else {
+							amountToCollect = dataToWrite.size();
+						}
+						newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
+						this->outputBuffers.emplace_back(newString);
+						dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
+						remainingBytes = dataToWrite.size();
+					}
+				} else {
+					this->outputBuffers.emplace_back(dataToWrite);
+				}
+			}
+		}
+		return ProcessIOResult::No_Error;
 	}
 
 	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInMs) noexcept {
