@@ -1740,7 +1740,6 @@ namespace DiscordCoreInternal {
 				auto theResult = SSLClient::processIO(theVector);
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {
-						value->disconnect(true);
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
 							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << static_cast<WebSocketSSLShard*>(value)->shard[0] << ","
 								 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
