@@ -431,6 +431,9 @@ namespace DiscordCoreInternal {
 					continue;
 				}
 			}
+
+			while (theVector[readWriteSet.theIndices[x]]->handleBuffer(theVector[readWriteSet.theIndices[x]])) {
+			}
 		}
 		return theReturnValue;
 	}
@@ -455,6 +458,10 @@ namespace DiscordCoreInternal {
 			}
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
+			if (!this->areWeAStandaloneSocket) {
+				while (this->handleBuffer(this)) {
+				}
+			}
 			return ProcessIOResult::No_Error;
 		} else {
 			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLHUP || readWriteSet.revents & POLLNVAL) {
@@ -557,10 +564,6 @@ namespace DiscordCoreInternal {
 				}
 			}
 		} while (SSL_pending(this->ssl));
-		if (!this->areWeAStandaloneSocket) {
-			while (this->handleBuffer(this)) {
-			}
-		}
 		return true;
 	}
 
