@@ -334,13 +334,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketSSLShard::handleBuffer(SSLClient* theClient) noexcept {
-		if (static_cast<WebSocketSSLShard*>(theClient)->currentState.load() == SSLShardState::Upgrading) {
-			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
-		}
-		return this->parseMessage(static_cast<WebSocketSSLShard*>(theClient));
-	}
-
 	void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
 		if (this->currentState.load() == SSLShardState::Authenticated) {
 			try {
@@ -1550,6 +1543,13 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	bool WebSocketSSLShard::handleBuffer(SSLClient* theClient) noexcept {
+		if (static_cast<WebSocketSSLShard*>(theClient)->currentState.load() == SSLShardState::Upgrading) {
+			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
+		}
+		return this->parseMessage(static_cast<WebSocketSSLShard*>(theClient));
+	}
+
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
 		if (this->theSocket != SOCKET_ERROR) {
 			this->theSocket = SOCKET_ERROR;
@@ -1579,9 +1579,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLShard::~WebSocketSSLShard() {
-	}
-
 	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocketAgentNew) noexcept {
 		this->configManager = &discordCoreClientNew->configManager;
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
@@ -1595,16 +1592,6 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
 		std::unique_lock theLock{ this->theMutex };
 		this->voiceConnections.push_back(theData);
-	}
-
-	void BaseSocketAgent::disconnectVoiceInternal() noexcept {
-		if (this->voiceConnectionsToDisconnect.size() > 0) {
-			std::unique_lock theLock{ this->theMutex };
-			auto theDCData = this->voiceConnectionsToDisconnect.front();
-			this->voiceConnectionsToDisconnect.pop_front();
-			theLock.unlock();
-			DiscordCoreAPI::Globals::voiceConnectionMap[theDCData]->disconnectInternal();
-		}		
 	}
 
 	void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage thePackageNew) noexcept {
@@ -1709,6 +1696,21 @@ namespace DiscordCoreInternal {
 		return this->taskThread.get();
 	}
 
+	void BaseSocketAgent::disconnectVoiceInternal() noexcept {
+		if (this->voiceConnectionsToDisconnect.size() > 0) {
+			std::unique_lock theLock{ this->theMutex };
+			auto theDCData = this->voiceConnectionsToDisconnect.front();
+			this->voiceConnectionsToDisconnect.pop_front();
+			theLock.unlock();
+			DiscordCoreAPI::Globals::voiceConnectionMap[theDCData]->disconnectInternal();
+		}
+	}
+
+	void BaseSocketAgent::disconnectVoice(uint64_t theDCData) noexcept {
+		std::unique_lock theLock{ this->theMutex };
+		this->voiceConnectionsToDisconnect.push_back(theDCData);
+	}
+
 	void BaseSocketAgent::connectVoiceInternal() noexcept {
 		if (this->voiceConnections.size() > 0) {
 			while (!this->theVCStopWatch.hasTimePassed()) {
@@ -1764,11 +1766,6 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
 			}
 		}
-	}
-
-	void BaseSocketAgent::disconnectVoice(uint64_t theDCData) noexcept {
-		std::unique_lock theLock{ this->theMutex };
-		this->voiceConnectionsToDisconnect.push_back(theDCData);
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {

@@ -48,8 +48,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
 	  public:
-		WebSocketMessageHandler() noexcept = default;
-
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
 
 		void stringifyJsonData(nlohmann::json& dataToSend, std::string& theString, DiscordCoreInternal::WebSocketOpCode theOpCode) noexcept;
@@ -101,7 +99,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed() noexcept;
 
-		~WebSocketSSLShard() noexcept;
+		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
 		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
@@ -145,7 +143,7 @@ namespace DiscordCoreInternal {
 
 		~BaseSocketAgent() noexcept;
 
-	  protected:		  
+	  protected:
 		std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>> theShardMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 250ms };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
