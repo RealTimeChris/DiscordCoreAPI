@@ -402,7 +402,7 @@ namespace DiscordCoreInternal {
 
 		if (auto returnValue = poll(readWriteSet.thePolls.data(), static_cast<unsigned long>(readWriteSet.theIndices.size()), 10); returnValue == SOCKET_ERROR) {
 			for (uint32_t x = 0; x < readWriteSet.thePolls.size(); ++x) {
-				if (readWriteSet.thePolls[x].revents & POLLERR || readWriteSet.thePolls[x].revents & POLLHUP || readWriteSet.thePolls[x].revents & POLLNVAL) {
+				if (readWriteSet.thePolls[x].revents & POLLERR) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
 					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
 					theReturnValue.push_back(theError);
@@ -464,7 +464,7 @@ namespace DiscordCoreInternal {
 			}
 			return ProcessIOResult::No_Error;
 		} else {
-			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLHUP || readWriteSet.revents & POLLNVAL) {
+			if (readWriteSet.revents & POLLERR) {
 				if (this->doWePrintErrorMessages) {
 					cout << reportError("SSLClient::processIO()") << endl;
 				}
