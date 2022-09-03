@@ -1179,7 +1179,7 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock(const UnboundedMessageBlock<ObjectType>&) = delete;
 
-		UnboundedMessageBlock<ObjectType>() noexcept = default;
+		UnboundedMessageBlock() noexcept = default;
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
