@@ -543,7 +543,8 @@ namespace DiscordCoreInternal {
 						this->inputBuffer += std::string{ this->rawInputBuffer.data(), readBytes };
 						this->bytesRead += readBytes;
 						if (!this->areWeAStandaloneSocket) {
-							this->handleBuffer(this);
+							while (this->handleBuffer(this)) {
+							}
 						}
 					}
 					break;
