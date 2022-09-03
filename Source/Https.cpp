@@ -252,17 +252,16 @@ namespace DiscordCoreInternal {
 	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
 
 	bool HttpsConnection::handleBuffer(SSLClient* theClient) noexcept {
-		DiscordCoreAPI::StopWatch stopWatch{ 4500ms };
 		auto theConnection = static_cast<HttpsConnection*>(theClient);
 		while (true) {
 			switch (this->theData.theCurrentState) {
 				case HttpsState::Collecting_Code: {
-					if (stopWatch.hasTimePassed()) {
+					if (this->theData.theStopWatch.hasTimePassed()) {
 						this->areWeDoneTheRequest = true;
 						return false;
 					}
 					theConnection->parseCode(this->theData, theConnection->getInputBuffer());
-					stopWatch.resetTimer();
+					this->theData.theStopWatch.resetTimer();
 					if (this->theData.responseCode == 204) {
 						this->areWeDoneTheRequest = true;
 						return false;
@@ -270,18 +269,18 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 				case HttpsState::Collecting_Headers: {
-					if (stopWatch.hasTimePassed()) {
+					if (this->theData.theStopWatch.hasTimePassed()) {
 						this->areWeDoneTheRequest = true;
 						return false;
 					}
 					if (!theConnection->doWeHaveHeaders) {
 						theConnection->parseHeaders(this->theData, theConnection->getInputBuffer());
-						stopWatch.resetTimer();
+						this->theData.theStopWatch.resetTimer();
 					}
 					return false;
 				}
 				case HttpsState::Collecting_Size: {
-					if (stopWatch.hasTimePassed()) {
+					if (this->theData.theStopWatch.hasTimePassed()) {
 						this->areWeDoneTheRequest = true;
 						return false;
 					}
@@ -289,18 +288,18 @@ namespace DiscordCoreInternal {
 						theConnection->clearCRLF(theConnection->getInputBuffer());
 						theConnection->parseSize(this->theData, theConnection->getInputBuffer());
 						theConnection->clearCRLF(theConnection->getInputBuffer());
-						stopWatch.resetTimer();
+						this->theData.theStopWatch.resetTimer();
 					}
 					return false;
 				}
 				case HttpsState::Collecting_Contents: {
 					auto theResult = theConnection->parseChunk(this->theData, theConnection->getInputBuffer());
-					if ((this->theData.responseMessage.size() >= this->theData.contentSize && !theResult) || stopWatch.hasTimePassed() || !theResult ||
+					if ((this->theData.responseMessage.size() >= this->theData.contentSize && !theResult) || this->theData.theStopWatch.hasTimePassed() || !theResult ||
 						(this->theData.responseCode == -5 && this->theData.contentSize == -5)) {
 						this->areWeDoneTheRequest = true;
 						return false;
 					} else {
-						stopWatch.resetTimer();
+						this->theData.theStopWatch.resetTimer();
 					}
 					return false;
 				}
@@ -569,8 +568,12 @@ namespace DiscordCoreInternal {
 			theConnection.getInputBuffer().clear();
 			theConnection.resetValues();
 			ProcessIOResult theResult{};
+			DiscordCoreAPI::StopWatch theStopWatch{ 3500ms };
 			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error) {
 				theResult = theConnection.processIO(10);
+				if (theConnection.theData.theStopWatch.hasTimePassed() || theStopWatch.hasTimePassed()) {
+					break;
+				}
 			}
 			return theConnection.finalizeReturnValues(theConnection.theData, rateLimitData);
 		} catch (...) {

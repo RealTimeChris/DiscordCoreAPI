@@ -53,6 +53,7 @@ namespace DiscordCoreInternal {
 		int64_t responseCode{ -1 };
 
 	  protected:
+		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 500ms };
 		uint64_t contentSize{ 0 };
 		bool isItChunked{ false };
 	};

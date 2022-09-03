@@ -1593,7 +1593,18 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
+		std::unique_lock theLock{ this->theMutex };
 		this->voiceConnections.push_back(theData);
+	}
+
+	void BaseSocketAgent::disconnectVoiceInternal() noexcept {
+		if (this->voiceConnectionsToDisconnect.size() > 0) {
+			std::unique_lock theLock{ this->theMutex };
+			auto theDCData = this->voiceConnectionsToDisconnect.front();
+			this->voiceConnectionsToDisconnect.pop_front();
+			theLock.unlock();
+			DiscordCoreAPI::Globals::voiceConnectionMap[theDCData]->disconnectInternal();
+		}		
 	}
 
 	void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage thePackageNew) noexcept {
@@ -1699,29 +1710,27 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::connectVoiceInternal() noexcept {
-		while (!this->theVCStopWatch.hasTimePassed()) {
-			std::this_thread::sleep_for(1ms);
+		if (this->voiceConnections.size() > 0) {
+			while (!this->theVCStopWatch.hasTimePassed()) {
+				std::this_thread::sleep_for(1ms);
+			}
+			this->theVCStopWatch.resetTimer();
+			std::unique_lock theLock{ this->theMutex };
+			VoiceConnectInitData theConnectionData = this->voiceConnections.front();
+			this->voiceConnections.pop_front();
+			theLock.unlock();
+			DiscordCoreAPI::Globals::voiceConnectionMap[theConnectionData.guildId] =
+				std::make_unique<DiscordCoreAPI::VoiceConnection>(this, this->theShardMap[theConnectionData.currentShard].get(), theConnectionData,
+					&this->discordCoreClient->configManager, this->doWeQuit, theConnectionData.streamType, theConnectionData.streamInfo);
+			DiscordCoreAPI::Globals::voiceConnectionMap[theConnectionData.guildId]->connect();
 		}
-		this->theVCStopWatch.resetTimer();
-		VoiceConnectInitData theConnectionData = this->voiceConnections.front();
-		this->voiceConnections.pop_front();
-		DiscordCoreAPI::Globals::voiceConnectionMap[theConnectionData.guildId] =
-			std::make_unique<DiscordCoreAPI::VoiceConnection>(this, this->theShardMap[theConnectionData.currentShard].get(), theConnectionData,
-				&this->discordCoreClient->configManager, this->doWeQuit, theConnectionData.streamType, theConnectionData.streamInfo);
-		DiscordCoreAPI::Globals::voiceConnectionMap[theConnectionData.guildId]->connect();
 	}
 
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
-				{
-					if (this->voiceConnectionsToDisconnect.size() > 0) {
-						this->disconnectVoice();
-					}
-					if (this->voiceConnections.size() > 0) {
-						this->connectVoiceInternal();
-					}
-				}
+				this->disconnectVoiceInternal();
+				this->connectVoiceInternal();
 				std::vector<SSLClient*> theVector{};
 				for (auto& [key, value]: this->theShardMap) {
 					if (!static_cast<WebSocketSSLShard*>(value.get())->areWeConnecting.load()) {
@@ -1731,9 +1740,10 @@ namespace DiscordCoreInternal {
 				auto theResult = SSLClient::processIO(theVector);
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {
+						value->disconnect(true);
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << value.shardNumber << "," << this->configManager->getTotalShardCount()
-								 << "]... reconnecting." << DiscordCoreAPI::reset() << endl
+							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << static_cast<WebSocketSSLShard*>(value)->shard[0] << ","
+								 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
 								 << endl;
 						}
 					}
@@ -1757,10 +1767,9 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::disconnectVoice() noexcept {
-		uint64_t theDCData = this->voiceConnectionsToDisconnect.front();
-		this->voiceConnectionsToDisconnect.pop_front();
-		DiscordCoreAPI::Globals::voiceConnectionMap[theDCData]->disconnectInternal();
+	void BaseSocketAgent::disconnectVoice(uint64_t theDCData) noexcept {
+		std::unique_lock theLock{ this->theMutex };
+		this->voiceConnectionsToDisconnect.push_back(theDCData);
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {

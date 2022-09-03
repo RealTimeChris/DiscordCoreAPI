@@ -145,9 +145,9 @@ namespace DiscordCoreInternal {
 
 		~BaseSocketAgent() noexcept;
 
-	  protected:
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 550ms };
+	  protected:		  
 		std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>> theShardMap{};
+		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 250ms };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::deque<Snowflake> voiceConnectionsToDisconnect{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
@@ -156,12 +156,15 @@ namespace DiscordCoreInternal {
 		std::atomic_bool* doWeQuit{ nullptr };
 		uint32_t currentBaseSocketAgent{};
 		int32_t heartbeatInterval{ 0 };
+		std::mutex theMutex{};
+
+		void disconnectVoiceInternal() noexcept;
+
+		void disconnectVoice(uint64_t) noexcept;
 
 		void connectVoiceInternal() noexcept;
 
 		void run(std::stop_token) noexcept;
-
-		void disconnectVoice() noexcept;
 	};
 
 }// namespace DiscordCoreInternal

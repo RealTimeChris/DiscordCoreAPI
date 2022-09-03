@@ -158,9 +158,9 @@ namespace DiscordCoreAPI {
 	  public:
 		GuildMemberCache() noexcept = default;
 
-		GuildMemberData& operator[](GuildMemberKey theData);
+		GuildMemberData& operator[](GuildMemberKey&& theData);
 
-		void insert(GuildMemberKey theKey, GuildMemberData theData);
+		void emplace(GuildMemberKey&& theKey, GuildMemberData&& theData);
 
 		bool contains(Snowflake guildId, Snowflake userId);
 

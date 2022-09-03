@@ -71,11 +71,6 @@ namespace DiscordCoreInternal {
 
 	constexpr int32_t SOCKET_ERROR{ -1 };
 
-	struct ConnectionError : public std::runtime_error {
-		int32_t shardNumber{};
-		explicit ConnectionError(const std::string& theString);
-	};
-
 	struct PollFDWrapper {
 		std::vector<uint32_t> theIndices{};
 		std::vector<pollfd> thePolls{};
@@ -241,7 +236,7 @@ namespace DiscordCoreInternal {
 
 		ConnectionResult connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
 
-		static std::vector<ConnectionError> processIO(std::vector<SSLClient*>&) noexcept;
+		static std::vector<SSLClient*> processIO(std::vector<SSLClient*>&) noexcept;
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 

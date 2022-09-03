@@ -927,7 +927,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::disconnect() noexcept {
-		this->baseSocketAgent->voiceConnectionsToDisconnect.push_back(this->voiceConnectInitData.guildId);
+		this->baseSocketAgent->disconnectVoice(this->voiceConnectInitData.guildId);
 		this->activeState.store(VoiceActiveState::Exiting);
 	}
 

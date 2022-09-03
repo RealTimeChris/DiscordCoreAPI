@@ -57,8 +57,6 @@ namespace DiscordCoreInternal {
 		return theStream.str();
 	}
 
-	ConnectionError::ConnectionError(const std::string& theString) : std::runtime_error(theString){};
-
 #ifdef _WIN32
 	void WSADataWrapper::WSADataDeleter::operator()(WSADATA* other) {
 		WSACleanup();
@@ -364,8 +362,8 @@ namespace DiscordCoreInternal {
 		return ConnectionResult::No_Error;
 	}
 
-	std::vector<ConnectionError> SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
-		std::vector<ConnectionError> theReturnValue{};
+	std::vector<SSLClient*> SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
+		std::vector<SSLClient*> theReturnValue{};
 		PollFDWrapper readWriteSet{};
 		for (uint32_t x = 0; x < theVector.size(); ++x) {
 			pollfd theWrapper{};
@@ -386,9 +384,7 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = poll(readWriteSet.thePolls.data(), static_cast<unsigned long>(readWriteSet.theIndices.size()), 10); returnValue == SOCKET_ERROR) {
 			for (uint32_t x = 0; x < readWriteSet.thePolls.size(); ++x) {
 				if (readWriteSet.thePolls[x].revents & POLLERR || readWriteSet.thePolls[x].revents & POLLHUP || readWriteSet.thePolls[x].revents & POLLNVAL) {
-					ConnectionError theError{ reportError("SSLClient::processIO") };
-					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
-					theReturnValue.push_back(theError);
+					theReturnValue.push_back(theVector[readWriteSet.theIndices[x]]);
 				}
 			}
 			return theReturnValue;
@@ -400,17 +396,13 @@ namespace DiscordCoreInternal {
 		for (uint32_t x = 0; x < readWriteSet.theIndices.size(); ++x) {
 			if (readWriteSet.thePolls[x].revents & POLLOUT) {
 				if (!theVector[readWriteSet.theIndices[x]]->processWriteData()) {
-					ConnectionError theError{ reportError("SSLClient::processIO") };
-					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
-					theReturnValue.push_back(theError);
+					theReturnValue.push_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
 				}
 			}
 			if (readWriteSet.thePolls[x].revents & POLLIN) {
 				if (!theVector[readWriteSet.theIndices[x]]->processReadData()) {
-					ConnectionError theError{ reportError("SSLClient::processIO") };
-					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
-					theReturnValue.push_back(theError);
+					theReturnValue.push_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
 				}
 			}
