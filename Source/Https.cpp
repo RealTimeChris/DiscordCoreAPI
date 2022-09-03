@@ -256,6 +256,7 @@ namespace DiscordCoreInternal {
 		auto theConnection = static_cast<HttpsConnection*>(theClient);
 		switch (this->theData.theCurrentState) {
 			case HttpsState::Collecting_Code: {
+				std::cout << "WERE HERE THIS IS IT!COLLECTING CODE" << std::endl;
 				if (stopWatch.hasTimePassed()) {
 					this->theData.theCurrentState = HttpsState::Complete;
 				}
@@ -267,6 +268,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			case HttpsState::Collecting_Headers: {
+				std::cout << "WERE HERE THIS IS IT!COLLECTING HEADERS" << std::endl;
 				if (stopWatch.hasTimePassed()) {
 					this->theData.theCurrentState = HttpsState::Complete;
 				}
@@ -277,6 +279,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			case HttpsState::Collecting_Size: {
+				std::cout << "WERE HERE THIS IS IT!COLLECTING SIZE" << std::endl;
 				if (stopWatch.hasTimePassed()) {
 					this->theData.theCurrentState = HttpsState::Complete;
 				}
@@ -289,6 +292,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			case HttpsState::Collecting_Contents: {
+				std::cout << "WERE HERE THIS IS IT!COLLECTING CONTENTS" << std::endl;
 				if (stopWatch.hasTimePassed()) {
 					this->theData.theCurrentState = HttpsState::Complete;
 				}
@@ -569,6 +573,7 @@ namespace DiscordCoreInternal {
 			theConnection.resetValues();
 			ProcessIOResult theResult{};
 			while (!theConnection.areWeDoneTheRequest) {
+				std::cout << "WERE HERE THIS IS IT!" << std::endl;
 				theResult = theConnection.processIO(1);
 			}
 			return theConnection.finalizeReturnValues(theConnection.theData, rateLimitData);
