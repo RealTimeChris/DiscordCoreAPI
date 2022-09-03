@@ -204,9 +204,8 @@ namespace DiscordCoreAPI {
 		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
 
 		theData.roles.clear();
-		theData.roles.reserve((*jsonObjectData)["roles"].size());
 		for (auto& value: (*jsonObjectData)["roles"]) {
-			theData.roles.push_back(stoull(value.get<std::string>()));
+			theData.roles.emplace_back(stoull(value.get<std::string>()));
 		}
 
 		theData.permissions = getString(jsonObjectData, "permissions");

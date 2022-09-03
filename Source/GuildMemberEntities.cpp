@@ -174,7 +174,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
-		GuildMembers::doWeCacheGuildMembers = configManagerNew->doWeCacheGuildMembers();
+		GuildMembers::doWeCacheGuildMembers = configManagerNew->doWeCacheUsers();
 		GuildMembers::httpsClient = theClient;
 	}
 

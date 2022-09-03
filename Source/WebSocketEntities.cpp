@@ -1386,7 +1386,7 @@ namespace DiscordCoreInternal {
 													this->voiceConnectionDataBufferMap[dataPackage->voiceStateData.guildId]->send(this->voiceConnectionData);
 												}
 											}
-											if (this->discordCoreClient->configManager.doWeCacheGuildMembers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
+											if (this->discordCoreClient->configManager.doWeCacheUsers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
 												if (DiscordCoreAPI::GuildMembers::cache.contains(dataPackage->voiceStateData.guildId, dataPackage->voiceStateData.userId)) {
 													DiscordCoreAPI::GuildMembers::cache[DiscordCoreAPI::GuildMemberKey{ dataPackage->voiceStateData.guildId,
 																							dataPackage->voiceStateData.userId }]

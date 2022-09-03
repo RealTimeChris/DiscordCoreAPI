@@ -116,10 +116,6 @@ namespace DiscordCoreAPI {
 		return this->theConfig.cacheOptions.cacheGuilds;
 	}
 
-	const bool ConfigManager::doWeCacheGuildMembers() {
-		return this->theConfig.cacheOptions.cacheGuildMembers;
-	}
-
 	const bool ConfigManager::doWeCacheRoles() {
 		return this->theConfig.cacheOptions.cacheRoles;
 	}

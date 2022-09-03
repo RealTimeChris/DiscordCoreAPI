@@ -294,14 +294,6 @@ namespace DiscordCoreInternal {
 			return ConnectionResult::Error;
 		}
 
-		int32_t value{ this->maxBufferSize + 1 };
-		if (setsockopt(this->theSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&value), sizeof(value))) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::connect::setsockopt()") << endl;
-			}
-			return ConnectionResult::Error;
-		}
-
 		const char optionValue{ true };
 		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
@@ -311,15 +303,6 @@ namespace DiscordCoreInternal {
 		}
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::connect::setsockopt()") << endl;
-			}
-			return ConnectionResult::Error;
-		}
-
-		linger optionValue02{};
-		optionValue02.l_onoff = 0;
-		if (setsockopt(this->theSocket, SOL_SOCKET, SO_LINGER, reinterpret_cast<char*>(&optionValue02), sizeof(linger))) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("SSLClient::connect::setsockopt()") << endl;
 			}
