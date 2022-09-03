@@ -568,10 +568,9 @@ namespace DiscordCoreInternal {
 			theConnection.getInputBuffer().clear();
 			theConnection.resetValues();
 			ProcessIOResult theResult{};
-			DiscordCoreAPI::StopWatch theStopWatch{ 3500ms };
 			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error) {
 				theResult = theConnection.processIO(10);
-				if (theConnection.theData.theStopWatch.hasTimePassed() || theStopWatch.hasTimePassed()) {
+				if (theConnection.theData.theStopWatch.hasTimePassed()) {
 					break;
 				}
 			}

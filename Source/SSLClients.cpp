@@ -494,7 +494,7 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					break;
+					return false;
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
@@ -528,7 +528,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					break;
+					return false;
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
