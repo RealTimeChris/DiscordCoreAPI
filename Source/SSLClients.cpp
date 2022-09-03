@@ -400,7 +400,7 @@ namespace DiscordCoreInternal {
 			return theReturnValue;
 		}
 
-		if (auto returnValue = poll(readWriteSet.thePolls.data(), static_cast<unsigned long>(readWriteSet.theIndices.size()), 1); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = poll(readWriteSet.thePolls.data(), static_cast<unsigned long>(readWriteSet.theIndices.size()), 0); returnValue == SOCKET_ERROR) {
 			for (uint32_t x = 0; x < readWriteSet.thePolls.size(); ++x) {
 				if (readWriteSet.thePolls[x].revents & POLLERR) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };

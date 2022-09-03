@@ -262,7 +262,7 @@ namespace DiscordCoreInternal {
 				}
 				theConnection->parseCode(this->theData, theConnection->getInputBuffer());
 				stopWatch.resetTimer();
-				if (this->theData.responseCode == 204) {
+				if (this->theData.responseCode == 204 || this->theData.responseCode == 404 || this->theData.responseCode == 400) {
 					this->theData.theCurrentState = HttpsState::Complete;
 				}
 				return false;

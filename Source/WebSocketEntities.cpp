@@ -1745,9 +1745,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				if (!theVector.size()) {
-					std::this_thread::sleep_for(1ms);
-				}
+				std::this_thread::sleep_for(1ms);
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
