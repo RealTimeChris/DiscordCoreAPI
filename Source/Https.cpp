@@ -568,8 +568,8 @@ namespace DiscordCoreInternal {
 			theConnection.getInputBuffer().clear();
 			theConnection.resetValues();
 			ProcessIOResult theResult{};
-			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error) {
-				theResult = theConnection.processIO(10);
+			while (!theConnection.areWeDoneTheRequest) {
+				theResult = theConnection.processIO(1);
 			}
 			return theConnection.finalizeReturnValues(theConnection.theData, rateLimitData);
 		} catch (...) {

@@ -1551,7 +1551,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
-		if (this->theSocket != SOCKET_ERROR) {
+		if (this && this->theSocket != SOCKET_ERROR) {
 			this->theSocket = SOCKET_ERROR;
 			this->currentState.store(SSLShardState::Disconnected);
 			this->areWeConnecting.store(true);
