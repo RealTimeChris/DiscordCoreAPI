@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file InteractionEntities.hpp
 
-#pragma once
+#ifndef INTERACTION_ENTITIES
+#define INTERACTION_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/MessageEntities.hpp>
@@ -617,3 +618,4 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 };// namespace DiscordCoreAPI
+#endif

@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMemberData>();
-		if (GuildMembers::cache.contains(dataPackage.guildId, dataPackage.guildMemberId)){
+		if (GuildMembers::cache.contains(dataPackage.guildId, dataPackage.guildMemberId)) {
 			co_return GuildMembers::cache[GuildMemberKey{ dataPackage.guildId, dataPackage.guildMemberId }];
 		}
 		co_return GuildMembers::getGuildMemberAsync(dataPackage).get();

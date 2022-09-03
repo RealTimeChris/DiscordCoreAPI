@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file ErlPacker.hpp
 
-#pragma once
+#ifndef ERL_PACKER
+#define ERL_PACKER
 
 #include <discordcoreapi/FoundationEntities.hpp>
 
@@ -151,3 +152,4 @@ namespace DiscordCoreInternal {
 		nlohmann::json parseAtomUtf8Ext();
 	};
 }// namespace DiscordCoreInternal
+#endif

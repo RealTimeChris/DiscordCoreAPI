@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file GuildScheduledEventEntities.hpp
 
-#pragma once
+#ifndef GUILD_SCHEDULED_EVENT_ENTITIES
+#define GUILD_SCHEDULED_EVENT_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
@@ -167,3 +168,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
+#endif

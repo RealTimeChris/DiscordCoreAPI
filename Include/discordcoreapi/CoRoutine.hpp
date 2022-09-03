@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file CoRoutine.hpp
 
-#pragma once
+#ifndef COROUTINE
+#define COROUTINE
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/ThreadPool.hpp>
@@ -392,3 +393,4 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 };// namespace DiscordCoreAPI
+#endif

@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file StickerEntities.hpp
 
-#pragma once
+#ifndef STICKER_ENTITIES
+#define STICKER_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
@@ -142,3 +143,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI
+#endif

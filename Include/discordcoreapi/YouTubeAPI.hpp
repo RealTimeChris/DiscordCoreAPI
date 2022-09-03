@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file YouTubeAPI.hpp
 
-#pragma once
+#ifndef YOUTUBE_API
+#define YOUTUBE_API
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/AudioDecoder.hpp>
@@ -69,3 +70,4 @@ namespace DiscordCoreInternal {
 	};
 
 };// namespace DiscordCoreAPI
+#endif

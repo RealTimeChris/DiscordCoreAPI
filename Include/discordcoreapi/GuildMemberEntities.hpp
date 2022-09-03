@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file GuildMemberEntities.hpp
 
-#pragma once
+#ifndef GUILD_MEMBER_ENTITIES
+#define GUILD_MEMBER_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/UserEntities.hpp>
@@ -162,7 +163,7 @@ namespace DiscordCoreAPI {
 		void insert(GuildMemberKey theKey, GuildMemberData theData);
 
 		bool contains(Snowflake guildId, Snowflake userId);
-		
+
 		void erase(Snowflake guildId, Snowflake userId);
 
 		size_t size();
@@ -244,3 +245,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI
+#endif

@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file FoundationEntities.hpp
 
-#pragma once
+#ifndef FOUNDATION_ENTITIES
+#define FOUNDATION_ENTITIES
 
 #include <discordcoreapi/Utilities.hpp>
 
@@ -931,7 +932,7 @@ namespace DiscordCoreAPI {
 		GuildMemberData() noexcept = default;
 
 		GuildMemberData& operator=(GuildMemberData&&) noexcept;
-	
+
 		GuildMemberData(GuildMemberData&&) noexcept;
 
 		GuildMemberData& operator=(const GuildMemberData&) noexcept = default;
@@ -3335,3 +3336,4 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 };// namespace DiscordCoreAPI
+#endif

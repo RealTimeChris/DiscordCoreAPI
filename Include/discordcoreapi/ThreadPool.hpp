@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file ThreadPool.hpp
 
-#pragma once
+#ifndef THREAD_POOL
+#define THREAD_POOL
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Https.hpp>
@@ -130,3 +131,4 @@ namespace DiscordCoreInternal {
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
+#endif

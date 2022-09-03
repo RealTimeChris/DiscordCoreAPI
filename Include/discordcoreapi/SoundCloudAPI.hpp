@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file SoundCloudAPI.hpp
 
-#pragma once
+#ifndef SOUNDCLOUD_API
+#define SOUNDCLOUD_API
 
 #include <discordcoreapi/AudioDecoder.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
@@ -72,3 +73,4 @@ namespace DiscordCoreInternal {
 	};
 
 };// namespace DiscordCoreAPI
+#endif

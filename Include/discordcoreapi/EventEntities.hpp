@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file EventEntities.hpp
 
-#pragma once
+#ifndef EVENT_ENTITIES
+#define EVENT_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 
@@ -167,3 +168,4 @@ namespace DiscordCoreInternal {
 	};
 
 }// namespace DiscordCoreAPI
+#endif

@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file EventManager.hpp
 
-#pragma once
+#ifndef EVENT_MANAGER
+#define EVENT_MANAGER
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
@@ -1025,3 +1026,4 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }// namespace DiscordCoreAPI
+#endif

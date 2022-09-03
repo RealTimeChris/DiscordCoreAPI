@@ -23,6 +23,9 @@
 /// https://discordcoreapi.com
 /// \file Index.hpp
 
-#pragma once
+#ifndef INDEX
+#define INDEX
 
 #include <discordcoreapi/DiscordCoreClient.hpp>
+
+#endif

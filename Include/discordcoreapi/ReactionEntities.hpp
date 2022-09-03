@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file ReactionEntities.hpp
 
-#pragma once
+#ifndef REACTION_ENTITIES
+#define REACTION_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/UserEntities.hpp>
@@ -232,3 +233,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
+#endif

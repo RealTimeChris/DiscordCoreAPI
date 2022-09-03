@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file Utilities.hpp
 
-#pragma once
+#ifndef UTILITIES
+#define UTILITIES
 
 #pragma warning(push)
 #pragma warning(disable : 4275)
@@ -1178,7 +1179,7 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock(const UnboundedMessageBlock<ObjectType>&) = delete;
 
-		UnboundedMessageBlock() noexcept = default;
+		UnboundedMessageBlock<ObjectType>() noexcept = default;
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
@@ -1312,3 +1313,4 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 };
+#endif

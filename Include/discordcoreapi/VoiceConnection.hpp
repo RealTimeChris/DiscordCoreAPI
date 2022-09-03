@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file VoiceConnection.hpp
 
-#pragma once
+#ifndef VOICE_CONNECTION
+#define VOICE_CONNECTION
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/AudioEncoder.hpp>
@@ -228,3 +229,4 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 };// namespace DiscordCoreAPI
+#endif

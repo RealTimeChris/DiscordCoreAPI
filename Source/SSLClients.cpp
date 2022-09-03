@@ -230,7 +230,7 @@ namespace DiscordCoreInternal {
 				} else if (returnValue == 0) {
 					return ProcessIOResult::Error;
 				}
-				
+
 				if (readWriteSet.revents & POLLOUT) {
 					this->outputBuffers.emplace_back(dataToWrite);
 					if (!this->writeDataProcess()) {
@@ -523,7 +523,7 @@ namespace DiscordCoreInternal {
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("SSLClient::writeDataProcess()",errorValue, this->ssl) << endl;
+						cout << reportSSLError("SSLClient::writeDataProcess()", errorValue, this->ssl) << endl;
 					}
 					this->disconnect(true);
 					return false;

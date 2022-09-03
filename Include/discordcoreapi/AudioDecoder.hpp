@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file AudioDecoder.hpp
 
-#pragma once
+#ifndef AUDIO_DECODER
+#define AUDIO_DECODER
 
 #include <discordcoreapi/EventEntities.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
@@ -207,3 +208,4 @@ namespace DiscordCoreInternal {
 	};
 
 }// namespace DiscordCoreAPI
+#endif

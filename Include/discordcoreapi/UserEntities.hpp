@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file UserEntities.hpp
 
-#pragma once
+#ifndef USER_ENTITIES
+#define USER_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/WebSocketEntities.hpp>
@@ -220,3 +221,4 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }// namespace DiscordCoreAPI
+#endif

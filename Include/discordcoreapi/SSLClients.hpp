@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file SSLClients.hpp
 
-#pragma once
+#ifndef SSL_CLIENTS
+#define SSL_CLIENTS
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/EventEntities.hpp>
@@ -310,3 +311,4 @@ namespace DiscordCoreInternal {
 		int64_t bytesRead{};
 	};
 }// namespace DiscordCoreInternal
+#endif

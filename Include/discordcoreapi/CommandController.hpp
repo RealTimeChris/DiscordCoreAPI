@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file CommandController.hpp
 
-#pragma once
+#ifndef COMMAND_CONTROLLER
+#define COMMAND_CONTROLLER
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
@@ -55,3 +56,4 @@ namespace DiscordCoreAPI {
 	};
 
 };// namespace DiscordCoreAPI
+#endif

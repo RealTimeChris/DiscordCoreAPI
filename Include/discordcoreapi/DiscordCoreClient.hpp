@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file DiscordCoreClient.hpp
 
-#pragma once
+#ifndef DISCORD_CORE_CLIENT
+#define DISCORD_CORE_CLIENT
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
@@ -174,3 +175,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
+#endif

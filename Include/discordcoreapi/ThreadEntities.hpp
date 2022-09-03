@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file ThreadEntities.hpp
 
-#pragma once
+#ifndef THREAD_ENTITIES
+#define THREAD_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
@@ -233,3 +234,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI
+#endif

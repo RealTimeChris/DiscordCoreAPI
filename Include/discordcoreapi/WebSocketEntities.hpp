@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file WebSocketEntities.hpp
 
-#pragma once
+#ifndef WEBSOCKET_ENTITIES
+#define WEBSOCKET_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/AudioDecoder.hpp>
@@ -164,3 +165,4 @@ namespace DiscordCoreInternal {
 	};
 
 }// namespace DiscordCoreInternal
+#endif

@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file SongAPI.hpp
 
-#pragma once
+#ifndef SONG_API
+#define SONG_API
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/EventEntities.hpp>
@@ -161,3 +162,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI
+#endif

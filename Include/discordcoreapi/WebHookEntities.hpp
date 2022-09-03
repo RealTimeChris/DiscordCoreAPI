@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file WebHookEntities.hpp
 
-#pragma once
+#ifndef WEBHOOK_ENTITIES
+#define WEBHOOK_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/MessageEntities.hpp>
@@ -332,3 +333,4 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }// namespace DiscordCoreAPI
+#endif

@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file Https.hpp
 
-#pragma once
+#ifndef HTTPS
+#define HTTPS
 
 #include <discordcoreapi/SSLClients.hpp>
 
@@ -195,3 +196,4 @@ namespace DiscordCoreInternal {
 	};
 
 }// namespace DiscordCoreInternal
+#endif

@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file RoleEntities.hpp
 
-#pragma once
+#ifndef ROLE_ENTITIES
+#define ROLE_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
@@ -246,3 +247,4 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }// namespace DiscordCoreAPI
+#endif

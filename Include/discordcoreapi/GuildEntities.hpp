@@ -23,7 +23,8 @@
 /// https://discordcoreapi.com
 /// \file GuildEntities.hpp
 
-#pragma once
+#ifndef GUILD_ENTITIES
+#define GUILD_ENTITIES
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
@@ -589,3 +590,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
+#endif
