@@ -292,14 +292,19 @@ namespace DiscordCoreInternal {
 				if (stopWatch.hasTimePassed()) {
 					this->theData.theCurrentState = HttpsState::Complete;
 				}
-				theConnection->parseChunk(this->theData, theConnection->getInputBuffer());
-				return false;
+				if (!theConnection->parseChunk(this->theData, theConnection->getInputBuffer())) {
+					this->areWeDoneTheRequest = true;
+					return false;
+				} else {
+					return false;
+				}
 			}
 			case HttpsState::Complete: {
 				this->areWeDoneTheRequest = true;
 				return false;
 			}
 		}
+		this->areWeDoneTheRequest = true;
 		std::this_thread::sleep_for(1ms);
 		return false;
 	}
