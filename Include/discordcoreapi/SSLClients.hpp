@@ -253,9 +253,9 @@ namespace DiscordCoreInternal {
 
 		bool areWeStillConnected() noexcept;
 
-		bool writeDataProcess() noexcept;
+		bool processWriteData() noexcept;
 
-		bool readDataProcess() noexcept;
+		bool processReadData() noexcept;
 
 		int64_t getBytesRead() noexcept;
 
@@ -285,9 +285,9 @@ namespace DiscordCoreInternal {
 
 		bool areWeStillConnected() noexcept;
 
-		void writeDataProcess() noexcept;
+		void processWriteData() noexcept;
 
-		void readDataProcess() noexcept;
+		void processReadData() noexcept;
 
 		int64_t getBytesRead() noexcept;
 

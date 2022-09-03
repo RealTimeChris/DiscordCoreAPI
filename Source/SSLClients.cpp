@@ -233,7 +233,7 @@ namespace DiscordCoreInternal {
 
 				if (readWriteSet.revents & POLLOUT) {
 					this->outputBuffers.emplace_back(dataToWrite);
-					if (!this->writeDataProcess()) {
+					if (!this->processWriteData()) {
 						return ProcessIOResult::Error;
 					}
 				}
@@ -416,7 +416,7 @@ namespace DiscordCoreInternal {
 
 		for (uint32_t x = 0; x < readWriteSet.theIndices.size(); ++x) {
 			if (readWriteSet.thePolls[x].revents & POLLOUT) {
-				if (!theVector[readWriteSet.theIndices[x]]->writeDataProcess()) {
+				if (!theVector[readWriteSet.theIndices[x]]->processWriteData()) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
 					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
 					theReturnValue.push_back(theError);
@@ -424,7 +424,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (readWriteSet.thePolls[x].revents & POLLIN) {
-				if (!theVector[readWriteSet.theIndices[x]]->readDataProcess()) {
+				if (!theVector[readWriteSet.theIndices[x]]->processReadData()) {
 					ConnectionError theError{ reportError("SSLClient::processIO") };
 					theError.shardNumber = static_cast<WebSocketSSLShard*>(theVector[readWriteSet.theIndices[x]])->shard[0].get<uint32_t>();
 					theReturnValue.push_back(theError);
@@ -471,12 +471,12 @@ namespace DiscordCoreInternal {
 				return ProcessIOResult::Error;
 			}
 			if (readWriteSet.revents & POLLIN) {
-				if (!this->readDataProcess()) {
+				if (!this->processReadData()) {
 					return ProcessIOResult::Error;
 				}
 			}
 			if (readWriteSet.revents & POLLOUT) {
-				if (!this->writeDataProcess()) {
+				if (!this->processWriteData()) {
 					return ProcessIOResult::Error;
 				}
 			}
@@ -500,7 +500,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool SSLClient::writeDataProcess() noexcept {
+	bool SSLClient::processWriteData() noexcept {
 		if (this->outputBuffers.size() > 0) {
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffers.front().data(), this->outputBuffers.front().size(), &writtenBytes) };
@@ -523,7 +523,7 @@ namespace DiscordCoreInternal {
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("SSLClient::writeDataProcess()", errorValue, this->ssl) << endl;
+						cout << reportSSLError("SSLClient::processWriteData()", errorValue, this->ssl) << endl;
 					}
 					this->disconnect(true);
 					return false;
@@ -533,7 +533,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	bool SSLClient::readDataProcess() noexcept {
+	bool SSLClient::processReadData() noexcept {
 		do {
 			size_t readBytes{ 0 };
 			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
@@ -557,7 +557,7 @@ namespace DiscordCoreInternal {
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("SSLClient::readDataProcess()", errorValue, this->ssl) << endl;
+						cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
 					}
 					this->disconnect(true);
 					return false;
@@ -655,10 +655,10 @@ namespace DiscordCoreInternal {
 			return;
 		} else {
 			if (readWriteSet.revents & POLLRDNORM) {
-				this->readDataProcess();
+				this->processReadData();
 			}
 			if (readWriteSet.revents & POLLWRNORM) {
-				this->writeDataProcess();
+				this->processWriteData();
 			}
 		}
 	}
@@ -696,7 +696,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void DatagramSocketClient::writeDataProcess() noexcept {
+	void DatagramSocketClient::processWriteData() noexcept {
 		if (this->outputBuffers.size() > 0 && this->areWeStreamConnected) {
 			std::string clientToServerString = this->outputBuffers.front();
 			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
@@ -710,7 +710,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void DatagramSocketClient::readDataProcess() noexcept {
+	void DatagramSocketClient::processReadData() noexcept {
 		if (this->areWeStreamConnected) {
 #ifdef _WIN32
 			int32_t intSize = sizeof(this->theStreamTargetAddress);
