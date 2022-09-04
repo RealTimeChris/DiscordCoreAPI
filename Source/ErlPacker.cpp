@@ -28,6 +28,11 @@
 
 namespace DiscordCoreInternal {
 
+	typedef union {
+		uint64_t uint64Value;
+		double doubleValue;
+	} TypePunner;
+
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
 	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
@@ -102,7 +107,7 @@ namespace DiscordCoreInternal {
 			this->appendBinaryExt(newVector, newValue);
 		} else if (jsonData.is_number_float()) {
 			double newValue = jsonData.get<double>();
-			this->appendFloatExt(newValue);
+			this->appendNewFloatExt(newValue);
 		} else if (jsonData.is_null()) {
 			this->appendNil();
 		}
@@ -130,10 +135,13 @@ namespace DiscordCoreInternal {
 		this->writeToBuffer(bufferNew);
 	}
 
-	void ErlPacker::appendFloatExt(double value) {
-		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Float_Ext) };
-		void* doubleValue{ &value };
-		DiscordCoreAPI::storeBits(bufferNew, *static_cast<uint64_t*>(doubleValue));
+	void ErlPacker::appendNewFloatExt(double floatValue) {
+		std::string bufferNew{};
+		bufferNew.push_back(static_cast<unsigned char>(ETFTokenType::New_Float_Ext));
+		
+		TypePunner punner{};
+		punner.doubleValue = floatValue;
+		DiscordCoreAPI::storeBits(bufferNew, punner.uint64Value);
 		this->writeToBuffer(bufferNew);
 	}
 
@@ -215,7 +223,7 @@ namespace DiscordCoreInternal {
 				return this->parseIntegerExt();
 			}
 			case ETFTokenType::New_Float_Ext: {
-				[[fallthrough]];
+				return this->parseNewFloatExt();
 			}
 			case ETFTokenType::Float_Ext: {
 				return this->parseFloatExt();
@@ -257,6 +265,7 @@ namespace DiscordCoreInternal {
 				return this->parseAtomUtf8Ext();
 			}
 			default: {
+				std::cout << "THE UNKNOWN TYPE: " << +type << std::endl;
 				throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Unknown data type in ETF.\n\n" };
 			}
 		}
@@ -307,18 +316,31 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseFloatExt() {
-		uint32_t floatLength = 31;
-		auto theStringNew = this->readString(floatLength);
-		if (theStringNew == nullptr) {
+		const uint8_t floatLength = 31;
+		const char* floatString = readString(floatLength);
+
+		if (floatString == NULL) {
 			return nlohmann::json{};
 		}
+
 		double number{};
-		std::string nullTerminated{ theStringNew, floatLength };
+		std::string nullTerminated{};
+		nullTerminated.insert(nullTerminated.begin(), floatString, floatString + floatLength);
+
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
-		if (!count) {
+
+		if (count != 1) {
 			return nlohmann::json{};
 		}
-		nlohmann::json theValue = number;
+
+		nlohmann::json returnValue = number;
+		return returnValue;
+	}
+
+	nlohmann::json ErlPacker::parseNewFloatExt() {
+		TypePunner thePunner{};
+		thePunner.uint64Value = readBits<uint64_t>();
+		nlohmann::json theValue = thePunner.doubleValue;
 		return theValue;
 	}
 

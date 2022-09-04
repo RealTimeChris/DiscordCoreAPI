@@ -632,7 +632,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll std::string getString(nlohmann::json* jsonData, const char* keyName);
 
-	DiscordCoreAPI_Dll uint64_t strtoull(std::string&& theString);
+	DiscordCoreAPI_Dll uint64_t strtoull(const std::string& theString);
 
 	template<typename ReturnType> ReturnType fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
 		ReturnType theValue{};

@@ -67,8 +67,8 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::string comparisongStringFalse{ "false" };
 		std::string comparisongStringNil{ "nil" };
-		std::string falseString{ "false" };
-		std::string nilString{ "nil" };
+		const char* falseString{ "false" };
+		const char* nilString{ "nil" };
 		std::string bufferString{};
 		char* buffer{ nullptr };
 		uint64_t offSet{};
@@ -84,7 +84,7 @@ namespace DiscordCoreInternal {
 
 		void appendIntegerExt(uint32_t);
 
-		void appendFloatExt(double);
+		void appendNewFloatExt(double value);
 
 		void appendNilExt();
 
@@ -120,6 +120,8 @@ namespace DiscordCoreInternal {
 		nlohmann::json parseBigint(uint32_t);
 
 		nlohmann::json parseIntegerExt();
+
+		nlohmann::json parseNewFloatExt();
 
 		nlohmann::json parseFloatExt();
 
