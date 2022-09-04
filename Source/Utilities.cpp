@@ -172,6 +172,8 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			this->thePtr.reset(nullptr);
 			this->thePtr = std::move(other.thePtr);
+			other.thePtr.reset(nullptr);
+			other.thePtr = nullptr;
 		}
 		return *this;
 	}
@@ -192,7 +194,6 @@ namespace DiscordCoreAPI {
 			for (uint64_t x = 0; x < theLength; ++x) {
 				this->thePtr[x] = other.thePtr[x];
 			}
-			this->thePtr[theLength] = '\0';
 		}
 		return *this;
 	}
@@ -208,7 +209,6 @@ namespace DiscordCoreAPI {
 		for (int32_t x = 0; x < theLength; ++x) {
 			this->thePtr[x] = theString[x];
 		}
-		this->thePtr[theLength] = '\0';
 		return *this;
 	}
 
@@ -226,7 +226,6 @@ namespace DiscordCoreAPI {
 			for (int64_t x = 0; x < theLength; ++x) {
 				this->thePtr[x] = theString[x];
 			}
-			this->thePtr[theLength] = '\0';
 		}
 		return *this;
 	}
@@ -268,7 +267,6 @@ namespace DiscordCoreAPI {
 			this->thePtr[x] = theStream.str()[x];
 		}
 		this->thePtr[theLength] = theChar;
-		this->thePtr[theLength + 1] = '\0';
 	}
 
 	size_t StringWrapper::size() {
