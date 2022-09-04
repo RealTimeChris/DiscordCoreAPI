@@ -151,6 +151,7 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		std::deque<VoiceConnectInitData> voiceConnections{};
 		DiscordCoreAPI::ConfigManager* configManager{};
+		std::vector<SSLClient*> theShardMapForPIO{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		uint32_t currentBaseSocketAgent{};
 		int32_t heartbeatInterval{ 0 };

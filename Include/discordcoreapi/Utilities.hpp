@@ -356,10 +356,10 @@ namespace DiscordCoreAPI {
 
 	/// For selecting the caching style of the library. \brief For selecting the caching style of the library.
 	struct DiscordCoreAPI_Dll CacheOptions {
-		bool cacheChannels{ true };///< Do we cache Channels?
-		bool cacheGuilds{ true };///< Do we cache Guilds?
-		bool cacheRoles{ true };///< Do we cache Roles?
-		bool cacheUsers{ true };///< Do we cache Users/GuildMembers?
+		bool cacheChannels{ false };///< Do we cache Channels?
+		bool cacheGuilds{ false };///< Do we cache Guilds?
+		bool cacheRoles{ false };///< Do we cache Roles?
+		bool cacheUsers{ false };///< Do we cache Users/GuildMembers?
 	};
 
 	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.

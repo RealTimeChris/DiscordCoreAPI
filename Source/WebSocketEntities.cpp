@@ -1684,6 +1684,7 @@ namespace DiscordCoreInternal {
 					std::this_thread::sleep_for(1ms);
 				}
 				this->theShardMap[thePackageNew.currentShard]->areWeConnecting.store(false);
+				this->theShardMapForPIO.push_back(this->theShardMap[thePackageNew.currentShard].get());
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1733,13 +1734,7 @@ namespace DiscordCoreInternal {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				this->disconnectVoiceInternal();
 				this->connectVoiceInternal();
-				std::vector<SSLClient*> theVector{};
-				for (auto& [key, value]: this->theShardMap) {
-					if (!static_cast<WebSocketSSLShard*>(value.get())->areWeConnecting.load()) {
-						theVector.push_back(value.get());
-					}
-				}
-				auto theResult = SSLClient::processIO(theVector);
+				auto theResult = SSLClient::processIO(this->theShardMapForPIO);
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1750,14 +1745,14 @@ namespace DiscordCoreInternal {
 					}
 				}
 
-				for (auto& value: theVector) {
+				for (auto& value: this->theShardMapForPIO) {
 					if (!static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
 						if (value->areWeStillConnected()) {
 							static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
 						}
 					}
 				}
-				if (theVector.size() == 0) {
+				if (this->theShardMapForPIO.size() == 0) {
 					std::this_thread::sleep_for(1ms);
 				}
 			}
