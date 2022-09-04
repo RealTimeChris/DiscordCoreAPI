@@ -441,7 +441,6 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
 		co_await NewThreadAwaitable<std::vector<GuildData>>();
-		std::shared_lock theLock{ Guilds::theMutex };
 		GuildDataVector guildVector{};
 		for (auto [key, value]: Guilds::cache) {
 			value.discordCoreClient = Guilds::discordCoreClient;
@@ -458,10 +457,9 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Guilds::getGuildAsync()";
 		Guild theData{};
 		if (!Guilds::cache.contains(dataPackage.guildId)) {
-			std::unique_lock theLock{ Guilds::theMutex };
-			Guilds::cache[dataPackage.guildId] = GuildData{};
+			Guilds::cache.emplace(dataPackage.guildId, GuildData{});
 		}
-		theData = Guilds::cache[dataPackage.guildId];
+		theData = Guilds::cache.readOnly(dataPackage.guildId);
 		theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theData);
 		theData.discordCoreClient = Guilds::discordCoreClient;
 		Guilds::insertGuild(theData);
@@ -470,14 +468,12 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		co_await NewThreadAwaitable<GuildData>();
-		std::shared_lock theLock{ Guilds::theMutex };
 		if (!Guilds::cache.contains(dataPackage.guildId)) {
-			theLock.unlock();
 			auto theGuild = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
 			theGuild.discordCoreClient = Guilds::discordCoreClient;
 			co_return theGuild;
 		} else {
-			auto& theGuild = Guilds::cache[dataPackage.guildId];
+			GuildData theGuild = Guilds::cache.readOnly(dataPackage.guildId);
 			theGuild.discordCoreClient = Guilds::discordCoreClient;
 			co_return theGuild;
 		}
@@ -910,9 +906,8 @@ namespace DiscordCoreAPI {
 		}
 		if (Guilds::doWeCacheGuilds) {
 			guild.discordCoreClient = Guilds::discordCoreClient;
-			std::unique_lock theLock{ Guilds::theMutex };
 			auto guildId = guild.id;
-			Guilds::cache[guildId] = std::move(guild);
+			Guilds::cache.emplace(guildId, std::move(guild));
 			if (Guilds::cache.size() % 500 == 0) {
 				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 			}
@@ -920,16 +915,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::removeGuild(const Snowflake guildId) {
-		std::unique_lock theLock{ Guilds::theMutex };
-		if (Guilds::cache.contains(guildId)) {
-			Guilds::cache.erase(guildId);
-		}
+		Guilds::cache.erase(guildId);
 	};
 
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
-	std::unordered_map<Snowflake, GuildData> Guilds::cache{};
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
+	ObjectCache<Snowflake, GuildData> Guilds::cache{};
 	bool Guilds::doWeCacheGuilds{ false };
-	std::shared_mutex Guilds::theMutex{};
 
 }

@@ -439,6 +439,58 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	template<typename KeyType, typename ObjectType>
+	class ObjectCache { 
+	  public:
+		ObjectCache() noexcept {};
+
+		void emplace(KeyType theKey, ObjectType&&theData) noexcept {
+			std::unique_lock theLock{ this->theMutex };
+			this->theMap.insert_or_assign(theKey, std::move(theData));
+		}
+
+		const ObjectType& readOnly(KeyType theKey) noexcept{
+			std::shared_lock theLock{ this->theMutex };
+			return this->theMap[theKey];
+		}
+
+		ObjectType& at(KeyType theKey) noexcept {
+			std::shared_lock theLock{ this->theMutex };
+			return this->theMap[theKey];
+		}
+
+		auto begin() {
+			std::unique_lock theLock{ this->theMutex };
+			return this->theMap.begin();
+		}
+
+		auto end() {
+			std::unique_lock theLock{ this->theMutex };
+			return this->theMap.end();
+		}
+
+		bool contains(KeyType theKey) noexcept {
+			std::unique_lock theLock{ this->theMutex };
+			return this->theMap.contains(theKey);
+		}
+
+		void erase(KeyType theKey) {
+			std::unique_lock theLock{ this->theMutex };
+			if (this->theMap.contains(theKey)) {
+				this->theMap.erase(theKey);
+			}
+		}
+
+		size_t size() noexcept {
+			std::unique_lock theLock{ this->theMutex };
+			return this->theMap.size();
+		}
+
+	  protected:
+		std::unordered_map<KeyType, ObjectType> theMap{};
+		std::shared_mutex theMutex{};
+	};
+
 	class DiscordCoreAPI_Dll StringWrapper {
 	  public:
 		StringWrapper() noexcept = default;

@@ -581,10 +581,9 @@ namespace DiscordCoreAPI {
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
 	  protected:
-		static std::unordered_map<Snowflake, GuildData> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static ObjectCache<Snowflake, GuildData> cache;
 		static DiscordCoreClient* discordCoreClient;
-		static std::shared_mutex theMutex;
 		static bool doWeCacheGuilds;
 
 		static void insertGuild(GuildData guild);

@@ -236,10 +236,9 @@ namespace DiscordCoreAPI {
 		}
 		Role theData{};
 		if (!Roles::cache.contains(dataPackage.roleId)) {
-			std::unique_lock theLock{ Roles::theMutex };
-			Roles::cache[dataPackage.roleId] = RoleData{};
+			Roles::cache.emplace(dataPackage.roleId, RoleData{});
 		}
-		theData = Roles::cache[dataPackage.roleId];
+		theData = Roles::cache.readOnly(dataPackage.roleId);
 		theData = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload, &theData);
 		Roles::insertRole(theData);
 		co_return theData;
@@ -287,12 +286,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
 		co_await NewThreadAwaitable<RoleData>();
-		std::shared_lock theLock{ Roles::theMutex };
 		if (!Roles::cache.contains(dataPackage.roleId)) {
-			theLock.unlock();
 			co_return Roles::getRoleAsync(dataPackage).get();
 		} else if (Roles::cache.contains(dataPackage.roleId)) {
-			co_return Roles::cache[dataPackage.roleId];
+			RoleData theData = Roles::cache.readOnly(dataPackage.roleId);
+			co_return theData;
 		}
 	}
 
@@ -301,9 +299,8 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Roles::doWeCacheRoles) {
-			std::unique_lock theLock{ Roles::theMutex };
 			auto roleId = role.id;
-			Roles::cache[roleId] = std::move(role);
+			Roles::cache.emplace(roleId, std::move(role));
 			if (Roles::cache.size() % 1000 == 0) {
 				std::cout << "ROLE COUNT: " << Roles::cache.size() << std::endl;
 			}
@@ -311,14 +308,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::removeRole(const Snowflake roleId) {
-		std::unique_lock theLock{ Roles::theMutex };
-		if (Roles::cache.contains(roleId)) {
-			Roles::cache.erase(roleId);
-		}
+		Roles::cache.erase(roleId);
 	};
 
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
-	std::unordered_map<Snowflake, RoleData> Roles::cache{};
+	ObjectCache<Snowflake, RoleData> Roles::cache{};
 	bool Roles::doWeCacheRoles{ false };
-	std::shared_mutex Roles::theMutex{};
 }

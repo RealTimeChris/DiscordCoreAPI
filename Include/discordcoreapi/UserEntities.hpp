@@ -213,9 +213,8 @@ namespace DiscordCoreAPI {
 		static void insertUser(UserData user);
 
 	  protected:
-		static std::unordered_map<Snowflake, UserData> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static std::shared_mutex theMutex;
+		static ObjectCache<Snowflake, UserData> cache;
 		static bool doWeCacheUsers;
 	};
 	/**@}*/

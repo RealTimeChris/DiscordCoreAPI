@@ -203,10 +203,9 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Channels::getChannelAsync()";
 		Channel theData{};
 		if (!Channels::cache.contains(dataPackage.channelId)) {
-			std::unique_lock theLock{ Channels::theMutex };
-			Channels::cache[dataPackage.channelId] = ChannelData{};
+			Channels::cache.emplace(dataPackage.channelId, ChannelData{});
 		}
-		theData = Channels::cache[dataPackage.channelId];
+		theData = Channels::cache.readOnly(dataPackage.channelId);
 		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
 		Channels::insertChannel(theData);
 		co_return theData;
@@ -214,12 +213,11 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
 		co_await NewThreadAwaitable<ChannelData>();
-		std::shared_lock theLock{ Channels::theMutex };
 		if (!Channels::cache.contains(dataPackage.channelId)) {
-			theLock.unlock();
 			co_return Channels::getChannelAsync(dataPackage).get();
 		} else {
-			co_return Channels::cache[dataPackage.channelId];
+			ChannelData theData = Channels::cache.readOnly(dataPackage.channelId);
+			co_return theData;
 		}
 	}
 
@@ -235,10 +233,9 @@ namespace DiscordCoreAPI {
 		}
 		Channel theData{};
 		if (!Channels::cache.contains(dataPackage.channelId)) {
-			std::unique_lock theLock{ Channels::theMutex };
-			Channels::cache[dataPackage.channelId] = ChannelData{};
+			Channels::cache.emplace(dataPackage.channelId, ChannelData{});
 		}
-		theData = Channels::cache[dataPackage.channelId];
+		theData = Channels::cache.readOnly(dataPackage.channelId);
 		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
 		Channels::insertChannel(theData);
 		co_return theData;
@@ -382,9 +379,8 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Channels::doWeCacheChannels) {
-			std::unique_lock theLock{ Channels::theMutex };
 			auto channelId = channel.id;
-			Channels::cache[channelId] = std::move(channel);
+			Channels::cache.emplace(channelId, std::move(channel));
 			if (Channels::cache.size() % 1000 == 0) {
 				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
 			}
@@ -392,14 +388,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::removeChannel(const Snowflake channelId) {
-		std::unique_lock theLock{ Channels::theMutex };
-		if (Channels::cache.contains(channelId)) {
-			Channels::cache.erase(channelId);
-		}
+		Channels::cache.erase(channelId);
 	};
 
 	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
-	std::unordered_map<Snowflake, ChannelData> Channels::cache{};
+	ObjectCache<Snowflake, ChannelData> Channels::cache{};
 	bool Channels::doWeCacheChannels{ false };
-	std::shared_mutex Channels::theMutex{};
 }
