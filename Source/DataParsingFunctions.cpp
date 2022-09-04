@@ -364,9 +364,7 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::doWeCacheGuildMembers) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
 				auto userId = strtoull(getString(&value, "user_id"));
-				if (GuildMembers::cache.contains(GuildMemberKey{ theData.id, userId })) {
-					GuildMembers::cache[GuildMemberKey{ theData.id, userId }].voiceChannelId = strtoull(getString(&value, "channel_id"));
-				}
+				GuildMembers::cache[GuildMemberKey{ theData.id, userId }].voiceChannelId = strtoull(getString(&value, "channel_id"));
 			}
 		}
 
@@ -486,9 +484,7 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::doWeCacheGuildMembers) {
 			for (auto& value: (*jsonObjectData)["voice_states"]) {
 				auto userId = strtoull(getString(&value, "user_id"));
-				if (GuildMembers::cache.contains(GuildMemberKey{ theData.id, userId })) {
-					GuildMembers::cache[GuildMemberKey{ theData.id, userId }].voiceChannelId = strtoull(getString(&value, "channel_id"));
-				}
+				GuildMembers::cache[GuildMemberKey{ theData.id, userId }].voiceChannelId = strtoull(getString(&value, "channel_id"));
 			}
 		}
 

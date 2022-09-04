@@ -169,7 +169,7 @@ namespace DiscordCoreAPI {
 		size_t size();
 
 	  protected:
-		std::unordered_multimap<Snowflake, GuildMemberData> theMap{};
+		std::unordered_map<Snowflake, GuildMemberData> theMap{};
 		std::mutex theMutex{};
 	};
 
