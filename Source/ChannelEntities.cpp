@@ -102,12 +102,12 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			this->permissionOverwrites = std::move(other.permissionOverwrites);
 			this->memberCount = other.memberCount;
+			this->topic = std::move(other.topic);
 			this->name = std::move(other.name);
 			this->parentId = other.parentId;
 			this->position = other.position;
 			this->guildId = other.guildId;
 			this->ownerId = other.ownerId;
-			this->topic = other.topic;
 			this->flags = other.flags;
 			this->type = other.type;
 			this->id = other.id;
@@ -384,7 +384,7 @@ namespace DiscordCoreAPI {
 		if (Channels::doWeCacheChannels) {
 			std::unique_lock theLock{ Channels::theMutex };
 			auto channelId = channel.id;
-			Channels::cache.emplace(channelId, std::move(channel));
+			Channels::cache[channelId] = std::move(channel);
 			if (Channels::cache.size() % 1000 == 0) {
 				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
 			}

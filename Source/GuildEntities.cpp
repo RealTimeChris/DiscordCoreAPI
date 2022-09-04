@@ -186,11 +186,54 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			this->voiceConnectionPtr = other.voiceConnectionPtr;
 			this->discordCoreClient = other.discordCoreClient;
-			this->channels = std::move(other.channels);
+			for (auto& value: other.channels) {
+				Channel theData{};
+				theData.id = value;
+				this->channels.push_back(theData);
+			}
+			for (auto& value: other.members) {
+				GuildMember theData{};
+				theData.id = value;
+				this->members.push_back(theData);
+			}
+			for (auto& value: other.roles) {
+				Role theData{};
+				theData.id = value;
+				this->roles.push_back(theData);
+			}
+			for (auto& value: other.emoji) {
+				EmojiData theData{};
+				theData.id = value;
+				this->emoji.push_back(theData);
+			}
+			for (auto& value: other.guildScheduledEvents) {
+				GuildScheduledEvent theData{};
+				theData.id = value;
+				this->guildScheduledEvents.push_back(theData);
+			}
+			for (auto& value: other.presences) {
+				PresenceUpdateData theData{};
+				theData.userId = value.userId;
+				this->presences.emplace(theData.userId, theData);
+			}
+			for (auto& value: other.stageInstances) {
+				StageInstance theData{};
+				theData.id = value;
+				this->stageInstances.push_back(theData);
+			}
+			for (auto& value: other.stickers) {
+				Sticker theData{};
+				theData.id = value;
+				this->stickers.push_back(theData);
+			}
+			for (auto& value: other.threads) {
+				Thread theData{};
+				theData.id = value;
+				this->threads.push_back(theData);
+			}
 			this->joinedAt = std::move(other.joinedAt);
 			this->ownerId = std::move(other.ownerId);
 			this->memberCount = other.memberCount;
-			this->roles = std::move(other.roles);
 			this->icon = std::move(other.icon);
 			this->name = std::move(other.name);
 			this->flags = other.flags;
@@ -207,12 +250,55 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			this->voiceConnectionPtr = other.voiceConnectionPtr;
 			this->discordCoreClient = other.discordCoreClient;
+			for (auto& value: other.channels) {
+				Channel theData{};
+				theData.id = value;
+				this->channels.push_back(theData);
+			}
+			for (auto& value: other.members) {
+				GuildMember theData{};
+				theData.id = value;
+				this->members.push_back(theData);
+			}
+			for (auto& value: other.roles) {
+				Role theData{};
+				theData.id = value;
+				this->roles.push_back(theData);
+			}
+			for (auto& value: other.emoji) {
+				EmojiData theData{};
+				theData.id = value;
+				this->emoji.push_back(theData);
+			}
+			for (auto& value: other.guildScheduledEvents) {
+				GuildScheduledEvent theData{};
+				theData.id = value;
+				this->guildScheduledEvents.push_back(theData);
+			}
+			for (auto& value: other.presences) {
+				PresenceUpdateData theData{};
+				theData.userId = value.userId;
+				this->presences.emplace(theData.userId, theData);
+			}
+			for (auto& value: other.stageInstances) {
+				StageInstance theData{};
+				theData.id = value;
+				this->stageInstances.push_back(theData);
+			}
+			for (auto& value: other.stickers) {
+				Sticker theData{};
+				theData.id = value;
+				this->stickers.push_back(theData);
+			}
+			for (auto& value: other.threads) {
+				Thread theData{};
+				theData.id = value;
+				this->threads.push_back(theData);
+			}
 			this->memberCount = other.memberCount;
-			this->channels = other.channels;
 			this->joinedAt = other.joinedAt;
 			this->ownerId = other.ownerId;
 			this->flags = other.flags;
-			this->roles = other.roles;
 			this->icon = other.icon;
 			this->name = other.name;
 			this->id = other.id;
@@ -826,7 +912,7 @@ namespace DiscordCoreAPI {
 			guild.discordCoreClient = Guilds::discordCoreClient;
 			std::unique_lock theLock{ Guilds::theMutex };
 			auto guildId = guild.id;
-			Guilds::cache.emplace(guildId, std::move(guild));
+			Guilds::cache[guildId] = std::move(guild);
 			if (Guilds::cache.size() % 500 == 0) {
 				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 			}

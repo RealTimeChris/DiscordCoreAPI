@@ -292,13 +292,16 @@ namespace DiscordCoreAPI {
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
 		StringWrapper preferredLocale{};///< Preferred locale, for voice chat servers.
 		std::vector<Sticker> stickers{};///< Stickers of the Guild.
+		std::vector<Channel> channels{};///< Channels of the Guild.
 		std::vector<Channel> threads{};///< Threads of the Guild.
+		std::vector<EmojiData> emoji{};///< Emoji of the Guild.
 		StringWrapper vanityUrlCode{};///< Vanity Url code, if applicable.
 		StringWrapper description{};///< Description of the Guild.
 		Snowflake widgetChannelId{};///< Channel id for the Guild's widget.
 		Snowflake systemChannelId{};///< Channel id for the Guild's system Channel.
 		IconHash discoverySplash{};///< Link to the discovery image's splash.
 		Snowflake rulesChannelId{};///< Channel id for the Guild's rules Channel.
+		std::vector<Role> roles{};///< Roles of the Guild.
 		Snowflake applicationId{};///< The current application id.
 		Permissions permissions{};///< Current Permissions for the bot in the Guild.
 		PremiumTier premiumTier{};///< What is the premium tier?

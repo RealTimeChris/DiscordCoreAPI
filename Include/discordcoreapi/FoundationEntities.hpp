@@ -905,6 +905,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll PresenceUpdateData {
 		uint8_t theStatus{};///< Current client status.
 		Snowflake guildId{};///< Guild id for the current presence.
+		Snowflake userId{};///< User id for the current presence.
 
 		PresenceUpdateData() noexcept = default;
 

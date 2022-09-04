@@ -811,7 +811,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"], theGuildMember);
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													if (DiscordCoreAPI::GuildMembers::cache.contains(guildId, userId)) {
+													if (DiscordCoreAPI::GuildMembers::cache.contains(DiscordCoreAPI::GuildMemberKey{ guildId, userId })) {
 														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache[DiscordCoreAPI::GuildMemberKey{ guildId, userId }];
 													}
 													if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
@@ -879,7 +879,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(&payload["d"], theGuildMember);
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													if (DiscordCoreAPI::GuildMembers::cache.contains(guildId, userId)) {
+													if (DiscordCoreAPI::GuildMembers::cache.contains(DiscordCoreAPI::GuildMemberKey{ guildId, userId })) {
 														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache[DiscordCoreAPI::GuildMemberKey{ guildId, userId }];
 													}
 												} else {
@@ -1380,7 +1380,8 @@ namespace DiscordCoreInternal {
 												}
 											}
 											if (this->discordCoreClient->configManager.doWeCacheUsers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
-												if (DiscordCoreAPI::GuildMembers::cache.contains(dataPackage->voiceStateData.guildId, dataPackage->voiceStateData.userId)) {
+												if (DiscordCoreAPI::GuildMembers::cache.contains(
+														DiscordCoreAPI::GuildMemberKey{ dataPackage->voiceStateData.guildId, dataPackage->voiceStateData.userId })) {
 													DiscordCoreAPI::GuildMembers::cache[DiscordCoreAPI::GuildMemberKey{ dataPackage->voiceStateData.guildId,
 																							dataPackage->voiceStateData.userId }]
 														.voiceChannelId = dataPackage->voiceStateData.channelId;

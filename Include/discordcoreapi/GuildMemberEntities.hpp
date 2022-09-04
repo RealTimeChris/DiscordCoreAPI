@@ -158,18 +158,18 @@ namespace DiscordCoreAPI {
 	  public:
 		GuildMemberCache() noexcept = default;
 
-		GuildMemberData& operator[](GuildMemberKey&& theData);
+		GuildMemberData& operator[](GuildMemberKey&& theKey);
 
 		void emplace(GuildMemberKey&& theKey, GuildMemberData&& theData);
 
-		bool contains(Snowflake guildId, Snowflake userId);
+		bool contains(GuildMemberKey&& theKey);
 
-		void erase(Snowflake guildId, Snowflake userId);
+		void erase(GuildMemberKey&& theKey);
 
 		size_t size();
 
 	  protected:
-		std::multimap<Snowflake, GuildMemberData> theMap{};
+		std::unordered_multimap<Snowflake, GuildMemberData> theMap{};
 		std::mutex theMutex{};
 	};
 
