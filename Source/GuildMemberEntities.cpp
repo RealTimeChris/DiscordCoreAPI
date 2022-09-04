@@ -127,7 +127,12 @@ namespace DiscordCoreAPI {
 
 	bool GuildMemberCache::contains(GuildMemberKey&& theKey) {
 		std::unique_lock theLock{ this->theMutex };
-		return this->theMap.contains(theKey.userId);
+		for (auto iterator = this->theMap.begin(); iterator != this->theMap.end(); ++iterator) {
+			if (iterator->second.id == theKey.userId && iterator->second.guildId == theKey.guildId) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void GuildMemberCache::emplace(GuildMemberKey&& theKey, GuildMemberData&& theData) {
@@ -135,15 +140,32 @@ namespace DiscordCoreAPI {
 		this->theMap.emplace(theKey.userId, std::move(theData));
 	}
 
-	GuildMemberData& GuildMemberCache::operator[](GuildMemberKey&& theKey) {
+	GuildMemberData& GuildMemberCache::operator[](GuildMemberKey&& theData) {
 		std::unique_lock theLock{ this->theMutex };
-		return this->theMap[theKey.userId];
+		for (auto iterator = this->theMap.begin(); iterator != this->theMap.end(); ++iterator) {
+			if (iterator->second.id == theData.userId && iterator->second.guildId == theData.guildId) {
+				return iterator->second;
+			}
+		}
+		GuildMemberData guildMember{};
+		guildMember.id = theData.userId;
+		guildMember.guildId = theData.guildId;
+		this->theMap.emplace(theData.userId, guildMember);
+		for (auto iterator = this->theMap.begin(); iterator != this->theMap.end(); ++iterator) {
+			if (iterator->second.id == theData.userId && iterator->second.guildId == theData.guildId) {
+				return iterator->second;
+			}
+		}
+		return theMap.find(theData.userId)->second;
 	}
 
 	void GuildMemberCache::erase(GuildMemberKey&& theKey) {
 		std::unique_lock theLock{ this->theMutex };
-		if (this->theMap.contains(theKey.userId)) {
-			this->theMap.erase(theKey.userId);
+		for (auto iterator = this->theMap.begin(); iterator != this->theMap.end(); ++iterator) {
+			if (iterator->second.id == theKey.userId && iterator->second.guildId == theKey.guildId) {
+				this->theMap.erase(iterator);
+				break;
+			}
 		}
 	}
 
