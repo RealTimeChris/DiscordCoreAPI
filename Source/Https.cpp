@@ -569,7 +569,7 @@ namespace DiscordCoreInternal {
 			theConnection.resetValues();
 			ProcessIOResult theResult{};
 			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error) {
-				theResult = theConnection.processIO(10);
+				theResult = theConnection.processIO(1);
 				if (theConnection.theData.theStopWatch.hasTimePassed()) {
 					break;
 				}
