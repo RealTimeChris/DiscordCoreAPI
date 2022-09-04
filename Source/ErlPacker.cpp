@@ -28,11 +28,6 @@
 
 namespace DiscordCoreInternal {
 
-	typedef union {
-		uint64_t uint64Value;
-		double doubleValue;
-	} TypePunner;
-
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
 	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
@@ -139,9 +134,8 @@ namespace DiscordCoreInternal {
 		std::string bufferNew{};
 		bufferNew.push_back(static_cast<unsigned char>(ETFTokenType::New_Float_Ext));
 		
-		TypePunner punner{};
-		punner.doubleValue = floatValue;
-		DiscordCoreAPI::storeBits(bufferNew, punner.uint64Value);
+		void* punner{ &floatValue };
+		DiscordCoreAPI::storeBits(bufferNew, *static_cast<uint64_t*>(punner));
 		this->writeToBuffer(bufferNew);
 	}
 
@@ -338,10 +332,10 @@ namespace DiscordCoreInternal {
 	}
 
 	nlohmann::json ErlPacker::parseNewFloatExt() {
-		TypePunner thePunner{};
-		thePunner.uint64Value = readBits<uint64_t>();
-		nlohmann::json theValue = thePunner.doubleValue;
-		return theValue;
+		uint64_t theValue = readBits<uint64_t>();
+		void* thePtr{ &theValue };
+		nlohmann::json theValueNew = *static_cast<double*>(thePtr);
+		return theValueNew;
 	}
 
 	bool compareString(const char* theString, const char* theString02, size_t theSize) {
