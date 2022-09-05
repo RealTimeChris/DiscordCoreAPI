@@ -412,12 +412,13 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::StopWatch theStopWatch{ 5s };
 	std::atomic_int32_t theInt{};
-	bool WebSocketSSLShard::onMessageReceived(const std::string& theData) noexcept {
+	bool WebSocketSSLShard::onMessageReceived(const std::string& theDataNew) noexcept {
+		std::string& theData{ ( std::string& )theDataNew };
 		if (this->discordCoreClient) {
 			if (this->areWeStillConnected()) {
 				try {
 					bool returnValue{ false };
-					nlohmann::json payload{};
+					std::string payload{};
 					if (theData.size() > 0) {
 						returnValue = true;
 
@@ -441,23 +442,32 @@ namespace DiscordCoreInternal {
 					} else {
 						returnValue = false;
 					}
-
-					if (payload.contains("s") && !payload["s"].is_null()) {
-						this->lastNumberReceived = payload["s"].get<int32_t>();
+					std::cout << "THE OP VALUE: " << payload << std::endl;
+					payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
+					auto theDocument = this->theParser.iterate(payload);
+					WebSocketMessage theMessage{};
+					simdjson::ondemand::object theObject{ theDocument };
+					std::cout << "THE OP VALUE: " << theMessage.op << ", THE S VALUE: " << theMessage.s << ", THE T VALUE: " << theMessage.t << std::endl;
+					parseObject(theDocument.get_object().value(), "", theMessage);
+					std::cout << "THE OP VALUE: " << theMessage.op << ", THE S VALUE: " << theMessage.s << ", THE T VALUE: " << theMessage.t << std::endl;
+					if (theMessage.s != 0) {
+						this->lastNumberReceived = theMessage.s;
 					}
 
-					if (this->configManager->doWePrintWebSocketSuccessMessages() && !payload.is_null()) {
+					if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightGreen()
 							 << "Message received from WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string(": ")
-							 << payload.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) << DiscordCoreAPI::reset() << endl
+							 << payload << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
-					if (payload.contains("op") && !payload["op"].is_null()) {
-						switch (payload["op"].get<int32_t>()) {
+					if (theMessage.op != -1) {
+						switch (theMessage.op) {
 							case 0: {
-								if (payload.contains("d") && !payload["d"].is_null() && payload.contains("t") && !payload["t"].is_null()) {
-									switch (EventConverter{ payload["t"].get<std::string>() }) {
-										case 1: {
+								if (theMessage.t != "") {
+										
+									switch (EventConverter{ theMessage.t }) {
+											/*
+											case 1: { 
 											this->currentState.store(SSLShardState::Authenticated);
 											this->sessionId = payload["d"]["session_id"].get<std::string>();
 											std::string theResumeUrl = payload["d"]["resume_gateway_url"].get<std::string>();
@@ -659,7 +669,7 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::parseObject(&payload["d"], dataPackage->threadMembersUpdateData);
 											this->discordCoreClient->eventManager.onThreadMembersUpdateEvent(*dataPackage);
 											break;
-										}
+										}*/
 										case 18: {
 											if (theInt.load() % 100 == 0) {
 												std::cout << "THE GUILD COUNT: " << theInt.load() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
@@ -667,10 +677,8 @@ namespace DiscordCoreInternal {
 											theInt.store(theInt.load() + 1);
 											DiscordCoreAPI::GuildData theGuild{};
 											Snowflake guildId{};
-											if (payload["d"].contains("id") && !payload["d"]["id"].is_null()) {
-												guildId = stoull(payload["d"]["id"].get<std::string>());
-											}
-											DiscordCoreAPI::parseObject(&payload["d"], theGuild);
+											DiscordCoreAPI::parseObject(theDocument.get_object(), "d", theGuild);
+											guildId = theGuild.id;
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
@@ -686,7 +694,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 											break;
-										}
+										} /*
 										case 19: {
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
@@ -1422,8 +1430,11 @@ namespace DiscordCoreInternal {
 											this->discordCoreClient->eventManager.onWebhookUpdateEvent(*dataPackage);
 											break;
 										}
+										*/
 									}
+									
 								}
+								
 								break;
 							}
 							case 1: {
@@ -1443,6 +1454,8 @@ namespace DiscordCoreInternal {
 								break;
 							}
 							case 9: {
+								InvalidSessionData theData{};
+								parseObject(payload, this->theParser, theData);
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
 										 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 9)!"
@@ -1453,7 +1466,7 @@ namespace DiscordCoreInternal {
 								int32_t numOfMsToWait =
 									static_cast<int32_t>(1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
 								std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
-								if (payload["d"] == true) {
+								if (theData.d == true) {
 									this->areWeResuming = true;
 								} else {
 									this->areWeResuming = false;
@@ -1463,10 +1476,12 @@ namespace DiscordCoreInternal {
 								break;
 							}
 							case 10: {
-								if (payload["d"].contains("heartbeat_interval") && !payload["d"]["heartbeat_interval"].is_null()) {
+								HelloData theData{};
+								parseObject(theDocument.get_object(), "", theData);
+								std::cout << "HELLO DATA: " << theData.heartbeatInterval << std::endl;
+								if (theData.heartbeatInterval != 0) {
 									this->areWeHeartBeating = true;
-									this->heartBeatStopWatch =
-										DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ payload["d"]["heartbeat_interval"] } };
+									this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ theData.heartbeatInterval } };
 								}
 								if (this->areWeResuming) {
 									WebSocketResumeData resumeData{};

@@ -416,13 +416,25 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string getString(simdjson::fallback::ondemand::document_stream::iterator::value_type& jsonData, const char* theKey) {
-		auto theResult = jsonData[theKey].get_string().take_value();
-		return theResult.data();
+		auto theResult = jsonData[theKey].find_field_unordered(theKey).get_object();
+		std::string_view theString{}; 
+		for (auto theObject: theResult) {
+			theString = theObject.unescaped_key().take_value();
+		}
+		std::string theStringNew{};
+		theStringNew.insert(theStringNew.begin(), theString.begin(), theString.end());
+		return theStringNew;
 	}
 
 	std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonData, const char* theKey) {
-		auto theResult = jsonData[theKey].get_string().take_value();
-		return theResult.data();
+		auto theResult = jsonData[theKey].find_field_unordered(theKey).get_object();
+		std::string_view theString{};
+		for (auto theObject: theResult) {
+			theString = theObject.unescaped_key().take_value();
+		}
+		std::string theStringNew{};
+		theStringNew.insert(theStringNew.begin(), theString.begin(), theString.end());
+		return theStringNew;
 	}
 
 	std::string getString(nlohmann::json* jsonData, const char* theKey) {

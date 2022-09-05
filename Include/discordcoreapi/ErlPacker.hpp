@@ -60,15 +60,16 @@ namespace DiscordCoreInternal {
 	  public:
 		std::string parseJsonToEtf(nlohmann::json&);
 
-		nlohmann::json parseEtfToJson(std::string& dataToParse);
+		std::string parseEtfToJson(std::string& dataToParse);
 
 		ErlPacker() noexcept = default;
 
 	  protected:
 		std::string comparisongStringFalse{ "false" };
 		std::string comparisongStringNil{ "nil" };
-		const char* falseString{ "false" };
-		const char* nilString{ "nil" };
+		std::string falseString{ "false" };
+		simdjson::dom::parser theParser{};
+		std::string nilString{ "nil" };
 		std::string bufferString{};
 		char* buffer{ nullptr };
 		uint64_t offSet{};
@@ -84,7 +85,7 @@ namespace DiscordCoreInternal {
 
 		void appendIntegerExt(uint32_t);
 
-		void appendNewFloatExt(double value);
+		void appendNewFloatExt(double);
 
 		void appendNilExt();
 
@@ -113,45 +114,45 @@ namespace DiscordCoreInternal {
 
 		const char* readString(uint32_t length);
 
-		nlohmann::json singleValueETFToJson();
+		std::string singleValueETFToJson();
 
-		nlohmann::json parseSmallIntegerExt();
+		std::string parseSmallIntegerExt();
 
-		nlohmann::json parseBigint(uint32_t);
+		std::string parseBigint(uint32_t);
 
-		nlohmann::json parseIntegerExt();
+		std::string parseIntegerExt();
 
-		nlohmann::json parseNewFloatExt();
+		std::string parseNewFloatExt();
 
-		nlohmann::json parseFloatExt();
+		std::string parseFloatExt();
 
-		nlohmann::json processAtom(const char* atom, uint32_t length);
+		std::string processAtom(const char* atom, uint32_t length);
 
-		nlohmann::json parseTuple(uint32_t);
+		std::string parseTuple(uint32_t);
 
-		nlohmann::json parseSmallTupleExt();
+		std::string parseSmallTupleExt();
 
-		nlohmann::json parseLargeTupleExt();
+		std::string parseLargeTupleExt();
 
-		nlohmann::json parseNilExt();
+		std::string parseNilExt();
 
-		nlohmann::json parseStringAsList();
+		std::string parseStringAsList();
 
-		nlohmann::json parseListExt();
+		std::string parseListExt();
 
-		nlohmann::json parseBinaryExt();
+		std::string parseBinaryExt();
 
-		nlohmann::json parseSmallBigExt();
+		std::string parseSmallBigExt();
 
-		nlohmann::json parseLargeBigExt();
+		std::string parseLargeBigExt();
 
-		nlohmann::json parseArray(uint32_t);
+		std::string parseArray(uint32_t);
 
-		nlohmann::json parseSmallAtomExt();
+		std::string parseSmallAtomExt();
 
-		nlohmann::json parseMapExt();
+		std::string parseMapExt();
 
-		nlohmann::json parseAtomUtf8Ext();
+		std::string parseAtomUtf8Ext();
 	};
 }// namespace DiscordCoreInternal
 #endif

@@ -182,7 +182,9 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		template<typename ReturnType> friend void parseObject(std::string& jsonObjectData, simdjson::ondemand::parser* theParser, ReturnType& theData);
+		template<typename ReturnType>
+		friend void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, const char* keyName, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(std::string& jsonObjectData, simdjson::ondemand::parser& theParser, ReturnType& theData);
 		template<typename ReturnType> friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;

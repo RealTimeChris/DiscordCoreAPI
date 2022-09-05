@@ -619,9 +619,11 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
+	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, const char* keyName, ReturnType& theData);
+
 	template<typename ReturnType> void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
 
-	template<typename ReturnType> void parseObject(std::string& jsonObjectData, simdjson::ondemand::parser* theParser, ReturnType& theData);
+	template<typename ReturnType> void parseObject(std::string& jsonObjectData, simdjson::ondemand::parser& theParser, ReturnType& theData);
 
 	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json* jsonData, const char* keyName);
 
@@ -630,20 +632,6 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll uint32_t getUint32(nlohmann::json* jsonData, const char* keyName);
 
 	DiscordCoreAPI_Dll uint64_t getUint64(nlohmann::json* jsonData, const char* keyName);
-
-	DiscordCoreAPI_Dll uint8_t getUint8(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName);
-
-	DiscordCoreAPI_Dll uint16_t getUint16(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName);
-
-	DiscordCoreAPI_Dll uint32_t getUint32(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName);
-
-	DiscordCoreAPI_Dll uint64_t getUint64(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName);
-
-	DiscordCoreAPI_Dll bool getBool(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName);
-	
-	DiscordCoreAPI_Dll std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, const char* keyName);
-
-	DiscordCoreAPI_Dll std::string getString(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName);
 
 	DiscordCoreAPI_Dll bool getBool(nlohmann::json* jsonData, const char* keyName);
 
