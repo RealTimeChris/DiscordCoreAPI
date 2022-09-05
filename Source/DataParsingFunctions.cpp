@@ -293,6 +293,110 @@ namespace DiscordCoreAPI {
 
 		theData.name = getString(jsonObjectData, "name");
 	}
+	
+	template<> void parseObject(std::string& jsonObjectData, simdjson::ondemand::parser* theParser, GuildData& theData) {
+		auto theDocument = theParser->iterate(jsonObjectData);
+		
+		theData.flags |= setBool(theData.flags, GuildFlags::WidgetEnabled, DiscordCoreAPI::getBool(theDocument, "widget_enabled"));
+
+		theData.flags |= setBool(theData.flags, GuildFlags::Unavailable, DiscordCoreAPI::getBool(theDocument, "unavailable"));
+
+		theData.flags |= setBool(theData.flags, GuildFlags::Owner, DiscordCoreAPI::getBool(theDocument, "owner"));
+
+		theData.flags |= setBool(theData.flags, GuildFlags::Large, DiscordCoreAPI::getBool(theDocument, "large"));
+
+		theData.ownerId = strtoull(getString(theDocument, "owner_id"));
+
+		theData.memberCount = getUint32(theDocument, "member_count");
+
+		theData.joinedAt = getString(theDocument, "joined_at");
+
+		theData.id = strtoull(getString(theDocument, "id"));
+
+		theData.icon = getString(theDocument, "icon");
+
+		theData.name = getString(theDocument, "name");
+
+		theData.threads.clear();
+		for (auto value: theDocument["threads"].get_array().value()) {
+			theData.threads.emplace_back(strtoull(getString(value.get_object(), "id")));
+		}
+
+		theData.stickers.clear();
+		for (auto value: theDocument["stickers"].get_array().value()) {
+			theData.stickers.emplace_back(strtoull(getString(value.get_object(), "id")));
+		}
+
+		theData.guildScheduledEvents.clear();
+		for (auto value: theDocument["guild_scheduled_events"].get_array().value()) {
+			theData.guildScheduledEvents.emplace_back(strtoull(getString(value.get_object(), "id")));
+		}
+
+		theData.stageInstances.clear();
+		for (auto value: theDocument["stage_instances"].get_array().value()) {
+			theData.stageInstances.emplace_back(strtoull(getString(value.get_object(), "id")));
+		}
+
+		theData.emoji.clear();
+		for (auto value: theDocument["emoji"].get_array().value()) {
+			theData.emoji.emplace_back(strtoull(getString(value.get_object(), "id")));
+		}
+
+		if (Roles::doWeCacheRoles) {
+			theData.roles.clear();
+			RoleData newData{};
+			for (auto value: theDocument["roles"].get_array().value()) {
+				nlohmann::json theJsonData{ value.get_raw_json_string().take_value().raw() };
+				DiscordCoreAPI::parseObject(&theJsonData, newData);
+				theData.roles.emplace_back(newData.id);
+				Roles::insertRole(std::move(newData));
+			}
+		}
+
+		if (GuildMembers::doWeCacheGuildMembers) {
+			theData.members.clear();
+			GuildMember newData{};
+			for (auto value: theDocument["members"].get_array().value()) {
+				nlohmann::json theJsonData{ value.get_raw_json_string().take_value().raw() };
+				DiscordCoreAPI::parseObject(&theJsonData, newData);
+				newData.guildId = theData.id;
+				theData.members.emplace_back(newData.id);
+				GuildMembers::insertGuildMember(std::move(newData));
+			}
+		}
+
+		if (GuildMembers::doWeCacheGuildMembers) {
+			for (auto value: theDocument["voice_states"].get_array().value()) {
+				nlohmann::json theJsonData{ value.get_raw_json_string().take_value().raw() };
+				auto userId = strtoull(getString(&theJsonData, "user_id"));
+				if (GuildMembers::cache.contains(GuildMemberKey{ theData.id, userId })) {
+					GuildMembers::cache.at(GuildMemberKey{ theData.id, userId }).voiceChannelId = strtoull(getString(&theJsonData, "channel_id"));
+				}
+			}
+		}
+
+		if (GuildMembers::doWeCacheGuildMembers) {
+			theData.presences.clear();
+			PresenceUpdateData newData{};
+			for (auto value: theDocument["presences"].get_array().value()) {
+				nlohmann::json theJsonData{ value.get_raw_json_string().take_value().raw() };
+				DiscordCoreAPI::parseObject(&theJsonData, newData);
+				theData.presences.emplace_back(std::move(newData));
+			}
+		}
+
+		if (Channels::doWeCacheChannels) {
+			theData.channels.clear();
+			ChannelData newData{};
+			for (auto value: theDocument["channels"].get_array().value()) {
+				nlohmann::json theJsonData{ value.get_raw_json_string().take_value().raw() };
+				DiscordCoreAPI::parseObject(&theJsonData, newData);
+				newData.guildId = theData.id;
+				theData.channels.emplace_back(newData.id);
+				Channels::insertChannel(std::move(newData));
+			}
+		}
+	}
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, GuildData& theData) {
 		theData.flags |= setBool(theData.flags, GuildFlags::WidgetEnabled, DiscordCoreAPI::getBool(jsonObjectData, "widget_enabled"));

@@ -33,6 +33,7 @@
 #include <discordcoreapi/EventEntities.hpp>
 #include <discordcoreapi/SSLClients.hpp>
 #include <discordcoreapi/ThreadPool.hpp>
+#include <simdjson.h>
 
 namespace DiscordCoreInternal {
 
@@ -110,6 +111,7 @@ namespace DiscordCoreInternal {
 		std::atomic_bool areWeConnecting{ true };
 		bool haveWeReceivedHeartbeatAck{ true };
 		const uint32_t maxReconnectTries{ 10 };
+		simdjson::ondemand::parser theParser{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		bool serverUpdateCollected{ false };
 		uint32_t currentReconnectTries{ 0 };

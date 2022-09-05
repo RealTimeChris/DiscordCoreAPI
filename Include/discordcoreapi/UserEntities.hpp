@@ -101,11 +101,11 @@ namespace DiscordCoreAPI {
 		virtual ~User() noexcept = default;
 	};
 
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, User& theData);
+	template<> void parseObject(nlohmann::json* jsonObjectData, User& theData);
 
 	class DiscordCoreAPI_Dll UserVector {
 	  public:
-		template<typename ReturnType> friend DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
 
 		UserVector() noexcept = default;
 
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 		std::vector<User> theUsers{};
 	};
 
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json* jsonObjectData, UserVector& theData);
+	template<> void parseObject(nlohmann::json* jsonObjectData, UserVector& theData);
 
 	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.
 	class DiscordCoreAPI_Dll BotUser : public User {

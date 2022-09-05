@@ -214,7 +214,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	template<> DiscordCoreAPI_Dll void parseObject(nlohmann::json* theJsonData, OnVoiceServerUpdateData& theData) {
+	template<> void parseObject(nlohmann::json* theJsonData, OnVoiceServerUpdateData& theData) {
 		if (theJsonData->contains("endpoint") && !(*theJsonData)["endpoint"].is_null()) {
 			theData.endpoint = (*theJsonData)["endpoint"].get<std::string>();
 		}
