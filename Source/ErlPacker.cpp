@@ -211,60 +211,89 @@ namespace DiscordCoreInternal {
 		uint8_t type = this->readBits<uint8_t>();
 		switch (static_cast<ETFTokenType>(type)) {
 			case ETFTokenType::Small_Integer_Ext: {
+				//std::cout << "WERE HERE 0101" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseSmallIntegerExt();
 			}
 			case ETFTokenType::Integer_Ext: {
+				//std::cout << "WERE HERE 0202" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseIntegerExt();
 			}
 			case ETFTokenType::New_Float_Ext: {
+				//std::cout << "WERE HERE 0303" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseNewFloatExt();
 			}
 			case ETFTokenType::Float_Ext: {
+				//std::cout << "WERE HERE 0404" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseFloatExt();
 			}
 			case ETFTokenType::Atom_Ext: {
+				//std::cout << "WERE HERE 0505" << std::string{ this->buffer, this->offSet } << std::endl;
 				std::string theString{};
-				theString.append(R"(")");
+				theString += "\"";
 				theString += this->parseAtomUtf8Ext();
-				theString.append(R"(")");
+				theString += "\"";
 				return theString;
 			}
 			case ETFTokenType::Small_Tuple_Ext: {
+				//std::cout << "WERE HERE 0606" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseSmallTupleExt();
 			}
 			case ETFTokenType::Large_Tuple_Ext: {
+				//std::cout << "WERE HERE 0707" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseLargeTupleExt();
 			}
 			case ETFTokenType::Nil_Ext: {
 				return this->parseNilExt();
 			}
 			case ETFTokenType::String_Ext: {
+				//std::cout << "WERE HERE 0808" << std::string{ this->buffer, this->offSet } << std::endl;
 				std::string theString{};
-				theString.append(R"(")");
+				theString += "\"";
 				theString += this->parseStringAsList();
-				theString.append(R"(")");
+				theString += "\"";
 				return theString;
 			}
 			case ETFTokenType::List_Ext: {
+				//std::cout << "WERE HERE 0909" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseListExt();
 			}
 			case ETFTokenType::Binary_Ext: {
-				return this->parseBinaryExt();
+				//std::cout << "WERE HERE 1010" << std::string{ this->buffer, this->offSet } << std::endl;
+				std::string theString{};
+				theString += "\"";
+				theString += this->parseBinaryExt();
+				theString += "\"";
+				return theString;
 			}
 			case ETFTokenType::Small_Big_Ext: {
-				return this->parseSmallBigExt();
+				////std::cout << "WERE HERE 1111" << std::string{ this->buffer, this->offSet } << std::endl;
+				std::string theString{};
+				theString += "\"";
+				theString += this->parseSmallBigExt();
+				theString += "\"";
+				return theString;
 			}
 			case ETFTokenType::Large_Big_Ext: {
+				//std::cout << "WERE HERE 1212" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseLargeBigExt();
 			}
 			case ETFTokenType::Small_Atom_Ext: {
-				return this->parseSmallAtomExt();
+				//std::cout << "WERE HERE 1313" << std::string{ this->buffer, this->offSet } << std::endl;
+				std::string theString{};
+				theString += "\"";
+				theString += this->parseSmallAtomExt();
+				theString += "\"";
+				return theString;
 			}
 			case ETFTokenType::Map_Ext: {
+				//std::cout << "WERE HERE 1414" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseMapExt();
 			}
 			case ETFTokenType::Atom_Utf8_Ext: {
-				return this->parseAtomUtf8Ext();
+				//std::cout << "WERE HERE 1515" << std::string{ this->buffer, this->offSet } << std::endl;
+				std::string theString{};
+				theString += this->parseAtomUtf8Ext();
+				return theString;
 			}
 			default: {
 				throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Unknown data type in ETF.\n\n" };
@@ -459,9 +488,7 @@ namespace DiscordCoreInternal {
 		map.append(R"({)");
 		for (uint32_t i = 0; i < length; ++i) {
 			std::string theKey{};
-			theKey.append(R"(")");
-			theKey += singleValueETFToJson();
-			theKey.append(R"(")");
+			theKey = singleValueETFToJson();
 			theKey += ":";
 			auto value = singleValueETFToJson();
 			if (i < length - 1) {

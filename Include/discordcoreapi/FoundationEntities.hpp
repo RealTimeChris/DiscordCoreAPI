@@ -306,21 +306,21 @@ namespace DiscordCoreInternal {
 
 	template<typename ReturnType> void parseObject(std::string& jsonObjectData, simdjson::ondemand::parser& theParser, ReturnType& theData);
 
-	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, const char* keyName, ReturnType& theData);
+	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, ReturnType& theData);
 
 	struct DiscordCoreAPI_Dll HelloData {
 		int32_t heartbeatInterval{};
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, const char* keyName, HelloData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, HelloData& theData);
 
 	struct DiscordCoreAPI_Dll WebSocketMessage {
 		int64_t op{ -1 };
 		std::string t{};
-		size_t s{};
+		uint64_t s{};
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, const char* keyName, WebSocketMessage& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, WebSocketMessage& theData);
 
 	struct DiscordCoreAPI_Dll ReconnectData {};
 
@@ -1878,7 +1878,7 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, GuildData& theData);
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, const char* keyName, GuildData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, GuildData& theData);
 
 	class DiscordCoreAPI_Dll GuildDataVector {
 	  public:

@@ -413,7 +413,7 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI::StopWatch theStopWatch{ 5s };
 	std::atomic_int32_t theInt{};
 	bool WebSocketSSLShard::onMessageReceived(const std::string& theDataNew) noexcept {
-		std::string& theData{ ( std::string& )theDataNew };
+		std::string theData = theDataNew;
 		if (this->discordCoreClient) {
 			if (this->areWeStillConnected()) {
 				try {
@@ -437,18 +437,17 @@ namespace DiscordCoreInternal {
 								returnValue = false;
 							}
 						} else {
-							payload = nlohmann::json::parse(( std::string& )theData);
+							payload = nlohmann::json::parse(theData);
 						}
 					} else {
 						returnValue = false;
 					}
-					std::cout << "THE OP VALUE: " << payload << std::endl;
+					//std::cout << "THE OP PAYLOAD: " << payload << std::endl;
 					payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 					auto theDocument = this->theParser.iterate(payload);
 					WebSocketMessage theMessage{};
-					simdjson::ondemand::object theObject{ theDocument };
-					std::cout << "THE OP VALUE: " << theMessage.op << ", THE S VALUE: " << theMessage.s << ", THE T VALUE: " << theMessage.t << std::endl;
-					parseObject(theDocument.get_object().value(), "", theMessage);
+					auto theObjectNewer = theDocument.get_object();
+					parseObject(theObjectNewer, "", theMessage);
 					std::cout << "THE OP VALUE: " << theMessage.op << ", THE S VALUE: " << theMessage.s << ", THE T VALUE: " << theMessage.t << std::endl;
 					if (theMessage.s != 0) {
 						this->lastNumberReceived = theMessage.s;
@@ -677,7 +676,8 @@ namespace DiscordCoreInternal {
 											theInt.store(theInt.load() + 1);
 											DiscordCoreAPI::GuildData theGuild{};
 											Snowflake guildId{};
-											DiscordCoreAPI::parseObject(theDocument.get_object(), "d", theGuild);
+											std::cout << "THE GUILD: " << theObjectNewer.value().raw_json().take_value() << std::endl;
+											DiscordCoreAPI::parseObject(theObjectNewer, "d", theGuild);
 											guildId = theGuild.id;
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
@@ -1477,7 +1477,8 @@ namespace DiscordCoreInternal {
 							}
 							case 10: {
 								HelloData theData{};
-								parseObject(theDocument.get_object(), "", theData);
+								auto theObjectNew = theDocument.get_object();
+								parseObject(theObjectNew, "", theData);
 								std::cout << "HELLO DATA: " << theData.heartbeatInterval << std::endl;
 								if (theData.heartbeatInterval != 0) {
 									this->areWeHeartBeating = true;

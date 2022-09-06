@@ -390,53 +390,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	uint8_t getUint8(simdjson::fallback::ondemand::document_stream::iterator::value_type& jsonData, const char* theKey) {
-		uint8_t theResult = jsonData[theKey].get_uint64().take_value();
-		return theResult;
-	}
-
-	uint16_t getUint16(simdjson::fallback::ondemand::document_stream::iterator::value_type& jsonData, const char* theKey) {
-		uint16_t theResult = jsonData[theKey].get_uint64().take_value();
-		return theResult;
-	}
-
-	uint32_t getUint32(simdjson::fallback::ondemand::document_stream::iterator::value_type& jsonData, const char* theKey) {
-		uint32_t theResult = jsonData[theKey].get_uint64().take_value();
-		return theResult;
-	}
-
-	uint64_t getUint64(simdjson::fallback::ondemand::document_stream::iterator::value_type& jsonData, const char* theKey) {
-		uint64_t theResult = jsonData[theKey].get_uint64().take_value();
-		return theResult;
-	}
-
-	bool getBool(simdjson::fallback::ondemand::document_stream::iterator::value_type& jsonData, const char* theKey) {
-		auto theResult = jsonData[theKey].get_bool().take_value();
-		return theResult;
-	}
-
-	std::string getString(simdjson::fallback::ondemand::document_stream::iterator::value_type& jsonData, const char* theKey) {
-		auto theResult = jsonData[theKey].find_field_unordered(theKey).get_object();
-		std::string_view theString{}; 
-		for (auto theObject: theResult) {
-			theString = theObject.unescaped_key().take_value();
-		}
-		std::string theStringNew{};
-		theStringNew.insert(theStringNew.begin(), theString.begin(), theString.end());
-		return theStringNew;
-	}
-
-	std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonData, const char* theKey) {
-		auto theResult = jsonData[theKey].find_field_unordered(theKey).get_object();
-		std::string_view theString{};
-		for (auto theObject: theResult) {
-			theString = theObject.unescaped_key().take_value();
-		}
-		std::string theStringNew{};
-		theStringNew.insert(theStringNew.begin(), theString.begin(), theString.end());
-		return theStringNew;
-	}
-
 	std::string getString(nlohmann::json* jsonData, const char* theKey) {
 		auto theResult = jsonData->find(theKey);
 		std::string returnString{};

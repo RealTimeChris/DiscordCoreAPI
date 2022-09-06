@@ -23,21 +23,25 @@
 # https://discordcoreapi.com
 
 # Set these values, if you are not building with VCPKG.
-# Set this value...
-set(VCPKG_ROOT_DIR "")
-# OR this value...
-set(CMAKE_CONFIG_FILE_DIR "C:/USers/Chris/Cmake/DiscordCoreAPI/share/discordcoreapi")
-# AND these values.
-set(ffmpeg_DIR "C:/vcpkg/installed/x64-windows/share/ffmpeg")
-set(nlohmann_json_DIR "C:/vcpkg/installed/x64-windows/share/nlohmann_json")
-set(Opus_DIR "C:/Vcpkg/installed/x64-windows/share/opus")
-set(unofficial-sodium_DIR "C:/vcpkg/installed/x64-windows/share/unofficial-sodium")
-set(OPENSSL_ROOT_DIR "C:/vcpkg/installed/x64-windows/")
-set(simdjson_DIR "C:/vcpkg/installed/x64-windows/share/simdjson")
+set(FFMPEG_INCLUDE_DIR "C:/Vcpkg/installed/x64-windows/include")
+set(FFMPEG_RELEASE_ROOT "C:/Vcpkg/installed/x64-windows/lib")
+set(FFMPEG_DEBUG_ROOT "C:/Vcpkg/installed/x64-windows/debug/lib")
+set(NLOHMANN_INCLUDE_DIR "C:/Vcpkg/installed/x64-windows/include")
+set(OPENSSL_INCLUDE_DIR "C:/Vcpkg/installed/x64-windows/include")
+set(OPENSSL_RELEASE_ROOT "C:/Vcpkg/installed/x64-windows/lib")
+set(OPENSSL_DEBUG_ROOT "C:/Vcpkg/installed/x64-windows/debug/lib")
+set(OPUS_INCLUDE_DIR "C:/Vcpkg/installed/x64-windows/include")
+set(OPUS_RELEASE_ROOT "C:/Vcpkg/installed/x64-windows/lib")
+set(OPUS_DEBUG_ROOT "C:/Vcpkg/installed/x64-windows/debug/lib")
+set(SIMDJSON_INCLUDE_DIR "C:/Vcpkg/installed/x64-windows/include")
+set(SIMDJSON_RELEASE_ROOT "C:/Vcpkg/installed/x64-windows/lib")
+set(SIMDJSON_DEBUG_ROOT "C:/Vcpkg/installed/x64-windows/debug/lib")
+set(SODIUM_INCLUDE_DIR "C:/Vcpkg/installed/x64-windows/include")
+set(SODIUM_RELEASE_ROOT "C:/Vcpkg/installed/x64-windows/lib")
+set(SODIUM_DEBUG_ROOT "C:/Vcpkg/installed/x64-windows/debug/lib")
 
 cmake_minimum_required(VERSION 3.20)
 set(PROJECT_NAME "DiscordCoreAPI")
-
 set(LIB_NAME "${PROJECT_NAME}")
 set(PRODUCT_VERSION "1.0.0")
 set(DESCRIPTION "A Discord bot library, written in C++, using custom asynchronous coroutines.")
@@ -48,7 +52,7 @@ project(
 	HOMEPAGE_URL "https://discordcoreapi.com"
 	DESCRIPTION "${DESCRIPTION}"
 )
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake;C:/vcpkg/installed/x64-windows/share/ffmpeg")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake;${CMAKE_SOURCE_DIR}/CMake/Find-Scripts") 
 set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}")
 
 if (NOT EXISTS "${_VCPKG_INSTALLED_DIR}")
@@ -65,18 +69,39 @@ if (NOT EXISTS "${_VCPKG_INSTALLED_DIR}")
 	else()
 		message(FATAL_ERROR "Sorry, but your OS is not supported!")
 	endif()
+	if (NOT EXISTS "${FFMPEG_INCLUDE_DIR}" OR NOT EXISTS "${FFMPEG_RELEASE_ROOT}" OR NOT EXISTS "${FFMPEG_DEBUG_ROOT}"
+		OR NOT EXISTS "${NLOHMANN_INCLUDE_DIR}" 
+		OR NOT EXISTS "${OPENSSL_INCLUDE_DIR}" OR NOT EXISTS "${OPENSSL_RELEASE_ROOT}" OR NOT EXISTS "${OPENSSL_DEBUG_ROOT}"
+		OR NOT EXISTS "${OPUS_INCLUDE_DIR}" OR NOT EXISTS "${OPUS_RELEASE_ROOT}" OR NOT EXISTS "${OPUS_DEBUG_ROOT}"
+		OR NOT EXISTS "${SIMDJSON_INCLUDE_DIR}" OR NOT EXISTS "${SIMDJSON_RELEASE_ROOT}" OR NOT EXISTS "${SIMDJSON_DEBUG_ROOT}"
+		OR NOT EXISTS "${SODIUM_INCLUDE_DIR}" OR NOT EXISTS "${SODIUM_RELEASE_ROOT}" OR NOT EXISTS "${SODIUM_DEBUG_ROOT}")
+		
+		message(FATAL_ERROR "Sorry - but please set the _DEBUG_ROOT, _RELEASE_ROOT AND _INCLUDE_DIR values in CMakeLists.txt!")
+	endif()
 else()
 	set(DEBUG_PREFIX "")
 	cmake_path(GET _VCPKG_INSTALLED_DIR ROOT_PATH ROOT_DRIVE)
 	set(VCPKG_INSTALLED_DIR "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
 	cmake_path(ABSOLUTE_PATH VCPKG_INSTALLED_DIR BASE_DIRECTORY "${ROOT_DRIVE}" NORMALIZE OUTPUT_VARIABLE VCPKG_INSTALLED_DIR)
-	set(VCPKG_ROOT_DIR "${VCPKG_INSTALLED_DIR}../")
-endif()
-
-if (EXISTS "${VCPKG_ROOT_DIR}")
-	include("${VCPKG_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake")
-	set(VCPKG_INSTALLED_DIR "${VCPKG_ROOT_DIR}/installed/x64-windows")
 	set(VCPKG_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/include")
+	set(VCPKG_RELEASE_ROOT "${VCPKG_INSTALLED_DIR}/lib")
+	set(VCPKG_DEBUG_ROOT "${VCPKG_INSTALLED_DIR}/debug/lib")
+	set(FFMPEG_INCLUDE_DIR "${VCPKG_INCLUDE_DIR}")
+	set(FFMPEG_RELEASE_ROOT "${VCPKG_RELEASE_ROOT}")
+	set(FFMPEG_DEBUG_ROOT "${VCPKG_DEBUG_ROOT}")
+	set(NLOHMANN_INCLUDE_DIR "${VCPKG_INCLUDE_DIR}")
+	set(OPENSSL_INCLUDE_DIR "${VCPKG_INCLUDE_DIR}")
+	set(OPENSSL_RELEASE_ROOT "${VCPKG_RELEASE_ROOT}")
+	set(OPENSSL_DEBUG_ROOT "${VCPKG_DEBUG_ROOT}")
+	set(OPUS_INCLUDE_DIR "${VCPKG_INCLUDE_DIR}")
+	set(OPUS_RELEASE_ROOT "${VCPKG_RELEASE_ROOT}")
+	set(OPUS_DEBUG_ROOT "${VCPKG_DEBUG_ROOT}")
+	set(SIMDJSON_INCLUDE_DIR "${VCPKG_INCLUDE_DIR}")
+	set(SIMDJSON_RELEASE_ROOT "${VCPKG_RELEASE_ROOT}")
+	set(SIMDJSON_DEBUG_ROOT "${VCPKG_DEBUG_ROOT}")
+	set(SODIUM_INCLUDE_DIR "${VCPKG_INCLUDE_DIR}")
+	set(SODIUM_RELEASE_ROOT "${VCPKG_RELEASE_ROOT}")
+	set(SODIUM_DEBUG_ROOT "${VCPKG_DEBUG_ROOT}")
 endif()
 
 add_subdirectory(Library)

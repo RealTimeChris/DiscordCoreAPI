@@ -64,24 +64,24 @@ target_include_directories(
 )
 
 find_package(FFMPEG MODULE REQUIRED)
-find_package(nlohmann_json CONFIG REQUIRED)
-find_package(OpenSSL REQUIRED)
-find_package(Opus CONFIG REQUIRED)
-find_package(unofficial-sodium CONFIG REQUIRED)
-find_package(simdjson CONFIG REQUIRED)
+find_package(NLOHMANN MODULE REQUIRED)
+find_package(OPENSSL MODULE REQUIRED)
+find_package(OPUS MODULE REQUIRED)
+find_package(SIMDJSON MODULE REQUIRED)
+find_package(SODIUM MODULE REQUIRED)
 
 target_link_libraries(
 	"${LIB_NAME}" PUBLIC
-	$<$<TARGET_EXISTS:ffmpeg::libavformat>:ffmpeg::libavformat>
-	$<$<TARGET_EXISTS:ffmpeg::libavcodec>:ffmpeg::libavcodec>
-	$<$<TARGET_EXISTS:ffmpeg::libavutil>:ffmpeg::libavutil>
-	$<$<TARGET_EXISTS:ffmpeg::libswresample>:ffmpeg::libswresample>
-	$<$<TARGET_EXISTS:nlohmann_json::nlohmann_json>:nlohmann_json::nlohmann_json>
-	$<$<TARGET_EXISTS:OpenSSL::Crypto>:OpenSSL::Crypto>
-	$<$<TARGET_EXISTS:OpenSSL::SSL>:OpenSSL::SSL>
-	$<$<TARGET_EXISTS:Opus::opus>:Opus::opus>
-	$<$<TARGET_EXISTS:simdjson::simdjson>:simdjson::simdjson>
-	$<$<TARGET_EXISTS:unofficial-sodium::sodium>:unofficial-sodium::sodium>
+	$<$<TARGET_EXISTS:FFMPEG::AVFormat>:FFMPEG::AVFormat>
+	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
+	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>
+	$<$<TARGET_EXISTS:FFMPEG::SWResample>:FFMPEG::SWResample>
+	$<$<TARGET_EXISTS:NLOHMANN::Json>:NLOHMANN::Json>
+	$<$<TARGET_EXISTS:OPENSSL::Ssl>:OPENSSL::Ssl>
+	$<$<TARGET_EXISTS:OPENSSL::Crypto>:OPENSSL::Crypto>
+	$<$<TARGET_EXISTS:OPUS::Opus>:OPUS::Opus>
+	$<$<TARGET_EXISTS:SIMDJSON::Simdjson>:SIMDJSON::Simdjson>
+	$<$<TARGET_EXISTS:SODIUM::Sodium>:SODIUM::Sodium>
 	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
 )
 
@@ -103,6 +103,8 @@ endif()
 if ("${VCPKG_TARGET_TRIPLET}" STREQUAL "x64-uwp")
 	target_compile_definitions("${LIB_NAME}" PUBLIC "UWP")
 endif()
+
+target_compile_definitions("${LIB_NAME}" PUBLIC "SIMDJSON_USING_WINDOWS_DYNAMIC_LIBRARY=1")
 
 target_compile_options(
 	"${LIB_NAME}" PRIVATE

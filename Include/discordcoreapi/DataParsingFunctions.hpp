@@ -41,7 +41,6 @@ namespace DiscordCoreInternal {
 	struct JsonParseError :public std::runtime_error {
 		explicit JsonParseError(int32_t theCode);
 	};
-	
 
 	DiscordCoreAPI_Dll uint8_t getUint8(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName, bool throwIfError = false,
 		std::source_location theLocation = std::source_location::current());
@@ -52,19 +51,13 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI_Dll uint32_t getUint32(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName, bool throwIfError = false,
 		std::source_location theLocation = std::source_location::current());
 
-	DiscordCoreAPI_Dll uint32_t getUint32(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, const char* keyName, bool throwIfError = false,
+	DiscordCoreAPI_Dll uint32_t getUint32(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, bool throwIfError = false,
 		std::source_location theLocation = std::source_location::current());
 
 	DiscordCoreAPI_Dll uint64_t getUint64(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName, bool throwIfError = false,
 		std::source_location theLocation = std::source_location::current());
 
 	DiscordCoreAPI_Dll double getFloat(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName, bool throwIfError = false,
-		std::source_location theLocation = std::source_location::current());
-
-	DiscordCoreAPI_Dll bool getBool(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName, bool throwIfError = false,
-		std::source_location theLocation = std::source_location::current());
-
-	DiscordCoreAPI_Dll std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, const char* keyName, bool throwIfError = false,
 		std::source_location theLocation = std::source_location::current());
 
 	DiscordCoreAPI_Dll std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, bool throwIfError = false,
