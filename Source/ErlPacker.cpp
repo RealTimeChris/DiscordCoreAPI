@@ -223,15 +223,15 @@ namespace DiscordCoreInternal {
 				return this->parseFloatExt();
 			}
 			case ETFTokenType::Atom_Ext: {
-				auto theStringNew = this->parseAtomUtf8Ext();
+				auto theStringNew = "";
 				std::string theString{ "\"" };
 				if (theStringNew != "null") {
-					theStringNew.insert(theStringNew.begin(), theString.begin(), theString.end());
-					theStringNew += "\"";
+					//theStringNew.insert(theStringNew.begin(), theString.begin(), theString.end());
+					//theStringNew += "\"";
 				} else {
-					theStringNew = "nullptr";
+					theStringNew = "null";
 				}
-				return theStringNew;
+				return this->parseAtomUtf8Ext();
 			}
 			case ETFTokenType::Small_Tuple_Ext: {
 				return this->parseSmallTupleExt();
@@ -452,7 +452,6 @@ namespace DiscordCoreInternal {
 		std::string array{};
 		for (uint32_t x = 0; x < length; x++) {
 			std::string theString{ this->singleValueETFToJson() };
-			DiscordCoreAPI::spinLock(100000);
 			array.append(theString);
 			if (x < length - 1) {
 				array.append(R"(,)");

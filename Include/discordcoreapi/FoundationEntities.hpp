@@ -1899,9 +1899,11 @@ namespace DiscordCoreAPI {
 		virtual ~GuildData() noexcept = default;
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, GuildData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, GuildData& theData);
 
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, GuildData& theData);
+
+	template<> void parseObject(nlohmann::json* jsonObjectData, GuildData& theData);
 
 	class DiscordCoreAPI_Dll GuildDataVector {
 	  public:

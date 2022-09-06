@@ -419,6 +419,7 @@ namespace DiscordCoreInternal {
 				try {
 					bool returnValue{ false };
 					std::string payload{};
+					nlohmann::json payloadJson{};
 					if (theData.size() > 0) {
 						returnValue = true;
 
@@ -426,7 +427,7 @@ namespace DiscordCoreInternal {
 							try {
 								DiscordCoreAPI::StopWatch theStopWatch{ 50us };
 								theStopWatch.resetTimer();
-								payload = ErlPacker::parseEtfToJson(( std::string& )(( std::string& )theData));
+								payload = ErlPacker::parseEtfToJson(theData);
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -437,18 +438,29 @@ namespace DiscordCoreInternal {
 								returnValue = false;
 							}
 						} else {
-							payload = nlohmann::json::parse(theData);
+							payloadJson = nlohmann::json::parse(theData);
 						}
 					} else {
 						returnValue = false;
 					}
+
+
+					std::cout << "THE PAYLOAD: " << payload << std::endl;
 					payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 					auto theDocument = this->theParser.iterate(payload);
 					auto thePayload = theDocument.value().get_value();
 					WebSocketMessage theMessage{};
-					//parseObject(thePayload, theMessage);
+					parseObject(thePayload, theMessage);
+					
 					if (theMessage.s != 0) {
 						this->lastNumberReceived = theMessage.s;
+					}
+					
+					if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+						cout << DiscordCoreAPI::shiftToBrightGreen()
+							 << "Message received from WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string(": ")
+							 << payloadJson.dump() << DiscordCoreAPI::reset() << endl
+							 << endl;
 					}
 
 					if (this->configManager->doWePrintWebSocketSuccessMessages()) {
@@ -466,11 +478,9 @@ namespace DiscordCoreInternal {
 											
 										case 1: { 
 											ReadyData theData{};
-
-											std::cout << "THE PAYLOAD: " << payload << std::endl;
 											parseObject(thePayload["d"], theData);
 											this->currentState.store(SSLShardState::Authenticated);
-
+											std::cout << "THIS IS IT WERE HERE! 0101" <<std::endl;
 											this->sessionId = theData.sessionId;
 											std::string theResumeUrl = theData.resumeGatewayUrl;
 											theResumeUrl = theResumeUrl.substr(theResumeUrl.find("wss://") + std::string{ "wss://" }.size());
@@ -662,8 +672,9 @@ namespace DiscordCoreInternal {
 											theInt.store(theInt.load() + 1);
 											DiscordCoreAPI::GuildData theGuild{};
 											Snowflake guildId{};
-											auto theValue = thePayload["d"];
-											DiscordCoreAPI::parseObject(theValue, theGuild);
+											std::cout << "THIS IS IT WERE HERE! 0202" << std::endl;
+											DiscordCoreAPI::parseObject(thePayload["d"], theGuild);
+											std::cout << "THIS IS IT WERE HERE! 0303" << std::endl;
 											guildId = theGuild.id;
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
@@ -686,8 +697,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
 												DiscordCoreAPI::GuildData theGuild{};
 												Snowflake guildId{};
-												auto theValue = thePayload["d"];
-												DiscordCoreAPI::parseObject(theValue, theGuild);
+												DiscordCoreAPI::parseObject(thePayload["d"], theGuild);
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 													DiscordCoreAPI::Guilds::insertGuild(std::move(theGuild));
 													theGuildPtr = &DiscordCoreAPI::Guilds::cache.at(guildId);
@@ -706,8 +716,7 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildDeletionEvent.theFunctions.size() > 0) {
 												std::unique_ptr<DiscordCoreAPI::GuildData> theGuild = std::make_unique<DiscordCoreAPI::GuildData>();
 												Snowflake guildId{};
-												auto theValue = thePayload["d"];
-												DiscordCoreAPI::parseObject(theValue, *theGuild);
+												DiscordCoreAPI::parseObject(thePayload["d"], *theGuild);
 												*theGuild = DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = guildId }).get();
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 													DiscordCoreAPI::Guilds::removeGuild(theGuild->id);
@@ -917,9 +926,9 @@ namespace DiscordCoreInternal {
 										}
 										case 32: {
 											if (DiscordCoreAPI::Roles::doWeCacheRoles || this->discordCoreClient->eventManager.onRoleDeletionEvent.theFunctions.size() > 0) {
-												Snowflake roleId{ DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(thePayload["d"], "role_id")) };
-												Snowflake guildId{ DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(thePayload["d"], "guild_id")) };
-												DiscordCoreAPI::RoleData theRole = DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = guildId, .roleId = roleId }).get();
+												Snowflake roleId{};//{ DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(thePayload["d"], "role_id")) };
+												Snowflake guildId{};//{ DiscordCoreAPI::strtoull(DiscordCoreAPI::getString(thePayload["d"], "guild_id")) };
+												DiscordCoreAPI::RoleData theRole{};//= DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = guildId, .roleId = roleId }).get();
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
 													DiscordCoreAPI::Roles::removeRole(roleId);
 													if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
@@ -1399,7 +1408,7 @@ namespace DiscordCoreInternal {
 							}
 							case 9: {
 								InvalidSessionData theData{};
-								parseObject(thePayload, theData);
+								//parseObject(thePayload, theData);
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
 										 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 9)!"
@@ -1421,7 +1430,7 @@ namespace DiscordCoreInternal {
 							}
 							case 10: {
 								HelloData theData{};
-								parseObject(thePayload, theData);
+								//parseObject(thePayload, theData);
 								if (theData.heartbeatInterval != 0) {
 									this->areWeHeartBeating = true;
 									this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ theData.heartbeatInterval } };

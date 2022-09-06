@@ -949,7 +949,7 @@ namespace DiscordCoreAPI {
 
 		void convertTimeStampToTimeUnits(TimeFormat theFormatNew, std::string originalTimeStamp) {
 			try {
-				if (originalTimeStamp != "") {
+				if (originalTimeStamp != "" && originalTimeStamp != "0") {
 					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)), stoi(originalTimeStamp.substr(8, 9)),
 						stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)), stoi(originalTimeStamp.substr(17, 18)), theFormatNew };
 					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) }.count();

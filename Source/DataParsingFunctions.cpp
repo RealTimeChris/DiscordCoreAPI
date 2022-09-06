@@ -44,85 +44,145 @@
 namespace DiscordCoreAPI {
 
 	bool getBool(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey) {
-		bool theResult{};
-		auto newResult = jsonData[theKey].get(theResult);
-		return theResult;
+		try {
+			bool theResult{};
+			auto newResult = jsonData[theKey].get(theResult);
+			return theResult;
+		} catch (...) {
+			reportException("getBool()");
+			return false;
+		}	
 	}
 
 	bool getBool(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey) {
-		bool theResult{};
-		auto newResult = jsonData[theKey].get(theResult);
-		return theResult;
+		try {
+			bool theResult{};
+			auto newResult = jsonData[theKey].get(theResult);
+			return theResult;
+		} catch (...) {
+			reportException("getBool()");
+			return false;
+		}
 	}
 
 	uint8_t getUint8(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey) {
-		uint64_t theResult{};
-		auto newResult = jsonData[theKey].get(theResult);
-		return static_cast<uint8_t>(theResult);
+		try{
+			uint64_t theResult{};
+			auto newResult = jsonData[theKey].get(theResult);
+			return static_cast<uint8_t>(theResult);
+		} catch (...) {
+			reportException("getBool()");
+			return 0;
+		}
 	}
 
 	uint8_t getUint8(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey) {
-		uint64_t theResult{};
-		auto newResult = jsonData[theKey].get(theResult);
-		return static_cast<uint8_t>(theResult);
+		try {
+			uint64_t theResult{};
+			auto newResult = jsonData[theKey].get(theResult);
+			return static_cast<uint8_t>(theResult);
+		} catch (...) {
+			reportException("getBool()");
+			return 0;
+		}
 	}
 
 	uint16_t getUint16(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey) {
-		uint64_t theResult{};
-		auto newResult = jsonData[theKey].get(theResult);
-		return static_cast<uint16_t>(theResult);
+		try{
+			uint64_t theResult{};
+			auto newResult = jsonData[theKey].get(theResult);
+			return static_cast<uint16_t>(theResult);
+		} catch (...) {
+			reportException("getBool()");
+			return 0;
+		}
 	}
 
 	uint16_t getUint16(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey) {
-		uint64_t theResult{};
-		auto newResult = jsonData[theKey].get(theResult);
-		return static_cast<uint16_t>(theResult);
+		try {
+			uint64_t theResult{};
+			auto newResult = jsonData[theKey].get(theResult);
+			return static_cast<uint16_t>(theResult);
+		} catch (...) {
+			reportException("getBool()");
+			return 0;
+		}
 	}
 
 	uint32_t getUint32(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey) {
-		uint64_t theResult{};
-		auto newResult = jsonData[theKey].get(theResult);
-		return static_cast<uint32_t>(theResult);
+		try{
+			uint64_t theResult{};
+			auto newResult = jsonData[theKey].get(theResult);
+			return static_cast<uint32_t>(theResult);
+		} catch (...) {
+			reportException("getBool()");
+			return 0;
+		}
 	}
 
 	uint32_t getUint32(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey) {
-		uint64_t theResult{};
-		auto newResult = jsonData[theKey].get(theResult);
-		return static_cast<uint32_t>(theResult);
+		try {
+			uint64_t theResult{};
+			auto newResult = jsonData[theKey].get(theResult);
+			return static_cast<uint32_t>(theResult);
+		} catch (...) {
+			reportException("getBool()");
+			return 0;
+		}
 	}
 
 	uint64_t getUint64(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey) {
-		uint64_t theResult{};
-		auto newResult = jsonData[theKey].get(theResult);
-		return theResult;
+		try{
+			uint64_t theResult{};
+			auto newResult = jsonData[theKey].get(theResult);
+			return theResult;
+		} catch (...) {
+			reportException("getBool()");
+			return 0;
+		}
 	}
 
 	uint64_t getUint64(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey) {
-		uint64_t theResult{};
-		auto newResult = jsonData[theKey].get(theResult);
-		return theResult;
+		try {
+			uint64_t theResult{};
+			auto newResult = jsonData[theKey].get(theResult);
+			return theResult;
+		} catch (...) {
+			reportException("getBool()");
+			return 0;
+		}
 	}
 
 	std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey) {
-		std::string_view theStringNew{};
-		auto theResult = jsonData[theKey].get(theStringNew);
-		if (theResult != simdjson::error_code::SUCCESS) {
-			return "0";
+		try{
+			std::string_view theStringNew{};
+			auto theResult = jsonData[theKey].get(theStringNew);
+			if (theResult != simdjson::error_code::SUCCESS) {
+				return "0";
+			}
+			std::string theStringNewer{};
+			theStringNewer.insert(theStringNewer.begin(), theStringNew.begin(), theStringNew.end());
+			return theStringNewer;
+		} catch (...) {
+			reportException("getBool()");
+			return "";
 		}
-		std::string theStringNewer{};
-		theStringNewer.insert(theStringNewer.begin(), theStringNew.begin(), theStringNew.end());
-		return theStringNewer;
 	}
 
 	std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey) {
-		std::string_view theStringNew{};
-		auto theResult = jsonData[theKey].get(theStringNew);
-		if (theResult != simdjson::error_code::SUCCESS) {
-			return "0";
+		try {
+			std::string_view theStringNew{};
+			auto theResult = jsonData[theKey].get(theStringNew);
+			if (theResult != simdjson::error_code::SUCCESS) {
+				return "0";
+			}
+			std::string theStringNewer{};
+			theStringNewer.insert(theStringNewer.begin(), theStringNew.begin(), theStringNew.end());
+			return theStringNewer;
+		} catch (...) {
+			reportException("getBool()");
+			return "";
 		}
-		std::string theStringNewer{};
-		theStringNewer.insert(theStringNewer.begin(), theStringNew.begin(), theStringNew.end());
-		return theStringNewer;
 	}
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, ApplicationCommand& theData) {
@@ -224,10 +284,11 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonObjectData, RoleData& theData) {
+		std::cout << "THIS IS IT WERE HERE! 2424" << std::endl;
 		theData.id = strtoull(getString(jsonObjectData, "id"));
-
+		std::cout << "THIS IS IT WERE HERE! 2525" << std::endl;
 		theData.name = getString(jsonObjectData, "name");
-
+		std::cout << "THIS IS IT WERE HERE! 2626" << std::endl;
 		std::stringstream theStream{};
 		theStream << getString(jsonObjectData, "unicode_emoji");
 		for (auto& value: theStream.str()) {
@@ -236,19 +297,19 @@ namespace DiscordCoreAPI {
 		if (theData.unicodeEmoji.size() > 3) {
 			theData.unicodeEmoji = static_cast<std::string>(theData.unicodeEmoji).substr(1, theData.unicodeEmoji.size() - 3);
 		}
-
+		std::cout << "THIS IS IT WERE HERE! 2727" << std::endl;
 		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
-
+		std::cout << "THIS IS IT WERE HERE! 2828" << std::endl;
 		theData.color = getUint32(jsonObjectData, "color");
-
+		std::cout << "THIS IS IT WERE HERE! 2929" << std::endl;
 		theData.flags |= setBool(theData.flags, RoleFlags::Hoist, getBool(jsonObjectData, "hoist"));
-
+		std::cout << "THIS IS IT WERE HERE! 3030" << std::endl;
 		theData.flags |= setBool(theData.flags, RoleFlags::Managed, getBool(jsonObjectData, "managed"));
-
+		std::cout << "THIS IS IT WERE HERE! 3131" << std::endl;
 		theData.flags |= setBool(theData.flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
-
+		std::cout << "THIS IS IT WERE HERE! 3232" << std::endl;
 		theData.position = getUint32(jsonObjectData, "position");
-
+		std::cout << "THIS IS IT WERE HERE! 3333" << std::endl;
 		theData.permissions = getString(jsonObjectData, "permissions");
 	}
 
@@ -597,6 +658,140 @@ namespace DiscordCoreAPI {
 		}
 
 		theData.name = getString(jsonObjectData, "name");
+	}
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, GuildData& theData) {
+		std::cout << "THIS IS IT WERE HERE! 0404" << std::endl;
+		theData.flags |= setBool(theData.flags, GuildFlags::WidgetEnabled, getBool(theParser, "widget_enabled"));
+		std::cout << "THIS IS IT WERE HERE! 0505" << std::endl;
+		theData.flags |= setBool(theData.flags, GuildFlags::Unavailable, getBool(theParser, "unavailable"));
+		std::cout << "THIS IS IT WERE HERE! 0606" << std::endl;
+		theData.flags |= setBool(theData.flags, GuildFlags::Owner, getBool(theParser, "owner"));
+		std::cout << "THIS IS IT WERE HERE! 0707" << std::endl;
+		theData.flags |= setBool(theData.flags, GuildFlags::Large, getUint8(theParser, "large"));
+		std::cout << "THIS IS IT WERE HERE! 0808" << std::endl;
+		theData.ownerId = strtoull(getString(theParser, "owner_id"));
+		std::cout << "THIS IS IT WERE HERE! 0909" << std::endl;
+		theData.memberCount = getUint32(theParser, "member_count");
+		std::cout << "THIS IS IT WERE HERE! 1010" << std::endl;
+		theData.joinedAt = getString(theParser, "joined_at");
+		std::cout << "THIS IS IT WERE HERE! 1111" << std::endl;
+		theData.id = strtoull(getString(theParser, "id"));
+		std::cout << "THIS IS IT WERE HERE! 1212" << std::endl;
+		theData.icon = getString(theParser, "icon");
+		std::cout << "THIS IS IT WERE HERE! 1313" << std::endl;
+		theData.name = getString(theParser, "name");
+		std::cout << "THIS IS IT WERE HERE! 1414" << std::endl;
+		theData.threads.clear();
+		simdjson::ondemand::array theArray{};
+		auto theResult = theParser["threads"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.threads.clear();
+			for (auto value: theArray) {
+				theData.threads.emplace_back(strtoull(getString(value, "id")));
+			}
+		}
+		std::cout << "THIS IS IT WERE HERE! 1515" << std::endl;
+		theResult = theParser["stickers"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.threads.clear();
+			for (auto value: theArray) {
+				theData.stickers.emplace_back(strtoull(getString(value, "id")));
+			}
+		}
+		std::cout << "THIS IS IT WERE HERE! 1616" << std::endl;
+		theResult = theParser["guild_scheduled_events"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.threads.clear();
+			for (auto value: theArray) {
+				theData.guildScheduledEvents.emplace_back(strtoull(getString(value, "id")));
+			}
+		}
+		std::cout << "THIS IS IT WERE HERE! 1717" << std::endl;
+		theResult = theParser["stage_instances"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.threads.clear();
+			for (auto value: theArray) {
+				theData.stageInstances.emplace_back(strtoull(getString(value, "id")));
+			}
+		}
+		std::cout << "THIS IS IT WERE HERE! 1818" << std::endl;
+		theResult = theParser["emoji"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.threads.clear();
+			for (auto value: theArray) {
+				theData.emoji.emplace_back(strtoull(getString(value, "id")));
+			}
+		}
+
+		std::cout << "THIS IS IT WERE HERE! 1919" << std::endl;
+		//theResult = theParser["members"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			if (GuildMembers::doWeCacheGuildMembers) {
+				theData.members.clear();
+				GuildMemberData newData{};
+				for (simdjson::ondemand::array_iterator iterator = theArray.begin(); iterator != theArray.end(); ++iterator) {
+					DiscordCoreAPI::parseObject(*iterator, newData);
+					newData.guildId = theData.id;
+					theData.members.emplace_back(newData.id);
+					GuildMembers::insertGuildMember(std::move(newData));
+				}
+			}
+		}
+		std::cout << "THIS IS IT WERE HERE! 2020" << std::endl;
+		theResult = theParser["roles"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			if (Roles::doWeCacheRoles) {
+				theData.roles.clear();
+				RoleData newData{};
+				for (simdjson::ondemand::array_iterator iterator = theArray.begin(); iterator != theArray.end(); ++iterator) {
+					DiscordCoreAPI::parseObject(*iterator, newData);
+					newData.guildId = theData.id;
+					theData.members.emplace_back(newData.id);
+					Roles::insertRole(std::move(newData));
+				}
+			}
+		}
+
+		std::cout << "THIS IS IT WERE HERE! 2121" << std::endl;
+		theResult = theParser["voice_states"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			if (GuildMembers::doWeCacheGuildMembers) {
+				for (simdjson::ondemand::array_iterator iterator = theArray.begin(); iterator != theArray.end(); ++iterator) {
+					auto userId = strtoull(getString(*iterator, "user_id"));
+					if (GuildMembers::cache.contains(GuildMemberKey{ theData.id, userId })) {
+						GuildMembers::cache.at(GuildMemberKey{ theData.id, userId }).voiceChannelId = strtoull(getString(*iterator, "channel_id"));
+					}
+				}
+			}
+		}
+		std::cout << "THIS IS IT WERE HERE! 2222" << std::endl;
+		theResult = theParser["presences"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			if (GuildMembers::doWeCacheGuildMembers) {
+				theData.presences.clear();
+				PresenceUpdateData newData{};
+				for (simdjson::ondemand::array_iterator iterator = theArray.begin(); iterator != theArray.end(); ++iterator) {
+					DiscordCoreAPI::parseObject(*iterator, newData);
+					newData.guildId = theData.id;
+					theData.presences.emplace_back(std::move(newData));
+				}
+			}
+		}
+		std::cout << "THIS IS IT WERE HERE! 2323" << std::endl;
+		theResult = theParser["channels"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			if (Channels::doWeCacheChannels) {
+				theData.channels.clear();
+				ChannelData newData{};
+				for (simdjson::ondemand::array_iterator iterator = theArray.begin(); iterator != theArray.end(); ++iterator) {
+					DiscordCoreAPI::parseObject(*iterator, newData);
+					newData.guildId = theData.id;
+					theData.members.emplace_back(newData.id);
+					Channels::insertChannel(std::move(newData));
+				}
+			}
+		}
 	}
 
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser,  GuildData& theData) {
@@ -5162,16 +5357,13 @@ namespace DiscordCoreInternal {
 
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, WebSocketMessage& theData) {
 		try {
-			//std::cout << theParser.value().raw_json().take_value() << std::endl;
-			std::cout << "NUMBER OF FIELDS: " << theParser.count_fields() << std::endl;
 			theData.op = DiscordCoreAPI::getUint32(theParser, "op");
 
 			std::cout << "WERE HERE THIS SI IT @ THE OP: " << theData.op << std::endl;
 			theData.s = DiscordCoreAPI::getUint32(theParser, "s");
 
 			std::cout << "WERE HERE THIS SI IT @ THE S: " << theData.s << std::endl;
-			theData.t = DiscordCoreAPI::getString(theParser, "t");
-			
+			theData.t = DiscordCoreAPI::getString(theParser, "t");			
 			std::cout << "WERE HERE THIS SI IT @ THE T: " << theData.t << std::endl;
 		} catch (...) {
 			DiscordCoreAPI::reportException("parseObject()");
