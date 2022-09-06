@@ -445,9 +445,9 @@ namespace DiscordCoreInternal {
 					//std::cout << "THE OP PAYLOAD: " << payload << std::endl;
 					payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 					auto theDocument = this->theParser.iterate(payload);
+					auto theObjectNewer = theDocument.value().get_value();
 					WebSocketMessage theMessage{};
-					auto theObjectNewer = theDocument.get_object();
-					parseObject(theObjectNewer, "", theMessage);
+					parseObject(theObjectNewer, theMessage);
 					std::cout << "THE OP VALUE: " << theMessage.op << ", THE S VALUE: " << theMessage.s << ", THE T VALUE: " << theMessage.t << std::endl;
 					if (theMessage.s != 0) {
 						this->lastNumberReceived = theMessage.s;
@@ -676,8 +676,8 @@ namespace DiscordCoreInternal {
 											theInt.store(theInt.load() + 1);
 											DiscordCoreAPI::GuildData theGuild{};
 											Snowflake guildId{};
-											std::cout << "THE GUILD: " << theObjectNewer.value().raw_json().take_value() << std::endl;
-											DiscordCoreAPI::parseObject(theObjectNewer, "d", theGuild);
+											auto theValue = theObjectNewer["d"];
+											DiscordCoreAPI::parseObject(theValue, theGuild);
 											guildId = theGuild.id;
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
@@ -1455,7 +1455,7 @@ namespace DiscordCoreInternal {
 							}
 							case 9: {
 								InvalidSessionData theData{};
-								parseObject(payload, this->theParser, theData);
+								parseObject(theObjectNewer, theData);
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
 										 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 9)!"
@@ -1477,8 +1477,7 @@ namespace DiscordCoreInternal {
 							}
 							case 10: {
 								HelloData theData{};
-								auto theObjectNew = theDocument.get_object();
-								parseObject(theObjectNew, "", theData);
+								parseObject(theObjectNewer, theData);
 								std::cout << "HELLO DATA: " << theData.heartbeatInterval << std::endl;
 								if (theData.heartbeatInterval != 0) {
 									this->areWeHeartBeating = true;

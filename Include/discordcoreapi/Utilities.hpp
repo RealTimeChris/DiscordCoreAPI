@@ -619,13 +619,9 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, const char* keyName, ReturnType& theData);
-
-	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, ReturnType& theData);
+	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, ReturnType& theData);
 
 	template<typename ReturnType> void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
-
-	template<typename ReturnType> void parseObject(std::string& jsonObjectData, simdjson::ondemand::parser& theParser, ReturnType& theData);
 
 	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json* jsonData, const char* keyName);
 

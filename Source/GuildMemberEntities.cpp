@@ -358,7 +358,7 @@ namespace DiscordCoreAPI {
 			auto guildMemberId = guildMember.id;
 			auto guildId = guildMember.guildId;
 			GuildMembers::cache.emplace(GuildMemberKey{ guildId, guildMemberId }, std::move(guildMember));
-			if (GuildMembers::cache.size() % 500 == 0) {
+			if (GuildMembers::cache.size() % 10 == 0) {
 				std::cout << "THE GUILDMEMBER COUNT: " << GuildMembers::cache.size() << std::endl;
 			}
 		}

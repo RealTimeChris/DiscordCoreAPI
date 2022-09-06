@@ -279,11 +279,7 @@ namespace DiscordCoreInternal {
 			}
 			case ETFTokenType::Small_Atom_Ext: {
 				//std::cout << "WERE HERE 1313" << std::string{ this->buffer, this->offSet } << std::endl;
-				std::string theString{};
-				theString += "\"";
-				theString += this->parseSmallAtomExt();
-				theString += "\"";
-				return theString;
+				return this->parseSmallAtomExt();
 			}
 			case ETFTokenType::Map_Ext: {
 				//std::cout << "WERE HERE 1414" << std::string{ this->buffer, this->offSet } << std::endl;
@@ -291,9 +287,7 @@ namespace DiscordCoreInternal {
 			}
 			case ETFTokenType::Atom_Utf8_Ext: {
 				//std::cout << "WERE HERE 1515" << std::string{ this->buffer, this->offSet } << std::endl;
-				std::string theString{};
-				theString += this->parseAtomUtf8Ext();
-				return theString;
+				return this->parseAtomUtf8Ext();
 			}
 			default: {
 				throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Unknown data type in ETF.\n\n" };
@@ -389,9 +383,9 @@ namespace DiscordCoreInternal {
 		}
 		if (length >= 3 && length <= 5) {
 			if (length == 3 && strncmp(atom, "nil", 3) == 0) {
-				return std::string{ "null" };
+				return std::string{};
 			} else if (length == 4 && strncmp(atom, "null", 4) == 0) {
-				return std::string{ "null" };
+				return std::string{};
 			} else if (length == 4 && strncmp(atom, "true", 4) == 0) {
 				return std::string{ "true" };
 			} else if (length == 5 && strncmp(atom, "false", 5) == 0) {
@@ -437,10 +431,12 @@ namespace DiscordCoreInternal {
 
 	std::string ErlPacker::parseListExt() {
 		uint32_t length = this->readBits<uint32_t>();
-		std::string theArray = this->parseArray(length);
+		std::string theArray{};
+		theArray.append(R"([)");
+		theArray += this->parseArray(length);
+		theArray.append(R"(])");
 		uint8_t theValue = this->readBits<uint8_t>();
-		const ETFTokenType tailMarker = static_cast<ETFTokenType>(theValue);
-		if (tailMarker != ETFTokenType::Nil_Ext) {
+		if (static_cast<ETFTokenType>(theValue) != ETFTokenType::Nil_Ext) {
 			return std::string{};
 		}
 		return theArray;
@@ -474,14 +470,16 @@ namespace DiscordCoreInternal {
 
 	std::string ErlPacker::parseArray(const uint32_t length) {
 		std::string array{};
-		array.append(R"([)");
-		for (uint32_t x = 0; x < length; ++x) {
-			array.append(this->singleValueETFToJson());
+		for (uint32_t x = 0; x < length; x++) {
+			std::string theString{ this->singleValueETFToJson() };
+			std::cout << "THE ARRAY: " << theString << std::endl;
+			DiscordCoreAPI::spinLock(100000);
+			array.append(theString);
 			if (x < length - 1) {
 				array.append(R"(,)");
 			}
 		}
-		array.append(R"(])");
+	
 		return array;
 	}
 
@@ -494,7 +492,7 @@ namespace DiscordCoreInternal {
 			theKey = singleValueETFToJson();
 			theKey += ":";
 			auto value = singleValueETFToJson();
-			if (i < length - 1) {
+			if (i < length -1) {
 				value += ",";
 			}
 			map.append(theKey);

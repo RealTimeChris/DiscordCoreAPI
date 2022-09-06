@@ -38,33 +38,8 @@ namespace DiscordCoreInternal {
 		{ 24, "PARSER_IN_USE" }, { 25, "OUT_OF_ORDER_ITERATION" }, { 26, "INSUFFICIENT_PADDING" }, { 27, "INCOMPLETE_ARRAY_OR_OBJECT" }, { 28, "SCALAR_DOCUMENT_AS_VALUE" },
 		{ 29, "OUT_OF_BOUNDS" }, { 30, "NUM_ERROR_CODES " } };
 
-	struct JsonParseError :public std::runtime_error {
+	struct JsonParseError : public std::runtime_error {
 		explicit JsonParseError(int32_t theCode);
 	};
-
-	DiscordCoreAPI_Dll uint8_t getUint8(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName, bool throwIfError = false,
-		std::source_location theLocation = std::source_location::current());
-
-	DiscordCoreAPI_Dll uint16_t getUint16(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName, bool throwIfError = false,
-		std::source_location theLocation = std::source_location::current());
-
-	DiscordCoreAPI_Dll uint32_t getUint32(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName, bool throwIfError = false,
-		std::source_location theLocation = std::source_location::current());
-
-	DiscordCoreAPI_Dll uint32_t getUint32(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, bool throwIfError = false,
-		std::source_location theLocation = std::source_location::current());
-
-	DiscordCoreAPI_Dll uint64_t getUint64(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName, bool throwIfError = false,
-		std::source_location theLocation = std::source_location::current());
-
-	DiscordCoreAPI_Dll double getFloat(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName, bool throwIfError = false,
-		std::source_location theLocation = std::source_location::current());
-
-	DiscordCoreAPI_Dll std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, bool throwIfError = false,
-		std::source_location theLocation = std::source_location::current());
-	
-	DiscordCoreAPI_Dll std::string getString(simdjson::fallback::ondemand::document_stream::iterator::value_type& theParser, const char* keyName, bool throwIfError = false,
-		std::source_location theLocation = std::source_location::current());
-
 }
 #endif

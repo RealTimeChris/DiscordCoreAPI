@@ -306,13 +306,13 @@ namespace DiscordCoreInternal {
 
 	template<typename ReturnType> void parseObject(std::string& jsonObjectData, simdjson::ondemand::parser& theParser, ReturnType& theData);
 
-	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, ReturnType& theData);
+	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, ReturnType& theData);
 
 	struct DiscordCoreAPI_Dll HelloData {
 		int32_t heartbeatInterval{};
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, HelloData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, HelloData& theData);
 
 	struct DiscordCoreAPI_Dll WebSocketMessage {
 		int64_t op{ -1 };
@@ -320,7 +320,7 @@ namespace DiscordCoreInternal {
 		uint64_t s{};
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, WebSocketMessage& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, WebSocketMessage& theData);
 
 	struct DiscordCoreAPI_Dll ReconnectData {};
 
@@ -328,7 +328,7 @@ namespace DiscordCoreInternal {
 		bool d{};
 	};
 
-	template<> void parseObject(std::string& theJsonData, simdjson::ondemand::parser& theParser, InvalidSessionData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, InvalidSessionData& theData);
 }
 
 /// The main namespace for this library. \brief The main namespace for this
@@ -972,6 +972,8 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildMemberData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, GuildMemberData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, GuildMemberData& theData);
 
@@ -1878,7 +1880,7 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, GuildData& theData);
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, const char* keyName, GuildData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, GuildData& theData);
 
 	class DiscordCoreAPI_Dll GuildDataVector {
 	  public:
