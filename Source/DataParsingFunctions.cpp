@@ -545,9 +545,11 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::doWeCacheGuildMembers) {
 			theData.members.clear();
 			GuildMember newData{};
-			for (simdjson::ondemand::object value: theGuild.find_field_unordered("members").get_array()) {
-				nlohmann::json theJsonData{ value.raw_json().take_value() };
-				//DiscordCoreAPI::parseObject(&theJsonData, newData);
+			simdjson::ondemand::array theArray{};
+			theGuild["members"].get(theArray);
+			for (auto value: theArray) {
+				nlohmann::json theJsonData{ value.get_object().take_value().raw_json().take_value() };
+				DiscordCoreAPI::parseObject(&theJsonData, newData);
 				newData.guildId = theData.id;
 				theData.members.emplace_back(newData.id);
 				GuildMembers::insertGuildMember(std::move(newData));

@@ -477,6 +477,9 @@ namespace DiscordCoreInternal {
 		array.append(R"([)");
 		for (uint32_t x = 0; x < length; ++x) {
 			array.append(this->singleValueETFToJson());
+			if (x < length - 1) {
+				array.append(R"(,)");
+			}
 		}
 		array.append(R"(])");
 		return array;
