@@ -246,7 +246,6 @@ namespace DiscordCoreAPI {
 		}
 		while (!Globals::doWeQuit.load()) {
 			if (this->theConnections.size() > 0 && this->theConnectionStopWatch.hasTimePassed()) {
-				std::cout << "WERE CONNECTING CONNECTING!" << std::endl;
 				this->theConnectionStopWatch.resetTimer();
 				auto theData = this->theConnections.front();
 				this->theConnections.pop_front();

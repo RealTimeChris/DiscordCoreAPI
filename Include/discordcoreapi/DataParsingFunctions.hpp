@@ -26,7 +26,6 @@
 #ifndef DATA_PARSING_FUNCTIONS
 #define DATA_PARSING_FUNCTIONS
 
-#include <discordcoreapi/FoundationEntities.hpp>
 #include <simdjson.h>
 
 namespace DiscordCoreInternal {
@@ -45,8 +44,6 @@ namespace DiscordCoreInternal {
 };
 
 namespace DiscordCoreAPI {
-
-	
 
 	bool getBool(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey);
 

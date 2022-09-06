@@ -2211,6 +2211,58 @@ namespace DiscordCoreAPI {
 		theData.theThreadMemberDatas.shrink_to_fit();
 	}
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonObjectData, VoiceStateData& theData) {
+		theData.requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
+
+		theData.channelId = strtoull(getString(jsonObjectData, "channel_id"));
+
+		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
+
+		theData.selfStream = getBool(jsonObjectData, "self_stream");
+
+		theData.userId = strtoull(getString(jsonObjectData, "user_id"));
+
+		theData.selfVideo = getBool(jsonObjectData, "self_video");
+
+		theData.sessionId = getString(jsonObjectData, "session_id");
+
+		theData.selfDeaf = getBool(jsonObjectData, "self_deaf");
+
+		theData.selfMute = getBool(jsonObjectData, "self_mute");
+
+		theData.suppress = getBool(jsonObjectData, "suppress");
+
+		theData.deaf = getBool(jsonObjectData, "deaf");
+
+		theData.mute = getBool(jsonObjectData, "mute");
+	}
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonObjectData, VoiceStateData& theData) {
+		theData.requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
+
+		theData.channelId = strtoull(getString(jsonObjectData, "channel_id"));
+
+		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
+
+		theData.selfStream = getBool(jsonObjectData, "self_stream");
+
+		theData.userId = strtoull(getString(jsonObjectData, "user_id"));
+
+		theData.selfVideo = getBool(jsonObjectData, "self_video");
+
+		theData.sessionId = getString(jsonObjectData, "session_id");
+
+		theData.selfDeaf = getBool(jsonObjectData, "self_deaf");
+
+		theData.selfMute = getBool(jsonObjectData, "self_mute");
+
+		theData.suppress = getBool(jsonObjectData, "suppress");
+
+		theData.deaf = getBool(jsonObjectData, "deaf");
+
+		theData.mute = getBool(jsonObjectData, "mute");
+	}
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, VoiceStateData& theData) {
 		theData.requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
 

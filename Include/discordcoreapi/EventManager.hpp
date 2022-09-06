@@ -403,6 +403,10 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild for which the server update is occurring.
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theJsonData, OnVoiceServerUpdateData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theJsonData, OnVoiceServerUpdateData& theData);
+
 	template<> void parseObject(nlohmann::json* theJsonData, OnVoiceServerUpdateData& theData);
 
 	/// Data that is received as part of a WebHook update event. \brief Data that is received as part of a WebHook update event.

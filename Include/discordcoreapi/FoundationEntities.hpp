@@ -27,6 +27,7 @@
 #define FOUNDATION_ENTITIES
 
 #include <discordcoreapi/Utilities.hpp>
+#include <discordcoreapi/DataParsingFunctions.hpp>
 
 namespace DiscordCoreInternal {
 
@@ -758,6 +759,10 @@ namespace DiscordCoreAPI {
 
 		virtual ~VoiceStateData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, VoiceStateData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, VoiceStateData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, VoiceStateData& theData);
 
@@ -3383,4 +3388,37 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 };// namespace DiscordCoreAPI
+
+namespace DiscordCoreInternal {
+
+	struct DiscordCoreAPI_Dll ReadyData {
+		DiscordCoreAPI::ApplicationData application{};
+		DiscordCoreAPI::UserData user{};
+		std::string resumeGatewayUrl{};
+		std::string sessionId{};
+		uint32_t shard[2]{};
+		int32_t v{};
+	};
+
+	template<> inline void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, ReadyData& theData) {
+		theData.resumeGatewayUrl = DiscordCoreAPI::getString(theParser, "resume_gateway_url");
+
+		theData.sessionId = DiscordCoreAPI::getString(theParser, "session_id");
+
+		DiscordCoreAPI::parseObject(theParser["user"], theData.user);
+
+		theData.v = DiscordCoreAPI::getUint32(theParser, "v");
+	}
+
+	template<> inline void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, ReadyData& theData) {
+		theData.resumeGatewayUrl = DiscordCoreAPI::getString(theParser, "resume_gateway_url");
+
+		theData.sessionId = DiscordCoreAPI::getString(theParser, "session_id");
+
+		DiscordCoreAPI::parseObject(theParser["user"], theData.user);
+
+		theData.v = DiscordCoreAPI::getUint32(theParser, "v");
+	}
+}
+
 #endif
