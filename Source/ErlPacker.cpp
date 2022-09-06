@@ -211,42 +211,38 @@ namespace DiscordCoreInternal {
 		uint8_t type = this->readBits<uint8_t>();
 		switch (static_cast<ETFTokenType>(type)) {
 			case ETFTokenType::Small_Integer_Ext: {
-				//std::cout << "WERE HERE 0101" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseSmallIntegerExt();
 			}
 			case ETFTokenType::Integer_Ext: {
-				//std::cout << "WERE HERE 0202" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseIntegerExt();
 			}
 			case ETFTokenType::New_Float_Ext: {
-				//std::cout << "WERE HERE 0303" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseNewFloatExt();
 			}
 			case ETFTokenType::Float_Ext: {
-				//std::cout << "WERE HERE 0404" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseFloatExt();
 			}
 			case ETFTokenType::Atom_Ext: {
-				//std::cout << "WERE HERE 0505" << std::string{ this->buffer, this->offSet } << std::endl;
-				std::string theString{};
-				theString += "\"";
-				theString += this->parseAtomUtf8Ext();
-				theString += "\"";
-				return theString;
+				auto theStringNew = this->parseAtomUtf8Ext();
+				std::string theString{ "\"" };
+				if (theStringNew != "null") {
+					theStringNew.insert(theStringNew.begin(), theString.begin(), theString.end());
+					theStringNew += "\"";
+				} else {
+					theStringNew = "nullptr";
+				}
+				return theStringNew;
 			}
 			case ETFTokenType::Small_Tuple_Ext: {
-				//std::cout << "WERE HERE 0606" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseSmallTupleExt();
 			}
 			case ETFTokenType::Large_Tuple_Ext: {
-				//std::cout << "WERE HERE 0707" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseLargeTupleExt();
 			}
 			case ETFTokenType::Nil_Ext: {
 				return this->parseNilExt();
 			}
-			case ETFTokenType::String_Ext: {
-				//std::cout << "WERE HERE 0808" << std::string{ this->buffer, this->offSet } << std::endl;
+			case ETFTokenType::String_Ext: {\
 				std::string theString{};
 				theString += "\"";
 				theString += this->parseStringAsList();
@@ -254,11 +250,9 @@ namespace DiscordCoreInternal {
 				return theString;
 			}
 			case ETFTokenType::List_Ext: {
-				//std::cout << "WERE HERE 0909" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseListExt();
 			}
 			case ETFTokenType::Binary_Ext: {
-				//std::cout << "WERE HERE 1010" << std::string{ this->buffer, this->offSet } << std::endl;
 				std::string theString{};
 				theString += "\"";
 				theString += this->parseBinaryExt();
@@ -266,7 +260,6 @@ namespace DiscordCoreInternal {
 				return theString;
 			}
 			case ETFTokenType::Small_Big_Ext: {
-				////std::cout << "WERE HERE 1111" << std::string{ this->buffer, this->offSet } << std::endl;
 				std::string theString{};
 				theString += "\"";
 				theString += this->parseSmallBigExt();
@@ -274,19 +267,15 @@ namespace DiscordCoreInternal {
 				return theString;
 			}
 			case ETFTokenType::Large_Big_Ext: {
-				//std::cout << "WERE HERE 1212" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseLargeBigExt();
 			}
 			case ETFTokenType::Small_Atom_Ext: {
-				//std::cout << "WERE HERE 1313" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseSmallAtomExt();
 			}
 			case ETFTokenType::Map_Ext: {
-				//std::cout << "WERE HERE 1414" << std::string{ this->buffer, this->offSet } << std::endl;
 				return this->parseMapExt();
 			}
-			case ETFTokenType::Atom_Utf8_Ext: {
-				//std::cout << "WERE HERE 1515" << std::string{ this->buffer, this->offSet } << std::endl;
+			case ETFTokenType::Atom_Utf8_Ext: {\
 				return this->parseAtomUtf8Ext();
 			}
 			default: {
@@ -368,24 +357,15 @@ namespace DiscordCoreInternal {
 		return theValueNew;
 	}
 
-	bool compareString(const char* theString, const char* theString02, size_t theSize) {
-		for (size_t x = 0; x < theSize; ++x) {
-			if (!(theString[x] & theString02[x])) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	std::string ErlPacker::processAtom(const char* atom, uint32_t length) {
 		if (atom == nullptr) {
 			return nlohmann::json{};
 		}
 		if (length >= 3 && length <= 5) {
 			if (length == 3 && strncmp(atom, "nil", 3) == 0) {
-				return std::string{};
+				return std::string{ "null" };
 			} else if (length == 4 && strncmp(atom, "null", 4) == 0) {
-				return std::string{};
+				return std::string{ "nil" };
 			} else if (length == 4 && strncmp(atom, "true", 4) == 0) {
 				return std::string{ "true" };
 			} else if (length == 5 && strncmp(atom, "false", 5) == 0) {
@@ -472,7 +452,6 @@ namespace DiscordCoreInternal {
 		std::string array{};
 		for (uint32_t x = 0; x < length; x++) {
 			std::string theString{ this->singleValueETFToJson() };
-			std::cout << "THE ARRAY: " << theString << std::endl;
 			DiscordCoreAPI::spinLock(100000);
 			array.append(theString);
 			if (x < length - 1) {

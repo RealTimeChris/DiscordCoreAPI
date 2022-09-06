@@ -313,7 +313,7 @@ namespace DiscordCoreAPI {
 
 	IconHash& IconHash::operator=(const std::string theString) {
 		std::string newHash{ theString };
-		if (newHash.empty()) {
+		if (newHash.empty() || newHash == "0") {
 			this->highBits = 0;
 			this->lowBits = 0;
 			return *this;
@@ -321,7 +321,7 @@ namespace DiscordCoreAPI {
 		if (newHash.length() == 34 && newHash.substr(0, 2) == "a_") {
 			newHash = newHash.substr(2);
 		}
-		if (newHash.length() != 32) {
+		if (newHash.length() != 32 && newHash.length() != 33) {
 			throw std::length_error("IconHash must be exactly 32 characters in length, passed value is: '" + std::to_string(newHash.size()) + "', in length.");
 		}
 		this->lowBits = fromString<uint64_t>(newHash.substr(0, 16), std::hex);

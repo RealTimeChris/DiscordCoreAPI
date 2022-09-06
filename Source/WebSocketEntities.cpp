@@ -442,13 +442,11 @@ namespace DiscordCoreInternal {
 					} else {
 						returnValue = false;
 					}
-					//std::cout << "THE OP PAYLOAD: " << payload << std::endl;
 					payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 					auto theDocument = this->theParser.iterate(payload);
 					auto thePayload = theDocument.value().get_value();
 					WebSocketMessage theMessage{};
-					parseObject(thePayload, theMessage);
-					std::cout << "THE OP VALUE: " << theMessage.op << ", THE S VALUE: " << theMessage.s << ", THE T VALUE: " << theMessage.t << std::endl;
+					//parseObject(thePayload, theMessage);
 					if (theMessage.s != 0) {
 						this->lastNumberReceived = theMessage.s;
 					}
@@ -468,8 +466,11 @@ namespace DiscordCoreInternal {
 											
 										case 1: { 
 											ReadyData theData{};
+
+											std::cout << "THE PAYLOAD: " << payload << std::endl;
 											parseObject(thePayload["d"], theData);
 											this->currentState.store(SSLShardState::Authenticated);
+
 											this->sessionId = theData.sessionId;
 											std::string theResumeUrl = theData.resumeGatewayUrl;
 											theResumeUrl = theResumeUrl.substr(theResumeUrl.find("wss://") + std::string{ "wss://" }.size());
@@ -1441,8 +1442,6 @@ namespace DiscordCoreInternal {
 									this->currentState.store(SSLShardState::Sending_Identify);
 								} else {
 									WebSocketIdentifyData identityData{};
-
-									std::cout << "HELLO DATA: " << theData.heartbeatInterval << std::endl;
 									identityData.botToken = this->configManager->getBotToken();
 									identityData.currentShard = this->shard[0];
 									identityData.numberOfShards = this->shard[1];
@@ -1477,11 +1476,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::checkForAndSendHeartBeat(bool isImmediate) noexcept {
-		std::cout << "HELLO DATA: "
-				  << " WEER HEEEE" << std::endl;
 		if (this->currentState.load() == SSLShardState::Authenticated) {
-			std::cout << "HELLO DATA: "
-					  << " WEER HEEEE" << std::endl;
 			try {
 				if ((this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
 					nlohmann::json heartbeat{};
@@ -1718,7 +1713,6 @@ namespace DiscordCoreInternal {
 				for (auto& value: theVector) {
 					if (!static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
 						if (value->areWeStillConnected()) {
-							std::cout << "WERE HERE THIS IS IT!" << std::endl;
 							static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
 						}
 					}

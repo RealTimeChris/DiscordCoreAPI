@@ -374,28 +374,25 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, GuildMemberData& theData) {
-		std::cout << "WERE HERE THIS SI IT 0101" << std::endl;
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Pending, getBool(theParser, "pending"));
-		std::cout << "WERE HERE THIS SI IT 0202" << std::endl;
+
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Mute, getBool(theParser, "mute"));
-		std::cout << "WERE HERE THIS SI IT 0303" << std::endl;
+		
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Deaf, getBool(theParser, "deaf"));
-		std::cout << "WERE HERE THIS SI IT 0404" << std::endl;
+		
 		theData.joinedAt = getString(theParser, "joined_at");
-		std::cout << "WERE HERE THIS SI IT 0505" << std::endl;
+		
 		theData.guildId = strtoull(getString(theParser, "guild_id"));
 		theData.roles.clear();
 		for (auto value: theParser["roles"]) {
-			std::cout << "WERE HERE THIS SI IT 0707" << std::endl;
 			std::string theString{ value.get_string().take_value().data() };
 			theData.roles.emplace_back(stoull(theString));
 		}
-		std::cout << "WERE HERE THIS SI IT 0707" << std::endl;
+		
 		theData.permissions = getString(theParser, "permissions");
-		std::cout << "WERE HERE THIS SI IT 0808" << std::endl;
+		
 		UserData theUser{};
 		DiscordCoreAPI::parseObject(theParser["user"], theUser);
-		std::cout << "WERE HERE THIS SI IT 0909" << std::endl;
 		theData.id = theUser.id;
 		Users::insertUser(std::move(theUser));
 
@@ -407,28 +404,25 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, GuildMemberData& theData) {
-		std::cout << "WERE HERE THIS SI IT 0101" << std::endl;
+		
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Pending, getBool(theParser, "pending"));
-		std::cout << "WERE HERE THIS SI IT 0202" << std::endl;
+		
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Mute, getBool(theParser, "mute"));
-		std::cout << "WERE HERE THIS SI IT 0303" << std::endl;
+		
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Deaf, getBool(theParser, "deaf"));
-		std::cout << "WERE HERE THIS SI IT 0404" << std::endl;
+		
 		theData.joinedAt = getString(theParser, "joined_at");
-		std::cout << "WERE HERE THIS SI IT 0505" << std::endl;
+		
 		theData.guildId = strtoull(getString(theParser, "guild_id"));
 		theData.roles.clear();
 		for (auto value: theParser["roles"]) {
-			std::cout << "WERE HERE THIS SI IT 0707" << std::endl;
 			std::string theString{ value.get_string().take_value().data() };
 			theData.roles.emplace_back(stoull(theString));
 		}
-		std::cout << "WERE HERE THIS SI IT 0707" << std::endl;
+		
 		theData.permissions = getString(theParser, "permissions");
-		std::cout << "WERE HERE THIS SI IT 0808" << std::endl;
+		
 		UserData theUser{};
-		DiscordCoreAPI::parseObject(theParser["user"], theUser);
-		std::cout << "WERE HERE THIS SI IT 0909" << std::endl;
 		theData.id = theUser.id;
 		Users::insertUser(std::move(theUser));
 
@@ -440,28 +434,25 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, GuildMemberData& theData) {
-		std::cout << "WERE HERE THIS SI IT 0101" << std::endl;
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
-		std::cout << "WERE HERE THIS SI IT 0202" << std::endl;
+		
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
-		std::cout << "WERE HERE THIS SI IT 0303" << std::endl;
+		
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Deaf, getBool(jsonObjectData, "deaf"));
-		std::cout << "WERE HERE THIS SI IT 0404" << std::endl;
+		
 		theData.joinedAt = getString(jsonObjectData, "joined_at");
-		std::cout << "WERE HERE THIS SI IT 0505" << std::endl;
+		
 		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
-		std::cout << "WERE HERE THIS SI IT 0606" << jsonObjectData->dump() << std::endl;
+		
 		theData.roles.clear();
 		for (auto& value: (*jsonObjectData)["roles"]) {
-			std::cout << "WERE HERE THIS SI IT 0707" << std::endl;
 			theData.roles.emplace_back(stoull(value.get<std::string>()));
 		}
-		std::cout << "WERE HERE THIS SI IT 0707" << std::endl;
+		
 		theData.permissions = getString(jsonObjectData, "permissions");
-		std::cout << "WERE HERE THIS SI IT 0808" << std::endl;
+		
 		UserData theUser{};
 		DiscordCoreAPI::parseObject(&(*jsonObjectData)["user"], theUser);
-		std::cout << "WERE HERE THIS SI IT 0909" << std::endl;
 		theData.id = theUser.id;
 		Users::insertUser(std::move(theUser));
 
@@ -638,30 +629,31 @@ namespace DiscordCoreAPI {
 		for (auto value: theArray) {
 			theData.threads.emplace_back(strtoull(getString(value, "id")));
 		}
+
 		theParser["stickers"].get(theArray);
 		theData.stickers.clear();
 		for (auto value: theArray) {
 			theData.stickers.emplace_back(strtoull(getString(value, "id")));
 		}
-		std::cout << "WERE HERE THIS IS IT! 1313" << std::endl;
+		
 		theParser["guild_scheduled_events"].get(theArray);
 		theData.guildScheduledEvents.clear();
 		for (auto value: theArray) {
 			theData.guildScheduledEvents.emplace_back(strtoull(getString(value, "id")));
 		}
-		std::cout << "WERE HERE THIS IS IT! 1414" << std::endl;
+		
 		theParser["stage_instances"].get(theArray);
 		theData.stageInstances.clear();
 		for (auto value: theArray) {
 			theData.stageInstances.emplace_back(strtoull(getString(value, "id")));
 		}
-		std::cout << "WERE HERE THIS IS IT! 1515" << std::endl;
+		
 		theParser["emoji"].get(theArray);
 		theData.emoji.clear();
 		for (auto value: theArray) {
 			theData.emoji.emplace_back(strtoull(getString(value, "id")));
 		}
-		std::cout << "WERE HERE THIS IS IT! 1616" << std::endl;
+		
 		if (Roles::doWeCacheRoles) {
 			theData.roles.clear();
 			RoleData newData{};
@@ -673,7 +665,7 @@ namespace DiscordCoreAPI {
 				Roles::insertRole(std::move(newData));
 			}
 		}
-		std::cout << "WERE HERE THIS IS IT! 1717" << std::endl;
+		
 		if (GuildMembers::doWeCacheGuildMembers) {
 			theData.members.clear();
 			GuildMemberData newData{};
@@ -685,7 +677,7 @@ namespace DiscordCoreAPI {
 				GuildMembers::insertGuildMember(std::move(newData));
 			}
 		}
-		std::cout << "WERE HERE THIS IS IT! 1818" << std::endl;
+		
 		if (GuildMembers::doWeCacheGuildMembers) {
 			auto theArray = theParser.find_field_unordered("voice_states").get_array();
 			for (simdjson::ondemand::array_iterator iterator = theArray.begin(); iterator != theArray.end(); ++iterator) {
@@ -695,7 +687,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
-		std::cout << "WERE HERE THIS IS IT! 1919" << std::endl;
+		
 		if (GuildMembers::doWeCacheGuildMembers) {
 			theData.presences.clear();
 			PresenceUpdateData newData{};
@@ -706,18 +698,14 @@ namespace DiscordCoreAPI {
 				theData.presences.emplace_back(std::move(newData));
 			}
 		}
-		std::cout << "WERE HERE THIS IS IT! 2020" << std::endl;
+		
 		if (Channels::doWeCacheChannels) {
 			theData.channels.clear();
 			ChannelData newData{};
 			auto theArray = theParser.find_field_unordered("channels").get_array();
 			for (simdjson::ondemand::array_iterator iterator = theArray.begin(); iterator != theArray.end(); ++iterator) {
-				std::cout << "WERE HERE THIS IS IT: 01012323" << std::endl;
 				DiscordCoreAPI::parseObject(*iterator, newData);
-				std::cout << "WERE HERE THIS IS IT: 0122323434" << std::endl;
 				newData.guildId = theData.id;
-				std::cout << "WERE HERE THE ID IS " << newData.id << std::endl;
-				std::cout << "WERE HERE THE ID IS " << newData.guildId << std::endl;
 				theData.members.emplace_back(newData.id);
 				Channels::insertChannel(std::move(newData));
 			}

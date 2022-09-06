@@ -3405,9 +3405,9 @@ namespace DiscordCoreInternal {
 
 		theData.sessionId = DiscordCoreAPI::getString(theParser, "session_id");
 
-		DiscordCoreAPI::parseObject(theParser["user"], theData.user);
-
 		theData.v = DiscordCoreAPI::getUint32(theParser, "v");
+
+		DiscordCoreAPI::parseObject(theParser["user"], theData.user);
 	}
 
 	template<> inline void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, ReadyData& theData) {
@@ -3415,9 +3415,9 @@ namespace DiscordCoreInternal {
 
 		theData.sessionId = DiscordCoreAPI::getString(theParser, "session_id");
 
-		DiscordCoreAPI::parseObject(theParser["user"], theData.user);
-
 		theData.v = DiscordCoreAPI::getUint32(theParser, "v");
+
+		DiscordCoreAPI::parseObject(theParser["user"], theData.user);
 	}
 }
 
