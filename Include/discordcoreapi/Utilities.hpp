@@ -214,6 +214,8 @@ namespace DiscordCoreInternal {
 		operator nlohmann::json();
 	};
 
+	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, ReturnType& theData);
+
 }// namespace DiscordCoreInternal
 
 namespace DiscordCoreAPI {
@@ -618,6 +620,8 @@ namespace DiscordCoreAPI {
 		ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
 		ShortTime = 't',///< "16:20" - Short Time
 	};
+
+	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, ReturnType& theData);
 
 	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, ReturnType& theData);
 

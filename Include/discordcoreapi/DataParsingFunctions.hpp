@@ -41,5 +41,36 @@ namespace DiscordCoreInternal {
 	struct JsonParseError : public std::runtime_error {
 		explicit JsonParseError(int32_t theCode);
 	};
+
+};
+
+namespace DiscordCoreAPI {
+
+	
+
+	bool getBool(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey);
+
+	bool getBool(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey);
+	
+	uint8_t getUint8(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey);
+	
+	uint8_t getUint8(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey);
+	
+	uint16_t getUint16(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey);
+	
+	uint16_t getUint16(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey);
+	
+	uint32_t getUint32(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey);
+	
+	uint32_t getUint32(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey);
+	
+	uint64_t getUint64(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey);
+	
+	uint64_t getUint64(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey);
+	
+	std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonData, const char* theKey);
+	
+	std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonData, const char* theKey);
+	
 }
 #endif

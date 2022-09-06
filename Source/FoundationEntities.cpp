@@ -28,6 +28,7 @@
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/InteractionEntities.hpp>
 #include <discordcoreapi/GuildScheduledEventEntities.hpp>
+#include <discordcoreapi/DataParsingFunctions.hpp>
 #include <discordcoreapi/RoleEntities.hpp>
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
@@ -248,6 +249,22 @@ namespace DiscordCoreAPI {
 		embed["url"] = this->url;
 		embed["fields"] = fields;
 		return embed;
+	}
+
+	OverWriteData& OverWriteData::operator=(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theJsonData) {
+		this->allow = strtoull(getString(theJsonData, "allow"));
+
+		this->deny = strtoull(getString(theJsonData, "deny"));
+
+		this->id = strtoull(getString(theJsonData, "id"));
+
+		this->type = static_cast<PermissionOverwritesType>(getUint8(theJsonData, "type"));
+
+		return *this;
+	}
+
+	OverWriteData::OverWriteData(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theJsonData) {
+		*this = theJsonData;
 	}
 
 	OverWriteData& OverWriteData::operator=(nlohmann::json& theJsonData) {

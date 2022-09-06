@@ -304,10 +304,6 @@ namespace DiscordCoreInternal {
 		HttpsWorkloadType workloadType{};
 	};
 
-	template<typename ReturnType> void parseObject(std::string& jsonObjectData, simdjson::ondemand::parser& theParser, ReturnType& theData);
-
-	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, ReturnType& theData);
-
 	struct DiscordCoreAPI_Dll HelloData {
 		int32_t heartbeatInterval{};
 	};
@@ -437,6 +433,10 @@ namespace DiscordCoreAPI {
 
 		virtual ~UserData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, UserData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, UserData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, UserData& theData);
 
@@ -809,6 +809,10 @@ namespace DiscordCoreAPI {
 		virtual ~RoleData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, RoleData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, RoleData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, RoleData& theData);
 
 	/// Data structure representing a single emoji. \brief Data structure representing a single emoji.
@@ -938,6 +942,10 @@ namespace DiscordCoreAPI {
 		virtual ~PresenceUpdateData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, PresenceUpdateData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, PresenceUpdateData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, PresenceUpdateData& theData);
 
 	enum class GuildMemberFlags : uint8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
@@ -973,6 +981,8 @@ namespace DiscordCoreAPI {
 		virtual ~GuildMemberData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, GuildMemberData& theData);
+
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, GuildMemberData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, GuildMemberData& theData);
@@ -994,9 +1004,15 @@ namespace DiscordCoreAPI {
 
 		OverWriteData(nlohmann::json& theJsonData);
 
+		OverWriteData& operator=(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theJsonData);
+
+		OverWriteData(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theJsonData);
+
 		virtual ~OverWriteData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonObjectData, OverWriteData& theData);
+	
 	template<> void parseObject(nlohmann::json* jsonObjectData, OverWriteData& theData);
 
 	enum class ChannelFlags : uint8_t { NSFW = 1 << 0 };
