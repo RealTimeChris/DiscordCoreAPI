@@ -309,7 +309,7 @@ namespace DiscordCoreInternal {
 		int32_t heartbeatInterval{};
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, HelloData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, HelloData& theData);
 
 	struct DiscordCoreAPI_Dll WebSocketMessage {
 		int64_t op{ -1 };
@@ -317,9 +317,9 @@ namespace DiscordCoreInternal {
 		uint64_t s{};
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, WebSocketMessage& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, WebSocketMessage& theData);
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, WebSocketMessage& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, WebSocketMessage& theData);
 
 	struct DiscordCoreAPI_Dll ReconnectData {};
 
@@ -327,7 +327,7 @@ namespace DiscordCoreInternal {
 		bool d{};
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, InvalidSessionData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, InvalidSessionData& theData);
 }
 
 /// The main namespace for this library. \brief The main namespace for this
@@ -762,9 +762,9 @@ namespace DiscordCoreAPI {
 		virtual ~VoiceStateData() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, VoiceStateData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, VoiceStateData& theData);
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, VoiceStateData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, VoiceStateData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, VoiceStateData& theData);
 
@@ -949,9 +949,9 @@ namespace DiscordCoreAPI {
 		virtual ~PresenceUpdateData() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, PresenceUpdateData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, PresenceUpdateData& theData);
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, PresenceUpdateData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, PresenceUpdateData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, PresenceUpdateData& theData);
 
@@ -1011,14 +1011,14 @@ namespace DiscordCoreAPI {
 
 		OverWriteData(nlohmann::json& theJsonData);
 
-		OverWriteData& operator=(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theJsonData);
+		OverWriteData& operator=(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theJsonData);
 
-		OverWriteData(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theJsonData);
+		OverWriteData(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theJsonData);
 
 		virtual ~OverWriteData() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonObjectData, OverWriteData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, OverWriteData& theData);
 	
 	template<> void parseObject(nlohmann::json* jsonObjectData, OverWriteData& theData);
 
@@ -1053,9 +1053,9 @@ namespace DiscordCoreAPI {
 		virtual ~ChannelData() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonObjectData, ChannelData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, ChannelData& theData);
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonObjectData, ChannelData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ChannelData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, ChannelData& theData);
 
@@ -1905,9 +1905,9 @@ namespace DiscordCoreAPI {
 		virtual ~GuildData() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, GuildData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, GuildData& theData);
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, GuildData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, GuildData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, GuildData& theData);
 
@@ -3408,7 +3408,7 @@ namespace DiscordCoreInternal {
 		int32_t v{};
 	};
 
-	template<> inline void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, ReadyData& theData) {
+	template<> inline void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, ReadyData& theData) {
 		theData.resumeGatewayUrl = DiscordCoreAPI::getString(theParser, "resume_gateway_url");
 
 		theData.sessionId = DiscordCoreAPI::getString(theParser, "session_id");
@@ -3418,14 +3418,14 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::parseObject(theParser["user"].get_object(), theData.user);
 	}
 
-	template<> inline void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, ReadyData& theData) {
+	template<> inline void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, ReadyData& theData) {
 		theData.resumeGatewayUrl = DiscordCoreAPI::getString(theParser, "resume_gateway_url");
 
 		theData.sessionId = DiscordCoreAPI::getString(theParser, "session_id");
 
 		theData.v = DiscordCoreAPI::getUint32(theParser, "v");
 
-		DiscordCoreAPI::parseObject(theParser["user"], theData.user);
+		DiscordCoreAPI::parseObject(theParser["user"].get_object(), theData.user);
 	}
 }
 

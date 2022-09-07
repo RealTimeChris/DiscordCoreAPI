@@ -251,7 +251,7 @@ namespace DiscordCoreAPI {
 		return embed;
 	}
 
-	OverWriteData& OverWriteData::operator=(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theJsonData) {
+	OverWriteData& OverWriteData::operator=(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theJsonData) {
 		this->allow = strtoull(getString(theJsonData, "allow"));
 
 		this->deny = strtoull(getString(theJsonData, "deny"));
@@ -263,8 +263,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	OverWriteData::OverWriteData(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theJsonData) {
-		*this = theJsonData;
+	OverWriteData::OverWriteData(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theJsonData) {
+		*this = std::move(theJsonData);
 	}
 
 	OverWriteData& OverWriteData::operator=(nlohmann::json& theJsonData) {

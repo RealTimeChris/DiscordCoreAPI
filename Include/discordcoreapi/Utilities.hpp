@@ -214,9 +214,9 @@ namespace DiscordCoreInternal {
 		operator nlohmann::json();
 	};
 
-	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, ReturnType& theData);
+	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, ReturnType& theData);
 
-	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, ReturnType& theData);
+	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, ReturnType& theData);
 
 }// namespace DiscordCoreInternal
 
@@ -626,10 +626,6 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, ReturnType& theData);
 
 	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, ReturnType& theData);
-
-	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, ReturnType& theData);
-
-	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, ReturnType& theData);
 
 	template<typename ReturnType> void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
 
