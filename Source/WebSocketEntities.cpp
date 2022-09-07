@@ -411,6 +411,7 @@ namespace DiscordCoreInternal {
 	}
 
 	DiscordCoreAPI::StopWatch theStopWatch{ 5s };
+	DiscordCoreAPI::StopWatch theStopWatchReal{ 50us };
 	std::atomic_int32_t theInt{};
 	bool WebSocketSSLShard::onMessageReceived(const std::string& theDataNew) noexcept {
 		std::string theData = theDataNew;
@@ -425,9 +426,9 @@ namespace DiscordCoreInternal {
 
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							try {
-								DiscordCoreAPI::StopWatch theStopWatch{ 50us };
-								theStopWatch.resetTimer();
+								theStopWatchReal.resetTimer();
 								payload = ErlPacker::parseEtfToJson(theData);
+								std::cout << "TIME TO PARSE: " << theStopWatchReal.totalTimePassed() << std::endl;
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -444,8 +445,6 @@ namespace DiscordCoreInternal {
 						returnValue = false;
 					}
 
-
-					std::cout << "THE PAYLOAD: " << payload << std::endl;
 					payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 					auto theDocument = this->theParser.iterate(payload);
 					auto thePayload = theDocument.value().get_value();
@@ -480,7 +479,6 @@ namespace DiscordCoreInternal {
 											ReadyData theData{};
 											parseObject(thePayload["d"], theData);
 											this->currentState.store(SSLShardState::Authenticated);
-											std::cout << "THIS IS IT WERE HERE! 0101" <<std::endl;
 											this->sessionId = theData.sessionId;
 											std::string theResumeUrl = theData.resumeGatewayUrl;
 											theResumeUrl = theResumeUrl.substr(theResumeUrl.find("wss://") + std::string{ "wss://" }.size());
@@ -672,9 +670,9 @@ namespace DiscordCoreInternal {
 											theInt.store(theInt.load() + 1);
 											DiscordCoreAPI::GuildData theGuild{};
 											Snowflake guildId{};
-											std::cout << "THIS IS IT WERE HERE! 0202" << std::endl;
+											theStopWatchReal.resetTimer();
 											DiscordCoreAPI::parseObject(thePayload["d"], theGuild);
-											std::cout << "THIS IS IT WERE HERE! 0303" << std::endl;
+											std::cout << "TIME TO PARSE 02: " << theStopWatchReal.totalTimePassed() << std::endl;
 											guildId = theGuild.id;
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };

@@ -428,7 +428,7 @@ namespace DiscordCoreAPI {
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, RoleData& theData) {
 		
 		theData.id = strtoull(getString(jsonObjectData, "id"));
-		std::cout << "THIS IS IT WERE HERE! 2424" << theData.id << std::endl;
+		
 		theData.name = getString(jsonObjectData, "name");
 
 		std::stringstream theStream{};
@@ -577,16 +577,16 @@ namespace DiscordCoreAPI {
 	}
 
  	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, GuildMemberData& theData) {
-		std::cout << "THIS IS IT WERE HERE! 2020111" << std::endl;
+		
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
-		std::cout << "THIS IS IT WERE HERE! 2020222" << std::endl;
+		
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
-		std::cout << "THIS IS IT WERE HERE! 2020333" << std::endl;
+		
 		theData.flags |= setBool(theData.flags, GuildMemberFlags::Deaf, getBool(jsonObjectData, "deaf"));
-		std::cout << "THIS IS IT WERE HERE! 2020444" << std::endl;
+		
 		theData.joinedAt = getString(jsonObjectData, "joined_at");
-		std::cout << "THIS IS IT WERE HERE! 2020555" << std::endl;
-		//theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
+		
+		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
 		theData.roles.clear();
 		simdjson::fallback::ondemand::array theArray{};
 		auto theResult = jsonObjectData["roles"].get(theArray);
@@ -596,18 +596,18 @@ namespace DiscordCoreAPI {
 				theData.roles.emplace_back(stoull(theString));
 			}
 		}
-		std::cout << "THIS IS IT WERE HERE! 2020666" << std::endl;
+		
 		theData.permissions = getString(jsonObjectData, "permissions");
-		std::cout << "THIS IS IT WERE HERE! 2020777" << std::endl;
+		
 		UserData theUser{};
 		DiscordCoreAPI::parseObject(jsonObjectData["user"].get_object(), theUser);
 		theData.id = theUser.id;
 		Users::insertUser(std::move(theUser));
-		std::cout << "THIS IS IT WERE HERE! 2020888" << std::endl;
+		
 		theData.avatar = getString(jsonObjectData, "avatar");
-		std::cout << "THIS IS IT WERE HERE! 2020999" << std::endl;
+		
 		theData.flags |= getUint8(jsonObjectData, "flags");
-		std::cout << "THIS IS IT WERE HERE! 202010101" << std::endl;
+		
 		theData.nick = getString(jsonObjectData, "nick");
 	}
 
@@ -738,8 +738,6 @@ namespace DiscordCoreAPI {
 
 		theData.id = strtoull(getString(jsonObjectData, "id"));
 
-		std::cout << "THIS IS IT WERE HERE! 2323" << theData.id << std::endl;
-
 		theData.flags |= getUint8(jsonObjectData, "flags");
 
 		theData.parentId = strtoull(getString(jsonObjectData, "parent_id"));
@@ -766,7 +764,7 @@ namespace DiscordCoreAPI {
 		theData.ownerId = strtoull(getString(jsonObjectData, "owner_id"));
 
 		theData.id = strtoull(getString(jsonObjectData, "id"));
-		std::cout << "THIS IS IT WERE HERE! 2323" << theData.id << std::endl;
+		
 		theData.flags |= getUint8(jsonObjectData, "flags");
 
 		theData.parentId = strtoull(getString(jsonObjectData, "parent_id"));
@@ -841,7 +839,7 @@ namespace DiscordCoreAPI {
 				theData.threads.emplace_back(strtoull(getString(value, "id")));
 			}
 		}
-		std::cout << "THIS IS IT WERE HERE! 1515" << std::endl;
+		
 		simdjson::ondemand::array theArray02{};
 		theResult = jsonObjectData["stickers"].get(theArray02);
 		if (theResult == simdjson::error_code::SUCCESS) {
@@ -850,7 +848,7 @@ namespace DiscordCoreAPI {
 				theData.stickers.emplace_back(strtoull(getString(value, "id")));
 			}
 		}
-		std::cout << "THIS IS IT WERE HERE! 1616" << std::endl;
+		
 		simdjson::ondemand::array theArray03{};
 		theResult = jsonObjectData["guild_scheduled_events"].get(theArray03);
 		if (theResult == simdjson::error_code::SUCCESS) {
@@ -859,8 +857,8 @@ namespace DiscordCoreAPI {
 				theData.guildScheduledEvents.emplace_back(strtoull(getString(value, "id")));
 			}
 		}
+
 		simdjson::ondemand::array theArray04{};
-		std::cout << "THIS IS IT WERE HERE! 1717" << std::endl;
 		theResult = jsonObjectData["stage_instances"].get(theArray04);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.threads.clear();
@@ -868,8 +866,8 @@ namespace DiscordCoreAPI {
 				theData.stageInstances.emplace_back(strtoull(getString(value, "id")));
 			}
 		}
+
 		simdjson::ondemand::array theArray05{};
-		std::cout << "THIS IS IT WERE HERE! 1818" << std::endl;
 		theResult = jsonObjectData["emoji"].get(theArray05);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.threads.clear();
@@ -878,7 +876,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		std::cout << "THIS IS IT WERE HERE! 1919" << std::endl;
 		simdjson::ondemand::array theArray06{};
 		theResult = jsonObjectData["roles"].get(theArray06);
 		if (theResult == simdjson::error_code::SUCCESS) {
@@ -893,8 +890,8 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+
 		simdjson::ondemand::array theArray07{};
-		std::cout << "THIS IS IT WERE HERE! 2020" << std::endl;
 		theResult = jsonObjectData["members"].get(theArray07);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			if (GuildMembers::doWeCacheGuildMembers) {
@@ -908,8 +905,8 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+
 		simdjson::ondemand::array theArray08{};
-		std::cout << "THIS IS IT WERE HERE! 2121" << std::endl;
 		theResult = jsonObjectData["voice_states"].get(theArray08);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			if (GuildMembers::doWeCacheGuildMembers) {
@@ -921,8 +918,8 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+
 		simdjson::ondemand::array theArray09{};
-		std::cout << "THIS IS IT WERE HERE! 2222" << std::endl;
 		theResult = jsonObjectData["presences"].get(theArray09);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			if (GuildMembers::doWeCacheGuildMembers) {
@@ -935,8 +932,8 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+
 		simdjson::ondemand::array theArray10{};
-		std::cout << "THIS IS IT WERE HERE! 2323" << std::endl;
 		theResult = jsonObjectData["channels"].get(theArray10);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			if (Channels::doWeCacheChannels) {
@@ -5517,12 +5514,9 @@ namespace DiscordCoreInternal {
 		try {
 			theData.op = DiscordCoreAPI::getUint32(jsonObjectData, "op");
 
-			std::cout << "WERE HERE THIS SI IT @ THE OP: " << theData.op << std::endl;
 			theData.s = DiscordCoreAPI::getUint32(jsonObjectData, "s");
 
-			std::cout << "WERE HERE THIS SI IT @ THE S: " << theData.s << std::endl;
-			theData.t = DiscordCoreAPI::getString(jsonObjectData, "t");			
-			std::cout << "WERE HERE THIS SI IT @ THE T: " << theData.t << std::endl;
+			theData.t = DiscordCoreAPI::getString(jsonObjectData, "t");
 		} catch (...) {
 			DiscordCoreAPI::reportException("parseObject()");
 		}
