@@ -264,19 +264,7 @@ namespace DiscordCoreInternal {
 				return this->parseFloatExt();
 			}
 			case ETFTokenType::Atom_Ext: {
-				std::string theString{ "\"" };
-				auto theStringNew = this->parseAtomUtf8Ext();
-				if (theStringNew == "null") {
-					theStringNew = "nullptr";
-					return theStringNew;
-				} else {
-					theString += theStringNew;
-					theString += "\"";
-				}
-				if (theString == "\"\"") {
-					theString = "null";
-				}
-				return theString;
+				return this->parseAtomUtf8Ext();
 			}
 			case ETFTokenType::Small_Tuple_Ext: {
 				return this->parseSmallTupleExt();
@@ -321,19 +309,7 @@ namespace DiscordCoreInternal {
 				return this->parseMapExt();
 			}
 			case ETFTokenType::Atom_Utf8_Ext: {
-				std::string theString{ "\"" };
-				auto theStringNew = this->parseAtomUtf8Ext();
-				if (theStringNew == "null") {
-					theStringNew = "nullptr";
-					return theStringNew;
-				} else {
-					theString += theStringNew;
-					theString += "\"";
-				}
-				if (theString == "\"\"") {
-					theString = "null";
-				}
-				return theString;
+				return this->parseAtomUtf8Ext();
 			}
 			default: {
 				throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Unknown data type in ETF.\n\n" };
@@ -429,7 +405,9 @@ namespace DiscordCoreInternal {
 				return std::string{ "false" };
 			}
 		}
-		std::string theValue = std::string{ atom, length };
+		std::string theValue{ "\"" };
+		theValue += std::string{ atom, length };
+		theValue += "\"";
 		return theValue;
 	}
 
