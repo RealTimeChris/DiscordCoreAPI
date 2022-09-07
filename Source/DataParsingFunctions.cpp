@@ -5221,6 +5221,7 @@ namespace DiscordCoreAPI {
 		std::string_view idNew{};
 		auto theResult = jsonObjectData["id"].get(idNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
+			std::cout << "THE ID: " << idNew.data() << std::endl;
 			parseObject(jsonObjectData, theData.applicationCommandData);
 		}
 

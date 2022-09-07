@@ -403,8 +403,6 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild for which the server update is occurring.
 	};
 
-	template<> void parseObject(simdjson::fallback::ondemand::object&& theJsonData, OnVoiceServerUpdateData& theData);
-
 	template<> void parseObject(simdjson::fallback::ondemand::object& theJsonData, OnVoiceServerUpdateData& theData);
 
 	template<> void parseObject(nlohmann::json* theJsonData, OnVoiceServerUpdateData& theData);
