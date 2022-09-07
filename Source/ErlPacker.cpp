@@ -266,7 +266,7 @@ namespace DiscordCoreInternal {
 			case ETFTokenType::Map_Ext: {
 				return this->parseMapExt();
 			}
-			case ETFTokenType::Atom_Utf8_Ext: {\
+			case ETFTokenType::Atom_Utf8_Ext: {
 				return this->parseAtomUtf8Ext();
 			}
 			default: {
@@ -383,8 +383,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseNilExt() {
-		std::string theString{};
-		theString.append(R"([])");
+		std::string theString{ R"([])" };
 		return theString;
 	}
 
@@ -394,8 +393,9 @@ namespace DiscordCoreInternal {
 		if (static_cast<uint64_t>(this->offSet) + length > this->size) {
 			throw ErlPackError{ "ErlPacker::parseStringAsList() Error: String list past end of buffer.\n\n" };
 		}
+		theArray.reserve(length);
 		for (uint16_t x = 0; x < length; ++x) {
-			theArray.append(this->parseSmallIntegerExt());
+			theArray.push_back(this->parseSmallIntegerExt()[0]);
 		}
 		return theArray;
 	}
@@ -403,9 +403,9 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseListExt() {
 		uint32_t length = this->readBits<uint32_t>();
 		std::string theArray{};
-		theArray.append(R"([)");
+		theArray += R"([)";
 		theArray += std::move(this->parseArray(length));
-		theArray.append(R"(])");
+		theArray += R"(])";
 		uint8_t theValue = this->readBits<uint8_t>();
 		if (static_cast<ETFTokenType>(theValue) != ETFTokenType::Nil_Ext) {
 			return std::string{};
@@ -420,13 +420,7 @@ namespace DiscordCoreInternal {
 			return std::string{};
 		}
 
-		std::string theValue{};
-
-		for (uint32_t x = 0; x < length; ++x) {
-			theValue.push_back(stringNew[x]);
-		}
-
-		return theValue;
+		return std::string{ stringNew, length };
 	}
 
 	std::string ErlPacker::parseSmallBigExt() {
@@ -442,29 +436,28 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseArray(const uint32_t length) {
 		std::string array{};
 		for (uint32_t x = 0; x < length; x++) {
-			std::string theString{ this->singleValueETFToJson() };
-			array.append(theString);
+			array += std::move(this->singleValueETFToJson());
 			if (x < length - 1) {
-				array.append(R"(,)");
+				array += R"(,)";
 			}
 		}
-	
+
 		return array;
 	}
 
 	std::string ErlPacker::parseMapExt() {
 		uint32_t length = readBits<uint32_t>();
 		std::string map{};
-		map.append(R"({)");
+		map += R"({)";
 		for (uint32_t i = 0; i < length; ++i) {
-			map.append(std::move(this->singleValueETFToJson()));
-			map.append(":");
-			map.append(std::move(this->singleValueETFToJson()));
-			if (i < length -1) {
-				map.append(",");
+			map += std::move(this->singleValueETFToJson());
+			map += ":";
+			map += std::move(this->singleValueETFToJson());
+			if (i < length - 1) {
+				map += ",";
 			}
 		}
-		map.append(R"(})");
+		map += R"(})";
 		return map;
 	}
 
@@ -480,5 +473,5 @@ namespace DiscordCoreInternal {
 		auto atom = this->readString(length);
 		std::string theValue = this->processAtom(atom, length);
 		return theValue;
-	}
+	};
 }

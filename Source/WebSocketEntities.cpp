@@ -322,6 +322,7 @@ namespace DiscordCoreInternal {
 		this->configManager = &theClient->configManager;
 		this->shard.emplace_back(currentShardNew);
 		this->theConnections = theConnectionsNew;
+		this->theParser.allocate(1024 * 1024);
 		this->discordCoreClient = theClient;
 		this->doWeQuit = doWeQuitNew;
 		if (this->discordCoreClient) {
