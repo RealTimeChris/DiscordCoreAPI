@@ -11,6 +11,7 @@
     "nlohmann-json",
     "openssl",
     "opus",
+    "simdjson",
     {
       "name": "vcpkg-cmake",
       "host": true
