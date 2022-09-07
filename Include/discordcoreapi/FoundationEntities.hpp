@@ -435,9 +435,9 @@ namespace DiscordCoreAPI {
 		virtual ~UserData() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, UserData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, UserData& theData);
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, UserData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, UserData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, UserData& theData);
 
@@ -814,9 +814,9 @@ namespace DiscordCoreAPI {
 		virtual ~RoleData() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, RoleData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, RoleData& theData);
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, RoleData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, RoleData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, RoleData& theData);
 
@@ -986,9 +986,9 @@ namespace DiscordCoreAPI {
 		virtual ~GuildMemberData() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, GuildMemberData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, GuildMemberData& theData);
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, GuildMemberData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, GuildMemberData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, GuildMemberData& theData);
 
@@ -1050,6 +1050,10 @@ namespace DiscordCoreAPI {
 
 		virtual ~ChannelData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonObjectData, ChannelData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonObjectData, ChannelData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, ChannelData& theData);
 
@@ -3409,7 +3413,7 @@ namespace DiscordCoreInternal {
 
 		theData.v = DiscordCoreAPI::getUint32(theParser, "v");
 
-		DiscordCoreAPI::parseObject(theParser["user"], theData.user);
+		DiscordCoreAPI::parseObject(theParser["user"].get_object(), theData.user);
 	}
 
 	template<> inline void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, ReadyData& theData) {
