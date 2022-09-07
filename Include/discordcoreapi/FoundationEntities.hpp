@@ -461,7 +461,9 @@ namespace DiscordCoreAPI {
 		virtual ~AttachmentData() noexcept = default;
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, AttachmentData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, AttachmentData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, AttachmentData& theData);
 
 	/// Sticker format types. \brief Sticker format types.
 	enum class StickerFormatType : uint8_t {
@@ -481,6 +483,10 @@ namespace DiscordCoreAPI {
 		virtual ~EmbedFooterData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, EmbedFooterData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, EmbedFooterData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, EmbedFooterData& theData);
 
 	/// Embed image data. \brief Embed image data.
@@ -494,6 +500,10 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedImageData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, EmbedImageData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, EmbedImageData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, EmbedImageData& theData);
 
@@ -509,6 +519,10 @@ namespace DiscordCoreAPI {
 		virtual ~EmbedThumbnailData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, EmbedThumbnailData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, EmbedThumbnailData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, EmbedThumbnailData& theData);
 
 	/// Embed video data. \brief Embed video data.
@@ -523,6 +537,10 @@ namespace DiscordCoreAPI {
 		virtual ~EmbedVideoData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, EmbedVideoData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, EmbedVideoData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, EmbedVideoData& theData);
 
 	/// Embed provider data. \brief Embed provider data.
@@ -534,6 +552,10 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedProviderData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, EmbedProviderData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, EmbedProviderData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, EmbedProviderData& theData);
 
@@ -549,6 +571,10 @@ namespace DiscordCoreAPI {
 		virtual ~EmbedAuthorData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, EmbedAuthorData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, EmbedAuthorData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, EmbedAuthorData& theData);
 
 	/// Embed field data. \brief Embed field data.
@@ -563,6 +589,10 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmbedFieldData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, EmbedFieldData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, EmbedFieldData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, EmbedFieldData& theData);
 
@@ -649,6 +679,10 @@ namespace DiscordCoreAPI {
 		virtual ~EmbedData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, EmbedData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, EmbedData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, EmbedData& theData);
 
 	/// Message reference data.\brief Message reference data.
@@ -664,6 +698,8 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageReferenceData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, MessageReferenceData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, MessageReferenceData& theData);
 
@@ -838,6 +874,10 @@ namespace DiscordCoreAPI {
 
 		virtual ~EmojiData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, EmojiData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, EmojiData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, EmojiData& theData);
 
@@ -1333,6 +1373,8 @@ namespace DiscordCoreAPI {
 		virtual ~MessageActivityData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, MessageActivityData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, MessageActivityData& theData);
 
 	/// Ban data. \brief Ban data.
@@ -1376,6 +1418,8 @@ namespace DiscordCoreAPI {
 		virtual ~TeamMembersObjectData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, TeamMembersObjectData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, TeamMembersObjectData& theData);
 
 	/// For updating the current voice state. \brief For updating the current voice state.
@@ -1392,13 +1436,15 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll TeamObjectData : public DiscordEntity {
 	  public:
 		std::vector<TeamMembersObjectData> members{};///< Array of team members object data.
-		std::string ownerUserId{};///< User id of the team owner.
+		Snowflake ownerUserId{};///< User id of the team owner.
 		std::string icon{};///< Icon for the team.
 
 		TeamObjectData() noexcept = default;
 
 		virtual ~TeamObjectData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, TeamObjectData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, TeamObjectData& theData);
 
@@ -1423,6 +1469,8 @@ namespace DiscordCoreAPI {
 
 		virtual ~InstallParamsData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, InstallParamsData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, InstallParamsData& theData);
 
@@ -1453,6 +1501,8 @@ namespace DiscordCoreAPI {
 
 		virtual ~ApplicationData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, ApplicationData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, ApplicationData& theData);
 
@@ -1794,6 +1844,8 @@ namespace DiscordCoreAPI {
 
 		virtual ~StickerData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, StickerData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, StickerData& theData);
 
@@ -2321,6 +2373,10 @@ namespace DiscordCoreAPI {
 		virtual ~UserCommandInteractionData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, UserCommandInteractionData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, UserCommandInteractionData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, UserCommandInteractionData& theData);
 
 	/// Message command interacction data. \brief Message command interacction data.
@@ -2331,6 +2387,10 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageCommandInteractionData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, MessageCommandInteractionData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, MessageCommandInteractionData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, MessageCommandInteractionData& theData);
 
@@ -2353,6 +2413,10 @@ namespace DiscordCoreAPI {
 		virtual ~ComponentInteractionData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, ComponentInteractionData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ComponentInteractionData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, ComponentInteractionData& theData);
 
 	/// Modal interaction data, for inputs from text modals. \brief Modal interaction data, for inputs from text modals.
@@ -2365,6 +2429,10 @@ namespace DiscordCoreAPI {
 
 		virtual ~ModalInteractionData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, ModalInteractionData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ModalInteractionData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, ModalInteractionData& theData);
 
@@ -2408,6 +2476,8 @@ namespace DiscordCoreAPI {
 		virtual ~SelectOptionData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, SelectOptionData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, SelectOptionData& theData);
 
 	/// Button styles. \brief Button styles.
@@ -2450,6 +2520,8 @@ namespace DiscordCoreAPI {
 
 		virtual ~ActionRowData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, ActionRowData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, ActionRowData& theData);
 
@@ -2513,6 +2585,8 @@ namespace DiscordCoreAPI {
 		virtual ~ChannelMentionData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, ChannelMentionData& theData);
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, ChannelMentionData& theData);
 
 	/// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
@@ -2569,6 +2643,10 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageInteractionData() noexcept = default;
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, MessageInteractionData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, MessageInteractionData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, MessageInteractionData& theData);
 
@@ -2641,6 +2719,8 @@ namespace DiscordCoreAPI {
 		virtual ~StickerItemData() noexcept = default;
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, StickerItemData& theData); 
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, StickerItemData& theData);
 
 	/// The core of a Message's data structure. \brief The core of a Message's data structure.
@@ -2697,7 +2777,9 @@ namespace DiscordCoreAPI {
 		virtual ~MessageData() noexcept = default;
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, MessageData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, MessageData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, MessageData& theData);
 
 	/// Resolved data. \brief Resolved data.
 	struct DiscordCoreAPI_Dll ResolvedData {
@@ -2708,6 +2790,10 @@ namespace DiscordCoreAPI {
 		std::unordered_map<Snowflake, UserData> users{};///< Map full of UserData.
 		std::unordered_map<Snowflake, RoleData> roles{};///< Map full of RoleData.
 	};
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, ResolvedData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ResolvedData& theData);
 
 	/// Represents a Sticker pack. \brief Represents a Sticker pack.
 	struct DiscordCoreAPI_Dll StickerPackData {
@@ -2798,7 +2884,9 @@ namespace DiscordCoreAPI {
 		virtual ~ApplicationCommandInteractionDataOption() noexcept = default;
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, ApplicationCommandInteractionDataOption& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, ApplicationCommandInteractionDataOption& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ApplicationCommandInteractionDataOption& theData);
 
 	/// ApplicationCommand Interaction data. \brief ApplicationCommand Interaction data.
 	class DiscordCoreAPI_Dll ApplicationCommandInteractionData : public DiscordEntity {
@@ -2814,7 +2902,9 @@ namespace DiscordCoreAPI {
 		virtual ~ApplicationCommandInteractionData() noexcept = default;
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, ApplicationCommandInteractionData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, ApplicationCommandInteractionData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, ApplicationCommandInteractionData& theData);
 
 	/// Interaction data data. \brief Interaction data data.
 	struct DiscordCoreAPI_Dll InteractionDataData {
@@ -2829,7 +2919,9 @@ namespace DiscordCoreAPI {
 		virtual ~InteractionDataData() noexcept = default;
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, InteractionDataData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, InteractionDataData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, InteractionDataData& theData);
 
 	/// Interaction data. \brief Interaction data.
 	class DiscordCoreAPI_Dll InteractionData : public DiscordEntity {
@@ -2854,7 +2946,9 @@ namespace DiscordCoreAPI {
 		virtual ~InteractionData() noexcept = default;
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, InteractionData& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, InteractionData& theData);
+
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, InteractionData& theData);
 
 	/// Data from the SessionStart info. \brief Data from the SessionStart info.
 	struct DiscordCoreAPI_Dll SessionStartData {

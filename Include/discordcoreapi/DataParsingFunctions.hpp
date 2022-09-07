@@ -45,6 +45,12 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	using Snowflake = uint64_t;
+
+	Snowflake getId(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, const char* theKey);
+
+	Snowflake getId(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, const char* theKey);
+
 	bool getBool(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonData, const char* theKey);
 
 	bool getBool(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonData, const char* theKey);

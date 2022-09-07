@@ -1051,10 +1051,10 @@ namespace DiscordCoreInternal {
 											}
 											this->discordCoreClient->eventManager.onIntegrationDeletionEvent(*dataPackage);
 											break;
-										}
+										}*/
 										case 41: {
 											std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
-											DiscordCoreAPI::parseObject(&payload["d"], *interactionData);
+											DiscordCoreAPI::parseObject(thePayload["d"].get_object(), *interactionData);
 											std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
 											switch (interactionData->type) {
 												case DiscordCoreAPI::InteractionType::Application_Command: {
@@ -1146,7 +1146,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 											break;
-										}
+										} /*
 										case 42: {
 											std::unique_ptr<DiscordCoreAPI::OnInviteCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInviteCreationData>() };
 											DiscordCoreAPI::parseObject(&payload["d"], dataPackage->invite);
