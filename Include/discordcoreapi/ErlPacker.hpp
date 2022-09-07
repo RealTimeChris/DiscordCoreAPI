@@ -58,12 +58,12 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll ErlPacker {
 	  public:
-		std::string parseJsonToEtf(nlohmann::json&);
-
-		std::string parseEtfToJson(std::string& dataToParse);
-
 		ErlPacker() noexcept = default;
 
+		std::string parseJsonToEtf(nlohmann::json&);
+
+		std::string& parseEtfToJson(std::string& dataToParse);
+		
 	  protected:
 		std::string comparisongStringFalse{ "false" };
 		std::string comparisongStringNil{ "nil" };

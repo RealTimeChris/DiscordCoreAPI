@@ -38,15 +38,17 @@ namespace DiscordCoreInternal {
 		return this->bufferString;
 	}
 
-	std::string ErlPacker::parseEtfToJson(std::string& dataToParse) {
+	std::string& ErlPacker::parseEtfToJson(std::string& dataToParse) {
 		this->bufferString.clear();
 		this->offSet = 0;
 		this->buffer = dataToParse.data();
+		std::cout << "INPUT SIZE: " << dataToParse.size() << std::endl;
 		this->size = dataToParse.size();
 		if (this->readBits<uint8_t>() != formatVersion) {
 			throw ErlPackError{ "ErlPacker::parseEtfToJson() Error: Incorrect format version specified." };
 		}
 		this->bufferString += this->singleValueETFToJson();
+		std::cout << "INPUT SIZE: " << bufferString.size() << std::endl;
 		return this->bufferString;
 	}
 
@@ -223,14 +225,6 @@ namespace DiscordCoreInternal {
 				return this->parseFloatExt();
 			}
 			case ETFTokenType::Atom_Ext: {
-				auto theStringNew = "";
-				std::string theString{ "\"" };
-				if (theStringNew != "null") {
-					//theStringNew.insert(theStringNew.begin(), theString.begin(), theString.end());
-					//theStringNew += "\"";
-				} else {
-					theStringNew = "null";
-				}
 				return this->parseAtomUtf8Ext();
 			}
 			case ETFTokenType::Small_Tuple_Ext: {
@@ -242,10 +236,9 @@ namespace DiscordCoreInternal {
 			case ETFTokenType::Nil_Ext: {
 				return this->parseNilExt();
 			}
-			case ETFTokenType::String_Ext: {\
-				std::string theString{};
-				theString += "\"";
-				theString += this->parseStringAsList();
+			case ETFTokenType::String_Ext: {
+				std::string theString{ "\"" };
+				theString += std::move(this->parseStringAsList());
 				theString += "\"";
 				return theString;
 			}
@@ -253,16 +246,14 @@ namespace DiscordCoreInternal {
 				return this->parseListExt();
 			}
 			case ETFTokenType::Binary_Ext: {
-				std::string theString{};
-				theString += "\"";
-				theString += this->parseBinaryExt();
+				std::string theString{ "\"" };
+				theString += std::move(this->parseBinaryExt());
 				theString += "\"";
 				return theString;
 			}
 			case ETFTokenType::Small_Big_Ext: {
-				std::string theString{};
-				theString += "\"";
-				theString += this->parseSmallBigExt();
+				std::string theString{ "\"" };
+				theString += std::move(this->parseSmallBigExt());
 				theString += "\"";
 				return theString;
 			}
@@ -413,7 +404,7 @@ namespace DiscordCoreInternal {
 		uint32_t length = this->readBits<uint32_t>();
 		std::string theArray{};
 		theArray.append(R"([)");
-		theArray += this->parseArray(length);
+		theArray += std::move(this->parseArray(length));
 		theArray.append(R"(])");
 		uint8_t theValue = this->readBits<uint8_t>();
 		if (static_cast<ETFTokenType>(theValue) != ETFTokenType::Nil_Ext) {
@@ -466,15 +457,12 @@ namespace DiscordCoreInternal {
 		std::string map{};
 		map.append(R"({)");
 		for (uint32_t i = 0; i < length; ++i) {
-			std::string theKey{};
-			theKey = singleValueETFToJson();
-			theKey += ":";
-			auto value = singleValueETFToJson();
+			map.append(std::move(this->singleValueETFToJson()));
+			map.append(":");
+			map.append(std::move(this->singleValueETFToJson()));
 			if (i < length -1) {
-				value += ",";
+				map.append(",");
 			}
-			map.append(theKey);
-			map.append(value);
 		}
 		map.append(R"(})");
 		return map;

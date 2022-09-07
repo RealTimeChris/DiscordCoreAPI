@@ -427,7 +427,7 @@ namespace DiscordCoreInternal {
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							try {
 								theStopWatchReal.resetTimer();
-								payload = ErlPacker::parseEtfToJson(theData);
+								payload.swap(ErlPacker::parseEtfToJson(theData));
 								std::cout << "TIME TO PARSE: " << theStopWatchReal.totalTimePassed() << std::endl;
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
@@ -446,7 +446,7 @@ namespace DiscordCoreInternal {
 					}
 
 					payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
-					auto theDocument = this->theParser.iterate(payload);
+					auto theDocument = this->theParser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity()));
 					auto thePayload = theDocument.value().get_value();
 					WebSocketMessage theMessage{};
 					parseObject(thePayload, theMessage);
