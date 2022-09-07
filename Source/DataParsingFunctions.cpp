@@ -468,7 +468,7 @@ namespace DiscordCoreAPI {
 				OverWriteData theDataNew{};
 				auto theObject = value.get_object().value();
 				parseObject(theObject, theDataNew);
-				theData.permissionOverwrites.emplace_back(value.get_object());
+				theData.permissionOverwrites.emplace_back(std::move(theDataNew));
 			}
 		}
 
@@ -2246,31 +2246,31 @@ namespace DiscordCoreAPI {
 		}
 
 		simdjson::fallback::ondemand::object theImage{};
-		auto theResult = jsonObjectData["image"].get(theImage);
+		theResult = jsonObjectData["image"].get(theImage);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(theImage, theData.image);
 		}
 
 		simdjson::fallback::ondemand::object theProvider{};
-		auto theResult = jsonObjectData["provider"].get(theProvider);
+		theResult = jsonObjectData["provider"].get(theProvider);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(theProvider, theData.provider);
 		}
 
 		simdjson::fallback::ondemand::object theThumbnail{};
-		auto theResult = jsonObjectData["thumbnail"].get(theThumbnail);
+		theResult = jsonObjectData["thumbnail"].get(theThumbnail);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(theThumbnail, theData.thumbnail);
 		}
 
 		simdjson::fallback::ondemand::object theVideo{};
-		auto theResult = jsonObjectData["video"].get(theVideo);
+		theResult = jsonObjectData["video"].get(theVideo);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(theVideo, theData.video);
 		}
 
 		simdjson::fallback::ondemand::object theAuthor{};
-		auto theResult = jsonObjectData["author"].get(theAuthor);
+		theResult = jsonObjectData["author"].get(theAuthor);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(theAuthor, theData.author);
 		}
@@ -2278,7 +2278,7 @@ namespace DiscordCoreAPI {
 		theData.fields.clear();
 		EmbedFieldData newData{};
 		simdjson::fallback::ondemand::array theArray{};
-		auto theResult = jsonObjectData["fields"].get(theArray);
+		theResult = jsonObjectData["fields"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			for (auto value: theArray) {
 				auto theObject = value.get_object().value();
@@ -3101,7 +3101,7 @@ namespace DiscordCoreAPI {
 		}
 
 		simdjson::fallback::ondemand::object theUserNew{};
-		auto theResult = jsonObjectData["user"].get(theUserNew);
+		theResult = jsonObjectData["user"].get(theUserNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			UserData theUser{};
 			parseObject(theUserNew, theUser);
@@ -3230,13 +3230,13 @@ namespace DiscordCoreAPI {
 				auto theObject = value.get_object().value();
 				parseObject(theObject, newData);
 				newData.guildId = theData.id;
-				theData.roles.emplace_back(newData.id);
+				theData.roles.emplace_back(newData);
 				Roles::insertRole(std::move(newData));
 			}
 		}
 		
 		simdjson::fallback::ondemand::object theUserNew{};
-		auto theResult = jsonObjectData["user"].get(theUserNew);
+		theResult = jsonObjectData["user"].get(theUserNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			UserData theUser{};
 			parseObject(theUserNew, theUser);
@@ -4707,7 +4707,7 @@ namespace DiscordCoreAPI {
 		theData.url = getString(jsonObjectData, "url");
 
 		simdjson::fallback::ondemand::array theArray02{};
-		auto theResult = jsonObjectData["select_option_data"].get(theArray02);
+		theResult = jsonObjectData["select_option_data"].get(theArray02);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.options.clear();
 			SelectOptionData newData{};
@@ -4724,7 +4724,7 @@ namespace DiscordCoreAPI {
 		auto theResult = jsonObjectData["components"].get(theArray02);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.components.clear();
-			SelectOptionData newData{};
+			ComponentData newData{};
 			for (auto value: theArray02) {
 				auto theObjectNew = value.get_object().value();
 				parseObject(theObjectNew, newData);
@@ -4754,10 +4754,10 @@ namespace DiscordCoreAPI {
 			parseObject(theUserNew, theData.user);
 		}
 
-		simdjson::fallback::ondemand::object theUserNew{};
-		auto theResult = jsonObjectData["member"].get(theUserNew);
+		simdjson::fallback::ondemand::object theMemberNew{};
+		theResult = jsonObjectData["member"].get(theMemberNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theUserNew, theData.member);
+			parseObject(theMemberNew, theData.member);
 		}
 	}
 
@@ -4822,10 +4822,10 @@ namespace DiscordCoreAPI {
 			parseObject(theUserNew, theData.author);
 		}
 
-		simdjson::fallback::ondemand::object theUserNew{};
-		theResult = jsonObjectData["member"].get(theUserNew);
+		simdjson::fallback::ondemand::object theMemberNew{};
+		theResult = jsonObjectData["member"].get(theMemberNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theUserNew, theData.member);
+			parseObject(theMemberNew, theData.member);
 		}
 
 		theData.timestamp = getString(jsonObjectData, "timestamp");
@@ -4849,10 +4849,10 @@ namespace DiscordCoreAPI {
 		}
 
 		theData.mentionRoles.clear();
-		simdjson::fallback::ondemand::array theArray{};
-		theResult = jsonObjectData["mention_roles"].get(theArray);
+		simdjson::fallback::ondemand::array theArray02{};
+		theResult = jsonObjectData["mention_roles"].get(theArray02);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			for (auto value: theArray) {
+			for (auto value: theArray02) {
 				auto theObject = value.get_string().take_value().data();
 				theData.mentionRoles.emplace_back(std::move(theObject));
 			}
@@ -4915,13 +4915,13 @@ namespace DiscordCoreAPI {
 		theData.type = static_cast<MessageType>(getUint8(jsonObjectData, "type"));
 
 		simdjson::fallback::ondemand::object theActivityNew{};
-		auto theResult = jsonObjectData["activity"].get(theActivityNew);
+		theResult = jsonObjectData["activity"].get(theActivityNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(theActivityNew, theData.activity);
 		}
 
 		simdjson::fallback::ondemand::object theApplicationNew{};
-		auto theResult = jsonObjectData["application"].get(theApplicationNew);
+		theResult = jsonObjectData["application"].get(theApplicationNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(theApplicationNew, theData.application);
 		}
@@ -4929,7 +4929,7 @@ namespace DiscordCoreAPI {
 		theData.applicationId = getId(jsonObjectData, "application_id");
 
 		simdjson::fallback::ondemand::object messageReferenceNew{};
-		auto theResult = jsonObjectData["message_reference"].get(messageReferenceNew);
+		theResult = jsonObjectData["message_reference"].get(messageReferenceNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(messageReferenceNew, theData.messageReference);
 		}
@@ -4961,7 +4961,7 @@ namespace DiscordCoreAPI {
 		}
 
 		simdjson::fallback::ondemand::object interactionNew{};
-		auto theResult = jsonObjectData["interaction"].get(interactionNew);
+		theResult = jsonObjectData["interaction"].get(interactionNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(interactionNew, theData.interaction);
 		}
@@ -4979,7 +4979,7 @@ namespace DiscordCoreAPI {
 		}
 
 		simdjson::fallback::ondemand::object threadNew{};
-		auto theResult = jsonObjectData["thread"].get(threadNew);
+		theResult = jsonObjectData["thread"].get(threadNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(threadNew, theData.thread);
 		}
@@ -5075,7 +5075,7 @@ namespace DiscordCoreAPI {
 		theData.theConnectionDatas.shrink_to_fit();
 	}
 
-	template<> void parseObject(simdjson::fallback::ondemand::object&& jsonObjectData, ApplicationCommandInteractionDataOption& theData) {
+	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, ApplicationCommandInteractionDataOption& theData) {
 		theData.name = getString(jsonObjectData, "name");
 
 		theData.type = static_cast<ApplicationCommandOptionType>(getUint8(jsonObjectData, "type"));
@@ -5102,103 +5102,29 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		simdjson::fallback::ondemand::object theArray03{};
-		theResult = jsonObjectData["options"].get(theArray03);
+		simdjson::fallback::ondemand::array theArray10{};
+		theResult = jsonObjectData["options"].get(theArray10);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.options.clear();
-			for (auto iterator = theArray03.begin(); iterator != theArray03.end(); ++iterator) {
-				ApplicationCommandInteractionDataOption newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.options.emplace_back(std::move(newData));
-			}
-		}
-	}
-
-	template<> void parseObject(simdjson::fallback::ondemand::object&& jsonObjectData, ResolvedData& theData) {
-		simdjson::fallback::ondemand::object theArray01{};
-		auto theResult = jsonObjectData["attachments"].get(theArray01);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.attachments.clear();
-			for (auto iterator = theArray01.begin(); iterator != theArray01.end(); ++iterator) {
-				AttachmentData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.attachments[strtoull(theObjectNew.key().take_value().raw())] = newData;
-			}
-		}
-
-		simdjson::fallback::ondemand::object theArray02{};
-		theResult = jsonObjectData["users"].get(theArray02);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.users.clear();
-			for (auto iterator = theArray02.begin(); iterator != theArray02.end(); ++iterator) {
-				UserData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.users[strtoull(theObjectNew.key().take_value().raw())] = newData;
-			}
-		}
-
-		simdjson::fallback::ondemand::object theArray03{};
-		theResult = jsonObjectData["channels"].get(theArray03);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.channels.clear();
-			for (auto iterator = theArray03.begin(); iterator != theArray03.end(); ++iterator) {
-				ChannelData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.channels[strtoull(theObjectNew.key().take_value().raw())] = newData;
-			}
-		}
-
-		simdjson::fallback::ondemand::object theArray04{};
-		theResult = jsonObjectData["roles"].get(theArray04);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.roles.clear();
-			for (auto iterator = theArray04.begin(); iterator != theArray04.end(); ++iterator) {
-				RoleData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.roles[strtoull(theObjectNew.key().take_value().raw())] = newData;
-			}
-		}
-
-		simdjson::fallback::ondemand::object theArray05{};
-		theResult = jsonObjectData["members"].get(theArray05);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.members.clear();
-			for (auto iterator = theArray05.begin(); iterator != theArray05.end(); ++iterator) {
-				GuildMemberData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.members[strtoull(theObjectNew.key().take_value().raw())] = newData;
-			}
-		}
-
-		simdjson::fallback::ondemand::object theArray06{};
-		theResult = jsonObjectData["messages"].get(theArray06);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.messages.clear();
-			for (auto iterator = theArray06.begin(); iterator != theArray06.end(); ++iterator) {
-				MessageData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.messages[strtoull(theObjectNew.key().take_value().raw())] = newData;
+			ApplicationCommandInteractionDataOption newActionRowData{};
+			for (auto theValue: theArray10) {
+				auto theObjectNew = theValue.get_object().value();
+				parseObject(theObjectNew, newActionRowData);
+				theData.options.emplace_back(std::move(newActionRowData));
 			}
 		}
 	}
 
 	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, ResolvedData& theData) {
-		simdjson::fallback::ondemand::object theArray01{};
+		simdjson::ondemand::object theArray01{};
 		auto theResult = jsonObjectData["attachments"].get(theArray01);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.attachments.clear();
-			for (auto iterator = theArray01.begin(); iterator != theArray01.end(); ++iterator) {
+			for (auto theValue: theArray01) {
 				AttachmentData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.attachments[strtoull(theObjectNew.key().take_value().raw())] = newData;
+				auto theObjectNew = theValue.value().get_object().value();
+				parseObject(theObjectNew, newData);
+				theData.attachments[strtoull(theValue.key().take_value().raw())] = std::move(newData);
 			}
 		}
 
@@ -5206,11 +5132,11 @@ namespace DiscordCoreAPI {
 		theResult = jsonObjectData["users"].get(theArray02);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.users.clear();
-			for (auto iterator = theArray02.begin(); iterator != theArray02.end(); ++iterator) {
+			for (auto theValue: theArray02) {			
 				UserData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.users[strtoull(theObjectNew.key().take_value().raw())] = newData;
+				auto theObjectNew = theValue.value().get_object().value();
+				parseObject(theObjectNew, newData);
+				theData.users[strtoull(theValue.key().take_value().raw())] = std::move(newData);
 			}
 		}
 
@@ -5218,11 +5144,11 @@ namespace DiscordCoreAPI {
 		theResult = jsonObjectData["channels"].get(theArray03);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.channels.clear();
-			for (auto iterator = theArray03.begin(); iterator != theArray03.end(); ++iterator) {
+			for (auto theValue: theArray02) {
 				ChannelData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.channels[strtoull(theObjectNew.key().take_value().raw())] = newData;
+				auto theObjectNew = theValue.value().get_object().value();
+				parseObject(theObjectNew, newData);
+				theData.channels[strtoull(theValue.key().take_value().raw())] = std::move(newData);
 			}
 		}
 
@@ -5230,11 +5156,11 @@ namespace DiscordCoreAPI {
 		theResult = jsonObjectData["roles"].get(theArray04);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.roles.clear();
-			for (auto iterator = theArray04.begin(); iterator != theArray04.end(); ++iterator) {
+			for (auto theValue: theArray02) {
 				RoleData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.roles[strtoull(theObjectNew.key().take_value().raw())] = newData;
+				auto theObjectNew = theValue.value().get_object().value();
+				parseObject(theObjectNew, newData);
+				theData.roles[strtoull(theValue.key().take_value().raw())] = std::move(newData);
 			}
 		}
 
@@ -5242,11 +5168,11 @@ namespace DiscordCoreAPI {
 		theResult = jsonObjectData["members"].get(theArray05);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.members.clear();
-			for (auto iterator = theArray05.begin(); iterator != theArray05.end(); ++iterator) {
+			for (auto theValue: theArray02) {
 				GuildMemberData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.members[strtoull(theObjectNew.key().take_value().raw())] = newData;
+				auto theObjectNew = theValue.value().get_object().value();
+				parseObject(theObjectNew, newData);
+				theData.members[strtoull(theValue.key().take_value().raw())] = std::move(newData);
 			}
 		}
 
@@ -5254,36 +5180,13 @@ namespace DiscordCoreAPI {
 		theResult = jsonObjectData["messages"].get(theArray06);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.messages.clear();
-			for (auto iterator = theArray06.begin(); iterator != theArray06.end(); ++iterator) {
+			for (auto theValue: theArray02) {
 				MessageData newData{};
-				auto theObjectNew = iterator.value().operator*();
-				parseObject(theObjectNew.value().get_object(), newData);
-				theData.messages[strtoull(theObjectNew.key().take_value().raw())] = newData;
+				auto theObjectNew = theValue.value().get_object().value();
+				parseObject(theObjectNew, newData);
+				theData.messages[strtoull(theValue.key().take_value().raw())] = std::move(newData);
 			}
 		}
-	}
-
-	template<> void parseObject(simdjson::fallback::ondemand::object&& jsonObjectData, ApplicationCommandInteractionData& theData) {
-		theData.type = static_cast<ApplicationCommandType>(getUint8(jsonObjectData, "type"));
-
-		theData.name = getString(jsonObjectData, "name");
-
-		theData.guildId = getId(jsonObjectData, "guild_id");
-
-		theData.id = getId(jsonObjectData, "id");
-
-		simdjson::fallback::ondemand::array theArray01{};
-		auto theResult = jsonObjectData["options"].get(theArray01);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.options.clear();
-			for (auto value: theArray01) {
-				ApplicationCommandInteractionDataOption newData{};
-				parseObject(value.get_object(), newData);
-				theData.options.emplace_back(std::move(newData));
-			}
-		}
-
-		parseObject(jsonObjectData["resolved"].get_object(), theData.resolved);
 	}
 
 	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, ApplicationCommandInteractionData& theData) {
@@ -5295,118 +5198,58 @@ namespace DiscordCoreAPI {
 
 		theData.id = getId(jsonObjectData, "id");
 
-		simdjson::fallback::ondemand::array theArray01{};
-		auto theResult = jsonObjectData["options"].get(theArray01);
+		simdjson::fallback::ondemand::array theArray02{};
+		auto theResult = jsonObjectData["options"].get(theArray02);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.options.clear();
-			for (auto value: theArray01) {
-				ApplicationCommandInteractionDataOption newData{};
-				parseObject(value.get_object(), newData);
+			ApplicationCommandInteractionDataOption newData{};
+			for (auto value: theArray02) {
+				auto theObjectNew = value.get_object().value();
+				parseObject(theObjectNew, newData);
 				theData.options.emplace_back(std::move(newData));
 			}
 		}
 
-		parseObject(jsonObjectData["resolved"].get_object(), theData.resolved);
-	}
-
-	template<> void parseObject(simdjson::fallback::ondemand::object&& jsonObjectData, InteractionDataData& theData) {
-		try {
-			if (!jsonObjectData["id"].is_null()) {
-				parseObject(jsonObjectData, theData.applicationCommandData);
-			}
-
-			if (!jsonObjectData["target_id"].is_null()) {
-				parseObject(jsonObjectData, theData.messageInteractionData);
-				parseObject(jsonObjectData, theData.userInteractionData);
-			}
-
-			if (!jsonObjectData["component_type"].is_null()) {
-				parseObject(jsonObjectData, theData.componentData);
-			}
-
-			if (!jsonObjectData["components"].is_null()) {
-				parseObject(jsonObjectData, theData.modalData);
-			}
-		} catch (...) {
-			reportException("parseObject()");
+		simdjson::fallback::ondemand::object threadNew{};
+		theResult = jsonObjectData["resolved"].get(threadNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(threadNew, theData.resolved);
 		}
 	}
 
 	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, InteractionDataData& theData) {
-		if (jsonObjectData["id"].get_string().take_value().data() != "") {
+		std::string_view idNew{};
+		auto theResult = jsonObjectData["id"].get(idNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(jsonObjectData, theData.applicationCommandData);
 		}
 
-		if (jsonObjectData["target_id"].get_string().take_value().data() != "") {
+		std::string_view targetIdNew{};
+		theResult = jsonObjectData["target_id"].get(targetIdNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(jsonObjectData, theData.messageInteractionData);
 			parseObject(jsonObjectData, theData.userInteractionData);
 		}
 
-		if (jsonObjectData["component_type"].get_string().take_value().data() != "") {
+		std::string_view componentType{};
+		theResult = jsonObjectData["component_type"].get(componentType);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(jsonObjectData, theData.componentData);
 		}
 
-		if (!jsonObjectData["components"].is_null()) {
+		simdjson::fallback::ondemand::object components{};
+		theResult = jsonObjectData["components"].get(components);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			parseObject(jsonObjectData, theData.modalData);
 		}
 	}
 
-	template<> void parseObject(simdjson::fallback::ondemand::object&&jsonObjectData, InteractionData& theData) {
-		try {
-			simdjson::fallback::ondemand::object theDataNew{};
-			auto theResult01 = jsonObjectData["data"].get(theDataNew);
-			if (theResult01 == simdjson::error_code::SUCCESS) {
-				parseObject(theDataNew, theData.data);
-			}
-
-			theData.appPermissions = getString(jsonObjectData, "app_permissions");
-
-			theData.type = static_cast<InteractionType>(getUint8(jsonObjectData, "type"));
-
-			theData.token = getString(jsonObjectData, "token");
-
-			simdjson::fallback::ondemand::object theMember{};
-			auto theResult02 = jsonObjectData["member"].get(theDataNew);
-			if (theResult02 == simdjson::error_code::SUCCESS) {
-				std::cout << "FIELD COUNT: " << theMember.count_fields() << std::endl;
-				parseObject(theMember, theData.member);
-			}
-
-			simdjson::fallback::ondemand::object theUser{};
-			auto theResult03 = jsonObjectData["user"].get(theDataNew);
-			if (theResult03 == simdjson::error_code::SUCCESS) {
-				std::cout << "FIELD COUNT: " << theUser.count_fields() << std::endl;
-				parseObject(theUser, theData.user);
-			}
-
-			theData.channelId = getId(jsonObjectData, "channel_id");
-
-			theData.guildId = getId(jsonObjectData, "guild_id");
-
-			theData.locale = getString(jsonObjectData, "locale");
-
-			theData.guildLocale = getString(jsonObjectData, "guild_locale");
-
-			simdjson::fallback::ondemand::object theMessage{};
-			auto theResult04 = jsonObjectData["message"].get(theDataNew);
-			if (theResult04 == simdjson::error_code::SUCCESS) {
-				parseObject(theMessage, theData.message);
-			}
-
-			parseObject(jsonObjectData["message"].get_object(), theData.message);
-
-			theData.version = getUint32(jsonObjectData, "version");
-
-			theData.id = getId(jsonObjectData, "id");
-
-			theData.applicationId = getId(jsonObjectData, "application_id");
-		} catch (...) {
-			reportException("parseObject()");
-		}
-	}
-
 	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, InteractionData& theData) {
-		parseObject(jsonObjectData["data"].get_object(), theData.data);
+		simdjson::fallback::ondemand::object dataNew{};
+		auto theResult = jsonObjectData["data"].get(dataNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(dataNew, theData.data);
+		}
 
 		theData.appPermissions = getString(jsonObjectData, "app_permissions");
 
@@ -5414,11 +5257,19 @@ namespace DiscordCoreAPI {
 
 		theData.token = getString(jsonObjectData, "token");
 
-		parseObject(jsonObjectData["member"].get_object(), theData.member);
-		theData.user.id = theData.member.id;
-		theData.user.userName = theData.member.getUserData().userName;
+		simdjson::fallback::ondemand::object memberNew{};
+		theResult = jsonObjectData["member"].get(memberNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(memberNew, theData.member);
+			theData.user.id = theData.member.id;
+			theData.user.userName = theData.member.getUserData().userName;
+		}
 
-		parseObject(jsonObjectData["user"].get_object(), theData.user);
+		simdjson::fallback::ondemand::object userNew{};
+		theResult = jsonObjectData["user"].get(userNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(userNew, theData.user);
+		}
 
 		theData.channelId = getId(jsonObjectData, "channel_id");
 
@@ -5428,7 +5279,11 @@ namespace DiscordCoreAPI {
 
 		theData.guildLocale = getString(jsonObjectData, "guild_locale");
 
-		parseObject(jsonObjectData["message"].get_object(), theData.message);
+		simdjson::fallback::ondemand::object messageNew{};
+		theResult = jsonObjectData["message"].get(messageNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(messageNew, theData.message);
+		}
 
 		theData.version = getUint32(jsonObjectData, "version");
 

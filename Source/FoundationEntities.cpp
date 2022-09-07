@@ -251,22 +251,6 @@ namespace DiscordCoreAPI {
 		return embed;
 	}
 
-	OverWriteData& OverWriteData::operator=(simdjson::fallback::ondemand::object&& theJsonData) {
-		this->allow = strtoull(getString(theJsonData, "allow"));
-
-		this->deny = strtoull(getString(theJsonData, "deny"));
-
-		this->id = strtoull(getString(theJsonData, "id"));
-
-		this->type = static_cast<PermissionOverwritesType>(getUint8(theJsonData, "type"));
-
-		return *this;
-	}
-
-	OverWriteData::OverWriteData(simdjson::fallback::ondemand::object&& theJsonData) {
-		*this = std::move(theJsonData);
-	}
-
 	OverWriteData& OverWriteData::operator=(nlohmann::json& theJsonData) {
 		this->allow = strtoull(getString(&theJsonData, "allow"));
 
