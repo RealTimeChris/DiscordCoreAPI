@@ -302,9 +302,7 @@ namespace DiscordCoreAPI {
 			if (theResult != simdjson::error_code::SUCCESS) {
 				return "0";
 			}
-			std::string theStringNewer{};
-			theStringNewer.insert(theStringNewer.begin(), theStringNew.begin(), theStringNew.end());
-			return theStringNewer;
+			return std::string{ theStringNew.data(), theStringNew.size() };
 		} catch (...) {
 			reportException("getBool()");
 			return "";
@@ -318,9 +316,7 @@ namespace DiscordCoreAPI {
 			if (theResult != simdjson::error_code::SUCCESS) {
 				return "0";
 			}
-			std::string theStringNewer{};
-			theStringNewer.insert(theStringNewer.begin(), theStringNew.begin(), theStringNew.end());
-			return theStringNewer;
+			return std::string{ theStringNew.data(), theStringNew.size() };
 		} catch (...) {
 			reportException("getBool()");
 			return "";

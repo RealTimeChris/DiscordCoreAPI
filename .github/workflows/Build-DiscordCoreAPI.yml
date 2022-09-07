@@ -61,6 +61,7 @@ jobs:
                 sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux || true
                 sudo cat /usr/local/share/vcpkg/buildtrees/discordcoreapi/install-x64-linux-dbg-out.log
                 sudo cat /usr/local/share/vcpkg/buildtrees/discordcoreapi/install-x64-linux-rel-out.log
+                sudo cat /usr/local/share/vcpkg/buildtrees/discordcoreapi/config-x64-linux-out.log
                 sudo rm -rf InstallOutput.txt
                 sudo rm -rf ./CMake/Raw-Files/Portfile-The-First.cmake
                 sudo rm -rf ./CMake/Raw-Files/Portfile-The-Second.cmake

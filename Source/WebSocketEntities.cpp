@@ -420,7 +420,8 @@ namespace DiscordCoreInternal {
 			if (this->areWeStillConnected()) {
 				try {
 					bool returnValue{ false };
-					std::string payload{};
+					std::string theString{};
+					std::string& payload{ theString };
 					nlohmann::json payloadJson{};
 					if (theData.size() > 0) {
 						returnValue = true;
@@ -428,8 +429,7 @@ namespace DiscordCoreInternal {
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							try {
 								theStopWatchReal.resetTimer();
-								payload.swap(ErlPacker::parseEtfToJson(theData));
-								std::cout << "TIME TO PARSE: " << theStopWatchReal.totalTimePassed() << std::endl;
+								payload = ErlPacker::parseEtfToJson(theData);
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -673,7 +673,6 @@ namespace DiscordCoreInternal {
 											Snowflake guildId{};
 											theStopWatchReal.resetTimer();
 											DiscordCoreAPI::parseObject(thePayload["d"], theGuild);
-											std::cout << "TIME TO PARSE 02: " << theStopWatchReal.totalTimePassed() << std::endl;
 											guildId = theGuild.id;
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildData* theGuildPtr{ nullptr };
