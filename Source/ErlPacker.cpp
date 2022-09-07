@@ -276,7 +276,7 @@ namespace DiscordCoreInternal {
 				std::string theString{ "\"" };
 				auto theStringNew = this->parseAtomUtf8Ext();
 				if (theStringNew == "null") {
-					theStringNew = "null";
+					theStringNew = "nullptr";
 					return theStringNew;
 				} else {
 					theString += theStringNew;
