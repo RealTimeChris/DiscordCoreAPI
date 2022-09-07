@@ -5744,21 +5744,25 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, InteractionDataData& theData) {
-		if (jsonObjectData["id"].get_string().take_value().data() != "") {
-			parseObject(jsonObjectData, theData.applicationCommandData);
-		}
+		try {
+			if (!jsonObjectData["id"].is_null()) {
+				parseObject(jsonObjectData, theData.applicationCommandData);
+			}
 
-		if (jsonObjectData["target_id"].get_string().take_value().data() != "") {
-			parseObject(jsonObjectData, theData.messageInteractionData);
-			parseObject(jsonObjectData, theData.userInteractionData);
-		}
+			if (!jsonObjectData["target_id"].is_null()) {
+				parseObject(jsonObjectData, theData.messageInteractionData);
+				parseObject(jsonObjectData, theData.userInteractionData);
+			}
 
-		if (jsonObjectData["component_type"].get_string().take_value().data() != "") {
-			parseObject(jsonObjectData, theData.componentData);
-		}
+			if (!jsonObjectData["component_type"].is_null()) {
+				parseObject(jsonObjectData, theData.componentData);
+			}
 
-		if (!jsonObjectData["components"].is_null()){
-			parseObject(jsonObjectData, theData.modalData);
+			if (!jsonObjectData["components"].is_null()) {
+				parseObject(jsonObjectData, theData.modalData);
+			}
+		} catch (...) {
+			reportException("parseObject()");
 		}
 	}
 
@@ -5782,35 +5786,56 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&&jsonObjectData, InteractionData& theData) {
-		parseObject(jsonObjectData["data"].get_object(), theData.data);
+		try {
+			simdjson::fallback::ondemand::object theDataNew{};
+			auto theResult01 = jsonObjectData["data"].get(theDataNew);
+			if (theResult01 == simdjson::error_code::SUCCESS) {
+				parseObject(theDataNew., theData.data);
+			}
 
-		theData.appPermissions = getString(jsonObjectData, "app_permissions");
+			theData.appPermissions = getString(jsonObjectData, "app_permissions");
 
-		theData.type = static_cast<InteractionType>(getUint8(jsonObjectData, "type"));
+			theData.type = static_cast<InteractionType>(getUint8(jsonObjectData, "type"));
 
-		theData.token = getString(jsonObjectData, "token");
+			theData.token = getString(jsonObjectData, "token");
 
-		parseObject(jsonObjectData["member"].get_object(), theData.member);
-		theData.user.id = theData.member.id;
-		theData.user.userName = theData.member.getUserData().userName;
+			simdjson::fallback::ondemand::object theMember{};
+			auto theResult02 = jsonObjectData["member"].get(theDataNew);
+			if (theResult02 == simdjson::error_code::SUCCESS) {
+				std::cout << "FIELD COUNT: " << theMember.count_fields() << std::endl;
+				parseObject(theMember.get_object(), theData.member);
+			}
 
-		parseObject(jsonObjectData["user"].get_object(), theData.user);
+			simdjson::fallback::ondemand::object theUser{};
+			auto theResult03 = jsonObjectData["user"].get(theDataNew);
+			if (theResult03 == simdjson::error_code::SUCCESS) {
+				parseObject(theUser.get_object(), theData.user);
+			}
 
-		theData.channelId = getId(jsonObjectData, "channel_id");
+			theData.channelId = getId(jsonObjectData, "channel_id");
 
-		theData.guildId = getId(jsonObjectData, "guild_id");
+			theData.guildId = getId(jsonObjectData, "guild_id");
 
-		theData.locale = getString(jsonObjectData, "locale");
+			theData.locale = getString(jsonObjectData, "locale");
 
-		theData.guildLocale = getString(jsonObjectData, "guild_locale");
+			theData.guildLocale = getString(jsonObjectData, "guild_locale");
 
-		parseObject(jsonObjectData["message"].get_object(), theData.message);
+			simdjson::fallback::ondemand::object theMessage{};
+			auto theResult04 = jsonObjectData["message"].get(theDataNew);
+			if (theResult04 == simdjson::error_code::SUCCESS) {
+				parseObject(theMessage.get_object(), theData.message);
+			}
 
-		theData.version = getUint32(jsonObjectData, "version");
+			parseObject(jsonObjectData["message"].get_object(), theData.message);
 
-		theData.id = getId(jsonObjectData, "id");
+			theData.version = getUint32(jsonObjectData, "version");
 
-		theData.applicationId = getId(jsonObjectData, "application_id");
+			theData.id = getId(jsonObjectData, "id");
+
+			theData.applicationId = getId(jsonObjectData, "application_id");
+		} catch (...) {
+			reportException("parseObject()");
+		}
 	}
 
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, InteractionData& theData) {

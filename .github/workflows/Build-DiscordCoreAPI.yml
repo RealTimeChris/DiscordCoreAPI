@@ -37,6 +37,7 @@ jobs:
            run: |
                 cd ./DiscordCoreAPI
                 sudo cp -v -R ./CMake/Raw-Files/Portfile-The-First.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake
+                sudo cp -v -R ./Vcpkg/ports/discordcoreapi/vcpkg.json /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json
                 sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux | sudo tee InstallOutput.txt || true
 
          - name: Update the portfile and download/install the library.
