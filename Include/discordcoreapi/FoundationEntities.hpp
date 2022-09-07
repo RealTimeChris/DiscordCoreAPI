@@ -317,6 +317,8 @@ namespace DiscordCoreInternal {
 		uint64_t s{};
 	};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& theParser, WebSocketMessage& theData);
+
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& theParser, WebSocketMessage& theData);
 
 	struct DiscordCoreAPI_Dll ReconnectData {};

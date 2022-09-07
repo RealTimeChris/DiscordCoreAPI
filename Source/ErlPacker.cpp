@@ -199,7 +199,57 @@ namespace DiscordCoreInternal {
 		if (this->offSet + static_cast<uint64_t>(length) > this->size) {
 			throw ErlPackError{ "this->readString() Error: readString() past end of buffer.\n\n" };
 		}
-		const char* theStringNew = this->buffer + this->offSet;
+		char* theStringNew = this->buffer + this->offSet;
+		for (int32_t x = 0; x < length; ++x) {
+			switch (static_cast<char>(theStringNew[x])) {
+				case '\b': {
+					theStringNew[x] = static_cast<char>('\\b');
+					std::cout << "WERE HERE \\bING IT UP!" << std::endl;
+					break;
+				}
+				case '\t': {
+					theStringNew[x] = static_cast<char>('\\t');
+					std::cout << "WERE HERE \\tING IT UP!" << std::endl;
+					break;
+				}
+				case '\n': {
+					theStringNew[x] = static_cast<char>('\\n');
+					std::cout << "WERE HERE \\nING IT UP!" << std::endl;
+					break;
+				}
+				case '\v': {
+					theStringNew[x] = static_cast<char>('\\v');
+					std::cout << "WERE HERE \\vING IT UP!" << std::endl;
+					break;
+				}
+				case '\f': {
+					theStringNew[x] = static_cast<char>('\\f');
+					std::cout << "WERE HERE \\fING IT UP!" << std::endl;
+					break;
+				}
+				case '\r': {
+					theStringNew[x] = static_cast<char>('\\r');
+					std::cout << "WERE HERE \\rING IT UP!" << std::endl;
+					break;
+				}
+				case '\"': {
+					theStringNew[x] = static_cast<char>('\\"');
+					std::cout << "WERE HERE \\\"ING IT UP!" << std::endl;
+					break;
+				}
+				case '\'': {
+					theStringNew[x] = static_cast<char>('\\\'');
+					std::cout << "WERE HERE \\'ING IT UP!" << std::endl;
+					break;
+				}
+				case '\\': {
+					theStringNew[x] = static_cast<char>('\\\\');
+					std::cout << "WERE HERE \\\ING IT UP!" << std::endl;
+					break;
+				}
+				default: {}
+			}
+		}
 		this->offSet += length;
 		return theStringNew;
 	}
@@ -223,7 +273,19 @@ namespace DiscordCoreInternal {
 				return this->parseFloatExt();
 			}
 			case ETFTokenType::Atom_Ext: {
-				return this->parseAtomUtf8Ext();
+				std::string theString{ "\"" };
+				auto theStringNew = this->parseAtomUtf8Ext();
+				if (theStringNew == "null") {
+					theStringNew = "null";
+					return theStringNew;
+				} else {
+					theString += theStringNew;
+					theString += "\"";
+				}
+				if (theString == "\"\"") {
+					theString = "null";
+				}
+				return theString;
 			}
 			case ETFTokenType::Small_Tuple_Ext: {
 				return this->parseSmallTupleExt();
@@ -247,6 +309,9 @@ namespace DiscordCoreInternal {
 				std::string theString{ "\"" };
 				theString += std::move(this->parseBinaryExt());
 				theString += "\"";
+				if (theString == "\"\"") {
+					theString = "nullptr";
+				}
 				return theString;
 			}
 			case ETFTokenType::Small_Big_Ext: {
@@ -265,7 +330,19 @@ namespace DiscordCoreInternal {
 				return this->parseMapExt();
 			}
 			case ETFTokenType::Atom_Utf8_Ext: {
-				return this->parseAtomUtf8Ext();
+				std::string theString{ "\"" };
+				auto theStringNew = this->parseAtomUtf8Ext();
+				if (theStringNew == "null") {
+					theStringNew = "nullptr";
+					return theStringNew;
+				} else {
+					theString += theStringNew;
+					theString += "\"";
+				}
+				if (theString == "\"\"") {
+					theString = "null";
+				}
+				return theString;
 			}
 			default: {
 				throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Unknown data type in ETF.\n\n" };
@@ -354,14 +431,14 @@ namespace DiscordCoreInternal {
 			if (length == 3 && strncmp(atom, "nil", 3) == 0) {
 				return std::string{ "null" };
 			} else if (length == 4 && strncmp(atom, "null", 4) == 0) {
-				return std::string{ "nil" };
+				return std::string{ "null" };
 			} else if (length == 4 && strncmp(atom, "true", 4) == 0) {
 				return std::string{ "true" };
 			} else if (length == 5 && strncmp(atom, "false", 5) == 0) {
 				return std::string{ "false" };
 			}
 		}
-		nlohmann::json theValue = std::string{ atom, length };
+		std::string theValue = std::string{ atom, length };
 		return theValue;
 	}
 

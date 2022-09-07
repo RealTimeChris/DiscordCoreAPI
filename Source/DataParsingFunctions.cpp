@@ -5506,13 +5506,25 @@ namespace DiscordCoreInternal {
 
 	JsonParseError::JsonParseError(int32_t theCode) : std::runtime_error(theErrors[theCode]){};
 
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>&& jsonObjectData, WebSocketMessage& theData) {
+		try {
+			theData.op = DiscordCoreAPI::getUint32(jsonObjectData.get_object(), "op");
+
+			theData.s = DiscordCoreAPI::getUint32(jsonObjectData.get_object(), "s");
+
+			theData.t = DiscordCoreAPI::getString(jsonObjectData.get_object(), "t");
+		} catch (...) {
+			DiscordCoreAPI::reportException("parseObject()");
+		}
+	}
+
 	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::value>& jsonObjectData, WebSocketMessage& theData) {
 		try {
-			theData.op = DiscordCoreAPI::getUint32(jsonObjectData, "op");
+			theData.op = DiscordCoreAPI::getUint32(jsonObjectData.get_object(), "op");
 
-			theData.s = DiscordCoreAPI::getUint32(jsonObjectData, "s");
+			theData.s = DiscordCoreAPI::getUint32(jsonObjectData.get_object(), "s");
 
-			theData.t = DiscordCoreAPI::getString(jsonObjectData, "t");
+			theData.t = DiscordCoreAPI::getString(jsonObjectData.get_object(), "t");
 		} catch (...) {
 			DiscordCoreAPI::reportException("parseObject()");
 		}
