@@ -127,11 +127,11 @@ namespace DiscordCoreAPI {
 		virtual ~GuildMember() noexcept = default;
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, DiscordCoreAPI::GuildMember& theGuildMember);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, DiscordCoreAPI::GuildMember& theGuildMember);
 
 	class DiscordCoreAPI_Dll GuildMemberVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ReturnType& theData);
 
 		GuildMemberVector() noexcept = default;
 
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 		std::vector<GuildMember> theGuildMembers{};
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, GuildMemberVector& theGuildMember);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, GuildMemberVector& theGuildMember);
 
 	/**@}*/
 
@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
 	  public:
 		template<typename ReturnType> friend void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, ReturnType& theData);
 		template<typename ReturnType> friend void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, ReturnType& theData);
-		template<typename ReturnType> friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class GuildMemberData;

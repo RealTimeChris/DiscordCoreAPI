@@ -143,11 +143,11 @@ namespace DiscordCoreAPI {
 		virtual ~Reaction() noexcept = default;
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, Reaction& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, Reaction& theData);
 
 	class DiscordCoreAPI_Dll ReactionVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ReturnType& theData);
 
 		ReactionVector() noexcept = default;
 
@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 		std::vector<Reaction> theReactions{};
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, ReactionVector& theData);
+	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ReactionVector& theData);
 
 	/**@}*/
 

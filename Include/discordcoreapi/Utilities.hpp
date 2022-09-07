@@ -627,7 +627,7 @@ namespace DiscordCoreAPI {
 
 	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, ReturnType& theData);
 
-	template<typename ReturnType> void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
+	template<typename ReturnType> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ReturnType& theData);
 
 	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json* jsonData, const char* keyName);
 
