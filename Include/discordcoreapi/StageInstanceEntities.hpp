@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 		virtual ~StageInstance() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, StageInstance& theData);
+	template<> void parseObject(nlohmann::json* jsonObjectData, StageInstance& theData);
 
 	/**
 	 * \addtogroup main_endpoints

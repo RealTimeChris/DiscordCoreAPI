@@ -154,8 +154,8 @@ namespace DiscordCoreAPI {
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		int32_t videoQualityMode{ 0 };///< Video quality mode.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
+		StringWrapper lastMessageId{};///< Id of the last Message.
 		StringWrapper permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
-		Snowflake lastMessageId{};///< Id of the last Message.
 		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
 		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
 		Snowflake applicationId{};///< Application id of the current application.
@@ -180,11 +180,11 @@ namespace DiscordCoreAPI {
 		std::string getIconUrl() noexcept;
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, Channel& theData);
+	template<> void parseObject(nlohmann::json* jsonObjectData, Channel& theData);
 
 	class DiscordCoreAPI_Dll ChannelVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
 
 		ChannelVector() noexcept = default;
 
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 		std::vector<Channel> theChannels{};
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ChannelVector& theData);
+	template<> void parseObject(nlohmann::json* jsonObjectData, ChannelVector& theData);
 
 	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
 	  public:
 		template<typename ReturnType> friend void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theParser, ReturnType& theData);
 		template<typename ReturnType> friend void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theParser, ReturnType& theData);
-		template<typename ReturnType> friend void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class ChannelData;

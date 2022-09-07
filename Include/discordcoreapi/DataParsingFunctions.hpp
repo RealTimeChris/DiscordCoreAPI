@@ -45,10 +45,6 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-	uint64_t getId(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, const char* theKey);
-
-	uint64_t getId(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, const char* theKey);
-
 	bool getBool(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonData, const char* theKey);
 
 	bool getBool(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonData, const char* theKey);
