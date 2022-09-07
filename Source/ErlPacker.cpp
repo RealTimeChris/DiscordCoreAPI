@@ -203,48 +203,39 @@ namespace DiscordCoreInternal {
 		for (int32_t x = 0; x < length; ++x) {
 			switch (static_cast<char>(theStringNew[x])) {
 				case '\b': {
-					theStringNew[x] = static_cast<char>('\\b');
-					std::cout << "WERE HERE \\bING IT UP!" << std::endl;
+					theStringNew[x] = static_cast<char>('b');
 					break;
 				}
 				case '\t': {
-					theStringNew[x] = static_cast<char>('\\t');
-					std::cout << "WERE HERE \\tING IT UP!" << std::endl;
+					theStringNew[x] = static_cast<char>('t');
 					break;
 				}
 				case '\n': {
-					theStringNew[x] = static_cast<char>('\\n');
-					std::cout << "WERE HERE \\nING IT UP!" << std::endl;
+					theStringNew[x] = static_cast<char>('n');
 					break;
 				}
 				case '\v': {
-					theStringNew[x] = static_cast<char>('\\v');
-					std::cout << "WERE HERE \\vING IT UP!" << std::endl;
+					theStringNew[x] = static_cast<char>('v');
 					break;
 				}
 				case '\f': {
-					theStringNew[x] = static_cast<char>('\\f');
-					std::cout << "WERE HERE \\fING IT UP!" << std::endl;
+					theStringNew[x] = static_cast<char>('f');
 					break;
 				}
 				case '\r': {
-					theStringNew[x] = static_cast<char>('\\r');
-					std::cout << "WERE HERE \\rING IT UP!" << std::endl;
+					theStringNew[x] = static_cast<char>('r');
 					break;
 				}
 				case '\"': {
-					theStringNew[x] = static_cast<char>('\\"');
-					std::cout << "WERE HERE \\\"ING IT UP!" << std::endl;
+					theStringNew[x] = static_cast<char>('r');
 					break;
 				}
 				case '\'': {
-					theStringNew[x] = static_cast<char>('\\\'');
-					std::cout << "WERE HERE \\'ING IT UP!" << std::endl;
+					theStringNew[x] = static_cast<char>('b');
 					break;
 				}
 				case '\\': {
-					theStringNew[x] = static_cast<char>('\\\\');
-					std::cout << "WERE HERE \\\ING IT UP!" << std::endl;
+					theStringNew[x] = static_cast<char>('b');
 					break;
 				}
 				default: {}

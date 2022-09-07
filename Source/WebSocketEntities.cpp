@@ -447,10 +447,8 @@ namespace DiscordCoreInternal {
 					}
 
 					payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
-					std::cout << "THE DATA 01: " << payload << std::endl;
 					auto theDocument = this->theParser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity()));
 					auto thePayload = theDocument.value().get_value();
-					//std::cout << "THE DATA: " << thePayload.value().get_object().take_value().raw_json().take_value().data()<< std::endl;
 					WebSocketMessage theMessage{};
 					uint64_t s{};
 					uint64_t op{};
