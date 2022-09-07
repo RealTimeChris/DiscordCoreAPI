@@ -47,33 +47,19 @@ namespace DiscordCoreAPI {
 
 	using Snowflake = uint64_t;
 
-	Snowflake getId(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonObjectData, const char* theKey);
+	Snowflake getId(simdjson::fallback::ondemand::object& jsonObjectData, const char* theKey);
 
-	Snowflake getId(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonObjectData, const char* theKey);
+	bool getBool(simdjson::fallback::ondemand::object& jsonData, const char* theKey);
 
-	bool getBool(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonData, const char* theKey);
+	uint8_t getUint8(simdjson::fallback::ondemand::object& jsonData, const char* theKey);
 
-	bool getBool(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonData, const char* theKey);
+	uint16_t getUint16(simdjson::fallback::ondemand::object& jsonData, const char* theKey);
 
-	uint8_t getUint8(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonData, const char* theKey);
+	uint32_t getUint32(simdjson::fallback::ondemand::object& jsonData, const char* theKey);
 
-	uint8_t getUint8(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonData, const char* theKey);
+	uint64_t getUint64(simdjson::fallback::ondemand::object& jsonData, const char* theKey);
 
-	uint16_t getUint16(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonData, const char* theKey);
-
-	uint16_t getUint16(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonData, const char* theKey);
-
-	uint32_t getUint32(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonData, const char* theKey);
-
-	uint32_t getUint32(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonData, const char* theKey);
-
-	uint64_t getUint64(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonData, const char* theKey);
-
-	uint64_t getUint64(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonData, const char* theKey);
-
-	std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& jsonData, const char* theKey);
-
-	std::string getString(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& jsonData, const char* theKey);
+	std::string getString(simdjson::fallback::ondemand::object& jsonData, const char* theKey);
 	
 }
 #endif

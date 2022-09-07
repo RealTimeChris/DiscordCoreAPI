@@ -214,7 +214,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>&& theJsonData, OnVoiceServerUpdateData& theData) {
+	template<> void parseObject(simdjson::fallback::ondemand::object&& theJsonData, OnVoiceServerUpdateData& theData) {
 		theData.endpoint = getString(theJsonData, "endpoint");
 
 		theData.guildId = stoull(getString(theJsonData, "guild_id"));
@@ -222,7 +222,7 @@ namespace DiscordCoreAPI {
 		theData.token = getString(theJsonData, "token");
 	};
 
-	template<> void parseObject(simdjson::simdjson_result<simdjson::fallback::ondemand::object>& theJsonData, OnVoiceServerUpdateData& theData) {
+	template<> void parseObject(simdjson::fallback::ondemand::object& theJsonData, OnVoiceServerUpdateData& theData) {
 		theData.endpoint = getString(theJsonData, "endpoint");
 
 		theData.guildId = stoull(getString(theJsonData, "guild_id"));
