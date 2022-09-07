@@ -459,7 +459,6 @@ namespace DiscordCoreInternal {
 					theMessage.s = s;
 					theMessage.t = t;
 					theMessage.op = op;
-					std::cout << "THE MESSAG,: OP: " << theMessage.op << ", s: " << theMessage.s << ", t: " << theMessage.t << std::endl;
 					
 					if (theMessage.s != 0) {
 						this->lastNumberReceived = theMessage.s;

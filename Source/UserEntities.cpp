@@ -232,7 +232,7 @@ namespace DiscordCoreAPI {
 		if (Users::doWeCacheUsers) {
 			auto userId = user.id;
 			Users::cache.emplace(userId, std::move(user));
-			if (Users::cache.size() % 10 == 0) {
+			if (Users::cache.size() % 1000 == 0) {
 				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
 			}
 		}

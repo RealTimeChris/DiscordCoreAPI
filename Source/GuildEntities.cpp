@@ -908,7 +908,7 @@ namespace DiscordCoreAPI {
 			guild.discordCoreClient = Guilds::discordCoreClient;
 			auto guildId = guild.id;
 			Guilds::cache.emplace(guildId, std::move(guild));
-			if (Guilds::cache.size() % 500 == 0) {
+			if (Guilds::cache.size() % 100 == 0) {
 				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 			}
 		}
