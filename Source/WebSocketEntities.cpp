@@ -665,7 +665,7 @@ namespace DiscordCoreInternal {
 											break;
 										}*/
 										case 18: {
-											if (theInt.load() % 100 == 0) {
+											if (theInt.load() % 100 == 0 || theStopWatch.totalTimePassed() % 10 == 0) {
 												std::cout << "THE GUILD COUNT: " << theInt.load() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 											}
 											theInt.store(theInt.load() + 1);
