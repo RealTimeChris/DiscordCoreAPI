@@ -1025,7 +1025,7 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, OverWriteData& theData);
-	
+
 	template<> void parseObject(nlohmann::json* jsonObjectData, OverWriteData& theData);
 
 	enum class ChannelFlags : uint8_t { NSFW = 1 << 0 };
@@ -2671,7 +2671,7 @@ namespace DiscordCoreAPI {
 		virtual ~StickerItemData() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, StickerItemData& theData); 
+	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, StickerItemData& theData);
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, StickerItemData& theData);
 
@@ -2817,13 +2817,18 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, ConnectionDataVector& theData);
 
+	enum class ObjectType : int8_t { Unset = -1, String = 0, Integer = 1, Float = 2, Boolean = 3 };
+
+	struct JsonValue {
+		std::string theValue{};
+		ObjectType theType{};
+	};
+
 	/// ApplicationCommand Interaction data option. \brief ApplicationCommand Interaction data option.
 	struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption {
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
 		ApplicationCommandOptionType type{};///< The type of ApplicationCommand options.
-		std::string valueString{};///< The value if it's a string.
-		bool valueBool{ false };///< the value if it's a bool.
-		int32_t valueInt{ 0 };///< The value if it's an int32_t.
+		JsonValue value{ };///< The value if it's an int32_t.
 		bool focused{ false };///< 	True if this option is the currently focused option for autocomplete.
 		std::string name{};///< The name of the current option.
 
@@ -2872,7 +2877,6 @@ namespace DiscordCoreAPI {
 		InteractionDataData data{};///< The Interaction's data.
 		std::string guildLocale{};///< The guild's preferred locale, if invoked in a guild.
 		Snowflake applicationId{};///< The application's id.
-		nlohmann::json rawData{};///< The Interaction's raw data.
 		GuildMemberData member{};///< The data of the Guild member who sent the Interaction, if applicable.
 		InteractionType type{};///< The type of Interaction.
 		MessageData message{};///< The Message that the Interaction came through on, if applicable.
@@ -3372,25 +3376,77 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	
+
+	struct JsonValues {
+		std::unordered_map<std::string, JsonValue> theValues{};
+	};
+
 	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.
 	class DiscordCoreAPI_Dll CommandData {
 	  public:
 		std::string subCommandGroupName{};
-		nlohmann::json optionsArgs{};
 		std::string subCommandName{};
 		InputEventData eventData{};
 		std::string commandName{};
+		JsonValues optionsArgs{};
 
 		CommandData() noexcept = default;
 
 		CommandData(InputEventData inputEventData);
 
+		template<typename ReturnType>
+		auto getArgument(std::string theArgName) {
+			return 0;
+		}
+
+		template<> auto getArgument<uint64_t>(std::string theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName];
+			switch (theValue.theType) {
+				case ObjectType::Integer: {
+					std::cout << "THE ARGUMENT: " << theValue.theValue << std::endl;
+					return stoull(theValue.theValue);
+				}
+			}
+			return 0ull;
+		}
+
+		template<> auto getArgument<float>(std::string theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName];
+			switch (theValue.theType) {
+				case ObjectType::Float: {
+					return stold(theValue.theValue);
+				}
+			}
+			return 0.0l;
+		}
+
+		template<> auto getArgument<std::string>(std::string theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName];
+			switch (theValue.theType) {
+				case ObjectType::String: {
+					return theValue.theValue;
+				}
+			}
+			return std::string{};
+		}
+
+		template<> auto getArgument<bool>(std::string theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName];
+			switch (theValue.theType) {
+				case ObjectType::Boolean: {
+					return bool{ static_cast<bool>(stoull(theValue.theValue)) };
+				}
+			}
+			return false;
+		}
+
 		virtual ~CommandData() noexcept = default;
 
-		void parseOptions(nlohmann::json& jsonObjectData);
+		void parseOptions(simdjson::fallback::ondemand::object& jsonObjectData);
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, CommandData& theData);
+	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, CommandData& theData);
 
 	/// Base arguments for the command classes. \brief Base arguments for the command classes.
 	struct DiscordCoreAPI_Dll BaseFunctionArguments : public CommandData {

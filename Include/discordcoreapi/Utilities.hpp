@@ -1213,11 +1213,11 @@ namespace DiscordCoreAPI {
 	}
 
 	template<typename ObjectType>
-	concept CopyableOrMovable = std::copyable<ObjectType> || std::movable<ObjectType>;
+	concept Copyable = std::copyable<ObjectType>;
 
 	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
 	/// \tparam ObjectType The type of object that will be sent over the message block.
-	template<CopyableOrMovable ObjectType> class UnboundedMessageBlock {
+	template<Copyable ObjectType> class UnboundedMessageBlock {
 	  public:
 		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) noexcept {
 			if (this != &other) {

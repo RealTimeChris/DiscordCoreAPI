@@ -41,7 +41,7 @@ namespace DiscordCoreInternal {
 	std::string& ErlPacker::parseEtfToJson(std::string& dataToParse) {
 		this->bufferString.clear();
 		this->offSet = 0;
-		this->buffer = dataToParse.data();
+		this->buffer = dataToParse;
 		this->size = dataToParse.size();
 		if (this->readBits<uint8_t>() != formatVersion) {
 			throw ErlPackError{ "ErlPacker::parseEtfToJson() Error: Incorrect format version specified." };
@@ -199,7 +199,7 @@ namespace DiscordCoreInternal {
 		if (this->offSet + static_cast<uint64_t>(length) > this->size) {
 			throw ErlPackError{ "this->readString() Error: readString() past end of buffer.\n\n" };
 		}
-		char* theStringNew = this->buffer + this->offSet;
+		char* theStringNew = ( char* )this->buffer.data() + this->offSet;
 		for (int32_t x = 0; x < length; ++x) {
 			switch (static_cast<char>(theStringNew[x])) {
 				case '\b': {

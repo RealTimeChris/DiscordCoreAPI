@@ -1011,13 +1011,26 @@ namespace DiscordCoreAPI {
 			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
 		}
 		if (inputEventData.interactionData->data.messageInteractionData.targetId != 0) {
-			this->optionsArgs.emplace("target_id", std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId));
+			this->optionsArgs.theValues.emplace("target_id",
+				JsonValue{ .theValue = std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId), .theType = ObjectType::String });
 		} else if (inputEventData.interactionData->data.userInteractionData.targetId != 0) {
-			this->optionsArgs.emplace("target_id", std::to_string(inputEventData.interactionData->data.userInteractionData.targetId));
+			this->optionsArgs.theValues.emplace("target_id",
+				JsonValue{ .theValue = std::to_string(inputEventData.interactionData->data.userInteractionData.targetId), .theType = ObjectType::String });
 		}
 		this->eventData = inputEventData;
-		auto theData = inputEventData.getInteractionData().rawData;
-		DiscordCoreAPI::parseObject(&theData, *this);
+		for (auto& value: this->eventData.interactionData->data.applicationCommandData.options) {
+			JsonValue theValue{};
+			theValue.theType = value.value.theType;
+			theValue.theValue = value.value.theValue;
+			std::cout << "THE ARGUMENT FINAL: " << value.value.theValue << std::endl;
+			std::cout << "THE ARGUMENT FINAL: " << value.value.theValue << std::endl;
+			std::cout << "THE ARGUMENT FINAL: " << value.value.theValue << std::endl;
+			std::cout << "THE ARGUMENT FINAL: " << theValue.theValue << std::endl;
+			this->optionsArgs.theValues.emplace(value.name, theValue);
+		}
+		//auto theData = inputEventData.interactionData->rawDataParser.iterate(inputEventData.getInteractionData().rawData);
+		//auto theObject = theData.get_object();
+		//DiscordCoreAPI::parseObject(theObject.value(), *this);
 	}
 
 	BaseFunctionArguments::BaseFunctionArguments(CommandData commandDataNew, DiscordCoreClient* discordCoreClientNew) : CommandData(commandDataNew) {

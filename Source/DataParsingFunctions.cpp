@@ -109,8 +109,7 @@ namespace DiscordCoreAPI {
 			if (theValue != simdjson::error_code::SUCCESS) {
 				return "0";
 			}
-			std::string theStringNewer{};
-			theStringNewer.insert(theStringNewer.begin(), theStringNew.begin(), theStringNew.end());
+			std::string theStringNewer{ theStringNew.data(), theStringNew.size() };
 			return theStringNewer;
 		} catch (...) {
 			reportException("getString()");
@@ -4643,12 +4642,14 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, ComponentInteractionData& theData) {
-		simdjson::fallback::ondemand::object theArray02{};
+		std::cout << "WERE HERE THIS IS IT!" << std::endl;
+		simdjson::fallback::ondemand::array theArray02{};
 		auto theResult = jsonObjectData["values"].get(theArray02);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.values.clear();
 			for (auto iterator = theArray02.begin(); iterator != theArray02.end(); ++iterator) {
-				theData.values.emplace_back(iterator.value().operator*().take_value().value().get_string().take_value().data());
+				std::cout << "WERE HERE THIS IS IT 0101!" << std::endl;
+				theData.values.emplace_back(iterator.value().operator*().get_string().take_value().data());
 			}
 		}
 
@@ -5076,42 +5077,55 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, ApplicationCommandInteractionDataOption& theData) {
-		theData.name = getString(jsonObjectData, "name");
 
 		theData.type = static_cast<ApplicationCommandOptionType>(getUint8(jsonObjectData, "type"));
 
 		theData.focused = getBool(jsonObjectData, "focused");
 
-		simdjson::fallback::ondemand::object theObject{};
+		theData.name = getString(jsonObjectData, "name");
 
-		auto theResult = jsonObjectData["value"].get(theObject);
+		simdjson::fallback::ondemand::array theArray10{};
+		auto theResult = jsonObjectData["options"].get(theArray10);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			auto theValue = theObject.begin().take_value().operator*();
-			uint64_t theIntValue{};
-			theResult = theValue.value().get(theIntValue);
-			theData.valueInt = theIntValue;
-			if (theResult == simdjson::error_code::SUCCESS) {
-			} else {
-				theResult = theValue.value().get(theData.valueBool);
-				if (theResult == simdjson::error_code::SUCCESS) {
-				} else {
-					std::string_view theStringNew{};
-					theResult = theValue.value().get(theStringNew);
-					theData.valueString = theStringNew.data();
-				}
+			ApplicationCommandInteractionDataOption newData{};
+			for (auto theValue: theArray10) {
+				auto theObjectNew = theValue.get_object().value();
+				parseObject(theObjectNew, newData);
+				theData.options.emplace_back(std::move(newData));
 			}
 		}
 
-		simdjson::fallback::ondemand::array theArray10{};
-		theResult = jsonObjectData["options"].get(theArray10);
+		theData.value.theType = ObjectType::Unset;
+		bool theBool{};
+		theResult = jsonObjectData["value"].get(theBool);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.options.clear();
-			ApplicationCommandInteractionDataOption newActionRowData{};
-			for (auto theValue: theArray10) {
-				auto theObjectNew = theValue.get_object().value();
-				parseObject(theObjectNew, newActionRowData);
-				theData.options.emplace_back(std::move(newActionRowData));
-			}
+			theData.value.theType = ObjectType::Boolean;
+			theData.value.theValue = std::to_string(theBool);
+			return;
+		}
+
+		uint64_t theInteger{};
+		theResult = jsonObjectData["value"].get(theInteger);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.value.theType = ObjectType::Integer;
+			theData.value.theValue = std::to_string(theInteger);
+			return;
+		} 
+
+		std::string_view theString{};
+		theResult = jsonObjectData["value"].get(theString);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.value.theType = ObjectType::String;
+			theData.value.theValue = theString;
+			return;
+		} 
+			
+		double theFloat{};
+		theResult = jsonObjectData["value"].get(theFloat);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.value.theType = ObjectType::Float;
+			theData.value.theValue = std::to_string(theFloat);
+			return;
 		}
 	}
 
@@ -5221,7 +5235,7 @@ namespace DiscordCoreAPI {
 		std::string_view idNew{};
 		auto theResult = jsonObjectData["id"].get(idNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			std::cout << "THE ID: " << idNew.data() << std::endl;
+			std::cout << "THE ID: " << std::string{ idNew.data(), idNew.size() } << std::endl;
 			parseObject(jsonObjectData, theData.applicationCommandData);
 		}
 
@@ -5232,9 +5246,10 @@ namespace DiscordCoreAPI {
 			parseObject(jsonObjectData, theData.userInteractionData);
 		}
 
-		std::string_view componentType{};
+		uint64_t componentType{};
 		theResult = jsonObjectData["component_type"].get(componentType);
 		if (theResult == simdjson::error_code::SUCCESS) {
+			std::cout << "THE ID: " << std::string{ idNew.data(), idNew.size() } << std::endl;
 			parseObject(jsonObjectData, theData.componentData);
 		}
 
@@ -5398,7 +5413,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void CommandData::parseOptions(nlohmann::json& jsonObjectData) {
+	void CommandData::parseOptions(simdjson::fallback::ondemand::object& jsonObjectData) {
+		/*
 		for (auto theOptionIterator = jsonObjectData.at("options").begin(); theOptionIterator != jsonObjectData.at("options").end(); ++theOptionIterator) {
 			if (theOptionIterator->contains("type") && theOptionIterator->at("type") == 1) {
 				if (theOptionIterator->contains("name")) {
@@ -5424,9 +5440,11 @@ namespace DiscordCoreAPI {
 				this->parseOptions(*theOptionIterator);
 			}
 		}
+		*/
 	}
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, CommandData& theData) {
+	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, CommandData& theData) {
+		/*
 		for (auto theIterator = jsonObjectData->begin(); theIterator != jsonObjectData->end(); ++theIterator) {
 			if (theIterator->contains("type") && theIterator->at("type") == 1) {
 				if (theIterator->contains("name")) {
@@ -5445,6 +5463,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData->contains("name") && !(*jsonObjectData)["name"].is_null()) {
 			theData.commandName = (*jsonObjectData)["name"].get<std::string>();
 		}
+		*/
 	}
 
 	template<> void parseObject(nlohmann::json* jsonObjectData, Song& theData) {

@@ -68,10 +68,9 @@ namespace DiscordCoreInternal {
 		std::string comparisongStringFalse{ "false" };
 		std::string comparisongStringNil{ "nil" };
 		std::string falseString{ "false" };
-		simdjson::dom::parser theParser{};
 		std::string nilString{ "nil" };
 		std::string bufferString{};
-		char* buffer{ nullptr };
+		std::string_view buffer{};
 		uint64_t offSet{};
 		uint64_t size{};
 
@@ -107,7 +106,7 @@ namespace DiscordCoreInternal {
 			if (this->offSet + sizeof(ReturnType) > this->size) {
 				throw ErlPackError{ "ErlPacker::readBits() Error: readBits() past end of the buffer.\n\n" };
 			}
-			const ReturnType newValue = *reinterpret_cast<const ReturnType*>(this->buffer + this->offSet);
+			const ReturnType newValue = *reinterpret_cast<const ReturnType*>(this->buffer.data() + this->offSet);
 			this->offSet += sizeof(ReturnType);
 			return DiscordCoreAPI::reverseByteOrder<const ReturnType>(newValue);
 		}
