@@ -214,8 +214,6 @@ namespace DiscordCoreInternal {
 		operator nlohmann::json();
 	};
 
-	template<typename ReturnType> void parseObject(simdjson::fallback::ondemand::object&& theParser, ReturnType& theData);
-
 	template<typename ReturnType> void parseObject(simdjson::fallback::ondemand::object& theParser, ReturnType& theData);
 
 }// namespace DiscordCoreInternal

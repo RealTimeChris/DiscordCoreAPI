@@ -3498,20 +3498,6 @@ namespace DiscordCoreInternal {
 		int32_t v{};
 	};
 
-	template<> inline void parseObject(simdjson::fallback::ondemand::object&& theParser, ReadyData& theData) {
-		theData.resumeGatewayUrl = DiscordCoreAPI::getString(theParser, "resume_gateway_url");
-
-		theData.sessionId = DiscordCoreAPI::getString(theParser, "session_id");
-
-		theData.v = DiscordCoreAPI::getUint32(theParser, "v");
-
-		simdjson::fallback::ondemand::object theUser{};
-		auto theResult = theParser["user"].get(theUser);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			DiscordCoreAPI::parseObject(theUser, theData.user);
-		}
-	}
-
 	template<> inline void parseObject(simdjson::fallback::ondemand::object& theParser, ReadyData& theData) {
 		theData.resumeGatewayUrl = DiscordCoreAPI::getString(theParser, "resume_gateway_url");
 
