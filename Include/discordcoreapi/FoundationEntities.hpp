@@ -3376,91 +3376,11 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	
+
 	struct JsonValues {
 		std::unordered_map<std::string, JsonValue> theValues{};
 	};
-
-	template<typename ReturnType> auto getArgument(JsonValues& optionsArgs, std::string_view theArgName);
-
-	template<> inline auto getArgument<uint64_t>(JsonValues& optionsArgs, std::string_view theArgName) {
-		auto theValue = optionsArgs.theValues[theArgName.data()];
-		switch (theValue.theType) {
-			case ObjectType::Integer: {
-				return stoull(theValue.theValue);
-			}
-		}
-		return 0ull;
-	}
-
-	template<> inline auto getArgument<uint32_t>(JsonValues& optionsArgs, std::string_view theArgName) {
-		auto theValue = optionsArgs.theValues[theArgName.data()];
-		switch (theValue.theType) {
-			case ObjectType::Integer: {
-				return stoull(theValue.theValue);
-			}
-		}
-		return 0ull;
-	}
-
-	template<> inline auto getArgument<uint16_t>(JsonValues& optionsArgs, std::string_view theArgName) {
-		auto theValue = optionsArgs.theValues[theArgName.data()];
-		switch (theValue.theType) {
-			case ObjectType::Integer: {
-				return stoull(theValue.theValue);
-			}
-		}
-		return 0ull;
-	}
-
-	template<> inline auto getArgument<uint8_t>(JsonValues& optionsArgs, std::string_view theArgName) {
-		auto theValue = optionsArgs.theValues[theArgName.data()];
-		switch (theValue.theType) {
-			case ObjectType::Integer: {
-				return stoull(theValue.theValue);
-			}
-		}
-		return 0ull;
-	}
-
-	template<> inline auto getArgument<float>(JsonValues& optionsArgs, std::string_view theArgName) {
-		auto theValue = optionsArgs.theValues[theArgName.data()];
-		switch (theValue.theType) {
-			case ObjectType::Float: {
-				return stold(theValue.theValue);
-			}
-		}
-		return 0.0l;
-	}
-
-	template<> inline auto getArgument<double>(JsonValues& optionsArgs, std::string_view theArgName) {
-		auto theValue = optionsArgs.theValues[theArgName.data()];
-		switch (theValue.theType) {
-			case ObjectType::Float: {
-				return stold(theValue.theValue);
-			}
-		}
-		return 0.0L;
-	}
-
-	template<> inline auto getArgument<std::string>(JsonValues& optionsArgs, std::string_view theArgName) {
-		auto theValue = optionsArgs.theValues[theArgName.data()];
-		switch (theValue.theType) {
-			case ObjectType::String: {
-				return theValue.theValue;
-			}
-		}
-		return std::string{};
-	}
-
-	template<> inline auto getArgument<bool>(JsonValues& optionsArgs, std::string_view theArgName) {
-		auto theValue = optionsArgs.theValues[theArgName.data()];
-		switch (theValue.theType) {
-			case ObjectType::Boolean: {
-				return static_cast<bool>(stoull(theValue.theValue));
-			}
-		}
-		return false;
-	}
 
 	/// Command data, for functions executed by the CommandController. \brief Command data, for functions executed by the CommandController.
 	class DiscordCoreAPI_Dll CommandData {
@@ -3474,6 +3394,90 @@ namespace DiscordCoreAPI {
 		CommandData() noexcept = default;
 
 		CommandData(InputEventData inputEventData);
+
+		template<typename ReturnType> auto getArgument(std::string_view theArgName) {
+			return 0;
+		}
+
+		template<> auto getArgument<uint64_t>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::Integer: {
+					return stoull(theValue.theValue);
+				}
+			}
+			return 0ull;
+		}
+
+		template<> auto getArgument<uint32_t>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::Integer: {
+					return stoull(theValue.theValue);
+				}
+			}
+			return 0ull;
+		}
+
+		template<> auto getArgument<uint16_t>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::Integer: {
+					return stoull(theValue.theValue);
+				}
+			}
+			return 0ull;
+		}
+
+		template<> auto getArgument<uint8_t>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::Integer: {
+					return stoull(theValue.theValue);
+				}
+			}
+			return 0ull;
+		}
+
+		template<> auto getArgument<float>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::Float: {
+					return stold(theValue.theValue);
+				}
+			}
+			return 0.0l;
+		}
+
+		template<> auto getArgument<double>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::Float: {
+					return stold(theValue.theValue);
+				}
+			}
+			return 0.0L;
+		}
+
+		template<> auto getArgument<std::string>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::String: {
+					return theValue.theValue;
+				}
+			}
+			return std::string{};
+		}
+
+		template<> auto getArgument<bool>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::Boolean: {
+					return static_cast<bool>(stoull(theValue.theValue));
+				}
+			}
+			return false;
+		}
 
 		virtual ~CommandData() noexcept = default;
 

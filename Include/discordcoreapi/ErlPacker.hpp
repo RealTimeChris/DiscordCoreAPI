@@ -56,21 +56,13 @@ namespace DiscordCoreInternal {
 		Atom_Utf8_Ext = 118
 	};
 
-	struct DiscordCoreAPI_Dll ParseReturnData {
-		ParseReturnData(std::string&) noexcept;
-		ParseReturnData& operator=(const ParseReturnData&);
-		ParseReturnData(const ParseReturnData&);
-		std::string& theReference;
-		size_t theSize{};
-	};
-
 	class DiscordCoreAPI_Dll ErlPacker {
 	  public:
 		ErlPacker() noexcept;
 
 		std::string parseJsonToEtf(nlohmann::json&);
 
-		ParseReturnData parseEtfToJson(std::string_view dataToParse);
+		std::string_view parseEtfToJson(std::string_view dataToParse);
 		
 	  protected:
 		std::string comparisongStringFalse{ "false" };
@@ -82,8 +74,6 @@ namespace DiscordCoreInternal {
 		uint64_t outputOffset{};
 		uint64_t offSet{};
 		uint64_t size{};
-
-		void writeToOutputString(const char* theValue, size_t length);
 
 		void singleValueJsonToETF(nlohmann::json&);
 
@@ -124,45 +114,45 @@ namespace DiscordCoreInternal {
 
 		const char* readString(uint32_t length);
 
-		std::string& singleValueETFToJson();
+		std::string singleValueETFToJson();
 
-		std::string& parseSmallIntegerExt();
+		std::string parseSmallIntegerExt();
 
-		std::string& parseBigint(uint32_t);
+		std::string parseBigint(uint32_t);
 
-		std::string& parseIntegerExt();
+		std::string parseIntegerExt();
 
-		std::string& parseNewFloatExt();
+		std::string parseNewFloatExt();
 
-		std::string& parseFloatExt();
+		std::string parseFloatExt();
 
-		std::string& processAtom(const char* atom, uint32_t length);
+		std::string processAtom(const char* atom, uint32_t length);
 
-		std::string& parseTuple(uint32_t);
+		std::string parseTuple(uint32_t);
 
-		std::string& parseSmallTupleExt();
+		std::string parseSmallTupleExt();
 
-		std::string& parseLargeTupleExt();
+		std::string parseLargeTupleExt();
 
-		std::string& parseNilExt();
+		std::string parseNilExt();
 
-		std::string& parseStringAsList();
+		std::string parseStringAsList();
 
-		std::string& parseListExt();
+		std::string parseListExt();
 
-		std::string& parseBinaryExt();
+		std::string parseBinaryExt();
 
-		std::string& parseSmallBigExt();
+		std::string parseSmallBigExt();
 
-		std::string& parseLargeBigExt();
+		std::string parseLargeBigExt();
 
-		std::string& parseArray(uint32_t);
+		std::string parseArray(uint32_t);
 
-		std::string& parseSmallAtomExt();
+		std::string parseSmallAtomExt();
 
-		std::string& parseMapExt();
+		std::string parseMapExt();
 
-		std::string& parseAtomUtf8Ext();
+		std::string parseAtomUtf8Ext();
 	};
 }// namespace DiscordCoreInternal
 #endif
