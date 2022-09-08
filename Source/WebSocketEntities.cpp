@@ -421,7 +421,8 @@ namespace DiscordCoreInternal {
 			if (this->areWeStillConnected()) {
 				try {
 					bool returnValue{ false };
-					std::string_view payload{};
+					std::string theString{};
+					ParseReturnData payload{ theString };
 					nlohmann::json payloadJson{};
 					if (theDataNew.size() > 0) {
 						returnValue = true;
@@ -444,8 +445,8 @@ namespace DiscordCoreInternal {
 					} else {
 						returnValue = false;
 					}
-
-					auto theDocument = this->theParser.iterate(payload.data());
+					payload.theReference.reserve(payload.theReference.size() + simdjson::SIMDJSON_PADDING);
+					auto theDocument = this->theParser.iterate(payload.theReference.data(), payload.theSize, payload.theReference.capacity());
 					auto thePayload = theDocument.value().get_value();
 					WebSocketMessage theMessage{};
 					uint64_t s{};
@@ -465,7 +466,7 @@ namespace DiscordCoreInternal {
 					if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightGreen()
 							 << "Message received from WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string(": ")
-							 << payload << DiscordCoreAPI::reset() << endl
+							 << payload.theReference << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
 
