@@ -205,6 +205,21 @@ namespace DiscordCoreInternal {
 
 	enum class ProcessIOResult : int8_t { No_Error = 0, Error = 1 };
 
+	struct DiscordCoreAPI_Dll RingBuffer {
+		std::array<const char, 1024 * 1024> theArray{};
+		int32_t head{};
+		int32_t tail{};
+		void updateFromWriteInfo(int32_t writtenBytes);
+		void updateFromReadInfo(int32_t readBytes);
+		const char* getCurrentTail();
+		const char* getCurrentHead();
+		size_t getFreeSpace();
+		size_t getUsedSpace();
+		bool isItEmpty();
+		bool isItFull();
+		void clear();
+	};
+
 	class DiscordCoreAPI_Dll SSLDataInterface {
 	  public:
 		friend class HttpsClient;
@@ -213,20 +228,21 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
 
-		virtual std::string& getInputBuffer() noexcept = 0;
+		virtual std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept = 0;
+
+		virtual std::string_view getInputBuffer() noexcept = 0;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
 		virtual ~SSLDataInterface() noexcept = default;
 
 	  protected:
-		std::array<char, 1024 * 16> rawInputBuffer{};
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::deque<std::string> outputBuffers{};
-		std::string inputBuffer{};
+		uint64_t offsetIntoInputBuffer{};
+		RingBuffer inputBuffer{};
 		int64_t bytesRead{ 0 };
 	};
-
 
 	enum class SSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
@@ -240,11 +256,15 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
-		ProcessIOResult processIO(int32_t msToWait) noexcept;
+		std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept;
 
+		ProcessIOResult processIO(int32_t msToWait) noexcept;
+		
 		virtual bool handleBuffer(SSLClient*) noexcept = 0;
 
-		std::string& getInputBuffer() noexcept;
+		std::string_view getInputBufferRemove() noexcept;
+
+		std::string_view getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
 

@@ -38,7 +38,7 @@ namespace DiscordCoreInternal {
 			HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };
 			dataPackage.baseUrl = this->baseUrl02;
 			dataPackage.relativePath = "/search?q=" + DiscordCoreAPI::urlEncode(songQuery.c_str()) + "&facet=model&client_id=" + SoundCloudRequestBuilder::clientId +
-				"&limit=20&offset=0&linked_partitioning=1&app_version=" + this->appVersion + "&app_locale=en";
+				"&limit=20&offSet=0&linked_partitioning=1&app_version=" + this->appVersion + "&app_locale=en";
 			dataPackage.headersToInsert = theHeaders;
 			dataPackage.workloadClass = HttpsWorkloadClass::Get;
 			HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);

@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 
 		std::string buildRequest(const HttpsWorkloadData& workload);
 
-		void parseHeaders(HttpsResponseData& theData, std::string&);
+		size_t parseHeaders(HttpsResponseData& theData, std::string&);
 
 		bool parseChunk(HttpsResponseData& theData, std::string&);
 
@@ -82,9 +82,9 @@ namespace DiscordCoreInternal {
 		bool doWeHaveHeaders{ false };
 		bool isItChunked{ false };
 
-		void parseSize(HttpsResponseData& theData, std::string&);
+		size_t parseSize(HttpsResponseData& theData, std::string&);
 
-		void parseCode(HttpsResponseData& theData, std::string&);
+		size_t parseCode(HttpsResponseData& theData, std::string& otherNew);
 
 		void clearCRLF(std::string&);
 	};
@@ -113,6 +113,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };
 		bool areWeDoneTheRequest{ false };
+		std::string theInputBufferReal{};
 		std::string currentBaseUrl{};
 		HttpsResponseData theData{};
 		bool doWeConnect{ true };

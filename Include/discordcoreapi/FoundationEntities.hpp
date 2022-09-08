@@ -3395,24 +3395,52 @@ namespace DiscordCoreAPI {
 
 		CommandData(InputEventData inputEventData);
 
-		template<typename ReturnType>
-		auto getArgument(std::string theArgName) {
+		template<typename ReturnType> auto getArgument(std::string_view theArgName) {
 			return 0;
 		}
 
-		template<> auto getArgument<uint64_t>(std::string theArgName) {
-			auto theValue = this->optionsArgs.theValues[theArgName];
+		template<> auto getArgument<uint64_t>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
 			switch (theValue.theType) {
 				case ObjectType::Integer: {
-					std::cout << "THE ARGUMENT: " << theValue.theValue << std::endl;
 					return stoull(theValue.theValue);
 				}
 			}
 			return 0ull;
 		}
 
-		template<> auto getArgument<float>(std::string theArgName) {
-			auto theValue = this->optionsArgs.theValues[theArgName];
+		template<> auto getArgument<uint32_t>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::Integer: {
+					return stoull(theValue.theValue);
+				}
+			}
+			return 0ull;
+		}
+
+		template<> auto getArgument<uint16_t>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::Integer: {
+					return stoull(theValue.theValue);
+				}
+			}
+			return 0ull;
+		}
+
+		template<> auto getArgument<uint8_t>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::Integer: {
+					return stoull(theValue.theValue);
+				}
+			}
+			return 0ull;
+		}
+
+		template<> auto getArgument<float>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
 			switch (theValue.theType) {
 				case ObjectType::Float: {
 					return stold(theValue.theValue);
@@ -3421,8 +3449,18 @@ namespace DiscordCoreAPI {
 			return 0.0l;
 		}
 
-		template<> auto getArgument<std::string>(std::string theArgName) {
-			auto theValue = this->optionsArgs.theValues[theArgName];
+		template<> auto getArgument<double>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
+			switch (theValue.theType) {
+				case ObjectType::Float: {
+					return stold(theValue.theValue);
+				}
+			}
+			return 0.0L;
+		}
+
+		template<> auto getArgument<std::string>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
 			switch (theValue.theType) {
 				case ObjectType::String: {
 					return theValue.theValue;
@@ -3431,11 +3469,11 @@ namespace DiscordCoreAPI {
 			return std::string{};
 		}
 
-		template<> auto getArgument<bool>(std::string theArgName) {
-			auto theValue = this->optionsArgs.theValues[theArgName];
+		template<> auto getArgument<bool>(std::string_view theArgName) {
+			auto theValue = this->optionsArgs.theValues[theArgName.data()];
 			switch (theValue.theType) {
 				case ObjectType::Boolean: {
-					return bool{ static_cast<bool>(stoull(theValue.theValue)) };
+					return static_cast<bool>(stoull(theValue.theValue));
 				}
 			}
 			return false;

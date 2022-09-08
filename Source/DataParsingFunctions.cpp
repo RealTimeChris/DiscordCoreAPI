@@ -610,11 +610,13 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::doWeCacheGuildMembers) {
 			simdjson::fallback::ondemand::array theArray{};
 			auto theResult = jsonObjectData["voice_states"].get(theArray);
-			for (auto value: theArray) {
-				auto theObject = value.get_object().value();
-				auto userId = getId(theObject, "user_id");
-				if (GuildMembers::cache.contains(GuildMemberKey{ theData.id, userId })) {
-					GuildMembers::cache.at(GuildMemberKey{ theData.id, userId }).voiceChannelId = getId(theObject, "channel_id");
+			if (theResult == simdjson::error_code::SUCCESS) {
+				for (auto value: theArray) {
+					auto theObject = value.get_object().value();
+					auto userId = getId(theObject, "user_id");
+					if (GuildMembers::cache.contains(GuildMemberKey{ theData.id, userId })) {
+						GuildMembers::cache.at(GuildMemberKey{ theData.id, userId }).voiceChannelId = getId(theObject, "channel_id");
+					}
 				}
 			}
 		}
@@ -4642,13 +4644,11 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::fallback::ondemand::object& jsonObjectData, ComponentInteractionData& theData) {
-		std::cout << "WERE HERE THIS IS IT!" << std::endl;
 		simdjson::fallback::ondemand::array theArray02{};
 		auto theResult = jsonObjectData["values"].get(theArray02);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.values.clear();
 			for (auto iterator = theArray02.begin(); iterator != theArray02.end(); ++iterator) {
-				std::cout << "WERE HERE THIS IS IT 0101!" << std::endl;
 				theData.values.emplace_back(iterator.value().operator*().get_string().take_value().data());
 			}
 		}
@@ -5235,7 +5235,6 @@ namespace DiscordCoreAPI {
 		std::string_view idNew{};
 		auto theResult = jsonObjectData["id"].get(idNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			std::cout << "THE ID: " << std::string{ idNew.data(), idNew.size() } << std::endl;
 			parseObject(jsonObjectData, theData.applicationCommandData);
 		}
 
@@ -5249,7 +5248,6 @@ namespace DiscordCoreAPI {
 		uint64_t componentType{};
 		theResult = jsonObjectData["component_type"].get(componentType);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			std::cout << "THE ID: " << std::string{ idNew.data(), idNew.size() } << std::endl;
 			parseObject(jsonObjectData, theData.componentData);
 		}
 

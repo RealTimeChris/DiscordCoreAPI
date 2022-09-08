@@ -359,7 +359,7 @@ namespace DiscordCoreAPI {
 			if (!WebSocketSSLShard::areWeStillConnected()) {
 				return false;
 			}
-			if (WebSocketSSLShard::inputBuffer.size() > 0) {
+			if (WebSocketSSLShard::inputBuffer.getUsedSpace() > 0) {
 				if (!VoiceConnection::parseMessage(this)) {
 					return true;
 				}
@@ -938,7 +938,6 @@ namespace DiscordCoreAPI {
 			this->taskThread03.reset(nullptr);
 		}
 		this->areWeHeartBeating = false;
-		WebSocketSSLShard::inputBuffer.clear();
 		DatagramSocketClient::inputBuffer.clear();
 		DatagramSocketClient::outputBuffers.clear();
 		WebSocketSSLShard::outputBuffers.clear();

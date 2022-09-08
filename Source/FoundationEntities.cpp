@@ -1022,10 +1022,6 @@ namespace DiscordCoreAPI {
 			JsonValue theValue{};
 			theValue.theType = value.value.theType;
 			theValue.theValue = value.value.theValue;
-			std::cout << "THE ARGUMENT FINAL: " << value.value.theValue << std::endl;
-			std::cout << "THE ARGUMENT FINAL: " << value.value.theValue << std::endl;
-			std::cout << "THE ARGUMENT FINAL: " << value.value.theValue << std::endl;
-			std::cout << "THE ARGUMENT FINAL: " << theValue.theValue << std::endl;
 			this->optionsArgs.theValues.emplace(value.name, theValue);
 		}
 		//auto theData = inputEventData.interactionData->rawDataParser.iterate(inputEventData.getInteractionData().rawData);

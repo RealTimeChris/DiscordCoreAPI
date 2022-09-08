@@ -194,6 +194,61 @@ namespace DiscordCoreInternal {
 			delete this->thePtr;
 		}
 	}
+	
+	void RingBuffer::updateFromWriteInfo(int32_t writtenBytes) {
+		if (this->head + writtenBytes >= this->theArray.size()) {
+			this->head = this->head + writtenBytes % this->theArray.size();
+		} else {
+			this->head += writtenBytes;
+		}
+	}
+
+	void RingBuffer::updateFromReadInfo(int32_t readBytes) {
+		if (this->tail + readBytes >= this->theArray.size()) {
+			this->tail = this->tail + readBytes % this->theArray.size();
+		} else {
+			this->tail += readBytes;
+		}
+	}
+
+	const char* RingBuffer::getCurrentTail() {
+		return this->theArray.data() + this->tail;
+	}
+
+	const char* RingBuffer::getCurrentHead() {
+		return this->theArray.data() + this->head;
+	}
+
+	size_t RingBuffer::getFreeSpace() {
+		if (this->head >= this->tail)
+			return this->theArray.size() - (this->head - this->tail);
+		else
+			return this->tail - this->head - 1;
+	}
+
+	size_t RingBuffer::getUsedSpace() {
+		return this->theArray.size() - this->getFreeSpace();
+	}
+	
+	bool RingBuffer::isItEmpty() {
+		if (this->getFreeSpace() == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	bool RingBuffer::isItFull() {
+		if (this->getFreeSpace() == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	void RingBuffer::clear() {
+		this->tail = this->head = 0;
+	}
 
 	bool SSLConnectionInterface::initialize() noexcept {
 		if (SSLConnectionInterface::context = SSL_CTX_new(TLS_client_method()); SSLConnectionInterface::context == nullptr) {
@@ -367,6 +422,12 @@ namespace DiscordCoreInternal {
 		return theReturnValue;
 	}
 
+	std::string_view SSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
+		std::string_view theString{ this->inputBuffer.theArray.data() + this->inputBuffer.tail + offSet, length };
+		this->inputBuffer.updateFromReadInfo(offSet + length);
+		return theString;
+	}
+
 	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
 		if (dataToWrite.size() > 0 && this->ssl) {
 			if (priority && dataToWrite.size() < static_cast<size_t>(16 * 1024)) {
@@ -460,8 +521,15 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::No_Error;
 	}
 
-	std::string& SSLClient::getInputBuffer() noexcept {
-		return this->inputBuffer;
+	std::string_view SSLClient::getInputBuffer() noexcept {
+		std::string_view theString{ this->inputBuffer.getCurrentTail(), this->inputBuffer.getUsedSpace() };
+		return theString;
+	}
+
+	std::string_view SSLClient::getInputBufferRemove() noexcept {
+		std::string_view theString{ this->inputBuffer.getCurrentTail(), this->inputBuffer.getUsedSpace() };
+		this->inputBuffer.updateFromReadInfo(this->inputBuffer.getUsedSpace());
+		return theString;
 	}
 
 	bool SSLClient::areWeStillConnected() noexcept {
@@ -508,7 +576,13 @@ namespace DiscordCoreInternal {
 	bool SSLClient::processReadData() noexcept {
 		do {
 			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
+			auto bytesToRead = this->inputBuffer.getFreeSpace();
+			if (bytesToRead >= this->maxBufferSize) {
+				bytesToRead = this->maxBufferSize;
+			} else if (bytesToRead == 0) {
+				return true;
+			}
+			auto returnValue{ SSL_read_ex(this->ssl, ( void* )this->inputBuffer.getCurrentHead(), bytesToRead, &readBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_WANT_READ: {
@@ -519,8 +593,8 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_NONE: {
 					if (readBytes > 0) {
-						this->inputBuffer.append(this->rawInputBuffer.data(), this->rawInputBuffer.data() + readBytes);
 						this->bytesRead += readBytes;
+						this->inputBuffer.updateFromWriteInfo(readBytes);
 					}
 					break;
 				}

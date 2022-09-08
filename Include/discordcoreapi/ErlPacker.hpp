@@ -62,7 +62,7 @@ namespace DiscordCoreInternal {
 
 		std::string parseJsonToEtf(nlohmann::json&);
 
-		std::string& parseEtfToJson(std::string& dataToParse);
+		std::string& parseEtfToJson(std::string_view dataToParse);
 		
 	  protected:
 		std::string comparisongStringFalse{ "false" };

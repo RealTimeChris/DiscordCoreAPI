@@ -38,7 +38,7 @@ namespace DiscordCoreInternal {
 		return this->bufferString;
 	}
 
-	std::string& ErlPacker::parseEtfToJson(std::string& dataToParse) {
+	std::string& ErlPacker::parseEtfToJson(std::string_view dataToParse) {
 		this->bufferString.clear();
 		this->offSet = 0;
 		this->buffer = dataToParse;
