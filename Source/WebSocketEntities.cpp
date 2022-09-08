@@ -421,8 +421,7 @@ namespace DiscordCoreInternal {
 			if (this->areWeStillConnected()) {
 				try {
 					bool returnValue{ false };
-					std::string theString{};
-					std::string& payload{ theString };
+					std::string_view payload{};
 					nlohmann::json payloadJson{};
 					if (theDataNew.size() > 0) {
 						returnValue = true;
@@ -446,8 +445,7 @@ namespace DiscordCoreInternal {
 						returnValue = false;
 					}
 
-					payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
-					auto theDocument = this->theParser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity()));
+					auto theDocument = this->theParser.iterate(payload.data());
 					auto thePayload = theDocument.value().get_value();
 					WebSocketMessage theMessage{};
 					uint64_t s{};

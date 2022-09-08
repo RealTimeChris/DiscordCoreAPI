@@ -29,6 +29,10 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
+	ErlPacker::ErlPacker() noexcept {
+		this->bufferString.resize(1024 * 1024);
+	}
+
 	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
 		this->bufferString.clear();
 		this->offSet = 0;
@@ -38,7 +42,7 @@ namespace DiscordCoreInternal {
 		return this->bufferString;
 	}
 
-	std::string& ErlPacker::parseEtfToJson(std::string_view dataToParse) {
+	std::string_view ErlPacker::parseEtfToJson(std::string_view dataToParse) {
 		this->bufferString.clear();
 		this->offSet = 0;
 		this->buffer = dataToParse;
@@ -46,8 +50,10 @@ namespace DiscordCoreInternal {
 		if (this->readBits<uint8_t>() != formatVersion) {
 			throw ErlPackError{ "ErlPacker::parseEtfToJson() Error: Incorrect format version specified." };
 		}
-		this->bufferString = this->singleValueETFToJson();
-		return this->bufferString;
+		this->bufferString= this->singleValueETFToJson();
+		this->bufferString.reserve(this->bufferString.size() + simdjson::SIMDJSON_PADDING);
+		std::string_view theString{ this->bufferString.data(), this->outputOffset };
+		return theString;
 	}
 
 	void ErlPacker::singleValueJsonToETF(nlohmann::json& jsonData) {
