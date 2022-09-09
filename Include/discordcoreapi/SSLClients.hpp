@@ -206,21 +206,19 @@ namespace DiscordCoreInternal {
 	enum class ProcessIOResult : int8_t { No_Error = 0, Error = 1 };
 
 	struct DiscordCoreAPI_Dll RingBuffer {
-		std::array<char, 1024 * 1024 * 2> theArray{};
-		int64_t head{};
-		int64_t tail{};
 		void writeData(char* theData, size_t theLength);
 		void readData(char* theData, size_t theLength);
-		char& peekByte(size_t theIndex);
-		void putByte(char& theByte);
-		char getByte();
 		char* getCurrentTail();
 		char* getCurrentHead();
 		int64_t getFreeSpace();
 		int64_t getUsedSpace();
-		bool isItEmpty();
-		bool isItFull();
 		void clear();
+	  protected:
+		std::array<char, 1024 * 1024 * 2> theArray{};
+		int64_t head{};
+		int64_t tail{};
+		void putByte(char& theByte);
+		char getByte();
 	};
 
 	class DiscordCoreAPI_Dll SSLDataInterface {

@@ -230,10 +230,6 @@ namespace DiscordCoreInternal {
 		this->head++;
 	}
 
-	char& RingBuffer::peekByte(size_t theIndex) {
-		return this->getCurrentTail()[theIndex];
-	}
-
 	char RingBuffer::getByte() {
 		char theReturn = this->getCurrentTail()[0];
 		this->tail++;
@@ -249,22 +245,6 @@ namespace DiscordCoreInternal {
 
 	int64_t RingBuffer::getUsedSpace() {
 		return this->theArray.size() - this->getFreeSpace();
-	}
-	
-	bool RingBuffer::isItEmpty() {
-		if (this->getFreeSpace() == 0) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	bool RingBuffer::isItFull() {
-		if (this->getFreeSpace() == 0) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 	
 	void RingBuffer::clear() {
@@ -601,7 +581,13 @@ namespace DiscordCoreInternal {
 	bool WebSocketSSLClient::processReadData() noexcept {
 		do {
 			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
+			size_t bytesToRead{};
+			if (this->inputBuffer.getFreeSpace() < this->maxBufferSize) {
+				bytesToRead = this->inputBuffer.getFreeSpace();
+			} else {
+				bytesToRead = this->maxBufferSize;
+			}
+			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), bytesToRead, &readBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_WANT_READ: {

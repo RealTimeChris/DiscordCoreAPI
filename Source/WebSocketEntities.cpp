@@ -1541,6 +1541,7 @@ namespace DiscordCoreInternal {
 			this->currentState.store(SSLShardState::Disconnected);
 			this->areWeConnecting.store(true);
 			this->outputBuffers.clear();
+			this->inputBuffer.clear();
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
 			if (doWeReconnect && this->theConnections) {
