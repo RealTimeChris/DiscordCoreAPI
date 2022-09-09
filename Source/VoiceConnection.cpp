@@ -28,6 +28,14 @@
 
 namespace DiscordCoreAPI {
 
+	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
+	constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126u };
+	constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127u };
+	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
+	constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125u };
+	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
+	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
+
 	void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) noexcept {
 		if (other) {
 			opus_decoder_destroy(other);
@@ -143,7 +151,7 @@ namespace DiscordCoreAPI {
 		this->audioDataBuffer.send(std::move(frameData));
 	}
 
-	bool VoiceConnection::onMessageReceived(const std::string& theData) noexcept {
+	bool VoiceConnection::onMessageReceived(std::string_view theData) noexcept {
 		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
 		try {
 			if (theData.size() > 0) {
@@ -256,6 +264,77 @@ namespace DiscordCoreAPI {
 			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
 		}
 		return VoiceConnection::parseMessage(this);
+	}
+
+	bool VoiceConnection::parseMessage(VoiceConnection* theShard) noexcept {
+		if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 4) {
+			return false;
+		}
+		theShard->dataOpCode = static_cast<DiscordCoreInternal::WebSocketOpCode>(WebSocketSSLShard::inputBuffer.getCurrentTail()[0] & ~webSocketFinishBit);
+		this->messageLength = 0;
+		this->messageOffset = 0;
+		switch (theShard->dataOpCode) {
+			case DiscordCoreInternal::WebSocketOpCode::Op_Continuation:
+				[[fallthrough]];
+			case DiscordCoreInternal::WebSocketOpCode::Op_Text:
+				[[fallthrough]];
+			case DiscordCoreInternal::WebSocketOpCode::Op_Binary:
+				[[fallthrough]];
+			case DiscordCoreInternal::WebSocketOpCode::Op_Ping:
+				[[fallthrough]];
+			case DiscordCoreInternal::WebSocketOpCode::Op_Pong: {
+				uint8_t length01 = WebSocketSSLShard::inputBuffer.getCurrentTail()[1];
+				theShard->messageOffset = 2;
+				if (length01 & webSocketMaskBit) {
+					return false;
+				}
+				theShard->messageLength = length01;
+				if (length01 == webSocketPayloadLengthMagicLarge) {
+					if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 8) {
+						return false;
+					}
+					uint8_t length03 = WebSocketSSLShard::inputBuffer.getCurrentTail()[2];
+					uint8_t length04 = WebSocketSSLShard::inputBuffer.getCurrentTail()[3];
+					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+					theShard->messageOffset += 2;
+				} else if (length01 == webSocketPayloadLengthMagicHuge) {
+					if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 10) {
+						return false;
+					}
+					theShard->messageLength = 0;
+					for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
+						uint8_t lengthNew = static_cast<uint8_t>(WebSocketSSLShard::inputBuffer.getCurrentTail()[x]);
+						theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+					}
+					theShard->messageOffset += 8;
+				}
+				if (WebSocketSSLShard::inputBuffer.getUsedSpace() < theShard->messageOffset + theShard->messageLength) {
+					return false;
+				} else {
+					this->onMessageReceived(WebSocketSSLShard::getInputBuffer(theShard->messageOffset, theShard->messageLength));
+					//WebSocketSSLShard::inputBuffer.updateFromReadInfo(theShard->messageOffset + theShard->messageLength);
+					return true;
+				}
+			}
+			case DiscordCoreInternal::WebSocketOpCode::Op_Close: {
+				uint16_t close = WebSocketSSLShard::inputBuffer.getCurrentTail()[2] & 0xff;
+				close <<= 8;
+				close |= WebSocketSSLShard::inputBuffer.getCurrentTail()[3] & 0xff;
+				theShard->closeCode = close;
+				if (theShard->closeCode) {
+					theShard->areWeResuming = true;
+				}
+				if (this->configManager->doWePrintWebSocketErrorMessages()) {
+					cout << DiscordCoreAPI::shiftToBrightRed()
+						 << "WebSocket " + theShard->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Closed; Code: "
+						 << +static_cast<uint16_t>(theShard->closeCode) << DiscordCoreAPI::reset() << endl
+						 << endl;
+				}
+				this->onClosed();
+				return false;
+			}
+		}
+		return false;
 	}
 
 	void VoiceConnection::sendSpeakingMessage(const bool isSpeaking) noexcept {

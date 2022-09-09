@@ -174,7 +174,9 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
-		bool onMessageReceived(const std::string& theData) noexcept;
+		bool onMessageReceived(std::string_view theData) noexcept;
+
+		bool parseMessage(WebSocketSSLShard* theShard) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
@@ -183,6 +185,8 @@ namespace DiscordCoreAPI {
 		void sendVoiceData(std::string& responseData) noexcept;
 
 		bool handleBuffer(WebSocketSSLClient* theClient) noexcept;
+
+		bool parseMessage(VoiceConnection* theShard) noexcept;
 
 		void runWebSocket(std::stop_token) noexcept;
 

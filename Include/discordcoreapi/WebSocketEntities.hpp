@@ -88,13 +88,13 @@ namespace DiscordCoreInternal {
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
+		virtual bool onMessageReceived(std::string_view theMessage) noexcept;
+
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		bool onMessageReceived(std::string_view theMessage) noexcept;
+		bool handleBuffer(WebSocketSSLClient* theClient) noexcept;
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
-
-		bool handleBuffer(WebSocketSSLClient* theClient) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
 
