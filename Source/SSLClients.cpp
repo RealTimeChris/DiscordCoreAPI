@@ -196,14 +196,24 @@ namespace DiscordCoreInternal {
 	}
 
 	void RingBuffer::writeData(char* theData, size_t theLength) {
-		for (size_t x = 0; x < theLength; ++x) {
-			this->putByte(theData[x]);
+		if (this->head + theLength > this->theArray.size()) {
+			for (size_t x = 0; x < theLength; ++x) {
+				this->putByte(theData[x]);
+			}
+		} else {
+			memcpy(this->getCurrentHead(), theData, theLength);
+			this->head += theLength;
 		}
 	}
 
 	void RingBuffer::readData(char* theData, size_t theLength) {
-		for (size_t x = 0; x < theLength; ++x) {
-			theData[x] = this->getByte();
+		if (this->tail + theLength > this->theArray.size()) {
+			for (size_t x = 0; x < theLength; ++x) {
+				theData[x] = this->getByte();
+			}
+		} else {
+			memcpy(theData, this->getCurrentTail(), theLength);
+			this->tail += theLength;
 		}
 	}
 
@@ -448,13 +458,9 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string_view WebSocketSSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
-		for (size_t x = 0; x < length+offSet; ++x) {
-			this->currentMessageBuffer[x] = this->inputBuffer.getByte();
-		}
+		this->inputBuffer.readData(this->currentMessageBuffer.data(), offSet + length);
 		std::string_view theString{ this->currentMessageBuffer.data() + offSet, length };
 		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
-		std::cout << "THE SIZE 0101: " << length << std::endl;
-		std::cout << "THE STRING: " << theString02 << std::endl;
 		return theString;
 	}
 
@@ -606,9 +612,7 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_NONE: {
 					if (readBytes > 0) {
-						for (size_t x = 0; x < readBytes; ++x) {
-							this->inputBuffer.putByte(this->rawInputBuffer[x]);
-						}
+						this->inputBuffer.writeData(this->rawInputBuffer.data(), readBytes);
 						this->bytesRead += readBytes;
 					}
 					break;
@@ -884,7 +888,6 @@ namespace DiscordCoreInternal {
 		theString.insert(theString.begin(), this->currentMessageBuffer.begin(), this->currentMessageBuffer.end());
 		std::string theString02{ this->currentMessageBuffer.data(), 12 };
 		this->currentMessageBuffer.clear();
-		std::cout << "THE STRING: " << theString02 << std::endl;
 		return theString;
 	}
 
