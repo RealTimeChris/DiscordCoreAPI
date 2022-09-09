@@ -194,41 +194,28 @@ namespace DiscordCoreInternal {
 			delete this->thePtr;
 		}
 	}
-	
-	void RingBuffer::readDataStay(char* theString, size_t theOffset, size_t theLength) {
-		for (size_t x = 0; x < theLength; ++x) {
-			theString[x] = this->theArray[(this->tail + theOffset + x) % this->theArray.size()];
-		}
-	}
 
-	void RingBuffer::readData(char* theString, size_t theOffset, size_t theLength) {
-		for (size_t x = 0; x < theLength; ++x) {
-			theString[x] = this->theArray[(this->tail + theOffset + x) % this->theArray.size()];
-		}
-		this->tail += theLength;
-	}
-
-	void RingBuffer::writeData(const char* theString, size_t theLength) {
-		for (size_t x = 0; x < theLength; ++x) {
-			this->theArray[(this->head + x) % this->theArray.size()] = theString[x];
-		}
-		this->head += theLength;
-	}
-
-	void RingBuffer::updateFromWriteInfo(int64_t writtenBytes) {
-		this->head += writtenBytes;
-	}
- 
-	void RingBuffer::updateFromReadInfo(int64_t readBytes) {
-		this->tail += readBytes;
-	}
-
-	const char* RingBuffer::getCurrentTail() {
+	char* RingBuffer::getCurrentTail() {
 		return (this->theArray.data() + (this->tail % this->theArray.size()));
 	}
 
-	const char* RingBuffer::getCurrentHead() {
+	char* RingBuffer::getCurrentHead() {
 		return (this->theArray.data() + (this->head % this->theArray.size()));
+	}
+
+	void RingBuffer::putByte(char& theByte) {
+		this->getCurrentHead()[0] = theByte;
+		this->head++;
+	}
+
+	char& RingBuffer::peekByte(size_t theIndex) {
+		return this->getCurrentTail()[theIndex];
+	}
+
+	char RingBuffer::getByte() {
+		char theReturn = this->getCurrentTail()[0];
+		this->tail++;
+		return theReturn;
 	}
 
 	int64_t RingBuffer::getFreeSpace() {
@@ -439,11 +426,13 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string_view SSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
-		size_t theSpace = this->inputBuffer.getUsedSpace();
-		std::string_view theString{};
-		this->currentMessageBuffer.resize(theSpace);
-		this->inputBuffer.readData(this->currentMessageBuffer.data(), offSet, length);
-		theString = this->currentMessageBuffer;
+		for (size_t x = 0; x < length + offSet; ++x) {
+			this->currentMessageBuffer[x] = this->inputBuffer.getByte();
+		}
+		std::string_view theString{ this->currentMessageBuffer.data() + offSet, length };
+		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
+		std::cout << "THE SIZE 0101: " << length << std::endl;
+		std::cout << "THE STRING: " << theString02 << std::endl;
 		return theString;
 	}
 
@@ -542,16 +531,23 @@ namespace DiscordCoreInternal {
 
 	std::string_view SSLClient::getInputBuffer() noexcept {
 		size_t theSpace = this->inputBuffer.getUsedSpace();
-		this->inputBuffer.readDataStay(this->currentMessageBuffer.data(), 0, theSpace);
-		return std::string_view{ this->currentMessageBuffer.data(), theSpace };
+		for (size_t x = 0; x < theSpace; ++x) {
+			this->currentMessageBuffer[x] = this->inputBuffer.peekByte(x);
+		}
+		std::string_view theString{ this->currentMessageBuffer.data(), theSpace };
+		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
+		std::cout << "THE STRING: 02  " << theString02 << std::endl;
+		return theString;
 	}
 
-	std::string SSLClient::getInputBufferRemove() noexcept {
-		std::string theString{};
+	std::string_view SSLClient::getInputBufferRemove() noexcept {
 		size_t theSpace = this->inputBuffer.getUsedSpace();
-		theString.resize(theSpace);
-		this->inputBuffer.readData(theString.data(), 0, theSpace);
-		std::cout << "THE STRING: " << theString << std ::endl;
+		for (size_t x = 0; x < theSpace; ++x) {
+			this->currentMessageBuffer[x] = this->inputBuffer.getByte();
+		}
+		std::string_view theString{ this->currentMessageBuffer.data(), theSpace };
+		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
+		std::cout << "THE STRING: 03 " << theString02 << std::endl;
 		return theString;
 	}
 
@@ -610,7 +606,9 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_NONE: {
 					if (readBytes > 0) {
-						this->inputBuffer.writeData(this->rawInputBuffer.data(), readBytes);
+						for (size_t x = 0; x < readBytes; ++x) {
+							this->inputBuffer.putByte(this->rawInputBuffer[x]);
+						}						
 						this->bytesRead += readBytes;
 					}
 					break;

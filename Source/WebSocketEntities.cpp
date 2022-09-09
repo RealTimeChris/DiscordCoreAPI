@@ -304,7 +304,6 @@ namespace DiscordCoreInternal {
 				if (theShard->closeCode) {
 					theShard->areWeResuming = true;
 				}
-				theShard->inputBuffer.updateFromReadInfo(4);
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightRed()
 						 << "WebSocket " + theShard->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Closed; Code: "

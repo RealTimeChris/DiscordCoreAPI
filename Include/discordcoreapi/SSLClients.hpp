@@ -206,16 +206,14 @@ namespace DiscordCoreInternal {
 	enum class ProcessIOResult : int8_t { No_Error = 0, Error = 1 };
 
 	struct DiscordCoreAPI_Dll RingBuffer {
-		std::array<char, 1024 * 1024> theArray{};
+		std::array<char, 1024 * 1024 * 2> theArray{};
 		int64_t head{};
 		int64_t tail{};
-		void readDataStay(char* theString, size_t theOffset, size_t theLength);
-		void readData(char* theString, size_t theOffset, size_t theLength);
-		void writeData(const char* theString, size_t theLength);
-		void updateFromWriteInfo(int64_t writtenBytes);
-		void updateFromReadInfo(int64_t readBytes);
-		const char* getCurrentTail();
-		const char* getCurrentHead();
+		char& peekByte(size_t theIndex);
+		void putByte(char& theByte);
+		char getByte();
+		char* getCurrentTail();
+		char* getCurrentHead();
 		int64_t getFreeSpace();
 		int64_t getUsedSpace();
 		bool isItEmpty();
@@ -267,7 +265,7 @@ namespace DiscordCoreInternal {
 		
 		virtual bool handleBuffer(SSLClient*) noexcept = 0;
 
-		std::string getInputBufferRemove() noexcept;
+		std::string_view getInputBufferRemove() noexcept;
 
 		std::string_view getInputBuffer() noexcept;
 
