@@ -209,7 +209,6 @@ namespace DiscordCoreInternal {
 		void writeData(char* theData, size_t theLength);
 		void readData(char* theData, size_t theLength);
 		char* getCurrentTail();
-		char* getCurrentHead();
 		int64_t getFreeSpace();
 		int64_t getUsedSpace();
 		void clear();
