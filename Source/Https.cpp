@@ -259,7 +259,7 @@ namespace DiscordCoreInternal {
 
 	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
 
-	bool HttpsConnection::handleBuffer(SSLClient* theClient) noexcept {
+	bool HttpsConnection::handleBuffer(HttpsSSLClient* theClient) noexcept {
 		auto theConnection = static_cast<HttpsConnection*>(theClient);
 		this->theData.theStopWatch.resetTimer();
 		while (true) {

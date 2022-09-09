@@ -251,7 +251,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool VoiceConnection::handleBuffer(SSLClient* theClient) noexcept {
+	bool VoiceConnection::handleBuffer(WebSocketSSLClient* theClient) noexcept {
 		if (static_cast<WebSocketSSLShard*>(theClient)->currentState.load() == DiscordCoreInternal::SSLShardState::Upgrading) {
 			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
 		}

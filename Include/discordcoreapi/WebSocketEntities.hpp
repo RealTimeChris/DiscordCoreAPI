@@ -59,7 +59,7 @@ namespace DiscordCoreInternal {
 
 		virtual bool onMessageReceived(std::string_view theMessage) noexcept = 0;
 
-		virtual bool handleBuffer(SSLClient* theClient) noexcept = 0;
+		virtual bool handleBuffer(WebSocketSSLClient* theClient) noexcept = 0;
 
 		bool parseMessage(WebSocketSSLShard* theShard) noexcept;
 
@@ -73,7 +73,7 @@ namespace DiscordCoreInternal {
 		uint64_t messageOffset{};
 	};
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLClient, public WebSocketMessageHandler {
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketSSLClient, public WebSocketMessageHandler {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
@@ -94,7 +94,7 @@ namespace DiscordCoreInternal {
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 
-		bool handleBuffer(SSLClient* theClient) noexcept;
+		bool handleBuffer(WebSocketSSLClient* theClient) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
 

@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 		std::string bucket{};
 	};
 
-	class DiscordCoreAPI_Dll HttpsConnection : public SSLClient, public HttpsRnRBuilder {
+	class DiscordCoreAPI_Dll HttpsConnection : public HttpsSSLClient, public HttpsRnRBuilder {
 	  public:
 		std::atomic_bool areWeCheckedOut{ false };
 		const int32_t maxReconnectTries{ 10 };
@@ -120,7 +120,7 @@ namespace DiscordCoreInternal {
 
 		HttpsConnection(bool doWePrintErrorMessages);
 
-		bool handleBuffer(SSLClient* theClient) noexcept;
+		bool handleBuffer(HttpsSSLClient* theClient) noexcept;
 
 		void disconnect(bool) noexcept;
 

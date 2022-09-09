@@ -1528,7 +1528,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketSSLShard::handleBuffer(SSLClient* theClient) noexcept {
+	bool WebSocketSSLShard::handleBuffer(WebSocketSSLClient* theClient) noexcept {
 		if (static_cast<WebSocketSSLShard*>(theClient)->currentState.load() == SSLShardState::Upgrading) {
 			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
 		}
@@ -1717,13 +1717,13 @@ namespace DiscordCoreInternal {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				this->disconnectVoiceInternal();
 				this->connectVoiceInternal();
-				std::vector<SSLClient*> theVector{};
+				std::vector<WebSocketSSLClient*> theVector{};
 				for (auto& [key, value]: this->theShardMap) {
 					if (!static_cast<WebSocketSSLShard*>(value.get())->areWeConnecting.load()) {
 						theVector.push_back(value.get());
 					}
 				}
-				auto theResult = SSLClient::processIO(theVector);
+				auto theResult = WebSocketSSLClient::processIO(theVector);
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
