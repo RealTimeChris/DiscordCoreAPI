@@ -206,9 +206,12 @@ namespace DiscordCoreInternal {
 	enum class ProcessIOResult : int8_t { No_Error = 0, Error = 1 };
 
 	struct DiscordCoreAPI_Dll RingBuffer {
-		std::array<const char, 1024 * 1024> theArray{};
+		std::array<char, 1024 * 1024> theArray{};
 		int64_t head{};
 		int64_t tail{};
+		void readDataStay(char* theString, size_t theOffset, size_t theLength);
+		void readData(char* theString, size_t theOffset, size_t theLength);
+		void writeData(const char* theString, size_t theLength);
 		void updateFromWriteInfo(int64_t writtenBytes);
 		void updateFromReadInfo(int64_t readBytes);
 		const char* getCurrentTail();
@@ -224,7 +227,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class HttpsClient;
 
-		SSLDataInterface() noexcept = default;
+		SSLDataInterface() noexcept;
 
 		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
 
@@ -240,6 +243,7 @@ namespace DiscordCoreInternal {
 		std::array<char, 1024 * 16> rawInputBuffer{};
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::deque<std::string> outputBuffers{};
+		std::string currentMessageBuffer{};
 		uint64_t offsetIntoInputBuffer{};
 		RingBuffer inputBuffer{};
 		int64_t bytesRead{ 0 };
@@ -263,7 +267,7 @@ namespace DiscordCoreInternal {
 		
 		virtual bool handleBuffer(SSLClient*) noexcept = 0;
 
-		std::string_view getInputBufferRemove() noexcept;
+		std::string getInputBufferRemove() noexcept;
 
 		std::string_view getInputBuffer() noexcept;
 
