@@ -890,14 +890,16 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string_view HttpsSSLClient::getInputBuffer() noexcept {
-		std::string_view theString{ this->currentMessageBuffer.data(), this->currentMessageBuffer.size() };
+		std::string theString{};
+		theString.insert(theString.begin(), this->currentMessageBuffer.begin(), this->currentMessageBuffer.end());
 		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
 		std::cout << "THE STRING: " << theString02 << std::endl;
 		return theString;
 	}
 
 	std::string HttpsSSLClient::getInputBufferRemove() noexcept {
-		std::string theString{ this->currentMessageBuffer.data(), this->currentMessageBuffer.size() };
+		std::string theString{};
+		theString.insert(theString.begin(), this->currentMessageBuffer.begin(), this->currentMessageBuffer.end());
 		this->currentMessageBuffer.clear();
 		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
 		std::cout << "THE STRING: " << theString02 << std::endl;
@@ -959,9 +961,7 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_NONE: {
 					if (readBytes > 0) {
-						for (size_t x = 0; x < readBytes; ++x) {
-							this->currentMessageBuffer.insert(this->currentMessageBuffer.end(), this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
-						}
+						this->currentMessageBuffer.insert(this->currentMessageBuffer.end(), this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
 						this->bytesRead += readBytes;
 					}
 					break;
