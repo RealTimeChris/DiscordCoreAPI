@@ -206,6 +206,18 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	char* RingBuffer::getBufferPtr(size_t theLength) {
+		if (this->tail + theLength > this->theArray.size()) {
+			this->readData(this->theOverFlowArray.data(), theLength);
+			return this->theOverFlowArray.data();
+		}
+		else {
+			char* thePtr = this->getCurrentTail();
+			this->tail += theLength;
+			return thePtr;
+		}
+	}
+
 	void RingBuffer::readData(char* theData, size_t theLength) {
 		if (this->tail + theLength > this->theArray.size()) {
 			for (size_t x = 0; x < theLength; ++x) {
@@ -438,9 +450,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string_view WebSocketSSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
-		this->inputBuffer.readData(this->currentMessageBuffer.data(), offSet + length);
-		std::string_view theString{ this->currentMessageBuffer.data() + offSet, length };
-		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
+		std::string_view theString{ this->inputBuffer.getBufferPtr(offSet + length) + offSet, length };
 		return theString;
 	}
 
@@ -872,7 +882,6 @@ namespace DiscordCoreInternal {
 	std::string HttpsSSLClient::getInputBufferRemove() noexcept {
 		std::string theString{};
 		theString.insert(theString.begin(), this->currentMessageBuffer.begin(), this->currentMessageBuffer.end());
-		std::string theString02{ this->currentMessageBuffer.data(), 12 };
 		this->currentMessageBuffer.clear();
 		return theString;
 	}

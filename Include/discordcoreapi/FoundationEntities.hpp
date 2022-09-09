@@ -3380,11 +3380,11 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, JsonValue> theValues{};
 	};
 
-	template<typename ReturnType> auto getArgument(JsonValues optionsArgs, std::string_view theArgName) {
+	template<typename ReturnType> auto getArgument(JsonValues& optionsArgs, std::string_view theArgName) {
 		return 0;
 	}
 
-	template<> auto getArgument<uint64_t>(JsonValues optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<uint64_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Integer: {
@@ -3394,7 +3394,7 @@ namespace DiscordCoreAPI {
 		return 0ull;
 	}
 
-	template<> auto getArgument<uint32_t>(JsonValues optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<uint32_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Integer: {
@@ -3404,7 +3404,7 @@ namespace DiscordCoreAPI {
 		return 0ull;
 	}
 
-	template<> auto getArgument<uint16_t>(JsonValues optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<uint16_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Integer: {
@@ -3414,7 +3414,7 @@ namespace DiscordCoreAPI {
 		return 0ull;
 	}
 
-	template<> auto getArgument<uint8_t>(JsonValues optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<uint8_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Integer: {
@@ -3424,7 +3424,7 @@ namespace DiscordCoreAPI {
 		return 0ull;
 	}
 
-	template<> auto getArgument<float>(JsonValues optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<float>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Float: {
@@ -3434,7 +3434,7 @@ namespace DiscordCoreAPI {
 		return 0.0l;
 	}
 
-	template<> auto getArgument<double>(JsonValues optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<double>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Float: {
@@ -3444,7 +3444,7 @@ namespace DiscordCoreAPI {
 		return 0.0L;
 	}
 
-	template<> auto getArgument<std::string>(JsonValues optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<std::string>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::String: {
@@ -3454,7 +3454,7 @@ namespace DiscordCoreAPI {
 		return std::string{};
 	}
 
-	template<> auto getArgument<bool>(JsonValues optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<bool>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Boolean: {
