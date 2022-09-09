@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 	enum class ProcessIOResult : int8_t { No_Error = 0, Error = 1 };
 
 	struct DiscordCoreAPI_Dll RingBuffer {
-		std::array<const char, 1024 * 1024 * 1024> theArray{};
+		std::array<const char, 1024 * 1024> theArray{};
 		int64_t head{};
 		int64_t tail{};
 		void updateFromWriteInfo(int64_t writtenBytes);
