@@ -234,11 +234,11 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
 		if (theShard->areWeStillConnected() && theShard->currentState.load() == SSLShardState::Upgrading && theShard->inputBuffer.getUsedSpace() > 100) {
-			std::string_view theString = theShard->getInputBuffer();
+			std::string_view theString = theShard->getInputBuffer(0, theShard->inputBuffer.getUsedSpace());
 			
 			auto theFindValue = theString.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
-				theShard->getInputBufferRemove();
+				theShard->getInputBuffer(0, theShard->inputBuffer.getUsedSpace());
 				theShard->currentState.store(SSLShardState::Collecting_Hello);
 				return true;
 			}

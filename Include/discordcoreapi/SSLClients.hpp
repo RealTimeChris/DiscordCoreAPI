@@ -209,6 +209,8 @@ namespace DiscordCoreInternal {
 		std::array<char, 1024 * 1024 * 2> theArray{};
 		int64_t head{};
 		int64_t tail{};
+		void writeData(char* theData, size_t theLength);
+		void readData(char* theData, size_t theLength);
 		char& peekByte(size_t theIndex);
 		void putByte(char& theByte);
 		char getByte();
@@ -229,9 +231,9 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
 
-		virtual std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept = 0;
+		virtual std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept;
 
-		virtual std::string_view getInputBuffer() noexcept = 0;
+		virtual std::string_view getInputBuffer() noexcept;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
@@ -258,15 +260,11 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
-		std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept;
-
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
 		virtual bool handleBuffer(HttpsSSLClient*) noexcept = 0;
 
 		std::string getInputBufferRemove() noexcept;
-
-		std::string_view getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
 
@@ -296,13 +294,9 @@ namespace DiscordCoreInternal {
 
 		std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept;
 
-		ProcessIOResult processIO(int32_t msToWait) noexcept;
-		
 		virtual bool handleBuffer(WebSocketSSLClient*) noexcept = 0;
 
-		std::string_view getInputBufferRemove() noexcept;
-
-		std::string_view getInputBuffer() noexcept;
+		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
 		bool areWeStillConnected() noexcept;
 

@@ -195,6 +195,18 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void RingBuffer::writeData(char* theData, size_t theLength) {
+		for (size_t x = 0; x < theLength; ++x) {
+			this->putByte(theData[x]);
+		}
+	}
+
+	void RingBuffer::readData(char* theData, size_t theLength) {
+		for (size_t x = 0; x < theLength; ++x) {
+			theData[x] = this->getByte();
+		}
+	}
+
 	char* RingBuffer::getCurrentTail() {
 		return (this->theArray.data() + (this->tail % this->theArray.size()));
 	}
@@ -267,6 +279,14 @@ namespace DiscordCoreInternal {
 		}
 #endif
 		return true;
+	}
+
+	std::string_view SSLDataInterface::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
+		return std::string_view{};
+	}
+
+	std::string_view SSLDataInterface::getInputBuffer() noexcept {
+		return std::string_view{};
 	}
 
 	WebSocketSSLClient::WebSocketSSLClient() noexcept {
@@ -428,7 +448,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string_view WebSocketSSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
-		for (size_t x = 0; x < length + offSet; ++x) {
+		for (size_t x = 0; x < length+offSet; ++x) {
 			this->currentMessageBuffer[x] = this->inputBuffer.getByte();
 		}
 		std::string_view theString{ this->currentMessageBuffer.data() + offSet, length };
@@ -531,28 +551,6 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::No_Error;
 	}
 
-	std::string_view WebSocketSSLClient::getInputBuffer() noexcept {
-		size_t theSpace = this->inputBuffer.getUsedSpace();
-		for (size_t x = 0; x < theSpace; ++x) {
-			this->currentMessageBuffer[x] = this->inputBuffer.peekByte(x);
-		}
-		std::string_view theString{ this->currentMessageBuffer.data(), theSpace };
-		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
-		std::cout << "THE STRING: 02  " << theString02 << std::endl;
-		return theString;
-	}
-
-	std::string_view WebSocketSSLClient::getInputBufferRemove() noexcept {
-		size_t theSpace = this->inputBuffer.getUsedSpace();
-		for (size_t x = 0; x < theSpace; ++x) {
-			this->currentMessageBuffer[x] = this->inputBuffer.getByte();
-		}
-		std::string_view theString{ this->currentMessageBuffer.data(), theSpace };
-		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
-		std::cout << "THE STRING: 03 " << theString02 << std::endl;
-		return theString;
-	}
-
 	bool WebSocketSSLClient::areWeStillConnected() noexcept {
 		if (static_cast<SOCKET*>(this->theSocket) && this->theSocket != SOCKET_ERROR) {
 			return true;
@@ -610,7 +608,7 @@ namespace DiscordCoreInternal {
 					if (readBytes > 0) {
 						for (size_t x = 0; x < readBytes; ++x) {
 							this->inputBuffer.putByte(this->rawInputBuffer[x]);
-						}						
+						}
 						this->bytesRead += readBytes;
 					}
 					break;
@@ -788,14 +786,6 @@ namespace DiscordCoreInternal {
 		return theReturnValue;
 	}
 
-	std::string_view HttpsSSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
-		std::string_view theString{ this->currentMessageBuffer.data() + offSet, length };
-		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
-		std::cout << "THE SIZE 0101: " << length << std::endl;
-		std::cout << "THE STRING: " << theString02 << std::endl;
-		return theString;
-	}
-
 	ProcessIOResult HttpsSSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
 		if (dataToWrite.size() > 0 && this->ssl) {
 			if (priority && dataToWrite.size() < static_cast<size_t>(16 * 1024)) {
@@ -889,19 +879,11 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::No_Error;
 	}
 
-	std::string_view HttpsSSLClient::getInputBuffer() noexcept {
-		std::string theString{};
-		theString.insert(theString.begin(), this->currentMessageBuffer.begin(), this->currentMessageBuffer.end());
-		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
-		std::cout << "THE STRING: " << theString02 << std::endl;
-		return theString;
-	}
-
 	std::string HttpsSSLClient::getInputBufferRemove() noexcept {
 		std::string theString{};
 		theString.insert(theString.begin(), this->currentMessageBuffer.begin(), this->currentMessageBuffer.end());
+		std::string theString02{ this->currentMessageBuffer.data(), 12 };
 		this->currentMessageBuffer.clear();
-		std::string_view theString02{ this->currentMessageBuffer.data(), 12 };
 		std::cout << "THE STRING: " << theString02 << std::endl;
 		return theString;
 	}
