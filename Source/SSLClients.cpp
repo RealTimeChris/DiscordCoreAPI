@@ -206,18 +206,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	char* RingBuffer::getBufferPtr(size_t theLength) {
-		if (this->tail + theLength > this->theArray.size()) {
-			this->readData(this->theOverFlowArray.data(), theLength);
-			return this->theOverFlowArray.data();
-		}
-		else {
-			char* thePtr = this->getCurrentTail();
-			this->tail += theLength;
-			return thePtr;
-		}
-	}
-
 	void RingBuffer::readData(char* theData, size_t theLength) {
 		if (this->tail + theLength > this->theArray.size()) {
 			for (size_t x = 0; x < theLength; ++x) {
@@ -226,6 +214,17 @@ namespace DiscordCoreInternal {
 		} else {
 			memcpy(theData, this->getCurrentTail(), theLength);
 			this->tail += theLength;
+		}
+	}
+
+	char* RingBuffer::getBufferPtr(size_t theLength) {
+		if (this->tail + theLength > this->theArray.size()) {
+			this->readData(this->theOverFlowArray.data(), theLength);
+			return this->theOverFlowArray.data();
+		} else {
+			char* thePtr = this->getCurrentTail();
+			this->tail += theLength;
+			return thePtr;
 		}
 	}
 
