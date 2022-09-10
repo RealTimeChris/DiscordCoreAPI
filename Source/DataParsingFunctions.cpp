@@ -2630,6 +2630,14 @@ namespace DiscordCoreAPI {
 		theData.roleName = getString(jsonObjectData, "role_name");
 	}
 
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, AuditLogChangeData& theData) {
+		theData.newValue = getString(jsonObjectData, "new_value");
+
+		theData.oldValue = getString(jsonObjectData, "old_value");
+
+		theData.key = getString(jsonObjectData, "key");
+	}
+
 	/*
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, AutoModerationActionExecutionEventData& theData) {
 		if (jsonObjectData->contains("alert_system_message_id") && !(*jsonObjectData)["alert_system_message_id"].is_null()) {
@@ -3400,21 +3408,6 @@ namespace DiscordCoreAPI {
 			parseObject(&(*jsonObjectData)["user"], theData.user);
 		}
 	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, AuditLogChangeData& theData) {
-		if (jsonObjectData->contains("new_value") && !(*jsonObjectData)["new_value"].is_null()) {
-			theData.newValue = (*jsonObjectData)["new_value"];
-		}
-
-		if (jsonObjectData->contains("old_value") && !(*jsonObjectData)["old_value"].is_null()) {
-			theData.oldValue = (*jsonObjectData)["old_value"];
-		}
-
-		if (jsonObjectData->contains("key") && !(*jsonObjectData)["key"].is_null()) {
-			theData.key = (*jsonObjectData)["key"].get<std::string>();
-		}
-	}
-
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, PartyData& theData) {
 		if (jsonObjectData->contains("id") && !(*jsonObjectData)["id"].is_null()) {
