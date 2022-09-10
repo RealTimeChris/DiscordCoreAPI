@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, RoleData& theData) {
-		theData.id = strtoull(getString(jsonObjectData, "id"));
+		theData.id = getId(jsonObjectData, "id");
 
 		theData.name = getString(jsonObjectData, "name");
 
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 			theData.unicodeEmoji = static_cast<std::string>(theData.unicodeEmoji).substr(1, theData.unicodeEmoji.size() - 3);
 		}
 
-		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
+		theData.guildId = getId(jsonObjectData, "guild_id");
 
 		theData.color = getUint32(jsonObjectData, "color");
 
@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, User& theData) {
 		theData.userName = getString(jsonObjectData, "username");
 
-		theData.id = strtoull(getString(jsonObjectData, "id"));
+		theData.id = getId(jsonObjectData, "id");
 
 		theData.accentColor = getUint32(jsonObjectData, "accent_color");
 
@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, Role& theData) {
-		theData.id = strtoull(getString(jsonObjectData, "id"));
+		theData.id = getId(jsonObjectData, "id");
 
 		theData.icon = getString(jsonObjectData, "icon");
 
@@ -293,7 +293,7 @@ namespace DiscordCoreAPI {
 
 		theData.joinedAt = getString(jsonObjectData, "joined_at");
 
-		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
+		theData.guildId = getId(jsonObjectData, "guild_id");
 		
 		simdjson::ondemand::array theArray{};
 		auto theValue = jsonObjectData["roles"].get(theArray);
@@ -332,7 +332,7 @@ namespace DiscordCoreAPI {
 
 		theData.joinedAt = getString(jsonObjectData, "joined_at");
 
-		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
+		theData.guildId = getId(jsonObjectData, "guild_id");
 
 		simdjson::ondemand::array theArray{};
 		auto theValue = jsonObjectData["roles"].get(theArray);
@@ -383,15 +383,15 @@ namespace DiscordCoreAPI {
 
 		theData.memberCount = getUint32(jsonObjectData, "member_count");
 
-		theData.ownerId = strtoull(getString(jsonObjectData, "owner_id"));
+		theData.ownerId = getId(jsonObjectData, "owner_id");
 
-		theData.id = strtoull(getString(jsonObjectData, "id"));
+		theData.id = getId(jsonObjectData, "id");
 		
 		theData.flags |= getUint8(jsonObjectData, "flags");
 
-		theData.parentId = strtoull(getString(jsonObjectData, "parent_id"));
+		theData.parentId = getId(jsonObjectData, "parent_id");
 
-		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
+		theData.guildId = getId(jsonObjectData, "guild_id");
 
 		theData.position = getUint32(jsonObjectData, "position");
 
@@ -934,21 +934,6 @@ namespace DiscordCoreAPI {
 		theData.guildId = getId(jsonObjectData, "guild_id");
 	}
 
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, AutoModerationRuleVector& theData) {
-		simdjson::ondemand::array theArray{};
-		auto theResult = jsonObjectData.get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.theAutoModerationRules.reserve(theArray.count_elements().take_value());
-			for (auto value: theArray) {
-				AutoModerationRule newData{};
-				auto theObject = value.value();
-				parseObject(theObject, newData);
-				theData.theAutoModerationRules.push_back(newData);
-			}
-			theData.theAutoModerationRules.shrink_to_fit();
-		}
-	}
-
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, VoiceRegionDataVector& theData) {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData.get(theArray);
@@ -1039,6 +1024,375 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ModalInteractionData& theData) {
+		simdjson::ondemand::value theComponent{};
+		auto theResult = jsonObjectData["components"][0]["components"][0].get(theComponent);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.value = getString(theComponent, "value");
+			theData.customIdSmall = getString(theComponent, "value");
+		}
+
+		theData.customId = getString(jsonObjectData, "custom_id");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ComponentInteractionData& theData) {
+		simdjson::ondemand::array theArray02{};
+		auto theResult = jsonObjectData["values"].get(theArray02);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.values.clear();
+			for (auto iterator = theArray02.begin(); iterator != theArray02.end(); ++iterator) {
+				theData.values.emplace_back(iterator.value().operator*().get_string().take_value().data());
+			}
+		}
+
+		theData.customId = getString(jsonObjectData, "custom_id");
+
+		theData.componentType = static_cast<ComponentType>(getUint8(jsonObjectData, "component_type"));
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, SelectOptionData& theData) {
+		theData.label = getString(jsonObjectData, "label");
+
+		theData.value = getString(jsonObjectData, "value");
+
+		theData.description = getString(jsonObjectData, "description");
+
+		simdjson::ondemand::value theEmoji{};
+		auto theResult = jsonObjectData["emoji"].get(theEmoji);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theEmoji, theData.emoji);
+		}
+
+		theData._default = getBool(jsonObjectData, "default");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ComponentData& theData) {
+		theData.type = static_cast<ComponentType>(getUint8(jsonObjectData, "type"));
+
+		theData.customId = getString(jsonObjectData, "custom_id");
+
+		theData.placeholder = getString(jsonObjectData, "placeholder");
+
+		theData.disabled = getBool(jsonObjectData, "disabled");
+
+		theData.style = getUint32(jsonObjectData, "style");
+
+		theData.label = getString(jsonObjectData, "label");
+
+		theData.minLength = getUint32(jsonObjectData, "min_length");
+
+		theData.maxLength = getUint32(jsonObjectData, "max_length");
+
+		theData.maxValues = getUint32(jsonObjectData, "max_values");
+
+		theData.maxValues = getUint32(jsonObjectData, "min_values");
+
+		theData.title = getString(jsonObjectData, "title");
+
+		theData.required = getBool(jsonObjectData, "required");
+
+		simdjson::ondemand::value theEmoji{};
+		auto theResult = jsonObjectData["emoji"].get(theEmoji);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theEmoji, theData.emoji);
+		}
+
+		theData.url = getString(jsonObjectData, "url");
+
+		simdjson::ondemand::array theArray02{};
+		theResult = jsonObjectData["select_option_data"].get(theArray02);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.options.clear();
+			SelectOptionData newData{};
+			for (auto value: theArray02) {
+				auto theObjectNew = value.value();
+				parseObject(theObjectNew, newData);
+				theData.options.emplace_back(std::move(newData));
+			}
+		}
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ActionRowData& theData) {
+		simdjson::ondemand::array theArray02{};
+		auto theResult = jsonObjectData["components"].get(theArray02);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.components.clear();
+			ComponentData newData{};
+			for (auto value: theArray02) {
+				auto theObjectNew = value.value();
+				parseObject(theObjectNew, newData);
+				theData.components.emplace_back(std::move(newData));
+			}
+		}
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, UserCommandInteractionData& theData) {
+		theData.targetId = getId(jsonObjectData, "target_id");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, MessageCommandInteractionData& theData) {
+		theData.targetId = getId(jsonObjectData, "target_id");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, MessageInteractionData& theData) {
+		theData.id = getId(jsonObjectData, "id");
+
+		theData.type = static_cast<InteractionType>(getUint8(jsonObjectData, "type"));
+
+		theData.name = getString(jsonObjectData, "name");
+
+		simdjson::ondemand::value theUserNew{};
+		auto theResult = jsonObjectData["user"].get(theUserNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theUserNew, theData.user);
+		}
+
+		simdjson::ondemand::value theMemberNew{};
+		theResult = jsonObjectData["member"].get(theMemberNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theMemberNew, theData.member);
+		}
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, StickerData& theData) {
+		theData.asset = getString(jsonObjectData, "asset");
+
+		theData.description = getString(jsonObjectData, "description");
+
+		theData.formatType = static_cast<StickerFormatType>(getUint8(jsonObjectData, "format_type"));
+
+		theData.stickerFlags |= setBool(theData.stickerFlags, StickerFlags::Available, getBool(jsonObjectData, "available"));
+
+		theData.guildId = getId(jsonObjectData, "guild_id");
+
+		theData.id = getId(jsonObjectData, "id");
+
+		theData.packId = getString(jsonObjectData, "pack_id");
+
+		theData.type = static_cast<StickerType>(getUint8(jsonObjectData, "type"));
+
+		theData.sortValue = getUint32(jsonObjectData, "sort_value");
+
+		theData.name = getString(jsonObjectData, "name");
+
+		simdjson::ondemand::value theUserNew{};
+		auto theResult = jsonObjectData["user"].get(theUserNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theUserNew, theData.user);
+		}
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, StickerItemData& theData) {
+		theData.id = getId(jsonObjectData, "id");
+
+		theData.name = getString(jsonObjectData, "name");
+
+		theData.formatType = static_cast<StickerItemType>(getUint8(jsonObjectData, "format_type"));
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ChannelMentionData& theData) {
+		theData.id = getId(jsonObjectData, "id");
+
+		theData.guildId = getId(jsonObjectData, "guild_id");
+
+		theData.type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
+
+		theData.name = getString(jsonObjectData, "name");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, MessageData& theData) {
+		theData.content = getString(jsonObjectData, "content");
+
+		theData.id = getId(jsonObjectData, "id");
+
+		theData.channelId = getId(jsonObjectData, "channel_id");
+
+		theData.guildId = getId(jsonObjectData, "guild_id");
+
+		simdjson::ondemand::value theUserNew{};
+		auto theResult = jsonObjectData["author"].get(theUserNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theUserNew, theData.author);
+		}
+
+		simdjson::ondemand::value theMemberNew{};
+		theResult = jsonObjectData["member"].get(theMemberNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theMemberNew, theData.member);
+		}
+
+		theData.timestamp = getString(jsonObjectData, "timestamp");
+
+		theData.editedTimestamp = getString(jsonObjectData, "edited_timestamp");
+
+		theData.tts = getBool(jsonObjectData, "tts");
+
+		theData.mentionEveryone = getBool(jsonObjectData, "mention_everyone");
+
+		theData.mentions.clear();
+		UserData newData{};
+		simdjson::ondemand::array theArray{};
+		theResult = jsonObjectData["mentions"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			for (auto value: theArray) {
+				auto theObject = value.value();
+				parseObject(theObject, newData);
+				theData.mentions.emplace_back(std::move(newData));
+			}
+		}
+
+		theData.mentionRoles.clear();
+		simdjson::ondemand::array theArray02{};
+		theResult = jsonObjectData["mention_roles"].get(theArray02);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			for (auto value: theArray02) {
+				auto theObject = value.get_string().take_value().data();
+				theData.mentionRoles.emplace_back(std::move(theObject));
+			}
+		}
+
+		simdjson::ondemand::array theArray04{};
+		theResult = jsonObjectData["mention_channels"].get(theArray04);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.mentionChannels.clear();
+			ChannelMentionData newChannelData{};
+			for (auto theValue: theArray04) {
+				auto theObjectNew = theValue.value();
+				parseObject(theObjectNew, newChannelData);
+				theData.mentionChannels.emplace_back(std::move(newChannelData));
+			}
+		}
+
+		simdjson::ondemand::array theArray05{};
+		theResult = jsonObjectData["attachments"].get(theArray05);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.attachments.clear();
+			AttachmentData newAttachmentData{};
+			for (auto theValue: theArray05) {
+				auto theObjectNew = theValue.value();
+				parseObject(theObjectNew, newAttachmentData);
+				theData.attachments.emplace_back(std::move(newAttachmentData));
+			}
+		}
+
+		simdjson::ondemand::array theArray06{};
+		theResult = jsonObjectData["embeds"].get(theArray06);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.embeds.clear();
+			EmbedData newEmbedData{};
+			for (auto theValue: theArray06) {
+				auto theObjectNew = theValue.value();
+				parseObject(theObjectNew, newEmbedData);
+				theData.embeds.emplace_back(std::move(newEmbedData));
+			}
+		}
+
+		simdjson::ondemand::array theArray07{};
+		theResult = jsonObjectData["reactions"].get(theArray07);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.reactions.clear();
+			ReactionData newReactionData{};
+			for (auto theValue: theArray07) {
+				auto theObjectNew = theValue.value();
+				parseObject(theObjectNew, newReactionData);
+				theData.reactions.emplace_back(std::move(newReactionData));
+			}
+		}
+
+		theData.nonce = getString(jsonObjectData, "nonce");
+
+		theData.pinned = getBool(jsonObjectData, "pinned");
+
+		theData.webHookId = getId(jsonObjectData, "webhook_id");
+
+		theData.type = static_cast<MessageType>(getUint8(jsonObjectData, "type"));
+
+		simdjson::ondemand::value theActivityNew{};
+		theResult = jsonObjectData["activity"].get(theActivityNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theActivityNew, theData.activity);
+		}
+
+		simdjson::ondemand::value theApplicationNew{};
+		theResult = jsonObjectData["application"].get(theApplicationNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theApplicationNew, theData.application);
+		}
+
+		theData.applicationId = getId(jsonObjectData, "application_id");
+
+		simdjson::ondemand::value messageReferenceNew{};
+		theResult = jsonObjectData["message_reference"].get(messageReferenceNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(messageReferenceNew, theData.messageReference);
+		}
+
+		theData.flags = getUint32(jsonObjectData, "flags");
+
+		simdjson::ondemand::array theArray08{};
+		theResult = jsonObjectData["sticker_items"].get(theArray08);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.stickerItems.clear();
+			StickerItemData newReactionData{};
+			for (auto theValue: theArray08) {
+				auto theObjectNew = theValue.value();
+				parseObject(theObjectNew, newReactionData);
+				theData.stickerItems.emplace_back(std::move(newReactionData));
+			}
+		}
+
+		simdjson::ondemand::array theArray09{};
+		theResult = jsonObjectData["stickers"].get(theArray09);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.stickers.clear();
+			StickerData newReactionData{};
+			for (auto theValue: theArray09) {
+				auto theObjectNew = theValue.value();
+				parseObject(theObjectNew, newReactionData);
+				theData.stickers.emplace_back(std::move(newReactionData));
+			}
+		}
+
+		simdjson::ondemand::value interactionNew{};
+		theResult = jsonObjectData["interaction"].get(interactionNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(interactionNew, theData.interaction);
+		}
+
+		simdjson::ondemand::array theArray10{};
+		theResult = jsonObjectData["components"].get(theArray10);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.components.clear();
+			ActionRowData newActionRowData{};
+			for (auto theValue: theArray10) {
+				auto theObjectNew = theValue.value();
+				parseObject(theObjectNew, newActionRowData);
+				theData.components.emplace_back(std::move(newActionRowData));
+			}
+		}
+
+		simdjson::ondemand::value threadNew{};
+		theResult = jsonObjectData["thread"].get(threadNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(threadNew, theData.thread);
+		}
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, AutoModerationRuleVector& theData) {
+		simdjson::ondemand::array theArray{};
+		auto theResult = jsonObjectData.get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.theAutoModerationRules.reserve(theArray.count_elements().take_value());
+			for (auto value: theArray) {
+				AutoModerationRule newData{};
+				auto theObject = value.value();
+				parseObject(theObject, newData);
+				theData.theAutoModerationRules.push_back(newData);
+			}
+			theData.theAutoModerationRules.shrink_to_fit();
+		}
+	}
+
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, Channel& theData) {
 		theData.id = getId(jsonObjectData, "id");
 
@@ -1068,96 +1422,259 @@ namespace DiscordCoreAPI {
 
 		theData.topic = getString(jsonObjectData, "topic");
 
-		if (jsonObjectData->contains("permissions") && !(*jsonObjectData)["permissions"].is_null()) {
-			theData.permissions = (*jsonObjectData)["permissions"].get<std::string>();
-		}
+		theData.permissions = getString(jsonObjectData, "permissions");
 
-		if (jsonObjectData->contains("nsfw") && !(*jsonObjectData)["nsfw"].is_null()) {
-			theData.flags = setBool(theData.flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
-		}
+		theData.flags = setBool(theData.flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
 
-		if (jsonObjectData->contains("last_message_id") && !(*jsonObjectData)["last_message_id"].is_null()) {
-			theData.lastMessageId = (*jsonObjectData)["last_message_id"].get<std::string>();
-		}
+		theData.lastMessageId = getString(jsonObjectData, "last_message_id");
 
-		if (jsonObjectData->contains("bitrate") && !(*jsonObjectData)["bitrate"].is_null()) {
-			theData.bitrate = (*jsonObjectData)["bitrate"].get<int32_t>();
-		}
+		theData.bitrate = getUint32(jsonObjectData, "bitrate");
 
-		if (jsonObjectData->contains("user_limit") && !(*jsonObjectData)["user_limit"].is_null()) {
-			theData.userLimit = (*jsonObjectData)["user_limit"].get<int32_t>();
-		}
+		theData.userLimit = getUint32(jsonObjectData, "user_limit");
 
-		if (jsonObjectData->contains("rate_limit_per_user") && !(*jsonObjectData)["rate_limit_per_user"].is_null()) {
-			theData.rateLimitPerUser = (*jsonObjectData)["rate_limit_per_user"].get<int32_t>();
-		}
+		theData.rateLimitPerUser = getUint32(jsonObjectData, "rate_limit_per_user");
 
-		if (jsonObjectData->contains("recipients") && !(*jsonObjectData)["recipients"].is_null()) {
+		theResult = jsonObjectData["recipients"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.recipients.clear();
-			for (auto& value: (*jsonObjectData)["recipients"]) {
-				UserData newData{};
-				parseObject(&value, newData);
-				theData.recipients[newData.id] = std::move(newData);
+			for (auto value: theArray) {
+				UserData theDataNew{};
+				auto theObject = value.value().value();
+				parseObject(theObject, theDataNew);
+				theData.recipients.emplace(theDataNew.id, std::move(theDataNew));
 			}
 		}
 
-		if (jsonObjectData->contains("icon") && !(*jsonObjectData)["icon"].is_null()) {
-			theData.icon = (*jsonObjectData)["icon"].get<std::string>();
+		theData.icon = getString(jsonObjectData, "icon");
+
+		theData.ownerId = getId(jsonObjectData, "owner_id");
+
+		theData.applicationId = getId(jsonObjectData, "application_id");
+
+		theData.parentId = getId(jsonObjectData, "parent_id");
+
+		theData.lastPinTimestamp = getString(jsonObjectData, "last_pin_timestamp");
+
+		theData.rtcRegion = getString(jsonObjectData, "rtc_region");
+
+		theData.videoQualityMode = getUint32(jsonObjectData, "video_quality_mode");
+
+		theData.messageCount = getUint32(jsonObjectData, "message_count");
+
+		theData.memberCount = getUint32(jsonObjectData, "member_count");
+
+		simdjson::ondemand::value threadNew{};
+		theResult = jsonObjectData["thread_metadata"].get(threadNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(threadNew, theData.threadMetadata);
 		}
 
-		if (jsonObjectData->contains("owner_id") && !(*jsonObjectData)["owner_id"].is_null()) {
-			theData.ownerId = stoull((*jsonObjectData)["owner_id"].get<std::string>());
-		}
-
-		if (jsonObjectData->contains("application_id") && !(*jsonObjectData)["application_id"].is_null()) {
-			theData.applicationId = stoull((*jsonObjectData)["application_id"].get<std::string>());
-		}
-
-		if (jsonObjectData->contains("parent_id") && !(*jsonObjectData)["parent_id"].is_null()) {
-			if ((*jsonObjectData)["parent_id"].is_string()) {
-				theData.parentId = stoull((*jsonObjectData)["parent_id"].get<std::string>());
-			} else {
-				theData.parentId = (*jsonObjectData)["parent_id"].get<int64_t>();
-			}
-		}
-
-		if (jsonObjectData->contains("last_pin_timestamp") && !(*jsonObjectData)["last_pin_timestamp"].is_null()) {
-			theData.lastPinTimestamp = (*jsonObjectData)["last_pin_timestamp"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("rtc_region") && !(*jsonObjectData)["rtc_region"].is_null()) {
-			theData.rtcRegion = (*jsonObjectData)["rtc_region"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("video_quality_mode") && !(*jsonObjectData)["video_quality_mode"].is_null()) {
-			theData.videoQualityMode = (*jsonObjectData)["video_quality_mode"].get<int32_t>();
-		}
-
-		if (jsonObjectData->contains("message_count") && !(*jsonObjectData)["message_count"].is_null()) {
-			theData.messageCount = (*jsonObjectData)["message_count"].get<int32_t>();
-		}
-
-		if (jsonObjectData->contains("member_count") && !(*jsonObjectData)["member_count"].is_null()) {
-			theData.memberCount = (*jsonObjectData)["member_count"].get<int32_t>();
-		}
-
-		if (jsonObjectData->contains("thread_metadata") && !(*jsonObjectData)["thread_metadata"].is_null()) {
-			parseObject(&(*jsonObjectData)["thread_metadata"], theData.threadMetadata);
-		}
-
-		if (jsonObjectData->contains("member") && !(*jsonObjectData)["member"].is_null()) {
-			parseObject(&(*jsonObjectData)["member"], theData.member);
+		theResult = jsonObjectData["member"].get(threadNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(threadNew, theData.member);
 		}
 	}
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ChannelVector& theData) {
-		theData.theChannels.reserve(jsonObjectData->size());
-		for (auto& value: *jsonObjectData) {
-			Channel newData{};
-			parseObject(&value, newData);
-			theData.theChannels.push_back(newData);
+		simdjson::ondemand::array theArray{};
+		auto theResult = jsonObjectData.get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.theChannels.reserve(theArray.count_elements().take_value());
+			for (auto value: theArray) {
+				Channel newData{};
+				auto theObject = value.value();
+				parseObject(theObject, newData);
+				theData.theChannels.push_back(newData);
+			}
+			theData.theChannels.shrink_to_fit();
 		}
-		theData.theChannels.shrink_to_fit();
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, RoleTagsData& theData) {
+		theData.botId = getString(jsonObjectData, "bot_id");
+
+		theData.integrationId = getString(jsonObjectData, "integration_id");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, MessageReferenceData& theData) {
+		theData.messageId = getId(jsonObjectData, "message_id");
+
+		theData.channelId = getId(jsonObjectData, "channel_id");
+
+		theData.guildId = getId(jsonObjectData, "guild_id");
+
+		theData.failIfNotExists = getBool(jsonObjectData, "fail_if_not_exists");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedFooterData& theData) {
+		theData.text = getString(jsonObjectData, "text");
+
+		theData.iconUrl = getString(jsonObjectData, "icon_url");
+
+		theData.proxyIconUrl = getString(jsonObjectData, "proxy_icon_url");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedImageData& theData) {
+		theData.url = getString(jsonObjectData, "url");
+
+		theData.proxyUrl = getString(jsonObjectData, "proxy_url");
+
+		theData.width = getUint32(jsonObjectData, "width");
+
+		theData.height = getUint32(jsonObjectData, "height");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedThumbnailData& theData) {
+		theData.url = getString(jsonObjectData, "url");
+
+		theData.proxyUrl = getString(jsonObjectData, "proxy_url");
+
+		theData.width = getUint32(jsonObjectData, "width");
+
+		theData.height = getUint32(jsonObjectData, "height");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedVideoData& theData) {
+		theData.url = getString(jsonObjectData, "url");
+
+		theData.proxyUrl = getString(jsonObjectData, "proxy_url");
+
+		theData.width = getUint32(jsonObjectData, "width");
+
+		theData.height = getUint32(jsonObjectData, "height");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedProviderData& theData) {
+		theData.url = getString(jsonObjectData, "url");
+
+		theData.name = getString(jsonObjectData, "name");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedAuthorData& theData) {
+		theData.url = getString(jsonObjectData, "url");
+
+		theData.proxyIconUrl = getString(jsonObjectData, "proxy_icon_url");
+
+		theData.name = getString(jsonObjectData, "name");
+
+		theData.iconUrl = getString(jsonObjectData, "icon_url");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedFieldData& theData) {
+		theData.Inline = getBool(jsonObjectData, "inline");
+
+		theData.name = getString(jsonObjectData, "name");
+
+		theData.value = getString(jsonObjectData, "value");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedData& theData) {
+		theData.title = getString(jsonObjectData, "title");
+
+		theData.type = getString(jsonObjectData, "type");
+
+		theData.description = getString(jsonObjectData, "description");
+
+		theData.url = getString(jsonObjectData, "url");
+
+		theData.timestamp = getString(jsonObjectData, "timestamp");
+
+		theData.hexColorValue = getUint32(jsonObjectData, "color");
+
+		simdjson::ondemand::value theObject{};
+		auto theResult = jsonObjectData["footer"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theObject, theData.footer);
+		}
+
+		theResult = jsonObjectData["image"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theObject, theData.image);
+		}
+
+		theResult = jsonObjectData["provider"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theObject, theData.provider);
+		}
+
+		theResult = jsonObjectData["thumbnail"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theObject, theData.thumbnail);
+		}
+
+		theResult = jsonObjectData["video"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theObject, theData.video);
+		}
+
+		theResult = jsonObjectData["author"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			parseObject(theObject, theData.author);
+		}
+
+		theData.fields.clear();
+		EmbedFieldData newData{};
+		simdjson::ondemand::array theArray{};
+		theResult = jsonObjectData["fields"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			for (auto value: theArray) {
+				auto theObject = value.value();
+				parseObject(theObject, newData);
+				theData.fields.emplace_back(std::move(newData));
+			}
+		}
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, VoiceStateData& theData) {
+		theData.requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
+
+		theData.channelId = getId(jsonObjectData, "channel_id");
+
+		theData.guildId = getId(jsonObjectData, "guild_id");
+
+		theData.selfStream = getBool(jsonObjectData, "self_stream");
+
+		theData.userId = getId(jsonObjectData, "user_id");
+
+		theData.selfVideo = getBool(jsonObjectData, "self_video");
+
+		theData.sessionId = getString(jsonObjectData, "session_id");
+
+		theData.selfDeaf = getBool(jsonObjectData, "self_deaf");
+
+		theData.selfMute = getBool(jsonObjectData, "self_mute");
+
+		theData.suppress = getBool(jsonObjectData, "suppress");
+
+		theData.deaf = getBool(jsonObjectData, "deaf");
+
+		theData.mute = getBool(jsonObjectData, "mute");
+	}
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, VoiceStateData& theData) {
+		theData.requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
+
+		theData.channelId = getId(jsonObjectData, "channel_id");
+
+		theData.guildId = getId(jsonObjectData, "guild_id");
+
+		theData.selfStream = getBool(jsonObjectData, "self_stream");
+
+		theData.userId = getId(jsonObjectData, "user_id");
+
+		theData.selfVideo = getBool(jsonObjectData, "self_video");
+
+		theData.sessionId = getString(jsonObjectData, "session_id");
+
+		theData.selfDeaf = getBool(jsonObjectData, "self_deaf");
+
+		theData.selfMute = getBool(jsonObjectData, "self_mute");
+
+		theData.suppress = getBool(jsonObjectData, "suppress");
+
+		theData.deaf = getBool(jsonObjectData, "deaf");
+
+		theData.mute = getBool(jsonObjectData, "mute");
 	}
 
 	/*
@@ -1204,23 +1721,6 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData->contains("user_id") && !(*jsonObjectData)["user_id"].is_null()) {
 			theData.userId = stoull((*jsonObjectData)["user_id"].get<std::string>());
-		}
-	}
-
-	
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, AutoModerationRuleVector& theData) {
-		simdjson::ondemand::array theArray{};
-		auto theResult = jsonObjectData["d"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.theAutoModerationRules.reserve(theArray.count_elements().take_value());
-			for (auto value: theArray) {
-				AutoModerationRule newData{};
-				auto theObject = value.value();
-				parseObject(theObject, newData);
-				theData.theAutoModerationRules.push_back(newData);
-			}
-			theData.theAutoModerationRules.shrink_to_fit();
 		}
 	}
 
@@ -1789,12 +2289,6 @@ namespace DiscordCoreAPI {
 		theData.theWebHooks.shrink_to_fit();
 	}
 
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, RoleTagsData& theData) {
-		theData.botId = getString(jsonObjectData, "bot_id");
-
-		theData.integrationId = getString(jsonObjectData, "integration_id");
-	}
-
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedFooterData& theData) {
 		if (jsonObjectData->contains("text") && !(*jsonObjectData)["text"].is_null()) {
 			theData.text = (*jsonObjectData)["text"].get<std::string>();
@@ -2032,192 +2526,6 @@ namespace DiscordCoreAPI {
 		theData.theThreadMemberDatas.shrink_to_fit();
 	}
 
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, MessageReferenceData& theData) {
-		theData.messageId = getId(jsonObjectData, "message_id");
-
-		theData.channelId = getId(jsonObjectData, "channel_id");
-
-		theData.guildId = getId(jsonObjectData, "guild_id");
-
-		theData.failIfNotExists = getBool(jsonObjectData, "fail_if_not_exists");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedFooterData& theData) {
-		theData.text = getString(jsonObjectData, "text");
-
-		theData.iconUrl = getString(jsonObjectData, "icon_url");
-
-		theData.proxyIconUrl = getString(jsonObjectData, "proxy_icon_url");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedImageData& theData) {
-		theData.url = getString(jsonObjectData, "url");
-
-		theData.proxyUrl = getString(jsonObjectData, "proxy_url");
-
-		theData.width = getUint32(jsonObjectData, "width");
-
-		theData.height = getUint32(jsonObjectData, "height");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedThumbnailData& theData) {
-		theData.url = getString(jsonObjectData, "url");
-
-		theData.proxyUrl = getString(jsonObjectData, "proxy_url");
-
-		theData.width = getUint32(jsonObjectData, "width");
-
-		theData.height = getUint32(jsonObjectData, "height");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedVideoData& theData) {
-		theData.url = getString(jsonObjectData, "url");
-
-		theData.proxyUrl = getString(jsonObjectData, "proxy_url");
-
-		theData.width = getUint32(jsonObjectData, "width");
-
-		theData.height = getUint32(jsonObjectData, "height");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedProviderData& theData) {
-		theData.url = getString(jsonObjectData, "url");
-
-		theData.name = getString(jsonObjectData, "name");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedAuthorData& theData) {
-		theData.url = getString(jsonObjectData, "url");
-
-		theData.proxyIconUrl = getString(jsonObjectData, "proxy_icon_url");
-
-		theData.name = getString(jsonObjectData, "name");
-
-		theData.iconUrl = getString(jsonObjectData, "icon_url");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedFieldData& theData) {
-		theData.Inline = getBool(jsonObjectData, "inline");
-
-		theData.name = getString(jsonObjectData, "name");
-
-		theData.value = getString(jsonObjectData, "value");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedData& theData) {
-		theData.title = getString(jsonObjectData, "title");
-
-		theData.type = getString(jsonObjectData, "type");
-
-		theData.description = getString(jsonObjectData, "description");
-
-		theData.url = getString(jsonObjectData, "url");
-
-		theData.timestamp = getString(jsonObjectData, "timestamp");
-
-		theData.hexColorValue = getUint32(jsonObjectData, "color");
-
-		simdjson::ondemand::value theFooter{};
-		auto theResult = jsonObjectData["footer"].get(theFooter);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theFooter, theData.footer);
-		}
-
-		simdjson::ondemand::value theImage{};
-		theResult = jsonObjectData["image"].get(theImage);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theImage, theData.image);
-		}
-
-		simdjson::ondemand::value theProvider{};
-		theResult = jsonObjectData["provider"].get(theProvider);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theProvider, theData.provider);
-		}
-
-		simdjson::ondemand::value theThumbnail{};
-		theResult = jsonObjectData["thumbnail"].get(theThumbnail);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theThumbnail, theData.thumbnail);
-		}
-
-		simdjson::ondemand::value theVideo{};
-		theResult = jsonObjectData["video"].get(theVideo);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theVideo, theData.video);
-		}
-
-		simdjson::ondemand::value theAuthor{};
-		theResult = jsonObjectData["author"].get(theAuthor);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theAuthor, theData.author);
-		}
-
-		theData.fields.clear();
-		EmbedFieldData newData{};
-		simdjson::ondemand::array theArray{};
-		theResult = jsonObjectData["fields"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			for (auto value: theArray) {
-				auto theObject = value.value();
-				parseObject(theObject, newData);
-				theData.fields.emplace_back(std::move(newData));
-			}
-		}
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, VoiceStateData& theData) {
-		theData.requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
-
-		theData.channelId = getId(jsonObjectData, "channel_id");
-
-		theData.guildId = getId(jsonObjectData, "guild_id");
-
-		theData.selfStream = getBool(jsonObjectData, "self_stream");
-
-		theData.userId = getId(jsonObjectData, "user_id");
-
-		theData.selfVideo = getBool(jsonObjectData, "self_video");
-
-		theData.sessionId = getString(jsonObjectData, "session_id");
-
-		theData.selfDeaf = getBool(jsonObjectData, "self_deaf");
-
-		theData.selfMute = getBool(jsonObjectData, "self_mute");
-
-		theData.suppress = getBool(jsonObjectData, "suppress");
-
-		theData.deaf = getBool(jsonObjectData, "deaf");
-
-		theData.mute = getBool(jsonObjectData, "mute");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, VoiceStateData& theData) {
-		theData.requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
-
-		theData.channelId = strtoull(getString(jsonObjectData, "channel_id"));
-
-		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
-
-		theData.selfStream = getBool(jsonObjectData, "self_stream");
-
-		theData.userId = strtoull(getString(jsonObjectData, "user_id"));
-
-		theData.selfVideo = getBool(jsonObjectData, "self_video");
-
-		theData.sessionId = getString(jsonObjectData, "session_id");
-
-		theData.selfDeaf = getBool(jsonObjectData, "self_deaf");
-
-		theData.selfMute = getBool(jsonObjectData, "self_mute");
-
-		theData.suppress = getBool(jsonObjectData, "suppress");
-
-		theData.deaf = getBool(jsonObjectData, "deaf");
-
-		theData.mute = getBool(jsonObjectData, "mute");
-	}
-
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ActiveThreadsData& theData) {
 		if (jsonObjectData->contains("threads") && !(*jsonObjectData)["threads"].is_null()) {
 			theData.threads.clear();
@@ -2387,7 +2695,7 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmojiData& theData) {
-		theData.id = strtoull(getString(jsonObjectData, "id"));
+		theData.id = getId(jsonObjectData, "id"));
 
 		theData.name = getString(jsonObjectData, "name");
 
@@ -3287,9 +3595,9 @@ namespace DiscordCoreAPI {
 
 		theData.stickerFlags |= setBool(theData.stickerFlags, StickerFlags::Available, getBool(jsonObjectData, "available"));
 
-		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
+		theData.guildId = getId(jsonObjectData, "guild_id"));
 
-		theData.id = strtoull(getString(jsonObjectData, "id"));
+		theData.id = getId(jsonObjectData, "id"));
 
 		theData.packId = getString(jsonObjectData, "pack_id");
 
@@ -3383,15 +3691,15 @@ namespace DiscordCoreAPI {
 
 		theData.userCount = getUint32(jsonObjectData, "user_count");
 
-		theData.channelId = strtoull(getString(jsonObjectData, "channel_id"));
+		theData.channelId = getId(jsonObjectData, "channel_id"));
 
-		theData.creatorId = strtoull(getString(jsonObjectData, "creator_id"));
+		theData.creatorId = getId(jsonObjectData, "creator_id"));
 
-		theData.entityId = strtoull(getString(jsonObjectData, "entity_id"));
+		theData.entityId = getId(jsonObjectData, "entity_id"));
 
-		theData.guildId = strtoull(getString(jsonObjectData, "guild_id"));
+		theData.guildId = getId(jsonObjectData, "guild_id"));
 
-		theData.id = strtoull(getString(jsonObjectData, "id"));
+		theData.id = getId(jsonObjectData, "id"));
 
 		theData.description = getString(jsonObjectData, "description");
 
@@ -4416,360 +4724,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ModalInteractionData& theData) {
-		simdjson::ondemand::value theComponent{};
-		auto theResult = jsonObjectData["components"][0]["components"][0].get(theComponent);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.value = getString(theComponent, "value");
-			theData.customIdSmall = getString(theComponent, "value");
-		}
-
-		theData.customId = getString(jsonObjectData, "custom_id");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ComponentInteractionData& theData) {
-		simdjson::ondemand::array theArray02{};
-		auto theResult = jsonObjectData["values"].get(theArray02);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.values.clear();
-			for (auto iterator = theArray02.begin(); iterator != theArray02.end(); ++iterator) {
-				theData.values.emplace_back(iterator.value().operator*().get_string().take_value().data());
-			}
-		}
-
-		theData.customId = getString(jsonObjectData, "custom_id");
-
-		theData.componentType = static_cast<ComponentType>(getUint8(jsonObjectData, "component_type"));
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, SelectOptionData& theData) {
-		theData.label = getString(jsonObjectData, "label");
-
-		theData.value = getString(jsonObjectData, "value");
-
-		theData.description = getString(jsonObjectData, "description");
-
-		simdjson::ondemand::value theEmoji{};
-		auto theResult = jsonObjectData["emoji"].get(theEmoji);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theEmoji, theData.emoji);
-		}
-
-		theData._default = getBool(jsonObjectData, "default");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ComponentData& theData) {
-		theData.type = static_cast<ComponentType>(getUint8(jsonObjectData, "type"));
-
-		theData.customId = getString(jsonObjectData, "custom_id");
-
-		theData.placeholder = getString(jsonObjectData, "placeholder");
-
-		theData.disabled = getBool(jsonObjectData, "disabled");
-
-		theData.style = getUint32(jsonObjectData, "style");
-
-		theData.label = getString(jsonObjectData, "label");
-
-		theData.minLength = getUint32(jsonObjectData, "min_length");
-
-		theData.maxLength = getUint32(jsonObjectData, "max_length");
-
-		theData.maxValues = getUint32(jsonObjectData, "max_values");
-
-		theData.maxValues = getUint32(jsonObjectData, "min_values");
-
-		theData.title = getString(jsonObjectData, "title");
-
-		theData.required = getBool(jsonObjectData, "required");
-
-		simdjson::ondemand::value theEmoji{};
-		auto theResult = jsonObjectData["emoji"].get(theEmoji);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theEmoji, theData.emoji);
-		}
-
-		theData.url = getString(jsonObjectData, "url");
-
-		simdjson::ondemand::array theArray02{};
-		theResult = jsonObjectData["select_option_data"].get(theArray02);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.options.clear();
-			SelectOptionData newData{};
-			for (auto value : theArray02) {
-				auto theObjectNew = value.value();
-				parseObject(theObjectNew, newData);
-				theData.options.emplace_back(std::move(newData));
-			}
-		}
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ActionRowData& theData) {
-		simdjson::ondemand::array theArray02{};
-		auto theResult = jsonObjectData["components"].get(theArray02);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.components.clear();
-			ComponentData newData{};
-			for (auto value: theArray02) {
-				auto theObjectNew = value.value();
-				parseObject(theObjectNew, newData);
-				theData.components.emplace_back(std::move(newData));
-			}
-		}
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, UserCommandInteractionData& theData) {
-		theData.targetId = getId(jsonObjectData, "target_id");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, MessageCommandInteractionData& theData) {
-		theData.targetId = getId(jsonObjectData, "target_id");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, MessageInteractionData& theData) {
-		theData.id = getId(jsonObjectData, "id");
-
-		theData.type = static_cast<InteractionType>(getUint8(jsonObjectData, "type"));
-
-		theData.name = getString(jsonObjectData, "name");
-
-		simdjson::ondemand::value theUserNew{};
-		auto theResult = jsonObjectData["user"].get(theUserNew);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theUserNew, theData.user);
-		}
-
-		simdjson::ondemand::value theMemberNew{};
-		theResult = jsonObjectData["member"].get(theMemberNew);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theMemberNew, theData.member);
-		}
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, StickerData& theData) {
-		theData.asset = getString(jsonObjectData, "asset");
-
-		theData.description = getString(jsonObjectData, "description");
-
-		theData.formatType = static_cast<StickerFormatType>(getUint8(jsonObjectData, "format_type"));
-
-		theData.stickerFlags |= setBool(theData.stickerFlags, StickerFlags::Available, getBool(jsonObjectData, "available"));
-
-		theData.guildId = getId(jsonObjectData, "guild_id");
-
-		theData.id = getId(jsonObjectData, "id");
-
-		theData.packId = getString(jsonObjectData, "pack_id");
-
-		theData.type = static_cast<StickerType>(getUint8(jsonObjectData, "type"));
-
-		theData.sortValue = getUint32(jsonObjectData, "sort_value");
-
-		theData.name = getString(jsonObjectData, "name");
-
-		simdjson::ondemand::value theUserNew{};
-		auto theResult = jsonObjectData["user"].get(theUserNew);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theUserNew, theData.user);
-		}
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, StickerItemData& theData) {
-		theData.id = getId(jsonObjectData, "id");
-
-		theData.name = getString(jsonObjectData, "name");
-
-		theData.formatType = static_cast<StickerItemType>(getUint8(jsonObjectData, "format_type"));
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ChannelMentionData& theData) {
-		theData.id = getId(jsonObjectData, "id");
-
-		theData.guildId = getId(jsonObjectData, "guild_id");
-
-		theData.type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
-
-		theData.name = getString(jsonObjectData, "name");
-	}
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, MessageData& theData) {
-		theData.content = getString(jsonObjectData, "content");
-
-		theData.id = getId(jsonObjectData, "id");
-
-		theData.channelId = getId(jsonObjectData, "channel_id");
-
-		theData.guildId = getId(jsonObjectData, "guild_id");
-
-		simdjson::ondemand::value theUserNew{};
-		auto theResult = jsonObjectData["author"].get(theUserNew);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theUserNew, theData.author);
-		}
-
-		simdjson::ondemand::value theMemberNew{};
-		theResult = jsonObjectData["member"].get(theMemberNew);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theMemberNew, theData.member);
-		}
-
-		theData.timestamp = getString(jsonObjectData, "timestamp");
-
-		theData.editedTimestamp = getString(jsonObjectData, "edited_timestamp");
-
-		theData.tts = getBool(jsonObjectData, "tts");
-
-		theData.mentionEveryone = getBool(jsonObjectData, "mention_everyone");
-
-		theData.mentions.clear();
-		UserData newData{};
-		simdjson::ondemand::array theArray{};
-		theResult = jsonObjectData["mentions"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			for (auto value: theArray) {
-				auto theObject = value.value();
-				parseObject(theObject, newData);
-				theData.mentions.emplace_back(std::move(newData));
-			}
-		}
-
-		theData.mentionRoles.clear();
-		simdjson::ondemand::array theArray02{};
-		theResult = jsonObjectData["mention_roles"].get(theArray02);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			for (auto value: theArray02) {
-				auto theObject = value.get_string().take_value().data();
-				theData.mentionRoles.emplace_back(std::move(theObject));
-			}
-		}
-
-		simdjson::ondemand::array theArray04{};
-		theResult = jsonObjectData["mention_channels"].get(theArray04);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.mentionChannels.clear();
-			ChannelMentionData newChannelData{};
-			for (auto theValue: theArray04) {
-				auto theObjectNew = theValue.get_object().value();
-				parseObject(theObjectNew, newChannelData);
-				theData.mentionChannels.emplace_back(std::move(newChannelData));
-			}
-		}
-		
-		simdjson::ondemand::array theArray05{};
-		theResult = jsonObjectData["attachments"].get(theArray05);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.attachments.clear();
-			AttachmentData newAttachmentData{};
-			for (auto theValue: theArray05) {
-				auto theObjectNew = theValue.get_object().value();
-				parseObject(theObjectNew, newAttachmentData);
-				theData.attachments.emplace_back(std::move(newAttachmentData));
-			}
-		}
-
-		simdjson::ondemand::array theArray06{};
-		theResult = jsonObjectData["embeds"].get(theArray06);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.embeds.clear();
-			EmbedData newEmbedData{};
-			for (auto theValue: theArray06) {
-				auto theObjectNew = theValue.get_object().value();
-				parseObject(theObjectNew, newEmbedData);
-				theData.embeds.emplace_back(std::move(newEmbedData));
-			}
-		}
-
-		simdjson::ondemand::array theArray07{};
-		theResult = jsonObjectData["reactions"].get(theArray07);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.reactions.clear();
-			ReactionData newReactionData{};
-			for (auto theValue: theArray07) {
-				auto theObjectNew = theValue.get_object().value();
-				parseObject(theObjectNew, newReactionData);
-				theData.reactions.emplace_back(std::move(newReactionData));
-			}
-		}
-
-		theData.nonce = getString(jsonObjectData, "nonce");
-
-		theData.pinned = getBool(jsonObjectData, "pinned");
-
-		theData.webHookId = getId(jsonObjectData, "webhook_id");
-
-		theData.type = static_cast<MessageType>(getUint8(jsonObjectData, "type"));
-
-		simdjson::ondemand::value theActivityNew{};
-		theResult = jsonObjectData["activity"].get(theActivityNew);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theActivityNew, theData.activity);
-		}
-
-		simdjson::ondemand::value theApplicationNew{};
-		theResult = jsonObjectData["application"].get(theApplicationNew);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(theApplicationNew, theData.application);
-		}
-
-		theData.applicationId = getId(jsonObjectData, "application_id");
-
-		simdjson::ondemand::value messageReferenceNew{};
-		theResult = jsonObjectData["message_reference"].get(messageReferenceNew);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(messageReferenceNew, theData.messageReference);
-		}
-
-		theData.flags = getUint32(jsonObjectData, "flags");
-
-		simdjson::ondemand::array theArray08{};
-		theResult = jsonObjectData["sticker_items"].get(theArray08);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.stickerItems.clear();
-			StickerItemData newReactionData{};
-			for (auto theValue: theArray08) {
-				auto theObjectNew = theValue.get_object().value();
-				parseObject(theObjectNew, newReactionData);
-				theData.stickerItems.emplace_back(std::move(newReactionData));
-			}
-		}
-
-		simdjson::ondemand::array theArray09{};
-		theResult = jsonObjectData["stickers"].get(theArray09);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.stickers.clear();
-			StickerData newReactionData{};
-			for (auto theValue: theArray09) {
-				auto theObjectNew = theValue.get_object().value();
-				parseObject(theObjectNew, newReactionData);
-				theData.stickers.emplace_back(std::move(newReactionData));
-			}
-		}
-
-		simdjson::ondemand::value interactionNew{};
-		theResult = jsonObjectData["interaction"].get(interactionNew);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(interactionNew, theData.interaction);
-		}
-
-		simdjson::ondemand::array theArray10{};
-		theResult = jsonObjectData["components"].get(theArray10);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.components.clear();
-			ActionRowData newActionRowData{};
-			for (auto theValue: theArray10) {
-				auto theObjectNew = theValue.get_object().value();
-				parseObject(theObjectNew, newActionRowData);
-				theData.components.emplace_back(std::move(newActionRowData));
-			}
-		}
-
-		simdjson::ondemand::value threadNew{};
-		theResult = jsonObjectData["thread"].get(threadNew);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			parseObject(threadNew, theData.thread);
-		}
-	}
-
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, StickerPackData& theData) {
 		if (jsonObjectData->contains("stickers") && !(*jsonObjectData)["stickers"].is_null()) {
 			theData.stickers.clear();
@@ -4873,7 +4827,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			ApplicationCommandInteractionDataOption newData{};
 			for (auto theValue: theArray10) {
-				auto theObjectNew = theValue.get_object().value();
+				auto theObjectNew = theValue.value();
 				parseObject(theObjectNew, newData);
 				theData.options.emplace_back(std::move(newData));
 			}
@@ -5354,7 +5308,7 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, GuildScheduledEventVector& theData) {
 		simdjson::ondemand::array theArray{};
-		auto theResult = jsonObjectData["d"].get(theArray);
+		auto theResult = jsonObjectData.get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.theGuildScheduledEvents.reserve(theArray.count_elements().take_value());
 			for (auto value: theArray) {
@@ -5369,7 +5323,7 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, GuildScheduledEventDataVector& theData) {
 		simdjson::ondemand::array theArray{};
-		auto theResult = jsonObjectData["d"].get(theArray);
+		auto theResult = jsonObjectData.get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.theGuildScheduledEventDatas.reserve(theArray.count_elements().take_value());
 			for (auto value: theArray) {
@@ -5400,9 +5354,7 @@ namespace DiscordCoreInternal {
 	}
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, HelloData& theData) {
-		simdjson::ondemand::value theObject{};
-		jsonObjectData["d"].get(theObject);
-		theData.heartbeatInterval = DiscordCoreAPI::getUint64(theObject, "heartbeat_interval");
+		theData.heartbeatInterval = DiscordCoreAPI::getUint64(jsonObjectData, "heartbeat_interval");
 	}
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, InvalidSessionData& theData) {
