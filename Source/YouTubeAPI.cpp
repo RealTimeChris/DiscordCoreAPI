@@ -43,7 +43,7 @@ namespace DiscordCoreInternal {
 				 << DiscordCoreAPI::reset() << endl
 				 << endl;
 		}
-		simdjson::ondemand::value partialSearchResultsJson{};
+		simdjson::ondemand::object partialSearchResultsJson{};
 		auto varInitFind = returnData.responseMessage.find("var ytInitialData = ");
 		if (varInitFind != std::string::npos) {
 			std::string newString00 = "var ytInitialData = ";
@@ -59,7 +59,7 @@ namespace DiscordCoreInternal {
 		if (theResult==simdjson::error_code::SUCCESS){
 			for (auto value: partialSearchResultsJson["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
 													  ["contents"].get_array()) {
-				simdjson::ondemand::value theObject{};
+				simdjson::ondemand::object theObject{};
 				theResult = partialSearchResultsJson["videoRenderer"].get(theObject);
 				if (theResult == simdjson::error_code::SUCCESS) {
 					DiscordCoreAPI::Song searchResult{};
@@ -105,7 +105,8 @@ namespace DiscordCoreInternal {
 			simdjson::ondemand::parser theParser{};
 			auto theVectorResult = theParser.iterate(responseData.responseMessage).get_value().value();
 			DiscordCoreAPI::YouTubeFormatVector theVector{};
-			DiscordCoreAPI::parseObject(theVectorResult, theVector);
+			auto theObject = theVectorResult.get_object().value();
+			DiscordCoreAPI::parseObject(theObject, theVector);
 			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };
 			for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {

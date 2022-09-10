@@ -50,7 +50,7 @@ namespace DiscordCoreInternal {
 			if (theResult == simdjson::error_code::SUCCESS) {
 				for (auto value: theArray) {
 					DiscordCoreAPI::Song newSong{};
-					auto theObjectNew = value.value();
+					auto theObjectNew = value.value().get_object().value();
 					DiscordCoreAPI::parseObject(theObjectNew, newSong);
 					if (!newSong.doWeGetSaved || newSong.songTitle == "") {
 						continue;
@@ -83,10 +83,10 @@ namespace DiscordCoreInternal {
 			HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
 			simdjson::ondemand::parser theParser{};
 			auto theDocument = theParser.iterate(results.responseMessage).get_value().value().get_object().value();
-			simdjson::ondemand::value theUrl{};
+			simdjson::ondemand::object theUrl{};
 			auto theResult = theDocument["url"].get(theUrl);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				newSong.secondDownloadUrl = theUrl.get_string().value().data();
+				newSong.secondDownloadUrl = theUrl.raw_json().take_value().data();
 			}
 			if (newSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
 				HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };

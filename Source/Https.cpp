@@ -56,7 +56,7 @@ namespace DiscordCoreInternal {
 			if (theData.responseMessage.size() >= theData.contentSize && theData.contentSize > 0) {
 				if ((theData.responseMessage[0] == '{' && theData.responseMessage[theData.contentSize - 1] == '}') ||
 					(theData.responseMessage[0] == '[' && theData.responseMessage[theData.contentSize - 1] == ']')) {
-					theData.responseData = nlohmann::json::parse(theData.responseMessage.substr(0, theData.contentSize));
+					theData.responseData = theData.responseMessage.substr(0, theData.contentSize);
 				}
 			}
 		} catch (...) {

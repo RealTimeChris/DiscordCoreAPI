@@ -814,28 +814,28 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(simdjson::ondemand::value theValue, const std::string& theName,
+	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(simdjson::ondemand::object& theValue, const std::string& theName,
 		std::unordered_map<std::string, std::string> theNameLocalizations) {
 		ApplicationCommandOptionChoiceData choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name = theName;
-		auto theResult = theValue.get(choiceData.valueBool);
+		auto theResult = theValue["value"].get(choiceData.valueBool);
 		
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->choices.emplace_back(choiceData);
 			return *this;
 		}
-		theResult = theValue.get(choiceData.valueFloat);
+		theResult = theValue["value"].get(choiceData.valueFloat);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->choices.emplace_back(choiceData);
 			return *this;
 		}
-		theResult = theValue.get(choiceData.valueInt);
+		theResult = theValue["value"].get(choiceData.valueInt);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->choices.emplace_back(choiceData);
 			return *this;
 		}
-		theResult = theValue.get(choiceData.valueString);
+		theResult = theValue["value"].get(choiceData.valueString);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			choiceData.valueStringReal = choiceData.valueString.data();
 			this->choices.emplace_back(choiceData);

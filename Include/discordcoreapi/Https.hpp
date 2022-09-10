@@ -174,14 +174,18 @@ namespace DiscordCoreInternal {
 				ReturnType theReturnValueNew{};
 				simdjson::ondemand::parser theParser{};
 				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
-				auto theObject = theParser.iterate(returnData.responseData, returnData.responseData.size()).get_value().value();
-				DiscordCoreAPI::parseObject(theObject, theReturnValueNew);
+				simdjson::ondemand::value theObject{};
+				auto theObjectResult = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity()).get(theObject);
+				auto theObjectFinal = theObject.get_object().value();
+				DiscordCoreAPI::parseObject(theObjectFinal, theReturnValueNew);
 				return std::move(theReturnValueNew);
 			} else {
 				simdjson::ondemand::parser theParser{};
 				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
-				auto theObject = theParser.iterate(returnData.responseData, returnData.responseData.size()).get_value().value();
-				DiscordCoreAPI::parseObject(theObject, *theReturnValue);
+				simdjson::ondemand::value theObject{};
+				auto theObjectResult = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity()).get(theObject);
+				auto theObjectFinal = theObject.get_object().value();
+				DiscordCoreAPI::parseObject(theObjectFinal, *theReturnValue);
 				return std::move(*theReturnValue);
 			}
 		}

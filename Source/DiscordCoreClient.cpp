@@ -268,8 +268,10 @@ namespace DiscordCoreAPI {
 		workload.callStack = "DiscordCoreClient::getGateWayBot()";
 		GatewayBotData theData{};
 		try {
+			std::cout << "WERE HERE THIS ISI T!" << std::endl;
 			theData = this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
 		} catch (...) {
+			reportException("getGateWatBot()");
 			return theData;
 		}
 		return theData;
