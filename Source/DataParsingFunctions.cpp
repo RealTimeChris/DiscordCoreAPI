@@ -1009,158 +1009,64 @@ namespace DiscordCoreAPI {
 
 		theData.approximateMemberCount = getUint32(jsonObjectData, "approximate_member_count");
 
-		if (jsonObjectData->contains("guild_id") && !(*jsonObjectData)["guild_id"].is_null()) {
-			theData.guildId = stoull((*jsonObjectData)["guild_id"].get<std::string>());
-		}
+		theData.guildId = getId(jsonObjectData, "guild_id");
 
-		if (jsonObjectData->contains("expires_at") && !(*jsonObjectData)["expires_at"].is_null()) {
-			theData.expiresAt = (*jsonObjectData)["expires_at"].get<std::string>();
-		}
+		theData.expiresAt = getString(jsonObjectData, "expires_at");
 
-		if (jsonObjectData->contains("stage_instance") && !(*jsonObjectData)["stage_instance"].is_null()) {
-			parseObject(&(*jsonObjectData)["stage_instance"], theData.stageInstance);
-		}
+		theData.uses = getUint32(jsonObjectData, "uses");
 
-		if (jsonObjectData->contains("guild_scheduled_event") && !(*jsonObjectData)["guild_scheduled_event"].is_null()) {
-			parseObject(&(*jsonObjectData)["guild_scheduled_event"], theData.guildScheduledEvent);
-		}
+		theData.maxUses = getUint32(jsonObjectData, "max_uses");
 
-		if (jsonObjectData->contains("uses") && !(*jsonObjectData)["uses"].is_null()) {
-			theData.uses = (*jsonObjectData)["uses"].get<int32_t>();
-		}
-
-		if (jsonObjectData->contains("max_uses") && !(*jsonObjectData)["max_uses"].is_null()) {
-			theData.maxUses = (*jsonObjectData)["max_uses"].get<int32_t>();
-		}
-
-		if (jsonObjectData->contains("max_age") && !(*jsonObjectData)["max_age"].is_null()) {
-			theData.maxAge = (*jsonObjectData)["max_age"].get<int32_t>();
-		}
+		theData.maxAge = getUint32(jsonObjectData, "max_age");
 
 		theData.temporary = getBool(jsonObjectData, "temporary");
 
-		if (jsonObjectData->contains("created_at") && !(*jsonObjectData)["created_at"].is_null()) {
-			theData.createdAt = (*jsonObjectData)["created_at"].get<std::string>();
-		}
+		theData.createdAt = getString(jsonObjectData, "created_at");
 	}
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, InviteDataVector& theData) {
-		theData.theInviteDatas.reserve(jsonObjectData->size());
-		for (auto& value: *jsonObjectData) {
-			InviteData newData{};
-			parseObject(&value, newData);
-			theData.theInviteDatas.push_back(newData);
-		}
-		theData.theInviteDatas.shrink_to_fit();
-	}
-
-	/*
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, AutoModerationActionExecutionEventData& theData) {
-		if (jsonObjectData->contains("alert_system_message_id") && !(*jsonObjectData)["alert_system_message_id"].is_null()) {
-			theData.alertSystemMessageId = stoull((*jsonObjectData)["alert_system_message_id"].get<std::string>());
-		}
-
-		if (jsonObjectData->contains("rule_trigger_type") && !(*jsonObjectData)["rule_trigger_type"].is_null()) {
-			theData.ruleTriggerType = (*jsonObjectData)["rule_trigger_type"].get<TriggerType>();
-		}
-
-		if (jsonObjectData->contains("matched_keyword") && !(*jsonObjectData)["matched_keyword"].is_null()) {
-			theData.matchedKeyword = (*jsonObjectData)["matched_keyword"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("matched_content") && !(*jsonObjectData)["matched_content"].is_null()) {
-			theData.matchedContent = (*jsonObjectData)["matched_content"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("action") && !(*jsonObjectData)["action"].is_null()) {
-			parseObject(&(*jsonObjectData)["action"], theData.action);
-		}
-
-		if (jsonObjectData->contains("content") && !(*jsonObjectData)["content"].is_null()) {
-			theData.content = (*jsonObjectData)["content"].get<std::string>();
-		}
-
-		if (jsonObjectData->contains("message_id") && !(*jsonObjectData)["message_id"].is_null()) {
-			theData.messageId = stoull((*jsonObjectData)["message_id"].get<std::string>());
-		}
-
-		if (jsonObjectData->contains("channel_id") && !(*jsonObjectData)["channel_id"].is_null()) {
-			theData.channelId = stoull((*jsonObjectData)["channel_id"].get<std::string>());
-		}
-
-		if (jsonObjectData->contains("guild_id") && !(*jsonObjectData)["guild_id"].is_null()) {
-			theData.guildId = stoull((*jsonObjectData)["guild_id"].get<std::string>());
-		}
-
-		if (jsonObjectData->contains("rule_id") && !(*jsonObjectData)["rule_id"].is_null()) {
-			theData.ruleId = stoull((*jsonObjectData)["rule_id"].get<std::string>());
-		}
-
-		if (jsonObjectData->contains("user_id") && !(*jsonObjectData)["user_id"].is_null()) {
-			theData.userId = stoull((*jsonObjectData)["user_id"].get<std::string>());
-		}
-	}
-
-	
-
-	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, AutoModerationRuleVector& theData) {
 		simdjson::ondemand::array theArray{};
-		auto theResult = jsonObjectData["d"].get(theArray);
+		auto theResult = jsonObjectData.get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.theAutoModerationRules.reserve(theArray.count_elements().take_value());
+			theData.theInviteDatas.reserve(theArray.count_elements().take_value());
 			for (auto value: theArray) {
-				AutoModerationRule newData{};
+				InviteData newData{};
 				auto theObject = value.value();
 				parseObject(theObject, newData);
-				theData.theAutoModerationRules.push_back(newData);
+				theData.theInviteDatas.push_back(newData);
 			}
-			theData.theAutoModerationRules.shrink_to_fit();
+			theData.theInviteDatas.shrink_to_fit();
 		}
 	}
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, Channel& theData) {
-		if (jsonObjectData->contains("id") && !(*jsonObjectData)["id"].is_null()) {
-			if ((*jsonObjectData)["id"].is_string()) {
-				theData.id = stoull((*jsonObjectData)["id"].get<std::string>());
-			} else {
-				theData.id = (*jsonObjectData)["id"].get<int64_t>();
-			}
-		}
+		theData.id = getId(jsonObjectData, "id");
 
-		if (jsonObjectData->contains("flags") && !(*jsonObjectData)["flags"].is_null()) {
-			theData.flags = (*jsonObjectData)["flags"].get<int8_t>();
-		}
+		theData.flags = getUint8(jsonObjectData, "flags");
 
-		if (jsonObjectData->contains("type") && !(*jsonObjectData)["type"].is_null()) {
-			theData.type = (*jsonObjectData)["type"].get<ChannelType>();
-		}
+		theData.type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
 
-		if (jsonObjectData->contains("guild_id") && !(*jsonObjectData)["guild_id"].is_null()) {
-			theData.guildId = stoull((*jsonObjectData)["guild_id"].get<std::string>());
-		}
+		theData.guildId = getId(jsonObjectData, "guild_id");
 
-		if (jsonObjectData->contains("default_auto_archive_duration") && !(*jsonObjectData)["default_auto_archive_duration"].is_null()) {
-			theData.defaultAutoArchiveDuration = (*jsonObjectData)["default_auto_archive_duration"].get<int32_t>();
-		}
+		theData.defaultAutoArchiveDuration = getUint32(jsonObjectData, "default_auto_archive_duration");
 
-		if (jsonObjectData->contains("position") && !(*jsonObjectData)["position"].is_null()) {
-			theData.position = (*jsonObjectData)["position"].get<int32_t>();
-		}
+		theData.position = getUint32(jsonObjectData, "position");
 
-		if (jsonObjectData->contains("permission_overwrites") && !(*jsonObjectData)["permission_overwrites"].is_null()) {
+		simdjson::ondemand::object theArray{};
+		auto theResult = jsonObjectData["permission_overwrites"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.permissionOverwrites.clear();
-			for (auto& value: (*jsonObjectData)["permission_overwrites"]) {
-				theData.permissionOverwrites.emplace_back(value);
+			for (auto value: theArray) {
+				OverWriteData theDataNew{};
+				auto theObject = value.value().value();
+				parseObject(theObject, theDataNew);
+				theData.permissionOverwrites.emplace_back(std::move(theDataNew));
 			}
 		}
 
-		if (jsonObjectData->contains("name") && !(*jsonObjectData)["name"].is_null()) {
-			theData.name = (*jsonObjectData)["name"].get<std::string>();
-		}
+		theData.name = getString(jsonObjectData, "name");
 
-		if (jsonObjectData->contains("topic") && !(*jsonObjectData)["topic"].is_null()) {
-			theData.topic = (*jsonObjectData)["topic"].get<std::string>();
-		}
+		theData.topic = getString(jsonObjectData, "topic");
 
 		if (jsonObjectData->contains("permissions") && !(*jsonObjectData)["permissions"].is_null()) {
 			theData.permissions = (*jsonObjectData)["permissions"].get<std::string>();
@@ -1252,6 +1158,70 @@ namespace DiscordCoreAPI {
 			theData.theChannels.push_back(newData);
 		}
 		theData.theChannels.shrink_to_fit();
+	}
+
+	/*
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, AutoModerationActionExecutionEventData& theData) {
+		if (jsonObjectData->contains("alert_system_message_id") && !(*jsonObjectData)["alert_system_message_id"].is_null()) {
+			theData.alertSystemMessageId = stoull((*jsonObjectData)["alert_system_message_id"].get<std::string>());
+		}
+
+		if (jsonObjectData->contains("rule_trigger_type") && !(*jsonObjectData)["rule_trigger_type"].is_null()) {
+			theData.ruleTriggerType = (*jsonObjectData)["rule_trigger_type"].get<TriggerType>();
+		}
+
+		if (jsonObjectData->contains("matched_keyword") && !(*jsonObjectData)["matched_keyword"].is_null()) {
+			theData.matchedKeyword = (*jsonObjectData)["matched_keyword"].get<std::string>();
+		}
+
+		if (jsonObjectData->contains("matched_content") && !(*jsonObjectData)["matched_content"].is_null()) {
+			theData.matchedContent = (*jsonObjectData)["matched_content"].get<std::string>();
+		}
+
+		if (jsonObjectData->contains("action") && !(*jsonObjectData)["action"].is_null()) {
+			parseObject(&(*jsonObjectData)["action"], theData.action);
+		}
+
+		if (jsonObjectData->contains("content") && !(*jsonObjectData)["content"].is_null()) {
+			theData.content = (*jsonObjectData)["content"].get<std::string>();
+		}
+
+		if (jsonObjectData->contains("message_id") && !(*jsonObjectData)["message_id"].is_null()) {
+			theData.messageId = stoull((*jsonObjectData)["message_id"].get<std::string>());
+		}
+
+		if (jsonObjectData->contains("channel_id") && !(*jsonObjectData)["channel_id"].is_null()) {
+			theData.channelId = stoull((*jsonObjectData)["channel_id"].get<std::string>());
+		}
+
+		if (jsonObjectData->contains("guild_id") && !(*jsonObjectData)["guild_id"].is_null()) {
+			theData.guildId = stoull((*jsonObjectData)["guild_id"].get<std::string>());
+		}
+
+		if (jsonObjectData->contains("rule_id") && !(*jsonObjectData)["rule_id"].is_null()) {
+			theData.ruleId = stoull((*jsonObjectData)["rule_id"].get<std::string>());
+		}
+
+		if (jsonObjectData->contains("user_id") && !(*jsonObjectData)["user_id"].is_null()) {
+			theData.userId = stoull((*jsonObjectData)["user_id"].get<std::string>());
+		}
+	}
+
+	
+
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, AutoModerationRuleVector& theData) {
+		simdjson::ondemand::array theArray{};
+		auto theResult = jsonObjectData["d"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.theAutoModerationRules.reserve(theArray.count_elements().take_value());
+			for (auto value: theArray) {
+				AutoModerationRule newData{};
+				auto theObject = value.value();
+				parseObject(theObject, newData);
+				theData.theAutoModerationRules.push_back(newData);
+			}
+			theData.theAutoModerationRules.shrink_to_fit();
+		}
 	}
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, GuildVector& theData) {
