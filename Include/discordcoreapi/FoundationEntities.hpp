@@ -437,8 +437,6 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, UserData& theData);
 
-	//template<> void parseObject(simdjson::ondemand::value& jsonObjectData, UserData& theData);
-
 	/// Attachment data. \brief Attachment data.
 	class DiscordCoreAPI_Dll AttachmentData : public DiscordEntity {
 	  public:
@@ -479,8 +477,6 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedFooterData& theData);
 
-	//template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedFooterData& theData);
-
 	/// Embed image data. \brief Embed image data.
 	struct DiscordCoreAPI_Dll EmbedImageData {
 		std::string proxyUrl{};///< Proxy url.
@@ -494,8 +490,6 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedImageData& theData);
-
-//	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedImageData& theData);
 
 	/// Embed thumbnail data. \brief Embed thumbnail data.
 	struct DiscordCoreAPI_Dll EmbedThumbnailData {
@@ -511,8 +505,6 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedThumbnailData& theData);
 
-	//template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedThumbnailData& theData);
-
 	/// Embed video data. \brief Embed video data.
 	struct DiscordCoreAPI_Dll EmbedVideoData {
 		std::string proxyUrl{};///< Proxy url.
@@ -527,8 +519,6 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedVideoData& theData);
 
-	//template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedVideoData& theData);
-
 	/// Embed provider data. \brief Embed provider data.
 	struct DiscordCoreAPI_Dll EmbedProviderData {
 		std::string name{};///< Name.
@@ -540,8 +530,6 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedProviderData& theData);
-
-	//template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedProviderData& theData);
 
 	/// Embed author data. \brief Embed author data.
 	struct DiscordCoreAPI_Dll EmbedAuthorData {
@@ -557,8 +545,6 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedAuthorData& theData);
 
-	//template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedAuthorData& theData);
-
 	/// Embed field data. \brief Embed field data.
 	struct DiscordCoreAPI_Dll EmbedFieldData {
 		bool Inline{ false };///< Is the field inline with the rest of them?
@@ -573,8 +559,6 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedFieldData& theData);
-
-	//template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedFieldData& theData);
 
 	/// Embed types. \brief Embed types.
 	enum class EmbedType : uint8_t {
@@ -661,8 +645,6 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedData& theData);
 
-	//template<> void parseObject(simdjson::ondemand::value& jsonObjectData, EmbedData& theData);
-
 	/// Message reference data.\brief Message reference data.
 	struct DiscordCoreAPI_Dll MessageReferenceData {
 		bool failIfNotExists{ false };///< Fail if the Message doesn't exist?
@@ -678,8 +660,6 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, MessageReferenceData& theData);
-
-	//template<> void parseObject(simdjson::ondemand::value& jsonObjectData, MessageReferenceData& theData);
 
 	enum class MediaType : uint8_t { png = 0, gif = 1, jpeg = 2, mpeg = 3, mp3 = 4 };
 
@@ -719,7 +699,7 @@ namespace DiscordCoreAPI {
 		virtual ~ThreadMetadataData() noexcept = default;
 	};
 
-	//template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ThreadMetadataData& theData);
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ThreadMetadataData& theData);
 
 	/// Data for a single member of a Thread. \brief Data for a single member of a Thread.
 	class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
@@ -749,7 +729,7 @@ namespace DiscordCoreAPI {
 		std::vector<ThreadMemberData> theThreadMemberDatas{};
 	};
 
-	//template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ThreadMemberDataVector& theData);
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ThreadMemberDataVector& theData);
 
 	/// Thread types. \brief Thread types.
 	enum class ThreadType : uint8_t {
@@ -2210,12 +2190,19 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};
 	};
 
+	enum class JsonType { Unset = 0, Integer = 1, Float = 2, String = 3, Boolean = 4 };
+
 	/// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
 	class DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
 	  public:
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
-		nlohmann::json value{};///< The value of the option.
+		JsonType type{};///< The value of the option.
 		std::string name{};///< The name of the current choice.
+		double valueFloat{};
+		uint64_t valueInt{};
+		std::string_view valueString{};
+		std::string valueStringReal{};
+		bool valueBool{};
 
 		ApplicationCommandOptionChoiceData() noexcept = default;
 
@@ -3123,7 +3110,7 @@ namespace DiscordCoreAPI {
 		/// \param theName A string for the name of the choice.
 		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setAutoCompleteChoice(nlohmann::json theValue, const std::string& theName,
+		RespondToInputEventData& setAutoCompleteChoice(simdjson::ondemand::value theValue, const std::string& theName,
 			std::unordered_map<std::string, std::string> theNameLocalizations = std::unordered_map<std::string, std::string>{});
 
 		/// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.

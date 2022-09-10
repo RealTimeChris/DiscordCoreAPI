@@ -379,7 +379,20 @@ namespace DiscordCoreAPI {
 		nlohmann::json theData{};
 		theData["name"] = this->name;
 		theData["name_localizations"] = this->nameLocalizations;
-		theData["value"] = this->value;
+		switch (this->type) {
+			case JsonType::Integer: {
+				theData["value"] = this->valueInt;
+			}
+			case JsonType::Float: {
+				theData["value"] = this->valueFloat;
+			}
+			case JsonType::Boolean: {
+				theData["value"] = this->valueBool;
+			}
+			case JsonType::String: {
+				theData["value"] = this->valueStringReal;
+			}
+		}
 		return theData;
 	}
 
@@ -801,13 +814,33 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(nlohmann::json theValue, const std::string& theName,
+	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(simdjson::ondemand::value theValue, const std::string& theName,
 		std::unordered_map<std::string, std::string> theNameLocalizations) {
 		ApplicationCommandOptionChoiceData choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
-		choiceData.value = theValue;
 		choiceData.name = theName;
-		this->choices.emplace_back(choiceData);
+		auto theResult = theValue.get(choiceData.valueBool);
+		
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->choices.emplace_back(choiceData);
+			return *this;
+		}
+		theResult = theValue.get(choiceData.valueFloat);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->choices.emplace_back(choiceData);
+			return *this;
+		}
+		theResult = theValue.get(choiceData.valueInt);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->choices.emplace_back(choiceData);
+			return *this;
+		}
+		theResult = theValue.get(choiceData.valueString);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			choiceData.valueStringReal = choiceData.valueString.data();
+			this->choices.emplace_back(choiceData);
+			return *this;
+		}
 		return *this;
 	}
 
@@ -963,7 +996,20 @@ namespace DiscordCoreAPI {
 				nlohmann::json theValue{};
 				theValue["name"] = value.name;
 				theValue["name_localizations"] = value.nameLocalizations;
-				theValue["value"] = value.value;
+				switch (value.type) {
+					case JsonType::Boolean: {
+						theValue["value"] = value.valueBool;
+					}
+					case JsonType::String: {
+						theValue["value"] = value.valueStringReal;
+					}
+					case JsonType::Float: {
+						theValue["value"] = value.valueFloat;
+					}
+					case JsonType::Integer: {
+						theValue["value"] = value.valueInt;
+					}
+				}
 				theArray.emplace_back(theValue);
 			}
 			data["data"]["choices"] = theArray;
