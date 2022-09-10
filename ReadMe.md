@@ -24,7 +24,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 # Features   
 
 ## Performant
-- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ErlPacker.cpp) for websocket transfer, and a pool of [kept-alive HTTP connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L343-L355) - this library offers the snappiest responses to your interactions and user input.
+- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ErlPacker.cpp) for websocket transfer, and a pool of [kept-alive HTTP connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L356-L368) - this library offers the snappiest responses to your interactions and user input.
 
 ## CPU Efficient   
 - It only uses about 0.1% of an Intel i7 9750h to stream audio in high quality (Opus 48Khz 16-bit Stereo) to a single server.   
