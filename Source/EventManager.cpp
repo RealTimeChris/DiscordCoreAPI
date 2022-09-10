@@ -214,24 +214,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	template<> void parseObject(simdjson::fallback::ondemand::object& theJsonData, OnVoiceServerUpdateData& theData) {
+	template<> void parseObject(simdjson::ondemand::value& theJsonData, OnVoiceServerUpdateData& theData) {
 		theData.endpoint = getString(theJsonData, "endpoint");
 
-		theData.guildId = stoull(getString(theJsonData, "guild_id"));
+		theData.guildId = getId(theJsonData, "guild_id");
 
 		theData.token = getString(theJsonData, "token");
-	};
-
-	template<> void parseObject(nlohmann::json* theJsonData, OnVoiceServerUpdateData& theData) {
-		if (theJsonData->contains("endpoint") && !(*theJsonData)["endpoint"].is_null()) {
-			theData.endpoint = (*theJsonData)["endpoint"].get<std::string>();
-		}
-		if (theJsonData->contains("guild_id") && !(*theJsonData)["guild_id"].is_null()) {
-			theData.guildId = stoull((*theJsonData)["guild_id"].get<std::string>());
-		}
-		if (theJsonData->contains("token") && !(*theJsonData)["token"].is_null()) {
-			theData.token = (*theJsonData)["token"].get<std::string>();
-		}
 	};
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(

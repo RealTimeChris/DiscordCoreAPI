@@ -214,7 +214,7 @@ namespace DiscordCoreInternal {
 		operator nlohmann::json();
 	};
 
-	template<typename ReturnType> void parseObject(simdjson::fallback::ondemand::object& theParser, ReturnType& theData);
+	template<typename ReturnType> void parseObject(simdjson::ondemand::value& theParser, ReturnType& theData);
 
 }// namespace DiscordCoreInternal
 
@@ -490,7 +490,7 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::unordered_map<KeyType, ObjectType> theMap{};
+		std::map<KeyType, ObjectType> theMap{};
 		std::shared_mutex theMutex{};
 	};
 
@@ -621,9 +621,7 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	template<typename ReturnType> void parseObject(simdjson::fallback::ondemand::object& theParser, ReturnType& theData);
-
-	template<typename ReturnType> void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
+	template<typename ReturnType> void parseObject(simdjson::ondemand::value& theParser, ReturnType& theData);
 
 	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json* jsonData, const char* keyName);
 

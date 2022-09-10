@@ -127,11 +127,11 @@ namespace DiscordCoreAPI {
 		virtual ~GuildMember() noexcept = default;
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, DiscordCoreAPI::GuildMember& theGuildMember);
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, DiscordCoreAPI::GuildMember& theGuildMember);
 
 	class DiscordCoreAPI_Dll GuildMemberVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value& jsonObjectData, ReturnType& theData);
 
 		GuildMemberVector() noexcept = default;
 
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 		std::vector<GuildMember> theGuildMembers{};
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, GuildMemberVector& theGuildMember);
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, GuildMemberVector& theGuildMember);
 
 	/**@}*/
 
@@ -153,6 +153,14 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};
 		Snowflake userId{};
 	};
+
+	inline bool operator==(const GuildMemberKey& lhs, const GuildMemberKey& rhs) {
+		return (lhs.userId == rhs.userId && lhs.guildId == rhs.guildId);
+	}
+
+	inline bool operator<(const GuildMemberKey& lhs, const GuildMemberKey& rhs) {
+		return (lhs.userId < rhs.userId && lhs.guildId < rhs.guildId);
+	}
 
 	class GuildMemberCache {
 	  public:
@@ -171,7 +179,7 @@ namespace DiscordCoreAPI {
 		size_t size() noexcept;
 
 	  protected:
-		std::unordered_multimap<Snowflake, GuildMemberData> theMap{};
+		std::map<GuildMemberKey, GuildMemberData> theMap{};
 		std::mutex theMutex{};
 	};
 
@@ -182,8 +190,8 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::fallback::ondemand::object& theParser, ReturnType& theData);
-		template<typename ReturnType> friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value& theParser, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value& jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class GuildMemberData;

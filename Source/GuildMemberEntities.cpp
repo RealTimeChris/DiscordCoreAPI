@@ -121,60 +121,43 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildMemberKey::GuildMemberKey(Snowflake guildIdNew, Snowflake userIdNew) {
-		this->guildId = guildIdNew;
 		this->userId = userIdNew;
 	}
 
 	const GuildMemberData& GuildMemberCache::readOnly(GuildMemberKey theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		for (auto iterator = this->theMap.begin(); iterator != this->theMap.end(); ++iterator) {
-			if (iterator->second.id == theKey.userId && iterator->second.guildId == theKey.guildId) {
-				return iterator->second;
-			}
+		if (!this->theMap.contains(theKey)) {
+			GuildMemberData theData{};
+			theData.id = theKey.userId;
+			this->theMap.insert_or_assign(theKey, std::move(theData));
 		}
-		GuildMemberData theData{};
-		theData.id = theKey.userId;
-		theData.guildId = theKey.guildId;
-		this->theMap.emplace(theKey.userId, std::move(theData));
-		return this->theMap.find(theKey.userId)->second;
+		return this->theMap[theKey];
 	}
 
 	GuildMemberData& GuildMemberCache::at(GuildMemberKey theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		for (auto iterator = this->theMap.begin(); iterator != this->theMap.end(); ++iterator) {
-			if (iterator->second.id == theKey.userId && iterator->second.guildId == theKey.guildId) {
-				return iterator->second;
-			}
+		if (!this->theMap.contains(theKey)) {
+			GuildMemberData theData{};
+			theData.id = theKey.userId;
+			this->theMap.insert_or_assign(theKey, std::move(theData));
 		}
-		GuildMemberData theData{};
-		theData.id = theKey.userId;
-		theData.guildId = theKey.guildId;
-		this->theMap.emplace(theKey.userId, std::move(theData));
-		return this->theMap.find(theKey.userId)->second;
+		return this->theMap[theKey];
 	}
 
 	void GuildMemberCache::emplace(GuildMemberKey theKey, GuildMemberData&& theData) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		this->theMap.insert(std::make_pair(theKey.userId, std::move(theData)));
+		this->theMap.insert_or_assign(theKey, std::move(theData));
 	}
 
 	bool GuildMemberCache::contains(GuildMemberKey theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		for (auto iterator = this->theMap.begin(); iterator != this->theMap.end(); ++iterator) {
-			if (iterator->second.id == theKey.userId && iterator->second.guildId == theKey.guildId) {
-				return true;
-			}
-		}
-		return false;
+		return this->theMap.contains(theKey);
 	}
 
 	void GuildMemberCache::erase(GuildMemberKey theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		for (auto iterator = this->theMap.begin(); iterator != this->theMap.end(); ++iterator) {
-			if (iterator->second.id == theKey.userId && iterator->second.guildId == theKey.guildId) {
-				this->theMap.erase(iterator);
-				break;
-			}
+		if (this->theMap.contains(theKey)) {
+			this->theMap.erase(theKey);
 		}
 	}
 

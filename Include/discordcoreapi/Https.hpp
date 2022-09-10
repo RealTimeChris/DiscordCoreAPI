@@ -49,7 +49,7 @@ namespace DiscordCoreInternal {
 		std::unordered_map<std::string, std::string> responseHeaders{};
 		HttpsState theCurrentState{ HttpsState::Collecting_Code };
 		std::string responseMessage{};
-		nlohmann::json responseData{};
+		std::string responseData{};
 		int64_t responseCode{ -1 };
 
 	  protected:
@@ -172,10 +172,16 @@ namespace DiscordCoreInternal {
 			}
 			if (theReturnValue == nullptr) {
 				ReturnType theReturnValueNew{};
-				DiscordCoreAPI::parseObject(&returnData.responseData, theReturnValueNew);
+				simdjson::ondemand::parser theParser{};
+				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
+				auto theObject = theParser.iterate(returnData.responseData, returnData.responseData.size()).get_value().value();
+				DiscordCoreAPI::parseObject(theObject, theReturnValueNew);
 				return std::move(theReturnValueNew);
 			} else {
-				DiscordCoreAPI::parseObject(&returnData.responseData, *theReturnValue);
+				simdjson::ondemand::parser theParser{};
+				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
+				auto theObject = theParser.iterate(returnData.responseData, returnData.responseData.size()).get_value().value();
+				DiscordCoreAPI::parseObject(theObject, *theReturnValue);
 				return std::move(*theReturnValue);
 			}
 		}

@@ -42,12 +42,16 @@ namespace DiscordCoreInternal {
 			dataPackage.headersToInsert = theHeaders;
 			dataPackage.workloadClass = HttpsWorkloadClass::Get;
 			HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
-			nlohmann::json data = nlohmann::json::parse(returnData.responseMessage);
 			std::vector<DiscordCoreAPI::Song> results{};
-			if (data.contains("collection") && !data["collection"].is_null()) {
-				for (auto& value: data["collection"]) {
+			simdjson::ondemand::parser theParser{};
+			auto theDocument = theParser.iterate(returnData.responseMessage).get_value().value().get_object().value();
+			simdjson::ondemand::array theArray{};
+			auto theResult = theDocument["collection"].get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				for (auto value: theArray) {
 					DiscordCoreAPI::Song newSong{};
-					DiscordCoreAPI::parseObject(&value, newSong);
+					auto theObjectNew = value.value();
+					DiscordCoreAPI::parseObject(theObjectNew, newSong);
 					if (!newSong.doWeGetSaved || newSong.songTitle == "") {
 						continue;
 					}
@@ -77,8 +81,12 @@ namespace DiscordCoreInternal {
 			dataPackage01.baseUrl = newSong.firstDownloadUrl;
 			dataPackage01.workloadClass = HttpsWorkloadClass::Get;
 			HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
-			if (results.responseData.contains("url")) {
-				newSong.secondDownloadUrl = results.responseData["url"];
+			simdjson::ondemand::parser theParser{};
+			auto theDocument = theParser.iterate(results.responseMessage).get_value().value().get_object().value();
+			simdjson::ondemand::value theUrl{};
+			auto theResult = theDocument["url"].get(theUrl);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				newSong.secondDownloadUrl = theUrl.get_string().value().data();
 			}
 			if (newSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
 				HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };

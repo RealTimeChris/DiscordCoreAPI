@@ -180,11 +180,11 @@ namespace DiscordCoreAPI {
 		std::string getIconUrl() noexcept;
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, Channel& theData);
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, Channel& theData);
 
 	class DiscordCoreAPI_Dll ChannelVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value& jsonObjectData, ReturnType& theData);
 
 		ChannelVector() noexcept = default;
 
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 		std::vector<Channel> theChannels{};
 	};
 
-	template<> void parseObject(nlohmann::json* jsonObjectData, ChannelVector& theData);
+	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, ChannelVector& theData);
 
 	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
@@ -218,8 +218,8 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::fallback::ondemand::object& theParser, ReturnType& theData);
-		template<typename ReturnType> friend void parseObject(nlohmann::json* jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value& theParser, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value& jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class ChannelData;
