@@ -1017,10 +1017,6 @@ namespace DiscordCoreAPI {
 
 		OverWriteData() noexcept = default;
 
-		OverWriteData& operator=(nlohmann::json& theJsonData);
-
-		OverWriteData(nlohmann::json& theJsonData);
-
 		virtual ~OverWriteData() noexcept = default;
 	};
 
@@ -1928,7 +1924,7 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, GuildDataVector& theData);
-
+	
 	/// Guild scheduled event privacy levels. \brief Guild scheduled event privacy levels.
 	enum class GuildScheduledEventPrivacyLevel : uint8_t {
 		Public = 1,///< Public.
@@ -3446,8 +3442,6 @@ namespace DiscordCoreAPI {
 		CommandData(InputEventData inputEventData);
 
 		virtual ~CommandData() noexcept = default;
-
-		void parseOptions(simdjson::ondemand::value& jsonObjectData);
 	};
 
 	template<> void parseObject(simdjson::ondemand::value& jsonObjectData, CommandData& theData);

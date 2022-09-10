@@ -251,22 +251,6 @@ namespace DiscordCoreAPI {
 		return embed;
 	}
 
-	OverWriteData& OverWriteData::operator=(nlohmann::json& theJsonData) {
-		this->allow = strtoull(getString(&theJsonData, "allow"));
-
-		this->deny = strtoull(getString(&theJsonData, "deny"));
-
-		this->id = strtoull(getString(&theJsonData, "id"));
-
-		this->type = static_cast<PermissionOverwritesType>(getUint8(&theJsonData, "type"));
-
-		return *this;
-	}
-
-	OverWriteData::OverWriteData(nlohmann::json& theJsonData) {
-		*this = theJsonData;
-	}
-
 	EmbedData& EmbedData::setAuthor(const std::string& authorName, const std::string& authorAvatarUrl) {
 		this->author.name = authorName;
 		this->author.iconUrl = authorAvatarUrl;
@@ -1024,9 +1008,6 @@ namespace DiscordCoreAPI {
 			theValue.theValue = value.value.theValue;
 			this->optionsArgs.theValues.emplace(value.name, theValue);
 		}
-		//auto theData = inputEventData.interactionData->rawDataParser.iterate(inputEventData.getInteractionData().rawData);
-		//auto theObject = theData.get_object();
-		//DiscordCoreAPI::parseObject(theObject.value(), *this);
 	}
 
 	BaseFunctionArguments::BaseFunctionArguments(CommandData commandDataNew, DiscordCoreClient* discordCoreClientNew) : CommandData(commandDataNew) {
