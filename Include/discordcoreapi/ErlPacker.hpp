@@ -80,6 +80,8 @@ namespace DiscordCoreInternal {
 		uint64_t offSet{};
 		uint64_t size{};
 
+		void escapeCharacters(std::string_view theString);
+
 		void singleValueJsonToETF(nlohmann::json&);
 
 		void writeToBuffer(const std::string&);
@@ -117,7 +119,7 @@ namespace DiscordCoreInternal {
 			return DiscordCoreAPI::reverseByteOrder<const ReturnType>(newValue);
 		}
 
-		ReadStringReturnData readString(uint32_t length);
+		std::string_view readString(uint32_t length);
 
 		std::string singleValueETFToJson();
 

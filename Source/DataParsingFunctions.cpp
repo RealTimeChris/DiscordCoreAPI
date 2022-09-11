@@ -44,7 +44,7 @@
 namespace DiscordCoreAPI {
 
 	uint64_t getId(simdjson::ondemand::object jsonObjectData, const char* theKey) {
-		return strtoull(getString(jsonObjectData, theKey));
+		return DiscordCoreAPI::strtoull(getString(jsonObjectData, theKey));
 	}
 
 	bool getBool(simdjson::ondemand::object jsonData, const char* theKey) {
@@ -294,25 +294,29 @@ namespace DiscordCoreAPI {
 		theData.joinedAt = getString(jsonObjectData, "joined_at");
 
 		theData.guildId = getId(jsonObjectData, "guild_id");
-		
-		simdjson::ondemand::array theArray{};
-		auto theResult= jsonObjectData["roles"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.roles.clear();
-			for (auto value: theArray) {
-				std::string theString{ value.get_string().take_value().data() };
-				theData.roles.emplace_back(stoull(theString));
+		try {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData["roles"].get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				theData.roles.clear();
+				for (auto value: theArray) {
+					std::string theString{ value.get_string().take_value().data() };
+					theData.roles.emplace_back(stoull(theString));
+				}
 			}
+		} catch (...) {
+			reportException("parseObject(GuildMemberData&)");
 		}
-
+		
 		theData.permissions = getString(jsonObjectData, "permissions");
 
 		simdjson::ondemand::object theObject{};
-		theResult = jsonObjectData["user"].get(theObject);
+		auto theResult = jsonObjectData["user"].get(theObject);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			UserData theUser{};
 			parseObject(theObject, theUser);
 			theData.id = theUser.id;
+			std::cout << "USER ID: " << theData.id << std::endl;
 			Users::insertUser(std::move(theUser));
 		}
 
@@ -334,20 +338,23 @@ namespace DiscordCoreAPI {
 
 		theData.guildId = getId(jsonObjectData, "guild_id");
 
-		simdjson::ondemand::array theArray{};
-		auto theResult= jsonObjectData["roles"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.roles.clear();
-			for (auto value: theArray) {
-				std::string theString{ value.get_string().take_value().data() };
-				theData.roles.emplace_back(stoull(theString));
+		try {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData["roles"].get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				theData.roles.clear();
+				for (auto value: theArray) {
+					std::string theString{ value.get_string().take_value().data() };
+					theData.roles.emplace_back(stoull(theString));
+				}
 			}
+		} catch (...) {
+			reportException("parseObject(GuildMemberData&)");
 		}
-
 		theData.permissions = getString(jsonObjectData, "permissions");
 
 		simdjson::ondemand::object theObject{};
-		theResult = jsonObjectData["user"].get(theObject);
+		auto theResult = jsonObjectData["user"].get(theObject);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			UserData theUser{};
 			parseObject(theObject, theUser);
@@ -1027,7 +1034,6 @@ namespace DiscordCoreAPI {
 		theData.customId = getString(jsonObjectData, "custom_id");
 
 		theData.componentType = static_cast<ComponentType>(getUint8(jsonObjectData, "component_type"));
-		std::cout << "COMPONENT TYPE: " << ( int )theData.componentType << std::endl;
 	}
 
 	template<> void parseObject(simdjson::ondemand::object jsonObjectData, SelectOptionData& theData) {
@@ -1709,7 +1715,7 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::ondemand::object jsonObjectData, PresenceUpdateData& theData) {
-		theData.guildId = stoull(getString(jsonObjectData, "guild_id"));
+		theData.guildId = getId(jsonObjectData, "guild_id");
 
 		auto theStringNew = getString(jsonObjectData, "status");
 
@@ -2557,7 +2563,7 @@ namespace DiscordCoreAPI {
 			theData.exemptRoles.clear();
 			for (auto value: theArray) {
 				std::string theString{ value.get_string().take_value().data() };
-				theData.exemptRoles.emplace_back(strtoull(theString));
+				theData.exemptRoles.emplace_back(DiscordCoreAPI::strtoull(theString));
 			}
 		}
 
@@ -2566,7 +2572,7 @@ namespace DiscordCoreAPI {
 			theData.exemptChannels.clear();
 			for (auto value: theArray) {
 				std::string theString{ value.get_string().take_value().data() };
-				theData.exemptChannels.emplace_back(strtoull(theString));
+				theData.exemptChannels.emplace_back(DiscordCoreAPI::strtoull(theString));
 			}
 		}
 
@@ -3069,16 +3075,13 @@ namespace DiscordCoreAPI {
 	template<> void parseObject(simdjson::ondemand::object jsonObjectData, Song& theData) {
 		try {
 			theData.duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData"), "label");
-			std::cout << "DURATION: " << theData.duration << std::endl;
 			std::string newString = getString(getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0), "text");
 			if (newString.size() > 256) {
 				newString = newString.substr(0, 256);
 			}
 			theData.description = utf8MakeValid(newString);
-			std::cout << "DESCRIPTION: " << theData.description << std::endl;
 
 			theData.thumbnailUrl = getString(getObject(getArray(getObject(jsonObjectData, "thumbnail"), "thumbnails"), 0), "url");
-			std::cout << "THUMBNAIL URL: " << theData.description << std::endl;
 			std::string newTitle01 = getString(getObject(getArray(getObject(jsonObjectData, "title"), "runs"), 0), "text");
 			if (newTitle01.size() > 256) {
 				newTitle01 = newTitle01.substr(0, 256);
@@ -3094,7 +3097,6 @@ namespace DiscordCoreAPI {
 			} else {
 				theData.songTitle = newTitle02;
 			}
-			std::cout << "TITLE: " << theData.songTitle << std::endl;
 
 			theData.songId = getString(jsonObjectData, "videoId");
 
@@ -3608,7 +3610,7 @@ namespace DiscordCoreAPI {
 				AttachmentData newData{};
 				auto theObject = value.value().get_object().value();
 				parseObject(theObject, newData);
-				theData.attachments[strtoull(value.key().take_value().raw())] = std::move(newData);
+				theData.attachments[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
 			}
 		}
 
@@ -3619,7 +3621,7 @@ namespace DiscordCoreAPI {
 				UserData newData{};
 				auto theObject = value.value().get_object().value();
 				parseObject(theObject, newData);
-				theData.users[strtoull(value.key().take_value().raw())] = std::move(newData);
+				theData.users[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
 			}
 		}
 
@@ -3630,7 +3632,7 @@ namespace DiscordCoreAPI {
 				ChannelData newData{};
 				auto theObject = value.value().get_object().value();
 				parseObject(theObject, newData);
-				theData.channels[strtoull(value.key().take_value().raw())] = std::move(newData);
+				theData.channels[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
 			}
 		}
 
@@ -3641,7 +3643,7 @@ namespace DiscordCoreAPI {
 				RoleData newData{};
 				auto theObject = value.value().get_object().value();
 				parseObject(theObject, newData);
-				theData.roles[strtoull(value.key().take_value().raw())] = std::move(newData);
+				theData.roles[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
 			}
 		}
 
@@ -3652,7 +3654,7 @@ namespace DiscordCoreAPI {
 				GuildMemberData newData{};
 				auto theObject = value.value().get_object().value();
 				parseObject(theObject, newData);
-				theData.members[strtoull(value.key().take_value().raw())] = std::move(newData);
+				theData.members[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
 			}
 		}
 
@@ -3663,7 +3665,7 @@ namespace DiscordCoreAPI {
 				MessageData newData{};
 				auto theObject = value.value().get_object().value();
 				parseObject(theObject, newData);
-				theData.messages[strtoull(value.key().take_value().raw())] = std::move(newData);
+				theData.messages[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
 			}
 		}
 	}

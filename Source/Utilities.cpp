@@ -402,6 +402,11 @@ namespace DiscordCoreAPI {
 	}
 
 	uint64_t strtoull(const std::string& theString) {
+		for (auto& value: theString) {
+			if (!isdigit(value)) {
+				return 0;
+			}
+		}
 		if (theString != "") {
 			return stoull(theString);
 		} else {
@@ -481,7 +486,6 @@ namespace DiscordCoreAPI {
 
 	bool Permissions::checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission) {
 		std::string permissionsString = Permissions::computePermissions(guildMember, channel);
-		std::cout << permissionsString << std::endl; 
 		if ((stoull(permissionsString) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
 			return true;
 		} else {

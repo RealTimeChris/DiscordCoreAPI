@@ -27,6 +27,66 @@
 
 namespace DiscordCoreInternal {
 
+	void ErlPacker::escapeCharacters(std::string_view theString) {
+		auto theSize = theString.size();
+		this->bufferString.resize(theSize);
+		for (int32_t x = 0; x < theSize; x++) {
+			switch (static_cast<char>(theString[x])) {
+				case 0x0008: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 'b');
+					x++;
+					break;
+				}
+				case 0x0009: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 't');
+					x++;
+					break;
+				}
+				case 0x000A: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 'n');
+					x++;
+					break;
+				}
+				case 0x000B: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 'v');
+					x++;
+					break;
+				}
+				case 0x000C: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 'f');
+					x++;
+					break;
+				}
+				case 0x000D: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 'r');
+					x++;
+					break;
+				}
+				case 0x005: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, '\\');
+					x++;
+					break;
+				}
+				case 0x0027: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, '\'');
+					x++;
+					break;
+				}
+				default: {
+					this->bufferString[x] = theString[x];
+				}
+			}
+		}
+	}
+
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
 	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
@@ -47,6 +107,7 @@ namespace DiscordCoreInternal {
 			throw ErlPackError{ "ErlPacker::parseEtfToJson() Error: Incorrect format version specified." };
 		}
 		this->bufferString = this->singleValueETFToJson();
+		escapeCharacters(this->bufferString);
 		return this->bufferString;
 	}
 
@@ -195,76 +256,16 @@ namespace DiscordCoreInternal {
 		this->writeToBuffer(bufferNew);
 	}
 
-	ReadStringReturnData ErlPacker::readString(uint32_t length) {
+	std::string_view ErlPacker::readString(uint32_t length) {
 		if (this->offSet + static_cast<uint64_t>(length) > this->size) {
 			throw ErlPackError{ "this->readString() Error: readString() past end of buffer.\n\n" };
 		}
-		if (this->offSet + length > this->tempString.size()) {
-			this->tempString.resize(this->offSet + length);
-		}
+		this->tempString.resize(length);
 		for (uint32_t x = 0; x < length; ++x) {
-			this->tempString[this->offSet + x] = this->buffer[this->offSet + x];
-			std::cout << this->tempString << std::endl;
-			std::cout << this->buffer << std::endl;
+			this->tempString[x] = this->buffer[this->offSet + x];
 		}
-		size_t theLength{};
-		for (int32_t x = 0; x < length; x++) {
-			switch (static_cast<char>(this->tempString[x])) {
-				case '\b': {
-					this->tempString[x] = '\\';
-					this->tempString.insert(this->tempString.begin() + x, 'b');
-					theLength++;
-					theLength++;
-					break;
-				}
-				case '\t': {
-					this->tempString[x] = '\\';
-					this->tempString.insert(this->tempString.begin() + x, 't');
-					theLength++;
-					theLength++;
-					break;
-				}
-				case '\n': {
-					this->tempString[x] = '\\';
-					this->tempString.insert(this->tempString.begin() + x, 'n');
-					theLength++;
-					theLength++;
-					break;
-				}
-				case '\v': {
-					this->tempString[x] = '\\';
-					this->tempString.insert(this->tempString.begin() + x, 'v');
-					theLength++;
-					theLength++;
-					break;
-				}
-				case '\f': {
-					this->tempString[x] = '\\';
-					this->tempString.insert(this->tempString.begin() + x, 'f');
-					theLength++;
-					theLength++;
-					break;
-				}
-				case '\r': {
-					this->tempString[x] = '\\';
-					this->tempString.insert(this->tempString.begin() + x, 'r');
-					theLength++;
-					theLength++;
-					break;
-				}
-				case '\\': {
-					this->tempString[x] = '\\';
-					this->tempString.insert(this->tempString.begin() + x, '\\');
-					theLength++;
-					theLength++;
-					break;
-				}
-				default: {}
-			}
-		}
-		std::string theString{ this->tempString.data() + this->offSet, theLength };
 		this->offSet += length;
-		return ReadStringReturnData{ .theString = std::move(theString), .theLength = theLength };
+		return this->tempString;
 	}
 
 	std::string ErlPacker::singleValueETFToJson() {
@@ -387,13 +388,13 @@ namespace DiscordCoreInternal {
 		const uint8_t floatLength = 31;
 		auto floatString = readString(floatLength);
 
-		if (floatString.theString.empty()) {
+		if (floatString.empty()) {
 			return nlohmann::json{};
 		}
 
 		double number{};
 		std::string nullTerminated{};
-		nullTerminated.insert(nullTerminated.begin(), floatString.theString.data(), floatString.theString.data() + floatLength);
+		nullTerminated.insert(nullTerminated.begin(), floatString.data(), floatString.data() + floatLength);
 
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
 
@@ -482,11 +483,10 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseBinaryExt() {
 		uint32_t length = this->readBits<uint32_t>();
 		auto stringNew = this->readString(length);
-		if (stringNew.theString.empty()) {
+		if (stringNew.empty()) {
 			return std::string{};
 		}
-		std::string theString{ stringNew.theString.data(), stringNew.theLength }; 
-		std::cout << theString << std::endl;
+		std::string theString{ stringNew };
 		return theString;
 	}
 
@@ -531,14 +531,14 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseAtomUtf8Ext() {
 		uint32_t lengthNew = this->readBits<uint16_t>();
 		auto atom = this->readString(lengthNew);
-		std::string theValue = this->processAtom(atom.theString.data(), atom.theLength);
+		std::string theValue = this->processAtom(atom.data(), atom.size());
 		return theValue;
 	}
 
 	std::string ErlPacker::parseSmallAtomExt() {
 		uint8_t length = this->readBits<uint8_t>();
 		auto atom = this->readString(length);
-		std::string theValue = this->processAtom(atom.theString.data(), atom.theLength);
+		std::string theValue = this->processAtom(atom.data(), atom.size());
 		return theValue;
 	};
 }

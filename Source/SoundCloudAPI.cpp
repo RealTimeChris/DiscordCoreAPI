@@ -39,7 +39,6 @@ namespace DiscordCoreInternal {
 			dataPackage.baseUrl = this->baseUrl02;
 			dataPackage.relativePath = "/search?q=" + DiscordCoreAPI::urlEncode(songQuery.c_str()) + "&facet=model&client_id=" + SoundCloudRequestBuilder::clientId +
 				"&limit=20&offSet=0&linked_partitioning=1&app_version=" + this->appVersion + "&app_locale=en";
-			std::cout << "THE CLIENT ID: " << SoundCloudRequestBuilder::clientId << std::endl;
 			dataPackage.headersToInsert = theHeaders;
 			dataPackage.workloadClass = HttpsWorkloadClass::Get;
 			HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
@@ -54,7 +53,6 @@ namespace DiscordCoreInternal {
 					DiscordCoreAPI::Song newSong{};
 					auto theObjectNew = value.value().get_object().value();
 					DiscordCoreAPI::parseObject(theObjectNew, newSong);
-					std::cout << "THE URL 0101: " << newSong.firstDownloadUrl << std::endl;
 					if (!newSong.doWeGetSaved || newSong.songTitle == "") {
 						continue;
 					}
@@ -69,7 +67,6 @@ namespace DiscordCoreInternal {
 					results.emplace_back(newSong);
 				}
 			}
-			std::cout << "THE RESULTS SIZE (SOUNDCLOUD): " << results.size() << std::endl;
 			return results;
 		} catch (...) {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {
@@ -92,7 +89,6 @@ namespace DiscordCoreInternal {
 			auto theResult = theDocument["url"].get(theUrl);
 			if (theResult == simdjson::error_code::SUCCESS) {
 				newSong.secondDownloadUrl = theUrl.raw_json().take_value().data();
-				std::cout << "THE SECOND DOWNLOAD URL: " << newSong.secondDownloadUrl << std::endl;
 			}
 			if (newSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
 				HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };
@@ -194,7 +190,6 @@ namespace DiscordCoreInternal {
 				 << endl
 				 << endl;
 		}
-		std::cout << "THE CLIENT ID: " << clientIdNew << std::endl;
 		return clientIdNew;
 	}
 

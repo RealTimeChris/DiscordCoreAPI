@@ -92,7 +92,6 @@ namespace DiscordCoreInternal {
 					}
 				}
 			}
-			std::cout << "THE STRING: " << newString << std::endl;
 		}
 		
 		
