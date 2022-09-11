@@ -316,7 +316,6 @@ namespace DiscordCoreAPI {
 			UserData theUser{};
 			parseObject(theObject, theUser);
 			theData.id = theUser.id;
-			std::cout << "USER ID: " << theData.id << std::endl;
 			Users::insertUser(std::move(theUser));
 		}
 
@@ -509,8 +508,7 @@ namespace DiscordCoreAPI {
 					auto theObject = value.get_object().value();
 					parseObject(theObject, newData);
 					newData.guildId = theData.id;
-					theData.members.emplace_back(newData.id);
-					GuildMembers::insertGuildMember(std::move(newData));
+					theData.members.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -664,8 +662,7 @@ namespace DiscordCoreAPI {
 					auto theObject = value.get_object().value();
 					parseObject(theObject, newData);
 					newData.guildId = theData.id;
-					theData.members.emplace_back(newData);
-					GuildMembers::insertGuildMember(std::move(newData));
+					theData.members.emplace_back(std::move(newData));
 				}
 			}
 		}

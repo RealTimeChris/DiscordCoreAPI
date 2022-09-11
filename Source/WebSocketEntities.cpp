@@ -744,7 +744,7 @@ namespace DiscordCoreInternal {
 												}
 												for (auto& value: theGuild->members) {
 													DiscordCoreAPI::GuildMemberData theGuildMember =
-														DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value, .guildId = guildId }).get();
+														DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value.id, .guildId = guildId }).get();
 													DiscordCoreAPI::GuildMembers::removeGuildMember(theGuildMember);
 												}
 												for (auto& value: theGuild->channels) {
@@ -787,7 +787,7 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->updateData.guildId)) {
 												DiscordCoreAPI::Guilds::cache.at(dataPackage->updateData.guildId).emoji.clear();
 												for (auto& value: dataPackage->updateData.emojis) {
-													DiscordCoreAPI::Guilds::cache.at(dataPackage->updateData.guildId).emoji.push_back(value.id);
+													DiscordCoreAPI::Guilds::cache.at(dataPackage->updateData.guildId).emoji.emplace_back(value.id);
 												}
 											}
 											this->discordCoreClient->eventManager.onGuildEmojisUpdateEvent(*dataPackage);
@@ -800,7 +800,7 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Guilds::cache.contains(dataPackage->updateData.guildId)) {
 												DiscordCoreAPI::Guilds::cache.at(dataPackage->updateData.guildId).stickers.clear();
 												for (auto& value: dataPackage->updateData.stickers) {
-													DiscordCoreAPI::Guilds::cache.at(dataPackage->updateData.guildId).stickers.push_back(value.id);
+													DiscordCoreAPI::Guilds::cache.at(dataPackage->updateData.guildId).stickers.emplace_back(value.id);
 												}
 											}
 											this->discordCoreClient->eventManager.onGuildStickersUpdateEvent(*dataPackage);
@@ -858,7 +858,7 @@ namespace DiscordCoreInternal {
 													if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
 														DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache.at(guildId);
 														for (uint64_t x = 0; x < guild->members.size(); ++x) {
-															if (guild->members[x] == userId) {
+															if (guild->members[x].id == userId) {
 																guild->memberCount--;
 																guild->members.erase(guild->members.begin() + x);
 															}
@@ -1239,7 +1239,7 @@ namespace DiscordCoreInternal {
 											simdjson::ondemand::array theArray{};
 											thePayload["d"]["ids"].get(theArray);
 											for (auto value : theArray) {
-												dataPackage->ids.push_back(DiscordCoreAPI::strtoull(value.get_string().take_value().data()));
+												dataPackage->ids.emplace_back(DiscordCoreAPI::strtoull(value.get_string().take_value().data()));
 											}
 											this->discordCoreClient->eventManager.onMessageDeleteBulkEvent(*dataPackage);
 											break;
@@ -1563,7 +1563,7 @@ namespace DiscordCoreInternal {
 				theData.currentReconnectTries = this->currentReconnectTries;
 				theData.areWeResuming = this->areWeResuming;
 				theData.currentShard = this->shard[0];
-				this->theConnections->push_back(theData);
+				this->theConnections->emplace_back(theData);
 			}
 		}
 	}
@@ -1590,7 +1590,7 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		this->voiceConnections.push_back(theData);
+		this->voiceConnections.emplace_back(theData);
 	}
 
 	void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage thePackageNew) noexcept {
@@ -1707,7 +1707,7 @@ namespace DiscordCoreInternal {
 
 	void BaseSocketAgent::disconnectVoice(uint64_t theDCData) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		this->voiceConnectionsToDisconnect.push_back(theDCData);
+		this->voiceConnectionsToDisconnect.emplace_back(theDCData);
 	}
 
 	void BaseSocketAgent::connectVoiceInternal() noexcept {
@@ -1735,7 +1735,7 @@ namespace DiscordCoreInternal {
 				std::vector<WebSocketSSLClient*> theVector{};
 				for (auto& [key, value]: this->theShardMap) {
 					if (!static_cast<WebSocketSSLShard*>(value.get())->areWeConnecting.load()) {
-						theVector.push_back(value.get());
+						theVector.emplace_back(value.get());
 					}
 				}
 				auto theResult = WebSocketSSLClient::processIO(theVector);

@@ -189,27 +189,27 @@ namespace DiscordCoreAPI {
 			for (auto& value: other.channels) {
 				Channel theData{};
 				theData.id = value;
-				this->channels.push_back(theData);
+				this->channels.emplace_back(theData);
 			}
 			for (auto& value: other.members) {
 				GuildMember theData{};
-				theData.id = value;
-				this->members.push_back(theData);
+				theData.id = value.id;
+				this->members.emplace_back(theData);
 			}
 			for (auto& value: other.roles) {
 				Role theData{};
 				theData.id = value;
-				this->roles.push_back(theData);
+				this->roles.emplace_back(theData);
 			}
 			for (auto& value: other.emoji) {
 				EmojiData theData{};
 				theData.id = value;
-				this->emoji.push_back(theData);
+				this->emoji.emplace_back(theData);
 			}
 			for (auto& value: other.guildScheduledEvents) {
 				GuildScheduledEvent theData{};
 				theData.id = value;
-				this->guildScheduledEvents.push_back(theData);
+				this->guildScheduledEvents.emplace_back(theData);
 			}
 			for (auto& value: other.presences) {
 				PresenceUpdateData theData{};
@@ -219,17 +219,17 @@ namespace DiscordCoreAPI {
 			for (auto& value: other.stageInstances) {
 				StageInstance theData{};
 				theData.id = value;
-				this->stageInstances.push_back(theData);
+				this->stageInstances.emplace_back(theData);
 			}
 			for (auto& value: other.stickers) {
 				Sticker theData{};
 				theData.id = value;
-				this->stickers.push_back(theData);
+				this->stickers.emplace_back(theData);
 			}
 			for (auto& value: other.threads) {
 				Thread theData{};
 				theData.id = value;
-				this->threads.push_back(theData);
+				this->threads.emplace_back(theData);
 			}
 			this->joinedAt = std::move(other.joinedAt);
 			this->ownerId = std::move(other.ownerId);
@@ -253,27 +253,27 @@ namespace DiscordCoreAPI {
 			for (auto& value: other.channels) {
 				Channel theData{};
 				theData.id = value;
-				this->channels.push_back(theData);
+				this->channels.emplace_back(theData);
 			}
 			for (auto& value: other.members) {
 				GuildMember theData{};
-				theData.id = value;
-				this->members.push_back(theData);
+				theData.id = value.id;
+				this->members.emplace_back(theData);
 			}
 			for (auto& value: other.roles) {
 				Role theData{};
 				theData.id = value;
-				this->roles.push_back(theData);
+				this->roles.emplace_back(theData);
 			}
 			for (auto& value: other.emoji) {
 				EmojiData theData{};
 				theData.id = value;
-				this->emoji.push_back(theData);
+				this->emoji.emplace_back(theData);
 			}
 			for (auto& value: other.guildScheduledEvents) {
 				GuildScheduledEvent theData{};
 				theData.id = value;
-				this->guildScheduledEvents.push_back(theData);
+				this->guildScheduledEvents.emplace_back(theData);
 			}
 			for (auto& value: other.presences) {
 				PresenceUpdateData theData{};
@@ -283,17 +283,17 @@ namespace DiscordCoreAPI {
 			for (auto& value: other.stageInstances) {
 				StageInstance theData{};
 				theData.id = value;
-				this->stageInstances.push_back(theData);
+				this->stageInstances.emplace_back(theData);
 			}
 			for (auto& value: other.stickers) {
 				Sticker theData{};
 				theData.id = value;
-				this->stickers.push_back(theData);
+				this->stickers.emplace_back(theData);
 			}
 			for (auto& value: other.threads) {
 				Thread theData{};
 				theData.id = value;
-				this->threads.push_back(theData);
+				this->threads.emplace_back(theData);
 			}
 			this->memberCount = other.memberCount;
 			this->joinedAt = other.joinedAt;

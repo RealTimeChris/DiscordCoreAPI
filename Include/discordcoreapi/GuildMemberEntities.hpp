@@ -179,7 +179,6 @@ namespace DiscordCoreAPI {
 		size_t size() noexcept;
 
 	  protected:
-		std::map<GuildMemberKey, GuildMemberData> theMap{};
 		std::mutex theMutex{};
 	};
 
