@@ -195,6 +195,73 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void RingBuffer::writeData(char* theData, size_t theLength) {
+		if (this->head + theLength > this->theArray.size()) {
+			for (size_t x = 0; x < theLength; ++x) {
+				this->putByte(theData[x]);
+			}
+		} else {
+			memcpy(this->getCurrentHead(), theData, theLength);
+			this->head += theLength;
+		}
+	}
+
+	void RingBuffer::readData(char* theData, size_t theLength) {
+		if (this->tail + theLength > this->theArray.size()) {
+			for (size_t x = 0; x < theLength; ++x) {
+				theData[x] = this->getByte();
+			}
+		} else {
+			memcpy(theData, this->getCurrentTail(), theLength);
+			this->tail += theLength;
+		}
+	}
+
+	char* RingBuffer::getBufferPtr(size_t theLength) {
+		if (this->tail + theLength > this->theArray.size()) {
+			this->readData(this->theOverFlowArray.data(), theLength);
+			return this->theOverFlowArray.data();
+		} else {
+			char* thePtr = this->getCurrentTail();
+			this->tail += theLength;
+			return thePtr;
+		}
+	}
+
+	char* RingBuffer::getCurrentTail() {
+		return (this->theArray.data() + (this->tail % this->theArray.size()));
+	}
+
+	char* RingBuffer::getCurrentHead() {
+		return (this->theArray.data() + (this->head % this->theArray.size()));
+	}
+
+	void RingBuffer::putByte(char theByte) {
+		this->getCurrentHead()[0] = theByte;
+		this->head++;
+	}
+
+	char RingBuffer::getByte() {
+		char theReturn = this->getCurrentTail()[0];
+		this->tail++;
+		return theReturn;
+	}
+
+	int64_t RingBuffer::getFreeSpace() {
+		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size()))
+			return this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+		else
+			return (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+	}
+
+	int64_t RingBuffer::getUsedSpace() {
+		return this->theArray.size() - this->getFreeSpace();
+	}
+	
+	void RingBuffer::clear() {
+		this->tail = this->head = 0;
+	}
+
 	SSLDataInterface::SSLDataInterface() noexcept {}
 
 	bool SSLConnectionInterface::initialize() noexcept {
