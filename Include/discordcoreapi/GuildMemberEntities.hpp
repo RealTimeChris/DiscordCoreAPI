@@ -127,11 +127,11 @@ namespace DiscordCoreAPI {
 		virtual ~GuildMember() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::ondemand::object& jsonObjectData, DiscordCoreAPI::GuildMember& theGuildMember);
+	template<> void parseObject(simdjson::ondemand::object jsonObjectData, DiscordCoreAPI::GuildMember& theGuildMember);
 
 	class DiscordCoreAPI_Dll GuildMemberVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object& jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object jsonObjectData, ReturnType& theData);
 
 		GuildMemberVector() noexcept = default;
 
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 		std::vector<GuildMember> theGuildMembers{};
 	};
 
-	template<> void parseObject(simdjson::ondemand::object& jsonObjectData, GuildMemberVector& theGuildMember);
+	template<> void parseObject(simdjson::ondemand::object jsonObjectData, GuildMemberVector& theGuildMember);
 
 	/**@}*/
 
@@ -190,8 +190,8 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object& theParser, ReturnType& theData);
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object& jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object theParser, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class GuildMemberData;

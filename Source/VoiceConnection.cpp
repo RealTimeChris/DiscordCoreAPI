@@ -260,8 +260,8 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::handleBuffer(WebSocketSSLClient* theClient) noexcept {
-		if (static_cast<WebSocketSSLShard*>(theClient)->currentState.load() == DiscordCoreInternal::SSLShardState::Upgrading) {
-			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
+		if (static_cast<VoiceConnection*>(theClient)->currentState.load() == DiscordCoreInternal::SSLShardState::Upgrading) {
+			return this->parseConnectionHeaders(static_cast<VoiceConnection*>(theClient));
 		}
 		return VoiceConnection::parseMessage(this);
 	}
@@ -312,7 +312,6 @@ namespace DiscordCoreAPI {
 					return false;
 				} else {
 					this->onMessageReceived(WebSocketSSLShard::getInputBuffer(theShard->messageOffset, theShard->messageLength));
-					//WebSocketSSLShard::inputBuffer.updateFromReadInfo(theShard->messageOffset + theShard->messageLength);
 					return true;
 				}
 			}

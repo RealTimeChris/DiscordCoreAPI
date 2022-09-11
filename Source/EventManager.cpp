@@ -214,7 +214,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	template<> void parseObject(simdjson::ondemand::object& theJsonData, OnVoiceServerUpdateData& theData) {
+	template<> void parseObject(simdjson::ondemand::object theJsonData, OnVoiceServerUpdateData& theData) {
 		theData.endpoint = getString(theJsonData, "endpoint");
 
 		theData.guildId = getId(theJsonData, "guild_id");

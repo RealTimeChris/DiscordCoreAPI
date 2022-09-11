@@ -117,9 +117,6 @@ namespace DiscordCoreInternal {
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
 
-	CoRoutineThreadPool::~CoRoutineThreadPool() {
-	}
-
 	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
 		while (!stopToken.stop_requested()) {
 			if (this->coroHandleCount.load() > 0) {

@@ -210,16 +210,16 @@ namespace DiscordCoreInternal {
 		void readData(char* theData, size_t theLength);
 		char* getBufferPtr(size_t theLength);
 		char* getCurrentTail();
-		char* getCurrentHead();
-		int64_t getFreeSpace();
 		int64_t getUsedSpace();
+		int64_t getFreeSpace();
 		void clear();
 	  protected:
 		std::array<char, 1024 * 1024> theOverFlowArray{};
 		std::array<char, 1024 * 1024> theArray{};
 		int64_t head{};
 		int64_t tail{};
-		void putByte(char& theByte);
+		void putByte(char theByte);
+		char* getCurrentHead();
 		char getByte();
 	};
 

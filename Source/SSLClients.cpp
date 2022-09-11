@@ -236,7 +236,7 @@ namespace DiscordCoreInternal {
 		return (this->theArray.data() + (this->head % this->theArray.size()));
 	}
 
-	void RingBuffer::putByte(char& theByte) {
+	void RingBuffer::putByte(char theByte) {
 		this->getCurrentHead()[0] = theByte;
 		this->head++;
 	}

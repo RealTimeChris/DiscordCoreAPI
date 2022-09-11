@@ -481,6 +481,7 @@ namespace DiscordCoreAPI {
 
 	bool Permissions::checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission) {
 		std::string permissionsString = Permissions::computePermissions(guildMember, channel);
+		std::cout << permissionsString << std::endl; 
 		if ((stoull(permissionsString) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
 			return true;
 		} else {

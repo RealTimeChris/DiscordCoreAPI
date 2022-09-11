@@ -417,11 +417,12 @@ namespace DiscordCoreInternal {
 	std::atomic_int32_t theInt{};
 	bool WebSocketSSLShard::onMessageReceived(std::string_view theDataNew) noexcept {
 		if (this->discordCoreClient) {
+			std::string theString{};
+			std::string& payload{ theString };
 			if (this->areWeStillConnected()) {
 				try {
 					bool returnValue{ false };
-					std::string theString{};
-					std::string& payload{ theString }; 
+					
 					simdjson::ondemand::document_stream::iterator::value_type theDocument{};
 					if (theDataNew.size() > 0) {
 						returnValue = true;
@@ -480,10 +481,8 @@ namespace DiscordCoreInternal {
 									switch (EventConverter{ theMessage.t }) {
 											
 										case 1: { 
-											std::cout << "WERE LEAVING LEAVING! 01234" << std::endl;
 											ReadyData theData{};
 											auto theObjectNew = thePayload["d"].get_object().take_value();
-											std::cout << "WERE LEAVING LEAVING! 45454" << std::endl;
 											parseObject(theObjectNew, theData);
 											this->currentState.store(SSLShardState::Authenticated);
 											this->sessionId = theData.sessionId;
@@ -1507,6 +1506,7 @@ namespace DiscordCoreInternal {
 				} catch (...) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
+						std::cout << payload << std::endl;
 					}
 					return false;
 				}

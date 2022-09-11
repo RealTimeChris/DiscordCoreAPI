@@ -80,11 +80,11 @@ namespace DiscordCoreAPI {
 		virtual ~Sticker() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::ondemand::object& jsonObjectData, Sticker& theData);
+	template<> void parseObject(simdjson::ondemand::object jsonObjectData, Sticker& theData);
 
 	class DiscordCoreAPI_Dll StickerVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object& jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object jsonObjectData, ReturnType& theData);
 
 		StickerVector() noexcept = default;
 
@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 		std::vector<Sticker> theStickers{};
 	};
 
-	template<> void parseObject(simdjson::ondemand::object& jsonObjectData, StickerVector& theData);
+	template<> void parseObject(simdjson::ondemand::object jsonObjectData, StickerVector& theData);
 
 	/**@}*/
 
