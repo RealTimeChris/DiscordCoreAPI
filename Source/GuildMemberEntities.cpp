@@ -122,38 +122,38 @@ namespace DiscordCoreAPI {
 	
 	const GuildMemberData& GuildMemberCache::readOnly(GuildMemberData theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		if (!this->theMap.contains(theKey)) {
+		if (!this->theMap.contains(theKey.id)) {
 			GuildMemberData theData{};
 			theData.id = theKey.id;
-			this->theMap.emplace(theKey);
+			this->theMap.emplace(theKey.id, std::move(theKey));
 		}
-		return *this->theMap.find(theKey);
+		return this->theMap.find(theKey.id).operator*().second;
 	}
 
 	GuildMemberData& GuildMemberCache::at(GuildMemberData theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		if (!this->theMap.contains(theKey)) {
+		if (!this->theMap.contains(theKey.id)) {
 			GuildMemberData theData{};
 			theData.id = theKey.id;
-			this->theMap.emplace(theKey);
+			this->theMap.emplace(theKey.id, std::move(theKey));
 		}
-		return ( GuildMemberData& )this->theMap.find(theKey).operator*();
+		return ( GuildMemberData& )this->theMap.find(theKey.id).operator*().second;
 	}
 
 	void GuildMemberCache::emplace(GuildMemberData&& theData) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		this->theMap.emplace(std::move(theData));
+		this->theMap.emplace(theData.id, std::move(theData));
 	}
 
 	bool GuildMemberCache::contains(GuildMemberData theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		return this->theMap.contains(theKey);
+		return this->theMap.contains(theKey.id);
 	}
 
 	void GuildMemberCache::erase(GuildMemberData theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		if (this->theMap.contains(theKey)) {
-			this->theMap.erase(theKey);
+		if (this->theMap.contains(theKey.id)) {
+			this->theMap.erase(theKey.id);
 		}
 	}
 	

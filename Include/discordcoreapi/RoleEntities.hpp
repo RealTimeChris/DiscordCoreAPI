@@ -32,6 +32,14 @@
 
 namespace DiscordCoreAPI {
 
+	inline bool operator==(const DiscordCoreAPI::RoleData& lhs, const DiscordCoreAPI::RoleData& rhs) {
+		if (lhs.id == rhs.id) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
@@ -241,7 +249,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<Snowflake, RoleData> cache;
+		static ObjectCache<RoleData> cache;
 		static bool doWeCacheRoles;
 	};
 	/**@}*/

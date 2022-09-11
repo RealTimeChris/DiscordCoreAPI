@@ -36,6 +36,14 @@
 
 namespace DiscordCoreAPI {
 
+	inline bool operator==(const DiscordCoreAPI::GuildData& lhs, const DiscordCoreAPI::GuildData& rhs) {
+		if (lhs.id == rhs.id) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
@@ -583,7 +591,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<Snowflake, GuildData> cache;
+		static ObjectCache<GuildData> cache;
 		static DiscordCoreClient* discordCoreClient;
 		static bool doWeCacheGuilds;
 

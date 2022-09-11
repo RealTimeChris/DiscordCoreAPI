@@ -3498,4 +3498,64 @@ namespace DiscordCoreInternal {
 	}
 }
 
+struct ChannelHash {
+	std::size_t operator()(DiscordCoreAPI::ChannelData const& object) const noexcept {
+		return object.id;
+	}
+};
+
+template<> struct std::hash<DiscordCoreAPI::ChannelData> {
+	std::size_t operator()(DiscordCoreAPI::ChannelData const& object) const noexcept {
+		return object.id;
+	}
+};
+
+struct GuildHash {
+	std::size_t operator()(DiscordCoreAPI::GuildData const& object) const noexcept {
+		return object.id;
+	}
+};
+
+template<> struct std::hash<DiscordCoreAPI::GuildData> {
+	std::size_t operator()(DiscordCoreAPI::GuildData const& object) const noexcept {
+		return object.id;
+	}
+};
+
+struct RoleHash {
+	std::size_t operator()(DiscordCoreAPI::RoleData const& object) const noexcept {
+		return object.id;
+	}
+};
+
+template<> struct std::hash<DiscordCoreAPI::RoleData> {
+	std::size_t operator()(DiscordCoreAPI::RoleData const& object) const noexcept {
+		return object.id;
+	}
+};
+
+struct UserHash {
+	std::size_t operator()(DiscordCoreAPI::UserData const& object) const noexcept {
+		return object.id;
+	}
+};
+
+template<> struct std::hash<DiscordCoreAPI::UserData> {
+	std::size_t operator()(DiscordCoreAPI::UserData const& object) const noexcept {
+		return object.id;
+	}
+};
+
+struct GuildMemberHash {
+	std::size_t operator()(DiscordCoreAPI::GuildMemberData const& object) const noexcept {
+		return object.guildId ^ (object.id << 1);
+	}
+};
+
+template<> struct std::hash<DiscordCoreAPI::GuildMemberData> {
+	std::size_t operator()(DiscordCoreAPI::GuildMemberData const& object) const noexcept {
+		return object.guildId ^ (object.id << 1);
+	}
+};
+
 #endif

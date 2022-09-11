@@ -31,6 +31,14 @@
 
 namespace DiscordCoreAPI {
 
+	inline bool operator==(const DiscordCoreAPI::ChannelData& lhs, const DiscordCoreAPI::ChannelData& rhs) {
+		if (lhs.id == rhs.id) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
@@ -308,7 +316,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<Snowflake, ChannelData> cache;
+		static ObjectCache<ChannelData> cache;
 		static bool doWeCacheChannels;
 	};
 	/**@}*/

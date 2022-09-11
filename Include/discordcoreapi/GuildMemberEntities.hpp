@@ -30,28 +30,6 @@
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/Https.hpp>
 
-#include <functional>
-#include <string>
-#include <unordered_set>
-
-// custom hash can be a standalone function object:
-struct MyHashGuildMember {
-	std::size_t operator()(DiscordCoreAPI::GuildMemberData const& s) const noexcept {
-		std::size_t h1 = s.guildId;
-		std::size_t h2 = s.id;
-		return h1 ^ (h2 << 1);// or use boost::hash_combine
-	}
-};
-
-// custom specialization of std::hash can be injected in namespace std
-template<> struct std::hash<DiscordCoreAPI::GuildMemberData> {
-	std::size_t operator()(DiscordCoreAPI::GuildMemberData const& s) const noexcept {
-		std::size_t h1 = s.guildId;
-		std::size_t h2 = s.id;
-		return h1 ^ (h2 << 1);// or use boost::hash_combine
-	}
-};
-
 namespace DiscordCoreAPI {
 
 	inline bool operator==(const DiscordCoreAPI::GuildMemberData& lhs, const DiscordCoreAPI::GuildMemberData& rhs) {
@@ -194,7 +172,7 @@ namespace DiscordCoreAPI {
 		size_t size() noexcept;
 
 	  protected:
-		std::unordered_set<GuildMemberData> theMap{};
+		std::map<Snowflake, GuildMemberData> theMap{};
 		std::mutex theMutex{};
 	};
 	

@@ -442,7 +442,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
 		co_await NewThreadAwaitable<std::vector<GuildData>>();
 		GuildDataVector guildVector{};
-		for (auto [key, value]: Guilds::cache) {
+		for (auto value: Guilds::cache) {
 			value.discordCoreClient = Guilds::discordCoreClient;
 			guildVector.theGuildDatas.emplace_back(std::move(value));
 		}
@@ -455,25 +455,29 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "?with_counts=true";
 		workload.callStack = "Guilds::getGuildAsync()";
-		Guild theData{};
-		if (!Guilds::cache.contains(dataPackage.guildId)) {
-			Guilds::cache.emplace(dataPackage.guildId, GuildData{});
+		GuildData theData{};
+		theData.id = dataPackage.guildId;
+		if (!Guilds::cache.contains(theData)) {
+			Guilds::cache.emplace(theData);
 		}
-		theData = Guilds::cache.readOnly(dataPackage.guildId);
-		theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theData);
-		theData.discordCoreClient = Guilds::discordCoreClient;
-		Guilds::insertGuild(theData);
-		co_return theData;
+		Guild theDataNew{};
+		theDataNew = Guilds::cache.readOnly(theData);
+		theDataNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theDataNew);
+		theDataNew.discordCoreClient = Guilds::discordCoreClient;
+		Guilds::insertGuild(theDataNew);
+		co_return theDataNew;
 	}
 
 	CoRoutine<GuildData> Guilds::getCachedGuildAsync(GetGuildData dataPackage) {
 		co_await NewThreadAwaitable<GuildData>();
-		if (!Guilds::cache.contains(dataPackage.guildId)) {
+		Guild theData{};
+		theData.id = dataPackage.guildId;
+		if (!Guilds::cache.contains(theData)) {
 			auto theGuild = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
 			theGuild.discordCoreClient = Guilds::discordCoreClient;
 			co_return theGuild;
 		} else {
-			GuildData theGuild = Guilds::cache.readOnly(dataPackage.guildId);
+			GuildData theGuild = Guilds::cache.readOnly(theData);
 			theGuild.discordCoreClient = Guilds::discordCoreClient;
 			co_return theGuild;
 		}
@@ -498,13 +502,17 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Guild theData{};
-		if (Guilds::cache.contains(dataPackage.guildId)) {
-			theData = Guilds::getCachedGuildAsync({ .guildId = dataPackage.guildId }).get();
+		GuildData theData{};
+		theData.id = dataPackage.guildId;
+		if (!Guilds::cache.contains(theData)) {
+			Guilds::cache.emplace(theData);
 		}
-		theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theData);
-		theData.discordCoreClient = Guilds::discordCoreClient;
-		co_return theData;
+		Guild theDataNew{};
+		theDataNew = Guilds::cache.readOnly(theData);
+		theDataNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theDataNew);
+		theDataNew.discordCoreClient = Guilds::discordCoreClient;
+		Guilds::insertGuild(theDataNew);
+		co_return theDataNew;
 	}
 
 	CoRoutine<void> Guilds::deleteGuildAsync(DeleteGuildData dataPackage) {
@@ -907,7 +915,7 @@ namespace DiscordCoreAPI {
 		if (Guilds::doWeCacheGuilds) {
 			guild.discordCoreClient = Guilds::discordCoreClient;
 			auto guildId = guild.id;
-			Guilds::cache.emplace(guildId, std::move(guild));
+			Guilds::cache.emplace(std::move(guild));
 			if (Guilds::cache.size() % 100 == 0) {
 				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 			}
@@ -915,12 +923,14 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::removeGuild(const Snowflake guildId) {
-		Guilds::cache.erase(guildId);
+		GuildData theData{};
+		theData.id = guildId;
+		Guilds::cache.erase(theData);
 	};
 
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
-	ObjectCache<Snowflake, GuildData> Guilds::cache{};
+	ObjectCache<GuildData> Guilds::cache{};
 	bool Guilds::doWeCacheGuilds{ false };
 
 }

@@ -160,11 +160,13 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
 		co_await NewThreadAwaitable<UserData>();
-		if (!Users::cache.contains(dataPackage.userId)) {
+		UserData theData{};
+		theData.id = dataPackage.userId;
+		if (!Users::cache.contains(theData)) {
 			co_return getUserAsync(dataPackage).get();
 
 		} else {
-			UserData theData = Users::cache.readOnly(dataPackage.userId);
+			UserData theData = Users::cache.readOnly(theData);
 			co_return theData;
 		}
 	}
@@ -176,7 +178,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/users/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Users::getUserAsync()";
 		User theData{};
-		theData = Users::cache.readOnly(dataPackage.userId);
+		theData.id = dataPackage.userId;
+		theData = Users::cache.readOnly(theData);
 		theData = Users::httpsClient->submitWorkloadAndGetResult<User>(workload, &theData);
 		Users::insertUser(theData);
 		co_return theData;
@@ -231,7 +234,7 @@ namespace DiscordCoreAPI {
 		}
 		if (Users::doWeCacheUsers) {
 			auto userId = user.id;
-			Users::cache.emplace(userId, std::move(user));
+			Users::cache.emplace(std::move(user));
 			if (Users::cache.size() % 1000 == 0) {
 				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
 			}
@@ -239,6 +242,6 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
-	ObjectCache<Snowflake, UserData> Users::cache{};
+	ObjectCache<UserData> Users::cache{};
 	bool Users::doWeCacheUsers{ false };
 }

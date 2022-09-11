@@ -202,10 +202,11 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "Channels::getChannelAsync()";
 		Channel theData{};
-		if (!Channels::cache.contains(dataPackage.channelId)) {
-			Channels::cache.emplace(dataPackage.channelId, ChannelData{});
+		theData.id = dataPackage.channelId;
+		if (!Channels::cache.contains(( ChannelData& )theData)) {
+			Channels::cache.emplace(( ChannelData& )theData);
 		}
-		theData = Channels::cache.readOnly(dataPackage.channelId);
+		theData = Channels::cache.readOnly(theData);
 		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
 		Channels::insertChannel(theData);
 		co_return theData;
@@ -213,10 +214,12 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<ChannelData> Channels::getCachedChannelAsync(GetChannelData dataPackage) {
 		co_await NewThreadAwaitable<ChannelData>();
-		if (!Channels::cache.contains(dataPackage.channelId)) {
+		ChannelData theChannel{};
+		theChannel.id = dataPackage.channelId;
+		if (!Channels::cache.contains(theChannel)) {
 			co_return Channels::getChannelAsync(dataPackage).get();
 		} else {
-			ChannelData theData = Channels::cache.readOnly(dataPackage.channelId);
+			ChannelData theData = Channels::cache.readOnly(theChannel);
 			co_return theData;
 		}
 	}
@@ -232,10 +235,11 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		Channel theData{};
-		if (!Channels::cache.contains(dataPackage.channelId)) {
-			Channels::cache.emplace(dataPackage.channelId, ChannelData{});
+		theData.id = dataPackage.channelId;
+		if (!Channels::cache.contains(theData)) {
+			Channels::cache.emplace(theData);
 		}
-		theData = Channels::cache.readOnly(dataPackage.channelId);
+		theData = Channels::cache.readOnly(theData);
 		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
 		Channels::insertChannel(theData);
 		co_return theData;
@@ -380,7 +384,7 @@ namespace DiscordCoreAPI {
 		}
 		if (Channels::doWeCacheChannels) {
 			auto channelId = channel.id;
-			Channels::cache.emplace(channelId, std::move(channel));
+			Channels::cache.emplace(std::move(channel));
 			if (Channels::cache.size() % 1000 == 0) {
 				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
 			}
@@ -388,10 +392,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::removeChannel(const Snowflake channelId) {
-		Channels::cache.erase(channelId);
+		ChannelData theData{};
+		theData.id = channelId;
+		Channels::cache.erase(theData);
 	};
 
 	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
-	ObjectCache<Snowflake, ChannelData> Channels::cache{};
+	ObjectCache<ChannelData> Channels::cache{};
 	bool Channels::doWeCacheChannels{ false };
 }

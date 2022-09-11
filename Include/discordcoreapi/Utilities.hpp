@@ -70,6 +70,7 @@ inline uint64_t ntohll(uint64_t x) {
 #include <condition_variable>
 #include <nlohmann/json.hpp>
 #include <source_location>
+#include <unordered_set>
 #include <shared_mutex>
 #include <functional>
 #include <simdjson.h>
@@ -217,6 +218,12 @@ namespace DiscordCoreInternal {
 	template<typename ReturnType> void parseObject(simdjson::ondemand::object theParser, ReturnType& theData);
 
 }// namespace DiscordCoreInternal
+template<typename ObjectType>
+struct SnowflakeHash {
+	std::size_t operator()(ObjectType const& s) const noexcept {
+		return s.id;
+	}
+};
 
 namespace DiscordCoreAPI {
 
@@ -441,25 +448,34 @@ namespace DiscordCoreAPI {
 	 * \addtogroup utilities
 	 * @{
 	 */
-
-	template<typename KeyType, typename ObjectType>
+	template<typename ObjectType>
 	class ObjectCache { 
 	  public:
 		ObjectCache() noexcept {};
 
-		void emplace(KeyType theKey, ObjectType&&theData) noexcept {
+		void emplace(ObjectType&& theData) noexcept {
 			std::unique_lock theLock{ this->theMutex };
-			this->theMap.insert_or_assign(theKey, std::move(theData));
+			this->theMap.emplace(std::move(theData));
 		}
 
-		const ObjectType& readOnly(KeyType theKey) noexcept{
-			std::shared_lock theLock{ this->theMutex };
-			return this->theMap[theKey];
+		void emplace(ObjectType& theData) noexcept {
+			std::unique_lock theLock{ this->theMutex };
+			this->theMap.emplace(theData);
 		}
 
-		ObjectType& at(KeyType theKey) noexcept {
+		const ObjectType& readOnly(ObjectType& theKey) noexcept {
 			std::shared_lock theLock{ this->theMutex };
-			return this->theMap[theKey];
+			return *this->theMap.find(theKey);
+		}
+
+		ObjectType& at(ObjectType&& theKey) noexcept {
+			std::shared_lock theLock{ this->theMutex };
+			return ( ObjectType& )*this->theMap.find(theKey);
+		}
+
+		ObjectType& at(ObjectType& theKey) noexcept {
+			std::shared_lock theLock{ this->theMutex };
+			return ( ObjectType& )*this->theMap.find(theKey);
 		}
 
 		auto begin() {
@@ -472,12 +488,12 @@ namespace DiscordCoreAPI {
 			return this->theMap.end();
 		}
 
-		bool contains(KeyType theKey) noexcept {
+		bool contains(ObjectType& theKey) noexcept {
 			std::unique_lock theLock{ this->theMutex };
 			return this->theMap.contains(theKey);
 		}
 
-		void erase(KeyType theKey) {
+		void erase(ObjectType& theKey) {
 			std::unique_lock theLock{ this->theMutex };
 			if (this->theMap.contains(theKey)) {
 				this->theMap.erase(theKey);
@@ -490,7 +506,7 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::map<KeyType, ObjectType> theMap{};
+		std::unordered_set<ObjectType> theMap{};
 		std::shared_mutex theMutex{};
 	};
 
