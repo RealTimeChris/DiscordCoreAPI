@@ -119,93 +119,48 @@ namespace DiscordCoreAPI {
 	GuildMemberVector::operator std::vector<GuildMember>() {
 		return this->theGuildMembers;
 	}
-
-	GuildMemberKey::GuildMemberKey(Snowflake guildIdNew, Snowflake userIdNew) {
-		this->userId = userIdNew;
-	}
-
-	const GuildMemberData& GuildMemberCache::readOnly(GuildMemberKey theKey) noexcept {
+	
+	const GuildMemberData& GuildMemberCache::readOnly(GuildMemberData theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		if (Guilds::cache.contains(theKey.guildId)) {
-			for (auto& value: Guilds::cache.at(theKey.guildId).members) {
-				if (value.id == theKey.userId) {
-					return value;
-				}
-			}
-		} else {
-			GuildData theData{};
-			theData.id = theKey.guildId;
-			Guilds::cache.emplace(theKey.guildId, std::move(theData));
+		if (!this->theMap.contains(theKey)) {
+			GuildMemberData theData{};
+			theData.id = theKey.id;
+			this->theMap.emplace(theKey);
 		}
-		GuildMemberData theData{};
-		theData.id = theKey.userId;
-		theData.guildId = theKey.guildId;
-		Guilds::cache.at(theKey.guildId).members.emplace_back(theData);
-		return Guilds::cache.at(theKey.guildId).members.back();
+		return *this->theMap.find(theKey);
 	}
 
-	GuildMemberData& GuildMemberCache::at(GuildMemberKey theKey) noexcept {
+	GuildMemberData& GuildMemberCache::at(GuildMemberData theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		if (Guilds::cache.contains(theKey.guildId)) {
-			for (auto& value: Guilds::cache.at(theKey.guildId).members) {
-				if (value.id == theKey.userId) {
-					return value;
-				}
-			}
-		} else {
-			GuildData theData{};
-			theData.id = theKey.guildId;
-			Guilds::cache.emplace(theKey.guildId, std::move(theData));
+		if (!this->theMap.contains(theKey)) {
+			GuildMemberData theData{};
+			theData.id = theKey.id;
+			this->theMap.emplace(theKey);
 		}
-		GuildMemberData theData{};
-		theData.id = theKey.userId;
-		theData.guildId = theKey.guildId;
-		Guilds::cache.at(theKey.guildId).members.emplace_back(theData);
-		return Guilds::cache.at(theKey.guildId).members.back();
+		return ( GuildMemberData& )this->theMap.find(theKey).operator*();
 	}
 
-	void GuildMemberCache::emplace(GuildMemberKey theKey, GuildMemberData&& theData) noexcept {
+	void GuildMemberCache::emplace(GuildMemberData&& theData) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		if (!Guilds::cache.contains(theKey.guildId)) {
-			GuildData theData{};
-			theData.id = theKey.guildId;
-			Guilds::cache.emplace(theKey.guildId, std::move(theData));
-		}
-		Guilds::cache.at(theKey.guildId).members.emplace_back(std::move(theData));
+		this->theMap.emplace(std::move(theData));
 	}
 
-	bool GuildMemberCache::contains(GuildMemberKey theKey) noexcept {
+	bool GuildMemberCache::contains(GuildMemberData theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		if (!Guilds::cache.contains(theKey.guildId)) {
-			return false;
-		}
-		for (auto& value: Guilds::cache.at(theKey.guildId).members) {
-			if (value.id == theKey.userId) {
-				return true;
-			}
-		}
-		return false;
+		return this->theMap.contains(theKey);
 	}
 
-	void GuildMemberCache::erase(GuildMemberKey theKey) noexcept {
+	void GuildMemberCache::erase(GuildMemberData theKey) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		if (Guilds::cache.contains(theKey.guildId)) {
-			for (uint32_t x = 0; x < Guilds::cache.at(theKey.guildId).members.size(); ++x) {
-				if (Guilds::cache.at(theKey.guildId).members[x].id == theKey.userId) {
-					Guilds::cache.at(theKey.guildId).members.erase(Guilds::cache.at(theKey.guildId).members.begin() + x);
-				}
-			}
+		if (this->theMap.contains(theKey)) {
+			this->theMap.erase(theKey);
 		}
 	}
-
+	
 	size_t GuildMemberCache::size() noexcept {
-		size_t theSize{};
-		for (auto& [key, value]: Guilds::cache) {
-			theSize += value.members.size();
-		}
-		return theSize;
+		return this->theMap.size();
 	}
-
+	
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
 		GuildMembers::doWeCacheGuildMembers = configManagerNew->doWeCacheUsers();
 		GuildMembers::httpsClient = theClient;
@@ -218,7 +173,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
 		workload.callStack = "GuildMembers::getGuildMemberAsync()";
 		GuildMember theData{};
-		theData = GuildMembers::cache.readOnly(GuildMemberKey{ dataPackage.guildId, dataPackage.guildMemberId });
+		theData.guildId = dataPackage.guildId;
+		theData.id = dataPackage.guildMemberId;
+		theData = GuildMembers::cache.readOnly(theData);
 		theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &theData);
 		theData.guildId = dataPackage.guildId;
 		GuildMembers::insertGuildMember(theData);
@@ -227,9 +184,12 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildMemberData> GuildMembers::getCachedGuildMemberAsync(GetGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMemberData>();
-		if (GuildMembers::cache.contains(GuildMemberKey{ dataPackage.guildId, dataPackage.guildMemberId })) {
-			GuildMemberData theData = GuildMembers::cache.readOnly(GuildMemberKey{ dataPackage.guildId, dataPackage.guildMemberId });
-			co_return theData;
+		GuildMemberData theKey{};
+		theKey.id = dataPackage.guildMemberId;
+		theKey.guildId = dataPackage.guildId;
+		if (GuildMembers::cache.contains(theKey)) {
+		theKey = GuildMembers::cache.readOnly(theKey);
+		co_return theKey;
 		}
 		co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
 	}
@@ -302,7 +262,9 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		GuildMember theData{};
-		theData = GuildMembers::cache.readOnly(GuildMemberKey{ dataPackage.guildId, dataPackage.guildMemberId });
+		theData.id = dataPackage.guildMemberId;
+		theData.guildId = dataPackage.guildId;
+		theData = GuildMembers::cache.readOnly(theData);
 		theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &theData);
 		theData.guildId = dataPackage.guildId;
 		GuildMembers::insertGuildMember(theData);
@@ -381,7 +343,7 @@ namespace DiscordCoreAPI {
 		if (GuildMembers::doWeCacheGuildMembers) {
 			auto guildMemberId = guildMember.id;
 			auto guildId = guildMember.guildId;
-			GuildMembers::cache.emplace(GuildMemberKey{ guildId, guildMemberId }, std::move(guildMember));
+			GuildMembers::cache.emplace(std::move(guildMember));
 			if (GuildMembers::cache.size() % 1000 == 0) {
 				std::cout << "THE GUILDMEMBER COUNT: " << GuildMembers::cache.size() << std::endl;
 			}
@@ -389,7 +351,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::removeGuildMember(GuildMemberData guildMember) {
-		GuildMembers::cache.erase(GuildMemberKey{ guildMember.guildId, guildMember.id });
+		GuildMembers::cache.erase(guildMember);
 	};
 
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };

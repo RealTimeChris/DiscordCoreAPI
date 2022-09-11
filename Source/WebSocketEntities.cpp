@@ -744,7 +744,7 @@ namespace DiscordCoreInternal {
 												}
 												for (auto& value: theGuild->members) {
 													DiscordCoreAPI::GuildMemberData theGuildMember =
-														DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value.id, .guildId = guildId }).get();
+														DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value, .guildId = guildId }).get();
 													DiscordCoreAPI::GuildMembers::removeGuildMember(theGuildMember);
 												}
 												for (auto& value: theGuild->channels) {
@@ -827,8 +827,11 @@ namespace DiscordCoreInternal {
 												Snowflake guildId{ theGuildMember.guildId };
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													if (DiscordCoreAPI::GuildMembers::cache.contains(DiscordCoreAPI::GuildMemberKey{ guildId, userId })) {
-														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache.at(DiscordCoreAPI::GuildMemberKey{ guildId, userId });
+													DiscordCoreAPI::GuildMemberData theDataNew{};
+													theDataNew.id = userId;
+													theDataNew.guildId = guildId;
+													if (DiscordCoreAPI::GuildMembers::cache.contains(theDataNew)) {
+														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache.at(theDataNew);
 													}
 													if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
 														DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache.at(guildId);
@@ -858,7 +861,7 @@ namespace DiscordCoreInternal {
 													if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
 														DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache.at(guildId);
 														for (uint64_t x = 0; x < guild->members.size(); ++x) {
-															if (guild->members[x].id == userId) {
+															if (guild->members[x] == userId) {
 																guild->memberCount--;
 																guild->members.erase(guild->members.begin() + x);
 															}
@@ -885,8 +888,11 @@ namespace DiscordCoreInternal {
 												Snowflake guildId{ theGuildMember.guildId };
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													if (DiscordCoreAPI::GuildMembers::cache.contains(DiscordCoreAPI::GuildMemberKey{ guildId, userId })) {
-														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache.at(DiscordCoreAPI::GuildMemberKey{ guildId, userId });
+													DiscordCoreAPI::GuildMemberData theDataNew{};
+													theDataNew.id = userId;
+													theDataNew.guildId = guildId;
+													if (DiscordCoreAPI::GuildMembers::cache.contains(theDataNew)) {
+														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache.at(theDataNew);
 													}
 												} else {
 													theGuildMemberPtr = &theGuildMember;
@@ -1371,11 +1377,11 @@ namespace DiscordCoreInternal {
 												}
 											}
 											if (this->discordCoreClient->configManager.doWeCacheUsers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
-												if (DiscordCoreAPI::GuildMembers::cache.contains(
-														DiscordCoreAPI::GuildMemberKey{ dataPackage->voiceStateData.guildId, dataPackage->voiceStateData.userId })) {
-													DiscordCoreAPI::GuildMembers::cache
-														.at(DiscordCoreAPI::GuildMemberKey{ dataPackage->voiceStateData.guildId, dataPackage->voiceStateData.userId })
-														.voiceChannelId = dataPackage->voiceStateData.channelId;
+												DiscordCoreAPI::GuildMemberData theData{};
+												theData.id = dataPackage->voiceStateData.userId;
+												theData.guildId = dataPackage->voiceStateData.guildId;
+												if (DiscordCoreAPI::GuildMembers::cache.contains(theData)) {
+													DiscordCoreAPI::GuildMembers::cache.at(theData).voiceChannelId = dataPackage->voiceStateData.channelId;
 												}
 											}
 

@@ -508,7 +508,8 @@ namespace DiscordCoreAPI {
 					auto theObject = value.get_object().value();
 					parseObject(theObject, newData);
 					newData.guildId = theData.id;
-					theData.members.emplace_back(std::move(newData));
+					theData.members.emplace_back(newData.id);
+					GuildMembers::insertGuildMember(std::move(newData));
 				}
 			}
 		}
@@ -519,8 +520,11 @@ namespace DiscordCoreAPI {
 				for (auto value: theArray) {
 					auto theObject = value.get_object().value();
 					auto userId = getId(theObject, "user_id");
-					if (GuildMembers::cache.contains(GuildMemberKey{ theData.id, userId })) {
-						GuildMembers::cache.at(GuildMemberKey{ theData.id, userId }).voiceChannelId = getId(theObject, "channel_id");
+					GuildMemberData theDataNew{};
+					theDataNew.id = userId;
+					theDataNew.guildId = theData.id;
+					if (GuildMembers::cache.contains(theDataNew)) {
+						GuildMembers::cache.at(theDataNew).voiceChannelId = getId(theObject, "channel_id");
 					}
 				}
 			}
@@ -673,8 +677,11 @@ namespace DiscordCoreAPI {
 				for (auto value: theArray) {
 					auto theObject = value.get_object().value();
 					auto userId = getId(theObject, "user_id");
-					if (GuildMembers::cache.contains(GuildMemberKey{ theData.id, userId })) {
-						GuildMembers::cache.at(GuildMemberKey{ theData.id, userId }).voiceChannelId = getId(theObject, "channel_id");
+					GuildMemberData theDataNew{};
+					theDataNew.id = userId;
+					theDataNew.guildId = theData.id;
+					if (GuildMembers::cache.contains(theDataNew)) {
+						GuildMembers::cache.at(theDataNew).voiceChannelId = getId(theObject, "channel_id");
 					}
 				}
 			}

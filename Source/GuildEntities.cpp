@@ -193,7 +193,7 @@ namespace DiscordCoreAPI {
 			}
 			for (auto& value: other.members) {
 				GuildMember theData{};
-				theData.id = value.id;
+				theData.id = value;
 				this->members.emplace_back(theData);
 			}
 			for (auto& value: other.roles) {
@@ -257,7 +257,7 @@ namespace DiscordCoreAPI {
 			}
 			for (auto& value: other.members) {
 				GuildMember theData{};
-				theData.id = value.id;
+				theData.id = value;
 				this->members.emplace_back(theData);
 			}
 			for (auto& value: other.roles) {
