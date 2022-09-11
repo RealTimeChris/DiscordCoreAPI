@@ -30,7 +30,27 @@
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/Https.hpp>
 
+#include <functional>
+#include <string>
+#include <unordered_set>
+
 namespace DiscordCoreAPI {
+	
+	inline bool operator<(const DiscordCoreAPI::GuildMemberData& lhs, const DiscordCoreAPI::GuildMemberData& rhs) {
+		if ((lhs.guildId < rhs.guildId) && (lhs.id < rhs.id)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	inline bool operator==(const DiscordCoreAPI::GuildMemberData& lhs, const DiscordCoreAPI::GuildMemberData& rhs) {
+		if ((lhs.guildId == rhs.guildId) && (lhs.id == rhs.id)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	/**
 	 * \addtogroup foundation_entities
@@ -146,43 +166,28 @@ namespace DiscordCoreAPI {
 	template<> void parseObject(simdjson::ondemand::object jsonObjectData, GuildMemberVector& theGuildMember);
 
 	/**@}*/
-
-	struct GuildMemberKey {
-		GuildMemberKey(Snowflake guildId, Snowflake userId);
-
-		Snowflake guildId{};
-		Snowflake userId{};
-	};
-
-	inline bool operator==(const GuildMemberKey& lhs, const GuildMemberKey& rhs) {
-		return (lhs.userId == rhs.userId && lhs.guildId == rhs.guildId);
-	}
-
-	inline bool operator<(const GuildMemberKey& lhs, const GuildMemberKey& rhs) {
-		return (lhs.userId < rhs.userId && lhs.guildId < rhs.guildId);
-	}
-
+	
 	class GuildMemberCache {
 	  public:
 		GuildMemberCache() noexcept = default;
 
-		void emplace(GuildMemberKey theKey, GuildMemberData&& theData) noexcept;
+		const GuildMemberData& readOnly(GuildMemberData theKey) noexcept;
 
-		const GuildMemberData& readOnly(GuildMemberKey theKey) noexcept;
+		GuildMemberData& at(GuildMemberData theKey) noexcept;
 
-		GuildMemberData& at(GuildMemberKey theKey) noexcept;
+		void emplace(GuildMemberData&& theData) noexcept;
 
-		bool contains(GuildMemberKey theKey) noexcept;
+		bool contains(GuildMemberData theKey) noexcept;
 
-		void erase(GuildMemberKey theKey) noexcept;
+		void erase(GuildMemberData theKey) noexcept;
 
 		size_t size() noexcept;
 
 	  protected:
-		std::map<GuildMemberKey, GuildMemberData> theMap{};
+		std::map<GuildMemberData, void*> theMap{};
 		std::mutex theMutex{};
 	};
-
+	
 	/**
 	 * \addtogroup main_endpoints
 	 * @{

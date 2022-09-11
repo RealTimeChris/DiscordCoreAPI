@@ -204,23 +204,87 @@ namespace DiscordCoreInternal {
 	};
 
 	enum class ProcessIOResult : int8_t { No_Error = 0, Error = 1 };
+	template<typename ObjectType> struct DiscordCoreAPI_Dll RingBuffer {
+		typedef ObjectType ValueType;
+		typedef ObjectType* Pointer;
+		typedef const ObjectType* ConstPointer;
+		typedef ObjectType& Reference;
+		typedef const ObjectType& ConstReference;
+		typedef size_t SizeType;
+		typedef ptrdiff_t DifferenceType;
 
-	struct DiscordCoreAPI_Dll RingBuffer {
-		void writeData(char* theData, size_t theLength);
-		void readData(char* theData, size_t theLength);
-		char* getBufferPtr(size_t theLength);
-		char* getCurrentTail();
-		int64_t getUsedSpace();
-		int64_t getFreeSpace();
-		void clear();
+		void writeData(Pointer theData, SizeType theLength) {
+			if (this->head + theLength > this->theArray.size()) {
+				for (SizeType x = 0; x < theLength; ++x) {
+					this->putByte(theData[x]);
+				}
+			} else {
+				memcpy(this->getCurrentHead(), theData, theLength);
+				this->head += theLength;
+			}
+		}
+
+		void readData(Pointer theData, SizeType theLength) {
+			if (this->tail + theLength > this->theArray.size()) {
+				for (SizeType x = 0; x < theLength; ++x) {
+					theData[x] = this->getByte();
+				}
+			} else {
+				memcpy(theData, this->getCurrentTail(), theLength);
+				this->tail += theLength;
+			}
+		}
+
+		Pointer getBufferPtr(SizeType theLength) {
+			if (this->tail + theLength > this->theArray.size()) {
+				this->readData(this->theOverFlowArray.data(), theLength);
+				return this->theOverFlowArray.data();
+			} else {
+				Pointer thePtr = this->getCurrentTail();
+				this->tail += theLength;
+				return thePtr;
+			}
+		}
+
+		Pointer getCurrentTail() {
+			return (this->theArray.data() + (this->tail % this->theArray.size()));
+		}
+
+		Pointer getCurrentHead() {
+			return (this->theArray.data() + (this->head % this->theArray.size()));
+		}
+
+		void putByte(Reference theValue) {
+			this->getCurrentHead()[0] = theValue;
+			this->head++;
+		}
+
+		char getByte() {
+			char theReturn = this->getCurrentTail()[0];
+			this->tail++;
+			return theReturn;
+		}
+
+		SizeType getFreeSpace() {
+			if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size()))
+				return this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+			else
+				return (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+		}
+
+		SizeType getUsedSpace() {
+			return this->theArray.size() - this->getFreeSpace();
+		}
+
+		void clear() {
+			this->tail = this->head = 0;
+		}
+
 	  protected:
-		std::array<char, 1024 * 1024> theOverFlowArray{};
-		std::array<char, 1024 * 1024> theArray{};
-		int64_t head{};
-		int64_t tail{};
-		void putByte(char theByte);
-		char* getCurrentHead();
-		char getByte();
+		std::array<ValueType, 1024 * 1024> theOverFlowArray{};
+		std::array<ValueType, 1024 * 1024> theArray{};
+		SizeType head{};
+		SizeType tail{};
 	};
 
 	class DiscordCoreAPI_Dll SSLDataInterface {
@@ -312,7 +376,7 @@ namespace DiscordCoreInternal {
 		std::atomic<SSLShardState> currentState{};
 		bool doWePrintErrorMessages{ false };
 		bool areWeAStandaloneSocket{ false };
-		RingBuffer inputBuffer{};
+		RingBuffer<char> inputBuffer{};
 	};
 
 	enum class ProcessIOType { Both = 0, Read_Only = 1, Write_Only = 2 };

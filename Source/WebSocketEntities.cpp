@@ -292,7 +292,6 @@ namespace DiscordCoreInternal {
 					return false;
 				} else {
 					this->onMessageReceived(theShard->getInputBuffer(theShard->messageOffset, theShard->messageLength));
-					//theShard->inputBuffer.updateFromReadInfo(theShard->messageOffset + theShard->messageLength);
 					return true;
 				}
 			}
@@ -827,8 +826,8 @@ namespace DiscordCoreInternal {
 												Snowflake guildId{ theGuildMember.guildId };
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													if (DiscordCoreAPI::GuildMembers::cache.contains(DiscordCoreAPI::GuildMemberKey{ guildId, userId })) {
-														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache.at(DiscordCoreAPI::GuildMemberKey{ guildId, userId });
+													if (DiscordCoreAPI::GuildMembers::cache.contains(*theGuildMemberPtr)) {
+														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache.at(*theGuildMemberPtr);
 													}
 													if (DiscordCoreAPI::Guilds::cache.contains(guildId)) {
 														DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache.at(guildId);
@@ -885,8 +884,8 @@ namespace DiscordCoreInternal {
 												Snowflake guildId{ theGuildMember.guildId };
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													if (DiscordCoreAPI::GuildMembers::cache.contains(DiscordCoreAPI::GuildMemberKey{ guildId, userId })) {
-														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache.at(DiscordCoreAPI::GuildMemberKey{ guildId, userId });
+													if (DiscordCoreAPI::GuildMembers::cache.contains(*theGuildMemberPtr)) {
+														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache.at(*theGuildMemberPtr);
 													}
 												} else {
 													theGuildMemberPtr = &theGuildMember;
@@ -1371,11 +1370,11 @@ namespace DiscordCoreInternal {
 												}
 											}
 											if (this->discordCoreClient->configManager.doWeCacheUsers() && this->discordCoreClient->configManager.doWeCacheGuilds()) {
-												if (DiscordCoreAPI::GuildMembers::cache.contains(
-														DiscordCoreAPI::GuildMemberKey{ dataPackage->voiceStateData.guildId, dataPackage->voiceStateData.userId })) {
-													DiscordCoreAPI::GuildMembers::cache
-														.at(DiscordCoreAPI::GuildMemberKey{ dataPackage->voiceStateData.guildId, dataPackage->voiceStateData.userId })
-														.voiceChannelId = dataPackage->voiceStateData.channelId;
+												DiscordCoreAPI::GuildMemberData theKey{};
+												theKey.guildId = dataPackage->voiceStateData.guildId;
+												theKey.id = dataPackage->voiceStateData.userId;
+												if (DiscordCoreAPI::GuildMembers::cache.contains(theKey)) {												
+													DiscordCoreAPI::GuildMembers::cache.at(theKey).voiceChannelId = dataPackage->voiceStateData.channelId;
 												}
 											}
 
@@ -1438,7 +1437,7 @@ namespace DiscordCoreInternal {
 							}
 							case 9: {
 								InvalidSessionData theData{};
-								//parseObject(thePayload, theData);
+								parseObject(thePayload, theData);
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
 										 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 9)!"
@@ -1460,7 +1459,7 @@ namespace DiscordCoreInternal {
 							}
 							case 10: {
 								HelloData theData{};
-								//parseObject(thePayload, theData);
+								parseObject(thePayload, theData);
 								if (theData.heartbeatInterval != 0) {
 									this->areWeHeartBeating = true;
 									this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ theData.heartbeatInterval } };
