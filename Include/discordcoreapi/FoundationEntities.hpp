@@ -3347,30 +3347,30 @@ namespace DiscordCoreAPI {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Integer: {
-				return stoll(theValue.theValue);
+				return static_cast<int32_t>(stoll(theValue.theValue));
 			}
 		}
-		return 0ll;
+		return 0;
 	}
 
 	template<> inline auto getArgument<int16_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Integer: {
-				return stoll(theValue.theValue);
+				return static_cast<int16_t>(stoll(theValue.theValue));
 			}
 		}
-		return 0ll;
+		return static_cast<int16_t>(0);
 	}
 
 	template<> inline auto getArgument<int8_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Integer: {
-				return stoll(theValue.theValue);
+				return static_cast<int8_t>(stoll(theValue.theValue));
 			}
 		}
-		return 0ll;
+		return static_cast<int8_t>(0);
 	}
 
 	template<> inline auto getArgument<uint64_t>(JsonValues& optionsArgs, std::string_view theArgName) {
@@ -3387,30 +3387,30 @@ namespace DiscordCoreAPI {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Integer: {
-				return stoull(theValue.theValue);
+				return static_cast<uint32_t>(stoull(theValue.theValue));
 			}
 		}
-		return 0ull;
+		return static_cast<uint32_t>(0);
 	}
 
 	template<> inline auto getArgument<uint16_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Integer: {
-				return stoull(theValue.theValue);
+				return static_cast<uint16_t>(stoull(theValue.theValue));
 			}
 		}
-		return 0ull;
+		return static_cast<uint16_t>(0);
 	}
 
 	template<> inline auto getArgument<uint8_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
 			case ObjectType::Integer: {
-				return stoull(theValue.theValue);
+				return static_cast<uint8_t>(stoull(theValue.theValue));
 			}
 		}
-		return 0ull;
+		return static_cast<uint8_t>(0);
 	}
 
 	template<> inline auto getArgument<float>(JsonValues& optionsArgs, std::string_view theArgName) {
