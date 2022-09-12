@@ -293,7 +293,7 @@ namespace DiscordCoreAPI {
 		if (!Roles::cache.contains(theData)) {
 			co_return Roles::getRoleAsync(dataPackage).get();
 		} else if (Roles::cache.contains(theData)) {
-			RoleData theData = Roles::cache.readOnly(theData);
+			theData = Roles::cache.readOnly(theData);
 			co_return theData;
 		}
 	}

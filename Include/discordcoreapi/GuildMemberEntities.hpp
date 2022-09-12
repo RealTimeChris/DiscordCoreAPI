@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 		size_t size() noexcept;
 
 	  protected:
-		std::map<Snowflake, GuildMemberData> theMap{};
+		std::unordered_set<GuildMemberData> theMap{};
 		std::mutex theMutex{};
 	};
 	
@@ -244,8 +244,8 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static ObjectCache<GuildMemberData> cache;
 		static bool doWeCacheGuildMembers;
-		static GuildMemberCache cache;
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

@@ -219,8 +219,8 @@ namespace DiscordCoreAPI {
 		if (!Channels::cache.contains(theChannel)) {
 			co_return Channels::getChannelAsync(dataPackage).get();
 		} else {
-			ChannelData theData = Channels::cache.readOnly(theChannel);
-			co_return theData;
+			theChannel = Channels::cache.readOnly(theChannel);
+			co_return theChannel;
 		}
 	}
 

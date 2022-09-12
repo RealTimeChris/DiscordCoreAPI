@@ -409,7 +409,7 @@ namespace DiscordCoreAPI {
 		Nitro_Classic = 1,///< Nitro classic.
 		Nitro = 2///< Nitro.
 	};
-	
+
 	/// Data structure representing a single User. \brief Data structure representing a single User.
 	class DiscordCoreAPI_Dll UserData : public DiscordEntity {
 	  public:
@@ -1213,7 +1213,7 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> void parseObject(simdjson::ondemand::object jsonObjectData, GuildApplicationCommandPermissionsDataVector& theData);
-	
+
 	class DiscordCoreAPI_Dll EmojiDataVector {
 	  public:
 		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object jsonObjectData, ReturnType& theData);
@@ -1227,7 +1227,7 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> void parseObject(simdjson::ondemand::object jsonObjectData, EmojiDataVector& theData);
-	
+
 	/// For updating/modifying a given Channel's properties. \brief For updating/modifying a given Channel's properties.
 	struct DiscordCoreAPI_Dll UpdateChannelData {
 		std::vector<OverWriteData> permissionOverwrites{};
@@ -1885,7 +1885,7 @@ namespace DiscordCoreAPI {
 		virtual ~GuildData() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::ondemand::object jsonObjectData, GuildData& theData);	
+	template<> void parseObject(simdjson::ondemand::object jsonObjectData, GuildData& theData);
 
 	class DiscordCoreAPI_Dll GuildDataVector {
 	  public:
@@ -1904,7 +1904,7 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> void parseObject(simdjson::ondemand::object jsonObjectData, GuildDataVector& theData);
-	
+
 	/// Guild scheduled event privacy levels. \brief Guild scheduled event privacy levels.
 	enum class GuildScheduledEventPrivacyLevel : uint8_t {
 		Public = 1,///< Public.
@@ -2779,7 +2779,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption {
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
 		ApplicationCommandOptionType type{};///< The type of ApplicationCommand options.
-		JsonValue value{ };///< The value if it's an int32_t.
+		JsonValue value{};///< The value if it's an int32_t.
 		bool focused{ false };///< 	True if this option is the currently focused option for autocomplete.
 		std::string name{};///< The name of the current option.
 
@@ -3331,8 +3331,46 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, JsonValue> theValues{};
 	};
 
-	template<typename ReturnType> auto getArgument(JsonValues& optionsArgs, std::string_view theArgName) {
-		return 0;
+	template<typename ReturnType> auto getArgument(JsonValues& optionsArgs, std::string_view theArgName);
+
+	template<> inline auto getArgument<int64_t>(JsonValues& optionsArgs, std::string_view theArgName) {
+		auto theValue = optionsArgs.theValues[theArgName.data()];
+		switch (theValue.theType) {
+			case ObjectType::Integer: {
+				return stoll(theValue.theValue);
+			}
+		}
+		return 0ll;
+	}
+
+	template<> inline auto getArgument<int32_t>(JsonValues& optionsArgs, std::string_view theArgName) {
+		auto theValue = optionsArgs.theValues[theArgName.data()];
+		switch (theValue.theType) {
+			case ObjectType::Integer: {
+				return stoll(theValue.theValue);
+			}
+		}
+		return 0ll;
+	}
+
+	template<> inline auto getArgument<int16_t>(JsonValues& optionsArgs, std::string_view theArgName) {
+		auto theValue = optionsArgs.theValues[theArgName.data()];
+		switch (theValue.theType) {
+			case ObjectType::Integer: {
+				return stoll(theValue.theValue);
+			}
+		}
+		return 0ll;
+	}
+
+	template<> inline auto getArgument<int8_t>(JsonValues& optionsArgs, std::string_view theArgName) {
+		auto theValue = optionsArgs.theValues[theArgName.data()];
+		switch (theValue.theType) {
+			case ObjectType::Integer: {
+				return stoll(theValue.theValue);
+			}
+		}
+		return 0ll;
 	}
 
 	template<> inline auto getArgument<uint64_t>(JsonValues& optionsArgs, std::string_view theArgName) {
@@ -3498,20 +3536,8 @@ namespace DiscordCoreInternal {
 	}
 }
 
-struct ChannelHash {
-	std::size_t operator()(DiscordCoreAPI::ChannelData const& object) const noexcept {
-		return object.id;
-	}
-};
-
 template<> struct std::hash<DiscordCoreAPI::ChannelData> {
 	std::size_t operator()(DiscordCoreAPI::ChannelData const& object) const noexcept {
-		return object.id;
-	}
-};
-
-struct GuildHash {
-	std::size_t operator()(DiscordCoreAPI::GuildData const& object) const noexcept {
 		return object.id;
 	}
 };
@@ -3522,20 +3548,8 @@ template<> struct std::hash<DiscordCoreAPI::GuildData> {
 	}
 };
 
-struct RoleHash {
-	std::size_t operator()(DiscordCoreAPI::RoleData const& object) const noexcept {
-		return object.id;
-	}
-};
-
 template<> struct std::hash<DiscordCoreAPI::RoleData> {
 	std::size_t operator()(DiscordCoreAPI::RoleData const& object) const noexcept {
-		return object.id;
-	}
-};
-
-struct UserHash {
-	std::size_t operator()(DiscordCoreAPI::UserData const& object) const noexcept {
 		return object.id;
 	}
 };
@@ -3543,12 +3557,6 @@ struct UserHash {
 template<> struct std::hash<DiscordCoreAPI::UserData> {
 	std::size_t operator()(DiscordCoreAPI::UserData const& object) const noexcept {
 		return object.id;
-	}
-};
-
-struct GuildMemberHash {
-	std::size_t operator()(DiscordCoreAPI::GuildMemberData const& object) const noexcept {
-		return object.guildId ^ (object.id << 1);
 	}
 };
 
