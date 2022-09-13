@@ -276,28 +276,16 @@ namespace DiscordCoreInternal {
 				return this->parseNilExt();
 			}
 			case ETFTokenType::String_Ext: {
-				std::string theString{ "\"" };
-				theString += std::move(this->parseStringAsList());
-				theString += "\"";
-				return theString;
+				return this->parseStringAsList();
 			}
 			case ETFTokenType::List_Ext: {
 				return this->parseListExt();
 			}
 			case ETFTokenType::Binary_Ext: {
-				std::string theString{ "\"" };
-				theString += std::move(this->parseBinaryExt());
-				theString += "\"";
-				if (theString == "\"\"") {
-					theString = "nullptr";
-				}
-				return theString;
+				return this->parseBinaryExt();
 			}
 			case ETFTokenType::Small_Big_Ext: {
-				std::string theString{ "\"" };
-				theString += std::move(this->parseSmallBigExt());
-				theString += "\"";
-				return theString;
+				return this->parseSmallBigExt();
 			}
 			case ETFTokenType::Large_Big_Ext: {
 				return this->parseLargeBigExt();
@@ -433,14 +421,14 @@ namespace DiscordCoreInternal {
 
 	std::string ErlPacker::parseStringAsList() {
 		uint16_t length = this->readBits<uint16_t>();
-		std::string theArray{};
+		std::string theArray{ "\"" };
 		if (static_cast<uint64_t>(this->offSet) + length > this->size) {
 			throw ErlPackError{ "ErlPacker::parseStringAsList() Error: String list past end of buffer.\n\n" };
 		}
-		theArray.reserve(length);
 		for (uint16_t x = 0; x < length; ++x) {
 			theArray.push_back(this->parseSmallIntegerExt()[0]);
 		}
+		theArray += "\"";
 		return theArray;
 	}
 
@@ -459,16 +447,19 @@ namespace DiscordCoreInternal {
 
 	std::string ErlPacker::parseBinaryExt() {
 		uint32_t length = this->readBits<uint32_t>();
-		auto stringNew = this->readString(length);
-		if (stringNew == nullptr) {
+		std::string stringNew{ "\"" };
+		stringNew += this->readString(length);
+		if (stringNew.empty()) {
 			return std::string{};
 		}
-
+		stringNew += "\"";
 		return std::string{ stringNew, length };
 	}
 
 	std::string ErlPacker::parseSmallBigExt() {
-		std::string theValue = this->parseBigint(this->readBits<uint8_t>());
+		std::string theValue{ "\"" };
+		theValue += this->parseBigint(this->readBits<uint8_t>());
+		theValue += "\"";
 		return theValue;
 	}
 
