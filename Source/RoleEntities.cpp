@@ -234,16 +234,14 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		RoleData theData{};
-		theData.id = dataPackage.roleId;
-		if (!Roles::cache.contains(theData)) {
-			Roles::cache.emplace(theData);
+		Role theData{};
+		if (!Roles::cache.contains(dataPackage.roleId)) {
+			Roles::cache.emplace(dataPackage.roleId, RoleData{});
 		}
-		Role theDataNew{};
-		theDataNew = Roles::cache.readOnly(theData);
-		theDataNew = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload, &theDataNew);
-		Roles::insertRole(theDataNew);
-		co_return theDataNew;
+		theData = Roles::cache.readOnly(dataPackage.roleId);
+		theData = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload, &theData);
+		Roles::insertRole(theData);
+		co_return theData;
 	}
 
 	CoRoutine<void> Roles::removeGuildRoleAsync(RemoveGuildRoleData dataPackage) {
@@ -288,12 +286,10 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<RoleData> Roles::getCachedRoleAsync(GetRoleData dataPackage) {
 		co_await NewThreadAwaitable<RoleData>();
-		RoleData theData{};
-		theData.id = dataPackage.roleId;
-		if (!Roles::cache.contains(theData)) {
+		if (!Roles::cache.contains(dataPackage.roleId)) {
 			co_return Roles::getRoleAsync(dataPackage).get();
-		} else if (Roles::cache.contains(theData)) {
-			theData = Roles::cache.readOnly(theData);
+		} else if (Roles::cache.contains(dataPackage.roleId)) {
+			RoleData theData = Roles::cache.readOnly(dataPackage.roleId);
 			co_return theData;
 		}
 	}
@@ -304,7 +300,7 @@ namespace DiscordCoreAPI {
 		}
 		if (Roles::doWeCacheRoles) {
 			auto roleId = role.id;
-			Roles::cache.emplace(std::move(role));
+			Roles::cache.emplace(roleId, std::move(role));
 			if (Roles::cache.size() % 1000 == 0) {
 				std::cout << "ROLE COUNT: " << Roles::cache.size() << std::endl;
 			}
@@ -312,12 +308,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::removeRole(const Snowflake roleId) {
-		RoleData theData{};
-		theData.id = roleId;
-		Roles::cache.erase(theData);
+		Roles::cache.erase(roleId);
 	};
 
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
-	ObjectCache<RoleData> Roles::cache{};
+	ObjectCache<Snowflake, RoleData> Roles::cache{};
 	bool Roles::doWeCacheRoles{ false };
 }

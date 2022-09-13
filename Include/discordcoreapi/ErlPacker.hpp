@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 		uint64_t offSet{};
 		uint64_t size{};
 
-		void escapeCharacters(std::string& theString);
+		void escapeCharacters(std::string_view theString);
 
 		void singleValueJsonToETF(nlohmann::json&);
 

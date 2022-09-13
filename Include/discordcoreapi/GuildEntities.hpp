@@ -36,14 +36,6 @@
 
 namespace DiscordCoreAPI {
 
-	inline bool operator==(const DiscordCoreAPI::GuildData& lhs, const DiscordCoreAPI::GuildData& rhs) {
-		if (lhs.id == rhs.id) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
@@ -340,11 +332,11 @@ namespace DiscordCoreAPI {
 		virtual ~Guild() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, Guild& theData);
+	template<> void parseObject(simdjson::ondemand::object jsonObjectData, Guild& theData);
 
 	class DiscordCoreAPI_Dll GuildVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object jsonObjectData, ReturnType& theData);
 
 		friend class Guilds;
 
@@ -358,7 +350,7 @@ namespace DiscordCoreAPI {
 		std::vector<Guild> theGuilds{};
 	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, GuildVector& theData);
+	template<> void parseObject(simdjson::ondemand::object jsonObjectData, GuildVector& theData);
 
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildData {
@@ -399,7 +391,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreClient;
@@ -591,7 +583,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<GuildData> cache;
+		static ObjectCache<Snowflake, GuildData> cache;
 		static DiscordCoreClient* discordCoreClient;
 		static bool doWeCacheGuilds;
 

@@ -159,11 +159,11 @@ namespace DiscordCoreAPI {
 		virtual ~Message() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, Message& theData);
+	template<> void parseObject(simdjson::ondemand::object jsonObjectData, Message& theData);
 
 	class DiscordCoreAPI_Dll MessageVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object jsonObjectData, ReturnType& theData);
 
 		MessageVector() noexcept = default;
 
@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 		std::vector<Message> theMessages{};
 	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, MessageVector& theData);
+	template<> void parseObject(simdjson::ondemand::object jsonObjectData, MessageVector& theData);
 
 	/**@}*/
 

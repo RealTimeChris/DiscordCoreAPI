@@ -27,70 +27,63 @@
 
 namespace DiscordCoreInternal {
 
-	void ErlPacker::escapeCharacters(std::string& theString) {
+	void ErlPacker::escapeCharacters(std::string_view theString) {
 		auto theSize = theString.size();
+		this->bufferString.resize(theSize);
 		for (int32_t x = 0; x < theSize; x++) {
-			/*
 			switch (static_cast<char>(theString[x])) {
-				case 0x08: {
-					theString[x] = '\\';
-					theString.insert(theString.begin() + x + 1, 'b');
-					theSize++;
+				case 0x0008: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 'b');
 					x++;
 					break;
 				}
-				case 0x09: {
-					theString[x] = '\\';
-					theString.insert(theString.begin() + x + 1, 't');
-					theSize++;
+				case 0x0009: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 't');
 					x++;
 					break;
 				}
-				case 0x0A: {
-					theString[x] = '\\';
-					theString.insert(theString.begin() + x + 1, 'n');
-					theSize++;
+				case 0x000A: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 'n');
 					x++;
 					break;
 				}
-				case 0x0B: {
-					theString[x] = '\\';
-					theString.insert(theString.begin() + x + 1, 'v');
-					theSize++;
+				case 0x000B: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 'v');
 					x++;
 					break;
 				}
-				case 0x0C: {
-					theString[x] = '\\';
-					theString.insert(theString.begin() + x + 1, 'f');
-					theSize++;
+				case 0x000C: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 'f');
 					x++;
 					break;
 				}
-				case 0x0D: {
-					theString[x] = '\\';
-					theString.insert(theString.begin() + x + 1, 'r');
-					theSize++;
+				case 0x000D: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, 'r');
 					x++;
 					break;
 				}
-				case 0x5C: {
-					theString[x] = '\\';
-					theString.insert(theString.begin() + x + 1, '\\');
-					theSize++;
+				case 0x005: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, '\\');
 					x++;
 					break;
 				}
-				case 0x27: {
-					theString[x] = '\\';
-					theString.insert(theString.begin() + x + 1, '\'');
-					theSize++;
+				case 0x0027: {
+					this->bufferString[x] = '\\';
+					this->bufferString.insert(this->bufferString.begin() + x, '\'');
 					x++;
 					break;
 				}
 				default: {
+					this->bufferString[x] = theString[x];
 				}
-			}*/
+			}
 		}
 	}
 

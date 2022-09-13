@@ -43,28 +43,58 @@ namespace DiscordCoreInternal {
 				 << DiscordCoreAPI::reset() << endl
 				 << endl;
 		}
-		nlohmann::json partialSearchResultsJson{};
+		simdjson::ondemand::object partialSearchResultsJson{};
 		auto varInitFind = returnData.responseMessage.find("var ytInitialData = ");
+		std::vector<DiscordCoreAPI::Song> searchResults{};
 		if (varInitFind != std::string::npos) {
 			std::string newString00 = "var ytInitialData = ";
 			std::string newString = returnData.responseMessage.substr(varInitFind + newString00.length());
 			std::string stringSequence = ";</script><script nonce=";
 			newString = newString.substr(0, newString.find(stringSequence));
-			partialSearchResultsJson = nlohmann::json::parse(newString);
-		}
-		std::vector<DiscordCoreAPI::Song> searchResults{};
-		if (partialSearchResultsJson.contains("contents") && !partialSearchResultsJson["contents"].is_null()) {
-			for (auto& value: partialSearchResultsJson["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
-													  ["contents"]) {
-				if (value.contains("videoRenderer") && !value["videoRenderer"].is_null()) {
-					DiscordCoreAPI::Song searchResult{};
-					DiscordCoreAPI::parseObject(value["videoRenderer"], searchResult);
-					searchResult.type = DiscordCoreAPI::SongType::YouTube;
-					searchResult.viewUrl = this->baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
-					searchResults.emplace_back(searchResult);
+			simdjson::ondemand::parser theParser{};
+			newString.reserve(newString.size() + simdjson::SIMDJSON_PADDING);
+			partialSearchResultsJson = theParser.iterate(newString.data(), newString.length(), newString.capacity()).value().get_value();
+			simdjson::ondemand::array theArray{};
+			simdjson::ondemand::object theObject{};
+			auto theResult = partialSearchResultsJson["contents"].get(theObject);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				theResult = theObject["twoColumnSearchResultsRenderer"].get(theObject);
+				if (theResult == simdjson::error_code::SUCCESS) {
+					theResult = theObject["primaryContents"].get(theObject);
+					if (theResult == simdjson::error_code::SUCCESS) {
+						theResult = theObject["sectionListRenderer"].get(theObject);
+						if (theResult == simdjson::error_code::SUCCESS) {
+							theResult = theObject["contents"].get(theArray);
+							if (theResult == simdjson::error_code::SUCCESS) {
+								theResult = theArray.at(0).get(theObject);
+								if (theResult == simdjson::error_code::SUCCESS) {
+									theResult = theObject["itemSectionRenderer"].get(theObject);
+									if (theResult == simdjson::error_code::SUCCESS) {
+										theResult = theObject["contents"].get(theArray);
+										if (theResult == simdjson::error_code::SUCCESS) {
+											for (auto value: theArray) {
+												simdjson::ondemand::object theObject{};
+												theResult = value["videoRenderer"].get(theObject);
+												if (theResult == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::Song searchResult{};
+													auto theObjectNew = value["videoRenderer"].get_object().value();
+													DiscordCoreAPI::parseObject(theObject, searchResult);
+													searchResult.type = DiscordCoreAPI::SongType::YouTube;
+													searchResult.viewUrl = this->baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
+													searchResults.emplace_back(searchResult);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
+		
+		
 		return searchResults;
 	}
 
@@ -96,9 +126,12 @@ namespace DiscordCoreInternal {
 					 << endl;
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
-			nlohmann::json jsonObject = nlohmann::json::parse(responseData.responseMessage);
+			simdjson::ondemand::parser theParser{};
+			responseData.responseMessage.reserve(responseData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
+			auto theVectorResult = theParser.iterate(responseData.responseMessage).get_value().value();
 			DiscordCoreAPI::YouTubeFormatVector theVector{};
-			DiscordCoreAPI::parseObject(jsonObject, theVector);
+			auto theObject = theVectorResult.get_object().value();
+			DiscordCoreAPI::parseObject(theObject, theVector);
 			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };
 			for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {
