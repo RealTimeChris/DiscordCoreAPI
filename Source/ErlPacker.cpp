@@ -318,8 +318,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseSmallIntegerExt() {
-		std::string theValue = std::to_string(this->readBits<uint8_t>());
-		return theValue;
+		return std::to_string(this->readBits<uint8_t>());
 	}
 
 	std::string ErlPacker::parseBigint(uint32_t digits) {
@@ -357,8 +356,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseIntegerExt() {
-		std::string theValue = std::to_string(this->readBits<uint32_t>());
-		return theValue;
+		return std::to_string(this->readBits<uint32_t>());
 	}
 
 	std::string ErlPacker::parseFloatExt() {
@@ -412,23 +410,19 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseTuple(const uint32_t length) {
-		std::string theValue = this->parseArray(length);
-		return theValue;
+		return this->parseArray(length);
 	}
 
 	std::string ErlPacker::parseSmallTupleExt() {
-		std::string theValue = this->parseTuple(this->readBits<uint8_t>());
-		return theValue;
+		return this->parseTuple(this->readBits<uint8_t>());
 	}
 
 	std::string ErlPacker::parseLargeTupleExt() {
-		std::string theValue = this->parseTuple(this->readBits<uint32_t>());
-		return theValue;
+		return this->parseTuple(this->readBits<uint32_t>());
 	}
 
 	std::string ErlPacker::parseNilExt() {
-		std::string theString{ R"([])" };
-		return theString;
+		return R"([])";
 	}
 
 	std::string ErlPacker::parseStringAsList() {
@@ -468,13 +462,11 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseSmallBigExt() {
-		std::string theValue = this->parseBigint(this->readBits<uint8_t>());
-		return theValue;
+		return this->parseBigint(this->readBits<uint8_t>());
 	}
 
 	std::string ErlPacker::parseLargeBigExt() {
-		std::string theValue = this->parseBigint(this->readBits<uint32_t>());
-		return theValue;
+		return this->parseBigint(this->readBits<uint32_t>());
 	}
 
 	std::string ErlPacker::parseArray(const uint32_t length) {
@@ -508,14 +500,12 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseAtomUtf8Ext() {
 		uint32_t lengthNew = this->readBits<uint16_t>();
 		auto atom = this->readString(lengthNew);
-		std::string theValue = this->processAtom(atom, lengthNew);
-		return theValue;
+		return this->processAtom(atom, lengthNew);
 	}
 
 	std::string ErlPacker::parseSmallAtomExt() {
 		uint8_t length = this->readBits<uint8_t>();
 		auto atom = this->readString(length);
-		std::string theValue = this->processAtom(atom, length);
-		return theValue;
+		return this->processAtom(atom, length);
 	};
 }
