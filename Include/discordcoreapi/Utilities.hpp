@@ -215,7 +215,7 @@ namespace DiscordCoreInternal {
 		operator nlohmann::json();
 	};
 
-	template<typename ReturnType> void parseObject(simdjson::ondemand::object theParser, ReturnType& theData);
+	template<typename ReturnType> void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
 
 }// namespace DiscordCoreInternal
 template<typename ObjectType>
@@ -637,7 +637,9 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	template<typename ReturnType> void parseObject(simdjson::ondemand::object theParser, ReturnType& theData);
+	template<typename ReturnType> void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
+
+	template<typename ReturnType> void parseObject(nlohmann::json& theParser, ReturnType& theData);
 
 	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json* jsonData, const char* keyName);
 
@@ -1177,6 +1179,8 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string shiftToBrightRed();
 
 	DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
+
+	DiscordCoreAPI_Dll std::string escapeCharacters(std::string_view theString);
 
 	DiscordCoreAPI_Dll std::string reset();
 

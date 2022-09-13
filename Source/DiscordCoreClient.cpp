@@ -189,6 +189,7 @@ namespace DiscordCoreAPI {
 		try {
 			theCommands = ApplicationCommands::getGlobalApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get();
 		} catch (...) {
+			reportException("DiscordCoreClient::registerFunctionsInternal()");
 			return;
 		}
 		while (this->commandsToRegister.size() > 0) {

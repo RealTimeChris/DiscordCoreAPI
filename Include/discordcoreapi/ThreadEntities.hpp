@@ -146,7 +146,7 @@ namespace DiscordCoreAPI {
 		virtual ~Thread() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::ondemand::object jsonObjectData, Thread& theData);
+	template<> void parseObject(simdjson::ondemand::value jsonObjectData, Thread& theData);
 
 	/**@}*/
 
