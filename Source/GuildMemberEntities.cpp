@@ -120,10 +120,6 @@ namespace DiscordCoreAPI {
 		return this->theGuildMembers;
 	}
 	
-	size_t GuildMemberCache::size() noexcept {
-		return this->theMap.size();
-	}
-	
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
 		GuildMembers::doWeCacheGuildMembers = configManagerNew->doWeCacheUsers();
 		GuildMembers::httpsClient = theClient;
