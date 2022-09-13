@@ -45,27 +45,25 @@ namespace DiscordCoreInternal {
 			std::vector<DiscordCoreAPI::Song> results{};
 			simdjson::ondemand::parser theParser{};
 			returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-			auto theDocument = theParser.iterate(returnData.responseMessage).get_value().value().get_object().value();
+			//auto theDocument = theParser.iterate().get_value().value().get_object().value();
+			nlohmann::json theJsonData = nlohmann::json::parse(returnData.responseMessage);
 			simdjson::ondemand::array theArray{};
-			auto theResult = theDocument["collection"].get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
-				for (auto value: theArray) {
-					DiscordCoreAPI::Song newSong{};
-					auto theObjectNew = value.value().get_object().value();
-					DiscordCoreAPI::parseObject(theObjectNew, newSong);
-					if (!newSong.doWeGetSaved || newSong.songTitle == "") {
-						continue;
-					}
-					newSong.type = DiscordCoreAPI::SongType::SoundCloud;
-					newSong.firstDownloadUrl += "?client_id=" + SoundCloudRequestBuilder::clientId + "&track_authorization=" + newSong.trackAuthorization;
-					if (newSong.thumbnailUrl.find_first_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ") != std::string::npos &&
-						newSong.thumbnailUrl.find("https") != std::string::npos) {
-						std::string newString = newSong.thumbnailUrl.substr(0, newSong.thumbnailUrl.find_last_of("-t") + 1);
-						newString += "t500x500.jpg";
-						newSong.thumbnailUrl = newString;
-					}
-					results.emplace_back(newSong);
+			//auto theResult = theDocument["collection"].get(theArray);
+			for (auto value: theJsonData["collection"]) {
+				DiscordCoreAPI::Song newSong{};
+				DiscordCoreAPI::parseObject(value, newSong);
+				if (!newSong.doWeGetSaved || newSong.songTitle == "") {
+					continue;
 				}
+				newSong.type = DiscordCoreAPI::SongType::SoundCloud;
+				newSong.firstDownloadUrl += "?client_id=" + SoundCloudRequestBuilder::clientId + "&track_authorization=" + newSong.trackAuthorization;
+				if (newSong.thumbnailUrl.find_first_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ") != std::string::npos &&
+					newSong.thumbnailUrl.find("https") != std::string::npos) {
+					std::string newString = newSong.thumbnailUrl.substr(0, newSong.thumbnailUrl.find_last_of("-t") + 1);
+					newString += "t500x500.jpg";
+					newSong.thumbnailUrl = newString;
+				}
+				results.emplace_back(newSong);
 			}
 			return results;
 		} catch (...) {

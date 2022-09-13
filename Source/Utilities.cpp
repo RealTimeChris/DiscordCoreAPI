@@ -287,6 +287,10 @@ namespace DiscordCoreAPI {
 	}
 
 	ColorValue::ColorValue(std::string theHexColorValue) {
+		if (theHexColorValue == "") {
+			theHexColorValue = "fefefe";
+		}
+		std::cout << "THE COLOR VALUE: " << theHexColorValue << std::endl;
 		this->theColor = stoull(theHexColorValue, nullptr, 16);
 	}
 
@@ -988,4 +992,67 @@ namespace DiscordCoreAPI {
 		timeStamp.resize(size);
 		return timeStamp;
 	}
+	
+	std::string escapeCharacters(std::string_view theString) {
+		std::string theStringNew{};
+		auto theSize = theString.size();
+		for (int32_t x = 0; x < theSize; x++) {
+			switch (static_cast<char>(theString[x])) {
+				/*
+				case 0x08: {
+					theStringNew.insert(theStringNew.end(), '\\');
+					theStringNew.insert(theStringNew.end(), 'b');
+					break;
+				}
+				case 0x09: {
+					theStringNew.insert(theStringNew.end(), '\\');
+					theStringNew.insert(theStringNew.end(), 't');
+					break;
+				}
+				case 0x0A: {
+					theStringNew.insert(theStringNew.end(), '\\');
+					theStringNew.insert(theStringNew.end(), 'n');
+					break;
+				}
+				case 0x0B: {
+					theStringNew.insert(theStringNew.end(), '\\');
+					theStringNew.insert(theStringNew.end(), 'v');
+					break;
+				}
+				case 0x0C: {
+					theStringNew.insert(theStringNew.end(), '\\');
+					theStringNew.insert(theStringNew.end(), 'f');
+					break;
+				}
+				case 0x0D: {
+					theStringNew.insert(theStringNew.end(), '\\');
+					theStringNew.insert(theStringNew.end(), 'r');
+					break;
+				}
+				case 0x22: {
+					theStringNew.insert(theStringNew.end(), '\\');
+					theStringNew.insert(theStringNew.end(), '"');
+					break;
+				}
+				case 0x00: {
+					break;
+				}
+				case 0x5C: {
+					theStringNew.insert(theStringNew.end(), '\\');
+					theStringNew.insert(theStringNew.end(), '\\');
+					break;
+				}
+				case 0x27: {
+					theStringNew.insert(theStringNew.end(), '\\');
+					theStringNew.insert(theStringNew.end(), '\'');
+					break;
+				}*/
+				default: {
+					theStringNew.insert(theStringNew.end(), theString[x]);
+				}
+			}
+		}
+		return theStringNew;
+	}
+
 };

@@ -32,6 +32,14 @@
 
 namespace DiscordCoreAPI {
 
+	inline bool operator==(const DiscordCoreAPI::GuildMemberData& lhs, const DiscordCoreAPI::GuildMemberData& rhs) {
+		if ((lhs.guildId == rhs.guildId) && (lhs.id == rhs.id)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
@@ -127,11 +135,11 @@ namespace DiscordCoreAPI {
 		virtual ~GuildMember() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::ondemand::object jsonObjectData, DiscordCoreAPI::GuildMember& theGuildMember);
+	template<> void parseObject(simdjson::ondemand::value jsonObjectData, DiscordCoreAPI::GuildMember& theGuildMember);
 
 	class DiscordCoreAPI_Dll GuildMemberVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
 
 		GuildMemberVector() noexcept = default;
 
@@ -143,45 +151,31 @@ namespace DiscordCoreAPI {
 		std::vector<GuildMember> theGuildMembers{};
 	};
 
-	template<> void parseObject(simdjson::ondemand::object jsonObjectData, GuildMemberVector& theGuildMember);
+	template<> void parseObject(simdjson::ondemand::value jsonObjectData, GuildMemberVector& theGuildMember);
 
 	/**@}*/
-
-	struct GuildMemberKey {
-		GuildMemberKey(Snowflake guildId, Snowflake userId);
-
-		Snowflake guildId{};
-		Snowflake userId{};
-	};
-
-	inline bool operator==(const GuildMemberKey& lhs, const GuildMemberKey& rhs) {
-		return (lhs.userId == rhs.userId && lhs.guildId == rhs.guildId);
-	}
-
-	inline bool operator<(const GuildMemberKey& lhs, const GuildMemberKey& rhs) {
-		return (lhs.userId < rhs.userId && lhs.guildId < rhs.guildId);
-	}
-
+	
 	class GuildMemberCache {
 	  public:
 		GuildMemberCache() noexcept = default;
 
-		void emplace(GuildMemberKey theKey, GuildMemberData&& theData) noexcept;
+		const GuildMemberData& readOnly(GuildMemberData theKey) noexcept;
 
-		const GuildMemberData& readOnly(GuildMemberKey theKey) noexcept;
+		GuildMemberData& at(GuildMemberData theKey) noexcept;
 
-		GuildMemberData& at(GuildMemberKey theKey) noexcept;
+		void emplace(GuildMemberData&& theData) noexcept;
 
-		bool contains(GuildMemberKey theKey) noexcept;
+		bool contains(GuildMemberData theKey) noexcept;
 
-		void erase(GuildMemberKey theKey) noexcept;
+		void erase(GuildMemberData theKey) noexcept;
 
 		size_t size() noexcept;
 
 	  protected:
+		std::unordered_set<GuildMemberData> theMap{};
 		std::mutex theMutex{};
 	};
-
+	
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
@@ -189,8 +183,8 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object theParser, ReturnType& theData);
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::object jsonObjectData, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
+		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class GuildMemberData;
@@ -250,8 +244,8 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static ObjectCache<GuildMemberData> cache;
 		static bool doWeCacheGuildMembers;
-		static GuildMemberCache cache;
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

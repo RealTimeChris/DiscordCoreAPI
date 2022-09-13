@@ -56,11 +56,6 @@ namespace DiscordCoreInternal {
 		Atom_Utf8_Ext = 118
 	};
 
-	struct DiscordCoreAPI_Dll ReadStringReturnData {
-		std::string theString{};
-		size_t theLength{};
-	};
-
 	class DiscordCoreAPI_Dll ErlPacker {
 	  public:
 		ErlPacker() noexcept = default;
@@ -76,11 +71,8 @@ namespace DiscordCoreInternal {
 		std::string nilString{ "nil" };
 		std::string bufferString{};
 		std::string_view buffer{};
-		std::string tempString{};
 		uint64_t offSet{};
 		uint64_t size{};
-
-		void escapeCharacters(std::string_view theString);
 
 		void singleValueJsonToETF(nlohmann::json&);
 
@@ -119,7 +111,7 @@ namespace DiscordCoreInternal {
 			return DiscordCoreAPI::reverseByteOrder<const ReturnType>(newValue);
 		}
 
-		std::string_view readString(uint32_t length);
+		const char* readString(uint32_t length);
 
 		std::string singleValueETFToJson();
 

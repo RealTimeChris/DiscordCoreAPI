@@ -27,66 +27,6 @@
 
 namespace DiscordCoreInternal {
 
-	void ErlPacker::escapeCharacters(std::string_view theString) {
-		auto theSize = theString.size();
-		this->bufferString.resize(theSize);
-		for (int32_t x = 0; x < theSize; x++) {
-			switch (static_cast<char>(theString[x])) {
-				case 0x0008: {
-					this->bufferString[x] = '\\';
-					this->bufferString.insert(this->bufferString.begin() + x, 'b');
-					x++;
-					break;
-				}
-				case 0x0009: {
-					this->bufferString[x] = '\\';
-					this->bufferString.insert(this->bufferString.begin() + x, 't');
-					x++;
-					break;
-				}
-				case 0x000A: {
-					this->bufferString[x] = '\\';
-					this->bufferString.insert(this->bufferString.begin() + x, 'n');
-					x++;
-					break;
-				}
-				case 0x000B: {
-					this->bufferString[x] = '\\';
-					this->bufferString.insert(this->bufferString.begin() + x, 'v');
-					x++;
-					break;
-				}
-				case 0x000C: {
-					this->bufferString[x] = '\\';
-					this->bufferString.insert(this->bufferString.begin() + x, 'f');
-					x++;
-					break;
-				}
-				case 0x000D: {
-					this->bufferString[x] = '\\';
-					this->bufferString.insert(this->bufferString.begin() + x, 'r');
-					x++;
-					break;
-				}
-				case 0x005: {
-					this->bufferString[x] = '\\';
-					this->bufferString.insert(this->bufferString.begin() + x, '\\');
-					x++;
-					break;
-				}
-				case 0x0027: {
-					this->bufferString[x] = '\\';
-					this->bufferString.insert(this->bufferString.begin() + x, '\'');
-					x++;
-					break;
-				}
-				default: {
-					this->bufferString[x] = theString[x];
-				}
-			}
-		}
-	}
-
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
 	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
@@ -107,7 +47,6 @@ namespace DiscordCoreInternal {
 			throw ErlPackError{ "ErlPacker::parseEtfToJson() Error: Incorrect format version specified." };
 		}
 		this->bufferString = this->singleValueETFToJson();
-		escapeCharacters(this->bufferString);
 		return this->bufferString;
 	}
 
@@ -256,16 +195,54 @@ namespace DiscordCoreInternal {
 		this->writeToBuffer(bufferNew);
 	}
 
-	std::string_view ErlPacker::readString(uint32_t length) {
+	const char* ErlPacker::readString(uint32_t length) {
 		if (this->offSet + static_cast<uint64_t>(length) > this->size) {
 			throw ErlPackError{ "this->readString() Error: readString() past end of buffer.\n\n" };
 		}
-		this->tempString.resize(length);
-		for (uint32_t x = 0; x < length; ++x) {
-			this->tempString[x] = this->buffer[this->offSet + x];
+		char* theStringNew = ( char* )this->buffer.data() + this->offSet;
+		for (int32_t x = 0; x < length; ++x) {
+			switch (static_cast<char>(theStringNew[x])) {
+				case '\b': {
+					theStringNew[x] = static_cast<char>('b');
+					break;
+				}
+				case '\t': {
+					theStringNew[x] = static_cast<char>('t');
+					break;
+				}
+				case '\n': {
+					theStringNew[x] = static_cast<char>('n');
+					break;
+				}
+				case '\v': {
+					theStringNew[x] = static_cast<char>('v');
+					break;
+				}
+				case '\f': {
+					theStringNew[x] = static_cast<char>('f');
+					break;
+				}
+				case '\r': {
+					theStringNew[x] = static_cast<char>('r');
+					break;
+				}
+				case '\"': {
+					theStringNew[x] = static_cast<char>('r');
+					break;
+				}
+				case '\'': {
+					theStringNew[x] = static_cast<char>('b');
+					break;
+				}
+				case '\\': {
+					theStringNew[x] = static_cast<char>('b');
+					break;
+				}
+				default: {}
+			}
 		}
 		this->offSet += length;
-		return this->tempString;
+		return theStringNew;
 	}
 
 	std::string ErlPacker::singleValueETFToJson() {
@@ -386,15 +363,15 @@ namespace DiscordCoreInternal {
 
 	std::string ErlPacker::parseFloatExt() {
 		const uint8_t floatLength = 31;
-		auto floatString = readString(floatLength);
+		const char* floatString = readString(floatLength);
 
-		if (floatString.empty()) {
+		if (floatString == NULL) {
 			return nlohmann::json{};
 		}
 
 		double number{};
 		std::string nullTerminated{};
-		nullTerminated.insert(nullTerminated.begin(), floatString.data(), floatString.data() + floatLength);
+		nullTerminated.insert(nullTerminated.begin(), floatString, floatString + floatLength);
 
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
 
@@ -483,11 +460,11 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseBinaryExt() {
 		uint32_t length = this->readBits<uint32_t>();
 		auto stringNew = this->readString(length);
-		if (stringNew.empty()) {
+		if (stringNew == nullptr) {
 			return std::string{};
 		}
-		std::string theString{ stringNew };
-		return theString;
+
+		return std::string{ stringNew, length };
 	}
 
 	std::string ErlPacker::parseSmallBigExt() {
@@ -531,14 +508,14 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseAtomUtf8Ext() {
 		uint32_t lengthNew = this->readBits<uint16_t>();
 		auto atom = this->readString(lengthNew);
-		std::string theValue = this->processAtom(atom.data(), atom.size());
+		std::string theValue = this->processAtom(atom, lengthNew);
 		return theValue;
 	}
 
 	std::string ErlPacker::parseSmallAtomExt() {
 		uint8_t length = this->readBits<uint8_t>();
 		auto atom = this->readString(length);
-		std::string theValue = this->processAtom(atom.data(), atom.size());
+		std::string theValue = this->processAtom(atom, length);
 		return theValue;
 	};
 }
