@@ -3152,7 +3152,7 @@ namespace DiscordCoreAPI {
 					if (newString.size() > 256) {
 						newString = newString.substr(0, 256);
 					}
-					theData.description = escapeCharacters(utf8MakeValid(newString));
+					theData.description = escapeCharacters(utf8MakeValid(newString)); 
 				}
 			}
 
