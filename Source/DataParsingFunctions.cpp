@@ -70,7 +70,6 @@ namespace DiscordCoreAPI {
 
 	uint64_t getId(simdjson::ondemand::value  jsonObjectData, const char* theKey) {
 		std::string theString = getString(jsonObjectData, theKey); 
-		std::cout << "THE STRING: " << theString<< std::endl;
 		return DiscordCoreAPI::strtoull(theString);
 	}
 
@@ -271,10 +270,8 @@ namespace DiscordCoreAPI {
 			}
 		}
 	}
-	std::atomic_int32_t theTotal{};
+
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, UserData& theData) {
-		theTotal.store(theTotal.load() + 1);
-		std::cout << "THE TOTAL: " << theTotal.load() << std::endl;
 		theData.id = getId(jsonObjectData, "id");
 		if (theData.id == 0) {
 			return;
@@ -288,21 +285,13 @@ namespace DiscordCoreAPI {
 		
 		theData.flags |= setBool(theData.flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
 
-		std::cout << "THE DISCRIMINATOR: " << theData.discriminator << "DISCRIM OLD" << std::endl;
-
 		theData.flags |= getUint32(jsonObjectData, "public_flags");
-
-		std::cout << "THE DISCRIMINATOR: " << theData.discriminator << "DISCRIM OLD" << std::endl;
-				
-		std::cout << "THE ID: " << theData.id << std::endl;
 		
 		theData.userName = getString(jsonObjectData, "username");
-		std::cout << "THE USERNAME: " << theData.userName << std::endl;
 		
 		theData.avatar = getString(jsonObjectData, "avatar");
 
 		theData.discriminator = getString(jsonObjectData, "discriminator");
-		std::cout << "THE DISCRIMINATOR: " << theData.discriminator << std::endl;
 	}
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, RoleData& theData) {
@@ -535,7 +524,6 @@ namespace DiscordCoreAPI {
 	}
 	
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, GuildData& theData) {
-		std::cout << "WERE HERE THIS IS IT!" << std::endl;
 		theData.flags |= setBool(theData.flags, GuildFlags::WidgetEnabled, getBool(jsonObjectData, "widget_enabled"));
 		theData.flags |= setBool(theData.flags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
 
@@ -562,7 +550,6 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.threads.clear();
 			for (auto value: theArray01) {
-				std::cout << "WERE HERE THIS IS IT! 0101" << std::endl;
 				auto theObject = value.value();
 				theData.threads.emplace_back(getId(theObject, "id"));
 			}
@@ -573,7 +560,6 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.stickers.clear();
 			for (auto value: theArray02) {
-				std::cout << "WERE HERE THIS IS IT! 0202" << std::endl;
 				theData.stickers.emplace_back(getId(value.value(), "id"));
 			}
 		}
@@ -583,7 +569,6 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.guildScheduledEvents.clear();
 			for (auto value: theArray03) {
-				std::cout << "WERE HERE THIS IS IT! 0303" << std::endl;
 				theData.guildScheduledEvents.emplace_back(getId(value.value(), "id"));
 			}
 		}
@@ -593,7 +578,6 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.stageInstances.clear();
 			for (auto value: theArray04) {
-				std::cout << "WERE HERE THIS IS IT! 0404" << std::endl;
 				theData.stageInstances.emplace_back(getId(value.value(), "id"));
 			}
 		}
@@ -603,7 +587,6 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.emoji.clear();
 			for (auto value: theArray05) {
-				std::cout << "WERE HERE THIS IS IT! 0505" << std::endl;
 				theData.emoji.emplace_back(getId(value.value(), "id"));
 			}
 		}
@@ -615,7 +598,6 @@ namespace DiscordCoreAPI {
 			theResult = jsonObjectData["roles"].get(theArray06);
 			if (theResult == simdjson::error_code::SUCCESS) {
 				for (auto value: theArray06) {
-					std::cout << "WERE HERE THIS IS IT! 0606" << std::endl;
 					parseObject(value.value(), newData);
 					newData.guildId = theData.id;
 					theData.roles.emplace_back(newData.id);
@@ -630,7 +612,6 @@ namespace DiscordCoreAPI {
 			GuildMemberData theDataNew{};
 			if (theResult == simdjson::error_code::SUCCESS) {
 				for (auto value: theArray07) {
-					std::cout << "WERE HERE THIS IS IT! 0707" << std::endl;
 					auto userId = getId(value.value(), "user_id");
 					theDataNew.id = userId;
 					theDataNew.guildId = theData.id;
@@ -647,10 +628,8 @@ namespace DiscordCoreAPI {
 			theData.members.clear();
 			GuildMemberData newData{};
 			theResult = jsonObjectData["members"].get(theArray08);
-			std::cout << "MEMBERS TOTAL: " << theArray08.count_elements() << std::endl;
 			if (theResult == simdjson::error_code::SUCCESS) {
 				for (auto value: theArray08) {
-					std::cout << "WERE HERE THIS IS IT! 0808" << std::endl;
 					parseObject(value.value(), newData);
 					newData.guildId = theData.id;
 					theData.members.emplace_back(newData.id);
@@ -666,7 +645,6 @@ namespace DiscordCoreAPI {
 			theResult = jsonObjectData["presences"].get(theArray09);
 			if (theResult == simdjson::error_code::SUCCESS) {
 				for (auto value: theArray09) {
-					std::cout << "WERE HERE THIS IS IT! 0909" << std::endl;
 					parseObject(value.value(), newData);
 					newData.guildId = theData.id;
 					theData.presences.emplace_back(std::move(newData));
@@ -681,7 +659,6 @@ namespace DiscordCoreAPI {
 			theResult = jsonObjectData["channels"].get(theArray10);
 			if (theResult == simdjson::error_code::SUCCESS) {
 				for (auto value: theArray10) {
-					std::cout << "WERE HERE THIS IS IT! 1010" << std::endl;
 					parseObject(value.value(), newData);
 					newData.guildId = theData.id;
 					theData.channels.emplace_back(newData.id);

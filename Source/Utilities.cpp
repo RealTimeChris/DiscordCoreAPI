@@ -290,7 +290,6 @@ namespace DiscordCoreAPI {
 		if (theHexColorValue == "") {
 			theHexColorValue = "fefefe";
 		}
-		std::cout << "THE COLOR VALUE: " << theHexColorValue << std::endl;
 		this->theColor = stoull(theHexColorValue, nullptr, 16);
 	}
 

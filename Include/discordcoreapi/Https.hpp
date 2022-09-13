@@ -174,10 +174,7 @@ namespace DiscordCoreInternal {
 				ReturnType theReturnValueNew{};
 				simdjson::ondemand::parser theParser{};
 				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
-				std::cout << "WERE HERE THIS IS IT! 0101" << std::endl;
 				auto theDocument = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
-				std::cout << "WERE HERE THIS IS IT! 0202" << std::endl;
-				std::cout << "RESPONSE DATA: " << returnData.responseData << std::endl;
 				simdjson::ondemand::value theObject{};
 				auto theResult02 = theDocument.get(theObject);
 				DiscordCoreAPI::parseObject(theObject, theReturnValueNew);
@@ -186,7 +183,6 @@ namespace DiscordCoreInternal {
 				simdjson::ondemand::parser theParser{};
 				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
 				auto theDocument = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
-				std::cout << "WERE HERE THIS IS IT! 0202" << std::endl;
 				simdjson::ondemand::value theObject{};
 				auto theResult02 = theDocument.get(theObject);
 				DiscordCoreAPI::parseObject(theObject, *theReturnValue);

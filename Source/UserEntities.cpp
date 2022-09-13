@@ -163,14 +163,9 @@ namespace DiscordCoreAPI {
 		UserData theData{};
 		theData.id = dataPackage.userId;
 		if (!Users::cache.contains(theData)) {
-			std::cout << "WERE HERE THIS IS IT" << std::endl;
 			co_return getUserAsync(dataPackage).get();
 
 		} else {
-			theData = Users::cache.readOnly(theData);
-			std::cout << "WERE HERE THIS IS IT 0202" << Users::cache.readOnly(theData).id << std::endl;
-			std::cout << "WERE HERE THIS IS IT 0202" << Users::cache.readOnly(theData).id << std::endl;
-			
 			theData = Users::cache.readOnly(theData);
 			co_return theData;
 		}
