@@ -998,6 +998,7 @@ namespace DiscordCoreAPI {
 		auto theSize = theString.size();
 		for (int32_t x = 0; x < theSize; x++) {
 			switch (static_cast<char>(theString[x])) {
+				/*
 				case 0x08: {
 					theStringNew.insert(theStringNew.end(), '\\');
 					theStringNew.insert(theStringNew.end(), 'b');
@@ -1045,7 +1046,7 @@ namespace DiscordCoreAPI {
 					theStringNew.insert(theStringNew.end(), '\\');
 					theStringNew.insert(theStringNew.end(), '\'');
 					break;
-				}
+				}*/
 				default: {
 					theStringNew.insert(theStringNew.end(), theString[x]);
 				}

@@ -28,7 +28,7 @@
 
 #include <simdjson.h>
 
-namespace DiscordCoreInternal {
+namespace DiscordCoreAPI {
 
 	static std::map<int32_t, std::string> theErrors{ { 0, "SUCCESS" }, { 1, "CAPACITY" }, { 2, "MEMALLOC" }, { 3, "TAPE_ERRPR" }, { 4, "DEPTH_ERROR" }, { 5, "STRING_ERROR" },
 		{ 6, "T_ATOM_ERROR" }, { 7, "F_ATOM_ERROR" }, { 8, "N_ATOM_ERROR" }, { 9, "NUMBER_ERROR" }, { 10, "UTF8_ERROR" }, { 11, "UNINITIALIZED" }, { 12, "EMPTY" },
@@ -40,10 +40,6 @@ namespace DiscordCoreInternal {
 	struct JsonParseError : public std::runtime_error {
 		explicit JsonParseError(int32_t theCode);
 	};
-
-};
-
-namespace DiscordCoreAPI {
 
 	using Snowflake = uint64_t;
 

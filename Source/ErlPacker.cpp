@@ -30,6 +30,7 @@ namespace DiscordCoreInternal {
 	void ErlPacker::escapeCharacters(std::string& theString) {
 		auto theSize = theString.size();
 		for (int32_t x = 0; x < theSize; x++) {
+			/*
 			switch (static_cast<char>(theString[x])) {
 				case 0x08: {
 					theString[x] = '\\';
@@ -87,8 +88,9 @@ namespace DiscordCoreInternal {
 					x++;
 					break;
 				}
-				default: {}
-			}
+				default: {
+				}
+			}*/
 		}
 	}
 
