@@ -154,27 +154,7 @@ namespace DiscordCoreAPI {
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, GuildMemberVector& theGuildMember);
 
 	/**@}*/
-	
-	class GuildMemberCache {
-	  public:
-		GuildMemberCache() noexcept = default;
 
-		const GuildMemberData& readOnly(GuildMemberData theKey) noexcept;
-
-		GuildMemberData& at(GuildMemberData theKey) noexcept;
-
-		void emplace(GuildMemberData&& theData) noexcept;
-
-		bool contains(GuildMemberData theKey) noexcept;
-
-		void erase(GuildMemberData theKey) noexcept;
-
-		size_t size() noexcept;
-
-	  protected:
-		std::unordered_set<GuildMemberData> theMap{};
-		std::mutex theMutex{};
-	};
 	
 	/**
 	 * \addtogroup main_endpoints
