@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 		std::string sessionId{};
 		std::string botToken{};
 
-		operator nlohmann::json();
+		operator std::string();
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
@@ -2190,13 +2190,11 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};
 	};
 
-	enum class JsonType { Unset = 0, Integer = 1, Float = 2, String = 3, Boolean = 4 };
-
 	/// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
 	class DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
 	  public:
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
-		JsonType type{};///< The value of the option.
+		ObjectType type{};///< The value of the option.
 		std::string name{};///< The name of the current choice.
 		double valueFloat{};
 		uint64_t valueInt{};
@@ -2769,13 +2767,6 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ConnectionDataVector& theData);
 
-	enum class ObjectType : int8_t { Unset = -1, String = 0, Integer = 1, Float = 2, Boolean = 3 };
-
-	struct JsonValue {
-		std::string theValue{};
-		ObjectType theType{};
-	};
-
 	/// ApplicationCommand Interaction data option. \brief ApplicationCommand Interaction data option.
 	struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption {
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
@@ -3338,7 +3329,7 @@ namespace DiscordCoreAPI {
 	template<> inline auto getArgument<int64_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Integer: {
+			case ObjectType::Integer_64_Bit: {
 				return stoll(theValue.theValue);
 			}
 		}
@@ -3348,7 +3339,7 @@ namespace DiscordCoreAPI {
 	template<> inline auto getArgument<int32_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Integer: {
+			case ObjectType::Integer_32_Bit: {
 				return static_cast<int32_t>(stoll(theValue.theValue));
 			}
 		}
@@ -3358,7 +3349,7 @@ namespace DiscordCoreAPI {
 	template<> inline auto getArgument<int16_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Integer: {
+			case ObjectType::Integer_16_Bit: {
 				return static_cast<int16_t>(stoll(theValue.theValue));
 			}
 		}
@@ -3368,7 +3359,7 @@ namespace DiscordCoreAPI {
 	template<> inline auto getArgument<int8_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Integer: {
+			case ObjectType::Integer_8_Bit: {
 				return static_cast<int8_t>(stoll(theValue.theValue));
 			}
 		}
@@ -3378,7 +3369,7 @@ namespace DiscordCoreAPI {
 	template<> inline auto getArgument<uint64_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Integer: {
+			case ObjectType::Unsigned_Integer_64_Bit: {
 				return stoull(theValue.theValue);
 			}
 		}
@@ -3388,7 +3379,7 @@ namespace DiscordCoreAPI {
 	template<> inline auto getArgument<uint32_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Integer: {
+			case ObjectType::Unsigned_Integer_32_Bit: {
 				return static_cast<uint32_t>(stoull(theValue.theValue));
 			}
 		}
@@ -3398,7 +3389,7 @@ namespace DiscordCoreAPI {
 	template<> inline auto getArgument<uint16_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Integer: {
+			case ObjectType::Unsigned_Integer_16_Bit: {
 				return static_cast<uint16_t>(stoull(theValue.theValue));
 			}
 		}
@@ -3408,7 +3399,7 @@ namespace DiscordCoreAPI {
 	template<> inline auto getArgument<uint8_t>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Integer: {
+			case ObjectType::Unsigned_Integer_8_Bit: {
 				return static_cast<uint8_t>(stoull(theValue.theValue));
 			}
 		}
@@ -3418,7 +3409,7 @@ namespace DiscordCoreAPI {
 	template<> inline auto getArgument<float>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Float: {
+			case ObjectType::Float_32_Bit: {
 				return stold(theValue.theValue);
 			}
 		}
@@ -3428,7 +3419,7 @@ namespace DiscordCoreAPI {
 	template<> inline auto getArgument<double>(JsonValues& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Float: {
+			case ObjectType::Float_64_Bit: {
 				return stold(theValue.theValue);
 			}
 		}

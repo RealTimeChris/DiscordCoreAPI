@@ -127,6 +127,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
+	class JsonStringGenerator;
 
 	struct ActivityData;
 	/// For selecting the type of streamer that the given bot is, one must be one server and one of client per connection. \brief For selecting the type of streamer that the given bot is, one must be one server and one of client per connection.
@@ -212,7 +213,7 @@ namespace DiscordCoreInternal {
 		int64_t since{ 0 };///< When was the activity started?
 		bool afk{ false };///< Are we afk.
 
-		operator nlohmann::json();
+		operator std::string();
 	};
 
 	template<typename ReturnType> void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
@@ -289,191 +290,251 @@ namespace DiscordCoreAPI {
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void ));
 
-	class JsonStringGenerator {
-	  public:
-		JsonStringGenerator() noexcept {
-			this->theString += "{";
+	enum class ObjectType : int8_t {
+		Unset = -1,
+		String = 0,
+		Integer_8_Bit = 1,
+		Integer_16_Bit = 2,
+		Integer_32_Bit = 3,
+		Integer_64_Bit = 4,
+		Unsigned_Integer_8_Bit = 5,
+		Unsigned_Integer_16_Bit = 6,
+		Unsigned_Integer_32_Bit = 7,
+		Unsigned_Integer_64_Bit = 8,
+		Float_32_Bit = 9,
+		Float_64_Bit = 10,
+		Boolean = 11,
+		Array_Start = 12,
+		Array_End = 13,
+		Struct_Start = 14,
+		Struct_End = 15
+	};
+
+	template<typename JsonObjectType = void> struct JsonScalarObject {
+		ObjectType theType{ ObjectType::Struct_Start };
+		std::string theValue{};
+		std::string theKey{};
+
+		template<typename JsonObjectType = void> JsonScalarObject(ObjectType theTypeNew, const char* theKeyNew, JsonObjectType theValueNew = JsonObjectType{}) {
+			if (theTypeNew == ObjectType::Struct_Start) {
+				this->theType = ObjectType::Struct_Start;
+				this->theKey = theKeyNew;
+			} else if (theTypeNew == ObjectType::Struct_End) {
+				this->theType = ObjectType::Struct_End;
+				this->theKey = theKeyNew;
+			} else if (theTypeNew == ObjectType::Array_Start) {
+				this->theType = ObjectType::Array_Start;
+				this->theKey = theKeyNew;
+			} else if (theTypeNew == ObjectType::Array_End) {
+				this->theType = ObjectType::Array_End;
+			} else if (std::is_same<JsonObjectType, std::string>::value) {
+				this->theType = ObjectType::String;
+				this->theValue = theValueNew;
+				this->theKey = theKeyNew;
+			} else if (std::is_same<JsonObjectType, const char*>::value) {
+				this->theType = ObjectType::String;
+				this->theValue = theValueNew;
+				this->theKey = theKeyNew;
+			} else if (std::is_same<JsonObjectType, bool>::value) {
+				this->theType = ObjectType::Boolean;
+				std::stringstream theStream{};
+				theStream << std::boolalpha << theValueNew;
+				this->theValue = theStream.str();
+				this->theKey = theKeyNew;
+			}
+		}
+
+		template<std::same_as<float> JsonObjectType>
+		JsonScalarObject(ObjectType theTypeNew = ObjectType::Struct_Start, const char* theKeyNew = "", JsonObjectType theValueNew = JsonObjectType{}) {
+			if (std::is_same<JsonObjectType, float>::value) {
+				this->theType = ObjectType::Float_32_Bit;
+				this->theValue = std::to_string(theValueNew);
+				this->theKey = theKeyNew;
+			}
+		}
+
+		template<std::same_as<double> JsonObjectType>
+		JsonScalarObject(ObjectType theTypeNew = ObjectType::Struct_Start, const char* theKeyNew = "", JsonObjectType theValueNew = JsonObjectType{}) {
+			if (std::is_same<JsonObjectType, double>::value) {
+				this->theType = ObjectType::Float_64_Bit;
+				this->theValue = std::to_string(theValueNew);
+				this->theKey = theKeyNew;
+			}
+		}
+
+		template<std::same_as<int64_t> JsonObjectType>
+		JsonScalarObject(ObjectType theTypeNew = ObjectType::Struct_Start, const char* theKeyNew = "", JsonObjectType theValueNew = JsonObjectType{}) {
+			if (std::is_same<JsonObjectType, int64_t>::value) {
+				this->theType = ObjectType::Integer_64_Bit;
+				this->theValue = std::to_string(theValueNew);
+				this->theKey = theKeyNew;
+			}
+		}
+
+		template<std::same_as<int32_t> JsonObjectType>
+		JsonScalarObject(ObjectType theTypeNew = ObjectType::Struct_Start, const char* theKeyNew = "", JsonObjectType theValueNew = JsonObjectType{}) {
+			if (std::is_same<JsonObjectType, int32_t>::value) {
+				this->theType = ObjectType::Integer_32_Bit;
+				this->theValue = std::to_string(theValueNew);
+				this->theKey = theKeyNew;
+			}
+		}
+
+		template<std::same_as<int16_t> JsonObjectType>
+		JsonScalarObject(ObjectType theTypeNew = ObjectType::Struct_Start, const char* theKeyNew = "", JsonObjectType theValueNew = JsonObjectType{}) {
+			if (std::is_same<JsonObjectType, int16_t>::value) {
+				this->theType = ObjectType::Integer_16_Bit;
+				this->theValue = std::to_string(theValueNew);
+				this->theKey = theKeyNew;
+			}
+		}
+
+		template<std::same_as<int8_t> JsonObjectType>
+		JsonScalarObject(ObjectType theTypeNew = ObjectType::Struct_Start, const char* theKeyNew = "", JsonObjectType theValueNew = JsonObjectType{}) {
+			if (std::is_same<JsonObjectType, int8_t>::value) {
+				this->theType = ObjectType::Integer_8_Bit;
+				this->theValue = std::to_string(theValueNew);
+				this->theKey = theKeyNew;
+			}
+		}
+
+		template<std::same_as<uint64_t> JsonObjectType>
+		JsonScalarObject(ObjectType theTypeNew = ObjectType::Struct_Start, const char* theKeyNew = "", JsonObjectType theValueNew = JsonObjectType{}) {
+			if (std::is_same<JsonObjectType, uint64_t>::value) {
+				this->theType = ObjectType::Unsigned_Integer_64_Bit;
+				this->theValue = std::to_string(theValueNew);
+				this->theKey = theKeyNew;
+			}
+		}
+
+		template<std::same_as<uint32_t> JsonObjectType>
+		JsonScalarObject(ObjectType theTypeNew = ObjectType::Struct_Start, const char* theKeyNew = "", JsonObjectType theValueNew = JsonObjectType{}) {
+			if (std::is_same<JsonObjectType, uint32_t>::value) {
+				this->theType = ObjectType::Unsigned_Integer_32_Bit;
+				this->theValue = std::to_string(theValueNew);
+				this->theKey = theKeyNew;
+			}
+		}
+
+		template<std::same_as<uint16_t> JsonObjectType>
+		JsonScalarObject(ObjectType theTypeNew = ObjectType::Struct_Start, const char* theKeyNew = "", JsonObjectType theValueNew = JsonObjectType{}) {
+			if (std::is_same<JsonObjectType, uint16_t>::value) {
+				this->theType = ObjectType::Unsigned_Integer_16_Bit;
+				this->theValue = std::to_string(theValueNew);
+				this->theKey = theKeyNew;
+			}
+		}
+
+		template<std::same_as<uint8_t> JsonObjectType>
+		JsonScalarObject(ObjectType theTypeNew = ObjectType::Struct_Start, const char* theKeyNew = "", JsonObjectType theValueNew = JsonObjectType{}) {
+			if (std::is_same<JsonObjectType, uint8_t>::value) {
+				this->theType = ObjectType::Unsigned_Integer_8_Bit;
+				this->theValue = std::to_string(theValueNew);
+				this->theKey = theKeyNew;
+			}
+		}
+	};
+
+	struct JsonValue {
+		std::vector<JsonScalarObject<>> theValues{};
+		std::string theValue{};
+
+		JsonValue() {
+		}
+
+		void parseValues(std::vector<JsonScalarObject<>> theValues) {
+			for (auto& value: theValues) {
+				switch (value.theType) {
+					case ObjectType::Array_Start: {
+						if (*(this->haveWeStarted.end() - 1)) {
+							this->theValue += ",";
+						}
+						if (!*(this->haveWeStarted.end() - 1)) {
+							*(this->haveWeStarted.end() - 1) = true;
+						}
+						if (!value.theKey.empty()) {
+							this->theValue += "\"" + std::string{ value.theKey } + "\":[";
+						} else {
+							this->theValue += "[";
+						}
+
+						this->haveWeStarted.push_back(false);
+						break;
+					}
+					case ObjectType::Array_End: {
+						this->theValue += "]";
+						this->haveWeStarted.erase(this->haveWeStarted.end() - 1);
+						break;
+					}
+					case ObjectType::Struct_Start: {
+						if (*(this->haveWeStarted.end() - 1)) {
+							this->theValue += ",";
+						}
+						if (!*(this->haveWeStarted.end() - 1)) {
+							*(this->haveWeStarted.end() - 1) = true;
+						}
+						if (!value.theKey.empty()) {
+							this->theValue += "\"" + std::string{ value.theKey } + "\":{";
+						} else {
+							this->theValue += "{";
+						}
+						this->haveWeStarted.push_back(false);
+						break;
+					}
+					case ObjectType::Struct_End: {
+						this->theValue += "}";
+						this->haveWeStarted.erase(this->haveWeStarted.end() - 1);
+						break;
+					}
+					case ObjectType::String: {
+						if (*(this->haveWeStarted.end() - 1)) {
+							this->theValue += ",";
+						}
+						if (!*(this->haveWeStarted.end() - 1)) {
+							*(this->haveWeStarted.end() - 1) = true;
+						}
+						if (!value.theKey.empty()) {
+							this->theValue += "\"" + std::string{ value.theKey } + "\":";
+						}
+						this->theValue += "\"" + std::string{ value.theValue } + "\"";
+						break;
+					}
+					default: {
+						if (*(this->haveWeStarted.end() - 1)) {
+							this->theValue += ",";
+						}
+						if (!*(this->haveWeStarted.end() - 1)) {
+							*(this->haveWeStarted.end() - 1) = true;
+						}
+						if (!value.theKey.empty()) {
+							this->theValue += "\"" + std::string{ value.theKey } + "\":";
+						}
+						this->theValue += std::string{ value.theValue };
+						break;
+					}
+				}
+			}
+		}
+
+		void operator+=(JsonScalarObject<>&& other) {
+			theValues.push_back(other);
 		}
 
 		operator std::string() {
-			this->theString += "}";
-			this->haveWeStarted.push_back(false);
-			auto theSize = this->theString.size();
-			return std::string{ this->theString.data(), theSize - 2 };
+			this->haveWeStarted.erase(this->haveWeStarted.begin(), this->haveWeStarted.end() - 1);
+			this->haveWeStarted[0] = false;
+			this->theValue.clear();
+			this->theValue += "{";
+			this->parseValues(this->theValues);
+			this->theValue += "}";
+			auto theSize = this->theValue.size();
+			std::cout << this->theValue << std::endl;
+			return std::string{ this->theValue.data(), theSize };
 		}
 
-		void appendInteger(uint64_t theInteger, const char* theName = nullptr) {
-			if (theName != nullptr) {
-				if (*(this->haveWeStarted.end() - 1)) {
-					this->theString += ",";
-				}
-				if (!*(this->haveWeStarted.end() - 1)) {
-					*(this->haveWeStarted.end() - 1) = true;
-				}
-				this->theString += "\"" + std::string{ theName } + "\":";
-			} else {
-				if (*(this->haveWeStartedTheArray.end() - 1)) {
-					this->theString += ",";
-				}
-				if (!*(this->haveWeStartedTheArray.end() - 1)) {
-					*(this->haveWeStartedTheArray.end() - 1) = true;
-				}
-			}
-			this->theString += std::to_string(theInteger);
-		}
-
-		void appendString(std::string theString, const char* theName = nullptr) {
-			if (theName != nullptr) {
-				if (*(this->haveWeStarted.end() - 1)) {
-					this->theString += ",";
-				}
-				if (!*(this->haveWeStarted.end() - 1)) {
-					*(this->haveWeStarted.end() - 1) = true;
-				}
-				this->theString += "\"" + std::string{ theName } + "\":";
-			} else {
-				if (*(this->haveWeStartedTheArray.end() - 1)) {
-					this->theString += ",";
-				}
-				if (!*(this->haveWeStartedTheArray.end() - 1)) {
-					*(this->haveWeStartedTheArray.end() - 1) = true;
-				}
-			}
-			this->theString += "\"" + theString + "\"";
-		}
-
-		void appendBool(bool theBool, const char* theName = nullptr) {
-			if (theName != nullptr) {
-				if (*(this->haveWeStarted.end() - 1)) {
-					this->theString += ",";
-				}
-				if (!*(this->haveWeStarted.end() - 1)) {
-					*(this->haveWeStarted.end() - 1) = true;
-				}
-				this->theString += "\"" + std::string{ theName } + "\":";
-			} else {
-				if (*(this->haveWeStartedTheArray.end() - 1)) {
-					this->theString += ",";
-				}
-				if (!*(this->haveWeStartedTheArray.end() - 1)) {
-					*(this->haveWeStartedTheArray.end() - 1) = true;
-				}
-			}
-			std::stringstream theStream{};
-			theStream << std::boolalpha << theBool;
-			this->theString += theStream.str();
-		}
-
-		void appendFloat(double theFloat, const char* theName = nullptr) {
-			if (theName != nullptr) {
-				if (*(this->haveWeStarted.end() - 1)) {
-					this->theString += ",";
-				}
-				if (!*(this->haveWeStarted.end() - 1)) {
-					*(this->haveWeStarted.end() - 1) = true;
-				}
-				this->theString += "\"" + std::string{ theName } + "\":";
-			} else {
-				if (*(this->haveWeStartedTheArray.end() - 1)) {
-					this->theString += ",";
-				}
-				if (!*(this->haveWeStartedTheArray.end() - 1)) {
-					*(this->haveWeStartedTheArray.end() - 1) = true;
-				}
-			}
-			this->theString += std::to_string(theFloat);
-		}
-
-		template<typename ElementType> void appendElement(ElementType theElement) {
-		}
-
-		template<std::same_as<const char*> ElementType> void appendElement(ElementType theElement) {
-			this->appendString(theElement);
-		}
-
-		template<std::same_as<std::string> ElementType> void appendElement(ElementType theElement) {
-			this->appendString(theElement);
-		}
-
-		template<std::same_as<int8_t> ElementType> void appendElement(ElementType theElement) {
-			this->appendInteger(theElement);
-		}
-
-		template<std::same_as<int16_t> ElementType> void appendElement(ElementType theElement) {
-			this->appendInteger(theElement);
-		}
-
-		template<std::same_as<int32_t> ElementType> void appendElement(ElementType theElement) {
-			this->appendInteger(theElement);
-		}
-
-		template<std::same_as<int64_t> ElementType> void appendElement(ElementType theElement) {
-			this->appendInteger(theElement);
-		}
-
-		template<std::same_as<uint8_t> ElementType> void appendElement(ElementType theElement) {
-			this->appendInteger(theElement);
-		}
-
-		template<std::same_as<uint16_t> ElementType> void appendElement(ElementType theElement) {
-			this->appendInteger(theElement);
-		}
-
-		template<std::same_as<uint32_t> ElementType> void appendElement(ElementType theElement) {
-			this->appendInteger(theElement);
-		}
-
-		template<std::same_as<uint64_t> ElementType> void appendElement(ElementType theElement) {
-			this->appendInteger(theElement);
-		}
-
-		template<std::same_as<float> ElementType> void appendElement(ElementType theElement) {
-			this->appendFloat(theElement);
-		}
-
-		template<std::same_as<double> ElementType> void appendElement(ElementType theElement) {
-			this->appendFloat(theElement);
-		}
-
-		template<std::same_as<bool> ElementType> void appendElement(ElementType theElement) {
-			this->appendBool(theElement);
-		}
-
-		void appendArray(const char* theName) {
-			if (*(this->haveWeStarted.end() - 1)) {
-				this->theString += ",";
-			} else {
-				*(this->haveWeStarted.end() - 1) = true;
-			}
-			this->haveWeStartedTheArray.push_back(false);
-			this->theString += "\"" + std::string{ theName } + "\":[";
-		}
-
-		void closeArray() {
-			this->theString += "]";
-			this->haveWeStartedTheArray.erase(this->haveWeStartedTheArray.end() - 1);
-		}
-
-		void appendStruct(const char* theName) {
-			if (*(this->haveWeStarted.end() - 1)) {
-				this->theString += ",";
-			} else {
-				*(this->haveWeStarted.end() - 1) = true;
-			}
-			this->haveWeStarted.push_back(false);
-			this->theString += "\"" + std::string{ theName } + "\":{";
-		}
-
-		void closeStruct() {
-			this->theString += "}";
-			this->haveWeStarted.erase(this->haveWeStarted.end() - 1);
-		}
-
-	  protected:
-		std::string theString{};
 		std::vector<bool> haveWeStarted{ false };
-		std::vector<bool> haveWeStartedTheArray{ false };
 	};
+
 
 	/// Input event response types. \brief Input event response types.
 	enum class InputEventResponseType : int8_t {
@@ -718,8 +779,6 @@ namespace DiscordCoreAPI {
 
 		operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>();
 
-		operator nlohmann::json();
-
 		void push_back(char theChar);
 
 		size_t size();
@@ -826,18 +885,6 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType> void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
 
 	template<typename ReturnType> void parseObject(nlohmann::json& theParser, ReturnType& theData);
-
-	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json* jsonData, const char* keyName);
-
-	DiscordCoreAPI_Dll uint16_t getUint16(nlohmann::json* jsonData, const char* keyName);
-
-	DiscordCoreAPI_Dll uint32_t getUint32(nlohmann::json* jsonData, const char* keyName);
-
-	DiscordCoreAPI_Dll uint64_t getUint64(nlohmann::json* jsonData, const char* keyName);
-
-	DiscordCoreAPI_Dll bool getBool(nlohmann::json* jsonData, const char* keyName);
-
-	DiscordCoreAPI_Dll std::string getString(nlohmann::json* jsonData, const char* keyName);
 
 	DiscordCoreAPI_Dll uint64_t strtoull(const std::string& theString);
 
@@ -1342,7 +1389,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
 
-	DiscordCoreAPI_Dll std::string constructMultiPartData(nlohmann::json theData, const std::vector<File>& files);
+	DiscordCoreAPI_Dll std::string constructMultiPartData(std::string& theData, const std::vector<File>& files);
 
 	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
 

@@ -246,16 +246,6 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
-	StringWrapper::operator nlohmann::json() {
-		nlohmann::json theValue;
-		std::string theString{};
-		for (auto& value: static_cast<std::string>(*this)) {
-			theString.push_back(value);
-		}
-		theValue = theString;
-		return theValue;
-	}
-
 	void StringWrapper::push_back(char theChar) {
 		std::stringstream theStream{};
 		if (this->thePtr) {
@@ -791,7 +781,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string constructMultiPartData(nlohmann::json theData, const std::vector<File>& files) {
+	std::string constructMultiPartData(std::string theData, const std::vector<File>& files) {
 		const std::string boundary("boundary25");
 		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
 
@@ -799,7 +789,7 @@ namespace DiscordCoreAPI {
 
 		content += "\r\nContent-Type: application/json\r\nContent-Disposition: form-data; "
 				   "name=\"payload_json\"\r\n\r\n";
-		content += theData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + "\r\n";
+		content += theData.data() + std::string{ "\r\n" };
 		if (files.size() == 1) {
 			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
 			content += files[0].data;

@@ -177,7 +177,7 @@ namespace DiscordCoreInternal {
 		this->configManager = configManagerNew;
 	}
 
-	void WebSocketMessageHandler::stringifyJsonData(nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept {
+	void WebSocketMessageHandler::stringifyJsonData(std::string& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept {
 		std::string theVector{};
 		std::string header{};
 
@@ -185,14 +185,14 @@ namespace DiscordCoreInternal {
 			cout << DiscordCoreAPI::shiftToBrightBlue()
 				 << "Sending WebSocket " + static_cast<WebSocketSSLShard*>(this)->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) +
 					std::string("'s Message: ")
-				 << dataToSend.dump() << endl
+				 << dataToSend << endl
 				 << endl
 				 << DiscordCoreAPI::reset();
 		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
 			theVector = ErlPacker::parseJsonToEtf(dataToSend);
 		} else {
-			theVector = dataToSend.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			theVector = dataToSend;
 		}
 		this->createHeader(header, theVector.size(), theOpCode);
 		std::string theVectorNew{};

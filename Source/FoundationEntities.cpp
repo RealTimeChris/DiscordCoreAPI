@@ -37,31 +37,34 @@
 
 namespace DiscordCoreInternal {
 
-	UpdatePresenceData::operator nlohmann::json() {
-		nlohmann::json data{};
+	UpdatePresenceData::operator std::string() {
+		DiscordCoreAPI::JsonStringGenerator data{};
+		data.appendStruct("d");
+		data.appendArray("activities");
 		for (auto& value: this->activities) {
-			nlohmann::json dataNew{};
-			if (static_cast<std::string>(value.url) != "") {
-				dataNew["url"] = value.url;
-			}
-			dataNew["name"] = value.name;
-			dataNew["type"] = value.type;
-			data["d"]["activities"].emplace_back(dataNew);
+			data.appendStruct();
+			data.appendString(value.url, "url");
+			data.appendString(value.name, "name");
+			data.appendInteger(static_cast<uint8_t>(value.type), "type");
+			data.closeStruct();
 		}
-		data["d"]["status"] = this->status;
-		data["d"]["since"] = nullptr;
-		data["d"]["afk"] = this->afk;
-		data["op"] = 3;
-		return data;
+		data.closeArray();
+		data.appendString(this->status, "status");
+		data.appendBool(this->afk, "status");
+		data.appendInteger(3, "op");
+		data.closeStruct();
+		return std::string{ data };
 	}
 
-	WebSocketResumeData::operator nlohmann::json() {
-		nlohmann::json theData{};
-		theData["d"]["seq"] = this->lastNumberReceived;
-		theData["d"]["session_id"] = this->sessionId;
-		theData["d"]["token"] = this->botToken;
-		theData["op"] = 6;
-		return theData;
+	WebSocketResumeData::operator std::string() {
+		DiscordCoreAPI::JsonStringGenerator data{};
+		data.appendStruct("d");
+		data.appendInteger(this->lastNumberReceived, "seq");
+		data.appendString(this->sessionId, "session_id");
+		data.appendString(this->botToken, "token");
+		data.appendInteger(6, "op");
+		data.closeStruct();
+		return std::string{ data };
 	}
 
 	WebSocketIdentifyData::operator nlohmann::json() {
@@ -77,9 +80,9 @@ namespace DiscordCoreInternal {
 		for (auto& value: this->presence.activities) {
 			nlohmann::json dataNew{};
 			if (static_cast<std::string>(value.url) != "") {
-				dataNew["url"] = value.url;
+				dataNew["url"] = std::string{ value.url };
 			}
-			dataNew["name"] = value.name;
+			dataNew["name"] = std::string{ value.name };
 			dataNew["type"] = value.type;
 			dataNewReal["activities"].emplace_back(dataNew);
 		}
