@@ -384,16 +384,6 @@ namespace DiscordCoreAPI {
 			this->theString += std::to_string(theFloat);
 		}
 
-		void appendArray(const char* theName) {
-			if (*(this->haveWeStarted.end() - 1)) {
-				this->theString += ",";
-			} else {
-				*(this->haveWeStarted.end() - 1) = true;
-			}
-			this->haveWeStartedTheArray.push_back(false);
-			this->theString += "\"" + std::string{ theName } + "\":[";
-		}
-
 		template<typename ElementType> void appendElement(ElementType theElement) {
 		}
 
@@ -447,6 +437,16 @@ namespace DiscordCoreAPI {
 
 		template<std::same_as<bool> ElementType> void appendElement(ElementType theElement) {
 			this->appendBool(theElement);
+		}
+
+		void appendArray(const char* theName) {
+			if (*(this->haveWeStarted.end() - 1)) {
+				this->theString += ",";
+			} else {
+				*(this->haveWeStarted.end() - 1) = true;
+			}
+			this->haveWeStartedTheArray.push_back(false);
+			this->theString += "\"" + std::string{ theName } + "\":[";
 		}
 
 		void closeArray() {
