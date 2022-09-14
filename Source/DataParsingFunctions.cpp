@@ -173,6 +173,63 @@ namespace DiscordCoreAPI {
 		bool didItSucceed{ false };
 	};
 
+	ObjectReturnData getObject(ArrayReturnData jsonObjectData, size_t objectIndex, std::source_location theLocation = std::source_location::current()) {
+		ObjectReturnData theValue{};
+		try {
+			if (jsonObjectData.didItSucceed) {
+				auto theResult = jsonObjectData.theArray.at(objectIndex).get(theValue.theObject);
+				if (theResult == simdjson::error_code::SUCCESS) {
+					theValue.didItSucceed = true;
+					return theValue;
+				} else {
+					throw JsonParseError{ theResult };
+				}
+			}
+		} catch (...) {
+			reportException("getObject()", theLocation);
+			return theValue;
+		}
+		return theValue;
+	}
+
+	ObjectReturnData getObject(ObjectReturnData jsonObjectData, const char* objectName, std::source_location theLocation = std::source_location::current()) {
+		ObjectReturnData theValue{};
+		try {
+			if (jsonObjectData.didItSucceed) {
+				auto theResult = jsonObjectData.theObject[objectName].get(theValue.theObject);
+				if (theResult == simdjson::error_code::SUCCESS) {
+					theValue.didItSucceed = true;
+					return theValue;
+				} else {
+					throw JsonParseError{ theResult };
+				}
+			}
+		} catch (...) {
+			reportException("getObject()", theLocation);
+			return theValue;
+		}
+		return theValue;
+	}
+
+	ArrayReturnData getArray(ObjectReturnData jsonObjectData, const char* arrayName) {
+		ArrayReturnData theValue{};
+		try {
+			if (jsonObjectData.didItSucceed) {
+				auto theResult = jsonObjectData.theObject[arrayName].get(theValue.theArray);
+				if (theResult == simdjson::error_code::SUCCESS) {
+					theValue.didItSucceed = true;
+					return theValue;
+				} else {
+					throw JsonParseError{ theResult };
+				}
+			}
+		} catch (...) {
+			reportException("getArray()");
+			return theValue;
+		}
+		return theValue;
+	}
+
 	ObjectReturnData getObject(simdjson::ondemand::array jsonObjectData, size_t objectIndex, std::source_location theLocation = std::source_location::current()) {
 		ObjectReturnData theValue{};
 		try {
@@ -3180,7 +3237,126 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, Song& theData) {
 		try {
-			
+			theData.duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData").theObject, "label");
+			std::string newString = getString(getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0).theObject, "text");
+			if (newString.size() > 256) {
+				newString = newString.substr(0, 256);
+			}
+			theData.description = utf8MakeValid(newString);
+
+			theData.thumbnailUrl = getString(getObject(getArray(getObject(jsonObjectData, "thumbnail"), "thumbnails"), 0).theObject, "url");
+			std::string newTitle01 = getString(getObject(getArray(getObject(jsonObjectData, "title"), "runs"), 0).theObject, "text");
+			if (newTitle01.size() > 256) {
+				newTitle01 = newTitle01.substr(0, 256);
+			}
+			theData.songTitle = utf8MakeValid(newTitle01);
+			std::string newTitle02 = getString(getObject(jsonObjectData, "title").theObject, "simpleText");
+			if (newTitle02.size() > 256) {
+				newTitle02 = newTitle02.substr(0, 256);
+			}
+			theData.songTitle = utf8MakeValid(newTitle02);
+			if (newTitle01 != "") {
+				theData.songTitle = newTitle01;
+			} else {
+				theData.songTitle = newTitle02;
+			}
+
+			theData.songId = getString(jsonObjectData, "videoId");
+
+			theData.trackAuthorization = getString(jsonObjectData, "track_authorization");
+
+			std::vector<MediaTranscoding> theMedia{};
+			for (auto value: getArray(getObject(jsonObjectData, "media"), "transcodings").theArray) {
+				MediaTranscoding theDataNew{};
+				parseObject(value.value(), theDataNew);
+				theMedia.push_back(theDataNew);
+			}
+
+			bool isItFound{ false };
+			for (auto& value: theMedia) {
+				if (value.thePreset == "opus_0_0") {
+					isItFound = true;
+					theData.firstDownloadUrl = value.theUrl;
+					theData.songId = value.theUrl;
+					theData.doWeGetSaved = true;
+				}
+			}
+			bool isItFound2{ false };
+			if (!isItFound) {
+				for (auto& value: theMedia) {
+					if (value.thePreset == "mp3_0_0") {
+						theData.firstDownloadUrl = value.theUrl;
+						theData.songId = value.theUrl;
+						isItFound2 = true;
+					}
+				}
+			}
+			if (!isItFound2 && !isItFound) {
+				for (auto& value: theMedia) {
+					theData.firstDownloadUrl = value.theUrl;
+					theData.songId = value.theUrl;
+				}
+			}
+			std::cout << "FIRST DOWNLOAD URL: " << theData.firstDownloadUrl << std::endl;
+			std::cout << "SONG ID: " << theData.songId << std::endl;
+
+			/*
+		if (jsonObjectData->contains("media") && !(*jsonObjectData)["media"].is_null()) {
+			bool isItFound{ false };
+			for (auto& value: (*jsonObjectData)["media"]["transcodings"]) {
+				if (value["preset"] == "opus_0_0") {
+					isItFound = true;
+					theData.firstDownloadUrl = value["url"].get<std::string>();
+					theData.songId = value["url"].get<std::string>();
+					theData.doWeGetSaved = true;
+				}
+			}
+			bool isItFound2{ false };
+			if (!isItFound) {
+				for (auto& value: (*jsonObjectData)["media"]["transcodings"]) {
+					if (value["preset"] == "mp3_0_0") {
+						theData.firstDownloadUrl = value["url"].get<std::string>();
+						theData.songId = value["url"].get<std::string>();
+						isItFound2 = true;
+					}
+				}
+			}
+			if (!isItFound2 && !isItFound) {
+				for (auto& value: (*jsonObjectData)["media"]["transcodings"]) {
+					theData.firstDownloadUrl = value["url"].get<std::string>();
+					theData.songId = value["url"].get<std::string>();
+				}
+			}
+		}
+		if (jsonObjectData->contains("title") && !(*jsonObjectData)["title"].is_null() && !(*jsonObjectData)["title"].is_object()) {
+			std::string newString = (*jsonObjectData)["title"].get<std::string>();
+			if (newString.size() > 256) {
+				newString = newString.substr(0, 256);
+			}
+			theData.songTitle = utf8MakeValid(newString);
+		}
+		if (jsonObjectData->contains("description") && !(*jsonObjectData)["description"].is_null()) {
+			std::string newString = (*jsonObjectData)["description"].get<std::string>();
+			if (newString.size() > 256) {
+				newString = newString.substr(0, 256);
+			}
+			theData.description = utf8MakeValid(newString);
+			theData.description += "...";
+		}
+		if (jsonObjectData->contains("artwork_url") && !(*jsonObjectData)["artwork_url"].is_null()) {
+			theData.thumbnailUrl = (*jsonObjectData)["artwork_url"].get<std::string>();
+		} else if (jsonObjectData->contains("user") && !(*jsonObjectData)["user"].is_null()) {
+			if ((*jsonObjectData)["user"].contains("avatar_url") && !(*jsonObjectData)["user"]["avatar_url"].is_null()) {
+				theData.thumbnailUrl = (*jsonObjectData)["user"]["avatar_url"].get<std::string>();
+			}
+		}
+		if (jsonObjectData->contains("duration") && !(*jsonObjectData)["duration"].is_null()) {
+			theData.duration = TimeStamp<std::chrono::milliseconds>::convertMsToDurationString((*jsonObjectData)["duration"].get<int32_t>());
+		}
+		if (jsonObjectData->contains("permalink_url") && !(*jsonObjectData)["permalink_url"].is_null()) {
+			theData.viewUrl = (*jsonObjectData)["permalink_url"].get<std::string>();
+		}
+		*/
 		} catch (...) {
 			reportException("parseObject()");
 		}

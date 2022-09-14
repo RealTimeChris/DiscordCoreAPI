@@ -304,9 +304,11 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (GuildMembers::doWeCacheGuildMembers) {
-			auto guildMemberId = guildMember.id;
-			auto guildId = guildMember.guildId;
-			GuildMembers::cache.emplace(std::move(guildMember));
+			if (!GuildMembers::cache.contains(guildMember)) {
+				GuildMembers::cache.emplace(std::move(guildMember));
+			} else {
+				GuildMembers::cache.at(guildMember) = std::move(guildMember);
+			}
 			if (GuildMembers::cache.size() % 1000 == 0) {
 				std::cout << "THE GUILDMEMBER COUNT: " << GuildMembers::cache.size() << std::endl;
 			}

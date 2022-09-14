@@ -3538,6 +3538,12 @@ namespace DiscordCoreInternal {
 	}
 }
 
+template<> struct std::hash<DiscordCoreAPI::DiscordEntity> {
+	std::size_t operator()(DiscordCoreAPI::DiscordEntity const& object) const noexcept {
+		return object.id;
+	}
+};
+
 template<> struct std::hash<DiscordCoreAPI::ChannelData> {
 	std::size_t operator()(DiscordCoreAPI::ChannelData const& object) const noexcept {
 		return object.id;

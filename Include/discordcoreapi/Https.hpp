@@ -150,6 +150,9 @@ namespace DiscordCoreInternal {
 		std::mutex theMutex{};
 	};
 
+	template<typename ObjectType>
+	concept SameAsVoid = std::same_as<void, ObjectType>;
+
 	class DiscordCoreAPI_Dll HttpsClient {
 	  public:
 		HttpsClient(DiscordCoreAPI::ConfigManager* configManager);
@@ -174,25 +177,32 @@ namespace DiscordCoreInternal {
 				ReturnType theReturnValueNew{};
 				simdjson::ondemand::parser theParser{};
 				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
-				simdjson::ondemand::value theObject{};
-				auto theResult = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity()).get(theObject);
-				if (theResult == simdjson::error_code::SUCCESS && theObject.type() != simdjson::ondemand::json_type::null) {
-					DiscordCoreAPI::parseObject(theObject, theReturnValueNew);
-				}
+				auto theDocument = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
+				if (theDocument.type() != simdjson::ondemand::json_type::null) {
+					simdjson::ondemand::value theObject{};
+					auto theResult = theDocument.get(theObject);
+					if (theObject.type() != simdjson::ondemand::json_type::null) {
+						DiscordCoreAPI::parseObject(theObject, theReturnValueNew);
+					}
+				}				
 				return std::move(theReturnValueNew);
 			} else {
 				simdjson::ondemand::parser theParser{};
 				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
 				simdjson::ondemand::value theObject{};
-				auto theResult = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity()).get(theObject);
-				if (theResult == simdjson::error_code::SUCCESS && theObject.type() != simdjson::ondemand::json_type::null) {
-					DiscordCoreAPI::parseObject(theObject, *theReturnValue);
+				auto theDocument = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
+				if (theDocument.type() != simdjson::ondemand::json_type::null) {
+					simdjson::ondemand::value theObject{};
+					auto theResult = theDocument.get(theObject);
+					if (theObject.type() != simdjson::ondemand::json_type::null) {
+						DiscordCoreAPI::parseObject(theObject, *theReturnValue);
+					}
 				}
 				return std::move(*theReturnValue);
 			}
 		}
 
-		template<std::same_as<void> ReturnType> ReturnType submitWorkloadAndGetResult(const HttpsWorkloadData& workload, ReturnType* theReturnValue = nullptr);
+		template<SameAsVoid ReturnType> ReturnType submitWorkloadAndGetResult(const HttpsWorkloadData& workload, ReturnType* theReturnValue = nullptr);
 
 		HttpsResponseData submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew);
 

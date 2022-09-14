@@ -163,14 +163,14 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<UserData> Users::getCachedUserAsync(GetUserData dataPackage) {
 		co_await NewThreadAwaitable<UserData>();
-		UserData theData{};
+		DiscordEntity theData{};
 		theData.id = dataPackage.userId;
-		if (!Users::cache.contains(theData)) {
+		if (!Users::cache.contains(*static_cast<UserData*>(&theData))) {
 			co_return getUserAsync(dataPackage).get();
 
 		} else {
-			theData = Users::cache.readOnly(theData);
-			co_return theData;
+			auto theDataNew = Users::cache.readOnly(*static_cast<UserData*>(&theData));
+			co_return theDataNew;
 		}
 	}
 
@@ -239,8 +239,11 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Users::doWeCacheUsers) {
-			auto userId = user.id;
-			Users::cache.emplace(std::move(user));
+			if (!Users::cache.contains(user)) {
+				Users::cache.emplace(std::move(user));
+			} else {
+				Users::cache.at(user) = std::move(user);
+			}
 			if (Users::cache.size() % 1000 == 0) {
 				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
 			}
