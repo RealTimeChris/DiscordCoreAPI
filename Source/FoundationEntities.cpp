@@ -38,32 +38,32 @@
 namespace DiscordCoreInternal {
 
 	UpdatePresenceData::operator std::string() {
-		DiscordCoreAPI::JsonStringGenerator data{};
-		data.appendStruct("d");
-		data.appendArray("activities");
+		DiscordCoreAPI::JsonValue data{};
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Struct_Start, "d", "" };
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Array_Start, "activities", "" };
 		for (auto& value: this->activities) {
-			data.appendStruct();
-			data.appendString(value.url, "url");
-			data.appendString(value.name, "name");
-			data.appendInteger(static_cast<uint8_t>(value.type), "type");
-			data.closeStruct();
+			data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Struct_Start, "", "" };
+			data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::String, "url", value.url };
+			data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::String, "name", value.name };
+			data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::String, "type", static_cast<uint8_t>(value.type) };
+			data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Struct_End, "", "" };
 		}
-		data.closeArray();
-		data.appendString(this->status, "status");
-		data.appendBool(this->afk, "status");
-		data.appendInteger(3, "op");
-		data.closeStruct();
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Array_End, "activities", "" };
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::String, "status", this->status };
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Boolean, "afk", this->afk };
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Integer_32_Bit, "op", 3 };
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Struct_End, "", "" };
 		return std::string{ data };
 	}
 
 	WebSocketResumeData::operator std::string() {
-		DiscordCoreAPI::JsonStringGenerator data{};
-		data.appendStruct("d");
-		data.appendInteger(this->lastNumberReceived, "seq");
-		data.appendString(this->sessionId, "session_id");
-		data.appendString(this->botToken, "token");
-		data.appendInteger(6, "op");
-		data.closeStruct();
+		DiscordCoreAPI::JsonValue data{};
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Struct_Start, "d", "" };
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Integer_32_Bit, "seq", this->lastNumberReceived };
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::String, "session_id", this->sessionId };
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::String, "token", this->botToken };
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Integer_32_Bit, "op", 6 };
+		data += DiscordCoreAPI::JsonScalarObject{ DiscordCoreAPI::ObjectType::Struct_End, "", "" };
 		return std::string{ data };
 	}
 
@@ -383,16 +383,16 @@ namespace DiscordCoreAPI {
 		theData["name"] = this->name;
 		theData["name_localizations"] = this->nameLocalizations;
 		switch (this->type) {
-			case JsonType::Integer: {
+			case ObjectType::Integer_32_Bit: {
 				theData["value"] = this->valueInt;
 			}
-			case JsonType::Float: {
+			case ObjectType::Float_32_Bit: {
 				theData["value"] = this->valueFloat;
 			}
-			case JsonType::Boolean: {
+			case ObjectType::Boolean: {
 				theData["value"] = this->valueBool;
 			}
-			case JsonType::String: {
+			case ObjectType::String: {
 				theData["value"] = this->valueStringReal;
 			}
 		}
@@ -1000,17 +1000,17 @@ namespace DiscordCoreAPI {
 				theValue["name"] = value.name;
 				theValue["name_localizations"] = value.nameLocalizations;
 				switch (value.type) {
-					case JsonType::Boolean: {
-						theValue["value"] = value.valueBool;
+					case ObjectType::Integer_32_Bit: {
+						theValue["value"] = value.valueInt;
 					}
-					case JsonType::String: {
-						theValue["value"] = value.valueStringReal;
-					}
-					case JsonType::Float: {
+					case ObjectType::Float_32_Bit: {
 						theValue["value"] = value.valueFloat;
 					}
-					case JsonType::Integer: {
-						theValue["value"] = value.valueInt;
+					case ObjectType::Boolean: {
+						theValue["value"] = value.valueBool;
+					}
+					case ObjectType::String: {
+						theValue["value"] = value.valueString;
 					}
 				}
 				theArray.emplace_back(theValue);
@@ -1041,12 +1041,10 @@ namespace DiscordCoreAPI {
 
 	void parseCommandDataOption(std::unordered_map<std::string, JsonValue>& theValues, ApplicationCommandInteractionDataOption& theData) {
 		JsonValue theValue{};
-		theValue.theType = theData.value.theType;
 		theValue.theValue = theData.value.theValue;
 		theValues.emplace(theData.name, theValue);
 		for (auto& value: theData.options) {
 			JsonValue theValueNew{};
-			theValueNew.theType = value.value.theType;
 			theValueNew.theValue = value.value.theValue;
 			theValues.emplace(value.name, theValueNew);
 			parseCommandDataOption(theValues, value);
@@ -1058,11 +1056,13 @@ namespace DiscordCoreAPI {
 			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
 		}
 		if (inputEventData.interactionData->data.messageInteractionData.targetId != 0) {
-			this->optionsArgs.theValues.emplace("target_id",
-				JsonValue{ .theValue = std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId), .theType = ObjectType::String });
+			JsonValue theValue{};
+			theValue.theValue = std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId);
+			this->optionsArgs.theValues.emplace("target_id", theValue);
 		} else if (inputEventData.interactionData->data.userInteractionData.targetId != 0) {
-			this->optionsArgs.theValues.emplace("target_id",
-				JsonValue{ .theValue = std::to_string(inputEventData.interactionData->data.userInteractionData.targetId), .theType = ObjectType::String });
+			JsonValue theValue{};
+			theValue.theValue = std::to_string(inputEventData.interactionData->data.userInteractionData.targetId);
+			this->optionsArgs.theValues.emplace("target_id", theValue);
 		}
 		this->eventData = inputEventData;
 		for (auto& value: this->eventData.interactionData->data.applicationCommandData.options) {

@@ -3321,7 +3321,7 @@ namespace DiscordCoreAPI {
 	 */
 
 	struct JsonValues {
-		std::unordered_map<std::string, JsonValue> theValues{};
+		std::unordered_map<std::string, JsonScalarObject<>> theValues{};
 	};
 
 	template<typename ReturnType> auto getArgument(JsonValues& optionsArgs, std::string_view theArgName);
