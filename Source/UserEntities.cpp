@@ -169,8 +169,7 @@ namespace DiscordCoreAPI {
 			co_return getUserAsync(dataPackage).get();
 
 		} else {
-			auto theDataNew = Users::cache.readOnly(*static_cast<UserData*>(&theData));
-			co_return theDataNew;
+			co_return Users::cache.at(*static_cast<UserData*>(&theData));
 		}
 	}
 
