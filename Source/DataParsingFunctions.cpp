@@ -606,6 +606,21 @@ namespace DiscordCoreAPI {
 			}
 		}
 		
+		simdjson::ondemand::array theArray08{};
+		if (GuildMembers::doWeCacheGuildMembers) {
+			theData.members.clear();
+			GuildMemberData newData{};
+			theResult = jsonObjectData["members"].get(theArray08);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				for (auto value: theArray08) {
+					parseObject(value.value(), newData);
+					newData.guildId = theData.id;
+					theData.members.emplace_back(newData.id);
+					GuildMembers::insertGuildMember(std::move(newData));
+				}
+			}
+		}
+
 		simdjson::ondemand::array theArray07{};
 		if (GuildMembers::doWeCacheGuildMembers) {
 			theResult = jsonObjectData["voice_states"].get(theArray07);
@@ -619,21 +634,6 @@ namespace DiscordCoreAPI {
 						GuildMembers::cache.emplace(theDataNew);
 					}
 					GuildMembers::cache.at(theDataNew).voiceChannelId = getId(value.value(), "channel_id");
-				}
-			}
-		}
-
-		simdjson::ondemand::array theArray08{};
-		if (GuildMembers::doWeCacheGuildMembers) {
-			theData.members.clear();
-			GuildMemberData newData{};
-			theResult = jsonObjectData["members"].get(theArray08);
-			if (theResult == simdjson::error_code::SUCCESS) {
-				for (auto value: theArray08) {
-					parseObject(value.value(), newData);
-					newData.guildId = theData.id;
-					theData.members.emplace_back(newData.id);
-					GuildMembers::insertGuildMember(std::move(newData));
 				}
 			}
 		}
@@ -3576,11 +3576,11 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["options"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.options.clear();
 			ApplicationCommandInteractionDataOption newData{};
 			for (auto value: theArray) {
 				auto theObject = value.value();
 				parseObject(theObject, newData);
+				
 				theData.options.emplace_back(std::move(newData));
 			}
 		}
@@ -3606,6 +3606,7 @@ namespace DiscordCoreAPI {
 			for (auto value: theArray) {
 				auto theObject = value.value();
 				parseObject(theObject, newData);
+
 				theData.options.emplace_back(std::move(newData));
 			}
 		}

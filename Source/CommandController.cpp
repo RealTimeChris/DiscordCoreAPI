@@ -44,12 +44,12 @@ namespace DiscordCoreAPI {
 	};
 
 	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
-		co_await NewThreadAwaitable<void>();
 		try {
 			std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
 			if (!functionPointer.get()) {
 				co_return;
 			}
+			co_await NewThreadAwaitable<void>();
 			BaseFunctionArguments theArgs{ commandData, this->discordCoreClient };
 			functionPointer->execute(theArgs);
 			co_return;
@@ -64,6 +64,7 @@ namespace DiscordCoreAPI {
 		bool isItFound{ false };
 		if (commandName.size() > 0) {
 			for (auto const& [keyFirst, value]: Globals::functions) {
+				
 				for (auto& key: keyFirst) {
 					if (key.find(convertToLowerCase(commandName)) != std::string::npos) {
 						isItFound = true;

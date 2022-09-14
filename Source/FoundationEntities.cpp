@@ -1036,6 +1036,20 @@ namespace DiscordCoreAPI {
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 	}
 
+	void parseCommandDataOption(std::unordered_map<std::string, JsonValue>& theValues, ApplicationCommandInteractionDataOption& theData) {
+		JsonValue theValue{};
+		theValue.theType = theData.value.theType;
+		theValue.theValue = theData.value.theValue;
+		theValues.emplace(theData.name, theValue);
+		for (auto& value: theData.options) {
+			JsonValue theValueNew{};
+			theValueNew.theType = value.value.theType;
+			theValueNew.theValue = value.value.theValue;
+			theValues.emplace(value.name, theValueNew);
+			parseCommandDataOption(theValues, value);
+		}
+	}
+
 	CommandData::CommandData(InputEventData inputEventData) {
 		if (inputEventData.interactionData->data.applicationCommandData.name != "") {
 			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
@@ -1049,10 +1063,15 @@ namespace DiscordCoreAPI {
 		}
 		this->eventData = inputEventData;
 		for (auto& value: this->eventData.interactionData->data.applicationCommandData.options) {
-			JsonValue theValue{};
-			theValue.theType = value.value.theType;
-			theValue.theValue = value.value.theValue;
-			this->optionsArgs.theValues.emplace(value.name, theValue);
+			parseCommandDataOption(this->optionsArgs.theValues, value);
+		}
+		for (auto& value: inputEventData.interactionData->data.applicationCommandData.options) {
+			if (value.type == ApplicationCommandOptionType::Sub_Command) {
+				this->subCommandName = value.name;
+			} 
+			if (value.type == ApplicationCommandOptionType::Sub_Command_Group) {
+				this->subCommandGroupName = value.name;
+			}
 		}
 	}
 
