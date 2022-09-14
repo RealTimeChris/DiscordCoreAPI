@@ -176,26 +176,29 @@ namespace DiscordCoreInternal {
 			if (theReturnValue == nullptr) {
 				ReturnType theReturnValueNew{};
 				simdjson::ondemand::parser theParser{};
-				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
-				auto theDocument = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
-				if (theDocument.type() != simdjson::ondemand::json_type::null) {
-					simdjson::ondemand::value theObject{};
-					auto theResult = theDocument.get(theObject);
-					if (theObject.type() != simdjson::ondemand::json_type::null) {
-						DiscordCoreAPI::parseObject(theObject, theReturnValueNew);
+				if (returnData.responseData.size() > 0) {
+					returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
+					auto theDocument = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
+					if (theDocument.type() != simdjson::ondemand::json_type::null) {
+						simdjson::ondemand::value theObject{};
+						auto theResult = theDocument.get(theObject);
+						if (theObject.type() != simdjson::ondemand::json_type::null) {
+							DiscordCoreAPI::parseObject(theObject, theReturnValueNew);
+						}
 					}
-				}				
-				return std::move(theReturnValueNew);
+				}
+				return theReturnValueNew;
 			} else {
 				simdjson::ondemand::parser theParser{};
-				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
-				simdjson::ondemand::value theObject{};
-				auto theDocument = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
-				if (theDocument.type() != simdjson::ondemand::json_type::null) {
-					simdjson::ondemand::value theObject{};
-					auto theResult = theDocument.get(theObject);
-					if (theObject.type() != simdjson::ondemand::json_type::null) {
-						DiscordCoreAPI::parseObject(theObject, *theReturnValue);
+				if (returnData.responseData.size() > 0) {
+					returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
+					auto theDocument = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
+					if (theDocument.type() != simdjson::ondemand::json_type::null) {
+						simdjson::ondemand::value theObject{};
+						auto theResult = theDocument.get(theObject);
+						if (theObject.type() != simdjson::ondemand::json_type::null) {
+							DiscordCoreAPI::parseObject(theObject, *theReturnValue);
+						}
 					}
 				}
 				return std::move(*theReturnValue);

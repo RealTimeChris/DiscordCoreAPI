@@ -289,6 +289,192 @@ namespace DiscordCoreAPI {
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void ));
 
+	class JsonStringGenerator {
+	  public:
+		JsonStringGenerator() noexcept {
+			this->theString += "{";
+		}
+
+		operator std::string() {
+			this->theString += "}";
+			this->haveWeStarted.push_back(false);
+			auto theSize = this->theString.size();
+			return std::string{ this->theString.data(), theSize - 2 };
+		}
+
+		void appendInteger(uint64_t theInteger, const char* theName = nullptr) {
+			if (theName != nullptr) {
+				if (*(this->haveWeStarted.end() - 1)) {
+					this->theString += ",";
+				}
+				if (!*(this->haveWeStarted.end() - 1)) {
+					*(this->haveWeStarted.end() - 1) = true;
+				}
+				this->theString += "\"" + std::string{ theName } + "\":";
+			} else {
+				if (*(this->haveWeStartedTheArray.end() - 1)) {
+					this->theString += ",";
+				}
+				if (!*(this->haveWeStartedTheArray.end() - 1)) {
+					*(this->haveWeStartedTheArray.end() - 1) = true;
+				}
+			}
+			this->theString += std::to_string(theInteger);
+		}
+
+		void appendString(std::string theString, const char* theName = nullptr) {
+			if (theName != nullptr) {
+				if (*(this->haveWeStarted.end() - 1)) {
+					this->theString += ",";
+				}
+				if (!*(this->haveWeStarted.end() - 1)) {
+					*(this->haveWeStarted.end() - 1) = true;
+				}
+				this->theString += "\"" + std::string{ theName } + "\":";
+			} else {
+				if (*(this->haveWeStartedTheArray.end() - 1)) {
+					this->theString += ",";
+				}
+				if (!*(this->haveWeStartedTheArray.end() - 1)) {
+					*(this->haveWeStartedTheArray.end() - 1) = true;
+				}
+			}
+			this->theString += "\"" + theString + "\"";
+		}
+
+		void appendBool(bool theBool, const char* theName = nullptr) {
+			if (theName != nullptr) {
+				if (*(this->haveWeStarted.end() - 1)) {
+					this->theString += ",";
+				}
+				if (!*(this->haveWeStarted.end() - 1)) {
+					*(this->haveWeStarted.end() - 1) = true;
+				}
+				this->theString += "\"" + std::string{ theName } + "\":";
+			} else {
+				if (*(this->haveWeStartedTheArray.end() - 1)) {
+					this->theString += ",";
+				}
+				if (!*(this->haveWeStartedTheArray.end() - 1)) {
+					*(this->haveWeStartedTheArray.end() - 1) = true;
+				}
+			}
+			std::stringstream theStream{};
+			theStream << std::boolalpha << theBool;
+			this->theString += theStream.str();
+		}
+
+		void appendFloat(double theFloat, const char* theName = nullptr) {
+			if (theName != nullptr) {
+				if (*(this->haveWeStarted.end() - 1)) {
+					this->theString += ",";
+				}
+				if (!*(this->haveWeStarted.end() - 1)) {
+					*(this->haveWeStarted.end() - 1) = true;
+				}
+				this->theString += "\"" + std::string{ theName } + "\":";
+			} else {
+				if (*(this->haveWeStartedTheArray.end() - 1)) {
+					this->theString += ",";
+				}
+				if (!*(this->haveWeStartedTheArray.end() - 1)) {
+					*(this->haveWeStartedTheArray.end() - 1) = true;
+				}
+			}
+			this->theString += std::to_string(theFloat);
+		}
+
+		void appendArray(const char* theName) {
+			if (*(this->haveWeStarted.end() - 1)) {
+				this->theString += ",";
+			} else {
+				*(this->haveWeStarted.end() - 1) = true;
+			}
+			this->haveWeStartedTheArray.push_back(false);
+			this->theString += "\"" + std::string{ theName } + "\":[";
+		}
+
+		template<typename ElementType> void appendElement(ElementType theElement) {
+		}
+
+		template<std::same_as<const char*> ElementType> void appendElement(ElementType theElement) {
+			this->appendString(theElement);
+		}
+
+		template<std::same_as<std::string> ElementType> void appendElement(ElementType theElement) {
+			this->appendString(theElement);
+		}
+
+		template<std::same_as<int8_t> ElementType> void appendElement(ElementType theElement) {
+			this->appendInteger(theElement);
+		}
+
+		template<std::same_as<int16_t> ElementType> void appendElement(ElementType theElement) {
+			this->appendInteger(theElement);
+		}
+
+		template<std::same_as<int32_t> ElementType> void appendElement(ElementType theElement) {
+			this->appendInteger(theElement);
+		}
+
+		template<std::same_as<int64_t> ElementType> void appendElement(ElementType theElement) {
+			this->appendInteger(theElement);
+		}
+
+		template<std::same_as<uint8_t> ElementType> void appendElement(ElementType theElement) {
+			this->appendInteger(theElement);
+		}
+
+		template<std::same_as<uint16_t> ElementType> void appendElement(ElementType theElement) {
+			this->appendInteger(theElement);
+		}
+
+		template<std::same_as<uint32_t> ElementType> void appendElement(ElementType theElement) {
+			this->appendInteger(theElement);
+		}
+
+		template<std::same_as<uint64_t> ElementType> void appendElement(ElementType theElement) {
+			this->appendInteger(theElement);
+		}
+
+		template<std::same_as<float> ElementType> void appendElement(ElementType theElement) {
+			this->appendFloat(theElement);
+		}
+
+		template<std::same_as<double> ElementType> void appendElement(ElementType theElement) {
+			this->appendFloat(theElement);
+		}
+
+		template<std::same_as<bool> ElementType> void appendElement(ElementType theElement) {
+			this->appendBool(theElement);
+		}
+
+		void closeArray() {
+			this->theString += "]";
+			this->haveWeStartedTheArray.erase(this->haveWeStartedTheArray.end() - 1);
+		}
+
+		void appendStruct(const char* theName) {
+			if (*(this->haveWeStarted.end() - 1)) {
+				this->theString += ",";
+			} else {
+				*(this->haveWeStarted.end() - 1) = true;
+			}
+			this->haveWeStarted.push_back(false);
+			this->theString += "\"" + std::string{ theName } + "\":{";
+		}
+
+		void closeStruct() {
+			this->theString += "}";
+			this->haveWeStarted.erase(this->haveWeStarted.end() - 1);
+		}
+
+	  protected:
+		std::string theString{};
+		std::vector<bool> haveWeStarted{ false };
+		std::vector<bool> haveWeStartedTheArray{ false };
+	};
+
 	/// Input event response types. \brief Input event response types.
 	enum class InputEventResponseType : int8_t {
 		Unset = 0,///< Unset.
