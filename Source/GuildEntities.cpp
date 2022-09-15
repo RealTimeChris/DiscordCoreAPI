@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 			newData["position"] = value.position;
 			newData["hoist"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
 			newData["color"] = value.color.getIntColorValue();
-			newData["name"] = static_cast<std::string>(value.name);
+			newData["name"] = value.name;
 			data["roles"].emplace_back(newData);
 		}
 		if (this->systemChannelId != 0) {

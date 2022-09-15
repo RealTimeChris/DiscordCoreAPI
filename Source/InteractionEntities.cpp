@@ -426,8 +426,7 @@ namespace DiscordCoreAPI {
 			"/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			std::string theString = dataPackage.data;
-			workload.content = constructMultiPartData(theString, dataPackage.data.data.files);
+			workload.content = constructMultiPartData(nlohmann::json::parse(std::string{ dataPackage.data }), dataPackage.data.data.files);
 		} else {
 			workload.content = dataPackage.data;
 		}
@@ -460,8 +459,7 @@ namespace DiscordCoreAPI {
 			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			auto theString = std::string{ dataPackage.data };
-			workload.content = constructMultiPartData(theString, dataPackage.data.files);
+			workload.content = constructMultiPartData(nlohmann::json::parse(std::string{ dataPackage.data }), dataPackage.data.files);
 		} else {
 			workload.content = dataPackage.data;
 		}
@@ -487,8 +485,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			std::string theString = dataPackage;
-			workload.content = constructMultiPartData(theString, dataPackage.files);
+			workload.content = constructMultiPartData(nlohmann::json::parse(std::string{ dataPackage }), dataPackage.files);
 		} else {
 			workload.content = dataPackage;
 		}
@@ -514,8 +511,7 @@ namespace DiscordCoreAPI {
 			std::to_string(dataPackage.messagePackage.messageId);
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			std::string theString = dataPackage.data;
-			workload.content = constructMultiPartData(theString, dataPackage.data.files);
+			workload.content = constructMultiPartData(nlohmann::json::parse(std::string{ dataPackage.data }), dataPackage.data.files);
 		} else {
 			workload.content = dataPackage.data;
 		}

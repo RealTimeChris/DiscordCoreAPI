@@ -29,7 +29,7 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
-	std::string ErlPacker::parseJsonToEtf(DiscordCoreAPI::JsonValue& dataToParse) {
+	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
 		this->bufferString.clear();
 		this->offSet = 0;
 		this->size = 0;
@@ -50,63 +50,61 @@ namespace DiscordCoreInternal {
 		return this->bufferString;
 	}
 
-	void ErlPacker::singleValueJsonToETF(DiscordCoreAPI::JsonValue& jsonData) {
-		for (auto& value: jsonData.theValues) {
-			if (value.theType == DiscordCoreAPI::ObjectType::Array_Start) {
-				uint32_t length = static_cast<uint32_t>(jsonData.size());
-				if (length == 0) {
-					this->appendNilExt();
-				} else {
-					if (length > std::numeric_limits<uint32_t>::max() - 1) {
-						throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: List too large for ETF.\n\n" };
-					}
-				}
-				this->appendListHeader(length);
-				for (uint64_t index = 0; index < length; ++index) {
-					this->singleValueJsonToETF(jsonData[index]);
-				}
+	void ErlPacker::singleValueJsonToETF(nlohmann::json& jsonData) {
+		if (jsonData.is_array()) {
+			uint32_t length = static_cast<uint32_t>(jsonData.size());
+			if (length == 0) {
 				this->appendNilExt();
-				if (value.theType == DiscordCoreAPI::ObjectType::Struct_Start) {
-				uint32_t length = static_cast<uint32_t>(jsonData.size());
+			} else {
 				if (length > std::numeric_limits<uint32_t>::max() - 1) {
-					throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: Map too large for ETF.\n\n" };
+					throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: List too large for ETF.\n\n" };
 				}
-				this->appendMapHeader(length);
-				for (auto n = jsonData.begin(); n != jsonData.end(); ++n) {
-					nlohmann::json jstr = n.key();
-					this->singleValueJsonToETF(jstr);
-					this->singleValueJsonToETF(n.value());
-				}
-			} else if (jsonData.is_number_integer()) {
-				uint64_t numberOld = jsonData.get<uint64_t>();
-				if (numberOld <= 127) {
-					uint8_t number = jsonData.get<uint8_t>();
-					this->appendSmallIntegerExt(number);
-				} else if (jsonData.is_number_unsigned() && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
-					uint64_t number = jsonData.get<uint64_t>();
-					this->appendUnsignedLongLong(number);
-				} else {
-					uint32_t number = jsonData.get<uint32_t>();
-					this->appendIntegerExt(number);
-				}
-			} else if (jsonData.is_boolean()) {
-				if (jsonData.get<bool>()) {
-					this->appendTrue();
-				} else {
-					this->appendFalse();
-				}
-			} else if (jsonData.is_string()) {
-				std::string newString = jsonData.get<std::string>();
-				std::string newVector{};
-				newVector.insert(newVector.begin(), newString.begin(), newString.end());
-				uint32_t newValue = static_cast<uint32_t>(newVector.size());
-				this->appendBinaryExt(newVector, newValue);
-			} else if (jsonData.is_number_float()) {
-				double newValue = jsonData.get<double>();
-				this->appendNewFloatExt(newValue);
-			} else if (jsonData.is_null()) {
-				this->appendNil();
 			}
+			this->appendListHeader(length);
+			for (uint64_t index = 0; index < length; ++index) {
+				this->singleValueJsonToETF(jsonData[index]);
+			}
+			this->appendNilExt();
+		} else if (jsonData.is_object()) {
+			uint32_t length = static_cast<uint32_t>(jsonData.size());
+			if (length > std::numeric_limits<uint32_t>::max() - 1) {
+				throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: Map too large for ETF.\n\n" };
+			}
+			this->appendMapHeader(length);
+			for (auto n = jsonData.begin(); n != jsonData.end(); ++n) {
+				nlohmann::json jstr = n.key();
+				this->singleValueJsonToETF(jstr);
+				this->singleValueJsonToETF(n.value());
+			}
+		} else if (jsonData.is_number_integer()) {
+			uint64_t numberOld = jsonData.get<uint64_t>();
+			if (numberOld <= 127) {
+				uint8_t number = jsonData.get<uint8_t>();
+				this->appendSmallIntegerExt(number);
+			} else if (jsonData.is_number_unsigned() && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
+				uint64_t number = jsonData.get<uint64_t>();
+				this->appendUnsignedLongLong(number);
+			} else {
+				uint32_t number = jsonData.get<uint32_t>();
+				this->appendIntegerExt(number);
+			}
+		} else if (jsonData.is_boolean()) {
+			if (jsonData.get<bool>()) {
+				this->appendTrue();
+			} else {
+				this->appendFalse();
+			}
+		} else if (jsonData.is_string()) {
+			std::string newString = jsonData.get<std::string>();
+			std::string newVector{};
+			newVector.insert(newVector.begin(), newString.begin(), newString.end());
+			uint32_t newValue = static_cast<uint32_t>(newVector.size());
+			this->appendBinaryExt(newVector, newValue);
+		} else if (jsonData.is_number_float()) {
+			double newValue = jsonData.get<double>();
+			this->appendNewFloatExt(newValue);
+		} else if (jsonData.is_null()) {
+			this->appendNil();
 		}
 	}
 

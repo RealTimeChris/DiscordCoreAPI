@@ -245,8 +245,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			std::string theString = dataPackage;
-			workload.content = constructMultiPartData(theString, dataPackage.files);
+			workload.content = constructMultiPartData(std::string{ dataPackage }, dataPackage.files);
 		} else {
 			workload.content = dataPackage;
 		}
@@ -270,8 +269,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			std::string theString = dataPackage;
-			workload.content = constructMultiPartData(theString, dataPackage.files);
+			workload.content = constructMultiPartData(std::string{ dataPackage }, dataPackage.files);
 		} else {
 			workload.content = dataPackage;
 		}

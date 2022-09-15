@@ -342,8 +342,7 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			std::string theString = dataPackage;
-			workload.content = constructMultiPartData(theString, dataPackage.files);
+			workload.content = constructMultiPartData(std::string{ dataPackage }, dataPackage.files);
 		} else {
 			workload.content = dataPackage;
 		}
@@ -372,8 +371,7 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			std::string theString = dataPackage;
-			workload.content = constructMultiPartData(theString, dataPackage.files);
+			workload.content = constructMultiPartData(std::string{ dataPackage }, dataPackage.files);
 		} else {
 			workload.content = dataPackage;
 		}

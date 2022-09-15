@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 
 	void BotUser::updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage) {
 		if (this->baseSocketAgent) {
-			std::string payload = dataPackage;
+			nlohmann::json payload = dataPackage;
 			std::string theString{};
 			uint32_t shardId = 0;
 			uint32_t basesocketAgentIndex{ 0 };
