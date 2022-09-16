@@ -29,11 +29,12 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
-	std::string ErlPacker::parseJsonToEtf(nlohmann::json& dataToParse) {
+	std::string ErlPacker::parseJsonToEtf(DiscordCoreAPI::JsonSerializer& dataToParse) {
 		this->bufferString.clear();
 		this->offSet = 0;
 		this->size = 0;
 		this->appendVersion();
+		std::cout << "THE STRING: " << dataToParse.getString() << std::endl;
 		this->singleValueJsonToETF(dataToParse);
 		return this->bufferString;
 	}
@@ -50,61 +51,93 @@ namespace DiscordCoreInternal {
 		return this->bufferString;
 	}
 
-	void ErlPacker::singleValueJsonToETF(nlohmann::json& jsonData) {
-		if (jsonData.is_array()) {
-			uint32_t length = static_cast<uint32_t>(jsonData.size());
-			if (length == 0) {
-				this->appendNilExt();
-			} else {
-				if (length > std::numeric_limits<uint32_t>::max() - 1) {
-					throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: List too large for ETF.\n\n" };
+	void ErlPacker::singleValueJsonToETF(DiscordCoreAPI::JsonSerializer jsonData) {
+		
+		if (jsonData.getVector().size() > 0) {
+			std::cout << "THE CURRENT VALUE: " << jsonData.getVector().front().theValue << std::endl;
+			if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Array_Start)) {
+				uint32_t length = static_cast<uint32_t>(jsonData.getArraySize());
+				jsonData.getEvent();
+				std::cout << "THE CURRENT VALUE: (ARRAY START)" << jsonData.getVector().front().theValue << std::endl;
+				if (length == 0) {
+					this->appendNilExt();
+				} else {
+					if (length > std::numeric_limits<uint32_t>::max() - 1) {
+						throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: List too large for ETF.\n\n" };
+					}
 				}
+				this->appendListHeader(length);
+				for (uint64_t index = 0; index < length; ++index) {
+					this->singleValueJsonToETF(jsonData);
+				}
+				this->appendNilExt();
+				jsonData.getEvent();
+				return;
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) == static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Object_Start)) {
+				jsonData.getEvent();
+				uint32_t length = static_cast<uint32_t>(jsonData.getObjectSize());
+				std::cout << "THE CURRENT VALUE: (OBJECT START)" << jsonData.getVector().front().theValue << std::endl;
+				if (length > std::numeric_limits<uint32_t>::max() - 1) {
+					throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: Map too large for ETF.\n\n" };
+				}
+				this->appendMapHeader(length);
+				for (uint32_t x = 0; x < length; ++x) {
+					this->singleValueJsonToETF(jsonData);
+				}
+				jsonData.getEvent();
+				return;
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Integer)) {
+				std::cout << "THE CURRENT VALUE: (NUMBER INTEGER)" << jsonData.getVector().front().theValue << std::endl;
+				uint64_t numberOld = stoull(jsonData.getVector().front().theValue);
+				if (numberOld <= 127) {
+					uint8_t number = stoull(jsonData.getVector().front().theValue);
+					this->appendSmallIntegerExt(number);
+				} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Unsigned) && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
+					uint64_t number = stoull(jsonData.getVector().front().theValue);
+					this->appendUnsignedLongLong(number);
+				} else {
+					uint32_t number = stoull(jsonData.getVector().front().theValue);
+					this->appendIntegerExt(number);
+				}
+				jsonData.getEvent();
+				return;
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Boolean)) {
+				std::cout << "THE CURRENT VALUE: (BOOLEAN)" << jsonData.getVector().front().theValue << std::endl;
+				if (stoull(jsonData.getVector().front().theValue)) {
+					this->appendTrue();
+				} else {
+					this->appendFalse();
+				}
+				jsonData.getEvent();
+				return;
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::String) ){
+				std::cout << "THE CURRENT VALUE: (STRING)" << jsonData.getVector().front().theValue << std::endl;
+				std::string newString = jsonData.getVector().front().theValue;
+				std::string newVector{};
+				newVector.insert(newVector.begin(), newString.begin(), newString.end());
+				uint32_t newValue = static_cast<uint32_t>(newVector.size());
+				this->appendBinaryExt(newVector, newValue);
+				jsonData.getEvent();
+				return;
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Float) || static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Double)) {
+				std::cout << "THE CURRENT VALUE: (NUMBER FLOAT)" << jsonData.getVector().front().theValue << std::endl;
+				if (stod(jsonData.getVector().front().theValue)) {
+					double newValue = stod(jsonData.getVector().front().theValue);
+					this->appendNewFloatExt(newValue);
+				} else {
+					double newValue = stod(jsonData.getVector().front().theValue);
+					this->appendNewFloatExt(newValue);
+				}
+				jsonData.getEvent();
+				return;
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Null_Value)) {
+				std::cout << "THE CURRENT VALUE: (NULL)" << jsonData.getVector().front().theValue << std::endl;
+				jsonData.getEvent();
+				this->appendNil();
+				return;
 			}
-			this->appendListHeader(length);
-			for (uint64_t index = 0; index < length; ++index) {
-				this->singleValueJsonToETF(jsonData[index]);
-			}
-			this->appendNilExt();
-		} else if (jsonData.is_object()) {
-			uint32_t length = static_cast<uint32_t>(jsonData.size());
-			if (length > std::numeric_limits<uint32_t>::max() - 1) {
-				throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: Map too large for ETF.\n\n" };
-			}
-			this->appendMapHeader(length);
-			for (auto n = jsonData.begin(); n != jsonData.end(); ++n) {
-				nlohmann::json jstr = n.key();
-				this->singleValueJsonToETF(jstr);
-				this->singleValueJsonToETF(n.value());
-			}
-		} else if (jsonData.is_number_integer()) {
-			uint64_t numberOld = jsonData.get<uint64_t>();
-			if (numberOld <= 127) {
-				uint8_t number = jsonData.get<uint8_t>();
-				this->appendSmallIntegerExt(number);
-			} else if (jsonData.is_number_unsigned() && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
-				uint64_t number = jsonData.get<uint64_t>();
-				this->appendUnsignedLongLong(number);
-			} else {
-				uint32_t number = jsonData.get<uint32_t>();
-				this->appendIntegerExt(number);
-			}
-		} else if (jsonData.is_boolean()) {
-			if (jsonData.get<bool>()) {
-				this->appendTrue();
-			} else {
-				this->appendFalse();
-			}
-		} else if (jsonData.is_string()) {
-			std::string newString = jsonData.get<std::string>();
-			std::string newVector{};
-			newVector.insert(newVector.begin(), newString.begin(), newString.end());
-			uint32_t newValue = static_cast<uint32_t>(newVector.size());
-			this->appendBinaryExt(newVector, newValue);
-		} else if (jsonData.is_number_float()) {
-			double newValue = jsonData.get<double>();
-			this->appendNewFloatExt(newValue);
-		} else if (jsonData.is_null()) {
-			this->appendNil();
+			jsonData.getEvent();
+			singleValueJsonToETF(jsonData);
 		}
 	}
 

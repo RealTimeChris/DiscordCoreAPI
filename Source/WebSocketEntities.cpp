@@ -177,6 +177,31 @@ namespace DiscordCoreInternal {
 		this->configManager = configManagerNew;
 	}
 
+	void WebSocketMessageHandler::stringifyJsonData(DiscordCoreAPI::JsonSerializer& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept {
+		std::string theVector{};
+		std::string header{};
+
+		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+			cout << DiscordCoreAPI::shiftToBrightBlue()
+				 << "Sending WebSocket " + static_cast<WebSocketSSLShard*>(this)->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) +
+					std::string("'s Message: ")
+				 << dataToSend.getString() << endl
+				 << endl
+				 << DiscordCoreAPI::reset();
+		}
+		if (theOpCode == WebSocketOpCode::Op_Binary) {
+			theVector = ErlPacker::parseJsonToEtf(dataToSend);
+		} else {
+			theVector = dataToSend.getString();
+		}
+		std::cout << "THE FINAL STRING: " << theVector << std::endl;
+		this->createHeader(header, theVector.size(), theOpCode);
+		std::string theVectorNew{};
+		theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
+		theVectorNew.insert(theVectorNew.begin() + header.size(), theVector.begin(), theVector.end());
+		theString = theVectorNew;
+	}
+
 	void WebSocketMessageHandler::stringifyJsonData(nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept {
 		std::string theVector{};
 		std::string header{};
@@ -190,10 +215,13 @@ namespace DiscordCoreInternal {
 				 << DiscordCoreAPI::reset();
 		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
-			theVector = ErlPacker::parseJsonToEtf(dataToSend);
+			//auto theObject = getTheData(dataToSend);
+			//theVector = ErlPacker::parseJsonToEtf(theObject);
+			//std::cout << "THE FINAL STRING: 0101: " << std::string{ theObject } << std::endl;
 		} else {
 			theVector = dataToSend.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 		}
+		std::cout << "THE FINAL STRING: 0101: " << theVector << std::endl;
 		this->createHeader(header, theVector.size(), theOpCode);
 		std::string theVectorNew{};
 		theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
@@ -1521,7 +1549,7 @@ namespace DiscordCoreInternal {
 									identityData.numberOfShards = this->shard[1];
 									identityData.intents = static_cast<int64_t>(this->configManager->getGatewayIntents());
 									identityData.presence = this->configManager->getPresenceData();
-									nlohmann::json identityJson = identityData;
+									DiscordCoreAPI::JsonSerializer identityJson = identityData;
 									std::string theString{};
 									this->stringifyJsonData(identityJson, theString, this->dataOpCode);
 									if (!this->sendMessage(theString, true)) {

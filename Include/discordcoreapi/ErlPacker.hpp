@@ -60,7 +60,7 @@ namespace DiscordCoreInternal {
 	  public:
 		ErlPacker() noexcept = default;
 
-		std::string parseJsonToEtf(nlohmann::json&);
+		std::string parseJsonToEtf(DiscordCoreAPI::JsonSerializer&);
 
 		std::string& parseEtfToJson(std::string_view dataToParse);
 		
@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 		uint64_t offSet{};
 		uint64_t size{};
 
-		void singleValueJsonToETF(nlohmann::json&);
+		void singleValueJsonToETF(DiscordCoreAPI::JsonSerializer jsonData);
 
 		void writeToBuffer(const std::string&);
 

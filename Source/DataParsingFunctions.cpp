@@ -3841,7 +3841,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		theData.value.theType = ObjectType::Unset;
+		theData.value.theType = ObjectType::Null;
 		bool theBool{};
 		theResult = jsonObjectData["value"].get(theBool);
 		if (theResult == simdjson::error_code::SUCCESS) {
@@ -3853,7 +3853,7 @@ namespace DiscordCoreAPI {
 		uint64_t theInteger{};
 		theResult = jsonObjectData["value"].get(theInteger);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.value.theType = ObjectType::Integer;
+			theData.value.theType = ObjectType::Number_Unsigned;
 			theData.value.theValue = std::to_string(theInteger);
 			return;
 		}
@@ -3869,7 +3869,7 @@ namespace DiscordCoreAPI {
 		double theFloat{};
 		theResult = jsonObjectData["value"].get(theFloat);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			theData.value.theType = ObjectType::Float;
+			theData.value.theType = ObjectType::Number_Float;
 			theData.value.theValue = std::to_string(theFloat);
 			return;
 		}

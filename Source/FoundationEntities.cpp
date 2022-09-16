@@ -37,22 +37,29 @@
 
 namespace DiscordCoreInternal {
 
-	UpdatePresenceData::operator nlohmann::json() {
-		nlohmann::json data{};
+	UpdatePresenceData::operator std::string() {
+		/*
+		DiscordCoreAPI::JsonObject theData{};
+		DiscordCoreAPI::Array theArray{};
 		for (auto& value: this->activities) {
-			nlohmann::json dataNew{};
+			DiscordCoreAPI::Object dataNew{};
 			if (static_cast<std::string>(value.url) != "") {
-				dataNew["url"] = value.url;
+				dataNew.append("url", std::string{ value.url });
 			}
-			dataNew["name"] = value.name;
-			dataNew["type"] = value.type;
-			data["d"]["activities"].emplace_back(dataNew);
+			dataNew.append("name", std::string{ value.name });
+			dataNew.append("type", static_cast<uint64_t>(value.type));
+			theArray.append(dataNew);
 		}
-		data["d"]["status"] = this->status;
-		data["d"]["since"] = nullptr;
-		data["d"]["afk"] = this->afk;
-		data["op"] = 3;
-		return data;
+		DiscordCoreAPI::Object dataNewer{};
+		dataNewer.append("activities", theArray);
+		dataNewer.append("status", this->status);
+		dataNewer.append("since", static_cast<uint64_t>(NULL));
+		dataNewer.append("afk", this->afk);
+		theData.append("d", dataNewer);
+		theData.append("op", static_cast<uint64_t>(3));
+		*/
+		return std::string{};
+
 	}
 
 	WebSocketResumeData::operator nlohmann::json() {
@@ -64,36 +71,50 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	WebSocketIdentifyData::operator nlohmann::json() {
-		nlohmann::json data{};
-		data["d"]["properties"]["browser"] = "DiscordCoreAPI";
-		data["d"]["properties"]["device"] = "DiscordCoreAPI";
-		data["d"]["shard"] = { this->currentShard, this->numberOfShards };
-		data["d"]["large_threshold"] = 250;
-		data["d"]["intents"] = this->intents;
-		data["d"]["compress"] = false;
-		data["d"]["token"] = this->botToken;
-		nlohmann::json dataNewReal{};
-		for (auto& value: this->presence.activities) {
-			nlohmann::json dataNew{};
-			if (static_cast<std::string>(value.url) != "") {
-				dataNew["url"] = value.url;
-			}
-			dataNew["name"] = value.name;
-			dataNew["type"] = value.type;
-			dataNewReal["activities"].emplace_back(dataNew);
-		}
-		dataNewReal["status"] = this->presence.status;
-		dataNewReal["since"] = nullptr;
-		dataNewReal["afk"] = this->presence.afk;
-		data["d"]["presence"] = dataNewReal;
-		data["op"] = 2;
+	WebSocketIdentifyData::operator DiscordCoreAPI::JsonSerializer() {
+		DiscordCoreAPI::JsonSerializer theSerializer{};
+		theSerializer.addEvent(static_cast<uint64_t>(2) ,"op");
+		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start,"d");
+		theSerializer.addEvent(this->botToken, "token");
+
+		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "properties");
+		theSerializer.addEvent("DiscordCoreAPI","browser");
+		theSerializer.addEvent("DiscordCoreAPI", "device");
 #ifdef _WIN32
-		data["d"]["properties"]["os"] = "Windows";
+		theSerializer.addEvent("os", "Windows");
 #else
-		data["d"]["properties"]["os"] = "Linux";
+		theSerializer.addEvent("os", "Linux");
 #endif
-		return data;
+		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "shard");
+		theSerializer.addEvent(static_cast<uint64_t>(this->currentShard));
+		theSerializer.addEvent(static_cast<uint64_t>(this->numberOfShards));
+		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
+		theSerializer.addEvent(static_cast<uint64_t>(this->largeThreshold), "large_threshold");
+		theSerializer.addEvent(static_cast<uint64_t>(this->intents), "intents");
+		theSerializer.addEvent(false, "compress");
+		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "presence");
+		theSerializer.addEvent(this->presence.status, "status");
+		theSerializer.addEvent(this->presence.afk, "afk");
+		theSerializer.addEvent(this->presence.since, "since");
+		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "activities");
+		std::vector<uint64_t> theVector{};
+		for (uint32_t x = 0; x < 112; ++x) {
+			theVector.push_back(x);
+		}
+
+		for (auto& value: this->presence.activities) {
+			theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start);
+			theSerializer.addEvent(std::string{ value.url }, "url");
+			theSerializer.addEvent(std::string{ value.name }, "name");
+			theSerializer.addEvent(static_cast<uint64_t>(value.type), "type");
+			theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		}
+		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
+		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+
+		return theSerializer;
 	}
 
 	VoiceSocketProtocolPayloadData::operator nlohmann::json() {
@@ -1036,13 +1057,13 @@ namespace DiscordCoreAPI {
 		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
 	}
 
-	void parseCommandDataOption(std::unordered_map<std::string, JsonValue>& theValues, ApplicationCommandInteractionDataOption& theData) {
-		JsonValue theValue{};
+	void parseCommandDataOption(std::unordered_map<std::string, JsonValueReal>& theValues, ApplicationCommandInteractionDataOption& theData) {
+		JsonValueReal theValue{};
 		theValue.theType = theData.value.theType;
 		theValue.theValue = theData.value.theValue;
 		theValues.emplace(theData.name, theValue);
 		for (auto& value: theData.options) {
-			JsonValue theValueNew{};
+			JsonValueReal theValueNew{};
 			theValueNew.theType = value.value.theType;
 			theValueNew.theValue = value.value.theValue;
 			theValues.emplace(value.name, theValueNew);
@@ -1056,10 +1077,10 @@ namespace DiscordCoreAPI {
 		}
 		if (inputEventData.interactionData->data.messageInteractionData.targetId != 0) {
 			this->optionsArgs.theValues.emplace("target_id",
-				JsonValue{ .theValue = std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId), .theType = ObjectType::String });
+				JsonValueReal{ .theValue = std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId), .theType = ObjectType::String });
 		} else if (inputEventData.interactionData->data.userInteractionData.targetId != 0) {
 			this->optionsArgs.theValues.emplace("target_id",
-				JsonValue{ .theValue = std::to_string(inputEventData.interactionData->data.userInteractionData.targetId), .theType = ObjectType::String });
+				JsonValueReal{ .theValue = std::to_string(inputEventData.interactionData->data.userInteractionData.targetId), .theType = ObjectType::String });
 		}
 		this->eventData = inputEventData;
 		for (auto& value: this->eventData.interactionData->data.applicationCommandData.options) {

@@ -212,7 +212,7 @@ namespace DiscordCoreInternal {
 		int64_t since{ 0 };///< When was the activity started?
 		bool afk{ false };///< Are we afk.
 
-		operator nlohmann::json();
+		operator std::string();
 	};
 
 	template<typename ReturnType> void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
@@ -386,6 +386,127 @@ namespace DiscordCoreAPI {
 		std::string botToken{};///< Your bot's token.
 	};
 
+	enum class ObjectType : int8_t {
+		Object = 0,
+		Array = 1,
+		String = 2,
+		Boolean = 3,
+		Number_Integer = 4,
+		Number_Unsigned = 5,
+		Number_Float = 6,
+		Number_Double = 7,
+		Null = 8
+	};
+
+	enum class JsonParserState { Adding_Object_Elements = 0, Adding_Array_Elements = 1 };
+
+	enum class JsonParseEvent : uint16_t {
+		Null_Value = 1 << 0,
+		Object_Start = 1 << 1,
+		Object_End = 1 << 2,
+		Array_Start = 1 << 3,
+		Array_End = 1 << 4,
+		String = 1 << 5,
+		Boolean = 1 << 6,
+		Number_Integer = 1 << 7,
+		Number_Unsigned = 1 << 8,
+		Number_Float = 1 << 9,
+		Number_Double = 1 << 10,
+		Key = 1 << 11
+	};
+
+	struct JsonValue {
+		JsonParseEvent theEvent{};
+		std::string theValue{};
+	};
+
+	class JsonSerializer {
+	  public:
+		JsonSerializer() noexcept = default;
+		std::string getString();
+
+		size_t parseForward(JsonParseEvent theEvent);
+
+		std::vector<JsonValue>& getVector();
+
+		JsonValue getEvent();
+
+		size_t getObjectSize(const char* theName = nullptr);
+
+		size_t getArraySize(const char* theName = nullptr);
+
+		template<std::same_as<uint64_t> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
+			if (keyName != nullptr) {
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+			}
+			std::string theString = std::to_string(theData);
+			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Unsigned, .theValue = theString});
+		}
+
+		template<std::same_as<int64_t> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
+			if (keyName != nullptr) {
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+			}
+			std::string theString = std::to_string(theData);
+			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Integer, .theValue = theString});
+		}
+
+		template<std::same_as<std::string> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
+			if (keyName != nullptr) {
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+			}
+			this->theValues.push_back({ .theEvent = JsonParseEvent::String, .theValue = theData});
+		}
+
+		template<std::same_as<bool> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
+			if (keyName != nullptr) {
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+			}
+			std::stringstream theStream{};
+			theStream << std::boolalpha << theData;
+			this->theValues.push_back({ .theEvent = JsonParseEvent::String, .theValue = theStream.str()});
+		}
+
+		template<std::same_as<float> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
+			if (keyName != nullptr) {
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+			}
+			std::string theString = std::to_string(theData);
+			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Integer, .theValue = theString});
+		}
+
+		template<std::same_as<double> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
+			if (keyName != nullptr) {
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+			}
+			std::string theString = std::to_string(theData);
+			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Integer, .theValue = theString});
+		}
+
+		template<std::same_as<const char*> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
+			if (keyName != nullptr) {
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+			}
+			this->theValues.push_back({ .theEvent = JsonParseEvent::String, .theValue = theData});
+		}
+
+		template<std::same_as<JsonParseEvent> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
+			if (keyName != nullptr) {
+				std::cout << "THE KEY: " << keyName << std::endl;
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName });
+				this->theValues.push_back({ .theEvent = theData, .theValue = "" });
+			} else {
+				this->theValues.push_back({ .theEvent = theData, .theValue = "" });
+			}			
+		}
+
+	  protected:
+		std::vector<JsonValue> theValues{};
+		bool isThisTheFirstElement{ true };
+		JsonParserState theState{};
+		size_t currentPosition{};
+	};
+
 	class DiscordCoreAPI_Dll ConfigManager {
 	  public:
 		ConfigManager() noexcept = default;
@@ -532,8 +653,6 @@ namespace DiscordCoreAPI {
 
 		operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>();
 
-		operator nlohmann::json();
-
 		void push_back(char theChar);
 
 		size_t size();
@@ -637,21 +756,9 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	template<typename ReturnType> void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
-
 	template<typename ReturnType> void parseObject(nlohmann::json& theParser, ReturnType& theData);
 
-	DiscordCoreAPI_Dll uint8_t getUint8(nlohmann::json* jsonData, const char* keyName);
-
-	DiscordCoreAPI_Dll uint16_t getUint16(nlohmann::json* jsonData, const char* keyName);
-
-	DiscordCoreAPI_Dll uint32_t getUint32(nlohmann::json* jsonData, const char* keyName);
-
-	DiscordCoreAPI_Dll uint64_t getUint64(nlohmann::json* jsonData, const char* keyName);
-
-	DiscordCoreAPI_Dll bool getBool(nlohmann::json* jsonData, const char* keyName);
-
-	DiscordCoreAPI_Dll std::string getString(nlohmann::json* jsonData, const char* keyName);
+	template<typename ReturnType> void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
 
 	DiscordCoreAPI_Dll uint64_t strtoull(const std::string& theString);
 
@@ -1156,7 +1263,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
 
-	DiscordCoreAPI_Dll std::string constructMultiPartData(nlohmann::json theData, const std::vector<File>& files);
+	DiscordCoreAPI_Dll std::string constructMultiPartData(std::string theData, const std::vector<File>& files);
 
 	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
 

@@ -63,6 +63,231 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	size_t JsonSerializer::parseForward(JsonParseEvent theEvent) {
+		for (uint32_t x = 0; x < this->theValues.size(); ++x) {
+			if (this->theValues[x].theEvent == theEvent) {
+				return x;
+			}
+		}
+		return 0;
+	}
+
+	std::vector<JsonValue>& JsonSerializer::getVector() {
+		return this->theValues;
+	}
+
+	JsonValue JsonSerializer::getEvent() {
+		JsonValue theResult = this->theValues.front();
+		this->theValues.erase(this->theValues.begin());
+		this->currentPosition++;
+		return theResult;
+	}
+
+	size_t JsonSerializer::getArraySize(const char* theName) {
+		size_t theSize{};
+		if (theName != nullptr) {
+			for (uint32_t x = 0; x < this->theValues.size(); ++x) {
+				if (this->theValues[x].theEvent == JsonParseEvent::Array_Start) {
+					this->currentPosition = x;
+					break;
+				}
+			}
+		}
+		bool areWeCounting{ false };
+		bool areWeCountingObjects{ false };
+		for (uint32_t x = this->currentPosition; x < this->theValues.size(); ++x) {
+			if (this->theValues[x].theEvent == JsonParseEvent::Array_Start) {
+				areWeCounting = true;
+			}
+			if (areWeCounting && this->theValues[x].theEvent == JsonParseEvent::Array_End) {
+				areWeCounting = false;
+				this->currentPosition = x;
+				break;
+			}
+			if (areWeCounting && this->theValues[x].theEvent == JsonParseEvent::Object_Start) {
+				areWeCountingObjects = true;
+				theSize++;
+			}
+			if (areWeCounting && !areWeCountingObjects) {
+				if (this->theValues[x].theEvent == JsonParseEvent::Boolean || this->theValues[x].theEvent == JsonParseEvent::Number_Double ||
+					this->theValues[x].theEvent == JsonParseEvent::Number_Float || this->theValues[x].theEvent == JsonParseEvent::Number_Integer ||
+					this->theValues[x].theEvent == JsonParseEvent::Number_Unsigned || this->theValues[x].theEvent == JsonParseEvent::String ||
+					this->theValues[x].theEvent == JsonParseEvent::Null_Value) {
+					theSize++;
+				}
+			}
+			this->currentPosition = x;
+		}
+		return theSize;
+	}
+
+	size_t JsonSerializer::getObjectSize(const char* theName) {
+		size_t theSize{};
+		if (theName != nullptr) {
+			for (uint32_t x = 0; x < this->theValues.size(); ++x) {
+				if (this->theValues[x].theEvent == JsonParseEvent::Object_Start) {
+					this->currentPosition = x;
+					break;
+				}
+			}
+		}
+		int32_t currentDepth{ 0 };
+		bool areWeInsideASubObject{ false };
+		for (uint32_t x = this->currentPosition; x < this->theValues.size(); ++x) {
+			if (this->theValues[x].theEvent == JsonParseEvent::Object_Start) {
+				std::cout << "THE CURRENT INDEX: " << x << ", THE EVENT: " << ( int )this->theValues[x].theEvent << std::endl;
+				if (!areWeInsideASubObject) {
+					theSize++;
+					areWeInsideASubObject = true;
+				} else {
+					currentDepth++;
+				}
+			}
+			if (this->theValues[x].theEvent == JsonParseEvent::Object_End) {
+				if (areWeInsideASubObject && !currentDepth) {
+					areWeInsideASubObject = false;
+				} else {
+					currentDepth--;
+				}
+				this->currentPosition = x;
+			}
+			this->currentPosition = x;
+		}
+		return theSize;
+	}
+
+	std::string JsonSerializer::getString() {
+		this->isThisTheFirstElement = true;
+		std::string theString{ "{" };
+		for (auto& value: this->theValues) {
+			switch (value.theEvent) {
+				case JsonParseEvent::Object_Start: {
+					if (!this->isThisTheFirstElement) {
+						theString += ",";
+					}
+					this->isThisTheFirstElement = true;
+					theString += "{";
+					break;
+				}
+				case JsonParseEvent::Object_End: {
+					theString += "}";
+					if (this->isThisTheFirstElement) {
+						this->isThisTheFirstElement = false;
+					}
+					if (theString[theString.size() - 2] == ',') {
+						theString.erase(theString.begin() + theString.size() - 2);
+					}
+					break;
+				}
+				case JsonParseEvent::Array_Start: {
+					if (!this->isThisTheFirstElement) {
+						theString += ",";
+					}
+					this->isThisTheFirstElement = true;
+					this->theState = JsonParserState::Adding_Array_Elements;
+					theString += "[";
+					break;
+				}
+				case JsonParseEvent::Array_End: {
+					if (!this->isThisTheFirstElement) {
+						theString += ",";
+					}
+					this->theState = JsonParserState::Adding_Object_Elements;
+					theString += "]";
+					if (theString[theString.size() - 2] == ',') {
+						theString.erase(theString.begin() + theString.size() - 2);
+					}
+					if (this->isThisTheFirstElement) {
+						this->isThisTheFirstElement = false;
+					}
+					break;
+				}
+				case JsonParseEvent::Boolean: {
+					if (!this->isThisTheFirstElement) {
+						theString += ",";
+					}
+					theString += value.theValue;
+					if (this->isThisTheFirstElement) {
+						this->isThisTheFirstElement = false;
+					}
+					break;
+				}
+				case JsonParseEvent::Null_Value: {
+					if (!this->isThisTheFirstElement) {
+						theString += ",";
+					}
+					theString += value.theValue;
+					if (this->isThisTheFirstElement) {
+						this->isThisTheFirstElement = false;
+					}
+					break;
+				}
+				case JsonParseEvent::Number_Double: {
+					if (!this->isThisTheFirstElement) {
+						theString += ",";
+					}
+					theString += value.theValue;
+					if (this->isThisTheFirstElement) {
+						this->isThisTheFirstElement = false;
+					}
+					break;
+				}
+				case JsonParseEvent::Number_Float: {
+					if (!this->isThisTheFirstElement) {
+						theString += ",";
+					}
+					theString += value.theValue;
+					if (this->isThisTheFirstElement) {
+						this->isThisTheFirstElement = false;
+					}
+					break;
+				}
+				case JsonParseEvent::Number_Integer: {
+					if (!this->isThisTheFirstElement) {
+						theString += ",";
+					}
+					theString += value.theValue;
+					if (this->isThisTheFirstElement) {
+						this->isThisTheFirstElement = false;
+					}
+					break;
+				}
+				case JsonParseEvent::Number_Unsigned: {
+					if (!this->isThisTheFirstElement) {
+						theString += ",";
+					}
+					theString += value.theValue;
+					if (this->isThisTheFirstElement) {
+						this->isThisTheFirstElement = false;
+					}
+					break;
+				}
+				case JsonParseEvent::String: {
+					if (!this->isThisTheFirstElement) {
+						theString += ",";
+					}
+					theString += "\"" + value.theValue + "\"";
+
+					if (this->isThisTheFirstElement) {
+						this->isThisTheFirstElement = false;
+					}
+					break;
+				}
+				case JsonParseEvent::Key: {
+					if (!this->isThisTheFirstElement) {
+						theString += ",";
+					}
+					theString += "\"" + value.theValue + "\":";
+					this->isThisTheFirstElement = true;
+					break;
+				}
+			}
+		}
+		theString += "}";
+		std::cout << "THE STRING REAL: " << theString << std::endl;
+		return theString;
+	}
+
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void )) {
 		outputSttream << theFunction();
 		return outputSttream;
@@ -246,16 +471,6 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
-	StringWrapper::operator nlohmann::json() {
-		nlohmann::json theValue;
-		std::string theString{};
-		for (auto& value: static_cast<std::string>(*this)) {
-			theString.push_back(value);
-		}
-		theValue = theString;
-		return theValue;
-	}
-
 	void StringWrapper::push_back(char theChar) {
 		std::stringstream theStream{};
 		if (this->thePtr) {
@@ -346,62 +561,6 @@ namespace DiscordCoreAPI {
 
 	bool IconHash::operator==(const IconHash& other) {
 		return this->lowBits == other.lowBits && this->highBits == other.highBits;
-	}
-
-	uint8_t getUint8(nlohmann::json* jsonData, const char* keyName) {
-		auto theResult = jsonData->find(keyName);
-		if (theResult != jsonData->end()) {
-			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint8_t>() : 0;
-		} else {
-			return 0;
-		}
-	}
-
-	uint16_t getUint16(nlohmann::json* jsonData, const char* keyName) {
-		auto theResult = jsonData->find(keyName);
-		if (theResult != jsonData->end()) {
-			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint16_t>() : 0;
-		} else {
-			return 0;
-		}
-	}
-
-	uint32_t getUint32(nlohmann::json* jsonData, const char* keyName) {
-		auto theResult = jsonData->find(keyName);
-		if (theResult != jsonData->end()) {
-			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint32_t>() : 0;
-		} else {
-			return 0;
-		}
-	}
-
-	uint64_t getUint64(nlohmann::json* jsonData, const char* keyName) {
-		auto theResult = jsonData->find(keyName);
-		if (theResult != jsonData->end()) {
-			return !theResult->is_null() && theResult->is_number() ? theResult->get<uint64_t>() : 0;
-		} else {
-			return 0;
-		}
-	}
-
-	bool getBool(nlohmann::json* jsonData, const char* keyName) {
-		auto theResult = jsonData->find(keyName);
-		if (theResult != jsonData->end()) {
-			return !theResult->is_null() && theResult->is_boolean() ? theResult->get<bool>() : false;
-		} else {
-			return false;
-		}
-	}
-
-	std::string getString(nlohmann::json* jsonData, const char* theKey) {
-		auto theResult = jsonData->find(theKey);
-		std::string returnString{};
-		if (theResult != jsonData->end() && !theResult->is_null() && theResult->is_string()) {
-			(*jsonData)[theKey].swap(returnString);
-			return returnString;
-		} else {
-			return const_cast<char*>("");
-		}
 	}
 
 	uint64_t strtoull(const std::string& theString) {
@@ -791,7 +950,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string constructMultiPartData(nlohmann::json theData, const std::vector<File>& files) {
+	std::string constructMultiPartData(std::string theData, const std::vector<File>& files) {
 		const std::string boundary("boundary25");
 		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
 
@@ -799,7 +958,7 @@ namespace DiscordCoreAPI {
 
 		content += "\r\nContent-Type: application/json\r\nContent-Disposition: form-data; "
 				   "name=\"payload_json\"\r\n\r\n";
-		content += theData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + "\r\n";
+		content += theData + "\r\n";
 		if (files.size() == 1) {
 			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
 			content += files[0].data;
