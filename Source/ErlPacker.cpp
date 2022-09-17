@@ -69,7 +69,7 @@ namespace DiscordCoreInternal {
 			auto theInt = jsonData.get_uint64().take_value();
 			if (theInt <= 255) {
 				this->appendSmallIntegerExt(static_cast<uint8_t>(theInt));
-			} else if (theInt <= UINT32_MAX) {
+			} else if (theInt <= std::numeric_limits<uint32_t>::max()) {
 				this->appendIntegerExt(static_cast<uint32_t>(theInt));
 			} else {
 				this->appendUnsignedLongLong(theInt);
