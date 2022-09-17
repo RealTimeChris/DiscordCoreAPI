@@ -64,8 +64,7 @@ namespace DiscordCoreInternal {
 		if (jsonData.get_number_type() == simdjson::ondemand::number_type::floating_point_number) {
 			auto theFloat = jsonData.get_double().take_value();
 			this->appendNewFloatExt(theFloat);
-		} else if (jsonData.get_number_type() == simdjson::ondemand::number_type::signed_integer ||
-			jsonData.get_number_type() == simdjson::ondemand::number_type::unsigned_integer) {
+		} else if (jsonData.get_number_type() == simdjson::ondemand::number_type::signed_integer) {
 			auto theInt = jsonData.get_uint64().take_value();
 			if (theInt <= 255) {
 				this->appendSmallIntegerExt(static_cast<uint8_t>(theInt));
@@ -73,6 +72,15 @@ namespace DiscordCoreInternal {
 				this->appendIntegerExt(static_cast<uint32_t>(theInt));
 			} else {
 				this->appendUnsignedLongLong(theInt);
+			}
+		} else if (jsonData.get_number_type() == simdjson::ondemand::number_type::unsigned_integer) {
+			auto theInt = jsonData.get_int64().take_value();
+			if (theInt <= 255) {
+				this->appendSmallIntegerExt(static_cast<uint8_t>(theInt));
+			} else if (theInt <= std::numeric_limits<uint32_t>::max()) {
+				this->appendIntegerExt(static_cast<uint32_t>(theInt));
+			} else {
+				this->appendUnsignedLongLong(static_cast<uint64_t>(theInt));
 			}
 		}
 	}
