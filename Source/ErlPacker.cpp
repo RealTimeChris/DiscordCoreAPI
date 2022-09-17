@@ -90,8 +90,8 @@ namespace DiscordCoreInternal {
 		switch (jsonData.type()) {
 			case simdjson::ondemand::json_type::array:
 				this->appendListHeader(jsonData.count_elements().take_value());
-				for (auto child: jsonData.get_array()) {
-					this->singleValueJsonToETF(child.value());
+				for (auto element: jsonData.get_array()) {
+					this->singleValueJsonToETF(element.value());
 				}
 				this->appendNilExt();
 				break;
