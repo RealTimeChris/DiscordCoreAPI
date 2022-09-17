@@ -93,10 +93,12 @@ namespace DiscordCoreInternal {
 		theSerializer.addEvent(static_cast<uint64_t>(this->largeThreshold), "large_threshold");
 		theSerializer.addEvent(static_cast<uint64_t>(this->intents), "intents");
 		theSerializer.addEvent(false, "compress");
+		/*
 		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "presence");
 		theSerializer.addEvent(this->presence.status, "status");
 		theSerializer.addEvent(this->presence.afk, "afk");
 		theSerializer.addEvent(this->presence.since, "since");
+		/*
 		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "activities");
 		std::vector<uint64_t> theVector{};
 		for (uint32_t x = 0; x < 112; ++x) {
@@ -112,6 +114,7 @@ namespace DiscordCoreInternal {
 		}
 		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
 		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		*/
 		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
 
 		return theSerializer;

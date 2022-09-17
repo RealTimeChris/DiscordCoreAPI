@@ -51,14 +51,13 @@ namespace DiscordCoreInternal {
 		return this->bufferString;
 	}
 
-	void ErlPacker::singleValueJsonToETF(DiscordCoreAPI::JsonSerializer jsonData) {
-		
+	void ErlPacker::singleValueJsonToETF(DiscordCoreAPI::JsonSerializer& jsonData) {
 		if (jsonData.getVector().size() > 0) {
-			std::cout << "THE CURRENT VALUE: " << jsonData.getVector().front().theValue << std::endl;
-			if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Array_Start)) {
+			if (static_cast<int32_t>(jsonData.getVector().front().theEvent) & static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Array_Start)) {
 				uint32_t length = static_cast<uint32_t>(jsonData.getArraySize());
-				jsonData.getEvent();
+
 				std::cout << "THE CURRENT VALUE: (ARRAY START)" << jsonData.getVector().front().theValue << std::endl;
+				jsonData.getEvent();
 				if (length == 0) {
 					this->appendNilExt();
 				} else {
@@ -72,11 +71,14 @@ namespace DiscordCoreInternal {
 				}
 				this->appendNilExt();
 				jsonData.getEvent();
-				return;
-			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) == static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Object_Start)) {
+				if (jsonData.getVector().size() > 0) {
+					singleValueJsonToETF(jsonData);
+				}
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) & static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Object_Start)) {
+				std::cout << "THE CURRENT VALUE: (OBJECT START)" << jsonData.getVector().front().theValue << std::endl;
 				jsonData.getEvent();
 				uint32_t length = static_cast<uint32_t>(jsonData.getObjectSize());
-				std::cout << "THE CURRENT VALUE: (OBJECT START)" << jsonData.getVector().front().theValue << std::endl;
+				std::cout << "THE CURRENT VALUE: (OBJECT START) SIZE: " << length << std::endl;
 				if (length > std::numeric_limits<uint32_t>::max() - 1) {
 					throw ErlPackError{ "ErlPacker::singleValueJsonToETF() Error: Map too large for ETF.\n\n" };
 				}
@@ -85,14 +87,17 @@ namespace DiscordCoreInternal {
 					this->singleValueJsonToETF(jsonData);
 				}
 				jsonData.getEvent();
-				return;
-			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Integer)) {
+				if (jsonData.getVector().size() > 0) {
+					singleValueJsonToETF(jsonData);
+				}
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) & static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Integer)) {
 				std::cout << "THE CURRENT VALUE: (NUMBER INTEGER)" << jsonData.getVector().front().theValue << std::endl;
 				uint64_t numberOld = stoull(jsonData.getVector().front().theValue);
 				if (numberOld <= 127) {
 					uint8_t number = stoull(jsonData.getVector().front().theValue);
 					this->appendSmallIntegerExt(number);
-				} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Unsigned) && (numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
+				} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) & static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Unsigned) &&
+					(numberOld >= std::numeric_limits<uint32_t>::max() - static_cast<size_t>(1))) {
 					uint64_t number = stoull(jsonData.getVector().front().theValue);
 					this->appendUnsignedLongLong(number);
 				} else {
@@ -100,8 +105,11 @@ namespace DiscordCoreInternal {
 					this->appendIntegerExt(number);
 				}
 				jsonData.getEvent();
+				if (jsonData.getVector().size() > 0) {
+					singleValueJsonToETF(jsonData);
+				}
 				return;
-			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Boolean)) {
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) & static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Boolean)) {
 				std::cout << "THE CURRENT VALUE: (BOOLEAN)" << jsonData.getVector().front().theValue << std::endl;
 				if (stoull(jsonData.getVector().front().theValue)) {
 					this->appendTrue();
@@ -109,17 +117,32 @@ namespace DiscordCoreInternal {
 					this->appendFalse();
 				}
 				jsonData.getEvent();
+				if (jsonData.getVector().size() > 0) {
+					singleValueJsonToETF(jsonData);
+				}
 				return;
-			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::String) ){
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) & static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Key)) {
+				std::cout << "THE CURRENT VALUE: (KEY)" << jsonData.getVector().front().theValue << std::endl;
+				std::string newString = jsonData.getVector().front().theValue;
+				uint32_t newValue = static_cast<uint32_t>(newString.size());
+				this->appendBinaryExt(newString, newValue);
+				jsonData.getEvent();
+				if (jsonData.getVector().size() > 0) {
+					singleValueJsonToETF(jsonData);
+				}
+				return;
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) & static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::String)) {
 				std::cout << "THE CURRENT VALUE: (STRING)" << jsonData.getVector().front().theValue << std::endl;
 				std::string newString = jsonData.getVector().front().theValue;
-				std::string newVector{};
-				newVector.insert(newVector.begin(), newString.begin(), newString.end());
-				uint32_t newValue = static_cast<uint32_t>(newVector.size());
-				this->appendBinaryExt(newVector, newValue);
+				uint32_t newValue = static_cast<uint32_t>(newString.size());
+				this->appendBinaryExt(newString, newValue);
 				jsonData.getEvent();
+				if (jsonData.getVector().size() > 0) {
+					singleValueJsonToETF(jsonData);
+				}
 				return;
-			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Float) || static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Double)) {
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) & static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Float) ||
+				static_cast<int32_t>(jsonData.getVector().front().theEvent) & static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Number_Double)) {
 				std::cout << "THE CURRENT VALUE: (NUMBER FLOAT)" << jsonData.getVector().front().theValue << std::endl;
 				if (stod(jsonData.getVector().front().theValue)) {
 					double newValue = stod(jsonData.getVector().front().theValue);
@@ -129,15 +152,25 @@ namespace DiscordCoreInternal {
 					this->appendNewFloatExt(newValue);
 				}
 				jsonData.getEvent();
+				if (jsonData.getVector().size() > 0) {
+					singleValueJsonToETF(jsonData);
+				}
 				return;
-			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) | static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Null_Value)) {
+			} else if (static_cast<int32_t>(jsonData.getVector().front().theEvent) & static_cast<int32_t>(DiscordCoreAPI::JsonParseEvent::Null_Value)) {
 				std::cout << "THE CURRENT VALUE: (NULL)" << jsonData.getVector().front().theValue << std::endl;
 				jsonData.getEvent();
-				this->appendNil();
+				if (jsonData.getVector().size() > 0) {
+					singleValueJsonToETF(jsonData);
+				}
+				return;
+			} else {
+				if (jsonData.getVector().size() > 0) {
+					std::cout << "THE CURRENT VALUE: " << jsonData.getVector().front().theValue << std::endl;
+				}
+				jsonData.getEvent();
+				singleValueJsonToETF(jsonData);
 				return;
 			}
-			jsonData.getEvent();
-			singleValueJsonToETF(jsonData);
 		}
 	}
 

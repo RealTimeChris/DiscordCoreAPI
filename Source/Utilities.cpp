@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 
 	size_t JsonSerializer::parseForward(JsonParseEvent theEvent) {
 		for (uint32_t x = 0; x < this->theValues.size(); ++x) {
-			if (this->theValues[x].theEvent == theEvent) {
+			if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(theEvent)) {
 				return x;
 			}
 		}
@@ -77,9 +77,11 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonValue JsonSerializer::getEvent() {
-		JsonValue theResult = this->theValues.front();
-		this->theValues.erase(this->theValues.begin());
-		this->currentPosition++;
+		JsonValue theResult{};
+		if (theValues.size() > 0) {
+			theResult = this->theValues.front();
+			this->theValues.erase(this->theValues.begin());
+		}
 		return theResult;
 	}
 
@@ -87,32 +89,37 @@ namespace DiscordCoreAPI {
 		size_t theSize{};
 		if (theName != nullptr) {
 			for (uint32_t x = 0; x < this->theValues.size(); ++x) {
-				if (this->theValues[x].theEvent == JsonParseEvent::Array_Start) {
+				if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_Start)) {
 					this->currentPosition = x;
 					break;
 				}
 			}
+		} else {
+			this->currentPosition = 0;
 		}
 		bool areWeCounting{ false };
 		bool areWeCountingObjects{ false };
 		for (uint32_t x = this->currentPosition; x < this->theValues.size(); ++x) {
-			if (this->theValues[x].theEvent == JsonParseEvent::Array_Start) {
+			if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_Start)) {
+				std::cout << "WERE STARTING TO COUNT THE ARRAY!;" << std::endl;
 				areWeCounting = true;
-			}
-			if (areWeCounting && this->theValues[x].theEvent == JsonParseEvent::Array_End) {
+			} else if (areWeCounting && static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_End)) {
 				areWeCounting = false;
 				this->currentPosition = x;
 				break;
-			}
-			if (areWeCounting && this->theValues[x].theEvent == JsonParseEvent::Object_Start) {
+			} else if (areWeCounting && static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start)) {
 				areWeCountingObjects = true;
 				theSize++;
-			}
-			if (areWeCounting && !areWeCountingObjects) {
-				if (this->theValues[x].theEvent == JsonParseEvent::Boolean || this->theValues[x].theEvent == JsonParseEvent::Number_Double ||
-					this->theValues[x].theEvent == JsonParseEvent::Number_Float || this->theValues[x].theEvent == JsonParseEvent::Number_Integer ||
-					this->theValues[x].theEvent == JsonParseEvent::Number_Unsigned || this->theValues[x].theEvent == JsonParseEvent::String ||
-					this->theValues[x].theEvent == JsonParseEvent::Null_Value) {
+			} else if (areWeCounting && !areWeCountingObjects) {
+				if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Boolean) ||
+					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Number_Double) ||
+					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Number_Float) ||
+					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Number_Integer) ||
+					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Number_Unsigned) ||
+					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::String) ||
+					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Null_Value) ||
+					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start) ||
+					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_Start)) {
 					theSize++;
 				}
 			}
@@ -125,71 +132,75 @@ namespace DiscordCoreAPI {
 		size_t theSize{};
 		if (theName != nullptr) {
 			for (uint32_t x = 0; x < this->theValues.size(); ++x) {
-				if (this->theValues[x].theEvent == JsonParseEvent::Object_Start) {
+				if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start)) {
 					this->currentPosition = x;
 					break;
 				}
 			}
+		} else {
+			this->currentPosition = 0;
 		}
-		int32_t currentDepth{ 0 };
+		int32_t currentDepth{};
 		bool areWeInsideASubObject{ false };
 		for (uint32_t x = this->currentPosition; x < this->theValues.size(); ++x) {
-			if (this->theValues[x].theEvent == JsonParseEvent::Object_Start) {
-				std::cout << "THE CURRENT INDEX: " << x << ", THE EVENT: " << ( int )this->theValues[x].theEvent << std::endl;
-				if (!areWeInsideASubObject) {
-					theSize++;
-					areWeInsideASubObject = true;
-				} else {
-					currentDepth++;
-				}
-			}
-			if (this->theValues[x].theEvent == JsonParseEvent::Object_End) {
+			if (!areWeInsideASubObject && static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start)) {
+				this->theDepths[this->theValues[x].theValue] = 0;
+				std::cout << "THE CURRENT VALUE (KEY): " << this->theValues[x].theValue << ", THE EVENT: 0101 " << ( int )this->theValues[x].theEvent << std::endl;
+				areWeInsideASubObject = true;
+			} else if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_End)) {
 				if (areWeInsideASubObject && !currentDepth) {
-					areWeInsideASubObject = false;
-				} else {
-					currentDepth--;
+					this->currentPosition = x;
+					break;
 				}
-				this->currentPosition = x;
+				currentDepth--;
+			} else if (!currentDepth && areWeInsideASubObject) {
+				if (this->theValues[x].theEvent != JsonParseEvent::Array_End && this->theValues[x].theEvent != JsonParseEvent::Object_End &&
+					this->theValues[x].theEvent != JsonParseEvent::Key) {
+					std::cout << "THE CURRENT VALUE (KEY): " << this->theValues[x].theValue << ", THE EVENT 0202: " << ( int )this->theValues[x].theEvent << std::endl;
+					theSize++;
+				}
+			} else if (areWeInsideASubObject && static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start) ||
+				static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_Start)) {
+				this->theDepths[this->theValues[x].theValue]++;
+				currentDepth++;
+			} else if (areWeInsideASubObject && static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_End) ||
+				static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start)) {
+				currentDepth--;
 			}
-			this->currentPosition = x;
 		}
 		return theSize;
 	}
 
 	std::string JsonSerializer::getString() {
-		this->isThisTheFirstElement = true;
+		this->theState = JsonParserState::Starting_Object;
 		std::string theString{ "{" };
 		for (auto& value: this->theValues) {
 			switch (value.theEvent) {
 				case JsonParseEvent::Object_Start: {
-					if (!this->isThisTheFirstElement) {
+					if (this->theState != JsonParserState::Starting_Object) {
 						theString += ",";
 					}
-					this->isThisTheFirstElement = true;
+					this->theState = JsonParserState::Starting_Object;
 					theString += "{";
 					break;
 				}
 				case JsonParseEvent::Object_End: {
 					theString += "}";
-					if (this->isThisTheFirstElement) {
-						this->isThisTheFirstElement = false;
-					}
 					if (theString[theString.size() - 2] == ',') {
 						theString.erase(theString.begin() + theString.size() - 2);
 					}
 					break;
 				}
 				case JsonParseEvent::Array_Start: {
-					if (!this->isThisTheFirstElement) {
+					if (this->theState != JsonParserState::Starting_Object) {
 						theString += ",";
 					}
-					this->isThisTheFirstElement = true;
-					this->theState = JsonParserState::Adding_Array_Elements;
+					this->theState = JsonParserState::Starting_Array;
 					theString += "[";
 					break;
 				}
 				case JsonParseEvent::Array_End: {
-					if (!this->isThisTheFirstElement) {
+					if (this->theState != JsonParserState::Starting_Object) {
 						theString += ",";
 					}
 					this->theState = JsonParserState::Adding_Object_Elements;
@@ -197,88 +208,112 @@ namespace DiscordCoreAPI {
 					if (theString[theString.size() - 2] == ',') {
 						theString.erase(theString.begin() + theString.size() - 2);
 					}
-					if (this->isThisTheFirstElement) {
-						this->isThisTheFirstElement = false;
+					if (this->theState == JsonParserState::Starting_Object) {
+						this->theState = JsonParserState::Adding_Object_Elements;
+					}
+					if (this->theState == JsonParserState::Starting_Array) {
+						this->theState = JsonParserState::Adding_Array_Elements;
 					}
 					break;
 				}
 				case JsonParseEvent::Boolean: {
-					if (!this->isThisTheFirstElement) {
+					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
 					theString += value.theValue;
-					if (this->isThisTheFirstElement) {
-						this->isThisTheFirstElement = false;
+					if (this->theState == JsonParserState::Starting_Object) {
+						this->theState = JsonParserState::Adding_Object_Elements;
+					}
+					if (this->theState == JsonParserState::Starting_Array) {
+						this->theState = JsonParserState::Adding_Array_Elements;
 					}
 					break;
 				}
 				case JsonParseEvent::Null_Value: {
-					if (!this->isThisTheFirstElement) {
+					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
 					theString += value.theValue;
-					if (this->isThisTheFirstElement) {
-						this->isThisTheFirstElement = false;
+					if (this->theState == JsonParserState::Starting_Object) {
+						this->theState = JsonParserState::Adding_Object_Elements;
+					}
+					if (this->theState == JsonParserState::Starting_Array) {
+						this->theState = JsonParserState::Adding_Array_Elements;
 					}
 					break;
 				}
 				case JsonParseEvent::Number_Double: {
-					if (!this->isThisTheFirstElement) {
+					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
 					theString += value.theValue;
-					if (this->isThisTheFirstElement) {
-						this->isThisTheFirstElement = false;
+					if (this->theState == JsonParserState::Starting_Object) {
+						this->theState = JsonParserState::Adding_Object_Elements;
+					}
+					if (this->theState == JsonParserState::Starting_Array) {
+						this->theState = JsonParserState::Adding_Array_Elements;
 					}
 					break;
 				}
 				case JsonParseEvent::Number_Float: {
-					if (!this->isThisTheFirstElement) {
+					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
 					theString += value.theValue;
-					if (this->isThisTheFirstElement) {
-						this->isThisTheFirstElement = false;
+					if (this->theState == JsonParserState::Starting_Object) {
+						this->theState = JsonParserState::Adding_Object_Elements;
+					}
+					if (this->theState == JsonParserState::Starting_Array) {
+						this->theState = JsonParserState::Adding_Array_Elements;
 					}
 					break;
 				}
 				case JsonParseEvent::Number_Integer: {
-					if (!this->isThisTheFirstElement) {
+					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
 					theString += value.theValue;
-					if (this->isThisTheFirstElement) {
-						this->isThisTheFirstElement = false;
+					if (this->theState == JsonParserState::Starting_Object) {
+						this->theState = JsonParserState::Adding_Object_Elements;
+					}
+					if (this->theState == JsonParserState::Starting_Array) {
+						this->theState = JsonParserState::Adding_Array_Elements;
 					}
 					break;
 				}
 				case JsonParseEvent::Number_Unsigned: {
-					if (!this->isThisTheFirstElement) {
+					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
 					theString += value.theValue;
-					if (this->isThisTheFirstElement) {
-						this->isThisTheFirstElement = false;
+					if (this->theState == JsonParserState::Starting_Object) {
+						this->theState = JsonParserState::Adding_Object_Elements;
+					}
+					if (this->theState == JsonParserState::Starting_Array) {
+						this->theState = JsonParserState::Adding_Array_Elements;
 					}
 					break;
 				}
 				case JsonParseEvent::String: {
-					if (!this->isThisTheFirstElement) {
+					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
 					theString += "\"" + value.theValue + "\"";
 
-					if (this->isThisTheFirstElement) {
-						this->isThisTheFirstElement = false;
+					if (this->theState == JsonParserState::Starting_Object) {
+						this->theState = JsonParserState::Adding_Object_Elements;
+					}
+					if (this->theState == JsonParserState::Starting_Array) {
+						this->theState = JsonParserState::Adding_Array_Elements;
 					}
 					break;
 				}
 				case JsonParseEvent::Key: {
-					if (!this->isThisTheFirstElement) {
+					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
 					theString += "\"" + value.theValue + "\":";
-					this->isThisTheFirstElement = true;
+					this->theState = JsonParserState::Starting_Object;
 					break;
 				}
 			}
@@ -531,7 +566,7 @@ namespace DiscordCoreAPI {
 
 	IconHash& IconHash::operator=(const std::string theString) {
 		std::string newHash{ theString };
-		if (newHash.empty() || newHash == "0") {
+		if (newHash.empty() ||newHash == "0") {
 			this->highBits = 0;
 			this->lowBits = 0;
 			return *this;
@@ -552,7 +587,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string IconHash::getIconHash() noexcept {
-		if (this->highBits == 0 || this->lowBits == 0) {
+		if (this->highBits == 0 ||this->lowBits == 0) {
 			return {};
 		} else {
 			return std::string{ toHex(this->lowBits) + toHex(this->highBits) };
@@ -595,7 +630,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(std::string&& other) {
-		if (other.size() == 0 || other == "") {
+		if (other.size() == 0 ||other == "") {
 			this->thePermissions = 0;
 		} else {
 			for (auto& value: other) {
@@ -611,7 +646,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(const std::string& other) {
-		if (other.size() == 0 || other == "") {
+		if (other.size() == 0 ||other == "") {
 			this->thePermissions = 0;
 		} else {
 			this->thePermissions = stoull(other);
@@ -1042,7 +1077,7 @@ namespace DiscordCoreAPI {
 	std::string utf8MakeValid(const std::string& inputString) {
 		std::string theReturnString{};
 		for (auto& value: inputString) {
-			if (value >= 128 || value < 0) {
+			if (value >= 128 ||value < 0) {
 				int32_t theDifference = 0 - value;
 				theReturnString.push_back(value + theDifference);
 			} else {
@@ -1060,7 +1095,7 @@ namespace DiscordCoreAPI {
 		for (std::string::const_iterator i = inputString.begin(), n = inputString.end(); i != n; ++i) {
 			std::string::value_type c = (*i);
 
-			if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+			if (isalnum(c) ||c == '-' ||c == '_' ||c == '.' ||c == '~') {
 				escaped << c;
 				continue;
 			}

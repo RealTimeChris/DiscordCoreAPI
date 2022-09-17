@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 		uint64_t offSet{};
 		uint64_t size{};
 
-		void singleValueJsonToETF(DiscordCoreAPI::JsonSerializer jsonData);
+		void singleValueJsonToETF(DiscordCoreAPI::JsonSerializer& jsonData);
 
 		void writeToBuffer(const std::string&);
 

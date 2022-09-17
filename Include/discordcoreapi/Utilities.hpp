@@ -398,7 +398,7 @@ namespace DiscordCoreAPI {
 		Null = 8
 	};
 
-	enum class JsonParserState { Adding_Object_Elements = 0, Adding_Array_Elements = 1 };
+	enum class JsonParserState { Starting_Object = 0, Adding_Object_Elements = 1, Starting_Array = 2, Adding_Array_Elements = 3 };
 
 	enum class JsonParseEvent : uint16_t {
 		Null_Value = 1 << 0,
@@ -437,72 +437,72 @@ namespace DiscordCoreAPI {
 
 		template<std::same_as<uint64_t> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
 			if (keyName != nullptr) {
-				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName });
 			}
 			std::string theString = std::to_string(theData);
-			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Unsigned, .theValue = theString});
+			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Unsigned, .theValue = theString });
 		}
 
 		template<std::same_as<int64_t> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
 			if (keyName != nullptr) {
-				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName });
 			}
 			std::string theString = std::to_string(theData);
-			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Integer, .theValue = theString});
+			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Integer, .theValue = theString });
 		}
 
 		template<std::same_as<std::string> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
 			if (keyName != nullptr) {
-				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName });
 			}
-			this->theValues.push_back({ .theEvent = JsonParseEvent::String, .theValue = theData});
+			this->theValues.push_back({ .theEvent = JsonParseEvent::String, .theValue = theData });
 		}
 
 		template<std::same_as<bool> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
 			if (keyName != nullptr) {
-				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName });
 			}
 			std::stringstream theStream{};
 			theStream << std::boolalpha << theData;
-			this->theValues.push_back({ .theEvent = JsonParseEvent::String, .theValue = theStream.str()});
+			this->theValues.push_back({ .theEvent = JsonParseEvent::String, .theValue = theStream.str() });
 		}
 
 		template<std::same_as<float> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
 			if (keyName != nullptr) {
-				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName });
 			}
 			std::string theString = std::to_string(theData);
-			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Integer, .theValue = theString});
+			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Integer, .theValue = theString });
 		}
 
 		template<std::same_as<double> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
 			if (keyName != nullptr) {
-				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName });
 			}
 			std::string theString = std::to_string(theData);
-			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Integer, .theValue = theString});
+			this->theValues.push_back({ .theEvent = JsonParseEvent::Number_Integer, .theValue = theString });
 		}
 
 		template<std::same_as<const char*> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
 			if (keyName != nullptr) {
-				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName});
+				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName });
 			}
-			this->theValues.push_back({ .theEvent = JsonParseEvent::String, .theValue = theData});
+			this->theValues.push_back({ .theEvent = JsonParseEvent::String, .theValue = theData });
 		}
 
 		template<std::same_as<JsonParseEvent> JsonObjectType> void addEvent(JsonObjectType theData, const char* keyName = nullptr) {
 			if (keyName != nullptr) {
 				std::cout << "THE KEY: " << keyName << std::endl;
 				this->theValues.push_back({ .theEvent = JsonParseEvent::Key, .theValue = keyName });
-				this->theValues.push_back({ .theEvent = theData, .theValue = "" });
+				this->theValues.push_back({ .theEvent = theData, .theValue = keyName });
 			} else {
 				this->theValues.push_back({ .theEvent = theData, .theValue = "" });
-			}			
+			}
 		}
 
 	  protected:
+		std::unordered_map<std::string, int32_t> theDepths{};
 		std::vector<JsonValue> theValues{};
-		bool isThisTheFirstElement{ true };
 		JsonParserState theState{};
 		size_t currentPosition{};
 	};
