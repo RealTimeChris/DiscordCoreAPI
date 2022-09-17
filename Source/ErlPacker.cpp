@@ -95,7 +95,6 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::singleValueJsonToETF(simdjson::ondemand::value jsonData) {
-		
 		switch (jsonData.type()) {
 			case simdjson::ondemand::json_type::array: {
 				simdjson::ondemand::array theArray{};
@@ -113,7 +112,6 @@ namespace DiscordCoreInternal {
 				simdjson::ondemand::object theObject{};
 				auto theResult = jsonData.get(theObject);
 				if (theResult == simdjson::error_code::SUCCESS) {
-					std::cout << "THE FIELDS COUNT: " << theObject.count_fields().take_value() << std::endl;
 					this->appendMapHeader(theObject.count_fields().take_value());
 					for (auto field: theObject) {
 						std::stringstream theStream{};
