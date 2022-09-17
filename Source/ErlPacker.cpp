@@ -75,9 +75,9 @@ namespace DiscordCoreInternal {
 			}
 		} else if (jsonData.get_number_type() == simdjson::ondemand::number_type::signed_integer) {
 			auto theInt = jsonData.get_int64().take_value();
-			if (theInt <= 255) {
+			if (theInt <= 127) {
 				this->appendSmallIntegerExt(static_cast<uint8_t>(theInt));
-			} else if (theInt <= std::numeric_limits<uint32_t>::max()) {
+			} else if (theInt <= std::numeric_limits<int32_t>::max()) {
 				this->appendIntegerExt(static_cast<uint32_t>(theInt));
 			} else {
 				this->appendUnsignedLongLong(static_cast<uint64_t>(theInt));
