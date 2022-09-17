@@ -37,116 +37,124 @@
 
 namespace DiscordCoreInternal {
 
-	UpdatePresenceData::operator std::string() {
-		/*
-		DiscordCoreAPI::JsonObject theData{};
-		DiscordCoreAPI::Array theArray{};
+	UpdatePresenceData::operator DiscordCoreAPI::JsonSerializer() {
+		DiscordCoreAPI::JsonSerializer theData{};
+		theData.addEvent(static_cast<uint8_t>(3), "op");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "activities");
 		for (auto& value: this->activities) {
-			DiscordCoreAPI::Object dataNew{};
-			if (static_cast<std::string>(value.url) != "") {
-				dataNew.append("url", std::string{ value.url });
+			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start);
+			if (value.url != "") {
+				theData.addEvent(std::string{ value.url }, "url");
 			}
-			dataNew.append("name", std::string{ value.name });
-			dataNew.append("type", static_cast<uint64_t>(value.type));
-			theArray.append(dataNew);
+			theData.addEvent(std::string{ value.name }, "name");
+			theData.addEvent(static_cast<uint64_t>(value.type), "type");
+			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
 		}
-		DiscordCoreAPI::Object dataNewer{};
-		dataNewer.append("activities", theArray);
-		dataNewer.append("status", this->status);
-		dataNewer.append("since", static_cast<uint64_t>(NULL));
-		dataNewer.append("afk", this->afk);
-		theData.append("d", dataNewer);
-		theData.append("op", static_cast<uint64_t>(3));
-		*/
-		return std::string{};
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
+		theData.addEvent(this->status, "status");
+		if (this->since != 0) {
+			theData.addEvent(this->since, "since");
+		}
+		theData.addEvent(this->afk, "afk");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		return theData;
 
 	}
 
-	WebSocketResumeData::operator nlohmann::json() {
-		nlohmann::json theData{};
-		theData["d"]["seq"] = this->lastNumberReceived;
-		theData["d"]["session_id"] = this->sessionId;
-		theData["d"]["token"] = this->botToken;
-		theData["op"] = 6;
+	WebSocketResumeData::operator DiscordCoreAPI::JsonSerializer() {
+		DiscordCoreAPI::JsonSerializer theData{};
+		theData.addEvent(static_cast<uint8_t>(6), "op");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
+		theData.addEvent(this->lastNumberReceived, "seq");
+		theData.addEvent(this->sessionId, "session_id");
+		theData.addEvent(this->botToken, "token");
 		return theData;
 	}
 
 	WebSocketIdentifyData::operator DiscordCoreAPI::JsonSerializer() {
-		DiscordCoreAPI::JsonSerializer theSerializer{};
-		theSerializer.addEvent(static_cast<uint64_t>(2) ,"op");
-		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start,"d");
-		theSerializer.addEvent(this->botToken, "token");
-
-		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "properties");
-		theSerializer.addEvent("DiscordCoreAPI","browser");
-		theSerializer.addEvent("DiscordCoreAPI", "device");
-#ifdef _WIN32
-		theSerializer.addEvent("os", "Windows");
-#else
-		theSerializer.addEvent("os", "Linux");
-#endif
-		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
-		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "shard");
-		theSerializer.addEvent(static_cast<uint64_t>(this->currentShard));
-		theSerializer.addEvent(static_cast<uint64_t>(this->numberOfShards));
-		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
-		theSerializer.addEvent(static_cast<uint64_t>(this->largeThreshold), "large_threshold");
-		theSerializer.addEvent(static_cast<uint64_t>(this->intents), "intents");
-		theSerializer.addEvent(false, "compress");
-		/*
-		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "presence");
-		theSerializer.addEvent(this->presence.status, "status");
-		theSerializer.addEvent(this->presence.afk, "afk");
-		theSerializer.addEvent(this->presence.since, "since");
-		/*
-		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "activities");
-		std::vector<uint64_t> theVector{};
-		for (uint32_t x = 0; x < 112; ++x) {
-			theVector.push_back(x);
-		}
-
+		DiscordCoreAPI::JsonSerializer theData{};
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
+		theData.addEvent(false, "compress");
+		theData.addEvent(static_cast<uint32_t>(this->intents), "intents");
+		theData.addEvent(static_cast<uint32_t>(250), "large_threshold");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "presence");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "activities");
 		for (auto& value: this->presence.activities) {
-			theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start);
-			theSerializer.addEvent(std::string{ value.url }, "url");
-			theSerializer.addEvent(std::string{ value.name }, "name");
-			theSerializer.addEvent(static_cast<uint64_t>(value.type), "type");
-			theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start);
+			if (value.url != "") {
+				theData.addEvent(std::string{ value.url }, "url");
+			}
+			theData.addEvent(std::string{ value.name }, "name");
+			theData.addEvent(static_cast<uint64_t>(value.type), "type");
+			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
 		}
-		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
-		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
-		*/
-		theSerializer.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
+		theData.addEvent(this->presence.afk, "afk");
+		if (this->presence.since == 0) {
+			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Null_Value, "since");
+		} else {
+			theData.addEvent(this->presence.since, "since");
+		}
 
-		return theSerializer;
+		theData.addEvent(this->presence.status, "status");
+
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "properties");
+		theData.addEvent("DiscordCoreAPI", "browser");
+		theData.addEvent("DiscordCoreAPI", "device");
+#ifdef _WIN32
+		theData.addEvent("Windows", "os");
+#else
+		theData.addEvent("Linux", "os");
+#endif
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "shard");
+		theData.addEvent(static_cast<uint8_t>(this->currentShard));
+		theData.addEvent(static_cast<uint8_t>(this->numberOfShards));
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
+		theData.addEvent(this->botToken, "token");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData.addEvent(static_cast<uint8_t>(2), "op");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		return theData;
 	}
 
-	VoiceSocketProtocolPayloadData::operator nlohmann::json() {
-		nlohmann::json data{};
-		data["d"]["data"]["port"] = stol(this->voicePort);
-		data["d"]["data"]["mode"] = this->voiceEncryptionMode;
-		data["d"]["data"]["address"] = this->externalIp;
-		data["d"]["protocol"] = "udp";
-		data["op"] = 1;
-		return data;
+
+	VoiceSocketProtocolPayloadData::operator DiscordCoreAPI::JsonSerializer() {
+		DiscordCoreAPI::JsonSerializer theData{};
+		theData.addEvent(static_cast<uint8_t>(1), "op");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
+		theData.addEvent("udp", "protocol");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "data");
+		theData.addEvent(this->voicePort, "port");
+		theData.addEvent(this->voiceEncryptionMode, "mode");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		return theData;
 	}
 
-	VoiceIdentifyData::operator nlohmann::json() {
-		nlohmann::json data{};
-		data["d"]["session_id"] = this->connectionData.sessionId;
-		data["d"]["server_id"] = std::to_string(this->connectInitData.guildId);
-		data["d"]["user_id"] = std::to_string(this->connectInitData.userId);
-		data["d"]["token"] = this->connectionData.token;
-		data["op"] = 0;
-		return data;
+	VoiceIdentifyData::operator DiscordCoreAPI::JsonSerializer() {
+		DiscordCoreAPI::JsonSerializer theData{};
+		theData.addEvent(static_cast<uint8_t>(0), "op");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
+		theData.addEvent(this->connectionData.sessionId, "session_id");
+		theData.addEvent(this->connectionData.token, "token");
+		theData.addEvent(this->connectInitData.guildId, "server_id");
+		theData.addEvent(this->connectInitData.userId, "user_id");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		return theData;
 	}
 
-	SendSpeakingData::operator nlohmann::json() {
-		nlohmann::json data{};
-		data["d"]["speaking"] = this->type;
-		data["d"]["delay"] = this->delay;
-		data["d"]["ssrc"] = this->ssrc;
-		data["op"] = 5;
-		return data;
+	SendSpeakingData::operator DiscordCoreAPI::JsonSerializer() {
+		DiscordCoreAPI::JsonSerializer theData{};
+		theData.addEvent(static_cast<uint8_t>(5), "op");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
+		theData.addEvent(static_cast<uint8_t>(this->type), "speaking");
+		theData.addEvent(this->delay, "delay");
+		theData.addEvent(this->ssrc, "ssrc");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		return theData;
 	}
 
 	HttpsWorkloadData& HttpsWorkloadData::operator=(const HttpsWorkloadData& other) noexcept {
@@ -215,33 +223,39 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	AttachmentData::operator nlohmann::json() {
-		nlohmann::json newValue{};
-		newValue["content_type"] = this->contentType;
-		newValue["description"] = this->description;
-		newValue["ephemeral"] = this->ephemeral;
-		newValue["file_name"] = this->filename;
-		newValue["proxy_url"] = this->proxyUrl;
-		newValue["height"] = this->height;
-		newValue["width"] = this->width;
-		newValue["size"] = this->size;
-		newValue["url"] = this->url;
-		return newValue;
+	AttachmentData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		theData.addEvent(this->contentType, "content_type");
+		theData.addEvent(this->description, "description");
+		theData.addEvent(this->ephemeral, "ephemeral");
+		theData.addEvent(this->filename, "file_name");
+		theData.addEvent(this->proxyUrl, "proxy_url");
+		theData.addEvent(this->height, "height");
+		theData.addEvent(this->width, "width");
+		theData.addEvent(this->size, "size");
+		theData.addEvent(this->url, "url");
+		return theData;
 	}
 
-	EmbedFieldData::operator nlohmann::json() {
-		nlohmann::json newValue{};
-		newValue["inline"] = this->Inline;
-		newValue["value"] = this->value;
-		newValue["name"] = this->name;
-		return newValue;
+	EmbedFieldData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		theData.addEvent(this->Inline, "inline");
+		theData.addEvent(this->value, "value");
+		theData.addEvent(this->name, "name");
+		return theData;
 	}
 
-	EmbedData::operator nlohmann::json() {
-		nlohmann::json fields{};
+	EmbedData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		theData.addEvent(JsonParseEvent::Array_Start, "fields");
 		for (auto& value2: this->fields) {
-			fields.emplace_back(value2);
+			theData.addEvent(JsonParseEvent::Object_Start);
+			theData.addEvent(value2.Inline, "inline");
+			theData.addEvent(value2.name, "name");
+			theData.addEvent(value2.value, "value");
+			theData.addEvent(JsonParseEvent::Object_End);
 		}
+		theData.addEvent(JsonParseEvent::Array_End);
 		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
 		nlohmann::json embed{};
 		embed["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
@@ -326,13 +340,13 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageReferenceData::operator nlohmann::json() {
-		nlohmann::json newValue{};
-		newValue["fail_if_not_exists"] = this->failIfNotExists;
-		newValue["message_id"] = this->messageId;
-		newValue["channel_id"] = this->channelId;
-		newValue["guild_id"] = this->guildId;
-		return newValue;
+	MessageReferenceData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		theData.addEvent(this->failIfNotExists, "fail_if_not_exists");
+		theData.addEvent(this->messageId, "message_id");
+		theData.addEvent(this->channelId, "channel_id");
+		theData.addEvent(this->guildId, "guild_id");
+		return theData;
 	}
 
 	GuildApplicationCommandPermissionsDataVector::operator std::vector<GuildApplicationCommandPermissionsData>() {

@@ -185,12 +185,13 @@ namespace DiscordCoreInternal {
 			cout << DiscordCoreAPI::shiftToBrightBlue()
 				 << "Sending WebSocket " + static_cast<WebSocketSSLShard*>(this)->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) +
 					std::string("'s Message: ")
-				 << dataToSend.getString() << endl
+				 //<< dataToSend.getString() << endl
 				 << endl
 				 << DiscordCoreAPI::reset();
 		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
-			theVector = ErlPacker::parseJsonToEtf(dataToSend);
+			auto theString = dataToSend.getString();
+			theVector = ErlPacker::parseJsonToEtf(theString);
 		} else {
 			theVector = dataToSend.getString();
 		}

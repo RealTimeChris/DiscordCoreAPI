@@ -55,12 +55,12 @@ namespace DiscordCoreInternal {
 		std::string sessionId{};
 		std::string botToken{};
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
 		UpdatePresenceData presence{};
-		int32_t largeThreshold{};
+		int32_t largeThreshold{ 250 };
 		int32_t numberOfShards{};
 		int32_t currentShard{};
 		std::string botToken{};
@@ -74,14 +74,14 @@ namespace DiscordCoreInternal {
 		std::string externalIp{};
 		std::string voicePort{};
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 	};
 
 	struct DiscordCoreAPI_Dll VoiceIdentifyData {
 		VoiceConnectInitData connectInitData{};
 		VoiceConnectionData connectionData{};
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 	};
 
 	enum class SendSpeakingType : uint8_t {
@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 		int32_t delay{};
 		int32_t ssrc{};
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 	};
 
 	enum class HttpsWorkloadClass : uint8_t { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
@@ -450,7 +450,7 @@ namespace DiscordCoreAPI {
 		int32_t size{ 0 };///< The size of the attachment.
 		std::string url{};///< The url for the attachment.
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 
 		virtual ~AttachmentData() noexcept = default;
 	};
@@ -553,7 +553,7 @@ namespace DiscordCoreAPI {
 
 		EmbedFieldData() noexcept = default;
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 
 		virtual ~EmbedFieldData() noexcept = default;
 	};
@@ -589,7 +589,7 @@ namespace DiscordCoreAPI {
 
 		EmbedData() noexcept = default;
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 
 		/// Sets the author's name and avatar for the embed. \brief Sets the author's name and avatar for the embed.
 		/// \param authorName The author's name.
@@ -654,7 +654,7 @@ namespace DiscordCoreAPI {
 
 		MessageReferenceData() noexcept = default;
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 
 		virtual ~MessageReferenceData() noexcept = default;
 	};
@@ -1365,7 +1365,7 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< Id of the desired voice Channel. Leave blank to disconnect.
 		Snowflake guildId{};///< The id of the Guild fo which we would like to establish a voice connection.
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 	};
 
 	/// Team object data. \brief Team object data.
@@ -1621,8 +1621,8 @@ namespace DiscordCoreAPI {
 
 	/// Audit log change data. \brief Audit log change data.
 	struct DiscordCoreAPI_Dll AuditLogChangeData {
-		nlohmann::json newValue{};///< New value.
-		nlohmann::json oldValue{};///< Old value.
+		JsonValue newValue{};///< New value.
+		JsonValue oldValue{};///< Old value.
 		std::string key{};///< The key of the audit log change.
 
 		AuditLogChangeData() noexcept = default;
@@ -2206,7 +2206,7 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandOptionChoiceData() noexcept = default;
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 
 		virtual ~ApplicationCommandOptionChoiceData() noexcept = default;
 	};
@@ -2230,7 +2230,7 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandOptionData() noexcept = default;
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 
 		virtual ~ApplicationCommandOptionData() noexcept = default;
 	};
@@ -2275,7 +2275,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll YouTubeFormatVector {
 	  public:
 		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-		template<typename ReturnType> friend void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
 
 		YouTubeFormatVector() noexcept = default;
 
@@ -2362,7 +2361,7 @@ namespace DiscordCoreAPI {
 
 		AllowedMentionsData() noexcept = default;
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 
 		virtual ~AllowedMentionsData() noexcept = default;
 	};
@@ -2430,7 +2429,7 @@ namespace DiscordCoreAPI {
 
 		ActionRowData() noexcept = default;
 
-		operator nlohmann::json();
+		operator DiscordCoreAPI::JsonSerializer();
 
 		virtual ~ActionRowData() noexcept = default;
 	};
@@ -3105,7 +3104,7 @@ namespace DiscordCoreAPI {
 		RespondToInputEventData& setTTSStatus(bool enabledTTs);
 
 		/// For setting the choices of an autocomplete response. \brief For setting the choices of an autocomplete response.
-		/// \param theValue An nlohmann::json value that is either a float, int32_t or a string.
+		/// \param theValue An simdjson::ondemand::object value that is either a float, int32_t or a string.
 		/// \param theName A string for the name of the choice.
 		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
@@ -3269,7 +3268,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Song {
 	  public:
 		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-		template<typename ReturnType> friend void parseObject(nlohmann::json& jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
 		friend class DiscordCoreInternal::YouTubeRequestBuilder;
 		friend class DiscordCoreInternal::SoundCloudAPI;

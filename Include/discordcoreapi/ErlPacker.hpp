@@ -56,14 +56,16 @@ namespace DiscordCoreInternal {
 		Atom_Utf8_Ext = 118
 	};
 
-	class DiscordCoreAPI_Dll ErlPacker {
+	class ErlPacker {
 	  public:
-		ErlPacker() noexcept = default;
+		ErlPacker() noexcept {};
 
-		std::string parseJsonToEtf(DiscordCoreAPI::JsonSerializer&);
+		std::string parseJsonToEtf(std::string&);
 
 		std::string& parseEtfToJson(std::string_view dataToParse);
-		
+
+		~ErlPacker(){};
+
 	  protected:
 		std::string comparisongStringFalse{ "false" };
 		std::string comparisongStringNil{ "nil" };
@@ -74,7 +76,13 @@ namespace DiscordCoreInternal {
 		uint64_t offSet{};
 		uint64_t size{};
 
-		void singleValueJsonToETF(DiscordCoreAPI::JsonSerializer& jsonData);
+		void singleValueJsonToETF(simdjson::ondemand::value jsonData);
+
+		void writeString(simdjson::ondemand::value jsonData);
+
+		void writeNumber(simdjson::ondemand::value jsonData);
+
+		void writeBool(simdjson::ondemand::value jsonData);
 
 		void writeToBuffer(const std::string&);
 

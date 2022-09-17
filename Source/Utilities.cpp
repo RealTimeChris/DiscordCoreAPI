@@ -63,112 +63,9 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-	size_t JsonSerializer::parseForward(JsonParseEvent theEvent) {
-		for (uint32_t x = 0; x < this->theValues.size(); ++x) {
-			if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(theEvent)) {
-				return x;
-			}
-		}
-		return 0;
-	}
-
-	std::vector<JsonValue>& JsonSerializer::getVector() {
-		return this->theValues;
-	}
-
-	JsonValue JsonSerializer::getEvent() {
-		JsonValue theResult{};
-		if (theValues.size() > 0) {
-			theResult = this->theValues.front();
-			this->theValues.erase(this->theValues.begin());
-		}
-		return theResult;
-	}
-
-	size_t JsonSerializer::getArraySize(const char* theName) {
-		size_t theSize{};
-		if (theName != nullptr) {
-			for (uint32_t x = 0; x < this->theValues.size(); ++x) {
-				if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_Start)) {
-					this->currentPosition = x;
-					break;
-				}
-			}
-		} else {
-			this->currentPosition = 0;
-		}
-		bool areWeCounting{ false };
-		bool areWeCountingObjects{ false };
-		for (uint32_t x = this->currentPosition; x < this->theValues.size(); ++x) {
-			if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_Start)) {
-				std::cout << "WERE STARTING TO COUNT THE ARRAY!;" << std::endl;
-				areWeCounting = true;
-			} else if (areWeCounting && static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_End)) {
-				areWeCounting = false;
-				this->currentPosition = x;
-				break;
-			} else if (areWeCounting && static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start)) {
-				areWeCountingObjects = true;
-				theSize++;
-			} else if (areWeCounting && !areWeCountingObjects) {
-				if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Boolean) ||
-					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Number_Double) ||
-					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Number_Float) ||
-					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Number_Integer) ||
-					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Number_Unsigned) ||
-					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::String) ||
-					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Null_Value) ||
-					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start) ||
-					static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_Start)) {
-					theSize++;
-				}
-			}
-			this->currentPosition = x;
-		}
-		return theSize;
-	}
-
-	size_t JsonSerializer::getObjectSize(const char* theName) {
-		size_t theSize{};
-		if (theName != nullptr) {
-			for (uint32_t x = 0; x < this->theValues.size(); ++x) {
-				if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start)) {
-					this->currentPosition = x;
-					break;
-				}
-			}
-		} else {
-			this->currentPosition = 0;
-		}
-		int32_t currentDepth{};
-		bool areWeInsideASubObject{ false };
-		for (uint32_t x = this->currentPosition; x < this->theValues.size(); ++x) {
-			if (!areWeInsideASubObject && static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start)) {
-				this->theDepths[this->theValues[x].theValue] = 0;
-				std::cout << "THE CURRENT VALUE (KEY): " << this->theValues[x].theValue << ", THE EVENT: 0101 " << ( int )this->theValues[x].theEvent << std::endl;
-				areWeInsideASubObject = true;
-			} else if (static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_End)) {
-				if (areWeInsideASubObject && !currentDepth) {
-					this->currentPosition = x;
-					break;
-				}
-				currentDepth--;
-			} else if (!currentDepth && areWeInsideASubObject) {
-				if (this->theValues[x].theEvent != JsonParseEvent::Array_End && this->theValues[x].theEvent != JsonParseEvent::Object_End &&
-					this->theValues[x].theEvent != JsonParseEvent::Key) {
-					std::cout << "THE CURRENT VALUE (KEY): " << this->theValues[x].theValue << ", THE EVENT 0202: " << ( int )this->theValues[x].theEvent << std::endl;
-					theSize++;
-				}
-			} else if (areWeInsideASubObject && static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start) ||
-				static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_Start)) {
-				this->theDepths[this->theValues[x].theValue]++;
-				currentDepth++;
-			} else if (areWeInsideASubObject && static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Array_End) ||
-				static_cast<int32_t>(this->theValues[x].theEvent) & static_cast<int32_t>(JsonParseEvent::Object_Start)) {
-				currentDepth--;
-			}
-		}
-		return theSize;
+	JsonSerializer::operator std::string() {
+		auto theString = this->getString();
+		return theString.substr(0, theString.size() - 1);
 	}
 
 	std::string JsonSerializer::getString() {
@@ -177,7 +74,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->theValues) {
 			switch (value.theEvent) {
 				case JsonParseEvent::Object_Start: {
-					if (this->theState != JsonParserState::Starting_Object) {
+					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
 					this->theState = JsonParserState::Starting_Object;
@@ -192,7 +89,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case JsonParseEvent::Array_Start: {
-					if (this->theState != JsonParserState::Starting_Object) {
+					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
 					this->theState = JsonParserState::Starting_Array;
@@ -207,12 +104,6 @@ namespace DiscordCoreAPI {
 					theString += "]";
 					if (theString[theString.size() - 2] == ',') {
 						theString.erase(theString.begin() + theString.size() - 2);
-					}
-					if (this->theState == JsonParserState::Starting_Object) {
-						this->theState = JsonParserState::Adding_Object_Elements;
-					}
-					if (this->theState == JsonParserState::Starting_Array) {
-						this->theState = JsonParserState::Adding_Array_Elements;
 					}
 					break;
 				}
@@ -281,7 +172,20 @@ namespace DiscordCoreAPI {
 					}
 					break;
 				}
-				case JsonParseEvent::Number_Unsigned: {
+				case JsonParseEvent::Number_Integer_Large: {
+					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
+						theString += ",";
+					}
+					theString += value.theValue;
+					if (this->theState == JsonParserState::Starting_Object) {
+						this->theState = JsonParserState::Adding_Object_Elements;
+					}
+					if (this->theState == JsonParserState::Starting_Array) {
+						this->theState = JsonParserState::Adding_Array_Elements;
+					}
+					break;
+				}
+				case JsonParseEvent::Number_Integer_Small: {
 					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
@@ -318,8 +222,8 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+		std::cout << "THE FINAL STRING REAL: " << theString << std::endl;
 		theString += "}";
-		std::cout << "THE STRING REAL: " << theString << std::endl;
 		return theString;
 	}
 
