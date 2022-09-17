@@ -31,92 +31,97 @@
 
 namespace DiscordCoreAPI {
 
-	CreateGlobalApplicationCommandData::operator std::string() {
-		nlohmann::json data{};
+	CreateGlobalApplicationCommandData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		if (this->defaultMemberPermissions != 0) {
-			data["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
+			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
-		data["description_localizations"] = this->descriptionLocalizations;
-		data["name_localizations"] = this->nameLocalizations;
-		data["dm_permission"] = this->dmPermission;
-		data["description"] = this->description;
-		data["name"] = this->name;
-		data["type"] = this->type;
+		theData["description_localizations"] = this->descriptionLocalizations;
+		theData["name_localizations"] = this->nameLocalizations;
+		theData["dm_permission"] = this->dmPermission;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
+		theData["type"] = this->type;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				data["options"].emplace_back(nlohmann::json(this->options[x]));
+				theData["options"].emplace_back(nlohmann::json(this->options[x]));
 			}
-		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		}*/
+		return theData;
 	}
 
-	EditGlobalApplicationCommandData::operator std::string() {
-		nlohmann::json data{};
+	EditGlobalApplicationCommandData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		if (this->defaultMemberPermissions != 0) {
-			data["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
+			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
-		data["description_localizations"] = this->descriptionLocalizations;
-		data["name_localizations"] = this->nameLocalizations;
-		data["dm_permission"] = this->dmPermission;
-		data["description"] = this->description;
-		data["name"] = this->name;
+		theData["description_localizations"] = this->descriptionLocalizations;
+		theData["name_localizations"] = this->nameLocalizations;
+		theData["dm_permission"] = this->dmPermission;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				data["options"].emplace_back(nlohmann::json{ this->options[x] });
+				theData["options"].emplace_back(nlohmann::json{ this->options[x] });
 			}
-		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		}*/
+		return theData;
 	}
 
-	CreateGuildApplicationCommandData::operator std::string() {
-		nlohmann::json data{};
+	CreateGuildApplicationCommandData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		if (this->defaultMemberPermissions != 0) {
-			data["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
+			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
-		data["description_localizations"] = this->descriptionLocalizations;
-		data["name_localizations"] = this->nameLocalizations;
-		data["dm_permission"] = this->dmPermission;
-		data["description"] = this->description;
-		data["name"] = this->name;
-		data["type"] = this->type;
+		theData["description_localizations"] = this->descriptionLocalizations;
+		theData["name_localizations"] = this->nameLocalizations;
+		theData["dm_permission"] = this->dmPermission;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
+		theData["type"] = this->type;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				data["options"].emplace_back(nlohmann::json{ this->options[x] });
+				theData["options"].emplace_back(nlohmann::json{ this->options[x] });
 			}
-			data["options"] = nlohmann::json{};
-		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			theData["options"] = nlohmann::json{};
+		}*/
+		return theData;
 	}
 
-	EditGuildApplicationCommandData::operator std::string() {
-		nlohmann::json data{};
+	EditGuildApplicationCommandData::operator JsonSerializer() {
+		JsonSerializer theData{}; /*
 		if (this->defaultMemberPermissions != 0) {
-			data["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
+			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
-		data["description_localizations"] = this->descriptionLocalizations;
-		data["name_localizations"] = this->nameLocalizations;
-		data["dm_permission"] = this->dmPermission;
-		data["description"] = this->description;
-		data["name"] = this->name;
+		theData["description_localizations"] = this->descriptionLocalizations;
+		theData["name_localizations"] = this->nameLocalizations;
+		theData["dm_permission"] = this->dmPermission;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				data["options"].emplace_back(nlohmann::json{ this->options[x] });
+				theData["options"].emplace_back(nlohmann::json{ this->options[x] });
 			}
-			data["options"] = nlohmann::json{};
+			theData["options"] = nlohmann::json{};
 		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		*/
+		return theData;
 	}
 
-	EditGuildApplicationCommandPermissionsData::operator std::string() {
-		nlohmann::json newDataArray{};
+	EditGuildApplicationCommandPermissionsData::operator JsonSerializer() {
+		JsonSerializer theData{}; /*
+		/*
 		for (auto& value: this->permissions) {
 			nlohmann::json newData{};
 			newData["permission"] = value.permission;
 			newData["type"] = value.type;
 			newData["id"] = std::to_string(value.id);
 			newDataArray.emplace_back(newData);
-		}
-		return newDataArray.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		}*/
+		return theData;
 	}
 
 	ApplicationCommandVector::operator std::vector<ApplicationCommand>() {
@@ -144,7 +149,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<ApplicationCommand>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "ApplicationCommands::createGlobalApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -175,7 +180,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands/" + appCommandId;
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "ApplicationCommands::editGlobalApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -218,7 +223,7 @@ namespace DiscordCoreAPI {
 			newVector.emplace_back(dataPackageNew);
 		}
 		for (auto& value: newVector) {
-			std::string newData = value;
+			std::string newData = static_cast<JsonSerializer>(value);
 			newDataArray.emplace_back(std::string{ newData });
 		}
 		nlohmann::json dataNew = newDataArray;
@@ -247,7 +252,7 @@ namespace DiscordCoreAPI {
 		dataPackage.applicationId = dataPackage.applicationId;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "ApplicationCommands::createGuildApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -279,7 +284,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + appCommandId;
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "ApplicationCommands::editGuildApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -322,7 +327,7 @@ namespace DiscordCoreAPI {
 			newVector.emplace_back(dataPackageNew);
 		}
 		for (auto& value: newVector) {
-			std::string newData = value;
+			std::string newData = static_cast<JsonSerializer>(value);
 			newDataArray.emplace_back(newData);
 		}
 		nlohmann::json dataNew = newDataArray;
@@ -383,8 +388,9 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath =
 			"/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + commandId + "/permissions";
-		nlohmann::json newData = { { "permissions", std::string{ dataPackage } } };
-		workload.content = newData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		std::string newData{ "permissions" };
+		newData.append(static_cast<JsonSerializer>(dataPackage));
+		workload.content = newData;
 		workload.callStack = "ApplicationCommands::editGuildApplicationCommandPermissionsAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<GuildApplicationCommandPermissionsData>(workload);
 	}

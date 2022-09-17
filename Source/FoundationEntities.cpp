@@ -74,49 +74,50 @@ namespace DiscordCoreInternal {
 
 	WebSocketIdentifyData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
-		theData.addEvent(false, "compress");
-		theData.addEvent(static_cast<uint32_t>(this->intents), "intents");
-		theData.addEvent(static_cast<uint32_t>(250), "large_threshold");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "presence");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "activities");
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["compress"] = false;
+		theData["intents"] = static_cast<uint32_t>(this->intents);
+		theData["large_threshold"] = static_cast<uint32_t>(250);
+		theData["presence"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["activities"] = DiscordCoreAPI::JsonParseEvent::Array_Start;
+
 		for (auto& value: this->presence.activities) {
-			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start);
+			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_Start;
 			if (value.url != "") {
-				theData.addEvent(std::string{ value.url }, "url");
+				theData["url"] = std::string{ value.url };
 			}
-			theData.addEvent(std::string{ value.name }, "name");
-			theData.addEvent(static_cast<uint64_t>(value.type), "type");
-			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+			theData["name"] = std::string{ value.name };
+			theData["type"] = static_cast<uint8_t>(value.type);
+			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		}
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
-		theData.addEvent(this->presence.afk, "afk");
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Array_End;
+		theData["afk"] = this->presence.afk;
 		if (this->presence.since == 0) {
-			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Null_Value, "since");
+			theData["since"] = DiscordCoreAPI::JsonParseEvent::Null_Value;
 		} else {
-			theData.addEvent(this->presence.since, "since");
+			theData["since"] = this->presence.since;
 		}
 
-		theData.addEvent(this->presence.status, "status");
+		theData["status"] = this->presence.status;
 
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "properties");
-		theData.addEvent("DiscordCoreAPI", "browser");
-		theData.addEvent("DiscordCoreAPI", "device");
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+		theData["properties"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["browser"] = "DiscordCoreAPI";
+		theData["device"] = "DiscordCoreAPI";
 #ifdef _WIN32
-		theData.addEvent("Windows", "os");
+		theData["os"] = "Windows";
 #else
-		theData.addEvent("Linux", "os");
+		theData["os"] = "Linux";
 #endif
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "shard");
-		theData.addEvent(static_cast<uint8_t>(this->currentShard));
-		theData.addEvent(static_cast<uint8_t>(this->numberOfShards));
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
-		theData.addEvent(this->botToken, "token");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
-		theData.addEvent(static_cast<uint8_t>(2), "op");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+		theData["shard"] = DiscordCoreAPI::JsonParseEvent::Array_Start;
+		theData[""] = static_cast<uint8_t>(this->currentShard);
+		theData[""] = static_cast<uint8_t>(this->numberOfShards);
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Array_End;
+		theData["token"] = this->botToken;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+		theData["op"] = static_cast<uint8_t>(2);
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 
@@ -247,6 +248,7 @@ namespace DiscordCoreAPI {
 
 	EmbedData::operator JsonSerializer() {
 		JsonSerializer theData{};
+		/*
 		theData.addEvent(JsonParseEvent::Array_Start, "fields");
 		for (auto& value2: this->fields) {
 			theData.addEvent(JsonParseEvent::Object_Start);
@@ -286,7 +288,8 @@ namespace DiscordCoreAPI {
 		embed["type"] = this->type;
 		embed["url"] = this->url;
 		embed["fields"] = fields;
-		return embed;
+		*/
+		return theData;
 	}
 
 	EmbedData& EmbedData::setAuthor(const std::string& authorName, const std::string& authorAvatarUrl) {
@@ -357,18 +360,20 @@ namespace DiscordCoreAPI {
 		return this->theBanDatas;
 	}
 
-	UpdateVoiceStateData::operator nlohmann::json() {
-		nlohmann::json data{};
+	UpdateVoiceStateData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
 		if (this->channelId == 0) {
-			data["d"]["channel_id"] = nullptr;
+			theData["channel_id"] = nullptr;
 		} else {
-			data["d"]["channel_id"] = std::to_string(this->channelId);
+			theData.addEvent(std::to_string(this->channelId), "channel_id");
 		}
-		data["d"]["self_deaf"] = this->selfDeaf;
-		data["d"]["self_mute"] = this->selfMute;
-		data["d"]["guild_id"] = std::to_string(this->guildId);
-		data["op"] = 4;
-		return data;
+		theData.addEvent(this->selfDeaf, "self_deaf");
+		theData.addEvent(this->selfMute, "self_mute");
+		theData.addEvent(std::to_string(this->guildId), "guild_id");
+		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData.addEvent(static_cast<uint8_t>(4), "op");
+		return theData;
 	}
 
 	GuildDataVector::operator std::vector<GuildData>() {
@@ -413,8 +418,8 @@ namespace DiscordCoreAPI {
 		return AuditLogEntryData();
 	}
 
-	ApplicationCommandOptionChoiceData::operator nlohmann::json() {
-		nlohmann::json theData{};
+	ApplicationCommandOptionChoiceData::operator JsonSerializer() {
+		JsonSerializer theData{};
 		theData["name"] = this->name;
 		theData["name_localizations"] = this->nameLocalizations;
 		switch (this->type) {
@@ -434,8 +439,9 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ApplicationCommandOptionData::operator nlohmann::json() {
-		nlohmann::json newOption{};
+	ApplicationCommandOptionData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		if (this->type == DiscordCoreAPI::ApplicationCommandOptionType::Channel) {
 			newOption["channel_types"] = this->channelTypes;
 		}
@@ -471,7 +477,8 @@ namespace DiscordCoreAPI {
 				newOption["options"].emplace_back(theData);
 			}
 		}
-		return newOption;
+		*/
+		return theData;
 	}
 
 	ThreadMemberDataVector::operator std::vector<ThreadMemberData>() {
@@ -488,17 +495,18 @@ namespace DiscordCoreAPI {
 		this->data.clear();
 	}
 
-	AllowedMentionsData::operator nlohmann::json() {
-		nlohmann::json newValue{};
-		newValue["replied_user"] = this->repliedUser;
-		newValue["parse"] = this->parse;
-		newValue["roles"] = this->roles;
-		newValue["users"] = this->users;
-		return newValue;
+	AllowedMentionsData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		theData["replied_user"] = this->repliedUser;
+		theData["parse"] = this->parse;
+		theData["roles"] = this->roles;
+		theData["users"] = this->users;
+		return theData;
 	}
 
-	ActionRowData::operator nlohmann::json() {
-		nlohmann::json components{};
+	ActionRowData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		for (auto& valueNew: this->components) {
 			if (valueNew.type == ComponentType::Button) {
 				nlohmann::json component{};
@@ -559,6 +567,7 @@ namespace DiscordCoreAPI {
 		nlohmann::json theData{};
 		theData["type"] = 1;
 		theData["components"] = components;
+		*/
 		return theData;
 	}
 
@@ -1015,19 +1024,20 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	InteractionResponseData::operator std::string() {
-		nlohmann::json data{};
+	InteractionResponseData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		for (auto& value: this->data.attachments) {
-			data["data"]["attachments"].emplace_back(DiscordCoreAPI::AttachmentData{ value });
+			theData["data"]["attachments"].emplace_back(DiscordCoreAPI::AttachmentData{ value });
 		}
 		if (this->data.components.size() == 0) {
-			data["data"]["components"] = nlohmann::json::array();
+			theData["data"]["components"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->data.components) {
-				data["data"]["components"].emplace_back(value);
+				theData["data"]["components"].emplace_back(value);
 			}
 		}
-		data["data"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->data.allowedMentions };
+		theData["data"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->data.allowedMentions };
 		if (this->data.choices.size() > 0) {
 			nlohmann::json::array_t theArray{};
 			for (auto& value: this->data.choices) {
@@ -1050,28 +1060,29 @@ namespace DiscordCoreAPI {
 				}
 				theArray.emplace_back(theValue);
 			}
-			data["data"]["choices"] = theArray;
+			theData["data"]["choices"] = theArray;
 		}
 		if (this->data.embeds.size() == 0) {
-			data["data"]["embeds"] = nlohmann::json::array();
+			theData["data"]["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->data.embeds) {
-				data["data"]["embeds"].emplace_back(DiscordCoreAPI::EmbedData{ value });
+				theData["data"]["embeds"].emplace_back(DiscordCoreAPI::EmbedData{ value });
 			}
 		}
 		if (this->data.customId != "") {
-			data["data"]["custom_id"] = this->data.customId;
+			theData["data"]["custom_id"] = this->data.customId;
 		}
 		if (this->data.content != "") {
-			data["data"]["content"] = this->data.content;
+			theData["data"]["content"] = this->data.content;
 		}
 		if (this->data.title != "") {
-			data["data"]["title"] = this->data.title;
+			theData["data"]["title"] = this->data.title;
 		}
-		data["data"]["flags"] = this->data.flags;
-		data["data"]["tts"] = this->data.tts;
-		data["type"] = this->type;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		theData["data"]["flags"] = this->data.flags;
+		theData["data"]["tts"] = this->data.tts;
+		theData["type"] = this->type;
+		*/
+		return theData;
 	}
 
 	void parseCommandDataOption(std::unordered_map<std::string, JsonValueReal>& theValues, ApplicationCommandInteractionDataOption& theData) {

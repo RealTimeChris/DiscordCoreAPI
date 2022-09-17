@@ -346,7 +346,7 @@ namespace DiscordCoreAPI {
 			theData.type = DiscordCoreInternal::SendSpeakingType::Microphone;
 			theData.delay = 0;
 			theData.ssrc = this->audioSSRC;
-			nlohmann::json newString = theData;
+			auto newString = static_cast<JsonSerializer>(theData);
 			std::string theString{};
 			this->stringifyJsonData(newString, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			if (!this->sendMessage(theString, true)) {
@@ -797,8 +797,8 @@ namespace DiscordCoreAPI {
 				identifyData.connectInitData = this->voiceConnectInitData;
 				identifyData.connectionData = this->voiceConnectionData;
 				std::string sendVector{};
-				nlohmann::json theData{ identifyData };
-				this->stringifyJsonData(theData[0], sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				JsonSerializer theData{ identifyData };
+				this->stringifyJsonData(theData, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
@@ -838,7 +838,7 @@ namespace DiscordCoreAPI {
 				protocolPayloadData.voiceEncryptionMode = this->audioEncryptionMode;
 				protocolPayloadData.externalIp = this->externalIp;
 				protocolPayloadData.voicePort = this->port;
-				nlohmann::json protocolPayloadSelectString = protocolPayloadData;
+				JsonSerializer protocolPayloadSelectString = protocolPayloadData;
 				std::string sendVector{};
 				this->stringifyJsonData(protocolPayloadSelectString, sendVector, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(sendVector, true)) {
@@ -900,11 +900,11 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::sendHeartBeat() noexcept {
 		try {
 			if (WebSocketSSLShard::areWeStillConnected() && this->haveWeReceivedHeartbeatAck) {
-				nlohmann::json data{};
-				data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-				data["op"] = int32_t(3);
+				JsonSerializer theData{};
+				theData["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				theData["op"] = int32_t(3);
 				std::string theString{};
-				this->stringifyJsonData(data, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				this->stringifyJsonData(theData, theString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(theString, true)) {
 					this->onClosed();
 				}

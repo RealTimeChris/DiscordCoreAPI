@@ -30,27 +30,31 @@
 
 namespace DiscordCoreAPI {
 
-	CreateGuildEmojiData::operator std::string() {
-		nlohmann::json data{};
+	CreateGuildEmojiData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		nlohmann::json rolesArray{};
 		for (auto& value: this->roles) {
 			rolesArray.emplace_back(value);
 		}
-		data["image"] = this->imageDataFinal;
-		data["name"] = this->name;
-		data["roles"] = rolesArray;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		theData["image"] = this->imageDataFinal;
+		theData["name"] = this->name;
+		theData["roles"] = rolesArray;
+		*/
+		return theData;
 	}
 
-	ModifyGuildEmojiData::operator std::string() {
-		nlohmann::json data{};
+	ModifyGuildEmojiData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		nlohmann::json rolesArray{};
 		for (auto& value: this->roles) {
 			rolesArray.emplace_back(value);
 		}
-		data["name"] = this->name;
-		data["roles"] = rolesArray;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		theData["name"] = this->name;
+		theData["roles"] = rolesArray;
+		*/
+		return theData;
 	}
 
 	ReactionVector::operator std::vector<Reaction>() {
@@ -199,7 +203,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Reactions::createGuildEmojiAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -212,7 +216,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis/" + std::to_string(dataPackage.emojiId);
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Reactions::modifyGuildEmojiAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

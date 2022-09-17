@@ -63,12 +63,299 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-	JsonSerializer::operator std::string() {
-		auto theString = this->getString();
-		return theString.substr(0, theString.size() - 1);
+	JsonValue::operator std::string() {
+		return this->theValue;
 	}
 
-	std::string JsonSerializer::getString() {
+	JsonValue& JsonValue::operator=(JsonParseEvent theData) {
+		this->theEvent = theData;
+		if (static_cast<uint16_t>(theData) & static_cast<uint16_t>(JsonParseEvent::Null_Value)) {
+			this->theValue = "null";
+		}
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(bool theData) {
+		this->theEvent = JsonParseEvent::Boolean;
+		if (theData) {
+			this->theValue = "true";
+		} else {
+			this->theValue = "false";
+		}
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(const char* theData) {
+		this->theEvent = JsonParseEvent::String;
+		this->theValue = theData;
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(const std::string&& theData) {
+		this->theEvent = JsonParseEvent::String;
+		this->theValue = theData;
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(const std::string& theData) {
+		this->theEvent = JsonParseEvent::String;
+		this->theValue = theData;
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(std::string&& theData) {
+		this->theEvent = JsonParseEvent::String;
+		this->theValue = std::move(theData);
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(std::string& theData) {
+		this->theEvent = JsonParseEvent::String;
+		this->theValue = theData;
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(float theData) {
+		this->theEvent = JsonParseEvent::Number_Float;
+		this->theValue = std::to_string(theData);
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(double theData) {
+		this->theEvent = JsonParseEvent::Number_Double;
+		this->theValue = std::to_string(theData);
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(int64_t theData) {
+		this->theEvent = JsonParseEvent::Number_Integer_Large;
+		this->theValue = std::to_string(theData);
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(int32_t theData) {
+		this->theEvent = JsonParseEvent::Number_Integer;
+		this->theValue = std::to_string(theData);
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(int16_t theData) {
+		this->theEvent = JsonParseEvent::Number_Integer;
+		this->theValue = std::to_string(theData);
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(int8_t theData) {
+		this->theEvent = JsonParseEvent::Number_Integer_Small;
+		this->theValue = std::to_string(theData);
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(uint64_t theData) {
+		this->theEvent = JsonParseEvent::Number_Integer_Large;
+		this->theValue = std::to_string(theData);
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(uint32_t theData) {
+		this->theEvent = JsonParseEvent::Number_Integer;
+		this->theValue = std::to_string(theData);
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(uint16_t theData) {
+		this->theEvent = JsonParseEvent::Number_Integer;
+		this->theValue = std::to_string(theData);
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(uint8_t theData) {
+		this->theEvent = JsonParseEvent::Number_Integer_Small;
+		this->theValue = std::to_string(theData);
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(JsonParseEvent theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(uint8_t theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(uint16_t theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(uint32_t theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(uint64_t theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(int8_t theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(int16_t theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(int32_t theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(int64_t theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(float theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(double theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(std::string&& theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(std::string& theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(const char* theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(bool theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer::operator std::string() {
 		this->theState = JsonParserState::Starting_Object;
 		std::string theString{ "{" };
 		for (auto& value: this->theValues) {
@@ -111,7 +398,7 @@ namespace DiscordCoreAPI {
 					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
-					theString += value.theValue;
+					theString += value;
 					if (this->theState == JsonParserState::Starting_Object) {
 						this->theState = JsonParserState::Adding_Object_Elements;
 					}
@@ -124,7 +411,7 @@ namespace DiscordCoreAPI {
 					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
-					theString += value.theValue;
+					theString += value;
 					if (this->theState == JsonParserState::Starting_Object) {
 						this->theState = JsonParserState::Adding_Object_Elements;
 					}
@@ -137,7 +424,7 @@ namespace DiscordCoreAPI {
 					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
-					theString += value.theValue;
+					theString += value;
 					if (this->theState == JsonParserState::Starting_Object) {
 						this->theState = JsonParserState::Adding_Object_Elements;
 					}
@@ -150,7 +437,7 @@ namespace DiscordCoreAPI {
 					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
-					theString += value.theValue;
+					theString += value;
 					if (this->theState == JsonParserState::Starting_Object) {
 						this->theState = JsonParserState::Adding_Object_Elements;
 					}
@@ -163,7 +450,7 @@ namespace DiscordCoreAPI {
 					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
-					theString += value.theValue;
+					theString += value;
 					if (this->theState == JsonParserState::Starting_Object) {
 						this->theState = JsonParserState::Adding_Object_Elements;
 					}
@@ -176,7 +463,7 @@ namespace DiscordCoreAPI {
 					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
-					theString += value.theValue;
+					theString += value;
 					if (this->theState == JsonParserState::Starting_Object) {
 						this->theState = JsonParserState::Adding_Object_Elements;
 					}
@@ -189,7 +476,7 @@ namespace DiscordCoreAPI {
 					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
-					theString += value.theValue;
+					theString += value;
 					if (this->theState == JsonParserState::Starting_Object) {
 						this->theState = JsonParserState::Adding_Object_Elements;
 					}
@@ -202,8 +489,9 @@ namespace DiscordCoreAPI {
 					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
-					theString += "\"" + value.theValue + "\"";
-
+					theString += "\"";
+					theString += value;
+					theString += "\"";
 					if (this->theState == JsonParserState::Starting_Object) {
 						this->theState = JsonParserState::Adding_Object_Elements;
 					}
@@ -216,15 +504,38 @@ namespace DiscordCoreAPI {
 					if (this->theState != JsonParserState::Starting_Object && this->theState != JsonParserState::Starting_Array) {
 						theString += ",";
 					}
-					theString += "\"" + value.theValue + "\":";
+					theString += "\"";
+					theString += value;
+					theString += "\":";
 					this->theState = JsonParserState::Starting_Object;
 					break;
 				}
 			}
 		}
-		std::cout << "THE FINAL STRING REAL: " << theString << std::endl;
 		theString += "}";
-		return theString;
+		return theString.substr(0, theString.size() - 1);
+	}
+
+
+	JsonSerializer& JsonSerializer::operator[](const char* keyName) {
+		for (size_t x = 0; x < this->theValues.size(); ++x) {
+			if (static_cast<uint32_t>(keyName[0]) != 0) {
+				if (this->theValues[x].theValue == keyName) {
+					this->currentPosition = x;
+					this->isItFound = true;
+					break;
+				}
+			}
+		}
+		if (!this->isItFound) {
+			if (static_cast<uint32_t>(keyName[0]) != 0) {
+				JsonValue theName{};
+				theName.theEvent = JsonParseEvent::Key;
+				theName.theValue = keyName;
+				this->theValues.push_back(theName);
+			}
+		}
+		return *this;
 	}
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void )) {

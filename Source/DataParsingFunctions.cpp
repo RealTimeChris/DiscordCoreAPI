@@ -3361,7 +3361,7 @@ namespace DiscordCoreAPI {
 			reportException("parseObject()");
 		}
 	}
-
+	/*
 	template<> void parseObject(nlohmann::json& jsonObjectData, Song& theData) {
 		try {
 			if (jsonObjectData.contains("lengthText") && !jsonObjectData["lengthText"].is_null()) {
@@ -3470,7 +3470,7 @@ namespace DiscordCoreAPI {
 			reportException("parseObject()");
 		}
 	}
-
+	*/
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, StickerPackDataVector& theData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
@@ -4015,7 +4015,7 @@ namespace DiscordCoreAPI {
 			theData.downloadUrl = getString(jsonObjectData, "url");
 		}
 	}
-
+	/*
 	template<> void parseObject(nlohmann::json& jsonObjectData, YouTubeFormatVector& theData) {
 		if (!jsonObjectData.is_null()) {
 			if (jsonObjectData.contains("streamingData") && !jsonObjectData["streamingData"].is_null() && jsonObjectData["streamingData"].contains("formats") &&
@@ -4172,7 +4172,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 	}
-
+	*/
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, YouTubeFormatVector& theData) {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["streamingData"]["formats"].get(theArray);

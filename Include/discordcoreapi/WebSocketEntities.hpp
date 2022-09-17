@@ -53,8 +53,6 @@ namespace DiscordCoreInternal {
 
 		void stringifyJsonData(DiscordCoreAPI::JsonSerializer& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept;
 
-		void stringifyJsonData(nlohmann::json& dataToSend, std::string& theString, WebSocketOpCode theOpCode) noexcept;
-
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
 		bool parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept;

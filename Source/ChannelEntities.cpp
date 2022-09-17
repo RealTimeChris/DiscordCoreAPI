@@ -28,39 +28,44 @@
 
 namespace DiscordCoreAPI {
 
-	EditChannelPermissionOverwritesData::operator std::string() {
-		nlohmann::json data{};
-		data["allow"] = this->allow;
-		data["deny"] = this->deny;
-		data["type"] = this->type;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+	EditChannelPermissionOverwritesData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
+		theData["allow"] = this->allow;
+		theData["deny"] = this->deny;
+		theData["type"] = this->type;
+		*/
+		return theData;
 	}
 
-	CreateChannelInviteData::operator std::string() {
-		nlohmann::json data{};
+	CreateChannelInviteData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		if (this->targetUserId != 0) {
-			data["target_application_id"] = this->targetApplicationId;
-			data["target_user_id"] = std::to_string(this->targetUserId);
-			data["target_type"] = this->targetType;
+			theData["target_application_id"] = this->targetApplicationId;
+			theData["target_user_id"] = std::to_string(this->targetUserId);
+			theData["target_type"] = this->targetType;
 		}
-		data["temporary"] = this->temporary;
-		data["max_uses"] = this->maxUses;
-		data["max_age"] = this->maxAge;
-		data["unique"] = this->unique;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		theData["temporary"] = this->temporary;
+		theData["max_uses"] = this->maxUses;
+		theData["max_age"] = this->maxAge;
+		theData["unique"] = this->unique;
+		*/
+		return theData;
 	}
 
-	FollowNewsChannelData::operator std::string() {
-		nlohmann::json data{};
-		data["webhook_channel_id"] = std::to_string(this->targetChannelId);
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+	FollowNewsChannelData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		theData["webhook_channel_id"] = std::to_string(this->targetChannelId);
+		return theData;
 	}
 
-	CreateGuildChannelData::operator std::string() {
-		nlohmann::json data{};
+	CreateGuildChannelData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		if (this->type == DiscordCoreAPI::ChannelType::Guild_Voice || this->type == DiscordCoreAPI::ChannelType::Guild_Stage_Voice) {
-			data["user_limit"] = this->userLimit;
-			data["bitrate"] = this->bitrate;
+			theData["user_limit"] = this->userLimit;
+			theData["bitrate"] = this->bitrate;
 		}
 		nlohmann::json overwrites{};
 		for (auto& value: this->permissionOverwrites) {
@@ -71,20 +76,22 @@ namespace DiscordCoreAPI {
 			newData["id"] = std::to_string(value.id);
 			overwrites.emplace_back(newData);
 		}
-		data["default_auto_archive_duration"] = this->defaultAutoArchiveDuration;
-		data["rate_limit_per_user"] = this->rateLimitPerUser;
-		data["permission_overwrites"] = overwrites;
-		data["parent_id"] = std::to_string(this->parentId);
-		data["position"] = this->position;
-		data["topic"] = this->topic;
-		data["name"] = this->name;
-		data["nsfw"] = this->nsfw;
-		data["type"] = this->type;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		theData["default_auto_archive_duration"] = this->defaultAutoArchiveDuration;
+		theData["rate_limit_per_user"] = this->rateLimitPerUser;
+		theData["permission_overwrites"] = overwrites;
+		theData["parent_id"] = std::to_string(this->parentId);
+		theData["position"] = this->position;
+		theData["topic"] = this->topic;
+		theData["name"] = this->name;
+		theData["nsfw"] = this->nsfw;
+		theData["type"] = this->type;
+		*/
+		return theData;
 	}
 
-	ModifyGuildChannelPositionsData::operator std::string() {
-		nlohmann::json data{};
+	ModifyGuildChannelPositionsData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		for (auto& value: this->modifyChannelData) {
 			nlohmann::json dataNew{};
 			dataNew["lock_permissions"] = value.lockPermissions;
@@ -95,7 +102,8 @@ namespace DiscordCoreAPI {
 			dataNew["id"] = std::to_string(value.id);
 			data.emplace_back(dataNew);
 		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		*/
+		return theData;
 	}
 
 	Channel& Channel::operator=(ChannelData&& other) noexcept {
@@ -163,8 +171,9 @@ namespace DiscordCoreAPI {
 		this->channelData.type = newData.type;
 	};
 
-	ModifyChannelData::operator std::string() {
-		nlohmann::json permOws{};
+	ModifyChannelData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		for (auto& value: this->channelData.permissionOverwrites) {
 			nlohmann::json newData{};
 			newData["allow"] = value.allow;
@@ -173,21 +182,22 @@ namespace DiscordCoreAPI {
 			newData["id"] = value.id;
 			permOws.emplace_back(newData);
 		}
-		nlohmann::json data{};
-		data["default_auto_archive_duration"] = this->channelData.defaultAutoArchiveDuration;
-		data["video_quality_mode"] = this->channelData.videoQualityMode;
-		data["rate_limit_per_user"] = this->channelData.rateLimitPerUser;
-		data["user_limit"] = this->channelData.userLimit;
-		data["rtc_region"] = std::string{ this->channelData.rtcRgion };
-		data["parent_id"] = std::string{ this->channelData.parentId };
-		data["position"] = this->channelData.position;
-		data["bitrate"] = this->channelData.bitrate;
-		data["topic"] = std::string{ this->channelData.topic };
-		data["nsfw"] = this->channelData.nsfw;
-		data["name"] = std::string{ this->channelData.name };
-		data["type"] = this->channelData.type;
-		data["permission_overwrites"] = permOws;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		JsonSerializer theData{};
+		theData["default_auto_archive_duration"] = this->channelData.defaultAutoArchiveDuration;
+		theData["video_quality_mode"] = this->channelData.videoQualityMode;
+		theData["rate_limit_per_user"] = this->channelData.rateLimitPerUser;
+		theData["user_limit"] = this->channelData.userLimit;
+		theData["rtc_region"] = std::string{ this->channelData.rtcRgion };
+		theData["parent_id"] = std::string{ this->channelData.parentId };
+		theData["position"] = this->channelData.position;
+		theData["bitrate"] = this->channelData.bitrate;
+		theData["topic"] = std::string{ this->channelData.topic };
+		theData["nsfw"] = this->channelData.nsfw;
+		theData["name"] = std::string{ this->channelData.name };
+		theData["type"] = this->channelData.type;
+		theData["permission_overwrites"] = permOws;
+		*/
+		return theData;
 	}
 
 	void Channels::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
@@ -229,7 +239,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Channel>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Channels::modifyChannelAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -262,7 +272,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/permissions/" + std::to_string(dataPackage.roleOrUserId);
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Channels::editChannelPermissionOverwritesAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -284,7 +294,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<InviteData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/invites";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Channels::createChannelInviteAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -309,7 +319,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Channel>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/followers";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Channels::followNewsChannelAsync()";
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 	}
@@ -337,7 +347,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Channel>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/channels";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Channels::createGuildChannelAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -350,7 +360,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/channels";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Channels::modifyGuildChannelPositionsAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

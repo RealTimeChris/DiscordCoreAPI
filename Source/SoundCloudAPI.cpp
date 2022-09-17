@@ -49,9 +49,9 @@ namespace DiscordCoreInternal {
 			nlohmann::json theJsonData = nlohmann::json::parse(returnData.responseMessage);
 			simdjson::ondemand::array theArray{};
 			//auto theResult = theDocument["collection"].get(theArray);
-			for (auto value: theJsonData["collection"]) {
+			for (nlohmann::json value: theJsonData["collection"]) {
 				DiscordCoreAPI::Song newSong{};
-				DiscordCoreAPI::parseObject(value, newSong);
+				//DiscordCoreAPI::parseObject(value, newSong);
 				if (!newSong.doWeGetSaved || newSong.songTitle == "") {
 					continue;
 				}
@@ -82,7 +82,7 @@ namespace DiscordCoreInternal {
 			HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
 			simdjson::ondemand::parser theParser{};
 			results.responseMessage.reserve(results.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-			auto theDocument = theParser.iterate(results.responseMessage).get_value().value().get_object().value();
+			simdjson::ondemand::object theDocument = theParser.iterate(results.responseMessage).get_value().value().get_object().value();
 			simdjson::ondemand::object theUrl{};
 			auto theResult = theDocument["url"].get(theUrl);
 			if (theResult == simdjson::error_code::SUCCESS) {

@@ -34,38 +34,42 @@ namespace DiscordCoreAPI {
 		this->webHookId = dataNew.id;
 	}
 
-	ExecuteWebHookData::operator std::string() {
-		nlohmann::json data{};
-		data["allowed_mentions"] = this->allowedMentions;
+	ExecuteWebHookData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
+		theData.addEvent(static_cast<JsonSerializer>(this->allowedMentions).operator std::string(), "allowed_mentions");
+		theData.addEvent(JsonParseEvent::Array_Start, "attachments");
 		for (auto& value: this->attachments) {
-			data["attachments"].emplace_back(value);
+			theData.addEvent("attachments"].emplace_back(value);
 		}
+		theData.addEvent(JsonParseEvent::Array_End);
 		if (this->components.size() == 0) {
-			data["components"] = nlohmann::json::array();
+			theData["components"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->components) {
-				data["components"].emplace_back(value);
+				theData["components"].emplace_back(value);
 			}
 		}
 		if (this->embeds.size() == 0) {
-			data["embeds"] = nlohmann::json::array();
+			theData["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->embeds) {
-				data["embeds"].emplace_back(value);
+				theData["embeds"].emplace_back(value);
 			}
 		}
 		if (this->avatarUrl != "") {
-			data["avatar_url"] = this->userName;
+			theData["avatar_url"] = this->userName;
 		}
 		if (this->userName != "") {
-			data["userName"] = this->userName;
+			theData["userName"] = this->userName;
 		}
 		if (this->content != "") {
-			data["content"] = this->content;
+			theData["content"] = this->content;
 		}
-		data["flags"] = this->flags;
-		data["tts"] = this->tts;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		theData["flags"] = this->flags;
+		theData["tts"] = this->tts;
+		*/
+		return theData;
 	}
 
 	ExecuteWebHookData& ExecuteWebHookData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
@@ -183,30 +187,31 @@ namespace DiscordCoreAPI {
 		this->webHookId = dataNew.id;
 	}
 
-	EditWebHookData::operator std::string() {
-		nlohmann::json data{};
-		data["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions };
+	EditWebHookData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
+		theData["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions };
 		for (auto& value: this->attachments) {
-			data["attachments"].emplace_back(value);
+			theData["attachments"].emplace_back(value);
 		}
 		if (this->components.size() == 0) {
-			data["components"] = nlohmann::json::array();
+			theData["components"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->components) {
-				data["components"].emplace_back(value);
+				theData["components"].emplace_back(value);
 			}
 		}
 		if (this->embeds.size() == 0) {
-			data["embeds"] = nlohmann::json::array();
+			theData["embeds"] = nlohmann::json::array();
 		} else {
 			for (auto& value: this->embeds) {
-				data["embeds"].emplace_back(value);
+				theData["embeds"].emplace_back(value);
 			}
 		}
 		if (this->content != "") {
-			data["content"] = this->content;
-		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			theData["content"] = this->content;
+		}*/
+		return theData;
 	}
 
 	WebHookVector::operator std::vector<WebHook>() {
@@ -342,9 +347,9 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(std::string{ dataPackage }, dataPackage.files);
+			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage), dataPackage.files);
 		} else {
-			workload.content = dataPackage;
+			workload.content = static_cast<JsonSerializer>(dataPackage);
 		}
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -371,9 +376,9 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(std::string{ dataPackage }, dataPackage.files);
+			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage), dataPackage.files);
 		} else {
-			workload.content = dataPackage;
+			workload.content = static_cast<JsonSerializer>(dataPackage);
 		}
 		workload.callStack = "WebHooks::editWebHookMessageAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);

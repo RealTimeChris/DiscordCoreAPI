@@ -3228,7 +3228,7 @@ namespace DiscordCoreAPI {
 
 		InteractionResponseData() noexcept = default;
 
-		operator std::string();
+		operator JsonSerializer();
 
 		InteractionCallbackData data{};///< Interaction ApplicationCommand callback data.
 		InteractionCallbackType type{};///< Interaction callback type.

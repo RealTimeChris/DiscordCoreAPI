@@ -27,57 +27,61 @@
 
 namespace DiscordCoreAPI {
 
-	CreateAutoModerationRuleData::operator std::string() {
-		nlohmann::json data{};
-		data["actions"];
+	CreateAutoModerationRuleData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
+		theData["actions"];
 		for (auto& value: this->actions) {
 			nlohmann::json dataNew{};
 			dataNew["metadata"]["channel_id"] = value.metadata.channelId;
 			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
 			dataNew["type"] = value.type;
-			data["actions"].emplace_back(dataNew);
+			theData["actions"].emplace_back(dataNew);
 		}
-		data["enabled"] = this->enabled;
-		data["event_type"] = this->eventType;
-		data["exempt_channels"];
+		theData["enabled"] = this->enabled;
+		theData["event_type"] = this->eventType;
+		theData["exempt_channels"];
 		for (auto& value: this->exemptChannels) {
-			data["exempt_channels"].emplace_back(value);
+			theData["exempt_channels"].emplace_back(value);
 		}
-		data["exempt_roles"];
+		theData["exempt_roles"];
 		for (auto& value: this->exemptRoles) {
-			data["exempt_roles"].emplace_back(value);
+			theData["exempt_roles"].emplace_back(value);
 		}
-		data["name"] = this->name;
-		data["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
-		data["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
-		data["trigger_type"] = this->triggerType;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		theData["name"] = this->name;
+		theData["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
+		theData["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
+		theData["trigger_type"] = this->triggerType;
+		*/
+		return theData;
 	}
 
-	ModifyAutoModerationRuleData::operator std::string() {
-		nlohmann::json data{};
-		data["actions"];
+	ModifyAutoModerationRuleData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
+		theData["actions"];
 		for (auto& value: this->actions) {
 			nlohmann::json dataNew{};
 			dataNew["metadata"]["channel_id"] = value.metadata.channelId;
 			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
 			dataNew["type"] = value.type;
-			data["actions"].emplace_back(dataNew);
+			theData["actions"].emplace_back(dataNew);
 		}
-		data["enabled"] = this->enabled;
-		data["event_type"] = this->eventType;
-		data["exempt_channels"];
+		theData["enabled"] = this->enabled;
+		theData["event_type"] = this->eventType;
+		theData["exempt_channels"];
 		for (auto& value: this->exemptChannels) {
-			data["exempt_channels"].emplace_back(value);
+			theData["exempt_channels"].emplace_back(value);
 		}
-		data["exempt_roles"];
+		theData["exempt_roles"];
 		for (auto& value: this->exemptRoles) {
-			data["exempt_roles"].emplace_back(value);
+			theData["exempt_roles"].emplace_back(value);
 		}
-		data["name"] = this->name;
-		data["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
-		data["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		theData["name"] = this->name;
+		theData["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
+		theData["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
+		*/
+		return theData;
 	}
 
 	AutoModerationRuleVector::operator std::vector<AutoModerationRule>() {
@@ -111,7 +115,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "AutoModerationRules::createAutoModerationRuleAsync()";
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
 	}
@@ -121,7 +125,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules/" + std::to_string(dataPackage.autoModerationRuleId);
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "AutoModerationRules::modifyAutoModerationRuleAsync()";
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
 	}

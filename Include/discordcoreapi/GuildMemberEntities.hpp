@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		bool mute{};///< Whether the user is muted in voice channels.
 		bool deaf{};///< Whether the user is deafened in voice channels.
 
-		operator std::string();
+		operator JsonSerializer();
 	};
 
 	/// For modifying the Current GuildMember's values. \brief For modifying the current GuildMember's values.
@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 		bool mute{ false };///< Whether or not to mute them in voice.
 		bool deaf{ false };///< Whether or not to deafen them, in voice.
 
-		operator std::string();
+		operator JsonSerializer();
 	};
 
 	/// For removing a GuildMember from a chosen Guild. \brief For removing a GuildMember from a chosen Guild.

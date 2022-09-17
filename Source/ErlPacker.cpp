@@ -36,7 +36,7 @@ namespace DiscordCoreInternal {
 		this->appendVersion();
 		dataToParse.reserve(dataToParse.size() + simdjson::SIMDJSON_PADDING);
 		simdjson::ondemand::parser theParser{};
-		auto theDocument = theParser.iterate(dataToParse.data(), dataToParse.length(), dataToParse.capacity()).value().get_value().value();
+		simdjson::ondemand::value theDocument = theParser.iterate(dataToParse.data(), dataToParse.length(), dataToParse.capacity()).value().get_value().value();
 		this->singleValueJsonToETF(theDocument);
 		return this->bufferString;
 	}
@@ -95,37 +95,53 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::singleValueJsonToETF(simdjson::ondemand::value jsonData) {
+		
 		switch (jsonData.type()) {
-			case simdjson::ondemand::json_type::array:
-				this->appendListHeader(jsonData.count_elements().take_value());
-				for (auto element: jsonData.get_array()) {
-					this->singleValueJsonToETF(element.value());
-				}
-				this->appendNilExt();
-				break;
-			case simdjson::ondemand::json_type::object:
-				this->appendMapHeader(jsonData.count_fields().take_value());
-				for (auto field: jsonData.get_object()) {
-					std::stringstream theStream{};
-					theStream << field.key();
-					std::string theKey = theStream.str();
-					auto theSize = theKey.size();
-					this->appendBinaryExt(theKey, theSize);
-					this->singleValueJsonToETF(field.value());
+			case simdjson::ondemand::json_type::array: {
+				simdjson::ondemand::array theArray{};
+				auto theResult = jsonData.get(theArray);
+				if (theResult == simdjson::error_code::SUCCESS) {
+					this->appendListHeader(theArray.count_elements().take_value());
+					for (auto element: theArray) {
+						this->singleValueJsonToETF(element.value());
+					}
+					this->appendNilExt();
 				}
 				break;
-			case simdjson::ondemand::json_type::number:
+			}
+			case simdjson::ondemand::json_type::object: {
+				simdjson::ondemand::object theObject{};
+				auto theResult = jsonData.get(theObject);
+				if (theResult == simdjson::error_code::SUCCESS) {
+					std::cout << "THE FIELDS COUNT: " << theObject.count_fields().take_value() << std::endl;
+					this->appendMapHeader(theObject.count_fields().take_value());
+					for (auto field: theObject) {
+						std::stringstream theStream{};
+						theStream << field.key();
+						std::string theKey = theStream.str();
+						auto theSize = theKey.size();
+						this->appendBinaryExt(theKey, theSize);
+						this->singleValueJsonToETF(field.value());
+					}
+				}
+				break;
+			}
+			case simdjson::ondemand::json_type::number: {
 				this->writeNumber(jsonData);
 				break;
-			case simdjson::ondemand::json_type::string:
+			}
+			case simdjson::ondemand::json_type::string: {
 				this->writeString(jsonData);
 				break;
-			case simdjson::ondemand::json_type::boolean:
+			}
+			case simdjson::ondemand::json_type::boolean: {
 				this->writeBool(jsonData);
 				break;
-			case simdjson::ondemand::json_type::null:
+			}
+			case simdjson::ondemand::json_type::null: {
 				this->appendNilExt();
 				break;
+			}
 		}
 	}
 
@@ -333,6 +349,7 @@ namespace DiscordCoreInternal {
 				return this->parseAtomUtf8Ext();
 			}
 			default: {
+				std::cout << "THE CURRENT STRING: " << this->buffer << std::endl;
 				throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Unknown data type in ETF.\n\n" };
 			}
 		}

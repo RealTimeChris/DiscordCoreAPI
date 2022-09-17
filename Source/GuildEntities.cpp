@@ -33,24 +33,24 @@
 #include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
-
-	CreateGuildData::operator std::string() {
-		nlohmann::json data{};
-		data["default_message_notifications"] = this->defaultMessageNotifications;
-		data["explicit_content_filter"] = this->explicitContentFilter;
-		data["system_channel_flags"] = this->systemChannelFlags;
-		data["verification_level"] = this->verificationLevel;
-		data["afk_timeout"] = this->afkTimeout;
-		data["region"] = this->region;
-		data["name"] = this->name;
-		data["icon"] = this->icon;
+	
+	CreateGuildData::operator JsonSerializer() {
+		JsonSerializer theData{}; /*
+		theData["default_message_notifications"] = this->defaultMessageNotifications;
+		theData["explicit_content_filter"] = this->explicitContentFilter;
+		theData["system_channel_flags"] = this->systemChannelFlags;
+		theData["verification_level"] = this->verificationLevel;
+		theData["afk_timeout"] = this->afkTimeout;
+		theData["region"] = this->region;
+		theData["name"] = this->name;
+		theData["icon"] = this->icon;
 		for (auto& value: this->channels) {
 			nlohmann::json newData{};
 			newData["parent_id"] = std::to_string(value.parentId);
 			newData["name"] = std::string{ value.name };
 			newData["id"] = value.id;
 			newData["type"] = value.type;
-			data["channels"].emplace_back(newData);
+			theData["channels"].emplace_back(newData);
 		}
 		for (auto& value: this->roles) {
 			nlohmann::json newData{};
@@ -64,35 +64,41 @@ namespace DiscordCoreAPI {
 			newData["hoist"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
 			newData["color"] = value.color.getIntColorValue();
 			newData["name"] = std::string{ value.name };
-			data["roles"].emplace_back(newData);
+			theData["roles"].emplace_back(newData);
 		}
 		if (this->systemChannelId != 0) {
-			data["system_channel_id"] = this->systemChannelId;
+			theData["system_channel_id"] = this->systemChannelId;
 		}
 		if (this->afkChannelId != 0) {
-			data["afk_channel_id"] = this->afkChannelId;
+			theData["afk_channel_id"] = this->afkChannelId;
 		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		*/
+		return theData;
 	}
 
-	CreateGuildBanData::operator std::string() {
-		nlohmann::json data{};
+	CreateGuildBanData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		if (this->deleteMessageDays != 0) {
-			data["delete_message_days"] = this->deleteMessageDays;
+			theData["delete_message_days"] = this->deleteMessageDays;
 		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		*/
+		return theData;
 	}
 
-	BeginGuildPruneData::operator std::string() {
-		nlohmann::json data{};
-		data["compute_prune_count"] = this->computePruneCount;
-		data["include_roles"] = this->includeRoles;
-		data["days"] = this->days;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+	BeginGuildPruneData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
+		theData["compute_prune_count"] = this->computePruneCount;
+		theData["include_roles"] = this->includeRoles;
+		theData["days"] = this->days;
+		*/
+		return theData;
 	}
 
-	ModifyGuildWelcomeScreenData::operator std::string() {
-		nlohmann::json channelsArray{};
+	ModifyGuildWelcomeScreenData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		for (auto& value: this->welcomeChannels) {
 			nlohmann::json newData{};
 			newData["description"] = value.description;
@@ -103,13 +109,14 @@ namespace DiscordCoreAPI {
 			}
 			channelsArray.emplace_back(newData);
 		}
-		nlohmann::json data{};
-		data["description"] = this->description;
-		data["welcome_channels"] = channelsArray;
-		data["enabled"] = this->enabled;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		JsonSerializer theData{};
+		theData["description"] = this->description;
+		theData["welcome_channels"] = channelsArray;
+		theData["enabled"] = this->enabled;
+		*/
+		return theData;
 	}
-
+	
 	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute, StreamType streamTypeNew,
 		StreamInfo streamInfoNew) {
 		if (DiscordCoreClient::getVoiceConnection(this->id) && DiscordCoreClient::getVoiceConnection(this->id)->areWeConnected()) {
@@ -352,39 +359,42 @@ namespace DiscordCoreAPI {
 		this->guildId = dataPackage.id;
 		this->name = dataPackage.name;
 	}
-
-	ModifyGuildData::operator std::string() {
-		nlohmann::json data{};
-		data["premium_progress_bar_enabled"] = this->premiumProgressBarEnabled;
-		data["default_message_notifications"] = this->defaultMessageNotifications;
-		data["explicit_content_filter"] = this->explicitContentFilter;
-		data["system_channel_flags"] = this->systemChannelFlags;
-		data["verification_level"] = this->verificationLevel;
-		data["discovery_splash"] = this->discoverySplash;
-		data["preferred_locale"] = std::string{ this->preferredLocale };
-		data["rules_channel_id"] = std::to_string(this->rulesChannelId);
-		data["description"] = std::string{ this->description };
-		data["afk_timeout"] = this->afkTimeout;
-		data["features"] = this->features;
-		data["splash"] = this->splash;
-		data["banner"] = this->banner;
-		data["name"] = std::string{ this->name };
-		data["icon"] = this->icon;
+	
+	ModifyGuildData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
+		theData["premium_progress_bar_enabled"] = this->premiumProgressBarEnabled;
+		theData["default_message_notifications"] = this->defaultMessageNotifications;
+		theData["explicit_content_filter"] = this->explicitContentFilter;
+		theData["system_channel_flags"] = this->systemChannelFlags;
+		theData["verification_level"] = this->verificationLevel;
+		theData["discovery_splash"] = this->discoverySplash;
+		theData["preferred_locale"] = std::string{ this->preferredLocale };
+		theData["rules_channel_id"] = std::to_string(this->rulesChannelId);
+		theData["description"] = std::string{ this->description };
+		theData["afk_timeout"] = this->afkTimeout;
+		theData["features"] = this->features;
+		theData["splash"] = this->splash;
+		theData["banner"] = this->banner;
+		theData["name"] = std::string{ this->name };
+		theData["icon"] = this->icon;
 		if (this->publicUpdatesChannelId != 0) {
-			data["public_updates_channel_id"] = std::to_string(this->publicUpdatesChannelId);
+			theData["public_updates_channel_id"] = std::to_string(this->publicUpdatesChannelId);
 		}
 		if (this->systemChannelId != 0) {
-			data["system_channel_id"] = std::to_string(this->systemChannelId);
+			theData["system_channel_id"] = std::to_string(this->systemChannelId);
 		}
 		if (this->afkChannelId != 0) {
-			data["afk_channel_id"] = std::to_string(this->afkChannelId);
+			theData["afk_channel_id"] = std::to_string(this->afkChannelId);
 		}
 		if (this->ownerId != 0) {
-			data["owner_id"] = std::to_string(this->ownerId);
+			theData["owner_id"] = std::to_string(this->ownerId);
 		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		return theData;
+		*/
+		return theData;
 	}
-
+	
 	void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
 		Guilds::doWeCacheGuilds = configManagerNew->doWeCacheGuilds();
 		Guilds::discordCoreClient = discordCoreClientNew;
@@ -432,7 +442,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Guilds::createGuildAsync()";
 		auto theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
 		theData.discordCoreClient = Guilds::discordCoreClient;
@@ -497,7 +507,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId);
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Guilds::modifyGuildAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -564,7 +574,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/bans/" + std::to_string(dataPackage.guildMemberId);
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Guilds::createGuildBanAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -619,7 +629,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildPruneCountData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/prune";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Guilds::beginGuildPruneAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -752,7 +762,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<WelcomeScreenData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/welcome-screen";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Guilds::modifyGuildWelcomeScreenAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

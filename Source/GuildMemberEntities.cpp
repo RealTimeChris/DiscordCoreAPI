@@ -29,35 +29,39 @@
 
 namespace DiscordCoreAPI {
 
-	AddGuildMemberData::operator std::string() {
-		nlohmann::json data{};
-		data["access_token"] = this->accessToken;
-		data["roles"] = this->roles;
-		data["deaf"] = this->deaf;
-		data["mute"] = this->mute;
-		data["nick"] = this->nick;
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+	AddGuildMemberData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
+		theData["access_token"] = this->accessToken;
+		theData["roles"] = this->roles;
+		theData["deaf"] = this->deaf;
+		theData["mute"] = this->mute;
+		theData["nick"] = this->nick;
+		*/
+		return theData;
 	}
 
-	ModifyGuildMemberData::operator std::string() {
-		nlohmann::json data{};
-		data["nick"] = this->nick;
-		data["communication_disabled_until"] = std::string(this->communicationDisabledUntil);
+	ModifyGuildMemberData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
+		theData["nick"] = this->nick;
+		theData["communication_disabled_until"] = std::string(this->communicationDisabledUntil);
 		if (this->roleIds.size() == 0) {
-			data["roles"] = nullptr;
+			theData["roles"] = nullptr;
 		} else {
 			nlohmann::json roleIdArray{};
 			for (auto& value: this->roleIds) {
 				roleIdArray.emplace_back(value);
 			}
-			data["roles"] = roleIdArray;
+			theData["roles"] = roleIdArray;
 		}
 		if (this->newVoiceChannelId != 0) {
-			data["channel_id"] = std::to_string(this->newVoiceChannelId);
-			data["mute"] = this->mute;
-			data["deaf"] = this->deaf;
+			theData["channel_id"] = std::to_string(this->newVoiceChannelId);
+			theData["mute"] = this->mute;
+			theData["deaf"] = this->deaf;
 		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		*/
+		return theData;
 	}
 
 	std::string GuildMemberData::getAvatarUrl() {
@@ -194,7 +198,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId);
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "GuildMembers::addGuildMemberAsync()";
 		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
 	}
@@ -217,7 +221,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "GuildMembers::modifyGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

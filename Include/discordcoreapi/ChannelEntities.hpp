@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 		std::string allow{};///< The permissions to list as "allowed".
 		std::string deny{};///< The permissions to list as "deny".
 
-		operator std::string();
+		operator JsonSerializer();
 	};
 
 	/// For collecting the invites to a given Channel. \brief For collecting the invites to a given Channel.
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 		int32_t maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
 		int32_t maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
 
-		operator std::string();
+		operator JsonSerializer();
 	};
 
 	/// For deleting the PermissionTypes overwrites of a given Channel for a given Role or User. \brief For deleting the PermissionTypes overwrites of a given Channel for a given Role or User.
@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 		Snowflake targetChannelId{};
 		Snowflake channelId{};
 
-		operator std::string();
+		operator JsonSerializer();
 	};
 
 	/// For triggering the typing indicator in a given Channel. \brief For triggering the typing indicator in a given Channel.
@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 		bool nsfw{ false };///<  Whether the Channel is nsfw.
 		Snowflake guildId{};///< The Guild within which to create the Channel.
 
-		operator std::string();
+		operator JsonSerializer();
 	};
 
 	/// For modifying the Channel position responseData of a single Channel. \brief For modifying the Channel position responseData of a single Channel.
@@ -145,7 +145,7 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< Reason for re-ordering the Channel positions.
 		Snowflake guildId{};///< Guild within which to re-order the Channel positions.
 
-		operator std::string();
+		operator JsonSerializer();
 	};
 
 	/// For collecting a direct-messaging Channel. \brief For collecting a direct-messaging Channel.
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The id of the Channel to modify.
 		std::string reason{};///< A reason for modifying the Channel.
 
-		operator std::string();
+		operator JsonSerializer();
 
 		ModifyChannelData(Channel newData);
 	};

@@ -28,55 +28,60 @@
 
 namespace DiscordCoreAPI {
 
-	CreateGuildRoleData::operator std::string() {
+	CreateGuildRoleData::operator JsonSerializer() {
 		int32_t roleColorInt = stol(this->hexColorValue, 0, 16);
 		std::stringstream stream;
 		stream << std::setbase(10) << roleColorInt;
 		std::string roleColorReal = stream.str();
-		nlohmann::json data{};
-		data["permissions"] = this->permissions.getCurrentPermissionString();
-		data["mentionable"] = this->mentionable;
-		data["hoist"] = this->hoist;
-		data["name"] = this->name;
-		data["color"] = roleColorReal;
+		JsonSerializer theData{};
+		/*
+		theData["permissions"] = this->permissions.getCurrentPermissionString();
+		theData["mentionable"] = this->mentionable;
+		theData["hoist"] = this->hoist;
+		theData["name"] = this->name;
+		theData["color"] = roleColorReal;
 		if (this->icon.size() > 0) {
-			data["icon"] = this->icon;
+			theData["icon"] = this->icon;
 		}
 		if (this->unicodeEmoji.size() > 0) {
-			data["unicode_emoji"] = this->unicodeEmoji;
-		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			theData["unicode_emoji"] = this->unicodeEmoji;
+		}*/
+		return theData;
 	}
 
-	ModifyGuildRolePositionsData::operator std::string() {
-		nlohmann::json dataArray{};
+	ModifyGuildRolePositionsData::operator JsonSerializer() {
+		JsonSerializer theData{};
+		/*
 		for (auto& value: this->rolePositions) {
-			nlohmann::json data{};
-			data["position"] = value.rolePosition;
-			data["id"] = std::to_string(value.roleId);
+			JsonSerializer theData{};
+			theData["position"] = value.rolePosition;
+			theData["id"] = std::to_string(value.roleId);
 			dataArray.emplace_back(data);
 		}
-		return dataArray.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		*/
+		return theData;
 	}
 
-	ModifyGuildRoleData::operator std::string() {
+	ModifyGuildRoleData::operator JsonSerializer() {
 		int32_t roleColorInt = stol(this->hexColorValue, 0, 16);
 		std::stringstream stream;
 		stream << std::setbase(10) << roleColorInt;
 		std::string roleColorReal = stream.str();
-		nlohmann::json data{};
-		data["permissions"] = this->permissions.getCurrentPermissionString();
-		data["mentionable"] = this->mentionable;
-		data["hoist"] = this->hoist;
-		data["name"] = this->name;
-		data["color"] = roleColorReal;
+		JsonSerializer theData{};
+		/*
+		theData["permissions"] = this->permissions.getCurrentPermissionString();
+		theData["mentionable"] = this->mentionable;
+		theData["hoist"] = this->hoist;
+		theData["name"] = this->name;
+		theData["color"] = roleColorReal;
 		if (this->icon.size() > 0) {
-			data["icon"] = this->icon;
+			theData["icon"] = this->icon;
 		}
 		if (this->unicodeEmoji.size() > 0) {
-			data["unicode_emoji"] = this->unicodeEmoji;
+			theData["unicode_emoji"] = this->unicodeEmoji;
 		}
-		return data.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		*/
+		return theData;
 	}
 
 	Role& Role::operator=(RoleData&& other) noexcept {
@@ -167,7 +172,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Roles::createGuildRoleAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -216,7 +221,7 @@ namespace DiscordCoreAPI {
 		dataPackage.rolePositions.emplace_back(newDataPos);
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles";
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Roles::modifyGuildRolePositionsAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -229,7 +234,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles/" + std::to_string(dataPackage.roleId);
-		workload.content = dataPackage;
+		workload.content = static_cast<JsonSerializer>(dataPackage);
 		workload.callStack = "Roles::modifyGuildRoleAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
