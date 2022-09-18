@@ -39,36 +39,37 @@ namespace DiscordCoreInternal {
 
 	UpdatePresenceData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.addEvent(static_cast<uint8_t>(3), "op");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "activities");
+		theData["op"] = static_cast<uint8_t>(3);
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["activities"] = DiscordCoreAPI::JsonParseEvent::Array_Start;
 		for (auto& value: this->activities) {
-			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start);
+			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_Start;
 			if (value.url != "") {
-				theData.addEvent(std::string{ value.url }, "url");
+				theData["url"] = std::string{ value.url };
 			}
-			theData.addEvent(std::string{ value.name }, "name");
-			theData.addEvent(static_cast<uint64_t>(value.type), "type");
-			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+			theData["name"] = std::string{ value.name };
+			theData["type"] = static_cast<uint8_t>(value.type);
+			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		}
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
-		theData.addEvent(this->status, "status");
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Array_End;
+		theData["status"] = this->status;
 		if (this->since != 0) {
-			theData.addEvent(this->since, "since");
+			theData["since"] = this->since;
 		}
-		theData.addEvent(this->afk, "afk");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData["afl"] = this->afk;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 
 	}
 
 	WebSocketResumeData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.addEvent(static_cast<uint8_t>(6), "op");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
-		theData.addEvent(this->lastNumberReceived, "seq");
-		theData.addEvent(this->sessionId, "session_id");
-		theData.addEvent(this->botToken, "token");
+		theData["op"] = static_cast<uint8_t>(6);
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["seq"] = this->lastNumberReceived;
+		theData["session_id"] = this->sessionId;
+		theData["token"] = this->botToken;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 
@@ -121,40 +122,39 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-
 	VoiceSocketProtocolPayloadData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.addEvent(static_cast<uint8_t>(1), "op");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
-		theData.addEvent("udp", "protocol");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "data");
-		theData.addEvent(this->voicePort, "port");
-		theData.addEvent(this->voiceEncryptionMode, "mode");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData["op"] = static_cast<uint8_t>(1);
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["protocol"] = "udp";
+		theData["data"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["port"] = this->voicePort;
+		theData["mode"] = this->voiceEncryptionMode;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 
 	VoiceIdentifyData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.addEvent(static_cast<uint8_t>(0), "op");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
-		theData.addEvent(this->connectionData.sessionId, "session_id");
-		theData.addEvent(this->connectionData.token, "token");
-		theData.addEvent(this->connectInitData.guildId, "server_id");
-		theData.addEvent(this->connectInitData.userId, "user_id");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData["op"] = static_cast<uint8_t>(0);
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["session_id"] = this->connectionData.sessionId;
+		theData["token"] = this->connectionData.token;
+		theData["server_id"] = this->connectInitData.guildId;
+		theData["user_id"] = this->connectInitData.userId;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 
 	SendSpeakingData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.addEvent(static_cast<uint8_t>(5), "op");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
-		theData.addEvent(static_cast<uint8_t>(this->type), "speaking");
-		theData.addEvent(this->delay, "delay");
-		theData.addEvent(this->ssrc, "ssrc");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData["op"] = static_cast<uint8_t>(5);
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["speaking"] = static_cast<uint8_t>(this->type);
+		theData["delay"] = this->delay;
+		theData["ssrc"] = this->ssrc;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 
@@ -226,69 +226,70 @@ namespace DiscordCoreAPI {
 
 	AttachmentData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData.addEvent(this->contentType, "content_type");
-		theData.addEvent(this->description, "description");
-		theData.addEvent(this->ephemeral, "ephemeral");
-		theData.addEvent(this->filename, "file_name");
-		theData.addEvent(this->proxyUrl, "proxy_url");
-		theData.addEvent(this->height, "height");
-		theData.addEvent(this->width, "width");
-		theData.addEvent(this->size, "size");
-		theData.addEvent(this->url, "url");
+		theData["content_type"] = this->contentType;
+		theData["description"] = this->description;
+		theData["ephemeral"] = this->ephemeral;
+		theData["file_name"] = this->filename;
+		theData["proxy_url"] = this->proxyUrl;
+		theData["height"] = this->height;
+		theData["width"] = this->width;
+		theData["size"] = this->size;
+		theData["url"] = this->url;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 
 	EmbedFieldData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData.addEvent(this->Inline, "inline");
-		theData.addEvent(this->value, "value");
-		theData.addEvent(this->name, "name");
+		theData["inline"] = this->Inline;
+		theData["value"] = this->value;
+		theData["name"] = this->name;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 
 	EmbedData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData.addEvent(JsonParseEvent::Array_Start, "fields");
+		JsonSerializer fields{};
+		fields["fields"] = JsonParseEvent::Array_Start;
 		for (auto& value2: this->fields) {
-			theData.addEvent(JsonParseEvent::Object_Start);
-			theData.addEvent(value2.Inline, "inline");
-			theData.addEvent(value2.name, "name");
-			theData.addEvent(value2.value, "value");
-			theData.addEvent(JsonParseEvent::Object_End);
+			fields[""] = JsonParseEvent::Object_Start;
+			fields["inline"] = value2.Inline;
+			fields["value"] = value2.value;
+			fields["name"] = value2.name;
+			fields[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		}
-		theData.addEvent(JsonParseEvent::Array_End);
+		fields[""] = JsonParseEvent::Array_End;
 		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
-		nlohmann::json embed{};
-		embed["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
-		embed["author"]["proxy_icon_url"] = this->author.proxyIconUrl;
-		embed["thumbnail"]["proxy_url"] = this->thumbnail.proxyUrl;
-		embed["thumbnail"]["height"] = this->thumbnail.height;
-		embed["thumbnail"]["width"] = this->thumbnail.width;
-		embed["image"]["proxy_url"] = this->image.proxyUrl;
-		embed["author"]["icon_url"] = this->author.iconUrl;
-		embed["footer"]["icon_url"] = this->footer.iconUrl;
-		embed["video"]["proxy_url"] = this->video.proxyUrl;
-		embed["provider"]["name"] = this->provider.name;
-		embed["thumbnail"]["url"] = this->thumbnail.url;
-		embed["provider"]["url"] = this->provider.url;
-		embed["video"]["height"] = this->video.height;
-		embed["image"]["height"] = this->image.height;
-		embed["author"]["name"] = this->author.name;
-		embed["image"]["width"] = this->image.width;
-		embed["footer"]["text"] = this->footer.text;
-		embed["video"]["width"] = this->video.width;
-		embed["author"]["url"] = this->author.url;
-		embed["description"] = this->description;
-		embed["image"]["url"] = this->image.url;
-		embed["video"]["url"] = this->video.url;
-		embed["timestamp"] = this->timestamp;
-		embed["title"] = this->title;
-		embed["color"] = realColorVal;
-		embed["type"] = this->type;
-		embed["url"] = this->url;
-		embed["fields"] = fields;
-		*/
+		theData["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
+		theData["author"]["proxy_icon_url"] = this->author.proxyIconUrl;
+		theData["thumbnail"]["proxy_url"] = this->thumbnail.proxyUrl;
+		theData["thumbnail"]["height"] = this->thumbnail.height;
+		theData["thumbnail"]["width"] = this->thumbnail.width;
+		theData["image"]["proxy_url"] = this->image.proxyUrl;
+		theData["author"]["icon_url"] = this->author.iconUrl;
+		theData["footer"]["icon_url"] = this->footer.iconUrl;
+		theData["video"]["proxy_url"] = this->video.proxyUrl;
+		theData["provider"]["name"] = this->provider.name;
+		theData["thumbnail"]["url"] = this->thumbnail.url;
+		theData["provider"]["url"] = this->provider.url;
+		theData["video"]["height"] = this->video.height;
+		theData["image"]["height"] = this->image.height;
+		theData["author"]["name"] = this->author.name;
+		theData["image"]["width"] = this->image.width;
+		theData["footer"]["text"] = this->footer.text;
+		theData["video"]["width"] = this->video.width;
+		theData["author"]["url"] = this->author.url;
+		theData["description"] = this->description;
+		theData["image"]["url"] = this->image.url;
+		theData["video"]["url"] = this->video.url;
+		theData["timestamp"] = this->timestamp;
+		theData["title"] = this->title;
+		theData["color"] = realColorVal;
+		theData["type"] = this->type;
+		theData["url"] = this->url;
+		theData["fields"] = fields;
+		fields[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 
@@ -345,10 +346,10 @@ namespace DiscordCoreAPI {
 
 	MessageReferenceData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData.addEvent(this->failIfNotExists, "fail_if_not_exists");
-		theData.addEvent(this->messageId, "message_id");
-		theData.addEvent(this->channelId, "channel_id");
-		theData.addEvent(this->guildId, "guild_id");
+		theData["fail_if_not_exists"] = this->failIfNotExists;
+		theData["message_id"] = this->messageId;
+		theData["channel_id"] = this->channelId;
+		theData["guild_id"] = this->guildId;
 		return theData;
 	}
 
@@ -362,17 +363,17 @@ namespace DiscordCoreAPI {
 
 	UpdateVoiceStateData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
 		if (this->channelId == 0) {
 			theData["channel_id"] = nullptr;
 		} else {
-			theData.addEvent(std::to_string(this->channelId), "channel_id");
+			theData["channel_id"] = std::to_string(this->channelId);
 		}
-		theData.addEvent(this->selfDeaf, "self_deaf");
-		theData.addEvent(this->selfMute, "self_mute");
-		theData.addEvent(std::to_string(this->guildId), "guild_id");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
-		theData.addEvent(static_cast<uint8_t>(4), "op");
+		theData["self_deaf"] = this->selfDeaf;
+		theData["self_mute"] = this->selfMute;
+		theData["guild_id"] = std::to_string(this->guildId);
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+		theData["op"] = static_cast<uint8_t>(4);
 		return theData;
 	}
 
@@ -425,15 +426,19 @@ namespace DiscordCoreAPI {
 		switch (this->type) {
 			case JsonType::Integer: {
 				theData["value"] = this->valueInt;
+				break;
 			}
 			case JsonType::Float: {
 				theData["value"] = this->valueFloat;
+				break;
 			}
 			case JsonType::Boolean: {
 				theData["value"] = this->valueBool;
+				break;
 			}
 			case JsonType::String: {
 				theData["value"] = this->valueStringReal;
+				break;
 			}
 		}
 		return theData;
@@ -441,43 +446,50 @@ namespace DiscordCoreAPI {
 
 	ApplicationCommandOptionData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
+		
 		if (this->type == DiscordCoreAPI::ApplicationCommandOptionType::Channel) {
-			newOption["channel_types"] = this->channelTypes;
+			for (auto& value: this->channelTypes) {
+				auto theNewValue = static_cast<uint8_t>(value);
+				theData["channel_types"] = theNewValue;
+			}
 		}
 		if (this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command && this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group) {
-			newOption["required"] = this->required;
+			theData["required"] = this->required;
 		}
-		newOption["description_localizations"] = this->descriptionLocalizations;
-		newOption["name_localizations"] = this->nameLocalizations;
-		newOption["description"] = this->description;
+		theData["description_localizations"] = this->descriptionLocalizations;
+		theData["name_localizations"] = this->nameLocalizations;
+		theData["description"] = this->description;
 		if (maxValue != 0) {
-			newOption["min_value"] = this->minValue;
+			theData["min_value"] = this->minValue;
 		}
 		if (maxValue != 0) {
-			newOption["max_value"] = this->maxValue;
+			theData["max_value"] = this->maxValue;
 		}
-		newOption["required"] = this->required;
-		newOption["name"] = this->name;
-		newOption["type"] = this->type;
+		theData["required"] = this->required;
+		theData["name"] = this->name;
+		theData["type"] = static_cast<uint8_t>(this->type);
+		theData["choices"] = JsonParseEvent::Array_Start;
 		if (this->choices.size() > 0) {
-			newOption["choices"] = nlohmann::json{};
+			
 			for (auto& value: this->choices) {
-				nlohmann::json theData = value;
-				newOption["choices"].emplace_back(theData);
+				JsonSerializer theChoice{};
+				theChoice = value.operator DiscordCoreAPI::JsonSerializer();
+				theData[""] = theChoice;
 			}
 		}
-		if (newOption["choices"].size() == 0) {
-			newOption["autocomplete"] = this->autocomplete;
+		else {
+			theData["autocomplete"] = this->autocomplete;
 		}
+		theData[""] = JsonParseEvent::Array_End;
 		if (this->options.size() > 0) {
-			newOption["options"] = nlohmann::json{};
+			theData["options"] = JsonParseEvent::Array_Start;
 			for (auto& value: this->options) {
-				nlohmann::json theData = value;
-				newOption["options"].emplace_back(theData);
+				JsonSerializer theData = value;
+				theData[""] = theData;
 			}
 		}
-		*/
+		theData[""] = JsonParseEvent::Array_End;
+		theData[""] = JsonParseEvent::Object_End;
 		return theData;
 	}
 
@@ -506,68 +518,67 @@ namespace DiscordCoreAPI {
 
 	ActionRowData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
+		theData["components"] = JsonParseEvent::Array_Start;
 		for (auto& valueNew: this->components) {
 			if (valueNew.type == ComponentType::Button) {
-				nlohmann::json component{};
-				component["emoji"]["animated"] = valueNew.emoji.animated;
+				theData[""] = JsonParseEvent::Object_Start;
+				theData["emoji"] = JsonParseEvent::Object_Start;
+				theData["animated"] = valueNew.emoji.animated;
 				std::string theString = valueNew.emoji.name;
-				component["emoji"]["name"] = static_cast<std::string>(theString);
+				theData["name"] = static_cast<std::string>(theString);
 				if (valueNew.emoji.id != 0) {
-					component["emoji"]["id"] = valueNew.emoji.id;
+					theData["id"] = valueNew.emoji.id;
 				}
-				component["custom_id"] = valueNew.customId;
-				component["disabled"] = valueNew.disabled;
-				component["label"] = valueNew.label;
-				component["style"] = valueNew.style;
-				component["type"] = valueNew.type;
-				component["url"] = valueNew.url;
-				components.emplace_back(component);
+				theData[""] = JsonParseEvent::Object_End;
+				theData["custom_id"] = valueNew.customId;
+				theData["disabled"] = valueNew.disabled;
+				theData["label"] = valueNew.label;
+				theData["style"] = valueNew.style;
+				theData["type"] = static_cast<uint8_t>(valueNew.type);
+				theData["url"] = valueNew.url;
+				theData[""] = JsonParseEvent::Object_End;
 			} else if (valueNew.type == ComponentType::SelectMenu) {
-				nlohmann::json optionsArray{};
+				theData[""] = JsonParseEvent::Object_Start;
+				theData["options"] = JsonParseEvent::Array_Start;
 				for (auto& value01: valueNew.options) {
-					nlohmann::json option{};
+					theData["emoji"] = JsonParseEvent::Object_Start;
 					if (value01.emoji.name != "") {
-						option["emoji"]["name"] = static_cast<std::string>(value01.emoji.name);
-						option["emoji"]["animated"] = value01.emoji.animated;
+						theData["name"] = static_cast<std::string>(value01.emoji.name);
+						theData["animated"] = value01.emoji.animated;
 					}
 					if (value01.emoji.id != 0) {
-						option["emoji"]["id"] = value01.emoji.id;
+						theData["id"] = value01.emoji.id;
 					}
-					option["description"] = value01.description;
-					option["default"] = value01._default;
-					option["label"] = value01.label;
-					option["value"] = value01.value;
-					optionsArray.emplace_back(option);
+					theData[""] = JsonParseEvent::Object_End;
+					theData["description"] = value01.description;
+					theData["default"] = value01._default;
+					theData["label"] = value01.label;
+					theData["value"] = value01.value;
+					theData[""] = JsonParseEvent::Object_End;
 				};
-				nlohmann::json component{};
-				component["placeholder"] = valueNew.placeholder;
-				component["max_values"] = valueNew.maxValues;
-				component["min_values"] = valueNew.minValues;
-				component["custom_id"] = valueNew.customId;
-				component["disabled"] = valueNew.disabled;
-				component["options"] = optionsArray;
-				component["type"] = valueNew.type;
-				components.emplace_back(component);
+				theData[""] = JsonParseEvent::Array_End;
+				theData["placeholder"] = valueNew.placeholder;
+				theData["max_values"] = valueNew.maxValues;
+				theData["min_values"] = valueNew.minValues;
+				theData["custom_id"] = valueNew.customId;
+				theData["disabled"] = valueNew.disabled;
+				theData["type"] = static_cast<uint8_t>(valueNew.type);
+				theData[""] = JsonParseEvent::Object_End;
 
 			} else if (valueNew.type == ComponentType::TextInput) {
-				nlohmann::json component{};
-				component["placeholder"] = valueNew.placeholder;
-				component["min_length"] = valueNew.minLength;
-				component["max_length"] = valueNew.maxLength;
-				component["custom_id"] = valueNew.customId;
-				component["required"] = valueNew.required;
-				component["style"] = valueNew.style;
-				component["label"] = valueNew.label;
-				component["value"] = valueNew.value;
-				component["type"] = valueNew.type;
-				components.emplace_back(component);
+				theData["placeholder"] = valueNew.placeholder;
+				theData["min_length"] = valueNew.minLength;
+				theData["max_length"] = valueNew.maxLength;
+				theData["custom_id"] = valueNew.customId;
+				theData["required"] = valueNew.required;
+				theData["style"] = valueNew.style;
+				theData["label"] = valueNew.label;
+				theData["value"] = valueNew.value;
+				theData["type"] = static_cast<uint8_t>(valueNew.type);
 			}
 		}
-		nlohmann::json theData{};
 		theData["type"] = 1;
-		theData["components"] = components;
-		*/
+		theData[""] = JsonParseEvent::Object_End;
 		return theData;
 	}
 
