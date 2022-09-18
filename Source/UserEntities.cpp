@@ -32,8 +32,8 @@ namespace DiscordCoreAPI {
 
 	AddRecipientToGroupDMData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData.addEvent(this->token, "access_token");
-		theData.addEvent(this->nick, "nick");
+		theData["access_token"] = this->token;
+		theData["nick"] = this->nick;
 		return theData;
 	}
 
@@ -157,7 +157,6 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Users::getCurrentUserAsync()";
 		auto userData = Users::httpsClient->submitWorkloadAndGetResult<UserData>(workload);
 		Users::insertUser(userData);
-		std::cout << "CURRENT USER REAL: " << userData.id << ", THE NAME: " << userData.userName << std::endl;
 		co_return userData;
 	}
 

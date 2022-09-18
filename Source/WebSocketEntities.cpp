@@ -191,12 +191,10 @@ namespace DiscordCoreInternal {
 		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
 			auto theString = static_cast<std::string>(dataToSend);
-			std::cout << "THE STRING: " << theString << std::endl;
 			theVector = ErlPacker::parseJsonToEtf(theString);
 		} else {
 			theVector = static_cast<std::string>(dataToSend);
 		}
-		std::cout << "THE FINAL STRING: " << theVector << std::endl;
 		this->createHeader(header, theVector.size(), theOpCode);
 		std::string theVectorNew{};
 		theVectorNew.insert(theVectorNew.begin(), header.begin(), header.end());
@@ -441,7 +439,6 @@ namespace DiscordCoreInternal {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
 									this->messageLength = 0;
 									this->messageOffset = 0;
-									std::cout << "THE DATA REAL: " << theDataNew << std::endl;
 								}
 								returnValue = false;
 							}

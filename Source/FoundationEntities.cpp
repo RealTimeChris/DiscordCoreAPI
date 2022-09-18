@@ -39,36 +39,36 @@ namespace DiscordCoreInternal {
 
 	UpdatePresenceData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.addEvent(static_cast<uint8_t>(3), "op");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_Start, "activities");
+		theData["op"] = static_cast<uint8_t>(3);
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["activities"] = DiscordCoreAPI::JsonParseEvent::Array_Start;
 		for (auto& value: this->activities) {
-			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start);
+			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_Start;
 			if (value.url != "") {
-				theData.addEvent(std::string{ value.url }, "url");
+				theData["url"] = std::string{ value.url };
 			}
-			theData.addEvent(std::string{ value.name }, "name");
-			theData.addEvent(static_cast<uint64_t>(value.type), "type");
-			theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+			theData["name"] = std::string{ value.name };
+			theData["type"] = static_cast<uint8_t>(value.type);
+			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		}
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Array_End);
-		theData.addEvent(this->status, "status");
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Array_End;
+		theData["status"] = this->status;
 		if (this->since != 0) {
-			theData.addEvent(this->since, "since");
+			theData["since"] = this->since;
 		}
-		theData.addEvent(this->afk, "afk");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData["afk"] = this->afk;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 
 	}
 
 	WebSocketResumeData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.addEvent(static_cast<uint8_t>(6), "op");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
-		theData.addEvent(this->lastNumberReceived, "seq");
-		theData.addEvent(this->sessionId, "session_id");
-		theData.addEvent(this->botToken, "token");
+		theData["op"] = static_cast<uint8_t>(6);
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["seq"] = this->lastNumberReceived;
+		theData["session_id"] = this->sessionId;
+		theData["token"] = this->botToken;
 		return theData;
 	}
 
@@ -124,37 +124,37 @@ namespace DiscordCoreInternal {
 
 	VoiceSocketProtocolPayloadData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.addEvent(static_cast<uint8_t>(1), "op");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
-		theData.addEvent("udp", "protocol");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "data");
-		theData.addEvent(this->voicePort, "port");
-		theData.addEvent(this->voiceEncryptionMode, "mode");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData["op"] = static_cast<uint8_t>(1);
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["protocol"] = "udp";
+		theData["data"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["port"] = this->voicePort;
+		theData["mode"] = this->voiceEncryptionMode;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 
 	VoiceIdentifyData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.addEvent(static_cast<uint8_t>(0), "op");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
-		theData.addEvent(this->connectionData.sessionId, "session_id");
-		theData.addEvent(this->connectionData.token, "token");
-		theData.addEvent(this->connectInitData.guildId, "server_id");
-		theData.addEvent(this->connectInitData.userId, "user_id");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData["op"] = static_cast<uint8_t>(0);
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["session_id"] = this->connectionData.sessionId;
+		theData["token"] = this->connectionData.token;
+		theData["server_id"] = this->connectInitData.guildId;
+		theData["user_id"] = this->connectInitData.userId;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 
 	SendSpeakingData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.addEvent(static_cast<uint8_t>(5), "op");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
-		theData.addEvent(static_cast<uint8_t>(this->type), "speaking");
-		theData.addEvent(this->delay, "delay");
-		theData.addEvent(this->ssrc, "ssrc");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
+		theData["op"] = static_cast<uint8_t>(5);
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theData["speaking"] = static_cast<uint8_t>(this->type);
+		theData["delay"] = this->delay;
+		theData["ssrc"] = this->ssrc;
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 
@@ -226,69 +226,80 @@ namespace DiscordCoreAPI {
 
 	AttachmentData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData.addEvent(this->contentType, "content_type");
-		theData.addEvent(this->description, "description");
-		theData.addEvent(this->ephemeral, "ephemeral");
-		theData.addEvent(this->filename, "file_name");
-		theData.addEvent(this->proxyUrl, "proxy_url");
-		theData.addEvent(this->height, "height");
-		theData.addEvent(this->width, "width");
-		theData.addEvent(this->size, "size");
-		theData.addEvent(this->url, "url");
+		theData["content_type"] = this->contentType;
+		theData["description"] = this->description;
+		theData["ephemeral"] = this->ephemeral;
+		theData["file_name"] = this->filename;
+		theData["proxy_url"] = this->proxyUrl;
+		theData["height"] = this->height;
+		theData["width"] = this->width;
+		theData["size"] = this->size;
+		theData["url"] = this->url;
+		theData[""] = JsonParseEvent::Object_End;
 		return theData;
 	}
 
 	EmbedFieldData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData.addEvent(this->Inline, "inline");
-		theData.addEvent(this->value, "value");
-		theData.addEvent(this->name, "name");
+		theData["inline"] = this->Inline;
+		theData["value"] = this->value;
+		theData["name"] = this->name;
+		theData[""] = JsonParseEvent::Object_End;
 		return theData;
 	}
 
 	EmbedData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData.addEvent(JsonParseEvent::Array_Start, "fields");
+		theData["fields"] = JsonParseEvent::Array_Start;
 		for (auto& value2: this->fields) {
-			theData.addEvent(JsonParseEvent::Object_Start);
-			theData.addEvent(value2.Inline, "inline");
-			theData.addEvent(value2.name, "name");
-			theData.addEvent(value2.value, "value");
-			theData.addEvent(JsonParseEvent::Object_End);
+			theData[""] = JsonParseEvent::Object_Start;
+			theData["inline"] = value2.Inline;
+			theData["name"] = value2.name;
+			theData["value"] = value2.value;
+			theData[""] = JsonParseEvent::Object_End;
 		}
-		theData.addEvent(JsonParseEvent::Array_End);
+		theData[""] = JsonParseEvent::Array_End;
 		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
-		nlohmann::json embed{};
-		embed["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
-		embed["author"]["proxy_icon_url"] = this->author.proxyIconUrl;
-		embed["thumbnail"]["proxy_url"] = this->thumbnail.proxyUrl;
-		embed["thumbnail"]["height"] = this->thumbnail.height;
-		embed["thumbnail"]["width"] = this->thumbnail.width;
-		embed["image"]["proxy_url"] = this->image.proxyUrl;
-		embed["author"]["icon_url"] = this->author.iconUrl;
-		embed["footer"]["icon_url"] = this->footer.iconUrl;
-		embed["video"]["proxy_url"] = this->video.proxyUrl;
-		embed["provider"]["name"] = this->provider.name;
-		embed["thumbnail"]["url"] = this->thumbnail.url;
-		embed["provider"]["url"] = this->provider.url;
-		embed["video"]["height"] = this->video.height;
-		embed["image"]["height"] = this->image.height;
-		embed["author"]["name"] = this->author.name;
-		embed["image"]["width"] = this->image.width;
-		embed["footer"]["text"] = this->footer.text;
-		embed["video"]["width"] = this->video.width;
-		embed["author"]["url"] = this->author.url;
-		embed["description"] = this->description;
-		embed["image"]["url"] = this->image.url;
-		embed["video"]["url"] = this->video.url;
-		embed["timestamp"] = this->timestamp;
-		embed["title"] = this->title;
-		embed["color"] = realColorVal;
-		embed["type"] = this->type;
-		embed["url"] = this->url;
-		embed["fields"] = fields;
-		*/
+		theData["footer"] = JsonParseEvent::Object_Start;
+		theData["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
+		theData["footer"]["icon_url"] = this->footer.iconUrl;
+		theData["footer"]["text"] = this->footer.text;
+		theData[""] = JsonParseEvent::Object_End;
+		theData["author"] = JsonParseEvent::Object_Start;
+		theData["author"]["proxy_icon_url"] = this->author.proxyIconUrl;
+		theData["author"]["icon_url"] = this->author.iconUrl;
+		theData["author"]["name"] = this->author.name;
+		theData["author"]["url"] = this->author.url;
+		theData[""] = JsonParseEvent::Object_End;
+		theData["thumbnail"] = JsonParseEvent::Object_Start;
+		theData["thumbnail"]["proxy_url"] = this->thumbnail.proxyUrl;
+		theData["thumbnail"]["height"] = this->thumbnail.height;
+		theData["thumbnail"]["width"] = this->thumbnail.width;
+		theData["thumbnail"]["url"] = this->thumbnail.url;
+		theData[""] = JsonParseEvent::Object_End;
+		theData["image"] = JsonParseEvent::Object_Start;
+		theData["image"]["proxy_url"] = this->image.proxyUrl;
+		theData["image"]["height"] = this->image.height;
+		theData["image"]["width"] = this->image.width;
+		theData["image"]["url"] = this->image.url;
+		theData[""] = JsonParseEvent::Object_End;
+		theData["video"] = JsonParseEvent::Object_Start;
+		theData["video"]["proxy_url"] = this->video.proxyUrl;
+		theData["video"]["height"] = this->video.height;
+		theData["video"]["url"] = this->video.url;
+		theData["video"]["width"] = this->video.width;
+		theData[""] = JsonParseEvent::Object_End;
+		theData["provider"] = JsonParseEvent::Object_Start;
+		theData["provider"]["name"] = this->provider.name;
+		theData["provider"]["url"] = this->provider.url;
+		theData[""] = JsonParseEvent::Object_End;
+		theData["description"] = this->description;
+		theData["timestamp"] = this->timestamp;
+		theData["title"] = this->title;
+		theData["color"] = realColorVal;
+		theData["type"] = this->type;
+		theData["url"] = this->url;
+		theData[""] = JsonParseEvent::Object_End;
 		return theData;
 	}
 
@@ -345,10 +356,11 @@ namespace DiscordCoreAPI {
 
 	MessageReferenceData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData.addEvent(this->failIfNotExists, "fail_if_not_exists");
-		theData.addEvent(this->messageId, "message_id");
-		theData.addEvent(this->channelId, "channel_id");
-		theData.addEvent(this->guildId, "guild_id");
+		theData["fail_if_not_exists"] = this->failIfNotExists;
+		theData["message_id"] = this->messageId;
+		theData["channel_id"] = this->channelId;
+		theData["guild_id"] = this->guildId;
+		theData[""] = JsonParseEvent::Object_End;
 		return theData;
 	}
 
@@ -362,17 +374,18 @@ namespace DiscordCoreAPI {
 
 	UpdateVoiceStateData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_Start, "d");
+		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
 		if (this->channelId == 0) {
 			theData["channel_id"] = nullptr;
 		} else {
-			theData.addEvent(std::to_string(this->channelId), "channel_id");
+			theData["channel_id"] = std::to_string(this->channelId);
 		}
-		theData.addEvent(this->selfDeaf, "self_deaf");
-		theData.addEvent(this->selfMute, "self_mute");
-		theData.addEvent(std::to_string(this->guildId), "guild_id");
-		theData.addEvent(DiscordCoreAPI::JsonParseEvent::Object_End);
-		theData.addEvent(static_cast<uint8_t>(4), "op");
+		theData["self_deaf"] = this->selfDeaf;
+		theData["self_mute"] = this->selfMute;
+		theData["guild_id"] = std::to_string(this->guildId);
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+		theData["op"] = static_cast<uint8_t>(4);
+		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 

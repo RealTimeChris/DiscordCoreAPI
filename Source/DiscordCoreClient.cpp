@@ -240,7 +240,6 @@ namespace DiscordCoreAPI {
 	}
 
 	BotUser DiscordCoreClient::getBotUser() {
-		std::cout << "CURRENT USER: " << this->currentUser.id << std::endl;
 		return this->currentUser;
 	}
 
@@ -281,7 +280,6 @@ namespace DiscordCoreAPI {
 			reportException("getGateWatBot()");
 			return theData;
 		}
-		std::cout << "THE URL: " << theData.url << std::endl;
 		return theData;
 	}
 

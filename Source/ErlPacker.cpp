@@ -347,7 +347,6 @@ namespace DiscordCoreInternal {
 				return this->parseAtomUtf8Ext();
 			}
 			default: {
-				std::cout << "THE CURRENT STRING: " << this->buffer << std::endl;
 				throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Unknown data type in ETF.\n\n" };
 			}
 		}
