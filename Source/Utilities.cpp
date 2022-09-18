@@ -69,6 +69,9 @@ namespace DiscordCoreAPI {
 
 	JsonValue& JsonValue::operator=(JsonParseEvent theData) {
 		this->theEvent = theData;
+		if (static_cast<uint16_t>(theData) & static_cast<uint16_t>(JsonParseEvent::Null_Value)) {
+			this->theValue = "null";
+		}
 		return *this;
 	}
 
@@ -88,7 +91,25 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	JsonValue& JsonValue::operator=(std::string theData) {
+	JsonValue& JsonValue::operator=(const std::string&& theData) {
+		this->theEvent = JsonParseEvent::String;
+		this->theValue = theData;
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(const std::string& theData) {
+		this->theEvent = JsonParseEvent::String;
+		this->theValue = theData;
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(std::string&& theData) {
+		this->theEvent = JsonParseEvent::String;
+		this->theValue = std::move(theData);
+		return *this;
+	}
+
+	JsonValue& JsonValue::operator=(std::string& theData) {
 		this->theEvent = JsonParseEvent::String;
 		this->theValue = theData;
 		return *this;
@@ -155,9 +176,14 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonSerializer& JsonSerializer::operator=(JsonParseEvent theData) {
-		JsonValue theValue{};
-		theValue.theEvent = theData;
-		this->theValues.push_back(theValue);
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
 		return *this;
 	}
 
@@ -281,7 +307,19 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	JsonSerializer& JsonSerializer::operator=(std::string theData) {
+	JsonSerializer& JsonSerializer::operator=(std::string&& theData) {
+		JsonValue theNewData{};
+		theNewData = theData;
+		if (this->isItFound) {
+			this->theValues[this->currentPosition + 1] = theNewData;
+		} else {
+			this->theValues.push_back(theNewData);
+		}
+		this->isItFound = false;
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(std::string& theData) {
 		JsonValue theNewData{};
 		theNewData = theData;
 		if (this->isItFound) {
@@ -317,31 +355,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-
 	JsonSerializer::operator std::string() {
-		auto theString = this->getString();
-		return theString.substr(0, theString.size() - 1);
-	}
-
-
-	JsonSerializer& JsonSerializer::operator[](const char* keyName) {
-		for (size_t x = 0; x < this->theValues.size(); ++x) {
-			if (this->theValues[x].theValue == keyName) {
-				this->currentPosition = x;
-				this->isItFound = true;
-				break;
-			}
-		}
-		if (!this->isItFound) {
-			JsonValue theName{};
-			theName.theEvent = JsonParseEvent::Key;
-			theName.theValue = keyName;
-			this->theValues.push_back(theName);
-		}
-		return *this;
-	}
-
-	std::string JsonSerializer::getString() {
 		this->theState = JsonParserState::Starting_Object;
 		std::string theString{ "{" };
 		for (auto& value: this->theValues) {
@@ -498,9 +512,30 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
-		std::cout << "THE FINAL STRING REAL: " << theString << std::endl;
 		theString += "}";
-		return theString;
+		return theString.substr(0, theString.size() - 1);
+	}
+
+
+	JsonSerializer& JsonSerializer::operator[](const char* keyName) {
+		for (size_t x = 0; x < this->theValues.size(); ++x) {
+			if (static_cast<uint32_t>(keyName[0]) != 0) {
+				if (this->theValues[x].theValue == keyName) {
+					this->currentPosition = x;
+					this->isItFound = true;
+					break;
+				}
+			}
+		}
+		if (!this->isItFound) {
+			if (static_cast<uint32_t>(keyName[0]) != 0) {
+				JsonValue theName{};
+				theName.theEvent = JsonParseEvent::Key;
+				theName.theValue = keyName;
+				this->theValues.push_back(theName);
+			}
+		}
+		return *this;
 	}
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void )) {
