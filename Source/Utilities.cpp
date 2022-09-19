@@ -99,7 +99,11 @@ namespace DiscordCoreAPI {
 	JsonSerializer& JsonSerializer::operator=(const char* theData) noexcept {
 		JsonRecord theRecord{};
 		theRecord.theEvent = JsonParseEvent::String;
-		theRecord.theValue = theData;
+		if (theData == nullptr) {
+			theRecord.theValue = "null";
+		} else {
+			theRecord.theValue = theData;
+		}
 		if (this->theJsonData.back().theEvent == JsonParseEvent::Unset) {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
@@ -113,7 +117,11 @@ namespace DiscordCoreAPI {
 	JsonSerializer& JsonSerializer::operator=(std::string& theData) noexcept {
 		JsonRecord theRecord{};
 		theRecord.theEvent = JsonParseEvent::String;
-		theRecord.theValue = theData;
+		if (theData.empty()) {
+			theRecord.theValue = "null";
+		} else {
+			theRecord.theValue = theData;
+		}
 		if (this->theJsonData.back().theEvent == JsonParseEvent::Unset) {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
@@ -268,7 +276,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	JsonRecord& JsonRecord::operator=(bool theData) noexcept {
+	JsonRecord::JsonRecord(bool theData) noexcept {
 		this->theEvent = JsonParseEvent::Boolean;
 		std::string theString{};
 		if (theData) {
@@ -277,141 +285,74 @@ namespace DiscordCoreAPI {
 			theString = "false";
 		}
 		this->theValue = theString;
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(const char* theData) noexcept {
-		this->theEvent = JsonParseEvent::String;
-		this->theValue = theData;
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(std::string&& theData) noexcept {
-		this->theEvent = JsonParseEvent::String;
-		this->theValue = std::move(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(std::string& theData) noexcept {
-		this->theEvent = JsonParseEvent::String;
-		this->theValue = theData;
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(float theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Float;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(double theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Double;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(int64_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Large;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(int32_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(int16_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(int8_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Small;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(uint64_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Large;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(uint32_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(uint16_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(uint8_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Small;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord::JsonRecord(int8_t theData) noexcept {
-		*this = theData;
-	}
-
-	JsonRecord::JsonRecord(int16_t theData) noexcept {
-		*this = theData;
-	}
-
-	JsonRecord::JsonRecord(int32_t theData) noexcept {
-		*this = theData;
-	}
-
-	JsonRecord::JsonRecord(int64_t theData) noexcept {
-		*this = theData;
-	}
-
-	JsonRecord::JsonRecord(uint8_t theData) noexcept {
-		*this = theData;
-	}
-
-	JsonRecord::JsonRecord(uint16_t theData) noexcept {
-		*this = theData;
-	}
-
-	JsonRecord::JsonRecord(uint32_t theData) noexcept {
-		*this = theData;
-	}
-
-	JsonRecord::JsonRecord(uint64_t theData) noexcept {
-		*this = theData;
-	}
-
-	JsonRecord::JsonRecord(bool theData) noexcept {
-		*this = theData;
-	}
-
-	JsonRecord::JsonRecord(double theData) noexcept {
-		*this = theData;
-	}
-
-	JsonRecord::JsonRecord(float theData) noexcept {
-		*this = theData;
-	}
-
-	JsonRecord::JsonRecord(std::string&& theData) noexcept {
-		*this = std::move(theData);
-	}
-
-	JsonRecord::JsonRecord(std::string& theData) noexcept {
-		*this = theData;
 	}
 
 	JsonRecord::JsonRecord(const char* theData) noexcept {
-		*this = theData;
+		this->theEvent = JsonParseEvent::String;
+		if (theData == nullptr) {
+			this->theValue = "null";
+		} else {
+			this->theValue = theData;
+		}
+	}
+
+	JsonRecord::JsonRecord(std::string& theData) noexcept {
+		this->theEvent = JsonParseEvent::String;
+		if (theData.empty()) {
+			this->theValue = "null";
+		} else {
+			this->theValue = theData;
+		}
+	}
+
+	JsonRecord::JsonRecord(float theData) noexcept {
+		this->theEvent = JsonParseEvent::Number_Float;
+		this->theValue = std::to_string(theData);
+	}
+
+	JsonRecord::JsonRecord(double theData) noexcept {
+		this->theEvent = JsonParseEvent::Number_Double;
+		this->theValue = std::to_string(theData);
+	}
+
+	JsonRecord::JsonRecord(int64_t theData) noexcept {
+		this->theEvent = JsonParseEvent::Number_Integer_Large;
+		this->theValue = std::to_string(theData);
+	}
+
+	JsonRecord::JsonRecord(int32_t theData) noexcept {
+		this->theEvent = JsonParseEvent::Number_Integer;
+		this->theValue = std::to_string(theData);
+	}
+
+	JsonRecord::JsonRecord(int16_t theData) noexcept {
+		this->theEvent = JsonParseEvent::Number_Integer;
+		this->theValue = std::to_string(theData);
+	}
+
+	JsonRecord::JsonRecord(int8_t theData) noexcept {
+		this->theEvent = JsonParseEvent::Number_Integer_Small;
+		this->theValue = std::to_string(theData);
+	}
+
+	JsonRecord::JsonRecord(uint64_t theData) noexcept {
+		this->theEvent = JsonParseEvent::Number_Integer_Large;
+		this->theValue = std::to_string(theData);
+	}
+
+	JsonRecord::JsonRecord(uint32_t theData) noexcept {
+		this->theEvent = JsonParseEvent::Number_Integer;
+		this->theValue = std::to_string(theData);
+	}
+
+	JsonRecord::JsonRecord(uint16_t theData) noexcept {
+		this->theEvent = JsonParseEvent::Number_Integer;
+		this->theValue = std::to_string(theData);
+	}
+
+	JsonRecord::JsonRecord(uint8_t theData) noexcept {
+		this->theEvent = JsonParseEvent::Number_Integer_Small;
+		this->theValue = std::to_string(theData);
 	}
 
 	JsonSerializer::JsonSerializer() noexcept {
@@ -427,6 +368,7 @@ namespace DiscordCoreAPI {
 		theRecord.theKey = theKeyName;
 		this->theJsonData.emplace_back(theRecord);
 	}
+
 
 	JsonSerializer::operator std::string() noexcept {
 		auto theString = this->getString();
@@ -645,6 +587,7 @@ namespace DiscordCoreAPI {
 		for (uint32_t x = 0; x < this->currentIndentationLevel; ++x) {
 			theString += "}";
 		}
+		std::cout << "THE FINAL STRING REAL: " << theString << std::endl;
 		return theString;
 	}
 

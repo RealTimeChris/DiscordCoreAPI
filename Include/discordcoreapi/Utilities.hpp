@@ -425,20 +425,6 @@ namespace DiscordCoreAPI {
 	class JsonRecord {
 	  public:
 		JsonRecord() noexcept = default;
-		JsonRecord& operator=(int8_t) noexcept;
-		JsonRecord& operator=(int16_t) noexcept;
-		JsonRecord& operator=(int32_t) noexcept;
-		JsonRecord& operator=(int64_t) noexcept;
-		JsonRecord& operator=(uint8_t) noexcept;
-		JsonRecord& operator=(uint16_t) noexcept;
-		JsonRecord& operator=(uint32_t) noexcept;
-		JsonRecord& operator=(uint64_t) noexcept;
-		JsonRecord& operator=(bool) noexcept;
-		JsonRecord& operator=(double) noexcept;
-		JsonRecord& operator=(float) noexcept;
-		JsonRecord& operator=(std::string&&) noexcept;
-		JsonRecord& operator=(std::string&) noexcept;
-		JsonRecord& operator=(const char*) noexcept;
 		JsonRecord(int8_t) noexcept;
 		JsonRecord(int16_t) noexcept;
 		JsonRecord(int32_t) noexcept;
@@ -450,7 +436,6 @@ namespace DiscordCoreAPI {
 		JsonRecord(bool) noexcept;
 		JsonRecord(double) noexcept;
 		JsonRecord(float) noexcept;
-		JsonRecord(std::string&&) noexcept;
 		JsonRecord(std::string&) noexcept;
 		JsonRecord(const char*) noexcept;
 
@@ -467,9 +452,6 @@ namespace DiscordCoreAPI {
 		JsonSerializer() noexcept;
 		JsonSerializer(const char*) noexcept;
 		JsonSerializer(const JsonSerializer& other) noexcept;
-		JsonSerializer& operator=(const JsonSerializer& other) noexcept;
-		JsonSerializer& operator=(JsonParseEvent theData) noexcept;
-
 		template<typename KeyType, typename ObjectType> JsonSerializer& operator=(std::unordered_map<KeyType, ObjectType> other) {
 			for (auto& [key, value]: other) {
 				JsonRecord theRecord{};
@@ -488,7 +470,8 @@ namespace DiscordCoreAPI {
 			}
 			return *this;
 		}
-
+		JsonSerializer& operator=(const JsonSerializer& other) noexcept;
+		JsonSerializer& operator=(JsonParseEvent theData) noexcept;
 		JsonSerializer& operator=(int8_t) noexcept;
 		JsonSerializer& operator=(int16_t) noexcept;
 		JsonSerializer& operator=(int32_t) noexcept;
