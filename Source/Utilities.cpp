@@ -100,6 +100,7 @@ namespace DiscordCoreAPI {
 		JsonRecord theRecord{};
 		theRecord.theEvent = JsonParseEvent::String;
 		if (theData == nullptr) {
+			theRecord.theEvent = JsonParseEvent::Null_Value;
 			theRecord.theValue = "null";
 		} else {
 			theRecord.theValue = theData;
@@ -118,6 +119,7 @@ namespace DiscordCoreAPI {
 		JsonRecord theRecord{};
 		theRecord.theEvent = JsonParseEvent::String;
 		if (theData.empty()) {
+			theRecord.theEvent = JsonParseEvent::Null_Value;
 			theRecord.theValue = "null";
 		} else {
 			theRecord.theValue = theData;
@@ -290,6 +292,7 @@ namespace DiscordCoreAPI {
 	JsonRecord::JsonRecord(const char* theData) noexcept {
 		this->theEvent = JsonParseEvent::String;
 		if (theData == nullptr) {
+			this->theEvent = JsonParseEvent::Null_Value;
 			this->theValue = "null";
 		} else {
 			this->theValue = theData;
@@ -299,6 +302,7 @@ namespace DiscordCoreAPI {
 	JsonRecord::JsonRecord(std::string& theData) noexcept {
 		this->theEvent = JsonParseEvent::String;
 		if (theData.empty()) {
+			this->theEvent = JsonParseEvent::Null_Value;
 			this->theValue = "null";
 		} else {
 			this->theValue = theData;
@@ -587,7 +591,6 @@ namespace DiscordCoreAPI {
 		for (uint32_t x = 0; x < this->currentIndentationLevel; ++x) {
 			theString += "}";
 		}
-		std::cout << "THE FINAL STRING REAL: " << theString << std::endl;
 		return theString;
 	}
 

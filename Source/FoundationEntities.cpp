@@ -526,13 +526,14 @@ namespace DiscordCoreAPI {
 
 	ActionRowData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
+		theData["type"] = 1;
+		theData["components"] = JsonParseEvent::Array_Start;
 		for (auto& valueNew: this->components) {
 			if (valueNew.type == ComponentType::Button) {
-				nlohmann::json component{};
+				JsonSerializer component{};
 				component["emoji"]["animated"] = valueNew.emoji.animated;
 				std::string theString = valueNew.emoji.name;
-				component["emoji"]["name"] = static_cast<std::string>(theString);
+				component["emoji"]["name"] = theString;
 				if (valueNew.emoji.id != 0) {
 					component["emoji"]["id"] = valueNew.emoji.id;
 				}
@@ -540,9 +541,9 @@ namespace DiscordCoreAPI {
 				component["disabled"] = valueNew.disabled;
 				component["label"] = valueNew.label;
 				component["style"] = valueNew.style;
-				component["type"] = valueNew.type;
+				component["type"] = static_cast<int8_t>(valueNew.type);
 				component["url"] = valueNew.url;
-				components.emplace_back(component);
+				theData.pushBack("components", component);
 			} else if (valueNew.type == ComponentType::SelectMenu) {
 				nlohmann::json optionsArray{};
 				for (auto& value01: valueNew.options) {
@@ -584,10 +585,6 @@ namespace DiscordCoreAPI {
 				components.emplace_back(component);
 			}
 		}
-		nlohmann::json theData{};
-		theData["type"] = 1;
-		theData["components"] = components;
-		*/
 		return theData;
 	}
 

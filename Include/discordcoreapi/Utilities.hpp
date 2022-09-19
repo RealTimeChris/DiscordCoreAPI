@@ -452,11 +452,18 @@ namespace DiscordCoreAPI {
 		JsonSerializer() noexcept;
 		JsonSerializer(const char*) noexcept;
 		JsonSerializer(const JsonSerializer& other) noexcept;
+
 		template<typename KeyType, typename ObjectType> JsonSerializer& operator=(std::unordered_map<KeyType, ObjectType> other) {
 			for (auto& [key, value]: other) {
 				JsonRecord theRecord{};
 				theRecord = value;
 				theRecord.theKey = key;
+				this->theJsonData.push_back(theRecord);
+			}
+			if (other.size() == 0) {
+				JsonRecord theRecord{};
+				theRecord.theValue = "";
+				theRecord.theEvent = JsonParseEvent::Null_Value;
 				this->theJsonData.push_back(theRecord);
 			}
 			return *this;
@@ -468,8 +475,15 @@ namespace DiscordCoreAPI {
 				theRecord = value;
 				this->theJsonData.push_back(theRecord);
 			}
+			if (other.size() == 0) {
+				JsonRecord theRecord{};
+				theRecord.theValue = "";
+				theRecord.theEvent = JsonParseEvent::Null_Value;
+				this->theJsonData.push_back(theRecord);
+			}
 			return *this;
 		}
+
 		JsonSerializer& operator=(const JsonSerializer& other) noexcept;
 		JsonSerializer& operator=(JsonParseEvent theData) noexcept;
 		JsonSerializer& operator=(int8_t) noexcept;
@@ -499,7 +513,6 @@ namespace DiscordCoreAPI {
 		size_t currentIndentationLevel{ 0 };
 		JsonParserState theState{};
 	};
-
 
 	class DiscordCoreAPI_Dll ConfigManager {
 	  public:
