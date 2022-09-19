@@ -400,6 +400,10 @@ namespace DiscordCoreAPI {
 		Null = 8
 	};
 
+	struct JsonValue {
+		std::string theValue{};
+	};
+
 	enum class JsonParserState { Starting_Object = 0, Adding_Object_Elements = 1, Starting_Array = 2, Adding_Array_Elements = 3 };
 
 	enum class JsonParseEvent : uint16_t {
@@ -465,6 +469,26 @@ namespace DiscordCoreAPI {
 		JsonSerializer(const JsonSerializer& other) noexcept;
 		JsonSerializer& operator=(const JsonSerializer& other) noexcept;
 		JsonSerializer& operator=(JsonParseEvent theData) noexcept;
+
+		template<typename KeyType, typename ObjectType> JsonSerializer& operator=(std::unordered_map<KeyType, ObjectType> other) {
+			for (auto& [key, value]: other) {
+				JsonRecord theRecord{};
+				theRecord = value;
+				theRecord.theKey = key;
+				this->theJsonData.push_back(theRecord);
+			}
+			return *this;
+		}
+
+		template<typename ObjectType> JsonSerializer& operator=(std::vector<ObjectType> other) {
+			for (auto& value: other) {
+				JsonRecord theRecord{};
+				theRecord = value;
+				this->theJsonData.push_back(theRecord);
+			}
+			return *this;
+		}
+
 		JsonSerializer& operator=(int8_t) noexcept;
 		JsonSerializer& operator=(int16_t) noexcept;
 		JsonSerializer& operator=(int32_t) noexcept;

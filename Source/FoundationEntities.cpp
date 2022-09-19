@@ -45,9 +45,11 @@ namespace DiscordCoreInternal {
 		for (auto& value: this->activities) {
 			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_Start;
 			if (value.url != "") {
-				theData["url"] = std::string{ value.url };
+				std::string theString = std::string{ value.url };
+				theData["url"] = theString;
 			}
-			theData["name"] = std::string{ value.name };
+			auto theString = std::string{ value.name };
+			theData["name"] = theString;
 			theData["type"] = static_cast<uint8_t>(value.type);
 			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		}
@@ -84,9 +86,11 @@ namespace DiscordCoreInternal {
 		for (auto& value: this->presence.activities) {
 			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_Start;
 			if (value.url != "") {
-				theData["url"] = std::string{ value.url };
+				std::string theString = std::string{ value.url };
+				theData["url"] = theString;
 			}
-			theData["name"] = std::string{ value.name };
+			auto theString = std::string{ value.name };
+			theData["name"] = theString;
 			theData["type"] = static_cast<uint8_t>(value.type);
 			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		}
@@ -374,15 +378,18 @@ namespace DiscordCoreAPI {
 
 	UpdateVoiceStateData::operator JsonSerializer() {
 		JsonSerializer theData{};
+		std::string theString{};
 		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
 		if (this->channelId == 0) {
 			theData["channel_id"] = nullptr;
 		} else {
-			theData["channel_id"] = std::to_string(this->channelId);
+			theString = std::to_string(this->channelId);
+			theData["channel_id"] = theString;
 		}
 		theData["self_deaf"] = this->selfDeaf;
 		theData["self_mute"] = this->selfMute;
-		theData["guild_id"] = std::to_string(this->guildId);
+		theString = std::to_string(this->guildId);
+		theData["guild_id"] = theString;
 		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		theData["op"] = static_cast<uint8_t>(4);
 		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;

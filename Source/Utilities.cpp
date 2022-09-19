@@ -414,7 +414,6 @@ namespace DiscordCoreAPI {
 		*this = theData;
 	}
 
-
 	JsonSerializer::JsonSerializer() noexcept {
 		JsonRecord theRecord{};
 		theRecord.theEvent = JsonParseEvent::Object_Start;
@@ -428,7 +427,6 @@ namespace DiscordCoreAPI {
 		theRecord.theKey = theKeyName;
 		this->theJsonData.emplace_back(theRecord);
 	}
-
 
 	JsonSerializer::operator std::string() noexcept {
 		auto theString = this->getString();

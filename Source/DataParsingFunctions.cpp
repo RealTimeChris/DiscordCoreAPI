@@ -2828,9 +2828,9 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, AuditLogChangeData& theData) {
-		theData.newValue = getString(jsonObjectData, "new_value");
+		theData.newValue.theValue = getString(jsonObjectData, "new_value");
 
-		theData.oldValue = getString(jsonObjectData, "old_value");
+		theData.oldValue.theValue = getString(jsonObjectData, "old_value");
 
 		theData.key = getString(jsonObjectData, "key");
 	}

@@ -56,7 +56,8 @@ namespace DiscordCoreAPI {
 
 	FollowNewsChannelData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData["webhook_channel_id"] = std::to_string(this->targetChannelId);
+		std::string theString = std::to_string(this->targetChannelId);
+		theData["webhook_channel_id"] = theString;
 		return theData;
 	}
 
