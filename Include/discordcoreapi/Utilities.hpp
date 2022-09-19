@@ -403,172 +403,96 @@ namespace DiscordCoreAPI {
 	enum class JsonParserState { Starting_Object = 0, Adding_Object_Elements = 1, Starting_Array = 2, Adding_Array_Elements = 3 };
 
 	enum class JsonParseEvent : uint16_t {
-		Null_Value = 1 << 0,
-		Object_Start = 1 << 1,
-		Object_End = 1 << 2,
-		Array_Start = 1 << 3,
-		Array_End = 1 << 4,
-		String = 1 << 5,
-		Boolean = 1 << 6,
-		Number_Integer = 1 << 7,
-		Number_Integer_Small = 1 << 8,
-		Number_Integer_Large = 1 << 9,
+		Unset = 0 << 0,
+		Null_Value = 1 << 1,
+		Object_Start = 1 << 2,
+		Object_End = 1 << 3,
+		Array_Start = 1 << 4,
+		Array_End = 1 << 5,
+		String = 1 << 6,
+		Boolean = 1 << 7,
+		Number_Integer = 1 << 8,
+		Number_Integer_Small = 1 << 9,
+		Number_Integer_Large = 1 << 10,
 		Number_Float = 1 << 11,
-		Number_Double = 1 << 12,
-		Key = 1 << 13
+		Number_Double = 1 << 12
 	};
 
-	struct JsonValue {
-		JsonParseEvent theEvent{};
-		std::string theValue{};
+	class JsonRecord {
+	  public:
+		JsonRecord() noexcept = default;
+		JsonRecord& operator=(int8_t) noexcept;
+		JsonRecord& operator=(int16_t) noexcept;
+		JsonRecord& operator=(int32_t) noexcept;
+		JsonRecord& operator=(int64_t) noexcept;
+		JsonRecord& operator=(uint8_t) noexcept;
+		JsonRecord& operator=(uint16_t) noexcept;
+		JsonRecord& operator=(uint32_t) noexcept;
+		JsonRecord& operator=(uint64_t) noexcept;
+		JsonRecord& operator=(bool) noexcept;
+		JsonRecord& operator=(double) noexcept;
+		JsonRecord& operator=(float) noexcept;
+		JsonRecord& operator=(std::string&&) noexcept;
+		JsonRecord& operator=(std::string&) noexcept;
+		JsonRecord& operator=(const char*) noexcept;
+		JsonRecord(int8_t) noexcept;
+		JsonRecord(int16_t) noexcept;
+		JsonRecord(int32_t) noexcept;
+		JsonRecord(int64_t) noexcept;
+		JsonRecord(uint8_t) noexcept;
+		JsonRecord(uint16_t) noexcept;
+		JsonRecord(uint32_t) noexcept;
+		JsonRecord(uint64_t) noexcept;
+		JsonRecord(bool) noexcept;
+		JsonRecord(double) noexcept;
+		JsonRecord(float) noexcept;
+		JsonRecord(std::string&&) noexcept;
+		JsonRecord(std::string&) noexcept;
+		JsonRecord(const char*) noexcept;
 
-		JsonValue() noexcept = default;
-		JsonValue& operator=(JsonParseEvent);
-		JsonValue& operator=(const std::string&&);
-		JsonValue& operator=(const std::string&);
-		JsonValue& operator=(std::string&&);
-		JsonValue& operator=(std::string&);
-		JsonValue& operator=(const char*);
-		JsonValue& operator=(uint64_t);
-		JsonValue& operator=(uint32_t);
-		JsonValue& operator=(uint16_t);
-		JsonValue& operator=(uint8_t);
-		JsonValue& operator=(int64_t);
-		JsonValue& operator=(int32_t);
-		JsonValue& operator=(int16_t);
-		JsonValue& operator=(int8_t);
-		JsonValue& operator=(double);
-		JsonValue& operator=(float);
-		JsonValue& operator=(bool);
-		operator std::string();
+		operator std::string() noexcept;
+
+		JsonParseEvent theEvent{ JsonParseEvent::Object_Start };
+		std::string theValue{};
+		std::string theKey{};
 	};
 
 	class JsonSerializer {
 	  public:
-		JsonSerializer() noexcept = default;
-
-		template<std::same_as<std::string> KeyType, std::same_as<std::string> JsonObjectType> JsonSerializer& operator=(std::unordered_map<KeyType, JsonObjectType>&& theData) {
-			JsonValue theValue{};
-			theValue = JsonParseEvent::Object_Start;
-			if (this->isItFound) {
-				for (auto [key, value]: theData) {
-					bool isItFound{ false };
-					for (uint64_t x = 0; x < this->theValues.size(); ++x) {
-						if (this->theValues[x].theValue == key) {
-							theValue = value;
-							this->theValues[x + 1] = theValue;
-						}
-					}
-				}
-			} else {
-				this->theValues.push_back(theValue);
-				for (auto [key,value]: theData) {
-					theValue = key;
-					this->theValues.push_back(theValue);
-					theValue = value;
-					this->theValues.push_back(theValue);
-				}
-				theValue = JsonParseEvent::Object_End;
-				this->theValues.push_back(theValue);
-			}
-			this->isItFound = false;
-			return *this;
-		}
-
-		template<std::same_as<std::string> KeyType, std::same_as<std::string> JsonObjectType> JsonSerializer& operator=(std::unordered_map<KeyType, JsonObjectType>& theData) {
-			JsonValue theValue{};
-			theValue = JsonParseEvent::Object_Start;
-			if (this->isItFound) {
-				for (auto [key, value]: theData) {
-					bool isItFound{ false };
-					for (uint64_t x = 0; x < this->theValues.size(); ++x) {
-						if (this->theValues[x].theValue == key) {
-							theValue = value;
-							this->theValues[x + 1] = theValue;
-						}
-					}
-				}
-			} else {
-				this->theValues.push_back(theValue);
-				for (auto [key, value]: theData) {
-					theValue = key;
-					this->theValues.push_back(theValue);
-					theValue = value;
-					this->theValues.push_back(theValue);
-				}
-				theValue = JsonParseEvent::Object_End;
-				this->theValues.push_back(theValue);
-			}
-			this->isItFound = false;
-			return *this;
-		}
-
-		template<typename JsonObjectType> JsonSerializer& operator=(std::vector<JsonObjectType>&& theData) {
-			JsonValue theValue{};
-			theValue = JsonParseEvent::Array_Start;
-			if (this->isItFound) {
-				for (uint32_t x = this->currentPosition; x < this->theValues.size() - this->currentPosition; ++x) {
-					this->theValues[x] = theData[x - this->currentPosition];
-				}
-			} else {
-				this->theValues.push_back(theValue);
-				for (auto& value: theData) {
-					theValue = value;
-					this->theValues.push_back(theValue);
-				}
-				theValue = JsonParseEvent::Array_End;
-				this->theValues.push_back(theValue);
-			}
-			this->isItFound = false;
-			return *this;
-		}
-
-		template<typename JsonObjectType> JsonSerializer& operator=(std::vector<JsonObjectType>& theData) {
-			JsonValue theValue{};
-			theValue = JsonParseEvent::Array_Start;
-			if (this->isItFound) {
-				for (uint32_t x = this->currentPosition; x < this->theValues.size() - this->currentPosition; ++x) {
-					this->theValues[x] = theData[x - this->currentPosition];
-				}
-			} else {
-				this->theValues.push_back(theValue);
-				for (auto& value: theData) {
-					theValue = value;
-					this->theValues.push_back(theValue);
-				}
-				theValue = JsonParseEvent::Array_End;
-				this->theValues.push_back(theValue);
-			}
-			this->isItFound = false;
-			return *this;
-		}
-
-		JsonSerializer& operator=(JsonParseEvent);
-		JsonSerializer& operator=(std::string&&);
-		JsonSerializer& operator=(std::string&);
-		JsonSerializer& operator=(const char*);
-		JsonSerializer& operator=(uint64_t);
-		JsonSerializer& operator=(uint32_t);
-		JsonSerializer& operator=(uint16_t);
-		JsonSerializer& operator=(uint8_t);
-		JsonSerializer& operator=(int64_t);
-		JsonSerializer& operator=(int32_t);
-		JsonSerializer& operator=(int16_t);
-		JsonSerializer& operator=(int8_t);
-		JsonSerializer& operator=(double);
-		JsonSerializer& operator=(float);
-		JsonSerializer& operator=(bool);
-
-		JsonSerializer& operator[](const char* keyName);
-
-		operator std::string();
+		friend class JsonRecord;
+		JsonSerializer() noexcept;
+		JsonSerializer(const char*) noexcept;
+		JsonSerializer(const JsonSerializer& other) noexcept;
+		JsonSerializer& operator=(const JsonSerializer& other) noexcept;
+		JsonSerializer& operator=(JsonParseEvent theData) noexcept;
+		JsonSerializer& operator=(int8_t) noexcept;
+		JsonSerializer& operator=(int16_t) noexcept;
+		JsonSerializer& operator=(int32_t) noexcept;
+		JsonSerializer& operator=(int64_t) noexcept;
+		JsonSerializer& operator=(uint8_t) noexcept;
+		JsonSerializer& operator=(uint16_t) noexcept;
+		JsonSerializer& operator=(uint32_t) noexcept;
+		JsonSerializer& operator=(uint64_t) noexcept;
+		JsonSerializer& operator=(bool) noexcept;
+		JsonSerializer& operator=(double) noexcept;
+		JsonSerializer& operator=(float) noexcept;
+		JsonSerializer& operator=(std::string&) noexcept;
+		JsonSerializer& operator=(const char*) noexcept;
+		std::string getString();
+		JsonSerializer& operator[](const char* keyName) noexcept;
+		JsonSerializer& operator=(JsonRecord&);
+		void pushBack(const char* keyName, JsonRecord& other) noexcept;
+		void pushBack(const char* keyName, JsonRecord&& other) noexcept;
+		void pushBack(const char* keyName, JsonSerializer& other) noexcept;
+		void pushBack(const char* keyName, JsonSerializer&& other) noexcept;
+		operator std::string() noexcept;
 
 	  protected:
-		std::vector<JsonValue> theValues{};
+		std::vector<JsonRecord> theJsonData{};
+		size_t currentIndentationLevel{ 0 };
 		JsonParserState theState{};
-		size_t currentPosition{};
-		bool isItFound{ false };
 	};
+
 
 	class DiscordCoreAPI_Dll ConfigManager {
 	  public:
