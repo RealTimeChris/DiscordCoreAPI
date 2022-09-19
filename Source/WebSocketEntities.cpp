@@ -1636,7 +1636,12 @@ namespace DiscordCoreInternal {
 				std::string connectionUrl = thePackageNew.areWeResuming ? this->theShardMap[thePackageNew.currentShard]->resumeUrl : this->configManager->getConnectionAddress();
 				bool isItFirstIteraion{ true };
 				ConnectionResult didWeConnect{};
+				DiscordCoreAPI::StopWatch theStopWatch{ 5s };
 				do {
+					if (theStopWatch.hasTimePassed()) {
+						theShardMap[thePackageNew.currentShard]->onClosed();
+						break;
+					}
 					if (!isItFirstIteraion) {
 						std::this_thread::sleep_for(5s);
 					}
@@ -1670,7 +1675,6 @@ namespace DiscordCoreInternal {
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " +
 					DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 				ProcessIOResult didWeWrite{ false };
-				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 				do {
 					if (theStopWatch.hasTimePassed()) {
 						this->theShardMap[thePackageNew.currentShard]->onClosed();
@@ -1697,7 +1701,6 @@ namespace DiscordCoreInternal {
 						}
 						break;
 					}
-					DiscordCoreAPI::StopWatch theStopWatch{ 2500ms };
 					if (this->theShardMap[thePackageNew.currentShard]->areWeStillConnected()) {
 						while (this->theShardMap[thePackageNew.currentShard]->currentState.load() == SSLShardState::Upgrading) {
 							if (theStopWatch.hasTimePassed()) {

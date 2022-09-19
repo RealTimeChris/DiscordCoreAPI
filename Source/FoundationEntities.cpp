@@ -75,54 +75,56 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketIdentifyData::operator DiscordCoreAPI::JsonSerializer() {
-		DiscordCoreAPI::JsonSerializer theData{};
-		theData["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
-		theData["compress"] = false;
-		theData["intents"] = static_cast<uint32_t>(this->intents);
-		theData["large_threshold"] = static_cast<uint32_t>(250);
-		theData["presence"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
-		theData["activities"] = DiscordCoreAPI::JsonParseEvent::Array_Start;
+		std::vector<uint32_t> theVector{};
+		DiscordCoreAPI::JsonSerializer theSerializer{};
+		theVector.push_back(244);
+		theVector.push_back(243);
+		theSerializer["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theSerializer["d"]["compress"] = false;
+		theSerializer["d"]["intents"] = static_cast<uint32_t>(this->intents);
+		theSerializer["d"]["large_threshold"] = static_cast<uint32_t>(250);
 
+		theSerializer["d"]["presences"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
 		for (auto& value: this->presence.activities) {
-			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+			DiscordCoreAPI::JsonSerializer theSerializer02{};
+			std::string theString{}; 
 			if (value.url != "") {
-				std::string theString = std::string{ value.url };
-				theData["url"] = theString;
+				theString = value.url;
+				theSerializer02["url"] = theString;
 			}
-			auto theString = std::string{ value.name };
-			theData["name"] = theString;
-			theData["type"] = static_cast<uint8_t>(value.type);
-			theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+			theString = std::string{ value.name };
+			theSerializer02["name"] = theString;
+			theSerializer02["type"] = uint32_t{ static_cast<uint32_t>(value.type) };
+			theSerializer02[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+			theSerializer.pushBack("activities", theSerializer02);
 		}
-		theData[""] = DiscordCoreAPI::JsonParseEvent::Array_End;
-		theData["afk"] = this->presence.afk;
+		theSerializer[""] = DiscordCoreAPI::JsonParseEvent::Array_End;
+		theSerializer[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+
+		theSerializer["d"]["afk"] = this->presence.afk;
 		if (this->presence.since == 0) {
-			theData["since"] = DiscordCoreAPI::JsonParseEvent::Null_Value;
+			theSerializer["d"]["since"] = DiscordCoreAPI::JsonParseEvent::Null_Value;
 		} else {
-			theData["since"] = this->presence.since;
+			theSerializer["d"]["since"] = this->presence.since;
 		}
 
-		theData["status"] = this->presence.status;
-
-		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
-		theData["properties"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
-		theData["browser"] = "DiscordCoreAPI";
-		theData["device"] = "DiscordCoreAPI";
+		theSerializer["d"]["status"] = this->presence.status;
+		theSerializer["d"]["properties"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theSerializer["d"]["properties"]["browser"] = "DiscordCoreAPI";
+		theSerializer["d"]["properties"]["device"] = "DiscordCoreAPI";
 #ifdef _WIN32
-		theData["os"] = "Windows";
+		theSerializer["d"]["properties"]["os"] = "Windows";
 #else
-		theData["os"] = "Linux";
+		theSerializer["d"]["properties"]["os"] = "Linux";
 #endif
-		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
-		theData["shard"] = DiscordCoreAPI::JsonParseEvent::Array_Start;
-		theData[""] = static_cast<uint8_t>(this->currentShard);
-		theData[""] = static_cast<uint8_t>(this->numberOfShards);
-		theData[""] = DiscordCoreAPI::JsonParseEvent::Array_End;
-		theData["token"] = this->botToken;
-		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
-		theData["op"] = static_cast<uint8_t>(2);
-		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
-		return theData;
+		theSerializer[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+		theSerializer["d"].pushBack("shard", static_cast<uint32_t>(this->currentShard));
+		theSerializer["d"].pushBack("shard", static_cast<uint32_t>(this->numberOfShards));
+		theSerializer[""] = DiscordCoreAPI::JsonParseEvent::Array_End;
+		theSerializer["d"]["token"] = this->botToken;
+		theSerializer[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
+		theSerializer["op"] = static_cast<uint8_t>(2);
+		return theSerializer;
 	}
 
 
@@ -134,8 +136,6 @@ namespace DiscordCoreInternal {
 		theData["data"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
 		theData["port"] = this->voicePort;
 		theData["mode"] = this->voiceEncryptionMode;
-		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
-		theData[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
 		return theData;
 	}
 

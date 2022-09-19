@@ -200,8 +200,12 @@ namespace DiscordCoreInternal {
 		std::string bufferNew{};
 		bufferNew.resize(static_cast<uint64_t>(1) + 2 + sizeof(uint64_t));
 		bufferNew[0] = static_cast<uint8_t>(ETFTokenType::Small_Big_Ext);
+		DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
 		uint8_t bytesToEncode = 0;
 		while (value > 0) {
+			if (theStopWatch.hasTimePassed()) {
+				break;
+			}
 			bufferNew[static_cast<size_t>(3) + bytesToEncode] = value & 0xF;
 			value >>= 8;
 			bytesToEncode++;
@@ -399,7 +403,7 @@ namespace DiscordCoreInternal {
 		const char* floatString = readString(floatLength);
 
 		if (floatString == NULL) {
-			return nlohmann::json{};
+			return std::string{};
 		}
 
 		double number{};
@@ -425,7 +429,7 @@ namespace DiscordCoreInternal {
 
 	std::string ErlPacker::processAtom(const char* atom, uint32_t length) {
 		if (atom == nullptr) {
-			return nlohmann::json{};
+			return std::string{};
 		}
 		if (length >= 3 && length <= 5) {
 			if (length == 3 && strncmp(atom, "nil", 3) == 0) {

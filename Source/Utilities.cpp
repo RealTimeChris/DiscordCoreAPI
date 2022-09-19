@@ -1391,10 +1391,13 @@ namespace DiscordCoreAPI {
 
 		std::string theReturnString{};
 		theReturnString.reserve(len_encoded);
-
+		DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
 		uint64_t pos = 0;
 
 		while (pos < theString.size()) {
+			if (theStopWatch.hasTimePassed()) {
+				break;
+			}
 			theReturnString.push_back(base64_chars_[(theString[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
 
 			if (static_cast<uint64_t>(pos + 1) < theString.size()) {
