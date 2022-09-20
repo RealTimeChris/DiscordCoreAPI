@@ -422,9 +422,12 @@ namespace DiscordCoreAPI {
 		Number_Double = 1 << 12
 	};
 
+	template<typename TheType>
+	concept IsEnum = std::is_enum<TheType>::value;
+
 	struct EnumConverter {
-		template<typename EnumType> EnumConverter(std::enable_if<std::is_enum<EnumType>::value> other) {
-			this->thePtr = new EnumType{};
+		template<IsEnum EnumType> EnumConverter(EnumType other) {
+			this->thePtr = new uint64_t{};
 			*static_cast<uint64_t*>(this->thePtr) = static_cast<uint64_t>(other);
 		};
 
