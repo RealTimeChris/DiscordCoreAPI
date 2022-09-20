@@ -364,7 +364,7 @@ namespace DiscordCoreAPI {
 		std::stringstream theStream{};
 		theStream << getString(jsonObjectData, "unicode_emoji");
 		for (auto& value: theStream.str()) {
-			theData.unicodeEmoji.push_back(value);
+			theData.unicodeEmoji.emplace_back(value);
 		}
 		if (theData.unicodeEmoji.size() > 3) {
 			theData.unicodeEmoji = static_cast<std::string>(theData.unicodeEmoji).substr(1, theData.unicodeEmoji.size() - 3);
@@ -424,7 +424,7 @@ namespace DiscordCoreAPI {
 		std::stringstream theStream{};
 		theStream << getString(jsonObjectData, "unicode_emoji");
 		for (auto& value: theStream.str()) {
-			theData.unicodeEmoji.push_back(value);
+			theData.unicodeEmoji.emplace_back(value);
 		}
 		if (theData.unicodeEmoji.size() > 3) {
 			theData.unicodeEmoji = static_cast<std::string>(theData.unicodeEmoji).substr(1, theData.unicodeEmoji.size() - 3);

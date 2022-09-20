@@ -66,13 +66,16 @@ namespace DiscordCoreAPI {
 	JsonSerializer& JsonSerializer::operator=(JsonParseEvent theData) noexcept {
 		JsonRecord theRecord{};
 		theRecord.theEvent = theData;
+		;
 		if (this->theJsonData.back().theEvent == JsonParseEvent::Unset) {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
 			this->theJsonData.emplace_back(theRecord);
 		}
-
+		if (theData == JsonParseEvent::Object_Start || theData == JsonParseEvent::Array_Start) {
+			this->currentObjectOrArrayStartIndex = this->theJsonData.size() - 1;
+		}
 		return *this;
 	}
 
@@ -381,7 +384,7 @@ namespace DiscordCoreAPI {
 
 	void JsonSerializer::pushBack(const char* keyName, JsonRecord& other) noexcept {
 		bool isItFound{ false };
-		for (uint32_t x = 0; x < this->theJsonData.size(); ++x) {
+		for (uint32_t x = this->currentObjectOrArrayStartIndex; x < this->theJsonData.size(); ++x) {
 			if (this->theJsonData[x].theKey == keyName) {
 				isItFound = true;
 			}
@@ -390,16 +393,16 @@ namespace DiscordCoreAPI {
 		if (!isItFound) {
 			JsonRecord theRecord{};
 			theRecord.theEvent = JsonParseEvent::Array_Start;
-			this->currentIndentationLevel++;
 			theRecord.theKey = keyName;
 			this->theJsonData.emplace_back(theRecord);
+			this->currentObjectOrArrayStartIndex = theJsonData.size() - 1;
 		}
 		*this = other;
 	}
 
 	void JsonSerializer::pushBack(const char* keyName, JsonRecord&& other) noexcept {
 		bool isItFound{ false };
-		for (uint32_t x = 0; x < this->theJsonData.size(); ++x) {
+		for (uint32_t x = this->currentObjectOrArrayStartIndex; x < this->theJsonData.size(); ++x) {
 			if (this->theJsonData[x].theKey == keyName) {
 				isItFound = true;
 			}
@@ -408,16 +411,16 @@ namespace DiscordCoreAPI {
 		if (!isItFound) {
 			JsonRecord theRecord{};
 			theRecord.theEvent = JsonParseEvent::Array_Start;
-			this->currentIndentationLevel++;
 			theRecord.theKey = keyName;
 			this->theJsonData.emplace_back(theRecord);
+			this->currentObjectOrArrayStartIndex = theJsonData.size() - 1;
 		}
 		*this = other;
 	}
 
 	void JsonSerializer::pushBack(const char* keyName, JsonSerializer& other) noexcept {
 		bool isItFound{ false };
-		for (uint32_t x = 0; x < this->theJsonData.size(); ++x) {
+		for (uint32_t x = this->currentObjectOrArrayStartIndex; x < this->theJsonData.size(); ++x) {
 			if (this->theJsonData[x].theKey == keyName) {
 				isItFound = true;
 			}
@@ -426,16 +429,16 @@ namespace DiscordCoreAPI {
 		if (!isItFound) {
 			JsonRecord theRecord{};
 			theRecord.theEvent = JsonParseEvent::Array_Start;
-			this->currentIndentationLevel++;
 			theRecord.theKey = keyName;
 			this->theJsonData.emplace_back(theRecord);
+			this->currentObjectOrArrayStartIndex = theJsonData.size() - 1;
 		}
 		*this = other;
 	}
 
 	void JsonSerializer::pushBack(const char* keyName, JsonSerializer&& other) noexcept {
 		bool isItFound{ false };
-		for (uint32_t x = 0; x < this->theJsonData.size(); ++x) {
+		for (uint32_t x = this->currentObjectOrArrayStartIndex; x < this->theJsonData.size(); ++x) {
 			if (this->theJsonData[x].theKey == keyName) {
 				isItFound = true;
 			}
@@ -444,9 +447,9 @@ namespace DiscordCoreAPI {
 		if (!isItFound) {
 			JsonRecord theRecord{};
 			theRecord.theEvent = JsonParseEvent::Array_Start;
-			this->currentIndentationLevel++;
 			theRecord.theKey = keyName;
 			this->theJsonData.emplace_back(theRecord);
+			this->currentObjectOrArrayStartIndex = theJsonData.size() - 1;
 		}
 		*this = std::move(other);
 	};
@@ -465,7 +468,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string JsonSerializer::getString() {
-		this->currentIndentationLevel = 0;
+		this->currentObjectOrArrayStartIndex = 0;
 		this->theState = JsonParserState::Starting_Object;
 		std::string theString{};
 		for (auto iterator = this->theJsonData.begin(); iterator != this->theJsonData.end(); ++iterator) {
@@ -478,13 +481,13 @@ namespace DiscordCoreAPI {
 			switch ((*iterator).theEvent) {
 				case JsonParseEvent::Object_Start: {
 					this->theState = JsonParserState::Starting_Object;
-					this->currentIndentationLevel++;
+					this->currentObjectOrArrayStartIndex++;
 					theString += "{";
 					break;
 				}
 				case JsonParseEvent::Object_End: {
 					theString += "}";
-					this->currentIndentationLevel--;
+					this->currentObjectOrArrayStartIndex--;
 					if (theString[theString.size() - 2] == ',') {
 						theString.erase(theString.begin() + theString.size() - 2);
 					}
@@ -588,7 +591,7 @@ namespace DiscordCoreAPI {
 					this->theJsonData.erase(iterator);
 			}
 		}
-		for (uint32_t x = 0; x < this->currentIndentationLevel; ++x) {
+		for (uint32_t x = 0; x < this->currentObjectOrArrayStartIndex; ++x) {
 			theString += "}";
 		}
 		return theString;
@@ -634,7 +637,7 @@ namespace DiscordCoreAPI {
 
 	JsonSerializer& JsonSerializer::operator[](const char* keyName) noexcept {
 		bool doesItExist{ false };
-		for (uint32_t x = 0; x < this->theJsonData.size(); ++x) {
+		for (uint32_t x = this->currentObjectOrArrayStartIndex; x < this->theJsonData.size(); ++x) {
 			if (this->theJsonData[x].theKey == keyName) {
 				doesItExist = true;
 			}

@@ -421,8 +421,10 @@ namespace DiscordCoreAPI {
 		Number_Float = 1 << 11,
 		Number_Double = 1 << 12
 	};
+
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
+
 	struct EnumConverter {
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
 			this->thePtr = new uint64_t{};
@@ -577,8 +579,8 @@ namespace DiscordCoreAPI {
 		operator std::string() noexcept;
 
 	  protected:
+		size_t currentObjectOrArrayStartIndex{ 0 };
 		std::vector<JsonRecord> theJsonData{};
-		size_t currentIndentationLevel{ 0 };
 		JsonParserState theState{};
 	};
 
