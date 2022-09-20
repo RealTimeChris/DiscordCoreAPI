@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -109,7 +109,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -184,7 +184,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -198,7 +198,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -240,7 +240,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -254,7 +254,7 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 
 		return *this;
@@ -268,13 +268,13 @@ namespace DiscordCoreAPI {
 			this->theJsonData.back().theValue = theRecord.theValue;
 			this->theJsonData.back().theEvent = theRecord.theEvent;
 		} else {
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 		return *this;
 	}
 
 	JsonSerializer& JsonSerializer::operator=(JsonRecord& theData) {
-		this->theJsonData.push_back(theData);
+		this->theJsonData.emplace_back(theData);
 		return *this;
 	}
 
@@ -392,7 +392,7 @@ namespace DiscordCoreAPI {
 			theRecord.theEvent = JsonParseEvent::Array_Start;
 			this->currentIndentationLevel++;
 			theRecord.theKey = keyName;
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 		*this = other;
 	}
@@ -410,7 +410,7 @@ namespace DiscordCoreAPI {
 			theRecord.theEvent = JsonParseEvent::Array_Start;
 			this->currentIndentationLevel++;
 			theRecord.theKey = keyName;
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 		*this = other;
 	}
@@ -428,7 +428,7 @@ namespace DiscordCoreAPI {
 			theRecord.theEvent = JsonParseEvent::Array_Start;
 			this->currentIndentationLevel++;
 			theRecord.theKey = keyName;
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 		*this = other;
 	}
@@ -446,7 +446,7 @@ namespace DiscordCoreAPI {
 			theRecord.theEvent = JsonParseEvent::Array_Start;
 			this->currentIndentationLevel++;
 			theRecord.theKey = keyName;
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		}
 		*this = std::move(other);
 	};
@@ -601,7 +601,7 @@ namespace DiscordCoreAPI {
 	JsonSerializer& JsonSerializer::operator=(const JsonSerializer& other) noexcept {
 		this->theState = other.theState;
 		for (auto& value: other.theJsonData) {
-			this->theJsonData.push_back(value);
+			this->theJsonData.emplace_back(value);
 		}
 		return *this;
 	}
@@ -610,15 +610,15 @@ namespace DiscordCoreAPI {
 		JsonRecord theRecord{};
 		if (other.vectorType) {
 			theRecord.theEvent = JsonParseEvent::Array_Start;
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 			for (auto& value: static_cast<std::vector<uint64_t>>(other)) {
 				theRecord.theEvent = JsonParseEvent::Number_Integer_Large;
 				theRecord.theValue = std::to_string(static_cast<uint64_t>(value));
-				this->theJsonData.push_back(theRecord);
+				this->theJsonData.emplace_back(theRecord);
 			}
 			theRecord.theEvent = JsonParseEvent::Array_End;
 			this->theState = JsonParserState::Adding_Object_Elements;
-			this->theJsonData.push_back(theRecord);
+			this->theJsonData.emplace_back(theRecord);
 		} else {
 			theRecord.theEvent = JsonParseEvent::Number_Integer_Large;
 			theRecord.theValue = std::to_string(static_cast<uint64_t>(other));
@@ -626,7 +626,7 @@ namespace DiscordCoreAPI {
 				this->theJsonData.back().theValue = theRecord.theValue;
 				this->theJsonData.back().theEvent = theRecord.theEvent;
 			} else {
-				this->theJsonData.push_back(theRecord);
+				this->theJsonData.emplace_back(theRecord);
 			}
 		}
 		return *this;
@@ -640,7 +640,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (!doesItExist) {
-			this->theJsonData.push_back(JsonRecord{});
+			this->theJsonData.emplace_back(JsonRecord{});
 			this->theJsonData.back().theEvent = JsonParseEvent::Unset;
 			this->theJsonData.back().theKey = keyName;
 		}
@@ -830,7 +830,7 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
-	void StringWrapper::push_back(char theChar) {
+	void StringWrapper::emplace_back(char theChar) {
 		std::stringstream theStream{};
 		if (this->thePtr) {
 			theStream << this->thePtr;
@@ -1048,127 +1048,127 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (permissionsInteger & (1ll << 0)) {
-			returnVector.push_back("Create Instant Invite");
+			returnVector.emplace_back("Create Instant Invite");
 		}
 		if (permissionsInteger & (1ll << 1)) {
-			returnVector.push_back("Kick Members");
+			returnVector.emplace_back("Kick Members");
 		}
 		if (permissionsInteger & (1ll << 2)) {
-			returnVector.push_back("Ban Members");
+			returnVector.emplace_back("Ban Members");
 		}
 		if (permissionsInteger & (1ll << 3)) {
-			returnVector.push_back("Administrator");
+			returnVector.emplace_back("Administrator");
 		}
 		if (permissionsInteger & (1ll << 4)) {
-			returnVector.push_back("Manage Channels");
+			returnVector.emplace_back("Manage Channels");
 		}
 		if (permissionsInteger & (1ll << 5)) {
-			returnVector.push_back("Manage Guild");
+			returnVector.emplace_back("Manage Guild");
 		}
 		if (permissionsInteger & (1ll << 6)) {
-			returnVector.push_back("Add Reactions");
+			returnVector.emplace_back("Add Reactions");
 		}
 		if (permissionsInteger & (1ll << 7)) {
-			returnVector.push_back("View Audit Log");
+			returnVector.emplace_back("View Audit Log");
 		}
 		if (permissionsInteger & (1ll << 8)) {
-			returnVector.push_back("Priority Speaker");
+			returnVector.emplace_back("Priority Speaker");
 		}
 		if (permissionsInteger & (1ll << 9)) {
-			returnVector.push_back("Stream");
+			returnVector.emplace_back("Stream");
 		}
 		if (permissionsInteger & (1ll << 10)) {
-			returnVector.push_back("View Channel");
+			returnVector.emplace_back("View Channel");
 		}
 		if (permissionsInteger & (1ll << 11)) {
-			returnVector.push_back("Send Messages");
+			returnVector.emplace_back("Send Messages");
 		}
 		if (permissionsInteger & (1ll << 12)) {
-			returnVector.push_back("Send TTS Messages");
+			returnVector.emplace_back("Send TTS Messages");
 		}
 		if (permissionsInteger & (1ll << 13)) {
-			returnVector.push_back("Manage Messages");
+			returnVector.emplace_back("Manage Messages");
 		}
 		if (permissionsInteger & (1ll << 14)) {
-			returnVector.push_back("Embed Links");
+			returnVector.emplace_back("Embed Links");
 		}
 		if (permissionsInteger & (1ll << 15)) {
-			returnVector.push_back("Attach Files");
+			returnVector.emplace_back("Attach Files");
 		}
 		if (permissionsInteger & (1ll << 16)) {
-			returnVector.push_back("Read Message History");
+			returnVector.emplace_back("Read Message History");
 		}
 		if (permissionsInteger & (1ll << 17)) {
-			returnVector.push_back("Mention Everyone");
+			returnVector.emplace_back("Mention Everyone");
 		}
 		if (permissionsInteger & (1ll << 18)) {
-			returnVector.push_back("Use External Emoji");
+			returnVector.emplace_back("Use External Emoji");
 		}
 		if (permissionsInteger & (1ll << 19)) {
-			returnVector.push_back("View Guild Insights");
+			returnVector.emplace_back("View Guild Insights");
 		}
 		if (permissionsInteger & (1ll << 20)) {
-			returnVector.push_back("Connect");
+			returnVector.emplace_back("Connect");
 		}
 		if (permissionsInteger & (1ll << 21)) {
-			returnVector.push_back("Speak");
+			returnVector.emplace_back("Speak");
 		}
 		if (permissionsInteger & (1ll << 22)) {
-			returnVector.push_back("Mute Members");
+			returnVector.emplace_back("Mute Members");
 		}
 		if (permissionsInteger & (1ll << 23)) {
-			returnVector.push_back("Deafen Members");
+			returnVector.emplace_back("Deafen Members");
 		}
 		if (permissionsInteger & (1ll << 24)) {
-			returnVector.push_back("Move Members");
+			returnVector.emplace_back("Move Members");
 		}
 		if (permissionsInteger & (1ll << 25)) {
-			returnVector.push_back("Use VAD");
+			returnVector.emplace_back("Use VAD");
 		}
 		if (permissionsInteger & (1ll << 26)) {
-			returnVector.push_back("Change Nickname");
+			returnVector.emplace_back("Change Nickname");
 		}
 		if (permissionsInteger & (1ll << 27)) {
-			returnVector.push_back("Manage Nicknames");
+			returnVector.emplace_back("Manage Nicknames");
 		}
 		if (permissionsInteger & (1ll << 28)) {
-			returnVector.push_back("Manage Roles");
+			returnVector.emplace_back("Manage Roles");
 		}
 		if (permissionsInteger & (1ll << 29)) {
-			returnVector.push_back("Manage Webhooks");
+			returnVector.emplace_back("Manage Webhooks");
 		}
 		if (permissionsInteger & (1ll << 30)) {
-			returnVector.push_back("Manage Emojis And Stickers");
+			returnVector.emplace_back("Manage Emojis And Stickers");
 		}
 		if (permissionsInteger & (1ll << 31)) {
-			returnVector.push_back("Use Application Commands");
+			returnVector.emplace_back("Use Application Commands");
 		}
 		if (permissionsInteger & (1ll << 32)) {
-			returnVector.push_back("Request To Speak");
+			returnVector.emplace_back("Request To Speak");
 		}
 		if (permissionsInteger & (1ll << 33)) {
-			returnVector.push_back("Manage Events");
+			returnVector.emplace_back("Manage Events");
 		}
 		if (permissionsInteger & (1ll << 34)) {
-			returnVector.push_back("Manage Threads");
+			returnVector.emplace_back("Manage Threads");
 		}
 		if (permissionsInteger & (1ll << 35)) {
-			returnVector.push_back("Create Public Threads");
+			returnVector.emplace_back("Create Public Threads");
 		}
 		if (permissionsInteger & (1ll << 36)) {
-			returnVector.push_back("Create Private Threads");
+			returnVector.emplace_back("Create Private Threads");
 		}
 		if (permissionsInteger & (1ll << 37)) {
-			returnVector.push_back("Use External Stickers");
+			returnVector.emplace_back("Use External Stickers");
 		}
 		if (permissionsInteger & (1ll << 38)) {
-			returnVector.push_back("Send Messages In Threads");
+			returnVector.emplace_back("Send Messages In Threads");
 		}
 		if (permissionsInteger & (1ll << 39)) {
-			returnVector.push_back("Start Embedded Activities");
+			returnVector.emplace_back("Start Embedded Activities");
 		}
 		if (permissionsInteger & (1ll << 40)) {
-			returnVector.push_back("Moderate Members");
+			returnVector.emplace_back("Moderate Members");
 		}
 		return returnVector;
 	}

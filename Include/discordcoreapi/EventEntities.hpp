@@ -160,7 +160,7 @@ namespace DiscordCoreInternal {
 		std::vector<ReturnType> operator()(ArgTypes&... args) {
 			std::vector<ReturnType> theVector{};
 			for (auto& [key, value]: this->theFunctions) {
-				theVector.push_back(value.theFunction(args...));
+				theVector.emplace_back(value.theFunction(args...));
 			}
 			return theVector;
 		}

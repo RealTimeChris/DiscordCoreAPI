@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 				dataPackage01.parentId = channels.at(1).parentId;
 				dataPackage01.position = channels.at(1).position-1;
 
-				dataPackage00.push_back(dataPackage01);
+				dataPackage00.emplace_back(dataPackage01);
 
 				DiscordCoreAPI::ModifyGuildChannelPositionsData dataPackage;
 				dataPackage.reason = "TESTING PURPOSES!";

@@ -11,12 +11,12 @@ namespace DiscordCoreAPI {
 	std::vector<EmbedData> updateMessageEmbeds(std::vector<Song> playlist, DiscordGuild* discordGuild, InputEventData interaction, InputEventData originalEvent, User theUser,
 		int32_t currentPageIndex) {
 		std::vector<std::vector<EmbedFieldData>> msgEmbedFields{};
-		msgEmbedFields.push_back(std::vector<EmbedFieldData>());
+		msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
 		int32_t msgEmbedFieldsPage{ 0 };
 		for (int32_t y = 0; y < playlist.size(); y += 1) {
 			if (y % 25 == 0 && y > 0) {
 				msgEmbedFieldsPage += 1;
-				msgEmbedFields.push_back(std::vector<EmbedFieldData>());
+				msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
 			}
 			EmbedFieldData msgEmbedField{};
 			msgEmbedField.Inline = false;
@@ -24,7 +24,7 @@ namespace DiscordCoreAPI {
 				std::to_string(playlist.at(y).addedByUserId) + "> (" + playlist.at(y).addedByUserName + ")";
 
 			msgEmbedField.name = "__**" + std::to_string(y + 1) + " of " + std::to_string(playlist.size()) + "**__";
-			msgEmbedFields[msgEmbedFieldsPage].push_back(msgEmbedField);
+			msgEmbedFields[msgEmbedFieldsPage].emplace_back(msgEmbedField);
 		}
 		msgEmbedFieldsPage = 0;
 		std::vector<EmbedData> newMsgEmbeds{};
@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 			newEmbed->setTitle("__**Playlist, Page " + std::to_string(y + 1) + " of " + std::to_string(msgEmbedFields.size()) + "**__");
 			newEmbed->setFooter("React with ✅ to edit the contents of the current page. React with ❌ to exit!");
 			newEmbed->setDescription("__**React with ✅ to edit the contents of the current page. React with ❌ to exit!**__").fields = msgEmbedFields[y];
-			newMsgEmbeds.push_back(*newEmbed);
+			newMsgEmbeds.emplace_back(*newEmbed);
 		}
 		RespondToInputEventData dataPackage(originalEvent);
 		dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
@@ -110,14 +110,14 @@ namespace DiscordCoreAPI {
 				int32_t currentPageIndex = 0;
 
 				std::vector<std::vector<EmbedFieldData>> msgEmbedFields;
-				msgEmbedFields.push_back(std::vector<EmbedFieldData>());
+				msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
 				int32_t msgEmbedFieldsPage{ 0 };
 				for (int32_t y = 0; y < SongAPI::getPlaylist(guild->id).songQueue.size(); y += 1) {
 					if (y % 25 == 0 && y > 0) {
 						if (y > 0) {
 							msgEmbedFieldsPage += 1;
 						}
-						msgEmbedFields.push_back(std::vector<EmbedFieldData>());
+						msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
 					}
 					EmbedFieldData msgEmbedField{};
 					msgEmbedField.Inline = false;
@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 						std::to_string(SongAPI::getPlaylist(guild->id).songQueue.at(y).addedByUserId) + "> (" + SongAPI::getPlaylist(guild->id).songQueue.at(y).addedByUserName +
 						")";
 					msgEmbedField.name = "__**" + std::to_string(y + 1) + " of " + std::to_string(SongAPI::getPlaylist(guild->id).songQueue.size()) + "**__";
-					msgEmbedFields[msgEmbedFieldsPage].push_back(msgEmbedField);
+					msgEmbedFields[msgEmbedFieldsPage].emplace_back(msgEmbedField);
 				}
 				std::vector<EmbedData> msgEmbeds;
 				msgEmbedFieldsPage = 0;
@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 						.setFooter("React with ✅ to edit the contents of the current page. React with ❌ to exit!")
 						.setDescription("__**React with ✅ to edit the contents of the current page. React with ❌ to exit!**__")
 						.fields = msgEmbedFields[y];
-					msgEmbeds.push_back(*newEmbed);
+					msgEmbeds.emplace_back(*newEmbed);
 				}
 				RespondToInputEventData dataPackage0(newEvent);
 				dataPackage0.setResponseType(InputEventResponseType::Interaction_Response);
@@ -256,13 +256,13 @@ namespace DiscordCoreAPI {
 							regex_search(newString, wordRegexMatch, wordRegex,
 								std::regex_constants::match_flag_type::match_any | std::regex_constants::match_flag_type::match_not_null |
 									std::regex_constants::match_flag_type::match_prev_avail);
-							args2.push_back(wordRegexMatch.str());
+							args2.emplace_back(wordRegexMatch.str());
 							std::regex_iterator<const char*>::regex_type rx("\\d{1,4}");
 							std::regex_iterator<const char*> next(newString.c_str(), newString.c_str() + strlen(newString.c_str()), rx);
 							std::regex_iterator<const char*> end;
 
 							for (; next != end; ++next) {
-								args2.push_back(next->str());
+								args2.emplace_back(next->str());
 							}
 
 							std::regex digitRegex("\\d{1,3}");
@@ -417,7 +417,7 @@ namespace DiscordCoreAPI {
 										std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
 									int32_t randomIndex = static_cast<uint32_t>(
 										(static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max()) * static_cast<float>(oldSongArray.songQueue.size())));
-									newVector.push_back(oldSongArray.songQueue.at(randomIndex));
+									newVector.emplace_back(oldSongArray.songQueue.at(randomIndex));
 									oldSongArray.songQueue.erase(oldSongArray.songQueue.begin() + randomIndex, oldSongArray.songQueue.begin() + randomIndex + 1);
 								}
 								oldSongArray.songQueue = newVector;

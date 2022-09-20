@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 					newEmbed->setTitle("__**" + std::to_string(x) + " of " + std::to_string(searchResults.size()) + "**__");
 					newEmbed->setImage(value.thumbnailUrl);
 					newEmbed->setColor(discordGuild.data.borderColor);
-					embedsFromSearch.push_back(*newEmbed);
+					embedsFromSearch.emplace_back(*newEmbed);
 				}
 
 				if (embedsFromSearch.size() > 0) {

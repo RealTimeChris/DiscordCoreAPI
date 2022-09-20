@@ -37,11 +37,11 @@ namespace DiscordCoreAPI {
 					int32_t currentHelpPage{ 0 };
 					for (auto& [key, value]: newArgs.discordCoreClient->getCommandController().getFunctions()) {
 						if (counter % 24 == 0) {
-							selectOptions.push_back(std::vector<SelectOptionData>());
+							selectOptions.emplace_back(std::vector<SelectOptionData>());
 							currentHelpPage += 1;
 						}
 						std::string newString;
-						newString.push_back(( char )toupper(value->commandName[0]));
+						newString.emplace_back(( char )toupper(value->commandName[0]));
 						newString += value->commandName.substr(1, value->commandName.length() - 1);
 						SelectOptionData newData;
 						newData.label = newString;
@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 						if (doWeContinue) {
 							continue;
 						}
-						selectOptions.at(( int64_t )currentHelpPage - ( int64_t )1).push_back(newData);
+						selectOptions.at(( int64_t )currentHelpPage - ( int64_t )1).emplace_back(newData);
 						counter += 1;
 					}
 					SelectOptionData newData;
@@ -71,8 +71,8 @@ namespace DiscordCoreAPI {
 					newData.emoji.name = "❌";
 					std::vector<std::vector<SelectOptionData>> selectOptionsNew;
 					for (auto& value: selectOptions) {
-						value.push_back(newData);
-						selectOptionsNew.push_back(value);
+						value.emplace_back(newData);
+						selectOptionsNew.emplace_back(value);
 					}
 
 					int32_t counter02{ 0 };
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 					for (uint32_t x = 0; x < selectOptionsNew.size(); x += 1) {
 						std::string customId{ "select_page_" + std::to_string(x) };
 						responseData.addButton(false, customId, std::to_string(x), ButtonStyle::Success, numberEmojiNames[x]);
-						numberEmojiId.push_back(customId);
+						numberEmojiId.emplace_back(customId);
 					}
 					responseData.addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
 					if (isItFirst) {
@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 						responseData03.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						responseData03.addMessageEmbed(msgEmbed00);
 						responseData03.addSelectMenu(false, "help_menu", value, "Commands", 1, 1);
-						editInteractionResponseData00.push_back(responseData03);
+						editInteractionResponseData00.emplace_back(responseData03);
 						counter03 += 1;
 					}
 					if (buttonData.size() > 0) {
@@ -174,7 +174,7 @@ namespace DiscordCoreAPI {
 						for (uint32_t x = 0; x < selectOptionsNew.size(); x += 1) {
 							std::string customId{ "select_page_" + std::to_string(x) };
 							responseData02.addButton(false, customId, std::to_string(x), ButtonStyle::Success, numberEmojiNames[x]);
-							numberEmojiId.push_back(customId);
+							numberEmojiId.emplace_back(customId);
 						}
 						responseData02.addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
 						newEvent = InputEvents::respondToInputEventAsync(responseData02).get();

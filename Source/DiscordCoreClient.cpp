@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 		bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
-		this->commandsToRegister.push_back(commandData);
+		this->commandsToRegister.emplace_back(commandData);
 	}
 
 	void DiscordCoreClient::registerFunctionsInternal() {
@@ -326,7 +326,7 @@ namespace DiscordCoreAPI {
 			theData.currentReconnectTries = 0;
 			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x] =
 				std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, &this->theConnections, x, &Globals::doWeQuit);
-			this->theConnections.push_back(theData);
+			this->theConnections.emplace_back(theData);
 		}
 		try {
 			this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[this->configManager.getStartingShard()].get() };

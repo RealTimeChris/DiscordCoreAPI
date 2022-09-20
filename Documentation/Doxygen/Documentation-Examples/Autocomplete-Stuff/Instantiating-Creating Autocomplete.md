@@ -44,14 +44,14 @@ namespace DiscordCoreAPI {
 				testOptionOne.name = "attachment";
 				testOptionOne.required = false;
 				testOptionOne.description = "Test attachment!";
-				createTestData.options.push_back(testOptionOne);
+				createTestData.options.emplace_back(testOptionOne);
 				DiscordCoreAPI::ApplicationCommandOptionData testOptionTwo;
 				testOptionTwo.type = DiscordCoreAPI::ApplicationCommandOptionType::String;
 				testOptionTwo.name = "test_string";
 				testOptionTwo.required = false;
 				testOptionTwo.autocomplete = true;
 				testOptionTwo.description = "Test string!";
-				createTestData.options.push_back(testOptionTwo);
+				createTestData.options.emplace_back(testOptionTwo);
 				DiscordCoreAPI::ApplicationCommands::createGlobalApplicationCommandAsync(createTestData).get();
 
 			} catch (...) {

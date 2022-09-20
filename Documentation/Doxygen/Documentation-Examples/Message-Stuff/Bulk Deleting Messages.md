@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 				DiscordCoreAPI::DeleteMessagesBulkData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				vector<string> messageIds { };
-				messageIds.push_back(args.eventData.getMessageId());
+				messageIds.emplace_back(args.eventData.getMessageId());
 				dataPackage.messageIds = messageIds;
 
 				DiscordCoreAPI::Messages::deleteMessagesBulkAsync(dataPackage).get();

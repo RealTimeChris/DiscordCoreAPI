@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 						}
 					}
 
-					discordGuild.data.musicChannelIds.push_back(channelID);
+					discordGuild.data.musicChannelIds.emplace_back(channelID);
 					discordGuild.writeDataToDB();
 					EmbedData messageEmbed;
 					messageEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());

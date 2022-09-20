@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 			try {
 				DiscordCoreAPI::BeginGuildPruneData dataPackage01;
 				dataPackage01.days = 30;
-				dataPackage01.includeRoles.push_back("860075141818744853");
+				dataPackage01.includeRoles.emplace_back("860075141818744853");
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.computePruneCount = true;
 				dataPackage01.reason = "TEST PRUNING!";

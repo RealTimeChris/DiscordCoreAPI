@@ -77,14 +77,15 @@ namespace DiscordCoreInternal {
 	WebSocketIdentifyData::operator DiscordCoreAPI::JsonSerializer() {
 		std::vector<uint32_t> theVector{};
 		DiscordCoreAPI::JsonSerializer theSerializer{};
-		theVector.push_back(244);
-		theVector.push_back(243);
+		theVector.emplace_back(244);
+		theVector.emplace_back(243);
 		theSerializer["d"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
 		theSerializer["d"]["compress"] = false;
 		theSerializer["d"]["intents"] = static_cast<uint32_t>(this->intents);
 		theSerializer["d"]["large_threshold"] = static_cast<uint32_t>(250);
 
 		theSerializer["d"]["presences"] = DiscordCoreAPI::JsonParseEvent::Object_Start;
+		theSerializer["d"]["presences"]["activities"] = DiscordCoreAPI::JsonParseEvent::Array_Start;
 		for (auto& value: this->presence.activities) {
 			DiscordCoreAPI::JsonSerializer theSerializer02{};
 			std::string theString{}; 
@@ -96,7 +97,7 @@ namespace DiscordCoreInternal {
 			theSerializer02["name"] = theString;
 			theSerializer02["type"] = uint32_t{ static_cast<uint32_t>(value.type) };
 			theSerializer02[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
-			theSerializer.pushBack("activities", theSerializer02);
+			theSerializer["d"]["presences"].pushBack("activities", theSerializer02);
 		}
 		theSerializer[""] = DiscordCoreAPI::JsonParseEvent::Array_End;
 		theSerializer[""] = DiscordCoreAPI::JsonParseEvent::Object_End;
@@ -254,13 +255,10 @@ namespace DiscordCoreAPI {
 
 	EmbedData::operator JsonSerializer() {
 		JsonSerializer theData{};
+		theData[""] = JsonParseEvent::Object_Start;
 		theData["fields"] = JsonParseEvent::Array_Start;
 		for (auto& value2: this->fields) {
-			theData[""] = JsonParseEvent::Object_Start;
-			theData["inline"] = value2.Inline;
-			theData["name"] = value2.name;
-			theData["value"] = value2.value;
-			theData[""] = JsonParseEvent::Object_End;
+			theData.pushBack("fields", value2);
 		}
 		theData[""] = JsonParseEvent::Array_End;
 		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
@@ -533,18 +531,21 @@ namespace DiscordCoreAPI {
 		for (auto& valueNew: this->components) {
 			if (valueNew.type == ComponentType::Button) {
 				JsonSerializer component{};
+				component["emoji"] = JsonParseEvent::Object_Start;
 				component["emoji"]["animated"] = valueNew.emoji.animated;
 				std::string theString = valueNew.emoji.name;
 				component["emoji"]["name"] = theString;
 				if (valueNew.emoji.id != 0) {
 					component["emoji"]["id"] = valueNew.emoji.id;
 				}
+				component[""] = JsonParseEvent::Object_End;
 				component["custom_id"] = valueNew.customId;
 				component["disabled"] = valueNew.disabled;
 				component["label"] = valueNew.label;
 				component["style"] = valueNew.style;
 				component["type"] = static_cast<int8_t>(valueNew.type);
 				component["url"] = valueNew.url;
+				component[""] = JsonParseEvent::Object_End;
 				theData.pushBack("components", component);
 			} else if (valueNew.type == ComponentType::SelectMenu) {
 				JsonSerializer optionsArray{};
@@ -562,6 +563,7 @@ namespace DiscordCoreAPI {
 					option["default"] = value01._default;
 					option["label"] = value01.label;
 					option["value"] = value01.value;
+					option[""] = JsonParseEvent::Object_End;
 					optionsArray.pushBack("options", option);
 				};
 
@@ -574,6 +576,7 @@ namespace DiscordCoreAPI {
 				component["disabled"] = valueNew.disabled;
 				component["options"] = optionsArray;
 				component["type"] = static_cast<uint8_t>(valueNew.type);
+				component[""] = JsonParseEvent::Object_End;
 				theData.pushBack("components", component);
 
 			} else if (valueNew.type == ComponentType::TextInput) {
@@ -587,6 +590,7 @@ namespace DiscordCoreAPI {
 				component["label"] = valueNew.label;
 				component["value"] = valueNew.value;
 				component["type"] = static_cast<uint8_t>(valueNew.type);
+				component[""] = JsonParseEvent::Object_End;
 				theData.pushBack("components", component);
 			}
 		}
@@ -1049,10 +1053,13 @@ namespace DiscordCoreAPI {
 
 	InteractionResponseData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		for (auto& value: this->data.attachments) {
-			theData["data"].pushBack("attachments", JsonSerializer{ value });
-		}
-		theData[""] = JsonParseEvent::Array_End;
+		theData["data"] = JsonParseEvent::Object_Start;
+		if (this->data.attachments.size() > 0) {
+			for (auto& value: this->data.attachments) {
+				theData["data"].pushBack("attachments", JsonSerializer{ value });
+			}
+			theData[""] = JsonParseEvent::Array_End;
+		}		
 		if (this->data.components.size() == 0) {
 			theData["data"]["components"] = JsonParseEvent::Null_Value;
 		} else {
@@ -1061,9 +1068,10 @@ namespace DiscordCoreAPI {
 			}
 		}
 		theData[""] = JsonParseEvent::Array_End;
-		theData["data"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->data.allowedMentions };
+		if (this->data.allowedMentions.parse.size() > 0 || this->data.allowedMentions.roles.size() > 0 || this->data.allowedMentions.users.size() > 0) {
+			theData["data"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{};
+		}
 		if (this->data.choices.size() > 0) {
-			JsonSerializer theArray{};
 			for (auto& value: this->data.choices) {
 				JsonSerializer theValue{};
 				theValue["name"] = value.name;
@@ -1086,9 +1094,8 @@ namespace DiscordCoreAPI {
 						break;
 					}
 				}
-				theArray.pushBack("chioces", theValue);
+				theData.pushBack("choices", theValue);
 			}
-			theData["data"]["choices"] = theArray;
 		}
 		theData[""] = JsonParseEvent::Array_End;
 		if (this->data.embeds.size() == 0) {

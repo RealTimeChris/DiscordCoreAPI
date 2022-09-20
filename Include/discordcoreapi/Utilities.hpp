@@ -432,7 +432,7 @@ namespace DiscordCoreAPI {
 		template<IsEnum EnumType> EnumConverter(std::vector<EnumType> other) {
 			this->thePtr = new std::vector<uint64_t>{};
 			for (auto& value: other) {
-				static_cast<std::vector<uint64_t>*>(this->thePtr)->push_back(static_cast<uint64_t>(value));
+				static_cast<std::vector<uint64_t>*>(this->thePtr)->emplace_back(static_cast<uint64_t>(value));
 			}
 			this->vectorType = true;
 		};
@@ -440,7 +440,7 @@ namespace DiscordCoreAPI {
 		operator std::vector<uint64_t>() {
 			std::vector<uint64_t> theObject{};
 			for (auto& value: *static_cast<std::vector<uint64_t>*>(this->thePtr)) {
-				theObject.push_back(value);
+				theObject.emplace_back(value);
 			}
 
 			return theObject;
@@ -495,13 +495,13 @@ namespace DiscordCoreAPI {
 				JsonRecord theRecord{};
 				theRecord = value;
 				theRecord.theKey = key;
-				this->theJsonData.push_back(theRecord);
+				this->theJsonData.emplace_back(theRecord);
 			}
 			if (other.size() == 0) {
 				JsonRecord theRecord{};
 				theRecord.theValue = "";
 				theRecord.theEvent = JsonParseEvent::Null_Value;
-				this->theJsonData.push_back(theRecord);
+				this->theJsonData.emplace_back(theRecord);
 			}
 			return *this;
 		}
@@ -510,13 +510,13 @@ namespace DiscordCoreAPI {
 			for (auto& value: other) {
 				JsonRecord theRecord{};
 				theRecord = value;
-				this->theJsonData.push_back(theRecord);
+				this->theJsonData.emplace_back(theRecord);
 			}
 			if (other.size() == 0) {
 				JsonRecord theRecord{};
 				theRecord.theValue = "";
 				theRecord.theEvent = JsonParseEvent::Null_Value;
-				this->theJsonData.push_back(theRecord);
+				this->theJsonData.emplace_back(theRecord);
 			}
 			return *this;
 		}
@@ -525,13 +525,13 @@ namespace DiscordCoreAPI {
 			for (auto& value: other) {
 				JsonRecord theRecord{};
 				theRecord = value;
-				this->theJsonData.push_back(theRecord);
+				this->theJsonData.emplace_back(theRecord);
 			}
 			if (other.size() == 0) {
 				JsonRecord theRecord{};
 				theRecord.theValue = "";
 				theRecord.theEvent = JsonParseEvent::Null_Value;
-				this->theJsonData.push_back(theRecord);
+				this->theJsonData.emplace_back(theRecord);
 			}
 			return *this;
 		}
@@ -540,13 +540,13 @@ namespace DiscordCoreAPI {
 			for (auto& value: other) {
 				JsonRecord theRecord{};
 				theRecord = value;
-				this->theJsonData.push_back(theRecord);
+				this->theJsonData.emplace_back(theRecord);
 			}
 			if (other.size() == 0) {
 				JsonRecord theRecord{};
 				theRecord.theValue = "";
 				theRecord.theEvent = JsonParseEvent::Null_Value;
-				this->theJsonData.push_back(theRecord);
+				this->theJsonData.emplace_back(theRecord);
 			}
 			return *this;
 		}
@@ -728,7 +728,7 @@ namespace DiscordCoreAPI {
 
 		operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>();
 
-		void push_back(char theChar);
+		void emplace_back(char theChar);
 
 		size_t size();
 

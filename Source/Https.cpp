@@ -419,7 +419,7 @@ namespace DiscordCoreInternal {
 		if (workload.baseUrl == "") {
 			workload.baseUrl = "https://discord.com/api/v10";
 		}
-
+		std::cout << "THE WORKLOAD: " << workload.content << std::endl;
 		RateLimitData& rateLimitData = *this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].get();
 		if (!rateLimitData.haveWeGoneYet.load()) {
 			std::this_thread::sleep_for(100ms);

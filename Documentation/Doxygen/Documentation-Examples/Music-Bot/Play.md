@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 		} else {
 			returnData =
 				moveThroughMessagePages(std::to_string(newArgs.eventData.getAuthorId()), InputEventData(newEvent), currentPageIndex, embedsFromSearch, false, 120000, true);
-			arrayOfIndices.push_back(returnData.currentPageIndex);
+			arrayOfIndices.emplace_back(returnData.currentPageIndex);
 			return recurseThroughOptions(returnData, returnData.currentPageIndex, returnData.inputEventData, embedsFromSearch, newArgs, arrayOfIndices, guildMember, searchResults);
 		}
 	}
@@ -214,7 +214,7 @@ namespace DiscordCoreAPI {
 					newEmbed->setTitle("__**" + std::to_string(x) + " of " + std::to_string(searchResults.size()) + "**__");
 					newEmbed->setImage(value.thumbnailUrl);
 					newEmbed->setColor(discordGuild.data.borderColor);
-					embedsFromSearch.push_back(*newEmbed);
+					embedsFromSearch.emplace_back(*newEmbed);
 				}
 
 				uint32_t currentPageIndex = 0;
@@ -388,7 +388,7 @@ namespace DiscordCoreAPI {
 						newEmbed->setTimeStamp(getTimeAndDate());
 						newEmbed->setTitle("__**Playing Issue:**__");
 						newEmbed->setColor(discordGuild.data.borderColor);
-						embedsFromSearch.push_back(*newEmbed);
+						embedsFromSearch.emplace_back(*newEmbed);
 						RespondToInputEventData dataPackage(newEvent);
 						dataPackage.setResponseType(InputEventResponseType::Follow_Up_Message);
 						dataPackage.addMessageEmbed(*newEmbed);
@@ -406,7 +406,7 @@ namespace DiscordCoreAPI {
 					newEmbed->setTimeStamp(getTimeAndDate());
 					newEmbed->setTitle("__**Playing Issue:**__");
 					newEmbed->setColor(discordGuild.data.borderColor);
-					embedsFromSearch.push_back(*newEmbed);
+					embedsFromSearch.emplace_back(*newEmbed);
 					RespondToInputEventData dataPackage(newEvent);
 					dataPackage.setResponseType(InputEventResponseType::Follow_Up_Message);
 					dataPackage.addMessageEmbed(*newEmbed);
@@ -428,7 +428,7 @@ namespace DiscordCoreAPI {
 					newEmbed->setTitle("__**Song Added To Queue Position: " + std::to_string(SongAPI::getPlaylist(guild.id).songQueue.size()) + "**__ ");
 					newEmbed->setColor(discordGuild.data.borderColor);
 					newEmbed->setThumbnail(searchResults[returnData.currentPageIndex].thumbnailUrl);
-					embedsFromSearch.push_back(*newEmbed);
+					embedsFromSearch.emplace_back(*newEmbed);
 					RespondToInputEventData dataPackage02(newEvent);
 					dataPackage02.setResponseType(InputEventResponseType::Follow_Up_Message);
 					dataPackage02.addMessageEmbed(*newEmbed);

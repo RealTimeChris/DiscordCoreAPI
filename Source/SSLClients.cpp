@@ -408,8 +408,8 @@ namespace DiscordCoreInternal {
 			} else {
 				theWrapper.events = POLLIN;
 			}
-			readWriteSet.theIndices.push_back(x);
-			readWriteSet.thePolls.push_back(theWrapper);
+			readWriteSet.theIndices.emplace_back(x);
+			readWriteSet.thePolls.emplace_back(theWrapper);
 		}
 
 		if (readWriteSet.theIndices.size() == 0) {
@@ -419,7 +419,7 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = poll(readWriteSet.thePolls.data(), static_cast<unsigned long>(readWriteSet.theIndices.size()), 1); returnValue == SOCKET_ERROR) {
 			for (uint32_t x = 0; x < readWriteSet.thePolls.size(); ++x) {
 				if (readWriteSet.thePolls[x].revents & POLLERR || readWriteSet.thePolls[x].revents & POLLHUP || readWriteSet.thePolls[x].revents & POLLNVAL) {
-					theReturnValue.push_back(theVector[readWriteSet.theIndices[x]]);
+					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 				}
 			}
 			return theReturnValue;
@@ -431,13 +431,13 @@ namespace DiscordCoreInternal {
 		for (uint32_t x = 0; x < readWriteSet.theIndices.size(); ++x) {
 			if (readWriteSet.thePolls[x].revents & POLLOUT) {
 				if (!theVector[readWriteSet.theIndices[x]]->processWriteData()) {
-					theReturnValue.push_back(theVector[readWriteSet.theIndices[x]]);
+					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
 				}
 			}
 			if (readWriteSet.thePolls[x].revents & POLLIN) {
 				if (!theVector[readWriteSet.theIndices[x]]->processReadData()) {
-					theReturnValue.push_back(theVector[readWriteSet.theIndices[x]]);
+					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
 				}
 			}
@@ -745,8 +745,8 @@ namespace DiscordCoreInternal {
 			} else {
 				theWrapper.events = POLLIN;
 			}
-			readWriteSet.theIndices.push_back(x);
-			readWriteSet.thePolls.push_back(theWrapper);
+			readWriteSet.theIndices.emplace_back(x);
+			readWriteSet.thePolls.emplace_back(theWrapper);
 		}
 
 		if (readWriteSet.theIndices.size() == 0) {
@@ -756,7 +756,7 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = poll(readWriteSet.thePolls.data(), static_cast<unsigned long>(readWriteSet.theIndices.size()), 1); returnValue == SOCKET_ERROR) {
 			for (uint32_t x = 0; x < readWriteSet.thePolls.size(); ++x) {
 				if (readWriteSet.thePolls[x].revents & POLLERR || readWriteSet.thePolls[x].revents & POLLHUP || readWriteSet.thePolls[x].revents & POLLNVAL) {
-					theReturnValue.push_back(theVector[readWriteSet.theIndices[x]]);
+					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 				}
 			}
 			return theReturnValue;
@@ -768,13 +768,13 @@ namespace DiscordCoreInternal {
 		for (uint32_t x = 0; x < readWriteSet.theIndices.size(); ++x) {
 			if (readWriteSet.thePolls[x].revents & POLLOUT) {
 				if (!theVector[readWriteSet.theIndices[x]]->processWriteData()) {
-					theReturnValue.push_back(theVector[readWriteSet.theIndices[x]]);
+					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
 				}
 			}
 			if (readWriteSet.thePolls[x].revents & POLLIN) {
 				if (!theVector[readWriteSet.theIndices[x]]->processReadData()) {
-					theReturnValue.push_back(theVector[readWriteSet.theIndices[x]]);
+					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
 				}
 			}

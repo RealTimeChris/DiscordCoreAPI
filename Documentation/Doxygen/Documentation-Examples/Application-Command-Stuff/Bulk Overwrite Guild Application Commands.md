@@ -36,13 +36,13 @@ namespace DiscordCoreAPI {
 			createSellDrugsCommandData.description = "Sell drugs in exchange for some currency!";
 			createSellDrugsCommandData.name = "selldrugs";
 			createSellDrugsCommandData.type = DiscordCoreAPI::ApplicationCommandType::Chat_Input;
-			newVector.push_back(createSellDrugsCommandData);
+			newVector.emplace_back(createSellDrugsCommandData);
 
 			DiscordCoreAPI::CreateGuildApplicationCommandData registerSlashCommandsCommandData;
 			registerSlashCommandsCommandData.description = "Register the programmatically designated slash commands.";
 			registerSlashCommandsCommandData.name = "registerslashcommands";
 			registerSlashCommandsCommandData.type = DiscordCoreAPI::ApplicationCommandType::Chat_Input;
-			newVector.push_back(registerSlashCommandsCommandData);
+			newVector.emplace_back(registerSlashCommandsCommandData);
 
 			DiscordCoreAPI::BulkOverwriteGuildApplicationCommandsData dataPackage;
 			dataPackage.responseData = newVector;

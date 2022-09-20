@@ -183,10 +183,10 @@ namespace DiscordCoreAPI {
 				currentPlaylist.songQueue.erase(currentPlaylist.songQueue.begin() + trackNumber);
 				std::vector<Song> newVector{};
 				Playlist newPlaylist{};
-				newVector.push_back(currentNew);
-				newVector.push_back(currentSong);
+				newVector.emplace_back(currentNew);
+				newVector.emplace_back(currentSong);
 				for (auto& value: currentPlaylist.songQueue) {
-					newVector.push_back(value);
+					newVector.emplace_back(value);
 				}
 				newPlaylist.songQueue = newVector;
 				newPlaylist.isLoopAllEnabled = SongAPI::isLoopAllEnabled(guild.id);

@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 				channelData.channelId = args.eventData.getChannelId();
 				channelData.description = "TESTING CHANNEL!";
 				channelData.emojiName = "🏳";
-				theVector.push_back(channelData);
+				theVector.emplace_back(channelData);
 
 				DiscordCoreAPI::ModifyGuildWelcomeScreenData dataPackage01;
 				dataPackage01.reason = "TESTING PURPOSES";

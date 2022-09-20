@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 			dataPackage02.permission = true;
 			dataPackage02.id = "859853159115259905";
 			dataPackage.commandName = "botinfo";
-			dataPackage.permissions.push_back(dataPackage02);
+			dataPackage.permissions.emplace_back(dataPackage02);
 			dataPackage.guildId = args.eventData.getGuildId();
 
 			auto returnValue = DiscordCoreAPI::ApplicationCommands::editGuildApplicationCommandPermissionsAsync(dataPackage).get();

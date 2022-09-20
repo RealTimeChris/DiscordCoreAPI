@@ -19,7 +19,7 @@ void onBoot02(DiscordCoreAPI::DiscordCoreClients* thePtr) {
 	DiscordCoreAPI::ActivityData activity;
 	activity.name = "!help for my commands!";
 	activity.type = DiscordCoreAPI::ActivityType::Game;
-	activities.push_back(activity);
+	activities.emplace_back(activity);
 	thePtr->getBotUser().updatePresence({.activities = activities, .status = "online", .afk = false});
 }
 
@@ -30,7 +30,7 @@ int32_t main() {
 	function01.function = onBoot02;
 	function01.intervalInMs = 500;
 	function01.repeated = false;
-	functionVector.push_back(function01);
+	functionVector.emplace_back(function01);
 	DiscordCoreAPI::CacheOptions cacheOptions;
 	cacheOptions.cacheGuildMembers = true;
 	cacheOptions.cacheChannels = true;

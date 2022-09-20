@@ -113,7 +113,7 @@ namespace DiscordCoreInternal {
 			});
 			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
 		}
-		this->theCoroutineHandles.push_back(coro);
+		this->theCoroutineHandles.emplace_back(coro);
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
 

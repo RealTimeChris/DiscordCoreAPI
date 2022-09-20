@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 			try {
 				DiscordCoreAPI::GetGuildPruneCountData dataPackage01;
 				dataPackage01.days = 28;
-				dataPackage01.roles.push_back("860075141818744853");
+				dataPackage01.roles.emplace_back("860075141818744853");
 				dataPackage01.guildId = args.eventData.getGuildId();
 
 				auto responseData = DiscordCoreAPI::Guilds::getGuildPruneCountAsync(dataPackage01).get();

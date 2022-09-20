@@ -450,7 +450,7 @@ namespace DiscordCoreAPI {
 		int32_t size{ 0 };///< The size of the attachment.
 		std::string url{};///< The url for the attachment.
 
-		operator DiscordCoreAPI::JsonSerializer();
+		operator JsonSerializer();
 
 		virtual ~AttachmentData() noexcept = default;
 	};
@@ -553,7 +553,7 @@ namespace DiscordCoreAPI {
 
 		EmbedFieldData() noexcept = default;
 
-		operator DiscordCoreAPI::JsonSerializer();
+		operator JsonSerializer();
 
 		virtual ~EmbedFieldData() noexcept = default;
 	};
@@ -589,7 +589,7 @@ namespace DiscordCoreAPI {
 
 		EmbedData() noexcept = default;
 
-		operator DiscordCoreAPI::JsonSerializer();
+		operator JsonSerializer();
 
 		/// Sets the author's name and avatar for the embed. \brief Sets the author's name and avatar for the embed.
 		/// \param authorName The author's name.
