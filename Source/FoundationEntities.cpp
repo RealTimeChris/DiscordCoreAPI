@@ -254,7 +254,6 @@ namespace DiscordCoreAPI {
 
 	EmbedData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData[""] = JsonParseEvent::Object_Start;
 		theData["fields"] = JsonParseEvent::Array_Start;
 		for (auto& value2: this->fields) {
 			theData.pushBack("fields", value2);
@@ -262,37 +261,37 @@ namespace DiscordCoreAPI {
 		theData[""] = JsonParseEvent::Array_End;
 		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
 		theData["footer"] = JsonParseEvent::Object_Start;
-		theData["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
-		theData["footer"]["icon_url"] = this->footer.iconUrl;
-		theData["footer"]["text"] = this->footer.text;
+		theData["proxy_icon_url"] = this->footer.proxyIconUrl;
+		theData["icon_url"] = this->footer.iconUrl;
+		theData["text"] = this->footer.text;
 		theData[""] = JsonParseEvent::Object_End;
 		theData["author"] = JsonParseEvent::Object_Start;
-		theData["author"]["proxy_icon_url"] = this->author.proxyIconUrl;
-		theData["author"]["icon_url"] = this->author.iconUrl;
-		theData["author"]["name"] = this->author.name;
-		theData["author"]["url"] = this->author.url;
+		theData["proxy_icon_url"] = this->author.proxyIconUrl;
+		theData["icon_url"] = this->author.iconUrl;
+		theData["name"] = this->author.name;
+		theData["url"] = this->author.url;
 		theData[""] = JsonParseEvent::Object_End;
 		theData["thumbnail"] = JsonParseEvent::Object_Start;
-		theData["thumbnail"]["proxy_url"] = this->thumbnail.proxyUrl;
-		theData["thumbnail"]["height"] = this->thumbnail.height;
-		theData["thumbnail"]["width"] = this->thumbnail.width;
-		theData["thumbnail"]["url"] = this->thumbnail.url;
+		theData["proxy_url"] = this->thumbnail.proxyUrl;
+		theData["height"] = this->thumbnail.height;
+		theData["width"] = this->thumbnail.width;
+		theData["url"] = this->thumbnail.url;
 		theData[""] = JsonParseEvent::Object_End;
 		theData["image"] = JsonParseEvent::Object_Start;
-		theData["image"]["proxy_url"] = this->image.proxyUrl;
-		theData["image"]["height"] = this->image.height;
-		theData["image"]["width"] = this->image.width;
-		theData["image"]["url"] = this->image.url;
+		theData["proxy_url"] = this->image.proxyUrl;
+		theData["height"] = this->image.height;
+		theData["width"] = this->image.width;
+		theData["url"] = this->image.url;
 		theData[""] = JsonParseEvent::Object_End;
 		theData["video"] = JsonParseEvent::Object_Start;
-		theData["video"]["proxy_url"] = this->video.proxyUrl;
-		theData["video"]["height"] = this->video.height;
-		theData["video"]["url"] = this->video.url;
-		theData["video"]["width"] = this->video.width;
+		theData["proxy_url"] = this->video.proxyUrl;
+		theData["height"] = this->video.height;
+		theData["url"] = this->video.url;
+		theData["width"] = this->video.width;
 		theData[""] = JsonParseEvent::Object_End;
 		theData["provider"] = JsonParseEvent::Object_Start;
-		theData["provider"]["name"] = this->provider.name;
-		theData["provider"]["url"] = this->provider.url;
+		theData["name"] = this->provider.name;
+		theData["url"] = this->provider.url;
 		theData[""] = JsonParseEvent::Object_End;
 		theData["description"] = this->description;
 		theData["timestamp"] = this->timestamp;
@@ -1052,23 +1051,25 @@ namespace DiscordCoreAPI {
 
 	InteractionResponseData::operator JsonSerializer() {
 		JsonSerializer theData{};
+		theData["type"] = static_cast<uint8_t>(this->type);
 		theData["data"] = JsonParseEvent::Object_Start;
 		if (this->data.attachments.size() > 0) {
 			for (auto& value: this->data.attachments) {
-				theData["data"].pushBack("attachments", JsonSerializer{ value });
+				theData.pushBack("attachments", JsonSerializer{ value });
 			}
 			theData[""] = JsonParseEvent::Array_End;
 		}		
 		if (this->data.components.size() == 0) {
-			theData["data"]["components"] = JsonParseEvent::Null_Value;
+			theData["components"] = JsonParseEvent::Null_Value;
 		} else {
 			for (auto& value: this->data.components) {
-				theData["data"].pushBack("components", value);
+				theData.pushBack("components", value);
 			}
+			theData[""] = JsonParseEvent::Array_End;
 		}
-		theData[""] = JsonParseEvent::Array_End;
+		
 		if (this->data.allowedMentions.parse.size() > 0 || this->data.allowedMentions.roles.size() > 0 || this->data.allowedMentions.users.size() > 0) {
-			theData["data"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{};
+			theData["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{};
 		}
 		if (this->data.choices.size() > 0) {
 			for (auto& value: this->data.choices) {
@@ -1095,29 +1096,28 @@ namespace DiscordCoreAPI {
 				}
 				theData.pushBack("choices", theValue);
 			}
+			theData[""] = JsonParseEvent::Array_End;
 		}
-		theData[""] = JsonParseEvent::Array_End;
 		if (this->data.embeds.size() == 0) {
-			theData["data"]["embeds"] = JsonParseEvent::Null_Value;
+			theData["embeds"] = JsonParseEvent::Null_Value;
 		} else {
 			for (auto& value: this->data.embeds) {
-				theData["data"].pushBack("embeds", value);
+				theData.pushBack("embeds", value);
 			}
+			theData[""] = JsonParseEvent::Array_End;
 		}
-		theData[""] = JsonParseEvent::Array_End;
 		if (this->data.customId != "") {
-			theData["data"]["custom_id"] = this->data.customId;
+			theData["custom_id"] = this->data.customId;
 		}
 		if (this->data.content != "") {
-			theData["data"]["content"] = this->data.content;
+			theData["content"] = this->data.content;
 		}
 		if (this->data.title != "") {
-			theData["data"]["title"] = this->data.title;
+			theData["title"] = this->data.title;
 		}
-		theData["data"]["flags"] = this->data.flags;
-		theData["data"]["tts"] = this->data.tts;
+		theData["flags"] = this->data.flags;
+		theData["tts"] = this->data.tts;
 		theData[""] = JsonParseEvent::Object_End;
-		theData["type"] = static_cast<uint8_t>(this->type);
 		return theData;
 	}
 
