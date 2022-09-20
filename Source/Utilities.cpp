@@ -606,6 +606,59 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
+	JsonSerializer& JsonSerializer::operator=(EnumConverter& other) {
+		JsonRecord theRecord{};
+		if (other.vectorType) {
+			theRecord.theEvent = JsonParseEvent::Array_Start;
+			this->theJsonData.push_back(theRecord);
+			for (auto& value: static_cast<std::vector<uint64_t>>(other)) {
+				theRecord.theEvent = JsonParseEvent::Number_Integer_Large;
+				theRecord.theValue = std::to_string(static_cast<uint64_t>(value));
+				this->theJsonData.push_back(theRecord);
+			}
+			theRecord.theEvent = JsonParseEvent::Array_End;
+			this->theState = JsonParserState::Adding_Object_Elements;
+			this->theJsonData.push_back(theRecord);
+		} else {
+			theRecord.theEvent = JsonParseEvent::Number_Integer_Large;
+			theRecord.theValue = std::to_string(static_cast<uint64_t>(other));
+			if (this->theJsonData.back().theEvent == JsonParseEvent::Unset) {
+				this->theJsonData.back().theValue = theRecord.theValue;
+				this->theJsonData.back().theEvent = theRecord.theEvent;
+			} else {
+				this->theJsonData.push_back(theRecord);
+			}
+		}
+
+		return *this;
+	}
+
+	JsonSerializer& JsonSerializer::operator=(EnumConverter&& other) {
+		JsonRecord theRecord{};
+		if (other.vectorType) {
+			theRecord.theEvent = JsonParseEvent::Array_Start;
+			this->theJsonData.push_back(theRecord);
+			for (auto& value: static_cast<std::vector<uint64_t>>(other)) {
+				theRecord.theEvent = JsonParseEvent::Number_Integer_Large;
+				theRecord.theValue = std::to_string(static_cast<uint64_t>(value));
+				this->theJsonData.push_back(theRecord);
+			}
+			theRecord.theEvent = JsonParseEvent::Array_End;
+			this->theState = JsonParserState::Adding_Object_Elements;
+			this->theJsonData.push_back(theRecord);
+		} else {
+			theRecord.theEvent = JsonParseEvent::Number_Integer_Large;
+			theRecord.theValue = std::to_string(static_cast<uint64_t>(other));
+			if (this->theJsonData.back().theEvent == JsonParseEvent::Unset) {
+				this->theJsonData.back().theValue = theRecord.theValue;
+				this->theJsonData.back().theEvent = theRecord.theEvent;
+			} else {
+				this->theJsonData.push_back(theRecord);
+			}
+		}
+		return *this;
+	}
+
 	JsonSerializer& JsonSerializer::operator[](const char* keyName) noexcept {
 		bool doesItExist{ false };
 		for (uint32_t x = 0; x < this->theJsonData.size(); ++x) {

@@ -53,37 +53,40 @@ namespace DiscordCoreAPI {
 
 	CreateMessageData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		for (auto& value: this->attachments) {
-			theData["attachments"].emplace_back(value);
+			theData.pushBack("attachments", value);
 		}
+		theData[""] = JsonParseEvent::Array_End;
 		if (this->messageReference.messageId != 0) {
 			theData["message_reference"] = this->messageReference;
 		}
 		if (this->components.size() == 0) {
-			theData["components"] = nlohmann::json::array();
+			theData["components"] = JsonParseEvent::Null_Value;
 		} else {
 			for (auto& value: this->components) {
-				theData["components"].emplace_back(value);
+				theData.pushBack("components", value);
 			}
+			theData[""] = JsonParseEvent::Array_End;
 		}
 		theData["allowed_mentions"] = this->allowedMentions;
 		for (auto& value: this->stickerIds) {
-			theData["sticker_ids"].emplace_back(value);
+			theData.pushBack("sticker_ids", value);
 		}
+
+		theData[""] = JsonParseEvent::Array_End;
 		if (this->embeds.size() == 0) {
-			theData["embeds"] = nlohmann::json::array();
+			theData["embeds"] = JsonParseEvent::Null_Value;
 		} else {
 			for (auto& value: this->embeds) {
-				theData["embeds"].emplace_back(value);
+				theData.pushBack("embeds", value);
 			}
+			theData[""] = JsonParseEvent::Array_End;
 		}
 		if (this->content != "") {
 			theData["content"] = this->content;
 		}
 		theData["flags"] = this->flags;
 		theData["tts"] = this->tts;
-		*/
 		return theData;
 	}
 
@@ -121,36 +124,37 @@ namespace DiscordCoreAPI {
 
 	EditMessageData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		for (auto& value: this->attachments) {
-			theData["attachments"].emplace_back(value);
+			theData.pushBack("attachments", value);
 		}
+		theData[""] = JsonParseEvent::Array_End;
 		if (this->components.size() == 0) {
-			theData["components"] = nlohmann::json::array();
+			theData["components"] = JsonParseEvent::Null_Value;
 		} else {
 			for (auto& value: this->components) {
-				theData["components"].emplace_back(value);
+				theData.pushBack("components", value);
 			}
+			theData[""] = JsonParseEvent::Array_End;
 		}
 		theData["allowed_mentions"] = this->allowedMentions;
 		if (this->embeds.size() == 0) {
-			theData["embeds"] = nlohmann::json::array();
+			theData["embeds"] = JsonParseEvent::Null_Value;
 		} else {
 			for (auto& value: this->embeds) {
-				theData["embeds"].emplace_back(value);
+				theData.pushBack("embeds", value);
 			}
+			theData[""] = JsonParseEvent::Array_End;
 		}
 		if (this->content != "") {
 			theData["content"] = this->content;
 		}
 		theData["flags"] = this->flags;
-		*/
 		return theData;
 	}
 
 	DeleteMessagesBulkData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		//theData["messages"] = this->messageIds;
+		theData["messages"] = this->messageIds;
 		return theData;
 	}
 

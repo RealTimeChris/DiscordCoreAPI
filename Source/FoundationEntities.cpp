@@ -445,15 +445,19 @@ namespace DiscordCoreAPI {
 		switch (this->type) {
 			case JsonType::Integer: {
 				theData["value"] = this->valueInt;
+				break;
 			}
 			case JsonType::Float: {
 				theData["value"] = this->valueFloat;
+				break;
 			}
 			case JsonType::Boolean: {
 				theData["value"] = this->valueBool;
+				break;
 			}
 			case JsonType::String: {
 				theData["value"] = this->valueStringReal;
+				break;
 			}
 		}
 		return theData;
@@ -461,43 +465,41 @@ namespace DiscordCoreAPI {
 
 	ApplicationCommandOptionData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		if (this->type == DiscordCoreAPI::ApplicationCommandOptionType::Channel) {
-			newOption["channel_types"] = this->channelTypes;
+			theData["channel_types"] = this->channelTypes;
 		}
 		if (this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command && this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group) {
-			newOption["required"] = this->required;
+			theData["required"] = this->required;
 		}
-		newOption["description_localizations"] = this->descriptionLocalizations;
-		newOption["name_localizations"] = this->nameLocalizations;
-		newOption["description"] = this->description;
+		theData["description_localizations"] = this->descriptionLocalizations;
+		theData["name_localizations"] = this->nameLocalizations;
+		theData["description"] = this->description;
 		if (maxValue != 0) {
-			newOption["min_value"] = this->minValue;
+			theData["min_value"] = this->minValue;
 		}
 		if (maxValue != 0) {
-			newOption["max_value"] = this->maxValue;
+			theData["max_value"] = this->maxValue;
 		}
-		newOption["required"] = this->required;
-		newOption["name"] = this->name;
-		newOption["type"] = this->type;
+		theData["required"] = this->required;
+		theData["name"] = this->name;
+		theData["type"] = static_cast<uint8_t>(this->type);
 		if (this->choices.size() > 0) {
-			newOption["choices"] = nlohmann::json{};
 			for (auto& value: this->choices) {
-				nlohmann::json theData = value;
-				newOption["choices"].emplace_back(theData);
+				JsonSerializer theDataNew = value;
+				theData.pushBack("choices", theDataNew);
 			}
 		}
-		if (newOption["choices"].size() == 0) {
-			newOption["autocomplete"] = this->autocomplete;
+		theData[""] = JsonParseEvent::Array_End;
+		if (this->choices.size() == 0) {
+			theData["autocomplete"] = this->autocomplete;
 		}
 		if (this->options.size() > 0) {
-			newOption["options"] = nlohmann::json{};
 			for (auto& value: this->options) {
-				nlohmann::json theData = value;
-				newOption["options"].emplace_back(theData);
+				JsonSerializer theDataNew = value;
+				theData.pushBack("options", theDataNew);
 			}
 		}
-		*/
+		theData[""] = JsonParseEvent::Array_End;
 		return theData;
 	}
 
@@ -545,11 +547,12 @@ namespace DiscordCoreAPI {
 				component["url"] = valueNew.url;
 				theData.pushBack("components", component);
 			} else if (valueNew.type == ComponentType::SelectMenu) {
-				nlohmann::json optionsArray{};
+				JsonSerializer optionsArray{};
 				for (auto& value01: valueNew.options) {
-					nlohmann::json option{};
+					JsonSerializer option{};
 					if (value01.emoji.name != "") {
-						option["emoji"]["name"] = static_cast<std::string>(value01.emoji.name);
+						std::string theString = value01.emoji.name;
+						option["emoji"]["name"] = theString;
 						option["emoji"]["animated"] = value01.emoji.animated;
 					}
 					if (value01.emoji.id != 0) {
@@ -559,20 +562,22 @@ namespace DiscordCoreAPI {
 					option["default"] = value01._default;
 					option["label"] = value01.label;
 					option["value"] = value01.value;
-					optionsArray.emplace_back(option);
+					optionsArray.pushBack("options", option);
 				};
-				nlohmann::json component{};
+
+				theData[""] = JsonParseEvent::Array_End;
+				JsonSerializer component{};
 				component["placeholder"] = valueNew.placeholder;
 				component["max_values"] = valueNew.maxValues;
 				component["min_values"] = valueNew.minValues;
 				component["custom_id"] = valueNew.customId;
 				component["disabled"] = valueNew.disabled;
 				component["options"] = optionsArray;
-				component["type"] = valueNew.type;
-				components.emplace_back(component);
+				component["type"] = static_cast<uint8_t>(valueNew.type);
+				theData.pushBack("components", component);
 
 			} else if (valueNew.type == ComponentType::TextInput) {
-				nlohmann::json component{};
+				JsonSerializer component{};
 				component["placeholder"] = valueNew.placeholder;
 				component["min_length"] = valueNew.minLength;
 				component["max_length"] = valueNew.maxLength;
@@ -581,10 +586,11 @@ namespace DiscordCoreAPI {
 				component["style"] = valueNew.style;
 				component["label"] = valueNew.label;
 				component["value"] = valueNew.value;
-				component["type"] = valueNew.type;
-				components.emplace_back(component);
+				component["type"] = static_cast<uint8_t>(valueNew.type);
+				theData.pushBack("components", component);
 			}
 		}
+		theData[""] = JsonParseEvent::Array_End;
 		return theData;
 	}
 
@@ -1043,49 +1049,56 @@ namespace DiscordCoreAPI {
 
 	InteractionResponseData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		for (auto& value: this->data.attachments) {
-			theData["data"]["attachments"].emplace_back(DiscordCoreAPI::AttachmentData{ value });
+			theData["data"].pushBack("attachments", JsonSerializer{ value });
 		}
+		theData[""] = JsonParseEvent::Array_End;
 		if (this->data.components.size() == 0) {
-			theData["data"]["components"] = nlohmann::json::array();
+			theData["data"]["components"] = JsonParseEvent::Null_Value;
 		} else {
 			for (auto& value: this->data.components) {
-				theData["data"]["components"].emplace_back(value);
+				theData["data"].pushBack("components", value);
 			}
 		}
+		theData[""] = JsonParseEvent::Array_End;
 		theData["data"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->data.allowedMentions };
 		if (this->data.choices.size() > 0) {
-			nlohmann::json::array_t theArray{};
+			JsonSerializer theArray{};
 			for (auto& value: this->data.choices) {
-				nlohmann::json theValue{};
+				JsonSerializer theValue{};
 				theValue["name"] = value.name;
 				theValue["name_localizations"] = value.nameLocalizations;
 				switch (value.type) {
 					case JsonType::Boolean: {
 						theValue["value"] = value.valueBool;
+						break;
 					}
 					case JsonType::String: {
 						theValue["value"] = value.valueStringReal;
+						break;
 					}
 					case JsonType::Float: {
 						theValue["value"] = value.valueFloat;
+						break;
 					}
 					case JsonType::Integer: {
 						theValue["value"] = value.valueInt;
+						break;
 					}
 				}
-				theArray.emplace_back(theValue);
+				theArray.pushBack("chioces", theValue);
 			}
 			theData["data"]["choices"] = theArray;
 		}
+		theData[""] = JsonParseEvent::Array_End;
 		if (this->data.embeds.size() == 0) {
-			theData["data"]["embeds"] = nlohmann::json::array();
+			theData["data"]["embeds"] = JsonParseEvent::Null_Value;
 		} else {
 			for (auto& value: this->data.embeds) {
-				theData["data"]["embeds"].emplace_back(DiscordCoreAPI::EmbedData{ value });
+				theData["data"].pushBack("embeds", value);
 			}
 		}
+		theData[""] = JsonParseEvent::Array_End;
 		if (this->data.customId != "") {
 			theData["data"]["custom_id"] = this->data.customId;
 		}
@@ -1097,8 +1110,8 @@ namespace DiscordCoreAPI {
 		}
 		theData["data"]["flags"] = this->data.flags;
 		theData["data"]["tts"] = this->data.tts;
-		theData["type"] = this->type;
-		*/
+		theData[""] = JsonParseEvent::Object_End;
+		theData["type"] = static_cast<uint8_t>(this->type);
 		return theData;
 	}
 

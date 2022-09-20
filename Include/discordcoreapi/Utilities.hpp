@@ -422,6 +422,39 @@ namespace DiscordCoreAPI {
 		Number_Double = 1 << 12
 	};
 
+	struct EnumConverter {
+		template<typename EnumType> EnumConverter(std::enable_if<std::is_enum<EnumType>::value> other) {
+			this->thePtr = new EnumType{};
+			*static_cast<uint64_t*>(this->thePtr) = static_cast<uint64_t>(other);
+		};
+
+		template<typename EnumType> EnumConverter(std::vector<EnumType> other) {
+			this->thePtr = new std::vector<uint64_t>{};
+			for (auto& value: other) {
+				static_cast<std::vector<uint64_t>*>(this->thePtr)->push_back(static_cast<uint64_t>(value));
+			}
+			this->vectorType = true;
+		};
+
+		operator std::vector<uint64_t>() {
+			std::vector<uint64_t> theObject{};
+			for (auto& value: *static_cast<std::vector<uint64_t>*>(this->thePtr)) {
+				theObject.push_back(value);
+			}
+
+			return theObject;
+		}
+
+		explicit operator uint64_t() {
+			uint64_t theObject{};
+			theObject = *static_cast<uint64_t*>(this->thePtr);
+			return theObject;
+		}
+
+		void* thePtr{};
+		bool vectorType{ false };
+	};
+
 	class JsonRecord {
 	  public:
 		JsonRecord() noexcept = default;
@@ -438,7 +471,6 @@ namespace DiscordCoreAPI {
 		JsonRecord(float) noexcept;
 		JsonRecord(std::string&) noexcept;
 		JsonRecord(const char*) noexcept;
-
 		operator std::string() noexcept;
 
 		JsonParseEvent theEvent{ JsonParseEvent::Object_Start };
@@ -469,7 +501,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		template<typename ObjectType> JsonSerializer& operator=(std::vector<ObjectType> other) {
+		template<typename ObjectType, std::enable_if<std::is_enum<EnumConverter>::value, ObjectType>> JsonSerializer& operator=(std::vector<ObjectType> other) {
 			for (auto& value: other) {
 				JsonRecord theRecord{};
 				theRecord = value;
@@ -484,6 +516,23 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		template<std::same_as<std::string> ObjectType> JsonSerializer& operator=(std::vector<ObjectType> other) {
+			for (auto& value: other) {
+				JsonRecord theRecord{};
+				theRecord = value;
+				this->theJsonData.push_back(theRecord);
+			}
+			if (other.size() == 0) {
+				JsonRecord theRecord{};
+				theRecord.theValue = "";
+				theRecord.theEvent = JsonParseEvent::Null_Value;
+				this->theJsonData.push_back(theRecord);
+			}
+			return *this;
+		}
+
+		JsonSerializer& operator=(EnumConverter& other);
+		JsonSerializer& operator=(EnumConverter&& other);
 		JsonSerializer& operator=(const JsonSerializer& other) noexcept;
 		JsonSerializer& operator=(JsonParseEvent theData) noexcept;
 		JsonSerializer& operator=(int8_t) noexcept;
@@ -513,6 +562,7 @@ namespace DiscordCoreAPI {
 		size_t currentIndentationLevel{ 0 };
 		JsonParserState theState{};
 	};
+
 
 	class DiscordCoreAPI_Dll ConfigManager {
 	  public:
