@@ -421,17 +421,15 @@ namespace DiscordCoreAPI {
 		Number_Float = 1 << 11,
 		Number_Double = 1 << 12
 	};
-
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
-
 	struct EnumConverter {
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
 			this->thePtr = new uint64_t{};
 			*static_cast<uint64_t*>(this->thePtr) = static_cast<uint64_t>(other);
 		};
 
-		template<typename EnumType> EnumConverter(std::vector<EnumType> other) {
+		template<IsEnum EnumType> EnumConverter(std::vector<EnumType> other) {
 			this->thePtr = new std::vector<uint64_t>{};
 			for (auto& value: other) {
 				static_cast<std::vector<uint64_t>*>(this->thePtr)->push_back(static_cast<uint64_t>(value));
@@ -452,6 +450,10 @@ namespace DiscordCoreAPI {
 			uint64_t theObject{};
 			theObject = *static_cast<uint64_t*>(this->thePtr);
 			return theObject;
+		}
+
+		~EnumConverter() {
+			delete this->thePtr;
 		}
 
 		void* thePtr{};
@@ -519,6 +521,21 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
+		template<std::same_as<size_t> ObjectType> JsonSerializer& operator=(std::vector<ObjectType> other) {
+			for (auto& value: other) {
+				JsonRecord theRecord{};
+				theRecord = value;
+				this->theJsonData.push_back(theRecord);
+			}
+			if (other.size() == 0) {
+				JsonRecord theRecord{};
+				theRecord.theValue = "";
+				theRecord.theEvent = JsonParseEvent::Null_Value;
+				this->theJsonData.push_back(theRecord);
+			}
+			return *this;
+		}
+
 		template<std::same_as<std::string> ObjectType> JsonSerializer& operator=(std::vector<ObjectType> other) {
 			for (auto& value: other) {
 				JsonRecord theRecord{};
@@ -534,8 +551,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		JsonSerializer& operator=(EnumConverter& other);
-		JsonSerializer& operator=(EnumConverter&& other);
+		JsonSerializer& operator=(EnumConverter other);
 		JsonSerializer& operator=(const JsonSerializer& other) noexcept;
 		JsonSerializer& operator=(JsonParseEvent theData) noexcept;
 		JsonSerializer& operator=(int8_t) noexcept;
@@ -565,7 +581,6 @@ namespace DiscordCoreAPI {
 		size_t currentIndentationLevel{ 0 };
 		JsonParserState theState{};
 	};
-
 
 	class DiscordCoreAPI_Dll ConfigManager {
 	  public:
