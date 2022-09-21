@@ -54,14 +54,16 @@ namespace DiscordCoreInternal {
 			std::cout << "THE VALUE: " << newString << std::endl;
 			newString.reserve(newString.size() + simdjson::SIMDJSON_PADDING);
 			simdjson::ondemand::parser theParser{};
-			partialSearchResultsJson = theParser.iterate(newString.data(), newString.length(), newString.capacity());
-			std::cout << partialSearchResultsJson.get_object().value().raw_json().take_value() << std::endl;
+			partialSearchResultsJson = theParser.iterate(newString.data(), newString.length(), newString.capacity()).value().get_value();
 		}
+
 		std::vector<DiscordCoreAPI::Song> searchResults{};
-		simdjson::ondemand::object theObject{};
-		if (partialSearchResultsJson.get(theObject) == simdjson::error_code::SUCCESS) {
-			for (auto value: theObject["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
+		simdjson::ondemand::value theObject{};
+		if (partialSearchResultsJson["contents"].get(theObject) == simdjson::error_code::SUCCESS) {
+			std::cout << "WERE YOUTOUBING IT UP!" << std::endl;
+			for (auto value: theObject["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
 													  ["contents"]) {
+				std::cout << "WERE YOUTOUBING IT UP! 0202" << std::endl;
 				simdjson::ondemand::value theObjectNew{};
 				if (value["videoRenderer"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
 					DiscordCoreAPI::Song searchResult{};

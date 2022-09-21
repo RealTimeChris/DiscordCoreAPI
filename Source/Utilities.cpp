@@ -552,7 +552,6 @@ namespace DiscordCoreAPI {
 					break;
 				}
 			}
-			std::cout << "THE STRING FINAL 0202: " << theString << std::endl;
 		}
 		theString += "}";
 		std::cout << "THE STRING FINAL 0101: " << theString << std::endl;
@@ -1484,17 +1483,9 @@ namespace DiscordCoreAPI {
 					theStringNew += '"';
 					break;
 				}
-				case 0x00: {
-					break;
-				}
 				case 0x5C: {
 					theStringNew += '\\';
 					theStringNew += '\\';
-					break;
-				}
-				case 0x27: {
-					theStringNew += '\\';
-					theStringNew += '\'';
 					break;
 				}
 				default: {
@@ -1504,5 +1495,5 @@ namespace DiscordCoreAPI {
 		}
 		return theStringNew;
 	}
-
+	template<typename Object> std::unordered_map<std::string, UnboundedMessageBlock<Object>*> ObjectCollector<Object>::objectsBufferMap{};
 };

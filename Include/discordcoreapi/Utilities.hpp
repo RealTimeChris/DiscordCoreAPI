@@ -1456,6 +1456,72 @@ namespace DiscordCoreAPI {
 		std::mutex accessMutex{};
 	};
 
+	/// Typedef for the message filter. \brief Typedef for the message filter.
+	template<typename Object>
+	using ObjectFilter = std::function<bool(Object)>;
+
+	/// ObjectCollectorReturnData responseData. \brief ObjectCollectorReturnData responseData.
+	template<typename Object>
+	struct DiscordCoreAPI_Dll ObjectCollectorReturnData {
+		std::vector<Object> objects{};///< A vector of collected Objects.
+	};
+
+	/// ObjectCollector, for collecting Objects from a Channel. \brief Object collector, for collecting Objects from a Channel.
+	template<typename Object>
+	class DiscordCoreAPI_Dll ObjectCollector {
+	  public:
+		static std::unordered_map<std::string, UnboundedMessageBlock<Object>*> objectsBufferMap;
+
+		ObjectCollector() noexcept = default;
+
+		/// Begin waiting for Objects. \brief Begin waiting for Objects.
+		/// \param quantityToCollect Maximum quantity of Objects to collect before returning the results.
+		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Objects before returning the results.
+		/// \param messageFilter A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
+		/// \returns A ObjectCollectorReturnData structure.
+		CoRoutine<ObjectCollectorReturnData<Object>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<Object> filteringFunctionNew) {
+			co_await NewThreadAwaitable<ObjectCollectorReturnData<Object>>();
+			this->quantityOfObjectToCollect = quantityToCollect;
+			this->filteringFunction = filteringFunctionNew;
+			this->msToCollectFor = msToCollectForNew;
+			this->collectorId = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			ObjectCollector::objectsBufferMap[this->collectorId] = &this->messagesBuffer;
+			this->run();
+			co_return this->messageReturnData;
+		}
+
+		void run() {
+			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			int64_t elapsedTime{ 0 };
+			while (elapsedTime < this->msToCollectFor) {
+				Object message{};
+				waitForTimeToPass<Object>(this->messagesBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
+				if (this->filteringFunction(message)) {
+					this->messageReturnData.objects.emplace_back(message);
+				}
+				if (static_cast<int32_t>(this->messageReturnData.objects.size()) >= this->quantityOfObjectToCollect) {
+					break;
+				}
+
+				elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingTime;
+			}
+		}
+
+		~ObjectCollector() {
+			if (ObjectCollector::objectsBufferMap.contains(this->collectorId)) {
+				ObjectCollector::objectsBufferMap.erase(this->collectorId);
+			}
+		}
+
+	  protected:
+		UnboundedMessageBlock<Object> messagesBuffer{};
+		ObjectCollectorReturnData<Object> messageReturnData{};
+		ObjectFilter<Object> filteringFunction{ nullptr };
+		int32_t quantityOfObjectToCollect{ 0 };
+		std::string collectorId{};
+		int32_t msToCollectFor{ 0 };
+	};
+
 	template<typename TimeType> class StopWatch {
 	  public:
 		using DoubleTimeDuration = std::chrono::duration<double, std::nano>;

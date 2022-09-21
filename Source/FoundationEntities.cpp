@@ -260,7 +260,8 @@ namespace DiscordCoreAPI {
 		theData.addNewStructure("footer");
 		theData.appendStructElement("proxy_icon_url", this->footer.proxyIconUrl);
 		theData.appendStructElement("icon_url", this->footer.iconUrl);
-		theData.appendStructElement("text", this->footer.text);
+		auto theString = escapeCharacters(this->footer.text);
+		theData.appendStructElement("text", theString);
 		theData.endStructure();
 		theData.addNewStructure("author");
 		theData.appendStructElement("proxy_icon_url", this->author.proxyIconUrl);
@@ -290,7 +291,7 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("name", this->provider.name);
 		theData.appendStructElement("url", this->provider.url);
 		theData.endStructure();
-		auto theString = escapeCharacters(this->description);
+		theString = escapeCharacters(this->description);
 		theData.appendStructElement("description", theString);
 		theData.appendStructElement("timestamp", this->timestamp);
 		theString = escapeCharacters(this->title);

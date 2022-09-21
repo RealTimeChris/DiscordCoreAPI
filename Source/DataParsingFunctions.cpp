@@ -314,7 +314,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
-		theData.port = std::to_string(getUint32(jsonObjectData, "port"));
+		theData.port = getUint64(jsonObjectData, "port");
 	}
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ApplicationCommand& theData) {

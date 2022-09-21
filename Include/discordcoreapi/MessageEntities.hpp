@@ -184,40 +184,6 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// Typedef for the message filter. \brief Typedef for the message filter.
-	using MessageFilter = std::function<bool(Message)>;
-
-	/// MessageCollectorReturnData responseData. \brief MessageCollectorReturnData responseData.
-	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
-		std::vector<Message> messages{};///< A vector of collected Messages.
-	};
-
-	/// MessageCollector, for collecting Messages from a Channel. \brief Message collector, for collecting Messages from a Channel.
-	class DiscordCoreAPI_Dll MessageCollector {
-	  public:
-		static std::unordered_map<std::string, UnboundedMessageBlock<Message>*> messagesBufferMap;
-
-		MessageCollector() noexcept = default;
-
-		/// Begin waiting for Messages. \brief Begin waiting for Messages.
-		/// \param quantityToCollect Maximum quantity of Messages to collect before returning the results.
-		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Messages before returning the results.
-		/// \param messageFilter A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
-		/// \returns A MessageCollectorReturnData structure.
-		CoRoutine<MessageCollectorReturnData> collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, MessageFilter messageFilter);
-
-		~MessageCollector();
-
-	  protected:
-		UnboundedMessageBlock<Message> messagesBuffer{};
-		MessageCollectorReturnData messageReturnData{};
-		MessageFilter filteringFunction{ nullptr };
-		int32_t quantityOfMessageToCollect{ 0 };
-		std::string collectorId{};
-		int32_t msToCollectFor{ 0 };
-
-		void run();
-	};
 	/**@}*/
 
 	/**

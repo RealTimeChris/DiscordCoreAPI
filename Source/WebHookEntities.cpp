@@ -204,7 +204,6 @@ namespace DiscordCoreAPI {
 		if (this->content != "") {
 			theData.appendStructElement("content", this->content);
 		}
-		theData.endStructure();
 		return theData;
 	}
 

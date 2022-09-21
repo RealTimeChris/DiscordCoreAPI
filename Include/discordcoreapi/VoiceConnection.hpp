@@ -35,9 +35,9 @@
 namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll VoiceSocketReadyData {
-		std::string port{};
 		std::string mode{};
 		std::string ip{};
+		uint64_t port{};
 		uint32_t ssrc{};
 	};
 
@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 		std::string voiceIp{};
 		std::string baseUrl{};
 		uint32_t audioSSRC{};
-		std::string port{};
+		uint64_t port{};
 
 		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
 

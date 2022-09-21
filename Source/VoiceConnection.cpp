@@ -930,7 +930,7 @@ namespace DiscordCoreAPI {
 	bool VoiceConnection::voiceConnect() noexcept {
 		try {
 			if (!DatagramSocketClient::areWeStillConnected()) {
-				if (!DatagramSocketClient::connect(this->voiceIp, this->port)) {
+				if (!DatagramSocketClient::connect(this->voiceIp, std::to_string(this->port))) {
 					return false;
 				} else {
 					std::string packet{};

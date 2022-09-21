@@ -30,6 +30,68 @@
 
 namespace DiscordCoreAPI {
 
+	/// ObjectCollectorReturnData responseData. \brief ObjectCollectorReturnData responseData.
+	template<> struct DiscordCoreAPI_Dll ObjectCollectorReturnData<Message> {
+		std::vector<Message> messages{};///< A vector of collected Objects.
+	};
+
+	/// ObjectCollector, for collecting Objects from a Channel. \brief Object collector, for collecting Objects from a Channel.
+	template<> class DiscordCoreAPI_Dll ObjectCollector<Message> {
+	  public:
+		static std::unordered_map<std::string, UnboundedMessageBlock<Message>*> objectsBufferMap;
+
+		ObjectCollector() noexcept = default;
+
+		/// Begin waiting for Objects. \brief Begin waiting for Objects.
+		/// \param quantityToCollect Maximum quantity of Objects to collect before returning the results.
+		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Objects before returning the results.
+		/// \param messageFilter A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
+		/// \returns A ObjectCollectorReturnData structure.
+		CoRoutine<ObjectCollectorReturnData<Message>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<Message> filteringFunctionNew) {
+			co_await NewThreadAwaitable<ObjectCollectorReturnData<Message>>();
+			this->quantityOfObjectToCollect = quantityToCollect;
+			this->filteringFunction = filteringFunctionNew;
+			this->msToCollectFor = msToCollectForNew;
+			this->collectorId = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			std::cout << "WAITING FOR TIME TO PASS!" << this->collectorId << std::endl;
+			ObjectCollector::objectsBufferMap[this->collectorId] = &this->messagesBuffer;
+			this->run();
+			co_return this->messageReturnData;
+		}
+
+		void run() {
+			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			int64_t elapsedTime{ 0 };
+			while (elapsedTime < this->msToCollectFor) {
+				std::cout << "WAITING FOR TIME TO PASS!" << std::endl;
+				Message message{};
+				waitForTimeToPass<Message>(this->messagesBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
+				if (this->filteringFunction(message)) {
+					this->messageReturnData.messages.emplace_back(message);
+				}
+				if (static_cast<int32_t>(this->messageReturnData.messages.size()) >= this->quantityOfObjectToCollect) {
+					break;
+				}
+
+				elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingTime;
+			}
+		}
+
+		~ObjectCollector() {
+			if (ObjectCollector::objectsBufferMap.contains(this->collectorId)) {
+				ObjectCollector::objectsBufferMap.erase(this->collectorId);
+			}
+		}
+
+	  protected:		
+		ObjectCollectorReturnData<Message> messageReturnData{};
+		ObjectFilter<Message> filteringFunction{ nullptr };
+		UnboundedMessageBlock<Message> messagesBuffer{};
+		int32_t quantityOfObjectToCollect{ 0 };
+		int32_t msToCollectFor{ 0 };
+		std::string collectorId{};
+	};
+
 	CreateMessageData::CreateMessageData(const Snowflake channelIdNew) {
 		this->channelId = channelIdNew;
 	}
@@ -166,40 +228,6 @@ namespace DiscordCoreAPI {
 
 	MessageVector::operator std::vector<Message>() {
 		return this->theMessages;
-	}
-
-	CoRoutine<MessageCollectorReturnData> MessageCollector::collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew, MessageFilter filteringFunctionNew) {
-		co_await NewThreadAwaitable<MessageCollectorReturnData>();
-		this->quantityOfMessageToCollect = quantityToCollect;
-		this->filteringFunction = filteringFunctionNew;
-		this->msToCollectFor = msToCollectForNew;
-		this->collectorId = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		MessageCollector::messagesBufferMap[this->collectorId] = &this->messagesBuffer;
-		this->run();
-		co_return this->messageReturnData;
-	}
-
-	void MessageCollector::run() {
-		int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		int64_t elapsedTime{ 0 };
-		while (elapsedTime < this->msToCollectFor) {
-			Message message{};
-			waitForTimeToPass<Message>(this->messagesBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
-			if (this->filteringFunction(message)) {
-				this->messageReturnData.messages.emplace_back(message);
-			}
-			if (static_cast<int32_t>(this->messageReturnData.messages.size()) >= this->quantityOfMessageToCollect) {
-				break;
-			}
-
-			elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingTime;
-		}
-	}
-
-	MessageCollector::~MessageCollector() {
-		if (MessageCollector::messagesBufferMap.contains(this->collectorId)) {
-			MessageCollector::messagesBufferMap.erase(this->collectorId);
-		}
 	}
 
 	void Messages::initialize(DiscordCoreInternal::HttpsClient* theClient) {
@@ -354,6 +382,6 @@ namespace DiscordCoreAPI {
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	std::unordered_map<std::string, UnboundedMessageBlock<Message>*> MessageCollector::messagesBufferMap{};
+	template<> std::unordered_map<std::string, UnboundedMessageBlock<Message>*> ObjectCollector<Message>::objectsBufferMap{};
 	DiscordCoreInternal::HttpsClient* Messages::httpsClient{ nullptr };
 }
