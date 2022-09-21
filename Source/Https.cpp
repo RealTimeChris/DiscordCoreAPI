@@ -106,6 +106,7 @@ namespace DiscordCoreInternal {
 			theReturnString += "Content-Length: " + std::to_string(theString.size()) + "\r\n\r\n";
 			theReturnString += theString;
 		}
+		std::cout << "THE STRING: " << theReturnString << std::endl;
 		return theReturnString;
 	}
 

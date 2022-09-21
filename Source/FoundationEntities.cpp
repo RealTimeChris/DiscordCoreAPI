@@ -238,8 +238,10 @@ namespace DiscordCoreAPI {
 	EmbedFieldData::operator JsonSerializer() {
 		JsonSerializer theData{};
 		theData.appendStructElement("inline", this->Inline);
-		theData.appendStructElement("value", this->value);
-		theData.appendStructElement("name", this->name);
+		auto theString = escapeCharacters(this->value);
+		theData.appendStructElement("value", theString);
+		theString = escapeCharacters(this->name);
+		theData.appendStructElement("name", theString);
 		return theData;
 	}
 
@@ -549,7 +551,6 @@ namespace DiscordCoreAPI {
 					component.appendStructElement("style", valueNew.style);
 					component.appendStructElement("type", static_cast<int8_t>(valueNew.type));
 					component.appendStructElement("url", valueNew.url);
-					component.endStructure();
 					theData.appendArrayElement(component);
 				} else if (valueNew.type == ComponentType::SelectMenu) {
 					JsonSerializer component{};
@@ -579,7 +580,6 @@ namespace DiscordCoreAPI {
 					component.appendStructElement("custom_id", valueNew.customId);
 					component.appendStructElement("disabled", valueNew.disabled);
 					component.appendStructElement("type", static_cast<uint8_t>(valueNew.type));
-					component.endStructure();
 					theData.appendArrayElement(component);
 
 				} else if (valueNew.type == ComponentType::TextInput) {
@@ -593,7 +593,6 @@ namespace DiscordCoreAPI {
 					component.appendStructElement("label", valueNew.label);
 					component.appendStructElement("value", valueNew.value);
 					component.appendStructElement("type", static_cast<uint8_t>(valueNew.type));
-					component.endStructure();
 					theData.appendArrayElement(component);
 				}
 			}
@@ -1060,7 +1059,6 @@ namespace DiscordCoreAPI {
 		JsonSerializer theData{};
 		theData.appendStructElement("type", static_cast<uint8_t>(this->type));
 		theData.addNewStructure("data");
-		theData.appendStructElement("type", "");
 		if (this->data.attachments.size() > 0) {
 			theData.addNewArray("attachments");
 			for (auto& value: this->data.attachments) {

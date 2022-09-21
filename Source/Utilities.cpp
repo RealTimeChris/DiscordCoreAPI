@@ -1450,55 +1450,55 @@ namespace DiscordCoreAPI {
 			switch (static_cast<char>(theString[x])) {
 				
 				case 0x08: {
-					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), 'b');
+					theStringNew += '\\';
+					theStringNew += 'b';
 					break;
 				}
 				case 0x09: {
-					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), 't');
+					theStringNew += '\\';
+					theStringNew += 't';
 					break;
 				}
 				case 0x0A: {
-					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), 'n');
+					theStringNew += '\\';
+					theStringNew += 'n';
 					break;
 				}
 				case 0x0B: {
-					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), 'v');
+					theStringNew += '\\';
+					theStringNew += 'v';
 					break;
 				}
 				case 0x0C: {
-					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), 'f');
+					theStringNew += '\\';
+					theStringNew += 'f';
 					break;
 				}
 				case 0x0D: {
-					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), 'r');
+					theStringNew += '\\';
+					theStringNew += 'r';
 					break;
 				}
 				case 0x22: {
-					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), '"');
+					theStringNew += '\\';
+					theStringNew += '"';
 					break;
 				}
 				case 0x00: {
 					break;
 				}
 				case 0x5C: {
-					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), '\\');
+					theStringNew += '\\';
+					theStringNew += '\\';
 					break;
 				}
 				case 0x27: {
-					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), '\'');
+					theStringNew += '\\';
+					theStringNew += '\'';
 					break;
 				}
 				default: {
-					theStringNew.insert(theStringNew.end(), theString[x]);
+					theStringNew += theString[x];
 				}
 			}
 		}
