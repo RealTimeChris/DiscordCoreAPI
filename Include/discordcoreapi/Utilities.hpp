@@ -514,10 +514,21 @@ namespace DiscordCoreAPI {
 		friend class JsonRecord;
 		JsonSerializer() noexcept = default;
 		void addNewStructure(const char* keyName);
-		void appendStructElement(const char* keyName, JsonRecord&&);
-		void appendStructElement(const char* keyName, JsonRecord&);
 		void appendStructElement(const char* keyName, EnumConverter& theRecord);
 		void appendStructElement(const char* keyName, EnumConverter&& theRecord);
+		template<typename ObjectType> void appendStructElement(const char* keyName, std::vector<ObjectType> other) {
+			JsonRecord theRecord{};
+			theRecord.theEvent = JsonParseEvent::Array_Start;
+			theRecord.theKey = keyName;
+			this->theJsonData.push_back(theRecord);
+			for (auto& value: other) {
+				theRecord = value;
+				this->theJsonData.push_back(theRecord);
+			}
+			theRecord.theEvent = JsonParseEvent::Array_End;
+			theRecord.theKey = keyName;
+			this->theJsonData.push_back(theRecord);
+		}
 		template<typename KeyType, typename ObjectType> void appendStructElement(const char* keyName, std::unordered_map<KeyType, ObjectType> other) {
 			JsonRecord theRecord{};
 			theRecord.theEvent = JsonParseEvent::Object_Start;
@@ -532,6 +543,10 @@ namespace DiscordCoreAPI {
 			theRecord.theKey = keyName;
 			this->theJsonData.push_back(theRecord);
 		}
+		void appendStructElement(const char*, JsonSerializer&&);
+		void appendStructElement(const char*, JsonSerializer&);
+		void appendStructElement(const char* keyName, JsonRecord&&);
+		void appendStructElement(const char* keyName, JsonRecord&);
 		void endStructure();
 		void addNewArray(const char* keyName);
 		void appendArrayElement(JsonSerializer&&);
@@ -541,10 +556,9 @@ namespace DiscordCoreAPI {
 		void endArray();
 
 		std::string getString();
-		operator std::string() noexcept;
 
 	  protected:
-		size_t currentObjectOrArrayStartIndex{ 0 };
+		int64_t currentObjectOrArrayStartIndex{ 0 };
 		std::vector<JsonRecord> theJsonData{};
 		JsonParserState theState{};
 	};

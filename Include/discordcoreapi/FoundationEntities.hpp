@@ -2361,7 +2361,7 @@ namespace DiscordCoreAPI {
 
 		AllowedMentionsData() noexcept = default;
 
-		operator DiscordCoreAPI::JsonSerializer();
+		operator JsonSerializer();
 
 		virtual ~AllowedMentionsData() noexcept = default;
 	};

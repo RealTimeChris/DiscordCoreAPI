@@ -347,9 +347,9 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage), dataPackage.files);
+			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage).getString(), dataPackage.files);
 		} else {
-			workload.content = static_cast<JsonSerializer>(dataPackage);
+			workload.content = static_cast<JsonSerializer>(dataPackage).getString();
 		}
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -376,9 +376,9 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage), dataPackage.files);
+			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage).getString(), dataPackage.files);
 		} else {
-			workload.content = static_cast<JsonSerializer>(dataPackage);
+			workload.content = static_cast<JsonSerializer>(dataPackage).getString();
 		}
 		workload.callStack = "WebHooks::editWebHookMessageAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);

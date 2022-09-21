@@ -183,17 +183,17 @@ namespace DiscordCoreInternal {
 
 		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 			cout << DiscordCoreAPI::shiftToBrightBlue()
-				 << "Sending WebSocket " + static_cast<WebSocketSSLShard*>(this)->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) +
-					std::string("'s Message: ")
-				 << static_cast<std::string>(dataToSend) << endl
+				 << "Sending WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
+					std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + std::string("'s Message: ")
+				 << static_cast<std::string>(dataToSend.getString()) << endl
 				 << endl
 				 << DiscordCoreAPI::reset();
 		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
-			auto theString = static_cast<std::string>(dataToSend);
+			auto theString = dataToSend.getString();
 			theVector = ErlPacker::parseJsonToEtf(theString);
 		} else {
-			theVector = static_cast<std::string>(dataToSend);
+			theVector = dataToSend.getString();
 		}
 		this->createHeader(header, theVector.size(), theOpCode);
 		std::string theVectorNew{};
@@ -306,7 +306,8 @@ namespace DiscordCoreInternal {
 				}
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightRed()
-						 << "WebSocket " + theShard->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Closed; Code: "
+						 << "WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) +
+							"]" + " Closed; Code: "
 						 << +static_cast<uint16_t>(theShard->closeCode) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
@@ -321,13 +322,13 @@ namespace DiscordCoreInternal {
 		std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketMessageHandler(&theClient->configManager) {
 		this->configManager = &theClient->configManager;
-		this->shard.emplace_back(currentShardNew);
+		this->shard[0] = currentShardNew;
 		this->theConnections = theConnectionsNew;
 		this->theParser.allocate(1024ull * 1024ull);
 		this->discordCoreClient = theClient;
 		this->doWeQuit = doWeQuitNew;
 		if (this->discordCoreClient) {
-			this->shard.emplace_back(this->discordCoreClient->configManager.getTotalShardCount());
+			this->shard[1] = this->discordCoreClient->configManager.getTotalShardCount();
 			if (this->discordCoreClient->configManager.getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 				this->dataOpCode = WebSocketOpCode::Op_Binary;
 			} else {
@@ -467,7 +468,8 @@ namespace DiscordCoreInternal {
 
 					if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightGreen()
-							 << "Message received from WebSocket " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + std::string(": ")
+							 << "Message received from WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
+								std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + std::string(": ")
 							 << payload << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
@@ -951,7 +953,7 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Roles::doWeCacheRoles || this->discordCoreClient->eventManager.onRoleUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::RoleData* theRolePtr{ nullptr };
 												DiscordCoreAPI::RoleData theRole{};
-												simdjson::ondemand::value theObjectNew = thePayload["d"].value();
+												simdjson::ondemand::value theObjectNew = thePayload["d"]["role"].value();
 												DiscordCoreAPI::parseObject(theObjectNew, theRole);
 												Snowflake roleId{ theRole.id };
 												Snowflake guildId{ theRole.guildId };
@@ -1455,7 +1457,8 @@ namespace DiscordCoreInternal {
 							case 7: {
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
-										 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 7)!"
+										 << "Shard [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
+											std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + " Reconnecting (Type 7)!"
 										 << DiscordCoreAPI::reset() << endl
 										 << endl;
 								}
@@ -1469,7 +1472,8 @@ namespace DiscordCoreInternal {
 								parseObject(thePayload["d"].value(), theData);
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
-										 << "Shard " + this->shard.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore) + " Reconnecting (Type 9)!"
+										 << "Shard [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
+											std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + " Reconnecting (Type 9)!"
 										 << DiscordCoreAPI::reset() << endl
 										 << endl;
 								}

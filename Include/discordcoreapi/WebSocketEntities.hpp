@@ -124,8 +124,8 @@ namespace DiscordCoreInternal {
 		bool areWeResuming{ false };
 		std::string resumeUrl{};
 		std::string sessionId{};
-		nlohmann::json shard{};
 		Snowflake userId{ 0 };
+		uint32_t shard[2]{};
 	};
 
 	class DiscordCoreAPI_Dll BaseSocketAgent {
