@@ -152,6 +152,7 @@ namespace DiscordCoreInternal {
 		theData.appendStructElement("speaking", static_cast<uint8_t>(this->type));
 		theData.appendStructElement("delay", this->delay);
 		theData.appendStructElement("ssrc", this->ssrc);
+		theData.endStructure();
 		return theData;
 	}
 

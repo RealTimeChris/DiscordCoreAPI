@@ -3358,7 +3358,10 @@ namespace DiscordCoreAPI {
 				theData.thumbnailUrl = newString;
 			}
 
-			theData.duration = TimeStamp<std::chrono::milliseconds>::convertMsToDurationString(getUint32(jsonObjectData, "duration"));
+			uint32_t theDuration = getUint32(jsonObjectData, "duration");
+			if (theDuration != 0) {
+				theData.duration = TimeStamp<std::chrono::milliseconds>::convertMsToDurationString(theDuration);
+			}
 
 			newString = getString(jsonObjectData, "permalink_url");
 			if (newString.size() > 0) {
