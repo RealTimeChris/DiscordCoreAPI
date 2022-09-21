@@ -40,6 +40,7 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/DataParsingFunctions.hpp>
+#include <discordcoreapi/VoiceConnection.hpp>
 
 namespace DiscordCoreInternal {
 
@@ -284,6 +285,23 @@ namespace DiscordCoreAPI {
 		}
 	}
 	
+	template<> void parseObject(simdjson::ondemand::value jsonObjectData, VoiceSocketReadyData& theData) {
+		theData.ip = getString(jsonObjectData, "ip");
+		theData.ssrc = getUint32(jsonObjectData, "ssrc");
+		simdjson::ondemand::array theArray{};
+		auto theResult = jsonObjectData["modes"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			theData.mode.clear();
+			for (auto value: theArray) {
+				std::string theString{ value.get_string().take_value() };
+				if (theString == "xsalsa20_poly1305") {
+					theData.mode = theString;
+				}
+			}
+		}
+		theData.port = std::to_string(getUint32(jsonObjectData, "port"));
+	}
+
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ApplicationCommand& theData) {
 		theData.id = getId(jsonObjectData, "id");
 

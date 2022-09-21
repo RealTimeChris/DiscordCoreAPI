@@ -39,7 +39,7 @@ namespace DiscordCoreInternal {
 
 	UpdatePresenceData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.appendStructElement("op", static_cast<uint8_t>(3));
+		theData.appendStructElement("op", static_cast<uint32_t>(3));
 		theData.addNewStructure("d");
 		theData.addNewArray("activities");
 		for (auto& value: this->activities) {
@@ -66,11 +66,12 @@ namespace DiscordCoreInternal {
 
 	WebSocketResumeData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.appendStructElement("op", static_cast<uint8_t>(6));
+		theData.appendStructElement("op", static_cast<uint32_t>(6));
 		theData.addNewStructure("d");
 		theData.appendStructElement("seq", this->lastNumberReceived);
 		theData.appendStructElement("session_id", this->sessionId);
 		theData.appendStructElement("token", this->botToken);
+		theData.endStructure();
 		return theData;
 	}
 
@@ -114,35 +115,39 @@ namespace DiscordCoreInternal {
 		theSerializer.endArray();
 		theSerializer.appendStructElement("token", this->botToken);
 		theSerializer.endStructure();
-		theSerializer.appendStructElement("op", static_cast<uint8_t>(2));
+		theSerializer.appendStructElement("op", static_cast<uint32_t>(2));
 		return theSerializer;
 	}
 
 	VoiceSocketProtocolPayloadData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.appendStructElement("op", static_cast<uint8_t>(1));
+		theData.appendStructElement("op", static_cast<uint32_t>(1));
 		theData.addNewStructure("d");
 		theData.appendStructElement("protocol", "udp");
 		theData.addNewStructure("data");
 		theData.appendStructElement("port", this->voicePort);
 		theData.appendStructElement("mode", this->voiceEncryptionMode);
+		theData.appendStructElement("address", this->externalIp);
+		theData.endStructure();
+		theData.endStructure();
 		return theData;
 	}
 
 	VoiceIdentifyData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.appendStructElement("op", static_cast<uint8_t>(0));
+		theData.appendStructElement("op", static_cast<uint32_t>(0));
 		theData.addNewStructure("d");
 		theData.appendStructElement("session_id", this->connectionData.sessionId);
 		theData.appendStructElement("token", this->connectionData.token);
 		theData.appendStructElement("server_id", this->connectInitData.guildId);
 		theData.appendStructElement("user_id", this->connectInitData.userId);
+		theData.endStructure();
 		return theData;
 	}
 
 	SendSpeakingData::operator DiscordCoreAPI::JsonSerializer() {
 		DiscordCoreAPI::JsonSerializer theData{};
-		theData.appendStructElement("op", static_cast<uint8_t>(5));
+		theData.appendStructElement("op", static_cast<uint32_t>(5));
 		theData.addNewStructure("d");
 		theData.appendStructElement("speaking", static_cast<uint8_t>(this->type));
 		theData.appendStructElement("delay", this->delay);
@@ -247,40 +252,52 @@ namespace DiscordCoreAPI {
 			}
 			theData.endArray();
 		}
-		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
-		theData.addNewStructure("footer");
-		theData.appendStructElement("proxy_icon_url", this->footer.proxyIconUrl);
-		theData.appendStructElement("icon_url", this->footer.iconUrl);
-		theData.appendStructElement("text", this->footer.text);
-		theData.endStructure();
-		theData.addNewStructure("author");
-		theData.appendStructElement("proxy_icon_url", this->author.proxyIconUrl);
-		theData.appendStructElement("icon_url", this->author.iconUrl);
-		theData.appendStructElement("name", this->author.name);
-		theData.appendStructElement("url", this->author.url);
-		theData.endStructure();
-		theData.addNewStructure("thumbnail");
-		theData.appendStructElement("proxy_url", this->thumbnail.proxyUrl);
-		theData.appendStructElement("height", this->thumbnail.height);
-		theData.appendStructElement("width", this->thumbnail.width);
-		theData.appendStructElement("url", this->thumbnail.url);
-		theData.endStructure();
-		theData.addNewStructure("image");
-		theData.appendStructElement("proxy_url", this->image.proxyUrl);
-		theData.appendStructElement("height", this->image.height);
-		theData.appendStructElement("width", this->image.width);
-		theData.appendStructElement("url", this->image.url);
-		theData.endStructure();
-		theData.addNewStructure("video");
-		theData.appendStructElement("proxy_url", this->video.proxyUrl);
-		theData.appendStructElement("height", this->video.height);
-		theData.appendStructElement("url", this->video.url);
-		theData.appendStructElement("width", this->video.width);
-		theData.endStructure();
-		theData.addNewStructure("provider");
-		theData.appendStructElement("name", this->provider.name);
-		theData.appendStructElement("url", this->provider.url);
-		theData.endStructure();
+		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());		
+		if (this->footer.text != "") {
+			theData.addNewStructure("footer");
+			theData.appendStructElement("proxy_icon_url", this->footer.proxyIconUrl);
+			theData.appendStructElement("icon_url", this->footer.iconUrl);
+			theData.appendStructElement("text", this->footer.text);
+			theData.endStructure();
+		}
+		if (this->author.iconUrl != "") {
+			theData.addNewStructure("author");
+			theData.appendStructElement("proxy_icon_url", this->author.proxyIconUrl);
+			theData.appendStructElement("icon_url", this->author.iconUrl);
+			theData.appendStructElement("name", this->author.name);
+			theData.appendStructElement("url", this->author.url);
+			theData.endStructure();
+		}
+		if (this->thumbnail.url != "") {
+			theData.addNewStructure("thumbnail");
+			theData.appendStructElement("proxy_url", this->thumbnail.proxyUrl);
+			theData.appendStructElement("height", this->thumbnail.height);
+			theData.appendStructElement("width", this->thumbnail.width);
+			theData.appendStructElement("url", this->thumbnail.url);
+			theData.endStructure();
+		}
+		if (this->image.url != "") {
+			theData.addNewStructure("image");
+			theData.appendStructElement("proxy_url", this->image.proxyUrl);
+			theData.appendStructElement("height", this->image.height);
+			theData.appendStructElement("width", this->image.width);
+			theData.appendStructElement("url", this->image.url);
+			theData.endStructure();
+		}
+		if (this->video.url != "") {
+			theData.addNewStructure("video");
+			theData.appendStructElement("proxy_url", this->video.proxyUrl);
+			theData.appendStructElement("height", this->video.height);
+			theData.appendStructElement("url", this->video.url);
+			theData.appendStructElement("width", this->video.width);
+			theData.endStructure();
+		}
+		if (this->provider.url != "") {
+			theData.addNewStructure("provider");
+			theData.appendStructElement("name", this->provider.name);
+			theData.appendStructElement("url", this->provider.url);
+			theData.endStructure();
+		}
 		theData.appendStructElement("description", this->description);
 		theData.appendStructElement("timestamp", this->timestamp);
 		theData.appendStructElement("title", this->title);
@@ -361,19 +378,15 @@ namespace DiscordCoreAPI {
 	UpdateVoiceStateData::operator JsonSerializer() {
 		JsonSerializer theData{};
 		std::string theString{};
+		theData.appendStructElement("op", static_cast<uint32_t>(4));
 		theData.addNewStructure("d");
-		if (this->channelId != 0) {
-			theString = std::to_string(this->channelId);
-			theData.appendStructElement("channel_id", theString);
-		} else {
-			theData.appendStructElement("channel_id", "");
-		}
+		theString = std::to_string(this->channelId);
+		theData.appendStructElement("channel_id", theString);
 		theData.appendStructElement("self_deaf", this->selfDeaf);
 		theData.appendStructElement("self_mute", this->selfMute);
 		theString = std::to_string(this->guildId);
 		theData.appendStructElement("guild_id", theString);
 		theData.endStructure();
-		theData.appendStructElement("op", static_cast<uint8_t>(4));
 		return theData;
 	}
 
@@ -503,18 +516,30 @@ namespace DiscordCoreAPI {
 
 	AllowedMentionsData::operator JsonSerializer() {
 		JsonSerializer theData{};
+		theData.addNewArray("parse");
+		for (auto& value: this->parse) {
+			theData.appendArrayElement(value);
+		}
+		theData.endArray();
+		theData.addNewArray("roles");
+		for (auto& value: this->roles) {
+			theData.appendArrayElement(value);
+		}
+		theData.endArray();
+		theData.addNewArray("users");
+		for (auto& value: this->users) {
+			theData.appendArrayElement(value);
+		}
+		theData.endArray();
 		theData.appendStructElement("replied_user", this->repliedUser);
-		theData.appendStructElement("parse", this->parse);
-		theData.appendStructElement("roles", this->roles);
-		theData.appendStructElement("users", this->users);
 		return theData;
 	}
 
 	ActionRowData::operator JsonSerializer() {
 		JsonSerializer theData{};
 		theData.appendStructElement("type", 1);
+		theData.addNewArray("components");
 		if (this->components.size() > 0) {
-			theData.addNewArray("components");
 			for (auto& valueNew: this->components) {
 				if (valueNew.type == ComponentType::Button) {
 					JsonSerializer component{};
@@ -580,8 +605,8 @@ namespace DiscordCoreAPI {
 					theData.appendArrayElement(component);
 				}
 			}
-			theData.endArray();
 		}
+		theData.endArray();
 		return theData;
 	}
 
@@ -1111,6 +1136,7 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("flags", this->data.flags);
 		theData.appendStructElement("tts", this->data.tts);
 		std::cout << "WERE HERE 101010" << std::endl;
+		theData.endStructure();
 		return theData;
 	}
 

@@ -36,39 +36,33 @@ namespace DiscordCoreAPI {
 
 	ExecuteWebHookData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData.addEvent(static_cast<JsonSerializer>(this->allowedMentions).operator std::string(), "allowed_mentions");
-		theData.addEvent(JsonParseEvent::Array_Start, "attachments");
+		theData.appendStructElement("allowed_mentions", static_cast<JsonSerializer>(this->allowedMentions));
+		theData.addNewArray("attachments");
 		for (auto& value: this->attachments) {
-			theData.addEvent("attachments"].emplace_back(value);
+			theData.appendArrayElement(value);
 		}
-		theData.addEvent(JsonParseEvent::Array_End);
-		if (this->components.size() == 0) {
-			theData["components"] = nlohmann::json::array();
-		} else {
-			for (auto& value: this->components) {
-				theData["components"].emplace_back(value);
-			}
+		theData.endArray();
+		theData.addNewArray("components");
+		for (auto& value: this->components) {
+			theData.appendArrayElement(value);
 		}
-		if (this->embeds.size() == 0) {
-			theData["embeds"] = nlohmann::json::array();
-		} else {
-			for (auto& value: this->embeds) {
-				theData["embeds"].emplace_back(value);
-			}
+		theData.endArray();
+		theData.addNewArray("embeds");
+		for (auto& value: this->embeds) {
+			theData.appendArrayElement(value);
 		}
+		theData.endArray();
 		if (this->avatarUrl != "") {
-			theData["avatar_url"] = this->userName;
+			theData.appendStructElement("avatar_url", this->userName);
 		}
 		if (this->userName != "") {
-			theData["userName"] = this->userName;
+			theData.appendStructElement("userName", this->userName);
 		}
 		if (this->content != "") {
-			theData["content"] = this->content;
+			theData.appendStructElement("content", this->content);
 		}
-		theData["flags"] = this->flags;
-		theData["tts"] = this->tts;
-		*/
+		theData.appendStructElement("flags", this->flags);
+		theData.appendStructElement("tts", this->tts);
 		return theData;
 	}
 

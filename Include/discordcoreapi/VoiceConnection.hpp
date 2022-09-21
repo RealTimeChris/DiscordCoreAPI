@@ -34,7 +34,16 @@
 
 namespace DiscordCoreAPI {
 
-	struct OpusDecoderWrapper {
+	struct DiscordCoreAPI_Dll VoiceSocketReadyData {
+		std::string port{};
+		std::string mode{};
+		std::string ip{};
+		uint32_t ssrc{};
+	};
+
+	template<> void parseObject(simdjson::ondemand::value jsonObjectData, VoiceSocketReadyData& theData);
+
+	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
 		struct OpusDecoderDeleter {
 			void operator()(OpusDecoder*) noexcept;
 		};
@@ -51,12 +60,12 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> thePtr{ nullptr, OpusDecoderDeleter{} };
 	};
 
-	struct VoicePayload {
+	struct DiscordCoreAPI_Dll VoicePayload {
 		std::vector<opus_int16> decodedData{};
 		std::vector<uint8_t> theRawData{};
 	};
 
-	struct VoiceUser {
+	struct DiscordCoreAPI_Dll VoiceUser {
 		std::queue<VoicePayload> thePayloads{};
 		OpusDecoderWrapper theDecoder{};
 		OpusEncoderWrapper theEncoder{};
@@ -71,7 +80,7 @@ namespace DiscordCoreAPI {
 
 	using DoubleTimePointMs = std::chrono::time_point<std::chrono::system_clock, DoubleMilliSecond>;
 
-	struct RTPPacket {
+	struct DiscordCoreAPI_Dll RTPPacket {
 		std::vector<uint8_t> audioData{};
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };

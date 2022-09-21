@@ -510,8 +510,10 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData>()
 											};
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->permissionData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->permissionData);
+											}
 											this->discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent(*dataPackage);
 											break;
 										}
@@ -519,8 +521,10 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleCreationData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnAutoModerationRuleCreationData>()
 											};
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->theRule);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->theRule);
+											}
 											this->discordCoreClient->eventManager.onAutoModerationRuleCreationEvent(*dataPackage);
 											break;
 										}
@@ -528,8 +532,10 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleUpdateData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnAutoModerationRuleUpdateData>()
 											};
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->theRule);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->theRule);
+											}
 											this->discordCoreClient->eventManager.onAutoModerationRuleUpdateEvent(*dataPackage);
 											break;
 										}
@@ -537,8 +543,10 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleDeletionData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnAutoModerationRuleDeletionData>()
 											};
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->theRule);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->theRule);
+											}
 											this->discordCoreClient->eventManager.onAutoModerationRuleDeletionEvent(*dataPackage);
 											break;
 										}
@@ -546,8 +554,10 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnAutoModerationActionExecutionData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnAutoModerationActionExecutionData>()
 											};
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->theData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->theData);
+											}
 											this->discordCoreClient->eventManager.onAutoModerationActionExecutionEvent(*dataPackage);
 											break;
 										}
@@ -556,8 +566,10 @@ namespace DiscordCoreInternal {
 												this->discordCoreClient->eventManager.onChannelCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::ChannelData* theChannelPtr{ nullptr };
 												DiscordCoreAPI::ChannelData theChannel{};
-												simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-												DiscordCoreAPI::parseObject(theObjectNew, theChannel);
+												simdjson::ondemand::value theObjectNew{};
+												if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObjectNew, theChannel);
+												}
 												Snowflake channelId{ theChannel.id };
 												Snowflake guildId{ theChannel.guildId };
 												DiscordCoreAPI::GuildData theGuild{};
@@ -583,8 +595,10 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Channels::doWeCacheChannels || this->discordCoreClient->eventManager.onChannelUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::ChannelData* theChannelPtr{ nullptr };
 												DiscordCoreAPI::ChannelData theChannel{};
-												simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-												DiscordCoreAPI::parseObject(theObjectNew, theChannel);
+												simdjson::ondemand::value theObjectNew{};
+												if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObjectNew, theChannel);
+												}
 												Snowflake channelId{ theChannel.id };
 												Snowflake guildId{ theChannel.guildId };
 												if (DiscordCoreAPI::Channels::doWeCacheChannels) {
@@ -604,8 +618,10 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Channels::doWeCacheChannels ||
 												this->discordCoreClient->eventManager.onChannelDeletionEvent.theFunctions.size() > 0) {
 												std::unique_ptr<DiscordCoreAPI::ChannelData> theChannel = std::make_unique<DiscordCoreAPI::ChannelData>();
-												simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-												DiscordCoreAPI::parseObject(theObjectNew, *theChannel);
+												simdjson::ondemand::value theObjectNew{};
+												if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObjectNew, *theChannel);
+												}
 												Snowflake channelId{ theChannel->id };
 												Snowflake guildId{ theChannel->guildId };
 												DiscordCoreAPI::GuildData theGuild{};
@@ -630,15 +646,19 @@ namespace DiscordCoreInternal {
 										} 
 										case 11: {
 											std::unique_ptr<DiscordCoreAPI::OnChannelPinsUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelPinsUpdateData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->dataPackage);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->dataPackage);
+											}
 											this->discordCoreClient->eventManager.onChannelPinsUpdateEvent(*dataPackage);
 											break;
 										}
 										case 12: {
 											std::unique_ptr<DiscordCoreAPI::OnThreadCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadCreationData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->thread);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->thread);
+											}
 											DiscordCoreAPI::GuildData theGuild{};
 											theGuild.id = dataPackage->thread.guildId;
 											if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
@@ -650,15 +670,19 @@ namespace DiscordCoreInternal {
 										}
 										case 13: {
 											std::unique_ptr<DiscordCoreAPI::OnThreadUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadUpdateData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->thread);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->thread);
+											}
 											this->discordCoreClient->eventManager.onThreadUpdateEvent(*dataPackage);
 											break;
 										}
 										case 14: {
 											std::unique_ptr<DiscordCoreAPI::OnThreadDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadDeletionData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->thread);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->thread);
+											}
 											DiscordCoreAPI::GuildData theGuild{};
 											theGuild.id = dataPackage->thread.guildId;
 											if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
@@ -674,22 +698,28 @@ namespace DiscordCoreInternal {
 										}
 										case 15: {
 											std::unique_ptr<DiscordCoreAPI::OnThreadListSyncData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadListSyncData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->threadListSyncData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->threadListSyncData);
+											}
 											this->discordCoreClient->eventManager.onThreadListSyncEvent(*dataPackage);
 											break;
 										}
 										case 16: {
 											std::unique_ptr<DiscordCoreAPI::OnThreadMemberUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadMemberUpdateData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->threadMember);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->threadMember);
+											}
 											this->discordCoreClient->eventManager.onThreadMemberUpdateEvent(*dataPackage);
 											break;
 										}
 										case 17: {
 											std::unique_ptr<DiscordCoreAPI::OnThreadMembersUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadMembersUpdateData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->threadMembersUpdateData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->threadMembersUpdateData);
+											}
 											this->discordCoreClient->eventManager.onThreadMembersUpdateEvent(*dataPackage);
 											break;
 										}
@@ -701,8 +731,10 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::GuildData> theGuildPtr{ std::make_unique<DiscordCoreAPI::GuildData>() };
 											Snowflake guildId{};
 											theStopWatchReal.resetTimer();
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, *theGuildPtr);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, *theGuildPtr);
+											}
 											guildId = theGuildPtr->id;
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 												
@@ -721,8 +753,10 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildUpdateEvent.theFunctions.size() > 0) {
 												std::unique_ptr<DiscordCoreAPI::GuildData> theGuildPtr{ std::make_unique<DiscordCoreAPI::GuildData>() };
 												Snowflake guildId{};
-												simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-												DiscordCoreAPI::parseObject(theObjectNew, *theGuildPtr);
+												simdjson::ondemand::value theObjectNew{};
+												if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObjectNew, *theGuildPtr);
+												}
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 													DiscordCoreAPI::Guilds::insertGuild(*theGuildPtr);
 												}
@@ -738,8 +772,10 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildDeletionEvent.theFunctions.size() > 0) {
 												std::unique_ptr<DiscordCoreAPI::GuildData> theGuild = std::make_unique<DiscordCoreAPI::GuildData>();
 												Snowflake guildId{};
-												simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-												DiscordCoreAPI::parseObject(theObjectNew, *theGuild);
+												simdjson::ondemand::value theObjectNew{};
+												if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObjectNew, *theGuild);
+												}
 												*theGuild = DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = guildId }).get();
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 													DiscordCoreAPI::Guilds::removeGuild(theGuild->id);
@@ -766,8 +802,10 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnGuildBanAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildBanAddData>() };
 											std::string_view theString{};
 											thePayload["d"]["guild_id"].get(theString);
-											simdjson::ondemand::value theObjectNew = thePayload["d"]["user"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->user);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"]["user"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->user);
+											}
 											dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
 											this->discordCoreClient->eventManager.onGuildBanAddEvent(*dataPackage);
 											break;
@@ -776,16 +814,20 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnGuildBanRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildBanRemoveData>() };
 											std::string_view theString{};
 											thePayload["d"]["guild_id"].get(theString);
-											simdjson::ondemand::value theObjectNew = thePayload["d"]["user"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->user);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"]["user"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->user);
+											}
 											dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
 											this->discordCoreClient->eventManager.onGuildBanRemoveEvent(*dataPackage);
 											break;
 										}
 										case 23: {
 											std::unique_ptr<DiscordCoreAPI::OnGuildEmojisUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildEmojisUpdateData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->updateData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->updateData);
+											}
 											DiscordCoreAPI::GuildData theGuild{};
 											theGuild.id = dataPackage->updateData.guildId;
 											if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
@@ -799,8 +841,10 @@ namespace DiscordCoreInternal {
 										}
 										case 24: {
 											std::unique_ptr<DiscordCoreAPI::OnGuildStickersUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildStickersUpdateData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->updateData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->updateData);
+											}
 											DiscordCoreAPI::GuildData theGuild{};
 											theGuild.id = dataPackage->updateData.guildId;
 											if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
@@ -827,8 +871,10 @@ namespace DiscordCoreInternal {
 												this->discordCoreClient->eventManager.onGuildMemberAddEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildMemberData* theGuildMemberPtr{ nullptr };
 												DiscordCoreAPI::GuildMemberData theGuildMember{};
-												simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-												DiscordCoreAPI::parseObject(theObjectNew, theGuildMember);
+												simdjson::ondemand::value theObjectNew{};
+												if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObjectNew, theGuildMember);
+												}
 												Snowflake userId{theGuildMember.id};
 												Snowflake guildId{ theGuildMember.guildId };
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
@@ -860,8 +906,10 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers ||
 												this->discordCoreClient->eventManager.onGuildMemberRemoveEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildMemberData theGuildMember{};
-												simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-												DiscordCoreAPI::parseObject(theObjectNew, theGuildMember);
+												simdjson::ondemand::value theObjectNew{};
+												if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObjectNew, theGuildMember);
+												}
 												Snowflake userId{ theGuildMember.id };
 												Snowflake guildId{ theGuildMember.guildId };
 												DiscordCoreAPI::GuildData theGuild{};
@@ -892,8 +940,10 @@ namespace DiscordCoreInternal {
 												this->discordCoreClient->eventManager.onGuildMemberUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::GuildMemberData* theGuildMemberPtr{ nullptr };
 												DiscordCoreAPI::GuildMemberData theGuildMember{};
-												simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-												DiscordCoreAPI::parseObject(theObjectNew, theGuildMember);
+												simdjson::ondemand::value theObjectNew{};
+												if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObjectNew, theGuildMember);
+												}
 												Snowflake userId{ theGuildMember.id };
 												Snowflake guildId{ theGuildMember.guildId };
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
@@ -916,8 +966,10 @@ namespace DiscordCoreInternal {
 										}
 										case 29: {
 											std::unique_ptr<DiscordCoreAPI::OnGuildMembersChunkData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildMembersChunkData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->chunkEventData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->chunkEventData);
+											}
 											this->discordCoreClient->eventManager.onGuildMembersChunkEvent(*dataPackage);
 											break;
 										}
@@ -925,8 +977,10 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Roles::doWeCacheRoles || this->discordCoreClient->eventManager.onRoleCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::RoleData* theRolePtr{ nullptr };
 												DiscordCoreAPI::RoleData theRole{};
-												simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-												DiscordCoreAPI::parseObject(theObjectNew, theRole);
+												simdjson::ondemand::value theObjectNew{};
+												if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObjectNew, theRole);
+												}
 												Snowflake roleId{ theRole.id };
 												Snowflake guildId{ theRole.guildId };
 												DiscordCoreAPI::GuildData theGuild{};
@@ -953,8 +1007,10 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Roles::doWeCacheRoles || this->discordCoreClient->eventManager.onRoleUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::RoleData* theRolePtr{ nullptr };
 												DiscordCoreAPI::RoleData theRole{};
-												simdjson::ondemand::value theObjectNew = thePayload["d"]["role"].value();
-												DiscordCoreAPI::parseObject(theObjectNew, theRole);
+												simdjson::ondemand::value theObjectNew{};
+												if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObjectNew, theRole);
+												}
 												Snowflake roleId{ theRole.id };
 												Snowflake guildId{ theRole.guildId };
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
@@ -1003,8 +1059,10 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnGuildScheduledEventCreationData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnGuildScheduledEventCreationData>()
 											};
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->guildScheduledEvent);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->guildScheduledEvent);
+											}
 											DiscordCoreAPI::GuildData theGuild{};
 											theGuild.id = dataPackage->guildScheduledEvent.guildId;
 											if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
@@ -1017,16 +1075,20 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnGuildScheduledEventUpdateData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnGuildScheduledEventUpdateData>()
 											};
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->guildScheduledEvent);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->guildScheduledEvent);
+											}
 											this->discordCoreClient->eventManager.onGuildScheduledEventUpdateEvent(*dataPackage);
 										}
 										case 35: {
 											std::unique_ptr<DiscordCoreAPI::OnGuildScheduledEventDeletionData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnGuildScheduledEventDeletionData>()
 											};
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->guildScheduledEvent);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->guildScheduledEvent);
+											}
 											DiscordCoreAPI::GuildData theGuild{};
 											theGuild.id = dataPackage->guildScheduledEvent.guildId;
 											if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
@@ -1099,8 +1161,10 @@ namespace DiscordCoreInternal {
 										}
 										case 41: {
 											std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, *interactionData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, *interactionData);
+											}
 											std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
 											switch (interactionData->type) {
 												case DiscordCoreAPI::InteractionType::Application_Command: {
@@ -1195,8 +1259,10 @@ namespace DiscordCoreInternal {
 										} 
 										case 42: {
 											std::unique_ptr<DiscordCoreAPI::OnInviteCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInviteCreationData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->invite);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->invite);
+											}
 											this->discordCoreClient->eventManager.onInviteCreationEvent(*dataPackage);
 											break;
 										}
@@ -1214,8 +1280,10 @@ namespace DiscordCoreInternal {
 										}
 										case 44: {
 											std::unique_ptr<DiscordCoreAPI::Message> message{ std::make_unique<DiscordCoreAPI::Message>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, *message);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, *message);
+											}
 											std::unique_ptr<DiscordCoreAPI::OnMessageCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageCreationData>() };
 											dataPackage->message = *message;
 											for (auto& [key, value]: DiscordCoreAPI::MessageCollector::messagesBufferMap) {
@@ -1235,8 +1303,10 @@ namespace DiscordCoreInternal {
 										}
 										case 45: {
 											std::unique_ptr<DiscordCoreAPI::OnMessageUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageUpdateData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->messageNew);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->messageNew);
+											}
 											for (auto& [key, value]: DiscordCoreAPI::MessageCollector::messagesBufferMap) {
 												value->send(dataPackage->messageNew);
 											}
@@ -1272,15 +1342,19 @@ namespace DiscordCoreInternal {
 										}
 										case 48: {
 											std::unique_ptr<DiscordCoreAPI::OnReactionAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnReactionAddData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->reaction);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->reaction);
+											}
 											this->discordCoreClient->eventManager.onReactionAddEvent(*dataPackage);
 											break;
 										}
 										case 49: {
 											std::unique_ptr<DiscordCoreAPI::OnReactionRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnReactionRemoveData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->reactionRemoveData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->reactionRemoveData);
+											}
 											this->discordCoreClient->eventManager.onReactionRemoveEvent(*dataPackage);
 											break;
 										}
@@ -1312,8 +1386,10 @@ namespace DiscordCoreInternal {
 										}
 										case 52: {
 											std::unique_ptr<DiscordCoreAPI::OnPresenceUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnPresenceUpdateData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->presenceData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->presenceData);
+											}
 											this->discordCoreClient->eventManager.onPresenceUpdateEvent(*dataPackage);
 											break;
 										} 
@@ -1321,8 +1397,10 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnStageInstanceCreationData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnStageInstanceCreationData>()
 											};
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->stageInstance);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->stageInstance);
+											}
 											DiscordCoreAPI::GuildData theGuild{};
 											theGuild.id = dataPackage->stageInstance.guildId;
 											if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
@@ -1334,8 +1412,10 @@ namespace DiscordCoreInternal {
 										}
 										case 54: {
 											std::unique_ptr<DiscordCoreAPI::OnStageInstanceUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnStageInstanceUpdateData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->stageInstance);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->stageInstance);
+											}
 											this->discordCoreClient->eventManager.onStageInstanceUpdateEvent(*dataPackage);
 											break;
 										}
@@ -1343,8 +1423,10 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnStageInstanceDeletionData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnStageInstanceDeletionData>()
 											};
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->stageInstance);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->stageInstance);
+											}
 											DiscordCoreAPI::GuildData theGuild{};
 											theGuild.id = dataPackage->stageInstance.guildId;
 											if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
@@ -1360,8 +1442,10 @@ namespace DiscordCoreInternal {
 										}
 										case 56: {
 											std::unique_ptr<DiscordCoreAPI::OnTypingStartData> dataPackage{ std::make_unique<DiscordCoreAPI::OnTypingStartData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->typingStartData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->typingStartData);
+											}
 											this->discordCoreClient->eventManager.onTypingStartEvent(*dataPackage);
 											break;
 										}
@@ -1369,8 +1453,10 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::UserData* theUserPtr{ nullptr };
 											if (DiscordCoreAPI::Users::doWeCacheUsers || this->discordCoreClient->eventManager.onUserUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::UserData theUser{};
-												simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-												DiscordCoreAPI::parseObject(theObjectNew, theUser);
+												simdjson::ondemand::value theObjectNew{};
+												if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObjectNew, theUser);
+												}
 												Snowflake userId{ theUser.id };
 												if (DiscordCoreAPI::Users::doWeCacheUsers) {
 													DiscordCoreAPI::Users::insertUser(theUser);
@@ -1387,8 +1473,10 @@ namespace DiscordCoreInternal {
 										}
 										case 58: {
 											std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, dataPackage->voiceStateData);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, dataPackage->voiceStateData);
+											}
 											this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 											if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected && userId == this->userId) {
 												this->voiceConnectionData = VoiceConnectionData{};
@@ -1414,8 +1502,10 @@ namespace DiscordCoreInternal {
 										}
 										case 59: {
 											std::unique_ptr<DiscordCoreAPI::OnVoiceServerUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceServerUpdateData>() };
-											simdjson::ondemand::value theObjectNew = thePayload["d"].value();
-											DiscordCoreAPI::parseObject(theObjectNew, *dataPackage);
+											simdjson::ondemand::value theObjectNew{};
+											if (thePayload["d"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
+												DiscordCoreAPI::parseObject(theObjectNew, *dataPackage);
+											}
 											this->voiceConnectionData.endPoint = dataPackage->endpoint;
 											this->voiceConnectionData.token = dataPackage->token;
 											if (this->areWeCollectingData && !this->serverUpdateCollected && !this->stateUpdateCollected) {
