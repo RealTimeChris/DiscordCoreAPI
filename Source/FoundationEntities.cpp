@@ -251,54 +251,44 @@ namespace DiscordCoreAPI {
 				theData.appendArrayElement(value2);
 			}
 			theData.endArray();
+		} else {
+			theData.appendStructElement("fields", nullptr);
 		}
 		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());		
-		if (this->footer.text != "") {
-			theData.addNewStructure("footer");
-			theData.appendStructElement("proxy_icon_url", this->footer.proxyIconUrl);
-			theData.appendStructElement("icon_url", this->footer.iconUrl);
-			theData.appendStructElement("text", this->footer.text);
-			theData.endStructure();
-		}
-		if (this->author.iconUrl != "") {
-			theData.addNewStructure("author");
-			theData.appendStructElement("proxy_icon_url", this->author.proxyIconUrl);
-			theData.appendStructElement("icon_url", this->author.iconUrl);
-			theData.appendStructElement("name", this->author.name);
-			theData.appendStructElement("url", this->author.url);
-			theData.endStructure();
-		}
-		if (this->thumbnail.url != "") {
-			theData.addNewStructure("thumbnail");
-			theData.appendStructElement("proxy_url", this->thumbnail.proxyUrl);
-			theData.appendStructElement("height", this->thumbnail.height);
-			theData.appendStructElement("width", this->thumbnail.width);
-			theData.appendStructElement("url", this->thumbnail.url);
-			theData.endStructure();
-		}
-		if (this->image.url != "") {
-			theData.addNewStructure("image");
-			theData.appendStructElement("proxy_url", this->image.proxyUrl);
-			theData.appendStructElement("height", this->image.height);
-			theData.appendStructElement("width", this->image.width);
-			theData.appendStructElement("url", this->image.url);
-			theData.endStructure();
-		}
-		if (this->video.url != "") {
-			theData.addNewStructure("video");
-			theData.appendStructElement("proxy_url", this->video.proxyUrl);
-			theData.appendStructElement("height", this->video.height);
-			theData.appendStructElement("url", this->video.url);
-			theData.appendStructElement("width", this->video.width);
-			theData.endStructure();
-		}
-		if (this->provider.url != "") {
-			theData.addNewStructure("provider");
-			theData.appendStructElement("name", this->provider.name);
-			theData.appendStructElement("url", this->provider.url);
-			theData.endStructure();
-		}
-		theData.appendStructElement("description", this->description);
+		theData.addNewStructure("footer");
+		theData.appendStructElement("proxy_icon_url", this->footer.proxyIconUrl);
+		theData.appendStructElement("icon_url", this->footer.iconUrl);
+		theData.appendStructElement("text", this->footer.text);
+		theData.endStructure();
+		theData.addNewStructure("author");
+		theData.appendStructElement("proxy_icon_url", this->author.proxyIconUrl);
+		theData.appendStructElement("icon_url", this->author.iconUrl);
+		theData.appendStructElement("name", this->author.name);
+		theData.appendStructElement("url", this->author.url);
+		theData.endStructure();
+		theData.addNewStructure("thumbnail");
+		theData.appendStructElement("proxy_url", this->thumbnail.proxyUrl);
+		theData.appendStructElement("height", this->thumbnail.height);
+		theData.appendStructElement("width", this->thumbnail.width);
+		theData.appendStructElement("url", this->thumbnail.url);
+		theData.endStructure();
+		theData.addNewStructure("image");
+		theData.appendStructElement("proxy_url", this->image.proxyUrl);
+		theData.appendStructElement("height", this->image.height);
+		theData.appendStructElement("width", this->image.width);
+		theData.appendStructElement("url", this->image.url);
+		theData.endStructure();
+		theData.addNewStructure("video");
+		theData.appendStructElement("proxy_url", this->video.proxyUrl);
+		theData.appendStructElement("height", this->video.height);
+		theData.appendStructElement("url", this->video.url);
+		theData.appendStructElement("width", this->video.width);
+		theData.endStructure();
+		theData.addNewStructure("provider");
+		theData.appendStructElement("name", this->provider.name);
+		theData.appendStructElement("url", this->provider.url);
+		theData.endStructure();
+		theData.appendStructElement("description", "\\u000aDESCRIPTION");
 		theData.appendStructElement("timestamp", this->timestamp);
 		theData.appendStructElement("title", this->title);
 		theData.appendStructElement("color", realColorVal);
@@ -1065,10 +1055,10 @@ namespace DiscordCoreAPI {
 
 	InteractionResponseData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData.addNewStructure("data");
 		theData.appendStructElement("type", static_cast<uint8_t>(this->type));
-		std::cout << "WERE HERE 0101" << std::endl;
 		theData.addNewStructure("data");
+		theData.appendStructElement("type", "");
+		std::cout << "WERE HERE 0101" << std::endl;
 		if (this->data.attachments.size() > 0) {
 			theData.addNewArray("attachments");
 			for (auto& value: this->data.attachments) {
@@ -1084,9 +1074,7 @@ namespace DiscordCoreAPI {
 		}
 		theData.endArray();
 		std::cout << "WERE HERE 0404" << std::endl;
-		if (this->data.allowedMentions.parse.size() > 0 || this->data.allowedMentions.roles.size() > 0 || this->data.allowedMentions.users.size() > 0) {
-			theData.appendStructElement("allowed_mentions", this->data.allowedMentions);
-		}
+		theData.appendStructElement("allowed_mentions", this->data.allowedMentions);
 		std::cout << "WERE HERE 0505" << std::endl;
 		if (this->data.choices.size() > 0) {
 			theData.addNewArray("choices");
@@ -1137,7 +1125,6 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("flags", this->data.flags);
 		theData.appendStructElement("tts", this->data.tts);
 		std::cout << "WERE HERE 101010" << std::endl;
-		theData.endStructure();
 		theData.endStructure();
 		return theData;
 	}

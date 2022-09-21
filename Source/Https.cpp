@@ -103,9 +103,9 @@ namespace DiscordCoreInternal {
 			theReturnString += "Connection: Keep-Alive\r\n";
 			theReturnString += "Host: " + baseUrlNew + "\r\n";
 			theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
-			theReturnString += workload.content;
+			theReturnString += DiscordCoreAPI::escapeCharacters(workload.content);
 		}
-		std::cout << "THE WORKLOAD: " << workload.content << std::endl;
+		std::cout << "THE WORKLOAD: " << DiscordCoreAPI::escapeCharacters(workload.content) << std::endl;
 		return theReturnString;
 	}
 

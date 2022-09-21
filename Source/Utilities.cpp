@@ -352,9 +352,7 @@ namespace DiscordCoreAPI {
 
 	void JsonSerializer::appendStructElement(const char* keyName, JsonRecord&& theRecord) {
 		theRecord.theKey = keyName;
-		if (theRecord.theValue != "") {
-			this->theJsonData.push_back(std::move(theRecord));
-		}
+		this->theJsonData.push_back(std::move(theRecord));
 	}
 
 	void JsonSerializer::appendStructElement(const char* keyName, EnumConverter& theRecord) {
@@ -1463,7 +1461,11 @@ namespace DiscordCoreAPI {
 				}
 				case 0x0A: {
 					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), 'n');
+					theStringNew.insert(theStringNew.end(), 'u');
+					theStringNew.insert(theStringNew.end(), '0');
+					theStringNew.insert(theStringNew.end(), '0');
+					theStringNew.insert(theStringNew.end(), '0');
+					theStringNew.insert(theStringNew.end(), 'a');
 					break;
 				}
 				case 0x0B: {
@@ -1479,11 +1481,6 @@ namespace DiscordCoreAPI {
 				case 0x0D: {
 					theStringNew.insert(theStringNew.end(), '\\');
 					theStringNew.insert(theStringNew.end(), 'r');
-					break;
-				}
-				case 0x22: {
-					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), '"');
 					break;
 				}
 				case 0x00: {
