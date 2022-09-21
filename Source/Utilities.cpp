@@ -200,54 +200,48 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	JsonRecord::JsonRecord(EnumConverter theData) noexcept {
+		*this = theData;
+	}
+
 	JsonRecord::JsonRecord(float theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Float;
-		this->theValue = std::to_string(theData);
+		*this = theData;
 	}
 
 	JsonRecord::JsonRecord(double theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Double;
-		this->theValue = std::to_string(theData);
+		*this = theData;
 	}
 
 	JsonRecord::JsonRecord(int64_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Large;
-		this->theValue = std::to_string(theData);
+		*this = theData;
 	}
 
 	JsonRecord::JsonRecord(int32_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
+		*this = theData;
 	}
 
 	JsonRecord::JsonRecord(int16_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
+		*this = theData;
 	}
 
 	JsonRecord::JsonRecord(int8_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Small;
-		this->theValue = std::to_string(theData);
+		*this = theData;
 	}
 
 	JsonRecord::JsonRecord(uint64_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Large;
-		this->theValue = std::to_string(theData);
+		*this = theData;
 	}
 
 	JsonRecord::JsonRecord(uint32_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
+		*this = theData;
 	}
 
 	JsonRecord::JsonRecord(uint16_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
+		*this = theData;
 	}
 
 	JsonRecord::JsonRecord(uint8_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Small;
-		this->theValue = std::to_string(theData);
+		*this = theData;
 	}
 
 	JsonSerializer::operator std::string() noexcept {
@@ -385,19 +379,31 @@ namespace DiscordCoreAPI {
 		theRecord.theEvent = JsonParseEvent::Object_Start;
 		this->theJsonData.push_back(theRecord);
 	}
+
 	void JsonSerializer::appendStructElement(const char* keyName, JsonRecord&& theRecord) {
 		theRecord.theKey = keyName;
 		this->theJsonData.push_back(std::move(theRecord));
 	}
+
+	void JsonSerializer::appendStructElement(const char* keyName, EnumConverter& theRecord) {
+		this->theJsonData.push_back(theRecord);
+	}
+
+	void JsonSerializer::appendStructElement(const char* keyName, EnumConverter&& theRecord) {
+		this->theJsonData.push_back(theRecord);
+	}
+
 	void JsonSerializer::appendStructElement(const char* keyName, JsonRecord& theRecord) {
 		theRecord.theKey = keyName;
 		this->theJsonData.push_back(theRecord);
 	}
+
 	void JsonSerializer::endStructure() {
 		JsonRecord theRecord{};
 		theRecord.theEvent = JsonParseEvent::Object_End;
 		this->theJsonData.push_back(theRecord);
 	}
+
 	void JsonSerializer::addNewArray(const char* keyName) {
 		JsonRecord theRecord{};
 		theRecord.theKey = keyName;
@@ -564,7 +570,7 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
-	JsonRecord& JsonRecord::operator=(EnumConverter other) {
+	JsonRecord& JsonRecord::operator=(EnumConverter other) noexcept {
 		JsonRecord theRecord{};
 		if (other.vectorType) {
 			theRecord.theEvent = JsonParseEvent::Array_Start;

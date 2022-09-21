@@ -431,12 +431,17 @@ namespace DiscordCoreAPI {
 			*static_cast<uint64_t*>(this->thePtr) = static_cast<uint64_t>(other);
 		};
 
-		template<IsEnum EnumType> EnumConverter(std::vector<EnumType> other) {
+		template<IsEnum EnumType> EnumConverter&operator=(std::vector<EnumType> other) {
 			this->thePtr = new std::vector<uint64_t>{};
 			for (auto& value: other) {
 				static_cast<std::vector<uint64_t>*>(this->thePtr)->emplace_back(static_cast<uint64_t>(value));
 			}
 			this->vectorType = true;
+			return *this;
+		};
+
+		template<IsEnum EnumType> EnumConverter(std::vector<EnumType> other) {
+			*this = other;
 		};
 
 		operator std::vector<uint64_t>() {
@@ -465,7 +470,7 @@ namespace DiscordCoreAPI {
 	class JsonRecord {
 	  public:
 		JsonRecord() noexcept = default;
-		JsonRecord& operator=(EnumConverter other);
+		JsonRecord& operator=(EnumConverter other) noexcept;
 		JsonRecord& operator=(int8_t) noexcept;
 		JsonRecord& operator=(int16_t) noexcept;
 		JsonRecord& operator=(int32_t) noexcept;
@@ -480,6 +485,7 @@ namespace DiscordCoreAPI {
 		JsonRecord& operator=(std::string&) noexcept;
 		JsonRecord& operator=(const char*) noexcept;
 		JsonRecord& operator[](const char*) noexcept;
+		JsonRecord(EnumConverter other) noexcept;
 		JsonRecord(int8_t) noexcept;
 		JsonRecord(int16_t) noexcept;
 		JsonRecord(int32_t) noexcept;
@@ -510,6 +516,22 @@ namespace DiscordCoreAPI {
 		void addNewStructure(const char* keyName);
 		void appendStructElement(const char* keyName, JsonRecord&&);
 		void appendStructElement(const char* keyName, JsonRecord&);
+		void appendStructElement(const char* keyName, EnumConverter& theRecord);
+		void appendStructElement(const char* keyName, EnumConverter&& theRecord);
+		template<typename KeyType, typename ObjectType> void appendStructElement(const char* keyName, std::unordered_map<KeyType, ObjectType> other) {
+			JsonRecord theRecord{};
+			theRecord.theEvent = JsonParseEvent::Object_Start;
+			theRecord.theKey = keyName;
+			this->theJsonData.push_back(theRecord);
+			for (auto& [key, value]: other) {
+				theRecord.theKey = key;
+				theRecord = value;
+				this->theJsonData.push_back(theRecord);
+			}
+			theRecord.theEvent = JsonParseEvent::Object_End;
+			theRecord.theKey = keyName;
+			this->theJsonData.push_back(theRecord);
+		}
 		void endStructure();
 		void addNewArray(const char* keyName);
 		void appendArrayElement(JsonSerializer&&);

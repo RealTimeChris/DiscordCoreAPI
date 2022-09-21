@@ -32,10 +32,8 @@ namespace DiscordCoreAPI {
 
 	AddRecipientToGroupDMData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["access_token"] = this->token;
-		theData["nick"] = this->nick;
-		*/
+		theData.appendStructElement("access_token", this->token);
+		theData.appendStructElement("nick", this->nick);
 		return theData;
 	}
 

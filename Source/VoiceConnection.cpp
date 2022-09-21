@@ -898,10 +898,8 @@ namespace DiscordCoreAPI {
 		try {
 			if (WebSocketSSLShard::areWeStillConnected() && this->haveWeReceivedHeartbeatAck) {
 				JsonSerializer theData{};
-				/*
-				theData["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-				theData["op"] = int32_t(3);
-				*/
+				theData.appendStructElement("d", std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				theData.appendStructElement("op", int32_t(3));
 				std::string theString = this->stringifyJsonData(theData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(theString, true)) {
 					this->onClosed();
