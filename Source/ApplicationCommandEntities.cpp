@@ -209,7 +209,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<ApplicationCommand>> ApplicationCommands::bulkOverwriteGlobalApplicationCommandsAsync(BulkOverwriteGlobalApplicationCommandsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Bulk_Put_Global_Application_Commands };
 		co_await NewThreadAwaitable<std::vector<ApplicationCommand>>();
-		auto newDataArray = nlohmann::json::array();
+		std::string newDataArray{};
 		std::vector<CreateGlobalApplicationCommandData> newVector{};
 		for (auto& value: dataPackage.responseData) {
 			CreateGlobalApplicationCommandData dataPackageNew;
@@ -224,12 +224,11 @@ namespace DiscordCoreAPI {
 		}
 		for (auto& value: newVector) {
 			std::string newData = static_cast<JsonSerializer>(value).getString();
-			newDataArray.emplace_back(std::string{ newData });
+			newDataArray += newData;
 		}
-		nlohmann::json dataNew = newDataArray;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands";
-		workload.content = dataNew.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		workload.content = newDataArray;
 		workload.callStack = "ApplicationCommands::bulkOverwriteGlobalApplicationCommandsAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommandVector>(workload);
 	}
@@ -313,7 +312,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<ApplicationCommand>> ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Bulk_Put_Guild_Application_Commands };
 		co_await NewThreadAwaitable<std::vector<ApplicationCommand>>();
-		auto newDataArray = nlohmann::json::array();
+		std::string newDataArray{};
 		std::vector<CreateGuildApplicationCommandData> newVector{};
 		for (auto& value: dataPackage.responseData) {
 			CreateGuildApplicationCommandData dataPackageNew;
@@ -328,12 +327,11 @@ namespace DiscordCoreAPI {
 		}
 		for (auto& value: newVector) {
 			std::string newData = static_cast<JsonSerializer>(value).getString();
-			newDataArray.emplace_back(newData);
+			newDataArray += newData;
 		}
-		nlohmann::json dataNew = newDataArray;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands";
-		workload.content = dataNew.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		workload.content = newDataArray;
 		workload.callStack = "ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommandVector>(workload);
 	}

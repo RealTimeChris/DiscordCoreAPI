@@ -308,6 +308,7 @@ namespace DiscordCoreInternal {
 		} else {
 			stringNew = baseUrl;
 		}
+		std::cout << "CONNECTION ADDRESS: " << baseUrl << ", CONNECTION PORT: "<< portNew<< std::endl;
 		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;

@@ -196,11 +196,14 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/users/@me";
 		workload.callStack = "Users::modifyCurrentUserAsync()";
 		if (dataPackage.avatar.size() > 0) {
-			nlohmann::json responseData = { { "avatar", dataPackage.avatar }, { "userName", dataPackage.userName } };
-			workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			JsonSerializer responseData{};
+			responseData.appendStructElement("avatar", dataPackage.avatar);
+			responseData.appendStructElement("userName", dataPackage.userName);
+			workload.content = responseData.getString();
 		} else {
-			nlohmann::json responseData = { { "userName", dataPackage.userName } };
-			workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			JsonSerializer responseData{};
+			responseData.appendStructElement("userName", dataPackage.userName);
+			workload.content = responseData.getString();
 		}
 		co_return Users::httpsClient->submitWorkloadAndGetResult<User>(workload);
 	}

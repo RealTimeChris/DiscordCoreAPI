@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 					theValue.didItSucceed = true;
 					return theValue;
 				} else {
-					throw JsonParseError{ theResult };
+					return theValue;
 				}
 			}
 		} catch (...) {
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 					theValue.didItSucceed = true;
 					return theValue;
 				} else {
-					throw JsonParseError{ theResult };
+					return theValue;
 				}
 			}
 		} catch (...) {
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 					theValue.didItSucceed = true;
 					return theValue;
 				} else {
-					throw JsonParseError{ theResult };
+					return theValue;
 				}
 			}
 		} catch (...) {
@@ -240,7 +240,7 @@ namespace DiscordCoreAPI {
 					theValue.didItSucceed = true;
 					return theValue;
 				} else {
-					throw JsonParseError{ theResult };
+					return theValue;
 				}
 			}
 		} catch (...) {
@@ -259,7 +259,7 @@ namespace DiscordCoreAPI {
 					theValue.didItSucceed = true;
 					return theValue;
 				} else {
-					throw JsonParseError{ theResult };
+					return theValue;
 				}
 			}
 		} catch (...) {
@@ -277,11 +277,26 @@ namespace DiscordCoreAPI {
 				theValue.didItSucceed = true;
 				return theValue;
 			} else {
-				throw JsonParseError{ theResult };
+				return theValue;
 			}
 		} catch (...) {
 			reportException("getArray()");
 			return theValue;
+		}
+	}
+
+	std::string getString(ObjectReturnData jsonData, const char* theKey) {
+		try {
+			std::string_view theValue{};
+			if (jsonData.didItSucceed) {
+				jsonData.theObject[theKey].get(theValue);
+				return std::string{ theValue.data(), theValue.size() };
+			} else {
+				return "";
+			}
+		} catch (...) {
+			reportException("getString()");
+			return "";
 		}
 	}
 	
@@ -3255,24 +3270,29 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, Song& theData) {
 		try {
-			theData.duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData").theObject, "label");
-			std::string newString = getString(getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0).theObject, "text");
+			theData.duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData"), "label");
+			std::string newString = getString(getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0), "text");
 			if (newString.size() > 256) {
 				newString = newString.substr(0, 256);
 			}
 			theData.description = utf8MakeValid(newString);
 
-			theData.thumbnailUrl = getString(getObject(getArray(getObject(jsonObjectData, "thumbnail"), "thumbnails"), 0).theObject, "url");
-			std::string newTitle01 = getString(getObject(getArray(getObject(jsonObjectData, "title"), "runs"), 0).theObject, "text");
+			theData.thumbnailUrl = getString(getObject(getArray(getObject(jsonObjectData, "thumbnail"), "thumbnails"), 0), "url");
+			std::string newTitle01 = getString(getObject(getArray(getObject(jsonObjectData, "title"), "runs"), 0), "text");
 			if (newTitle01.size() > 256) {
 				newTitle01 = newTitle01.substr(0, 256);
 			}
-			theData.songTitle = utf8MakeValid(newTitle01);
-			std::string newTitle02 = getString(getObject(jsonObjectData, "title").theObject, "simpleText");
+			if (newTitle01.size() > 0) {
+				theData.songTitle = utf8MakeValid(newTitle01);
+			}
+			std::string newTitle02 = getString(getObject(jsonObjectData, "title"), "simpleText");
 			if (newTitle02.size() > 256) {
 				newTitle02 = newTitle02.substr(0, 256);
 			}
-			theData.songTitle = utf8MakeValid(newTitle02);
+			if (newTitle02.size() > 0) {
+				theData.songTitle = utf8MakeValid(newTitle02);
+			}
+			
 			if (newTitle01 != "") {
 				theData.songTitle = newTitle01;
 			} else {
@@ -3284,10 +3304,13 @@ namespace DiscordCoreAPI {
 			theData.trackAuthorization = getString(jsonObjectData, "track_authorization");
 
 			std::vector<MediaTranscoding> theMedia{};
-			for (auto value: getArray(getObject(jsonObjectData, "media"), "transcodings").theArray) {
-				MediaTranscoding theDataNew{};
-				parseObject(value.value(), theDataNew);
-				theMedia.push_back(theDataNew);
+			auto theArrayNew = getArray(getObject(jsonObjectData, "media"), "transcodings");
+			if (theArrayNew.didItSucceed) {
+				for (auto value: theArrayNew.theArray) {
+					MediaTranscoding theDataNew{};
+					parseObject(value.value(), theDataNew);
+					theMedia.push_back(theDataNew);
+				}
 			}
 
 			bool isItFound{ false };
@@ -3315,66 +3338,43 @@ namespace DiscordCoreAPI {
 					theData.songId = value.theUrl;
 				}
 			}
-			std::cout << "FIRST DOWNLOAD URL: " << theData.firstDownloadUrl << std::endl;
-			std::cout << "SONG ID: " << theData.songId << std::endl;
 
-			/*
-		if (jsonObjectData->contains("media") && !(*jsonObjectData)["media"].is_null()) {
-			bool isItFound{ false };
-			for (auto& value: (*jsonObjectData)["media"]["transcodings"]) {
-				if (value["preset"] == "opus_0_0") {
-					isItFound = true;
-					theData.firstDownloadUrl = value["url"].get<std::string>();
-					theData.songId = value["url"].get<std::string>();
-					theData.doWeGetSaved = true;
+			std::cout << "FIRST DOWNLOAD URL: " << theData.firstDownloadUrl << std::endl;
+
+			newString= getString(jsonObjectData, "title");
+			if (newString.size() > 0) {
+				if (newString.size() > 256) {
+					newString = newString.substr(0, 256);
 				}
+				theData.songTitle = utf8MakeValid(newString);
 			}
-			bool isItFound2{ false };
-			if (!isItFound) {
-				for (auto& value: (*jsonObjectData)["media"]["transcodings"]) {
-					if (value["preset"] == "mp3_0_0") {
-						theData.firstDownloadUrl = value["url"].get<std::string>();
-						theData.songId = value["url"].get<std::string>();
-						isItFound2 = true;
-					}
+
+			newString = getString(jsonObjectData, "description");
+			if (newString.size() > 0) {
+				if (newString.size() > 256) {
+					newString = newString.substr(0, 256);
 				}
+				theData.description = utf8MakeValid(newString);
+				theData.description += "...";
 			}
-			if (!isItFound2 && !isItFound) {
-				for (auto& value: (*jsonObjectData)["media"]["transcodings"]) {
-					theData.firstDownloadUrl = value["url"].get<std::string>();
-					theData.songId = value["url"].get<std::string>();
-				}
+
+			newString = getString(jsonObjectData, "artwork_url");
+			if (newString.size() > 0) {
+				theData.thumbnailUrl = newString;
 			}
-		}
-		if (jsonObjectData->contains("title") && !(*jsonObjectData)["title"].is_null() && !(*jsonObjectData)["title"].is_object()) {
-			std::string newString = (*jsonObjectData)["title"].get<std::string>();
-			if (newString.size() > 256) {
-				newString = newString.substr(0, 256);
+
+			newString = getString(getObject(jsonObjectData, "user"), "avatar_url");
+			if (newString.size() > 0) {
+				theData.thumbnailUrl = newString;
 			}
-			theData.songTitle = utf8MakeValid(newString);
-		}
-		if (jsonObjectData->contains("description") && !(*jsonObjectData)["description"].is_null()) {
-			std::string newString = (*jsonObjectData)["description"].get<std::string>();
-			if (newString.size() > 256) {
-				newString = newString.substr(0, 256);
+
+			theData.duration = TimeStamp<std::chrono::milliseconds>::convertMsToDurationString(getUint32(jsonObjectData, "duration"));
+
+			newString = getString(jsonObjectData, "permalink_url");
+			if (newString.size() > 0) {
+				theData.viewUrl = newString;
 			}
-			theData.description = utf8MakeValid(newString);
-			theData.description += "...";
-		}
-		if (jsonObjectData->contains("artwork_url") && !(*jsonObjectData)["artwork_url"].is_null()) {
-			theData.thumbnailUrl = (*jsonObjectData)["artwork_url"].get<std::string>();
-		} else if (jsonObjectData->contains("user") && !(*jsonObjectData)["user"].is_null()) {
-			if ((*jsonObjectData)["user"].contains("avatar_url") && !(*jsonObjectData)["user"]["avatar_url"].is_null()) {
-				theData.thumbnailUrl = (*jsonObjectData)["user"]["avatar_url"].get<std::string>();
-			}
-		}
-		if (jsonObjectData->contains("duration") && !(*jsonObjectData)["duration"].is_null()) {
-			theData.duration = TimeStamp<std::chrono::milliseconds>::convertMsToDurationString((*jsonObjectData)["duration"].get<int32_t>());
-		}
-		if (jsonObjectData->contains("permalink_url") && !(*jsonObjectData)["permalink_url"].is_null()) {
-			theData.viewUrl = (*jsonObjectData)["permalink_url"].get<std::string>();
-		}
-		*/
+		
 		} catch (...) {
 			reportException("parseObject()");
 		}

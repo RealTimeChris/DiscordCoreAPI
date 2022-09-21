@@ -428,10 +428,7 @@ namespace DiscordCoreAPI {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage.data).getString(), dataPackage.data.data.files);
 		} else {
-			auto theResponseString = static_cast<JsonSerializer>(dataPackage.data).getString();
-			std::cout << "THE RESPONSE STRING: " << std::string{ static_cast<std::string>(theResponseString) } << std::endl;
-			std::cout << "THE RESPONSE STRING: " << std::string{ static_cast<std::string>(theResponseString) } << std::endl;
-			workload.content = theResponseString;
+			workload.content = static_cast<JsonSerializer>(dataPackage.data).getString();
 		}
 		workload.callStack = "Interactions::createInteractionResponseAsync()";
 		Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);

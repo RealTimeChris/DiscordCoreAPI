@@ -120,6 +120,7 @@ namespace DiscordCoreAPI {
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->baseSocketAgent = BaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
+		this->theSongAPIPtr = this->baseSocketAgent->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId);
 		this->configManager = configManagerNew;
 		this->theStreamInfo = streamInfoNew;
 		this->streamType = streamTypeNew;
@@ -711,15 +712,10 @@ namespace DiscordCoreAPI {
 			}
 			this->taskThread03.reset(nullptr);
 		}
-
 		DatagramSocketClient::disconnect();
 		WebSocketSSLShard::disconnect(false);
 		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
 			this->streamSocket->disconnect();
-		}
-		if (DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)) {
-			DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)
-				->onSongCompletionEvent.remove(DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->eventToken);
 		}
 		this->areWeConnectedBool.store(false);
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);

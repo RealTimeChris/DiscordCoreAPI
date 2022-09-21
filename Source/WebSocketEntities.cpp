@@ -442,7 +442,7 @@ namespace DiscordCoreInternal {
 								returnValue = false;
 							}
 						} else {
-							auto payloadJson = nlohmann::json::parse(theDataNew).dump();
+							std::string payloadJson = static_cast<std::string>(theDataNew);
 							payloadJson.reserve(payloadJson.size() + simdjson::SIMDJSON_PADDING);
 							theDocument = this->theParser.iterate(simdjson::padded_string_view(payloadJson.data(), payloadJson.length(), payloadJson.capacity()));
 						}

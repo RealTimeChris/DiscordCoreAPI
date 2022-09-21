@@ -46,6 +46,8 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->components) {
 			theData.appendArrayElement(value);
 		}
+		std::cout << "THE ARRAY SIZE (WEBHOOK DATA): " << this->components.size() << std::endl;
+
 		theData.endArray();
 		theData.addNewArray("embeds");
 		for (auto& value: this->embeds) {
@@ -183,28 +185,26 @@ namespace DiscordCoreAPI {
 
 	EditWebHookData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions };
+		theData.appendStructElement("allowed_mentions", DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions });
+		theData.addNewArray("attachments");
 		for (auto& value: this->attachments) {
-			theData["attachments"].emplace_back(value);
+			theData.appendArrayElement(value);
 		}
-		if (this->components.size() == 0) {
-			theData["components"] = nlohmann::json::array();
-		} else {
-			for (auto& value: this->components) {
-				theData["components"].emplace_back(value);
-			}
+		theData.endArray();
+		theData.addNewArray("components");
+		for (auto& value: this->components) {
+			theData.appendArrayElement(value);
 		}
-		if (this->embeds.size() == 0) {
-			theData["embeds"] = nlohmann::json::array();
-		} else {
-			for (auto& value: this->embeds) {
-				theData["embeds"].emplace_back(value);
-			}
+		theData.endArray();
+		theData.addNewArray("embeds");
+		for (auto& value: this->embeds) {
+			theData.appendArrayElement(value);
 		}
+		theData.endArray();
 		if (this->content != "") {
-			theData["content"] = this->content;
-		}*/
+			theData.appendStructElement("content", this->content);
+		}
+		theData.endStructure();
 		return theData;
 	}
 
@@ -222,11 +222,14 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/webhooks";
 		workload.callStack = "WebHooks::createWebHookAsync()";
-		nlohmann::json responseData = { { "name", dataPackage.name } };
+		JsonSerializer responseData{};
 		if (dataPackage.avatar.size() > 0) {
-			responseData.update({ { "avatar", dataPackage.avatar } });
+			responseData.appendStructElement("avatar", dataPackage.avatar);
 		}
-		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		if (dataPackage.name != "") {
+			responseData.appendStructElement("name", dataPackage.name);
+		}
+		workload.content = responseData.getString();
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
 
@@ -271,17 +274,17 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<WebHook>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId);
-		nlohmann::json responseData{};
+		JsonSerializer responseData{};
 		if (dataPackage.avatar.size() > 0) {
-			responseData.update({ { "avatar", dataPackage.avatar } });
+			responseData.appendStructElement("avatar", dataPackage.avatar);
 		}
 		if (dataPackage.name != "") {
-			responseData.update({ { "name", dataPackage.name } });
+			responseData.appendStructElement("name", dataPackage.name);
 		}
 		if (dataPackage.channelId != 0) {
-			responseData.update({ { "channel_id", std::to_string(dataPackage.channelId) } });
+			responseData.appendStructElement("channel_id", dataPackage.channelId);
 		}
-		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		workload.content = responseData.getString();
 		workload.callStack = "WebHooks::modifyWebHookAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
@@ -291,17 +294,17 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<WebHook>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId) + "/" + dataPackage.webhookToken;
-		nlohmann::json responseData{};
+		JsonSerializer responseData{};
 		if (dataPackage.avatar.size() > 0) {
-			responseData.update({ { "avatar", dataPackage.avatar } });
+			responseData.appendStructElement("avatar", dataPackage.avatar);
 		}
 		if (dataPackage.name != "") {
-			responseData.update({ { "name", dataPackage.name } });
+			responseData.appendStructElement("name", dataPackage.name);
 		}
 		if (dataPackage.channelId != 0) {
-			responseData.update({ { "channel_id", std::to_string(dataPackage.channelId) } });
+			responseData.appendStructElement("channel_id", dataPackage.channelId);
 		}
-		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		workload.content = responseData.getString();
 		workload.callStack = "WebHooks::modifyWebHookWithTokenAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}

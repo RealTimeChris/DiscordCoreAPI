@@ -377,8 +377,9 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/users/@me/channels";
 		workload.callStack = "Channels::createDMChannelAsync()";
-		nlohmann::json theValue = { { "recipient_id", dataPackage.userId } };
-		workload.content = theValue.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		JsonSerializer theValue{};
+		theValue.appendStructElement("recipient_id", dataPackage.userId);
+		workload.content = theValue.getString();
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 	}
 

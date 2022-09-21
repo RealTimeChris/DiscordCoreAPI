@@ -43,22 +43,29 @@ namespace DiscordCoreInternal {
 				 << DiscordCoreAPI::reset() << endl
 				 << endl;
 		}
-		nlohmann::json partialSearchResultsJson{};
+		simdjson::ondemand::value partialSearchResultsJson{};
 		auto varInitFind = returnData.responseMessage.find("var ytInitialData = ");
+		std::cout << "THE VALUE: " << returnData.responseMessage << std::endl;
 		if (varInitFind != std::string::npos) {
 			std::string newString00 = "var ytInitialData = ";
 			std::string newString = returnData.responseMessage.substr(varInitFind + newString00.length());
 			std::string stringSequence = ";</script><script nonce=";
 			newString = newString.substr(0, newString.find(stringSequence));
-			partialSearchResultsJson = nlohmann::json::parse(newString);
+			std::cout << "THE VALUE: " << newString << std::endl;
+			newString.reserve(newString.size() + simdjson::SIMDJSON_PADDING);
+			simdjson::ondemand::parser theParser{};
+			partialSearchResultsJson = theParser.iterate(newString.data(), newString.length(), newString.capacity());
+			std::cout << partialSearchResultsJson.get_object().value().raw_json().take_value() << std::endl;
 		}
 		std::vector<DiscordCoreAPI::Song> searchResults{};
-		if (partialSearchResultsJson.contains("contents") && !partialSearchResultsJson["contents"].is_null()) {
-			for (auto& value: partialSearchResultsJson["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
+		simdjson::ondemand::object theObject{};
+		if (partialSearchResultsJson.get(theObject) == simdjson::error_code::SUCCESS) {
+			for (auto value: theObject["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
 													  ["contents"]) {
-				if (value.contains("videoRenderer") && !value["videoRenderer"].is_null()) {
+				simdjson::ondemand::value theObjectNew{};
+				if (value["videoRenderer"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
 					DiscordCoreAPI::Song searchResult{};
-					//DiscordCoreAPI::parseObject(value["videoRenderer"], searchResult);
+					DiscordCoreAPI::parseObject(theObjectNew, searchResult);
 					searchResult.type = DiscordCoreAPI::SongType::YouTube;
 					searchResult.viewUrl = this->baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
 					searchResults.emplace_back(searchResult);
@@ -70,24 +77,27 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth) {
 		try {
-			nlohmann::json theRequest{};
-			theRequest["videoId"] = newSong.songId;
-			theRequest["contentCheckOk"] = true;
-			theRequest["racyCheckOk"] = true;
-			theRequest["context"];
-			theRequest["context"]["client"];
-			theRequest["context"]["client"]["clientName"] = "ANDROID";
-			theRequest["context"]["client"]["clientScreen"] = "EMBED";
-			theRequest["context"]["client"]["clientVersion"] = "16.46.37";
-			theRequest["context"]["client"]["hl"] = "en";
-			theRequest["context"]["client"]["gl"] = "US";
-			theRequest["context"]["client"]["utcOffsetMinutes"] = 0;
-			theRequest["context"]["thirdParty"];
-			theRequest["context"]["thirdParty"]["embedUrl"] = "https://www.youtube.com";
+			DiscordCoreAPI::JsonSerializer theRequest{};
+			theRequest.appendStructElement("videoId", newSong.songId);
+			theRequest.appendStructElement("contentCheckOk", true);
+			theRequest.appendStructElement("racyCheckOk", true);
+			theRequest.addNewStructure("context");
+			theRequest.addNewStructure("client");
+			theRequest.appendStructElement("clientName", "ANDROID");
+			theRequest.appendStructElement("clientScreen", "EMBED");
+			theRequest.appendStructElement("clientVersion", "16.46.37");
+			theRequest.appendStructElement("hl", "en");
+			theRequest.appendStructElement("gl", "US");
+			theRequest.appendStructElement("utcOffsetMinutes", 0);
+			theRequest.endStructure();
+			theRequest.addNewStructure("thirdParty");
+			theRequest.appendStructElement("embedUrl", "https://www.youtube.com");
+			theRequest.endStructure();
+			theRequest.endStructure();
 			HttpsWorkloadData dataPackage02{ HttpsWorkloadType::YouTubeGetSearchResults };
 			dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
 			dataPackage02.relativePath = "/youtubei/v1/player?key=" + YouTubeRequestBuilder::apiKey;
-			dataPackage02.content = theRequest.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+			dataPackage02.content = theRequest.getString();
 			dataPackage02.workloadClass = HttpsWorkloadClass::Post;
 			HttpsResponseData responseData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
@@ -96,9 +106,11 @@ namespace DiscordCoreInternal {
 					 << endl;
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
-			nlohmann::json jsonObject = nlohmann::json::parse(responseData.responseMessage);
+			simdjson::ondemand::parser theParser{};
+			responseData.responseMessage.reserve(responseData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
+			auto jsonObject = theParser.iterate(responseData.responseMessage.data(), responseData.responseMessage.length(), responseData.responseMessage.capacity());
 			DiscordCoreAPI::YouTubeFormatVector theVector{};
-			//DiscordCoreAPI::parseObject(jsonObject, theVector);
+			DiscordCoreAPI::parseObject(jsonObject, theVector);
 			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };
 			for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {

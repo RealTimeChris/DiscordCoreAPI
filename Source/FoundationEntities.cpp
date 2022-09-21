@@ -288,9 +288,11 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("name", this->provider.name);
 		theData.appendStructElement("url", this->provider.url);
 		theData.endStructure();
-		theData.appendStructElement("description", "\\u000aDESCRIPTION");
+		auto theString = escapeCharacters(this->description);
+		theData.appendStructElement("description", theString);
 		theData.appendStructElement("timestamp", this->timestamp);
-		theData.appendStructElement("title", this->title);
+		theString = escapeCharacters(this->title);
+		theData.appendStructElement("title", theString);
 		theData.appendStructElement("color", realColorVal);
 		theData.appendStructElement("type", this->type);
 		theData.appendStructElement("url", this->url);
@@ -597,6 +599,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		theData.endArray();
+		std::cout << "THE ARRAY SIZE: " << theData.getString() << std::endl;
 		return theData;
 	}
 
@@ -1058,24 +1061,20 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("type", static_cast<uint8_t>(this->type));
 		theData.addNewStructure("data");
 		theData.appendStructElement("type", "");
-		std::cout << "WERE HERE 0101" << std::endl;
 		if (this->data.attachments.size() > 0) {
 			theData.addNewArray("attachments");
 			for (auto& value: this->data.attachments) {
 				theData.appendArrayElement(JsonSerializer{ value });
-				std::cout << "WERE HERE 0202" << std::endl;
 			}
 			theData.endArray();
-		}		
-		std::cout << "WERE HERE 0303" << std::endl;
+		}
 		theData.addNewArray("components");
 		for (auto& value: this->data.components) {
 			theData.appendArrayElement(value);
 		}
+		std::cout << "THE ARRAY SIZE: " << this->data.components.size() << std::endl;
 		theData.endArray();
-		std::cout << "WERE HERE 0404" << std::endl;
 		theData.appendStructElement("allowed_mentions", this->data.allowedMentions);
-		std::cout << "WERE HERE 0505" << std::endl;
 		if (this->data.choices.size() > 0) {
 			theData.addNewArray("choices");
 			for (auto& value: this->data.choices) {
@@ -1100,19 +1099,15 @@ namespace DiscordCoreAPI {
 						break;
 					}
 				}
-				std::cout << "WERE HERE 0606" << std::endl;
 				theData.appendArrayElement(theValue);
 			}
 			theData.endArray();
 		}
-		std::cout << "WERE HERE 0707" << std::endl;
 		theData.addNewArray("embeds");
 		for (auto& value: this->data.embeds) {
 			theData.appendArrayElement(value);
-			std::cout << "WERE HERE 0808" << std::endl;
 		}
 		theData.endArray();
-		std::cout << "WERE HERE 0909" << std::endl;
 		if (this->data.customId != "") {			
 			theData.appendStructElement("custom_id", this->data.customId);
 		}
@@ -1124,7 +1119,6 @@ namespace DiscordCoreAPI {
 		}
 		theData.appendStructElement("flags", this->data.flags);
 		theData.appendStructElement("tts", this->data.tts);
-		std::cout << "WERE HERE 101010" << std::endl;
 		theData.endStructure();
 		return theData;
 	}

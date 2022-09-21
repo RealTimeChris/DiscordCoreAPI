@@ -1461,11 +1461,7 @@ namespace DiscordCoreAPI {
 				}
 				case 0x0A: {
 					theStringNew.insert(theStringNew.end(), '\\');
-					theStringNew.insert(theStringNew.end(), 'u');
-					theStringNew.insert(theStringNew.end(), '0');
-					theStringNew.insert(theStringNew.end(), '0');
-					theStringNew.insert(theStringNew.end(), '0');
-					theStringNew.insert(theStringNew.end(), 'a');
+					theStringNew.insert(theStringNew.end(), 'n');
 					break;
 				}
 				case 0x0B: {
@@ -1481,6 +1477,11 @@ namespace DiscordCoreAPI {
 				case 0x0D: {
 					theStringNew.insert(theStringNew.end(), '\\');
 					theStringNew.insert(theStringNew.end(), 'r');
+					break;
+				}
+				case 0x22: {
+					theStringNew.insert(theStringNew.end(), '\\');
+					theStringNew.insert(theStringNew.end(), '"');
 					break;
 				}
 				case 0x00: {

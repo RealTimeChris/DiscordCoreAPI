@@ -208,7 +208,9 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/@me";
-		workload.content = nlohmann::json{ { "nick", dataPackage.nick } }.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		JsonSerializer theData{};
+		theData.appendStructElement("nick", dataPackage.nick);
+		workload.content = theData.getString();
 		workload.callStack = "GuildMembers::modifyCurrentGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

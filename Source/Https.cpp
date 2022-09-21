@@ -102,10 +102,10 @@ namespace DiscordCoreInternal {
 			}
 			theReturnString += "Connection: Keep-Alive\r\n";
 			theReturnString += "Host: " + baseUrlNew + "\r\n";
-			theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
-			theReturnString += DiscordCoreAPI::escapeCharacters(workload.content);
+			auto theString = workload.content;
+			theReturnString += "Content-Length: " + std::to_string(theString.size()) + "\r\n\r\n";
+			theReturnString += theString;
 		}
-		std::cout << "THE WORKLOAD: " << DiscordCoreAPI::escapeCharacters(workload.content) << std::endl;
 		return theReturnString;
 	}
 
@@ -464,7 +464,8 @@ namespace DiscordCoreInternal {
 				if (theStopWatch.hasTimePassed()) {
 					break;
 				}
-				theResult = httpsConnection.writeData(theRequest, true);
+				std::string theString{ theRequest.c_str() };
+				theResult = httpsConnection.writeData(theString, true);
 			} while (theResult == ProcessIOResult::Error);
 			if (theResult != ProcessIOResult::No_Error) {
 				httpsConnection.currentReconnectTries++;
@@ -552,9 +553,14 @@ namespace DiscordCoreInternal {
 				}
 			} else {
 				if (returnData.responseCode == 429) {
-					if (returnData.responseMessage.size() > 0 && nlohmann::json::parse(returnData.responseMessage).contains("retry_after")) {
-						rateLimitData.msRemain.store(static_cast<int64_t>(ceil(nlohmann::json::parse(returnData.responseMessage)["retry_after"].get<double>())) * 1000);
+					simdjson::ondemand::parser theParser{};
+					returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
+					auto theDocument = theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
+					double theDouble{};
+					if (returnData.responseMessage.size() > 0 && theDocument["retry_after"].get(theDouble) == simdjson::error_code::SUCCESS) {
+						rateLimitData.msRemain.store(static_cast<int64_t>(ceil(theDouble)) * 1000);
 					}
+					
 					rateLimitData.didWeHitRateLimit.store(true);
 					rateLimitData.sampledTimeInMs.store(
 						static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));

@@ -690,8 +690,11 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildWidgetData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/widget";
-		nlohmann::json responseData = { { "channel_id", std::to_string(dataPackage.widgetData.channelId) }, { "enabled", dataPackage.widgetData.enabled } };
-		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		JsonSerializer responseData{};
+		auto theString = std::to_string(dataPackage.widgetData.channelId);
+		responseData.appendStructElement("channel_id", theString);
+		responseData.appendStructElement("enabled", dataPackage.widgetData.enabled);
+		workload.content = responseData.getString();
 		workload.callStack = "Guilds::modifyGuildWidgetAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -703,7 +706,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Widget };
 		co_await NewThreadAwaitable<GuildWidgetData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/widget.nlohmann::json";
+		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/widget.json";
 		workload.callStack = "Guilds::getGuildWidgetAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildWidgetData>(workload);
 	}
@@ -784,8 +787,10 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/templates/" + dataPackage.templateCode;
-		nlohmann::json responseData = { { "name", dataPackage.name }, { "icon", dataPackage.imageData } };
-		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		JsonSerializer responseData{};
+		responseData.appendStructElement("name", dataPackage.name);
+		responseData.appendStructElement("icon", dataPackage.imageData);
+		workload.content = responseData.getString();
 		workload.callStack = "Guilds::createGuildFromGuildTemplateAsync()";
 		auto newGuild = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
 		newGuild.discordCoreClient = Guilds::discordCoreClient;
@@ -806,8 +811,10 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildTemplateData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/templates";
-		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name } };
-		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		JsonSerializer responseData{};
+		responseData.appendStructElement("description", dataPackage.description);
+		responseData.appendStructElement("name", dataPackage.name);
+		workload.content = responseData.getString();
 		workload.callStack = "Guilds::createGuildTemplateAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(workload);
 	}
@@ -826,8 +833,10 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildTemplateData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/templates/" + dataPackage.templateCode;
-		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name } };
-		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		JsonSerializer responseData{};
+		responseData.appendStructElement("description", dataPackage.description);
+		responseData.appendStructElement("name", dataPackage.name);
+		workload.content = responseData.getString();
 		workload.callStack = "Guilds::modifyGuildTemplateAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(workload);
 	}

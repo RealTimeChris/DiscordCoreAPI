@@ -45,14 +45,14 @@ namespace DiscordCoreInternal {
 			std::vector<DiscordCoreAPI::Song> results{};
 			simdjson::ondemand::parser theParser{};
 			returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-			//auto theDocument = theParser.iterate().get_value().value().get_object().value();
-			nlohmann::json theJsonData = nlohmann::json::parse(returnData.responseMessage);
+			auto theDocument = theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
 			simdjson::ondemand::array theArray{};
-			//auto theResult = theDocument["collection"].get(theArray);
-			for (nlohmann::json value: theJsonData["collection"]) {
+			auto theResult = theDocument.get_value().value().get_object().value()["collection"].get(theArray);
+			for (auto value:theArray){
 				DiscordCoreAPI::Song newSong{};
-				//DiscordCoreAPI::parseObject(value, newSong);
-				if (!newSong.doWeGetSaved || newSong.songTitle == "") {
+				auto theValue = value.value();
+				DiscordCoreAPI::parseObject(theValue, newSong);
+				if (newSong.songTitle == "") {
 					continue;
 				}
 				newSong.type = DiscordCoreAPI::SongType::SoundCloud;

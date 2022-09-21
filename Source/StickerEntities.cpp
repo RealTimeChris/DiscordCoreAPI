@@ -68,8 +68,12 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";
-		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name }, { "tags", dataPackage.tags }, { "file", dataPackage.file } };
-		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		JsonSerializer theData{};
+		theData.appendStructElement("description", dataPackage.description);
+		theData.appendStructElement("name", dataPackage.name);
+		theData.appendStructElement("tags", dataPackage.tags);
+		theData.appendStructElement("file", dataPackage.file);
+		workload.content = theData.getString();
 		workload.callStack = "Stickers::createGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -82,8 +86,11 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + std::to_string(dataPackage.stickerId);
-		nlohmann::json responseData = { { "description", dataPackage.description }, { "name", dataPackage.name }, { "tags", dataPackage.tags } };
-		workload.content = responseData.dump(-1, static_cast<char>(32), false, nlohmann::json::error_handler_t::ignore);
+		JsonSerializer theData{};
+		theData.appendStructElement("description", dataPackage.description);
+		theData.appendStructElement("name", dataPackage.name);
+		theData.appendStructElement("tags", dataPackage.tags);
+		workload.content = theData.getString();
 		workload.callStack = "Stickers::modifyGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
