@@ -1065,6 +1065,7 @@ namespace DiscordCoreAPI {
 
 	InteractionResponseData::operator JsonSerializer() {
 		JsonSerializer theData{};
+		theData.addNewStructure("data");
 		theData.appendStructElement("type", static_cast<uint8_t>(this->type));
 		std::cout << "WERE HERE 0101" << std::endl;
 		theData.addNewStructure("data");
@@ -1136,6 +1137,7 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("flags", this->data.flags);
 		theData.appendStructElement("tts", this->data.tts);
 		std::cout << "WERE HERE 101010" << std::endl;
+		theData.endStructure();
 		theData.endStructure();
 		return theData;
 	}
