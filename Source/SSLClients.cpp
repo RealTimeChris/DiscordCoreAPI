@@ -650,7 +650,7 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
-
+		std::cout << "CONNECTION ADDRESS: " << baseUrl << ", CONNECTION PORT: " << portNew << std::endl;
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("HttpsSSLClient::connect::getaddrinfo()") << endl;

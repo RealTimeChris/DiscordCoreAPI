@@ -43,6 +43,16 @@ namespace DiscordCoreAPI {
 
 	using Snowflake = uint64_t;
 
+	struct ObjectReturnData {
+		simdjson::ondemand::value theObject{};
+		bool didItSucceed{ false };
+	};
+
+	struct ArrayReturnData {
+		simdjson::ondemand::array theArray{};
+		bool didItSucceed{ false };
+	};
+
 	Snowflake getId(simdjson::ondemand::value jsonObjectData, const char* theKey);
 
 	bool getBool(simdjson::ondemand::value jsonData, const char* theKey);
@@ -56,6 +66,14 @@ namespace DiscordCoreAPI {
 	uint64_t getUint64(simdjson::ondemand::value jsonData, const char* theKey);
 
 	std::string getString(simdjson::ondemand::value jsonData, const char* theKey);
+
+	ObjectReturnData getObject(ArrayReturnData jsonObjectData, size_t objectIndex, std::source_location theLocation = std::source_location::current());
+
+	ObjectReturnData getObject(simdjson::ondemand::value jsonObjectData, const char* objectName, std::source_location theLocation = std::source_location::current());
+
+	ObjectReturnData getObject(ObjectReturnData jsonObjectData, const char* objectName, std::source_location theLocation = std::source_location::current());
+	
+	ArrayReturnData getArray(ObjectReturnData jsonObjectData, const char* arrayName);
 
 };
 #endif

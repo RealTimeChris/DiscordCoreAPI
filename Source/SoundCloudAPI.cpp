@@ -52,6 +52,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::Song newSong{};
 				auto theValue = value.value();
 				DiscordCoreAPI::parseObject(theValue, newSong);
+				std::cout << "THE TITLE: " << newSong.songTitle << ", URL: " << newSong.firstDownloadUrl << std::endl;
 				if (newSong.songTitle == "") {
 					continue;
 				}

@@ -164,17 +164,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	struct ObjectReturnData {
-		simdjson::ondemand::value theObject{};
-		bool didItSucceed{ false };
-	};
-
-	struct ArrayReturnData {
-		simdjson::ondemand::array theArray{};
-		bool didItSucceed{ false };
-	};
-
-	ObjectReturnData getObject(ArrayReturnData jsonObjectData, size_t objectIndex, std::source_location theLocation = std::source_location::current()) {
+	ObjectReturnData getObject(ArrayReturnData jsonObjectData, size_t objectIndex, std::source_location theLocation) {
 		ObjectReturnData theValue{};
 		try {
 			if (jsonObjectData.didItSucceed) {
@@ -193,7 +183,7 @@ namespace DiscordCoreAPI {
 		return theValue;
 	}
 
-	ObjectReturnData getObject(ObjectReturnData jsonObjectData, const char* objectName, std::source_location theLocation = std::source_location::current()) {
+	ObjectReturnData getObject(ObjectReturnData jsonObjectData, const char* objectName, std::source_location theLocation) {
 		ObjectReturnData theValue{};
 		try {
 			if (jsonObjectData.didItSucceed) {
@@ -231,7 +221,7 @@ namespace DiscordCoreAPI {
 		return theValue;
 	}
 
-	ObjectReturnData getObject(simdjson::ondemand::array jsonObjectData, size_t objectIndex, std::source_location theLocation = std::source_location::current()) {
+	ObjectReturnData getObject(simdjson::ondemand::array jsonObjectData, size_t objectIndex, std::source_location theLocation) {
 		ObjectReturnData theValue{};
 		try {
 			if (!jsonObjectData.at(objectIndex).is_null()) {
@@ -250,7 +240,7 @@ namespace DiscordCoreAPI {
 		return theValue;
 	}
 
-	ObjectReturnData getObject(simdjson::ondemand::value jsonObjectData, const char* objectName, std::source_location theLocation = std::source_location::current()) {
+	ObjectReturnData getObject(simdjson::ondemand::value jsonObjectData, const char* objectName, std::source_location theLocation) {
 		ObjectReturnData theValue{};
 		try {
 			if (!jsonObjectData.is_null()) {

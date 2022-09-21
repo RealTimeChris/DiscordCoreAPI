@@ -29,9 +29,10 @@
 #include <discordcoreapi/SSLClients.hpp>
 #include <discordcoreapi/AudioEncoder.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
+#include <discordcoreapi/DataParsingFunctions.hpp>
 
 namespace DiscordCoreInternal {
-
+	
 	std::vector<DiscordCoreAPI::Song> YouTubeRequestBuilder::collectSearchResults(const std::string& searchQuery) {
 		HttpsWorkloadData dataPackage{ HttpsWorkloadType::YouTubeGetSearchResults };
 		dataPackage.baseUrl = this->baseUrl;
@@ -44,33 +45,49 @@ namespace DiscordCoreInternal {
 				 << endl;
 		}
 		simdjson::ondemand::value partialSearchResultsJson{};
+
+		std::vector<DiscordCoreAPI::Song> searchResults{};
 		auto varInitFind = returnData.responseMessage.find("var ytInitialData = ");
-		std::cout << "THE VALUE: " << returnData.responseMessage << std::endl;
 		if (varInitFind != std::string::npos) {
 			std::string newString00 = "var ytInitialData = ";
 			std::string newString = returnData.responseMessage.substr(varInitFind + newString00.length());
 			std::string stringSequence = ";</script><script nonce=";
 			newString = newString.substr(0, newString.find(stringSequence));
-			std::cout << "THE VALUE: " << newString << std::endl;
 			newString.reserve(newString.size() + simdjson::SIMDJSON_PADDING);
 			simdjson::ondemand::parser theParser{};
-			partialSearchResultsJson = theParser.iterate(newString.data(), newString.length(), newString.capacity()).value().get_value();
-		}
-
-		std::vector<DiscordCoreAPI::Song> searchResults{};
-		simdjson::ondemand::value theObject{};
-		if (partialSearchResultsJson["contents"].get(theObject) == simdjson::error_code::SUCCESS) {
-			std::cout << "WERE YOUTOUBING IT UP!" << std::endl;
-			for (auto value: theObject["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"]
-													  ["contents"]) {
-				std::cout << "WERE YOUTOUBING IT UP! 0202" << std::endl;
-				simdjson::ondemand::value theObjectNew{};
-				if (value["videoRenderer"].get(theObjectNew) == simdjson::error_code::SUCCESS) {
-					DiscordCoreAPI::Song searchResult{};
-					DiscordCoreAPI::parseObject(theObjectNew, searchResult);
-					searchResult.type = DiscordCoreAPI::SongType::YouTube;
-					searchResult.viewUrl = this->baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
-					searchResults.emplace_back(searchResult);
+			partialSearchResultsJson = theParser.iterate(newString.data(), newString.length(), newString.capacity());
+			simdjson::ondemand::value theObjectContents{};
+			if (partialSearchResultsJson["contents"].get(theObjectContents) == simdjson::error_code::SUCCESS) {
+				simdjson::ondemand::value theObjectContents02{};
+				if (theObjectContents["twoColumnSearchResultsRenderer"].get(theObjectContents02) == simdjson::error_code::SUCCESS) {
+					simdjson::ondemand::value theObjectContents03{};
+					if (theObjectContents02["primaryContents"].get(theObjectContents03) == simdjson::error_code::SUCCESS) {
+						simdjson::ondemand::value theObjectContents04{};
+						if (theObjectContents03["sectionListRenderer"].get(theObjectContents04) == simdjson::error_code::SUCCESS) {
+							simdjson::ondemand::array theObjectContents05{};
+							if (theObjectContents04["contents"].get(theObjectContents05) == simdjson::error_code::SUCCESS) {
+								simdjson::ondemand::value theObjectContents06{};
+								if (theObjectContents05.at(0).get(theObjectContents06) == simdjson::error_code::SUCCESS) {
+									simdjson::ondemand::value theObjectContents07{};
+									if (theObjectContents06["itemSectionRenderer"].get(theObjectContents07) == simdjson::error_code::SUCCESS) {
+										simdjson::ondemand::array theObjectContents08{};
+										if (theObjectContents07["contents"].get(theObjectContents08) == simdjson::error_code::SUCCESS) {
+											for (auto iterator: theObjectContents08) {
+												DiscordCoreAPI::Song searchResult{};
+												simdjson::ondemand::value theObject{};
+												if (iterator["videoRenderer"].get(theObject) == simdjson::error_code::SUCCESS) {
+													DiscordCoreAPI::parseObject(theObject, searchResult);
+												}
+												searchResult.type = DiscordCoreAPI::SongType::YouTube;
+												searchResult.viewUrl = this->baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
+												searchResults.emplace_back(searchResult);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
