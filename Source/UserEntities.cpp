@@ -32,8 +32,10 @@ namespace DiscordCoreAPI {
 
 	AddRecipientToGroupDMData::operator JsonSerializer() {
 		JsonSerializer theData{};
+		/*
 		theData["access_token"] = this->token;
 		theData["nick"] = this->nick;
+		*/
 		return theData;
 	}
 
@@ -83,7 +85,7 @@ namespace DiscordCoreAPI {
 			std::string theString{};
 			uint32_t shardId = (dataPackage.guildId >> 22) % this->baseSocketAgent->configManager->getTotalShardCount();
 			uint32_t basesocketAgentIndex{ shardId % this->baseSocketAgent->configManager->getTotalShardCount() };
-			this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->stringifyJsonData(payload, theString,
+			theString = this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->stringifyJsonData(payload,
 				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId].get())
 					->dataOpCode);
 			this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->sendMessage(theString, true);
@@ -96,7 +98,7 @@ namespace DiscordCoreAPI {
 			std::string theString{};
 			uint32_t shardId = 0;
 			uint32_t basesocketAgentIndex{ 0 };
-			this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->stringifyJsonData(payload, theString,
+			theString = this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->stringifyJsonData(payload,
 				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId].get())
 					->dataOpCode);
 			this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->sendMessage(theString, true);

@@ -465,6 +465,21 @@ namespace DiscordCoreAPI {
 	class JsonRecord {
 	  public:
 		JsonRecord() noexcept = default;
+		JsonRecord& operator=(EnumConverter other);
+		JsonRecord& operator=(int8_t) noexcept;
+		JsonRecord& operator=(int16_t) noexcept;
+		JsonRecord& operator=(int32_t) noexcept;
+		JsonRecord& operator=(int64_t) noexcept;
+		JsonRecord& operator=(uint8_t) noexcept;
+		JsonRecord& operator=(uint16_t) noexcept;
+		JsonRecord& operator=(uint32_t) noexcept;
+		JsonRecord& operator=(uint64_t) noexcept;
+		JsonRecord& operator=(bool) noexcept;
+		JsonRecord& operator=(double) noexcept;
+		JsonRecord& operator=(float) noexcept;
+		JsonRecord& operator=(std::string&) noexcept;
+		JsonRecord& operator=(const char*) noexcept;
+		JsonRecord& operator[](const char*) noexcept;
 		JsonRecord(int8_t) noexcept;
 		JsonRecord(int16_t) noexcept;
 		JsonRecord(int32_t) noexcept;
@@ -477,10 +492,13 @@ namespace DiscordCoreAPI {
 		JsonRecord(double) noexcept;
 		JsonRecord(float) noexcept;
 		JsonRecord(std::string&) noexcept;
+
 		JsonRecord(const char*) noexcept;
 		operator std::string() noexcept;
-
-		JsonParseEvent theEvent{ JsonParseEvent::Object_Start };
+		std::vector<JsonRecord> theArrayData{};
+		JsonParseEvent theEvent{ JsonParseEvent::Unset };
+		size_t currentObjectOrArrayStartIndex{ 0 };
+		JsonParserState theState{};
 		std::string theValue{};
 		std::string theKey{};
 	};
@@ -488,94 +506,19 @@ namespace DiscordCoreAPI {
 	class JsonSerializer {
 	  public:
 		friend class JsonRecord;
-		JsonSerializer() noexcept;
-		JsonSerializer(const char*) noexcept;
-		JsonSerializer(const JsonSerializer& other) noexcept;
+		JsonSerializer() noexcept = default;
+		void addNewStructure(const char* keyName);
+		void appendStructElement(const char* keyName, JsonRecord&&);
+		void appendStructElement(const char* keyName, JsonRecord&);
+		void endStructure();
+		void addNewArray(const char* keyName);
+		void appendArrayElement(JsonSerializer&&);
+		void appendArrayElement(JsonSerializer&);
+		void appendArrayElement(JsonRecord&&);
+		void appendArrayElement(JsonRecord&);
+		void endArray();
 
-		template<typename KeyType, typename ObjectType> JsonSerializer& operator=(std::unordered_map<KeyType, ObjectType> other) {
-			for (auto& [key, value]: other) {
-				JsonRecord theRecord{};
-				theRecord = value;
-				theRecord.theKey = key;
-				this->theJsonData.emplace_back(theRecord);
-			}
-			if (other.size() == 0) {
-				JsonRecord theRecord{};
-				theRecord.theValue = "";
-				theRecord.theEvent = JsonParseEvent::Null_Value;
-				this->theJsonData.emplace_back(theRecord);
-			}
-			return *this;
-		}
-
-		template<typename ObjectType, std::enable_if<std::is_enum<EnumConverter>::value, ObjectType>> JsonSerializer& operator=(std::vector<ObjectType> other) {
-			for (auto& value: other) {
-				JsonRecord theRecord{};
-				theRecord = value;
-				this->theJsonData.emplace_back(theRecord);
-			}
-			if (other.size() == 0) {
-				JsonRecord theRecord{};
-				theRecord.theValue = "";
-				theRecord.theEvent = JsonParseEvent::Null_Value;
-				this->theJsonData.emplace_back(theRecord);
-			}
-			return *this;
-		}
-
-		template<std::same_as<size_t> ObjectType> JsonSerializer& operator=(std::vector<ObjectType> other) {
-			for (auto& value: other) {
-				JsonRecord theRecord{};
-				theRecord = value;
-				this->theJsonData.emplace_back(theRecord);
-			}
-			if (other.size() == 0) {
-				JsonRecord theRecord{};
-				theRecord.theValue = "";
-				theRecord.theEvent = JsonParseEvent::Null_Value;
-				this->theJsonData.emplace_back(theRecord);
-			}
-			return *this;
-		}
-
-		template<std::same_as<std::string> ObjectType> JsonSerializer& operator=(std::vector<ObjectType> other) {
-			for (auto& value: other) {
-				JsonRecord theRecord{};
-				theRecord = value;
-				this->theJsonData.emplace_back(theRecord);
-			}
-			if (other.size() == 0) {
-				JsonRecord theRecord{};
-				theRecord.theValue = "";
-				theRecord.theEvent = JsonParseEvent::Null_Value;
-				this->theJsonData.emplace_back(theRecord);
-			}
-			return *this;
-		}
-
-		JsonSerializer& operator=(EnumConverter other);
-		JsonSerializer& operator=(const JsonSerializer& other) noexcept;
-		JsonSerializer& operator=(JsonParseEvent theData) noexcept;
-		JsonSerializer& operator=(int8_t) noexcept;
-		JsonSerializer& operator=(int16_t) noexcept;
-		JsonSerializer& operator=(int32_t) noexcept;
-		JsonSerializer& operator=(int64_t) noexcept;
-		JsonSerializer& operator=(uint8_t) noexcept;
-		JsonSerializer& operator=(uint16_t) noexcept;
-		JsonSerializer& operator=(uint32_t) noexcept;
-		JsonSerializer& operator=(uint64_t) noexcept;
-		JsonSerializer& operator=(bool) noexcept;
-		JsonSerializer& operator=(double) noexcept;
-		JsonSerializer& operator=(float) noexcept;
-		JsonSerializer& operator=(std::string&) noexcept;
-		JsonSerializer& operator=(const char*) noexcept;
 		std::string getString();
-		JsonSerializer& operator[](const char* keyName) noexcept;
-		JsonSerializer& operator=(JsonRecord&);
-		void pushBack(const char* keyName, JsonRecord& other) noexcept;
-		void pushBack(const char* keyName, JsonRecord&& other) noexcept;
-		void pushBack(const char* keyName, JsonSerializer& other) noexcept;
-		void pushBack(const char* keyName, JsonSerializer&& other) noexcept;
 		operator std::string() noexcept;
 
 	  protected:

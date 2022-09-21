@@ -53,6 +53,7 @@ namespace DiscordCoreAPI {
 
 	CreateMessageData::operator JsonSerializer() {
 		JsonSerializer theData{};
+		/*
 		for (auto& value: this->attachments) {
 			theData.pushBack("attachments", value);
 		}
@@ -87,6 +88,7 @@ namespace DiscordCoreAPI {
 		}
 		theData["flags"] = this->flags;
 		theData["tts"] = this->tts;
+		*/
 		return theData;
 	}
 
@@ -124,6 +126,7 @@ namespace DiscordCoreAPI {
 
 	EditMessageData::operator JsonSerializer() {
 		JsonSerializer theData{};
+		/*
 		for (auto& value: this->attachments) {
 			theData.pushBack("attachments", value);
 		}
@@ -149,12 +152,15 @@ namespace DiscordCoreAPI {
 			theData["content"] = this->content;
 		}
 		theData["flags"] = this->flags;
+		*/
 		return theData;
 	}
 
 	DeleteMessagesBulkData::operator JsonSerializer() {
 		JsonSerializer theData{};
+		/*
 		theData["messages"] = this->messageIds;
+		*/
 		return theData;
 	}
 
