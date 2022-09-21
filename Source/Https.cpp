@@ -105,6 +105,7 @@ namespace DiscordCoreInternal {
 			theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
 			theReturnString += workload.content;
 		}
+		std::cout << "THE WORKLOAD: " << workload.content << std::endl;
 		return theReturnString;
 	}
 
@@ -419,7 +420,6 @@ namespace DiscordCoreInternal {
 		if (workload.baseUrl == "") {
 			workload.baseUrl = "https://discord.com/api/v10";
 		}
-		std::cout << "THE WORKLOAD: " << workload.content << std::endl;
 		RateLimitData& rateLimitData = *this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].get();
 		if (!rateLimitData.haveWeGoneYet.load()) {
 			std::this_thread::sleep_for(100ms);

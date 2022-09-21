@@ -479,6 +479,7 @@ namespace DiscordCoreAPI {
 		JsonRecord& operator=(uint16_t) noexcept;
 		JsonRecord& operator=(uint32_t) noexcept;
 		JsonRecord& operator=(uint64_t) noexcept;
+		JsonRecord& operator=(std::nullptr_t) noexcept;
 		JsonRecord& operator=(bool) noexcept;
 		JsonRecord& operator=(double) noexcept;
 		JsonRecord& operator=(float) noexcept;
@@ -494,6 +495,7 @@ namespace DiscordCoreAPI {
 		JsonRecord(uint16_t) noexcept;
 		JsonRecord(uint32_t) noexcept;
 		JsonRecord(uint64_t) noexcept;
+		JsonRecord(std::nullptr_t) noexcept;
 		JsonRecord(bool) noexcept;
 		JsonRecord(double) noexcept;
 		JsonRecord(float) noexcept;

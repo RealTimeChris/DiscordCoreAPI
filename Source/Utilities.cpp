@@ -75,6 +75,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
+	JsonRecord& JsonRecord::operator=(std::nullptr_t) noexcept {
+		this->theEvent = JsonParseEvent::Null_Value;
+		return *this;
+	}
+
 	JsonRecord& JsonRecord::operator=(const char* theData) noexcept {
 		this->theEvent = JsonParseEvent::String;
 		this->theValue = theData;
@@ -156,6 +161,10 @@ namespace DiscordCoreAPI {
 			theString = "false";
 		}
 		this->theValue = theString;
+	}
+
+	JsonRecord::JsonRecord(std::nullptr_t) noexcept {
+		this->theEvent = JsonParseEvent::Null_Value;
 	}
 
 	JsonRecord::JsonRecord(const char* theData) noexcept {
@@ -256,7 +265,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case JsonParseEvent::Null_Value: {
-				theString += this->theValue;
+				theString += "null";
 				if (this->theState == JsonParserState::Starting_Object) {
 					this->theState = JsonParserState::Adding_Object_Elements;
 				}
@@ -473,7 +482,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case JsonParseEvent::Null_Value: {
-					theString += (*iterator).theValue;
+					theString += "null";
 					if (this->theState == JsonParserState::Starting_Object) {
 						this->theState = JsonParserState::Adding_Object_Elements;
 					}
