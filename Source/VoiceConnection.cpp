@@ -993,9 +993,9 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::sendSilence() noexcept {
 		AudioFrameData newFrame{};
-		newFrame.data.emplace_back(0xf8);
-		newFrame.data.emplace_back(0xff);
-		newFrame.data.emplace_back(0xfe);
+		newFrame.data.push_back(0xf8);
+		newFrame.data.push_back(0xff);
+		newFrame.data.push_back(0xfe);
 		auto theFrame = this->encryptSingleAudioFrame(newFrame);
 		if (theFrame.size() > 0) {
 			this->sendVoiceData(theFrame);
