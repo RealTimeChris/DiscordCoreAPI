@@ -181,7 +181,10 @@ namespace DiscordCoreAPI {
 					switch (theMessage.op) {
 						case 2: {
 							VoiceSocketReadyData theData{};
-							simdjson::ondemand::value theObjectNew = thePayload["d"].value();
+							simdjson::ondemand::value theObjectNew{};
+							if (thePayload["d"].get(theObjectNew) != simdjson::error_code::SUCCESS) {
+								throw std::runtime_error{ "Failed to collect the 'd' from Voice-socket-ready-data!" };
+							}
 							DiscordCoreAPI::parseObject(theObjectNew, theData);
 							this->audioSSRC = theData.ssrc;
 							this->voiceIp = theData.ip;
@@ -743,6 +746,7 @@ namespace DiscordCoreAPI {
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING THE COLLECTING INIT DATA!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -756,6 +760,7 @@ namespace DiscordCoreAPI {
 					DiscordCoreInternal::ConnectionResult::No_Error) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING THE INITIALIZIGN WEBSOCKET! 0101" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -768,6 +773,7 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING THE INITIALIZIGN WEBSOCKET! 0202" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -783,6 +789,7 @@ namespace DiscordCoreAPI {
 				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify) {
 					if (theStopWatch.hasTimePassed()) {
 						this->onClosed();
+						std::cout << "FAILING THE COLLECTING HELLO!" << std::endl;
 						return;
 					}
 					WebSocketSSLShard::processIO(10);
@@ -802,6 +809,7 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING THE SENDING IDENTIFY!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -814,6 +822,7 @@ namespace DiscordCoreAPI {
 				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
 					if (theStopWatch.hasTimePassed()) {
 						this->onClosed();
+						std::cout << "FAILING THE COLLECTING READY!" << std::endl;
 						return;
 					}
 					WebSocketSSLShard::processIO(10);
@@ -826,6 +835,7 @@ namespace DiscordCoreAPI {
 				if (!this->voiceConnect()) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING THE DATAGRAM SOCKET!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -843,6 +853,7 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING THE SENDING SELECT-PROTOCOL!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -855,6 +866,7 @@ namespace DiscordCoreAPI {
 				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
 					if (theStopWatch.hasTimePassed()) {
 						this->onClosed();
+						std::cout << "FAILING THE COLLECTING SESSION-DESCRIPTION!" << std::endl;
 						return;
 					}
 					WebSocketSSLShard::processIO(10);

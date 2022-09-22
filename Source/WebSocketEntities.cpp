@@ -357,8 +357,8 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				dataPackage.channelId = doWeCollect.channelId;
-				DiscordCoreAPI::JsonSerializer newData02 = dataPackage;
-				std::string theString02 = this->stringifyJsonData(newData02, this->dataOpCode);
+				newData = dataPackage;
+				std::string theString02 = this->stringifyJsonData(newData, this->dataOpCode);
 				this->areWeCollectingData = true;
 				if (!this->sendMessage(theString02, true)) {
 					return;
@@ -1361,11 +1361,14 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnVoiceStateUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnVoiceStateUpdateData>() };
 											DiscordCoreAPI::parseObject(theObject, dataPackage->voiceStateData);
 											this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
-											if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected && userId == this->userId) {
+											if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected &&
+												dataPackage->voiceStateData.userId == this->userId) {
+												std::cout << "WERE COLLECTING VOICE STATE UPDATE DATA!" << std::endl;
 												this->voiceConnectionData = VoiceConnectionData{};
 												this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 												this->stateUpdateCollected = true;
 											} else if (this->areWeCollectingData && !this->stateUpdateCollected) {
+												std::cout << "WERE COLLECTING VOICE STATE UPDATE DATA!" << std::endl;
 												this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 												if (this->voiceConnectionDataBufferMap.contains(dataPackage->voiceStateData.guildId)) {
 													this->voiceConnectionDataBufferMap[dataPackage->voiceStateData.guildId]->send(this->voiceConnectionData);
@@ -1389,9 +1392,11 @@ namespace DiscordCoreInternal {
 											this->voiceConnectionData.endPoint = dataPackage->endpoint;
 											this->voiceConnectionData.token = dataPackage->token;
 											if (this->areWeCollectingData && !this->serverUpdateCollected && !this->stateUpdateCollected) {
+												std::cout << "WERE COLLECTING VOICE SERVER UPDATE DATA!" << std::endl;
 												this->voiceConnectionData = VoiceConnectionData{};
 												this->serverUpdateCollected = true;
 											} else if (this->areWeCollectingData && !this->serverUpdateCollected) {
+												std::cout << "WERE COLLECTING VOICE SERVER UPDATE DATA!" << std::endl;
 												if (this->voiceConnectionDataBufferMap.contains(dataPackage->guildId)) {
 													this->voiceConnectionDataBufferMap[dataPackage->guildId]->send(this->voiceConnectionData);
 												}
