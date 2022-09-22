@@ -53,7 +53,6 @@ namespace DiscordCoreAPI {
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
 			this->collectorId = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-			std::cout << "WAITING FOR TIME TO PASS!" << this->collectorId << std::endl;
 			ObjectCollector::objectsBufferMap[this->collectorId] = &this->messagesBuffer;
 			this->run();
 			co_return this->messageReturnData;
@@ -63,7 +62,6 @@ namespace DiscordCoreAPI {
 			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			int64_t elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
-				std::cout << "WAITING FOR TIME TO PASS!" << std::endl;
 				Message message{};
 				waitForTimeToPass<Message>(this->messagesBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
 				if (this->filteringFunction(message)) {
@@ -134,7 +132,6 @@ namespace DiscordCoreAPI {
 			theData.appendArrayElement(value);
 		}
 		theData.endArray();
-
 		theData.addNewArray("embeds");
 		for (auto& value: this->embeds) {
 			theData.appendArrayElement(value);
@@ -181,7 +178,6 @@ namespace DiscordCoreAPI {
 	}
 
 	EditMessageData::operator JsonSerializer() {
-		JsonSerializer theData{};
 		JsonSerializer theData{};
 		theData.addNewArray("attachments");
 		for (auto& value: this->attachments) {
