@@ -101,7 +101,7 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 		theSerializer.appendStructElement("os", "Windows");
 #else
-		theSerializer.appendStructElement("d"].appendStructElement("properties"].appendStructElement("os", "Linux";
+		theSerializer.appendStructElement("os", "Linux");
 #endif
 		theSerializer.endStructure();
 		theSerializer.addNewArray("shard");
