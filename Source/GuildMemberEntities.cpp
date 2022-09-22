@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 	ModifyGuildMemberData::operator JsonSerializer() {
 		JsonSerializer theData{};
 		theData.appendStructElement("nick", this->nick);
-		theData.appendStructElement("communication_disabled_until", std::string(this->communicationDisabledUntil));
+		theData.appendStructElement("communication_disabled_until", static_cast<std::string>(this->communicationDisabledUntil));
 		theData.addNewArray("roles");
 		for (auto& value: this->roleIds) {
 			theData.appendArrayElement(value);

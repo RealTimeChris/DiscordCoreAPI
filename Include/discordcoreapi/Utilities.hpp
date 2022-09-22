@@ -989,8 +989,7 @@ namespace DiscordCoreAPI {
 				}
 				TimeStamp theTimeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
 					std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), timeFormat };
-				theTimeStamp.getISO8601TimeStamp(timeFormat);
-				theReturnString = static_cast<std::string>(theTimeStamp);
+				theReturnString = theTimeStamp.getISO8601TimeStamp(timeFormat);
 			} else {
 				if (resultTwo->tm_hour + 5 >= 24) {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
@@ -998,8 +997,7 @@ namespace DiscordCoreAPI {
 				}
 				TimeStamp theTimeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
 					std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), timeFormat };
-				theTimeStamp.getISO8601TimeStamp(timeFormat);
-				theReturnString = static_cast<std::string>(theTimeStamp);
+				theReturnString = theTimeStamp.getISO8601TimeStamp(timeFormat);
 			}
 			return theReturnString;
 		}
@@ -1153,7 +1151,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case TimeFormat::LongDateTime: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%a %b %d %Y %X", &timeInfo);
+					size_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%T", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
