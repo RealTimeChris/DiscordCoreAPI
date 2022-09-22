@@ -155,42 +155,55 @@ namespace DiscordCoreAPI {
 		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
 		try {
 			if (theData.size() > 0) {
-				nlohmann::json payload = payload.parse(theData);
+				std::string theString{ theData };
+				theString.reserve(theString.size() + simdjson::SIMDJSON_PADDING);
+				simdjson::ondemand::parser theParser{};
+				auto theDocument = theParser.iterate(theString.data(), theString.length(), theString.capacity());
+				uint64_t theOp{};
+
+				auto thePayload = theDocument.value().get_value();
+				DiscordCoreInternal::WebSocketMessage theMessage{};
+				uint64_t s{};
+				uint64_t op{};
+				std::string_view t{};
+				thePayload["s"].get(s);
+				thePayload["op"].get(op);
+				thePayload["t"].get(t);
+				theMessage.s = s;
+				theMessage.t = t;
+				theMessage.op = op;
+
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << payload << reset() << endl << endl;
+					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theData << reset() << endl << endl;
 				}
-				if (payload.contains("op") && !payload["op"].is_null()) {
-					switch (payload["op"].get<int32_t>()) {
+				if (theMessage.op!=0) {
+					switch (theMessage.op) {
 						case 2: {
-							this->audioSSRC = payload["d"]["ssrc"].get<uint32_t>();
-							this->voiceIp = payload["d"]["ip"].get<std::string>();
-							this->port = payload["d"]["port"].get<int64_t>();
-							for (auto& value: payload["d"]["modes"]) {
-								if (value == "xsalsa20_poly1305") {
-									this->audioEncryptionMode = value;
-								}
+							VoiceSocketReadyData theData{};
+							simdjson::ondemand::value theObjectNew{};
+							if (thePayload["d"].get(theObjectNew) != simdjson::error_code::SUCCESS) {
+								throw std::runtime_error{ "Failed to collect the 'd' from Voice-socket-ready-data!" };
 							}
+							DiscordCoreAPI::parseObject(theObjectNew, theData);
+							this->audioSSRC = theData.ssrc;
+							this->voiceIp = theData.ip;
+							this->port = theData.port;
+							this->audioEncryptionMode = theData.mode;
 							this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
 							return true;
 						}
 						case 4: {
-							std::string theSecretKey{};
-							for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); ++x) {
-								theSecretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
-							}
+							std::string theSecretKey = getString(thePayload["d"], "secret_key");
 							this->secretKeySend = theSecretKey;
 							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 							return true;
 						}
 						case 5: {
-							if (payload.contains("d") && !payload["d"].is_null()) {
-								if (!payload["d"]["ssrc"].is_null()) {
-									VoiceUser theUser{};
-									theUser.theUserId = stoull(payload["d"]["user_id"].get<std::string>());
-									theLock00.lock();
-									this->voiceUsers[payload["d"]["ssrc"].get<int32_t>()] = std::move(theUser);
-								}
-							}
+							uint32_t ssrc = getUint32(thePayload["d"], "ssrc");
+							VoiceUser theUser{};
+							theUser.theUserId = stoull(getString(thePayload["d"], "user_id"));
+							theLock00.lock();
+							this->voiceUsers[ssrc] = std::move(theUser);
 							return true;
 						}
 						case 6: {
@@ -198,24 +211,20 @@ namespace DiscordCoreAPI {
 							return true;
 						}
 						case 8: {
-							if (payload["d"].contains("heartbeat_interval")) {
-								this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>()) } };
-								this->areWeHeartBeating = true;
-								this->connectionState.store(VoiceConnectionState::Sending_Identify);
-							}
+							auto theHeartBeat = static_cast<uint32_t>(getFloat(thePayload["d"], "heartbeat_interval"));
+							std::cout << "HEARTBEAT INTERVAL: " << theHeartBeat << std::endl;
+							this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ theHeartBeat } };
+							this->areWeHeartBeating = true;
+							this->connectionState.store(VoiceConnectionState::Sending_Identify);
 							return true;
 						}
 						case 13: {
-							if (payload.contains("d") && !payload["d"].is_null()) {
-								if (!payload["d"]["user_id"].is_null()) {
-									auto userId = stoull(payload["d"]["user_id"].get<std::string>());
-									for (auto& [key, value]: this->voiceUsers) {
-										if (userId == value.theUserId) {
-											theLock00.lock();
-											this->voiceUsers.erase(key);
-											break;
-										}
-									}
+							auto theUserId = stoull(getString(thePayload["d"], "user_id"));
+							for (auto& [key, value]: this->voiceUsers) {
+								if (theUserId == value.theUserId) {
+									theLock00.lock();
+									this->voiceUsers.erase(key);
+									break;
 								}
 							}
 							return true;

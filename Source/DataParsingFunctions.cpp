@@ -74,6 +74,21 @@ namespace DiscordCoreAPI {
 		return DiscordCoreAPI::strtoull(theString);
 	}
 
+	float getFloat(simdjson::ondemand::value jsonData, const char* theKey) {
+		try {
+			double theValue{};
+			if (jsonData.type() != simdjson::ondemand::json_type::null) {
+				jsonData[theKey].get(theValue);
+				return static_cast<float>(theValue);
+			} else {
+				return 0.0f;
+			}
+		} catch (...) {
+			reportException("getFloat()");
+			return 0.0f;
+		}
+	}
+
 	bool getBool(simdjson::ondemand::value  jsonData, const char* theKey) {
 		try {
 			bool theValue{};
