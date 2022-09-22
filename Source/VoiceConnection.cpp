@@ -461,6 +461,7 @@ namespace DiscordCoreAPI {
 		StopWatch theStopWatch{ 20000ms };
 		StopWatch theSendSilenceStopWatch{ 5000ms };
 		while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
+			std::cout << "WERE CONNECTED TO VOICE!" << std::endl;
 			switch (this->activeState.load()) {
 				case VoiceActiveState::Connecting: {
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Connecting) {

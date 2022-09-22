@@ -145,6 +145,7 @@ namespace DiscordCoreAPI {
 		}
 		this->configManager = ConfigManager{ configData };
 		if (this->configManager.doWePrintFFMPEGSuccessMessages()) {
+			std::cout << "WERE LOGGING THE STUFF!" << std::endl;
 			av_log_set_level(AV_LOG_INFO);
 		}
 		if (this->configManager.doWePrintFFMPEGErrorMessages()) {
