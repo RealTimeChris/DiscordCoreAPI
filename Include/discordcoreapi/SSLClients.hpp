@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 	enum class ProcessIOResult : int8_t { No_Error = 0, Error = 1 };
 
 	struct DiscordCoreAPI_Dll RingBuffer {
-		void writeData(char* theData, size_t theLength); 
+		void writeData(char* theData, size_t theLength);
 		void readData(char* theData, size_t theLength);
 		char* getBufferPtr(size_t theLength);
 		char* getCurrentTail();
