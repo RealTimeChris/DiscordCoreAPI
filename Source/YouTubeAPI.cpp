@@ -178,6 +178,9 @@ namespace DiscordCoreInternal {
 		} catch (...) {
 			if (currentRecursionDepth <= 10) {
 				currentRecursionDepth++;
+				if (this->configManager->doWePrintHttpsErrorMessages()) {
+					DiscordCoreAPI::reportException("YouTubeRequestBuilder::constructDownloadInfo()");
+				}
 				return this->constructDownloadInfo(newSong, currentRecursionDepth);
 			} else {
 				return {};

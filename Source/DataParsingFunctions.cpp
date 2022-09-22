@@ -3888,7 +3888,7 @@ namespace DiscordCoreAPI {
 
 		theData.bitrate = getUint32(jsonObjectData, "bitrate");
 
-		theData.contentLength = stoll(getString(jsonObjectData, "contentLength"));
+		theData.contentLength = getUint32(jsonObjectData, "contentLength");
 
 		theData.fps = getUint32(jsonObjectData, "fps");
 
