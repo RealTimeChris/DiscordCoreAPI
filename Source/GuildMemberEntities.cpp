@@ -259,38 +259,45 @@ namespace DiscordCoreAPI {
 		TimeStamp<std::chrono::milliseconds> theTimeStamp{};
 		switch (dataPackage.numOfMinutesToTimeoutFor) {
 			case TimeoutDurations::Day: {
-				theTimeStamp.convertToFutureISO8601TimeStamp(0, 0, 1, 0, 0, TimeFormat::LongDateTime);
-				dataPackage01.communicationDisabledUntil = theTimeStamp;
+				auto theString = theTimeStamp.convertToFutureISO8601TimeStamp(0, 0, 1, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theString;
+				std::cout << "THE TIME OUT: (ONE DAY): " << theString << std::endl;
 				break;
 			}
 			case TimeoutDurations::Five_Minutes: {
-				theTimeStamp.convertToFutureISO8601TimeStamp(5, 0, 0, 0, 0, TimeFormat::LongDateTime);
-				dataPackage01.communicationDisabledUntil = theTimeStamp;
+				auto theString = theTimeStamp.convertToFutureISO8601TimeStamp(5, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theString;
+				std::cout << "THE TIME OUT: (FIVE MINUTES): " << theString << std::endl;
 				break;
 			}
 			case TimeoutDurations::Hour: {
-				theTimeStamp.convertToFutureISO8601TimeStamp(0, 1, 0, 0, 0, TimeFormat::LongDateTime);
-				dataPackage01.communicationDisabledUntil = theTimeStamp;
+				auto theString = theTimeStamp.convertToFutureISO8601TimeStamp(0, 1, 0, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theString;
+				std::cout << "THE TIME OUT: (HOUR): " << theString << std::endl;
 				break;
 			}
 			case TimeoutDurations::Ten_Minutes: {
-				theTimeStamp.convertToFutureISO8601TimeStamp(10, 0, 0, 0, 0, TimeFormat::LongDateTime);
-				dataPackage01.communicationDisabledUntil = theTimeStamp;
+				auto theString = theTimeStamp.convertToFutureISO8601TimeStamp(10, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theString;
+				std::cout << "THE TIME OUT: (TEN MINUTES): " << theString << std::endl;
 				break;
 			}
 			case TimeoutDurations::Week: {
-				theTimeStamp.convertToFutureISO8601TimeStamp(0, 0, 7, 0, 0, TimeFormat::LongDateTime);
-				dataPackage01.communicationDisabledUntil = theTimeStamp;
+				auto theString = theTimeStamp.convertToFutureISO8601TimeStamp(0, 0, 7, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theString;
+				std::cout << "THE TIME OUT: (ONE WEEK): " << theString << std::endl;
 				break;
 			}
 			case TimeoutDurations::Minute: {
-				theTimeStamp.convertToFutureISO8601TimeStamp(1, 0, 0, 0, 0, TimeFormat::LongDateTime);
-				dataPackage01.communicationDisabledUntil = theTimeStamp;
+				auto theString = theTimeStamp.convertToFutureISO8601TimeStamp(1, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theString;
+				std::cout << "THE TIME OUT: (ONE MINUTE): " << theString << std::endl;
 				break;
 			}
 			case TimeoutDurations::None: {
-				theTimeStamp.convertToFutureISO8601TimeStamp(0, 0, 0, 0, 0, TimeFormat::LongDateTime);
-				dataPackage01.communicationDisabledUntil = theTimeStamp;
+				auto theString = theTimeStamp.convertToFutureISO8601TimeStamp(0, 0, 0, 0, 0, TimeFormat::LongDateTime);
+				dataPackage01.communicationDisabledUntil = theString;
+				std::cout << "THE TIME OUT: (NONE): " << theString << std::endl;
 				break;
 			}
 		}

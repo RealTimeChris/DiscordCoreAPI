@@ -53,7 +53,7 @@
 	#include <cstring>
 inline uint64_t ntohll(uint64_t x) {
 	uint8_t theData[8]{};
-	memcpy(&data, &(x), sizeof(x));
+	memcpy(&theData, &(x), sizeof(x));
 	uint64_t theValue{};
 	for (uint32_t y = 0; y < sizeof(uint64_t); ++y) {
 		theValue |= static_cast<uint64_t>(theData[y]) << 8 * (sizeof(uint64_t) - y - 1);

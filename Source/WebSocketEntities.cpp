@@ -814,6 +814,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(theObject, theGuildMember);
 												Snowflake userId{theGuildMember.id};
 												Snowflake guildId{ theGuildMember.guildId };
+												std::cout << "THE USER ID: " << userId << ", THE GUILD ID: " << guildId << std::endl;
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
 													DiscordCoreAPI::GuildMemberData theDataNew{};
@@ -847,6 +848,7 @@ namespace DiscordCoreInternal {
 												Snowflake userId{ theGuildMember.id };
 												Snowflake guildId{ theGuildMember.guildId };
 												DiscordCoreAPI::GuildData theGuild{};
+												std::cout << "THE USER ID: " << userId << ", THE GUILD ID: " << guildId << std::endl;
 												theGuild.id = guildId;
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::removeGuildMember(theGuildMember);
@@ -877,6 +879,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(theObject, theGuildMember);
 												Snowflake userId{ theGuildMember.id };
 												Snowflake guildId{ theGuildMember.guildId };
+												std::cout << "THE USER ID: " << userId<< ", THE GUILD ID: " << guildId << std::endl;
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
 													DiscordCoreAPI::GuildMemberData theDataNew{};
@@ -905,12 +908,12 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Roles::doWeCacheRoles || this->discordCoreClient->eventManager.onRoleCreationEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::RoleData* theRolePtr{ nullptr };
 												DiscordCoreAPI::RoleData theRole{};
-												DiscordCoreAPI::parseObject(theObject, theRole);
-												Snowflake guildId{}; 
+												Snowflake guildId{};
 												std::string_view theString{};
 												if (theObject["guild_id"].get(theString) == simdjson::error_code::SUCCESS) {
 													guildId = stoull(static_cast<std::string>(theString));
 												}
+												DiscordCoreAPI::parseObject(theObject["role"], theRole);
 												Snowflake roleId{ theRole.id };
 												std::cout << "THE ROLE ID: " << roleId << ", THE GUILD ID: " << guildId << std::endl;
 												DiscordCoreAPI::GuildData theGuild{};
@@ -937,9 +940,10 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Roles::doWeCacheRoles || this->discordCoreClient->eventManager.onRoleUpdateEvent.theFunctions.size() > 0) {
 												DiscordCoreAPI::RoleData* theRolePtr{ nullptr };
 												DiscordCoreAPI::RoleData theRole{};
-												DiscordCoreAPI::parseObject(theObject, theRole);
+												DiscordCoreAPI::parseObject(theObject["role"], theRole);
 												Snowflake roleId{ theRole.id };
 												Snowflake guildId{ theRole.guildId };
+												std::cout << "THE ROLE ID: " << roleId << ", THE GUILD ID: " << guildId << std::endl;
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
 													DiscordCoreAPI::Roles::insertRole(std::move(theRole));
 													theRolePtr =
