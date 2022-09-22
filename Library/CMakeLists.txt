@@ -111,6 +111,7 @@ target_compile_options(
 	"$<$<NOT:$<PLATFORM_ID:Linux>>:/bigobj>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
+	"$<$<PLATFORM_ID:Linux>:-fpermissive>"
 )
 
 target_link_options(
