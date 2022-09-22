@@ -322,6 +322,7 @@ namespace DiscordCoreInternal {
 							if (streamSocket->areWeStillConnected()) {
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
 								std::string streamBuffer = static_cast<std::string>(streamSocket->getInputBuffer(0, streamSocket->inputBuffer.getUsedSpace()));
+								std::cout << "THE STREAM BUFFER: " << streamBuffer << std::endl;
 								headerSize = static_cast<int32_t>(streamBuffer.size());
 							}
 						}
@@ -367,6 +368,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						std::string streamBuffer = static_cast<std::string>(streamSocket->getInputBuffer(0, streamSocket->inputBuffer.getUsedSpace()));
+						std::cout << "THE STREAM BUFFER: " << streamBuffer << std::endl;
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
 							while (theCurrentString.size() > 0) {
