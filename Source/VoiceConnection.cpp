@@ -1,18 +1,14 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
-
 	Copyright 2021, 2022 Chris M. (RealTimeChris)
-
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
 	License as published by the Free Software Foundation; either
 	version 2.1 of the License, or (at your option) any later version.
-
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 	Lesser General Public License for more details.
-
 	You should have received a copy of the GNU Lesser General Public
 	License along with this library; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
@@ -120,7 +116,6 @@ namespace DiscordCoreAPI {
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->baseSocketAgent = BaseSocketAgentNew;
 		this->voiceConnectInitData = initDataNew;
-		this->theSongAPIPtr = this->baseSocketAgent->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId);
 		this->configManager = configManagerNew;
 		this->theStreamInfo = streamInfoNew;
 		this->streamType = streamTypeNew;
@@ -156,55 +151,42 @@ namespace DiscordCoreAPI {
 		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
 		try {
 			if (theData.size() > 0) {
-				std::string theString{ theData };
-				theString.reserve(theString.size() + simdjson::SIMDJSON_PADDING);
-				simdjson::ondemand::parser theParser{};
-				auto theDocument = theParser.iterate(theString.data(), theString.length(), theString.capacity());
-				uint64_t theOp{};
-
-				auto thePayload = theDocument.value().get_value();
-				DiscordCoreInternal::WebSocketMessage theMessage{};
-				uint64_t s{};
-				uint64_t op{};
-				std::string_view t{};
-				thePayload["s"].get(s);
-				thePayload["op"].get(op);
-				thePayload["t"].get(t);
-				theMessage.s = s;
-				theMessage.t = t;
-				theMessage.op = op;
-
+				nlohmann::json payload = payload.parse(theData);
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theData << reset() << endl << endl;
+					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << payload << reset() << endl << endl;
 				}
-				if (theMessage.op!=0) {
-					switch (theMessage.op) {
+				if (payload.contains("op") && !payload["op"].is_null()) {
+					switch (payload["op"].get<int32_t>()) {
 						case 2: {
-							VoiceSocketReadyData theData{};
-							simdjson::ondemand::value theObjectNew{};
-							if (thePayload["d"].get(theObjectNew) != simdjson::error_code::SUCCESS) {
-								throw std::runtime_error{ "Failed to collect the 'd' from Voice-socket-ready-data!" };
+							this->audioSSRC = payload["d"]["ssrc"].get<uint32_t>();
+							this->voiceIp = payload["d"]["ip"].get<std::string>();
+							this->port = payload["d"]["port"].get<int64_t>();
+							for (auto& value: payload["d"]["modes"]) {
+								if (value == "xsalsa20_poly1305") {
+									this->audioEncryptionMode = value;
+								}
 							}
-							DiscordCoreAPI::parseObject(theObjectNew, theData);
-							this->audioSSRC = theData.ssrc;
-							this->voiceIp = theData.ip;
-							this->port = theData.port;
-							this->audioEncryptionMode = theData.mode;
 							this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
 							return true;
 						}
 						case 4: {
-							std::string theSecretKey = getString(thePayload["d"], "secret_key");
+							std::string theSecretKey{};
+							for (uint32_t x = 0; x < payload["d"]["secret_key"].size(); ++x) {
+								theSecretKey.push_back(payload["d"]["secret_key"][x].get<uint8_t>());
+							}
 							this->secretKeySend = theSecretKey;
 							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 							return true;
 						}
 						case 5: {
-							uint32_t ssrc = getUint32(thePayload["d"], "ssrc");
-							VoiceUser theUser{};
-							theUser.theUserId = stoull(getString(thePayload["d"], "user_id"));
-							theLock00.lock();
-							this->voiceUsers[ssrc] = std::move(theUser);
+							if (payload.contains("d") && !payload["d"].is_null()) {
+								if (!payload["d"]["ssrc"].is_null()) {
+									VoiceUser theUser{};
+									theUser.theUserId = stoull(payload["d"]["user_id"].get<std::string>());
+									theLock00.lock();
+									this->voiceUsers[payload["d"]["ssrc"].get<int32_t>()] = std::move(theUser);
+								}
+							}
 							return true;
 						}
 						case 6: {
@@ -212,19 +194,24 @@ namespace DiscordCoreAPI {
 							return true;
 						}
 						case 8: {
-							auto theHeartBeat = getUint32(thePayload["d"], "heartbeat_interval");
-							this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ theHeartBeat } };
-							this->areWeHeartBeating = true;
-							this->connectionState.store(VoiceConnectionState::Sending_Identify);
+							if (payload["d"].contains("heartbeat_interval")) {
+								this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ static_cast<int32_t>(payload["d"]["heartbeat_interval"].get<float>()) } };
+								this->areWeHeartBeating = true;
+								this->connectionState.store(VoiceConnectionState::Sending_Identify);
+							}
 							return true;
 						}
 						case 13: {
-							auto theUserId = stoull(getString(thePayload["d"], "user_id"));
-							for (auto& [key, value]: this->voiceUsers) {
-								if (theUserId == value.theUserId) {
-									theLock00.lock();
-									this->voiceUsers.erase(key);
-									break;
+							if (payload.contains("d") && !payload["d"].is_null()) {
+								if (!payload["d"]["user_id"].is_null()) {
+									auto userId = stoull(payload["d"]["user_id"].get<std::string>());
+									for (auto& [key, value]: this->voiceUsers) {
+										if (userId == value.theUserId) {
+											theLock00.lock();
+											this->voiceUsers.erase(key);
+											break;
+										}
+									}
 								}
 							}
 							return true;
@@ -333,9 +320,7 @@ namespace DiscordCoreAPI {
 					theShard->areWeResuming = true;
 				}
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightRed()
-						 << "WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
-							std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + " Closed; Code: "
+					cout << DiscordCoreAPI::shiftToBrightRed() << "WebSocket [" + std::to_string(theShard->shard[0]) + "," + std::to_string(theShard->shard[1]) + "] Closed; Code: "
 						 << +static_cast<uint16_t>(theShard->closeCode) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
@@ -356,8 +341,9 @@ namespace DiscordCoreAPI {
 			theData.type = DiscordCoreInternal::SendSpeakingType::Microphone;
 			theData.delay = 0;
 			theData.ssrc = this->audioSSRC;
-			auto newString = static_cast<JsonSerializer>(theData);
-			std::string theString = this->stringifyJsonData(newString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+			JsonSerializer newString = theData;
+			std::string theString{};
+			theString = this->stringifyJsonData(newString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			if (!this->sendMessage(theString, true)) {
 				this->onClosed();
 			}
@@ -715,10 +701,15 @@ namespace DiscordCoreAPI {
 			}
 			this->taskThread03.reset(nullptr);
 		}
+
 		DatagramSocketClient::disconnect();
 		WebSocketSSLShard::disconnect(false);
 		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
 			this->streamSocket->disconnect();
+		}
+		if (DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)) {
+			DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)
+				->onSongCompletionEvent.remove(DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->eventToken);
 		}
 		this->areWeConnectedBool.store(false);
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
@@ -746,7 +737,6 @@ namespace DiscordCoreAPI {
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE COLLECTING INIT DATA!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -760,7 +750,6 @@ namespace DiscordCoreAPI {
 					DiscordCoreInternal::ConnectionResult::No_Error) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE INITIALIZIGN WEBSOCKET! 0101" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -773,7 +762,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE INITIALIZIGN WEBSOCKET! 0202" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -789,7 +777,6 @@ namespace DiscordCoreAPI {
 				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify) {
 					if (theStopWatch.hasTimePassed()) {
 						this->onClosed();
-						std::cout << "FAILING THE COLLECTING HELLO!" << std::endl;
 						return;
 					}
 					WebSocketSSLShard::processIO(10);
@@ -804,12 +791,12 @@ namespace DiscordCoreAPI {
 				DiscordCoreInternal::VoiceIdentifyData identifyData{};
 				identifyData.connectInitData = this->voiceConnectInitData;
 				identifyData.connectionData = this->voiceConnectionData;
+				std::string sendVector{};
 				JsonSerializer theData{ identifyData };
-				std::string sendVector = this->stringifyJsonData(theData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				sendVector = this->stringifyJsonData(theData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE SENDING IDENTIFY!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -822,7 +809,6 @@ namespace DiscordCoreAPI {
 				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
 					if (theStopWatch.hasTimePassed()) {
 						this->onClosed();
-						std::cout << "FAILING THE COLLECTING READY!" << std::endl;
 						return;
 					}
 					WebSocketSSLShard::processIO(10);
@@ -835,7 +821,6 @@ namespace DiscordCoreAPI {
 				if (!this->voiceConnect()) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE DATAGRAM SOCKET!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -849,11 +834,11 @@ namespace DiscordCoreAPI {
 				protocolPayloadData.externalIp = this->externalIp;
 				protocolPayloadData.voicePort = this->port;
 				JsonSerializer protocolPayloadSelectString = protocolPayloadData;
-				std::string sendVector = this->stringifyJsonData(protocolPayloadSelectString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				std::string sendVector{};
+				sendVector = this->stringifyJsonData(protocolPayloadSelectString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE SENDING SELECT-PROTOCOL!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -866,7 +851,6 @@ namespace DiscordCoreAPI {
 				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
 					if (theStopWatch.hasTimePassed()) {
 						this->onClosed();
-						std::cout << "FAILING THE COLLECTING SESSION-DESCRIPTION!" << std::endl;
 						return;
 					}
 					WebSocketSSLShard::processIO(10);
@@ -911,10 +895,11 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::sendHeartBeat() noexcept {
 		try {
 			if (WebSocketSSLShard::areWeStillConnected() && this->haveWeReceivedHeartbeatAck) {
-				JsonSerializer theData{};
-				theData.appendStructElement("d", std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-				theData.appendStructElement("op", int32_t(3));
-				std::string theString = this->stringifyJsonData(theData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				JsonSerializer data{};
+				data.appendStructElement("d", std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				data.appendStructElement("op", int32_t(3));
+				std::string theString{};
+				theString = this->stringifyJsonData(data, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(theString, true)) {
 					this->onClosed();
 				}
@@ -995,9 +980,9 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::sendSilence() noexcept {
 		AudioFrameData newFrame{};
-		newFrame.data.emplace_back(0xf8);
-		newFrame.data.emplace_back(0xff);
-		newFrame.data.emplace_back(0xfe);
+		newFrame.data.push_back(0xf8);
+		newFrame.data.push_back(0xff);
+		newFrame.data.push_back(0xfe);
 		auto theFrame = this->encryptSingleAudioFrame(newFrame);
 		if (theFrame.size() > 0) {
 			this->sendVoiceData(theFrame);
@@ -1086,7 +1071,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::connect() noexcept {
 		if (this->baseSocketAgent) {
 			this->thePackage.currentShard = 1;
-			this->theConnections.emplace_back(this->thePackage);
+			this->theConnections.push_back(this->thePackage);
 			this->activeState.store(VoiceActiveState::Connecting);
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
@@ -1116,5 +1101,4 @@ namespace DiscordCoreAPI {
 	VoiceConnection::~VoiceConnection() {
 		this->disconnectInternal();
 	}
-
-};
+}

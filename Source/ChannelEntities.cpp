@@ -179,6 +179,7 @@ namespace DiscordCoreAPI {
 			newData.appendStructElement("id", value.id);
 			theData.appendArrayElement(newData);
 		}
+		theData.endArray();
 		theData.appendStructElement("default_auto_archive_duration", this->channelData.defaultAutoArchiveDuration);
 		theData.appendStructElement("video_quality_mode", this->channelData.videoQualityMode);
 		theData.appendStructElement("rate_limit_per_user", this->channelData.rateLimitPerUser);

@@ -161,7 +161,6 @@ namespace DiscordCoreAPI {
 		const int64_t maxReconnectTries{ 10 };
 		int64_t currentReconnectTries{ 0 };
 		std::string audioEncryptionMode{};
-		SongAPI* theSongAPIPtr{ nullptr };
 		Snowflake currentGuildMemberId{};
 		ConnectionPackage thePackage{};
 		std::string secretKeySend{};
