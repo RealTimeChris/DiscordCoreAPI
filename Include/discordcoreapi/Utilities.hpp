@@ -1456,19 +1456,24 @@ namespace DiscordCoreAPI {
 		std::mutex accessMutex{};
 	};
 
+	template<typename ReturnType> class NewThreadAwaiter;
+
+	/// An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution. \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
+	/// \tparam ReturnType The type of value returned by the containing CoRoutine.
+	template<typename ReturnType> auto NewThreadAwaitable() {
+		return NewThreadAwaiter<ReturnType>{};
+	}
+
 	/// Typedef for the message filter. \brief Typedef for the message filter.
-	template<typename Object>
-	using ObjectFilter = std::function<bool(Object)>;
+	template<typename Object> using ObjectFilter = std::function<bool(Object)>;
 
 	/// ObjectCollectorReturnData responseData. \brief ObjectCollectorReturnData responseData.
-	template<typename Object>
-	struct DiscordCoreAPI_Dll ObjectCollectorReturnData {
+	template<typename Object> struct DiscordCoreAPI_Dll ObjectCollectorReturnData {
 		std::vector<Object> objects{};///< A vector of collected Objects.
 	};
 
 	/// ObjectCollector, for collecting Objects from a Channel. \brief Object collector, for collecting Objects from a Channel.
-	template<typename Object>
-	class DiscordCoreAPI_Dll ObjectCollector {
+	template<typename Object> class DiscordCoreAPI_Dll ObjectCollector {
 	  public:
 		static std::unordered_map<std::string, UnboundedMessageBlock<Object>*> objectsBufferMap;
 
