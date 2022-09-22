@@ -460,7 +460,7 @@ namespace DiscordCoreAPI {
 		}
 
 		~EnumConverter() {
-			delete this->thePtr;
+			delete static_cast<uint64_t*>(this->thePtr);
 		}
 
 		void* thePtr{};

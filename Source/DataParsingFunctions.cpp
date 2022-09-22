@@ -3906,9 +3906,12 @@ namespace DiscordCoreAPI {
 
 		theData.quality = getString(jsonObjectData, "quality");
 
-		theData.signatureCipher = getString(jsonObjectData, "signatureCipher");
+		std::string theString = getString(jsonObjectData, "signatureCipher");
+		if (theString == "") {
+			theString = getString(jsonObjectData, "cipher");
+		}
 
-		theData.signatureCipher = getString(jsonObjectData, "cipher");
+		theData.signatureCipher = theString;
 
 		auto ampersandSpFind = theData.signatureCipher.find("&sp");
 		if (ampersandSpFind != std::string::npos) {

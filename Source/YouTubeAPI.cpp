@@ -192,6 +192,7 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(DiscordCoreAPI::Song& newSong) {
 		newSong.firstDownloadUrl = this->baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
 		newSong = this->constructDownloadInfo(newSong, 0);
+		std::cout << "THE FIRST DOWNLOAD URL: " << newSong.firstDownloadUrl << std::endl;
 		return newSong;
 	}
 
@@ -341,6 +342,7 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						std::string streamBuffer = static_cast<std::string>(streamSocket->getInputBuffer(0, streamSocket->inputBuffer.getUsedSpace()));
+						std::cout << "THE STREAM BUFFER: " << streamBuffer << std::endl;
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
 							std::string submissionString{};
