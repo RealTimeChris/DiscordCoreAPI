@@ -30,82 +30,76 @@ namespace DiscordCoreAPI {
 
 	EditChannelPermissionOverwritesData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["allow"] = this->allow;
-		theData["deny"] = this->deny;
-		theData["type"] = this->type;
-		*/
+		theData.appendStructElement("allow", this->allow);
+		theData.appendStructElement("deny", this->deny);
+		theData.appendStructElement("type", this->type);
 		return theData;
 	}
 
 	CreateChannelInviteData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		if (this->targetUserId != 0) {
-			theData["target_application_id"] = this->targetApplicationId;
-			theData["target_user_id"] = std::to_string(this->targetUserId);
-			theData["target_type"] = this->targetType;
+			theData.appendStructElement("target_application_id", this->targetApplicationId);
+			auto theString = std::to_string(this->targetUserId);
+			theData.appendStructElement("target_user_id", theString);
+			theData.appendStructElement("target_type", this->targetType);
 		}
-		theData["temporary"] = this->temporary;
-		theData["max_uses"] = this->maxUses;
-		theData["max_age"] = this->maxAge;
-		theData["unique"] = this->unique;
-		*/
+		theData.appendStructElement("temporary", this->temporary);
+		theData.appendStructElement("max_uses", this->maxUses);
+		theData.appendStructElement("max_age", this->maxAge);
+		theData.appendStructElement("unique", this->unique);
 		return theData;
 	}
 
 	FollowNewsChannelData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		std::string theString = std::to_string(this->targetChannelId);
-		theData["webhook_channel_id"] = theString;
-		*/
+		theData.appendStructElement("webhook_channel_id", theString);
 		return theData;
 	}
 
 	CreateGuildChannelData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		if (this->type == DiscordCoreAPI::ChannelType::Guild_Voice || this->type == DiscordCoreAPI::ChannelType::Guild_Stage_Voice) {
-			theData["user_limit"] = this->userLimit;
-			theData["bitrate"] = this->bitrate;
+			theData.appendStructElement("user_limit", this->userLimit);
+			theData.appendStructElement("bitrate", this->bitrate);
 		}
-		nlohmann::json overwrites{};
+		theData.addNewArray("permission_overwrites");
 		for (auto& value: this->permissionOverwrites) {
-			nlohmann::json newData{};
-			newData["allow"] = value.allow;
-			newData["deny"] = value.deny;
-			newData["type"] = value.type;
-			newData["id"] = std::to_string(value.id);
-			overwrites.emplace_back(newData);
+			JsonSerializer newData{};
+			theData.appendStructElement("allow", value.allow);
+			theData.appendStructElement("deny", value.deny);
+			theData.appendStructElement("type", value.type);
+			auto theString = std::to_string(value.id);
+			theData.appendStructElement("id", theString);
+			theData.appendArrayElement(newData);
 		}
-		theData["default_auto_archive_duration"] = this->defaultAutoArchiveDuration;
-		theData["rate_limit_per_user"] = this->rateLimitPerUser;
-		theData["permission_overwrites"] = overwrites;
-		theData["parent_id"] = std::to_string(this->parentId);
-		theData["position"] = this->position;
-		theData["topic"] = this->topic;
-		theData["name"] = this->name;
-		theData["nsfw"] = this->nsfw;
-		theData["type"] = this->type;
-		*/
+		theData.endArray();
+		theData.appendStructElement("default_auto_archive_duration", this->defaultAutoArchiveDuration);
+		theData.appendStructElement("rate_limit_per_user", this->rateLimitPerUser);
+		auto theString = std::to_string(this->parentId);
+		theData.appendStructElement("parent_id", theString);
+		theData.appendStructElement("position", this->position);
+		theData.appendStructElement("topic", this->topic);
+		theData.appendStructElement("name", this->name);
+		theData.appendStructElement("nsfw", this->nsfw);
+		theData.appendStructElement("type", this->type);
 		return theData;
 	}
 
 	ModifyGuildChannelPositionsData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		for (auto& value: this->modifyChannelData) {
-			nlohmann::json dataNew{};
-			dataNew["lock_permissions"] = value.lockPermissions;
+			JsonSerializer dataNew{};
+			dataNew.appendStructElement("lock_permissions", value.lockPermissions);
 			if (value.parentId != 0) {
-				dataNew["parent_id"] = value.parentId;
+				dataNew.appendStructElement("parent_id", value.parentId);
 			}
-			dataNew["position"] = value.position;
-			dataNew["id"] = std::to_string(value.id);
-			data.emplace_back(dataNew);
+			dataNew.appendStructElement("position", value.position);
+			auto theString = std::to_string(value.id);
+			dataNew.appendStructElement("id", theString);
+			theData.appendArrayElement(dataNew);
 		}
-		*/
 		return theData;
 	}
 
@@ -176,30 +170,31 @@ namespace DiscordCoreAPI {
 
 	ModifyChannelData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
+		theData.addNewArray("permission_overwrites");
 		for (auto& value: this->channelData.permissionOverwrites) {
-			nlohmann::json newData{};
-			newData["allow"] = value.allow;
-			newData["deny"] = value.deny;
-			newData["type"] = value.type;
-			newData["id"] = value.id;
-			permOws.emplace_back(newData);
+			JsonSerializer newData{};
+			newData.appendStructElement("allow", value.allow);
+			newData.appendStructElement("deny", value.deny);
+			newData.appendStructElement("type", value.type);
+			newData.appendStructElement("id", value.id);
+			theData.appendArrayElement(newData);
 		}
-		JsonSerializer theData{};
-		theData["default_auto_archive_duration"] = this->channelData.defaultAutoArchiveDuration;
-		theData["video_quality_mode"] = this->channelData.videoQualityMode;
-		theData["rate_limit_per_user"] = this->channelData.rateLimitPerUser;
-		theData["user_limit"] = this->channelData.userLimit;
-		theData["rtc_region"] = std::string{ this->channelData.rtcRgion };
-		theData["parent_id"] = std::string{ this->channelData.parentId };
-		theData["position"] = this->channelData.position;
-		theData["bitrate"] = this->channelData.bitrate;
-		theData["topic"] = std::string{ this->channelData.topic };
-		theData["nsfw"] = this->channelData.nsfw;
-		theData["name"] = std::string{ this->channelData.name };
-		theData["type"] = this->channelData.type;
-		theData["permission_overwrites"] = permOws;
-		*/
+		theData.appendStructElement("default_auto_archive_duration", this->channelData.defaultAutoArchiveDuration);
+		theData.appendStructElement("video_quality_mode", this->channelData.videoQualityMode);
+		theData.appendStructElement("rate_limit_per_user", this->channelData.rateLimitPerUser);
+		theData.appendStructElement("user_limit", this->channelData.userLimit);
+		auto theString = std::string{ this->channelData.rtcRgion };
+		theData.appendStructElement("rtc_region", theString);
+		theString = std::string{ this->channelData.parentId };
+		theData.appendStructElement("parent_id", theString);
+		theData.appendStructElement("position", this->channelData.position);
+		theData.appendStructElement("bitrate", this->channelData.bitrate);
+		theString = std::string{ this->channelData.topic };
+		theData.appendStructElement("topic", theString);
+		theData.appendStructElement("nsfw", this->channelData.nsfw);
+		theString = std::string{ this->channelData.name };
+		theData.appendStructElement("name", theString);
+		theData.appendStructElement("type", this->channelData.type);
 		return theData;
 	}
 

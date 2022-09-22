@@ -84,10 +84,10 @@ namespace DiscordCoreInternal {
 			simdjson::ondemand::parser theParser{};
 			results.responseMessage.reserve(results.responseMessage.size() + simdjson::SIMDJSON_PADDING);
 			simdjson::ondemand::object theDocument = theParser.iterate(results.responseMessage).get_value().value().get_object().value();
-			simdjson::ondemand::object theUrl{};
+			std::string_view theUrl{};
 			auto theResult = theDocument["url"].get(theUrl);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				newSong.secondDownloadUrl = theUrl.raw_json().take_value().data();
+				newSong.secondDownloadUrl = static_cast<std::string>(theUrl);
 			}
 			if (newSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
 				HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };
