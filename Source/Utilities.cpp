@@ -1490,8 +1490,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case 0x22: {
-					theStringNew += '\\';
-					theStringNew += '"';
+					//theStringNew += '\\';
 					break;
 				}
 				case 0x5C: {
