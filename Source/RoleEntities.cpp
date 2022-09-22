@@ -52,11 +52,12 @@ namespace DiscordCoreAPI {
 		JsonSerializer theData{};
 		theData.addNewArray("");
 		for (auto& value: this->rolePositions) {
-			JsonSerializer theData{};
-			theData.appendStructElement("position", value.rolePosition);
-			theData.appendStructElement("id", std::to_string(value.roleId));
-			dataArray.emplace_back(data);
+			JsonSerializer newData{};
+			newData.appendStructElement("position", value.rolePosition);
+			newData.appendStructElement("id", std::to_string(value.roleId));
+			theData.appendArrayElement(newData);
 		}
+		theData.endArray();
 		return theData;
 	}
 
