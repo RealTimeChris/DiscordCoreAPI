@@ -33,94 +33,97 @@ namespace DiscordCoreAPI {
 
 	CreateGlobalApplicationCommandData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		if (this->defaultMemberPermissions != 0) {
-			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
+			theData.appendStructElement("default_member_permissions", static_cast<uint64_t>(this->defaultMemberPermissions));
 		}
-		theData["description_localizations"] = this->descriptionLocalizations;
-		theData["name_localizations"] = this->nameLocalizations;
-		theData["dm_permission"] = this->dmPermission;
-		theData["description"] = this->description;
-		theData["name"] = this->name;
-		theData["type"] = this->type;
+		theData.appendStructElement("description_localizations", this->descriptionLocalizations);
+		theData.appendStructElement("name_localizations", this->nameLocalizations);
+		theData.appendStructElement("dm_permission", this->dmPermission);
+		theData.appendStructElement("description", this->description);
+		theData.appendStructElement("name", this->name);
+		theData.appendStructElement("type", this->type);
 		if (this->options.size() > 0) {
+			theData.addNewArray("options");
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData["options"].emplace_back(nlohmann::json(this->options[x]));
+				theData.appendArrayElement(this->options[x]);
 			}
-		}*/
+			theData.endArray();
+		}
 		return theData;
 	}
 
 	EditGlobalApplicationCommandData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		if (this->defaultMemberPermissions != 0) {
-			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
+			theData.appendStructElement("default_member_permissions", static_cast<uint64_t>(this->defaultMemberPermissions));
 		}
-		theData["description_localizations"] = this->descriptionLocalizations;
-		theData["name_localizations"] = this->nameLocalizations;
-		theData["dm_permission"] = this->dmPermission;
-		theData["description"] = this->description;
-		theData["name"] = this->name;
+		theData.appendStructElement("description_localizations", this->descriptionLocalizations);
+		theData.appendStructElement("name_localizations", this->nameLocalizations);
+		theData.appendStructElement("dm_permission", this->dmPermission);
+		theData.appendStructElement("description", this->description);
+		theData.appendStructElement("name", this->name);
 		if (this->options.size() > 0) {
+			theData.addNewArray("options");
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData["options"].emplace_back(nlohmann::json{ this->options[x] });
+				theData.appendArrayElement(this->options[x]);
 			}
-		}*/
+			theData.endArray();
+		}
 		return theData;
 	}
 
 	CreateGuildApplicationCommandData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		if (this->defaultMemberPermissions != 0) {
-			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
+			theData.appendStructElement("default_member_permissions", static_cast<uint64_t>(this->defaultMemberPermissions));
 		}
-		theData["description_localizations"] = this->descriptionLocalizations;
-		theData["name_localizations"] = this->nameLocalizations;
-		theData["dm_permission"] = this->dmPermission;
-		theData["description"] = this->description;
-		theData["name"] = this->name;
-		theData["type"] = this->type;
+		theData.appendStructElement("description_localizations", this->descriptionLocalizations);
+		theData.appendStructElement("name_localizations", this->nameLocalizations);
+		theData.appendStructElement("dm_permission", this->dmPermission);
+		theData.appendStructElement("description", this->description);
+		theData.appendStructElement("name", this->name);
+		theData.appendStructElement("type", this->type);
 		if (this->options.size() > 0) {
+			theData.addNewArray("options");
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData["options"].emplace_back(nlohmann::json{ this->options[x] });
+				theData.appendArrayElement(this->options[x]);
 			}
-			theData["options"] = nlohmann::json{};
-		}*/
+			theData.endArray();
+		}
 		return theData;
 	}
 
 	EditGuildApplicationCommandData::operator JsonSerializer() {
-		JsonSerializer theData{}; /*
+		JsonSerializer theData{};
 		if (this->defaultMemberPermissions != 0) {
-			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
+			theData.appendStructElement("default_member_permissions", static_cast<uint64_t>(this->defaultMemberPermissions));
 		}
-		theData["description_localizations"] = this->descriptionLocalizations;
-		theData["name_localizations"] = this->nameLocalizations;
-		theData["dm_permission"] = this->dmPermission;
-		theData["description"] = this->description;
-		theData["name"] = this->name;
+		theData.appendStructElement("description_localizations", this->descriptionLocalizations);
+		theData.appendStructElement("name_localizations", this->nameLocalizations);
+		theData.appendStructElement("dm_permission", this->dmPermission);
+		theData.appendStructElement("description", this->description);
+		theData.appendStructElement("name", this->name);
 		if (this->options.size() > 0) {
+			theData.addNewArray("options");
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData["options"].emplace_back(nlohmann::json{ this->options[x] });
+				theData.appendArrayElement(this->options[x]);
 			}
-			theData["options"] = nlohmann::json{};
+			theData.endArray();
 		}
-		*/
 		return theData;
 	}
 
 	EditGuildApplicationCommandPermissionsData::operator JsonSerializer() {
-		JsonSerializer theData{}; /*
-		/*
+		JsonSerializer theData{};
+		theData.addNewArray("");
 		for (auto& value: this->permissions) {
-			nlohmann::json newData{};
-			newData["permission"] = value.permission;
-			newData["type"] = value.type;
-			newData["id"] = std::to_string(value.id);
-			newDataArray.emplace_back(newData);
-		}*/
+			JsonSerializer newData{};
+			newData.appendStructElement("permission", value.permission);
+			newData.appendStructElement("type", static_cast<uint8_t>(value.type));
+			newData.appendStructElement("id", std::to_string(value.id));
+			theData.appendArrayElement(newData);
+		}
+		theData.endArray();
 		return theData;
 	}
 

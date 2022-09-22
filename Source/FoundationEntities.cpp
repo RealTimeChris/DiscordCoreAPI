@@ -45,11 +45,9 @@ namespace DiscordCoreInternal {
 		for (auto& value: this->activities) {
 			DiscordCoreAPI::JsonSerializer theDataNew{};
 			if (value.url != "") {
-				std::string theString = std::string{ value.url };
-				theDataNew.appendStructElement("url", theString);
+				theDataNew.appendStructElement("url", std::string{ value.url });
 			}
-			auto theString = std::string{ value.name };
-			theDataNew.appendStructElement("name", theString);
+			theDataNew.appendStructElement("name", std::string{ value.name });
 			theDataNew.appendStructElement("type", static_cast<uint8_t>(value.type));
 			theData.appendArrayElement(theDataNew);
 		}
@@ -83,13 +81,10 @@ namespace DiscordCoreInternal {
 		theSerializer.addNewArray("activities");
 		for (auto& value: this->presence.activities) {
 			DiscordCoreAPI::JsonSerializer theSerializer02{};
-			std::string theString{};
 			if (value.url != "") {
-				theString = value.url;
-				theSerializer02.appendStructElement("url", theString);
+				theSerializer02.appendStructElement("url", std::string{ value.url });
 			}
-			theString = std::string{ value.name };
-			theSerializer02.appendStructElement("name", theString);
+			theSerializer02.appendStructElement("name", std::string{ value.name });
 			theSerializer02.appendStructElement("type", uint32_t{ static_cast<uint32_t>(value.type) });
 			theSerializer.appendArrayElement(theSerializer02);
 		}
@@ -239,10 +234,8 @@ namespace DiscordCoreAPI {
 	EmbedFieldData::operator JsonSerializer() {
 		JsonSerializer theData{};
 		theData.appendStructElement("inline", this->Inline);
-		auto theString = escapeCharacters(this->value);
-		theData.appendStructElement("value", theString);
-		theString = escapeCharacters(this->name);
-		theData.appendStructElement("name", theString);
+		theData.appendStructElement("value", escapeCharacters(this->value));
+		theData.appendStructElement("name", escapeCharacters(this->name));
 		return theData;
 	}
 
@@ -261,8 +254,7 @@ namespace DiscordCoreAPI {
 		theData.addNewStructure("footer");
 		theData.appendStructElement("proxy_icon_url", this->footer.proxyIconUrl);
 		theData.appendStructElement("icon_url", this->footer.iconUrl);
-		auto theString = escapeCharacters(this->footer.text);
-		theData.appendStructElement("text", theString);
+		theData.appendStructElement("text", escapeCharacters(this->footer.text));
 		theData.endStructure();
 		theData.addNewStructure("author");
 		theData.appendStructElement("proxy_icon_url", this->author.proxyIconUrl);
@@ -292,11 +284,9 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("name", this->provider.name);
 		theData.appendStructElement("url", this->provider.url);
 		theData.endStructure();
-		theString = escapeCharacters(this->description);
-		theData.appendStructElement("description", theString);
+		theData.appendStructElement("description", escapeCharacters(this->description));
 		theData.appendStructElement("timestamp", this->timestamp);
-		theString = escapeCharacters(this->title);
-		theData.appendStructElement("title", theString);
+		theData.appendStructElement("title", escapeCharacters(this->title));
 		theData.appendStructElement("color", realColorVal);
 		theData.appendStructElement("type", this->type);
 		theData.appendStructElement("url", this->url);
@@ -373,15 +363,12 @@ namespace DiscordCoreAPI {
 
 	UpdateVoiceStateData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		std::string theString{};
 		theData.appendStructElement("op", static_cast<uint32_t>(4));
 		theData.addNewStructure("d");
-		theString = std::to_string(this->channelId);
-		theData.appendStructElement("channel_id", theString);
+		theData.appendStructElement("channel_id", std::to_string(this->channelId));
 		theData.appendStructElement("self_deaf", this->selfDeaf);
 		theData.appendStructElement("self_mute", this->selfMute);
-		theString = std::to_string(this->guildId);
-		theData.appendStructElement("guild_id", theString);
+		theData.appendStructElement("guild_id", std::to_string(this->guildId));
 		theData.endStructure();
 		return theData;
 	}
@@ -541,8 +528,7 @@ namespace DiscordCoreAPI {
 					JsonSerializer component{};
 					component.addNewStructure("emoji");
 					component.appendStructElement("animated", valueNew.emoji.animated);
-					std::string theString{ valueNew.emoji.name };
-					component.appendStructElement("name", theString);
+					component.appendStructElement("name", std::string{ valueNew.emoji.name });
 					if (valueNew.emoji.id != 0) {
 						component.appendStructElement("id", valueNew.emoji.id);
 					}
@@ -561,8 +547,7 @@ namespace DiscordCoreAPI {
 						JsonSerializer option{};
 						option.addNewStructure("emoji");
 						if (value01.emoji.name != "") {
-							std::string theString = value01.emoji.name;
-							option.appendStructElement("name", theString);
+							option.appendStructElement("name", std::string{ value01.emoji.name });
 							option.appendStructElement("animated", value01.emoji.animated);
 						}
 						if (value01.emoji.id != 0) {

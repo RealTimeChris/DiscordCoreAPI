@@ -70,8 +70,7 @@ namespace DiscordCoreAPI {
 	JsonParseError::JsonParseError(int32_t theCode) : std::runtime_error(theErrors[theCode]){};
 
 	uint64_t getId(simdjson::ondemand::value  jsonObjectData, const char* theKey) {
-		std::string theString = getString(jsonObjectData, theKey); 
-		return DiscordCoreAPI::strtoull(theString);
+		return DiscordCoreAPI::strtoull(getString(jsonObjectData, theKey));
 	}
 
 	float getFloat(simdjson::ondemand::value jsonData, const char* theKey) {
@@ -313,9 +312,8 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.mode.clear();
 			for (auto value: theArray) {
-				std::string theString{ value.get_string().take_value() };
-				if (theString == "xsalsa20_poly1305") {
-					theData.mode = theString;
+				if (std::string{ value.get_string().take_value() } == "xsalsa20_poly1305") {
+					theData.mode = std::string{ value.get_string().take_value() };
 				}
 			}
 		}
@@ -507,8 +505,7 @@ namespace DiscordCoreAPI {
 			if (theResult == simdjson::error_code::SUCCESS) {
 				theData.roles.clear();
 				for (auto value: theArray) {
-					std::string theString{ value.get_string().take_value().data() };
-					theData.roles.emplace_back(stoull(theString));
+					theData.roles.emplace_back(stoull(std::string{ value.get_string().take_value().data() }));
 				}
 			}
 		} catch (...) {
@@ -550,8 +547,7 @@ namespace DiscordCoreAPI {
 			if (theResult == simdjson::error_code::SUCCESS) {
 				theData.roles.clear();
 				for (auto value: theArray) {
-					std::string theString{ value.get_string().take_value().data() };
-					theData.roles.emplace_back(stoull(theString));
+					theData.roles.emplace_back(stoull(std::string{ value.get_string().take_value().data() }));
 				}
 			}
 		} catch (...) {
@@ -968,8 +964,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.features.clear();
 			for (auto value: theArray) {
-				std::string theString{ value.get_string().take_value().data() };
-				theData.features.emplace_back(theString);
+				theData.features.emplace_back(std::string{ value.get_string().take_value().data() });
 			}
 		}
 
@@ -2792,8 +2787,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.exemptRoles.clear();
 			for (auto value: theArray) {
-				std::string theString{ value.get_string().take_value().data() };
-				theData.exemptRoles.emplace_back(DiscordCoreAPI::strtoull(theString));
+				theData.exemptRoles.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value().data() }));
 			}
 		}
 
@@ -2801,8 +2795,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.exemptChannels.clear();
 			for (auto value: theArray) {
-				std::string theString{ value.get_string().take_value().data() };
-				theData.exemptChannels.emplace_back(DiscordCoreAPI::strtoull(theString));
+				theData.exemptChannels.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value().data() }));
 			}
 		}
 
@@ -3524,8 +3517,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.scopes.clear();
 			for (auto value: theArray) {
-				std::string theString{ value.get_string().take_value().data() };
-				theData.scopes.emplace_back(theString);
+				theData.scopes.emplace_back(std::string{ value.get_string().take_value().data() });
 			}
 		}
 

@@ -31,36 +31,28 @@ namespace DiscordCoreAPI {
 
 	AddGuildMemberData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["access_token"] = this->accessToken;
-		theData["roles"] = this->roles;
-		theData["deaf"] = this->deaf;
-		theData["mute"] = this->mute;
-		theData["nick"] = this->nick;
-		*/
+		theData.appendStructElement("access_token", this->accessToken);
+		theData.appendStructElement("roles", this->roles);
+		theData.appendStructElement("deaf", this->deaf);
+		theData.appendStructElement("mute", this->mute);
+		theData.appendStructElement("nick", this->nick);
 		return theData;
 	}
 
 	ModifyGuildMemberData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["nick"] = this->nick;
-		theData["communication_disabled_until"] = std::string(this->communicationDisabledUntil);
-		if (this->roleIds.size() == 0) {
-			theData["roles"] = nullptr;
-		} else {
-			nlohmann::json roleIdArray{};
-			for (auto& value: this->roleIds) {
-				roleIdArray.emplace_back(value);
-			}
-			theData["roles"] = roleIdArray;
+		theData.appendStructElement("nick", this->nick);
+		theData.appendStructElement("communication_disabled_until", std::string(this->communicationDisabledUntil));
+		theData.addNewArray("roles");
+		for (auto& value: this->roleIds) {
+			theData.appendArrayElement(value);
 		}
+		theData.endArray();
 		if (this->newVoiceChannelId != 0) {
-			theData["channel_id"] = std::to_string(this->newVoiceChannelId);
-			theData["mute"] = this->mute;
-			theData["deaf"] = this->deaf;
+			theData.appendStructElement("channel_id", std::to_string(this->newVoiceChannelId));
+			theData.appendStructElement("mute", this->mute);
+			theData.appendStructElement("deaf", this->deaf);
 		}
-		*/
 		return theData;
 	}
 

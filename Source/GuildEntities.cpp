@@ -35,85 +35,83 @@
 namespace DiscordCoreAPI {
 	
 	CreateGuildData::operator JsonSerializer() {
-		JsonSerializer theData{}; /*
-		theData["default_message_notifications"] = this->defaultMessageNotifications;
-		theData["explicit_content_filter"] = this->explicitContentFilter;
-		theData["system_channel_flags"] = this->systemChannelFlags;
-		theData["verification_level"] = this->verificationLevel;
-		theData["afk_timeout"] = this->afkTimeout;
-		theData["region"] = this->region;
-		theData["name"] = this->name;
-		theData["icon"] = this->icon;
+		JsonSerializer theData{}; 
+		theData.appendStructElement("default_message_notifications", this->defaultMessageNotifications);
+		theData.appendStructElement("explicit_content_filter", this->explicitContentFilter);
+		theData.appendStructElement("system_channel_flags", this->systemChannelFlags);
+		theData.appendStructElement("verification_level", this->verificationLevel);
+		theData.appendStructElement("afk_timeout", this->afkTimeout);
+		theData.appendStructElement("region", this->region);
+		theData.appendStructElement("name", this->name);
+		theData.appendStructElement("icon", this->icon);
+		theData.addNewArray("channels");
 		for (auto& value: this->channels) {
-			nlohmann::json newData{};
-			newData["parent_id"] = std::to_string(value.parentId);
-			newData["name"] = std::string{ value.name };
-			newData["id"] = value.id;
-			newData["type"] = value.type;
-			theData["channels"].emplace_back(newData);
+			JsonSerializer newData{};
+			newData.appendStructElement("parent_id", std::to_string(value.parentId));
+			newData.appendStructElement("name", std::string{ value.name });
+			newData.appendStructElement("id", value.id);
+			newData.appendStructElement("type", value.type);
+			theData.appendArrayElement(newData);
 		}
 		for (auto& value: this->roles) {
-			nlohmann::json newData{};
-			newData["permissions"] = static_cast<uint64_t>(value.permissions);
-			newData["tags"]["premium_subscriber"] = value.tags.premiumSubscriber;
-			newData["tags"]["integration_id"] = value.tags.integrationId;
-			newData["mentionable"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Mentionable);
-			newData["tags"]["bot_id"] = value.tags.botId;
-			newData["managed"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Managed);
-			newData["position"] = value.position;
-			newData["hoist"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
-			newData["color"] = value.color.getIntColorValue();
-			newData["name"] = std::string{ value.name };
-			theData["roles"].emplace_back(newData);
+			JsonSerializer newData{};
+			newData.appendStructElement("permissions", static_cast<uint64_t>(value.permissions));
+			newData.addNewStructure("tags");
+			newData.appendStructElement("premium_subscriber", value.tags.premiumSubscriber);
+			newData.appendStructElement("integration_id", value.tags.integrationId);
+			newData.endStructure();
+			newData.appendStructElement("mentionable", DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Mentionable));
+			newData.addNewStructure("tags");
+			newData.appendStructElement("bot_id", value.tags.botId);
+			newData.endStructure();
+			newData.appendStructElement("managed", DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Managed));
+			newData.appendStructElement("position", value.position);
+			newData.appendStructElement("hoist", DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist));
+			newData.appendStructElement("color", value.color.getIntColorValue());
+			newData.appendStructElement("name", std::string{ value.name });
+			theData.appendArrayElement(newData);
 		}
 		if (this->systemChannelId != 0) {
-			theData["system_channel_id"] = this->systemChannelId;
+			theData.appendStructElement("system_channel_id", this->systemChannelId);
 		}
 		if (this->afkChannelId != 0) {
-			theData["afk_channel_id"] = this->afkChannelId;
+			theData.appendStructElement("afk_channel_id", this->afkChannelId);
 		}
-		*/
 		return theData;
 	}
 
 	CreateGuildBanData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		if (this->deleteMessageDays != 0) {
-			theData["delete_message_days"] = this->deleteMessageDays;
+			theData.appendStructElement("delete_message_days", this->deleteMessageDays);
 		}
-		*/
 		return theData;
 	}
 
 	BeginGuildPruneData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["compute_prune_count"] = this->computePruneCount;
-		theData["include_roles"] = this->includeRoles;
-		theData["days"] = this->days;
-		*/
+		theData.appendStructElement("compute_prune_count", this->computePruneCount);
+		theData.appendStructElement("include_roles", this->includeRoles);
+		theData.appendStructElement("days", this->days);
 		return theData;
 	}
 
 	ModifyGuildWelcomeScreenData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
+		theData.addNewArray("welcome_channels");
 		for (auto& value: this->welcomeChannels) {
-			nlohmann::json newData{};
-			newData["description"] = value.description;
-			newData["channel_id"] = value.channelId;
-			newData["emoji_name"] = value.emojiName;
+			JsonSerializer newData{};
+			newData.appendStructElement("description", value.description);
+			newData.appendStructElement("channel_id", value.channelId);
+			newData.appendStructElement("emoji_name", value.emojiName);
 			if (value.emojiId != 0) {
-				newData["emoji_id"] = std::to_string(value.emojiId);
+				newData.appendStructElement("emoji_id", std::to_string(value.emojiId));
 			}
-			channelsArray.emplace_back(newData);
+			theData.appendArrayElement(newData);
 		}
-		JsonSerializer theData{};
-		theData["description"] = this->description;
-		theData["welcome_channels"] = channelsArray;
-		theData["enabled"] = this->enabled;
-		*/
+		theData.endArray();
+		theData.appendStructElement("description", this->description);
+		theData.appendStructElement("enabled", this->enabled);
 		return theData;
 	}
 	
@@ -362,36 +360,33 @@ namespace DiscordCoreAPI {
 	
 	ModifyGuildData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["premium_progress_bar_enabled"] = this->premiumProgressBarEnabled;
-		theData["default_message_notifications"] = this->defaultMessageNotifications;
-		theData["explicit_content_filter"] = this->explicitContentFilter;
-		theData["system_channel_flags"] = this->systemChannelFlags;
-		theData["verification_level"] = this->verificationLevel;
-		theData["discovery_splash"] = this->discoverySplash;
-		theData["preferred_locale"] = std::string{ this->preferredLocale };
-		theData["rules_channel_id"] = std::to_string(this->rulesChannelId);
-		theData["description"] = std::string{ this->description };
-		theData["afk_timeout"] = this->afkTimeout;
-		theData["features"] = this->features;
-		theData["splash"] = this->splash;
-		theData["banner"] = this->banner;
-		theData["name"] = std::string{ this->name };
-		theData["icon"] = this->icon;
+		theData.appendStructElement("premium_progress_bar_enabled", this->premiumProgressBarEnabled);
+		theData.appendStructElement("default_message_notifications", this->defaultMessageNotifications);
+		theData.appendStructElement("explicit_content_filter", this->explicitContentFilter);
+		theData.appendStructElement("system_channel_flags", this->systemChannelFlags);
+		theData.appendStructElement("verification_level", this->verificationLevel);
+		theData.appendStructElement("discovery_splash", this->discoverySplash);
+		theData.appendStructElement("preferred_locale", std::string{ this->preferredLocale });
+		theData.appendStructElement("rules_channel_id", std::to_string(this->rulesChannelId));
+		theData.appendStructElement("description", std::string{ this->description });
+		theData.appendStructElement("afk_timeout", this->afkTimeout);
+		theData.appendStructElement("features", this->features);
+		theData.appendStructElement("splash", this->splash);
+		theData.appendStructElement("banner", this->banner);
+		theData.appendStructElement("name", std::string{ this->name });
+		theData.appendStructElement("icon", this->icon);
 		if (this->publicUpdatesChannelId != 0) {
-			theData["public_updates_channel_id"] = std::to_string(this->publicUpdatesChannelId);
+			theData.appendStructElement("public_updates_channel_id", std::to_string(this->publicUpdatesChannelId));
 		}
 		if (this->systemChannelId != 0) {
-			theData["system_channel_id"] = std::to_string(this->systemChannelId);
+			theData.appendStructElement("system_channel_id", std::to_string(this->systemChannelId));
 		}
 		if (this->afkChannelId != 0) {
-			theData["afk_channel_id"] = std::to_string(this->afkChannelId);
+			theData.appendStructElement("afk_channel_id", std::to_string(this->afkChannelId));
 		}
 		if (this->ownerId != 0) {
-			theData["owner_id"] = std::to_string(this->ownerId);
+			theData.appendStructElement("owner_id", std::to_string(this->ownerId));
 		}
-		return theData;
-		*/
 		return theData;
 	}
 	
@@ -691,8 +686,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/widget";
 		JsonSerializer responseData{};
-		auto theString = std::to_string(dataPackage.widgetData.channelId);
-		responseData.appendStructElement("channel_id", theString);
+		responseData.appendStructElement("channel_id", std::to_string(dataPackage.widgetData.channelId));
 		responseData.appendStructElement("enabled", dataPackage.widgetData.enabled);
 		workload.content = responseData.getString();
 		workload.callStack = "Guilds::modifyGuildWidgetAsync()";

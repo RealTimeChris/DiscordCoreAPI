@@ -32,28 +32,24 @@ namespace DiscordCoreAPI {
 
 	CreateGuildEmojiData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		nlohmann::json rolesArray{};
+		theData.addNewArray("roles");
 		for (auto& value: this->roles) {
-			rolesArray.emplace_back(value);
+			theData.appendArrayElement(value);
 		}
-		theData["image"] = this->imageDataFinal;
-		theData["name"] = this->name;
-		theData["roles"] = rolesArray;
-		*/
+		theData.endArray();
+		theData.appendStructElement("image", this->imageDataFinal);
+		theData.appendStructElement("name", this->name);
 		return theData;
 	}
 
 	ModifyGuildEmojiData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		nlohmann::json rolesArray{};
+		theData.addNewArray("roles");
 		for (auto& value: this->roles) {
-			rolesArray.emplace_back(value);
+			theData.appendArrayElement(value);
 		}
-		theData["name"] = this->name;
-		theData["roles"] = rolesArray;
-		*/
+		theData.endArray();
+		theData.appendStructElement("name", this->name);
 		return theData;
 	}
 

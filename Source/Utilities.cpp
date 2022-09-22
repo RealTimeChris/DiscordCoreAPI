@@ -86,6 +86,12 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
+	JsonRecord& JsonRecord::operator=(std::string&& theData) noexcept {
+		this->theEvent = JsonParseEvent::String;
+		this->theValue = std::move(theData);
+		return *this;
+	}
+
 	JsonRecord& JsonRecord::operator=(std::string& theData) noexcept {
 		this->theEvent = JsonParseEvent::String;
 		this->theValue = theData;
@@ -170,6 +176,11 @@ namespace DiscordCoreAPI {
 	JsonRecord::JsonRecord(const char* theData) noexcept {
 		this->theEvent = JsonParseEvent::String;
 		this->theValue = theData;
+	}
+
+	JsonRecord::JsonRecord(std::string&& theData) noexcept {
+		this->theEvent = JsonParseEvent::String;
+		this->theValue = std::move(theData);
 	}
 
 	JsonRecord::JsonRecord(std::string& theData) noexcept {

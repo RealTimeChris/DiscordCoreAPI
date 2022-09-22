@@ -29,58 +29,68 @@ namespace DiscordCoreAPI {
 
 	CreateAutoModerationRuleData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["actions"];
+		theData.addNewArray("actions");
 		for (auto& value: this->actions) {
-			nlohmann::json dataNew{};
-			dataNew["metadata"]["channel_id"] = value.metadata.channelId;
-			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
-			dataNew["type"] = value.type;
-			theData["actions"].emplace_back(dataNew);
+			JsonSerializer dataNew{};
+			dataNew.addNewStructure("metadata");
+			dataNew.appendStructElement("channel_id", std::to_string(value.metadata.channelId));
+			dataNew.appendStructElement("duration_seconds", value.metadata.durationSeconds);
+			dataNew.endStructure();
+			dataNew.appendStructElement("type", value.type);
+			theData.appendArrayElement(dataNew);
 		}
-		theData["enabled"] = this->enabled;
-		theData["event_type"] = this->eventType;
-		theData["exempt_channels"];
+		theData.endArray();
+		theData.appendStructElement("enabled", this->enabled);
+		theData.appendStructElement("event_type", this->eventType);
+		theData.addNewArray("exempt_channels");
 		for (auto& value: this->exemptChannels) {
-			theData["exempt_channels"].emplace_back(value);
+			theData.appendArrayElement(value);
 		}
-		theData["exempt_roles"];
+		theData.endArray();
+		theData.addNewArray("exempt_roles");
 		for (auto& value: this->exemptRoles) {
-			theData["exempt_roles"].emplace_back(value);
+			theData.appendArrayElement(value);
 		}
-		theData["name"] = this->name;
-		theData["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
-		theData["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
-		theData["trigger_type"] = this->triggerType;
-		*/
+		theData.endArray();
+		theData.appendStructElement("name", this->name);
+		theData.addNewStructure("trigger_metadata");
+		theData.appendStructElement("keyword_filter", this->triggerMetadata.keywordFilter);
+		theData.appendStructElement("presets", this->triggerMetadata.presets);
+		theData.endStructure();
+		theData.appendStructElement("trigger_type", this->triggerType);
 		return theData;
 	}
 
 	ModifyAutoModerationRuleData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["actions"];
+		theData.addNewArray("actions");
 		for (auto& value: this->actions) {
-			nlohmann::json dataNew{};
-			dataNew["metadata"]["channel_id"] = value.metadata.channelId;
-			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
-			dataNew["type"] = value.type;
-			theData["actions"].emplace_back(dataNew);
+			JsonSerializer dataNew{};
+			dataNew.addNewStructure("metadata");
+			dataNew.appendStructElement("channel_id", std::to_string(value.metadata.channelId));
+			dataNew.appendStructElement("duration_seconds", value.metadata.durationSeconds);
+			dataNew.endStructure();
+			dataNew.appendStructElement("type", value.type);
+			theData.appendArrayElement(dataNew);
 		}
-		theData["enabled"] = this->enabled;
-		theData["event_type"] = this->eventType;
-		theData["exempt_channels"];
+		theData.endArray();
+		theData.appendStructElement("enabled", this->enabled);
+		theData.appendStructElement("event_type", this->eventType);
+		theData.addNewArray("exempt_channels");
 		for (auto& value: this->exemptChannels) {
-			theData["exempt_channels"].emplace_back(value);
+			theData.appendArrayElement(value);
 		}
-		theData["exempt_roles"];
+		theData.endArray();
+		theData.addNewArray("exempt_roles");
 		for (auto& value: this->exemptRoles) {
-			theData["exempt_roles"].emplace_back(value);
+			theData.appendArrayElement(value);
 		}
-		theData["name"] = this->name;
-		theData["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
-		theData["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
-		*/
+		theData.endArray();
+		theData.appendStructElement("name", this->name);
+		theData.addNewStructure("trigger_metadata");
+		theData.appendStructElement("keyword_filter", this->triggerMetadata.keywordFilter);
+		theData.appendStructElement("presets", this->triggerMetadata.presets);
+		theData.endStructure();
 		return theData;
 	}
 

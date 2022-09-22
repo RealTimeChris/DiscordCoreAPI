@@ -34,31 +34,29 @@ namespace DiscordCoreAPI {
 		stream << std::setbase(10) << roleColorInt;
 		std::string roleColorReal = stream.str();
 		JsonSerializer theData{};
-		/*
-		theData["permissions"] = this->permissions.getCurrentPermissionString();
-		theData["mentionable"] = this->mentionable;
-		theData["hoist"] = this->hoist;
-		theData["name"] = this->name;
-		theData["color"] = roleColorReal;
+		theData.appendStructElement("permissions", this->permissions.getCurrentPermissionString());
+		theData.appendStructElement("mentionable", this->mentionable);
+		theData.appendStructElement("hoist", this->hoist);
+		theData.appendStructElement("name", this->name);
+		theData.appendStructElement("color", roleColorReal);
 		if (this->icon.size() > 0) {
-			theData["icon"] = this->icon;
+			theData.appendStructElement("icon", this->icon);
 		}
 		if (this->unicodeEmoji.size() > 0) {
-			theData["unicode_emoji"] = this->unicodeEmoji;
-		}*/
+			theData.appendStructElement("unicode_emoji", this->unicodeEmoji);
+		}
 		return theData;
 	}
 
 	ModifyGuildRolePositionsData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
+		theData.addNewArray("");
 		for (auto& value: this->rolePositions) {
 			JsonSerializer theData{};
-			theData["position"] = value.rolePosition;
-			theData["id"] = std::to_string(value.roleId);
+			theData.appendStructElement("position", value.rolePosition);
+			theData.appendStructElement("id", std::to_string(value.roleId));
 			dataArray.emplace_back(data);
 		}
-		*/
 		return theData;
 	}
 

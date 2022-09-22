@@ -40,8 +40,7 @@ namespace DiscordCoreAPI {
 		JsonSerializer theData{};
 		if (this->targetUserId != 0) {
 			theData.appendStructElement("target_application_id", this->targetApplicationId);
-			auto theString = std::to_string(this->targetUserId);
-			theData.appendStructElement("target_user_id", theString);
+			theData.appendStructElement("target_user_id", std::to_string(this->targetUserId));
 			theData.appendStructElement("target_type", this->targetType);
 		}
 		theData.appendStructElement("temporary", this->temporary);
@@ -53,8 +52,7 @@ namespace DiscordCoreAPI {
 
 	FollowNewsChannelData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		std::string theString = std::to_string(this->targetChannelId);
-		theData.appendStructElement("webhook_channel_id", theString);
+		theData.appendStructElement("webhook_channel_id", std::to_string(this->targetChannelId));
 		return theData;
 	}
 
@@ -70,15 +68,13 @@ namespace DiscordCoreAPI {
 			theData.appendStructElement("allow", value.allow);
 			theData.appendStructElement("deny", value.deny);
 			theData.appendStructElement("type", value.type);
-			auto theString = std::to_string(value.id);
-			theData.appendStructElement("id", theString);
+			theData.appendStructElement("id", std::to_string(value.id));
 			theData.appendArrayElement(newData);
 		}
 		theData.endArray();
 		theData.appendStructElement("default_auto_archive_duration", this->defaultAutoArchiveDuration);
 		theData.appendStructElement("rate_limit_per_user", this->rateLimitPerUser);
-		auto theString = std::to_string(this->parentId);
-		theData.appendStructElement("parent_id", theString);
+		theData.appendStructElement("parent_id", std::to_string(this->parentId));
 		theData.appendStructElement("position", this->position);
 		theData.appendStructElement("topic", this->topic);
 		theData.appendStructElement("name", this->name);
@@ -96,8 +92,7 @@ namespace DiscordCoreAPI {
 				dataNew.appendStructElement("parent_id", value.parentId);
 			}
 			dataNew.appendStructElement("position", value.position);
-			auto theString = std::to_string(value.id);
-			dataNew.appendStructElement("id", theString);
+			dataNew.appendStructElement("id", std::to_string(value.id));
 			theData.appendArrayElement(dataNew);
 		}
 		return theData;
@@ -184,17 +179,13 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("video_quality_mode", this->channelData.videoQualityMode);
 		theData.appendStructElement("rate_limit_per_user", this->channelData.rateLimitPerUser);
 		theData.appendStructElement("user_limit", this->channelData.userLimit);
-		auto theString = std::string{ this->channelData.rtcRgion };
-		theData.appendStructElement("rtc_region", theString);
-		theString = std::string{ this->channelData.parentId };
-		theData.appendStructElement("parent_id", theString);
+		theData.appendStructElement("rtc_region", std::string{ this->channelData.rtcRgion });
+		theData.appendStructElement("parent_id", std::string{ this->channelData.parentId });
 		theData.appendStructElement("position", this->channelData.position);
 		theData.appendStructElement("bitrate", this->channelData.bitrate);
-		theString = std::string{ this->channelData.topic };
-		theData.appendStructElement("topic", theString);
+		theData.appendStructElement("topic", std::string{ this->channelData.topic });
 		theData.appendStructElement("nsfw", this->channelData.nsfw);
-		theString = std::string{ this->channelData.name };
-		theData.appendStructElement("name", theString);
+		theData.appendStructElement("name", std::string{ this->channelData.name });
 		theData.appendStructElement("type", this->channelData.type);
 		return theData;
 	}
