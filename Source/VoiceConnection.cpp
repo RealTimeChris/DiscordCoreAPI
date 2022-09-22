@@ -144,11 +144,11 @@ namespace DiscordCoreAPI {
 	}
 
 	UnboundedMessageBlock<AudioFrameData>& VoiceConnection::getAudioBuffer() noexcept {
-		return this->audioDataBuffer;
+		return this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer;
 	}
 
 	void VoiceConnection::sendSingleFrame(AudioFrameData& frameData) noexcept {
-		this->audioDataBuffer.send(std::move(frameData));
+		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.send(std::move(frameData));
 	}
 
 	bool VoiceConnection::onMessageReceived(std::string_view theData) noexcept {
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 						case 13: {
 							auto theUserId = stoull(getString(thePayload["d"], "user_id"));
 							for (auto& [key, value]: this->voiceUsers) {
-								if (theUserId == value.theUserId) {
+								if (theUserId == value.theUserId.operator const size_t()) {
 									theLock00.lock();
 									this->voiceUsers.erase(key);
 									break;
@@ -470,7 +470,7 @@ namespace DiscordCoreAPI {
 				}
 				case VoiceActiveState::Stopped: {
 					this->areWePlaying.store(false);
-					this->audioDataBuffer.clearContents();
+					this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.clearContents();
 					this->clearAudioData();
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Stopped) {
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
@@ -521,7 +521,7 @@ namespace DiscordCoreAPI {
 					}
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
-						this->audioDataBuffer.tryReceive(this->audioData);
+						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(this->audioData);
 						if (!this->streamSocket) {
 							while (this->theFrameQueue.size() > 0) {
 								this->theFrameQueue.pop_front();
@@ -546,7 +546,7 @@ namespace DiscordCoreAPI {
 							case AudioFrameType::Skip: {
 								SongCompletionEventData completionEventData{};
 								completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
-								if (this->currentGuildMemberId != 0) {
+								if (this->currentGuildMemberId.operator const size_t() != 0) {
 									completionEventData.guildMember =
 										GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = this->currentGuildMemberId, .guildId = this->voiceConnectInitData.guildId })
 											.get();
@@ -673,7 +673,7 @@ namespace DiscordCoreAPI {
 		theFrame.data.insert(theFrame.data.begin(), theBuffer.begin(), theBuffer.end());
 		theFrame.sampleCount = 960;
 		theFrame.type = AudioFrameType::Encoded;
-		this->audioDataBuffer.send(std::move(theFrame));
+		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.send(std::move(theFrame));
 	}
 
 	bool VoiceConnection::areWeCurrentlyPlaying() noexcept {
@@ -718,6 +718,10 @@ namespace DiscordCoreAPI {
 		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
 			this->streamSocket->disconnect();
 		}
+		if (DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)) {
+			DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)
+				->onSongCompletionEvent.remove(DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->eventToken);
+		}
 		this->areWeConnectedBool.store(false);
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		this->activeState.store(VoiceActiveState::Connecting);
@@ -737,8 +741,8 @@ namespace DiscordCoreAPI {
 		}
 		switch (this->connectionState.load()) {
 			case VoiceConnectionState::Collecting_Init_Data: {
-				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId] = &this->voiceConnectionDataBuffer;
-				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId]->clearContents();
+				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId.operator const size_t()] = &this->voiceConnectionDataBuffer;
+				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId.operator const size_t()]->clearContents();
 				this->baseShard->getVoiceConnectionData(this->voiceConnectInitData);
 
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
@@ -894,7 +898,7 @@ namespace DiscordCoreAPI {
 			this->audioData = AudioFrameData();
 		}
 		AudioFrameData frameData{};
-		while (this->audioDataBuffer.tryReceive(frameData)) {
+		while (this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(frameData)) {
 		};
 	}
 

@@ -198,14 +198,14 @@ namespace DiscordCoreAPI {
 			this->commandsToRegister.pop_front();
 			theData.applicationId = this->getBotUser().id;
 			if (theData.alwaysRegister) {
-				if (theData.guildId != 0) {
+				if (theData.guildId.operator const size_t() != 0) {
 					ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&theData)).get();
 				} else {
 					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();
 				}
 			} else {
 				std::vector<ApplicationCommand> theGuildCommands{};
-				if (theData.guildId != 0) {
+				if (theData.guildId.operator const size_t() != 0) {
 					theGuildCommands =
 						ApplicationCommands::getGuildApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id, .guildId = theData.guildId })
 							.get();
@@ -222,7 +222,7 @@ namespace DiscordCoreAPI {
 					}
 				}
 				if (!doesItExist) {
-					if (theData.guildId != 0) {
+					if (theData.guildId.operator const size_t() != 0) {
 						ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&theData)).get();
 					} else {
 						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();

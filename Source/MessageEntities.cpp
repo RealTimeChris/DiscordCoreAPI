@@ -118,7 +118,7 @@ namespace DiscordCoreAPI {
 			theData.appendArrayElement(value);
 		}
 		theData.endArray();
-		if (this->messageReference.messageId != 0) {
+		if (this->messageReference.messageId.operator const size_t() != 0) {
 			theData.appendStructElement("message_reference", this->messageReference);
 		}
 		theData.addNewArray("components");
@@ -206,7 +206,11 @@ namespace DiscordCoreAPI {
 
 	DeleteMessagesBulkData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		theData.appendStructElement("messages", this->messageIds);
+		theData.addNewArray("messages");
+		for (auto& value: this->messageIds) {
+			theData.appendArrayElement(std::to_string(value));
+		}
+		theData.endArray();
 		return theData;
 	}
 
@@ -230,14 +234,14 @@ namespace DiscordCoreAPI {
 			} else {
 				workload.relativePath += "&limit=1";
 			}
-		} else if (dataPackage.beforeThisId != 0) {
+		} else if (dataPackage.beforeThisId.operator const size_t() != 0) {
 			workload.relativePath += "?before=" + std::to_string(dataPackage.beforeThisId);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
-		} else if (dataPackage.afterThisId != 0) {
+		} else if (dataPackage.afterThisId.operator const size_t() != 0) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.afterThisId);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);

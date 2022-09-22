@@ -63,6 +63,30 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	Snowflake& Snowflake::operator=(const std::string other) noexcept {
+		if (!other.empty()) {
+			this->theId = stoull(other);
+		}
+		return *this;
+	}
+
+	Snowflake::Snowflake(const std::string other) noexcept {
+		*this = other;
+	}
+
+	Snowflake& Snowflake::operator=(const size_t other) noexcept {
+		this->theId = other;
+		return *this;
+	}
+
+	Snowflake::Snowflake(const size_t other) noexcept {
+		*this = other;
+	}
+
+	Snowflake::operator const size_t() noexcept {
+		return this->theId;
+	}
+
 	JsonRecord& JsonRecord::operator=(bool theData) noexcept {
 		std::string theString{};
 		if (theData) {
@@ -1149,7 +1173,7 @@ namespace DiscordCoreAPI {
 		uint64_t deny{ 0 };
 		for (auto& value: guildMemberRoles) {
 			for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-				if (channel.permissionOverwrites[x].id == value.id) {
+				if (value.id == channel.permissionOverwrites[x].id) {
 					allow |= channel.permissionOverwrites[x].allow;
 					deny |= channel.permissionOverwrites[x].deny;
 				}

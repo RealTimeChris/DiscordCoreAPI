@@ -30,20 +30,20 @@ namespace DiscordCoreAPI {
 
 	CreateGuildScheduledEventData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			theData["channel_id"] = nullptr;
+			theData.appendStructElement("channel_id", nullptr);
 		} else {
-			theData["channel_id"] = std::to_string(this->channelId);
+			theData.appendStructElement("channel_id", std::to_string(this->channelId));
 		}
-		theData["entity_metadata"]["location"] = this->entityMetadata.location;
-		theData["entity_metadata"]["entity_type"] = this->entityType;
-		theData["scheduled_start_time"] = this->scheduledStartTime;
-		theData["scheduled_end_time"] = this->scheduledEndTime;
-		theData["privacy_level"] = this->privacyLevel;
-		theData["description"] = this->description;
-		theData["name"] = this->name;
-		*/
+		theData.addNewStructure("entity_metadata");
+		theData.appendStructElement("location", this->entityMetadata.location);
+		theData.appendStructElement("entity_type", this->entityType);
+		theData.endStructure();
+		theData.appendStructElement("scheduled_start_time", this->scheduledStartTime);
+		theData.appendStructElement("scheduled_end_time", this->scheduledEndTime);
+		theData.appendStructElement("privacy_level", this->privacyLevel);
+		theData.appendStructElement("description", this->description);
+		theData.appendStructElement("name", this->name);
 		return theData;
 	}
 
@@ -132,26 +132,26 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId) + "/users";
 		if (dataPackage.limit != 0) {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
-			if (dataPackage.after != 0) {
+			if (dataPackage.after.operator const size_t() != 0) {
 				workload.relativePath += "&after=" + std::to_string(dataPackage.after);
 			}
-			if (dataPackage.before != 0) {
+			if (dataPackage.before.operator const size_t() != 0) {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";
 			}
 		}
-		if (dataPackage.after != 0) {
+		if (dataPackage.after.operator const size_t() != 0) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.after);
-			if (dataPackage.before != 0) {
+			if (dataPackage.before.operator const size_t() != 0) {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";
 			}
 		}
-		if (dataPackage.before != 0) {
+		if (dataPackage.before.operator const size_t() != 0) {
 			workload.relativePath += "?before=" + std::to_string(dataPackage.before);
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";

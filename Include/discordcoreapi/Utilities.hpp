@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
 	 */
 
 	class JsonSerializer;
-
+	struct Snowflake;
 	struct ActivityData;
 	/// For selecting the type of streamer that the given bot is, one must be one server and one of client per connection. \brief For selecting the type of streamer that the given bot is, one must be one server and one of client per connection.
 	enum class StreamType { None = 0, Client = 1, Server = 2 };
@@ -220,17 +220,28 @@ namespace DiscordCoreInternal {
 	template<typename ReturnType> void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
 
 }// namespace DiscordCoreInternal
-template<typename ObjectType>
-struct SnowflakeHash {
-	std::size_t operator()(ObjectType const& s) const noexcept {
-		return s.id;
-	}
-};
+
 
 namespace DiscordCoreAPI {
 
 	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
-	using Snowflake = uint64_t;
+	struct DiscordCoreAPI_Dll Snowflake {
+		friend inline bool operator==(const Snowflake, const Snowflake);
+		Snowflake() noexcept = default;
+		Snowflake& operator=(const std::string) noexcept;
+		explicit Snowflake(const std::string) noexcept;
+		Snowflake& operator=(const size_t) noexcept;
+		explicit Snowflake(const size_t) noexcept;
+		operator const size_t() noexcept;
+
+	  protected:
+		mutable uint64_t theId{};
+	};
+
+	inline bool operator==(const Snowflake lhs, const Snowflake rhs) {
+		return (lhs.theId == rhs.theId);
+	}
+
 	using namespace std::literals;
 	using std::cout;
 	using std::endl;
@@ -388,17 +399,7 @@ namespace DiscordCoreAPI {
 		std::string botToken{};///< Your bot's token.
 	};
 
-	enum class ObjectType : int8_t {
-		Object = 0,
-		Array = 1,
-		String = 2,
-		Boolean = 3,
-		Number_Integer = 4,
-		Number_Unsigned = 5,
-		Number_Float = 6,
-		Number_Double = 7,
-		Null = 8
-	};
+	enum class ObjectType : int8_t { Object = 0, Array = 1, String = 2, Boolean = 3, Number_Integer = 4, Number_Unsigned = 5, Number_Float = 6, Number_Double = 7, Null = 8 };
 
 	struct JsonValue {
 		std::string theValue{};
@@ -431,7 +432,7 @@ namespace DiscordCoreAPI {
 			*static_cast<uint64_t*>(this->thePtr) = static_cast<uint64_t>(other);
 		};
 
-		template<IsEnum EnumType> EnumConverter&operator=(std::vector<EnumType> other) {
+		template<IsEnum EnumType> EnumConverter& operator=(std::vector<EnumType> other) {
 			this->thePtr = new std::vector<uint64_t>{};
 			for (auto& value: other) {
 				static_cast<std::vector<uint64_t>*>(this->thePtr)->emplace_back(static_cast<uint64_t>(value));
@@ -526,7 +527,7 @@ namespace DiscordCoreAPI {
 			theRecord.theKey = keyName;
 			this->theJsonData.push_back(theRecord);
 			for (auto& value: other) {
-				theRecord = value;
+				theRecord = static_cast<ObjectType>(value);
 				this->theJsonData.push_back(theRecord);
 			}
 			theRecord.theEvent = JsonParseEvent::Array_End;
@@ -629,8 +630,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup utilities
 	 * @{
 	 */
-	template<typename ObjectType>
-	class ObjectCache { 
+	template<typename ObjectType> class ObjectCache {
 	  public:
 		ObjectCache() noexcept {};
 
@@ -1619,4 +1619,11 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 };
+
+template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::Snowflake> {
+	std::size_t operator()(DiscordCoreAPI::Snowflake const& object) const noexcept {
+		return static_cast<DiscordCoreAPI::Snowflake>(object).operator const size_t();
+	}
+};
+
 #endif

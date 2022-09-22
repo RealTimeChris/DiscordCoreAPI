@@ -103,7 +103,7 @@ namespace DiscordCoreInternal {
 		~WebSocketSSLShard() noexcept = default;
 
 	  protected:
-		std::unordered_map<Snowflake, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		std::unordered_map<uint64_t, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
@@ -113,6 +113,7 @@ namespace DiscordCoreInternal {
 		const uint32_t maxReconnectTries{ 10 };
 		simdjson::ondemand::parser theParser{};
 		std::atomic_bool* doWeQuit{ nullptr };
+		DiscordCoreAPI::Snowflake userId{ 0 };
 		bool serverUpdateCollected{ false };
 		uint32_t currentReconnectTries{ 0 };
 		bool stateUpdateCollected{ false };
@@ -124,7 +125,6 @@ namespace DiscordCoreInternal {
 		bool areWeResuming{ false };
 		std::string resumeUrl{};
 		std::string sessionId{};
-		Snowflake userId{ 0 };
 		uint32_t shard[2]{};
 	};
 
@@ -148,8 +148,8 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>> theShardMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 250ms };
+		std::deque<DiscordCoreAPI::Snowflake> voiceConnectionsToDisconnect{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
-		std::deque<Snowflake> voiceConnectionsToDisconnect{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		std::deque<VoiceConnectInitData> voiceConnections{};
 		DiscordCoreAPI::ConfigManager* configManager{};

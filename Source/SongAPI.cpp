@@ -134,11 +134,11 @@ namespace DiscordCoreAPI {
 			SongAPI::setCurrentSong(Song(), guildMember.guildId);
 		}
 		AudioFrameData frameData{};
-		while (DiscordCoreClient::getVoiceConnection(guildMember.guildId)->audioDataBuffer.tryReceive(frameData)) {
+		while (DiscordCoreClient::getSongAPI(guildMember.guildId)->audioDataBuffer.tryReceive(frameData)) {
 		};
 		frameData.type = AudioFrameType::Skip;
-		frameData.guildMemberId = guildMember.id;
-		DiscordCoreClient::getVoiceConnection(guildMember.guildId)->audioDataBuffer.send(frameData);
+		frameData.guildMemberId = static_cast<GuildMember>(guildMember).id;
+		DiscordCoreClient::getSongAPI(guildMember.guildId)->audioDataBuffer.send(frameData);
 	}
 
 	void SongAPI::stop(const Snowflake guildId) {
@@ -293,7 +293,7 @@ namespace DiscordCoreAPI {
 			this->taskThread.reset(nullptr);
 		}
 		DiscordCoreAPI::AudioFrameData dataFrame{};
-		while (DiscordCoreClient::getVoiceConnection(this->guildId)->audioDataBuffer.tryReceive(dataFrame)) {
+		while (DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.tryReceive(dataFrame)) {
 		};
 	}
 

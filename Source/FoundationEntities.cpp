@@ -134,8 +134,8 @@ namespace DiscordCoreInternal {
 		theData.addNewStructure("d");
 		theData.appendStructElement("session_id", this->connectionData.sessionId);
 		theData.appendStructElement("token", this->connectionData.token);
-		theData.appendStructElement("server_id", this->connectInitData.guildId);
-		theData.appendStructElement("user_id", this->connectInitData.userId);
+		theData.appendStructElement("server_id", std::to_string(this->connectInitData.guildId));
+		theData.appendStructElement("user_id", std::to_string(this->connectInitData.userId));
 		theData.endStructure();
 		return theData;
 	}
@@ -284,7 +284,7 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("name", this->provider.name);
 		theData.appendStructElement("url", this->provider.url);
 		theData.endStructure();
-		theData.appendStructElement("description", escapeCharacters(this->description));
+		theData.appendStructElement("description", "TEST");
 		theData.appendStructElement("timestamp", this->timestamp);
 		theData.appendStructElement("title", escapeCharacters(this->title));
 		theData.appendStructElement("color", realColorVal);
@@ -347,9 +347,9 @@ namespace DiscordCoreAPI {
 	MessageReferenceData::operator JsonSerializer() {
 		JsonSerializer theData{};
 		theData.appendStructElement("fail_if_not_exists", this->failIfNotExists);
-		theData.appendStructElement("message_id", this->messageId);
-		theData.appendStructElement("channel_id", this->channelId);
-		theData.appendStructElement("guild_id", this->guildId);
+		theData.appendStructElement("message_id", std::to_string(this->messageId));
+		theData.appendStructElement("channel_id", std::to_string(this->channelId));
+		theData.appendStructElement("guild_id", std::to_string(this->guildId));
 		return theData;
 	}
 
@@ -529,8 +529,8 @@ namespace DiscordCoreAPI {
 					component.addNewStructure("emoji");
 					component.appendStructElement("animated", valueNew.emoji.animated);
 					component.appendStructElement("name", std::string{ valueNew.emoji.name });
-					if (valueNew.emoji.id != 0) {
-						component.appendStructElement("id", valueNew.emoji.id);
+					if (valueNew.emoji.id.operator const size_t() != 0) {
+						component.appendStructElement("id", std::to_string(valueNew.emoji.id));
 					}
 					component.endStructure();
 					component.appendStructElement("custom_id", valueNew.customId);
@@ -550,8 +550,8 @@ namespace DiscordCoreAPI {
 							option.appendStructElement("name", std::string{ value01.emoji.name });
 							option.appendStructElement("animated", value01.emoji.animated);
 						}
-						if (value01.emoji.id != 0) {
-							option.appendStructElement("id", value01.emoji.id);
+						if (value01.emoji.id.operator const size_t() != 0) {
+							option.appendStructElement("id", std::to_string(value01.emoji.id));
 						}
 						option.appendStructElement("description", value01.description);
 						option.appendStructElement("default", value01._default);
@@ -701,19 +701,19 @@ namespace DiscordCoreAPI {
 		return this->interactionData->message.components;
 	}
 
-	uint64_t InputEventData::getAuthorId() {
+	Snowflake InputEventData::getAuthorId() {
 		return this->interactionData->user.id;
 	}
 
-	uint64_t InputEventData::getInteractionId() {
+	Snowflake InputEventData::getInteractionId() {
 		return this->interactionData->id;
 	}
 
-	uint64_t InputEventData::getApplicationId() {
+	Snowflake InputEventData::getApplicationId() {
 		return this->interactionData->applicationId;
 	}
 
-	uint64_t InputEventData::getChannelId() {
+	Snowflake InputEventData::getChannelId() {
 		return this->interactionData->channelId;
 	}
 
@@ -721,11 +721,11 @@ namespace DiscordCoreAPI {
 		return this->interactionData->token;
 	}
 
-	uint64_t InputEventData::getGuildId() {
+	Snowflake InputEventData::getGuildId() {
 		return this->interactionData->guildId;
 	}
 
-	uint64_t InputEventData::getMessageId() {
+	Snowflake InputEventData::getMessageId() {
 		return this->interactionData->message.id;
 	}
 
@@ -1093,7 +1093,7 @@ namespace DiscordCoreAPI {
 			theData.appendArrayElement(value);
 		}
 		theData.endArray();
-		if (this->data.customId != "") {			
+		if (this->data.customId != "") {
 			theData.appendStructElement("custom_id", this->data.customId);
 		}
 		if (this->data.content != "") {
@@ -1126,10 +1126,10 @@ namespace DiscordCoreAPI {
 		if (inputEventData.interactionData->data.applicationCommandData.name != "") {
 			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
 		}
-		if (inputEventData.interactionData->data.messageInteractionData.targetId != 0) {
+		if (inputEventData.interactionData->data.messageInteractionData.targetId.operator const size_t() != 0) {
 			this->optionsArgs.theValues.emplace("target_id",
 				JsonValueReal{ .theValue = std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId), .theType = ObjectType::String });
-		} else if (inputEventData.interactionData->data.userInteractionData.targetId != 0) {
+		} else if (inputEventData.interactionData->data.userInteractionData.targetId.operator const size_t() != 0) {
 			this->optionsArgs.theValues.emplace("target_id",
 				JsonValueReal{ .theValue = std::to_string(inputEventData.interactionData->data.userInteractionData.targetId), .theType = ObjectType::String });
 		}
@@ -1171,7 +1171,7 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(1ms);
 			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
 
-			std::vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, stoull(userID)).get() };
+			std::vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, Snowflake{ stoull(userID) }).get() };
 
 			if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
 				std::unique_ptr<RespondToInputEventData> dataPackage02{ std::make_unique<RespondToInputEventData>(originalEvent) };

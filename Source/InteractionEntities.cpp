@@ -540,14 +540,14 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
-		int32_t maxCollectedSelectMenuCountNew, uint64_t targetUser) {
+		int32_t maxCollectedSelectMenuCountNew, Snowflake targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
-		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
+		if (targetUser.operator const size_t() == 0 && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;
 		} else {
 			this->getSelectMenuDataForAll = getSelectMenuDataForAllNew;
 		}
-		if (targetUser != 0) {
+		if (targetUser.operator const size_t() != 0) {
 			this->userId = targetUser;
 		}
 		this->maxCollectedSelectMenuCount = maxCollectedSelectMenuCountNew;
@@ -668,13 +668,13 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
-		uint64_t targetUser) {
+		Snowflake targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
-		if (targetUser == 0 && !getButtonDataForAllNew) {
+		if (targetUser.operator const size_t() == 0 && !getButtonDataForAllNew) {
 			throw std::runtime_error{ "ButtonCollector::collectButtonData(), You've failed to "
 									  "properly set the collectButtonData() parameters!\n\n" };
 		}
-		if (targetUser != 0) {
+		if (targetUser.operator const size_t() != 0) {
 			this->userId = targetUser;
 		}
 		this->maxCollectedButtonCount = maxNumberOfPressesNew;

@@ -30,50 +30,54 @@ namespace DiscordCoreAPI {
 
 	StartThreadWithMessageData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["auto_archive_duration"] = this->autoArchiveDuration;
-		theData["rate_limit_per_user"] = this->rateLimitPerUser;
-		theData["name"] = this->threadName;
-		*/
+		theData.appendStructElement("auto_archive_duration", this->autoArchiveDuration);
+		theData.appendStructElement("rate_limit_per_user", this->rateLimitPerUser);
+		theData.appendStructElement("name", this->threadName);
 		return theData;
 	}
 
 	StartThreadWithoutMessageData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["auto_archive_duration"] = this->autoArchiveDuration;
-		theData["rate_limit_per_user"] = this->rateLimitPerUser;
-		theData["invitable"] = this->invitable;
-		theData["name"] = this->threadName;
-		theData["type"] = this->type;
-		*/
+		theData.appendStructElement("auto_archive_duration", this->autoArchiveDuration);
+		theData.appendStructElement("rate_limit_per_user", this->rateLimitPerUser);
+		theData.appendStructElement("invitable", this->invitable);
+		theData.appendStructElement("name", this->threadName);
+		theData.appendStructElement("type", this->type);
 		return theData;
 	}
 
 	StartThreadInForumChannelData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["message"]["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->message.allowedMentions };
+		theData.addNewStructure("message");
+		theData.appendStructElement("allowed_mentions", DiscordCoreAPI::AllowedMentionsData{ this->message.allowedMentions });
+		theData.addNewArray("attachments");
 		for (auto& value: this->message.attachments) {
-			theData["message"]["attachments"].emplace_back(value);
+			theData.appendArrayElement(value);
 		}
+		theData.endArray();
+		theData.addNewArray("components");
 		for (auto& value: this->message.components) {
-			theData["message"]["components"].emplace_back(value);
+			theData.appendArrayElement(value);
 		}
+		theData.endArray();
+		theData.addNewArray("sticker_ids");
 		for (auto& value: this->message.stickerIds) {
-			theData["message"]["sticker_ids"].emplace_back(value);
+			theData.appendArrayElement(value);
 		}
+		theData.endArray();
+		theData.addNewArray("embeds");
 		for (auto& value: this->message.embeds) {
-			theData["message"]["embeds"].emplace_back(value);
+			theData.appendArrayElement(value);
 		}
+		theData.endArray();
 		if (this->message.content != "") {
-			theData["message"]["content"] = this->message.content;
+			theData.appendStructElement("content", this->message.content);
 		}
-		theData["message"]["flags"] = this->message.flags;
-		theData["name"] = this->name;
-		theData["auto_archive_duration"] = this->autoArchiveDuration;
-		theData["rate_limit_per_user"] = this->rateLimitPerUser;
-		*/
+		theData.appendStructElement("flags", this->message.flags);
+		theData.endStructure();
+		theData.appendStructElement("name", this->name);
+		theData.appendStructElement("auto_archive_duration", this->autoArchiveDuration);
+		theData.appendStructElement("rate_limit_per_user", this->rateLimitPerUser);
 		return theData;
 	}
 

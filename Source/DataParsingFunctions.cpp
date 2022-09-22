@@ -69,8 +69,8 @@ namespace DiscordCoreAPI {
 	
 	JsonParseError::JsonParseError(int32_t theCode) : std::runtime_error(theErrors[theCode]){};
 
-	uint64_t getId(simdjson::ondemand::value  jsonObjectData, const char* theKey) {
-		return DiscordCoreAPI::strtoull(getString(jsonObjectData, theKey));
+	Snowflake getId(simdjson::ondemand::value jsonObjectData, const char* theKey) {
+		return Snowflake{ DiscordCoreAPI::strtoull(getString(jsonObjectData, theKey)) };
 	}
 
 	float getFloat(simdjson::ondemand::value jsonData, const char* theKey) {
@@ -371,7 +371,7 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, UserData& theData) {
 		theData.id = getId(jsonObjectData, "id");
-		if (theData.id == 0) {
+		if (theData.id.operator const size_t() == 0) {
 			return;
 		}
 
@@ -1103,7 +1103,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.exemptRoles.reserve(theArray.count_elements().take_value());
 			for (auto value: theArray) {
-				theData.exemptRoles.push_back(value.get_uint64().value());
+				theData.exemptRoles.push_back(Snowflake{ value.get_uint64().value() });
 			}
 			theData.exemptRoles.shrink_to_fit();
 		}
@@ -1112,7 +1112,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			theData.exemptChannels.reserve(theArray.count_elements().take_value());
 			for (auto value: theArray) {
-				theData.exemptChannels.push_back(value.get_uint64().value());
+				theData.exemptChannels.push_back(Snowflake{ value.get_uint64().value() });
 			}
 			theData.exemptChannels.shrink_to_fit();
 		}
@@ -2131,7 +2131,7 @@ namespace DiscordCoreAPI {
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, TeamMembersObjectData& theData) {
 		theData.membershipState = getUint32(jsonObjectData, "membership_state");
 
-		theData.teamId = getId(jsonObjectData, "team_id");
+		theData.teamId = std::to_string(getId(jsonObjectData, "team_id"));
 
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["permissions"].get(theArray);
@@ -2226,9 +2226,9 @@ namespace DiscordCoreAPI {
 
 		theData.channelId = getId(jsonObjectData, "channel_id");
 
-		theData.creatorId = getId(jsonObjectData, "creator_id");
+		theData.creatorId = std::to_string(getId(jsonObjectData, "creator_id"));
 
-		theData.entityId = getId(jsonObjectData, "entity_id");
+		theData.entityId = std::to_string(getId(jsonObjectData, "entity_id"));
 
 		theData.guildId = getId(jsonObjectData, "guild_id");
 
@@ -2399,7 +2399,7 @@ namespace DiscordCoreAPI {
 
 		theData.channelId = getId(jsonObjectData, "channel_id");
 
-		theData.creatorId = getId(jsonObjectData, "creator_id");
+		theData.creatorId = std::to_string(getId(jsonObjectData, "creator_id"));
 
 		theData.entityId = getString(jsonObjectData, "entity_id");
 

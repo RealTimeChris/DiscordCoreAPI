@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 		JsonSerializer responseData{};
 		responseData.appendStructElement("privacy_level", dataPackage.privacyLevel);
 		responseData.appendStructElement("topic", dataPackage.topic);
-		responseData.appendStructElement("channel_id", dataPackage.channelId);
+		responseData.appendStructElement("channel_id", std::to_string(dataPackage.channelId));
 		workload.content = responseData.getString();
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

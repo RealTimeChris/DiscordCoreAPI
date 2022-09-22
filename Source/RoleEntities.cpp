@@ -67,19 +67,17 @@ namespace DiscordCoreAPI {
 		stream << std::setbase(10) << roleColorInt;
 		std::string roleColorReal = stream.str();
 		JsonSerializer theData{};
-		/*
-		theData["permissions"] = this->permissions.getCurrentPermissionString();
-		theData["mentionable"] = this->mentionable;
-		theData["hoist"] = this->hoist;
-		theData["name"] = this->name;
-		theData["color"] = roleColorReal;
+		theData.appendStructElement("permissions", this->permissions.getCurrentPermissionString());
+		theData.appendStructElement("mentionable", this->mentionable);
+		theData.appendStructElement("hoist", this->hoist);
+		theData.appendStructElement("name", this->name);
+		theData.appendStructElement("color", roleColorReal);
 		if (this->icon.size() > 0) {
-			theData["icon"] = this->icon;
+			theData.appendStructElement("icon", this->icon);
 		}
 		if (this->unicodeEmoji.size() > 0) {
-			theData["unicode_emoji"] = this->unicodeEmoji;
+			theData.appendStructElement("unicode_emoji", this->unicodeEmoji);
 		}
-		*/
 		return theData;
 	}
 
@@ -157,7 +155,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<Role>> Roles::getGuildRolesAsync(GetGuildRolesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Roles };
 		co_await NewThreadAwaitable<std::vector<Role>>();
-		if (dataPackage.guildId == 0) {
+		if (dataPackage.guildId.operator const size_t() == 0) {
 			throw std::runtime_error{ "Roles::getGuildRolesAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -279,7 +277,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<Role> Roles::getRoleAsync(GetRoleData dataPackage) {
 		co_await NewThreadAwaitable<Role>();
 		auto roles = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
-		if (dataPackage.guildId == 0) {
+		if (dataPackage.guildId.operator const size_t() == 0) {
 			throw std::runtime_error{ "Roles::getRoleAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
 		}
 		for (auto& value: roles) {
@@ -304,7 +302,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::insertRole(RoleData role) {
-		if (role.id == 0) {
+		if (role.id.operator const size_t() == 0) {
 			return;
 		}
 		if (Roles::doWeCacheRoles) {

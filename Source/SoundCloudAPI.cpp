@@ -195,7 +195,7 @@ namespace DiscordCoreInternal {
 	SoundCloudAPI::SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClient, const DiscordCoreAPI::Snowflake guildIdNew) {
 		this->configManager = configManagerNew;
 		this->httpsClient = httpsClient;
-		this->guildId = guildIdNew;
+		this->guildId = static_cast<DiscordCoreAPI::Snowflake>(guildIdNew).operator const size_t();
 		if (SoundCloudRequestBuilder::clientId == "") {
 			SoundCloudRequestBuilder::clientId = this->collectClientId();
 		}
@@ -208,7 +208,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Song newerSong = newSong;
 		if (currentReconnectTries > 9) {
 			DiscordCoreAPI::AudioFrameData frameData{};
-			while (DiscordCoreAPI::DiscordCoreClient::getVoiceConnection(this->guildId)->audioDataBuffer.tryReceive(frameData)) {
+			while (DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.tryReceive(frameData)) {
 			};
 			DiscordCoreAPI::SongCompletionEventData eventData{};
 			auto returnValue = DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId);
@@ -310,8 +310,8 @@ namespace DiscordCoreInternal {
 				} else {
 					for (auto& value: frames) {
 						auto encodedFrame = audioEncoder->encodeSingleAudioFrame(value);
-						encodedFrame.guildMemberId = newSong.addedByUserId;
-						DiscordCoreAPI::DiscordCoreClient::getVoiceConnection(this->guildId)->audioDataBuffer.send(std::move(encodedFrame));
+						encodedFrame.guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId.operator const size_t();
+						DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(encodedFrame));
 					}
 				}
 				if (stopToken.stop_requested()) {
@@ -328,7 +328,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::AudioFrameData frameData{};
 			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
 			frameData.sampleCount = 0;
-			DiscordCoreAPI::DiscordCoreClient::getVoiceConnection(this->guildId)->audioDataBuffer.send(std::move(frameData));
+			DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frameData));
 		} catch (...) {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {
 				DiscordCoreAPI::reportException("SoundCloudAPI::downloadAndStreamAudio()");

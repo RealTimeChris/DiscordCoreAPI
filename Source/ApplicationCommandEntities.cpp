@@ -174,7 +174,7 @@ namespace DiscordCoreAPI {
 		std::string appCommandId{};
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
-				appCommandId = value.id;
+				appCommandId = std::to_string(value.id);
 				isItFound = true;
 			}
 		}
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
-				commandId = value.id;
+				commandId = std::to_string(value.id);
 				isItFound = true;
 			}
 		}
@@ -277,7 +277,7 @@ namespace DiscordCoreAPI {
 		std::string appCommandId;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
-				appCommandId = value.id;
+				appCommandId = std::to_string(value.id);
 				isItFound = true;
 			}
 		}
@@ -299,7 +299,7 @@ namespace DiscordCoreAPI {
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
-				commandId = value.id;
+				commandId = std::to_string(value.id);
 				isItFound = true;
 			}
 		}
@@ -357,7 +357,7 @@ namespace DiscordCoreAPI {
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.commandName) {
-				commandId = value.id;
+				commandId = std::to_string(value.id);
 				isItFound = true;
 			}
 		}
@@ -379,7 +379,7 @@ namespace DiscordCoreAPI {
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.commandName) {
-				commandId = value.id;
+				commandId = std::to_string(value.id);
 				isItFound = true;
 			}
 		}

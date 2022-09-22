@@ -38,8 +38,8 @@ namespace DiscordCoreAPI {
 
 	CreateChannelInviteData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		if (this->targetUserId != 0) {
-			theData.appendStructElement("target_application_id", this->targetApplicationId);
+		if (this->targetUserId.operator const size_t() != 0) {
+			theData.appendStructElement("target_application_id", std::to_string(this->targetApplicationId));
 			theData.appendStructElement("target_user_id", std::to_string(this->targetUserId));
 			theData.appendStructElement("target_type", this->targetType);
 		}
@@ -88,8 +88,8 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->modifyChannelData) {
 			JsonSerializer dataNew{};
 			dataNew.appendStructElement("lock_permissions", value.lockPermissions);
-			if (value.parentId != 0) {
-				dataNew.appendStructElement("parent_id", value.parentId);
+			if (value.parentId.operator const size_t() != 0) {
+				dataNew.appendStructElement("parent_id", std::to_string(value.parentId));
 			}
 			dataNew.appendStructElement("position", value.position);
 			dataNew.appendStructElement("id", std::to_string(value.id));
@@ -153,10 +153,10 @@ namespace DiscordCoreAPI {
 	ModifyChannelData::ModifyChannelData(Channel newData) {
 		this->channelData.nsfw = getBool<int8_t, ChannelFlags>(newData.flags, ChannelFlags::NSFW);
 		this->channelData.permissionOverwrites = newData.permissionOverwrites;
+		this->channelData.parentId = std::to_string(newData.parentId);
 		this->channelData.rateLimitPerUser = newData.rateLimitPerUser;
 		this->channelData.userLimit = newData.userLimit;
 		this->channelData.rtcRgion = newData.rtcRegion;
-		this->channelData.parentId = newData.parentId;
 		this->channelData.position = newData.position;
 		this->channelData.topic = newData.topic;
 		this->channelData.name = newData.name;
@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 			newData.appendStructElement("allow", value.allow);
 			newData.appendStructElement("deny", value.deny);
 			newData.appendStructElement("type", value.type);
-			newData.appendStructElement("id", value.id);
+			newData.appendStructElement("id", std::to_string(value.id));
 			theData.appendArrayElement(newData);
 		}
 		theData.endArray();
@@ -365,7 +365,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/users/@me/channels";
 		workload.callStack = "Channels::createDMChannelAsync()";
 		JsonSerializer theValue{};
-		theValue.appendStructElement("recipient_id", dataPackage.userId);
+		theValue.appendStructElement("recipient_id", std::to_string(dataPackage.userId));
 		workload.content = theValue.getString();
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 	}
@@ -380,7 +380,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::insertChannel(ChannelData channel) {
-		if (channel.id == 0) {
+		if (channel.id.operator const size_t() == 0) {
 			return;
 		}
 		if (Channels::doWeCacheChannels) {

@@ -41,8 +41,6 @@ namespace DiscordCoreAPI {
 		explicit JsonParseError(int32_t theCode);
 	};
 
-	using Snowflake = uint64_t;
-
 	struct ObjectReturnData {
 		simdjson::ondemand::value theObject{};
 		bool didItSucceed{ false };

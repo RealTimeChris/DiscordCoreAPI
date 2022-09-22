@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 		JsonSerializer theData{};
 		theData.addNewArray("roles");
 		for (auto& value: this->roles) {
-			theData.appendArrayElement(value);
+			theData.appendArrayElement(std::to_string(value));
 		}
 		theData.endArray();
 		theData.appendStructElement("image", this->imageDataFinal);
@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 		JsonSerializer theData{};
 		theData.addNewArray("roles");
 		for (auto& value: this->roles) {
-			theData.appendArrayElement(value);
+			theData.appendArrayElement(std::to_string(value));
 		}
 		theData.endArray();
 		theData.appendStructElement("name", this->name);
@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Reaction };
 		co_await NewThreadAwaitable<Reaction>();
 		std::string emoji;
-		if (dataPackage.emojiId != 0) {
+		if (dataPackage.emojiId.operator const size_t() != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 		} else {
 			emoji = dataPackage.emojiName;
@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Own_Reaction };
 		co_await NewThreadAwaitable<void>();
 		std::string emoji;
-		if (dataPackage.emojiId != 0) {
+		if (dataPackage.emojiId.operator const size_t() != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 		} else {
 			emoji = dataPackage.emojiName;
@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_User_Reaction };
 		co_await NewThreadAwaitable<void>();
 		std::string emoji;
-		if (dataPackage.emojiId != 0) {
+		if (dataPackage.emojiId.operator const size_t() != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 
 		} else {
@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<UserVector>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/reactions/" + dataPackage.emoji;
-		if (dataPackage.afterId != 0) {
+		if (dataPackage.afterId.operator const size_t() != 0) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.afterId);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
@@ -141,7 +141,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Reactions_By_Emoji };
 		co_await NewThreadAwaitable<void>();
 		std::string emoji;
-		if (dataPackage.emojiId != 0) {
+		if (dataPackage.emojiId.operator const size_t() != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 		} else {
 			emoji = dataPackage.emojiName;

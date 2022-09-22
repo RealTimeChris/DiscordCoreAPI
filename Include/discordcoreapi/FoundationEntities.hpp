@@ -31,17 +31,15 @@
 
 namespace DiscordCoreInternal {
 
-	using Snowflake = uint64_t;
-
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
 		DiscordCoreAPI::StreamType streamType{};
 		DiscordCoreAPI::StreamInfo streamInfo{};
+		DiscordCoreAPI::Snowflake channelId{};
+		DiscordCoreAPI::Snowflake guildId{};
+		DiscordCoreAPI::Snowflake userId{};
 		int32_t currentShard{};
 		bool selfDeaf{ false };
 		bool selfMute{ false };
-		Snowflake channelId{};
-		Snowflake guildId{};
-		Snowflake userId{};
 	};
 
 	struct DiscordCoreAPI_Dll VoiceConnectionData {
@@ -1871,7 +1869,7 @@ namespace DiscordCoreAPI {
 		/// \param streamType For usage with the Vc-to-Vc audio streaming option.
 		/// \param streamInfo For usage with the Vc-to-Vc audio streaming option.
 		/// \returns VoiceConnection* A pointer to the currently held voice connection, or nullptr if it failed to connect.
-		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = 0, bool selfDeaf = false, bool selfMute = false,
+		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{ 0 }, bool selfDeaf = false, bool selfMute = false,
 			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
 
 		std::string getBannerUrl() noexcept;
@@ -2684,12 +2682,12 @@ namespace DiscordCoreAPI {
 
 	/// Resolved data. \brief Resolved data.
 	struct DiscordCoreAPI_Dll ResolvedData {
-		std::unordered_map<Snowflake, AttachmentData> attachments{};///< Map of Snowflakes to attachment objects the ids and attachment objects.
-		std::unordered_map<Snowflake, GuildMemberData> members{};///< Map full of GuildMemeberData.
-		std::unordered_map<Snowflake, MessageData> messages{};///< Map full of messageData->
-		std::unordered_map<Snowflake, ChannelData> channels{};///< Map full of ChannelData.
-		std::unordered_map<Snowflake, UserData> users{};///< Map full of UserData.
-		std::unordered_map<Snowflake, RoleData> roles{};///< Map full of RoleData.
+		std::unordered_map<uint64_t, AttachmentData> attachments{};///< Map of Snowflakes to attachment objects the ids and attachment objects.
+		std::unordered_map<uint64_t, GuildMemberData> members{};///< Map full of GuildMemeberData.
+		std::unordered_map<uint64_t, MessageData> messages{};///< Map full of messageData->
+		std::unordered_map<uint64_t, ChannelData> channels{};///< Map full of ChannelData.
+		std::unordered_map<uint64_t, UserData> users{};///< Map full of UserData.
+		std::unordered_map<uint64_t, RoleData> roles{};///< Map full of RoleData.
 	};
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ResolvedData& theData);
@@ -2702,7 +2700,7 @@ namespace DiscordCoreAPI {
 		std::string description{};///< Description of the Sticker pack.
 		std::string skuId{};///< Id of the pack's SKU.
 		std::string name{};///< Name of the Sticker pack.
-		std::string Id{};///< Id of the Sticker pack.
+		Snowflake Id{};///< Id of the Sticker pack.
 
 		StickerPackData() noexcept = default;
 
@@ -3040,7 +3038,7 @@ namespace DiscordCoreAPI {
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		RespondToInputEventData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-			const std::string& emojiName = "", Snowflake emojiId = 0, const std::string& url = "");
+			const std::string& emojiName = "", Snowflake emojiId = Snowflake{ 0 }, const std::string& url = "");
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -3150,7 +3148,7 @@ namespace DiscordCoreAPI {
 		/// \param url A url, if applicable.
 		/// \returns MessageResponseBase& A reference to this data structure.
 		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			Snowflake emojiId = 0, const std::string& url = "");
+			Snowflake emojiId = Snowflake{ 0 }, const std::string& url = "");
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -3534,39 +3532,39 @@ namespace DiscordCoreInternal {
 	}
 }
 
-template<> struct std::hash<DiscordCoreAPI::DiscordEntity> {
+template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::DiscordEntity> {
 	std::size_t operator()(DiscordCoreAPI::DiscordEntity const& object) const noexcept {
-		return object.id;
+		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
 	}
 };
 
-template<> struct std::hash<DiscordCoreAPI::ChannelData> {
+template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::ChannelData> {
 	std::size_t operator()(DiscordCoreAPI::ChannelData const& object) const noexcept {
-		return object.id;
+		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
 	}
 };
 
-template<> struct std::hash<DiscordCoreAPI::GuildData> {
+template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::GuildData> {
 	std::size_t operator()(DiscordCoreAPI::GuildData const& object) const noexcept {
-		return object.id;
+		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
 	}
 };
 
-template<> struct std::hash<DiscordCoreAPI::RoleData> {
+template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::RoleData> {
 	std::size_t operator()(DiscordCoreAPI::RoleData const& object) const noexcept {
-		return object.id;
+		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
 	}
 };
 
-template<> struct std::hash<DiscordCoreAPI::UserData> {
+template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::UserData> {
 	std::size_t operator()(DiscordCoreAPI::UserData const& object) const noexcept {
-		return object.id;
+		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
 	}
 };
 
-template<> struct std::hash<DiscordCoreAPI::GuildMemberData> {
+template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::GuildMemberData> {
 	std::size_t operator()(DiscordCoreAPI::GuildMemberData const& object) const noexcept {
-		return object.guildId ^ (object.id << 1);
+		return static_cast<DiscordCoreAPI::Snowflake>(object.guildId) ^ (static_cast<DiscordCoreAPI::Snowflake>(object.id) << 1);
 	}
 };
 
