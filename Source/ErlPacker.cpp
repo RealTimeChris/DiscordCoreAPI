@@ -29,7 +29,7 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
-	std::string ErlPacker::parseJsonToEtf(std::string& dataToParse) {
+	std::string ErlPacker::parseJsonToEtf(std::string&& dataToParse) {
 		this->bufferString.clear();
 		this->offSet = 0;
 		this->size = 0;

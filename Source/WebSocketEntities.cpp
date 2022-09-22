@@ -190,8 +190,7 @@ namespace DiscordCoreInternal {
 				 << DiscordCoreAPI::reset();
 		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
-			auto theString = dataToSend.getString();
-			theVector = ErlPacker::parseJsonToEtf(theString);
+			theVector = ErlPacker::parseJsonToEtf(dataToSend.getString());
 		} else {
 			theVector = dataToSend.getString();
 		}

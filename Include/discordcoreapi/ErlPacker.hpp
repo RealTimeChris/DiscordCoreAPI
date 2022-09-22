@@ -60,7 +60,7 @@ namespace DiscordCoreInternal {
 	  public:
 		ErlPacker() noexcept {};
 
-		std::string parseJsonToEtf(std::string&);
+		std::string parseJsonToEtf(std::string&& dataToParse);
 
 		std::string& parseEtfToJson(std::string_view dataToParse);
 
