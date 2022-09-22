@@ -102,11 +102,9 @@ namespace DiscordCoreInternal {
 			}
 			theReturnString += "Connection: Keep-Alive\r\n";
 			theReturnString += "Host: " + baseUrlNew + "\r\n";
-			auto theString = workload.content;
-			theReturnString += "Content-Length: " + std::to_string(theString.size()) + "\r\n\r\n";
-			theReturnString += theString;
+			theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
+			theReturnString += workload.content;
 		}
-		std::cout << "THE STRING: " << theReturnString << std::endl;
 		return theReturnString;
 	}
 
@@ -421,6 +419,7 @@ namespace DiscordCoreInternal {
 		if (workload.baseUrl == "") {
 			workload.baseUrl = "https://discord.com/api/v10";
 		}
+
 		RateLimitData& rateLimitData = *this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].get();
 		if (!rateLimitData.haveWeGoneYet.load()) {
 			std::this_thread::sleep_for(100ms);
@@ -465,8 +464,7 @@ namespace DiscordCoreInternal {
 				if (theStopWatch.hasTimePassed()) {
 					break;
 				}
-				std::string theString{ theRequest.c_str() };
-				theResult = httpsConnection.writeData(theString, true);
+				theResult = httpsConnection.writeData(theRequest, true);
 			} while (theResult == ProcessIOResult::Error);
 			if (theResult != ProcessIOResult::No_Error) {
 				httpsConnection.currentReconnectTries++;

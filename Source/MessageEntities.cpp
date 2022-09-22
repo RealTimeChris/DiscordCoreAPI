@@ -115,42 +115,36 @@ namespace DiscordCoreAPI {
 
 	CreateMessageData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
+		theData.addNewArray("attachments");
 		for (auto& value: this->attachments) {
-			theData.pushBack("attachments", value);
+			theData.appendArrayElement(value);
 		}
-		theData[""] = JsonParseEvent::Array_End;
+		theData.endArray();
 		if (this->messageReference.messageId != 0) {
-			theData["message_reference"] = this->messageReference;
+			theData.appendStructElement("message_reference", this->messageReference);
 		}
-		if (this->components.size() == 0) {
-			theData["components"] = JsonParseEvent::Null_Value;
-		} else {
-			for (auto& value: this->components) {
-				theData.pushBack("components", value);
-			}
-			theData[""] = JsonParseEvent::Array_End;
+		theData.addNewArray("components");
+		for (auto& value: this->components) {
+			theData.appendArrayElement(value);
 		}
-		theData["allowed_mentions"] = this->allowedMentions;
+		theData.endArray();
+		theData.appendStructElement("allowed_mentions", this->allowedMentions);
+		theData.addNewArray("sticker_ids");
 		for (auto& value: this->stickerIds) {
-			theData.pushBack("sticker_ids", value);
+			theData.appendArrayElement(value);
 		}
+		theData.endArray();
 
-		theData[""] = JsonParseEvent::Array_End;
-		if (this->embeds.size() == 0) {
-			theData["embeds"] = JsonParseEvent::Null_Value;
-		} else {
-			for (auto& value: this->embeds) {
-				theData.pushBack("embeds", value);
-			}
-			theData[""] = JsonParseEvent::Array_End;
+		theData.addNewArray("embeds");
+		for (auto& value: this->embeds) {
+			theData.appendArrayElement(value);
 		}
+		theData.endArray();
 		if (this->content != "") {
-			theData["content"] = this->content;
+			theData.appendStructElement("content", this->content);
 		}
-		theData["flags"] = this->flags;
-		theData["tts"] = this->tts;
-		*/
+		theData.appendStructElement("flags", this->flags);
+		theData.appendStructElement("tts", this->tts);
 		return theData;
 	}
 
@@ -188,41 +182,35 @@ namespace DiscordCoreAPI {
 
 	EditMessageData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
+		JsonSerializer theData{};
+		theData.addNewArray("attachments");
 		for (auto& value: this->attachments) {
-			theData.pushBack("attachments", value);
+			theData.appendArrayElement(value);
 		}
-		theData[""] = JsonParseEvent::Array_End;
-		if (this->components.size() == 0) {
-			theData["components"] = JsonParseEvent::Null_Value;
-		} else {
-			for (auto& value: this->components) {
-				theData.pushBack("components", value);
-			}
-			theData[""] = JsonParseEvent::Array_End;
+		theData.endArray();
+		theData.addNewArray("components");
+		for (auto& value: this->components) {
+			theData.appendArrayElement(value);
 		}
-		theData["allowed_mentions"] = this->allowedMentions;
-		if (this->embeds.size() == 0) {
-			theData["embeds"] = JsonParseEvent::Null_Value;
-		} else {
-			for (auto& value: this->embeds) {
-				theData.pushBack("embeds", value);
-			}
-			theData[""] = JsonParseEvent::Array_End;
+		theData.endArray();
+		theData.appendStructElement("allowed_mentions", this->allowedMentions);
+
+		theData.addNewArray("embeds");
+		for (auto& value: this->embeds) {
+			theData.appendArrayElement(value);
 		}
+		theData.endArray();
 		if (this->content != "") {
-			theData["content"] = this->content;
+			theData.appendStructElement("content", this->content);
 		}
-		theData["flags"] = this->flags;
-		*/
+		theData.appendStructElement("flags", this->flags);
+		theData.appendStructElement("tts", this->tts);
 		return theData;
 	}
 
 	DeleteMessagesBulkData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
-		theData["messages"] = this->messageIds;
-		*/
+		theData.appendStructElement("messages", this->messageIds);
 		return theData;
 	}
 
