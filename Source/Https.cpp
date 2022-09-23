@@ -105,6 +105,7 @@ namespace DiscordCoreInternal {
 			theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
 			theReturnString += workload.content;
 		}
+		std::cout << "THE DATA: " << workload.content << std::endl;
 		return theReturnString;
 	}
 
