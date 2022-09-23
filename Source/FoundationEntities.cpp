@@ -585,7 +585,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 		theData.endArray();
-		std::cout << "THE ARRAY SIZE: " << theData.getString() << std::endl;
 		return theData;
 	}
 
@@ -1057,7 +1056,6 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->data.components) {
 			theData.appendArrayElement(value);
 		}
-		std::cout << "THE ARRAY SIZE: " << this->data.components.size() << std::endl;
 		theData.endArray();
 		theData.appendStructElement("allowed_mentions", this->data.allowedMentions);
 		if (this->data.choices.size() > 0) {

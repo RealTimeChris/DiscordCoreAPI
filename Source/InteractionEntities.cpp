@@ -428,7 +428,6 @@ namespace DiscordCoreAPI {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage.data).getString(), dataPackage.data.data.files);
 		} else {
-			std::cout << "COMPONENTS COUNT: " << dataPackage.data.data.components.size() << std::endl;
 			workload.content = static_cast<JsonSerializer>(dataPackage.data).getString();
 		}
 		workload.callStack = "Interactions::createInteractionResponseAsync()";

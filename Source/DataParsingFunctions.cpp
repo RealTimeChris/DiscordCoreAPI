@@ -3888,7 +3888,7 @@ namespace DiscordCoreAPI {
 
 		theData.bitrate = getUint32(jsonObjectData, "bitrate");
 
-		theData.contentLength = getUint32(jsonObjectData, "contentLength");
+		theData.contentLength = strtoull(getString(jsonObjectData, "contentLength"));
 
 		theData.fps = getUint32(jsonObjectData, "fps");
 
@@ -3927,6 +3927,7 @@ namespace DiscordCoreAPI {
 	}
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, YouTubeFormatVector& theData) {
+
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["streamingData"]["formats"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {

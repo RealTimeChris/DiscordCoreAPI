@@ -193,8 +193,17 @@ namespace DiscordCoreAPI {
 							return true;
 						}
 						case 4: {
-							std::string theSecretKey = getString(thePayload["d"], "secret_key");
-							this->secretKeySend = theSecretKey;
+							auto theObject = getObject(thePayload.value(), "d");
+							if (theObject.didItSucceed) {
+								auto theArray = getArray(theObject, "secret_key");
+								if (theArray.didItSucceed) {
+									std::string theSecretKey{};
+									for (auto iterator: theArray.theArray) {
+										theSecretKey.push_back(static_cast<uint8_t>(iterator.get_uint64().take_value()));
+									}
+									this->secretKeySend = theSecretKey;
+								}
+							}
 							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 							return true;
 						}
@@ -212,7 +221,6 @@ namespace DiscordCoreAPI {
 						}
 						case 8: {
 							auto theHeartBeat = static_cast<uint32_t>(getFloat(thePayload["d"], "heartbeat_interval"));
-							std::cout << "HEARTBEAT INTERVAL: " << theHeartBeat << std::endl;
 							this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ theHeartBeat } };
 							this->areWeHeartBeating = true;
 							this->connectionState.store(VoiceConnectionState::Sending_Identify);
@@ -461,7 +469,6 @@ namespace DiscordCoreAPI {
 		StopWatch theStopWatch{ 20000ms };
 		StopWatch theSendSilenceStopWatch{ 5000ms };
 		while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
-			std::cout << "WERE CONNECTED TO VOICE!" << std::endl;
 			switch (this->activeState.load()) {
 				case VoiceActiveState::Connecting: {
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Connecting) {
@@ -522,6 +529,7 @@ namespace DiscordCoreAPI {
 					}
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
+						
 						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(this->audioData);
 						if (!this->streamSocket) {
 							while (this->theFrameQueue.size() > 0) {
@@ -749,7 +757,6 @@ namespace DiscordCoreAPI {
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE COLLECTING INIT DATA!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -763,7 +770,6 @@ namespace DiscordCoreAPI {
 					DiscordCoreInternal::ConnectionResult::No_Error) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE INITIALIZIGN WEBSOCKET! 0101" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -776,7 +782,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE INITIALIZIGN WEBSOCKET! 0202" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -792,7 +797,6 @@ namespace DiscordCoreAPI {
 				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify) {
 					if (theStopWatch.hasTimePassed()) {
 						this->onClosed();
-						std::cout << "FAILING THE COLLECTING HELLO!" << std::endl;
 						return;
 					}
 					WebSocketSSLShard::processIO(10);
@@ -812,7 +816,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE SENDING IDENTIFY!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -825,7 +828,6 @@ namespace DiscordCoreAPI {
 				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
 					if (theStopWatch.hasTimePassed()) {
 						this->onClosed();
-						std::cout << "FAILING THE COLLECTING READY!" << std::endl;
 						return;
 					}
 					WebSocketSSLShard::processIO(10);
@@ -838,7 +840,6 @@ namespace DiscordCoreAPI {
 				if (!this->voiceConnect()) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE DATAGRAM SOCKET!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -856,7 +857,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING THE SENDING SELECT-PROTOCOL!" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -869,7 +869,6 @@ namespace DiscordCoreAPI {
 				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
 					if (theStopWatch.hasTimePassed()) {
 						this->onClosed();
-						std::cout << "FAILING THE COLLECTING SESSION-DESCRIPTION!" << std::endl;
 						return;
 					}
 					WebSocketSSLShard::processIO(10);

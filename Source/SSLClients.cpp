@@ -308,7 +308,6 @@ namespace DiscordCoreInternal {
 		} else {
 			stringNew = baseUrl;
 		}
-		std::cout << "CONNECTION ADDRESS: " << baseUrl << ", CONNECTION PORT: "<< portNew<< std::endl;
 		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
@@ -650,7 +649,7 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
-		std::cout << "CONNECTION ADDRESS: " << baseUrl << ", CONNECTION PORT: " << portNew << std::endl;
+
 		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("HttpsSSLClient::connect::getaddrinfo()") << endl;
@@ -978,7 +977,7 @@ namespace DiscordCoreInternal {
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
-		std::cout << "CONNECTION ADDRESS: " << baseUrlNew << ", CONNECTION PORT: " << portNew << std::endl;
+
 		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
 			return false;
 		}
@@ -1041,7 +1040,6 @@ namespace DiscordCoreInternal {
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->theSocket;
 		readWriteSet.events = POLLIN | POLLOUT;
-
 		if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 			this->disconnect();
 			return;
@@ -1099,7 +1097,6 @@ namespace DiscordCoreInternal {
 				this->disconnect();
 				return;
 			} else {
-				std::cout << "BYTES WRITTEN: " << this->outputBuffers.front() << std::endl;
 				this->outputBuffers.erase(this->outputBuffers.begin());
 			}
 		}

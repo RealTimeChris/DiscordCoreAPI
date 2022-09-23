@@ -815,7 +815,6 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(theObject, theGuildMember);
 												DiscordCoreAPI::Snowflake userId{ theGuildMember.id.operator const size_t() };
 												DiscordCoreAPI::Snowflake guildId{ theGuildMember.guildId.operator const size_t() };
-												std::cout << "THE USER ID: " << userId << ", THE GUILD ID: " << guildId << std::endl;
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
 													DiscordCoreAPI::GuildMemberData theDataNew{};
@@ -849,7 +848,6 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::Snowflake userId{ theGuildMember.id.operator const size_t() };
 												DiscordCoreAPI::Snowflake guildId{ theGuildMember.guildId.operator const size_t() };
 												DiscordCoreAPI::GuildData theGuild{};
-												std::cout << "THE USER ID: " << userId << ", THE GUILD ID: " << guildId << std::endl;
 												theGuild.id = guildId.operator const size_t();
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::removeGuildMember(theGuildMember);
@@ -882,7 +880,6 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(theObject, theGuildMember);
 												DiscordCoreAPI::Snowflake userId{ theGuildMember.id.operator const size_t() };
 												DiscordCoreAPI::Snowflake guildId{ theGuildMember.guildId.operator const size_t() };
-												std::cout << "THE USER ID: " << userId<< ", THE GUILD ID: " << guildId << std::endl;
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
 													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
 													DiscordCoreAPI::GuildMemberData theDataNew{};
@@ -918,7 +915,6 @@ namespace DiscordCoreInternal {
 												}
 												DiscordCoreAPI::parseObject(theObject["role"], theRole);
 												DiscordCoreAPI::Snowflake roleId{ theRole.id.operator const size_t() };
-												std::cout << "THE ROLE ID: " << roleId << ", THE GUILD ID: " << guildId << std::endl;
 												DiscordCoreAPI::GuildData theGuild{};
 												theGuild.id = guildId.operator const size_t();
 												if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
@@ -947,7 +943,6 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::parseObject(theObject["role"], theRole);
 												DiscordCoreAPI::Snowflake roleId{ theRole.id.operator const size_t() };
 												DiscordCoreAPI::Snowflake guildId{ theRole.guildId.operator const size_t() };
-												std::cout << "THE ROLE ID: " << roleId << ", THE GUILD ID: " << guildId << std::endl;
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
 													DiscordCoreAPI::Roles::insertRole(std::move(theRole));
 													theRolePtr = &DiscordCoreAPI::Roles::cache.at(DiscordCoreAPI::Roles::getCachedRoleAsync(
@@ -1208,7 +1203,6 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnMessageCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageCreationData>() };
 											dataPackage->message = *message;
 											for (auto& [key, value]: DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::Message>::objectsBufferMap) {
-												std::cout << "SENDING THE MESSAGE TO: " << key << std::endl;
 												value->send(*message);
 											}
 											this->discordCoreClient->eventManager.onMessageCreationEvent(*dataPackage);
@@ -1227,7 +1221,6 @@ namespace DiscordCoreInternal {
 											std::unique_ptr<DiscordCoreAPI::OnMessageUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageUpdateData>() };
 											DiscordCoreAPI::parseObject(theObject, dataPackage->messageNew);
 											for (auto& [key, value]: DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::Message>::objectsBufferMap) {
-												std::cout << "SENDING THE UPDATE MESSAGE TO: " << key << std::endl;
 												value->send(dataPackage->messageNew);
 											}
 											this->discordCoreClient->eventManager.onMessageUpdateEvent(*dataPackage);
@@ -1373,12 +1366,10 @@ namespace DiscordCoreInternal {
 											this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 											if (this->areWeCollectingData && !this->stateUpdateCollected && !this->serverUpdateCollected &&
 												dataPackage->voiceStateData.userId.operator const size_t() == this->userId.operator const size_t()) {
-												std::cout << "WERE COLLECTING VOICE STATE UPDATE DATA!" << std::endl;
 												this->voiceConnectionData = VoiceConnectionData{};
 												this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 												this->stateUpdateCollected = true;
 											} else if (this->areWeCollectingData && !this->stateUpdateCollected) {
-												std::cout << "WERE COLLECTING VOICE STATE UPDATE DATA!" << std::endl;
 												this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
 												if (this->voiceConnectionDataBufferMap.contains(dataPackage->voiceStateData.guildId.operator const size_t())) {
 													this->voiceConnectionDataBufferMap[dataPackage->voiceStateData.guildId.operator const size_t()]->send(this->voiceConnectionData);
@@ -1402,11 +1393,9 @@ namespace DiscordCoreInternal {
 											this->voiceConnectionData.endPoint = dataPackage->endpoint;
 											this->voiceConnectionData.token = dataPackage->token;
 											if (this->areWeCollectingData && !this->serverUpdateCollected && !this->stateUpdateCollected) {
-												std::cout << "WERE COLLECTING VOICE SERVER UPDATE DATA!" << std::endl;
 												this->voiceConnectionData = VoiceConnectionData{};
 												this->serverUpdateCollected = true;
 											} else if (this->areWeCollectingData && !this->serverUpdateCollected) {
-												std::cout << "WERE COLLECTING VOICE SERVER UPDATE DATA!" << std::endl;
 												if (this->voiceConnectionDataBufferMap.contains(dataPackage->guildId.operator const size_t())) {
 													this->voiceConnectionDataBufferMap[dataPackage->guildId.operator const size_t()]->send(this->voiceConnectionData);
 												}

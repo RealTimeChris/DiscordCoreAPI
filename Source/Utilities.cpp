@@ -468,7 +468,6 @@ namespace DiscordCoreAPI {
 		std::string theString{ "{" };
 		this->theState = JsonParserState::Starting_Object;
 		for (auto iterator = this->theJsonData.begin(); iterator != this->theJsonData.end(); ++iterator) {
-			std::cout << "WERE HERE THIS IS ITS!" << std::endl;
 			if (this->theState == JsonParserState::Adding_Object_Elements|| this->theState == JsonParserState::Adding_Array_Elements) {
 				theString += ",";
 			}
@@ -589,7 +588,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 		theString += "}";
-		std::cout << "THE STRING FINAL 0101: " << theString << std::endl;
 		return theString;
 	}
 

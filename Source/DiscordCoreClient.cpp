@@ -30,10 +30,10 @@
 namespace DiscordCoreAPI {
 
 	namespace Globals {
+		SongAPIMap songAPIMap{};
 		VoiceConnectionMap voiceConnectionMap{};
 		SoundCloudAPIMap soundCloudAPIMap{};
 		YouTubeAPIMap youtubeAPIMap{};
-		SongAPIMap songAPIMap{};
 		std::atomic_bool doWeQuit{ false };
 	}
 
@@ -64,7 +64,6 @@ namespace DiscordCoreAPI {
 		theGuildNew.id = guildId;
 		GuildData* theGuild = &Guilds::cache.at(theGuildNew);
 		if (!Globals::voiceConnectionMap.contains(guildId)) {
-			std::cout << "WE DONT HAVE THE VOICE CONNECTION!" << std::endl;
 			uint64_t theShardId{ (guildId >> 22) % theGuild->discordCoreClient->configManager.getTotalShardCount() };
 			uint64_t baseSocketIndex{ theShardId % theGuild->discordCoreClient->baseSocketAgentMap.size() };
 			auto baseSocketAgent = theGuild->discordCoreClient->baseSocketAgentMap[baseSocketIndex].get();
@@ -145,7 +144,6 @@ namespace DiscordCoreAPI {
 		}
 		this->configManager = ConfigManager{ configData };
 		if (this->configManager.doWePrintFFMPEGSuccessMessages()) {
-			std::cout << "WERE LOGGING THE STUFF!" << std::endl;
 			av_log_set_level(AV_LOG_INFO);
 		}
 		if (this->configManager.doWePrintFFMPEGErrorMessages()) {

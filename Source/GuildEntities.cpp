@@ -172,7 +172,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildData::disconnect() {
-		std::cout << "THE GUILD ID: " << this->id << std::endl;
 		if (DiscordCoreClient::getVoiceConnection(this->id)) {
 			UpdateVoiceStateData updateVoiceData{};
 			updateVoiceData.channelId = 0;

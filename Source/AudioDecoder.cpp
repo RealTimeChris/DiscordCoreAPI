@@ -224,7 +224,6 @@ namespace DiscordCoreInternal {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(std::move(frameData));
 			stream->areWeQuitting.store(true);
-			std::cout << "TIME PASSED!" << std::endl;
 			return AVERROR_EOF;
 		}
 		if (stream->currentBuffer.size() > 0) {
@@ -237,8 +236,6 @@ namespace DiscordCoreInternal {
 			frameData.sampleCount = -5;
 			stream->outDataBuffer.send(std::move(frameData));
 			stream->areWeQuitting.store(true);
-			std::cout << "TOTAL FILE SIZE: " << stream->totalFileSize << std::endl;
-			std::cout << "WE RAN OUT OF BUFFER SPACE!" << std::endl;
 			return static_cast<int32_t>(stream->bytesRead);
 		}
 		return static_cast<int32_t>(stream->bytesRead);
@@ -255,7 +252,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			this->ioContext = avio_alloc_context(theBuffer, static_cast<int32_t>(this->bufferMaxSize - 1), 0, this, &AudioDecoder::FileStreamRead, 0, 0);
+			this->ioContext = avio_alloc_context(theBuffer, static_cast<int32_t>(this->bufferMaxSize - 1), 0, this, &AudioDecoder::ReadBufferData, 0, 0);
 
 			if (this->ioContext == nullptr) {
 				this->haveWeFailedBool.store(true);
@@ -365,7 +362,6 @@ namespace DiscordCoreInternal {
 					this->audioDecodeContext->sample_fmt, this->audioDecodeContext->sample_rate, 0, nullptr);
 				swr_init(this->swrContext);
 				if (this->configManager->doWePrintFFMPEGSuccessMessages()) {
-					std::cout << "WERE PRINTING FFMPEG SUCCCESS MESSAGES!" << std::endl;
 					av_dump_format(this->formatContext, 0, "memory", 0);
 				}
 			}
@@ -459,22 +455,14 @@ namespace DiscordCoreInternal {
 						}
 					}
 				} else {
-					std::cout << "IT WASNT EQUAL!" << std::endl;
 					break;
 				}
 				this->frame = av_frame_alloc();
 				this->newFrame = av_frame_alloc();
 				this->packet = av_packet_alloc();
 				if (stopToken.stop_requested() || this->areWeQuitting.load()) {
-					std::cout << "IT WAS STOP REQUESTED OR WE QUIT!" << std::endl;
 					break;
 				}
-			}
-			if (this->areWeQuitting.load()) {
-				std::cout << "IT WE QUIT!" << std::endl;
-			}
-			if (stopToken.stop_requested()) {
-				std::cout << "STOP WAS REQUESTED!" << std::endl;
 			}
 			if (this->configManager->doWePrintFFMPEGSuccessMessages()) {
 				cout << DiscordCoreAPI::shiftToBrightGreen() << "Completed decoding!" << endl << DiscordCoreAPI::reset() << endl << endl;

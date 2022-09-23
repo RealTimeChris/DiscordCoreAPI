@@ -130,7 +130,6 @@ namespace DiscordCoreInternal {
 			auto jsonObject = theParser.iterate(responseData.responseMessage.data(), responseData.responseMessage.length(), responseData.responseMessage.capacity());
 			DiscordCoreAPI::YouTubeFormatVector theVector{};
 			DiscordCoreAPI::parseObject(jsonObject, theVector);
-			std::cout << "THE RESPONSE: " << responseData.responseMessage << std::endl;
 			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };
 			for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {
@@ -193,7 +192,6 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI::Song YouTubeRequestBuilder::collectFinalSong(DiscordCoreAPI::Song& newSong) {
 		newSong.firstDownloadUrl = this->baseUrl + "/watch?v=" + newSong.songId + "&hl=en";
 		newSong = this->constructDownloadInfo(newSong, 0);
-		std::cout << "THE FIRST DOWNLOAD URL: " << newSong.firstDownloadUrl << std::endl;
 		return newSong;
 	}
 
@@ -378,7 +376,6 @@ namespace DiscordCoreInternal {
 									submissionString = std::move(theCurrentString);
 									theCurrentString.clear();
 								}
-								std::cout << "SUBMITTED FOR DECODING FRAME DATA: " << submissionString.data() << std::endl;
 								audioDecoder->submitDataForDecoding(std::move(submissionString));
 								bytesReadTotal = streamSocket->getBytesRead();
 							}
@@ -393,9 +390,6 @@ namespace DiscordCoreInternal {
 						while (doWeContinue) {
 							DiscordCoreAPI::AudioFrameData rawFrame{};
 							doWeContinue = audioDecoder->getFrame(rawFrame);
-							if (rawFrame.data.size() > 0) {
-								std::cout << "ENCODED FRAME DATA: (SAMPLE COUNT)" << rawFrame.sampleCount << rawFrame.data.data() << std::endl;
-							}
 							if (rawFrame.sampleCount == -5) {
 								doWeContinue = false;
 								break;
@@ -406,7 +400,6 @@ namespace DiscordCoreInternal {
 						}
 						for (auto& value: frames) {
 							auto encodedFrame = audioEncoder->encodeSingleAudioFrame(value);
-							std::cout << "ENCODED FRAME DATA: " << encodedFrame.data.data() << std::endl;
 							encodedFrame.guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId.operator const size_t();
 							DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(encodedFrame));
 						}
