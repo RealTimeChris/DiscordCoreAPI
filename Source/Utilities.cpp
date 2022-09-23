@@ -1480,13 +1480,13 @@ namespace DiscordCoreAPI {
 		auto theSize = theString.size();
 		for (int32_t x = 0; x < theSize; x++) {
 			switch (static_cast<char>(theString[x])) {
-				case 0x27: {
-					break;
-				}
 				case 0x22: {
 					break;
 				}
 				case 0x5C: {
+					break;
+				}
+				case 0x00: {
 					break;
 				}
 				case 0x07: {
@@ -1499,12 +1499,17 @@ namespace DiscordCoreAPI {
 					theStringNew += 'b';
 					break;
 				}
+				case 0x0C: {
+					theStringNew += '\\';
+					theStringNew += 'f';
+					break;
+				}
 				case 0x0A: {
 					theStringNew += '\\';
 					theStringNew += 'n';
 					break;
 				}
-				case 0x0d: {
+				case 0x0D: {
 					theStringNew += '\\';
 					theStringNew += 'r';
 					break;
@@ -1524,6 +1529,11 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+		if (theStringNew.size() > 1) {
+			if (theStringNew[theStringNew.size() - 1] == '\0') {
+				theStringNew.erase(theStringNew.size() - 1);
+			}
+		}		
 		return theStringNew;
 	}
 	template<typename Object> std::unordered_map<std::string, UnboundedMessageBlock<Object>*> ObjectCollector<Object>::objectsBufferMap{};

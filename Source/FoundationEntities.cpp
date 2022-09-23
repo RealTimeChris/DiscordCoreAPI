@@ -241,15 +241,11 @@ namespace DiscordCoreAPI {
 
 	EmbedData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		if (this->fields.size() > 0) {
-			theData.addNewArray("fields");
-			for (auto& value2: this->fields) {
-				theData.appendArrayElement(value2);
-			}
-			theData.endArray();
-		} else {
-			theData.appendStructElement("fields", nullptr);
+		theData.addNewArray("fields");
+		for (auto& value2: this->fields) {
+			theData.appendArrayElement(value2);
 		}
+		theData.endArray();
 		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());		
 		theData.addNewStructure("footer");
 		theData.appendStructElement("proxy_icon_url", this->footer.proxyIconUrl);
