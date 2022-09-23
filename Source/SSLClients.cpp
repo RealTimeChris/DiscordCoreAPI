@@ -247,14 +247,14 @@ namespace DiscordCoreInternal {
 		return theReturn;
 	}
 
-	int64_t RingBuffer::getFreeSpace() {
+	uint64_t RingBuffer::getFreeSpace() {
 		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size()))
 			return this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
 		else
 			return (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
 	}
 
-	int64_t RingBuffer::getUsedSpace() {
+	uint64_t RingBuffer::getUsedSpace() {
 		return this->theArray.size() - this->getFreeSpace();
 	}
 	

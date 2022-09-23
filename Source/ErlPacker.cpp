@@ -84,7 +84,7 @@ namespace DiscordCoreInternal {
 
 	void ErlPacker::writeObject(simdjson::ondemand::value jsonData) {
 		bool add_comma{ false };
-		this->appendMapHeader(jsonData.count_fields().take_value());
+		this->appendMapHeader(static_cast<uint32_t>(jsonData.count_fields().take_value()));
 		for (auto field: jsonData.get_object()) {
 			if (add_comma) {
 			}
@@ -93,7 +93,7 @@ namespace DiscordCoreInternal {
 			std::string theKey = theStream.str();
 
 			auto theSize = theKey.size();
-			this->appendBinaryExt(theKey, theSize);
+			this->appendBinaryExt(theKey, static_cast<uint32_t>(theSize));
 			this->singleValueJsonToETF(field.value());
 			add_comma = true;
 		}
@@ -102,7 +102,7 @@ namespace DiscordCoreInternal {
 	void ErlPacker::writeString(simdjson::ondemand::value jsonData) {
 		std::stringstream theStream{};
 		theStream << jsonData.get_string().take_value();
-		auto theSize = theStream.str().size();
+		auto theSize = static_cast<uint32_t>(theStream.str().size());
 		this->appendBinaryExt(theStream.str(), theSize);
 	}
 
@@ -133,7 +133,7 @@ namespace DiscordCoreInternal {
 
 	void ErlPacker::writeArray(simdjson::ondemand::value jsonData) {
 		bool add_comma{ false };
-		this->appendListHeader(jsonData.count_elements().take_value());
+		this->appendListHeader(static_cast<uint32_t>(jsonData.count_elements().take_value()));
 		for (auto element: jsonData.get_array()) {
 			this->singleValueJsonToETF(element.value());
 			add_comma = true;
@@ -246,7 +246,7 @@ namespace DiscordCoreInternal {
 			throw ErlPackError{ "this->readString() Error: readString() past end of buffer.\n\n" };
 		}
 		char* theStringNew = ( char* )this->buffer.data() + this->offSet;
-		for (int32_t x = 0; x < length; ++x) {
+		for (uint32_t x = 0; x < length; ++x) {
 			switch (static_cast<char>(theStringNew[x])) {
 				case '\b': {
 					theStringNew[x] = static_cast<char>('b');
