@@ -284,7 +284,7 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("name", this->provider.name);
 		theData.appendStructElement("url", this->provider.url);
 		theData.endStructure();
-		theData.appendStructElement("description", "TEST");
+		theData.appendStructElement("description", escapeCharacters(this->description));
 		theData.appendStructElement("timestamp", this->timestamp);
 		theData.appendStructElement("title", escapeCharacters(this->title));
 		theData.appendStructElement("color", realColorVal);
