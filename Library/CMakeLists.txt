@@ -64,7 +64,6 @@ target_include_directories(
 )
 
 find_package(FFMPEG MODULE REQUIRED)
-find_package(NLOHMANN MODULE REQUIRED)
 find_package(OPENSSL MODULE REQUIRED)
 find_package(OPUS MODULE REQUIRED)
 find_package(SIMDJSON MODULE REQUIRED)
@@ -76,7 +75,6 @@ target_link_libraries(
 	$<$<TARGET_EXISTS:FFMPEG::AVCodec>:FFMPEG::AVCodec>
 	$<$<TARGET_EXISTS:FFMPEG::AVUtil>:FFMPEG::AVUtil>
 	$<$<TARGET_EXISTS:FFMPEG::SWResample>:FFMPEG::SWResample>
-	$<$<TARGET_EXISTS:NLOHMANN::Json>:NLOHMANN::Json>
 	$<$<TARGET_EXISTS:OPENSSL::Ssl>:OPENSSL::Ssl>
 	$<$<TARGET_EXISTS:OPENSSL::Crypto>:OPENSSL::Crypto>
 	$<$<TARGET_EXISTS:OPUS::Opus>:OPUS::Opus>
