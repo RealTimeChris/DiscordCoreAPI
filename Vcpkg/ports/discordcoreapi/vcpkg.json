@@ -8,6 +8,7 @@
   "dependencies": [
     "ffmpeg",
     "libsodium",
+    "nlohmann-json",
     "openssl",
     "opus",
     "simdjson",
