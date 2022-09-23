@@ -33,7 +33,6 @@
 #include <discordcoreapi/EventEntities.hpp>
 #include <discordcoreapi/SSLClients.hpp>
 #include <discordcoreapi/ThreadPool.hpp>
-#include <simdjson.h>
 
 namespace DiscordCoreInternal {
 

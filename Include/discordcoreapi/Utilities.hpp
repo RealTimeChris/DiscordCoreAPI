@@ -68,7 +68,6 @@ inline uint64_t ntohll(uint64_t x) {
 #endif
 
 #include <condition_variable>
-#include <nlohmann/json.hpp>
 #include <source_location>
 #include <unordered_set>
 #include <shared_mutex>
@@ -86,6 +85,7 @@ inline uint64_t ntohll(uint64_t x) {
 #include <thread>
 #include <mutex>
 #include <queue>
+#include <array>
 #include <map>
 
 #ifdef max
