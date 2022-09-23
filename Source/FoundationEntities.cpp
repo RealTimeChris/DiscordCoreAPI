@@ -529,7 +529,7 @@ namespace DiscordCoreAPI {
 					component.addNewStructure("emoji");
 					component.appendStructElement("animated", valueNew.emoji.animated);
 					component.appendStructElement("name", std::string{ valueNew.emoji.name });
-					if (valueNew.emoji.id.operator const size_t() != 0) {
+					if (valueNew.emoji.id.operator size_t() != 0) {
 						component.appendStructElement("id", std::to_string(valueNew.emoji.id));
 					}
 					component.endStructure();
@@ -550,7 +550,7 @@ namespace DiscordCoreAPI {
 							option.appendStructElement("name", std::string{ value01.emoji.name });
 							option.appendStructElement("animated", value01.emoji.animated);
 						}
-						if (value01.emoji.id.operator const size_t() != 0) {
+						if (value01.emoji.id.operator size_t() != 0) {
 							option.appendStructElement("id", std::to_string(value01.emoji.id));
 						}
 						option.appendStructElement("description", value01.description);
@@ -1124,10 +1124,10 @@ namespace DiscordCoreAPI {
 		if (inputEventData.interactionData->data.applicationCommandData.name != "") {
 			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
 		}
-		if (inputEventData.interactionData->data.messageInteractionData.targetId.operator const size_t() != 0) {
+		if (inputEventData.interactionData->data.messageInteractionData.targetId.operator size_t() != 0) {
 			this->optionsArgs.theValues.emplace("target_id",
 				JsonValueReal{ .theValue = std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId), .theType = ObjectType::String });
-		} else if (inputEventData.interactionData->data.userInteractionData.targetId.operator const size_t() != 0) {
+		} else if (inputEventData.interactionData->data.userInteractionData.targetId.operator size_t() != 0) {
 			this->optionsArgs.theValues.emplace("target_id",
 				JsonValueReal{ .theValue = std::to_string(inputEventData.interactionData->data.userInteractionData.targetId), .theType = ObjectType::String });
 		}

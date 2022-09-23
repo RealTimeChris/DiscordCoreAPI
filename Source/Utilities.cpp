@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	Snowflake::operator const size_t() noexcept {
+	Snowflake::operator size_t() noexcept {
 		return this->theId;
 	}
 
@@ -1480,15 +1480,29 @@ namespace DiscordCoreAPI {
 		auto theSize = theString.size();
 		for (int32_t x = 0; x < theSize; x++) {
 			switch (static_cast<char>(theString[x])) {
-				
+				case 0x27: {
+					theStringNew += '\\';
+					theStringNew += '\'';
+					break;
+				}
+				case 0x22: {
+					theStringNew += '\\';
+					theStringNew += '"';
+					break;
+				}
+				case 0x3F: {
+					theStringNew += '\\';
+					theStringNew += '?';
+					break;
+				}
+				case 0x07: {
+					theStringNew += '\\';
+					theStringNew += 'a';
+					break;
+				}
 				case 0x08: {
 					theStringNew += '\\';
 					theStringNew += 'b';
-					break;
-				}
-				case 0x09: {
-					theStringNew += '\\';
-					theStringNew += 't';
 					break;
 				}
 				case 0x0A: {
@@ -1496,28 +1510,19 @@ namespace DiscordCoreAPI {
 					theStringNew += 'n';
 					break;
 				}
-				case 0x0B: {
-					theStringNew += '\\';
-					theStringNew += 'v';
-					break;
-				}
-				case 0x0C: {
-					theStringNew += '\\';
-					theStringNew += 'f';
-					break;
-				}
-				case 0x0D: {
+				case 0x0d: {
 					theStringNew += '\\';
 					theStringNew += 'r';
 					break;
 				}
-				case 0x22: {
-					//theStringNew += '\\';
+				case 0x09: {
+					theStringNew += '\\';
+					theStringNew += 't';
 					break;
 				}
-				case 0x5C: {
+				case 0x0B: {
 					theStringNew += '\\';
-					theStringNew += '\\';
+					theStringNew += 'v';
 					break;
 				}
 				default: {

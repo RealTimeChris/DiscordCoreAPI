@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 
 	CreateChannelInviteData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		if (this->targetUserId.operator const size_t() != 0) {
+		if (this->targetUserId.operator size_t() != 0) {
 			theData.appendStructElement("target_application_id", std::to_string(this->targetApplicationId));
 			theData.appendStructElement("target_user_id", std::to_string(this->targetUserId));
 			theData.appendStructElement("target_type", this->targetType);
@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->modifyChannelData) {
 			JsonSerializer dataNew{};
 			dataNew.appendStructElement("lock_permissions", value.lockPermissions);
-			if (value.parentId.operator const size_t() != 0) {
+			if (value.parentId.operator size_t() != 0) {
 				dataNew.appendStructElement("parent_id", std::to_string(value.parentId));
 			}
 			dataNew.appendStructElement("position", value.position);
@@ -380,7 +380,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::insertChannel(ChannelData channel) {
-		if (channel.id.operator const size_t() == 0) {
+		if (channel.id.operator size_t() == 0) {
 			return;
 		}
 		if (Channels::doWeCacheChannels) {

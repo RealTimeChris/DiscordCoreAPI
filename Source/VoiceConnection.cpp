@@ -229,7 +229,7 @@ namespace DiscordCoreAPI {
 						case 13: {
 							auto theUserId = stoull(getString(thePayload["d"], "user_id"));
 							for (auto& [key, value]: this->voiceUsers) {
-								if (theUserId == value.theUserId.operator const size_t()) {
+								if (theUserId == value.theUserId.operator size_t()) {
 									theLock00.lock();
 									this->voiceUsers.erase(key);
 									break;
@@ -555,7 +555,7 @@ namespace DiscordCoreAPI {
 							case AudioFrameType::Skip: {
 								SongCompletionEventData completionEventData{};
 								completionEventData.guild = Guilds::getCachedGuildAsync({ .guildId = this->voiceConnectInitData.guildId }).get();
-								if (this->currentGuildMemberId.operator const size_t() != 0) {
+								if (this->currentGuildMemberId.operator size_t() != 0) {
 									completionEventData.guildMember =
 										GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = this->currentGuildMemberId, .guildId = this->voiceConnectInitData.guildId })
 											.get();
@@ -750,8 +750,8 @@ namespace DiscordCoreAPI {
 		}
 		switch (this->connectionState.load()) {
 			case VoiceConnectionState::Collecting_Init_Data: {
-				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId.operator const size_t()] = &this->voiceConnectionDataBuffer;
-				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId.operator const size_t()]->clearContents();
+				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId.operator size_t()] = &this->voiceConnectionDataBuffer;
+				this->baseShard->voiceConnectionDataBufferMap[this->voiceConnectInitData.guildId.operator size_t()]->clearContents();
 				this->baseShard->getVoiceConnectionData(this->voiceConnectInitData);
 
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {

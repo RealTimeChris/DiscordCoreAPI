@@ -371,7 +371,7 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, UserData& theData) {
 		theData.id = getId(jsonObjectData, "id");
-		if (theData.id.operator const size_t() == 0) {
+		if (theData.id.operator size_t() == 0) {
 			return;
 		}
 

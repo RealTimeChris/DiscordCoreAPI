@@ -132,26 +132,26 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId) + "/users";
 		if (dataPackage.limit != 0) {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
-			if (dataPackage.after.operator const size_t() != 0) {
+			if (dataPackage.after.operator size_t() != 0) {
 				workload.relativePath += "&after=" + std::to_string(dataPackage.after);
 			}
-			if (dataPackage.before.operator const size_t() != 0) {
+			if (dataPackage.before.operator size_t() != 0) {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";
 			}
 		}
-		if (dataPackage.after.operator const size_t() != 0) {
+		if (dataPackage.after.operator size_t() != 0) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.after);
-			if (dataPackage.before.operator const size_t() != 0) {
+			if (dataPackage.before.operator size_t() != 0) {
 				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
 			}
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";
 			}
 		}
-		if (dataPackage.before.operator const size_t() != 0) {
+		if (dataPackage.before.operator size_t() != 0) {
 			workload.relativePath += "?before=" + std::to_string(dataPackage.before);
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";

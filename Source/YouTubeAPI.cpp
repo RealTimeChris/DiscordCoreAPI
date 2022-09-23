@@ -213,7 +213,7 @@ namespace DiscordCoreInternal {
 	YouTubeAPI::YouTubeAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClientNew, const DiscordCoreAPI::Snowflake guildIdNew) {
 		this->configManager = configManagerNew;
 		this->httpsClient = httpsClientNew;
-		this->guildId = static_cast<DiscordCoreAPI::Snowflake>(guildIdNew).operator const size_t();
+		this->guildId = static_cast<DiscordCoreAPI::Snowflake>(guildIdNew).operator size_t();
 		if (YouTubeRequestBuilder::apiKey == "") {
 			YouTubeRequestBuilder::apiKey = this->collectApiKey();
 		}
@@ -400,7 +400,7 @@ namespace DiscordCoreInternal {
 						}
 						for (auto& value: frames) {
 							auto encodedFrame = audioEncoder->encodeSingleAudioFrame(value);
-							encodedFrame.guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId.operator const size_t();
+							encodedFrame.guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId.operator size_t();
 							DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(encodedFrame));
 						}
 					}

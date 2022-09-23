@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Users::insertUser(UserData user) {
-		if (user.id.operator const size_t() == 0) {
+		if (user.id.operator size_t() == 0) {
 			return;
 		}
 		if (Users::doWeCacheUsers) {

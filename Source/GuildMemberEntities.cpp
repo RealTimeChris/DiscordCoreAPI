@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("access_token", this->accessToken);
 		theData.addNewArray("roles");
 		for (auto& value: this->roles) {
-			theData.appendArrayElement(std::to_string(value.operator const size_t()));
+			theData.appendArrayElement(std::to_string(value.operator size_t()));
 		}
 		theData.endArray();
 		theData.appendStructElement("deaf", this->deaf);
@@ -49,10 +49,10 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("communication_disabled_until", static_cast<std::string>(this->communicationDisabledUntil));
 		theData.addNewArray("roles");
 		for (auto& value: this->roleIds) {
-			theData.appendArrayElement(std::to_string(value.operator const size_t()));
+			theData.appendArrayElement(std::to_string(value.operator size_t()));
 		}
 		theData.endArray();
-		if (this->newVoiceChannelId.operator const size_t() != 0) {
+		if (this->newVoiceChannelId.operator size_t() != 0) {
 			theData.appendStructElement("channel_id", std::to_string(this->newVoiceChannelId));
 			theData.appendStructElement("mute", this->mute);
 			theData.appendStructElement("deaf", this->deaf);
@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 	}
 
 	UserData GuildMemberData::getUserData() {
-		if (this->id.operator const size_t() != 0) {
+		if (this->id.operator size_t() != 0) {
 			return Users::getCachedUserAsync({ .userId = this->id }).get();
 		} else {
 			return {};
@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<GuildMember>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members";
-		if (dataPackage.after.operator const size_t() != 0) {
+		if (dataPackage.after.operator size_t() != 0) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.after);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
@@ -302,7 +302,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
-		if (guildMember.id.operator const size_t() == 0) {
+		if (guildMember.id.operator size_t() == 0) {
 			return;
 		}
 		if (GuildMembers::doWeCacheGuildMembers) {

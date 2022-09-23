@@ -194,7 +194,7 @@ namespace DiscordCoreInternal {
 	SoundCloudAPI::SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClient, const DiscordCoreAPI::Snowflake guildIdNew) {
 		this->configManager = configManagerNew;
 		this->httpsClient = httpsClient;
-		this->guildId = static_cast<DiscordCoreAPI::Snowflake>(guildIdNew).operator const size_t();
+		this->guildId = static_cast<DiscordCoreAPI::Snowflake>(guildIdNew).operator size_t();
 		if (SoundCloudRequestBuilder::clientId == "") {
 			SoundCloudRequestBuilder::clientId = this->collectClientId();
 		}
@@ -309,7 +309,7 @@ namespace DiscordCoreInternal {
 				} else {
 					for (auto& value: frames) {
 						auto encodedFrame = audioEncoder->encodeSingleAudioFrame(value);
-						encodedFrame.guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId.operator const size_t();
+						encodedFrame.guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId.operator size_t();
 						DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(encodedFrame));
 					}
 				}

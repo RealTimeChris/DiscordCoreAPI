@@ -232,7 +232,7 @@ namespace DiscordCoreAPI {
 		explicit Snowflake(const std::string) noexcept;
 		Snowflake& operator=(const size_t) noexcept;
 		explicit Snowflake(const size_t) noexcept;
-		operator const size_t() noexcept;
+		operator size_t() noexcept;
 
 	  protected:
 		mutable uint64_t theId{};
@@ -1622,7 +1622,7 @@ namespace DiscordCoreAPI {
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::Snowflake> {
 	std::size_t operator()(DiscordCoreAPI::Snowflake const& object) const noexcept {
-		return static_cast<DiscordCoreAPI::Snowflake>(object).operator const size_t();
+		return static_cast<DiscordCoreAPI::Snowflake>(object).operator size_t();
 	}
 };
 
