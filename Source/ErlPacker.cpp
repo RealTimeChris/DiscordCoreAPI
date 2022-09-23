@@ -285,6 +285,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				default: {
+					break;
 				}
 			}
 		}
