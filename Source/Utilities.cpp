@@ -1481,16 +1481,9 @@ namespace DiscordCoreAPI {
 		for (int32_t x = 0; x < theSize; x++) {
 			switch (static_cast<char>(theString[x])) {
 				case 0x27: {
-					theStringNew += '\\';
-					theStringNew += '\'';
 					break;
 				}
 				case 0x22: {
-					break;
-				}
-				case 0x3F: {
-					theStringNew += '\\';
-					theStringNew += '?';
 					break;
 				}
 				case 0x5C: {
