@@ -52,14 +52,14 @@ namespace DiscordCoreAPI {
 			this->quantityOfObjectToCollect = quantityToCollect;
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
-			this->collectorId = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			this->collectorId = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 			ObjectCollector::objectsBufferMap[this->collectorId] = &this->messagesBuffer;
 			this->run();
 			co_return this->messageReturnData;
 		}
 
 		void run() {
-			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 			int64_t elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
 				Message message{};
@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 
-				elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startingTime;
+				elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() - startingTime;
 			}
 		}
 

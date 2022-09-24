@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 
 				InputEventData newEvent = newArgs.eventData;
 
-				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 				int64_t previousPlayedTime{ 0 };
 				if (PlayQ::timeOfLastPlay.contains(newArgs.eventData.getGuildId())) {
 					previousPlayedTime = PlayQ::timeOfLastPlay.at(newArgs.eventData.getGuildId());
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 				dataPackage.setResponseType(InputEventResponseType::Deferred_Response);
 				newEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
 
-				previousPlayedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				previousPlayedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 				PlayQ::timeOfLastPlay.insert_or_assign(newArgs.eventData.getGuildId(), previousPlayedTime);
 
 				VoiceStateData voiceStateData{};

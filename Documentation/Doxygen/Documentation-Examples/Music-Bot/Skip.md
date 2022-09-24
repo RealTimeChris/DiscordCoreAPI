@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 				}
 				InputEventData newEvent = newArgs.eventData;
 
-				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 				int64_t previousSkippedTime{ 0 };
 				if (Skip::timeOfLastSkip.contains(newArgs.eventData.getGuildId())) {
 					previousSkippedTime = Skip::timeOfLastSkip.at(newArgs.eventData.getGuildId());
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				previousSkippedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				previousSkippedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 				Skip::timeOfLastSkip.insert_or_assign(newArgs.eventData.getGuildId(), previousSkippedTime);
 				VoiceConnection* voiceConnection{};
 				VoiceStateData voiceStateData{};

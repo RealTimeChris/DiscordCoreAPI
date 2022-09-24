@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 
 				InputEventData newEvent = newArgs.eventData;
 
-				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 				int64_t previousPlayedTime{ 0 };
 				if (Play::timeOfLastPlay.contains(newEvent.getGuildId())) {
 					previousPlayedTime = Play::timeOfLastPlay.at(newEvent.getGuildId());
@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				previousPlayedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				previousPlayedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 				Play::timeOfLastPlay.insert_or_assign(newEvent.getGuildId(), previousPlayedTime);
 
 				RespondToInputEventData dataPackage(newEvent);

@@ -414,7 +414,7 @@ namespace DiscordCoreAPI {
 								std::vector<Song> newVector{};
 								while (oldSongArray.songQueue.size() > 0) {
 									std::mt19937_64 randomEngine{ static_cast<uint32_t>(
-										std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) };
+										std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()) };
 									int32_t randomIndex = static_cast<uint32_t>(
 										(static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max()) * static_cast<float>(oldSongArray.songQueue.size())));
 									newVector.emplace_back(oldSongArray.songQueue.at(randomIndex));

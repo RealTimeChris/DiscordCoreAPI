@@ -507,7 +507,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case VoiceActiveState::Playing: {
-					DoubleTimePointNs startingValue{ std::chrono::system_clock::now().time_since_epoch() };
+					DoubleTimePointNs startingValue{ std::chrono::steady_clock::now().time_since_epoch() };
 					DoubleTimePointNs intervalCount{ std::chrono::nanoseconds{ 20000000 } };
 					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
 					int64_t frameCounter{ 0 };
@@ -570,13 +570,13 @@ namespace DiscordCoreAPI {
 						if (doWeBreak) {
 							break;
 						}
-						auto waitTime = targetTime - std::chrono::system_clock::now();
+						auto waitTime = targetTime - std::chrono::steady_clock::now();
 						nanoSleep(static_cast<uint64_t>(static_cast<double>(waitTime.count()) * 0.95f));
-						waitTime = targetTime - std::chrono::system_clock::now();
+						waitTime = targetTime - std::chrono::steady_clock::now();
 						if (waitTime.count() > 0 && static_cast<uint64_t>(waitTime.count()) < 20000000) {
 							spinLock(waitTime.count());
 						}
-						startingValue = std::chrono::system_clock::now();
+						startingValue = std::chrono::steady_clock::now();
 						if (newFrame.size() > 0) {
 							this->sendVoiceData(newFrame);
 						}
@@ -590,10 +590,10 @@ namespace DiscordCoreAPI {
 						this->audioData.data.clear();
 						this->audioData.sampleCount = 0;
 						this->audioData.type = AudioFrameType::Unset;
-						totalTime += std::chrono::system_clock::now() - startingValue;
+						totalTime += std::chrono::steady_clock::now() - startingValue;
 						auto intervalCountNew = DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - totalTime.time_since_epoch() / frameCounter }.time_since_epoch().count();
 						intervalCount = DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew) } };
-						targetTime = std::chrono::system_clock::now().time_since_epoch() + intervalCount;
+						targetTime = std::chrono::steady_clock::now().time_since_epoch() + intervalCount;
 					}
 					break;
 				}
@@ -913,7 +913,7 @@ namespace DiscordCoreAPI {
 		try {
 			if (WebSocketSSLShard::areWeStillConnected() && this->haveWeReceivedHeartbeatAck) {
 				JsonSerializer theData{};
-				theData.appendStructElement("d", std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+				theData.appendStructElement("d", std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 				theData.appendStructElement("op", int32_t(3));
 				std::string theString = this->stringifyJsonData(theData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendMessage(theString, true)) {

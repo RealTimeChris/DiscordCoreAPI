@@ -1398,17 +1398,17 @@ namespace DiscordCoreAPI {
 	}
 
 	void spinLock(uint64_t timeInNsToSpinLockFor) {
-		uint64_t startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		uint64_t startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 		uint64_t timePassed{ 0 };
 		while (timePassed < timeInNsToSpinLockFor) {
-			timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startTime;
+			timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() - startTime;
 		}
 	}
 
 	std::string generateBase64EncodedKey() {
 		std::string theReturnString{};
 		theReturnString.resize(16);
-		std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()) };
+		std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::steady_clock::now().time_since_epoch().count()) };
 		for (uint32_t x = 0; x < 16; ++x) {
 			theReturnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
 		}
