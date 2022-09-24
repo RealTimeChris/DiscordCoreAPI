@@ -1548,7 +1548,7 @@ namespace DiscordCoreAPI {
 			this->resetTimer();
 		}
 
-		StopWatch<TimeType>& operator=(const StopWatch<TimeType>& other) noexcept {
+		StopWatch<TimeType>& operator=(StopWatch<TimeType>& other) noexcept {
 			std::unique_lock theLock{ other.theMutex };
 			if (this != &other) {
 				this->maxNumberOfMs = other.maxNumberOfMs;
@@ -1557,7 +1557,7 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		StopWatch(const StopWatch<TimeType>& other) noexcept {
+		StopWatch(StopWatch<TimeType>& other) noexcept {
 			std::unique_lock theLock{ other.theMutex };
 			*this = other;
 			this->resetTimer();
@@ -1570,7 +1570,7 @@ namespace DiscordCoreAPI {
 		StopWatch<TimeType>& operator=(TimeType maxNumberOfMsNew) {
 			std::unique_lock theLock{ this->theMutex };
 			this->maxNumberOfMs = DoubleTimePoint{ maxNumberOfMsNew };
-			this->startTime = std::chrono::system_clock::now();
+			this->startTime = std::chrono::steady_clock::now();
 			return *this;
 		}
 
@@ -1581,14 +1581,14 @@ namespace DiscordCoreAPI {
 
 		uint64_t totalTimePassed() {
 			std::unique_lock theLock{ this->theMutex };
-			auto elapsedTime = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()) -
+			auto elapsedTime = std::chrono::duration_cast<TimeType>(std::chrono::steady_clock::now().time_since_epoch()) -
 				std::chrono::duration_cast<TimeType>(this->startTime.time_since_epoch());
 			return elapsedTime.count();
 		}
 
 		bool hasTimePassed() {
 			std::unique_lock theLock{ this->theMutex };
-			DoubleTimeDuration elapsedTime = std::chrono::system_clock::now() - this->startTime;
+			DoubleTimeDuration elapsedTime = std::chrono::steady_clock::now() - this->startTime;
 			if (elapsedTime >= this->maxNumberOfMs.time_since_epoch()) {
 				return true;
 			} else {
@@ -1601,7 +1601,7 @@ namespace DiscordCoreAPI {
 			if (theNewTime != 0) {
 				this->maxNumberOfMs = DoubleTimePoint{ TimeType{ theNewTime } };
 			}
-			this->startTime = std::chrono::system_clock::now();
+			this->startTime = std::chrono::steady_clock::now();
 		}
 
 	  protected:
