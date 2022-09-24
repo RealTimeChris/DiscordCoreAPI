@@ -253,9 +253,12 @@ namespace DiscordCoreInternal {
 		size_t theIndex{};
 		for (uint32_t x = 0; x < length; ++x) {
 			switch (static_cast<char>(theStringNew[x])) {
-				case '\0': {
+				case 0x00: {
+					break;
+				}
+				case 0x5C: {
 					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('0');
+					this->bufferString[theIndex + 1] = static_cast<char>('\\');
 					theFinalSize += 2;
 					theIndex += 2;
 					break;

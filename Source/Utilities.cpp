@@ -1483,9 +1483,12 @@ namespace DiscordCoreAPI {
 		size_t theIndex{};
 		for (uint32_t x = 0; x < theString.size(); ++x) {
 			switch (static_cast<char>(theString[x])) {
-				case '\0': {
+				case 0x00: {
+					break;
+				}
+				case 0x5C: {
 					theStringNew[theIndex] = static_cast<char>('\\');
-					theStringNew[theIndex + 1] = static_cast<char>('0');
+					theStringNew[theIndex + 1] = static_cast<char>('\\');
 					theIndex += 2;
 					break;
 				}
@@ -1537,15 +1540,22 @@ namespace DiscordCoreAPI {
 					theIndex += 2;
 					break;
 				}
-
 				default: {
-					theStringNew[theIndex] = theStringNew[x];
+					theStringNew[theIndex] = theString[x];
 					theIndex++;
 					break;
 				}
 			}
 		}
+		if (theStringNew.size() > 1) {
+			if (theStringNew[theStringNew.size() - 1] == '\0') {
+				theStringNew.erase(theStringNew.size() - 1);
+			}
+		}
+		theStringNew.resize(theIndex);
+		std::cout << "THE STRING: " << theStringNew << std::endl;
 		return theStringNew;
 	}
+
 	template<typename Object> std::unordered_map<std::string, UnboundedMessageBlock<Object>*> ObjectCollector<Object>::objectsBufferMap{};
 };
