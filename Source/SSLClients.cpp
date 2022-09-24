@@ -397,8 +397,8 @@ namespace DiscordCoreInternal {
 		return ConnectionResult::No_Error;
 	}
 
-	std::vector<WebSocketSSLClient*> WebSocketSSLClient::processIO(std::vector<WebSocketSSLClient*>& theVector) noexcept {
-		std::vector<WebSocketSSLClient*> theReturnValue{};
+	std::vector<WebSocketSSLShard*> WebSocketSSLClient::processIO(std::vector<WebSocketSSLShard*>& theVector) noexcept {
+		std::vector<WebSocketSSLShard*> theReturnValue{};
 		PollFDWrapper readWriteSet{};
 		for (uint32_t x = 0; x < theVector.size(); ++x) {
 			pollfd theWrapper{};
@@ -519,7 +519,7 @@ namespace DiscordCoreInternal {
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
 			if (!this->areWeAStandaloneSocket) {
-				while (this->handleBuffer(this)) {
+				while (this->handleBuffer(static_cast<WebSocketSSLShard*>(this))) {
 					std::cout << "SSL CLIENT WHILE 0303" << std::endl;
 				}
 			}
@@ -543,7 +543,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 		if (!this->areWeAStandaloneSocket) {
-			while (this->handleBuffer(this)) {
+			while (this->handleBuffer(static_cast<WebSocketSSLShard*>(this))) {
 				std::cout << "SSL CLIENT WHILE 0404" << std::endl;
 			}
 		}

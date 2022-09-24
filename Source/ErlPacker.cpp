@@ -241,56 +241,92 @@ namespace DiscordCoreInternal {
 		this->writeToBuffer(bufferNew);
 	}
 
-	const char* ErlPacker::readString(uint32_t length) {
+	size_t ErlPacker::readString(uint32_t length) {
 		if (this->offSet + static_cast<uint64_t>(length) > this->size) {
 			throw ErlPackError{ "this->readString() Error: readString() past end of buffer.\n\n" };
 		}
+		if (this->bufferString.size() <= length * 2) {
+			this->bufferString.resize(length * 2);
+		}
+		size_t theFinalSize{};
 		char* theStringNew = ( char* )this->buffer.data() + this->offSet;
+		size_t theIndex{};
 		for (uint32_t x = 0; x < length; ++x) {
 			switch (static_cast<char>(theStringNew[x])) {
-				case '\b': {
-					theStringNew[x] = static_cast<char>('b');
+				case '\0': {
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('0');
+					theFinalSize += 2;
+					theIndex += 2;
 					break;
 				}
-				case '\t': {
-					theStringNew[x] = static_cast<char>('t');
+				case 0x22: {
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('"');
+					theFinalSize += 2;
+					theIndex += 2;
 					break;
 				}
-				case '\n': {
-					theStringNew[x] = static_cast<char>('n');
+				case 0x07: {
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('a');
+					theFinalSize += 2;
+					theIndex += 2;
 					break;
 				}
-				case '\v': {
-					theStringNew[x] = static_cast<char>('v');
+				case 0x08: {
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('b');
+					theFinalSize += 2;
+					theIndex += 2;
 					break;
 				}
-				case '\f': {
-					theStringNew[x] = static_cast<char>('f');
+				case 0x0C: {
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('f');
+					theFinalSize += 2;
+					theIndex += 2;
 					break;
 				}
-				case '\r': {
-					theStringNew[x] = static_cast<char>('r');
+				case 0x0A: {
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('n');
+					theFinalSize += 2;
+					theIndex += 2;
 					break;
 				}
-				case '\"': {
-					theStringNew[x] = static_cast<char>('r');
+				case 0x0D: {
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('r');
+					theFinalSize += 2;
+					theIndex += 2;
 					break;
 				}
-				case '\'': {
-					theStringNew[x] = static_cast<char>('b');
+				case 0x09: {
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('t');
+					theFinalSize += 2;
+					theIndex += 2;
 					break;
 				}
-				case '\\': {
-					theStringNew[x] = static_cast<char>('b');
+				case 0x0B: {
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('a');
+					theFinalSize += 2;
+					theIndex += 2;
 					break;
 				}
+				
 				default: {
+					this->bufferString[theIndex] = theStringNew[x];
+					theFinalSize++;
+					theIndex++;
 					break;
 				}
 			}
 		}
 		this->offSet += length;
-		return theStringNew;
+		return theFinalSize;
 	}
 
 	std::string ErlPacker::processAtom(const char* atom, uint32_t length) {
@@ -438,8 +474,8 @@ namespace DiscordCoreInternal {
 
 	std::string ErlPacker::parseSmallAtomExt() {
 		uint8_t length = this->readBits<uint8_t>();
-		auto atom = this->readString(length);
-		return this->processAtom(atom, length);
+		auto lengthNew = this->readString(length);
+		return this->processAtom(this->bufferString.data(), length);
 	};
 
 	std::string ErlPacker::parseStringAsList() {
@@ -475,9 +511,9 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseAtomUtf8Ext() {
-		uint32_t lengthNew = this->readBits<uint16_t>();
-		auto atom = this->readString(lengthNew);
-		return this->processAtom(atom, lengthNew);
+		uint32_t length = this->readBits<uint16_t>();
+		auto lengthNew = this->readString(length);
+		return this->processAtom(this->bufferString.data(), lengthNew);
 	}
 
 	std::string ErlPacker::parseIntegerExt() {
@@ -487,14 +523,15 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseBinaryExt() {
 		std::string theString{ "\"" };
 		uint32_t length = this->readBits<uint32_t>();
-		theString += this->readString(length);
+		auto lengthNew = this->readString(length);
+		theString += std::string{ this->bufferString.data(), lengthNew };
 		theString += "\"";
 		return theString;
 	}
 
 	std::string ErlPacker::parseFloatExt() {
 		const uint8_t floatLength = 31;
-		const char* floatString = readString(floatLength);
+		size_t floatString = readString(floatLength);
 
 		if (floatString == NULL) {
 			return std::string{};
@@ -502,7 +539,7 @@ namespace DiscordCoreInternal {
 
 		double number{};
 		std::string nullTerminated{};
-		nullTerminated.insert(nullTerminated.begin(), floatString, floatString + floatLength);
+		nullTerminated.insert(nullTerminated.begin(), this->bufferString.data(), this->bufferString.data() + floatLength);
 
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
 
@@ -517,9 +554,9 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseListExt() {
 		uint32_t length = this->readBits<uint32_t>();
 		std::string theArray{};
-		theArray += R"([)";
+		theArray += "[";
 		theArray += std::move(this->parseArray(length));
-		theArray += R"(])";
+		theArray += "]";
 		uint8_t theValue = this->readBits<uint8_t>();
 		if (static_cast<ETFTokenType>(theValue) != ETFTokenType::Nil_Ext) {
 			return std::string{};
@@ -528,13 +565,13 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseNilExt() {
-		return R"([])";
+		return "[]";
 	}
 
 	std::string ErlPacker::parseMapExt() {
 		uint32_t length = readBits<uint32_t>();
 		std::string map{};
-		map += R"({)";
+		map += "{";
 		for (uint32_t i = 0; i < length; ++i) {
 			map += std::move(this->singleValueETFToJson());
 			map += ":";
@@ -543,7 +580,7 @@ namespace DiscordCoreInternal {
 				map += ",";
 			}
 		}
-		map += R"(})";
+		map += "}";
 		return map;
 	}
 }

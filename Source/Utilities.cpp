@@ -1477,63 +1477,74 @@ namespace DiscordCoreAPI {
 	
 	std::string escapeCharacters(std::string_view theString) {
 		std::string theStringNew{};
-		auto theSize = theString.size();
-		for (int32_t x = 0; x < theSize; x++) {
+		if (theStringNew.size() <= theString.size() * 2) {
+			theStringNew.resize(theString.size() * 2);
+		}
+		size_t theIndex{};
+		for (uint32_t x = 0; x < theString.size(); ++x) {
 			switch (static_cast<char>(theString[x])) {
+				case '\0': {
+					theStringNew[theIndex] = static_cast<char>('\\');
+					theStringNew[theIndex + 1] = static_cast<char>('0');
+					theIndex += 2;
+					break;
+				}
 				case 0x22: {
-					break;
-				}
-				case 0x5C: {
-					break;
-				}
-				case 0x00: {
+					theStringNew[theIndex] = static_cast<char>('\\');
+					theStringNew[theIndex + 1] = static_cast<char>('"');
+					theIndex += 2;
 					break;
 				}
 				case 0x07: {
-					theStringNew += '\\';
-					theStringNew += 'a';
+					theStringNew[theIndex] = static_cast<char>('\\');
+					theStringNew[theIndex + 1] = static_cast<char>('a');
+					theIndex += 2;
 					break;
 				}
 				case 0x08: {
-					theStringNew += '\\';
-					theStringNew += 'b';
+					theStringNew[theIndex] = static_cast<char>('\\');
+					theStringNew[theIndex + 1] = static_cast<char>('b');
+					theIndex += 2;
 					break;
 				}
 				case 0x0C: {
-					theStringNew += '\\';
-					theStringNew += 'f';
+					theStringNew[theIndex] = static_cast<char>('\\');
+					theStringNew[theIndex + 1] = static_cast<char>('f');
+					theIndex += 2;
 					break;
 				}
 				case 0x0A: {
-					theStringNew += '\\';
-					theStringNew += 'n';
+					theStringNew[theIndex] = static_cast<char>('\\');
+					theStringNew[theIndex + 1] = static_cast<char>('n');
+					theIndex += 2;
 					break;
 				}
 				case 0x0D: {
-					theStringNew += '\\';
-					theStringNew += 'r';
+					theStringNew[theIndex] = static_cast<char>('\\');
+					theStringNew[theIndex + 1] = static_cast<char>('r');
+					theIndex += 2;
 					break;
 				}
 				case 0x09: {
-					theStringNew += '\\';
-					theStringNew += 't';
+					theStringNew[theIndex] = static_cast<char>('\\');
+					theStringNew[theIndex + 1] = static_cast<char>('t');
+					theIndex += 2;
 					break;
 				}
 				case 0x0B: {
-					theStringNew += '\\';
-					theStringNew += 'v';
+					theStringNew[theIndex] = static_cast<char>('\\');
+					theStringNew[theIndex + 1] = static_cast<char>('a');
+					theIndex += 2;
 					break;
 				}
+
 				default: {
-					theStringNew += theString[x];
+					theStringNew[theIndex] = theStringNew[x];
+					theIndex++;
+					break;
 				}
 			}
 		}
-		if (theStringNew.size() > 1) {
-			if (theStringNew[theStringNew.size() - 1] == '\0') {
-				theStringNew.erase(theStringNew.size() - 1);
-			}
-		}		
 		return theStringNew;
 	}
 	template<typename Object> std::unordered_map<std::string, UnboundedMessageBlock<Object>*> ObjectCollector<Object>::objectsBufferMap{};

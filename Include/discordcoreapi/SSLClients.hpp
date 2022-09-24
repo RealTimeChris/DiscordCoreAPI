@@ -288,13 +288,13 @@ namespace DiscordCoreInternal {
 
 		ConnectionResult connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
 
-		static std::vector<WebSocketSSLClient*> processIO(std::vector<WebSocketSSLClient*>&) noexcept;
+		static std::vector<WebSocketSSLShard*> processIO(std::vector<WebSocketSSLShard*>&) noexcept;
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
 		std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept;
 
-		virtual bool handleBuffer(WebSocketSSLClient*) noexcept = 0;
+		virtual bool handleBuffer(WebSocketSSLShard* theClient) noexcept = 0;
 
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
 

@@ -474,9 +474,8 @@ namespace DiscordCoreInternal {
 
 					if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightGreen()
-							 << "Message received from WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
-								std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + std::string(": ")
-							 << payload << DiscordCoreAPI::reset() << endl
+							 << "Message received from WebSocket [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + std::string(": ") << payload
+							 << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
 
@@ -1431,8 +1430,8 @@ namespace DiscordCoreInternal {
 							case 7: {
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
-										 << "Shard [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
-											std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + " Reconnecting (Type 7)!"
+										 << "Shard [" + std::to_string(this->shard[0]) + "," +
+											std::to_string(this->shard[1]) + "]" + " Reconnecting (Type 7)!"
 										 << DiscordCoreAPI::reset() << endl
 										 << endl;
 								}
@@ -1446,8 +1445,8 @@ namespace DiscordCoreInternal {
 								parseObject(theObject, theData);
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
-										 << "Shard [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
-											std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + " Reconnecting (Type 9)!"
+										 << "Shard [" + std::to_string(this->shard[0]) + "," +
+											std::to_string(this->shard[1]) + "]" + " Reconnecting (Type 9)!"
 										 << DiscordCoreAPI::reset() << endl
 										 << endl;
 								}
@@ -1510,6 +1509,7 @@ namespace DiscordCoreInternal {
 				} catch (...) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
+						std::cout << payload << std::endl;
 					}
 					return false;
 				}
@@ -1541,11 +1541,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketSSLShard::handleBuffer(WebSocketSSLClient* theClient) noexcept {
-		if (static_cast<WebSocketSSLShard*>(theClient)->currentState.load() == SSLShardState::Upgrading) {
-			return this->parseConnectionHeaders(static_cast<WebSocketSSLShard*>(theClient));
+	bool WebSocketSSLShard::handleBuffer(WebSocketSSLShard* theClient) noexcept {
+		if (theClient->currentState.load() == SSLShardState::Upgrading) {
+			return this->parseConnectionHeaders(theClient);
 		}
-		return this->parseMessage(static_cast<WebSocketSSLShard*>(theClient));
+		return this->parseMessage(theClient);
 	}
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
@@ -1740,9 +1740,9 @@ namespace DiscordCoreInternal {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				this->disconnectVoiceInternal();
 				this->connectVoiceInternal();
-				std::vector<WebSocketSSLClient*> theVector{};
+				std::vector<WebSocketSSLShard*> theVector{};
 				for (auto& [key, value]: this->theShardMap) {
-					if (!static_cast<WebSocketSSLShard*>(value.get())->areWeConnecting.load()) {
+					if (!value.get()->areWeConnecting.load()) {
 						theVector.emplace_back(value.get());
 					}
 				}
@@ -1750,7 +1750,7 @@ namespace DiscordCoreInternal {
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << static_cast<WebSocketSSLShard*>(value)->shard[0] << ","
+							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << value->shard[0] << ","
 								 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
 								 << endl;
 						}
@@ -1758,9 +1758,9 @@ namespace DiscordCoreInternal {
 				}
 
 				for (auto& value: theVector) {
-					if (!static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
+					if (!value->areWeConnecting.load()) {
 						if (value->areWeStillConnected()) {
-							static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
+							value->checkForAndSendHeartBeat();
 						}
 					}
 				}

@@ -123,7 +123,7 @@ namespace DiscordCoreInternal {
 			return DiscordCoreAPI::reverseByteOrder<const ReturnType>(newValue);
 		}
 
-		const char* readString(uint32_t length);
+		size_t readString(uint32_t length);
 
 		std::string processAtom(const char* atom, uint32_t length);
 
