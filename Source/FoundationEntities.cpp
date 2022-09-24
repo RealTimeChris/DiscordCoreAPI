@@ -361,7 +361,11 @@ namespace DiscordCoreAPI {
 		JsonSerializer theData{};
 		theData.appendStructElement("op", static_cast<uint32_t>(4));
 		theData.addNewStructure("d");
-		theData.appendStructElement("channel_id", std::to_string(this->channelId));
+		if (this->channelId == 0) {
+			theData.appendStructElement("channel_id", "");
+		} else {
+			theData.appendStructElement("channel_id", std::to_string(this->channelId));
+		}
 		theData.appendStructElement("self_deaf", this->selfDeaf);
 		theData.appendStructElement("self_mute", this->selfMute);
 		theData.appendStructElement("guild_id", std::to_string(this->guildId));
