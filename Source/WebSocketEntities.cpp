@@ -1669,12 +1669,16 @@ namespace DiscordCoreInternal {
 						}
 						break;
 					}
+					if (theStopWatch.hasTimePassed()) {
+						this->theShardMap[thePackageNew.currentShard]->onClosed();
+						return;
+					}
 					if (this->theShardMap[thePackageNew.currentShard]->areWeStillConnected()) {
 						while (this->theShardMap[thePackageNew.currentShard]->currentState.load() == SSLShardState::Upgrading) {
 							if (theStopWatch.hasTimePassed()) {
 								this->theShardMap[thePackageNew.currentShard]->onClosed();
 								return;
-							}
+							}		
 							this->theShardMap[thePackageNew.currentShard]->processIO(10);
 							std::this_thread::sleep_for(1ms);
 						}
