@@ -49,20 +49,20 @@ namespace DiscordCoreAPI {
 
 	ModifyGuildScheduledEventData::operator JsonSerializer() {
 		JsonSerializer theData{};
-		/*
 		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			theData["channel_id"] = nullptr;
+			theData.appendStructElement("channel_id", nullptr);
 		} else {
-			theData["channel_id"] = std::to_string(this->channelId);
+			theData.appendStructElement("channel_id", std::to_string(this->channelId));
 		}
-		theData["entity_metadata"]["location"] = this->entityMetadata.location;
-		theData["entity_metadata"]["entity_type"] = this->entityType;
-		theData["scheduled_start_time"] = this->scheduledStartTime;
-		theData["scheduled_end_time"] = this->scheduledEndTime;
-		theData["privacy_level"] = this->privacyLevel;
-		theData["description"] = this->description;
-		theData["name"] = this->name;
-		*/
+		theData.addNewStructure("entity_metadata");
+		theData.appendStructElement("location", this->entityMetadata.location);
+		theData.appendStructElement("entity_type", this->entityType);
+		theData.endStructure();
+		theData.appendStructElement("scheduled_start_time", this->scheduledStartTime);
+		theData.appendStructElement("scheduled_end_time", this->scheduledEndTime);
+		theData.appendStructElement("privacy_level", this->privacyLevel);
+		theData.appendStructElement("description", this->description);
+		theData.appendStructElement("name", this->name);
 		return theData;
 	}
 
