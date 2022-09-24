@@ -190,7 +190,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId);
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "GuildMembers::addGuildMemberAsync()";
 		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
 	}
@@ -215,7 +215,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "GuildMembers::modifyGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

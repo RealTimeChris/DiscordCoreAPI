@@ -90,11 +90,11 @@ target_compile_features(
 
 if (DEFINED ENV{EnableASAN})
 	if(MSVC)
-		target_compile_options("${LIB_NAME}" PUBLIC "/fsanitize=address" "/Zi" "/Debug")
-		target_link_options("${LIB_NAME}" PUBLIC "/incremental:no" "/Debug")	
+		target_compile_options("${LIB_NAME}" PRIVATE "/fsanitize=address" "/Zi" "/Debug")
+		target_link_options("${LIB_NAME}" PRIVATE "/incremental:no" "/Debug")
 	else()
-		target_compile_options("${LIB_NAME}" PUBLIC "-fsanitize=address")
-		target_link_options("${LIB_NAME}" PUBLIC "-fsanitize=address")
+		target_compile_options("${LIB_NAME}" PRIVATE "-fsanitize=address")
+		target_link_options("${LIB_NAME}" PRIVATE "-fsanitize=address")
 	endif()
 endif()
 

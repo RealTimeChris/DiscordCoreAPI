@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/threads";
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "Threads::startThreadWithMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/threads";
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "Threads::startThreadWithoutMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -106,7 +106,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/threads";
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "Threads::startThreadInForumChannelAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

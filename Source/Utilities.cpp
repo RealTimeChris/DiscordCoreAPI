@@ -109,6 +109,11 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
+	JsonObject::JsonObject() noexcept {
+		this->theType = ValueType::Unset;
+		this->createPtr(ValueType::Unset);
+	}
+
 	JsonObject& JsonObject::operator=(EnumConverter theData) noexcept {
 		this->theType = ValueType::Uint64;
 		EnumConverter theConverter{ theData };
@@ -125,62 +130,68 @@ namespace DiscordCoreAPI {
 		*static_cast<EnumConverter*>(this->theValue) = theData;
 	}
 
-	JsonObject& JsonObject::operator=(const JsonObject& theKey) noexcept {
-		for (auto& [key, value]: theKey.theValues) {
-			this->theValues[key] = value;
+	JsonObject& JsonObject::operator=(JsonObject&& theKey) noexcept {
+		if (this->theKey == "") {
+			for (auto& [key, value]: theKey.theValues) {
+				this->theValues[key] = value;
+			}
+			this->createPtr(theKey.theType);
+			this->copyPtrData(theKey.theType, theKey);
+			this->theType = theKey.theType;
+			this->theKey = theKey.theKey;
+		} else if (this->theValues.contains(theKey.theKey)) {
+			for (auto& [key, value]: theKey.theValues) {
+				this->theValues[key] = value;
+			}
+			this->createPtr(theKey.theType);
+			this->copyPtrData(theKey.theType, theKey);
+			this->theType = theKey.theType;
+			this->theKey = theKey.theKey;
+		} else {
+			for (auto& [key, value]: theKey.theValues) {
+				this->theValues[key] = value;
+			}
+			theKey.theValue = nullptr;
 		}
-		this->theValue = theKey.theValue;
-		this->theType = theKey.theType;
-		this->theKey = theKey.theKey;
 		return *this;
 	}
 
-	JsonObject::JsonObject(const JsonObject& theKey) noexcept {
+	JsonObject::JsonObject(JsonObject&& theKey) noexcept {
+		*this = theKey;
+	}
+
+	JsonObject& JsonObject::operator=(JsonObject& theKey) noexcept {
+		if (this->theKey == "") {
+			for (auto& [key, value]: theKey.theValues) {
+				this->theValues[key] = value;
+			}
+			this->createPtr(theKey.theType);
+			this->copyPtrData(theKey.theType, theKey);
+			this->theType = theKey.theType;
+			this->theKey = theKey.theKey;
+		} else if (this->theValues.contains(theKey.theKey)) {
+			for (auto& [key, value]: theKey.theValues) {
+				this->theValues[key] = value;
+			}
+			this->createPtr(theKey.theType);
+			this->copyPtrData(theKey.theType, theKey);
+			this->theType = theKey.theType;
+			this->theKey = theKey.theKey;
+		} else {
+			for (auto& [key, value]: theKey.theValues) {
+				this->theValues[key] = value;
+			}
+			theKey.theValue = nullptr;
+		}
+		return *this;
+	}
+
+	JsonObject::JsonObject(JsonObject& theKey) noexcept {
 		*this = theKey;
 	}
 
 	JsonObject& JsonObject::operator=(const ValueType& theType) noexcept {
-		switch (theType) {
-			case ValueType::Bool: {
-				this->theValue = new bool{};
-				break;
-			}
-			case ValueType::Double: {
-				this->theValue = new double{};
-				break;
-			}
-			case ValueType::Float: {
-				this->theValue = new float{};
-				break;
-			}
-			case ValueType::Uint64: {
-				this->theValue = new uint64_t{};
-				break;
-			}
-			case ValueType::Int64: {
-				this->theValue = new int64_t{};
-				break;
-			}
-			case ValueType::String: {
-				this->theValue = new std::string{};
-				break;
-			}
-			case ValueType::Null: {
-				this->theValue = new nullptr_t{};
-				break;
-			}
-			case ValueType::Array: {
-				this->theValue = new JsonArray{};
-				break;
-			}
-			case ValueType::Object: {
-				this->theValue = new JsonObject{};
-				break;
-			}
-			case ValueType::Unset: {
-				break;
-			}
-		}
+		this->createPtr(theType);
 		return *this;
 	}
 
@@ -188,7 +199,7 @@ namespace DiscordCoreAPI {
 		*this = theType;
 	}
 
-	JsonObject& JsonObject::operator=(const JsonArray& theData) noexcept {
+	JsonObject& JsonObject::operator=(JsonArray& theData) noexcept {
 		this->theKey = theData.theKey;
 		this->theType = theData.theType;
 		this->theValue = theData.theValue;
@@ -198,7 +209,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	JsonObject::JsonObject(const JsonArray& theData) noexcept {
+	JsonObject::JsonObject(JsonArray& theData) noexcept {
 		*this = theData;
 	}
 
@@ -230,6 +241,21 @@ namespace DiscordCoreAPI {
 	JsonObject::JsonObject(std::string theData) noexcept {
 		this->theValue = new std::string{};
 		*static_cast<std::string*>(this->theValue) = theData;
+	}
+
+	JsonObject& JsonObject::operator=(std::nullptr_t theData) noexcept {
+		this->theType = ValueType::Null;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<std::nullptr_t*>(this->theValue) = theData;
+		return *this;
+	}
+
+	JsonObject::JsonObject(std::nullptr_t theData) noexcept {
+		this->theValue = new std::nullptr_t{};
+		*static_cast<std::nullptr_t*>(this->theValue) = theData;
 	}
 
 	JsonObject& JsonObject::operator=(uint64_t theData) noexcept {
@@ -398,23 +424,23 @@ namespace DiscordCoreAPI {
 	JsonObject& JsonObject::operator[](const char* theKey) noexcept {
 		if (this->theKey == "") {
 			JsonObject theObject{};
+			theObject = ValueType::Object;
 			theObject.theKey = theKey;
-			theObject.theType = ValueType::Object;
 			this->theValues[theKey] = theObject;
 			return this->theValues[theKey];
 		} else if (this->theKey == theKey && this->theType == ValueType::Object) {
 			return *this;
 		} else if (!this->theValues.contains(theKey)) {
 			JsonObject theObject{};
+			theObject = ValueType::Object;
 			theObject.theKey = theKey;
-			theObject.theType = ValueType::Object;
 			this->theValues[theKey] = theObject;
 			return this->theValues[theKey];
 		} else if (this->theValues.contains(theKey)) {
 			return this->theValues[theKey];
 		} else {
 			JsonObject theObject{};
-			theObject.theType = ValueType::Object;
+			theObject = ValueType::Object;
 			theObject.theKey = theKey;
 			this->theValues[theKey] = theObject;
 			return this->theValues[theKey];
@@ -477,8 +503,111 @@ namespace DiscordCoreAPI {
 				theString += std::to_string(*static_cast<int64_t*>(this->theValue));
 				break;
 			}
+			case ValueType::Null: {
+				theString += "null";
+				break;
+			}
 		}
 		return theString;
+	}
+
+	void JsonObject::copyPtrData(ValueType theType, JsonObject&other){
+		switch (theType) {
+			case ValueType::Bool: {
+				*static_cast<bool*>(this->theValue) = *static_cast<bool*>(other.theValue);
+				break;
+			}
+			case ValueType::Double: {
+				*static_cast<double*>(this->theValue) = *static_cast<double*>(other.theValue);
+				break;
+			}
+			case ValueType::Float: {
+				*static_cast<float*>(this->theValue) = *static_cast<float*>(other.theValue);
+				break;
+			}
+			case ValueType::Uint64: {
+				*static_cast<uint64_t*>(this->theValue) = *static_cast<uint64_t*>(other.theValue);
+				break;
+			}
+			case ValueType::Int64: {
+				*static_cast<int64_t*>(this->theValue) = *static_cast<int64_t*>(other.theValue);
+				break;
+			}
+			case ValueType::String: {
+				*static_cast<std::string*>(this->theValue) = *static_cast<std::string*>(other.theValue);
+				break;
+			}
+			case ValueType::Null: {
+				*static_cast<nullptr_t*>(this->theValue) = *static_cast<nullptr_t*>(other.theValue);
+				break;
+			}
+			case ValueType::Array: {
+				*static_cast<JsonArray*>(this->theValue) = *static_cast<JsonArray*>(other.theValue);
+				break;
+			}
+			case ValueType::Object: {
+				*static_cast<JsonObject*>(this->theValue) = *static_cast<JsonObject*>(other.theValue);
+				break;
+			}
+			case ValueType::Unset: {
+				*static_cast<uint64_t*>(this->theValue) = *static_cast<uint64_t*>(other.theValue);
+				break;
+			}
+		}
+	}
+
+	void JsonObject::createPtr(ValueType theType) {
+		if (this->theValue) {
+			delete this->theValue;
+		}
+		switch (theType) {
+			case ValueType::Bool: {
+				this->theValue = new bool{};
+				break;
+			}
+			case ValueType::Double: {
+				this->theValue = new double{};
+				break;
+			}
+			case ValueType::Float: {
+				this->theValue = new float{};
+				break;
+			}
+			case ValueType::Uint64: {
+				this->theValue = new uint64_t{};
+				break;
+			}
+			case ValueType::Int64: {
+				this->theValue = new int64_t{};
+				break;
+			}
+			case ValueType::String: {
+				this->theValue = new std::string{};
+				break;
+			}
+			case ValueType::Null: {
+				this->theValue = new nullptr_t{};
+				break;
+			}
+			case ValueType::Array: {
+				this->theValue = new JsonArray{};
+				break;
+			}
+			case ValueType::Object: {
+				this->theValue = new JsonObject{};
+				break;
+			}
+			case ValueType::Unset: {
+				this->theValue = new uint64_t{};
+				break;
+			}
+		}
+	}
+
+	JsonObject::~JsonObject() noexcept {
+		if (this->theValue) {
+			delete this->theValue;
+		}
 	}
 
 	void JsonObject::pushBack(const char* theKey, std::string other) noexcept {

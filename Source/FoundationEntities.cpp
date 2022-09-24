@@ -991,7 +991,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->data.components) {
 			theData["data"].pushBack("components", value);
 		}
-		theData["data"]["allowed_mentions"] = this->data.allowedMentions;
+		theData["data"]["allowed_mentions"] = JsonObject{ this->data.allowedMentions };
 		if (this->data.choices.size() > 0) {
 			for (auto& value: this->data.choices) {
 				JsonObject theValue{};

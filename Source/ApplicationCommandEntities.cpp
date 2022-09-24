@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<ApplicationCommand>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands";
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "ApplicationCommands::createGlobalApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands/" + appCommandId;
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "ApplicationCommands::editGlobalApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
 		dataPackage.applicationId = dataPackage.applicationId;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands";
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "ApplicationCommands::createGuildApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -276,7 +276,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + appCommandId;
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "ApplicationCommands::editGuildApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}

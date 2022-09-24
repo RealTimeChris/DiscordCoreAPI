@@ -465,13 +465,17 @@ namespace DiscordCoreAPI {
 		bool vectorType{ false };
 	};
 
-	struct JsonObject {
+	struct JsonObjectBase {
+
+	};
+
+	struct JsonObject : public JsonObjectBase {
 		std::unordered_map<std::string, JsonObject> theValues{};
 		ValueType theType{ ValueType::Object };
 		std::string theKey{};
 		void* theValue{};
 
-		JsonObject() noexcept = default;
+		JsonObject() noexcept;
 
 		template<typename ObjectType> JsonObject& operator=(std::vector<ObjectType> theData) noexcept {
 			this->theType = ValueType::Array;
@@ -505,20 +509,26 @@ namespace DiscordCoreAPI {
 		JsonObject& operator=(EnumConverter theData) noexcept;
 		JsonObject(EnumConverter) noexcept;
 
-		JsonObject& operator=(const JsonObject& theKey) noexcept;
-		JsonObject(const JsonObject& theKey) noexcept;
+		JsonObject& operator=(JsonObject&& theKey) noexcept;
+		JsonObject(JsonObject&& theKey) noexcept;
+
+		JsonObject& operator=(JsonObject& theKey) noexcept;
+		JsonObject(JsonObject& theKey) noexcept;
 
 		JsonObject& operator=(const ValueType& theType) noexcept;
 		JsonObject(const ValueType& theType) noexcept;
 
-		JsonObject& operator=(const JsonArray& theData) noexcept;
-		JsonObject(const JsonArray& theData) noexcept;
+		JsonObject& operator=(JsonArray& theData) noexcept;
+		JsonObject(JsonArray& theData) noexcept;
 
 		JsonObject& operator=(const char* theData) noexcept;
 		JsonObject(const char* theData) noexcept;
 
 		JsonObject& operator=(std::string theData) noexcept;
 		JsonObject(std::string) noexcept;
+
+		JsonObject& operator=(nullptr_t theData) noexcept;
+		JsonObject(nullptr_t) noexcept;
 
 		JsonObject& operator=(uint64_t theData) noexcept;
 		JsonObject(uint64_t) noexcept;
@@ -557,6 +567,10 @@ namespace DiscordCoreAPI {
 
 		operator std::string() noexcept;
 
+		void copyPtrData(ValueType theType, JsonObject&);
+
+		void createPtr(ValueType theType);
+
 		void pushBack(const char* theKey, std::string other) noexcept;
 		void pushBack(const char* theKey, JsonObject other) noexcept;
 		void pushBack(const char* theKey, uint64_t other) noexcept;
@@ -567,6 +581,8 @@ namespace DiscordCoreAPI {
 		void pushBack(const char* theKey, int32_t other) noexcept;
 		void pushBack(const char* theKey, int16_t other) noexcept;
 		void pushBack(const char* theKey, int8_t other) noexcept;
+
+		~JsonObject() noexcept;
 	};
 
 	struct JsonArray : public JsonObject {

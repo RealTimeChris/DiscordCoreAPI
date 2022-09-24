@@ -487,7 +487,7 @@ namespace DiscordCoreAPI {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
 		} else {
-			workload.content = static_cast<JsonObject>(dataPackage);
+			workload.content = dataPackage;
 		}
 		workload.callStack = "Interactions::createFollowUpMessageAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);

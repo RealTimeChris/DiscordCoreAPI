@@ -432,7 +432,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds";
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "Guilds::createGuildAsync()";
 		auto theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
 		theData.discordCoreClient = Guilds::discordCoreClient;
@@ -497,7 +497,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId);
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "Guilds::modifyGuildAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -564,7 +564,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/bans/" + std::to_string(dataPackage.guildMemberId);
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "Guilds::createGuildBanAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -619,7 +619,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildPruneCountData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/prune";
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "Guilds::beginGuildPruneAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -754,7 +754,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<WelcomeScreenData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/welcome-screen";
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "Guilds::modifyGuildWelcomeScreenAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

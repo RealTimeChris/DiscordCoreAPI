@@ -38,13 +38,13 @@ namespace DiscordCoreAPI {
 		JsonObject theData{};
 		theData["allowed_mentions"] = this->allowedMentions;
 		for (auto& value: this->attachments) {
-			theData.pushBack("attachments", value);
+			theData.pushBack("attachments", JsonObject{ value });
 		}
 		for (auto& value: this->components) {
-			theData.pushBack("components", value);
+			theData.pushBack("components", JsonObject{ value });
 		}
 		for (auto& value: this->embeds) {
-			theData.pushBack("embeds",value);
+			theData.pushBack("embeds", JsonObject{ value });
 		}
 		if (this->avatarUrl != "") {
 			theData["avatar_url"] = this->userName;
@@ -57,6 +57,7 @@ namespace DiscordCoreAPI {
 		}
 		theData["flags"] = this->flags;
 		theData["tts"] = this->tts;
+		std::cout << "THE STRING: " << ( std::string )theData << std::endl;
 		return theData;
 	}
 
@@ -331,7 +332,7 @@ namespace DiscordCoreAPI {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
 		} else {
-			workload.content = static_cast<JsonObject>(dataPackage);
+			workload.content = dataPackage;
 		}
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -360,7 +361,7 @@ namespace DiscordCoreAPI {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
 		} else {
-			workload.content = static_cast<JsonObject>(dataPackage);
+			workload.content = dataPackage;
 		}
 		workload.callStack = "WebHooks::editWebHookMessageAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);

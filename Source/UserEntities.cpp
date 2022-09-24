@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/recipients/" + std::to_string(dataPackage.userId);
-		workload.content = static_cast<JsonObject>(dataPackage);
+		workload.content = dataPackage;
 		workload.callStack = "Users::addRecipientToGroupDMAsync()";
 		co_return Users::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
