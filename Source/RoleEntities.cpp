@@ -28,55 +28,53 @@
 
 namespace DiscordCoreAPI {
 
-	CreateGuildRoleData::operator JsonSerializer() {
+	CreateGuildRoleData::operator std::string() {
 		int32_t roleColorInt = stol(this->hexColorValue, 0, 16);
 		std::stringstream stream;
 		stream << std::setbase(10) << roleColorInt;
 		std::string roleColorReal = stream.str();
-		JsonSerializer theData{};
-		theData.appendStructElement("permissions", this->permissions.getCurrentPermissionString());
-		theData.appendStructElement("mentionable", this->mentionable);
-		theData.appendStructElement("hoist", this->hoist);
-		theData.appendStructElement("name", this->name);
-		theData.appendStructElement("color", roleColorReal);
+		JsonObject theData{};
+		theData["permissions"] = this->permissions.getCurrentPermissionString();
+		theData["mentionable"] = this->mentionable;
+		theData["hoist"] = this->hoist;
+		theData["name"] = this->name;
+		theData["color"] = roleColorReal;
 		if (this->icon.size() > 0) {
-			theData.appendStructElement("icon", this->icon);
+			theData["icon"] = this->icon;
 		}
 		if (this->unicodeEmoji.size() > 0) {
-			theData.appendStructElement("unicode_emoji", this->unicodeEmoji);
+			theData["unicode_emoji"] = this->unicodeEmoji;
 		}
 		return theData;
 	}
 
-	ModifyGuildRolePositionsData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("");
+	ModifyGuildRolePositionsData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->rolePositions) {
-			JsonSerializer newData{};
-			newData.appendStructElement("position", value.rolePosition);
-			newData.appendStructElement("id", std::to_string(value.roleId));
-			theData.appendArrayElement(newData);
+			JsonObject newData{};
+			newData["position"] = value.rolePosition;
+			newData["id"] = std::to_string(value.roleId);
+			theData.pushBack("",newData);
 		}
-		theData.endArray();
 		return theData;
 	}
 
-	ModifyGuildRoleData::operator JsonSerializer() {
+	ModifyGuildRoleData::operator std::string() {
 		int32_t roleColorInt = stol(this->hexColorValue, 0, 16);
 		std::stringstream stream;
 		stream << std::setbase(10) << roleColorInt;
 		std::string roleColorReal = stream.str();
-		JsonSerializer theData{};
-		theData.appendStructElement("permissions", this->permissions.getCurrentPermissionString());
-		theData.appendStructElement("mentionable", this->mentionable);
-		theData.appendStructElement("hoist", this->hoist);
-		theData.appendStructElement("name", this->name);
-		theData.appendStructElement("color", roleColorReal);
+		JsonObject theData{};
+		theData["permissions"] = this->permissions.getCurrentPermissionString();
+		theData["mentionable"] = this->mentionable;
+		theData["hoist"] = this->hoist;
+		theData["name"] = this->name;
+		theData["color"] = roleColorReal;
 		if (this->icon.size() > 0) {
-			theData.appendStructElement("icon", this->icon);
+			theData["icon"] = this->icon;
 		}
 		if (this->unicodeEmoji.size() > 0) {
-			theData.appendStructElement("unicode_emoji", this->unicodeEmoji);
+			theData["unicode_emoji"] = this->unicodeEmoji;
 		}
 		return theData;
 	}
@@ -169,7 +167,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Roles::createGuildRoleAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -218,7 +216,7 @@ namespace DiscordCoreAPI {
 		dataPackage.rolePositions.emplace_back(newDataPos);
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Roles::modifyGuildRolePositionsAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -231,7 +229,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles/" + std::to_string(dataPackage.roleId);
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Roles::modifyGuildRoleAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

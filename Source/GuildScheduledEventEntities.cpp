@@ -28,41 +28,37 @@
 
 namespace DiscordCoreAPI {
 
-	CreateGuildScheduledEventData::operator JsonSerializer() {
-		JsonSerializer theData{};
+	CreateGuildScheduledEventData::operator std::string() {
+		JsonObject theData{};
 		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			theData.appendStructElement("channel_id", nullptr);
+			theData["channel_id"] = nullptr;
 		} else {
-			theData.appendStructElement("channel_id", std::to_string(this->channelId));
+			theData["channel_id"] = std::to_string(this->channelId);
 		}
-		theData.addNewStructure("entity_metadata");
-		theData.appendStructElement("location", this->entityMetadata.location);
-		theData.appendStructElement("entity_type", this->entityType);
-		theData.endStructure();
-		theData.appendStructElement("scheduled_start_time", this->scheduledStartTime);
-		theData.appendStructElement("scheduled_end_time", this->scheduledEndTime);
-		theData.appendStructElement("privacy_level", this->privacyLevel);
-		theData.appendStructElement("description", this->description);
-		theData.appendStructElement("name", this->name);
+		theData["entity_metadata"]["location"] = this->entityMetadata.location;
+		theData["entity_metadata"]["entity_type"] = this->entityType;
+		theData["scheduled_start_time"] = this->scheduledStartTime;
+		theData["scheduled_end_time"] = this->scheduledEndTime;
+		theData["privacy_level"] = this->privacyLevel;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
 		return theData;
 	}
 
-	ModifyGuildScheduledEventData::operator JsonSerializer() {
-		JsonSerializer theData{};
+	ModifyGuildScheduledEventData::operator std::string() {
+		JsonObject theData{};
 		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			theData.appendStructElement("channel_id", nullptr);
+			theData["channel_id"] = nullptr;
 		} else {
-			theData.appendStructElement("channel_id", std::to_string(this->channelId));
+			theData["channel_id"] = std::to_string(this->channelId);
 		}
-		theData.addNewStructure("entity_metadata");
-		theData.appendStructElement("location", this->entityMetadata.location);
-		theData.appendStructElement("entity_type", this->entityType);
-		theData.endStructure();
-		theData.appendStructElement("scheduled_start_time", this->scheduledStartTime);
-		theData.appendStructElement("scheduled_end_time", this->scheduledEndTime);
-		theData.appendStructElement("privacy_level", this->privacyLevel);
-		theData.appendStructElement("description", this->description);
-		theData.appendStructElement("name", this->name);
+		theData["entity_metadata"]["location"] = this->entityMetadata.location;
+		theData["entity_metadata"]["entity_type"] = this->entityType;
+		theData["scheduled_start_time"] = this->scheduledStartTime;
+		theData["scheduled_end_time"] = this->scheduledEndTime;
+		theData["privacy_level"] = this->privacyLevel;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
 		return theData;
 	}
 
@@ -88,7 +84,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "GuildScheduledEvents::createGuildScheduledEventAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEvent>(workload);
 	}
@@ -111,7 +107,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId);
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "GuildScheduledEvents::modifyGuildScheduledEventAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEvent>(workload);
 	}

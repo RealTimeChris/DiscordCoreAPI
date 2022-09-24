@@ -111,37 +111,29 @@ namespace DiscordCoreAPI {
 		this->channelId = dataPackage.getChannelId();
 	}
 
-	CreateMessageData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("attachments");
+	CreateMessageData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->attachments) {
-			theData.appendArrayElement(value);
+			theData.pushBack("attachments",value);
 		}
-		theData.endArray();
 		if (this->messageReference.messageId.operator size_t() != 0) {
-			theData.appendStructElement("message_reference", this->messageReference);
+			theData["message_reference"] = this->messageReference;
 		}
-		theData.addNewArray("components");
 		for (auto& value: this->components) {
-			theData.appendArrayElement(value);
+			theData.pushBack("components", value);
 		}
-		theData.endArray();
-		theData.appendStructElement("allowed_mentions", this->allowedMentions);
-		theData.addNewArray("sticker_ids");
+		theData["allowed_mentions"] = this->allowedMentions;
 		for (auto& value: this->stickerIds) {
-			theData.appendArrayElement(value);
+			theData.pushBack("sticker_ids", value);
 		}
-		theData.endArray();
-		theData.addNewArray("embeds");
 		for (auto& value: this->embeds) {
-			theData.appendArrayElement(value);
+			theData.pushBack("embeds", value);
 		}
-		theData.endArray();
 		if (this->content != "") {
-			theData.appendStructElement("content", this->content);
+			theData["content"] = this->content;
 		}
-		theData.appendStructElement("flags", this->flags);
-		theData.appendStructElement("tts", this->tts);
+		theData["flags"] = this->flags;
+		theData["tts"] = this->tts;
 		return theData;
 	}
 
@@ -177,40 +169,31 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	EditMessageData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("attachments");
+	EditMessageData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->attachments) {
-			theData.appendArrayElement(value);
+			theData.pushBack("attachments", value);
 		}
-		theData.endArray();
-		theData.addNewArray("components");
 		for (auto& value: this->components) {
-			theData.appendArrayElement(value);
+			theData.pushBack("components", value);
 		}
-		theData.endArray();
-		theData.appendStructElement("allowed_mentions", this->allowedMentions);
-
-		theData.addNewArray("embeds");
+		theData["allowed_mentions"] = this->allowedMentions;
 		for (auto& value: this->embeds) {
-			theData.appendArrayElement(value);
+			theData.pushBack("embeds", value);
 		}
-		theData.endArray();
 		if (this->content != "") {
-			theData.appendStructElement("content", this->content);
+			theData["content"] = this->content;
 		}
-		theData.appendStructElement("flags", this->flags);
-		theData.appendStructElement("tts", this->tts);
+		theData["flags"] = this->flags;
+		theData["tts"] = this->tts;
 		return theData;
 	}
 
-	DeleteMessagesBulkData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("messages");
+	DeleteMessagesBulkData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->messageIds) {
-			theData.appendArrayElement(std::to_string(value));
+			theData.pushBack("messages", std::to_string(value));
 		}
-		theData.endArray();
 		return theData;
 	}
 
@@ -275,9 +258,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage).getString(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
 		} else {
-			workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+			workload.content = static_cast<JsonObject>(dataPackage);
 		}
 		workload.callStack = "Messages::createMessageAsync()";
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -299,9 +282,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage).getString(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
 		} else {
-			workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+			workload.content = static_cast<JsonObject>(dataPackage);
 		}
 		workload.callStack = "Messages::editMessageAsync()";
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -329,7 +312,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/bulk-delete";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Messages::deleteMessagesBulkAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

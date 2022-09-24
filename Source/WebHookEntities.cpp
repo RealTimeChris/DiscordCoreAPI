@@ -34,35 +34,29 @@ namespace DiscordCoreAPI {
 		this->webHookId = dataNew.id;
 	}
 
-	ExecuteWebHookData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("allowed_mentions", static_cast<JsonSerializer>(this->allowedMentions));
-		theData.addNewArray("attachments");
+	ExecuteWebHookData::operator std::string() {
+		JsonObject theData{};
+		theData["allowed_mentions"] = this->allowedMentions;
 		for (auto& value: this->attachments) {
-			theData.appendArrayElement(value);
+			theData.pushBack("attachments", value);
 		}
-		theData.endArray();
-		theData.addNewArray("components");
 		for (auto& value: this->components) {
-			theData.appendArrayElement(value);
+			theData.pushBack("components", value);
 		}
-		theData.endArray();
-		theData.addNewArray("embeds");
 		for (auto& value: this->embeds) {
-			theData.appendArrayElement(value);
+			theData.pushBack("embeds",value);
 		}
-		theData.endArray();
 		if (this->avatarUrl != "") {
-			theData.appendStructElement("avatar_url", this->userName);
+			theData["avatar_url"] = this->userName;
 		}
 		if (this->userName != "") {
-			theData.appendStructElement("userName", this->userName);
+			theData["userName"] = this->userName;
 		}
 		if (this->content != "") {
-			theData.appendStructElement("content", this->content);
+			theData["content"] = this->content;
 		}
-		theData.appendStructElement("flags", this->flags);
-		theData.appendStructElement("tts", this->tts);
+		theData["flags"] = this->flags;
+		theData["tts"] = this->tts;
 		return theData;
 	}
 
@@ -181,26 +175,20 @@ namespace DiscordCoreAPI {
 		this->webHookId = dataNew.id;
 	}
 
-	EditWebHookData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("allowed_mentions", DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions });
-		theData.addNewArray("attachments");
+	EditWebHookData::operator std::string() {
+		JsonObject theData{};
+		theData["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions };
 		for (auto& value: this->attachments) {
-			theData.appendArrayElement(value);
+			theData.pushBack("attachments", value);
 		}
-		theData.endArray();
-		theData.addNewArray("components");
 		for (auto& value: this->components) {
-			theData.appendArrayElement(value);
+			theData.pushBack("components", value);
 		}
-		theData.endArray();
-		theData.addNewArray("embeds");
 		for (auto& value: this->embeds) {
-			theData.appendArrayElement(value);
+			theData.pushBack("embeds", value);
 		}
-		theData.endArray();
 		if (this->content != "") {
-			theData.appendStructElement("content", this->content);
+			theData["content"] = this->content;
 		}
 		return theData;
 	}
@@ -219,14 +207,14 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/webhooks";
 		workload.callStack = "WebHooks::createWebHookAsync()";
-		JsonSerializer responseData{};
+		JsonObject responseData{};
 		if (dataPackage.avatar.size() > 0) {
-			responseData.appendStructElement("avatar", dataPackage.avatar);
+			responseData["avatar"] = dataPackage.avatar;
 		}
 		if (dataPackage.name != "") {
-			responseData.appendStructElement("name", dataPackage.name);
+			responseData["name"] = dataPackage.name;
 		}
-		workload.content = responseData.getString();
+		workload.content = responseData;
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
 
@@ -271,17 +259,17 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<WebHook>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId);
-		JsonSerializer responseData{};
+		JsonObject responseData{};
 		if (dataPackage.avatar.size() > 0) {
-			responseData.appendStructElement("avatar", dataPackage.avatar);
+			responseData["avatar"] = dataPackage.avatar;
 		}
 		if (dataPackage.name != "") {
-			responseData.appendStructElement("name", dataPackage.name);
+			responseData["name"] = dataPackage.name;
 		}
 		if (dataPackage.channelId.operator size_t() != 0) {
-			responseData.appendStructElement("channel_id", std::to_string(dataPackage.channelId));
+			responseData["channel_id"] = std::to_string(dataPackage.channelId);
 		}
-		workload.content = responseData.getString();
+		workload.content = responseData;
 		workload.callStack = "WebHooks::modifyWebHookAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
@@ -291,17 +279,17 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<WebHook>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId) + "/" + dataPackage.webhookToken;
-		JsonSerializer responseData{};
+		JsonObject responseData{};
 		if (dataPackage.avatar.size() > 0) {
-			responseData.appendStructElement("avatar", dataPackage.avatar);
+			responseData["avatar"] = dataPackage.avatar;
 		}
 		if (dataPackage.name != "") {
-			responseData.appendStructElement("name", dataPackage.name);
+			responseData["name"] = dataPackage.name;
 		}
 		if (dataPackage.channelId.operator size_t() != 0) {
-			responseData.appendStructElement("channel_id", std::to_string(dataPackage.channelId));
+			responseData["channel_id"] = std::to_string(dataPackage.channelId);
 		}
-		workload.content = responseData.getString();
+		workload.content = responseData;
 		workload.callStack = "WebHooks::modifyWebHookWithTokenAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<WebHook>(workload);
 	}
@@ -341,9 +329,9 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage).getString(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
 		} else {
-			workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+			workload.content = static_cast<JsonObject>(dataPackage);
 		}
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -370,9 +358,9 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage).getString(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
 		} else {
-			workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+			workload.content = static_cast<JsonObject>(dataPackage);
 		}
 		workload.callStack = "WebHooks::editWebHookMessageAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);

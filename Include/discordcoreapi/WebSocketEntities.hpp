@@ -50,7 +50,7 @@ namespace DiscordCoreInternal {
 	  public:
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
 
-		std::string stringifyJsonData(DiscordCoreAPI::JsonSerializer& dataToSend, WebSocketOpCode theOpCode) noexcept;
+		std::string stringifyJsonData(std::string& dataToSend, WebSocketOpCode theOpCode) noexcept;
 
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 

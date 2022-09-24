@@ -177,7 +177,7 @@ namespace DiscordCoreInternal {
 		this->configManager = configManagerNew;
 	}
 
-	std::string WebSocketMessageHandler::stringifyJsonData(DiscordCoreAPI::JsonSerializer& dataToSend, WebSocketOpCode theOpCode) noexcept {
+	std::string WebSocketMessageHandler::stringifyJsonData(std::string& dataToSend, WebSocketOpCode theOpCode) noexcept {
 		std::string theVector{};
 		std::string header{};
 
@@ -185,14 +185,14 @@ namespace DiscordCoreInternal {
 			cout << DiscordCoreAPI::shiftToBrightBlue()
 				 << "Sending WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
 					std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + std::string("'s Message: ")
-				 << static_cast<std::string>(dataToSend.getString()) << endl
+				 << dataToSend << endl
 				 << endl
 				 << DiscordCoreAPI::reset();
 		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
-			theVector = ErlPacker::parseJsonToEtf(dataToSend.getString());
+			theVector = ErlPacker::parseJsonToEtf(static_cast<std::string>(dataToSend));
 		} else {
-			theVector = dataToSend.getString();
+			theVector = dataToSend;
 		}
 		this->createHeader(header, theVector.size(), theOpCode);
 		std::string theVectorNew{};
@@ -346,7 +346,7 @@ namespace DiscordCoreInternal {
 				dataPackage.selfDeaf = doWeCollect.selfDeaf;
 				dataPackage.selfMute = doWeCollect.selfMute;
 				this->userId = doWeCollect.userId;
-				DiscordCoreAPI::JsonSerializer newData = dataPackage;
+				std::string newData = dataPackage;
 				std::string theString = this->stringifyJsonData(newData, this->dataOpCode);
 				bool didWeWrite{ false };
 				if (!this->sendMessage(theString, true)) {
@@ -1477,7 +1477,7 @@ namespace DiscordCoreInternal {
 									resumeData.botToken = this->configManager->getBotToken();
 									resumeData.sessionId = this->sessionId;
 									resumeData.lastNumberReceived = this->lastNumberReceived;
-									DiscordCoreAPI::JsonSerializer resumePayload = resumeData;
+									std::string resumePayload = resumeData;
 									std::string theString = this->stringifyJsonData(resumePayload, this->dataOpCode);
 									if (!this->sendMessage(theString, true)) {
 										returnValue = true;
@@ -1490,7 +1490,7 @@ namespace DiscordCoreInternal {
 									identityData.numberOfShards = this->shard[1];
 									identityData.intents = static_cast<int64_t>(this->configManager->getGatewayIntents());
 									identityData.presence = this->configManager->getPresenceData();
-									DiscordCoreAPI::JsonSerializer identityJson = identityData;
+									std::string identityJson = identityData;
 									std::string theString = this->stringifyJsonData(identityJson, this->dataOpCode);
 									if (!this->sendMessage(theString, true)) {
 										returnValue = true;
@@ -1522,10 +1522,11 @@ namespace DiscordCoreInternal {
 		if (this->currentState.load() == SSLShardState::Authenticated) {
 			try {
 				if ((this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
-					DiscordCoreAPI::JsonSerializer heartbeat{};
-					heartbeat.appendStructElement("d", this->lastNumberReceived);
-					heartbeat.appendStructElement("op", 1);
-					std::string theString = this->stringifyJsonData(heartbeat, this->dataOpCode);
+					DiscordCoreAPI::JsonObject heartbeat{};
+					heartbeat["d"] = this->lastNumberReceived;
+					heartbeat["op"] = 1;
+					std::string stringReal = heartbeat;
+					std::string theString = this->stringifyJsonData(stringReal, this->dataOpCode);
 					if (!this->sendMessage(theString, true)) {
 						return;
 					}

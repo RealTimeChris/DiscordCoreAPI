@@ -96,27 +96,21 @@ namespace DiscordCoreInternal {
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth) {
 		try {
-			DiscordCoreAPI::JsonSerializer theRequest{};
-			theRequest.appendStructElement("videoId", newSong.songId);
-			theRequest.appendStructElement("contentCheckOk", true);
-			theRequest.appendStructElement("racyCheckOk", true);
-			theRequest.addNewStructure("context");
-			theRequest.addNewStructure("client");
-			theRequest.appendStructElement("clientName", "ANDROID");
-			theRequest.appendStructElement("clientScreen", "EMBED");
-			theRequest.appendStructElement("clientVersion", "16.46.37");
-			theRequest.appendStructElement("hl", "en");
-			theRequest.appendStructElement("gl", "US");
-			theRequest.appendStructElement("utcOffsetMinutes", 0);
-			theRequest.endStructure();
-			theRequest.addNewStructure("thirdParty");
-			theRequest.appendStructElement("embedUrl", "https://www.youtube.com");
-			theRequest.endStructure();
-			theRequest.endStructure();
+			DiscordCoreAPI::JsonObject theRequest{};
+			theRequest["videoId"] = newSong.songId;
+			theRequest["contentCheckOk"] = true;
+			theRequest["racyCheckOk"] = true;
+			theRequest["context"]["client"]["clientName"] = "ANDROID";
+			theRequest["context"]["client"]["clientScreen"] = "EMBED";
+			theRequest["context"]["client"]["clientVersion"] = "16.46.37";
+			theRequest["context"]["client"]["hl"] = "en";
+			theRequest["context"]["client"]["gl"] = "US";
+			theRequest["context"]["client"]["utcOffsetMinutes"] = 0;
+			theRequest["context"]["embedUrl"] = "https://www.youtube.com";
 			HttpsWorkloadData dataPackage02{ HttpsWorkloadType::YouTubeGetSearchResults };
 			dataPackage02.baseUrl = YouTubeRequestBuilder::baseUrl;
 			dataPackage02.relativePath = "/youtubei/v1/player?key=" + YouTubeRequestBuilder::apiKey;
-			dataPackage02.content = theRequest.getString();
+			dataPackage02.content = theRequest;
 			dataPackage02.workloadClass = HttpsWorkloadClass::Post;
 			HttpsResponseData responseData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {

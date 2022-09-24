@@ -31,99 +31,89 @@
 
 namespace DiscordCoreAPI {
 
-	CreateGlobalApplicationCommandData::operator JsonSerializer() {
-		JsonSerializer theData{};
+	CreateGlobalApplicationCommandData::operator std::string() {
+		JsonObject theData{};
 		if (this->defaultMemberPermissions != 0) {
-			theData.appendStructElement("default_member_permissions", static_cast<uint64_t>(this->defaultMemberPermissions));
+			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
-		theData.appendStructElement("description_localizations", this->descriptionLocalizations);
-		theData.appendStructElement("name_localizations", this->nameLocalizations);
-		theData.appendStructElement("dm_permission", this->dmPermission);
-		theData.appendStructElement("description", this->description);
-		theData.appendStructElement("name", this->name);
-		theData.appendStructElement("type", this->type);
+		theData["description_localizations"] = this->descriptionLocalizations;
+		theData["name_localizations"] = this->nameLocalizations;
+		theData["dm_permission"] = this->dmPermission;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
+		theData["type"] = this->type;
 		if (this->options.size() > 0) {
-			theData.addNewArray("options");
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData.appendArrayElement(this->options[x]);
+				theData.pushBack("options", this->options[x]);
 			}
-			theData.endArray();
 		}
 		return theData;
 	}
 
-	EditGlobalApplicationCommandData::operator JsonSerializer() {
-		JsonSerializer theData{};
+	EditGlobalApplicationCommandData::operator std::string() {
+		JsonObject theData{};
 		if (this->defaultMemberPermissions != 0) {
-			theData.appendStructElement("default_member_permissions", static_cast<uint64_t>(this->defaultMemberPermissions));
+			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
-		theData.appendStructElement("description_localizations", this->descriptionLocalizations);
-		theData.appendStructElement("name_localizations", this->nameLocalizations);
-		theData.appendStructElement("dm_permission", this->dmPermission);
-		theData.appendStructElement("description", this->description);
-		theData.appendStructElement("name", this->name);
+		theData["description_localizations"] = this->descriptionLocalizations;
+		theData["name_localizations"] = this->nameLocalizations;
+		theData["dm_permission"] = this->dmPermission;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
 		if (this->options.size() > 0) {
-			theData.addNewArray("options");
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData.appendArrayElement(this->options[x]);
+				theData.pushBack("options", this->options[x]);
 			}
-			theData.endArray();
 		}
 		return theData;
 	}
 
-	CreateGuildApplicationCommandData::operator JsonSerializer() {
-		JsonSerializer theData{};
+	CreateGuildApplicationCommandData::operator std::string() {
+		JsonObject theData{};
 		if (this->defaultMemberPermissions != 0) {
-			theData.appendStructElement("default_member_permissions", static_cast<uint64_t>(this->defaultMemberPermissions));
+			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
-		theData.appendStructElement("description_localizations", this->descriptionLocalizations);
-		theData.appendStructElement("name_localizations", this->nameLocalizations);
-		theData.appendStructElement("dm_permission", this->dmPermission);
-		theData.appendStructElement("description", this->description);
-		theData.appendStructElement("name", this->name);
-		theData.appendStructElement("type", this->type);
+		theData["description_localizations"] = this->descriptionLocalizations;
+		theData["name_localizations"] = this->nameLocalizations;
+		theData["dm_permission"] = this->dmPermission;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
+		theData["type"] = this->type;
 		if (this->options.size() > 0) {
-			theData.addNewArray("options");
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData.appendArrayElement(this->options[x]);
+				theData.pushBack("options", this->options[x]);
 			}
-			theData.endArray();
 		}
 		return theData;
 	}
 
-	EditGuildApplicationCommandData::operator JsonSerializer() {
-		JsonSerializer theData{};
+	EditGuildApplicationCommandData::operator std::string() {
+		JsonObject theData{};
 		if (this->defaultMemberPermissions != 0) {
-			theData.appendStructElement("default_member_permissions", static_cast<uint64_t>(this->defaultMemberPermissions));
+			theData["default_member_permissions"] = static_cast<uint64_t>(this->defaultMemberPermissions);
 		}
-		theData.appendStructElement("description_localizations", this->descriptionLocalizations);
-		theData.appendStructElement("name_localizations", this->nameLocalizations);
-		theData.appendStructElement("dm_permission", this->dmPermission);
-		theData.appendStructElement("description", this->description);
-		theData.appendStructElement("name", this->name);
+		theData["description_localizations"] = this->descriptionLocalizations;
+		theData["name_localizations"] = this->nameLocalizations;
+		theData["dm_permission"] = this->dmPermission;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
 		if (this->options.size() > 0) {
-			theData.addNewArray("options");
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData.appendArrayElement(this->options[x]);
+				theData.pushBack("options", this->options[x]);
 			}
-			theData.endArray();
 		}
 		return theData;
 	}
 
-	EditGuildApplicationCommandPermissionsData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("");
+	EditGuildApplicationCommandPermissionsData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->permissions) {
-			JsonSerializer newData{};
-			newData.appendStructElement("permission", value.permission);
-			newData.appendStructElement("type", static_cast<uint8_t>(value.type));
-			newData.appendStructElement("id", std::to_string(value.id));
-			theData.appendArrayElement(newData);
+			JsonObject newData{};
+			newData["permission"] = value.permission;
+			newData["type"] = static_cast<uint8_t>(value.type);
+			newData["id"] = std::to_string(value.id);
+			theData.pushBack("permissions", newData);
 		}
-		theData.endArray();
 		return theData;
 	}
 
@@ -152,7 +142,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<ApplicationCommand>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "ApplicationCommands::createGlobalApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -183,7 +173,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands/" + appCommandId;
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "ApplicationCommands::editGlobalApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -226,7 +216,7 @@ namespace DiscordCoreAPI {
 			newVector.emplace_back(dataPackageNew);
 		}
 		for (auto& value: newVector) {
-			std::string newData = static_cast<JsonSerializer>(value).getString();
+			std::string newData = value;
 			newDataArray += newData;
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
@@ -254,7 +244,7 @@ namespace DiscordCoreAPI {
 		dataPackage.applicationId = dataPackage.applicationId;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "ApplicationCommands::createGuildApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -286,7 +276,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + appCommandId;
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "ApplicationCommands::editGuildApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -329,7 +319,7 @@ namespace DiscordCoreAPI {
 			newVector.emplace_back(dataPackageNew);
 		}
 		for (auto& value: newVector) {
-			std::string newData = static_cast<JsonSerializer>(value).getString();
+			std::string newData = value;
 			newDataArray += newData;
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
@@ -389,8 +379,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath =
 			"/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + commandId + "/permissions";
-		std::string newData{ "permissions" };
-		newData.append(static_cast<JsonSerializer>(dataPackage).getString());
+		std::string newData{ dataPackage };
 		workload.content = newData;
 		workload.callStack = "ApplicationCommands::editGuildApplicationCommandPermissionsAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<GuildApplicationCommandPermissionsData>(workload);

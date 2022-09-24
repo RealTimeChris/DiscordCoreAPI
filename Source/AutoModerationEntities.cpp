@@ -27,70 +27,54 @@
 
 namespace DiscordCoreAPI {
 
-	CreateAutoModerationRuleData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("actions");
+	CreateAutoModerationRuleData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->actions) {
-			JsonSerializer dataNew{};
-			dataNew.addNewStructure("metadata");
-			dataNew.appendStructElement("channel_id", std::to_string(value.metadata.channelId));
-			dataNew.appendStructElement("duration_seconds", value.metadata.durationSeconds);
-			dataNew.endStructure();
-			dataNew.appendStructElement("type", value.type);
-			theData.appendArrayElement(dataNew);
+			JsonObject dataNew{};
+			dataNew["metadata"]["channel_id"] = std::to_string(value.metadata.channelId);
+			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
+			dataNew["type"] = value.type;
+			theData.pushBack("actions", dataNew);
 		}
-		theData.endArray();
-		theData.appendStructElement("enabled", this->enabled);
-		theData.appendStructElement("event_type", this->eventType);
-		theData.addNewArray("exempt_channels");
+		theData["enabled"] = this->enabled;
+		theData["event_type"] = this->eventType;
 		for (auto& value: this->exemptChannels) {
-			theData.appendArrayElement(value);
+			theData.pushBack("exempt_channels", value);
 		}
-		theData.endArray();
-		theData.addNewArray("exempt_roles");
 		for (auto& value: this->exemptRoles) {
-			theData.appendArrayElement(value);
+			theData.pushBack("exempt_roles", value);
 		}
-		theData.endArray();
-		theData.appendStructElement("name", this->name);
-		theData.addNewStructure("trigger_metadata");
-		theData.appendStructElement("keyword_filter", this->triggerMetadata.keywordFilter);
-		theData.appendStructElement("presets", this->triggerMetadata.presets);
-		theData.endStructure();
-		theData.appendStructElement("trigger_type", this->triggerType);
+		theData["name"] = this->name;
+		for (auto& value: this->triggerMetadata.keywordFilter) {
+			theData["trigger_metadata"].pushBack("keyword_filter", value);
+		}
+		theData["presets"] = this->triggerMetadata.presets;
+		theData["trigger_type"] = this->triggerType;
 		return theData;
 	}
 
-	ModifyAutoModerationRuleData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("actions");
+	ModifyAutoModerationRuleData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->actions) {
-			JsonSerializer dataNew{};
-			dataNew.addNewStructure("metadata");
-			dataNew.appendStructElement("channel_id", std::to_string(value.metadata.channelId));
-			dataNew.appendStructElement("duration_seconds", value.metadata.durationSeconds);
-			dataNew.endStructure();
-			dataNew.appendStructElement("type", value.type);
-			theData.appendArrayElement(dataNew);
+			JsonObject dataNew{};
+			dataNew["metadata"]["channel_id"] = std::to_string(value.metadata.channelId);
+			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
+			dataNew["type"] = value.type;
+			theData.pushBack("actions", dataNew);
 		}
-		theData.endArray();
-		theData.appendStructElement("enabled", this->enabled);
-		theData.appendStructElement("event_type", this->eventType);
-		theData.addNewArray("exempt_channels");
+		theData["enabled"] = this->enabled;
+		theData["event_type"] = this->eventType;
 		for (auto& value: this->exemptChannels) {
-			theData.appendArrayElement(value);
+			theData.pushBack("exempt_channels", value);
 		}
-		theData.endArray();
-		theData.addNewArray("exempt_roles");
 		for (auto& value: this->exemptRoles) {
-			theData.appendArrayElement(value);
+			theData.pushBack("exempt_roles", value);
 		}
-		theData.endArray();
-		theData.appendStructElement("name", this->name);
-		theData.addNewStructure("trigger_metadata");
-		theData.appendStructElement("keyword_filter", this->triggerMetadata.keywordFilter);
-		theData.appendStructElement("presets", this->triggerMetadata.presets);
-		theData.endStructure();
+		theData["name"] = this->name;
+		for (auto& value: this->triggerMetadata.keywordFilter) {
+			theData["trigger_metadata"].pushBack("keyword_filter", value);
+		}
+		theData["presets"] = this->triggerMetadata.presets;
 		return theData;
 	}
 
@@ -125,7 +109,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "AutoModerationRules::createAutoModerationRuleAsync()";
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
 	}
@@ -135,7 +119,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules/" + std::to_string(dataPackage.autoModerationRuleId);
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "AutoModerationRules::modifyAutoModerationRuleAsync()";
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
 	}

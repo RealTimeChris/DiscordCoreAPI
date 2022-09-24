@@ -214,7 +214,7 @@ namespace DiscordCoreInternal {
 		int64_t since{ 0 };///< When was the activity started?
 		bool afk{ false };///< Are we afk.
 
-		operator DiscordCoreAPI::JsonSerializer();
+		operator std::string();
 	};
 
 	template<typename ReturnType> void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
@@ -405,23 +405,9 @@ namespace DiscordCoreAPI {
 		std::string theValue{};
 	};
 
-	enum class JsonParserState { Starting_Object = 0, Adding_Object_Elements = 1, Starting_Array = 2, Adding_Array_Elements = 3 };
+	enum class ValueType { Null = 0, Object = 1, Object_End = 2, Array = 3, Double = 4, Float = 5, String = 6, Bool = 7, Int64 = 8, Uint64 = 9, Unset = 10 };
 
-	enum class JsonParseEvent : uint16_t {
-		Unset = 0 << 0,
-		Null_Value = 1 << 1,
-		Object_Start = 1 << 2,
-		Object_End = 1 << 3,
-		Array_Start = 1 << 4,
-		Array_End = 1 << 5,
-		String = 1 << 6,
-		Boolean = 1 << 7,
-		Number_Integer = 1 << 8,
-		Number_Integer_Small = 1 << 9,
-		Number_Integer_Large = 1 << 10,
-		Number_Float = 1 << 11,
-		Number_Double = 1 << 12
-	};
+	struct JsonArray;
 
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
@@ -429,8 +415,17 @@ namespace DiscordCoreAPI {
 	struct EnumConverter {
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
 			this->thePtr = new uint64_t{};
+			std::cout << "WERE HERE THIS IST I!" << static_cast<uint64_t>(other) << std::endl;
 			*static_cast<uint64_t*>(this->thePtr) = static_cast<uint64_t>(other);
 		};
+
+		EnumConverter& operator=(EnumConverter&&) noexcept;
+
+		EnumConverter(EnumConverter&&) noexcept;
+
+		EnumConverter& operator=(EnumConverter&) noexcept;
+
+		EnumConverter(EnumConverter&) noexcept;
 
 		template<IsEnum EnumType> EnumConverter& operator=(std::vector<EnumType> other) {
 			this->thePtr = new std::vector<uint64_t>{};
@@ -461,111 +456,121 @@ namespace DiscordCoreAPI {
 		}
 
 		~EnumConverter() {
-			delete static_cast<uint64_t*>(this->thePtr);
+			if (this->thePtr) {
+				delete this->thePtr;
+			}
 		}
 
-		void* thePtr{};
+		void* thePtr{ nullptr };
 		bool vectorType{ false };
 	};
 
-	class JsonRecord {
-	  public:
-		JsonRecord() noexcept = default;
-		JsonRecord& operator=(EnumConverter other) noexcept;
-		JsonRecord& operator=(int8_t) noexcept;
-		JsonRecord& operator=(int16_t) noexcept;
-		JsonRecord& operator=(int32_t) noexcept;
-		JsonRecord& operator=(int64_t) noexcept;
-		JsonRecord& operator=(uint8_t) noexcept;
-		JsonRecord& operator=(uint16_t) noexcept;
-		JsonRecord& operator=(uint32_t) noexcept;
-		JsonRecord& operator=(uint64_t) noexcept;
-		JsonRecord& operator=(std::nullptr_t) noexcept;
-		JsonRecord& operator=(bool) noexcept;
-		JsonRecord& operator=(double) noexcept;
-		JsonRecord& operator=(float) noexcept;
-		JsonRecord& operator=(std::string&&) noexcept;
-		JsonRecord& operator=(std::string&) noexcept;
-		JsonRecord& operator=(const char*) noexcept;
-		JsonRecord& operator[](const char*) noexcept;
-		JsonRecord(EnumConverter other) noexcept;
-		JsonRecord(int8_t) noexcept;
-		JsonRecord(int16_t) noexcept;
-		JsonRecord(int32_t) noexcept;
-		JsonRecord(int64_t) noexcept;
-		JsonRecord(uint8_t) noexcept;
-		JsonRecord(uint16_t) noexcept;
-		JsonRecord(uint32_t) noexcept;
-		JsonRecord(uint64_t) noexcept;
-		JsonRecord(std::nullptr_t) noexcept;
-		JsonRecord(bool) noexcept;
-		JsonRecord(double) noexcept;
-		JsonRecord(float) noexcept;
-		JsonRecord(std::string&&) noexcept;
-		JsonRecord(std::string&) noexcept;
-
-		JsonRecord(const char*) noexcept;
-		operator std::string() noexcept;
-		std::vector<JsonRecord> theArrayData{};
-		JsonParseEvent theEvent{ JsonParseEvent::Unset };
-		size_t currentObjectOrArrayStartIndex{ 0 };
-		JsonParserState theState{};
-		std::string theValue{};
+	struct JsonObject {
+		std::unordered_map<std::string, JsonObject> theValues{};
+		ValueType theType{ ValueType::Object };
 		std::string theKey{};
+		void* theValue{};
+
+		JsonObject() noexcept = default;
+
+		template<typename ObjectType> JsonObject& operator=(std::vector<ObjectType> theData) noexcept {
+			this->theType = ValueType::Array;
+			int32_t theIndex{};
+			for (auto& value: theData) {
+				this->theValues[std::to_string(theIndex)] = value;
+			}
+			theIndex++;
+			return *this;
+		}
+
+		template<typename ObjectType> JsonObject(std::vector<ObjectType> theData) noexcept {
+			*this = theData;
+		}
+
+		template<typename KeyType, typename ObjectType> JsonObject& operator=(std::unordered_map<KeyType, ObjectType> theData) noexcept {
+			int32_t theIndex{};
+			for (auto& [key, value]: theData) {
+				this->theValues[key] = value;
+				this->theValues[key].theType = ValueType::String;
+				this->theValues[key].theKey = key;
+			}
+			theIndex++;
+			return *this;
+		}
+
+		template<typename KeyType, typename ObjectType> JsonObject(std::unordered_map<KeyType, ObjectType> theData) noexcept {
+			*this = theData;
+		}
+
+		JsonObject& operator=(EnumConverter theData) noexcept;
+		JsonObject(EnumConverter) noexcept;
+
+		JsonObject& operator=(const JsonObject& theKey) noexcept;
+		JsonObject(const JsonObject& theKey) noexcept;
+
+		JsonObject& operator=(const ValueType& theType) noexcept;
+		JsonObject(const ValueType& theType) noexcept;
+
+		JsonObject& operator=(const JsonArray& theData) noexcept;
+		JsonObject(const JsonArray& theData) noexcept;
+
+		JsonObject& operator=(const char* theData) noexcept;
+		JsonObject(const char* theData) noexcept;
+
+		JsonObject& operator=(std::string theData) noexcept;
+		JsonObject(std::string) noexcept;
+
+		JsonObject& operator=(uint64_t theData) noexcept;
+		JsonObject(uint64_t) noexcept;
+
+		JsonObject& operator=(uint32_t theData) noexcept;
+		JsonObject(uint32_t) noexcept;
+
+		JsonObject& operator=(uint16_t theData) noexcept;
+		JsonObject(uint16_t) noexcept;
+
+		JsonObject& operator=(uint8_t theData) noexcept;
+		JsonObject(uint8_t) noexcept;
+
+		JsonObject& operator=(int64_t theData) noexcept;
+		JsonObject(int64_t) noexcept;
+
+		JsonObject& operator=(int32_t theData) noexcept;
+		JsonObject(int32_t) noexcept;
+
+		JsonObject& operator=(int16_t theData) noexcept;
+		JsonObject(int16_t) noexcept;
+
+		JsonObject& operator=(int8_t theData) noexcept;
+		JsonObject(int8_t) noexcept;
+
+		JsonObject& operator=(double theData) noexcept;
+		JsonObject(double) noexcept;
+
+		JsonObject& operator=(float theData) noexcept;
+		JsonObject(float) noexcept;
+
+		JsonObject& operator=(bool theData) noexcept;
+		JsonObject(bool) noexcept;
+
+		JsonObject& operator[](const char* theKey) noexcept;
+
+		operator std::string() noexcept;
+
+		void pushBack(const char* theKey, std::string other) noexcept;
+		void pushBack(const char* theKey, JsonObject other) noexcept;
+		void pushBack(const char* theKey, uint64_t other) noexcept;
+		void pushBack(const char* theKey, uint32_t other) noexcept;
+		void pushBack(const char* theKey, uint16_t other) noexcept;
+		void pushBack(const char* theKey, uint8_t other) noexcept;
+		void pushBack(const char* theKey, int64_t other) noexcept;
+		void pushBack(const char* theKey, int32_t other) noexcept;
+		void pushBack(const char* theKey, int16_t other) noexcept;
+		void pushBack(const char* theKey, int8_t other) noexcept;
 	};
 
-	class JsonSerializer {
-	  public:
-		friend class JsonRecord;
-		JsonSerializer() noexcept = default;
-		void addNewStructure(const char* keyName);
-		void appendStructElement(const char* keyName, EnumConverter& theRecord);
-		void appendStructElement(const char* keyName, EnumConverter&& theRecord);
-		template<typename ObjectType> void appendStructElement(const char* keyName, std::vector<ObjectType> other) {
-			JsonRecord theRecord{};
-			theRecord.theEvent = JsonParseEvent::Array_Start;
-			theRecord.theKey = keyName;
-			this->theJsonData.push_back(theRecord);
-			for (auto& value: other) {
-				theRecord = static_cast<ObjectType>(value);
-				this->theJsonData.push_back(theRecord);
-			}
-			theRecord.theEvent = JsonParseEvent::Array_End;
-			theRecord.theKey = keyName;
-			this->theJsonData.push_back(theRecord);
-		}
-		template<typename KeyType, typename ObjectType> void appendStructElement(const char* keyName, std::unordered_map<KeyType, ObjectType> other) {
-			JsonRecord theRecord{};
-			theRecord.theEvent = JsonParseEvent::Object_Start;
-			theRecord.theKey = keyName;
-			this->theJsonData.push_back(theRecord);
-			for (auto& [key, value]: other) {
-				theRecord.theKey = key;
-				theRecord = value;
-				this->theJsonData.push_back(theRecord);
-			}
-			theRecord.theEvent = JsonParseEvent::Object_End;
-			theRecord.theKey = keyName;
-			this->theJsonData.push_back(theRecord);
-		}
-		void appendStructElement(const char*, JsonSerializer&&);
-		void appendStructElement(const char*, JsonSerializer&);
-		void appendStructElement(const char* keyName, JsonRecord&&);
-		void appendStructElement(const char* keyName, JsonRecord&);
-		void endStructure();
-		void addNewArray(const char* keyName);
-		void appendArrayElement(JsonSerializer&&);
-		void appendArrayElement(JsonSerializer&);
-		void appendArrayElement(JsonRecord&&);
-		void appendArrayElement(JsonRecord&);
-		void endArray();
-
-		std::string getString();
-
-	  protected:
-		int64_t currentObjectOrArrayStartIndex{ 0 };
-		std::vector<JsonRecord> theJsonData{};
-		JsonParserState theState{};
+	struct JsonArray : public JsonObject {
+		JsonArray() noexcept = default;
 	};
 
 	class DiscordCoreAPI_Dll ConfigManager {

@@ -68,12 +68,12 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";
-		JsonSerializer theData{};
-		theData.appendStructElement("description", dataPackage.description);
-		theData.appendStructElement("name", dataPackage.name);
-		theData.appendStructElement("tags", dataPackage.tags);
-		theData.appendStructElement("file", dataPackage.file);
-		workload.content = theData.getString();
+		JsonObject theData{};
+		theData["description"] = dataPackage.description;
+		theData["name"] = dataPackage.name;
+		theData["tags"] = dataPackage.tags;
+		theData["file"] = dataPackage.file;
+		workload.content = theData;
 		workload.callStack = "Stickers::createGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -86,11 +86,11 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + std::to_string(dataPackage.stickerId);
-		JsonSerializer theData{};
-		theData.appendStructElement("description", dataPackage.description);
-		theData.appendStructElement("name", dataPackage.name);
-		theData.appendStructElement("tags", dataPackage.tags);
-		workload.content = theData.getString();
+		JsonObject theData{};
+		theData["description"] = dataPackage.description;
+		theData["name"] = dataPackage.name;
+		theData["tags"] = dataPackage.tags;
+		workload.content = theData;
 		workload.callStack = "Stickers::modifyGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

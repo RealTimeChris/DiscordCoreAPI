@@ -28,72 +28,70 @@
 
 namespace DiscordCoreAPI {
 
-	EditChannelPermissionOverwritesData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("allow", this->allow);
-		theData.appendStructElement("deny", this->deny);
-		theData.appendStructElement("type", this->type);
+	EditChannelPermissionOverwritesData::operator std::string() {
+		JsonObject theData{};
+		theData["allow"] = this->allow;
+		theData["deny"] = this->deny;
+		theData["type"] = this->type;
 		return theData;
 	}
 
-	CreateChannelInviteData::operator JsonSerializer() {
-		JsonSerializer theData{};
+	CreateChannelInviteData::operator std::string() {
+		JsonObject theData{};
 		if (this->targetUserId.operator size_t() != 0) {
-			theData.appendStructElement("target_application_id", std::to_string(this->targetApplicationId));
-			theData.appendStructElement("target_user_id", std::to_string(this->targetUserId));
-			theData.appendStructElement("target_type", this->targetType);
+			theData["target_application_id"] = std::to_string(this->targetApplicationId);
+			theData["target_user_id"] = std::to_string(this->targetUserId);
+			theData["target_type"] = this->targetType;
 		}
-		theData.appendStructElement("temporary", this->temporary);
-		theData.appendStructElement("max_uses", this->maxUses);
-		theData.appendStructElement("max_age", this->maxAge);
-		theData.appendStructElement("unique", this->unique);
+		theData["temporary"] = this->temporary;
+		theData["max_uses"] = this->maxUses;
+		theData["max_age"] = this->maxAge;
+		theData["unique"] = this->unique;
 		return theData;
 	}
 
-	FollowNewsChannelData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("webhook_channel_id", std::to_string(this->targetChannelId));
+	FollowNewsChannelData::operator std::string() {
+		JsonObject theData{};
+		theData["webhook_channel_id"] = std::to_string(this->targetChannelId);
 		return theData;
 	}
 
-	CreateGuildChannelData::operator JsonSerializer() {
-		JsonSerializer theData{};
+	CreateGuildChannelData::operator std::string() {
+		JsonObject theData{};
 		if (this->type == DiscordCoreAPI::ChannelType::Guild_Voice || this->type == DiscordCoreAPI::ChannelType::Guild_Stage_Voice) {
-			theData.appendStructElement("user_limit", this->userLimit);
-			theData.appendStructElement("bitrate", this->bitrate);
+			theData["user_limit"] = this->userLimit;
+			theData["bitrate"] = this->bitrate;
 		}
-		theData.addNewArray("permission_overwrites");
 		for (auto& value: this->permissionOverwrites) {
-			JsonSerializer newData{};
-			theData.appendStructElement("allow", value.allow);
-			theData.appendStructElement("deny", value.deny);
-			theData.appendStructElement("type", value.type);
-			theData.appendStructElement("id", std::to_string(value.id));
-			theData.appendArrayElement(newData);
+			JsonObject newData{};
+			theData["allow"] = value.allow;
+			theData["deny"] = value.deny;
+			theData["type"] = value.type;
+			theData["id"] = std::to_string(value.id);
+			theData.pushBack("permission_overwrites",newData);
 		}
-		theData.endArray();
-		theData.appendStructElement("default_auto_archive_duration", this->defaultAutoArchiveDuration);
-		theData.appendStructElement("rate_limit_per_user", this->rateLimitPerUser);
-		theData.appendStructElement("parent_id", std::to_string(this->parentId));
-		theData.appendStructElement("position", this->position);
-		theData.appendStructElement("topic", this->topic);
-		theData.appendStructElement("name", this->name);
-		theData.appendStructElement("nsfw", this->nsfw);
-		theData.appendStructElement("type", this->type);
+		theData["default_auto_archive_duration"] = this->defaultAutoArchiveDuration;
+		theData["rate_limit_per_user"] = this->rateLimitPerUser;
+		theData["parent_id"] = std::to_string(this->parentId);
+		theData["position"] = this->position;
+		theData["topic"] = this->topic;
+		theData["name"] = this->name;
+		theData["nsfw"] = this->nsfw;
+		theData["type"] = this->type;
 		return theData;
 	}
 
-	ModifyGuildChannelPositionsData::operator JsonSerializer() {
-		JsonSerializer theData{};
+	ModifyGuildChannelPositionsData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->modifyChannelData) {
-			JsonSerializer dataNew{};
-			dataNew.appendStructElement("lock_permissions", value.lockPermissions);
+			JsonObject dataNew{};
+			dataNew["lock_permissions"] = value.lockPermissions;
 			if (value.parentId.operator size_t() != 0) {
-				dataNew.appendStructElement("parent_id", std::to_string(value.parentId));
+				dataNew["parent_id"] = std::to_string(value.parentId);
 			}
-			dataNew.appendStructElement("position", value.position);
-			dataNew.appendStructElement("id", std::to_string(value.id));
-			theData.appendArrayElement(dataNew);
+			dataNew["position"] = value.position;
+			dataNew["id"] = std::to_string(value.id);
+			theData.pushBack("", dataNew);
 		}
 		return theData;
 	}
@@ -163,30 +161,28 @@ namespace DiscordCoreAPI {
 		this->channelData.type = newData.type;
 	};
 
-	ModifyChannelData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("permission_overwrites");
+	ModifyChannelData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->channelData.permissionOverwrites) {
-			JsonSerializer newData{};
-			newData.appendStructElement("allow", value.allow);
-			newData.appendStructElement("deny", value.deny);
-			newData.appendStructElement("type", value.type);
-			newData.appendStructElement("id", std::to_string(value.id));
-			theData.appendArrayElement(newData);
+			JsonObject newData{};
+			newData["allow"] = value.allow;
+			newData["deny"] = value.deny;
+			newData["type"] = value.type;
+			newData["id"] = std::to_string(value.id);
+			theData.pushBack("permission_overwrites", newData);
 		}
-		theData.endArray();
-		theData.appendStructElement("default_auto_archive_duration", this->channelData.defaultAutoArchiveDuration);
-		theData.appendStructElement("video_quality_mode", this->channelData.videoQualityMode);
-		theData.appendStructElement("rate_limit_per_user", this->channelData.rateLimitPerUser);
-		theData.appendStructElement("user_limit", this->channelData.userLimit);
-		theData.appendStructElement("rtc_region", std::string{ this->channelData.rtcRgion });
-		theData.appendStructElement("parent_id", std::string{ this->channelData.parentId });
-		theData.appendStructElement("position", this->channelData.position);
-		theData.appendStructElement("bitrate", this->channelData.bitrate);
-		theData.appendStructElement("topic", std::string{ this->channelData.topic });
-		theData.appendStructElement("nsfw", this->channelData.nsfw);
-		theData.appendStructElement("name", std::string{ this->channelData.name });
-		theData.appendStructElement("type", this->channelData.type);
+		theData["default_auto_archive_duration"] = this->channelData.defaultAutoArchiveDuration;
+		theData["video_quality_mode"] = this->channelData.videoQualityMode;
+		theData["rate_limit_per_user"] = this->channelData.rateLimitPerUser;
+		theData["user_limit"] = this->channelData.userLimit;
+		theData["rtc_region"]= std::string{ this->channelData.rtcRgion };
+		theData["parent_id"] = std::string{ this->channelData.parentId };
+		theData["position"] = this->channelData.position;
+		theData["bitrate"] = this->channelData.bitrate;
+		theData["topic"] = std::string{ this->channelData.topic };
+		theData["nsfw"] = this->channelData.nsfw;
+		theData["name"] = std::string{ this->channelData.name };
+		theData["type"] = this->channelData.type;
 		return theData;
 	}
 
@@ -229,7 +225,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Channel>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId);
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Channels::modifyChannelAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -262,7 +258,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/permissions/" + std::to_string(dataPackage.roleOrUserId);
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Channels::editChannelPermissionOverwritesAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -284,7 +280,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<InviteData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/invites";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Channels::createChannelInviteAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -309,7 +305,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Channel>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/followers";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Channels::followNewsChannelAsync()";
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 	}
@@ -337,7 +333,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Channel>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/channels";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Channels::createGuildChannelAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -350,7 +346,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/channels";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Channels::modifyGuildChannelPositionsAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -364,9 +360,9 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/users/@me/channels";
 		workload.callStack = "Channels::createDMChannelAsync()";
-		JsonSerializer theValue{};
-		theValue.appendStructElement("recipient_id", std::to_string(dataPackage.userId));
-		workload.content = theValue.getString();
+		JsonObject theValue{};
+		theValue["recipient_id"] = std::to_string(dataPackage.userId);
+		workload.content = theValue;
 		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
 	}
 

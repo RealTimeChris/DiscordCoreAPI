@@ -30,10 +30,10 @@
 
 namespace DiscordCoreAPI {
 
-	AddRecipientToGroupDMData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("access_token", this->token);
-		theData.appendStructElement("nick", this->nick);
+	AddRecipientToGroupDMData::operator std::string() {
+		JsonObject theData{};
+		theData["access_token"] = this->token;
+		theData["nick"] = this->nick;
 		return theData;
 	}
 
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData& dataPackage) {
 		if (this->baseSocketAgent) {
-			JsonSerializer payload = dataPackage;
+			std::string payload = dataPackage;
 			std::string theString{};
 			uint32_t shardId = (dataPackage.guildId >> 22) % this->baseSocketAgent->configManager->getTotalShardCount();
 			uint32_t basesocketAgentIndex{ shardId % this->baseSocketAgent->configManager->getTotalShardCount() };
@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 
 	void BotUser::updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage) {
 		if (this->baseSocketAgent) {
-			JsonSerializer payload = dataPackage;
+			std::string payload = dataPackage;
 			std::string theString{};
 			uint32_t shardId = 0;
 			uint32_t basesocketAgentIndex{ 0 };
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/recipients/" + std::to_string(dataPackage.userId);
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Users::addRecipientToGroupDMAsync()";
 		co_return Users::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -196,14 +196,14 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/users/@me";
 		workload.callStack = "Users::modifyCurrentUserAsync()";
 		if (dataPackage.avatar.size() > 0) {
-			JsonSerializer responseData{};
-			responseData.appendStructElement("avatar", dataPackage.avatar);
-			responseData.appendStructElement("userName", dataPackage.userName);
-			workload.content = responseData.getString();
+			JsonObject responseData{};
+			responseData["avatar"] = dataPackage.avatar;
+			responseData["userName"] = dataPackage.userName;
+			workload.content = responseData;
 		} else {
-			JsonSerializer responseData{};
-			responseData.appendStructElement("userName", dataPackage.userName);
-			workload.content = responseData.getString();
+			JsonObject responseData{};
+			responseData["userName"] = dataPackage.userName;
+			workload.content = responseData;
 		}
 		co_return Users::httpsClient->submitWorkloadAndGetResult<User>(workload);
 	}

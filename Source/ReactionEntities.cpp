@@ -30,26 +30,22 @@
 
 namespace DiscordCoreAPI {
 
-	CreateGuildEmojiData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("roles");
+	CreateGuildEmojiData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->roles) {
-			theData.appendArrayElement(std::to_string(value));
+			theData.pushBack("roles", std::to_string(value));
 		}
-		theData.endArray();
-		theData.appendStructElement("image", this->imageDataFinal);
-		theData.appendStructElement("name", this->name);
+		theData["images"] = this->imageDataFinal;
+		theData["name"] = this->name;
 		return theData;
 	}
 
-	ModifyGuildEmojiData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("roles");
+	ModifyGuildEmojiData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->roles) {
-			theData.appendArrayElement(std::to_string(value));
+			theData.pushBack("roles", std::to_string(value));
 		}
-		theData.endArray();
-		theData.appendStructElement("name", this->name);
+		theData["name"] = this->name;
 		return theData;
 	}
 
@@ -199,7 +195,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis";
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Reactions::createGuildEmojiAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -212,7 +208,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis/" + std::to_string(dataPackage.emojiId);
-		workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+		workload.content = static_cast<JsonObject>(dataPackage);
 		workload.callStack = "Reactions::modifyGuildEmojiAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

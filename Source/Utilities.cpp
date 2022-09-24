@@ -87,527 +87,528 @@ namespace DiscordCoreAPI {
 		return this->theId;
 	}
 
-	JsonRecord& JsonRecord::operator=(bool theData) noexcept {
-		std::string theString{};
-		if (theData) {
-			theString = "true";
-		} else {
-			theString = "false";
+	EnumConverter& EnumConverter::operator=(EnumConverter& other) noexcept {
+		this->thePtr = other.thePtr;
+		other.thePtr = nullptr;
+		this->vectorType = other.vectorType;
+		return *this;
+	}
+
+	EnumConverter::EnumConverter(EnumConverter& other) noexcept {
+		*this = other;
+	}
+
+	EnumConverter& EnumConverter::operator=(EnumConverter&& other) noexcept {
+		this->thePtr = other.thePtr;
+		other.thePtr = nullptr;
+		this->vectorType = other.vectorType;
+		return *this;
+	}
+
+	EnumConverter::EnumConverter(EnumConverter&& other) noexcept {
+		*this = other;
+	}
+
+	JsonObject& JsonObject::operator=(EnumConverter theData) noexcept {
+		this->theType = ValueType::Uint64;
+		EnumConverter theConverter{ theData };
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<uint64_t*>(this->theValue) = static_cast<uint64_t>(theConverter);
+		return *this;
+	}
+
+	JsonObject::JsonObject(EnumConverter theData) noexcept {
+		this->theValue = new EnumConverter{ DiscordCoreAPI::ChannelType::Dm };
+		*static_cast<EnumConverter*>(this->theValue) = theData;
+	}
+
+	JsonObject& JsonObject::operator=(const JsonObject& theKey) noexcept {
+		for (auto& [key, value]: theKey.theValues) {
+			this->theValues[key] = value;
 		}
-		this->theValue = theString;
-		this->theEvent = JsonParseEvent::Boolean;
+		this->theValue = theKey.theValue;
+		this->theType = theKey.theType;
+		this->theKey = theKey.theKey;
 		return *this;
 	}
 
-	JsonRecord& JsonRecord::operator=(std::nullptr_t) noexcept {
-		this->theEvent = JsonParseEvent::Null_Value;
-		return *this;
+	JsonObject::JsonObject(const JsonObject& theKey) noexcept {
+		*this = theKey;
 	}
 
-	JsonRecord& JsonRecord::operator=(const char* theData) noexcept {
-		this->theEvent = JsonParseEvent::String;
-		this->theValue = theData;
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(std::string&& theData) noexcept {
-		this->theEvent = JsonParseEvent::String;
-		this->theValue = std::move(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(std::string& theData) noexcept {
-		this->theEvent = JsonParseEvent::String;
-		this->theValue = theData;
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(float theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Float;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(double theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Double;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(int64_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Large;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(int32_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(int16_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(int8_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Small;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(uint64_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Large;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(uint32_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(uint16_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord& JsonRecord::operator=(uint8_t theData) noexcept {
-		this->theEvent = JsonParseEvent::Number_Integer_Small;
-		this->theValue = std::to_string(theData);
-		return *this;
-	}
-
-	JsonRecord::JsonRecord(bool theData) noexcept {
-		this->theEvent = JsonParseEvent::Boolean;
-		std::string theString{};
-		if (theData) {
-			theString = "true";
-		} else {
-			theString = "false";
+	JsonObject& JsonObject::operator=(const ValueType& theType) noexcept {
+		switch (theType) {
+			case ValueType::Bool: {
+				this->theValue = new bool{};
+				break;
+			}
+			case ValueType::Double: {
+				this->theValue = new double{};
+				break;
+			}
+			case ValueType::Float: {
+				this->theValue = new float{};
+				break;
+			}
+			case ValueType::Uint64: {
+				this->theValue = new uint64_t{};
+				break;
+			}
+			case ValueType::Int64: {
+				this->theValue = new int64_t{};
+				break;
+			}
+			case ValueType::String: {
+				this->theValue = new std::string{};
+				break;
+			}
+			case ValueType::Null: {
+				this->theValue = new nullptr_t{};
+				break;
+			}
+			case ValueType::Array: {
+				this->theValue = new JsonArray{};
+				break;
+			}
+			case ValueType::Object: {
+				this->theValue = new JsonObject{};
+				break;
+			}
+			case ValueType::Unset: {
+				break;
+			}
 		}
-		this->theValue = theString;
+		return *this;
 	}
 
-	JsonRecord::JsonRecord(std::nullptr_t) noexcept {
-		this->theEvent = JsonParseEvent::Null_Value;
+	JsonObject::JsonObject(const ValueType& theType) noexcept {
+		*this = theType;
 	}
 
-	JsonRecord::JsonRecord(const char* theData) noexcept {
-		this->theEvent = JsonParseEvent::String;
-		this->theValue = theData;
+	JsonObject& JsonObject::operator=(const JsonArray& theData) noexcept {
+		this->theKey = theData.theKey;
+		this->theType = theData.theType;
+		this->theValue = theData.theValue;
+		for (auto& [key, value]: theData.theValues) {
+			this->theValues[key] = value;
+		}
+		return *this;
 	}
 
-	JsonRecord::JsonRecord(std::string&& theData) noexcept {
-		this->theEvent = JsonParseEvent::String;
-		this->theValue = std::move(theData);
-	}
-
-	JsonRecord::JsonRecord(std::string& theData) noexcept {
-		this->theEvent = JsonParseEvent::String;
-		this->theValue = theData;
-	}
-
-	JsonRecord::JsonRecord(EnumConverter theData) noexcept {
+	JsonObject::JsonObject(const JsonArray& theData) noexcept {
 		*this = theData;
 	}
 
-	JsonRecord::JsonRecord(float theData) noexcept {
-		*this = theData;
+	JsonObject& JsonObject::operator=(const char* theData) noexcept {
+		this->theType = ValueType::String;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<std::string*>(this->theValue) = theData;
+		return *this;
 	}
 
-	JsonRecord::JsonRecord(double theData) noexcept {
-		*this = theData;
+	JsonObject::JsonObject(const char* theData) noexcept {
+		this->theValue = new std::string{};
+		*static_cast<std::string*>(this->theValue) = theData;
 	}
 
-	JsonRecord::JsonRecord(int64_t theData) noexcept {
-		*this = theData;
+	JsonObject& JsonObject::operator=(std::string theData) noexcept {
+		this->theType = ValueType::String;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<std::string*>(this->theValue) = theData;
+		return *this;
 	}
 
-	JsonRecord::JsonRecord(int32_t theData) noexcept {
-		*this = theData;
+	JsonObject::JsonObject(std::string theData) noexcept {
+		this->theValue = new std::string{};
+		*static_cast<std::string*>(this->theValue) = theData;
 	}
 
-	JsonRecord::JsonRecord(int16_t theData) noexcept {
-		*this = theData;
+	JsonObject& JsonObject::operator=(uint64_t theData) noexcept {
+		this->theType = ValueType::Uint64;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<uint64_t*>(this->theValue) = theData;
+		return *this;
 	}
 
-	JsonRecord::JsonRecord(int8_t theData) noexcept {
-		*this = theData;
+	JsonObject::JsonObject(uint64_t theData) noexcept {
+		this->theValue = new uint64_t{};
+		*static_cast<uint64_t*>(this->theValue) = theData;
 	}
 
-	JsonRecord::JsonRecord(uint64_t theData) noexcept {
-		*this = theData;
+	JsonObject& JsonObject::operator=(uint32_t theData) noexcept {
+		this->theType = ValueType::Uint64;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<uint64_t*>(this->theValue) = theData;
+		return *this;
 	}
 
-	JsonRecord::JsonRecord(uint32_t theData) noexcept {
-		*this = theData;
+	JsonObject::JsonObject(uint32_t theData) noexcept {
+		this->theValue = new uint32_t{};
+		*static_cast<uint32_t*>(this->theValue) = theData;
 	}
 
-	JsonRecord::JsonRecord(uint16_t theData) noexcept {
-		*this = theData;
+	JsonObject& JsonObject::operator=(uint16_t theData) noexcept {
+		this->theType = ValueType::Uint64;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<uint64_t*>(this->theValue) = theData;
+		return *this;
 	}
 
-	JsonRecord::JsonRecord(uint8_t theData) noexcept {
-		*this = theData;
+	JsonObject::JsonObject(uint16_t theData) noexcept {
+		this->theValue = new uint16_t{};
+		*static_cast<uint16_t*>(this->theValue) = theData;
 	}
 
-	JsonRecord::operator std::string() noexcept {
+	JsonObject& JsonObject::operator=(uint8_t theData) noexcept {
+		this->theType = ValueType::Uint64;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<uint64_t*>(this->theValue) = theData;
+		return *this;
+	}
+
+	JsonObject::JsonObject(uint8_t theData) noexcept {
+		this->theValue = new uint8_t{};
+		*static_cast<uint8_t*>(this->theValue) = theData;
+	}
+
+	JsonObject& JsonObject::operator=(int64_t theData) noexcept {
+		this->theType = ValueType::Int64;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<int64_t*>(this->theValue) = theData;
+		return *this;
+	}
+
+	JsonObject::JsonObject(int64_t theData) noexcept {
+		this->theValue = new uint64_t{};
+		*static_cast<int64_t*>(this->theValue) = theData;
+	}
+
+	JsonObject& JsonObject::operator=(int32_t theData) noexcept {
+		this->theType = ValueType::Int64;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<int64_t*>(this->theValue) = theData;
+		return *this;
+	}
+
+	JsonObject::JsonObject(int32_t theData) noexcept {
+		this->theValue = new uint32_t{};
+		*static_cast<int32_t*>(this->theValue) = theData;
+	}
+
+	JsonObject& JsonObject::operator=(int16_t theData) noexcept {
+		this->theType = ValueType::Int64;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<int64_t*>(this->theValue) = theData;
+		return *this;
+	}
+
+	JsonObject::JsonObject(int16_t theData) noexcept {
+		this->theValue = new uint16_t{};
+		*static_cast<int16_t*>(this->theValue) = theData;
+	}
+
+	JsonObject& JsonObject::operator=(int8_t theData) noexcept {
+		this->theType = ValueType::Int64;
+		*this = this->theType;
+		*static_cast<int64_t*>(this->theValue) = theData;
+		return *this;
+	}
+
+	JsonObject::JsonObject(int8_t theData) noexcept {
+		this->theValue = new uint8_t{};
+		*static_cast<int8_t*>(this->theValue) = theData;
+	}
+
+	JsonObject& JsonObject::operator=(double theData) noexcept {
+		this->theType = ValueType::Double;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<double*>(this->theValue) = theData;
+		return *this;
+	}
+
+	JsonObject::JsonObject(double theData) noexcept {
+		this->theValue = new double{};
+		*static_cast<double*>(this->theValue) = theData;
+	}
+
+	JsonObject& JsonObject::operator=(float theData) noexcept {
+		this->theType = ValueType::Float;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<float*>(this->theValue) = theData;
+		return *this;
+	}
+
+	JsonObject::JsonObject(float theData) noexcept {
+		this->theValue = new float{};
+		*static_cast<float*>(this->theValue) = theData;
+	}
+
+	JsonObject& JsonObject::operator=(bool theData) noexcept {
+		this->theType = ValueType::Bool;
+		JsonObject theObject{ theData };
+		theObject.theKey = this->theKey;
+		theObject.theType = this->theType;
+		*this = theObject;
+		*static_cast<bool*>(this->theValue) = theData;
+		return *this;
+	}
+
+
+	JsonObject::JsonObject(bool theData) noexcept {
+		this->theValue = new bool{};
+		*static_cast<bool*>(this->theValue) = theData;
+	}
+
+	JsonObject& JsonObject::operator[](const char* theKey) noexcept {
+		if (this->theKey == "") {
+			JsonObject theObject{};
+			theObject.theKey = theKey;
+			theObject.theType = ValueType::Object;
+			this->theValues[theKey] = theObject;
+			return this->theValues[theKey];
+		} else if (this->theKey == theKey && this->theType == ValueType::Object) {
+			return *this;
+		} else if (!this->theValues.contains(theKey)) {
+			JsonObject theObject{};
+			theObject.theKey = theKey;
+			theObject.theType = ValueType::Object;
+			this->theValues[theKey] = theObject;
+			return this->theValues[theKey];
+		} else if (this->theValues.contains(theKey)) {
+			return this->theValues[theKey];
+		} else {
+			JsonObject theObject{};
+			theObject.theType = ValueType::Object;
+			theObject.theKey = theKey;
+			this->theValues[theKey] = theObject;
+			return this->theValues[theKey];
+		}
+	}
+
+	JsonObject::operator std::string() noexcept {
 		std::string theString{};
 		if (this->theKey != "") {
 			theString += "\"" + this->theKey + "\":";
 		}
-		switch (this->theEvent) {
-			case JsonParseEvent::Object_Start: {
-				this->theState = JsonParserState::Starting_Object;
-				this->currentObjectOrArrayStartIndex++;
+		switch (this->theType) {
+			case ValueType::Object: {
+				bool doWeAddComma{ false };
 				theString += "{";
-				break;
-			}
-			case JsonParseEvent::Object_End: {
+				for (auto& [key, valueNew] : this->theValues) {
+					if (doWeAddComma) {
+						theString += ",";
+					}
+					theString += valueNew;
+					doWeAddComma = true;
+				}
 				theString += "}";
-				this->currentObjectOrArrayStartIndex--;
-				if (theString[theString.size() - 2] == ',') {
-					theString.erase(theString.begin() + theString.size() - 2);
-				}
 				break;
 			}
-			case JsonParseEvent::Array_Start: {
-				this->theState = JsonParserState::Starting_Array;
+			case ValueType::Array: {
+				bool doWeAddComma{ false };
 				theString += "[";
-				break;
-			}
-			case JsonParseEvent::Array_End: {
-				this->theState = JsonParserState::Adding_Object_Elements;
+				for (auto& [key, valueNew]: this->theValues) {
+					if (doWeAddComma) {
+						theString += ",";
+					}
+					theString += valueNew;
+					doWeAddComma = true;
+				}
 				theString += "]";
-				if (theString[theString.size() - 2] == ',') {
-					theString.erase(theString.begin() + theString.size() - 2);
-				}
 				break;
 			}
-			case JsonParseEvent::Boolean: {
-				theString += this->theValue;
-				if (this->theState == JsonParserState::Starting_Object) {
-					this->theState = JsonParserState::Adding_Object_Elements;
-				}
-				if (this->theState == JsonParserState::Starting_Array) {
-					this->theState = JsonParserState::Adding_Array_Elements;
-				}
+			case ValueType::Bool: {
+				std::stringstream theStream{};
+				theStream << std::boolalpha << *static_cast<bool*>(this->theValue);
+				theString += theStream.str();
 				break;
 			}
-			case JsonParseEvent::Null_Value: {
-				theString += "null";
-				if (this->theState == JsonParserState::Starting_Object) {
-					this->theState = JsonParserState::Adding_Object_Elements;
-				}
-				if (this->theState == JsonParserState::Starting_Array) {
-					this->theState = JsonParserState::Adding_Array_Elements;
-				}
-				break;
-			}
-			case JsonParseEvent::Number_Double: {
-				theString += this->theValue;
-				if (this->theState == JsonParserState::Starting_Object) {
-					this->theState = JsonParserState::Adding_Object_Elements;
-				}
-				if (this->theState == JsonParserState::Starting_Array) {
-					this->theState = JsonParserState::Adding_Array_Elements;
-				}
-				break;
-			}
-			case JsonParseEvent::Number_Float: {
-				theString += this->theValue;
-				if (this->theState == JsonParserState::Starting_Object) {
-					this->theState = JsonParserState::Adding_Object_Elements;
-				}
-				if (this->theState == JsonParserState::Starting_Array) {
-					this->theState = JsonParserState::Adding_Array_Elements;
-				}
-				break;
-			}
-			case JsonParseEvent::Number_Integer: {
-				theString += this->theValue;
-				if (this->theState == JsonParserState::Starting_Object) {
-					this->theState = JsonParserState::Adding_Object_Elements;
-				}
-				if (this->theState == JsonParserState::Starting_Array) {
-					this->theState = JsonParserState::Adding_Array_Elements;
-				}
-				break;
-			}
-			case JsonParseEvent::Number_Integer_Large: {
-				theString += this->theValue;
-				if (this->theState == JsonParserState::Starting_Object) {
-					this->theState = JsonParserState::Adding_Object_Elements;
-				}
-				if (this->theState == JsonParserState::Starting_Array) {
-					this->theState = JsonParserState::Adding_Array_Elements;
-				}
-				break;
-			}
-			case JsonParseEvent::Number_Integer_Small: {
-				theString += this->theValue;
-				if (this->theState == JsonParserState::Starting_Object) {
-					this->theState = JsonParserState::Adding_Object_Elements;
-				}
-				if (this->theState == JsonParserState::Starting_Array) {
-					this->theState = JsonParserState::Adding_Array_Elements;
-				}
-				break;
-			}
-			case JsonParseEvent::String: {
+			case ValueType::String: {
 				theString += "\"";
-				theString += this->theValue;
+				theString += *static_cast<std::string*>(this->theValue);
 				theString += "\"";
-				if (this->theState == JsonParserState::Starting_Object) {
-					this->theState = JsonParserState::Adding_Object_Elements;
-				}
-				if (this->theState == JsonParserState::Starting_Array) {
-					this->theState = JsonParserState::Adding_Array_Elements;
-				}
 				break;
 			}
-		}
-		for (uint32_t x = 0; x < this->currentObjectOrArrayStartIndex; ++x) {
-			theString += "}";
+			case ValueType::Double: {
+				theString += *static_cast<double*>(this->theValue);
+				break;
+			}
+			case ValueType::Uint64: {
+				theString += std::to_string(*static_cast<uint64_t*>(this->theValue));
+				break;
+			}
+			case ValueType::Int64: {
+				theString += std::to_string(*static_cast<int64_t*>(this->theValue));
+				break;
+			}
 		}
 		return theString;
 	}
 
-	void JsonSerializer::addNewStructure(const char* keyName) {
-		JsonRecord theRecord{};
-		theRecord.theKey = keyName;
-		theRecord.theEvent = JsonParseEvent::Object_Start;
-		this->theJsonData.push_back(theRecord);
-	}
-
-	void JsonSerializer::appendStructElement(const char* keyName, JsonRecord&& theRecord) {
-		theRecord.theKey = keyName;
-		this->theJsonData.push_back(std::move(theRecord));
-	}
-
-	void JsonSerializer::appendStructElement(const char* keyName, EnumConverter& theRecord) {
-		this->theJsonData.push_back(theRecord);
-	}
-
-	void JsonSerializer::appendStructElement(const char* keyName, EnumConverter&& theRecord) {
-		this->theJsonData.push_back(theRecord);
-	}
-
-	void JsonSerializer::appendStructElement(const char* keyName, JsonRecord& theRecord) {
-		theRecord.theKey = keyName;
-		if (theRecord.theValue != "") {
-			this->theJsonData.push_back(theRecord);
+	void JsonObject::pushBack(const char* theKey, std::string other) noexcept {
+		if (!this->theValues.contains(theKey)) {
+			this->theValues[theKey] = JsonObject{};
+			this->theValues[theKey].theType = ValueType::Array;
+			this->theValues[theKey].theKey = theKey;
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		} else {
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
 
-	void JsonSerializer::endStructure() {
-		JsonRecord theRecord{};
-		theRecord.theEvent = JsonParseEvent::Object_End;
-		this->theJsonData.push_back(theRecord);
-	}
-
-	void JsonSerializer::addNewArray(const char* keyName) {
-		JsonRecord theRecord{};
-		theRecord.theKey = keyName;
-		theRecord.theEvent = JsonParseEvent::Array_Start;
-		this->theJsonData.push_back(theRecord);
-	}
-
-	void JsonSerializer::appendArrayElement(JsonRecord&& theRecord) {
-		this->theJsonData.push_back(std::move(theRecord));
-	}
-
-	void JsonSerializer::appendArrayElement(JsonRecord& theRecord) {
-		this->theJsonData.push_back(theRecord);
-	}
-
-	void JsonSerializer::appendStructElement(const char* theKeyName, JsonSerializer&& theRecord) {
-		this->addNewStructure(theKeyName);
-		for (auto& value: theRecord.theJsonData) {
-			this->theJsonData.push_back(std::move(value));
+	void JsonObject::pushBack(const char* theKey, JsonObject other) noexcept {
+		if (!this->theValues.contains(theKey)) {
+			this->theValues[theKey] = JsonObject{};
+			this->theValues[theKey].theType = ValueType::Array;
+			this->theValues[theKey].theKey = std::move(theKey);
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = std::move(other);
+		} else {
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = std::move(other);
 		}
-		this->endStructure();
-	}
+	};
 
-	void JsonSerializer::appendStructElement(const char* theKeyName,JsonSerializer& theRecord) {
-		this->addNewStructure(theKeyName);
-		for (auto& value: theRecord.theJsonData) {
-			this->theJsonData.push_back(value);
+	void JsonObject::pushBack(const char* theKey, uint64_t other) noexcept {
+		if (!this->theValues.contains(theKey)) {
+			this->theValues[theKey] = JsonObject{};
+			this->theValues[theKey].theType = ValueType::Array;
+			this->theValues[theKey].theKey = theKey;
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		} else {
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
-		this->endStructure();
 	}
 
-	void JsonSerializer::appendArrayElement(JsonSerializer&& theRecord) {
-		this->addNewStructure("");
-		for (auto& value: theRecord.theJsonData) {
-			this->theJsonData.push_back(std::move(value));
+	void JsonObject::pushBack(const char* theKey, uint32_t other) noexcept {
+		if (!this->theValues.contains(theKey)) {
+			this->theValues[theKey] = JsonObject{};
+			this->theValues[theKey].theType = ValueType::Array;
+			this->theValues[theKey].theKey = theKey;
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		} else {
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
-		this->endStructure();
 	}
 
-	void JsonSerializer::appendArrayElement(JsonSerializer& theRecord) {
-		this->addNewStructure("");
-		for (auto& value: theRecord.theJsonData) {
-			this->theJsonData.push_back(value);
+	void JsonObject::pushBack(const char* theKey, uint16_t other) noexcept {
+		if (!this->theValues.contains(theKey)) {
+			this->theValues[theKey] = JsonObject{};
+			this->theValues[theKey].theType = ValueType::Array;
+			this->theValues[theKey].theKey = theKey;
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		} else {
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
-		this->endStructure();
 	}
 
-	void JsonSerializer::endArray() {
-		JsonRecord theRecord{};
-		theRecord.theEvent = JsonParseEvent::Array_End;
-		this->theJsonData.push_back(theRecord);
-	}
-
-	std::string JsonSerializer::getString() {
-		std::string theString{ "{" };
-		this->theState = JsonParserState::Starting_Object;
-		for (auto iterator = this->theJsonData.begin(); iterator != this->theJsonData.end(); ++iterator) {
-			if (this->theState == JsonParserState::Adding_Object_Elements|| this->theState == JsonParserState::Adding_Array_Elements) {
-				theString += ",";
-			}
-			if ((*iterator).theKey != "") {
-				theString += "\"" + (*iterator).theKey + "\":";
-			}
-			switch ((*iterator).theEvent) {
-				case JsonParseEvent::Object_Start: {
-					this->theState = JsonParserState::Starting_Object;
-					this->currentObjectOrArrayStartIndex++;
-					theString += "{";
-					break;
-				}
-				case JsonParseEvent::Object_End: {
-					this->theState = JsonParserState::Adding_Object_Elements;
-					theString += "}";
-					this->currentObjectOrArrayStartIndex--;
-					if (theString[theString.size() - 2] == ',') {
-						theString.erase(theString.begin() + theString.size() - 2);
-					}
-					break;
-				}
-				case JsonParseEvent::Array_Start: {
-					this->theState = JsonParserState::Starting_Array;
-					theString += "[";
-					break;
-				}
-				case JsonParseEvent::Array_End: {
-					this->theState = JsonParserState::Adding_Object_Elements;
-					theString += "]";
-					if (theString[theString.size() - 2] == ',') {
-						theString.erase(theString.begin() + theString.size() - 2);
-					}
-					break;
-				}
-				case JsonParseEvent::Boolean: {
-					theString += (*iterator).theValue;
-					if (this->theState == JsonParserState::Starting_Object) {
-						this->theState = JsonParserState::Adding_Object_Elements;
-					}
-					if (this->theState == JsonParserState::Starting_Array) {
-						this->theState = JsonParserState::Adding_Array_Elements;
-					}
-					break;
-				}
-				case JsonParseEvent::Null_Value: {
-					theString += "null";
-					if (this->theState == JsonParserState::Starting_Object) {
-						this->theState = JsonParserState::Adding_Object_Elements;
-					}
-					if (this->theState == JsonParserState::Starting_Array) {
-						this->theState = JsonParserState::Adding_Array_Elements;
-					}
-					break;
-				}
-				case JsonParseEvent::Number_Double: {
-					theString += (*iterator).theValue;
-					if (this->theState == JsonParserState::Starting_Object) {
-						this->theState = JsonParserState::Adding_Object_Elements;
-					}
-					if (this->theState == JsonParserState::Starting_Array) {
-						this->theState = JsonParserState::Adding_Array_Elements;
-					}
-					break;
-				}
-				case JsonParseEvent::Number_Float: {
-					theString += (*iterator).theValue;
-					if (this->theState == JsonParserState::Starting_Object) {
-						this->theState = JsonParserState::Adding_Object_Elements;
-					}
-					if (this->theState == JsonParserState::Starting_Array) {
-						this->theState = JsonParserState::Adding_Array_Elements;
-					}
-					break;
-				}
-				case JsonParseEvent::Number_Integer: {
-					theString += (*iterator).theValue;
-					if (this->theState == JsonParserState::Starting_Object) {
-						this->theState = JsonParserState::Adding_Object_Elements;
-					}
-					if (this->theState == JsonParserState::Starting_Array) {
-						this->theState = JsonParserState::Adding_Array_Elements;
-					}
-					break;
-				}
-				case JsonParseEvent::Number_Integer_Large: {
-					theString += (*iterator).theValue;
-					if (this->theState == JsonParserState::Starting_Object) {
-						this->theState = JsonParserState::Adding_Object_Elements;
-					}
-					if (this->theState == JsonParserState::Starting_Array) {
-						this->theState = JsonParserState::Adding_Array_Elements;
-					}
-					break;
-				}
-				case JsonParseEvent::Number_Integer_Small: {
-					theString += (*iterator).theValue;
-					if (this->theState == JsonParserState::Starting_Object) {
-						this->theState = JsonParserState::Adding_Object_Elements;
-					}
-					if (this->theState == JsonParserState::Starting_Array) {
-						this->theState = JsonParserState::Adding_Array_Elements;
-					}
-					break;
-				}
-				case JsonParseEvent::String: {
-					theString += "\"";
-					theString += (*iterator).theValue;
-					theString += "\"";
-					if (this->theState == JsonParserState::Starting_Object) {
-						this->theState = JsonParserState::Adding_Object_Elements;
-					}
-					if (this->theState == JsonParserState::Starting_Array) {
-						this->theState = JsonParserState::Adding_Array_Elements;
-					}
-					break;
-				}
-			}
+	void JsonObject::pushBack(const char* theKey, uint8_t other) noexcept {
+		if (!this->theValues.contains(theKey)) {
+			this->theValues[theKey] = JsonObject{};
+			this->theValues[theKey].theType = ValueType::Array;
+			this->theValues[theKey].theKey = theKey;
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		} else {
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
-		theString += "}";
-		return theString;
 	}
 
-	JsonRecord& JsonRecord::operator=(EnumConverter other) noexcept {
-		JsonRecord theRecord{};
-		if (other.vectorType) {
-			theRecord.theEvent = JsonParseEvent::Array_Start;
-			for (auto& value: static_cast<std::vector<uint64_t>>(other)) {
-				theRecord.theEvent = JsonParseEvent::Number_Integer_Large;
-				theRecord.theValue = std::to_string(static_cast<uint64_t>(value));
-			}
-			theRecord.theEvent = JsonParseEvent::Array_End;
+	void JsonObject::pushBack(const char* theKey, int64_t other) noexcept {
+		if (!this->theValues.contains(theKey)) {
+			this->theValues[theKey] = JsonObject{};
+			this->theValues[theKey].theType = ValueType::Array;
+			this->theValues[theKey].theKey = theKey;
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		} else {
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
-		return *this;
 	}
 
-	JsonRecord& JsonRecord::operator[](const char* keyName) noexcept {
-		this->theKey = keyName;
-		this->theValue = keyName;
-		return *this;
+	void JsonObject::pushBack(const char* theKey, int32_t other) noexcept {
+		if (!this->theValues.contains(theKey)) {
+			this->theValues[theKey] = JsonObject{};
+			this->theValues[theKey].theType = ValueType::Array;
+			this->theValues[theKey].theKey = theKey;
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		} else {
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		}
+	}
+
+	void JsonObject::pushBack(const char* theKey, int16_t other) noexcept {
+		if (!this->theValues.contains(theKey)) {
+			this->theValues[theKey] = JsonObject{};
+			this->theValues[theKey].theType = ValueType::Array;
+			this->theValues[theKey].theKey = theKey;
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		} else {
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		}
+	}
+
+	void JsonObject::pushBack(const char* theKey, int8_t other) noexcept {
+		if (!this->theValues.contains(theKey)) {
+			this->theValues[theKey] = JsonObject{};
+			this->theValues[theKey].theType = ValueType::Array;
+			this->theValues[theKey].theKey = theKey;
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		} else {
+			int32_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+		}
 	}
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void )) {

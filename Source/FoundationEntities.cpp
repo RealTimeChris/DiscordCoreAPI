@@ -37,117 +37,95 @@
 
 namespace DiscordCoreInternal {
 
-	UpdatePresenceData::operator DiscordCoreAPI::JsonSerializer() {
-		DiscordCoreAPI::JsonSerializer theData{};
-		theData.appendStructElement("op", static_cast<uint32_t>(3));
-		theData.addNewStructure("d");
-		theData.addNewArray("activities");
+	UpdatePresenceData::operator std::string() {
+		DiscordCoreAPI::JsonObject theData{};
+		theData["op"] = static_cast<uint32_t>(3);
 		for (auto& value: this->activities) {
-			DiscordCoreAPI::JsonSerializer theDataNew{};
+			DiscordCoreAPI::JsonObject theDataNew{};
 			if (value.url != "") {
-				theDataNew.appendStructElement("url", std::string{ value.url });
+				theDataNew["url"] = std::string{ value.url };
 			}
-			theDataNew.appendStructElement("name", std::string{ value.name });
-			theDataNew.appendStructElement("type", static_cast<uint8_t>(value.type));
-			theData.appendArrayElement(theDataNew);
+			theDataNew["name"] = std::string{ value.name };
+			theDataNew["type"] = static_cast<uint8_t>(value.type);
+			theData["d"].pushBack("activities", theDataNew);
 		}
-		theData.endArray();
-		theData.appendStructElement("status", this->status);
+		theData["status"] = this->status;
 		if (this->since != 0) {
-			theData.appendStructElement("since", this->since);
+			theData["since"] = this->since;
 		}
-		theData.appendStructElement("afk", this->afk);
-		theData.endStructure();
+		theData["afk"] = this->afk;
 		return theData;
 
 	}
 
-	WebSocketResumeData::operator DiscordCoreAPI::JsonSerializer() {
-		DiscordCoreAPI::JsonSerializer theData{};
-		theData.appendStructElement("op", static_cast<uint32_t>(6));
-		theData.addNewStructure("d");
-		theData.appendStructElement("seq", this->lastNumberReceived);
-		theData.appendStructElement("session_id", this->sessionId);
-		theData.appendStructElement("token", this->botToken);
-		theData.endStructure();
+	WebSocketResumeData::operator std::string() {
+		DiscordCoreAPI::JsonObject theData{};
+		theData["op"] = static_cast<uint32_t>(6);
+		theData["d"]["seq"] = this->lastNumberReceived;
+		theData["d"]["session_id"] = this->sessionId;
+		theData["d"]["token"] = this->botToken;
 		return theData;
 	}
 
-	WebSocketIdentifyData::operator DiscordCoreAPI:: JsonSerializer() {
-		DiscordCoreAPI::JsonSerializer theSerializer{};
-		theSerializer.addNewStructure("d");
-		theSerializer.appendStructElement("intents", static_cast<uint32_t>(this->intents));
-		theSerializer.appendStructElement("large_threshold", static_cast<uint32_t>(250));
-		theSerializer.addNewArray("activities");
+	WebSocketIdentifyData::operator std::string() {
+		DiscordCoreAPI::JsonObject theSerializer{};
+		theSerializer["d"]["intents"] = static_cast<uint32_t>(this->intents);
+		theSerializer["d"]["large_threshold"] = static_cast<uint32_t>(250);
 		for (auto& value: this->presence.activities) {
-			DiscordCoreAPI::JsonSerializer theSerializer02{};
+			DiscordCoreAPI::JsonObject theSerializer02{};
 			if (value.url != "") {
-				theSerializer02.appendStructElement("url", std::string{ value.url });
+				theSerializer02["url"] = std::string{ value.url };
 			}
-			theSerializer02.appendStructElement("name", std::string{ value.name });
-			theSerializer02.appendStructElement("type", uint32_t{ static_cast<uint32_t>(value.type) });
-			theSerializer.appendArrayElement(theSerializer02);
+			theSerializer02["name"] = std::string{ value.name };
+			theSerializer02["type"] = uint32_t{ static_cast<uint32_t>(value.type) };
+			theSerializer["d"].pushBack("activities", theSerializer02);
 		}
-		theSerializer.endArray();
-		theSerializer.appendStructElement("afk", this->presence.afk);
+		theSerializer["d"]["afk"] = this->presence.afk;
 		if (this->presence.since != 0) {
-			theSerializer.appendStructElement("since", this->presence.since);
+			theSerializer["d"]["since"] = this->presence.since;
 		}
 
-		theSerializer.appendStructElement("status", this->presence.status);
-		theSerializer.addNewStructure("properties");
-		theSerializer.appendStructElement("browser", "DiscordCoreAPI");
-		theSerializer.appendStructElement("device", "DiscordCoreAPI");
+		theSerializer["d"]["status"] = this->presence.status;
+		theSerializer["d"]["properties"]["browser"] = "DiscordCoreAPI";
+		theSerializer["d"]["properties"]["device"] = "DiscordCoreAPI";
 #ifdef _WIN32
-		theSerializer.appendStructElement("os", "Windows");
+		theSerializer["d"]["properties"]["os"] = "Windows";
 #else
-		theSerializer.appendStructElement("os", "Linux");
+		theSerializer["d"]["properties"]["os"] = "Linux";
 #endif
-		theSerializer.endStructure();
-		theSerializer.addNewArray("shard");
-		theSerializer.appendArrayElement(static_cast<uint32_t>(this->currentShard));
-		theSerializer.appendArrayElement(static_cast<uint32_t>(this->numberOfShards));
-		theSerializer.endArray();
-		theSerializer.appendStructElement("token", this->botToken);
-		theSerializer.endStructure();
-		theSerializer.appendStructElement("op", static_cast<uint32_t>(2));
+		theSerializer["d"].pushBack("shard", static_cast<uint32_t>(this->currentShard));
+		theSerializer["d"].pushBack("shard", static_cast<uint32_t>(this->numberOfShards));
+		theSerializer["d"]["token"] = this->botToken;
+		theSerializer["op"] = static_cast<uint32_t>(2);
 		return theSerializer;
 	}
 
-	VoiceSocketProtocolPayloadData::operator DiscordCoreAPI::JsonSerializer() {
-		DiscordCoreAPI::JsonSerializer theData{};
-		theData.appendStructElement("op", static_cast<uint32_t>(1));
-		theData.addNewStructure("d");
-		theData.appendStructElement("protocol", "udp");
-		theData.addNewStructure("data");
-		theData.appendStructElement("port", this->voicePort);
-		theData.appendStructElement("mode", this->voiceEncryptionMode);
-		theData.appendStructElement("address", this->externalIp);
-		theData.endStructure();
-		theData.endStructure();
+	VoiceSocketProtocolPayloadData::operator std::string() {
+		DiscordCoreAPI::JsonObject theData{};
+		theData["op"] = static_cast<uint32_t>(1);
+		theData["d"]["protocol"] = "udp";
+		theData["d"]["data"]["port"] = this->voicePort;
+		theData["d"]["data"]["mode"] = this->voiceEncryptionMode;
+		theData["d"]["data"]["address"] = this->externalIp;
 		return theData;
 	}
 
-	VoiceIdentifyData::operator DiscordCoreAPI::JsonSerializer() {
-		DiscordCoreAPI::JsonSerializer theData{};
-		theData.appendStructElement("op", static_cast<uint32_t>(0));
-		theData.addNewStructure("d");
-		theData.appendStructElement("session_id", this->connectionData.sessionId);
-		theData.appendStructElement("token", this->connectionData.token);
-		theData.appendStructElement("server_id", std::to_string(this->connectInitData.guildId));
-		theData.appendStructElement("user_id", std::to_string(this->connectInitData.userId));
-		theData.endStructure();
+	VoiceIdentifyData::operator std::string() {
+		DiscordCoreAPI::JsonObject theData{};
+		theData["op"] = static_cast<uint32_t>(0);
+		theData["d"]["session_id"] = this->connectionData.sessionId;
+		theData["d"]["token"] = this->connectionData.token;
+		theData["d"]["server_id"] = std::to_string(this->connectInitData.guildId);
+		theData["d"]["user_id"] = std::to_string(this->connectInitData.userId);
 		return theData;
 	}
 
-	SendSpeakingData::operator DiscordCoreAPI::JsonSerializer() {
-		DiscordCoreAPI::JsonSerializer theData{};
-		theData.appendStructElement("op", static_cast<uint32_t>(5));
-		theData.addNewStructure("d");
-		theData.appendStructElement("speaking", static_cast<uint8_t>(this->type));
-		theData.appendStructElement("delay", this->delay);
-		theData.appendStructElement("ssrc", this->ssrc);
-		theData.endStructure();
+	SendSpeakingData::operator std::string() {
+		DiscordCoreAPI::JsonObject theData{};
+		theData["op"] = static_cast<uint32_t>(5);
+		theData["d"]["speaking"] = static_cast<uint8_t>(this->type);
+		theData["d"]["delay"] = this->delay;
+		theData["d"]["ssrc"] = this->ssrc;
 		return theData;
 	}
 
@@ -217,75 +195,61 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	AttachmentData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("content_type", this->contentType);
-		theData.appendStructElement("description", this->description);
-		theData.appendStructElement("ephemeral", this->ephemeral);
-		theData.appendStructElement("file_name", this->filename);
-		theData.appendStructElement("proxy_url", this->proxyUrl);
-		theData.appendStructElement("height", this->height);
-		theData.appendStructElement("width", this->width);
-		theData.appendStructElement("size", this->size);
-		theData.appendStructElement("url", this->url);
+	AttachmentData::operator std::string() {
+		JsonObject theData{};
+		theData["content_type"] = this->contentType;
+		theData["description"] = this->description;
+		theData["ephemeral"] = this->ephemeral;
+		theData["file_name"] = this->filename;
+		theData["proxy_url"] = this->proxyUrl;
+		theData["height"] = this->height;
+		theData["width"] = this->width;
+		theData["size"] = this->size;
+		theData["url"] = this->url;
 		return theData;
 	}
 
-	EmbedFieldData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("inline", this->Inline);
-		theData.appendStructElement("value", escapeCharacters(this->value));
-		theData.appendStructElement("name", escapeCharacters(this->name));
+	EmbedFieldData::operator std::string() {
+		JsonObject theData{};
+		theData["inline"] = this->Inline;
+		theData["value"] = escapeCharacters(this->value);
+		theData["name"]= escapeCharacters(this->name);
 		return theData;
 	}
 
-	EmbedData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("fields");
+	EmbedData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value2: this->fields) {
-			theData.appendArrayElement(value2);
+			theData.pushBack("fields", value2);
 		}
-		theData.endArray();
 		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());		
-		theData.addNewStructure("footer");
-		theData.appendStructElement("proxy_icon_url", this->footer.proxyIconUrl);
-		theData.appendStructElement("icon_url", this->footer.iconUrl);
-		theData.appendStructElement("text", escapeCharacters(this->footer.text));
-		theData.endStructure();
-		theData.addNewStructure("author");
-		theData.appendStructElement("proxy_icon_url", this->author.proxyIconUrl);
-		theData.appendStructElement("icon_url", this->author.iconUrl);
-		theData.appendStructElement("name", this->author.name);
-		theData.appendStructElement("url", this->author.url);
-		theData.endStructure();
-		theData.addNewStructure("thumbnail");
-		theData.appendStructElement("proxy_url", this->thumbnail.proxyUrl);
-		theData.appendStructElement("height", this->thumbnail.height);
-		theData.appendStructElement("width", this->thumbnail.width);
-		theData.appendStructElement("url", this->thumbnail.url);
-		theData.endStructure();
-		theData.addNewStructure("image");
-		theData.appendStructElement("proxy_url", this->image.proxyUrl);
-		theData.appendStructElement("height", this->image.height);
-		theData.appendStructElement("width", this->image.width);
-		theData.appendStructElement("url", this->image.url);
-		theData.endStructure();
-		theData.addNewStructure("video");
-		theData.appendStructElement("proxy_url", this->video.proxyUrl);
-		theData.appendStructElement("height", this->video.height);
-		theData.appendStructElement("url", this->video.url);
-		theData.appendStructElement("width", this->video.width);
-		theData.endStructure();
-		theData.addNewStructure("provider");
-		theData.appendStructElement("name", this->provider.name);
-		theData.appendStructElement("url", this->provider.url);
-		theData.endStructure();
-		theData.appendStructElement("description", escapeCharacters(this->description));
-		theData.appendStructElement("timestamp", this->timestamp);
-		theData.appendStructElement("title", escapeCharacters(this->title));
-		theData.appendStructElement("color", realColorVal);
-		theData.appendStructElement("type", this->type);
-		theData.appendStructElement("url", this->url);
+		theData["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
+		theData["footer"]["icon_url"] = this->footer.iconUrl;
+		theData["footer"]["text"] = escapeCharacters(this->footer.text);
+		theData["author"]["proxy_icon_url"] = this->author.proxyIconUrl;
+		theData["author"]["icon_url"] = this->author.iconUrl;
+		theData["author"]["name"] = this->author.name;
+		theData["author"]["url"] = this->author.url;
+		theData["thumbnail"]["proxy_url"] = this->thumbnail.proxyUrl;
+		theData["thumbnail"]["height"] = this->thumbnail.height;
+		theData["thumbnail"]["width"] = this->thumbnail.width;
+		theData["thumbnail"]["url"] = this->thumbnail.url;
+		theData["image"]["proxy_url"] = this->image.proxyUrl;
+		theData["image"]["height"] = this->image.height;
+		theData["image"]["width"] = this->image.width;
+		theData["image"]["url"] = this->image.url;
+		theData["video"]["proxy_url"] = this->video.proxyUrl;
+		theData["video"]["height"] = this->video.height;
+		theData["video"]["url"] = this->video.url;
+		theData["video"]["width"] = this->video.width;
+		theData["provider"]["name"] = this->provider.name;
+		theData["provider"]["url"] = this->provider.url;
+		theData["description"] = escapeCharacters(this->description);
+		theData["timestamp"] = this->timestamp;
+		theData["title"] = escapeCharacters(this->title);
+		theData["color"] = realColorVal;
+		theData["type"] = this->type;
+		theData["url"] = this->url;
 		return theData;
 	}
 
@@ -340,12 +304,12 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageReferenceData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("fail_if_not_exists", this->failIfNotExists);
-		theData.appendStructElement("message_id", std::to_string(this->messageId));
-		theData.appendStructElement("channel_id", std::to_string(this->channelId));
-		theData.appendStructElement("guild_id", std::to_string(this->guildId));
+	MessageReferenceData::operator std::string() {
+		JsonObject theData{};
+		theData["fail_if_not_exists"] = this->failIfNotExists;
+		theData["message_id"] = std::to_string(this->messageId);
+		theData["channel_id"] = std::to_string(this->channelId);
+		theData["guild_id"] = std::to_string(this->guildId);
 		return theData;
 	}
 
@@ -357,19 +321,17 @@ namespace DiscordCoreAPI {
 		return this->theBanDatas;
 	}
 
-	UpdateVoiceStateData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("op", static_cast<uint32_t>(4));
-		theData.addNewStructure("d");
+	UpdateVoiceStateData::operator std::string() {
+		JsonObject theData{};
+		theData["op"] = static_cast<uint32_t>(4);
 		if (this->channelId == 0) {
-			theData.appendStructElement("channel_id", nullptr);
+			theData["d"]["channel_id"] = nullptr;
 		} else {
-			theData.appendStructElement("channel_id", std::to_string(this->channelId));
+			theData["d"]["channel_id"] = std::to_string(this->channelId);
 		}
-		theData.appendStructElement("self_deaf", this->selfDeaf);
-		theData.appendStructElement("self_mute", this->selfMute);
-		theData.appendStructElement("guild_id", std::to_string(this->guildId));
-		theData.endStructure();
+		theData["d"]["self_deaf"] = this->selfDeaf;
+		theData["d"]["self_mute"] = this->selfMute;
+		theData["d"]["guild_id"] = std::to_string(this->guildId);
 		return theData;
 	}
 
@@ -415,70 +377,63 @@ namespace DiscordCoreAPI {
 		return AuditLogEntryData();
 	}
 
-	ApplicationCommandOptionChoiceData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("name", this->name);
-		theData.appendStructElement("name_localizations", this->nameLocalizations);
+	ApplicationCommandOptionChoiceData::operator std::string() {
+		JsonObject theData{};
+		theData["name"] = this->name;
+		theData["name_localizations"] = this->nameLocalizations;
 		switch (this->type) {
 			case JsonType::Integer: {
-				theData.appendStructElement("value", this->valueInt);
+				theData["value"] = this->valueInt;
 				break;
 			}
 			case JsonType::Float: {
-				theData.appendStructElement("value", this->valueFloat);
+				theData["value"] = this->valueFloat;
 				break;
 			}
 			case JsonType::Boolean: {
-				theData.appendStructElement("value", this->valueBool);
+				theData["value"] = this->valueBool;
 				break;
 			}
 			case JsonType::String: {
-				theData.appendStructElement("value", this->valueStringReal);
+				theData["value"] = this->valueStringReal;
 				break;
 			}
 		}
 		return theData;
 	}
 
-	ApplicationCommandOptionData::operator JsonSerializer() {
-		JsonSerializer theData{};
+	ApplicationCommandOptionData::operator std::string() {
+		JsonObject theData{};
 		if (this->type == DiscordCoreAPI::ApplicationCommandOptionType::Channel) {
-			theData.appendStructElement("channel_types", this->channelTypes);
+			theData["channel_types"] = this->channelTypes;
 		}
 		if (this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command && this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group) {
-			theData.appendStructElement("required", this->required);
+			theData["required"] = this->required;
 		}
-		theData.appendStructElement("description_localizations", this->descriptionLocalizations);
-		theData.appendStructElement("name_localizations", this->nameLocalizations);
-		theData.appendStructElement("description", this->description);
+		theData["description_localizations"] = this->descriptionLocalizations;
+		theData["name_localizations"] = this->nameLocalizations;
+		theData["description"] = this->description;
 		if (maxValue != 0) {
-			theData.appendStructElement("min_value", this->minValue);
+			theData["min_value"] = this->minValue;
 		}
 		if (maxValue != 0) {
-			theData.appendStructElement("max_value", this->maxValue);
+			theData["max_value"] = this->maxValue;
 		}
-		theData.appendStructElement("required", this->required);
-		theData.appendStructElement("name", this->name);
-		theData.appendStructElement("type", static_cast<uint8_t>(this->type));
+		theData["required"] = this->required;
+		theData["name"] = this->name;
+		theData["type"] = static_cast<uint8_t>(this->type);
 		if (this->choices.size() > 0) {
-			theData.addNewArray("choices");
 			for (auto& value: this->choices) {
-				JsonSerializer theDataNew = value;
-				theData.appendArrayElement(theDataNew);
+				theData.pushBack("choices", value);
 			}
-			theData.endArray();
 		}
-		theData.appendStructElement("", JsonParseEvent::Array_End);
 		if (this->choices.size() == 0) {
-			theData.appendStructElement("autocomplete", this->autocomplete);
+			theData["autocomplete"] = this->autocomplete;
 		}
 		if (this->options.size() > 0) {
-			theData.addNewArray("options");
 			for (auto& value: this->options) {
-				JsonSerializer theDataNew = value;
-				theData.appendArrayElement(theDataNew);
+				theData.pushBack("options",value);
 			}
-			theData.endArray();
 		}
 		return theData;
 	}
@@ -497,94 +452,78 @@ namespace DiscordCoreAPI {
 		this->data.clear();
 	}
 
-	AllowedMentionsData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.addNewArray("parse");
+	AllowedMentionsData::operator std::string() {
+		JsonObject theData{};
 		for (auto& value: this->parse) {
-			theData.appendArrayElement(value);
+			theData.pushBack("parse", value);
 		}
-		theData.endArray();
-		theData.addNewArray("roles");
 		for (auto& value: this->roles) {
-			theData.appendArrayElement(value);
+			theData.pushBack("roles", value);
 		}
-		theData.endArray();
-		theData.addNewArray("users");
 		for (auto& value: this->users) {
-			theData.appendArrayElement(value);
+			theData.pushBack("users", value);
 		}
-		theData.endArray();
-		theData.appendStructElement("replied_user", this->repliedUser);
+		theData["replied_user"] = this->repliedUser;
 		return theData;
 	}
 
-	ActionRowData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("type", 1);
-		theData.addNewArray("components");
+	ActionRowData::operator std::string() {
+		JsonObject theData{};
+		theData["type"] = 1;
 		if (this->components.size() > 0) {
 			for (auto& valueNew: this->components) {
 				if (valueNew.type == ComponentType::Button) {
-					JsonSerializer component{};
-					component.addNewStructure("emoji");
-					component.appendStructElement("animated", valueNew.emoji.animated);
-					component.appendStructElement("name", std::string{ valueNew.emoji.name });
+					JsonObject component{};
+					component["emoji"]["animated"] = valueNew.emoji.animated;
+					component["emoji"]["name"] = std::string{ valueNew.emoji.name };
 					if (valueNew.emoji.id.operator size_t() != 0) {
-						component.appendStructElement("id", std::to_string(valueNew.emoji.id));
+						component["emoji"]["id"] = std::to_string(valueNew.emoji.id);
 					}
-					component.endStructure();
-					component.appendStructElement("custom_id", valueNew.customId);
-					component.appendStructElement("disabled", valueNew.disabled);
-					component.appendStructElement("label", valueNew.label);
-					component.appendStructElement("style", valueNew.style);
-					component.appendStructElement("type", static_cast<int8_t>(valueNew.type));
-					component.appendStructElement("url", valueNew.url);
-					theData.appendArrayElement(component);
+					component["custom_id"] = valueNew.customId;
+					component["disabled"] = valueNew.disabled;
+					component["label"] = valueNew.label;
+					component["style"] = valueNew.style;
+					component["type"] = static_cast<int8_t>(valueNew.type);
+					component["url"] = valueNew.url;
+					theData.pushBack("components",component);
 				} else if (valueNew.type == ComponentType::SelectMenu) {
-					JsonSerializer component{};
-					component.addNewArray("options");
+					JsonObject component{};
 					for (auto& value01: valueNew.options) {
-						JsonSerializer option{};
-						option.addNewStructure("emoji");
-						if (value01.emoji.name != "") {
-							option.appendStructElement("name", std::string{ value01.emoji.name });
-							option.appendStructElement("animated", value01.emoji.animated);
+						JsonObject option{};
+						component["emoji"]["animated"] = valueNew.emoji.animated;
+						component["emoji"]["name"] = std::string{ valueNew.emoji.name };
+						if (valueNew.emoji.id.operator size_t() != 0) {
+							component["emoji"]["id"] = std::to_string(valueNew.emoji.id);
 						}
-						if (value01.emoji.id.operator size_t() != 0) {
-							option.appendStructElement("id", std::to_string(value01.emoji.id));
-						}
-						option.appendStructElement("description", value01.description);
-						option.appendStructElement("default", value01._default);
-						option.appendStructElement("label", value01.label);
-						option.appendStructElement("value", value01.value);
-						option.endStructure();
-						component.appendArrayElement(option);
+						option["description"] = value01.description;
+						option["default"] = value01._default;
+						option["label"] = value01.label;
+						option["value"] = value01.value;
+						component.pushBack("options",option);
 					};
-					component.endArray();
-					component.appendStructElement("placeholder", valueNew.placeholder);
-					component.appendStructElement("max_values", valueNew.maxValues);
-					component.appendStructElement("min_values", valueNew.minValues);
-					component.appendStructElement("custom_id", valueNew.customId);
-					component.appendStructElement("disabled", valueNew.disabled);
-					component.appendStructElement("type", static_cast<uint8_t>(valueNew.type));
-					theData.appendArrayElement(component);
+					component["placeholder"] = valueNew.placeholder;
+					component["max_values"] = valueNew.maxValues;
+					component["min_values"] = valueNew.minValues;
+					component["custom_id"] = valueNew.customId;
+					component["disabled"] = valueNew.disabled;
+					component["type"] = static_cast<uint8_t>(valueNew.type);
+					theData.pushBack("components", component);
 
 				} else if (valueNew.type == ComponentType::TextInput) {
-					JsonSerializer component{};
-					component.appendStructElement("placeholder", valueNew.placeholder);
-					component.appendStructElement("min_length", valueNew.minLength);
-					component.appendStructElement("max_length", valueNew.maxLength);
-					component.appendStructElement("custom_id", valueNew.customId);
-					component.appendStructElement("required", valueNew.required);
-					component.appendStructElement("style", valueNew.style);
-					component.appendStructElement("label", valueNew.label);
-					component.appendStructElement("value", valueNew.value);
-					component.appendStructElement("type", static_cast<uint8_t>(valueNew.type));
-					theData.appendArrayElement(component);
+					JsonObject component{};
+					component["placeholder"] = valueNew.placeholder;
+					component["min_length"] = valueNew.minLength;
+					component["max_length"] = valueNew.maxLength;
+					component["custom_id"] = valueNew.customId;
+					component["required"] = valueNew.required;
+					component["style"] = valueNew.style;
+					component["label"] = valueNew.label;
+					component["value"] = valueNew.value;
+					component["type"]= static_cast<uint8_t>(valueNew.type);
+					theData.pushBack("components", component);
 				}
 			}
 		}
-		theData.endArray();
 		return theData;
 	}
 
@@ -1041,68 +980,58 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	InteractionResponseData::operator JsonSerializer() {
-		JsonSerializer theData{};
-		theData.appendStructElement("type", static_cast<uint8_t>(this->type));
-		theData.addNewStructure("data");
+	InteractionResponseData::operator std::string() {
+		JsonObject theData{};
+		theData["type"] = static_cast<uint8_t>(this->type);
 		if (this->data.attachments.size() > 0) {
-			theData.addNewArray("attachments");
 			for (auto& value: this->data.attachments) {
-				theData.appendArrayElement(JsonSerializer{ value });
+				theData["data"].pushBack("attachments", JsonObject{ value });
 			}
-			theData.endArray();
 		}
-		theData.addNewArray("components");
 		for (auto& value: this->data.components) {
-			theData.appendArrayElement(value);
+			theData["data"].pushBack("components", value);
 		}
-		theData.endArray();
-		theData.appendStructElement("allowed_mentions", this->data.allowedMentions);
+		theData["data"]["allowed_mentions"] = this->data.allowedMentions;
 		if (this->data.choices.size() > 0) {
-			theData.addNewArray("choices");
 			for (auto& value: this->data.choices) {
-				JsonSerializer theValue{};
-				theValue.appendStructElement("name", value.name);
-				theValue.appendStructElement("name_localizations", value.nameLocalizations);
+				JsonObject theValue{};
+				theValue["name"] = value.name;
+				theValue["name_localizations"] = value.nameLocalizations;
 				switch (value.type) {
 					case JsonType::Boolean: {
-						theValue.appendStructElement("value", value.valueBool);
+						theValue["value"] = value.valueBool;
 						break;
 					}
 					case JsonType::String: {
-						theValue.appendStructElement("value", value.valueStringReal);
+						theValue["value"] = value.valueStringReal;
 						break;
 					}
 					case JsonType::Float: {
-						theValue.appendStructElement("value", value.valueFloat);
+						theValue["value"] = value.valueFloat;
 						break;
 					}
 					case JsonType::Integer: {
-						theValue.appendStructElement("value", value.valueInt);
+						theValue["value"] = value.valueInt;
 						break;
 					}
 				}
-				theData.appendArrayElement(theValue);
+				theData["data"].pushBack("choices", theValue);
 			}
-			theData.endArray();
 		}
-		theData.addNewArray("embeds");
 		for (auto& value: this->data.embeds) {
-			theData.appendArrayElement(value);
+			theData["data"].pushBack("embeds", value);
 		}
-		theData.endArray();
 		if (this->data.customId != "") {
-			theData.appendStructElement("custom_id", this->data.customId);
+			theData["data"]["custom_id"] = this->data.customId;
 		}
 		if (this->data.content != "") {
-			theData.appendStructElement("content", this->data.content);
+			theData["data"]["content"] = this->data.content;
 		}
 		if (this->data.title != "") {
-			theData.appendStructElement("title", this->data.title);
+			theData["data"]["title"] = this->data.title;
 		}
-		theData.appendStructElement("flags", this->data.flags);
-		theData.appendStructElement("tts", this->data.tts);
-		theData.endStructure();
+		theData["data"]["flags"] = this->data.flags;
+		theData["data"]["tts"] = this->data.tts;
 		return theData;
 	}
 

@@ -426,9 +426,9 @@ namespace DiscordCoreAPI {
 			"/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage.data).getString(), dataPackage.data.data.files);
+			workload.content = constructMultiPartData(dataPackage.data, dataPackage.data.data.files);
 		} else {
-			workload.content = static_cast<JsonSerializer>(dataPackage.data).getString();
+			workload.content = dataPackage.data;
 		}
 		workload.callStack = "Interactions::createInteractionResponseAsync()";
 		Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
@@ -459,9 +459,9 @@ namespace DiscordCoreAPI {
 			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage.data).getString(), dataPackage.data.files);
+			workload.content = constructMultiPartData(dataPackage.data, dataPackage.data.files);
 		} else {
-			workload.content = static_cast<JsonSerializer>(dataPackage.data).getString();
+			workload.content = dataPackage.data;
 		}
 		workload.callStack = "Interactions::editInteractionResponseAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -485,9 +485,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage).getString(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
 		} else {
-			workload.content = static_cast<JsonSerializer>(dataPackage).getString();
+			workload.content = static_cast<JsonObject>(dataPackage);
 		}
 		workload.callStack = "Interactions::createFollowUpMessageAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -511,9 +511,9 @@ namespace DiscordCoreAPI {
 			std::to_string(dataPackage.messagePackage.messageId);
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(static_cast<JsonSerializer>(dataPackage.data).getString(), dataPackage.data.files);
+			workload.content = constructMultiPartData(dataPackage.data, dataPackage.data.files);
 		} else {
-			workload.content = static_cast<JsonSerializer>(dataPackage.data).getString();
+			workload.content = dataPackage.data;
 		}
 		workload.callStack = "Interactions::editFollowUpMessageAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
