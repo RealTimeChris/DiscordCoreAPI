@@ -362,7 +362,7 @@ namespace DiscordCoreAPI {
 		theData.appendStructElement("op", static_cast<uint32_t>(4));
 		theData.addNewStructure("d");
 		if (this->channelId == 0) {
-			theData.appendStructElement("channel_id", "");
+			theData.appendStructElement("channel_id", nullptr);
 		} else {
 			theData.appendStructElement("channel_id", std::to_string(this->channelId));
 		}

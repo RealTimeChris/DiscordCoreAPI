@@ -174,7 +174,7 @@ namespace DiscordCoreAPI {
 	void GuildData::disconnect() {
 		if (DiscordCoreClient::getVoiceConnection(this->id)) {
 			UpdateVoiceStateData updateVoiceData{};
-			updateVoiceData.channelId = 0;
+			updateVoiceData.channelId = "";
 			updateVoiceData.selfDeaf = false;
 			updateVoiceData.selfMute = false;
 			updateVoiceData.guildId = this->id;

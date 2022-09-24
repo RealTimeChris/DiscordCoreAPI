@@ -36,7 +36,7 @@ namespace DiscordCoreInternal {
 		this->appendVersion();
 		dataToParse.reserve(dataToParse.size() + simdjson::SIMDJSON_PADDING);
 		simdjson::ondemand::parser theParser{};
-		simdjson::ondemand::value theDocument = theParser.iterate(dataToParse.data(), dataToParse.length(), dataToParse.capacity()).value().get_value().value();
+		auto theDocument = theParser.iterate(dataToParse.data(), dataToParse.length(), dataToParse.capacity());
 		this->singleValueJsonToETF(theDocument);
 		return this->bufferString;
 	}
@@ -76,7 +76,7 @@ namespace DiscordCoreInternal {
 				break;
 			}
 			case simdjson::ondemand::json_type::null: {
-				this->appendNilExt();
+				this->appendNil();
 				break;
 			}
 		}
@@ -338,13 +338,13 @@ namespace DiscordCoreInternal {
 		}
 		if (length >= 3 && length <= 5) {
 			if (length == 3 && strncmp(atom, "nil", 3) == 0) {
-				return std::string{ "null" };
+				return "null";
 			} else if (length == 4 && strncmp(atom, "null", 4) == 0) {
-				return std::string{ "null" };
+				return "null";
 			} else if (length == 4 && strncmp(atom, "true", 4) == 0) {
-				return std::string{ "true" };
+				return "true";
 			} else if (length == 5 && strncmp(atom, "false", 5) == 0) {
-				return std::string{ "false" };
+				return "false";
 			}
 		}
 		std::string theValue{ "\"" };
@@ -456,7 +456,7 @@ namespace DiscordCoreInternal {
 		for (uint32_t x = 0; x < length; x++) {
 			array += std::move(this->singleValueETFToJson());
 			if (x < length - 1) {
-				array += R"(,)";
+				array += ",";
 			}
 		}
 

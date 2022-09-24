@@ -606,6 +606,7 @@ namespace DiscordCoreAPI {
 
 	JsonRecord& JsonRecord::operator[](const char* keyName) noexcept {
 		this->theKey = keyName;
+		this->theValue = keyName;
 		return *this;
 	}
 
