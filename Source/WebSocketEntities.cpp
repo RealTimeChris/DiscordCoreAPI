@@ -1764,7 +1764,14 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				if (theVector.size() == 0) {
+				bool areWeConnected{ false };
+				for (auto& value: theVector) {
+					if (value->areWeStillConnected()) {
+						areWeConnected = true;
+						break;
+					}
+				}
+				if (!areWeConnected) {
 					std::this_thread::sleep_for(1ms);
 				}
 			}
