@@ -294,7 +294,7 @@ namespace DiscordCoreInternal {
 		this->currentMessageBuffer.resize(1024 * 1024);
 	}
 
-	ConnectionResult WebSocketSSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
+	bool WebSocketSSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
 		std::string addressString{};
@@ -317,14 +317,14 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("WebSocketSSLClient::connect::getaddrinfo()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("WebSocketSSLClient::connect::socket()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		const char optionValue{ true };
@@ -332,21 +332,21 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("WebSocketSSLClient::connect::setsockopt()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("WebSocketSSLClient::connect::setsockopt()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("WebSocketSSLClient::connect::connect()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		std::unique_lock theLock{ SSLConnectionInterface::theMutex };
@@ -354,7 +354,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("WebSocketSSLClient::connect::SSL_new()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 		theLock.unlock();
 
@@ -362,7 +362,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("WebSocketSSLClient::connect::SSL_set_fd()", theResult, this->ssl) << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		/* SNI */
@@ -370,14 +370,14 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("WebSocketSSLClient::connect::SSL_set_tlsext_host_name()", theResult, this->ssl) << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		if (auto theResult = SSL_connect(this->ssl); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("WebSocketSSLClient::connect::SSL_connect()", theResult, this->ssl) << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 #ifdef _WIN32
@@ -386,15 +386,15 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("WebSocketSSLClient::connect::ioctlsocket()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 #else
 		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
-			return ConnectionResult::Error;
+			return false;
 		}
 #endif
 		this->currentState.store(DiscordCoreInternal::SSLShardState::Upgrading);
-		return ConnectionResult::No_Error;
+		return true;
 	}
 
 	std::vector<WebSocketSSLShard*> WebSocketSSLClient::processIO(std::vector<WebSocketSSLShard*>& theVector) noexcept {
@@ -636,7 +636,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	ConnectionResult HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
+	bool HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
 		std::string addressString{};
@@ -659,14 +659,14 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("HttpsSSLClient::connect::getaddrinfo()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("HttpsSSLClient::connect::socket()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		const char optionValue{ true };
@@ -674,21 +674,21 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("HttpsSSLClient::connect::setsockopt()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("HttpsSSLClient::connect::setsockopt()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("HttpsSSLClient::connect::connect()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		std::unique_lock theLock{ SSLConnectionInterface::theMutex };
@@ -696,7 +696,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("HttpsSSLClient::connect::SSL_new()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 		theLock.unlock();
 
@@ -704,7 +704,7 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("HttpsSSLClient::connect::SSL_set_fd()", theResult, this->ssl) << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		/* SNI */
@@ -712,14 +712,14 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("HttpsSSLClient::connect::SSL_set_tlsext_host_name()", theResult, this->ssl) << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 		if (auto theResult = SSL_connect(this->ssl); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("HttpsSSLClient::connect::SSL_connect()", theResult, this->ssl) << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 
 #ifdef _WIN32
@@ -728,15 +728,15 @@ namespace DiscordCoreInternal {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("HttpsSSLClient::connect::ioctlsocket()") << endl;
 			}
-			return ConnectionResult::Error;
+			return false;
 		}
 #else
 		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
-			return ConnectionResult::Error;
+			return false;
 		}
 #endif
 		this->currentState.store(DiscordCoreInternal::SSLShardState::Upgrading);
-		return ConnectionResult::No_Error;
+		return true;
 	}
 
 	std::vector<HttpsSSLClient*> HttpsSSLClient::processIO(std::vector<HttpsSSLClient*>& theVector) noexcept {

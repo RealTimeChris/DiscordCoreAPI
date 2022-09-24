@@ -179,13 +179,11 @@ namespace DiscordCoreInternal {
 		bool doWeClearAddrInfo{ false };
 	};
 
-	enum class ConnectionResult : int8_t { No_Error = 0, Error = 1 };
-
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
 	  public:
 		SSLConnectionInterface() noexcept = default;
 
-		virtual ConnectionResult connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept = 0;
+		virtual bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept = 0;
 
 		virtual void disconnect(bool doWeReconnect) noexcept = 0;
 
@@ -254,7 +252,7 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpsSSLClient() noexcept = default;
 
-		ConnectionResult connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
+		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
 
 		static std::vector<HttpsSSLClient*> processIO(std::vector<HttpsSSLClient*>&) noexcept;
 
@@ -286,7 +284,7 @@ namespace DiscordCoreInternal {
 	  public:
 		WebSocketSSLClient() noexcept;
 
-		ConnectionResult connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
+		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
 
 		static std::vector<WebSocketSSLShard*> processIO(std::vector<WebSocketSSLShard*>&) noexcept;
 

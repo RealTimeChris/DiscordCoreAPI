@@ -1603,7 +1603,7 @@ namespace DiscordCoreInternal {
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries++;
 				std::string connectionUrl = thePackageNew.areWeResuming ? this->theShardMap[thePackageNew.currentShard]->resumeUrl : this->configManager->getConnectionAddress();
 				bool isItFirstIteraion{ true };
-				ConnectionResult didWeConnect{};
+				bool didWeConnect{};
 				DiscordCoreAPI::StopWatch theStopWatch{ 5s };
 				do {
 					if (theStopWatch.hasTimePassed()) {
@@ -1624,7 +1624,7 @@ namespace DiscordCoreInternal {
 					isItFirstIteraion = false;
 					didWeConnect = this->theShardMap[thePackageNew.currentShard]->connect(connectionUrl, this->configManager->getConnectionPort(),
 						this->configManager->doWePrintWebSocketErrorMessages(), false);
-					if (didWeConnect == ConnectionResult::Error) {
+					if (didWeConnect == false) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
 							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed for WebSocket [" << thePackageNew.currentShard << ","
 								 << this->configManager->getTotalShardCount() << "]"
@@ -1633,7 +1633,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 
-				} while (didWeConnect != ConnectionResult::No_Error && !this->doWeQuit->load());
+				} while (didWeConnect != true && !this->doWeQuit->load());
 
 				this->theShardMap[thePackageNew.currentShard]->currentState.store(SSLShardState::Upgrading);
 				std::string sendString{};
