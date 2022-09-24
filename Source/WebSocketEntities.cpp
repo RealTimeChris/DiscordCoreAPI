@@ -415,8 +415,8 @@ namespace DiscordCoreInternal {
 	std::atomic_int32_t theInt{};
 	bool WebSocketSSLShard::onMessageReceived(std::string_view theDataNew) noexcept {
 		if (this->discordCoreClient) {
-			std::string theString{};
-			std::string& payload{ theString };
+			std::string refString{};
+			std::string& payload{ refString };
 			if (this->areWeStillConnected()) {
 				try {
 					bool returnValue{ false };

@@ -187,7 +187,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				return std::move(theReturnValueNew);
+				return theReturnValueNew;
 			} else {
 				simdjson::ondemand::parser theParser{};
 				if (returnData.responseData.size() > 0) {
@@ -201,7 +201,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-				return std::move(*theReturnValue);
+				return *theReturnValue;
 			}
 		}
 

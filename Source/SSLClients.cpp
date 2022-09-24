@@ -297,23 +297,23 @@ namespace DiscordCoreInternal {
 	ConnectionResult WebSocketSSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
-		std::string stringNew{};
+		std::string addressString{};
 		auto httpsFind = baseUrl.find("https://");
 		auto comFind = baseUrl.find(".com");
 		auto orgFind = baseUrl.find(".org");
 		if (httpsFind != std::string::npos && comFind != std::string::npos) {
-			stringNew = baseUrl.substr(httpsFind + std::string("https://").size(), comFind + std::string(".com").size() - std::string("https://").size());
+			addressString = baseUrl.substr(httpsFind + std::string("https://").size(), comFind + std::string(".com").size() - std::string("https://").size());
 		} else if (httpsFind != std::string::npos && orgFind != std::string::npos) {
-			stringNew = baseUrl.substr(httpsFind + std::string("https://").size(), orgFind + std::string(".org").size() - std::string("https://").size());
+			addressString = baseUrl.substr(httpsFind + std::string("https://").size(), orgFind + std::string(".org").size() - std::string("https://").size());
 		} else {
-			stringNew = baseUrl;
+			addressString = baseUrl;
 		}
 		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
 
-		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
+		if (getaddrinfo(addressString.c_str(), portNew.c_str(), hints, address)) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("WebSocketSSLClient::connect::getaddrinfo()") << endl;
 			}
@@ -366,7 +366,7 @@ namespace DiscordCoreInternal {
 		}
 
 		/* SNI */
-		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); theResult != 1) {
+		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, addressString.c_str()); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("WebSocketSSLClient::connect::SSL_set_tlsext_host_name()", theResult, this->ssl) << endl;
 			}
@@ -639,23 +639,23 @@ namespace DiscordCoreInternal {
 	ConnectionResult HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
-		std::string stringNew{};
+		std::string addressString{};
 		auto httpsFind = baseUrl.find("https://");
 		auto comFind = baseUrl.find(".com");
 		auto orgFind = baseUrl.find(".org");
 		if (httpsFind != std::string::npos && comFind != std::string::npos) {
-			stringNew = baseUrl.substr(httpsFind + std::string("https://").size(), comFind + std::string(".com").size() - std::string("https://").size());
+			addressString = baseUrl.substr(httpsFind + std::string("https://").size(), comFind + std::string(".com").size() - std::string("https://").size());
 		} else if (httpsFind != std::string::npos && orgFind != std::string::npos) {
-			stringNew = baseUrl.substr(httpsFind + std::string("https://").size(), orgFind + std::string(".org").size() - std::string("https://").size());
+			addressString = baseUrl.substr(httpsFind + std::string("https://").size(), orgFind + std::string(".org").size() - std::string("https://").size());
 		} else {
-			stringNew = baseUrl;
+			addressString = baseUrl;
 		}
 		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
 
-		if (getaddrinfo(stringNew.c_str(), portNew.c_str(), hints, address)) {
+		if (getaddrinfo(addressString.c_str(), portNew.c_str(), hints, address)) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("HttpsSSLClient::connect::getaddrinfo()") << endl;
 			}
@@ -708,7 +708,7 @@ namespace DiscordCoreInternal {
 		}
 
 		/* SNI */
-		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, stringNew.c_str()); theResult != 1) {
+		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, addressString.c_str()); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("HttpsSSLClient::connect::SSL_set_tlsext_host_name()", theResult, this->ssl) << endl;
 			}
