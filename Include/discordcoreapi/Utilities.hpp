@@ -1534,7 +1534,7 @@ namespace DiscordCoreAPI {
 		using DoubleTimePoint = std::chrono::time_point<std::chrono::steady_clock, DoubleTimeDuration>;
 
 		StopWatch<TimeType>& operator=(StopWatch<TimeType>&& other) noexcept {
-			std::unique_lock theLock{ this->theMutex };
+			std::unique_lock theLock{ other.theMutex };
 			if (this != &other) {
 				this->maxNumberOfMs = std::move(other.maxNumberOfMs);
 				this->startTime = std::move(other.startTime);
@@ -1543,13 +1543,13 @@ namespace DiscordCoreAPI {
 		}
 
 		StopWatch(StopWatch<TimeType>&& other) noexcept {
-			std::unique_lock theLock{ this->theMutex };
+			std::unique_lock theLock{ other.theMutex };
 			*this = std::move(other);
 			this->resetTimer();
 		}
 
 		StopWatch<TimeType>& operator=(const StopWatch<TimeType>& other) noexcept {
-			std::unique_lock theLock{ this->theMutex };
+			std::unique_lock theLock{ other.theMutex };
 			if (this != &other) {
 				this->maxNumberOfMs = other.maxNumberOfMs;
 				this->startTime = other.startTime;
@@ -1558,7 +1558,7 @@ namespace DiscordCoreAPI {
 		}
 
 		StopWatch(const StopWatch<TimeType>& other) noexcept {
-			std::unique_lock theLock{ this->theMutex };
+			std::unique_lock theLock{ other.theMutex };
 			*this = other;
 			this->resetTimer();
 		}
