@@ -325,7 +325,7 @@ namespace DiscordCoreAPI {
 		JsonObject theData{};
 		theData["op"] = static_cast<uint32_t>(4);
 		if (this->channelId == 0) {
-			theData["d"]["channel_id"] = nullptr;
+			theData["d"]["channel_id"] = ValueType::Null;
 		} else {
 			theData["d"]["channel_id"] = std::to_string(this->channelId);
 		}
@@ -989,7 +989,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (this->data.components.size() == 0) {
-			theData["data"]["components"] = nullptr;
+			theData["data"]["components"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->data.components) {
 				theData["data"].pushBack("components", value);
@@ -1027,7 +1027,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (this->data.embeds.size() == 0) {
-			theData["data"]["embeds"] = nullptr;
+			theData["data"]["embeds"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->data.embeds) {
 				theData["data"].pushBack("embeds", JsonObject{ value });

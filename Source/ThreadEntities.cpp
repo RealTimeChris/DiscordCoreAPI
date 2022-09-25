@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 			theData["message"].pushBack("attachments", value);
 		}
 		if (this->message.components.size() == 0) {
-			theData["message"]["components"] = nullptr;
+			theData["message"]["components"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->message.components) {
 				theData["message"].pushBack("components", value);
@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 			theData["message"].pushBack("sticker_ids", value);
 		}
 		if (this->message.embeds.size() == 0) {
-			theData["message"]["embeds"] = nullptr;
+			theData["message"]["embeds"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->message.embeds) {
 				theData["message"].pushBack("embeds", JsonObject{ value });

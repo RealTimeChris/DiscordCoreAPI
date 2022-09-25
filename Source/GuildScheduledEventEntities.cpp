@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 	CreateGuildScheduledEventData::operator JsonObject() {
 		JsonObject theData{};
 		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			theData["channel_id"] = nullptr;
+			theData["channel_id"] = ValueType::Null;
 		} else {
 			theData["channel_id"] = std::to_string(this->channelId);
 		}
@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 	ModifyGuildScheduledEventData::operator JsonObject() {
 		JsonObject theData{};
 		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			theData["channel_id"] = nullptr;
+			theData["channel_id"] = ValueType::Null;
 		} else {
 			theData["channel_id"] = std::to_string(this->channelId);
 		}

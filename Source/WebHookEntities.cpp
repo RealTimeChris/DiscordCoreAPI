@@ -45,14 +45,14 @@ namespace DiscordCoreAPI {
 			theData.pushBack("attachments", JsonObject{ value });
 		}
 		if (this->components.size() == 0) {
-			theData["components"] = nullptr;
+			theData["components"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->components) {
 				theData.pushBack("components", value);
 			}
 		}
 		if (this->embeds.size() == 0) {
-			theData["embeds"] = nullptr;
+			theData["embeds"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->embeds) {
 				theData.pushBack("embeds", JsonObject{ value });
@@ -198,14 +198,14 @@ namespace DiscordCoreAPI {
 			theData.pushBack("attachments", value);
 		}
 		if (this->components.size() == 0) {
-			theData["components"] = nullptr;
+			theData["components"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->components) {
 				theData.pushBack("components", value);
 			}
 		}
 		if (this->embeds.size() == 0) {
-			theData["embeds"] = nullptr;
+			theData["embeds"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->embeds) {
 				theData.pushBack("embeds", JsonObject{ value });

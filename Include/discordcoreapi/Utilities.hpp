@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	enum class ValueType { Null = 0, Object = 1, Array = 3, Double = 4, Float = 5, String = 6, Bool = 7, Int64 = 8, Uint64 = 9, Unset = 10 };
+	enum class ValueType { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Double = 4, Float = 5, String = 6, Bool = 7, Int64 = 8, Uint64 = 9, Unset = 10 };
 
 	struct JsonArray;
 
@@ -212,23 +212,20 @@ namespace DiscordCoreAPI {
 		JsonObject& operator=(EnumConverter theData) noexcept;
 		JsonObject(EnumConverter) noexcept;
 
-		JsonObject& operator=(const JsonObject& theKey) noexcept;
-		JsonObject(const JsonObject& theKey) noexcept;
-
-		JsonObject& operator=(const ValueType& theType) noexcept;
-		JsonObject(const ValueType& theType) noexcept;
-
 		JsonObject& operator=(const JsonArray& theData) noexcept;
 		JsonObject(const JsonArray& theData) noexcept;
 
-		JsonObject& operator=(std::nullptr_t theData) noexcept;
-		JsonObject(std::nullptr_t) noexcept;
+		JsonObject& operator=(const JsonObject& theKey) noexcept;
+		JsonObject(const JsonObject& theKey) noexcept;
 
 		JsonObject& operator=(const char* theData) noexcept;
 		JsonObject(const char* theData) noexcept;
-
+		
 		JsonObject& operator=(std::string theData) noexcept;
 		JsonObject(std::string) noexcept;
+		
+		JsonObject& operator=(ValueType theType) noexcept;
+		JsonObject(ValueType theType) noexcept;
 
 		JsonObject& operator=(uint64_t theData) noexcept;
 		JsonObject(uint64_t) noexcept;
@@ -1525,7 +1522,7 @@ namespace DiscordCoreAPI {
 
 		StopWatch<TimeType>& operator=(StopWatch<TimeType>&& other) noexcept {
 			if (this != &other) {
-				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
+				this->maxNumberOfTimeUnits.store(other.maxNumberOfTimeUnits.load());
 				this->startTime.store(other.startTime.load());
 			}
 			return *this;
@@ -1538,7 +1535,7 @@ namespace DiscordCoreAPI {
 
 		StopWatch<TimeType>& operator=(StopWatch<TimeType>& other) noexcept {
 			if (this != &other) {
-				this->maxNumberOfMs.store(other.maxNumberOfMs.load());
+				this->maxNumberOfTimeUnits.store(other.maxNumberOfTimeUnits.load());
 				this->startTime.store(other.startTime.load());
 			}
 			return *this;
@@ -1553,14 +1550,14 @@ namespace DiscordCoreAPI {
 			this->resetTimer();
 		}
 
-		StopWatch<TimeType>& operator=(TimeType maxNumberOfMsNew) {
-			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
+		StopWatch<TimeType>& operator=(TimeType maxNumberOfTimeUnitsNew) {
+			this->maxNumberOfTimeUnits.store(maxNumberOfTimeUnitsNew.count());
 			this->startTime.store(std::chrono::duration_cast<TimeType>(std::chrono::steady_clock::now().time_since_epoch()).count());
 			return *this;
 		}
 
-		explicit StopWatch(TimeType maxNumberOfMsNew) {
-			*this = maxNumberOfMsNew;
+		explicit StopWatch(TimeType maxNumberOfTimeUnitsNew) {
+			*this = maxNumberOfTimeUnitsNew;
 			this->resetTimer();
 		}
 
@@ -1571,7 +1568,7 @@ namespace DiscordCoreAPI {
 
 		bool hasTimePassed() {
 			auto elapsedTime = std::chrono::duration_cast<TimeType>(std::chrono::steady_clock::now().time_since_epoch()).count() - this->startTime.load();
-			if (elapsedTime >= this->maxNumberOfMs.load()) {
+			if (elapsedTime >= this->maxNumberOfTimeUnits.load()) {
 				return true;
 			} else {
 				return false;
@@ -1580,13 +1577,13 @@ namespace DiscordCoreAPI {
 
 		void resetTimer(uint64_t theNewTime = 0) {
 			if (theNewTime != 0) {
-				this->maxNumberOfMs.store(TimeType{ theNewTime }.count());
+				this->maxNumberOfTimeUnits.store(TimeType{ theNewTime }.count());
 			}
 			this->startTime.store(std::chrono::duration_cast<TimeType>(std::chrono::steady_clock::now().time_since_epoch()).count());
 		}
 
 	  protected:
-		std::atomic_uint64_t maxNumberOfMs{};
+		std::atomic_uint64_t maxNumberOfTimeUnits{};
 		std::atomic_uint64_t startTime{};
 	};
 

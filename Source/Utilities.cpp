@@ -34,7 +34,6 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/Utilities.hpp>
-#include <string>
 
 namespace DiscordCoreInternal {
 
@@ -164,7 +163,7 @@ namespace DiscordCoreAPI {
 		*this = theKey;
 	}
 
-	JsonObject& JsonObject::operator=(const ValueType& theType) noexcept {
+	JsonObject& JsonObject::operator=(ValueType theType) noexcept {
 		switch (theType) {
 			case ValueType::Bool: {
 				this->theValue = new bool{};
@@ -190,8 +189,14 @@ namespace DiscordCoreAPI {
 				this->theValue = new std::string{};
 				break;
 			}
+			case ValueType::Null_Ext: {
+				this->theValue = new uint64_t{};
+				*static_cast<uint64_t*>(this->theValue) = static_cast<uint64_t>(theType);
+				break;
+			}
 			case ValueType::Null: {
-				this->theValue = new nullptr_t{};
+				this->theValue = new uint64_t{};
+				*static_cast<uint64_t*>(this->theValue) = static_cast<uint64_t>(theType);
 				break;
 			}
 			case ValueType::Array: {
@@ -207,25 +212,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 		return *this;
-	}
-
-	JsonObject::JsonObject(const ValueType& theType) noexcept {
-		*this = theType;
-	}
-
-	JsonObject& JsonObject::operator=(std::nullptr_t theData) noexcept {
-		this->theType = ValueType::Null;
-		JsonObject theObject{ theData };
-		theObject.theKey = this->theKey;
-		theObject.theType = this->theType;
-		*this = theObject;
-		*static_cast<std::nullptr_t*>(this->theValue) = theData;
-		return *this;
-	}
-
-	JsonObject::JsonObject(std::nullptr_t other) noexcept {
-		this->theValue = new std::nullptr_t{};
-		*static_cast<std::nullptr_t*>(this->theValue) = other;
 	}
 
 	JsonObject& JsonObject::operator=(const JsonArray& theData) noexcept {
@@ -270,6 +256,11 @@ namespace DiscordCoreAPI {
 	JsonObject::JsonObject(std::string theData) noexcept {
 		this->theValue = new std::string{};
 		*static_cast<std::string*>(this->theValue) = theData;
+	}
+
+	JsonObject::JsonObject(ValueType theData) noexcept {
+		this->theValue = new uint64_t{};
+		*this = theData;
 	}
 
 	JsonObject& JsonObject::operator=(uint64_t theData) noexcept {
@@ -522,6 +513,10 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case ValueType::Null: {
+				theString += "null";
+				break;
+			}
+			case ValueType::Null_Ext: {
 				theString += "[]";
 				break;
 			}

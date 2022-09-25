@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 			theData["message_reference"] = this->messageReference;
 		}
 		if (this->components.size() == 0) {
-			theData["components"] = nullptr;
+			theData["components"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->components) {
 				theData.pushBack("components", value);
@@ -135,7 +135,7 @@ namespace DiscordCoreAPI {
 			theData.pushBack("sticker_ids", value);
 		}
 		if (this->embeds.size() == 0) {
-			theData["embeds"] = nullptr;
+			theData["embeds"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->embeds) {
 				theData.pushBack("embeds", JsonObject{ value });
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 			theData.pushBack("attachments", value);
 		}
 		if (this->components.size() == 0) {
-			theData["components"] = nullptr;
+			theData["components"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->components) {
 				theData.pushBack("components", value);
@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 			theData["allowed_mentions"]["users"] = this->allowedMentions.users;
 		}
 		if (this->embeds.size() == 0) {
-			theData["embeds"] = nullptr;
+			theData["embeds"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->embeds) {
 				theData.pushBack("embeds", value);
