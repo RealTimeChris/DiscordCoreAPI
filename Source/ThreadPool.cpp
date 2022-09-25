@@ -33,6 +33,7 @@ namespace DiscordCoreAPI {
 		auto theThread = std::jthread([=](std::stop_token stopToken) {
 			StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
 			while (true) {
+				std::cout << "THREAD POOL LOOP 000" << std::endl;
 				stopWatch.resetTimer();
 				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
 				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
@@ -116,9 +117,13 @@ namespace DiscordCoreInternal {
 		this->theCoroutineHandles.emplace_back(coro);
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
-	
+	std::atomic_int32_t theIntNew{};
 	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
 		while (!stopToken.stop_requested()) {
+			theIntNew.store(theIntNew.load() + 1);
+			if (theIntNew.load() % 10000 == 0) {
+				std::cout << "THREAD POOL LOOP 000" << std::endl;
+			}
 			std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 			if (this->coroHandleCount.load() > 0) {
 				if (theLock01.try_lock()) {

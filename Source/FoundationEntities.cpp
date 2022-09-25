@@ -78,14 +78,14 @@ namespace DiscordCoreInternal {
 			}
 			theSerializer02["name"] = std::string{ value.name };
 			theSerializer02["type"] = uint32_t{ static_cast<uint32_t>(value.type) };
-			theSerializer["d"].pushBack("activities", theSerializer02);
+			theSerializer["d"]["presence"].pushBack("activities", theSerializer02);
 		}
-		theSerializer["d"]["afk"] = this->presence.afk;
+		theSerializer["d"]["presence"]["afk"] = this->presence.afk;
 		if (this->presence.since != 0) {
-			theSerializer["d"]["since"] = this->presence.since;
+			theSerializer["d"]["presence"]["since"] = this->presence.since;
 		}
 
-		theSerializer["d"]["status"] = this->presence.status;
+		theSerializer["d"]["presence"]["status"] = this->presence.status;
 		theSerializer["d"]["properties"]["browser"] = "DiscordCoreAPI";
 		theSerializer["d"]["properties"]["device"] = "DiscordCoreAPI";
 #ifdef _WIN32

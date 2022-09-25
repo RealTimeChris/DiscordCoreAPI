@@ -67,7 +67,7 @@ namespace DiscordCoreInternal {
 	#undef SOCKET_ERROR
 #endif
 
-	using SOCKET = uint32_t;
+	using SOCKET = int32_t;
 
 	constexpr int32_t SOCKET_ERROR{ -1 };
 
@@ -121,7 +121,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
-			void operator()(SOCKET other);
+			void operator()(SOCKET* other);
 		};
 
 		SOCKETWrapper& operator=(SOCKETWrapper&&) noexcept;
@@ -142,10 +142,8 @@ namespace DiscordCoreInternal {
 
 		SOCKETWrapper() noexcept = default;
 
-		~SOCKETWrapper() noexcept;
-
 	  protected:
-		SOCKET thePtr{ static_cast<SOCKET>(SOCKET_ERROR) };
+		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ SOCKET_ERROR }, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll sockaddrWrapper {

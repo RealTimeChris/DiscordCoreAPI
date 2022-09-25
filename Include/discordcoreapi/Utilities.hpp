@@ -1600,11 +1600,4 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 };
-
-template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::Snowflake> {
-	std::size_t operator()(DiscordCoreAPI::Snowflake const& object) const noexcept {
-		return static_cast<DiscordCoreAPI::Snowflake>(object).operator size_t();
-	}
-};
-
 #endif

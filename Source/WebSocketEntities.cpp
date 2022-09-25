@@ -364,6 +364,7 @@ namespace DiscordCoreInternal {
 				}
 				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
 				while (this->areWeCollectingData) {
+					std::cout << "WEBSOCKETENTITIESLOOP 001" << std::endl;
 					if (theStopWatch.hasTimePassed()) {
 						break;
 					}
@@ -393,6 +394,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					didWeWrite = this->writeData(dataToSend, priority);
+					std::cout << "WEBSOCKETENTITIESLOOP 002" << std::endl;
 				} while (didWeWrite != ProcessIOResult::No_Error);
 				if (didWeWrite != ProcessIOResult::No_Error) {
 					this->onClosed();
@@ -1627,7 +1629,7 @@ namespace DiscordCoreInternal {
 								 << endl;
 						}
 					}
-
+					std::cout << "WEBSOCKETENTITIESLOOP 003" << std::endl;
 				} while (didWeConnect != true && !this->doWeQuit->load());
 
 				this->theShardMap[thePackageNew.currentShard]->currentState.store(SSLShardState::Upgrading);
@@ -1645,6 +1647,7 @@ namespace DiscordCoreInternal {
 					}
 					std::this_thread::sleep_for(1ms);
 					didWeWrite = this->theShardMap[thePackageNew.currentShard]->writeData(sendString, true);
+					std::cout << "WEBSOCKETENTITIESLOOP 004" << std::endl;
 				} while (didWeWrite != ProcessIOResult::No_Error);
 				if (didWeWrite != ProcessIOResult::No_Error) {
 					this->theShardMap[thePackageNew.currentShard]->onClosed();
@@ -1652,6 +1655,7 @@ namespace DiscordCoreInternal {
 				}
 
 				while (!this->doWeQuit->load()) {
+					std::cout << "WEBSOCKETENTITIESLOOP 005" << std::endl;
 					if (this->theShardMap[thePackageNew.currentShard]->currentState.load() == SSLShardState::Collecting_Hello) {
 						break;
 					}
@@ -1670,6 +1674,7 @@ namespace DiscordCoreInternal {
 					}
 					if (this->theShardMap[thePackageNew.currentShard]->areWeStillConnected()) {
 						while (this->theShardMap[thePackageNew.currentShard]->currentState.load() == SSLShardState::Upgrading) {
+							std::cout << "WEBSOCKETENTITIESLOOP 006" << std::endl;
 							if (theStopWatch.hasTimePassed()) {
 								this->theShardMap[thePackageNew.currentShard]->onClosed();
 								return;
@@ -1716,6 +1721,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::connectVoiceInternal() noexcept {
 		if (this->voiceConnections.size() > 0) {
 			while (!this->theVCStopWatch.hasTimePassed()) {
+				std::cout << "WEBSOCKETENTITIESLOOP 007" << std::endl;
 				std::this_thread::sleep_for(1ms);
 			}
 			this->theVCStopWatch.resetTimer();
@@ -1730,9 +1736,14 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	std::atomic_int32_t theInt02{};
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
+				theInt02.store(theInt02.load() + 1);
+				if (theInt02.load() % 100000 == 0) {
+					std::cout << "WEBSOCKETENTITIESLOOP 008" << std::endl;
+				}
 				this->disconnectVoiceInternal();
 				this->connectVoiceInternal();
 				std::vector<WebSocketSSLShard*> theVector{};
@@ -1751,24 +1762,18 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
-
+				bool areWeConnected{ false };
 				for (auto& value: theVector) {
 					if (!value->areWeConnecting.load()) {
 						if (value->areWeStillConnected()) {
 							value->checkForAndSendHeartBeat();
+							areWeConnected = true;
 						}
-					}
-				}
-				bool areWeConnected{ false };
-				for (auto& value: theVector) {
-					if (value->areWeStillConnected()) {
-						areWeConnected = true;
-						break;
 					}
 				}
 				if (!areWeConnected) {
 					std::this_thread::sleep_for(1ms);
-				}
+				}			
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1776,6 +1781,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 	}
+
 	BaseSocketAgent::~BaseSocketAgent() {
 		if (this->taskThread) {
 			this->taskThread->request_stop();

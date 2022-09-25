@@ -107,26 +107,25 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET other) {
-		if (other != SOCKET_ERROR) {
+	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
+		if (*other != SOCKET_ERROR) {
 #ifdef _WIN32
-			shutdown(other, SD_BOTH);
-			closesocket(other);
+			shutdown(*other, SD_BOTH);
+			closesocket(*other);
 #else
-			shutdown(other, SHUT_RDWR);
-			close(other);
+			shutdown(*other, SHUT_RDWR);
+			close(*other);
 #endif
-			other = SOCKET_ERROR;
+			*other = SOCKET_ERROR;
 		};
 	};
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper&& other) noexcept {
-		if (this->thePtr != SOCKET_ERROR) {
-			SOCKETWrapper::SOCKETDeleter theDeleter{};
-			theDeleter.operator()(this->thePtr);
+		if (*this->thePtr != SOCKET_ERROR) {
+			this->thePtr.reset(new SOCKET{});
 		}
-		this->thePtr = other.thePtr;
-		other.thePtr = SOCKET_ERROR;
+		*this->thePtr = *other.thePtr;
+		*other.thePtr = SOCKET_ERROR;
 		return *this;
 	}
 
@@ -135,11 +134,10 @@ namespace DiscordCoreInternal {
 	}
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) noexcept {
-		if (this->thePtr != SOCKET_ERROR) {
-			SOCKETWrapper::SOCKETDeleter theDeleter{};
-			theDeleter.operator()(this->thePtr);
+		if (*this->thePtr != SOCKET_ERROR) {
+			this->thePtr.reset(new SOCKET{});
 		}
-		this->thePtr = other;
+		*this->thePtr = other;
 		return *this;
 	}
 
@@ -148,18 +146,11 @@ namespace DiscordCoreInternal {
 	}
 
 	SOCKETWrapper::operator SOCKET*() noexcept {
-		return &this->thePtr;
+		return this->thePtr.get();
 	}
 
 	SOCKETWrapper::operator SOCKET() noexcept {
-		return static_cast<SOCKET>(this->thePtr);
-	}
-
-	SOCKETWrapper::~SOCKETWrapper() noexcept {
-		if (this->thePtr != SOCKET_ERROR) {
-			SOCKETWrapper::SOCKETDeleter theDeleter{};
-			theDeleter.operator()(this->thePtr);
-		}
+		return *this->thePtr;
 	}
 
 	sockaddr* sockaddrWrapper::operator->() {
@@ -443,7 +434,7 @@ namespace DiscordCoreInternal {
 			}
 
 			while (theVector[readWriteSet.theIndices[x]]->handleBuffer(theVector[readWriteSet.theIndices[x]])) {
-				//std::cout << "SSL CLIENT WHILE 0101" << std::endl;
+				std::cout << "SSL CLIENT WHILE 0101" << std::endl;
 			}
 		}
 		return theReturnValue;
@@ -488,7 +479,7 @@ namespace DiscordCoreInternal {
 						this->outputBuffers.emplace_back(newString);
 						dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 						remainingBytes = dataToWrite.size();
-						//std::cout << "SSL CLIENT WHILE 0202" << std::endl;
+						std::cout << "SSL CLIENT WHILE 0202" << std::endl;
 					}
 				} else {
 					this->outputBuffers.emplace_back(dataToWrite);
@@ -520,7 +511,7 @@ namespace DiscordCoreInternal {
 		} else if (returnValue == 0) {
 			if (!this->areWeAStandaloneSocket) {
 				while (this->handleBuffer(static_cast<WebSocketSSLShard*>(this))) {
-					//std::cout << "SSL CLIENT WHILE 0303" << std::endl;
+					std::cout << "SSL CLIENT WHILE 0303" << std::endl;
 				}
 			}
 			return ProcessIOResult::No_Error;
@@ -544,7 +535,7 @@ namespace DiscordCoreInternal {
 		}
 		if (!this->areWeAStandaloneSocket) {
 			while (this->handleBuffer(static_cast<WebSocketSSLShard*>(this))) {
-				//std::cout << "SSL CLIENT WHILE 0404" << std::endl;
+				std::cout << "SSL CLIENT WHILE 0404" << std::endl;
 			}
 		}
 		return ProcessIOResult::No_Error;
@@ -627,7 +618,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 			}
-			//std::cout << "SSL CLIENT WHILE 0404" << std::endl;
+			std::cout << "SSL CLIENT WHILE 0404" << std::endl;
 		} while (SSL_pending(this->ssl));
 		return true;
 	}
@@ -785,7 +776,7 @@ namespace DiscordCoreInternal {
 			}
 
 			while (theVector[readWriteSet.theIndices[x]]->handleBuffer(theVector[readWriteSet.theIndices[x]])) {
-				//std::cout << "SSL CLIENT WHILE 0505" << std::endl;
+				std::cout << "SSL CLIENT WHILE 0505" << std::endl;
 			}
 		}
 		return theReturnValue;
@@ -825,7 +816,7 @@ namespace DiscordCoreInternal {
 						this->outputBuffers.emplace_back(newString);
 						dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 						remainingBytes = dataToWrite.size();
-						//std::cout << "SSL CLIENT WHILE 0606" << std::endl;
+						std::cout << "SSL CLIENT WHILE 0606" << std::endl;
 					}
 				} else {
 					this->outputBuffers.emplace_back(dataToWrite);
@@ -857,7 +848,7 @@ namespace DiscordCoreInternal {
 		} else if (returnValue == 0) {
 			if (!this->areWeAStandaloneSocket) {
 				while (this->handleBuffer(this)) {
-					//std::cout << "SSL CLIENT WHILE 0707" << std::endl;
+					std::cout << "SSL CLIENT WHILE 0707" << std::endl;
 				}
 			}
 			return ProcessIOResult::No_Error;
@@ -881,7 +872,7 @@ namespace DiscordCoreInternal {
 		}
 		if (!this->areWeAStandaloneSocket) {
 			while (this->handleBuffer(this)) {
-				//std::cout << "SSL CLIENT WHILE 0808" << std::endl;
+				std::cout << "SSL CLIENT WHILE 0808" << std::endl;
 			}
 		}
 		return ProcessIOResult::No_Error;
@@ -965,7 +956,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 			}
-			//std::cout << "SSL CLIENT WHILE 111111" << std::endl;
+			std::cout << "SSL CLIENT WHILE 111111" << std::endl;
 		} while (SSL_pending(this->ssl));
 		return true;
 	}

@@ -166,48 +166,59 @@ namespace DiscordCoreAPI {
 	JsonObject& JsonObject::operator=(ValueType theType) noexcept {
 		switch (theType) {
 			case ValueType::Bool: {
+				this->theType = ValueType::Bool;
 				this->theValue = new bool{};
 				break;
 			}
 			case ValueType::Double: {
+				this->theType = ValueType::Double;
 				this->theValue = new double{};
 				break;
 			}
 			case ValueType::Float: {
+				this->theType = ValueType::Float;
 				this->theValue = new float{};
 				break;
 			}
 			case ValueType::Uint64: {
+				this->theType = ValueType::Uint64;
 				this->theValue = new uint64_t{};
 				break;
 			}
 			case ValueType::Int64: {
+				this->theType = ValueType::Int64;
 				this->theValue = new int64_t{};
 				break;
 			}
 			case ValueType::String: {
+				this->theType = ValueType::String;
 				this->theValue = new std::string{};
 				break;
 			}
 			case ValueType::Null_Ext: {
+				this->theType = ValueType::Null_Ext;
 				this->theValue = new uint64_t{};
 				*static_cast<uint64_t*>(this->theValue) = static_cast<uint64_t>(theType);
 				break;
 			}
 			case ValueType::Null: {
+				this->theType = ValueType::Null;
 				this->theValue = new uint64_t{};
 				*static_cast<uint64_t*>(this->theValue) = static_cast<uint64_t>(theType);
 				break;
 			}
 			case ValueType::Array: {
+				this->theType = ValueType::Array;
 				this->theValue = new JsonArray{};
 				break;
 			}
 			case ValueType::Object: {
+				this->theType = ValueType::Object;
 				this->theValue = new JsonObject{};
 				break;
 			}
 			case ValueType::Unset: {
+				this->theType = ValueType::Unset;
 				break;
 			}
 		}
