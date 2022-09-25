@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 	/// ObjectCollector, for collecting Objects from a Channel. \brief Object collector, for collecting Objects from a Channel.
 	template<> class DiscordCoreAPI_Dll ObjectCollector<Message> {
 	  public:
-		static std::unordered_map<std::string, UnboundedMessageBlock<Message>*> objectsBufferMap;
+		inline static std::unordered_map<std::string, UnboundedMessageBlock<Message>*> objectsBufferMap{};
 
 		ObjectCollector() noexcept = default;
 
