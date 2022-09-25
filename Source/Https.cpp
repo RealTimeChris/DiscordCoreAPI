@@ -586,9 +586,10 @@ namespace DiscordCoreInternal {
 		try {
 			theConnection.resetValues();
 			ProcessIOResult theResult{};
+			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error) {
 				theResult = theConnection.processIO(1);
-				if (theConnection.theData.theStopWatch.hasTimePassed()) {
+				if (theStopWatch.hasTimePassed()) {
 					break;
 				}
 			}

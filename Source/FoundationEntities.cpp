@@ -1098,7 +1098,8 @@ namespace DiscordCoreAPI {
 		dataPackage->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
 		dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 		originalEvent = InputEvents::respondToInputEventAsync(*dataPackage).get();
-		while (true) {
+		StopWatch theStopWatch{ std::chrono::milliseconds{ waitForMaxMs } };
+		while (!theStopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
 			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
 

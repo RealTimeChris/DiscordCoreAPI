@@ -800,7 +800,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void ModalCollector::run() {
-		while (!this->doWeQuit) {
+		StopWatch theStopWatch{ std::chrono::milliseconds{ this->maxTimeInMs } };
+		while (!this->doWeQuit && !theStopWatch.hasTimePassed()) {
 			auto buttonInteractionData = std::make_unique<InteractionData>();
 			if (waitForTimeToPass(this->modalIncomingInteractionBuffer, *buttonInteractionData.get(), this->maxTimeInMs)) {
 				*this->responseData.interactionData = *buttonInteractionData;

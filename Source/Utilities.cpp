@@ -1352,7 +1352,6 @@ namespace DiscordCoreAPI {
 		theReturnString.reserve(len_encoded);
 		DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
 		uint64_t pos = 0;
-
 		while (pos < theString.size()) {
 			if (theStopWatch.hasTimePassed()) {
 				break;
