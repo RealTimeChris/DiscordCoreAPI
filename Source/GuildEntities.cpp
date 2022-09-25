@@ -34,7 +34,7 @@
 
 namespace DiscordCoreAPI {
 	
-	CreateGuildData::operator std::string() {
+	CreateGuildData::operator JsonObject() {
 		JsonObject theData{}; 
 		theData["default_message_notifications"] = this->defaultMessageNotifications;
 		theData["explicit_content_filter"] = this->explicitContentFilter;
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	CreateGuildBanData::operator std::string() {
+	CreateGuildBanData::operator JsonObject() {
 		JsonObject theData{};
 		if (this->deleteMessageDays != 0) {
 			theData["delete_message_days"] = this->deleteMessageDays;
@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	BeginGuildPruneData::operator std::string() {
+	BeginGuildPruneData::operator JsonObject() {
 		JsonObject theData{};
 		theData["compute_prune_count"] = this->computePruneCount;
 		for (auto& value: this->includeRoles) {
@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ModifyGuildWelcomeScreenData::operator std::string() {
+	ModifyGuildWelcomeScreenData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->welcomeChannels) {
 			JsonObject newData{};
@@ -353,7 +353,7 @@ namespace DiscordCoreAPI {
 		this->name = dataPackage.name;
 	}
 	
-	ModifyGuildData::operator std::string() {
+	ModifyGuildData::operator JsonObject() {
 		JsonObject theData{};
 		theData["premium_progress_bar_enabled"] = this->premiumProgressBarEnabled;
 		theData["default_message_notifications"] = this->defaultMessageNotifications;
@@ -432,7 +432,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds";
-		workload.content = dataPackage;
+		workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
 		workload.callStack = "Guilds::createGuildAsync()";
 		auto theData = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload);
 		theData.discordCoreClient = Guilds::discordCoreClient;
@@ -497,7 +497,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId);
-		workload.content = dataPackage;
+		workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
 		workload.callStack = "Guilds::modifyGuildAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -564,7 +564,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/bans/" + std::to_string(dataPackage.guildMemberId);
-		workload.content = dataPackage;
+		workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
 		workload.callStack = "Guilds::createGuildBanAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -619,7 +619,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildPruneCountData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/prune";
-		workload.content = dataPackage;
+		workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
 		workload.callStack = "Guilds::beginGuildPruneAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -754,7 +754,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<WelcomeScreenData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/welcome-screen";
-		workload.content = dataPackage;
+		workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
 		workload.callStack = "Guilds::modifyGuildWelcomeScreenAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

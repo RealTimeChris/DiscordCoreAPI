@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 		std::string region{};///< The region that the servers are in.
 		std::string name{};///< The name of the new Guild.
 
-		operator std::string();
+		operator JsonObject();
 	};
 
 	/// For getting a Guild from the library's cache or a Discord server. \brief For getting a Guild from the library's cache or a Discord server.
@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild from which to ban the member.
 		std::string reason{};///< The reason for the ban.
 
-		operator std::string();
+		operator JsonObject();
 	};
 
 	/// For removing a previous created Ban. \brief For removing a previous created Ban.
@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< Guild within which to perform the prune.
 		int32_t days{ 0 };/// Number of days after which to prune a given GuildMember.
 
-		operator std::string();
+		operator JsonObject();
 	};
 
 	/// For collecting a list of Guild voice regions. \brief For collecting a list of Guild voice regions.
@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< The reason for modifying the welcome screen.
 		Snowflake guildId{};///< The Guild for which to modify the welcome screen of.
 
-		operator std::string();
+		operator JsonObject();
 	};
 
 	/// For collecting a Guild's template. \brief For collecting a Guild's template.
@@ -386,7 +386,7 @@ namespace DiscordCoreAPI {
 
 		ModifyGuildData(Guild dataPackage);
 
-		operator std::string();
+		operator JsonObject();
 	};
 
 	/**@}*/

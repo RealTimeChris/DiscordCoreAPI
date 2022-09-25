@@ -34,9 +34,13 @@ namespace DiscordCoreAPI {
 		this->webHookId = dataNew.id;
 	}
 
-	ExecuteWebHookData::operator std::string() {
+	ExecuteWebHookData::operator JsonObject() {
 		JsonObject theData{};
-		theData["allowed_mentions"] = this->allowedMentions;
+		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
+			theData["allowed_mentions"]["roles"] = this->allowedMentions.roles;
+			theData["allowed_mentions"]["parse"] = this->allowedMentions.parse;
+			theData["allowed_mentions"]["users"] = this->allowedMentions.users;
+		}
 		for (auto& value: this->attachments) {
 			theData.pushBack("attachments", JsonObject{ value });
 		}
@@ -176,9 +180,13 @@ namespace DiscordCoreAPI {
 		this->webHookId = dataNew.id;
 	}
 
-	EditWebHookData::operator std::string() {
+	EditWebHookData::operator JsonObject() {
 		JsonObject theData{};
-		theData["allowed_mentions"] = DiscordCoreAPI::AllowedMentionsData{ this->allowedMentions };
+		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
+			theData["allowed_mentions"]["roles"] = this->allowedMentions.roles;
+			theData["allowed_mentions"]["parse"] = this->allowedMentions.parse;
+			theData["allowed_mentions"]["users"] = this->allowedMentions.users;
+		}
 		for (auto& value: this->attachments) {
 			theData.pushBack("attachments", value);
 		}
@@ -330,9 +338,9 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage.operator DiscordCoreAPI::JsonObject(), dataPackage.files);
 		} else {
-			workload.content = dataPackage;
+			workload.content = dataPackage.operator JsonObject();
 		}
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -359,9 +367,9 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage.operator DiscordCoreAPI::JsonObject(), dataPackage.files);
 		} else {
-			workload.content = dataPackage;
+			workload.content = dataPackage.operator JsonObject();
 		}
 		workload.callStack = "WebHooks::editWebHookMessageAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);

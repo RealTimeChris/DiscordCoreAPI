@@ -111,7 +111,7 @@ namespace DiscordCoreAPI {
 		this->channelId = dataPackage.getChannelId();
 	}
 
-	CreateMessageData::operator std::string() {
+	CreateMessageData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->attachments) {
 			theData.pushBack("attachments",value);
@@ -122,7 +122,11 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->components) {
 			theData.pushBack("components", value);
 		}
-		theData["allowed_mentions"] = this->allowedMentions;
+		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
+			theData["allowed_mentions"]["roles"] = this->allowedMentions.roles;
+			theData["allowed_mentions"]["parse"] = this->allowedMentions.parse;
+			theData["allowed_mentions"]["users"] = this->allowedMentions.users;
+		}
 		for (auto& value: this->stickerIds) {
 			theData.pushBack("sticker_ids", value);
 		}
@@ -169,7 +173,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	EditMessageData::operator std::string() {
+	EditMessageData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->attachments) {
 			theData.pushBack("attachments", value);
@@ -177,7 +181,11 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->components) {
 			theData.pushBack("components", value);
 		}
-		theData["allowed_mentions"] = this->allowedMentions;
+		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
+			theData["allowed_mentions"]["roles"] = this->allowedMentions.roles;
+			theData["allowed_mentions"]["parse"] = this->allowedMentions.parse;
+			theData["allowed_mentions"]["users"] = this->allowedMentions.users;
+		}
 		for (auto& value: this->embeds) {
 			theData.pushBack("embeds", value);
 		}
@@ -189,7 +197,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	DeleteMessagesBulkData::operator std::string() {
+	DeleteMessagesBulkData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->messageIds) {
 			theData.pushBack("messages", std::to_string(value));
@@ -258,9 +266,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage.operator DiscordCoreAPI::JsonObject(), dataPackage.files);
 		} else {
-			workload.content = dataPackage;
+			workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
 		}
 		workload.callStack = "Messages::createMessageAsync()";
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -282,9 +290,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage, dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage.operator DiscordCoreAPI::JsonObject(), dataPackage.files);
 		} else {
-			workload.content = dataPackage;
+			workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
 		}
 		workload.callStack = "Messages::editMessageAsync()";
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -312,7 +320,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/bulk-delete";
-		workload.content = dataPackage;
+		workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
 		workload.callStack = "Messages::deleteMessagesBulkAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

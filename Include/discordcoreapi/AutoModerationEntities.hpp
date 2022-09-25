@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
 
-		operator std::string();
+		operator JsonObject();
 	};
 
 	/// For when an auto-moderation-rule is executed. \brief For when an auto-moderation-rule is executed.
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
 
-		operator std::string();
+		operator JsonObject();
 	};
 
 	/// For deleting an auto-moderation-rule. \brief For deleting an auto-moderation-rule.

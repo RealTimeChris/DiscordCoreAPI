@@ -37,7 +37,7 @@
 
 namespace DiscordCoreInternal {
 
-	UpdatePresenceData::operator std::string() {
+	UpdatePresenceData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = static_cast<uint32_t>(3);
 		for (auto& value: this->activities) {
@@ -58,7 +58,7 @@ namespace DiscordCoreInternal {
 
 	}
 
-	WebSocketResumeData::operator std::string() {
+	WebSocketResumeData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = static_cast<uint32_t>(6);
 		theData["d"]["seq"] = this->lastNumberReceived;
@@ -67,7 +67,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	WebSocketIdentifyData::operator std::string() {
+	WebSocketIdentifyData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theSerializer{};
 		theSerializer["d"]["intents"] = static_cast<uint32_t>(this->intents);
 		theSerializer["d"]["large_threshold"] = static_cast<uint32_t>(250);
@@ -100,7 +100,7 @@ namespace DiscordCoreInternal {
 		return theSerializer;
 	}
 
-	VoiceSocketProtocolPayloadData::operator std::string() {
+	VoiceSocketProtocolPayloadData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = static_cast<uint32_t>(1);
 		theData["d"]["protocol"] = "udp";
@@ -110,7 +110,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	VoiceIdentifyData::operator std::string() {
+	VoiceIdentifyData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = static_cast<uint32_t>(0);
 		theData["d"]["session_id"] = this->connectionData.sessionId;
@@ -120,7 +120,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	SendSpeakingData::operator std::string() {
+	SendSpeakingData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = static_cast<uint32_t>(5);
 		theData["d"]["speaking"] = static_cast<uint8_t>(this->type);
@@ -195,7 +195,7 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	AttachmentData::operator std::string() {
+	AttachmentData::operator JsonObject() {
 		JsonObject theData{};
 		theData["content_type"] = this->contentType;
 		theData["description"] = this->description;
@@ -209,7 +209,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	EmbedFieldData::operator std::string() {
+	EmbedFieldData::operator JsonObject() {
 		JsonObject theData{};
 		theData["inline"] = this->Inline;
 		theData["value"] = escapeCharacters(this->value);
@@ -217,7 +217,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	EmbedData::operator std::string() {
+	EmbedData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value2: this->fields) {
 			theData.pushBack("fields", value2);
@@ -304,7 +304,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageReferenceData::operator std::string() {
+	MessageReferenceData::operator JsonObject() {
 		JsonObject theData{};
 		theData["fail_if_not_exists"] = this->failIfNotExists;
 		theData["message_id"] = std::to_string(this->messageId);
@@ -321,7 +321,7 @@ namespace DiscordCoreAPI {
 		return this->theBanDatas;
 	}
 
-	UpdateVoiceStateData::operator std::string() {
+	UpdateVoiceStateData::operator JsonObject() {
 		JsonObject theData{};
 		theData["op"] = static_cast<uint32_t>(4);
 		if (this->channelId == 0) {
@@ -377,7 +377,7 @@ namespace DiscordCoreAPI {
 		return AuditLogEntryData();
 	}
 
-	ApplicationCommandOptionChoiceData::operator std::string() {
+	ApplicationCommandOptionChoiceData::operator JsonObject() {
 		JsonObject theData{};
 		theData["name"] = this->name;
 		theData["name_localizations"] = this->nameLocalizations;
@@ -402,7 +402,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ApplicationCommandOptionData::operator std::string() {
+	ApplicationCommandOptionData::operator JsonObject() {
 		JsonObject theData{};
 		if (this->type == DiscordCoreAPI::ApplicationCommandOptionType::Channel) {
 			theData["channel_types"] = this->channelTypes;
@@ -452,7 +452,7 @@ namespace DiscordCoreAPI {
 		this->data.clear();
 	}
 
-	AllowedMentionsData::operator std::string() {
+	AllowedMentionsData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->parse) {
 			theData.pushBack("parse", value);
@@ -467,7 +467,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ActionRowData::operator std::string() {
+	ActionRowData::operator JsonObject() {
 		JsonObject theData{};
 		theData["type"] = 1;
 		if (this->components.size() > 0) {
@@ -980,37 +980,41 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	InteractionResponseData::operator std::string() {
+	InteractionResponseData::operator JsonObject() {
 		JsonObject theData{};
 		theData["type"] = static_cast<uint8_t>(this->type);
 		if (this->data.attachments.size() > 0) {
 			for (auto& value: this->data.attachments) {
-				theData["data"].pushBack("attachments", JsonObject{ value });
+				theData["data"].pushBack("attachments", value);
 			}
 		}
 		for (auto& value: this->data.components) {
-			theData["data"].pushBack("components", value);
+			theData["data"].pushBack("components",  value );
 		}
-		theData["data"]["allowed_mentions"] = JsonObject{ this->data.allowedMentions };
+		if (this->data.allowedMentions.parse.size() > 0 || this->data.allowedMentions.roles.size() > 0 || this->data.allowedMentions.users.size() > 0) {
+			theData["data"]["allowed_mentions"]["roles"] = this->data.allowedMentions.roles;
+			theData["data"]["allowed_mentions"]["parse"] = this->data.allowedMentions.parse;
+			theData["data"]["allowed_mentions"]["users"] = this->data.allowedMentions.users;
+		}
 		if (this->data.choices.size() > 0) {
 			for (auto& value: this->data.choices) {
 				JsonObject theValue{};
 				theValue["name"] = value.name;
 				theValue["name_localizations"] = value.nameLocalizations;
 				switch (value.type) {
-					case JsonType::Boolean: {
+					case DiscordCoreAPI::JsonType::Boolean: {
 						theValue["value"] = value.valueBool;
 						break;
 					}
-					case JsonType::String: {
+					case DiscordCoreAPI::JsonType::String: {
 						theValue["value"] = value.valueStringReal;
 						break;
 					}
-					case JsonType::Float: {
+					case DiscordCoreAPI::JsonType::Float: {
 						theValue["value"] = value.valueFloat;
 						break;
 					}
-					case JsonType::Integer: {
+					case DiscordCoreAPI::JsonType::Integer: {
 						theValue["value"] = value.valueInt;
 						break;
 					}
@@ -1019,7 +1023,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		for (auto& value: this->data.embeds) {
-			theData["data"].pushBack("embeds", value);
+			theData["data"].pushBack("embeds", JsonObject{ value });
 		}
 		if (this->data.customId != "") {
 			theData["data"]["custom_id"] = this->data.customId;

@@ -346,7 +346,7 @@ namespace DiscordCoreInternal {
 				dataPackage.selfDeaf = doWeCollect.selfDeaf;
 				dataPackage.selfMute = doWeCollect.selfMute;
 				this->userId = doWeCollect.userId;
-				std::string newData = dataPackage;
+				std::string newData = dataPackage.operator DiscordCoreAPI::JsonObject();
 				std::string theString = this->stringifyJsonData(newData, this->dataOpCode);
 				bool didWeWrite{ false };
 				if (!this->sendMessage(theString, true)) {
@@ -356,7 +356,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				dataPackage.channelId = static_cast<VoiceConnectInitData>(doWeCollect).channelId.operator size_t();
-				newData = dataPackage;
+				newData = dataPackage.operator DiscordCoreAPI::JsonObject();
 				std::string theString02 = this->stringifyJsonData(newData, this->dataOpCode);
 				this->areWeCollectingData = true;
 				if (!this->sendMessage(theString02, true)) {
@@ -1477,7 +1477,7 @@ namespace DiscordCoreInternal {
 									resumeData.botToken = this->configManager->getBotToken();
 									resumeData.sessionId = this->sessionId;
 									resumeData.lastNumberReceived = this->lastNumberReceived;
-									std::string resumePayload = resumeData;
+									std::string resumePayload = resumeData.operator DiscordCoreAPI::JsonObject();
 									std::string theString = this->stringifyJsonData(resumePayload, this->dataOpCode);
 									if (!this->sendMessage(theString, true)) {
 										returnValue = true;
@@ -1490,7 +1490,7 @@ namespace DiscordCoreInternal {
 									identityData.numberOfShards = this->shard[1];
 									identityData.intents = static_cast<int64_t>(this->configManager->getGatewayIntents());
 									identityData.presence = this->configManager->getPresenceData();
-									std::string identityJson = identityData;
+									std::string identityJson = identityData.operator DiscordCoreAPI::JsonObject();
 									std::string theString = this->stringifyJsonData(identityJson, this->dataOpCode);
 									if (!this->sendMessage(theString, true)) {
 										returnValue = true;
