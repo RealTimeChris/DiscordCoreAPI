@@ -1173,5 +1173,6 @@ namespace DiscordCoreAPI {
 				return returnData;
 			}
 		};
+		return returnData;
 	};
 };
