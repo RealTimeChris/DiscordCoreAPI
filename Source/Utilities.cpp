@@ -118,7 +118,7 @@ namespace DiscordCoreAPI {
 		return theObject;
 	}
 
-	explicit EnumConverter::operator uint64_t() {
+	EnumConverter::operator uint64_t() {
 		uint64_t theObject{};
 		theObject = *static_cast<uint64_t*>(this->thePtr);
 		return theObject;
