@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 	struct EnumConverter {
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
 			this->thePtr = new uint64_t{};
-			std::cout << "WERE HERE THIS IST I!" << static_cast<uint64_t>(other) << std::endl;
+			//std::cout << "WERE HERE THIS IST I!" << static_cast<uint64_t>(other) << std::endl;
 			*static_cast<uint64_t*>(this->thePtr) = static_cast<uint64_t>(other);
 		};
 

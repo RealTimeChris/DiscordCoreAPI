@@ -685,7 +685,7 @@ namespace DiscordCoreInternal {
 										}
 										case 18: {
 											if (theInt.load() % 100 == 0 || theStopWatch.totalTimePassed() % 10 == 0) {
-												std::cout << "THE GUILD COUNT: " << theInt.load() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
+												//std::cout << "THE GUILD COUNT: " << theInt.load() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 											}
 											theInt.store(theInt.load() + 1);
 											std::unique_ptr<DiscordCoreAPI::GuildData> theGuildPtr{ std::make_unique<DiscordCoreAPI::GuildData>() };

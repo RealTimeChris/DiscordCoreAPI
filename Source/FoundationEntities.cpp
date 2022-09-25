@@ -524,6 +524,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
+		//std::cout << "THE COMPONENTS: " << theData.operator std::string() << std::endl;
 		return theData;
 	}
 

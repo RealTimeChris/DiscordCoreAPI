@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 		}
 		theData["flags"] = this->flags;
 		theData["tts"] = this->tts;
-		std::cout << "THE STRING: " << ( std::string )theData << std::endl;
+		//std::cout << "THE STRING: " << ( std::string )theData << std::endl;
 		return theData;
 	}
 

@@ -1577,7 +1577,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		theStringNew.resize(theIndex);
-		std::cout << "THE STRING: " << theStringNew << std::endl;
+		//std::cout << "THE STRING: " << theStringNew << std::endl;
 		return theStringNew;
 	}
 
