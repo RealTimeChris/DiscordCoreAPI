@@ -161,17 +161,11 @@ namespace DiscordCoreAPI {
 				auto theDocument = theParser.iterate(theString.data(), theString.length(), theString.capacity());
 				uint64_t theOp{};
 
-				auto thePayload = theDocument.value().get_value();
+				auto thePayload = theDocument.get_value();
 				DiscordCoreInternal::WebSocketMessage theMessage{};
-				uint64_t s{};
-				uint64_t op{};
-				std::string_view t{};
-				thePayload["s"].get(s);
-				thePayload["op"].get(op);
-				thePayload["t"].get(t);
-				theMessage.s = s;
-				theMessage.t = t;
-				theMessage.op = op;
+				thePayload["s"].get(theMessage.s);
+				thePayload["op"].get(theMessage.op);
+				thePayload["t"].get(theMessage.t);
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theData << reset() << endl << endl;
@@ -399,9 +393,10 @@ namespace DiscordCoreAPI {
 					this->heartBeatStopWatch.resetTimer();
 				}
 				if (!stopToken.stop_requested() && WebSocketSSLShard::areWeStillConnected()) {
-					WebSocketSSLShard::processIO(10);
+					if (WebSocketSSLShard::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
+						this->onClosed();
+					}
 				}
-
 				std::this_thread::sleep_for(1ms);
 			}
 		} catch (...) {

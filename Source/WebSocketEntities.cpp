@@ -449,23 +449,17 @@ namespace DiscordCoreInternal {
 						returnValue = false;
 					}
 
-					auto thePayload = theDocument.value().get_value();
+					auto thePayload = theDocument.get_value();
 					WebSocketMessage theMessage{};
-					uint64_t s{};
-					uint64_t op{};
-					std::string_view t{};
 					simdjson::ondemand::value theObject{};
 					if (thePayload["d"].get(theObject) != simdjson::error_code::SUCCESS) {
 						throw std::runtime_error{ "Failed to collect the 'd'." };
 					}
-					if (thePayload["s"].get(s) == simdjson::error_code::SUCCESS) {
-						theMessage.s = s;
+					if (thePayload["s"].get(theMessage.s) == simdjson::error_code::SUCCESS) {
 					}
-					if (thePayload["t"].get(t) == simdjson::error_code::SUCCESS) {
-						theMessage.t = t;
+					if (thePayload["t"].get(theMessage.t) == simdjson::error_code::SUCCESS) {
 					}
-					if (thePayload["op"].get(op) == simdjson::error_code::SUCCESS) {
-						theMessage.op = op;
+					if (thePayload["op"].get(theMessage.op) == simdjson::error_code::SUCCESS) {
 					}
 
 					if (theMessage.s != 0) {
@@ -484,7 +478,7 @@ namespace DiscordCoreInternal {
 							case 0: {
 								if (theMessage.t != "") {
 										
-									switch (EventConverter{ theMessage.t }) {
+									switch (EventConverter{ static_cast<std::string>(theMessage.t) }) {
 											
 										case 1: { 
 											ReadyData theData{};

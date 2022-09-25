@@ -108,6 +108,31 @@ namespace DiscordCoreAPI {
 	EnumConverter::EnumConverter(EnumConverter&& other) noexcept {
 		*this = other;
 	}
+	
+	EnumConverter::operator std::vector<uint64_t>() {
+		std::vector<uint64_t> theObject{};
+		for (auto& value: *static_cast<std::vector<uint64_t>*>(this->thePtr)) {
+			theObject.emplace_back(value);
+		}
+
+		return theObject;
+	}
+
+	explicit EnumConverter::operator uint64_t() {
+		uint64_t theObject{};
+		theObject = *static_cast<uint64_t*>(this->thePtr);
+		return theObject;
+	}
+
+	EnumConverter::~EnumConverter() {
+		if (this->thePtr) {
+			if (this->vectorType) {
+				delete static_cast<std::vector<uint64_t>*>(this->thePtr);
+			} else {
+				delete static_cast<uint64_t*>(this->thePtr);
+			}
+		}
+	}
 
 	JsonObject& JsonObject::operator=(EnumConverter theData) noexcept {
 		this->theType = ValueType::Uint64;
@@ -509,10 +534,10 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
@@ -522,10 +547,10 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = std::move(theKey);
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = std::move(other);
 		} else {
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = std::move(other);
 		}
 	};
@@ -535,10 +560,10 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
@@ -548,10 +573,10 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
@@ -561,10 +586,10 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
@@ -574,10 +599,10 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
@@ -587,10 +612,10 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
@@ -600,10 +625,10 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
@@ -613,10 +638,10 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
@@ -626,10 +651,10 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			int32_t theSize = this->theValues[theKey].theValues.size();
+			size_t theSize = this->theValues[theKey].theValues.size();
 			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
@@ -1510,15 +1535,15 @@ namespace DiscordCoreAPI {
 				case 0x00: {
 					break;
 				}
-				case 0x5C: {
-					theStringNew[theIndex] = static_cast<char>('\\');
-					theStringNew[theIndex + 1] = static_cast<char>('\\');
-					theIndex += 2;
-					break;
-				}
 				case 0x22: {
 					theStringNew[theIndex] = static_cast<char>('\\');
 					theStringNew[theIndex + 1] = static_cast<char>('"');
+					theIndex += 2;
+					break;
+				}
+				case 0x5c: {
+					theStringNew[theIndex] = static_cast<char>('\\');
+					theStringNew[theIndex + 1] = static_cast<char>('\\');
 					theIndex += 2;
 					break;
 				}
@@ -1552,15 +1577,15 @@ namespace DiscordCoreAPI {
 					theIndex += 2;
 					break;
 				}
-				case 0x09: {
+				case 0x0B: {
 					theStringNew[theIndex] = static_cast<char>('\\');
-					theStringNew[theIndex + 1] = static_cast<char>('t');
+					theStringNew[theIndex + 1] = static_cast<char>('v');
 					theIndex += 2;
 					break;
 				}
-				case 0x0B: {
+				case 0x09: {
 					theStringNew[theIndex] = static_cast<char>('\\');
-					theStringNew[theIndex + 1] = static_cast<char>('a');
+					theStringNew[theIndex + 1] = static_cast<char>('t');
 					theIndex += 2;
 					break;
 				}

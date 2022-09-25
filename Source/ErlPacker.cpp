@@ -256,9 +256,9 @@ namespace DiscordCoreInternal {
 				case 0x00: {
 					break;
 				}
-				case 0x5C: {
+				case 0x27: {
 					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('\'');
 					theFinalSize += 2;
 					theIndex += 2;
 					break;
@@ -266,6 +266,13 @@ namespace DiscordCoreInternal {
 				case 0x22: {
 					this->bufferString[theIndex] = static_cast<char>('\\');
 					this->bufferString[theIndex + 1] = static_cast<char>('"');
+					theFinalSize += 2;
+					theIndex += 2;
+					break;
+				}
+				case 0x5c: {
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('\\');
 					theFinalSize += 2;
 					theIndex += 2;
 					break;
@@ -305,21 +312,20 @@ namespace DiscordCoreInternal {
 					theIndex += 2;
 					break;
 				}
+				case 0x0B: {
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('v');
+					theFinalSize += 2;
+					theIndex += 2;
+					break;
+				}
 				case 0x09: {
 					this->bufferString[theIndex] = static_cast<char>('\\');
 					this->bufferString[theIndex + 1] = static_cast<char>('t');
 					theFinalSize += 2;
 					theIndex += 2;
 					break;
-				}
-				case 0x0B: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('a');
-					theFinalSize += 2;
-					theIndex += 2;
-					break;
-				}
-				
+				}				
 				default: {
 					this->bufferString[theIndex] = theStringNew[x];
 					theFinalSize++;
@@ -515,7 +521,7 @@ namespace DiscordCoreInternal {
 
 	std::string ErlPacker::parseAtomUtf8Ext() {
 		uint32_t length = this->readBits<uint16_t>();
-		auto lengthNew = this->readString(length);
+		auto lengthNew = static_cast<uint32_t>(this->readString(length));
 		return this->processAtom(this->bufferString.data(), lengthNew);
 	}
 

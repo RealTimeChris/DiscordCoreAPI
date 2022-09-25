@@ -162,26 +162,11 @@ namespace DiscordCoreAPI {
 			*this = other;
 		};
 
-		operator std::vector<uint64_t>() {
-			std::vector<uint64_t> theObject{};
-			for (auto& value: *static_cast<std::vector<uint64_t>*>(this->thePtr)) {
-				theObject.emplace_back(value);
-			}
+		operator std::vector<uint64_t>();
 
-			return theObject;
-		}
+		explicit operator uint64_t();
 
-		explicit operator uint64_t() {
-			uint64_t theObject{};
-			theObject = *static_cast<uint64_t*>(this->thePtr);
-			return theObject;
-		}
-
-		~EnumConverter() {
-			if (this->thePtr) {
-				delete this->thePtr;
-			}
-		}
+		~EnumConverter();
 
 		void* thePtr{ nullptr };
 		bool vectorType{ false };
