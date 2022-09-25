@@ -2945,55 +2945,55 @@ namespace DiscordCoreAPI {
 
 		/// Returns the userName of the last User to trigger this input-event. \brief Returns the userName of the last User to trigger this input-event.
 		/// \returns std::string A string containing the User name.
-		std::string getUserName();
+		std::string getUserName() const;
 
 		/// Gets the avatar Url of the last User to trigger this input-event. \brief Gets the avatar Url of the last User to trigger this input-event.
 		/// \returns std::string A string containing the avatar Url.
-		std::string getAvatarUrl();
+		std::string getAvatarUrl() const;
 
 		/// Returns the Message embeds that are on the Message, if applicable. \brief Returns the Message embeds that are on the Message, if applicable.
 		/// \returns std::vector A vector containing the EmbedData.
-		std::vector<EmbedData> getEmbeds();
+		std::vector<EmbedData> getEmbeds() const;
 
 		/// Returns the Message components that are on the Message, if applicable. \brief Returns the Message components that are on the Message, if applicable.
 		/// \returns std::vector A vector containing ActionRowData.
-		std::vector<ActionRowData> getComponents();
+		std::vector<ActionRowData> getComponents() const;
 
 		/// Returns the User id of the last requester of this input-event. \brief Returns the User id of the last requester of this input-event.
 		/// \returns Snowflake A Snowflake containing the author's id.
-		Snowflake getAuthorId();
+		Snowflake getAuthorId() const;
 
 		/// Returns the Interaction id, if appplicable, of this input-event. \brief Returns the Interaction id, if appplicable, of this input-event.
 		/// \returns Snowflake A Snowflake containing the Interaction id.
-		Snowflake getInteractionId();
+		Snowflake getInteractionId() const;
 
 		/// Returns the application id. \brief Returns the application id.
 		/// \returns Snowflake A Snowflake containing the application id.
-		Snowflake getApplicationId();
+		Snowflake getApplicationId() const;
 
 		/// Returns the Channel id of this input-event. \brief Returns the Channel id of this input-event.
 		/// \returns Snowflake A Snowflake containing the Channel id.
-		Snowflake getChannelId();
+		Snowflake getChannelId() const;
 
 		/// Returns the Interaction token, if applicable, of this input-event. \brief Returns the Interaction token, if applicable, of this input-event.
 		/// \returns std::string A string containing the Interaction token.
-		std::string getInteractionToken();
+		std::string getInteractionToken() const;
 
 		/// Returns the Guild id, of this input-event. \brief Returns the Guild id, of this input-event.
 		/// \returns Snowflake A Snowflake containing the Guild id.
-		Snowflake getGuildId();
+		Snowflake getGuildId() const;
 
 		/// Returns the Message id, if applicable, of this input-event. \brief Returns the Message id, if applicable, of this input-event.
 		/// \returns Snowflake A Snowflake containing the Message id.
-		Snowflake getMessageId();
+		Snowflake getMessageId() const;
 
 		/// Returns the Interaction data, if applicable, of this input-event. \brief Returns the InteractionData, if applicable, of this input-event.
 		/// \returns InteractionData An InteractionData structure.
-		InteractionData getInteractionData();
+		InteractionData getInteractionData() const;
 
 		/// Returns the Message data, if applicable, of this input-event. \brief Returns the Message data, if applicable, of this input-event.
 		/// \returns MessageData A MessageData structure.
-		MessageData getMessageData();
+		MessageData getMessageData() const;
 
 		virtual ~InputEventData() noexcept = default;
 
@@ -3020,13 +3020,13 @@ namespace DiscordCoreAPI {
 		friend class InputEvents;
 		friend class SendDMData;
 
-		RespondToInputEventData& operator=(InteractionData& dataPackage);
+		RespondToInputEventData& operator=(const InteractionData& dataPackage);
 
-		RespondToInputEventData(InteractionData& dataPackage);
+		RespondToInputEventData(const InteractionData& dataPackage);
 
-		RespondToInputEventData& operator=(InputEventData& dataPackage);
+		RespondToInputEventData& operator=(const InputEventData& dataPackage);
 
-		RespondToInputEventData(InputEventData& dataPackage);
+		RespondToInputEventData(const InputEventData& dataPackage);
 
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.

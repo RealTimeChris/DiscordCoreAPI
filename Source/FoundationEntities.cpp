@@ -524,7 +524,6 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
-		//std::cout << "THE COMPONENTS: " << theData.operator std::string() << std::endl;
 		return theData;
 	}
 
@@ -620,11 +619,11 @@ namespace DiscordCoreAPI {
 		*this = interactionData;
 	}
 
-	std::string InputEventData::getUserName() {
+	std::string InputEventData::getUserName() const {
 		return this->interactionData->user.userName;
 	}
 
-	std::string InputEventData::getAvatarUrl() {
+	std::string InputEventData::getAvatarUrl() const {
 		if (this->interactionData->member.getUserData().getAvatarUrl() != "") {
 			return this->interactionData->member.getUserData().getAvatarUrl();
 		} else {
@@ -632,51 +631,51 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::vector<EmbedData> InputEventData::getEmbeds() {
+	std::vector<EmbedData> InputEventData::getEmbeds() const {
 		return this->interactionData->message.embeds;
 	}
 
-	std::vector<ActionRowData> InputEventData::getComponents() {
+	std::vector<ActionRowData> InputEventData::getComponents() const {
 		return this->interactionData->message.components;
 	}
 
-	Snowflake InputEventData::getAuthorId() {
+	Snowflake InputEventData::getAuthorId() const {
 		return this->interactionData->user.id;
 	}
 
-	Snowflake InputEventData::getInteractionId() {
+	Snowflake InputEventData::getInteractionId() const {
 		return this->interactionData->id;
 	}
 
-	Snowflake InputEventData::getApplicationId() {
+	Snowflake InputEventData::getApplicationId() const {
 		return this->interactionData->applicationId;
 	}
 
-	Snowflake InputEventData::getChannelId() {
+	Snowflake InputEventData::getChannelId() const {
 		return this->interactionData->channelId;
 	}
 
-	std::string InputEventData::getInteractionToken() {
+	std::string InputEventData::getInteractionToken() const {
 		return this->interactionData->token;
 	}
 
-	Snowflake InputEventData::getGuildId() {
+	Snowflake InputEventData::getGuildId() const {
 		return this->interactionData->guildId;
 	}
 
-	Snowflake InputEventData::getMessageId() {
+	Snowflake InputEventData::getMessageId() const {
 		return this->interactionData->message.id;
 	}
 
-	InteractionData InputEventData::getInteractionData() {
+	InteractionData InputEventData::getInteractionData() const {
 		return *this->interactionData;
 	}
 
-	MessageData InputEventData::getMessageData() {
+	MessageData InputEventData::getMessageData() const {
 		return this->interactionData->message;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::operator=(InteractionData& dataPackage) {
+	RespondToInputEventData& RespondToInputEventData::operator=(const InteractionData& dataPackage) {
 		this->applicationId = dataPackage.applicationId;
 		this->interactionToken = dataPackage.token;
 		this->messageId = dataPackage.message.id;
@@ -686,11 +685,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	};
 
-	RespondToInputEventData::RespondToInputEventData(InteractionData& dataPackage) {
+	RespondToInputEventData::RespondToInputEventData(const InteractionData& dataPackage) {
 		*this = dataPackage;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::operator=(InputEventData& dataPackage) {
+	RespondToInputEventData& RespondToInputEventData::operator=(const InputEventData& dataPackage) {
 		this->interactionToken = dataPackage.getInteractionToken();
 		this->applicationId = dataPackage.getApplicationId();
 		this->interactionId = dataPackage.getInteractionId();
@@ -699,7 +698,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData::RespondToInputEventData(InputEventData& dataPackage) {
+	RespondToInputEventData::RespondToInputEventData(const InputEventData& dataPackage) {
 		*this = dataPackage;
 	}
 
@@ -989,8 +988,12 @@ namespace DiscordCoreAPI {
 				theData["data"].pushBack("attachments", value);
 			}
 		}
-		for (auto& value: this->data.components) {
-			theData["data"].pushBack("components",  value );
+		if (this->data.components.size() == 0) {
+			theData["data"]["components"] = nullptr;
+		} else {
+			for (auto& value: this->data.components) {
+				theData["data"].pushBack("components", value);
+			}
 		}
 		if (this->data.allowedMentions.parse.size() > 0 || this->data.allowedMentions.roles.size() > 0 || this->data.allowedMentions.users.size() > 0) {
 			theData["data"]["allowed_mentions"]["roles"] = this->data.allowedMentions.roles;
@@ -1023,8 +1026,12 @@ namespace DiscordCoreAPI {
 				theData["data"].pushBack("choices", theValue);
 			}
 		}
-		for (auto& value: this->data.embeds) {
-			theData["data"].pushBack("embeds", JsonObject{ value });
+		if (this->data.embeds.size() == 0) {
+			theData["data"]["embeds"] = nullptr;
+		} else {
+			for (auto& value: this->data.embeds) {
+				theData["data"].pushBack("embeds", JsonObject{ value });
+			}
 		}
 		if (this->data.customId != "") {
 			theData["data"]["custom_id"] = this->data.customId;

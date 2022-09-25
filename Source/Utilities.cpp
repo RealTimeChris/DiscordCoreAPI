@@ -497,7 +497,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case ValueType::Null: {
-				theString += "null";
+				theString += "[]";
 				break;
 			}
 		}
@@ -1577,7 +1577,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 		theStringNew.resize(theIndex);
-		//std::cout << "THE STRING: " << theStringNew << std::endl;
 		return theStringNew;
 	}
 

@@ -119,8 +119,12 @@ namespace DiscordCoreAPI {
 		if (this->messageReference.messageId.operator size_t() != 0) {
 			theData["message_reference"] = this->messageReference;
 		}
-		for (auto& value: this->components) {
-			theData.pushBack("components", value);
+		if (this->components.size() == 0) {
+			theData["components"] = nullptr;
+		} else {
+			for (auto& value: this->components) {
+				theData.pushBack("components", value);
+			}
 		}
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
 			theData["allowed_mentions"]["roles"] = this->allowedMentions.roles;
@@ -130,8 +134,12 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->stickerIds) {
 			theData.pushBack("sticker_ids", value);
 		}
-		for (auto& value: this->embeds) {
-			theData.pushBack("embeds", value);
+		if (this->embeds.size() == 0) {
+			theData["embeds"] = nullptr;
+		} else {
+			for (auto& value: this->embeds) {
+				theData.pushBack("embeds", JsonObject{ value });
+			}
 		}
 		if (this->content != "") {
 			theData["content"] = this->content;
@@ -178,16 +186,24 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->attachments) {
 			theData.pushBack("attachments", value);
 		}
-		for (auto& value: this->components) {
-			theData.pushBack("components", value);
+		if (this->components.size() == 0) {
+			theData["components"] = nullptr;
+		} else {
+			for (auto& value: this->components) {
+				theData.pushBack("components", value);
+			}
 		}
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
 			theData["allowed_mentions"]["roles"] = this->allowedMentions.roles;
 			theData["allowed_mentions"]["parse"] = this->allowedMentions.parse;
 			theData["allowed_mentions"]["users"] = this->allowedMentions.users;
 		}
-		for (auto& value: this->embeds) {
-			theData.pushBack("embeds", value);
+		if (this->embeds.size() == 0) {
+			theData["embeds"] = nullptr;
+		} else {
+			for (auto& value: this->embeds) {
+				theData.pushBack("embeds", value);
+			}
 		}
 		if (this->content != "") {
 			theData["content"] = this->content;

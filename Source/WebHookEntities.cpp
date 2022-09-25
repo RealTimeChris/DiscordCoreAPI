@@ -44,11 +44,19 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->attachments) {
 			theData.pushBack("attachments", JsonObject{ value });
 		}
-		for (auto& value: this->components) {
-			theData.pushBack("components", JsonObject{ value });
+		if (this->components.size() == 0) {
+			theData["components"] = nullptr;
+		} else {
+			for (auto& value: this->components) {
+				theData.pushBack("components", value);
+			}
 		}
-		for (auto& value: this->embeds) {
-			theData.pushBack("embeds", JsonObject{ value });
+		if (this->embeds.size() == 0) {
+			theData["embeds"] = nullptr;
+		} else {
+			for (auto& value: this->embeds) {
+				theData.pushBack("embeds", JsonObject{ value });
+			}
 		}
 		if (this->avatarUrl != "") {
 			theData["avatar_url"] = this->userName;
@@ -61,7 +69,6 @@ namespace DiscordCoreAPI {
 		}
 		theData["flags"] = this->flags;
 		theData["tts"] = this->tts;
-		//std::cout << "THE STRING: " << ( std::string )theData << std::endl;
 		return theData;
 	}
 
@@ -190,11 +197,19 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->attachments) {
 			theData.pushBack("attachments", value);
 		}
-		for (auto& value: this->components) {
-			theData.pushBack("components", value);
+		if (this->components.size() == 0) {
+			theData["components"] = nullptr;
+		} else {
+			for (auto& value: this->components) {
+				theData.pushBack("components", value);
+			}
 		}
-		for (auto& value: this->embeds) {
-			theData.pushBack("embeds", value);
+		if (this->embeds.size() == 0) {
+			theData["embeds"] = nullptr;
+		} else {
+			for (auto& value: this->embeds) {
+				theData.pushBack("embeds", JsonObject{ value });
+			}
 		}
 		if (this->content != "") {
 			theData["content"] = this->content;

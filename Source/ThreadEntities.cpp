@@ -56,14 +56,22 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->message.attachments) {
 			theData["message"].pushBack("attachments", value);
 		}
-		for (auto& value: this->message.components) {
-			theData["message"].pushBack("components", value);
+		if (this->message.components.size() == 0) {
+			theData["message"]["components"] = nullptr;
+		} else {
+			for (auto& value: this->message.components) {
+				theData["message"].pushBack("components", value);
+			}
 		}
 		for (auto& value: this->message.stickerIds) {
 			theData["message"].pushBack("sticker_ids", value);
 		}
-		for (auto& value: this->message.embeds) {
-			theData["message"].pushBack("embeds", value);
+		if (this->message.embeds.size() == 0) {
+			theData["message"]["embeds"] = nullptr;
+		} else {
+			for (auto& value: this->message.embeds) {
+				theData["message"].pushBack("embeds", JsonObject{ value });
+			}
 		}
 		if (this->message.content != "") {
 			theData["message"]["content"] = this->message.content;
