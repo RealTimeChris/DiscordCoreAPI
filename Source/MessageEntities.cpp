@@ -377,6 +377,5 @@ namespace DiscordCoreAPI {
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	template<> std::unordered_map<std::string, UnboundedMessageBlock<Message>*> ObjectCollector<Message>::objectsBufferMap{};
 	DiscordCoreInternal::HttpsClient* Messages::httpsClient{ nullptr };
 }
