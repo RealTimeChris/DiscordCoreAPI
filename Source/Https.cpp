@@ -272,7 +272,7 @@ namespace DiscordCoreInternal {
 						this->areWeDoneTheRequest = true;
 						return false;
 					}
-					theConnection->theInputBufferReal += static_cast<std::string>(theConnection->getInputBufferRemove());
+					theConnection->theInputBufferReal += std::move(theConnection->getInputBufferRemove());
 					theConnection->parseCode(this->theData, theConnection->theInputBufferReal);
 					this->theData.theStopWatch.resetTimer();
 					if (this->theData.responseCode == 204) {
@@ -287,7 +287,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					if (!theConnection->doWeHaveHeaders) {
-						theConnection->theInputBufferReal += static_cast<std::string>(theConnection->getInputBufferRemove());
+						theConnection->theInputBufferReal += std::move(theConnection->getInputBufferRemove());
 						theConnection->parseHeaders(this->theData, theConnection->theInputBufferReal);
 						this->theData.theStopWatch.resetTimer();
 					}
@@ -299,7 +299,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					if (!theConnection->doWeHaveContentSize) {
-						theConnection->theInputBufferReal += static_cast<std::string>(theConnection->getInputBufferRemove());
+						theConnection->theInputBufferReal += std::move(theConnection->getInputBufferRemove());
 						theConnection->clearCRLF(theConnection->theInputBufferReal);
 						theConnection->parseSize(this->theData, theConnection->theInputBufferReal);
 						theConnection->clearCRLF(theConnection->theInputBufferReal);
@@ -308,7 +308,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 				case HttpsState::Collecting_Contents: {
-					theConnection->theInputBufferReal += static_cast<std::string>(theConnection->getInputBufferRemove());
+					theConnection->theInputBufferReal += std::move(theConnection->getInputBufferRemove());
 					auto theResult = theConnection->parseChunk(this->theData, theConnection->theInputBufferReal);
 					if ((this->theData.responseMessage.size() >= this->theData.contentSize && !theResult) || this->theData.theStopWatch.hasTimePassed() || !theResult ||
 						(this->theData.responseCode == -5 && this->theData.contentSize == -5)) {

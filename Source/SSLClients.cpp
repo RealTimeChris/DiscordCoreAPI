@@ -186,70 +186,37 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	RingBuffer::RingBuffer() noexcept {
-		this->theArray.resize(1024 * 1024);
-	}
+	RingBuffer::RingBuffer() noexcept {}
 
-	void RingBuffer::adjustReadOrWritePosition(RingBufferAccessType theType, int64_t theAmount) {
+	void RingBuffer::adjustReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
 		if (theType == RingBufferAccessType::Read) {
-			this->tail -= theAmount;
+			this->tail -= theSize;
 		} else {
-			this->head += theAmount;
-		}
-	}
-
-	void RingBuffer::readData(char* theData, size_t theLength) {
-		if (this->currentlyUsedOverFlowAmount > 0) {
-			memcpy(theData, this->theOverFlowArray.data(), theLength);
-			this->currentlyUsedOverFlowAmount = 0;
-		} else {
-			if (this->tail + theLength > this->theArray.size()) {
-				for (size_t x = 0; x < theLength; ++x) {
-					theData[x] = this->getByte();
-				}
-			} else {
-				memcpy(theData, this->getCurrentTail(), theLength);
-				this->tail += theLength;
-			}
-		}
-	}
-
-	char* RingBuffer::getBufferPtr(RingBufferAccessType theType, size_t theLength) {
-		if (theType == RingBufferAccessType::Read) {
-			if ((this->tail%this->theArray.size()) + theLength > this->theArray.size()) {
-				if (theLength > this->theOverFlowArray.size()) {
-					this->theOverFlowArray.resize(theLength);
-				}
-				this->readData(this->theOverFlowArray.data(), theLength);
-				this->currentlyUsedOverFlowAmount += theLength;
-				return this->theOverFlowArray.data();
-			}
-			
-			char* thePtr = const_cast<char*>(this->getCurrentTail());
-			this->tail += theLength;
-			return thePtr;
-		} else if (theType == RingBufferAccessType::Write) {
-			if ((this->head % this->theArray.size()) + theLength > this->theArray.size()) {
-				this->theArray.resize(this->theArray.size() * 2);
-			}
-			char* thePtr = this->getCurrentHead();
-			return thePtr;
-		} else {
-			return nullptr;
+			this->head -= theSize;
 		}
 	}
 
 	void RingBuffer::writeData(char* theData, size_t theLength) {
-		if (theLength > this->getFreeSpace()) {
-			this->theArray.resize(this->theArray.size() * 2);
-		}
-		if (this->head + theLength > this->theArray.size()) {
-			for (size_t x = 0; x < theLength; ++x) {
-				this->putByte(theData[x]);
-			}
-		} else {
-			memcpy(this->getCurrentHead(), theData, theLength);
+		memcpy(this->getCurrentHead(), theData, theLength);
+		this->head += theLength;
+	}
+
+	void RingBuffer::readData(char* theData, size_t theLength) {
+		memcpy(theData, this->getCurrentTail(), theLength);
+		this->tail += theLength;
+	}
+
+	char* RingBuffer::getBufferPtr(RingBufferAccessType theType, size_t theLength) {
+		if (theType == RingBufferAccessType::Read) {
+			char* thePtr = this->getCurrentTail();
+			this->tail += theLength;
+			return thePtr;
+		} else if (theType == RingBufferAccessType::Write) {
+			char* thePtr = this->getCurrentHead();
 			this->head += theLength;
+			return thePtr;
+		} else {
+			return nullptr;
 		}
 	}
 
@@ -284,6 +251,75 @@ namespace DiscordCoreInternal {
 	}
 	
 	void RingBuffer::clear() {
+		this->tail = this->head = 0;
+	}
+
+	RingBufferArray::RingBufferArray() noexcept {
+		this->theArray.resize(1024 * 1024 / 16);
+	}
+
+	void RingBufferArray::adjustReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
+		if (theType == RingBufferAccessType::Read) {
+			this->tail += theSize;
+		} else {
+			this->head += theSize;
+		}
+	}
+
+	RingBuffer* RingBufferArray::getBufferPtr(RingBufferAccessType theType) {
+		if (theType == RingBufferAccessType::Read) {
+			auto thePtr = this->getCurrentTail();
+			return thePtr;
+		} else {
+			auto thePtr = this->getCurrentHead();
+			return thePtr;
+		}
+	}
+
+	void RingBufferArray::writeData(char* theData, size_t theLength) {
+		this->getCurrentHead()->writeData(theData, theLength);
+		std::cout << "THE WRITTEN DATA: " << this->getCurrentHead()->getCurrentTail() << std::endl;
+		this->head += 1;
+	}
+
+	void RingBufferArray::readData(char* theData, size_t theLength) {
+		if (theLength > 1024 * 16) {
+			for (uint32_t x = 0; x < theLength / 1024 * 16; ++x) {
+				if (this->getCurrentTail()->getUsedSpace() > 0) {
+					std::cout << "THE READ DATA: 234234 " << this->getCurrentTail()->getCurrentTail() << std::endl;
+					this->getCurrentTail()->readData(theData + (x * 1024 * 16), theLength);
+					this->tail += 1;
+				}
+			}
+		} else {
+			if (this->getCurrentTail()->getUsedSpace() > 0) {
+				std::cout << "THE READ DATA: 012012 " << this->getCurrentTail()->getCurrentTail() << std::endl;
+				this->getCurrentTail()->readData(theData, theLength);
+				this->tail += 1;
+			}
+		}
+	}
+
+	RingBuffer* RingBufferArray::getCurrentTail() {
+		return (this->theArray.data() + (this->tail % (this->theArray.size())));
+	}
+
+	RingBuffer* RingBufferArray::getCurrentHead() {
+		return (this->theArray.data() + (this->head % (this->theArray.size())));
+	}
+
+	uint64_t RingBufferArray::getUsedSpace() {
+		return this->theArray.size() - this->getFreeSpace();
+	}
+
+	uint64_t RingBufferArray::getFreeSpace() {
+		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size()))
+			return this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+		else
+			return (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+	}
+
+	void RingBufferArray::clear() {
 		this->tail = this->head = 0;
 	}
 
@@ -464,7 +500,8 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string_view SSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
-		std::string_view theString{ this->inputBuffer.getBufferPtr(RingBufferAccessType::Read, offSet + length) + offSet, length };
+		std::string_view theString{ this->inputBuffer.getBufferPtr(RingBufferAccessType::Read)->getBufferPtr(RingBufferAccessType::Read, offSet + length) + offSet, length };
+		std::cout << "the String: 0101: " << theString << std::endl;
 		return theString;
 	}
 
@@ -472,7 +509,7 @@ namespace DiscordCoreInternal {
 		std::string theStringNew{};
 		theStringNew.resize(this->inputBuffer.getUsedSpace());
 		this->inputBuffer.readData(theStringNew.data(), this->inputBuffer.getUsedSpace());
-		this->inputBuffer.clear();
+		std::cout << "the String: " << theStringNew << std::endl;
 		return theStringNew;
 	}
 
@@ -490,6 +527,7 @@ namespace DiscordCoreInternal {
 
 				if (readWriteSet.revents & POLLOUT) {
 					this->outputBuffer.writeData(dataToWrite.data(), dataToWrite.size());
+					this->outputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Write, 1);
 					if (!this->processWriteData()) {
 						return ProcessIOResult::Error;
 					}
@@ -507,12 +545,14 @@ namespace DiscordCoreInternal {
 						}
 						newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 						this->outputBuffer.writeData(newString.data(), newString.size());
+						this->outputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Write, 1);
 						dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 						remainingBytes = dataToWrite.size();
 						std::cout << "SSL CLIENT WHILE 0202" << std::endl;
 					}
 				} else {
 					this->outputBuffer.writeData(dataToWrite.data(), dataToWrite.size());
+					this->outputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Write, 1);
 				}
 			}
 		}
@@ -526,11 +566,13 @@ namespace DiscordCoreInternal {
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->theSocket;
 		if (this->outputBuffer.getUsedSpace() > 0) {
+			//std::cout << "SSL CLIENT WHILE 787878" << std::endl;
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
+			//std::cout << "SSL CLIENT WHILE 565656" << std::endl;
 			readWriteSet.events = POLLIN;
 		}
-
+		ProcessIOResult theResult{ ProcessIOResult::No_Error };
 		if (auto returnValue = poll(&readWriteSet, 1, theWaitTimeInMs); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("SSLClient::processIO()") << endl;
@@ -538,11 +580,11 @@ namespace DiscordCoreInternal {
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
 			if (!this->areWeAStandaloneSocket) {
-				while (this->handleBuffer(static_cast<WebSocketSSLShard*>(this))) {
+				while (this->handleBuffer(static_cast<SSLClient*>(this))) {
 					std::cout << "SSL CLIENT WHILE 0303" << std::endl;
 				}
 			}
-			return ProcessIOResult::No_Error;
+			theResult = ProcessIOResult::No_Error;
 		} else {
 			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLNVAL) {
 				if (this->doWePrintErrorMessages) {
@@ -551,29 +593,31 @@ namespace DiscordCoreInternal {
 				return ProcessIOResult::Error;
 			}
 			if (readWriteSet.revents & POLLIN) {
+				std::cout << "SSL CLIENT WHILE 454545" << std::endl;
 				if (!this->processReadData()) {
 					return ProcessIOResult::Error;
 				}
 			}
 			if (readWriteSet.revents & POLLOUT) {
+				//std::cout << "SSL CLIENT WHILE 343434" << std::endl;
 				if (!this->processWriteData()) {
 					return ProcessIOResult::Error;
 				}
 			}
 		}
 		if (!this->areWeAStandaloneSocket) {
-			while (this->handleBuffer(static_cast<WebSocketSSLShard*>(this))) {
+			while (this->handleBuffer(static_cast<SSLClient*>(this))) {
 				std::cout << "SSL CLIENT WHILE 0404" << std::endl;
 			}
 		}
-		return ProcessIOResult::No_Error;
+		return theResult;
 	}
 	
 	std::string SSLClient::getInputBufferRemove() noexcept {
 		std::string theStringNew{};
-		theStringNew.resize(this->inputBuffer.getUsedSpace());
-		this->inputBuffer.readData(theStringNew.data(), this->inputBuffer.getUsedSpace());
-		this->inputBuffer.clear();
+		theStringNew.resize(this->inputBuffer.getCurrentTail()->getUsedSpace());
+		this->inputBuffer.getBufferPtr(RingBufferAccessType::Read)->readData(theStringNew.data(), this->inputBuffer.getCurrentTail()->getUsedSpace());
+		std::cout << "the String: 0202: " << theStringNew << std::endl;
 		return theStringNew;
 	}
 
@@ -588,13 +632,15 @@ namespace DiscordCoreInternal {
 	bool SSLClient::processWriteData() noexcept {
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			size_t bytesToWrite{};
+			std::cout << "THE BYTES TO WRITE: " << this->outputBuffer.getCurrentTail()->getUsedSpace() << std::endl;
 			if (this->outputBuffer.getUsedSpace() < this->maxBufferSize) {
-				bytesToWrite = this->outputBuffer.getUsedSpace();
+				bytesToWrite = this->outputBuffer.getCurrentTail()->getUsedSpace();
 			} else {
 				bytesToWrite = this->maxBufferSize;
 			}
 			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.getBufferPtr(RingBufferAccessType::Read, bytesToWrite), bytesToWrite, &writtenBytes) };
+			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.getBufferPtr(RingBufferAccessType::Read)->getBufferPtr(RingBufferAccessType::Read, bytesToWrite),
+				bytesToWrite, &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_WANT_READ: {
@@ -605,7 +651,9 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_NONE: {
 					if (writtenBytes > 0) {
-						this->outputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Read, bytesToWrite - writtenBytes);
+						std::cout << "WRITTEN BYTES: " << this->outputBuffer.getBufferPtr(RingBufferAccessType::Read)->getCurrentTail() << std::endl;
+						std::cout << "WRITTEN BYTES: " << writtenBytes << std::endl;
+						this->outputBuffer.getBufferPtr(RingBufferAccessType::Read)->adjustReadOrWritePosition(RingBufferAccessType::Read, bytesToWrite - writtenBytes);
 					}
 					return true;
 				}
@@ -624,42 +672,44 @@ namespace DiscordCoreInternal {
 	}
 
 	bool SSLClient::processReadData() noexcept {
-		do {
-			size_t readBytes{ 0 };
-			int64_t bytesToRead{};
-			if (this->inputBuffer.getFreeSpace() < this->maxBufferSize) {
-				bytesToRead = this->inputBuffer.getFreeSpace();
-			} else {
-				bytesToRead = this->maxBufferSize;
-			}
-			auto returnValue{ SSL_read_ex(this->ssl, this->inputBuffer.getBufferPtr(RingBufferAccessType::Write, bytesToRead), bytesToRead, &readBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-				case SSL_ERROR_WANT_READ: {
-					[[fallthrough]];
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					[[fallthrough]];
-				}
-				case SSL_ERROR_NONE: {
-					if (readBytes > 0) {
-						this->inputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Write, static_cast<int64_t>(readBytes));
-						this->bytesRead += readBytes;
+		if (this->inputBuffer.getFreeSpace() > 0) {
+			do {
+				size_t readBytes{ 0 };
+				int64_t bytesToRead{ this->maxBufferSize };
+				auto returnValue{ SSL_read_ex(this->ssl, this->inputBuffer.getBufferPtr(RingBufferAccessType::Write)->getBufferPtr(RingBufferAccessType::Write, bytesToRead),
+					bytesToRead, &readBytes) };
+				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				switch (errorValue) {
+					case SSL_ERROR_WANT_READ: {
+						[[fallthrough]];
 					}
-					break;
-				}
-				case SSL_ERROR_ZERO_RETURN: {
-					return false;
-				}
-				default: {
-					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
+					case SSL_ERROR_WANT_WRITE: {
+						[[fallthrough]];
 					}
-					return false;
+					case SSL_ERROR_NONE: {
+						//std::cout << "THE READ BYTES: " << this->inputBuffer.getBufferPtr(RingBufferAccessType::Read)->getBufferPtr(RingBufferAccessType::Read) << std::endl;
+						if (readBytes > 0) {
+							std::cout << "THE READ BYTES: " << readBytes << std::endl;
+							this->inputBuffer.getBufferPtr(RingBufferAccessType::Write)->adjustReadOrWritePosition(RingBufferAccessType::Write, bytesToRead - readBytes);
+							this->inputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Write, 1);
+							this->bytesRead += readBytes;
+						}
+						break;
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						return false;
+					}
+					default: {
+						if (this->doWePrintErrorMessages) {
+							cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
+						}
+						return false;
+					}
 				}
-			}
-			//std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
-		} while (SSL_pending(this->ssl));
+				//std::cout << "THE READ BYTES: " << this->inputBuffer.getBufferPtr(RingBufferAccessType::Read)->getBufferPtr(RingBufferAccessType::Read) << std::endl;
+				std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
+			} while (SSL_pending(this->ssl));
+		}
 		return true;
 	}
 

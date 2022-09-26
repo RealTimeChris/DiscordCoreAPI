@@ -205,7 +205,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll RingBuffer {
 		RingBuffer() noexcept;
-		void adjustReadOrWritePosition(RingBufferAccessType theType, int64_t theAmount);
+		void adjustReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
 		char* getBufferPtr(RingBufferAccessType theType, size_t theLength = 0);
 		void writeData(char* theData, size_t theLength);
 		void readData(char* theData, size_t theLength);
@@ -215,13 +215,31 @@ namespace DiscordCoreInternal {
 		uint64_t getFreeSpace();
 		void clear();
 	  protected:
-		int32_t currentlyUsedOverFlowAmount{};
-		std::vector<char> theOverFlowArray{};
-		std::vector<char> theArray{};
+		std::array<char, 1024 * 16> theArray{};
 		int64_t head{};
 		int64_t tail{};
 		void putByte(char theByte);
 		char getByte();
+
+	};
+
+	struct DiscordCoreAPI_Dll RingBufferArray {
+		void adjustReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
+		RingBufferArray() noexcept;
+		std::vector<RingBuffer> theArray{};
+		size_t theSize{};
+		RingBuffer* getBufferPtr(RingBufferAccessType theType);
+		void readData(char* theData, size_t theLength);
+		void writeData(char* theData, size_t theLength);
+		RingBuffer* getCurrentTail();
+		RingBuffer* getCurrentHead();
+		uint64_t getUsedSpace();
+		uint64_t getFreeSpace();
+		void clear();
+
+	  protected:
+		int64_t head{};
+		int64_t tail{};
 	};
 
 	class DiscordCoreAPI_Dll SSLDataInterface {
@@ -244,8 +262,8 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
-		RingBuffer outputBuffer{};
-		RingBuffer inputBuffer{};
+		RingBufferArray outputBuffer{};
+		RingBufferArray inputBuffer{};
 		int64_t bytesRead{ 0 };
 	};
 
