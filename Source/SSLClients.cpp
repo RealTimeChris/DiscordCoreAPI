@@ -508,14 +508,6 @@ namespace DiscordCoreInternal {
 		return theString;
 	}
 
-	std::string SSLClient::getInputBuffer() noexcept {
-		std::string theStringNew{};
-		theStringNew.resize(this->inputBuffer.getCurrentTail()->getUsedSpace());
-		this->inputBuffer.getBufferPtr(RingBufferAccessType::Read)->readData(theStringNew.data(), this->inputBuffer.getCurrentTail()->getUsedSpace());
-		std::cout << "the String: 0202: " << theStringNew << std::endl;
-		return theStringNew;
-	}
-
 	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
 		if (dataToWrite.size() > 0 && this->ssl) {
 			if (priority && dataToWrite.size() < static_cast<size_t>(16 * 1024)) {
@@ -654,6 +646,7 @@ namespace DiscordCoreInternal {
 						std::cout << "WRITTEN BYTES: " << this->outputBuffer.getBufferPtr(RingBufferAccessType::Read)->getCurrentTail() << std::endl;
 						std::cout << "WRITTEN BYTES: " << writtenBytes << std::endl;
 						this->outputBuffer.getBufferPtr(RingBufferAccessType::Read)->adjustReadOrWritePosition(RingBufferAccessType::Read, bytesToWrite - writtenBytes);
+						this->outputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Read, 1);
 					}
 					return true;
 				}

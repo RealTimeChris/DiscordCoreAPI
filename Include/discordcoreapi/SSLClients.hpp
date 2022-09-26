@@ -254,8 +254,6 @@ namespace DiscordCoreInternal {
 
 		virtual std::string getInputBufferRemove() noexcept = 0;
 
-		virtual std::string getInputBuffer() noexcept = 0;
-
 		virtual int64_t getBytesRead() noexcept = 0;
 
 		virtual ~SSLDataInterface() noexcept = default;
@@ -284,8 +282,6 @@ namespace DiscordCoreInternal {
 		virtual bool handleBuffer(SSLClient*) noexcept = 0;
 
 		std::string getInputBufferRemove() noexcept;
-
-		std::string getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
 

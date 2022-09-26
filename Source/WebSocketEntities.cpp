@@ -239,6 +239,7 @@ namespace DiscordCoreInternal {
 			std::cout << "WERE HERE DOING IT FOR REAL!" << theString << std::endl;
 			auto theFindValue = theString.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
+				theShard->inputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Read, 1);
 
 				std::cout << "WERE HERE DOING IT FOR REAL!" << std::endl;
 				theShard->currentState.store(SSLShardState::Collecting_Hello);
