@@ -238,9 +238,8 @@ namespace DiscordCoreInternal {
 			
 			auto theFindValue = theString.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
-				theShard->getInputBufferRemove();
+				theShard->getInputBuffer(0, theShard->inputBuffer.getUsedSpace());
 				theShard->currentState.store(SSLShardState::Collecting_Hello);
-				std::cout << "WERE HERE THIS ISIT!" << theShard->getInputBuffer(0, theShard->inputBuffer.getUsedSpace()) << std::endl;
 				return true;
 			}
 		}

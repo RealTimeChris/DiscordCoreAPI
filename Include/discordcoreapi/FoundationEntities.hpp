@@ -284,7 +284,7 @@ namespace DiscordCoreInternal {
 
 		mutable std::unordered_map<std::string, std::string> headersToInsert{};
 		PayloadType payloadType{ PayloadType::Application_Json };
-		std::atomic_int64_t thisWorkerId{ 0 };
+		mutable std::atomic_int64_t thisWorkerId{ 0 };
 		HttpsWorkloadClass workloadClass{};
 		mutable std::string baseUrl{};
 		std::string relativePath{};

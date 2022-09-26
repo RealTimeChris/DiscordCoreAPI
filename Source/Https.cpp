@@ -429,6 +429,14 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(100ms);
 			rateLimitData.haveWeGoneYet.store(true);
 		}
+
+		if (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() >= workload.thisWorkerId.load() && !rateLimitData.theSemaphore
+			.try_acquire()) {
+			HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->store(0);
+			HttpsWorkloadData::workloadIdsExternal[workload.workloadType]->store(1);
+			workload.thisWorkerId.store(1);
+		}
+
 		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
 			std::cout << "HTTPS CLIENT LOOP 003" << std::endl;
 			std::this_thread::sleep_for(1ms);
