@@ -164,29 +164,32 @@ namespace DiscordCoreInternal {
 		std::string newString01 = "crossorigin src=";
 		std::string newerString{};
 		newerString = returnData.responseMessage;
-		std::string newString = newerString.substr(newerString.find("crossorigin src=") + newString01.size());
-		std::string newString02 = newString.substr(1, newString.find(".js") + 2);
-		assetPaths.emplace_back(newString02);
-		while (newString.find("crossorigin src=") != std::string::npos) {
-			std::string newString03 = newString.substr(1, newString.find(".js") + 2);
-			newString = newString.substr(newString.find("crossorigin src=") + newString01.size());
-			assetPaths.emplace_back(newString03);
-		}
-		HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
-		dataPackage03.baseUrl = assetPaths[5];
-		dataPackage03.workloadClass = HttpsWorkloadClass::Get;
-		HttpsResponseData returnData02 = this->httpsClient->submitWorkloadAndGetResult(dataPackage03);
-		std::string newerString02{};
-		newerString02.insert(newerString02.begin(), returnData02.responseMessage.begin(), returnData02.responseMessage.end());
-		std::string newString03 = newerString02.substr(newerString02.find("JSON.stringify({client_id:\"") + std::string{ "JSON.stringify({client_id:\"" }.size());
 		std::string clientIdNew{};
-		if (newString03.find("\",nonce:e.nonce}))))") != std::string::npos) {
-			clientIdNew = newString03.substr(0, newString03.find("\",nonce:e.nonce}))))"));
-		}
-		if (returnData02.responseCode not_eq 200 && this->configManager->doWePrintHttpsErrorMessages()) {
-			cout << DiscordCoreAPI::shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData.responseCode << newerString02.c_str() << DiscordCoreAPI::reset()
-				 << endl
-				 << endl;
+		if (newerString.find(newString01) != std::string::npos) {
+			std::string newString = newerString.substr(newerString.find(newString01) + newString01.size());
+			std::string newString02 = newString.substr(1, newString.find(".js") + 2);
+			assetPaths.emplace_back(newString02);
+			while (newString.find("crossorigin src=") != std::string::npos) {
+				std::string newString03 = newString.substr(1, newString.find(".js") + 2);
+				newString = newString.substr(newString.find("crossorigin src=") + newString01.size());
+				assetPaths.emplace_back(newString03);
+			}
+			HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
+			dataPackage03.baseUrl = assetPaths[5];
+			dataPackage03.workloadClass = HttpsWorkloadClass::Get;
+			HttpsResponseData returnData02 = this->httpsClient->submitWorkloadAndGetResult(dataPackage03);
+			std::string newerString02{};
+			newerString02.insert(newerString02.begin(), returnData02.responseMessage.begin(), returnData02.responseMessage.end());
+			std::string newString03 = newerString02.substr(newerString02.find("JSON.stringify({client_id:\"") + std::string{ "JSON.stringify({client_id:\"" }.size());
+
+			if (newString03.find("\",nonce:e.nonce}))))") != std::string::npos) {
+				clientIdNew = newString03.substr(0, newString03.find("\",nonce:e.nonce}))))"));
+			}
+			if (returnData02.responseCode not_eq 200 && this->configManager->doWePrintHttpsErrorMessages()) {
+				cout << DiscordCoreAPI::shiftToBrightRed() << "SoundCloudAPI::searchForSong Error: " << returnData.responseCode << newerString02.c_str() << DiscordCoreAPI::reset()
+					 << endl
+					 << endl;
+			}
 		}
 		return clientIdNew;
 	}

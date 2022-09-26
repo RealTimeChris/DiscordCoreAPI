@@ -204,18 +204,19 @@ namespace DiscordCoreInternal {
 	enum class RingBufferAccessType { Read = 0, Write = 1 };
 
 	struct DiscordCoreAPI_Dll RingBuffer {
-		void updateReadOrWritePosition(RingBufferAccessType theType, int64_t theAmountToAdjust);
+		RingBuffer() noexcept;
+		void adjustReadOrWritePosition(RingBufferAccessType theType, int64_t theAmount);
 		char* getBufferPtr(RingBufferAccessType theType, size_t theLength = 0);
 		void writeData(char* theData, size_t theLength);
 		void readData(char* theData, size_t theLength);
+		const char* getCurrentTail();
 		uint64_t getUsedSpace();
 		uint64_t getFreeSpace();
-		char* getCurrentTail();
 		void clear();
 	  protected:
-		std::array<char, 1024 * 1024> theOverFlowArray{};
-		std::array<char, 1024 * 1024> theArray{};
-		int64_t currentOverFlowArrayUsedAmount{};
+		int32_t currentlyUsedOverFlowAmount{};
+		std::vector<char> theOverFlowArray{};
+		std::vector<char> theArray{};
 		int64_t head{};
 		int64_t tail{};
 		void putByte(char theByte);
@@ -240,6 +241,7 @@ namespace DiscordCoreInternal {
 		virtual ~SSLDataInterface() noexcept = default;
 
 	  protected:
+		std::array<char, 1024 * 16> theRawInputBuffer{};
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		RingBuffer outputBuffer{};
 		RingBuffer inputBuffer{};
@@ -310,7 +312,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		const int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::array<char, 1024 * 16> rawInputBuffer{};
-		std::deque<std::string> outputBuffers{};
+		std::deque<std::string> outputBuffer{};
 		DiscordCoreAPI::StreamType streamType{};
 		sockaddr_in theStreamTargetAddress{};
 		bool areWeStreamConnected{ false };

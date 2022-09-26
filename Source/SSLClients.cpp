@@ -186,31 +186,24 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void RingBuffer::updateReadOrWritePosition(RingBufferAccessType theType, int64_t theAmountToAdjust) {
-		if (theType == RingBufferAccessType::Read) {
-			this->tail -= theAmountToAdjust;
-			std::cout << this->tail << std::endl;
-		} else if (theType == RingBufferAccessType::Write) {
-			this->head -= theAmountToAdjust;
-			std::cout <<  this->head << std::endl;
-		}
+	RingBuffer::RingBuffer() noexcept {
+		this->theArray.resize(1024 * 1024);
 	}
 
-	void RingBuffer::writeData(char* theData, size_t theLength) {
-		if (this->head + theLength > this->theArray.size()) {
-			for (size_t x = 0; x < theLength; ++x) {
-				this->putByte(theData[x]);
-			}
+	void RingBuffer::adjustReadOrWritePosition(RingBufferAccessType theType, int64_t theAmount) {
+		if (theType == RingBufferAccessType::Read) {
+			this->tail -= theAmount;
+			std::cout << "THE AMOUNT TO ADJUST (READ): " << theAmount << std::endl;
 		} else {
-			memcpy(this->getCurrentHead(), theData, theLength);
-			this->head += theLength;
+			std::cout << "THE AMOUNT TO ADJUST (WRITE): " << theAmount << std::endl;
+			this->head -= theAmount;
 		}
 	}
 
 	void RingBuffer::readData(char* theData, size_t theLength) {
-		if (this->currentOverFlowArrayUsedAmount > 0) {
+		if (this->currentlyUsedOverFlowAmount > 0) {
 			memcpy(theData, this->theOverFlowArray.data(), theLength);
-			this->currentOverFlowArrayUsedAmount = 0;
+			this->currentlyUsedOverFlowAmount = 0;
 		} else {
 			if (this->tail + theLength > this->theArray.size()) {
 				for (size_t x = 0; x < theLength; ++x) {
@@ -224,14 +217,26 @@ namespace DiscordCoreInternal {
 	}
 
 	char* RingBuffer::getBufferPtr(RingBufferAccessType theType, size_t theLength) {
-		if (this->tail + theLength > this->theArray.size()) {
-			this->currentOverFlowArrayUsedAmount += theLength;
-			return this->theOverFlowArray.data();
-		} else if (theType == RingBufferAccessType::Read) {
-			char* thePtr = this->getCurrentTail();
+		if (theType == RingBufferAccessType::Read) {
+			if ((this->tail%this->theArray.size()) + theLength > this->theArray.size()) {
+				if (theLength > this->theOverFlowArray.size()) {
+					this->theOverFlowArray.resize(theLength);
+				}
+				this->readData(this->theOverFlowArray.data(), theLength);
+				std::cout << "WERE HERE LOSITNG IT!" << std::endl;
+				return this->theOverFlowArray.data();
+			}
+			
+			char* thePtr = const_cast<char*>(this->getCurrentTail());
 			this->tail += theLength;
 			return thePtr;
 		} else if (theType == RingBufferAccessType::Write) {
+			if ((this->head % this->theArray.size()) + theLength > this->theArray.size()) {
+				std::cout << "THE VALUE FIRST: " << this->head % this->theArray.size() << std::endl;
+				this->theArray.resize(this->theArray.size() * 2);
+				std::cout << "THE VALUE AFTER: " << this->head % this->theArray.size() << std::endl;
+				std::cout << "WERE HERE LOSITNG IT! 0202" << std::endl;
+			}
 			char* thePtr = this->getCurrentHead();
 			this->head += theLength;
 			return thePtr;
@@ -240,12 +245,29 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	char* RingBuffer::getCurrentTail() {
-		return (this->theArray.data() + (this->tail % this->theArray.size()));
+	void RingBuffer::writeData(char* theData, size_t theLength) {
+		
+		if (theLength > this->getFreeSpace()) {
+			std::cout << "THE CURRENT POSITION BEFORE RESIZING: " << (this->head % (this->theArray.size())) << std::endl;
+			this->theArray.resize(this->theArray.size() * 2);
+			std::cout << "THE CURRENT POSITION AFTER RESIZING: " << (this->head % (this->theArray.size())) << std::endl;
+		}
+		if (this->head + theLength > this->theArray.size()) {
+			for (size_t x = 0; x < theLength; ++x) {
+				this->putByte(theData[x]);
+			}
+		} else {
+			memcpy(this->getCurrentHead(), theData, theLength);
+			this->head += theLength;
+		}
+	}
+
+	const char* RingBuffer::getCurrentTail() {
+		return (this->theArray.data() + (this->tail % (this->theArray.size())));
 	}
 
 	char* RingBuffer::getCurrentHead() {
-		return (this->theArray.data() + (this->head % this->theArray.size()));
+		return (this->theArray.data() + (this->head % (this->theArray.size())));
 	}
 
 	void RingBuffer::putByte(char theByte) {
@@ -460,6 +482,7 @@ namespace DiscordCoreInternal {
 
 	std::string_view SSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
 		std::string_view theString{ this->inputBuffer.getBufferPtr(RingBufferAccessType::Read, offSet + length) + offSet, length };
+		std::cout << "THE STRING: " << theString << std::endl;
 		return theString;
 	}
 
@@ -472,7 +495,7 @@ namespace DiscordCoreInternal {
 				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
-					return ProcessIOResult::No_Error;
+					return ProcessIOResult::Error;
 				}
 
 				if (readWriteSet.revents & POLLOUT) {
@@ -574,14 +597,14 @@ namespace DiscordCoreInternal {
 
 	bool SSLClient::processWriteData() noexcept {
 		if (this->outputBuffer.getUsedSpace() > 0) {
-			size_t theWriteSize{};
-			if (this->outputBuffer.getUsedSpace() > this->maxBufferSize) {
-				theWriteSize = this->maxBufferSize;
+			size_t bytesToWrite{};
+			if (this->outputBuffer.getUsedSpace() < this->maxBufferSize) {
+				bytesToWrite = this->outputBuffer.getUsedSpace();
 			} else {
-				theWriteSize = this->outputBuffer.getUsedSpace();
+				bytesToWrite = this->maxBufferSize;
 			}
 			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.getBufferPtr(RingBufferAccessType::Read, theWriteSize), theWriteSize, &writtenBytes) };
+			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.getBufferPtr(RingBufferAccessType::Read, bytesToWrite), bytesToWrite, &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_WANT_READ: {
@@ -592,7 +615,7 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_NONE: {
 					if (writtenBytes > 0) {
-						this->outputBuffer.updateReadOrWritePosition(RingBufferAccessType::Read, theWriteSize - writtenBytes);
+						this->outputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Read, bytesToWrite - writtenBytes);
 					}
 					return true;
 				}
@@ -619,7 +642,7 @@ namespace DiscordCoreInternal {
 			} else {
 				bytesToRead = this->maxBufferSize;
 			}
-			auto returnValue{ SSL_read_ex(this->ssl, this->inputBuffer.getBufferPtr(RingBufferAccessType::Write, bytesToRead), bytesToRead, &readBytes) };
+			auto returnValue{ SSL_read_ex(this->ssl, this->theRawInputBuffer.data(), bytesToRead, &readBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_WANT_READ: {
@@ -630,8 +653,8 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_NONE: {
 					if (readBytes > 0) {
+						this->inputBuffer.writeData(this->theRawInputBuffer.data(), readBytes);
 						this->bytesRead += readBytes;
-						this->inputBuffer.updateReadOrWritePosition(RingBufferAccessType::Write, bytesToRead - readBytes);
 					}
 					break;
 				}
@@ -763,12 +786,12 @@ namespace DiscordCoreInternal {
 					amountToCollect = dataToWrite.size();
 				}
 				newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
-				this->outputBuffers.emplace_back(newString);
+				this->outputBuffer.emplace_back(newString);
 				dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 				remainingBytes = dataToWrite.size();
 			}
 		} else {
-			this->outputBuffers.emplace_back(dataToWrite);
+			this->outputBuffer.emplace_back(dataToWrite);
 		}
 	}
 
@@ -785,14 +808,14 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::processWriteData() noexcept {
-		if (this->outputBuffers.size() > 0 && this->areWeStreamConnected) {
-			std::string clientToServerString = this->outputBuffers.front();
+		if (this->outputBuffer.size() > 0 && this->areWeStreamConnected) {
+			std::string clientToServerString = this->outputBuffer.front();
 			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
 				( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr));
 			if (writtenBytes < 0) {
 				return false;
 			} else {
-				this->outputBuffers.erase(this->outputBuffers.begin());
+				this->outputBuffer.erase(this->outputBuffer.begin());
 				return true;
 			}
 		}
@@ -826,7 +849,7 @@ namespace DiscordCoreInternal {
 
 	void DatagramSocketClient::disconnect() noexcept {
 		this->theSocket = SOCKET_ERROR;
-		this->outputBuffers.clear();
+		this->outputBuffer.clear();
 		this->inputBuffer.clear();
 	}
 

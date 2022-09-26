@@ -1507,6 +1507,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 						cout << payload << std::endl;
 					}
+					this->inputBuffer.clear();
 					return false;
 				}
 			}
