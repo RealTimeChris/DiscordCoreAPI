@@ -132,6 +132,8 @@ namespace DiscordCoreAPI {
 
 	struct JsonArray;
 
+	struct JsonObject;
+
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
 

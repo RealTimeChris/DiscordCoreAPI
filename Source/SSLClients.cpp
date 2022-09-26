@@ -229,10 +229,8 @@ namespace DiscordCoreInternal {
 			this->tail += theLength;
 			return thePtr;
 		} else if (theType == RingBufferAccessType::Write) {
-			std::cout << "THE FREE SPACE: " << this->getFreeSpace() << std::endl;
 			if ((this->head % this->theArray.size()) + theLength > this->theArray.size()) {
 				this->theArray.resize(this->theArray.size() * 2);
-				std::cout << "WERE HERE LOSITNG IT!" << std::endl;
 			}
 			char* thePtr = this->getCurrentHead();
 			return thePtr;
