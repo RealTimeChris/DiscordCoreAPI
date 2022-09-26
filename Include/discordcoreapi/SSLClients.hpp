@@ -209,7 +209,8 @@ namespace DiscordCoreInternal {
 		char* getBufferPtr(RingBufferAccessType theType, size_t theLength = 0);
 		void writeData(char* theData, size_t theLength);
 		void readData(char* theData, size_t theLength);
-		const char* getCurrentTail();
+		char* getCurrentTail();
+		char* getCurrentHead();
 		uint64_t getUsedSpace();
 		uint64_t getFreeSpace();
 		void clear();
@@ -220,7 +221,6 @@ namespace DiscordCoreInternal {
 		int64_t head{};
 		int64_t tail{};
 		void putByte(char theByte);
-		char* getCurrentHead();
 		char getByte();
 	};
 
@@ -232,16 +232,17 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
 
-		virtual std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept;
+		virtual std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept = 0;
 
-		virtual std::string_view getInputBuffer() noexcept;
+		virtual std::string getInputBufferRemove() noexcept = 0;
+
+		virtual std::string getInputBuffer() noexcept = 0;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
 		virtual ~SSLDataInterface() noexcept = default;
 
 	  protected:
-		std::array<char, 1024 * 16> theRawInputBuffer{};
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		RingBuffer outputBuffer{};
 		RingBuffer inputBuffer{};
@@ -265,6 +266,8 @@ namespace DiscordCoreInternal {
 		virtual bool handleBuffer(SSLClient*) noexcept = 0;
 
 		std::string getInputBufferRemove() noexcept;
+
+		std::string getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
 
