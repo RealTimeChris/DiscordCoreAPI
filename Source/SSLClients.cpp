@@ -726,17 +726,16 @@ namespace DiscordCoreInternal {
 	ProcessIOResult DatagramSocketClient::processIO(ProcessIOType theType) noexcept {
 		ProcessIOResult theResult{ ProcessIOResult::No_Error };
 		if (!this->areWeStillConnected() || !this->areWeStreamConnected) {
-			return ProcessIOResult::No_Error;
-		}		
+			return theResult;
+		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->theSocket;
 		readWriteSet.events = POLLIN | POLLOUT;
 		if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 			theResult = ProcessIOResult::Error;
-			reportError("DatagramSocketClient::processIO()");
-			return ProcessIOResult::No_Error;
+			return theResult;
 		} else if (returnValue == 0) {
-			return ProcessIOResult::No_Error;
+			return theResult;
 		} else {
 			if (readWriteSet.revents & POLLRDNORM) {
 				if (!this->processReadData()) {
@@ -749,10 +748,10 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-		return ProcessIOResult::No_Error;
+		return theResult;
 	}
 
-	void DatagramSocketClient::writeData(std::string& dataToWrite) noexcept {
+	void DatagramSocketClient::writeData(std::string dataToWrite) noexcept {
 		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ dataToWrite.size() };
 			while (remainingBytes > 0) {
@@ -764,20 +763,17 @@ namespace DiscordCoreInternal {
 					amountToCollect = dataToWrite.size();
 				}
 				newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
-				this->outputBuffer.writeData(newString.data(), newString.size());
+				this->outputBuffers.emplace_back(newString);
 				dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 				remainingBytes = dataToWrite.size();
 			}
 		} else {
-			this->outputBuffer.writeData(dataToWrite.data(), dataToWrite.size());
+			this->outputBuffers.emplace_back(dataToWrite);
 		}
 	}
 
-	std::string DatagramSocketClient::getInputBuffer() noexcept {
-		std::string theString{};
-		theString.insert(theString.begin(), this->inputBuffer.getBufferPtr(RingBufferAccessType::Read),
-			this->inputBuffer.getBufferPtr(RingBufferAccessType::Read) + this->inputBuffer.getUsedSpace());
-		return theString;
+	std::string& DatagramSocketClient::getInputBuffer() noexcept {
+		return this->inputBuffer;
 	}
 
 	bool DatagramSocketClient::areWeStillConnected() noexcept {
@@ -789,20 +785,14 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::processWriteData() noexcept {
-		if (this->outputBuffer.getUsedSpace() > 0 && this->areWeStreamConnected) {
-			size_t theWriteSize{};
-			if (this->outputBuffer.getUsedSpace() > 16 * 1024) {
-				theWriteSize = 16 * 1024;
-			} else {
-				theWriteSize = this->outputBuffer.getUsedSpace();
-			}
-			size_t writtenBytes =
-				sendto(this->theSocket, this->outputBuffer.getBufferPtr(RingBufferAccessType::Read), theWriteSize, 0, ( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr));
+		if (this->outputBuffers.size() > 0 && this->areWeStreamConnected) {
+			std::string clientToServerString = this->outputBuffers.front();
+			int32_t writtenBytes = sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
+				( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr));
 			if (writtenBytes < 0) {
-				reportError("DatagramSocketClient::processWriteData()");
 				return false;
 			} else {
-				this->outputBuffer.updateReadOrWritePosition(RingBufferAccessType::Read, -1 * theWriteSize - writtenBytes);
+				this->outputBuffers.erase(this->outputBuffers.begin());
 				return true;
 			}
 		}
@@ -811,27 +801,18 @@ namespace DiscordCoreInternal {
 
 	bool DatagramSocketClient::processReadData() noexcept {
 		if (this->areWeStreamConnected) {
-
 #ifdef _WIN32
 			int32_t intSize = sizeof(this->theStreamTargetAddress);
 #else
 			socklen_t intSize = sizeof(this->theStreamTargetAddress);
 #endif
-			
-			size_t bytesToRead{};
-			if (this->inputBuffer.getFreeSpace() < this->maxBufferSize) {
-				bytesToRead = this->inputBuffer.getFreeSpace();
-			} else {
-				bytesToRead = this->maxBufferSize;
-			}
-			size_t readBytes =
-				recvfrom(this->theSocket, this->inputBuffer.getBufferPtr(RingBufferAccessType::Write), bytesToRead, 0, ( sockaddr* )&this->theStreamTargetAddress, &intSize);
+			int32_t readBytes =
+				recvfrom(this->theSocket, this->rawInputBuffer.data(), static_cast<int32_t>(this->maxBufferSize), 0, ( sockaddr* )&this->theStreamTargetAddress, &intSize);
 
 			if (readBytes < 0) {
-				reportError("DatagramSocketClient::processReadData()");
 				return false;
 			} else {
-				this->inputBuffer.updateReadOrWritePosition(RingBufferAccessType::Write, -1 * bytesToRead - readBytes);
+				this->inputBuffer.append(rawInputBuffer.data(), rawInputBuffer.data() + readBytes);
 				this->bytesRead += readBytes;
 				return true;
 			}
@@ -845,7 +826,7 @@ namespace DiscordCoreInternal {
 
 	void DatagramSocketClient::disconnect() noexcept {
 		this->theSocket = SOCKET_ERROR;
-		this->outputBuffer.clear();
+		this->outputBuffers.clear();
 		this->inputBuffer.clear();
 	}
 

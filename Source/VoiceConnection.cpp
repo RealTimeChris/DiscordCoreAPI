@@ -1043,7 +1043,7 @@ namespace DiscordCoreAPI {
 		}
 		this->areWeHeartBeating = false;
 		DatagramSocketClient::inputBuffer.clear();
-		DatagramSocketClient::outputBuffer.clear();
+		DatagramSocketClient::outputBuffers.clear();
 		WebSocketSSLShard::outputBuffer.clear();
 		this->currentReconnectTries++;
 		this->areWeConnectedBool.store(false);
