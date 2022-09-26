@@ -480,12 +480,14 @@ namespace DiscordCoreInternal {
 
 		for (uint32_t x = 0; x < readWriteSet.theIndices.size(); ++x) {
 			if (readWriteSet.thePolls[x].revents & POLLOUT) {
+				std::cout << "SSL CLIENT WHILE 233434" << std::endl;
 				if (!theVector[readWriteSet.theIndices[x]]->processWriteData()) {
 					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
 				}
 			}
 			if (readWriteSet.thePolls[x].revents & POLLIN) {
+				std::cout << "SSL CLIENT WHILE 453453" << std::endl;
 				if (!theVector[readWriteSet.theIndices[x]]->processReadData()) {
 					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
@@ -499,8 +501,9 @@ namespace DiscordCoreInternal {
 		return theReturnValue;
 	}
 
-	std::string_view SSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
-		std::string_view theString{ this->inputBuffer.getBufferPtr(RingBufferAccessType::Read)->getBufferPtr(RingBufferAccessType::Read, offSet + length) + offSet, length };
+	std::string SSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
+		std::string theString{ this->inputBuffer.getBufferPtr(RingBufferAccessType::Read)->getBufferPtr(RingBufferAccessType::Read, offSet + length) + offSet, length };
+		this->inputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Read, 1);
 		std::cout << "the String: 0101: " << theString << std::endl;
 		return theString;
 	}
@@ -593,22 +596,22 @@ namespace DiscordCoreInternal {
 				return ProcessIOResult::Error;
 			}
 			if (readWriteSet.revents & POLLIN) {
-				std::cout << "SSL CLIENT WHILE 454545" << std::endl;
+				
 				if (!this->processReadData()) {
+					std::cout << "SSL CLIENT WHILE 454545" << std::endl;
 					return ProcessIOResult::Error;
 				}
 			}
 			if (readWriteSet.revents & POLLOUT) {
-				//std::cout << "SSL CLIENT WHILE 343434" << std::endl;
+				
 				if (!this->processWriteData()) {
+					std::cout << "SSL CLIENT WHILE 343434" << std::endl;
 					return ProcessIOResult::Error;
 				}
 			}
 		}
-		if (!this->areWeAStandaloneSocket) {
-			while (this->handleBuffer(static_cast<SSLClient*>(this))) {
-				std::cout << "SSL CLIENT WHILE 0404" << std::endl;
-			}
+		while (this->handleBuffer(static_cast<SSLClient*>(this))) {
+			std::cout << "SSL CLIENT WHILE 0404" << std::endl;
 		}
 		return theResult;
 	}
@@ -632,8 +635,7 @@ namespace DiscordCoreInternal {
 	bool SSLClient::processWriteData() noexcept {
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			size_t bytesToWrite{};
-			std::cout << "THE BYTES TO WRITE: " << this->outputBuffer.getCurrentTail()->getUsedSpace() << std::endl;
-			if (this->outputBuffer.getUsedSpace() < this->maxBufferSize) {
+			if (this->outputBuffer.getCurrentTail()->getUsedSpace() < this->maxBufferSize) {
 				bytesToWrite = this->outputBuffer.getCurrentTail()->getUsedSpace();
 			} else {
 				bytesToWrite = this->maxBufferSize;

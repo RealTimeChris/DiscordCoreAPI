@@ -250,7 +250,7 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
 
-		virtual std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept = 0;
+		virtual std::string getInputBuffer(uint32_t offSet, uint32_t length) noexcept = 0;
 
 		virtual std::string getInputBufferRemove() noexcept = 0;
 
@@ -275,7 +275,7 @@ namespace DiscordCoreInternal {
 
 		static std::vector<SSLClient*> processIO(std::vector<SSLClient*>&) noexcept;
 
-		std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept;
+		std::string getInputBuffer(uint32_t offSet, uint32_t length) noexcept;
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 

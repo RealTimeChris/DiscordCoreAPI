@@ -233,12 +233,15 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
-		if (theShard->areWeStillConnected() && theShard->currentState.load() == SSLShardState::Upgrading && theShard->inputBuffer.getUsedSpace() > 100) {
-			std::string_view theString = theShard->getInputBuffer(0, theShard->inputBuffer.getUsedSpace());
-			
+		if (theShard->areWeStillConnected() && theShard->currentState.load() == SSLShardState::Upgrading && theShard->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
+			std::string theString = theShard->getInputBuffer(0, theShard->inputBuffer.getCurrentTail()->getUsedSpace());
+
+			std::cout << "WERE HERE DOING IT FOR REAL!" << theString << std::endl;
 			auto theFindValue = theString.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
-				theShard->getInputBuffer(0, theShard->inputBuffer.getUsedSpace());
+				theShard->inputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Read, 1);
+
+				std::cout << "WERE HERE DOING IT FOR REAL!" << std::endl;
 				theShard->currentState.store(SSLShardState::Collecting_Hello);
 				return true;
 			}
