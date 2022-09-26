@@ -507,9 +507,9 @@ namespace DiscordCoreInternal {
 
 	std::string SSLClient::getInputBuffer() noexcept {
 		std::string theStringNew{};
-		theStringNew.resize(this->inputBuffer.getUsedSpace());
-		this->inputBuffer.readData(theStringNew.data(), this->inputBuffer.getUsedSpace());
-		std::cout << "the String: " << theStringNew << std::endl;
+		theStringNew.resize(this->inputBuffer.getCurrentTail()->getUsedSpace());
+		this->inputBuffer.getBufferPtr(RingBufferAccessType::Read)->readData(theStringNew.data(), this->inputBuffer.getCurrentTail()->getUsedSpace());
+		std::cout << "the String: 0202: " << theStringNew << std::endl;
 		return theStringNew;
 	}
 
@@ -616,7 +616,7 @@ namespace DiscordCoreInternal {
 	std::string SSLClient::getInputBufferRemove() noexcept {
 		std::string theStringNew{};
 		theStringNew.resize(this->inputBuffer.getCurrentTail()->getUsedSpace());
-		this->inputBuffer.getBufferPtr(RingBufferAccessType::Read)->readData(theStringNew.data(), this->inputBuffer.getCurrentTail()->getUsedSpace());
+		this->inputBuffer.readData(theStringNew.data(), this->inputBuffer.getCurrentTail()->getUsedSpace());
 		std::cout << "the String: 0202: " << theStringNew << std::endl;
 		return theStringNew;
 	}
