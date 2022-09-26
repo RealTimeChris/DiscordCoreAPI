@@ -1550,7 +1550,7 @@ namespace DiscordCoreInternal {
 			this->theSocket = SOCKET_ERROR;
 			this->currentState.store(SSLShardState::Disconnected);
 			this->areWeConnecting.store(true);
-			this->outputBuffers.clear();
+			this->outputBuffer.clear();
 			this->inputBuffer.clear();
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;

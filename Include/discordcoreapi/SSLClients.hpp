@@ -201,17 +201,21 @@ namespace DiscordCoreInternal {
 
 	enum class ProcessIOResult : int8_t { No_Error = 0, Error = 1 };
 
+	enum class RingBufferAccessType { Read = 0, Write = 1 };
+
 	struct DiscordCoreAPI_Dll RingBuffer {
+		void updateReadOrWritePosition(RingBufferAccessType theType, int64_t theAmountToAdjust);
+		char* getBufferPtr(RingBufferAccessType theType, size_t theLength = 0);
 		void writeData(char* theData, size_t theLength);
 		void readData(char* theData, size_t theLength);
-		const char* getBufferPtr(size_t theLength);
-		char* getCurrentTail();
 		uint64_t getUsedSpace();
 		uint64_t getFreeSpace();
+		char* getCurrentTail();
 		void clear();
 	  protected:
 		std::array<char, 1024 * 1024> theOverFlowArray{};
 		std::array<char, 1024 * 1024> theArray{};
+		int64_t currentOverFlowArrayUsedAmount{};
 		int64_t head{};
 		int64_t tail{};
 		void putByte(char theByte);
@@ -236,9 +240,8 @@ namespace DiscordCoreInternal {
 		virtual ~SSLDataInterface() noexcept = default;
 
 	  protected:
-		std::array<char, 1024 * 16> rawInputBuffer{};
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
-		std::deque<std::string> outputBuffers{};
+		RingBuffer outputBuffer{};
 		RingBuffer inputBuffer{};
 		int64_t bytesRead{ 0 };
 	};
