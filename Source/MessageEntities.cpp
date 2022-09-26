@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 		/// Begin waiting for Objects. \brief Begin waiting for Objects.
 		/// \param quantityToCollect Maximum quantity of Objects to collect before returning the results.
 		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Objects before returning the results.
-		/// \param messageFilter A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
+		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
 		/// \returns A ObjectCollectorReturnData structure.
 		CoRoutine<ObjectCollectorReturnData<Message>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<Message> filteringFunctionNew) {
 			co_await NewThreadAwaitable<ObjectCollectorReturnData<Message>>();

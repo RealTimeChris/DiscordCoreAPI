@@ -21,7 +21,7 @@
 /// SSLClents.cpp - Source file for the "SSL Client" stuff.
 /// Dec 12, 2021
 /// https://discordcoreapi.com
-/// \file WebSocketSSLClients.cpp
+/// \file SSLClients.cpp
 
 #include <discordcoreapi/SSLClients.hpp>
 #include <discordcoreapi/WebSocketEntities.hpp>
@@ -658,7 +658,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 			}
-			std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
+			//std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
 		} while (SSL_pending(this->ssl));
 		return true;
 	}
