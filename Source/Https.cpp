@@ -429,13 +429,15 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(100ms);
 			rateLimitData.haveWeGoneYet.store(true);
 		}
-
+		std::cout << "HTTPS CLIENT TYPE:  " << ( int32_t )workload.workloadType << std::endl;
 		if (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() >= workload.thisWorkerId.load() && !rateLimitData.theSemaphore
 			.try_acquire()) {
+			std::cout << "HTTPS CLIENT TYPE:  " << ( int32_t )workload.workloadType << std::endl;
 			HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->store(0);
-			HttpsWorkloadData::workloadIdsExternal[workload.workloadType]->store(1);
+			HttpsWorkloadData::workloadIdsExternal[workload.workloadType]->store(0);
 			workload.thisWorkerId.store(1);
 		}
+		rateLimitData.theSemaphore.release();
 
 		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
 			std::cout << "HTTPS CLIENT LOOP 003" << std::endl;

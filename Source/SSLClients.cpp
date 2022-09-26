@@ -449,7 +449,6 @@ namespace DiscordCoreInternal {
 				readWriteSet.fd = this->theSocket;
 				readWriteSet.events = POLLOUT;
 				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
-					this->disconnect(true);
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
 					return ProcessIOResult::Error;
@@ -488,7 +487,6 @@ namespace DiscordCoreInternal {
 
 	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInMs) noexcept {
 		if (!this->areWeStillConnected()) {
-			this->disconnect(true);
 			return ProcessIOResult::Error;
 		}
 		pollfd readWriteSet{};
@@ -500,7 +498,6 @@ namespace DiscordCoreInternal {
 		}
 
 		if (auto returnValue = poll(&readWriteSet, 1, theWaitTimeInMs); returnValue == SOCKET_ERROR) {
-			this->disconnect(true);
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("SSLClient::processIO()") << endl;
 			}
@@ -579,7 +576,6 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintErrorMessages) {
 						cout << reportSSLError("SSLClient::processWriteData()", errorValue, this->ssl) << endl;
 					}
-					this->disconnect(true);
 					return false;
 				}
 			}
@@ -619,7 +615,6 @@ namespace DiscordCoreInternal {
 					if (this->doWePrintErrorMessages) {
 						cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
 					}
-					this->disconnect(true);
 					return false;
 				}
 			}
