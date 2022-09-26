@@ -455,6 +455,7 @@ namespace DiscordCoreInternal {
 					WebSocketMessage theMessage{};
 					simdjson::ondemand::value theObject{};
 					if (thePayload["d"].get(theObject) != simdjson::error_code::SUCCESS) {
+						std::cout << "This was the message: " << theDataNew << std::endl;
 						throw std::runtime_error{ "Failed to collect the 'd'." };
 					}
 					if (thePayload["s"].get(theMessage.s) == simdjson::error_code::SUCCESS) {
