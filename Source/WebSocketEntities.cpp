@@ -239,7 +239,6 @@ namespace DiscordCoreInternal {
 			std::cout << "WERE HERE DOING IT FOR REAL!" << theString << std::endl;
 			auto theFindValue = theString.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
-				theShard->inputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Read, 1);
 
 				std::cout << "WERE HERE DOING IT FOR REAL!" << std::endl;
 				theShard->currentState.store(SSLShardState::Collecting_Hello);
@@ -250,7 +249,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard) noexcept {
-		if (theShard->inputBuffer.getUsedSpace() < 4) {
+		if (theShard->inputBuffer.getCurrentTail()->getUsedSpace() < 4) {
 			return false;
 		}
 		theShard->dataOpCode = static_cast<WebSocketOpCode>(theShard->inputBuffer.getCurrentTail()->getCurrentTail()[0] & ~webSocketFinishBit);
@@ -273,7 +272,7 @@ namespace DiscordCoreInternal {
 				}
 				theShard->messageLength = length01;
 				if (length01 == webSocketPayloadLengthMagicLarge) {
-					if (theShard->inputBuffer.getUsedSpace() < 8) {
+					if (theShard->inputBuffer.getCurrentTail()->getUsedSpace() < 8) {
 						return false;
 					}
 					uint8_t length03 = theShard->inputBuffer.getCurrentTail()->getCurrentTail()[2];
@@ -281,7 +280,7 @@ namespace DiscordCoreInternal {
 					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
 					theShard->messageOffset += 2;
 				} else if (length01 == webSocketPayloadLengthMagicHuge) {
-					if (theShard->inputBuffer.getUsedSpace() < 10) {
+					if (theShard->inputBuffer.getCurrentTail()->getUsedSpace() < 10) {
 						return false;
 					}
 					theShard->messageLength = 0;
@@ -291,10 +290,12 @@ namespace DiscordCoreInternal {
 					}
 					theShard->messageOffset += 8;
 				}
-				if (theShard->inputBuffer.getUsedSpace() < theShard->messageOffset + theShard->messageLength) {
+				if (theShard->inputBuffer.getCurrentTail()->getUsedSpace() < theShard->messageOffset + theShard->messageLength) {
 					return false;
 				} else {
-					this->onMessageReceived(theShard->getInputBuffer(theShard->messageOffset, theShard->messageLength));
+					auto theString = theShard->getInputBuffer(theShard->messageOffset, theShard->messageLength);
+					std::cout << "THE CURRENT STRING: " << theString << std::endl;
+					this->onMessageReceived(theString);
 					return true;
 				}
 			}

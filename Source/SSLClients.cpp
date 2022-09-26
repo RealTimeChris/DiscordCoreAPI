@@ -530,7 +530,6 @@ namespace DiscordCoreInternal {
 
 				if (readWriteSet.revents & POLLOUT) {
 					this->outputBuffer.writeData(dataToWrite.data(), dataToWrite.size());
-					this->outputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Write, 1);
 					if (!this->processWriteData()) {
 						return ProcessIOResult::Error;
 					}
@@ -548,14 +547,12 @@ namespace DiscordCoreInternal {
 						}
 						newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 						this->outputBuffer.writeData(newString.data(), newString.size());
-						this->outputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Write, 1);
 						dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 						remainingBytes = dataToWrite.size();
 						std::cout << "SSL CLIENT WHILE 0202" << std::endl;
 					}
 				} else {
 					this->outputBuffer.writeData(dataToWrite.data(), dataToWrite.size());
-					this->outputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Write, 1);
 				}
 			}
 		}
@@ -640,6 +637,7 @@ namespace DiscordCoreInternal {
 			} else {
 				bytesToWrite = this->maxBufferSize;
 			}
+			std::cout << "WRITTEN BYTES SIZE: " << bytesToWrite << std::endl;
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.getBufferPtr(RingBufferAccessType::Read)->getBufferPtr(RingBufferAccessType::Read, bytesToWrite),
 				bytesToWrite, &writtenBytes) };
