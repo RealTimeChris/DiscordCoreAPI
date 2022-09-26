@@ -39,14 +39,14 @@ namespace DiscordCoreInternal {
 
 	UpdatePresenceData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
-		theData["op"] = static_cast<uint32_t>(3);
+		theData["op"] = 3;
 		for (auto& value: this->activities) {
 			DiscordCoreAPI::JsonObject theDataNew{};
 			if (value.url != "") {
 				theDataNew["url"] = std::string{ value.url };
 			}
 			theDataNew["name"] = std::string{ value.name };
-			theDataNew["type"] = static_cast<uint8_t>(value.type);
+			theDataNew["type"] = value.type;
 			theData["d"].pushBack("activities", theDataNew);
 		}
 		theData["status"] = this->status;
@@ -60,7 +60,7 @@ namespace DiscordCoreInternal {
 
 	WebSocketResumeData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
-		theData["op"] = static_cast<uint32_t>(6);
+		theData["op"] = 6;
 		theData["d"]["seq"] = this->lastNumberReceived;
 		theData["d"]["session_id"] = this->sessionId;
 		theData["d"]["token"] = this->botToken;
@@ -69,15 +69,15 @@ namespace DiscordCoreInternal {
 
 	WebSocketIdentifyData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theSerializer{};
-		theSerializer["d"]["intents"] = static_cast<uint32_t>(this->intents);
-		theSerializer["d"]["large_threshold"] = static_cast<uint32_t>(250);
+		theSerializer["d"]["intents"] = this->intents;
+		theSerializer["d"]["large_threshold"] = 250;
 		for (auto& value: this->presence.activities) {
 			DiscordCoreAPI::JsonObject theSerializer02{};
 			if (value.url != "") {
-				theSerializer02["url"] = std::string{ value.url };
+				theSerializer02["url"] = value.url;
 			}
-			theSerializer02["name"] = std::string{ value.name };
-			theSerializer02["type"] = uint32_t{ static_cast<uint32_t>(value.type) };
+			theSerializer02["name"] = value.name;
+			theSerializer02["type"] = value.type;
 			theSerializer["d"]["presence"].pushBack("activities", theSerializer02);
 		}
 		theSerializer["d"]["presence"]["afk"] = this->presence.afk;
@@ -93,16 +93,16 @@ namespace DiscordCoreInternal {
 #else
 		theSerializer["d"]["properties"]["os"] = "Linux";
 #endif
-		theSerializer["d"].pushBack("shard", static_cast<uint32_t>(this->currentShard));
-		theSerializer["d"].pushBack("shard", static_cast<uint32_t>(this->numberOfShards));
+		theSerializer["d"].pushBack("shard", this->currentShard);
+		theSerializer["d"].pushBack("shard", this->numberOfShards);
 		theSerializer["d"]["token"] = this->botToken;
-		theSerializer["op"] = static_cast<uint32_t>(2);
+		theSerializer["op"] = 2;
 		return theSerializer;
 	}
 
 	VoiceSocketProtocolPayloadData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
-		theData["op"] = static_cast<uint32_t>(1);
+		theData["op"] = 1;
 		theData["d"]["protocol"] = "udp";
 		theData["d"]["data"]["port"] = this->voicePort;
 		theData["d"]["data"]["mode"] = this->voiceEncryptionMode;
@@ -112,7 +112,7 @@ namespace DiscordCoreInternal {
 
 	VoiceIdentifyData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
-		theData["op"] = static_cast<uint32_t>(0);
+		theData["op"] = 0;
 		theData["d"]["session_id"] = this->connectionData.sessionId;
 		theData["d"]["token"] = this->connectionData.token;
 		theData["d"]["server_id"] = std::to_string(this->connectInitData.guildId);
@@ -122,8 +122,8 @@ namespace DiscordCoreInternal {
 
 	SendSpeakingData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
-		theData["op"] = static_cast<uint32_t>(5);
-		theData["d"]["speaking"] = static_cast<uint8_t>(this->type);
+		theData["op"] = 5;
+		theData["d"]["speaking"] = this->type;
 		theData["d"]["delay"] = this->delay;
 		theData["d"]["ssrc"] = this->ssrc;
 		return theData;
@@ -323,7 +323,7 @@ namespace DiscordCoreAPI {
 
 	UpdateVoiceStateData::operator JsonObject() {
 		JsonObject theData{};
-		theData["op"] = static_cast<uint32_t>(4);
+		theData["op"] = 4;
 		if (this->channelId == 0) {
 			theData["d"]["channel_id"] = ValueType::Null;
 		} else {
@@ -421,7 +421,7 @@ namespace DiscordCoreAPI {
 		}
 		theData["required"] = this->required;
 		theData["name"] = this->name;
-		theData["type"] = static_cast<uint8_t>(this->type);
+		theData["type"] = this->type;
 		if (this->choices.size() > 0) {
 			for (auto& value: this->choices) {
 				theData.pushBack("choices", value);
@@ -483,7 +483,7 @@ namespace DiscordCoreAPI {
 					component["disabled"] = valueNew.disabled;
 					component["label"] = valueNew.label;
 					component["style"] = valueNew.style;
-					component["type"] = static_cast<int8_t>(valueNew.type);
+					component["type"] = valueNew.type;
 					component["url"] = valueNew.url;
 					theData.pushBack("components",component);
 				} else if (valueNew.type == ComponentType::SelectMenu) {
@@ -506,7 +506,7 @@ namespace DiscordCoreAPI {
 					component["min_values"] = valueNew.minValues;
 					component["custom_id"] = valueNew.customId;
 					component["disabled"] = valueNew.disabled;
-					component["type"] = static_cast<uint8_t>(valueNew.type);
+					component["type"] = valueNew.type;
 					theData.pushBack("components", component);
 
 				} else if (valueNew.type == ComponentType::TextInput) {
@@ -519,7 +519,7 @@ namespace DiscordCoreAPI {
 					component["style"] = valueNew.style;
 					component["label"] = valueNew.label;
 					component["value"] = valueNew.value;
-					component["type"]= static_cast<uint8_t>(valueNew.type);
+					component["type"] = valueNew.type;
 					theData.pushBack("components", component);
 				}
 			}
@@ -982,7 +982,7 @@ namespace DiscordCoreAPI {
 
 	InteractionResponseData::operator JsonObject() {
 		JsonObject theData{};
-		theData["type"] = static_cast<uint8_t>(this->type);
+		theData["type"] = this->type;
 		if (this->data.attachments.size() > 0) {
 			for (auto& value: this->data.attachments) {
 				theData["data"].pushBack("attachments", value);
@@ -1118,7 +1118,7 @@ namespace DiscordCoreAPI {
 				if (buttonIntData.at(0).buttonId == "empty") {
 					*dataPackage02 = originalEvent;
 				} else {
-					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
+					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
 					*dataPackage02 = RespondToInputEventData{ *interactionData };
 				}
 
@@ -1148,9 +1148,9 @@ namespace DiscordCoreAPI {
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
 					newCurrentPageIndex--;
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
-					newCurrentPageIndex = static_cast<uint8_t>(messageEmbeds.size()) - 1;
+					newCurrentPageIndex = static_cast<uint32_t>(messageEmbeds.size()) - 1;
 				}
-				std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
+				std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
 				*dataPackage = RespondToInputEventData{ *interactionData };
 				dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 				for (auto& value: originalEvent.getComponents()) {
@@ -1163,7 +1163,7 @@ namespace DiscordCoreAPI {
 					InputEventData dataPackage03{ originalEvent };
 					InputEvents::deleteInputEventResponseAsync(dataPackage03);
 				} else {
-					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(static_cast<InteractionData>(buttonIntData.at(0)));
+					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
 					*dataPackage = RespondToInputEventData{ *interactionData };
 					dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);

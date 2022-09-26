@@ -168,7 +168,6 @@ namespace DiscordCoreAPI {
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		ConnectionPackage thePackage{};
-		SimdJsonConverter theParser{};
 		std::string secretKeySend{};
 		std::mutex voiceUserMutex{};
 		uint16_t sequenceIndex{ 0 };
@@ -194,8 +193,10 @@ namespace DiscordCoreAPI {
 		bool parseMessage(SSLClient* theShard) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
-
+		
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
+
+		bool sendTextMessage(std::string& theMessage, bool priority) noexcept;
 
 		void sendVoiceData(std::string& responseData) noexcept;
 

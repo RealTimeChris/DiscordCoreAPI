@@ -58,10 +58,6 @@ namespace DiscordCoreInternal {
 	WebSocketClose::operator bool() {
 		return utCast(this->theValue) & utCast(WebSocketCloseCode::We_Do_Reconnect);
 	}
-
-	UpdatePresenceData::UpdatePresenceData(DiscordCoreAPI::Snowflake guildIdNew) {
-		this->guildId = guildIdNew;
-	}
 }
 
 namespace DiscordCoreAPI {

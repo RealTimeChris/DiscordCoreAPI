@@ -336,6 +336,7 @@ namespace DiscordCoreInternal {
 		SSLDataInterface::maxBufferSize = (1024 * 16) - 1;
 		SSLDataInterface::outputBuffers.clear();
 		this->theInputBufferReal.clear();
+		this->inputBuffer.clear();
 		this->theData = HttpsResponseData{};
 		this->doWeHaveContentSize = false;
 		this->areWeDoneTheRequest = false;

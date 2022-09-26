@@ -286,7 +286,7 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
 
-		void processIO(ProcessIOType theType) noexcept;
+		ProcessIOResult processIO(ProcessIOType theType) noexcept;
 
 		void writeData(std::string data) noexcept;
 
@@ -294,9 +294,9 @@ namespace DiscordCoreInternal {
 
 		bool areWeStillConnected() noexcept;
 
-		void processWriteData() noexcept;
+		bool processWriteData() noexcept;
 
-		void processReadData() noexcept;
+		bool processReadData() noexcept;
 
 		int64_t getBytesRead() noexcept;
 

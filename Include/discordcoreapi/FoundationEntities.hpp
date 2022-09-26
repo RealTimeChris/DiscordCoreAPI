@@ -57,7 +57,7 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
-		UpdatePresenceData presence{ DiscordCoreAPI::Snowflake{} };
+		UpdatePresenceData presence{};
 		int32_t largeThreshold{ 250 };
 		int32_t numberOfShards{};
 		int32_t currentShard{};
@@ -3517,6 +3517,19 @@ namespace DiscordCoreInternal {
 		int32_t v{};
 	};
 
+	template<> inline void parseObject(simdjson::ondemand::value jsonObjectData, ReadyData& theData) {
+		theData.resumeGatewayUrl = DiscordCoreAPI::getString(jsonObjectData, "resume_gateway_url");
+
+		theData.sessionId = DiscordCoreAPI::getString(jsonObjectData, "session_id");
+
+		theData.v = DiscordCoreAPI::getUint32(jsonObjectData, "v");
+
+		simdjson::ondemand::value theUser{};
+		auto theResult = jsonObjectData["user"].get(theUser);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			DiscordCoreAPI::parseObject(theUser, theData.user);
+		}
+	}
 }
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::DiscordEntity> {

@@ -238,8 +238,9 @@ namespace DiscordCoreInternal {
 			
 			auto theFindValue = theString.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
-				theShard->getInputBuffer(0, theShard->inputBuffer.getUsedSpace());
+				theShard->getInputBufferRemove();
 				theShard->currentState.store(SSLShardState::Collecting_Hello);
+				std::cout << "WERE HERE THIS ISIT!" << theShard->getInputBuffer(0, theShard->inputBuffer.getUsedSpace()) << std::endl;
 				return true;
 			}
 		}
@@ -323,6 +324,7 @@ namespace DiscordCoreInternal {
 		this->configManager = &theClient->configManager;
 		this->shard[0] = currentShardNew;
 		this->theConnections = theConnectionsNew;
+		this->theParser.allocate(1024ull * 1024ull);
 		this->discordCoreClient = theClient;
 		this->doWeQuit = doWeQuitNew;
 		if (this->discordCoreClient) {
@@ -430,6 +432,9 @@ namespace DiscordCoreInternal {
 							try {
 								theStopWatchReal.resetTimer();
 								payload = ErlPacker::parseEtfToJson(theDataNew);
+								
+								payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
+								theDocument = this->theParser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity()));
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -439,7 +444,9 @@ namespace DiscordCoreInternal {
 								returnValue = false;
 							}
 						} else {
-							std::string& payloadJson = static_cast<std::string>(theDataNew);
+							std::string payloadJson = static_cast<std::string>(theDataNew);
+							payloadJson.reserve(payloadJson.size() + simdjson::SIMDJSON_PADDING);
+							theDocument = this->theParser.iterate(simdjson::padded_string_view(payloadJson.data(), payloadJson.length(), payloadJson.capacity()));
 						}
 					} else {
 						returnValue = false;
@@ -1509,18 +1516,20 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::checkForAndSendHeartBeat(bool isImmediate) noexcept {
-		if ((this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
+		if (this->currentState.load() == SSLShardState::Authenticated) {
 			try {
-				DiscordCoreAPI::JsonObject heartbeat{};
-				heartbeat["d"] = this->lastNumberReceived;
-				heartbeat["op"] = 1;
-				std::string stringReal = heartbeat;
-				std::string theString = this->stringifyJsonData(stringReal, this->dataOpCode);
-				if (!this->sendMessage(theString, true)) {
-					return;
+				if ((this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
+					DiscordCoreAPI::JsonObject heartbeat{};
+					heartbeat["d"] = this->lastNumberReceived;
+					heartbeat["op"] = 1;
+					std::string stringReal = heartbeat;
+					std::string theString = this->stringifyJsonData(stringReal, this->dataOpCode);
+					if (!this->sendMessage(theString, true)) {
+						return;
+					}
+					this->haveWeReceivedHeartbeatAck = false;
+					this->heartBeatStopWatch.resetTimer();
 				}
-				this->haveWeReceivedHeartbeatAck = false;
-				this->heartBeatStopWatch.resetTimer();
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::checkForAndSendHeartBeat()");
@@ -1657,6 +1666,7 @@ namespace DiscordCoreInternal {
 							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + thePackageNew.currentShard << ","
 								 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
 								 << endl;
+							this->theShardMap[thePackageNew.currentShard]->onClosed();
 						}
 						break;
 					}
@@ -1671,7 +1681,16 @@ namespace DiscordCoreInternal {
 								this->theShardMap[thePackageNew.currentShard]->onClosed();
 								return;
 							}		
-							this->theShardMap[thePackageNew.currentShard]->processIO(10);
+							theResult = this->theShardMap[thePackageNew.currentShard]->processIO(10);
+							if (theResult != ProcessIOResult::No_Error) {
+								if (this->configManager->doWePrintWebSocketErrorMessages()) {
+									cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + thePackageNew.currentShard << ","
+										 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
+										 << endl;
+									this->theShardMap[thePackageNew.currentShard]->onClosed();
+								}
+								break;
+							}
 							std::this_thread::sleep_for(1ms);
 						}
 					}
@@ -1744,18 +1763,19 @@ namespace DiscordCoreInternal {
 						theVector.emplace_back(value.get());
 					}
 				}
-				auto theResult = WebSocketSSLShard::processIO(theVector);
-				for (auto& value: theResult) {
-					if (this->configManager->doWePrintWebSocketErrorMessages()) {
-						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << static_cast<WebSocketSSLShard*>(value)->shard[0] << ","
-							 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
-							 << endl;
-						value->disconnect(true);
+				auto theResult = SSLClient::processIO(theVector);
+				if (theResult.size() > 0) {
+					for (auto& value: theResult) {
+						if (this->configManager->doWePrintWebSocketErrorMessages()) {
+							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << static_cast<WebSocketSSLShard*>(value)->shard[0] << ","
+								 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
+								 << endl;
+						}
 					}
 				}
 				bool areWeConnected{ false };
 				for (auto& value: theVector) {
-					if (!static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
+					if (!static_cast<WebSocketSSLShard*>(value) ->areWeConnecting.load()) {
 						if (value->areWeStillConnected()) {
 							static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
 							areWeConnected = true;
