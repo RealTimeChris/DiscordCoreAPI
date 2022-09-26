@@ -41,7 +41,13 @@ namespace DiscordCoreAPI {
 		uint32_t ssrc{};
 	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, VoiceSocketReadyData& theData);
+	struct DiscordCoreAPI_Dll SessionDescriptionData {
+		std::string theKey{};
+	};
+
+	struct DiscordCoreAPI_Dll SpeakingPayloadData {
+
+	};
 
 	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
 		struct OpusDecoderDeleter {
@@ -162,6 +168,7 @@ namespace DiscordCoreAPI {
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		ConnectionPackage thePackage{};
+		SimdJsonConverter theParser{};
 		std::string secretKeySend{};
 		std::mutex voiceUserMutex{};
 		uint16_t sequenceIndex{ 0 };
@@ -184,7 +191,7 @@ namespace DiscordCoreAPI {
 
 		bool onMessageReceived(std::string_view theData) noexcept;
 
-		bool parseMessage(WebSocketSSLShard* theShard) noexcept;
+		bool parseMessage(SSLClient* theShard) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
@@ -192,7 +199,7 @@ namespace DiscordCoreAPI {
 
 		void sendVoiceData(std::string& responseData) noexcept;
 
-		bool handleBuffer(WebSocketSSLClient* theClient) noexcept;
+		bool handleBuffer(SSLClient* theClient) noexcept;
 
 		bool parseMessage(VoiceConnection* theShard) noexcept;
 

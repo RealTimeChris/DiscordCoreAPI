@@ -37,43 +37,64 @@ namespace DiscordCoreAPI {
 		{ 24, "PARSER_IN_USE" }, { 25, "OUT_OF_ORDER_ITERATION" }, { 26, "INSUFFICIENT_PADDING" }, { 27, "INCOMPLETE_ARRAY_OR_OBJECT" }, { 28, "SCALAR_DOCUMENT_AS_VALUE" },
 		{ 29, "OUT_OF_BOUNDS" }, { 30, "NUM_ERROR_CODES " } };
 
-	struct JsonParseError : public std::runtime_error {
+	struct DiscordCoreAPI_Dll JsonParseError : public std::runtime_error {
 		explicit JsonParseError(int32_t theCode);
 	};
 
-	struct ObjectReturnData {
+	struct DiscordCoreAPI_Dll ObjectReturnData {
 		simdjson::ondemand::value theObject{};
 		bool didItSucceed{ false };
 	};
 
-	struct ArrayReturnData {
+	struct DiscordCoreAPI_Dll ArrayReturnData {
 		simdjson::ondemand::array theArray{};
 		bool didItSucceed{ false };
 	};
 
-	Snowflake getId(simdjson::ondemand::value jsonObjectData, const char* theKey);
+	class DiscordCoreAPI_Dll SimdJsonConverter {
+	  public:
+		SimdJsonConverter() noexcept = default;
+		
+		void prepForParsing(std::string& theString);
 
-	bool getBool(simdjson::ondemand::value jsonData, const char* theKey);
+		template<typename ObjectType> void parseObject(ObjectType&, const char* theParseEntryPoint = nullptr);
 
-	uint8_t getUint8(simdjson::ondemand::value jsonData, const char* theKey);
+	  protected:
+		simdjson::ondemand::parser theParser{};
+		simdjson::ondemand::value theObject{};
 
-	uint16_t getUint16(simdjson::ondemand::value jsonData, const char* theKey);
+		Snowflake getId(simdjson::ondemand::value jsonObjectData, const char* theKey);
 
-	uint32_t getUint32(simdjson::ondemand::value jsonData, const char* theKey);
+		bool getBool(simdjson::ondemand::value jsonData, const char* theKey);
 
-	float getFloat(simdjson::ondemand::value jsonData, const char* theKey);
+		uint8_t getUint8(simdjson::ondemand::value jsonData, const char* theKey);
 
-	uint64_t getUint64(simdjson::ondemand::value jsonData, const char* theKey);
+		uint16_t getUint16(simdjson::ondemand::value jsonData, const char* theKey);
 
-	std::string getString(simdjson::ondemand::value jsonData, const char* theKey);
+		uint32_t getUint32(simdjson::ondemand::value jsonData, const char* theKey);
 
-	ObjectReturnData getObject(ArrayReturnData jsonObjectData, size_t objectIndex, std::source_location theLocation = std::source_location::current());
+		float getFloat(simdjson::ondemand::value jsonData, const char* theKey);
 
-	ObjectReturnData getObject(simdjson::ondemand::value jsonObjectData, const char* objectName, std::source_location theLocation = std::source_location::current());
+		uint64_t getUint64(simdjson::ondemand::value jsonData, const char* theKey);
 
-	ObjectReturnData getObject(ObjectReturnData jsonObjectData, const char* objectName, std::source_location theLocation = std::source_location::current());
+		std::string getString(simdjson::ondemand::value jsonData, const char* theKey);
+
+		std::string getString(ObjectReturnData jsonData, const char* theKey);
+
+		ObjectReturnData getObject(ArrayReturnData jsonObjectData, size_t objectIndex, std::source_location theLocation = std::source_location::current());
+
+		ObjectReturnData getObject(simdjson::ondemand::array jsonObjectData, size_t objectIndex, std::source_location theLocation);
+
+		ArrayReturnData getArray(simdjson::ondemand::value jsonObjectData, const char* arrayName);
+
+		ObjectReturnData getObject(simdjson::ondemand::value jsonObjectData, const char* objectName, std::source_location theLocation = std::source_location::current());
+
+		ObjectReturnData getObject(ObjectReturnData jsonObjectData, const char* objectName, std::source_location theLocation = std::source_location::current());
+
+		ArrayReturnData getArray(ObjectReturnData jsonObjectData, const char* arrayName);
+	};
+
 	
-	ArrayReturnData getArray(ObjectReturnData jsonObjectData, const char* arrayName);
 
 };
 #endif

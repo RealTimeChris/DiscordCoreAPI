@@ -70,7 +70,9 @@ namespace DiscordCoreInternal {
 		uint64_t messageOffset{};
 	};
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketSSLClient, public WebSocketMessageHandler {
+	enum class SSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
+
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLClient, public WebSocketMessageHandler {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
@@ -89,7 +91,7 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		bool handleBuffer(WebSocketSSLShard* theClient) noexcept;
+		bool handleBuffer(SSLClient* theClient) noexcept;
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 
@@ -104,11 +106,12 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
+		DiscordCoreAPI::SimdJsonConverter theParser{};
 		VoiceConnectionData voiceConnectionData{};
+		std::atomic<SSLShardState> currentState{};
 		std::atomic_bool areWeConnecting{ true };
 		bool haveWeReceivedHeartbeatAck{ true };
 		const uint32_t maxReconnectTries{ 10 };
-		simdjson::ondemand::parser theParser{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		DiscordCoreAPI::Snowflake userId{ 0 };
 		bool serverUpdateCollected{ false };

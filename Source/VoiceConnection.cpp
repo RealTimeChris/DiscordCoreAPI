@@ -157,15 +157,11 @@ namespace DiscordCoreAPI {
 			if (theData.size() > 0) {
 				std::string theString{ theData };
 				theString.reserve(theString.size() + simdjson::SIMDJSON_PADDING);
-				simdjson::ondemand::parser theParser{};
-				auto theDocument = theParser.iterate(theString.data(), theString.length(), theString.capacity());
-				uint64_t theOp{};
 
-				auto thePayload = theDocument.get_value();
+				this->theParser.prepForParsing(( std::string& )(theData));
+
 				DiscordCoreInternal::WebSocketMessage theMessage{};
-				thePayload["s"].get(theMessage.s);
-				thePayload["op"].get(theMessage.op);
-				thePayload["t"].get(theMessage.t);
+				this->theParser.parseObject(theMessage);
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theData << reset() << endl << endl;
@@ -174,11 +170,7 @@ namespace DiscordCoreAPI {
 					switch (theMessage.op) {
 						case 2: {
 							VoiceSocketReadyData theData{};
-							simdjson::ondemand::value theObjectNew{};
-							if (thePayload["d"].get(theObjectNew) != simdjson::error_code::SUCCESS) {
-								throw std::runtime_error{ "Failed to collect the 'd' from Voice-socket-ready-data!" };
-							}
-							DiscordCoreAPI::parseObject(theObjectNew, theData);
+							this->theParser.parseObject(theData, "d");
 							this->audioSSRC = theData.ssrc;
 							this->voiceIp = theData.ip;
 							this->port = theData.port;
@@ -187,17 +179,9 @@ namespace DiscordCoreAPI {
 							return true;
 						}
 						case 4: {
-							auto theObject = getObject(thePayload.value(), "d");
-							if (theObject.didItSucceed) {
-								auto theArray = getArray(theObject, "secret_key");
-								if (theArray.didItSucceed) {
-									std::string theSecretKey{};
-									for (auto iterator: theArray.theArray) {
-										theSecretKey.push_back(static_cast<uint8_t>(iterator.get_uint64().take_value()));
-									}
-									this->secretKeySend = theSecretKey;
-								}
-							}
+							SessionDescriptionData theData{};
+							this->theParser.parseObject(theData, "d");
+							this->secretKeySend = theData.theKey;
 							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 							return true;
 						}
@@ -268,7 +252,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool VoiceConnection::handleBuffer(WebSocketSSLClient* theClient) noexcept {
+	bool VoiceConnection::handleBuffer(SSLClient* theClient) noexcept {
 		if (static_cast<VoiceConnection*>(theClient)->currentState.load() == DiscordCoreInternal::SSLShardState::Upgrading) {
 			return this->parseConnectionHeaders(static_cast<VoiceConnection*>(theClient));
 		}

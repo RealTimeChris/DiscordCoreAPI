@@ -128,14 +128,32 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
+	struct DiscordCoreAPI_Dll Snowflake {
+		friend inline bool operator==(const Snowflake, const Snowflake);
+		Snowflake() noexcept = default;
+		Snowflake& operator=(const std::string) noexcept;
+		explicit Snowflake(const std::string) noexcept;
+		Snowflake& operator=(const size_t) noexcept;
+		explicit Snowflake(const size_t) noexcept;
+		operator size_t() noexcept;
+
+	  protected:
+		mutable uint64_t theId{};
+	};
+
+	inline bool operator==(const Snowflake lhs, const Snowflake rhs) {
+		return (lhs.theId == rhs.theId);
+	}
+
 	enum class ValueType { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Double = 4, Float = 5, String = 6, Bool = 7, Int64 = 8, Uint64 = 9, Unset = 10 };
 
-	struct JsonArray;
+	struct DiscordCoreAPI_Dll JsonArray;
 
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
 
-	struct EnumConverter {
+	struct DiscordCoreAPI_Dll EnumConverter {
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
 			this->thePtr = new uint64_t{};
 			*static_cast<uint64_t*>(this->thePtr) = static_cast<uint64_t>(other);
@@ -172,7 +190,7 @@ namespace DiscordCoreAPI {
 		bool vectorType{ false };
 	};
 
-	struct JsonObject {
+	struct DiscordCoreAPI_Dll JsonObject {
 		std::unordered_map<std::string, JsonObject> theValues{};
 		ValueType theType{ ValueType::Object };
 		std::string theKey{};
@@ -276,19 +294,17 @@ namespace DiscordCoreAPI {
 		void pushBack(const char* theKey, int8_t other) noexcept;
 	};
 
-	struct JsonArray : public JsonObject {
+	struct DiscordCoreAPI_Dll JsonArray : public JsonObject {
 		JsonArray() noexcept = default;
 	};
 
-	struct Snowflake;
-
-	struct ActivityData;
+	struct DiscordCoreAPI_Dll ActivityData;
 
 	/// For selecting the type of streamer that the given bot is, one must be one server and one of client per connection. \brief For selecting the type of streamer that the given bot is, one must be one server and one of client per connection.
 	enum class StreamType { None = 0, Client = 1, Server = 2 };
 
 	/// For connecting two bots to stream the VC contents between the two. \brief For connecting two bots to stream the VC contents between the two.
-	struct StreamInfo {
+	struct DiscordCoreAPI_Dll StreamInfo {
 		std::string address{};///< The address to connect to.
 		std::string port{};///< The port to connect to.
 	};
@@ -362,9 +378,11 @@ namespace DiscordCoreInternal {
 
 	/// For updating a User's presence. \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
+		UpdatePresenceData(DiscordCoreAPI::Snowflake guildId);
 		std::vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
 		std::string status{};///< Current status.
 		int64_t since{ 0 };///< When was the activity started?
+		DiscordCoreAPI::Snowflake guildId{};
 		bool afk{ false };///< Are we afk.
 
 		operator DiscordCoreAPI::JsonObject();
@@ -376,24 +394,6 @@ namespace DiscordCoreInternal {
 
 
 namespace DiscordCoreAPI {
-
-	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
-	struct DiscordCoreAPI_Dll Snowflake {
-		friend inline bool operator==(const Snowflake, const Snowflake);
-		Snowflake() noexcept = default;
-		Snowflake& operator=(const std::string) noexcept;
-		explicit Snowflake(const std::string) noexcept;
-		Snowflake& operator=(const size_t) noexcept;
-		explicit Snowflake(const size_t) noexcept;
-		operator size_t() noexcept;
-
-	  protected:
-		mutable uint64_t theId{};
-	};
-
-	inline bool operator==(const Snowflake lhs, const Snowflake rhs) {
-		return (lhs.theId == rhs.theId);
-	}
 
 	using namespace std::literals;
 	using std::cout;
@@ -540,9 +540,9 @@ namespace DiscordCoreAPI {
 
 	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
+		DiscordCoreInternal::UpdatePresenceData presenceData{ Snowflake{} };///< Presence data to initialize your bot with.
 		GatewayIntents theIntents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
-		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
 		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.

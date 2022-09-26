@@ -204,7 +204,7 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll RingBuffer {
 		void writeData(char* theData, size_t theLength);
 		void readData(char* theData, size_t theLength);
-		char* getBufferPtr(size_t theLength);
+		const char* getBufferPtr(size_t theLength);
 		char* getCurrentTail();
 		uint64_t getUsedSpace();
 		uint64_t getFreeSpace();
@@ -239,26 +239,25 @@ namespace DiscordCoreInternal {
 		std::array<char, 1024 * 16> rawInputBuffer{};
 		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::deque<std::string> outputBuffers{};
-		std::string currentMessageBuffer{};
-		uint64_t offsetIntoInputBuffer{};
+		RingBuffer inputBuffer{};
 		int64_t bytesRead{ 0 };
 	};
 
-	enum class SSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
-
-	class DiscordCoreAPI_Dll HttpsSSLClient : public SSLDataInterface, public SSLConnectionInterface {
+	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
-		HttpsSSLClient() noexcept = default;
+		SSLClient() noexcept;
 
 		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
 
-		static std::vector<HttpsSSLClient*> processIO(std::vector<HttpsSSLClient*>&) noexcept;
+		static std::vector<SSLClient*> processIO(std::vector<SSLClient*>&) noexcept;
+
+		std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept;
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
-		virtual bool handleBuffer(HttpsSSLClient*) noexcept = 0;
+		virtual bool handleBuffer(SSLClient*) noexcept = 0;
 
 		std::string getInputBufferRemove() noexcept;
 
@@ -270,45 +269,11 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		virtual ~HttpsSSLClient() noexcept = default;
+		virtual ~SSLClient() noexcept = default;
 
 	  protected:
-		std::atomic<SSLShardState> currentState{};
 		bool doWePrintErrorMessages{ false };
 		bool areWeAStandaloneSocket{ false };
-	};
-
-	class DiscordCoreAPI_Dll WebSocketSSLClient : public SSLDataInterface, public SSLConnectionInterface {
-	  public:
-		WebSocketSSLClient() noexcept;
-
-		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
-
-		static std::vector<WebSocketSSLShard*> processIO(std::vector<WebSocketSSLShard*>&) noexcept;
-
-		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
-
-		std::string_view getInputBuffer(uint32_t offSet, uint32_t length) noexcept;
-
-		virtual bool handleBuffer(WebSocketSSLShard* theClient) noexcept = 0;
-
-		ProcessIOResult processIO(int32_t msToWait) noexcept;
-
-		bool areWeStillConnected() noexcept;
-
-		bool processWriteData() noexcept;
-
-		bool processReadData() noexcept;
-
-		int64_t getBytesRead() noexcept;
-
-		virtual ~WebSocketSSLClient() noexcept = default;
-
-	  protected:
-		std::atomic<SSLShardState> currentState{};
-		bool doWePrintErrorMessages{ false };
-		bool areWeAStandaloneSocket{ false };
-		RingBuffer inputBuffer{};
 	};
 
 	enum class ProcessIOType { Both = 0, Read_Only = 1, Write_Only = 2 };

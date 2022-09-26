@@ -208,7 +208,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	char* RingBuffer::getBufferPtr(size_t theLength) {
+	const char* RingBuffer::getBufferPtr(size_t theLength) {
 		if (this->tail + theLength > this->theArray.size()) {
 			this->readData(this->theOverFlowArray.data(), theLength);
 			return this->theOverFlowArray.data();
@@ -281,11 +281,9 @@ namespace DiscordCoreInternal {
 		return std::string_view{};
 	}
 
-	WebSocketSSLClient::WebSocketSSLClient() noexcept {
-		this->currentMessageBuffer.resize(1024 * 1024);
-	}
+	SSLClient::SSLClient() noexcept {}
 
-	bool WebSocketSSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
+	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
 		std::string addressString{};
@@ -306,14 +304,14 @@ namespace DiscordCoreInternal {
 
 		if (getaddrinfo(addressString.c_str(), portNew.c_str(), hints, address)) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("WebSocketSSLClient::connect::getaddrinfo()") << endl;
+				cout << reportError("SSLClient::connect::getaddrinfo()") << endl;
 			}
 			return false;
 		}
 
 		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("WebSocketSSLClient::connect::socket()") << endl;
+				cout << reportError("SSLClient::connect::socket()") << endl;
 			}
 			return false;
 		}
@@ -321,21 +319,21 @@ namespace DiscordCoreInternal {
 		const char optionValue{ true };
 		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("WebSocketSSLClient::connect::setsockopt()") << endl;
+				cout << reportError("SSLClient::connect::setsockopt()") << endl;
 			}
 			return false;
 		}
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("WebSocketSSLClient::connect::setsockopt()") << endl;
+				cout << reportError("SSLClient::connect::setsockopt()") << endl;
 			}
 			return false;
 		}
 
 		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("WebSocketSSLClient::connect::connect()") << endl;
+				cout << reportError("SSLClient::connect::connect()") << endl;
 			}
 			return false;
 		}
@@ -343,7 +341,7 @@ namespace DiscordCoreInternal {
 		std::unique_lock theLock{ SSLConnectionInterface::theMutex };
 		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("WebSocketSSLClient::connect::SSL_new()") << endl;
+				cout << reportSSLError("SSLClient::connect::SSL_new()") << endl;
 			}
 			return false;
 		}
@@ -351,7 +349,7 @@ namespace DiscordCoreInternal {
 
 		if (auto theResult = SSL_set_fd(this->ssl, this->theSocket); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("WebSocketSSLClient::connect::SSL_set_fd()", theResult, this->ssl) << endl;
+				cout << reportSSLError("SSLClient::connect::SSL_set_fd()", theResult, this->ssl) << endl;
 			}
 			return false;
 		}
@@ -359,14 +357,14 @@ namespace DiscordCoreInternal {
 		/* SNI */
 		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, addressString.c_str()); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("WebSocketSSLClient::connect::SSL_set_tlsext_host_name()", theResult, this->ssl) << endl;
+				cout << reportSSLError("SSLClient::connect::SSL_set_tlsext_host_name()", theResult, this->ssl) << endl;
 			}
 			return false;
 		}
 
 		if (auto theResult = SSL_connect(this->ssl); theResult != 1) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("WebSocketSSLClient::connect::SSL_connect()", theResult, this->ssl) << endl;
+				cout << reportSSLError("SSLClient::connect::SSL_connect()", theResult, this->ssl) << endl;
 			}
 			return false;
 		}
@@ -375,7 +373,7 @@ namespace DiscordCoreInternal {
 		u_long value02{ 1 };
 		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("WebSocketSSLClient::connect::ioctlsocket()") << endl;
+				cout << reportError("SSLClient::connect::ioctlsocket()") << endl;
 			}
 			return false;
 		}
@@ -384,12 +382,11 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 #endif
-		this->currentState.store(DiscordCoreInternal::SSLShardState::Upgrading);
 		return true;
 	}
 
-	std::vector<WebSocketSSLShard*> WebSocketSSLClient::processIO(std::vector<WebSocketSSLShard*>& theVector) noexcept {
-		std::vector<WebSocketSSLShard*> theReturnValue{};
+	std::vector<SSLClient*> SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
+		std::vector<SSLClient*> theReturnValue{};
 		PollFDWrapper readWriteSet{};
 		for (uint32_t x = 0; x < theVector.size(); ++x) {
 			pollfd theWrapper{};
@@ -440,12 +437,12 @@ namespace DiscordCoreInternal {
 		return theReturnValue;
 	}
 
-	std::string_view WebSocketSSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
+	std::string_view SSLClient::getInputBuffer(uint32_t offSet, uint32_t length) noexcept {
 		std::string_view theString{ this->inputBuffer.getBufferPtr(offSet + length) + offSet, length };
 		return theString;
 	}
 
-	ProcessIOResult WebSocketSSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
+	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
 		if (dataToWrite.size() > 0 && this->ssl) {
 			if (priority && dataToWrite.size() < static_cast<size_t>(16 * 1024)) {
 				pollfd readWriteSet{};
@@ -489,7 +486,7 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::No_Error;
 	}
 
-	ProcessIOResult WebSocketSSLClient::processIO(int32_t theWaitTimeInMs) noexcept {
+	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInMs) noexcept {
 		if (!this->areWeStillConnected()) {
 			this->disconnect(true);
 			return ProcessIOResult::Error;
@@ -505,7 +502,7 @@ namespace DiscordCoreInternal {
 		if (auto returnValue = poll(&readWriteSet, 1, theWaitTimeInMs); returnValue == SOCKET_ERROR) {
 			this->disconnect(true);
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("WebSocketSSLClient::processIO()") << endl;
+				cout << reportSSLError("SSLClient::processIO()") << endl;
 			}
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
@@ -518,7 +515,7 @@ namespace DiscordCoreInternal {
 		} else {
 			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLHUP || readWriteSet.revents & POLLNVAL) {
 				if (this->doWePrintErrorMessages) {
-					cout << reportError("WebSocketSSLClient::processIO()") << endl;
+					cout << reportSSLError("SSLClient::processIO()") << endl;
 				}
 				return ProcessIOResult::Error;
 			}
@@ -540,8 +537,16 @@ namespace DiscordCoreInternal {
 		}
 		return ProcessIOResult::No_Error;
 	}
+	
+	std::string SSLClient::getInputBufferRemove() noexcept {
+		std::string theStringNew{};
+		theStringNew.resize(this->inputBuffer.getUsedSpace());
+		this->inputBuffer.readData(theStringNew.data(), this->inputBuffer.getUsedSpace());
+		this->inputBuffer.clear();
+		return theStringNew;
+	}
 
-	bool WebSocketSSLClient::areWeStillConnected() noexcept {
+	bool SSLClient::areWeStillConnected() noexcept {
 		if (static_cast<SOCKET*>(this->theSocket) && this->theSocket != SOCKET_ERROR) {
 			return true;
 		} else {
@@ -549,7 +554,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketSSLClient::processWriteData() noexcept {
+	bool SSLClient::processWriteData() noexcept {
 		if (this->outputBuffers.size() > 0) {
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffers.front().data(), this->outputBuffers.front().size(), &writtenBytes) };
@@ -572,7 +577,7 @@ namespace DiscordCoreInternal {
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("WebSocketSSLClient::processWriteData()", errorValue, this->ssl) << endl;
+						cout << reportSSLError("SSLClient::processWriteData()", errorValue, this->ssl) << endl;
 					}
 					this->disconnect(true);
 					return false;
@@ -582,7 +587,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	bool WebSocketSSLClient::processReadData() noexcept {
+	bool SSLClient::processReadData() noexcept {
 		do {
 			size_t readBytes{ 0 };
 			size_t bytesToRead{};
@@ -603,6 +608,7 @@ namespace DiscordCoreInternal {
 				case SSL_ERROR_NONE: {
 					if (readBytes > 0) {
 						this->inputBuffer.writeData(this->rawInputBuffer.data(), readBytes);
+						std::cout << "THE READ BYTES: " << this->rawInputBuffer.data() << std::endl;
 						this->bytesRead += readBytes;
 					}
 					break;
@@ -612,7 +618,7 @@ namespace DiscordCoreInternal {
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("WebSocketSSLClient::processReadData()", errorValue, this->ssl) << endl;
+						cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
 					}
 					this->disconnect(true);
 					return false;
@@ -623,348 +629,10 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	int64_t WebSocketSSLClient::getBytesRead() noexcept {
+	int64_t SSLClient::getBytesRead() noexcept {
 		return this->bytesRead;
 	}
-
-	bool HttpsSSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
-		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
-		this->doWePrintErrorMessages = doWePrintErrorsNew;
-		std::string addressString{};
-		auto httpsFind = baseUrl.find("https://");
-		auto comFind = baseUrl.find(".com");
-		auto orgFind = baseUrl.find(".org");
-		if (httpsFind != std::string::npos && comFind != std::string::npos) {
-			addressString = baseUrl.substr(httpsFind + std::string("https://").size(), comFind + std::string(".com").size() - std::string("https://").size());
-		} else if (httpsFind != std::string::npos && orgFind != std::string::npos) {
-			addressString = baseUrl.substr(httpsFind + std::string("https://").size(), orgFind + std::string(".org").size() - std::string("https://").size());
-		} else {
-			addressString = baseUrl;
-		}
-		addrinfoWrapper hints{}, address{};
-		hints->ai_family = AF_INET;
-		hints->ai_socktype = SOCK_STREAM;
-		hints->ai_protocol = IPPROTO_TCP;
-
-		if (getaddrinfo(addressString.c_str(), portNew.c_str(), hints, address)) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("HttpsSSLClient::connect::getaddrinfo()") << endl;
-			}
-			return false;
-		}
-
-		if (this->theSocket = socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->theSocket == SOCKET_ERROR) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("HttpsSSLClient::connect::socket()") << endl;
-			}
-			return false;
-		}
-
-		const char optionValue{ true };
-		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("HttpsSSLClient::connect::setsockopt()") << endl;
-			}
-			return false;
-		}
-
-		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("HttpsSSLClient::connect::setsockopt()") << endl;
-			}
-			return false;
-		}
-
-		if (::connect(this->theSocket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("HttpsSSLClient::connect::connect()") << endl;
-			}
-			return false;
-		}
-
-		std::unique_lock theLock{ SSLConnectionInterface::theMutex };
-		if (this->ssl = SSL_new(this->context); this->ssl == nullptr) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("HttpsSSLClient::connect::SSL_new()") << endl;
-			}
-			return false;
-		}
-		theLock.unlock();
-
-		if (auto theResult = SSL_set_fd(this->ssl, this->theSocket); theResult != 1) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("HttpsSSLClient::connect::SSL_set_fd()", theResult, this->ssl) << endl;
-			}
-			return false;
-		}
-
-		/* SNI */
-		if (auto theResult = SSL_set_tlsext_host_name(this->ssl, addressString.c_str()); theResult != 1) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("HttpsSSLClient::connect::SSL_set_tlsext_host_name()", theResult, this->ssl) << endl;
-			}
-			return false;
-		}
-
-		if (auto theResult = SSL_connect(this->ssl); theResult != 1) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("HttpsSSLClient::connect::SSL_connect()", theResult, this->ssl) << endl;
-			}
-			return false;
-		}
-
-#ifdef _WIN32
-		u_long value02{ 1 };
-		if (auto returnValue = ioctlsocket(this->theSocket, FIONBIO, &value02); returnValue == SOCKET_ERROR) {
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("HttpsSSLClient::connect::ioctlsocket()") << endl;
-			}
-			return false;
-		}
-#else
-		if (auto returnValue = fcntl(this->theSocket, F_SETFL, fcntl(this->theSocket, F_GETFL, 0) | O_NONBLOCK); returnValue == SOCKET_ERROR) {
-			return false;
-		}
-#endif
-		this->currentState.store(DiscordCoreInternal::SSLShardState::Upgrading);
-		return true;
-	}
-
-	std::vector<HttpsSSLClient*> HttpsSSLClient::processIO(std::vector<HttpsSSLClient*>& theVector) noexcept {
-		std::vector<HttpsSSLClient*> theReturnValue{};
-		PollFDWrapper readWriteSet{};
-		for (uint32_t x = 0; x < theVector.size(); ++x) {
-			pollfd theWrapper{};
-			theWrapper.fd = theVector[x]->theSocket;
-			if (theVector[x]->outputBuffers.size() > 0) {
-				theWrapper.events = POLLIN | POLLOUT;
-			} else {
-				theWrapper.events = POLLIN;
-			}
-			readWriteSet.theIndices.emplace_back(x);
-			readWriteSet.thePolls.emplace_back(theWrapper);
-		}
-
-		if (readWriteSet.theIndices.size() == 0) {
-			return theReturnValue;
-		}
-
-		if (auto returnValue = poll(readWriteSet.thePolls.data(), static_cast<unsigned long>(readWriteSet.theIndices.size()), 1); returnValue == SOCKET_ERROR) {
-			for (uint32_t x = 0; x < readWriteSet.thePolls.size(); ++x) {
-				if (readWriteSet.thePolls[x].revents & POLLERR || readWriteSet.thePolls[x].revents & POLLHUP || readWriteSet.thePolls[x].revents & POLLNVAL) {
-					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
-				}
-			}
-			return theReturnValue;
-
-		} else if (returnValue == 0) {
-			return theReturnValue;
-		}
-
-		for (uint32_t x = 0; x < readWriteSet.theIndices.size(); ++x) {
-			if (readWriteSet.thePolls[x].revents & POLLOUT) {
-				if (!theVector[readWriteSet.theIndices[x]]->processWriteData()) {
-					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
-					continue;
-				}
-			}
-			if (readWriteSet.thePolls[x].revents & POLLIN) {
-				if (!theVector[readWriteSet.theIndices[x]]->processReadData()) {
-					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
-					continue;
-				}
-			}
-
-			while (theVector[readWriteSet.theIndices[x]]->handleBuffer(theVector[readWriteSet.theIndices[x]])) {
-				std::cout << "SSL CLIENT WHILE 0505" << std::endl;
-			}
-		}
-		return theReturnValue;
-	}
-
-	ProcessIOResult HttpsSSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
-		if (dataToWrite.size() > 0 && this->ssl) {
-			if (priority && dataToWrite.size() < static_cast<size_t>(16 * 1024)) {
-				pollfd readWriteSet{};
-				readWriteSet.fd = this->theSocket;
-				readWriteSet.events = POLLOUT;
-				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
-					this->disconnect(true);
-					return ProcessIOResult::Error;
-				} else if (returnValue == 0) {
-					return ProcessIOResult::Error;
-				}
-
-				if (readWriteSet.revents & POLLOUT) {
-					this->outputBuffers.emplace_back(dataToWrite);
-					if (!this->processWriteData()) {
-						return ProcessIOResult::Error;
-					}
-				}
-			} else {
-				if (dataToWrite.size() >= static_cast<size_t>(16 * 1024)) {
-					size_t remainingBytes{ dataToWrite.size() };
-					while (remainingBytes > 0) {
-						std::string newString{};
-						size_t amountToCollect{};
-						if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
-							amountToCollect = static_cast<size_t>(1024 * 16);
-						} else {
-							amountToCollect = dataToWrite.size();
-						}
-						newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
-						this->outputBuffers.emplace_back(newString);
-						dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
-						remainingBytes = dataToWrite.size();
-						std::cout << "SSL CLIENT WHILE 0606" << std::endl;
-					}
-				} else {
-					this->outputBuffers.emplace_back(dataToWrite);
-				}
-			}
-		}
-		return ProcessIOResult::No_Error;
-	}
-
-	ProcessIOResult HttpsSSLClient::processIO(int32_t theWaitTimeInMs) noexcept {
-		if (!this->areWeStillConnected()) {
-			this->disconnect(true);
-			return ProcessIOResult::Error;
-		}
-		pollfd readWriteSet{};
-		readWriteSet.fd = this->theSocket;
-		if (this->outputBuffers.size() > 0) {
-			readWriteSet.events = POLLIN | POLLOUT;
-		} else {
-			readWriteSet.events = POLLIN;
-		}
-
-		if (auto returnValue = poll(&readWriteSet, 1, theWaitTimeInMs); returnValue == SOCKET_ERROR) {
-			this->disconnect(true);
-			if (this->doWePrintErrorMessages) {
-				cout << reportError("HttpsSSLClient::processIO()") << endl;
-			}
-			return ProcessIOResult::Error;
-		} else if (returnValue == 0) {
-			if (!this->areWeAStandaloneSocket) {
-				while (this->handleBuffer(this)) {
-					std::cout << "SSL CLIENT WHILE 0707" << std::endl;
-				}
-			}
-			return ProcessIOResult::No_Error;
-		} else {
-			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLHUP || readWriteSet.revents & POLLNVAL) {
-				if (this->doWePrintErrorMessages) {
-					cout << reportError("HttpsSSLClient::processIO()") << endl;
-				}
-				return ProcessIOResult::Error;
-			}
-			if (readWriteSet.revents & POLLIN) {
-				if (!this->processReadData()) {
-					return ProcessIOResult::Error;
-				}
-			}
-			if (readWriteSet.revents & POLLOUT) {
-				if (!this->processWriteData()) {
-					return ProcessIOResult::Error;
-				}
-			}
-		}
-		if (!this->areWeAStandaloneSocket) {
-			while (this->handleBuffer(this)) {
-				std::cout << "SSL CLIENT WHILE 0808" << std::endl;
-			}
-		}
-		return ProcessIOResult::No_Error;
-	}
-
-	std::string HttpsSSLClient::getInputBufferRemove() noexcept {
-		std::string theString{};
-		theString.insert(theString.begin(), this->currentMessageBuffer.begin(), this->currentMessageBuffer.end());
-		this->currentMessageBuffer.clear();
-		return theString;
-	}
-
-	bool HttpsSSLClient::areWeStillConnected() noexcept {
-		if (static_cast<SOCKET*>(this->theSocket) && this->theSocket != SOCKET_ERROR) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	bool HttpsSSLClient::processWriteData() noexcept {
-		if (this->outputBuffers.size() > 0) {
-			size_t writtenBytes{ 0 };
-			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffers.front().data(), this->outputBuffers.front().size(), &writtenBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-				case SSL_ERROR_WANT_READ: {
-					[[fallthrough]];
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					[[fallthrough]];
-				}
-				case SSL_ERROR_NONE: {
-					if (writtenBytes > 0) {
-						this->outputBuffers.erase(this->outputBuffers.begin());
-					}
-					return true;
-				}
-				case SSL_ERROR_ZERO_RETURN: {
-					return false;
-				}
-				default: {
-					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("HttpsSSLClient::processWriteData()", errorValue, this->ssl) << endl;
-					}
-					this->disconnect(true);
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	bool HttpsSSLClient::processReadData() noexcept {
-		do {
-			size_t readBytes{ 0 };
-			auto returnValue{ SSL_read_ex(this->ssl, this->rawInputBuffer.data(), this->maxBufferSize, &readBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
-			switch (errorValue) {
-				case SSL_ERROR_WANT_READ: {
-					[[fallthrough]];
-				}
-				case SSL_ERROR_WANT_WRITE: {
-					[[fallthrough]];
-				}
-				case SSL_ERROR_NONE: {
-					if (readBytes > 0) {
-						this->currentMessageBuffer.insert(this->currentMessageBuffer.end(), this->rawInputBuffer.begin(), this->rawInputBuffer.begin() + readBytes);
-						this->bytesRead += readBytes;
-					}
-					break;
-				}
-				case SSL_ERROR_ZERO_RETURN: {
-					return false;
-				}
-				default: {
-					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("HttpsSSLClient::processReadData()", errorValue, this->ssl) << endl;
-					}
-					this->disconnect(true);
-					return false;
-				}
-			}
-			std::cout << "SSL CLIENT WHILE 111111" << std::endl;
-		} while (SSL_pending(this->ssl));
-		return true;
-	}
-
-	int64_t HttpsSSLClient::getBytesRead() noexcept {
-		return this->bytesRead;
-	}
-
+	
 	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept {
 		this->streamType = streamTypeNew;
 	}

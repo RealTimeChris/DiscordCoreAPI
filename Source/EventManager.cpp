@@ -214,14 +214,6 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	template<> void parseObject(simdjson::ondemand::value theJsonData, OnVoiceServerUpdateData& theData) {
-		theData.endpoint = getString(theJsonData, "endpoint");
-
-		theData.guildId = getId(theJsonData, "guild_id");
-
-		theData.token = getString(theJsonData, "token");
-	};
-
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnApplicationCommandPermissionsUpdateData> handler) {
 		return this->onApplicationCommandPermissionsUpdateEvent.add(std::move(handler));
