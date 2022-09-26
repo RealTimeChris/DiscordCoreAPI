@@ -80,6 +80,9 @@ namespace DiscordCoreInternal {
 												}
 												searchResult.type = DiscordCoreAPI::SongType::YouTube;
 												searchResult.viewUrl = this->baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
+												if (searchResult.description == "" || searchResult.viewUrl == "") {
+													continue;
+												}
 												searchResults.emplace_back(searchResult);
 											}
 										}
