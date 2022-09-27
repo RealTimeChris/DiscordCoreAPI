@@ -91,11 +91,11 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
+		virtual bool handleBuffer() noexcept;
+
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
-
-		virtual bool handleBuffer() noexcept;
 
 		void onClosed() noexcept;
 

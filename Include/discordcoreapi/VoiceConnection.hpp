@@ -200,6 +200,8 @@ namespace DiscordCoreAPI {
 
 		void sendVoiceData(std::string& responseData) noexcept;
 
+		bool handleBuffer() noexcept;
+
 		bool parseMessage(VoiceConnection* theShard) noexcept;
 
 		void runWebSocket(std::stop_token) noexcept;
@@ -225,8 +227,6 @@ namespace DiscordCoreAPI {
 		void sendHeartBeat() noexcept;
 
 		bool voiceConnect() noexcept;
-
-		bool handleBuffer() noexcept;
 
 		void sendSilence() noexcept;
 

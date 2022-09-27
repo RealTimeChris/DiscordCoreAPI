@@ -234,21 +234,13 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
 		if (theShard->areWeStillConnected() && theShard->currentState.load() == SSLShardState::Upgrading && theShard->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
-			std::cout << "THE CURRENTLY USED SPACE: " << theShard->inputBuffer.getCurrentTail()->getUsedSpace() << std::endl;
 			std::string theString = theShard->getInputBuffer(0, theShard->inputBuffer.getCurrentTail()->getUsedSpace());
-			std::cout << "THE CURRENTLY USED SPACE: " << theString.size() << std::endl;
+
 			std::cout << "WERE HERE DOING IT FOR REAL!" << theString << std::endl;
-			std::cout << "THE ELEMENTS: ";
-			for (auto& value: theString) {
-				if (value == '\n') {
-					std::cout << "THE VALUE: 01 " << value << std::endl;
-				} else if (value == '\r') {
-					std::cout << "THE VALUE: 02 " << value << std::endl;
-				}				
-			}
 			auto theFindValue = theString.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
-				theShard->clearInputBuffer(theString.size());
+				theShard->inputBuffer.adjustReadOrWritePosition(RingBufferAccessType::Read, 1);
+
 				std::cout << "WERE HERE DOING IT FOR REAL!" << std::endl;
 				theShard->currentState.store(SSLShardState::Collecting_Hello);
 				return true;
@@ -259,7 +251,6 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard) noexcept {
 		if (theShard->inputBuffer.getCurrentTail()->getUsedSpace() < 4) {
-			std::cout << "THE CURRENT STRING: 0101" << std::endl;
 			return false;
 		}
 		theShard->dataOpCode = static_cast<WebSocketOpCode>(theShard->inputBuffer.getCurrentTail()->getCurrentTail()[0] & ~webSocketFinishBit);
@@ -278,7 +269,6 @@ namespace DiscordCoreInternal {
 				uint8_t length01 = theShard->inputBuffer.getCurrentTail()->getCurrentTail()[1];
 				theShard->messageOffset = 2;
 				if (length01 & webSocketMaskBit) {
-					std::cout << "THE CURRENT STRING: 0202" << std::endl;
 					return false;
 				}
 				theShard->messageLength = length01;
@@ -292,7 +282,6 @@ namespace DiscordCoreInternal {
 					theShard->messageOffset += 2;
 				} else if (length01 == webSocketPayloadLengthMagicHuge) {
 					if (theShard->inputBuffer.getCurrentTail()->getUsedSpace() < 10) {
-						std::cout << "THE CURRENT STRING: 0303" << std::endl;
 						return false;
 					}
 					theShard->messageLength = 0;
@@ -302,14 +291,12 @@ namespace DiscordCoreInternal {
 					}
 					theShard->messageOffset += 8;
 				}
-				if (theShard->inputBuffer.getTotalSize() < theShard->messageOffset + theShard->messageLength) {
-					std::cout << "THE CURRENT STRING: " << std::endl;
+				if (theShard->inputBuffer.getCurrentTail()->getUsedSpace() < theShard->messageOffset + theShard->messageLength) {
 					return false;
 				} else {
 					auto theString = theShard->getInputBuffer(theShard->messageOffset, theShard->messageLength);
-					std::cout << "THE OFFSET: " << theShard->messageOffset << ", THE SIZE: " << theShard->messageLength << std::endl;
+					std::cout << "THE CURRENT STRING: " << theString << std::endl;
 					this->onMessageReceived(theString);
-					theShard->clearInputBuffer(theShard->messageOffset + theShard->messageLength);
 					return true;
 				}
 			}
@@ -1524,7 +1511,7 @@ namespace DiscordCoreInternal {
 				} catch (...) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
-						cout << "The payload: " << payload << std::endl;
+						cout << payload << std::endl;
 					}
 					this->inputBuffer.clear();
 					return false;
