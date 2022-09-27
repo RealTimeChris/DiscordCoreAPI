@@ -109,7 +109,6 @@ namespace DiscordCoreInternal {
 			theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
 			theReturnString += workload.content;
 		}
-		std::cout << "THE REQUEST: " << theReturnString << std::endl;
 		return theReturnString;
 	}
 
@@ -282,10 +281,8 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					this->theInputBufferReal += std::move(this->getInputBuffer());
-					std::cout << "THE STRING 01: " << this->theInputBufferReal << std::endl;
 					this->parseCode(this->theInputBufferReal);
 					if (this->theData.responseCode == 400) {
-						std::cout << "THE URL: " << this->currentBaseUrl << std::endl;
 					}
 					this->theData.theStopWatch.resetTimer();
 					if (this->theData.responseCode == 204) {
@@ -301,7 +298,6 @@ namespace DiscordCoreInternal {
 					}
 					if (!this->doWeHaveHeaders) {
 						this->theInputBufferReal += std::move(this->getInputBuffer());
-						std::cout << "THE STRING 02: " << this->theInputBufferReal << std::endl;
 						this->parseHeaders(this->theInputBufferReal);
 						this->theData.theStopWatch.resetTimer();
 					}
@@ -314,7 +310,6 @@ namespace DiscordCoreInternal {
 					}
 					if (!this->doWeHaveContentSize) {
 						this->theInputBufferReal += std::move(this->getInputBuffer());
-						std::cout << "THE STRING 03: " << this->theInputBufferReal << std::endl;
 						this->clearCRLF(this->theInputBufferReal);
 						this->parseSize(this->theInputBufferReal);
 						this->clearCRLF(this->theInputBufferReal);
@@ -324,7 +319,6 @@ namespace DiscordCoreInternal {
 				}
 				case HttpsState::Collecting_Contents: {
 					this->theInputBufferReal += std::move(this->getInputBuffer());
-					std::cout << "THE STRING 04: " << this->theInputBufferReal << std::endl;
 					auto theResult = this->parseChunk(this->theInputBufferReal);
 					if ((this->theData.responseMessage.size() >= this->theData.contentSize && !theResult) || this->theData.theStopWatch.hasTimePassed() || !theResult ||
 						(this->theData.responseCode == -5 && this->theData.contentSize == -5)) {
@@ -445,10 +439,8 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(100ms);
 			rateLimitData.haveWeGoneYet.store(true);
 		}
-		std::cout << "HTTPS CLIENT TYPE:  " << ( int32_t )workload.workloadType << std::endl;
 		if (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() >= workload.thisWorkerId.load() && !rateLimitData.theSemaphore
 			.try_acquire()) {
-			std::cout << "HTTPS CLIENT TYPE:  " << ( int32_t )workload.workloadType << std::endl;
 			HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->store(0);
 			HttpsWorkloadData::workloadIdsExternal[workload.workloadType]->store(0);
 			workload.thisWorkerId.store(1);

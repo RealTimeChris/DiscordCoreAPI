@@ -235,13 +235,9 @@ namespace DiscordCoreInternal {
 	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
 		if (theShard->areWeStillConnected() && theShard->currentState.load() == SSLShardState::Upgrading && theShard->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
 			theShard->currentMessage = theShard->getInputBuffer();
-
-			std::cout << "WERE HERE DOING IT FOR REAL!" << theShard->currentMessage << std::endl;
 			auto theFindValue = theShard->currentMessage.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
 				theShard->currentMessage.clear();
-
-				std::cout << "WERE HERE DOING IT FOR REAL!" << std::endl;
 				theShard->currentState.store(SSLShardState::Collecting_Hello);
 				return true;
 			}
@@ -250,78 +246,83 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard) noexcept {
-		if (theShard->inputBuffer.getCurrentTail()->getUsedSpace() < 4) {
-			return false;
-		}
-		theShard->currentMessage += theShard->getInputBuffer();
-		theShard->dataOpCode = static_cast<WebSocketOpCode>(theShard->currentMessage[0] & ~webSocketFinishBit);
-		this->messageLength = 0;
-		this->messageOffset = 0;
-		switch (theShard->dataOpCode) {
-			case WebSocketOpCode::Op_Continuation:
-				[[fallthrough]];
-			case WebSocketOpCode::Op_Text:
-				[[fallthrough]];
-			case WebSocketOpCode::Op_Binary:
-				[[fallthrough]];
-			case WebSocketOpCode::Op_Ping:
-				[[fallthrough]];
-			case WebSocketOpCode::Op_Pong: {
-				uint8_t length01 = theShard->currentMessage[1];
-				theShard->messageOffset = 2;
-				if (length01 & webSocketMaskBit) {
-					return false;
+		if (theShard->inputBuffer.getUsedSpace() > 0) {
+			theShard->currentMessage += theShard->getInputBuffer();
+			if (theShard->currentMessage.size() < 4) {
+				return true;
+			}
+
+			theShard->dataOpCode = static_cast<WebSocketOpCode>(theShard->currentMessage[0] & ~webSocketFinishBit);
+			this->messageLength = 0;
+			this->messageOffset = 0;
+			switch (theShard->dataOpCode) {
+				case WebSocketOpCode::Op_Continuation:
+					[[fallthrough]];
+				case WebSocketOpCode::Op_Text:
+					[[fallthrough]];
+				case WebSocketOpCode::Op_Binary:
+					[[fallthrough]];
+				case WebSocketOpCode::Op_Ping:
+					[[fallthrough]];
+				case WebSocketOpCode::Op_Pong: {
+					uint8_t length01 = theShard->currentMessage[1];
+					theShard->messageOffset = 2;
+					if (length01 & webSocketMaskBit) {
+						return true;
+					}
+					theShard->messageLength = length01;
+					if (length01 == webSocketPayloadLengthMagicLarge) {
+						if (theShard->currentMessage.size() < 8) {
+							return true;
+						}
+						uint8_t length03 = theShard->currentMessage[2];
+						uint8_t length04 = theShard->currentMessage[3];
+						theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+						theShard->messageOffset += 2;
+					} else if (length01 == webSocketPayloadLengthMagicHuge) {
+						if (theShard->currentMessage.size() < 10) {
+							return true;
+						}
+						theShard->messageLength = 0;
+						for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
+							uint8_t lengthNew = static_cast<uint8_t>(theShard->currentMessage[x]);
+							theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+						}
+						theShard->messageOffset += 8;
+					}
+					if (theShard->currentMessage.size() < theShard->messageOffset + theShard->messageLength) {
+						return true;
+					} else {
+						theShard->currentMessage += theShard->getInputBuffer();
+						this->onMessageReceived(theShard->currentMessage.substr(theShard->messageOffset, theShard->messageLength));
+						theShard->currentMessage.erase(theShard->currentMessage.begin(), theShard->currentMessage.begin() + theShard->messageOffset + theShard->messageLength);
+						return true;
+					}
 				}
-				theShard->messageLength = length01;
-				if (length01 == webSocketPayloadLengthMagicLarge) {
-					if (theShard->currentMessage.size() < 8) {
-						return false;
+				case WebSocketOpCode::Op_Close: {
+					uint16_t close = theShard->currentMessage[2] & 0xff;
+					close <<= 8;
+					close |= theShard->currentMessage[3] & 0xff;
+					theShard->closeCode = close;
+					if (theShard->closeCode) {
+						theShard->areWeResuming = true;
 					}
-					uint8_t length03 = theShard->currentMessage[2];
-					uint8_t length04 = theShard->currentMessage[3];
-					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
-					theShard->messageOffset += 2;
-				} else if (length01 == webSocketPayloadLengthMagicHuge) {
-					if (theShard->currentMessage.size() < 10) {
-						return false;
+					if (this->configManager->doWePrintWebSocketErrorMessages()) {
+						cout << DiscordCoreAPI::shiftToBrightRed()
+							 << "WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
+								std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + " Closed; Code: "
+							 << +static_cast<uint16_t>(theShard->closeCode) << DiscordCoreAPI::reset() << endl
+							 << endl;
 					}
-					theShard->messageLength = 0;
-					for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-						uint8_t lengthNew = static_cast<uint8_t>(theShard->currentMessage[x]);
-						theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
-					}
-					theShard->messageOffset += 8;
-				}
-				if (theShard->currentMessage.size() < theShard->messageOffset + theShard->messageLength) {
-					return false;
-				} else {
-					theShard->currentMessage += theShard->getInputBuffer();
-					std::cout << "THE CURRENT STRING: " << theShard->currentMessage << std::endl;
-					this->onMessageReceived(theShard->currentMessage.substr(theShard->messageOffset, theShard->messageLength));
-					theShard->currentMessage.erase(theShard->currentMessage.begin(), theShard->currentMessage.begin() + theShard->messageOffset + theShard->messageLength);
+					this->onClosed();
 					return true;
 				}
 			}
-			case WebSocketOpCode::Op_Close: {
-				uint16_t close = theShard->currentMessage[2] & 0xff;
-				close <<= 8;
-				close |= theShard->currentMessage[3] & 0xff;
-				theShard->closeCode = close;
-				if (theShard->closeCode) {
-					theShard->areWeResuming = true;
-				}
-				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightRed()
-						 << "WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) +
-							"]" + " Closed; Code: "
-						 << +static_cast<uint16_t>(theShard->closeCode) << DiscordCoreAPI::reset() << endl
-						 << endl;
-				}
-				this->onClosed();
-				return false;
-			}
+			return true;
+		} else {
+			return false;
 		}
-		return false;
+		
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, int32_t currentShardNew,
@@ -462,7 +463,6 @@ namespace DiscordCoreInternal {
 					WebSocketMessage theMessage{};
 					simdjson::ondemand::value theObject{};
 					if (thePayload["d"].get(theObject) != simdjson::error_code::SUCCESS) {
-						std::cout << "This was the message: " << theDataNew << std::endl;
 						throw std::runtime_error{ "Failed to collect the 'd'." };
 					}
 					if (thePayload["s"].get(theMessage.s) == simdjson::error_code::SUCCESS) {
@@ -1551,7 +1551,9 @@ namespace DiscordCoreInternal {
 		if (this->currentState.load() == SSLShardState::Upgrading) {
 			return this->parseConnectionHeaders(this);
 		}
-		return this->parseMessage(this);
+		while (this->parseMessage(this)) {
+		}
+		return false;
 	}
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {

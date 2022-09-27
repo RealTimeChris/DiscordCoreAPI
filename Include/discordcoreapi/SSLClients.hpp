@@ -208,28 +208,32 @@ namespace DiscordCoreInternal {
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
 		char* getCurrentTail();
 		char* getCurrentHead();
-		uint64_t getUsedSpace();
-		uint64_t getFreeSpace();
+		size_t getUsedSpace();
+		bool isItEmpty();
+		bool isItFull();
 		void clear();
+
 	  protected:
 		std::array<char, 1024 * 16> theArray{};
+		bool areWeFull{ false };
 		int64_t head{};
 		int64_t tail{};
 
 	};
 
 	struct DiscordCoreAPI_Dll RingBufferArray {
-		RingBufferArray() noexcept;
+		RingBufferArray() noexcept = default;
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
 		RingBuffer* getCurrentTail();
 		RingBuffer* getCurrentHead();
-		uint64_t getUsedSpace();
-		uint64_t getFreeSpace();
+		size_t getUsedSpace();
+		bool isItEmpty();
+		bool isItFull();
 		void clear();
 
 	  protected:
-		std::vector<RingBuffer> theArray{};
-		size_t theSize{};
+		std::array<RingBuffer, 64> theArray{};
+		bool areWeFull{ false };
 		int64_t head{};
 		int64_t tail{};
 	};
