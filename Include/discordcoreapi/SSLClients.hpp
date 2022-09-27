@@ -218,7 +218,6 @@ namespace DiscordCoreInternal {
 		bool areWeFull{ false };
 		int64_t head{};
 		int64_t tail{};
-
 	};
 
 	struct DiscordCoreAPI_Dll RingBufferArray {
@@ -275,7 +274,7 @@ namespace DiscordCoreInternal {
 		std::string_view getInputBuffer() noexcept;
 
 		virtual bool handleBuffer() noexcept = 0;
-		
+
 		bool areWeStillConnected() noexcept;
 
 		void resetStringBuffer() noexcept;

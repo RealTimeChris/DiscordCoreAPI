@@ -155,7 +155,7 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
-	
+
 	/**
 	 * \addtogroup main_endpoints
 	 * @{

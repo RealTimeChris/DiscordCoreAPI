@@ -48,7 +48,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
 	  public:
-
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
 
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;

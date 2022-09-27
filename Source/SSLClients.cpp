@@ -296,7 +296,8 @@ namespace DiscordCoreInternal {
 		this->head = 0;
 	}
 
-	SSLDataInterface::SSLDataInterface() noexcept {}
+	SSLDataInterface::SSLDataInterface() noexcept {
+	}
 
 	bool SSLConnectionInterface::initialize() noexcept {
 		if (SSLConnectionInterface::context = SSL_CTX_new(TLS_client_method()); SSLConnectionInterface::context == nullptr) {
