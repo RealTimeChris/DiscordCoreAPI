@@ -249,7 +249,7 @@ namespace DiscordCoreInternal {
 		if (theShard->inputBuffer.getUsedSpace() > 0) {
 			theShard->currentMessage += theShard->getInputBuffer();
 			if (theShard->currentMessage.size() < 4) {
-				return true;
+				return false;
 			}
 
 			theShard->dataOpCode = static_cast<WebSocketOpCode>(theShard->currentMessage[0] & ~webSocketFinishBit);
@@ -268,12 +268,12 @@ namespace DiscordCoreInternal {
 					uint8_t length01 = theShard->currentMessage[1];
 					theShard->messageOffset = 2;
 					if (length01 & webSocketMaskBit) {
-						return true;
+						return false;
 					}
 					theShard->messageLength = length01;
 					if (length01 == webSocketPayloadLengthMagicLarge) {
 						if (theShard->currentMessage.size() < 8) {
-							return true;
+							return false;
 						}
 						uint8_t length03 = theShard->currentMessage[2];
 						uint8_t length04 = theShard->currentMessage[3];
@@ -281,7 +281,7 @@ namespace DiscordCoreInternal {
 						theShard->messageOffset += 2;
 					} else if (length01 == webSocketPayloadLengthMagicHuge) {
 						if (theShard->currentMessage.size() < 10) {
-							return true;
+							return false;
 						}
 						theShard->messageLength = 0;
 						for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
@@ -291,7 +291,7 @@ namespace DiscordCoreInternal {
 						theShard->messageOffset += 8;
 					}
 					if (theShard->currentMessage.size() < theShard->messageOffset + theShard->messageLength) {
-						return true;
+						return false;
 					} else {
 						theShard->currentMessage += theShard->getInputBuffer();
 						this->onMessageReceived(theShard->currentMessage.substr(theShard->messageOffset, theShard->messageLength));
@@ -315,7 +315,7 @@ namespace DiscordCoreInternal {
 							 << endl;
 					}
 					this->onClosed();
-					return true;
+					return false;
 				}
 			}
 			return true;
@@ -1787,6 +1787,7 @@ namespace DiscordCoreInternal {
 				for (auto& value: theVector) {
 					if (!static_cast<WebSocketSSLShard*>(value) ->areWeConnecting.load()) {
 						if (value->areWeStillConnected()) {
+							value->handleBuffer();
 							static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
 							areWeConnected = true;
 						}

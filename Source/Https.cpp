@@ -344,9 +344,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpsConnection::resetValues() {
-		SSLDataInterface::maxBufferSize = (1024 * 16) - 1;
 		SSLDataInterface::outputBuffer.clear();
 		this->theInputBufferReal.clear();
+		this->outputBuffer.clear();
 		this->inputBuffer.clear();
 		this->theData = HttpsResponseData{};
 		this->doWeHaveContentSize = false;
