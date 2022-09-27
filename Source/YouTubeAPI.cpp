@@ -32,7 +32,7 @@
 #include <discordcoreapi/DataParsingFunctions.hpp>
 
 namespace DiscordCoreInternal {
-	
+
 	std::vector<DiscordCoreAPI::Song> YouTubeRequestBuilder::collectSearchResults(const std::string& searchQuery) {
 		HttpsWorkloadData dataPackage{ HttpsWorkloadType::YouTubeGetSearchResults };
 		dataPackage.baseUrl = this->baseUrl;
@@ -245,7 +245,7 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr) };
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
-				if (!streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true) ) {
+				if (!streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true)) {
 					return;
 				}
 			} else {
@@ -316,7 +316,8 @@ namespace DiscordCoreInternal {
 						if (!stopToken.stop_requested()) {
 							if (streamSocket->areWeStillConnected()) {
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
-								std::string streamBuffer = streamSocket->getInputBuffer();
+								std::string streamBuffer = static_cast<std::string>(streamSocket->getInputBuffer());
+								streamSocket->resetStringBuffer();
 								headerSize = static_cast<int32_t>(streamBuffer.size());
 							}
 						}
@@ -336,7 +337,8 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						std::string streamBuffer = streamSocket->getInputBuffer();
+						std::string streamBuffer = static_cast<std::string>(streamSocket->getInputBuffer());
+						streamSocket->resetStringBuffer();
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
 							std::string submissionString{};
@@ -360,7 +362,8 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						std::string streamBuffer = streamSocket->getInputBuffer();
+						std::string streamBuffer = static_cast<std::string>(streamSocket->getInputBuffer());
+						streamSocket->resetStringBuffer();
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
 							while (theCurrentString.size() > 0) {

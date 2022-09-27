@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 			theData["deny"] = value.deny;
 			theData["type"] = value.type;
 			theData["id"] = std::to_string(value.id);
-			theData.pushBack("permission_overwrites",newData);
+			theData.pushBack("permission_overwrites", newData);
 		}
 		theData["default_auto_archive_duration"] = this->defaultAutoArchiveDuration;
 		theData["rate_limit_per_user"] = this->rateLimitPerUser;
@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 		theData["video_quality_mode"] = this->channelData.videoQualityMode;
 		theData["rate_limit_per_user"] = this->channelData.rateLimitPerUser;
 		theData["user_limit"] = this->channelData.userLimit;
-		theData["rtc_region"]= std::string{ this->channelData.rtcRgion };
+		theData["rtc_region"] = std::string{ this->channelData.rtcRgion };
 		theData["parent_id"] = std::string{ this->channelData.parentId };
 		theData["position"] = this->channelData.position;
 		theData["bitrate"] = this->channelData.bitrate;

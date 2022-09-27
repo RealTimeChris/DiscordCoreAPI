@@ -64,7 +64,6 @@ namespace DiscordCoreAPI {
 		bool isItFound{ false };
 		if (commandName.size() > 0) {
 			for (auto const& [keyFirst, value]: Globals::functions) {
-				
 				for (auto& key: keyFirst) {
 					if (key.find(convertToLowerCase(commandName)) != std::string::npos) {
 						isItFound = true;

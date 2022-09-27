@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 			JsonObject newData{};
 			newData["position"] = value.rolePosition;
 			newData["id"] = std::to_string(value.roleId);
-			theData.pushBack("",newData);
+			theData.pushBack("", newData);
 		}
 		return theData;
 	}

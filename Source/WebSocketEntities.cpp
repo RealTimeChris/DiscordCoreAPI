@@ -232,30 +232,29 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
-		if (theShard->areWeStillConnected() && theShard->currentState.load() == SSLShardState::Upgrading && theShard->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
-			theShard->currentMessage = theShard->getInputBuffer();
-			auto theFindValue = theShard->currentMessage.find("\r\n\r\n");
+	bool WebSocketMessageHandler::parseConnectionHeaders() noexcept {
+		if (static_cast<WebSocketSSLShard*>(this)->areWeStillConnected() && static_cast<WebSocketSSLShard*>(this)->currentState.load() == SSLShardState::Upgrading &&
+			static_cast<WebSocketSSLShard*>(this)->getInputBuffer().size() > 100) {
+			auto theFindValue = static_cast<WebSocketSSLShard*>(this)->getInputBuffer().find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
-				theShard->currentMessage.clear();
-				theShard->currentState.store(SSLShardState::Collecting_Hello);
+				static_cast<WebSocketSSLShard*>(this)->resetStringBuffer();
+				static_cast<WebSocketSSLShard*>(this)->currentState.store(SSLShardState::Collecting_Hello);
 				return true;
 			}
 		}
 		return false;
 	}
 
-	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard) noexcept {
-		if (theShard->inputBuffer.getUsedSpace() > 0) {
-			theShard->currentMessage += theShard->getInputBuffer();
-			if (theShard->currentMessage.size() < 4) {
+	bool WebSocketMessageHandler::parseMessage() noexcept {
+		if (static_cast<WebSocketSSLShard*>(this)->getInputBuffer().size() > 0) {
+			if (static_cast<WebSocketSSLShard*>(this)->getInputBuffer().size() < 4) {
 				return false;
 			}
 
-			theShard->dataOpCode = static_cast<WebSocketOpCode>(theShard->currentMessage[0] & ~webSocketFinishBit);
+			static_cast<WebSocketSSLShard*>(this)->dataOpCode = static_cast<WebSocketOpCode>(static_cast<WebSocketSSLShard*>(this)->getInputBuffer()[0] & ~webSocketFinishBit);
 			this->messageLength = 0;
 			this->messageOffset = 0;
-			switch (theShard->dataOpCode) {
+			switch (static_cast<WebSocketSSLShard*>(this)->dataOpCode) {
 				case WebSocketOpCode::Op_Continuation:
 					[[fallthrough]];
 				case WebSocketOpCode::Op_Text:
@@ -265,53 +264,54 @@ namespace DiscordCoreInternal {
 				case WebSocketOpCode::Op_Ping:
 					[[fallthrough]];
 				case WebSocketOpCode::Op_Pong: {
-					uint8_t length01 = theShard->currentMessage[1];
-					theShard->messageOffset = 2;
+					uint8_t length01 = static_cast<WebSocketSSLShard*>(this)->getInputBuffer()[1];
+					static_cast<WebSocketSSLShard*>(this)->messageOffset = 2;
 					if (length01 & webSocketMaskBit) {
 						return false;
 					}
-					theShard->messageLength = length01;
+					static_cast<WebSocketSSLShard*>(this)->messageLength = length01;
 					if (length01 == webSocketPayloadLengthMagicLarge) {
-						if (theShard->currentMessage.size() < 8) {
+						if (static_cast<WebSocketSSLShard*>(this)->getInputBuffer().size() < 8) {
 							return false;
 						}
-						uint8_t length03 = theShard->currentMessage[2];
-						uint8_t length04 = theShard->currentMessage[3];
-						theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
-						theShard->messageOffset += 2;
+						uint8_t length03 = static_cast<WebSocketSSLShard*>(this)->getInputBuffer()[2];
+						uint8_t length04 = static_cast<WebSocketSSLShard*>(this)->getInputBuffer()[3];
+						static_cast<WebSocketSSLShard*>(this)->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+						static_cast<WebSocketSSLShard*>(this)->messageOffset += 2;
 					} else if (length01 == webSocketPayloadLengthMagicHuge) {
-						if (theShard->currentMessage.size() < 10) {
+						if (static_cast<WebSocketSSLShard*>(this)->getInputBuffer().size() < 10) {
 							return false;
 						}
-						theShard->messageLength = 0;
+						static_cast<WebSocketSSLShard*>(this)->messageLength = 0;
 						for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-							uint8_t lengthNew = static_cast<uint8_t>(theShard->currentMessage[x]);
-							theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+							uint8_t lengthNew = static_cast<uint8_t>(static_cast<WebSocketSSLShard*>(this)->getInputBuffer()[x]);
+							static_cast<WebSocketSSLShard*>(this)->messageLength |=
+								static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
 						}
-						theShard->messageOffset += 8;
+						static_cast<WebSocketSSLShard*>(this)->messageOffset += 8;
 					}
-					if (theShard->currentMessage.size() < theShard->messageOffset + theShard->messageLength) {
+					if (static_cast<WebSocketSSLShard*>(this)->getInputBuffer().size() <
+						static_cast<WebSocketSSLShard*>(this)->messageOffset + static_cast<WebSocketSSLShard*>(this)->messageLength) {
 						return false;
 					} else {
-						theShard->currentMessage += theShard->getInputBuffer();
-						this->onMessageReceived(theShard->currentMessage.substr(theShard->messageOffset, theShard->messageLength));
-						theShard->currentMessage.erase(theShard->currentMessage.begin(), theShard->currentMessage.begin() + theShard->messageOffset + theShard->messageLength);
+						this->onMessageReceived();
+						static_cast<WebSocketSSLShard*>(this)->resetStringBuffer();
 						return true;
 					}
 				}
 				case WebSocketOpCode::Op_Close: {
-					uint16_t close = theShard->currentMessage[2] & 0xff;
+					uint16_t close = static_cast<WebSocketSSLShard*>(this)->getInputBuffer()[2] & 0xff;
 					close <<= 8;
-					close |= theShard->currentMessage[3] & 0xff;
-					theShard->closeCode = close;
-					if (theShard->closeCode) {
-						theShard->areWeResuming = true;
+					close |= static_cast<WebSocketSSLShard*>(this)->getInputBuffer()[3] & 0xff;
+					static_cast<WebSocketSSLShard*>(this)->closeCode = close;
+					if (static_cast<WebSocketSSLShard*>(this)->closeCode) {
+						static_cast<WebSocketSSLShard*>(this)->areWeResuming = true;
 					}
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed()
 							 << "WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
 								std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + " Closed; Code: "
-							 << +static_cast<uint16_t>(theShard->closeCode) << DiscordCoreAPI::reset() << endl
+							 << +static_cast<uint16_t>(static_cast<WebSocketSSLShard*>(this)->closeCode) << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
 					this->onClosed();
@@ -322,7 +322,6 @@ namespace DiscordCoreInternal {
 		} else {
 			return false;
 		}
-		
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, int32_t currentShardNew,
@@ -423,23 +422,23 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI::StopWatch theStopWatch{ 5s };
 	DiscordCoreAPI::StopWatch theStopWatchReal{ 50us };
 	std::atomic_int32_t theInt{};
-	bool WebSocketSSLShard::onMessageReceived(std::string_view theDataNew) noexcept {
+	bool WebSocketSSLShard::onMessageReceived() noexcept {
 		if (this->discordCoreClient) {
 			std::string refString{};
 			std::string& payload{ refString };
 			if (this->areWeStillConnected()) {
 				try {
 					bool returnValue{ false };
-					
+
 					simdjson::ondemand::document_stream::iterator::value_type theDocument{};
-					if (theDataNew.size() > 0) {
+					if (this->theFinalString.size() > 0) {
 						returnValue = true;
 
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							try {
 								theStopWatchReal.resetTimer();
-								payload = ErlPacker::parseEtfToJson(theDataNew);
-								
+								payload = ErlPacker::parseEtfToJson(this->theFinalString);
+
 								payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 								theDocument = this->theParser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity()));
 							} catch (...) {
@@ -451,7 +450,7 @@ namespace DiscordCoreInternal {
 								returnValue = false;
 							}
 						} else {
-							std::string payloadJson = static_cast<std::string>(theDataNew);
+							std::string payloadJson = static_cast<std::string>(this->theFinalString);
 							payloadJson.reserve(payloadJson.size() + simdjson::SIMDJSON_PADDING);
 							theDocument = this->theParser.iterate(simdjson::padded_string_view(payloadJson.data(), payloadJson.length(), payloadJson.capacity()));
 						}
@@ -487,10 +486,8 @@ namespace DiscordCoreInternal {
 						switch (theMessage.op) {
 							case 0: {
 								if (theMessage.t != "") {
-										
 									switch (EventConverter{ static_cast<std::string>(theMessage.t) }) {
-											
-										case 1: { 
+										case 1: {
 											ReadyData theData{};
 											simdjson::ondemand::value theObjectNew = theObject;
 											parseObject(theObjectNew, theData);
@@ -509,12 +506,12 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::Users::insertUser(std::move(theUser));
 											this->currentReconnectTries = 0;
 											break;
-											} 
+										}
 										case 2: {
 											this->currentState.store(SSLShardState::Authenticated);
 											this->currentReconnectTries = 0;
 											break;
-										}											
+										}
 										case 3: {
 											std::unique_ptr<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData>()
@@ -628,7 +625,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 											break;
-										} 
+										}
 										case 11: {
 											std::unique_ptr<DiscordCoreAPI::OnChannelPinsUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelPinsUpdateData>() };
 											DiscordCoreAPI::parseObject(theObject, dataPackage->dataPackage);
@@ -698,7 +695,6 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::parseObject(theObject, *theGuildPtr);
 											guildId = theGuildPtr->id.operator size_t();
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
-												
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 													DiscordCoreAPI::Guilds::insertGuild(*theGuildPtr);
 												}
@@ -709,7 +705,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 											break;
-										} 
+										}
 										case 19: {
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildUpdateEvent.theFunctions.size() > 0) {
 												std::unique_ptr<DiscordCoreAPI::GuildData> theGuildPtr{ std::make_unique<DiscordCoreAPI::GuildData>() };
@@ -736,9 +732,8 @@ namespace DiscordCoreInternal {
 													DiscordCoreAPI::Guilds::removeGuild(theGuild->id);
 												}
 												for (auto& value: theGuild->members) {
-													DiscordCoreAPI::GuildMemberData theGuildMember = DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync(
-														{ .guildMemberId = value, .guildId = guildId })
-																										 .get();
+													DiscordCoreAPI::GuildMemberData theGuildMember =
+														DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value, .guildId = guildId }).get();
 													DiscordCoreAPI::GuildMembers::removeGuildMember(theGuildMember);
 												}
 												for (auto& value: theGuild->channels) {
@@ -753,7 +748,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 											break;
-										} 
+										}
 										case 21: {
 											std::unique_ptr<DiscordCoreAPI::OnGuildBanAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildBanAddData>() };
 											std::string_view theString{};
@@ -865,11 +860,9 @@ namespace DiscordCoreInternal {
 													}
 												}
 												if (this->discordCoreClient->eventManager.onGuildMemberRemoveEvent.theFunctions.size() > 0) {
-													DiscordCoreAPI::OnGuildMemberRemoveData dataPackage{
-														std::make_unique<DiscordCoreAPI::UserData>(
-															DiscordCoreAPI::Users::getCachedUserAsync({ .userId = userId }).get()),
-														this->discordCoreClient, userId
-													};
+													DiscordCoreAPI::OnGuildMemberRemoveData dataPackage{ std::make_unique<DiscordCoreAPI::UserData>(
+																											 DiscordCoreAPI::Users::getCachedUserAsync({ .userId = userId }).get()),
+														this->discordCoreClient, userId };
 													this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(dataPackage);
 												}
 											}
@@ -926,9 +919,8 @@ namespace DiscordCoreInternal {
 												}
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
 													DiscordCoreAPI::Roles::insertRole(std::move(theRole));
-													theRolePtr = &DiscordCoreAPI::Roles::cache.at(DiscordCoreAPI::Roles::getCachedRoleAsync(
-														{ .guildId = guildId, .roleId = roleId })
-																									  .get());
+													theRolePtr =
+														&DiscordCoreAPI::Roles::cache.at(DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = guildId, .roleId = roleId }).get());
 												} else {
 													theRolePtr = &theRole;
 												}
@@ -948,9 +940,8 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::Snowflake guildId{ theRole.guildId.operator size_t() };
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
 													DiscordCoreAPI::Roles::insertRole(std::move(theRole));
-													theRolePtr = &DiscordCoreAPI::Roles::cache.at(DiscordCoreAPI::Roles::getCachedRoleAsync(
-														{ .guildId = guildId, .roleId = roleId })
-																									  .get());
+													theRolePtr =
+														&DiscordCoreAPI::Roles::cache.at(DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = guildId, .roleId = roleId }).get());
 												} else {
 													theRolePtr = &theRole;
 												}
@@ -968,11 +959,9 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::Snowflake roleId = DiscordCoreAPI::Snowflake{ stoull(static_cast<std::string>(theString)) };
 												theObject["guild_hashes"]["guild_id"].get(theString);
 												DiscordCoreAPI::Snowflake guildId = DiscordCoreAPI::Snowflake{ stoull(static_cast<std::string>(theString)) };
-												
+
 												DiscordCoreAPI::OnRoleDeletionData dataPackage{ std::make_unique<DiscordCoreAPI::RoleData>(), guildId };
-												DiscordCoreAPI::RoleData theRole = DiscordCoreAPI::Roles::getCachedRoleAsync(
-													{ .guildId = guildId, .roleId = roleId })
-																					   .get();
+												DiscordCoreAPI::RoleData theRole = DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = guildId, .roleId = roleId }).get();
 												DiscordCoreAPI::GuildData theGuild{};
 												theGuild.id = guildId.operator size_t();
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
@@ -1035,7 +1024,7 @@ namespace DiscordCoreInternal {
 											};
 											std::string_view theString{};
 											theObject["user_id"].get(theString);
-											dataPackage->userId= DiscordCoreAPI::strtoull(theString.data());
+											dataPackage->userId = DiscordCoreAPI::strtoull(theString.data());
 											theObject["guild_id"].get(theString);
 											dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
 											theObject["guild_scheduled_event_id"].get(theString);
@@ -1181,7 +1170,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 											break;
-										} 
+										}
 										case 42: {
 											std::unique_ptr<DiscordCoreAPI::OnInviteCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInviteCreationData>() };
 											DiscordCoreAPI::parseObject(theObject, dataPackage->invite);
@@ -1250,7 +1239,7 @@ namespace DiscordCoreInternal {
 											dataPackage->channelId = DiscordCoreAPI::strtoull(theString.data());
 											simdjson::ondemand::array theArray{};
 											theObject["ids"].get(theArray);
-											for (auto value : theArray) {
+											for (auto value: theArray) {
 												dataPackage->ids.emplace_back(DiscordCoreAPI::strtoull(value.get_string().take_value().data()));
 											}
 											this->discordCoreClient->eventManager.onMessageDeleteBulkEvent(*dataPackage);
@@ -1299,7 +1288,7 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::parseObject(theObject, dataPackage->presenceData);
 											this->discordCoreClient->eventManager.onPresenceUpdateEvent(*dataPackage);
 											break;
-										} 
+										}
 										case 53: {
 											std::unique_ptr<DiscordCoreAPI::OnStageInstanceCreationData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnStageInstanceCreationData>()
@@ -1409,7 +1398,7 @@ namespace DiscordCoreInternal {
 
 											this->discordCoreClient->eventManager.onVoiceServerUpdateEvent(*dataPackage);
 											break;
-										} 
+										}
 										case 60: {
 											std::unique_ptr<DiscordCoreAPI::OnWebhookUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnWebhookUpdateData>() };
 											std::string_view theString{};
@@ -1420,11 +1409,9 @@ namespace DiscordCoreInternal {
 											this->discordCoreClient->eventManager.onWebhookUpdateEvent(*dataPackage);
 											break;
 										}
-										
 									}
-									
 								}
-								
+
 								break;
 							}
 							case 1: {
@@ -1434,8 +1421,7 @@ namespace DiscordCoreInternal {
 							case 7: {
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
-										 << "Shard [" + std::to_string(this->shard[0]) + "," +
-											std::to_string(this->shard[1]) + "]" + " Reconnecting (Type 7)!"
+										 << "Shard [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + " Reconnecting (Type 7)!"
 										 << DiscordCoreAPI::reset() << endl
 										 << endl;
 								}
@@ -1449,8 +1435,7 @@ namespace DiscordCoreInternal {
 								parseObject(theObject, theData);
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
-										 << "Shard [" + std::to_string(this->shard[0]) + "," +
-											std::to_string(this->shard[1]) + "]" + " Reconnecting (Type 9)!"
+										 << "Shard [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + " Reconnecting (Type 9)!"
 										 << DiscordCoreAPI::reset() << endl
 										 << endl;
 								}
@@ -1549,9 +1534,9 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketSSLShard::handleBuffer() noexcept {
 		if (this->currentState.load() == SSLShardState::Upgrading) {
-			return this->parseConnectionHeaders(this);
+			return this->parseConnectionHeaders();
 		}
-		while (this->parseMessage(this)) {
+		while (this->parseMessage()) {
 		}
 		return false;
 	}
@@ -1690,7 +1675,7 @@ namespace DiscordCoreInternal {
 							if (theStopWatch.hasTimePassed()) {
 								this->theShardMap[thePackageNew.currentShard]->onClosed();
 								return;
-							}		
+							}
 							theResult = this->theShardMap[thePackageNew.currentShard]->processIO(10);
 							if (theResult != ProcessIOResult::No_Error) {
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1705,7 +1690,7 @@ namespace DiscordCoreInternal {
 						}
 					}
 					if (this->theShardMap[thePackageNew.currentShard]->areWeStillConnected()) {
-						this->theShardMap[thePackageNew.currentShard]->parseMessage(this->theShardMap[thePackageNew.currentShard].get());
+						this->theShardMap[thePackageNew.currentShard]->parseMessage();
 					}
 					std::this_thread::sleep_for(1ms);
 				}
@@ -1785,7 +1770,7 @@ namespace DiscordCoreInternal {
 				}
 				bool areWeConnected{ false };
 				for (auto& value: theVector) {
-					if (!static_cast<WebSocketSSLShard*>(value) ->areWeConnecting.load()) {
+					if (!static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
 						if (value->areWeStillConnected()) {
 							value->handleBuffer();
 							static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
@@ -1795,7 +1780,7 @@ namespace DiscordCoreInternal {
 				}
 				if (!areWeConnected) {
 					std::this_thread::sleep_for(1ms);
-				}			
+				}
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {

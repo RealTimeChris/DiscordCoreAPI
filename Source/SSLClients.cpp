@@ -210,8 +210,7 @@ namespace DiscordCoreInternal {
 		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
 			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
 			return this->theArray.size() - freeSpace;
-		}			
-		else {
+		} else {
 			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
 			return this->theArray.size() - freeSpace;
 		}
@@ -297,9 +296,7 @@ namespace DiscordCoreInternal {
 		this->head = 0;
 	}
 
-	SSLDataInterface::SSLDataInterface() noexcept {
-		this->theFinalString.resize(1024 * 1024);
-	}
+	SSLDataInterface::SSLDataInterface() noexcept {}
 
 	bool SSLConnectionInterface::initialize() noexcept {
 		if (SSLConnectionInterface::context = SSL_CTX_new(TLS_client_method()); SSLConnectionInterface::context == nullptr) {
@@ -319,7 +316,9 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	SSLClient::SSLClient() noexcept {}
+	SSLClient::SSLClient() noexcept {
+		this->theFinalString.resize(1024 * 1024);
+	}
 
 	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
@@ -364,7 +363,7 @@ namespace DiscordCoreInternal {
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::connect::setsockopt(), to: "+baseUrl) << endl;
+				cout << reportError("SSLClient::connect::setsockopt(), to: " + baseUrl) << endl;
 			}
 			return false;
 		}
@@ -477,16 +476,21 @@ namespace DiscordCoreInternal {
 		return theReturnValue;
 	}
 
-	std::string SSLClient::getInputBuffer() noexcept {
-		std::string theStringNew{};
+	void SSLClient::resetStringBuffer() noexcept {
+		this->currentStringSize = 0;
+	}
+
+	std::string_view SSLClient::getInputBuffer() noexcept {
 		if (!this->inputBuffer.getCurrentTail()->isItEmpty()) {
 			auto theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
-			theStringNew.resize(theSize);
-			memcpy(theStringNew.data(), this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize);
+			this->currentStringSize += theSize;
+			memcpy(this->theFinalString.data() + this->currentStringSize, this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize);
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
-		return theStringNew;
+		std::string_view theString{ this->theFinalString.data(), static_cast<size_t>(this->currentStringSize) };
+		std::cout << "THE STRING: " << theString << std::endl;
+		return theString;
 	}
 
 	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
@@ -676,7 +680,7 @@ namespace DiscordCoreInternal {
 	int64_t SSLClient::getBytesRead() noexcept {
 		return this->bytesRead;
 	}
-	
+
 	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept {
 		this->streamType = streamTypeNew;
 	}
