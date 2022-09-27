@@ -188,8 +188,6 @@ namespace DiscordCoreAPI {
 
 		bool onMessageReceived(std::string_view theData) noexcept;
 
-		bool parseMessage(SSLClient* theShard) noexcept;
-
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
@@ -200,7 +198,7 @@ namespace DiscordCoreAPI {
 
 		bool handleBuffer() noexcept;
 
-		bool parseMessage(VoiceConnection* theShard) noexcept;
+		bool parseMessage() noexcept;
 
 		void runWebSocket(std::stop_token) noexcept;
 

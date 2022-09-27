@@ -203,8 +203,8 @@ namespace DiscordCoreInternal {
 
 	enum class RingBufferAccessType { Read = 0, Write = 1 };
 
-	struct DiscordCoreAPI_Dll RingBuffer {
-		RingBuffer() noexcept = default;
+	class DiscordCoreAPI_Dll RingBuffer {
+	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
 		char* getCurrentTail();
 		char* getCurrentHead();
@@ -220,18 +220,24 @@ namespace DiscordCoreInternal {
 		int64_t tail{};
 	};
 
-	struct DiscordCoreAPI_Dll RingBufferArray {
-		RingBufferArray() noexcept = default;
+	class DiscordCoreAPI_Dll RingBufferArray {
+	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
+		std::string_view getStringView(size_t offSet, size_t size);
 		RingBuffer* getCurrentTail();
 		RingBuffer* getCurrentHead();
+		size_t getTotalSize();
 		size_t getUsedSpace();
+		void clearString();
 		bool isItEmpty();
 		bool isItFull();
 		void clear();
 
 	  protected:
+		std::unique_ptr<char[]> referenceString{};
 		std::array<RingBuffer, 64> theArray{};
+		size_t currentStringUsed{};
+		size_t currentStringSize{};
 		bool areWeFull{ false };
 		int64_t head{};
 		int64_t tail{};
@@ -245,7 +251,7 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
 
-		virtual std::string getInputBuffer() noexcept = 0;
+		virtual std::string_view getInputBuffer() noexcept = 0;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
@@ -254,7 +260,6 @@ namespace DiscordCoreInternal {
 	  protected:
 		RingBufferArray outputBuffer{};
 		RingBufferArray inputBuffer{};
-		std::string theFinalString{};
 		int64_t bytesRead{ 0 };
 	};
 
@@ -270,9 +275,9 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
-		virtual bool handleBuffer() noexcept = 0;
+		std::string_view getInputBuffer() noexcept;
 
-		std::string getInputBuffer() noexcept;
+		virtual bool handleBuffer() noexcept = 0;
 
 		bool areWeStillConnected() noexcept;
 

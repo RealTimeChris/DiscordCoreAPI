@@ -266,80 +266,87 @@ namespace DiscordCoreAPI {
 
 	bool VoiceConnection::handleBuffer() noexcept {
 		if (this->currentState.load() == DiscordCoreInternal::SSLShardState::Upgrading) {
-			return this->parseConnectionHeaders(this);
+			return this->parseConnectionHeaders();
 		}
-		return VoiceConnection::parseMessage(this);
+		return VoiceConnection::parseMessage();
 	}
 
-	bool VoiceConnection::parseMessage(VoiceConnection* theShard) noexcept {
-		if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 4) {
-			return false;
-		}
-		theShard->dataOpCode = static_cast<DiscordCoreInternal::WebSocketOpCode>(WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[0] & ~webSocketFinishBit);
-		this->messageLength = 0;
-		this->messageOffset = 0;
-		switch (theShard->dataOpCode) {
-			case DiscordCoreInternal::WebSocketOpCode::Op_Continuation:
-				[[fallthrough]];
-			case DiscordCoreInternal::WebSocketOpCode::Op_Text:
-				[[fallthrough]];
-			case DiscordCoreInternal::WebSocketOpCode::Op_Binary:
-				[[fallthrough]];
-			case DiscordCoreInternal::WebSocketOpCode::Op_Ping:
-				[[fallthrough]];
-			case DiscordCoreInternal::WebSocketOpCode::Op_Pong: {
-				uint8_t length01 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[1];
-				theShard->messageOffset = 2;
-				if (length01 & webSocketMaskBit) {
-					return false;
+	bool VoiceConnection::parseMessage() noexcept {
+		if (WebSocketSSLShard::inputBuffer.getUsedSpace() > 0) {
+			if (WebSocketSSLShard::inputBuffer.getCurrentTail()->getUsedSpace() < 4) {
+				return true;
+			}
+
+			WebSocketSSLShard::dataOpCode =
+				static_cast<DiscordCoreInternal::WebSocketOpCode>(WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[0] & ~webSocketFinishBit);
+			this->messageLength = 0;
+			this->messageOffset = 0;
+			switch (WebSocketSSLShard::dataOpCode) {
+				case DiscordCoreInternal::WebSocketOpCode::Op_Continuation :
+					[[fallthrough]];
+				case DiscordCoreInternal::WebSocketOpCode::Op_Text:
+					[[fallthrough]];
+				case DiscordCoreInternal::WebSocketOpCode::Op_Binary:
+					[[fallthrough]];
+				case DiscordCoreInternal::WebSocketOpCode::Op_Ping:
+					[[fallthrough]];
+				case DiscordCoreInternal::WebSocketOpCode::Op_Pong: {
+					uint8_t length01 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[1];
+					WebSocketSSLShard::messageOffset = 2;
+					if (length01 & webSocketMaskBit) {
+						return true;
+					}
+					this->messageLength = length01;
+					if (length01 == webSocketPayloadLengthMagicLarge) {
+						if (WebSocketSSLShard::inputBuffer.getCurrentTail()->getUsedSpace() < 8) {
+							return true;
+						}
+						uint8_t length03 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[2];
+						uint8_t length04 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[3];
+						this->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+						this->messageOffset += 2;
+					} else if (length01 == webSocketPayloadLengthMagicHuge) {
+						if (WebSocketSSLShard::inputBuffer.getCurrentTail()->getUsedSpace() < 10) {
+							return true;
+						}
+						WebSocketSSLShard::messageLength = 0;
+						for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
+							uint8_t lengthNew = static_cast<uint8_t>(WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[x]);
+							WebSocketSSLShard::messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+						}
+						WebSocketSSLShard::messageOffset += 8;
+					}
+					if (WebSocketSSLShard::inputBuffer.getTotalSize() < WebSocketSSLShard::messageOffset + WebSocketSSLShard::messageLength) {
+						return true;
+					} else {
+						this->onMessageReceived(WebSocketSSLShard::inputBuffer.getStringView(WebSocketSSLShard::messageOffset, WebSocketSSLShard::messageLength));
+						WebSocketSSLShard::inputBuffer.clearString();
+						return true;
+					}
 				}
-				theShard->messageLength = length01;
-				if (length01 == webSocketPayloadLengthMagicLarge) {
-					if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 8) {
-						return false;
+				case DiscordCoreInternal::WebSocketOpCode::Op_Close : {
+					uint16_t close = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[2] & 0xff;
+					close <<= 8;
+					close |= WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[3] & 0xff;
+					WebSocketSSLShard::closeCode = close;
+					if (WebSocketSSLShard::closeCode) {
+						WebSocketSSLShard::areWeResuming = true;
 					}
-					uint8_t length03 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[2];
-					uint8_t length04 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[3];
-					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
-					theShard->messageOffset += 2;
-				} else if (length01 == webSocketPayloadLengthMagicHuge) {
-					if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 10) {
-						return false;
+					if (this->configManager->doWePrintWebSocketErrorMessages()) {
+						cout << DiscordCoreAPI::shiftToBrightRed()
+							 << "WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
+								std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + " Closed; Code: "
+							 << +static_cast<uint16_t>(WebSocketSSLShard::closeCode) << DiscordCoreAPI::reset() << endl
+							 << endl;
 					}
-					theShard->messageLength = 0;
-					for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-						uint8_t lengthNew = static_cast<uint8_t>(WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[x]);
-						theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
-					}
-					theShard->messageOffset += 8;
-				}
-				if (WebSocketSSLShard::inputBuffer.getUsedSpace() < theShard->messageOffset + theShard->messageLength) {
-					return false;
-				} else {
-					this->onMessageReceived(WebSocketSSLShard::getInputBuffer());
+					this->onClosed();
 					return true;
 				}
 			}
-			case DiscordCoreInternal::WebSocketOpCode::Op_Close: {
-				uint16_t close = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[2] & 0xff;
-				close <<= 8;
-				close |= WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[3] & 0xff;
-				theShard->closeCode = close;
-				if (theShard->closeCode) {
-					theShard->areWeResuming = true;
-				}
-				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightRed()
-						 << "WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
-							std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + " Closed; Code: "
-						 << +static_cast<uint16_t>(theShard->closeCode) << DiscordCoreAPI::reset() << endl
-						 << endl;
-				}
-				this->onClosed();
-				return false;
-			}
+			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	void VoiceConnection::sendSpeakingMessage(const bool isSpeaking) noexcept {
@@ -452,7 +459,7 @@ namespace DiscordCoreAPI {
 				return false;
 			}
 			if (WebSocketSSLShard::inputBuffer.getUsedSpace() > 0) {
-				if (!VoiceConnection::parseMessage(this)) {
+				if (!VoiceConnection::parseMessage()) {
 					return true;
 				}
 			}
