@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::SoundCloudAPI;
 		friend class DiscordCoreInternal::YouTubeAPI;
 		friend class VoiceConnection;
-		
+
 		DiscordCoreInternal::Event<CoRoutine<void>, SongCompletionEventData> onSongCompletionEvent{};
 		UnboundedMessageBlock<AudioFrameData> audioDataBuffer{};
 		DiscordCoreInternal::EventDelegateToken eventToken{};

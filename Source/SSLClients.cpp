@@ -210,8 +210,7 @@ namespace DiscordCoreInternal {
 		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
 			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
 			return this->theArray.size() - freeSpace;
-		}			
-		else {
+		} else {
 			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
 			return this->theArray.size() - freeSpace;
 		}
@@ -319,7 +318,8 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	SSLClient::SSLClient() noexcept {}
+	SSLClient::SSLClient() noexcept {
+	}
 
 	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
@@ -364,7 +364,7 @@ namespace DiscordCoreInternal {
 
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("SSLClient::connect::setsockopt(), to: "+baseUrl) << endl;
+				cout << reportError("SSLClient::connect::setsockopt(), to: " + baseUrl) << endl;
 			}
 			return false;
 		}
@@ -676,7 +676,7 @@ namespace DiscordCoreInternal {
 	int64_t SSLClient::getBytesRead() noexcept {
 		return this->bytesRead;
 	}
-	
+
 	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept {
 		this->streamType = streamTypeNew;
 	}

@@ -322,7 +322,6 @@ namespace DiscordCoreInternal {
 		} else {
 			return false;
 		}
-		
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, int32_t currentShardNew,
@@ -430,7 +429,7 @@ namespace DiscordCoreInternal {
 			if (this->areWeStillConnected()) {
 				try {
 					bool returnValue{ false };
-					
+
 					simdjson::ondemand::document_stream::iterator::value_type theDocument{};
 					if (theDataNew.size() > 0) {
 						returnValue = true;
@@ -439,7 +438,7 @@ namespace DiscordCoreInternal {
 							try {
 								theStopWatchReal.resetTimer();
 								payload = ErlPacker::parseEtfToJson(theDataNew);
-								
+
 								payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 								theDocument = this->theParser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity()));
 							} catch (...) {
@@ -487,10 +486,8 @@ namespace DiscordCoreInternal {
 						switch (theMessage.op) {
 							case 0: {
 								if (theMessage.t != "") {
-										
 									switch (EventConverter{ static_cast<std::string>(theMessage.t) }) {
-											
-										case 1: { 
+										case 1: {
 											ReadyData theData{};
 											simdjson::ondemand::value theObjectNew = theObject;
 											parseObject(theObjectNew, theData);
@@ -509,12 +506,12 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::Users::insertUser(std::move(theUser));
 											this->currentReconnectTries = 0;
 											break;
-											} 
+										}
 										case 2: {
 											this->currentState.store(SSLShardState::Authenticated);
 											this->currentReconnectTries = 0;
 											break;
-										}											
+										}
 										case 3: {
 											std::unique_ptr<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData>()
@@ -628,7 +625,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 											break;
-										} 
+										}
 										case 11: {
 											std::unique_ptr<DiscordCoreAPI::OnChannelPinsUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnChannelPinsUpdateData>() };
 											DiscordCoreAPI::parseObject(theObject, dataPackage->dataPackage);
@@ -698,7 +695,6 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::parseObject(theObject, *theGuildPtr);
 											guildId = theGuildPtr->id.operator size_t();
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
-												
 												if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 													DiscordCoreAPI::Guilds::insertGuild(*theGuildPtr);
 												}
@@ -709,7 +705,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 											break;
-										} 
+										}
 										case 19: {
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildUpdateEvent.theFunctions.size() > 0) {
 												std::unique_ptr<DiscordCoreAPI::GuildData> theGuildPtr{ std::make_unique<DiscordCoreAPI::GuildData>() };
@@ -736,9 +732,8 @@ namespace DiscordCoreInternal {
 													DiscordCoreAPI::Guilds::removeGuild(theGuild->id);
 												}
 												for (auto& value: theGuild->members) {
-													DiscordCoreAPI::GuildMemberData theGuildMember = DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync(
-														{ .guildMemberId = value, .guildId = guildId })
-																										 .get();
+													DiscordCoreAPI::GuildMemberData theGuildMember =
+														DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value, .guildId = guildId }).get();
 													DiscordCoreAPI::GuildMembers::removeGuildMember(theGuildMember);
 												}
 												for (auto& value: theGuild->channels) {
@@ -753,7 +748,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 											break;
-										} 
+										}
 										case 21: {
 											std::unique_ptr<DiscordCoreAPI::OnGuildBanAddData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildBanAddData>() };
 											std::string_view theString{};
@@ -865,11 +860,9 @@ namespace DiscordCoreInternal {
 													}
 												}
 												if (this->discordCoreClient->eventManager.onGuildMemberRemoveEvent.theFunctions.size() > 0) {
-													DiscordCoreAPI::OnGuildMemberRemoveData dataPackage{
-														std::make_unique<DiscordCoreAPI::UserData>(
-															DiscordCoreAPI::Users::getCachedUserAsync({ .userId = userId }).get()),
-														this->discordCoreClient, userId
-													};
+													DiscordCoreAPI::OnGuildMemberRemoveData dataPackage{ std::make_unique<DiscordCoreAPI::UserData>(
+																											 DiscordCoreAPI::Users::getCachedUserAsync({ .userId = userId }).get()),
+														this->discordCoreClient, userId };
 													this->discordCoreClient->eventManager.onGuildMemberRemoveEvent(dataPackage);
 												}
 											}
@@ -926,9 +919,8 @@ namespace DiscordCoreInternal {
 												}
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
 													DiscordCoreAPI::Roles::insertRole(std::move(theRole));
-													theRolePtr = &DiscordCoreAPI::Roles::cache.at(DiscordCoreAPI::Roles::getCachedRoleAsync(
-														{ .guildId = guildId, .roleId = roleId })
-																									  .get());
+													theRolePtr =
+														&DiscordCoreAPI::Roles::cache.at(DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = guildId, .roleId = roleId }).get());
 												} else {
 													theRolePtr = &theRole;
 												}
@@ -948,9 +940,8 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::Snowflake guildId{ theRole.guildId.operator size_t() };
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
 													DiscordCoreAPI::Roles::insertRole(std::move(theRole));
-													theRolePtr = &DiscordCoreAPI::Roles::cache.at(DiscordCoreAPI::Roles::getCachedRoleAsync(
-														{ .guildId = guildId, .roleId = roleId })
-																									  .get());
+													theRolePtr =
+														&DiscordCoreAPI::Roles::cache.at(DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = guildId, .roleId = roleId }).get());
 												} else {
 													theRolePtr = &theRole;
 												}
@@ -968,11 +959,9 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::Snowflake roleId = DiscordCoreAPI::Snowflake{ stoull(static_cast<std::string>(theString)) };
 												theObject["guild_hashes"]["guild_id"].get(theString);
 												DiscordCoreAPI::Snowflake guildId = DiscordCoreAPI::Snowflake{ stoull(static_cast<std::string>(theString)) };
-												
+
 												DiscordCoreAPI::OnRoleDeletionData dataPackage{ std::make_unique<DiscordCoreAPI::RoleData>(), guildId };
-												DiscordCoreAPI::RoleData theRole = DiscordCoreAPI::Roles::getCachedRoleAsync(
-													{ .guildId = guildId, .roleId = roleId })
-																					   .get();
+												DiscordCoreAPI::RoleData theRole = DiscordCoreAPI::Roles::getCachedRoleAsync({ .guildId = guildId, .roleId = roleId }).get();
 												DiscordCoreAPI::GuildData theGuild{};
 												theGuild.id = guildId.operator size_t();
 												if (DiscordCoreAPI::Roles::doWeCacheRoles) {
@@ -1035,7 +1024,7 @@ namespace DiscordCoreInternal {
 											};
 											std::string_view theString{};
 											theObject["user_id"].get(theString);
-											dataPackage->userId= DiscordCoreAPI::strtoull(theString.data());
+											dataPackage->userId = DiscordCoreAPI::strtoull(theString.data());
 											theObject["guild_id"].get(theString);
 											dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
 											theObject["guild_scheduled_event_id"].get(theString);
@@ -1181,7 +1170,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 											break;
-										} 
+										}
 										case 42: {
 											std::unique_ptr<DiscordCoreAPI::OnInviteCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInviteCreationData>() };
 											DiscordCoreAPI::parseObject(theObject, dataPackage->invite);
@@ -1250,7 +1239,7 @@ namespace DiscordCoreInternal {
 											dataPackage->channelId = DiscordCoreAPI::strtoull(theString.data());
 											simdjson::ondemand::array theArray{};
 											theObject["ids"].get(theArray);
-											for (auto value : theArray) {
+											for (auto value: theArray) {
 												dataPackage->ids.emplace_back(DiscordCoreAPI::strtoull(value.get_string().take_value().data()));
 											}
 											this->discordCoreClient->eventManager.onMessageDeleteBulkEvent(*dataPackage);
@@ -1299,7 +1288,7 @@ namespace DiscordCoreInternal {
 											DiscordCoreAPI::parseObject(theObject, dataPackage->presenceData);
 											this->discordCoreClient->eventManager.onPresenceUpdateEvent(*dataPackage);
 											break;
-										} 
+										}
 										case 53: {
 											std::unique_ptr<DiscordCoreAPI::OnStageInstanceCreationData> dataPackage{
 												std::make_unique<DiscordCoreAPI::OnStageInstanceCreationData>()
@@ -1409,7 +1398,7 @@ namespace DiscordCoreInternal {
 
 											this->discordCoreClient->eventManager.onVoiceServerUpdateEvent(*dataPackage);
 											break;
-										} 
+										}
 										case 60: {
 											std::unique_ptr<DiscordCoreAPI::OnWebhookUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnWebhookUpdateData>() };
 											std::string_view theString{};
@@ -1420,11 +1409,9 @@ namespace DiscordCoreInternal {
 											this->discordCoreClient->eventManager.onWebhookUpdateEvent(*dataPackage);
 											break;
 										}
-										
 									}
-									
 								}
-								
+
 								break;
 							}
 							case 1: {
@@ -1434,8 +1421,7 @@ namespace DiscordCoreInternal {
 							case 7: {
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
-										 << "Shard [" + std::to_string(this->shard[0]) + "," +
-											std::to_string(this->shard[1]) + "]" + " Reconnecting (Type 7)!"
+										 << "Shard [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + " Reconnecting (Type 7)!"
 										 << DiscordCoreAPI::reset() << endl
 										 << endl;
 								}
@@ -1449,8 +1435,7 @@ namespace DiscordCoreInternal {
 								parseObject(theObject, theData);
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
 									cout << DiscordCoreAPI::shiftToBrightBlue()
-										 << "Shard [" + std::to_string(this->shard[0]) + "," +
-											std::to_string(this->shard[1]) + "]" + " Reconnecting (Type 9)!"
+										 << "Shard [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + " Reconnecting (Type 9)!"
 										 << DiscordCoreAPI::reset() << endl
 										 << endl;
 								}
@@ -1690,7 +1675,7 @@ namespace DiscordCoreInternal {
 							if (theStopWatch.hasTimePassed()) {
 								this->theShardMap[thePackageNew.currentShard]->onClosed();
 								return;
-							}		
+							}
 							theResult = this->theShardMap[thePackageNew.currentShard]->processIO(10);
 							if (theResult != ProcessIOResult::No_Error) {
 								if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1785,7 +1770,7 @@ namespace DiscordCoreInternal {
 				}
 				bool areWeConnected{ false };
 				for (auto& value: theVector) {
-					if (!static_cast<WebSocketSSLShard*>(value) ->areWeConnecting.load()) {
+					if (!static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
 						if (value->areWeStillConnected()) {
 							static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
 							areWeConnected = true;
@@ -1794,7 +1779,7 @@ namespace DiscordCoreInternal {
 				}
 				if (!areWeConnected) {
 					std::this_thread::sleep_for(1ms);
-				}			
+				}
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {

@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::SoundCloudAPI* DiscordCoreClient::getSoundCloudAPI(Snowflake guildId) {
-		GuildData theGuildNew{}; 
+		GuildData theGuildNew{};
 		theGuildNew.id = guildId;
 		GuildData* theGuild = &Guilds::cache.at(theGuildNew);
 		if (!Globals::soundCloudAPIMap.contains(guildId)) {

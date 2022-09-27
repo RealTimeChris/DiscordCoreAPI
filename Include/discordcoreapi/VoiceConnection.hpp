@@ -45,9 +45,7 @@ namespace DiscordCoreAPI {
 		std::string theKey{};
 	};
 
-	struct DiscordCoreAPI_Dll SpeakingPayloadData {
-
-	};
+	struct DiscordCoreAPI_Dll SpeakingPayloadData {};
 
 	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
 		struct OpusDecoderDeleter {
@@ -193,7 +191,7 @@ namespace DiscordCoreAPI {
 		bool parseMessage(SSLClient* theShard) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
-		
+
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
 		bool sendTextMessage(std::string& theMessage, bool priority) noexcept;

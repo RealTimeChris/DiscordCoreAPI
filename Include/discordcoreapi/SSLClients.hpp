@@ -218,7 +218,6 @@ namespace DiscordCoreInternal {
 		bool areWeFull{ false };
 		int64_t head{};
 		int64_t tail{};
-
 	};
 
 	struct DiscordCoreAPI_Dll RingBufferArray {

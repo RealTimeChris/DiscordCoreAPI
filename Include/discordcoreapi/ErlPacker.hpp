@@ -103,7 +103,7 @@ namespace DiscordCoreInternal {
 		void appendMapHeader(uint32_t);
 
 		void appendNewFloatExt(double);
-		
+
 		void appendVersion();
 
 		void appendNilExt();
@@ -150,7 +150,7 @@ namespace DiscordCoreInternal {
 		std::string parseSmallBigExt();
 
 		std::string parseLargeBigExt();
-		
+
 		std::string parseAtomUtf8Ext();
 
 		std::string parseIntegerExt();
@@ -164,7 +164,6 @@ namespace DiscordCoreInternal {
 		std::string parseNilExt();
 
 		std::string parseMapExt();
-		
 	};
 }// namespace DiscordCoreInternal
 #endif

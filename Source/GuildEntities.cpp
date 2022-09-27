@@ -33,9 +33,9 @@
 #include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
-	
+
 	CreateGuildData::operator JsonObject() {
-		JsonObject theData{}; 
+		JsonObject theData{};
 		theData["default_message_notifications"] = this->defaultMessageNotifications;
 		theData["explicit_content_filter"] = this->explicitContentFilter;
 		theData["system_channel_flags"] = this->systemChannelFlags;
@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 			newData["name"] = std::string{ value.name };
 			newData["id"] = std::to_string(value.id);
 			newData["type"] = value.type;
-			theData.pushBack("channels",newData);
+			theData.pushBack("channels", newData);
 		}
 		for (auto& value: this->roles) {
 			JsonObject newData{};
@@ -103,13 +103,13 @@ namespace DiscordCoreAPI {
 			if (value.emojiId.operator size_t() != 0) {
 				newData["emoji_id"] = std::to_string(value.emojiId);
 			}
-			theData.pushBack("welcome_channels",newData);
+			theData.pushBack("welcome_channels", newData);
 		}
 		theData["description"] = this->description;
 		theData["enabled"] = this->enabled;
 		return theData;
 	}
-	
+
 	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute, StreamType streamTypeNew,
 		StreamInfo streamInfoNew) {
 		if (DiscordCoreClient::getVoiceConnection(this->id) && DiscordCoreClient::getVoiceConnection(this->id)->areWeConnected()) {
@@ -352,7 +352,7 @@ namespace DiscordCoreAPI {
 		this->guildId = dataPackage.id;
 		this->name = dataPackage.name;
 	}
-	
+
 	ModifyGuildData::operator JsonObject() {
 		JsonObject theData{};
 		theData["premium_progress_bar_enabled"] = this->premiumProgressBarEnabled;
@@ -384,7 +384,7 @@ namespace DiscordCoreAPI {
 		}
 		return theData;
 	}
-	
+
 	void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
 		Guilds::doWeCacheGuilds = configManagerNew->doWeCacheGuilds();
 		Guilds::discordCoreClient = discordCoreClientNew;

@@ -222,10 +222,10 @@ namespace DiscordCoreAPI {
 
 		JsonObject& operator=(const char* theData) noexcept;
 		JsonObject(const char* theData) noexcept;
-		
+
 		JsonObject& operator=(std::string theData) noexcept;
 		JsonObject(std::string) noexcept;
-		
+
 		JsonObject& operator=(ValueType theType) noexcept;
 		JsonObject(ValueType theType) noexcept;
 
@@ -1521,7 +1521,6 @@ namespace DiscordCoreAPI {
 
 	template<typename TimeType> class StopWatch {
 	  public:
-
 		StopWatch<TimeType>& operator=(StopWatch<TimeType>&& other) noexcept {
 			if (this != &other) {
 				this->maxNumberOfTimeUnits.store(other.maxNumberOfTimeUnits.load());

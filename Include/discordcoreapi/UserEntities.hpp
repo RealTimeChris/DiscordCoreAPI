@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
