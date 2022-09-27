@@ -197,20 +197,23 @@ namespace DiscordCoreInternal {
 			if (this->head == this->tail) {
 				this->areWeFull = true;
 			}
-			if (this->tail != this->head) {
+			if (this->head != this->tail) {
 				this->areWeFull = false;
 			}
 		}
 	}
 
 	size_t RingBuffer::getUsedSpace() {
+		if (this->areWeFull) {
+			return this->theArray.size();
+		}
 		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
-			size_t theSize = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
-			return this->theArray.size() - theSize;
+			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+			return this->theArray.size() - freeSpace;
 		}			
 		else {
-			size_t theSize = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
-			return this->theArray.size() - theSize;
+			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+			return this->theArray.size() - freeSpace;
 		}
 	}
 
@@ -250,19 +253,22 @@ namespace DiscordCoreInternal {
 			if (this->head == this->tail) {
 				this->areWeFull = true;
 			}
-			if (this->tail != this->head) {
+			if (this->head != this->tail) {
 				this->areWeFull = false;
 			}
 		}
 	}
 
 	size_t RingBufferArray::getUsedSpace() {
+		if (this->areWeFull) {
+			return this->theArray.size();
+		}
 		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
-			size_t theSize = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
-			return this->theArray.size() - theSize;
+			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+			return this->theArray.size() - freeSpace;
 		} else {
-			size_t theSize = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
-			return this->theArray.size() - theSize;
+			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+			return this->theArray.size() - freeSpace;
 		}
 	}
 
@@ -286,11 +292,14 @@ namespace DiscordCoreInternal {
 	}
 
 	void RingBufferArray::clear() {
+		this->areWeFull = false;
 		this->tail = 0;
 		this->head = 0;
 	}
 
-	SSLDataInterface::SSLDataInterface() noexcept {}
+	SSLDataInterface::SSLDataInterface() noexcept {
+		this->theFinalString.resize(1024 * 1024);
+	}
 
 	bool SSLConnectionInterface::initialize() noexcept {
 		if (SSLConnectionInterface::context = SSL_CTX_new(TLS_client_method()); SSLConnectionInterface::context == nullptr) {
@@ -606,7 +615,8 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_NONE: {
 					if (writtenBytes > 0) {
-						this->outputBuffer.getCurrentTail()->modifyReadOrWritePosition(RingBufferAccessType::Read, writtenBytes);
+						std::cout << "WRITTEN BYTES: " << this->outputBuffer.getCurrentTail()->getCurrentTail() << std::endl;
+						this->outputBuffer.getCurrentTail()->clear();
 						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 					}
 					return true;
@@ -629,7 +639,7 @@ namespace DiscordCoreInternal {
 		if (!this->inputBuffer.isItFull()) {
 			do {
 				size_t readBytes{ 0 };
-				int64_t bytesToRead{ this->maxBufferSize };
+				int64_t bytesToRead{ 1024 * 16 };
 				auto returnValue{ SSL_read_ex(this->ssl, this->inputBuffer.getCurrentHead()->getCurrentHead(), bytesToRead, &readBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {

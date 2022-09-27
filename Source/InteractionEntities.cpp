@@ -423,7 +423,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath =
-			"/api/v10/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
+			"/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			workload.content = constructMultiPartData(dataPackage.data.operator DiscordCoreAPI::JsonObject(), dataPackage.data.data.files);
@@ -446,7 +446,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Interaction_Response };
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/api/v10/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/@original";
+		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/@original";
 		workload.callStack = "Interactions::getInteractionResponseAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -456,7 +456,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath =
-			"/api/v10/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
+			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			workload.content = constructMultiPartData(dataPackage.data.operator DiscordCoreAPI::JsonObject(), dataPackage.data.files);
@@ -473,7 +473,7 @@ namespace DiscordCoreAPI {
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath =
-			"/api/v10/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
+			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		workload.callStack = "Interactions::deleteInteractionResponseAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -482,7 +482,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Followup_Message };
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/api/v10/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken;
+		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			workload.content = constructMultiPartData(dataPackage.operator DiscordCoreAPI::JsonObject(), dataPackage.files);
@@ -498,7 +498,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath =
-			"/api/v10/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/" + std::to_string(dataPackage.messageId);
+			"/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Interactions::getFollowUpMessageAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -507,7 +507,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Followup_Message };
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/api/v10/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
+		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
 			std::to_string(dataPackage.messagePackage.messageId);
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
@@ -524,7 +524,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/api/v10/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
+		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
 			std::to_string(dataPackage.messagePackage.messageId);
 		workload.callStack = "Interactions::deleteFollowUpMessageToBeWrappe()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);

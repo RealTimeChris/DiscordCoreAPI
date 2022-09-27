@@ -253,9 +253,9 @@ namespace DiscordCoreInternal {
 		virtual ~SSLDataInterface() noexcept = default;
 
 	  protected:
-		int32_t maxBufferSize{ (1024 * 16) - 1 };
 		RingBufferArray outputBuffer{};
 		RingBufferArray inputBuffer{};
+		std::string theFinalString{};
 		int64_t bytesRead{ 0 };
 	};
 

@@ -398,7 +398,7 @@ namespace DiscordCoreInternal {
 
 	template<> void HttpsClient::submitWorkloadAndGetResult<void>(const HttpsWorkloadData& workload, void* theReturnValue) {
 		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
-		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com, 1.0)";
+		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
 		if (workload.payloadType == PayloadType::Application_Json) {
 			workload.headersToInsert["Content-Type"] = "application/json";
 		} else if (workload.payloadType == PayloadType::Multipart_Form) {
@@ -432,7 +432,7 @@ namespace DiscordCoreInternal {
 
 	HttpsResponseData HttpsClient::httpRequest(const HttpsWorkloadData& workload) {
 		if (workload.baseUrl == "") {
-			workload.baseUrl = "https://discord.com";
+			workload.baseUrl = "https://discord.com/api/v10";
 		}
 
 		RateLimitData& rateLimitData = *this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].get();
