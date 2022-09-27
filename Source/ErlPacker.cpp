@@ -225,19 +225,17 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::appendFalse() {
-		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 5, static_cast<uint8_t>('f'), static_cast<uint8_t>('a'), static_cast<uint8_t>('l'),
-			static_cast<uint8_t>('s'), static_cast<uint8_t>('e') };
+		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 5, 'f', 'a', 'l', 's', 'e' };
 		this->writeToBuffer(bufferNew);
 	}
 
 	void ErlPacker::appendTrue() {
-		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 4, static_cast<uint8_t>('t'), static_cast<uint8_t>('r'), static_cast<uint8_t>('u'),
-			static_cast<uint8_t>('e') };
+		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 4, 't', 'r', 'u', 'e' };
 		this->writeToBuffer(bufferNew);
 	}
 
 	void ErlPacker::appendNil() {
-		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 3, static_cast<uint8_t>('n'), static_cast<uint8_t>('i'), static_cast<uint8_t>('l') };
+		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 3, 'n', 'i', 'l' };
 		this->writeToBuffer(bufferNew);
 	}
 
