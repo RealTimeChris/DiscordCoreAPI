@@ -349,7 +349,8 @@ namespace DiscordCoreInternal {
 		this->head = 0;
 	}
 
-	SSLDataInterface::SSLDataInterface() noexcept {}
+	SSLDataInterface::SSLDataInterface() noexcept {
+	}
 
 	bool SSLConnectionInterface::initialize() noexcept {
 		if (SSLConnectionInterface::context = SSL_CTX_new(TLS_client_method()); SSLConnectionInterface::context == nullptr) {
@@ -529,7 +530,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string_view SSLClient::getInputBuffer() noexcept {
-		return this->inputBuffer.getStringView(0,this->inputBuffer.getTotalSize());
+		return this->inputBuffer.getStringView(0, this->inputBuffer.getTotalSize());
 	}
 
 	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {

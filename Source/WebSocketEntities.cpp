@@ -233,7 +233,8 @@ namespace DiscordCoreInternal {
 	}
 
 	bool WebSocketMessageHandler::parseConnectionHeaders() noexcept {
-		if (static_cast<WebSocketSSLShard*>(this)->areWeStillConnected() && static_cast<WebSocketSSLShard*>(this)->currentState.load() == SSLShardState::Upgrading && static_cast<WebSocketSSLShard*>(this)->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
+		if (static_cast<WebSocketSSLShard*>(this)->areWeStillConnected() && static_cast<WebSocketSSLShard*>(this)->currentState.load() == SSLShardState::Upgrading &&
+			static_cast<WebSocketSSLShard*>(this)->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
 			auto theString = static_cast<WebSocketSSLShard*>(this)->getInputBuffer();
 			auto theFindValue = theString.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
@@ -247,7 +248,6 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketMessageHandler::parseMessage() noexcept {
 		if (static_cast<WebSocketSSLShard*>(this)->inputBuffer.getUsedSpace() > 0) {
-			//std::cout << "THE STRING: " << theShard->currentMessage << std::endl;
 			if (static_cast<WebSocketSSLShard*>(this)->inputBuffer.getCurrentTail()->getUsedSpace() < 4) {
 				return true;
 			}
@@ -287,15 +287,27 @@ namespace DiscordCoreInternal {
 						static_cast<WebSocketSSLShard*>(this)->messageLength = 0;
 						for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
 							uint8_t lengthNew = static_cast<uint8_t>(static_cast<WebSocketSSLShard*>(this)->inputBuffer.getCurrentTail()->getCurrentTail()[x]);
-							static_cast<WebSocketSSLShard*>(this)->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+							static_cast<WebSocketSSLShard*>(this)->messageLength |=
+								static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
 						}
 						static_cast<WebSocketSSLShard*>(this)->messageOffset += 8;
 					}
-					if (static_cast<WebSocketSSLShard*>(this)->inputBuffer.getTotalSize() < static_cast<WebSocketSSLShard*>(this)->messageOffset + static_cast<WebSocketSSLShard*>(this)->messageLength) {
+					if (static_cast<WebSocketSSLShard*>(this)->inputBuffer.getTotalSize() <
+						static_cast<WebSocketSSLShard*>(this)->messageOffset + static_cast<WebSocketSSLShard*>(this)->messageLength) {
 						return true;
 					} else {
 						auto theStringView = static_cast<WebSocketSSLShard*>(this)->inputBuffer.getStringView(static_cast<WebSocketSSLShard*>(this)->messageOffset,
 							static_cast<WebSocketSSLShard*>(this)->messageLength);
+						std::string newString{};
+						for (auto& value: theStringView) {
+							if (value == 253) {
+								std::cout << "THE STRING SO FAR: " << newString << std::endl;
+							}
+							newString.push_back(value);
+						}
+						std::cout << "THE STRINGVIEW: " << theStringView << std::endl;
+						std::cout << "THE CHOSEN SIZE: " << static_cast<WebSocketSSLShard*>(this)->messageLength
+								  << ", THE CHOSEN OFFSET: " << static_cast<WebSocketSSLShard*>(this)->messageOffset << std::endl;
 						if (theStringView.size() > 0) {
 							static_cast<WebSocketSSLShard*>(this)->onMessageReceived(theStringView);
 						}
@@ -998,6 +1010,7 @@ namespace DiscordCoreInternal {
 												guild->guildScheduledEvents.emplace_back(dataPackage->guildScheduledEvent.id);
 											}
 											this->discordCoreClient->eventManager.onGuildScheduledEventCreationEvent(*dataPackage);
+											break;
 										}
 										case 34: {
 											std::unique_ptr<DiscordCoreAPI::OnGuildScheduledEventUpdateData> dataPackage{
@@ -1005,6 +1018,7 @@ namespace DiscordCoreInternal {
 											};
 											DiscordCoreAPI::parseObject(theObject, dataPackage->guildScheduledEvent);
 											this->discordCoreClient->eventManager.onGuildScheduledEventUpdateEvent(*dataPackage);
+											break;
 										}
 										case 35: {
 											std::unique_ptr<DiscordCoreAPI::OnGuildScheduledEventDeletionData> dataPackage{
@@ -1022,6 +1036,7 @@ namespace DiscordCoreInternal {
 												}
 											}
 											this->discordCoreClient->eventManager.onGuildScheduledEventDeletionEvent(*dataPackage);
+											break;
 										}
 										case 36: {
 											std::unique_ptr<DiscordCoreAPI::OnGuildScheduledEventUserAddData> dataPackage{
@@ -1035,6 +1050,7 @@ namespace DiscordCoreInternal {
 											theObject["guild_scheduled_event_id"].get(theString);
 											dataPackage->guildScheduledEventId = DiscordCoreAPI::strtoull(theString.data());
 											this->discordCoreClient->eventManager.onGuildScheduledEventUserAddEvent(*dataPackage);
+											break;
 										}
 										case 37: {
 											std::unique_ptr<DiscordCoreAPI::OnGuildScheduledEventUserRemoveData> dataPackage{
@@ -1048,6 +1064,7 @@ namespace DiscordCoreInternal {
 											theObject["guild_scheduled_event_id"].get(theString);
 											dataPackage->guildScheduledEventId = DiscordCoreAPI::strtoull(theString.data());
 											this->discordCoreClient->eventManager.onGuildScheduledEventUserRemoveEvent(*dataPackage);
+											break;
 										}
 										case 38: {
 											std::unique_ptr<DiscordCoreAPI::OnIntegrationCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnIntegrationCreationData>() };
@@ -1139,6 +1156,7 @@ namespace DiscordCoreInternal {
 															break;
 														}
 													}
+													break;
 												}
 												case DiscordCoreAPI::InteractionType::Modal_Submit: {
 													eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;

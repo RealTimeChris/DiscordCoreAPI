@@ -151,7 +151,8 @@ namespace DiscordCoreAPI {
 
 	JsonObject& JsonObject::operator=(const JsonObject& theKey) noexcept {
 		for (auto& [key, value]: theKey.theValues) {
-			this->theValues[key] = std::make_unique<JsonObject>(value);
+			this->theValues[key] = std::make_unique<JsonObject>();
+			*this->theValues[key].get() = *value;
 		}
 		this->theValue = theKey.theValue;
 		this->theType = theKey.theType;
@@ -230,7 +231,8 @@ namespace DiscordCoreAPI {
 		this->theType = theData.theType;
 		this->theValue = theData.theValue;
 		for (auto& [key, value]: theData.theValues) {
-			this->theValues[key] = std::make_unique<JsonObject>(value);
+			this->theValues[key] = std::make_unique<JsonObject>();
+			*this->theValues[key] = *value;
 		}
 		return *this;
 	}

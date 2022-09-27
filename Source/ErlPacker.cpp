@@ -247,8 +247,10 @@ namespace DiscordCoreInternal {
 
 	size_t ErlPacker::readString(uint32_t length) {
 		if (this->offSet + static_cast<uint64_t>(length) > this->size) {
-			std::cout << "THE LENGTH: " << length << ", THE OFFSET: " << this->offSet << ", THE STRING: " << this->buffer << ", THE STRING LENGTH: " << this->buffer.size()
-					  << std::endl;
+			std::cout << "THE LENGTH: " << length << ", THE OFFSET: " << this->offSet << ", THE STRING LENGTH: " << this->buffer.size() << ", THE STRING: ";
+			for (uint32_t x = 0; x < this->buffer.size(); ++x) {
+				std::cout << "INDEX: " << x << ", VALUE: " << this->buffer[x] << std::endl;
+			}
 			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer.\n\n" };
 		}
 		if (this->bufferString.size() <= length * 2) {
