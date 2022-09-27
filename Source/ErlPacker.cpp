@@ -246,94 +246,82 @@ namespace DiscordCoreInternal {
 		if (this->bufferString.size() <= length * 2) {
 			this->bufferString.resize(length * 2);
 		}
-		size_t theFinalSize{};
 		char* theStringNew = ( char* )this->buffer.data() + this->offSet;
 		size_t theIndex{};
 		for (uint32_t x = 0; x < length; ++x) {
-			switch (static_cast<char>(theStringNew[x])) {
+			switch (theStringNew[x]) {
 				case 0x00: {
 					break;
 				}
 				case 0x27: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('\'');
-					theFinalSize += 2;
+					this->bufferString[theIndex] = '\\';
+					this->bufferString[theIndex + 1] = '\'';
 					theIndex += 2;
 					break;
 				}
 				case 0x22: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('"');
-					theFinalSize += 2;
+					this->bufferString[theIndex] = '\\';
+					this->bufferString[theIndex + 1] = '"';
 					theIndex += 2;
 					break;
 				}
 				case 0x5c: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('\\');
-					theFinalSize += 2;
+					this->bufferString[theIndex] = '\\';
+					this->bufferString[theIndex + 1] = '\\';
 					theIndex += 2;
 					break;
 				}
 				case 0x07: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('a');
-					theFinalSize += 2;
+					this->bufferString[theIndex] = '\\';
+					this->bufferString[theIndex + 1] = 'a';
 					theIndex += 2;
 					break;
 				}
 				case 0x08: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('b');
-					theFinalSize += 2;
+					this->bufferString[theIndex] = '\\';
+					this->bufferString[theIndex + 1] = 'b';
 					theIndex += 2;
 					break;
 				}
 				case 0x0C: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('f');
-					theFinalSize += 2;
+					this->bufferString[theIndex] = '\\';
+					this->bufferString[theIndex + 1] = 'f';
 					theIndex += 2;
 					break;
 				}
 				case 0x0A: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('n');
-					theFinalSize += 2;
+					this->bufferString[theIndex] = '\\';
+					this->bufferString[theIndex + 1] = 'n';
 					theIndex += 2;
 					break;
 				}
 				case 0x0D: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('r');
-					theFinalSize += 2;
+					this->bufferString[theIndex] = '\\';
+					this->bufferString[theIndex + 1] = 'r';
 					theIndex += 2;
 					break;
 				}
 				case 0x0B: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('v');
-					theFinalSize += 2;
+					this->bufferString[theIndex] = '\\';
+					this->bufferString[theIndex + 1] = 'v';
 					theIndex += 2;
 					break;
 				}
 				case 0x09: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('t');
-					theFinalSize += 2;
+					this->bufferString[theIndex] = '\\';
+					this->bufferString[theIndex + 1] = 't';
 					theIndex += 2;
 					break;
 				}
 				default: {
 					this->bufferString[theIndex] = theStringNew[x];
-					theFinalSize++;
 					theIndex++;
 					break;
 				}
 			}
 		}
 		this->offSet += length;
-		return theFinalSize;
+		return theIndex;
 	}
 
 	std::string ErlPacker::processAtom(const char* atom, uint32_t length) {
