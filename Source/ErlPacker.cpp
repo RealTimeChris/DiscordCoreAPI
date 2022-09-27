@@ -85,17 +85,20 @@ namespace DiscordCoreInternal {
 	void ErlPacker::writeObject(simdjson::ondemand::value jsonData) {
 		bool add_comma{ false };
 		this->appendMapHeader(static_cast<uint32_t>(jsonData.count_fields().take_value()));
-		for (auto field: jsonData.get_object()) {
-			if (add_comma) {
-			}
-			std::stringstream theStream{};
-			theStream << field.key();
-			std::string theKey = theStream.str();
+		simdjson::ondemand::object theObject{};
+		if (jsonData.get(theObject) == simdjson::error_code::SUCCESS) {
+			for (auto field: theObject) {
+				if (add_comma) {
+				}
+				std::stringstream theStream{};
+				theStream << field.key();
+				std::string theKey = theStream.str();
 
-			auto theSize = theKey.size();
-			this->appendBinaryExt(theKey, static_cast<uint32_t>(theSize));
-			this->singleValueJsonToETF(field.value());
-			add_comma = true;
+				auto theSize = theKey.size();
+				this->appendBinaryExt(theKey, static_cast<uint32_t>(theSize));
+				this->singleValueJsonToETF(field.value());
+				add_comma = true;
+			}
 		}
 	}
 
@@ -134,11 +137,14 @@ namespace DiscordCoreInternal {
 	void ErlPacker::writeArray(simdjson::ondemand::value jsonData) {
 		bool add_comma{ false };
 		this->appendListHeader(static_cast<uint32_t>(jsonData.count_elements().take_value()));
-		for (auto element: jsonData.get_array()) {
-			this->singleValueJsonToETF(element.value());
-			add_comma = true;
+		simdjson::ondemand::array theArray{};
+		if (jsonData.get(theArray) == simdjson::error_code::SUCCESS) {
+			for (auto element: theArray) {
+				this->singleValueJsonToETF(element.value());
+				add_comma = true;
+			}
+			this->appendNilExt();
 		}
-		this->appendNilExt();
 	}
 
 	void ErlPacker::writeBool(simdjson::ondemand::value jsonData) {
@@ -241,6 +247,8 @@ namespace DiscordCoreInternal {
 
 	size_t ErlPacker::readString(uint32_t length) {
 		if (this->offSet + static_cast<uint64_t>(length) > this->size) {
+			std::cout << "THE LENGTH: " << length << ", THE OFFSET: " << this->offSet << ", THE STRING: " << this->buffer << ", THE STRING LENGTH: " << this->buffer.size()
+					  << std::endl;
 			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer.\n\n" };
 		}
 		if (this->bufferString.size() <= length * 2) {
@@ -506,8 +514,10 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseAtomUtf8Ext() {
-		uint32_t length = this->readBits<uint16_t>();
+		uint16_t length = this->readBits<uint16_t>();
+		std::cout << "THE LENGTH OLD: " << length << std::endl;
 		auto lengthNew = static_cast<uint32_t>(this->readString(length));
+		std::cout << "THE LENGTH NEW: " << lengthNew << std::endl;
 		return this->processAtom(this->bufferString.data(), lengthNew);
 	}
 
@@ -518,7 +528,9 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseBinaryExt() {
 		std::string theString{ "\"" };
 		uint32_t length = this->readBits<uint32_t>();
+		std::cout << "THE LENGTH OLD (BINARY): " << length << std::endl;
 		auto lengthNew = this->readString(length);
+		std::cout << "THE LENGTH NEW: (BINARY) " << lengthNew << std::endl;
 		theString += std::string{ this->bufferString.data(), lengthNew };
 		theString += "\"";
 		return theString;

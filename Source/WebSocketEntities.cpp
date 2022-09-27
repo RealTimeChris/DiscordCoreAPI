@@ -294,7 +294,11 @@ namespace DiscordCoreInternal {
 					if (static_cast<WebSocketSSLShard*>(this)->inputBuffer.getTotalSize() < static_cast<WebSocketSSLShard*>(this)->messageOffset + static_cast<WebSocketSSLShard*>(this)->messageLength) {
 						return true;
 					} else {
-						static_cast<WebSocketSSLShard*>(this)->onMessageReceived(static_cast<WebSocketSSLShard*>(this)->inputBuffer.getStringView(static_cast<WebSocketSSLShard*>(this)->messageOffset, static_cast<WebSocketSSLShard*>(this)->messageLength));
+						auto theStringView = static_cast<WebSocketSSLShard*>(this)->inputBuffer.getStringView(static_cast<WebSocketSSLShard*>(this)->messageOffset,
+							static_cast<WebSocketSSLShard*>(this)->messageLength);
+						if (theStringView.size() > 0) {
+							static_cast<WebSocketSSLShard*>(this)->onMessageReceived(theStringView);
+						}
 						static_cast<WebSocketSSLShard*>(this)->inputBuffer.clearString();
 						return true;
 					}
