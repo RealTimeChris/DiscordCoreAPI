@@ -204,11 +204,8 @@ namespace DiscordCoreInternal {
 	enum class RingBufferAccessType { Read = 0, Write = 1 };
 
 	struct DiscordCoreAPI_Dll RingBuffer {
-		RingBuffer() noexcept;
-		void adjustReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
-		char* getBufferPtr(RingBufferAccessType theType, size_t theLength = 0);
-		void writeData(char* theData, size_t theLength);
-		void readData(char* theData, size_t theLength);
+		RingBuffer() noexcept = default;
+		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
 		char* getCurrentTail();
 		char* getCurrentHead();
 		uint64_t getUsedSpace();
@@ -218,19 +215,12 @@ namespace DiscordCoreInternal {
 		std::array<char, 1024 * 16> theArray{};
 		int64_t head{};
 		int64_t tail{};
-		void putByte(char theByte);
-		char getByte();
 
 	};
 
 	struct DiscordCoreAPI_Dll RingBufferArray {
-		void adjustReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
 		RingBufferArray() noexcept;
-		std::vector<RingBuffer> theArray{};
-		size_t theSize{};
-		RingBuffer* getBufferPtr(RingBufferAccessType theType);
-		void readData(char* theData, size_t theLength);
-		void writeData(char* theData, size_t theLength);
+		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
 		RingBuffer* getCurrentTail();
 		RingBuffer* getCurrentHead();
 		uint64_t getUsedSpace();
@@ -238,6 +228,8 @@ namespace DiscordCoreInternal {
 		void clear();
 
 	  protected:
+		std::vector<RingBuffer> theArray{};
+		size_t theSize{};
 		int64_t head{};
 		int64_t tail{};
 	};
@@ -250,9 +242,7 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
 
-		virtual std::string getInputBuffer(uint32_t offSet, uint32_t length) noexcept = 0;
-
-		virtual std::string getInputBufferRemove() noexcept = 0;
+		virtual std::string getInputBuffer() noexcept = 0;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
@@ -273,15 +263,13 @@ namespace DiscordCoreInternal {
 
 		static std::vector<SSLClient*> processIO(std::vector<SSLClient*>&) noexcept;
 
-		std::string getInputBuffer(uint32_t offSet, uint32_t length) noexcept;
-
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
 		virtual bool handleBuffer() noexcept = 0;
 
-		std::string getInputBufferRemove() noexcept;
+		std::string getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
 

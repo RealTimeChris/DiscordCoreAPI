@@ -316,7 +316,7 @@ namespace DiscordCoreAPI {
 				if (WebSocketSSLShard::inputBuffer.getUsedSpace() < theShard->messageOffset + theShard->messageLength) {
 					return false;
 				} else {
-					this->onMessageReceived(WebSocketSSLShard::getInputBuffer(theShard->messageOffset, theShard->messageLength));
+					this->onMessageReceived(WebSocketSSLShard::getInputBuffer());
 					return true;
 				}
 			}
