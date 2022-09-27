@@ -66,13 +66,13 @@ namespace DiscordCoreInternal {
 
 		void updateRateLimitData(RateLimitData& theConnection, std::unordered_map<std::string, std::string>& headers);
 
-		HttpsResponseData finalizeReturnValues(HttpsResponseData& theData, RateLimitData& rateLimitData);
+		HttpsResponseData finalizeReturnValues(RateLimitData& rateLimitData);
 
 		std::string buildRequest(const HttpsWorkloadData& workload);
 
-		size_t parseHeaders(HttpsResponseData& theData, std::string&);
+		size_t parseHeaders(std::string&);
 
-		bool parseChunk(HttpsResponseData& theData, std::string&);
+		bool parseChunk(std::string&);
 
 		virtual ~HttpsRnRBuilder() noexcept = default;
 
@@ -82,9 +82,9 @@ namespace DiscordCoreInternal {
 		bool doWeHaveHeaders{ false };
 		bool isItChunked{ false };
 
-		size_t parseSize(HttpsResponseData& theData, std::string&);
+		size_t parseSize(std::string&);
 
-		size_t parseCode(HttpsResponseData& theData, std::string& otherNew);
+		size_t parseCode(std::string& otherNew);
 
 		void clearCRLF(std::string&);
 	};
@@ -120,9 +120,9 @@ namespace DiscordCoreInternal {
 
 		HttpsConnection(bool doWePrintErrorMessages);
 
-		bool handleBuffer(SSLClient* theClient) noexcept;
-
 		void disconnect(bool) noexcept;
+
+		bool handleBuffer() noexcept;
 
 		void resetValues();
 

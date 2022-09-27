@@ -205,32 +205,24 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll RingBuffer {
 		RingBuffer() noexcept;
-		void adjustReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
-		char* getBufferPtr(RingBufferAccessType theType, size_t theLength = 0);
-		void writeData(char* theData, size_t theLength);
-		void readData(char* theData, size_t theLength);
-		char* getCurrentTail();
-		char* getCurrentHead();
+		void setReadOrWrittenAmount(RingBufferAccessType theType, size_t theSize);
+		unsigned char* getCurrentTail();
+		unsigned char* getCurrentHead();
 		uint64_t getUsedSpace();
 		uint64_t getFreeSpace();
 		void clear();
 	  protected:
-		std::array<char, 1024 * 16> theArray{};
+		std::array<unsigned char, 1024 * 16> theArray{};
 		int64_t head{};
 		int64_t tail{};
-		void putByte(char theByte);
-		char getByte();
-
 	};
 
 	struct DiscordCoreAPI_Dll RingBufferArray {
-		void adjustReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
+		void setReadOrWrittenAmount(RingBufferAccessType theType, size_t theSize);
 		RingBufferArray() noexcept;
 		std::vector<RingBuffer> theArray{};
 		size_t theSize{};
-		RingBuffer* getBufferPtr(RingBufferAccessType theType);
-		void readData(char* theData, size_t theLength);
-		void writeData(char* theData, size_t theLength);
+		size_t getTotalSize();
 		RingBuffer* getCurrentTail();
 		RingBuffer* getCurrentHead();
 		uint64_t getUsedSpace();
@@ -253,6 +245,8 @@ namespace DiscordCoreInternal {
 		virtual std::string getInputBuffer(uint32_t offSet, uint32_t length) noexcept = 0;
 
 		virtual std::string getInputBufferRemove() noexcept = 0;
+
+		void clearInputBuffer(size_t amoutntToClear) noexcept;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
@@ -277,11 +271,13 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
+		void clearInputBuffer(size_t amoutntToClear) noexcept;
+
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
-		virtual bool handleBuffer(SSLClient*) noexcept = 0;
-
 		std::string getInputBufferRemove() noexcept;
+
+		virtual bool handleBuffer() noexcept = 0;
 
 		bool areWeStillConnected() noexcept;
 

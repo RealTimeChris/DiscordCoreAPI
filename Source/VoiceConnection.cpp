@@ -264,9 +264,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool VoiceConnection::handleBuffer(SSLClient* theClient) noexcept {
-		if (static_cast<VoiceConnection*>(theClient)->currentState.load() == DiscordCoreInternal::SSLShardState::Upgrading) {
-			return this->parseConnectionHeaders(static_cast<VoiceConnection*>(theClient));
+	bool VoiceConnection::handleBuffer() noexcept {
+		if (this->currentState.load() == DiscordCoreInternal::SSLShardState::Upgrading) {
+			return this->parseConnectionHeaders(this);
 		}
 		return VoiceConnection::parseMessage(this);
 	}
