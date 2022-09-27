@@ -45,7 +45,9 @@ namespace DiscordCoreAPI {
 		std::string theKey{};
 	};
 
-	struct DiscordCoreAPI_Dll SpeakingPayloadData {};
+	struct DiscordCoreAPI_Dll SpeakingPayloadData {
+
+	};
 
 	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
 		struct OpusDecoderDeleter {
@@ -186,12 +188,12 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
-		bool onMessageReceived() noexcept;
+		bool onMessageReceived(std::string_view theData) noexcept;
 
-		bool parseMessage() noexcept;
+		bool parseMessage(SSLClient* theShard) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
-
+		
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
 		bool sendTextMessage(std::string& theMessage, bool priority) noexcept;
@@ -199,6 +201,8 @@ namespace DiscordCoreAPI {
 		void sendVoiceData(std::string& responseData) noexcept;
 
 		bool handleBuffer() noexcept;
+
+		bool parseMessage(VoiceConnection* theShard) noexcept;
 
 		void runWebSocket(std::stop_token) noexcept;
 

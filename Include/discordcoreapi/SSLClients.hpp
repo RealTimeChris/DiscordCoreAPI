@@ -218,6 +218,7 @@ namespace DiscordCoreInternal {
 		bool areWeFull{ false };
 		int64_t head{};
 		int64_t tail{};
+
 	};
 
 	struct DiscordCoreAPI_Dll RingBufferArray {
@@ -245,7 +246,7 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
 
-		virtual std::string_view getInputBuffer() noexcept = 0;
+		virtual std::string getInputBuffer() noexcept = 0;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
@@ -255,7 +256,6 @@ namespace DiscordCoreInternal {
 		RingBufferArray outputBuffer{};
 		RingBufferArray inputBuffer{};
 		std::string theFinalString{};
-		int64_t currentStringSize{};
 		int64_t bytesRead{ 0 };
 	};
 
@@ -271,13 +271,11 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
-		std::string_view getInputBuffer() noexcept;
-
 		virtual bool handleBuffer() noexcept = 0;
 
-		bool areWeStillConnected() noexcept;
+		std::string getInputBuffer() noexcept;
 
-		void resetStringBuffer() noexcept;
+		bool areWeStillConnected() noexcept;
 
 		bool processWriteData() noexcept;
 

@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 	EnumConverter::EnumConverter(EnumConverter&& other) noexcept {
 		*this = other;
 	}
-
+	
 	EnumConverter::operator std::vector<uint64_t>() {
 		std::vector<uint64_t> theObject{};
 		for (auto& value: *static_cast<std::vector<uint64_t>*>(this->thePtr)) {
@@ -908,7 +908,7 @@ namespace DiscordCoreAPI {
 
 	IconHash& IconHash::operator=(const std::string theString) {
 		std::string newHash{ theString };
-		if (newHash.empty() || newHash == "0") {
+		if (newHash.empty() ||newHash == "0") {
 			this->highBits = 0;
 			this->lowBits = 0;
 			return *this;
@@ -929,7 +929,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string IconHash::getIconHash() noexcept {
-		if (this->highBits == 0 || this->lowBits == 0) {
+		if (this->highBits == 0 ||this->lowBits == 0) {
 			return {};
 		} else {
 			return std::string{ toHex(this->lowBits) + toHex(this->highBits) };
@@ -972,7 +972,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(std::string&& other) {
-		if (other.size() == 0 || other == "") {
+		if (other.size() == 0 ||other == "") {
 			this->thePermissions = 0;
 		} else {
 			for (auto& value: other) {
@@ -988,7 +988,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(const std::string& other) {
-		if (other.size() == 0 || other == "") {
+		if (other.size() == 0 ||other == "") {
 			this->thePermissions = 0;
 		} else {
 			this->thePermissions = stoull(other);
@@ -1421,7 +1421,7 @@ namespace DiscordCoreAPI {
 	std::string utf8MakeValid(const std::string& inputString) {
 		std::string theReturnString{};
 		for (auto& value: inputString) {
-			if (value >= 128 || value < 0) {
+			if (value >= 128 ||value < 0) {
 				int32_t theDifference = 0 - value;
 				theReturnString.push_back(value + theDifference);
 			} else {
@@ -1439,7 +1439,7 @@ namespace DiscordCoreAPI {
 		for (std::string::const_iterator i = inputString.begin(), n = inputString.end(); i != n; ++i) {
 			std::string::value_type c = (*i);
 
-			if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+			if (isalnum(c) ||c == '-' ||c == '_' ||c == '.' ||c == '~') {
 				escaped << c;
 				continue;
 			}
@@ -1529,7 +1529,7 @@ namespace DiscordCoreAPI {
 		timeStamp.resize(size);
 		return timeStamp;
 	}
-
+	
 	std::string escapeCharacters(std::string_view theString) {
 		std::string theStringNew{};
 		if (theStringNew.size() <= theString.size() * 2) {

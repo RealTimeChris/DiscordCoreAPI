@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-	  protected:
+	  protected:		
 		ObjectCollectorReturnData<Message> messageReturnData{};
 		ObjectFilter<Message> filteringFunction{ nullptr };
 		UnboundedMessageBlock<Message> messagesBuffer{};
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 	CreateMessageData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->attachments) {
-			theData.pushBack("attachments", value);
+			theData.pushBack("attachments",value);
 		}
 		if (this->messageReference.messageId.operator size_t() != 0) {
 			theData["message_reference"] = this->messageReference;

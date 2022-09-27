@@ -325,7 +325,7 @@ namespace DiscordCoreInternal {
 					theFinalSize += 2;
 					theIndex += 2;
 					break;
-				}
+				}				
 				default: {
 					this->bufferString[theIndex] = theStringNew[x];
 					theFinalSize++;
@@ -593,3 +593,5 @@ namespace DiscordCoreInternal {
 		return map;
 	}
 }
+
+	

@@ -167,8 +167,8 @@ namespace DiscordCoreInternal {
 					this->parseSize(other);
 					this->clearCRLF(other);
 					if (other.find("\r\n") != other.find("\r\n0\r\n\r\n")) {
-						static_cast<HttpsConnection*>(this)->theData.responseMessage.insert(static_cast<HttpsConnection*>(this)->theData.responseMessage.end(), other.begin(),
-							other.begin() + other.find("\r\n"));
+						static_cast<HttpsConnection*>(this)->theData.responseMessage.insert(static_cast<HttpsConnection*>(this)->theData.responseMessage.end(),
+							other.begin(), other.begin() + other.find("\r\n"));
 						other.erase(other.begin(), other.begin() + other.find("\r\n") + 2);
 					}
 				}
@@ -281,8 +281,7 @@ namespace DiscordCoreInternal {
 						this->areWeDoneTheRequest = true;
 						return false;
 					}
-					this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
-					this->resetStringBuffer();
+					this->theInputBufferReal += std::move(this->getInputBuffer());
 					this->parseCode(this->theInputBufferReal);
 					if (this->theData.responseCode == 400) {
 					}
@@ -299,8 +298,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					if (!this->doWeHaveHeaders) {
-						this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
-						this->resetStringBuffer();
+						this->theInputBufferReal += std::move(this->getInputBuffer());
 						this->parseHeaders(this->theInputBufferReal);
 						this->theData.theStopWatch.resetTimer();
 					}
@@ -312,8 +310,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					if (!this->doWeHaveContentSize) {
-						this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
-						this->resetStringBuffer();
+						this->theInputBufferReal += std::move(this->getInputBuffer());
 						this->clearCRLF(this->theInputBufferReal);
 						this->parseSize(this->theInputBufferReal);
 						this->clearCRLF(this->theInputBufferReal);
@@ -322,8 +319,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 				case HttpsState::Collecting_Contents: {
-					this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
-					this->resetStringBuffer();
+					this->theInputBufferReal += std::move(this->getInputBuffer());
 					auto theResult = this->parseChunk(this->theInputBufferReal);
 					if ((this->theData.responseMessage.size() >= this->theData.contentSize && !theResult) || this->theData.theStopWatch.hasTimePassed() || !theResult ||
 						(this->theData.responseCode == -5 && this->theData.contentSize == -5)) {
@@ -348,9 +344,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpsConnection::resetValues() {
+		SSLDataInterface::maxBufferSize = (1024 * 16) - 1;
 		SSLDataInterface::outputBuffer.clear();
 		this->theInputBufferReal.clear();
-		this->outputBuffer.clear();
 		this->inputBuffer.clear();
 		this->theData = HttpsResponseData{};
 		this->doWeHaveContentSize = false;
@@ -444,7 +440,8 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(100ms);
 			rateLimitData.haveWeGoneYet.store(true);
 		}
-		if (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() >= workload.thisWorkerId.load() && !rateLimitData.theSemaphore.try_acquire()) {
+		if (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() >= workload.thisWorkerId.load() && !rateLimitData.theSemaphore
+			.try_acquire()) {
 			HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->store(0);
 			HttpsWorkloadData::workloadIdsExternal[workload.workloadType]->store(0);
 			workload.thisWorkerId.store(1);
@@ -589,7 +586,7 @@ namespace DiscordCoreInternal {
 					if (returnData.responseMessage.size() > 0 && theDocument["retry_after"].get(theDouble) == simdjson::error_code::SUCCESS) {
 						rateLimitData.msRemain.store(static_cast<int64_t>(ceil(theDouble)) * 1000);
 					}
-
+					
 					rateLimitData.didWeHitRateLimit.store(true);
 					rateLimitData.sampledTimeInMs.store(
 						static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()));

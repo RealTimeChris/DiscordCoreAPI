@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 	GuildMemberVector::operator std::vector<GuildMember>() {
 		return this->theGuildMembers;
 	}
-
+	
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* theClient, ConfigManager* configManagerNew) {
 		GuildMembers::doWeCacheGuildMembers = configManagerNew->doWeCacheUsers();
 		GuildMembers::httpsClient = theClient;
@@ -201,7 +201,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/@me";
 		JsonObject theData{};
-		theData["nick"] = dataPackage.nick;
+		theData["nick"]= dataPackage.nick;
 		workload.content = theData;
 		workload.callStack = "GuildMembers::modifyCurrentGuildMemberAsync()";
 		if (dataPackage.reason != "") {

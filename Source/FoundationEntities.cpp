@@ -55,6 +55,7 @@ namespace DiscordCoreInternal {
 		}
 		theData["afk"] = this->afk;
 		return theData;
+
 	}
 
 	WebSocketResumeData::operator DiscordCoreAPI::JsonObject() {
@@ -212,7 +213,7 @@ namespace DiscordCoreAPI {
 		JsonObject theData{};
 		theData["inline"] = this->Inline;
 		theData["value"] = escapeCharacters(this->value);
-		theData["name"] = escapeCharacters(this->name);
+		theData["name"]= escapeCharacters(this->name);
 		return theData;
 	}
 
@@ -221,7 +222,7 @@ namespace DiscordCoreAPI {
 		for (auto& value2: this->fields) {
 			theData.pushBack("fields", value2);
 		}
-		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
+		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());		
 		theData["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
 		theData["footer"]["icon_url"] = this->footer.iconUrl;
 		theData["footer"]["text"] = escapeCharacters(this->footer.text);
@@ -431,7 +432,7 @@ namespace DiscordCoreAPI {
 		}
 		if (this->options.size() > 0) {
 			for (auto& value: this->options) {
-				theData.pushBack("options", value);
+				theData.pushBack("options",value);
 			}
 		}
 		return theData;
@@ -484,7 +485,7 @@ namespace DiscordCoreAPI {
 					component["style"] = valueNew.style;
 					component["type"] = valueNew.type;
 					component["url"] = valueNew.url;
-					theData.pushBack("components", component);
+					theData.pushBack("components",component);
 				} else if (valueNew.type == ComponentType::SelectMenu) {
 					JsonObject component{};
 					for (auto& value01: valueNew.options) {
@@ -498,7 +499,7 @@ namespace DiscordCoreAPI {
 						option["default"] = value01._default;
 						option["label"] = value01.label;
 						option["value"] = value01.value;
-						component.pushBack("options", option);
+						component.pushBack("options",option);
 					};
 					component["placeholder"] = valueNew.placeholder;
 					component["max_values"] = valueNew.maxValues;
@@ -822,7 +823,7 @@ namespace DiscordCoreAPI {
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name = theName;
 		auto theResult = theValue["value"].get(choiceData.valueBool);
-
+		
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->choices.emplace_back(choiceData);
 			return *this;
@@ -1078,7 +1079,7 @@ namespace DiscordCoreAPI {
 		for (auto& value: inputEventData.interactionData->data.applicationCommandData.options) {
 			if (value.type == ApplicationCommandOptionType::Sub_Command) {
 				this->subCommandName = value.name;
-			}
+			} 
 			if (value.type == ApplicationCommandOptionType::Sub_Command_Group) {
 				this->subCommandGroupName = value.name;
 			}

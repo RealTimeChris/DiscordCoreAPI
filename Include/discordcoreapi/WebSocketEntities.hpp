@@ -50,17 +50,17 @@ namespace DiscordCoreInternal {
 	  public:
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
 
-		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
-
 		std::string stringifyJsonData(std::string& dataToSend, WebSocketOpCode theOpCode) noexcept;
 
-		virtual bool onMessageReceived() noexcept = 0;
+		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
-		bool parseConnectionHeaders() noexcept;
+		bool parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept;
+
+		virtual bool onMessageReceived(std::string_view theMessage) noexcept = 0;
+
+		bool parseMessage(WebSocketSSLShard* theShard) noexcept;
 
 		virtual void onClosed() noexcept = 0;
-
-		bool parseMessage() noexcept;
 
 		virtual ~WebSocketMessageHandler() noexcept = default;
 
@@ -87,15 +87,15 @@ namespace DiscordCoreInternal {
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
-		virtual bool onMessageReceived() noexcept;
+		virtual bool onMessageReceived(std::string_view theMessage) noexcept;
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
+
+		virtual bool handleBuffer() noexcept;
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
-
-		virtual bool handleBuffer() noexcept;
 
 		void onClosed() noexcept;
 
@@ -122,6 +122,7 @@ namespace DiscordCoreInternal {
 		bool areWeHeartBeating{ false };
 		WebSocketClose closeCode{ 0 };
 		WebSocketOpCode dataOpCode{};
+		std::string currentMessage{};
 		bool areWeResuming{ false };
 		std::string resumeUrl{};
 		std::string sessionId{};
