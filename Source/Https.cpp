@@ -84,9 +84,9 @@ namespace DiscordCoreInternal {
 		std::string theReturnString{};
 		if (workload.workloadClass == HttpsWorkloadClass::Get || workload.workloadClass == HttpsWorkloadClass::Delete) {
 			if (workload.workloadClass == HttpsWorkloadClass::Get) {
-				theReturnString += "GET " + workload.relativePath + " HTTP/1.1\r\n";
+				theReturnString += "GET " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			} else if (workload.workloadClass == HttpsWorkloadClass::Delete) {
-				theReturnString += "DELETE " + workload.relativePath + " HTTP/1.1\r\n";
+				theReturnString += "DELETE " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			}
 			for (auto& [key, value]: workload.headersToInsert) {
 				theReturnString += key + ": " + value + "\r\n";
@@ -95,11 +95,11 @@ namespace DiscordCoreInternal {
 			theReturnString += "Host: " + baseUrlNew + "\r\n\r\n";
 		} else {
 			if (workload.workloadClass == HttpsWorkloadClass::Patch) {
-				theReturnString += "PATCH " + workload.relativePath + " HTTP/1.1\r\n";
+				theReturnString += "PATCH " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			} else if (workload.workloadClass == HttpsWorkloadClass::Post) {
-				theReturnString += "POST " + workload.relativePath + " HTTP/1.1\r\n";
+				theReturnString += "POST " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			} else if (workload.workloadClass == HttpsWorkloadClass::Put) {
-				theReturnString = "PUT " + workload.relativePath + " HTTP/1.1\r\n";
+				theReturnString = "PUT " + workload.baseUrl + workload.relativePath + " HTTP/1.1\r\n";
 			}
 			for (auto& [key, value]: workload.headersToInsert) {
 				theReturnString += key + ": " + value + "\r\n";
@@ -109,6 +109,7 @@ namespace DiscordCoreInternal {
 			theReturnString += "Content-Length: " + std::to_string(workload.content.size()) + "\r\n\r\n";
 			theReturnString += workload.content;
 		}
+		std::cout << "THE HTTP REQUEST: " << theReturnString << std::endl;
 		return theReturnString;
 	}
 
@@ -397,7 +398,7 @@ namespace DiscordCoreInternal {
 
 	template<> void HttpsClient::submitWorkloadAndGetResult<void>(const HttpsWorkloadData& workload, void* theReturnValue) {
 		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
-		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/, 1.0)";
+		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com, 1.0)";
 		if (workload.payloadType == PayloadType::Application_Json) {
 			workload.headersToInsert["Content-Type"] = "application/json";
 		} else if (workload.payloadType == PayloadType::Multipart_Form) {

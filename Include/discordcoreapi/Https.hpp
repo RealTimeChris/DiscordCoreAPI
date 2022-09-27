@@ -159,7 +159,7 @@ namespace DiscordCoreInternal {
 
 		template<typename ReturnType> ReturnType submitWorkloadAndGetResult(const HttpsWorkloadData& workload, ReturnType* theReturnValue = nullptr) {
 			workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
-			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com 1.0)";
+			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com, 1.0)";
 			if (workload.payloadType == PayloadType::Application_Json) {
 				workload.headersToInsert["Content-Type"] = "application/json";
 			} else if (workload.payloadType == PayloadType::Multipart_Form) {
