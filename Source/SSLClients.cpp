@@ -446,7 +446,7 @@ namespace DiscordCoreInternal {
 			auto theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
 			std::cout << "THE SIZE: " << theSize << std::endl;
 			theStringNew.resize(theSize);
-			memcpy(this->inputBuffer.getCurrentTail()->getCurrentTail(), theStringNew.data(), theSize);
+			memcpy(theStringNew.data(), this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize);
 			this->inputBuffer.getCurrentTail()->modifyReadOrWritePosition(RingBufferAccessType::Read, theSize);
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 			std::cout << "the String: 0202: " << theStringNew << std::endl;
