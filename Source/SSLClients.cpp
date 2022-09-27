@@ -186,7 +186,9 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	RingBuffer::RingBuffer() noexcept {}
+	RingBuffer::RingBuffer() noexcept {
+		this->theArray.resize(1024 * 16);
+	}
 
 	void RingBuffer::setReadOrWrittenAmount(RingBufferAccessType theType, size_t theSize) {
 		if (theType == RingBufferAccessType::Read) {
@@ -196,11 +198,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	unsigned char* RingBuffer::getCurrentTail() {
+	char* RingBuffer::getCurrentTail() {
 		return (this->theArray.data() + (this->tail % (this->theArray.size())));
 	}
 
-	unsigned char* RingBuffer::getCurrentHead() {
+	char* RingBuffer::getCurrentHead() {
 		return (this->theArray.data() + (this->head % (this->theArray.size())));
 	}
 
@@ -625,6 +627,7 @@ namespace DiscordCoreInternal {
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			size_t bytesToWrite{};
 			bytesToWrite = this->outputBuffer.getCurrentTail()->getUsedSpace();
+			std::cout << "BYTES TO WRITE: " << bytesToWrite << std::endl;
 			size_t writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.getCurrentTail()->getCurrentTail(), bytesToWrite, &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };

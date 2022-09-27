@@ -206,13 +206,13 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll RingBuffer {
 		RingBuffer() noexcept;
 		void setReadOrWrittenAmount(RingBufferAccessType theType, size_t theSize);
-		unsigned char* getCurrentTail();
-		unsigned char* getCurrentHead();
+		char* getCurrentTail();
+		char* getCurrentHead();
 		uint64_t getUsedSpace();
 		uint64_t getFreeSpace();
 		void clear();
 	  protected:
-		std::array<unsigned char, 1024 * 16> theArray{};
+		std::string theArray{};
 		int64_t head{};
 		int64_t tail{};
 	};

@@ -282,6 +282,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					this->theInputBufferReal += std::move(this->getInputBufferRemove());
+					std::cout << "THE STRING 01: " << this->theInputBufferReal << std::endl;
 					this->parseCode(this->theInputBufferReal);
 					if (this->theData.responseCode == 400) {
 						std::cout << "THE URL: " << this->currentBaseUrl << std::endl;
@@ -300,6 +301,7 @@ namespace DiscordCoreInternal {
 					}
 					if (!this->doWeHaveHeaders) {
 						this->theInputBufferReal += std::move(this->getInputBufferRemove());
+						std::cout << "THE STRING 02: " << this->theInputBufferReal << std::endl;
 						this->parseHeaders(this->theInputBufferReal);
 						this->theData.theStopWatch.resetTimer();
 					}
@@ -312,6 +314,7 @@ namespace DiscordCoreInternal {
 					}
 					if (!this->doWeHaveContentSize) {
 						this->theInputBufferReal += std::move(this->getInputBufferRemove());
+						std::cout << "THE STRING 03: " << this->theInputBufferReal << std::endl;
 						this->clearCRLF(this->theInputBufferReal);
 						this->parseSize(this->theInputBufferReal);
 						this->clearCRLF(this->theInputBufferReal);
@@ -321,6 +324,7 @@ namespace DiscordCoreInternal {
 				}
 				case HttpsState::Collecting_Contents: {
 					this->theInputBufferReal += std::move(this->getInputBufferRemove());
+					std::cout << "THE STRING 04: " << this->theInputBufferReal << std::endl;
 					auto theResult = this->parseChunk(this->theInputBufferReal);
 					if ((this->theData.responseMessage.size() >= this->theData.contentSize && !theResult) || this->theData.theStopWatch.hasTimePassed() || !theResult ||
 						(this->theData.responseCode == -5 && this->theData.contentSize == -5)) {
