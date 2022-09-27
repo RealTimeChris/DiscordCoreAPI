@@ -423,7 +423,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath =
-			"/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
+			"/api/v10/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			workload.content = constructMultiPartData(dataPackage.data.operator DiscordCoreAPI::JsonObject(), dataPackage.data.data.files);
@@ -456,7 +456,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath =
-			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
+			"/api/v10/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			workload.content = constructMultiPartData(dataPackage.data.operator DiscordCoreAPI::JsonObject(), dataPackage.data.files);
@@ -473,7 +473,7 @@ namespace DiscordCoreAPI {
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath =
-			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
+			"/api/v10/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		workload.callStack = "Interactions::deleteInteractionResponseAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -498,7 +498,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath =
-			"/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/" + std::to_string(dataPackage.messageId);
+			"/api/v10/webhooks/" + std::to_string(dataPackage.applicationId) + "/" + dataPackage.interactionToken + "/messages/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Interactions::getFollowUpMessageAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
