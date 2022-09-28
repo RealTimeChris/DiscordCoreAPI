@@ -55,16 +55,6 @@ namespace DiscordCoreInternal {
 
 		operator DiscordCoreAPI::JsonObject();
 	};
-	
-	/// For updating a User's presence. \brief For updating a User's presence.
-	struct DiscordCoreAPI_Dll UpdatePresenceData {
-		std::vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
-		std::string status{};///< Current status.
-		int64_t since{ 0 };///< When was the activity started?
-		bool afk{ false };///< Are we afk.
-
-		operator DiscordCoreAPI::JsonObject();
-	};
 
 	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
 		UpdatePresenceData presence{};

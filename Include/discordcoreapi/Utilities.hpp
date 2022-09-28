@@ -374,6 +374,16 @@ namespace DiscordCoreInternal {
 		operator bool();
 	};
 
+	/// For updating a User's presence. \brief For updating a User's presence.
+	struct DiscordCoreAPI_Dll UpdatePresenceData {
+		std::vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
+		std::string status{};///< Current status.
+		int64_t since{ 0 };///< When was the activity started?
+		bool afk{ false };///< Are we afk.
+
+		operator DiscordCoreAPI::JsonObject();
+	};
+
 }// namespace DiscordCoreInternal
 
 
@@ -545,9 +555,9 @@ namespace DiscordCoreAPI {
 		DiscordCoreClientConfig& operator=(const DiscordCoreClientConfig&);
 		DiscordCoreClientConfig(const DiscordCoreClientConfig&);
 		DiscordCoreClientConfig() noexcept;
-
-		std::unique_ptr<DiscordCoreInternal::UpdatePresenceData> presenceData{};///< Presence data to initialize your bot with.
+				
 		GatewayIntents theIntents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
+		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
 		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
