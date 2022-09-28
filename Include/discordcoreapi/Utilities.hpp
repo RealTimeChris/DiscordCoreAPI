@@ -552,9 +552,6 @@ namespace DiscordCoreAPI {
 
 	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
-		DiscordCoreClientConfig& operator=(const DiscordCoreClientConfig&);
-		DiscordCoreClientConfig(const DiscordCoreClientConfig&);
-		DiscordCoreClientConfig() noexcept;
 				
 		GatewayIntents theIntents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.

@@ -241,28 +241,6 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-	DiscordCoreClientConfig& DiscordCoreClientConfig::operator=(const DiscordCoreClientConfig& other) {
-		this->presenceData = std::make_unique<DiscordCoreInternal::UpdatePresenceData>();
-		this->functionsToExecute = other.functionsToExecute;
-		this->connectionAddress = other.connectionAddress;
-		this->connectionPort = other.connectionPort;
-		this->shardOptions = other.shardOptions;
-		this->cacheOptions = other.cacheOptions;
-		this->textFormat = other.textFormat;		
-		this->logOptions = other.logOptions;
-		this->theIntents = other.theIntents;
-		this->botToken = other.botToken;
-		return *this;
-	}
-
-	DiscordCoreClientConfig::DiscordCoreClientConfig(const DiscordCoreClientConfig& other) {
-		*this = other;
-	}
-
-	DiscordCoreClientConfig::DiscordCoreClientConfig() noexcept {
-		this->presenceData = std::make_unique<DiscordCoreInternal::UpdatePresenceData>();
-	}
-
 	Snowflake& Snowflake::operator=(const std::string other) noexcept {
 		if (!other.empty()) {
 			this->theId = stoull(other);
