@@ -3237,7 +3237,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	struct MediaTranscoding {
+	struct DiscordCoreAPI_Dll MediaTranscoding {
 		std::string thePreset{};
 		std::string theUrl{};
 	};

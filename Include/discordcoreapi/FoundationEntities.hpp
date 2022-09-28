@@ -335,7 +335,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	*/
 
-	class NewBase {};
+	class DiscordCoreAPI_Dll NewBase {};
 
 	struct DiscordCoreAPI_Dll ConnectionPackage {
 		int32_t currentReconnectTries{ 0 };
@@ -2766,7 +2766,7 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ConnectionDataVector& theData);
 
-	struct JsonValueReal {
+	struct DiscordCoreAPI_Dll JsonValueReal {
 		std::string theValue{};
 		ObjectType theType{};
 	};
@@ -3323,7 +3323,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	struct JsonValueReals {
+	struct DiscordCoreAPI_Dll JsonValueReals {
 		std::unordered_map<std::string, JsonValueReal> theValues{};
 	};
 

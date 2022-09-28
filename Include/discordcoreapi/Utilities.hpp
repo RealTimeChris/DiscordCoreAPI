@@ -130,14 +130,14 @@ namespace DiscordCoreAPI {
 
 	enum class ValueType { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Double = 4, Float = 5, String = 6, Bool = 7, Int64 = 8, Uint64 = 9, Unset = 10 };
 
-	struct JsonArray;
+	struct DiscordCoreAPI_Dll JsonArray;
 
-	struct JsonObject;
+	struct DiscordCoreAPI_Dll JsonObject;
 
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
 
-	struct EnumConverter {
+	struct DiscordCoreAPI_Dll EnumConverter {
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
 			this->thePtr = new uint64_t{};
 			*static_cast<uint64_t*>(this->thePtr) = static_cast<uint64_t>(other);
@@ -174,7 +174,7 @@ namespace DiscordCoreAPI {
 		bool vectorType{ false };
 	};
 
-	struct JsonObject {
+	struct DiscordCoreAPI_Dll JsonObject {
 		std::unordered_map<std::string, JsonObject> theValues{};
 		ValueType theType{ ValueType::Object };
 		std::string theKey{};
@@ -286,19 +286,19 @@ namespace DiscordCoreAPI {
 		void pushBack(const char* theKey, int8_t other) noexcept;
 	};
 
-	struct JsonArray : public JsonObject {
+	struct DiscordCoreAPI_Dll JsonArray : public JsonObject {
 		JsonArray() noexcept = default;
 	};
 
-	struct Snowflake;
+	struct DiscordCoreAPI_Dll Snowflake;
 
-	struct ActivityData;
+	struct DiscordCoreAPI_Dll ActivityData;
 
 	/// For selecting the type of streamer that the given bot is, one must be one server and one of client per connection. \brief For selecting the type of streamer that the given bot is, one must be one server and one of client per connection.
 	enum class StreamType { None = 0, Client = 1, Server = 2 };
 
 	/// For connecting two bots to stream the VC contents between the two. \brief For connecting two bots to stream the VC contents between the two.
-	struct StreamInfo {
+	struct DiscordCoreAPI_Dll StreamInfo {
 		std::string address{};///< The address to connect to.
 		std::string port{};///< The port to connect to.
 	};
@@ -564,7 +564,7 @@ namespace DiscordCoreAPI {
 
 	enum class ObjectType : int8_t { Object = 0, Array = 1, String = 2, Boolean = 3, Number_Integer = 4, Number_Unsigned = 5, Number_Float = 6, Number_Double = 7, Null = 8 };
 
-	struct JsonValue {
+	struct DiscordCoreAPI_Dll JsonValue {
 		std::string theValue{};
 	};
 
@@ -881,7 +881,7 @@ namespace DiscordCoreAPI {
 
 	template<typename TimeType>
 	/// Class for representing a timestamp, as well as working with time-related values. \brief Class for representing a timestamp, as well as working with time-related values.
-	class TimeStamp {
+	class DiscordCoreAPI_Dll TimeStamp {
 	  public:
 		explicit TimeStamp(TimeFormat theFormatNew = TimeFormat::LongDateTime) {
 			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -1612,7 +1612,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	class StringBuffer {
+	class DiscordCoreAPI_Dll StringBuffer {
 	  public:
 		std::string_view substr(size_t, size_t);
 

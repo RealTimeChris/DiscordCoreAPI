@@ -41,12 +41,12 @@ namespace DiscordCoreAPI {
 		explicit JsonParseError(int32_t theCode);
 	};
 
-	struct ObjectReturnData {
+	struct DiscordCoreAPI_Dll ObjectReturnData {
 		simdjson::ondemand::value theObject{};
 		bool didItSucceed{ false };
 	};
 
-	struct ArrayReturnData {
+	struct DiscordCoreAPI_Dll ArrayReturnData {
 		simdjson::ondemand::array theArray{};
 		bool didItSucceed{ false };
 	};

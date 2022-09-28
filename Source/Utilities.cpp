@@ -1658,7 +1658,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	StringBuffer::operator std::string_view(){
+	StringBuffer::operator std::string_view() {
 		if (this->whichOneAreWeOn == 0) {
 			std::string_view theString{ this->theString01.data(), this->theSize };
 			return theString;
@@ -1666,7 +1666,6 @@ namespace DiscordCoreInternal {
 			std::string_view theString{ this->theString02.data(), this->theSize };
 			return theString;
 		}
-		
 	}
 
 	char StringBuffer::operator[](size_t theIndex) {

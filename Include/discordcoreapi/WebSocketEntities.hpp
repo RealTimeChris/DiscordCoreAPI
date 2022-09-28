@@ -36,7 +36,7 @@
 
 namespace DiscordCoreInternal {
 
-	class EventConverter {
+	class DiscordCoreAPI_Dll EventConverter {
 	  public:
 		EventConverter(std::string theEventNew);
 

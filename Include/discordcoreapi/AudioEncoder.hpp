@@ -31,8 +31,8 @@
 
 namespace DiscordCoreAPI {
 
-	struct OpusEncoderWrapper {
-		struct OpusEncoderDeleter {
+	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
+		struct DiscordCoreAPI_Dll OpusEncoderDeleter {
 			void operator()(OpusEncoder*) noexcept;
 		};
 

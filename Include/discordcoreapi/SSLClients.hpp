@@ -64,14 +64,14 @@
 namespace DiscordCoreInternal {
 
 #ifndef SOCKET_ERROR
-	#def SOCKET_ERROR -1
+	#def SOCKET_ERROR - 1
 #endif
 
 	using INT_PTR = signed long long;
 
 	using SOCKET = INT_PTR;
 
-	struct PollFDWrapper {
+	struct DiscordCoreAPI_Dll PollFDWrapper {
 		std::vector<uint32_t> theIndices{};
 		std::vector<pollfd> thePolls{};
 	};
