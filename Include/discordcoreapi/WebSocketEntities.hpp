@@ -36,7 +36,7 @@
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll EventConverter {
+	class EventConverter {
 	  public:
 		EventConverter(std::string theEventNew);
 
@@ -50,17 +50,17 @@ namespace DiscordCoreInternal {
 	  public:
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
 
+		std::string stringifyJsonData(std::string& dataToSend, WebSocketOpCode theOpCode) noexcept;
+
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
-		std::string stringifyJsonData(std::string& dataToSend, WebSocketOpCode theOpCode) noexcept;
+		bool parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept;
 
 		virtual bool onMessageReceived(std::string_view theMessage) noexcept = 0;
 
-		bool parseConnectionHeaders() noexcept;
+		bool parseMessage(WebSocketSSLShard* theShard) noexcept;
 
 		virtual void onClosed() noexcept = 0;
-
-		bool parseMessage() noexcept;
 
 		virtual ~WebSocketMessageHandler() noexcept = default;
 
@@ -122,8 +122,8 @@ namespace DiscordCoreInternal {
 		bool areWeHeartBeating{ false };
 		WebSocketClose closeCode{ 0 };
 		WebSocketOpCode dataOpCode{};
+		std::string currentMessage{};
 		bool areWeResuming{ false };
-		std::string theReference{};
 		std::string resumeUrl{};
 		std::string sessionId{};
 		uint32_t shard[2]{};
