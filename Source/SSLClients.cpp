@@ -187,7 +187,7 @@ namespace DiscordCoreInternal {
 	}
 
 	SSLDataInterface::SSLDataInterface() noexcept {
-		this->theFinalString.resize(1024 * 1024);
+		this->theFinalString.resize(static_cast<size_t>(1024 * 1024));
 	}
 
 	bool SSLConnectionInterface::initialize() noexcept {
@@ -525,7 +525,7 @@ namespace DiscordCoreInternal {
 		if (!this->inputBuffer.isItFull()) {
 			do {
 				size_t readBytes{ 0 };
-				int64_t bytesToRead{ 1024 * 16 };
+				int64_t bytesToRead{ static_cast<int64_t>(1024 * 16) };
 				auto returnValue{ SSL_read_ex(this->ssl, this->inputBuffer.getCurrentHead()->getCurrentHead(), bytesToRead, &readBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
