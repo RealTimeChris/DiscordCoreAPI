@@ -2721,16 +2721,11 @@ namespace DiscordCoreAPI {
 		std::vector<ConnectionData> theConnectionDatas{};
 	};
 
-	struct DiscordCoreAPI_Dll JsonValueReal {
-		std::string theValue{};
-		ObjectType theType{};
-	};
-
 	/// ApplicationCommand Interaction data option. \brief ApplicationCommand Interaction data option.
 	struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption {
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
 		ApplicationCommandOptionType type{};///< The type of ApplicationCommand options.
-		JsonValueReal value{};///< The value if it's an int32_t.
+		JsonValue value{};///< The value if it's an int32_t.
 		bool focused{ false };///< 	True if this option is the currently focused option for autocomplete.
 		std::string name{};///< The name of the current option.
 
@@ -3278,7 +3273,7 @@ namespace DiscordCoreAPI {
 	 */
 
 	struct DiscordCoreAPI_Dll JsonValueReals {
-		std::unordered_map<std::string, JsonValueReal> theValues{};
+		std::unordered_map<std::string, JsonValue> theValues{};
 	};
 
 	template<typename ReturnType> auto getArgument(JsonValueReals& optionsArgs, std::string_view theArgName);

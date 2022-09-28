@@ -909,7 +909,7 @@ namespace DiscordCoreAPI {
 	}
 
 	const DiscordCoreInternal::UpdatePresenceData ConfigManager::getPresenceData() {
-		return *this->theConfig.presenceData;
+		return this->theConfig.presenceData;
 	}
 
 	const std::string ConfigManager::getBotToken() {

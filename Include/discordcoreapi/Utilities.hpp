@@ -569,6 +569,7 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll JsonValue {
 		std::string theValue{};
+		ObjectType theType{};
 	};
 
 	class DiscordCoreAPI_Dll ConfigManager {

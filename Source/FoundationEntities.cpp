@@ -3987,13 +3987,13 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	void parseCommandDataOption(std::unordered_map<std::string, JsonValueReal>& theValues, ApplicationCommandInteractionDataOption& theData) {
-		JsonValueReal theValue{};
+	void parseCommandDataOption(std::unordered_map<std::string, JsonValue>& theValues, ApplicationCommandInteractionDataOption& theData) {
+		JsonValue theValue{};
 		theValue.theType = theData.value.theType;
 		theValue.theValue = theData.value.theValue;
 		theValues.emplace(theData.name, theValue);
 		for (auto& value: theData.options) {
-			JsonValueReal theValueNew{};
+			JsonValue theValueNew{};
 			theValueNew.theType = value.value.theType;
 			theValueNew.theValue = value.value.theValue;
 			theValues.emplace(value.name, theValueNew);
@@ -4007,10 +4007,10 @@ namespace DiscordCoreAPI {
 		}
 		if (inputEventData.interactionData->data.messageInteractionData.targetId.operator size_t() != 0) {
 			this->optionsArgs.theValues.emplace("target_id",
-				JsonValueReal{ .theValue = std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId), .theType = ObjectType::String });
+				JsonValue{ .theValue = std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId), .theType = ObjectType::String });
 		} else if (inputEventData.interactionData->data.userInteractionData.targetId.operator size_t() != 0) {
 			this->optionsArgs.theValues.emplace("target_id",
-				JsonValueReal{ .theValue = std::to_string(inputEventData.interactionData->data.userInteractionData.targetId), .theType = ObjectType::String });
+				JsonValue{ .theValue = std::to_string(inputEventData.interactionData->data.userInteractionData.targetId), .theType = ObjectType::String });
 		}
 		this->eventData = inputEventData;
 		for (auto& value: this->eventData.interactionData->data.applicationCommandData.options) {
