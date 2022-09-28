@@ -35,6 +35,7 @@
 namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll VoiceSocketReadyData {
+		VoiceSocketReadyData(simdjson::ondemand::value);
 		std::string mode{};
 		std::string ip{};
 		uint64_t port{};

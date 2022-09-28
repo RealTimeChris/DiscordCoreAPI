@@ -154,6 +154,8 @@ namespace DiscordCoreAPI {
 
 		Role(const RoleData& other) noexcept;
 
+		Role(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~Role() noexcept = default;
 	};
 
@@ -189,7 +191,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class RoleData;
-		friend class Guild;
+		friend class GuildData;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 

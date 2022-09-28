@@ -79,6 +79,43 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
+	Role::Role(simdjson::ondemand::value jsonObjectData) {
+		this->id = getId(jsonObjectData, "id");
+
+		this->icon = getString(jsonObjectData, "icon");
+
+		this->name = getString(jsonObjectData, "name");
+
+		std::stringstream theStream{};
+		theStream << getString(jsonObjectData, "unicode_emoji");
+		for (auto& value: theStream.str()) {
+			this->unicodeEmoji.emplace_back(value);
+		}
+		if (this->unicodeEmoji.size() > 3) {
+			this->unicodeEmoji = static_cast<std::string>(this->unicodeEmoji).substr(1, this->unicodeEmoji.size() - 3);
+		}
+
+		this->color = getUint32(jsonObjectData, "color");
+
+		this->flags |= setBool(this->flags, RoleFlags::Hoist, getBool(jsonObjectData, "hoist"));
+
+		this->position = getUint32(jsonObjectData, "position");
+
+		this->permissions = getString(jsonObjectData, "permissions");
+
+		this->flags |= setBool(this->flags, RoleFlags::Managed, getBool(jsonObjectData, "managed"));
+
+		this->flags |= setBool(this->flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
+
+		simdjson::ondemand::value theRoleTagsNew{};
+		auto theResult = jsonObjectData["tags"].get(theRoleTagsNew);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			RoleTagsData theRoleTags{};
+			parseObject(theRoleTagsNew, theRoleTags);
+			this->tags = std::move(theRoleTags);
+		}
+	}
+
 	Role& Role::operator=(RoleData&& other) noexcept {
 		if (this != &other) {
 			this->unicodeEmoji = std::move(other.unicodeEmoji);

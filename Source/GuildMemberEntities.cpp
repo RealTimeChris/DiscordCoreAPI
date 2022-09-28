@@ -56,24 +56,6 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	std::string GuildMemberData::getAvatarUrl() {
-		if (this->avatar.getIconHash() != "") {
-			std::string theStringNew{ "https://cdn.discordapp.com/" };
-			theStringNew += "guilds/" + std::to_string(this->guildId) + "/users/" + std::to_string(this->id) + "/avatars/" + this->avatar.getIconHash();
-			return theStringNew;
-		} else {
-			return this->getUserData().getAvatarUrl();
-		}
-	}
-
-	UserData GuildMemberData::getUserData() {
-		if (this->id.operator size_t() != 0) {
-			return Users::getCachedUserAsync({ .userId = this->id }).get();
-		} else {
-			return {};
-		}
-	}
-
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) noexcept {
 		if (this != &other) {
 			this->permissions = std::move(other.permissions);
@@ -110,6 +92,51 @@ namespace DiscordCoreAPI {
 
 	GuildMember::GuildMember(const GuildMemberData& other) noexcept {
 		*this = other;
+	}
+
+	GuildMember::GuildMember(simdjson::ondemand::value jsonObjectData) {
+		this->flags |= setBool(this->flags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
+
+		this->flags |= setBool(this->flags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
+
+		this->flags |= setBool(this->flags, GuildMemberFlags::Deaf, getBool(jsonObjectData, "deaf"));
+
+		this->joinedAt = getString(jsonObjectData, "joined_at");
+
+		this->guildId = getId(jsonObjectData, "guild_id");
+
+		try {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData["roles"].get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->roles.clear();
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					this->roles.emplace_back(stoull(std::string{ value.get_string().take_value().data() }));
+				}
+			}
+		} catch (...) {
+			reportException("parseObject(GuildMemberData&)");
+		}
+		this->permissions = getString(jsonObjectData, "permissions");
+
+		simdjson::ondemand::value theObject{};
+		auto theResult = jsonObjectData["user"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			UserData theUser{};
+			parseObject(theObject, theUser);
+			this->id = theUser.id;
+			Users::insertUser(std::move(theUser));
+		}
+
+		this->avatar = getString(jsonObjectData, "avatar");
+
+		this->flags |= getUint8(jsonObjectData, "flags");
+
+		this->nick = getString(jsonObjectData, "nick");
+
+		this->communicationDisabledUntil = getString(jsonObjectData, "communication_disabled_until");
+
+		this->premiumSince = getString(jsonObjectData, "premium_since");
 	}
 
 	GuildMemberVector::operator std::vector<GuildMember>() {

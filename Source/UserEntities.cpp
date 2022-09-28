@@ -37,12 +37,6 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	std::string UserData::getAvatarUrl() {
-		std::string theStringNew{ "https://cdn.discordapp.com/" };
-		theStringNew += "avatars/" + std::to_string(this->id) + "/" + this->avatar.getIconHash();
-		return theStringNew;
-	}
-
 	User& User::operator=(UserData&& other) noexcept {
 		if (this != &other) {
 			this->discriminator = std::move(other.discriminator);
@@ -71,6 +65,34 @@ namespace DiscordCoreAPI {
 
 	User::User(const UserData& dataNew) noexcept {
 		*this = dataNew;
+	}
+
+	User::User(simdjson::ondemand::value jsonObjectData) {
+		flags |= setBool(this->flags, UserFlags::MFAEnabled, getBool(jsonObjectData, "mfa_enabled"));
+
+		this->flags |= setBool(this->flags, UserFlags::Verified, getBool(jsonObjectData, "verified"));
+
+		this->flags |= setBool(this->flags, UserFlags::System, getBool(jsonObjectData, "system"));
+
+		this->flags |= setBool(this->flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
+
+		this->discriminator = getString(jsonObjectData, "discriminator");
+
+		this->flags |= getUint32(jsonObjectData, "public_flags");
+
+		this->userName = getString(jsonObjectData, "username");
+
+		this->id = getId(jsonObjectData, "id");
+
+		this->avatar = getString(jsonObjectData, "avatar");
+
+		this->locale = getString(jsonObjectData, "locale");
+
+		this->email = getString(jsonObjectData, "email");
+
+		this->premiumType = static_cast<PremiumType>(getUint8(jsonObjectData, "premium_type"));
+
+		this->flags = getUint32(jsonObjectData, "public_flags");
 	}
 
 	UserVector::operator std::vector<User>() {

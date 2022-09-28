@@ -370,18 +370,6 @@ namespace DiscordCoreInternal {
 		operator bool();
 	};
 
-	/// For updating a User's presence. \brief For updating a User's presence.
-	struct DiscordCoreAPI_Dll UpdatePresenceData {
-		std::vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
-		std::string status{};///< Current status.
-		int64_t since{ 0 };///< When was the activity started?
-		bool afk{ false };///< Are we afk.
-
-		operator DiscordCoreAPI::JsonObject();
-	};
-
-	template<typename ReturnType> void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
-
 }// namespace DiscordCoreInternal
 
 
@@ -815,8 +803,6 @@ namespace DiscordCoreAPI {
 		ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
 		ShortTime = 't',///< "16:20" - Short Time
 	};
-
-	template<typename ReturnType> void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
 
 	DiscordCoreAPI_Dll uint64_t strtoull(const std::string& theString);
 

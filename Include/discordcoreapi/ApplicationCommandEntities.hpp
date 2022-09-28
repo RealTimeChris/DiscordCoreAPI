@@ -181,6 +181,8 @@ namespace DiscordCoreAPI {
 	  public:
 		ApplicationCommand() noexcept = default;
 
+		ApplicationCommand(simdjson::ondemand::value) noexcept;
+
 		virtual ~ApplicationCommand() noexcept = default;
 	};
 

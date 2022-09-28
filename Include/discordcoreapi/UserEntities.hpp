@@ -106,6 +106,8 @@ namespace DiscordCoreAPI {
 
 		User(const UserData&) noexcept;
 
+		User(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~User() noexcept = default;
 	};
 

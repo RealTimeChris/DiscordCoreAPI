@@ -132,6 +132,8 @@ namespace DiscordCoreAPI {
 
 		GuildMember(const GuildMemberData&) noexcept;
 
+		GuildMember(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~GuildMember() noexcept = default;
 	};
 

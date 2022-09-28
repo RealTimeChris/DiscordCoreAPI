@@ -32,6 +32,23 @@ namespace DiscordCoreAPI {
 	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
 	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
+	VoiceSocketReadyData::VoiceSocketReadyData(simdjson::ondemand::value jsonObjectData) {
+		this->ip = getString(jsonObjectData, "ip");
+		this->ssrc = getUint32(jsonObjectData, "ssrc");
+		simdjson::ondemand::array theArray{};
+		auto theResult = jsonObjectData["modes"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->mode.clear();
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				if (std::string{ value.get_string().take_value() } == "xsalsa20_poly1305") {
+					this->mode = std::string{ value.get_string().take_value() };
+				}
+			}
+		}
+		this->port = getUint64(jsonObjectData, "port");
+	}
+
+
 	void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) noexcept {
 		if (other) {
 			opus_decoder_destroy(other);

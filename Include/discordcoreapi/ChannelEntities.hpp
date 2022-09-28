@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class ChannelData;
-		friend class Guild;
+		friend class GuildData;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManager);
 
