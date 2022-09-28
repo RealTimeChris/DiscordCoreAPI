@@ -1772,11 +1772,10 @@ namespace DiscordCoreInternal {
 				}
 				bool areWeConnected{ false };
 				for (auto& value: theVector) {
-					if (!static_cast<WebSocketSSLShard*>(value)->areWeConnecting.load()) {
-						if (value->areWeStillConnected()) {
-							static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
-							areWeConnected = true;
-						}
+					if (value->areWeStillConnected()) {
+						static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
+						static_cast<WebSocketSSLShard*>(value)->parseMessage(static_cast<WebSocketSSLShard*>(value));
+						areWeConnected = true;
 					}
 				}
 				if (!areWeConnected) {

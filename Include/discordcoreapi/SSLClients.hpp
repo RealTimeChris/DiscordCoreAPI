@@ -207,7 +207,7 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
 
-		virtual std::string getInputBuffer() noexcept = 0;
+		virtual std::string_view getInputBuffer() noexcept = 0;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
@@ -232,9 +232,9 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
-		virtual bool handleBuffer() noexcept = 0;
+		std::string_view getInputBuffer() noexcept;
 
-		std::string getInputBuffer() noexcept;
+		virtual bool handleBuffer() noexcept = 0;
 
 		bool areWeStillConnected() noexcept;
 

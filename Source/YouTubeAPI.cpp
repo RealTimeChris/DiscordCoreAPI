@@ -316,10 +316,8 @@ namespace DiscordCoreInternal {
 						if (!stopToken.stop_requested()) {
 							if (streamSocket->areWeStillConnected()) {
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
-								std::string streamBuffer{};
-								auto theString = streamSocket->getInputBuffer();
-								streamBuffer.insert(streamBuffer.begin(), theString.begin(), theString.end());
-								headerSize = static_cast<int32_t>(streamBuffer.size());
+								std::string streamBufferReal = static_cast<std::string>(streamSocket->getInputBuffer());
+								headerSize = static_cast<int32_t>(streamBufferReal.size());
 							}
 						}
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
@@ -338,11 +336,9 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						std::string streamBuffer{};
-						auto theString = streamSocket->getInputBuffer();
-						streamBuffer.insert(streamBuffer.begin(), theString.begin(), theString.end());
-						if (streamBuffer.size() > 0) {
-							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
+						std::string streamBufferReal = static_cast<std::string>(streamSocket->getInputBuffer());
+						if (streamBufferReal.size() > 0) {
+							theCurrentString.insert(theCurrentString.end(), streamBufferReal.data(), streamBufferReal.data() + streamBufferReal.size());
 							std::string submissionString{};
 							if (theCurrentString.size() >= this->maxBufferSize) {
 								submissionString.insert(submissionString.begin(), theCurrentString.data(), theCurrentString.data() + this->maxBufferSize);
@@ -364,13 +360,11 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						std::string streamBuffer{};
-						auto theString = streamSocket->getInputBuffer();
-						streamBuffer.insert(streamBuffer.begin(), theString.begin(), theString.end());
-						std::cout << "THE STRING REALER 0303 SIZE: " << streamBuffer.size() << std::endl;
+						std::string streamBufferReal = static_cast<std::string>(streamSocket->getInputBuffer());
+						std::cout << "THE STRING REALER 0303 SIZE: " << streamBufferReal.size() << std::endl;
 						
-						if (streamBuffer.size() > 0) {
-							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
+						if (streamBufferReal.size() > 0) {
+							theCurrentString.insert(theCurrentString.end(), streamBufferReal.data(), streamBufferReal.data() + streamBufferReal.size());
 							while (theCurrentString.size() > 0) {
 								std::string submissionString{};
 								if (theCurrentString.size() >= this->maxBufferSize) {

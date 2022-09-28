@@ -352,7 +352,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (readWriteSet.thePolls[x].revents & POLLIN) {
-				std::cout << "SSL CLIENT WHILE 453453" << std::endl;
+				//std::cout << "SSL CLIENT WHILE 453453" << std::endl;
 				if (!theVector[readWriteSet.theIndices[x]]->processReadData()) {
 					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
@@ -366,16 +366,16 @@ namespace DiscordCoreInternal {
 		return theReturnValue;
 	}
 
-	std::string SSLClient::getInputBuffer() noexcept {
-		std::string theStringNew{};
+	std::string_view SSLClient::getInputBuffer() noexcept {
+		size_t theSize{};
 		if (!this->inputBuffer.getCurrentTail()->isItEmpty()) {
-			auto theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
-			theStringNew.resize(theSize);
-			memcpy(theStringNew.data(), this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize);
+			theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
+			this->theFinalString.resize(theSize);
+			memcpy(this->theFinalString.data(), this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize);
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
-		return theStringNew;
+		return std::string_view{ this->theFinalString.data(), theSize };
 	}
 
 	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
@@ -470,8 +470,10 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-		while (this->handleBuffer()) {
-			std::cout << "SSL CLIENT WHILE 0404" << std::endl;
+		if (!this->areWeAStandaloneSocket) {
+			while (this->handleBuffer()) {
+				std::cout << "SSL CLIENT WHILE 0303" << std::endl;
+			}
 		}
 		return theResult;
 	}
@@ -551,7 +553,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 				}
-				std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
+				//std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
 			} while (SSL_pending(this->ssl));
 		}
 		return true;
