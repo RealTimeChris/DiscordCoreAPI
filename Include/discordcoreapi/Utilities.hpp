@@ -1625,7 +1625,7 @@ namespace DiscordCoreInternal {
 
 	enum class RingBufferAccessType { Read = 0, Write = 1 };
 
-	class DiscordCoreAPI_Dll RingBuffer {
+	class DiscordCoreAPI_Dll RingBufferSlice {
 	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
 		char* getCurrentTail();
@@ -1642,18 +1642,18 @@ namespace DiscordCoreInternal {
 		int64_t tail{};
 	};
 
-	class DiscordCoreAPI_Dll RingBufferArray {
+	class DiscordCoreAPI_Dll RingBuffer {
 	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
-		RingBuffer* getCurrentTail();
-		RingBuffer* getCurrentHead();
+		RingBufferSlice* getCurrentTail();
+		RingBufferSlice* getCurrentHead();
 		size_t getUsedSpace();
 		bool isItEmpty();
 		bool isItFull();
 		void clear();
 
 	  protected:
-		std::array<RingBuffer, 64> theArray{};
+		std::array<RingBufferSlice, 64> theArray{};
 		bool areWeFull{ false };
 		int64_t head{};
 		int64_t tail{};
