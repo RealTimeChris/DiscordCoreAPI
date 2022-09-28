@@ -1538,8 +1538,7 @@ namespace DiscordCoreInternal {
 		if (this->currentState.load() == SSLShardState::Upgrading) {
 			return this->parseConnectionHeaders(this);
 		}
-		while (this->parseMessage(this)) {
-		}
+		this->parseMessage(this);
 		return false;
 	}
 
@@ -1774,7 +1773,7 @@ namespace DiscordCoreInternal {
 				for (auto& value: theVector) {
 					if (value->areWeStillConnected()) {
 						static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
-						static_cast<WebSocketSSLShard*>(value)->parseMessage(static_cast<WebSocketSSLShard*>(value));
+						static_cast<WebSocketSSLShard*>(value)->handleBuffer();
 						areWeConnected = true;
 					}
 				}

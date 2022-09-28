@@ -738,7 +738,6 @@ namespace DiscordCoreAPI {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				cout << "VoiceConnection::connectInternal() Error: Failed to connect to voice channel!" << endl << endl;
 			}
-			std::cout << "FAILING TO CONNECT 0101" << std::endl;
 			return;
 		}
 		switch (this->connectionState.load()) {
@@ -750,7 +749,6 @@ namespace DiscordCoreAPI {
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING TO CONNECT 0202" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -763,7 +761,6 @@ namespace DiscordCoreAPI {
 				if (!WebSocketSSLShard::connect(this->baseUrl, "443", this->configManager->doWePrintWebSocketErrorMessages(), false)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING TO CONNECT 0303" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -776,14 +773,12 @@ namespace DiscordCoreAPI {
 				if (!this->sendTextMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING TO CONNECT 0404" << std::endl;
 					this->connectInternal();
 					return;
 				}
 				while (this->currentState.load() != DiscordCoreInternal::SSLShardState::Collecting_Hello) {
 					if (WebSocketSSLShard::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
-						std::cout << "FAILING TO CONNECT 0505" << std::endl;
 						this->connectInternal();
 						return;
 					}
@@ -796,14 +791,12 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify) {
 					if (theStopWatch.hasTimePassed()) {
-						std::cout << "FAILING TO CONNECT 0606" << std::endl;
 						this->onClosed();
 						this->connectInternal();
 						return;
 					}
 					if (WebSocketSSLShard::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
-						std::cout << "FAILING TO CONNECT 0707" << std::endl;
 						this->connectInternal();
 						return;
 					}
@@ -823,7 +816,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendTextMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING TO CONNECT 0808" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -835,14 +827,12 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
 					if (theStopWatch.hasTimePassed()) {
-						std::cout << "FAILING TO CONNECT 0909" << std::endl;
 						this->onClosed();
 						this->connectInternal();
 						return;
 					}
 					if (WebSocketSSLShard::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
-						std::cout << "FAILING TO CONNECT 101010" << std::endl;
 						this->connectInternal();
 						return;
 					}
@@ -855,7 +845,6 @@ namespace DiscordCoreAPI {
 				if (!this->voiceConnect()) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING TO CONNECT 111111" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -873,7 +862,6 @@ namespace DiscordCoreAPI {
 				if (!this->sendTextMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
-					std::cout << "FAILING TO CONNECT 121212" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -885,14 +873,12 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
 					if (theStopWatch.hasTimePassed()) {
-						std::cout << "FAILING TO CONNECT 131313" << std::endl;
 						this->onClosed();
 						this->connectInternal();
 						return;
 					}
 					if (WebSocketSSLShard::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
-						std::cout << "FAILING TO CONNECT 141414" << std::endl;
 						this->connectInternal();
 						return;
 					}

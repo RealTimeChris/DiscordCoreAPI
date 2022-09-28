@@ -361,7 +361,6 @@ namespace DiscordCoreInternal {
 							return;
 						}
 						std::string streamBufferReal = static_cast<std::string>(streamSocket->getInputBuffer());
-						std::cout << "THE STRING REALER 0303 SIZE: " << streamBufferReal.size() << std::endl;
 						
 						if (streamBufferReal.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBufferReal.data(), streamBufferReal.data() + streamBufferReal.size());
