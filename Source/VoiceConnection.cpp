@@ -159,11 +159,9 @@ namespace DiscordCoreAPI {
 
 				auto thePayload = theDocument.get_value();
 				DiscordCoreInternal::WebSocketMessage theMessage{};
-				std::string_view theStringNew{};
 				thePayload["s"].get(theMessage.s);
 				thePayload["op"].get(theMessage.op);
-				thePayload["t"].get(theStringNew);
-				theMessage.t = static_cast<std::string>(theStringNew);
+				thePayload["t"].get(theMessage.t);
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theData << reset() << endl << endl;
@@ -284,7 +282,7 @@ namespace DiscordCoreAPI {
 			this->messageLength = 0;
 			this->messageOffset = 0;
 			switch (WebSocketSSLShard::dataOpCode) {
-				case DiscordCoreInternal::WebSocketOpCode::Op_Continuation:
+				case DiscordCoreInternal::WebSocketOpCode::Op_Continuation :
 					[[fallthrough]];
 				case DiscordCoreInternal::WebSocketOpCode::Op_Text:
 					[[fallthrough]];
@@ -326,7 +324,7 @@ namespace DiscordCoreAPI {
 						return true;
 					}
 				}
-				case DiscordCoreInternal::WebSocketOpCode::Op_Close: {
+				case DiscordCoreInternal::WebSocketOpCode::Op_Close : {
 					uint16_t close = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[2] & 0xff;
 					close <<= 8;
 					close |= WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[3] & 0xff;

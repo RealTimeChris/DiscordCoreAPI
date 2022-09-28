@@ -85,20 +85,17 @@ namespace DiscordCoreInternal {
 	void ErlPacker::writeObject(simdjson::ondemand::value jsonData) {
 		bool add_comma{ false };
 		this->appendMapHeader(static_cast<uint32_t>(jsonData.count_fields().take_value()));
-		simdjson::ondemand::object theObject{};
-		if (jsonData.get(theObject) == simdjson::error_code::SUCCESS) {
-			for (auto field: theObject) {
-				if (add_comma) {
-				}
-				std::stringstream theStream{};
-				theStream << field.key();
-				std::string theKey = theStream.str();
-
-				auto theSize = theKey.size();
-				this->appendBinaryExt(theKey, static_cast<uint32_t>(theSize));
-				this->singleValueJsonToETF(field.value());
-				add_comma = true;
+		for (auto field: jsonData.get_object()) {
+			if (add_comma) {
 			}
+			std::stringstream theStream{};
+			theStream << field.key();
+			std::string theKey = theStream.str();
+
+			auto theSize = theKey.size();
+			this->appendBinaryExt(theKey, static_cast<uint32_t>(theSize));
+			this->singleValueJsonToETF(field.value());
+			add_comma = true;
 		}
 	}
 
@@ -137,14 +134,11 @@ namespace DiscordCoreInternal {
 	void ErlPacker::writeArray(simdjson::ondemand::value jsonData) {
 		bool add_comma{ false };
 		this->appendListHeader(static_cast<uint32_t>(jsonData.count_elements().take_value()));
-		simdjson::ondemand::array theArray{};
-		if (jsonData.get(theArray) == simdjson::error_code::SUCCESS) {
-			for (auto element: theArray) {
-				this->singleValueJsonToETF(element.value());
-				add_comma = true;
-			}
-			this->appendNilExt();
+		for (auto element: jsonData.get_array()) {
+			this->singleValueJsonToETF(element.value());
+			add_comma = true;
 		}
+		this->appendNilExt();
 	}
 
 	void ErlPacker::writeBool(simdjson::ondemand::value jsonData) {
@@ -231,107 +225,117 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::appendFalse() {
-		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 5, 'f', 'a', 'l', 's', 'e' };
+		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 5, static_cast<uint8_t>('f'), static_cast<uint8_t>('a'), static_cast<uint8_t>('l'),
+			static_cast<uint8_t>('s'), static_cast<uint8_t>('e') };
 		this->writeToBuffer(bufferNew);
 	}
 
 	void ErlPacker::appendTrue() {
-		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 4, 't', 'r', 'u', 'e' };
+		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 4, static_cast<uint8_t>('t'), static_cast<uint8_t>('r'), static_cast<uint8_t>('u'),
+			static_cast<uint8_t>('e') };
 		this->writeToBuffer(bufferNew);
 	}
 
 	void ErlPacker::appendNil() {
-		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 3, 'n', 'i', 'l' };
+		std::string bufferNew{ static_cast<uint8_t>(ETFTokenType::Small_Atom_Ext), 3, static_cast<uint8_t>('n'), static_cast<uint8_t>('i'), static_cast<uint8_t>('l') };
 		this->writeToBuffer(bufferNew);
 	}
 
 	size_t ErlPacker::readString(uint32_t length) {
 		if (this->offSet + static_cast<uint64_t>(length) > this->size) {
-			std::cout << "THE LENGTH: " << length << ", THE OFFSET: " << this->offSet << ", THE STRING LENGTH: " << this->buffer.size() << ", THE STRING: ";
-			for (uint32_t x = 0; x < this->buffer.size(); ++x) {
-				std::cout << "INDEX: " << x << ", VALUE: " << this->buffer[x] << std::endl;
-			}
-			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer.\n\n" };
+			throw ErlPackError{ "this->readString() Error: readString() past end of buffer.\n\n" };
 		}
-		if (this->bufferString.size() <= static_cast<uint64_t>(length * 2)) {
-			this->bufferString.resize(static_cast<uint64_t>(length * 2));
+		if (this->bufferString.size() <= length * 2) {
+			this->bufferString.resize(length * 2);
 		}
+		size_t theFinalSize{};
 		char* theStringNew = ( char* )this->buffer.data() + this->offSet;
 		size_t theIndex{};
 		for (uint32_t x = 0; x < length; ++x) {
-			switch (theStringNew[x]) {
+			switch (static_cast<char>(theStringNew[x])) {
 				case 0x00: {
 					break;
 				}
 				case 0x27: {
-					this->bufferString[theIndex] = '\\';
-					this->bufferString[theIndex + 1] = '\'';
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('\'');
+					theFinalSize += 2;
 					theIndex += 2;
 					break;
 				}
 				case 0x22: {
-					this->bufferString[theIndex] = '\\';
-					this->bufferString[theIndex + 1] = '"';
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('"');
+					theFinalSize += 2;
 					theIndex += 2;
 					break;
 				}
 				case 0x5c: {
-					this->bufferString[theIndex] = '\\';
-					this->bufferString[theIndex + 1] = '\\';
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('\\');
+					theFinalSize += 2;
 					theIndex += 2;
 					break;
 				}
 				case 0x07: {
-					this->bufferString[theIndex] = '\\';
-					this->bufferString[theIndex + 1] = 'a';
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('a');
+					theFinalSize += 2;
 					theIndex += 2;
 					break;
 				}
 				case 0x08: {
-					this->bufferString[theIndex] = '\\';
-					this->bufferString[theIndex + 1] = 'b';
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('b');
+					theFinalSize += 2;
 					theIndex += 2;
 					break;
 				}
 				case 0x0C: {
-					this->bufferString[theIndex] = '\\';
-					this->bufferString[theIndex + 1] = 'f';
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('f');
+					theFinalSize += 2;
 					theIndex += 2;
 					break;
 				}
 				case 0x0A: {
-					this->bufferString[theIndex] = '\\';
-					this->bufferString[theIndex + 1] = 'n';
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('n');
+					theFinalSize += 2;
 					theIndex += 2;
 					break;
 				}
 				case 0x0D: {
-					this->bufferString[theIndex] = '\\';
-					this->bufferString[theIndex + 1] = 'r';
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('r');
+					theFinalSize += 2;
 					theIndex += 2;
 					break;
 				}
 				case 0x0B: {
-					this->bufferString[theIndex] = '\\';
-					this->bufferString[theIndex + 1] = 'v';
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('v');
+					theFinalSize += 2;
 					theIndex += 2;
 					break;
 				}
 				case 0x09: {
-					this->bufferString[theIndex] = '\\';
-					this->bufferString[theIndex + 1] = 't';
+					this->bufferString[theIndex] = static_cast<char>('\\');
+					this->bufferString[theIndex + 1] = static_cast<char>('t');
+					theFinalSize += 2;
 					theIndex += 2;
 					break;
 				}
 				default: {
 					this->bufferString[theIndex] = theStringNew[x];
+					theFinalSize++;
 					theIndex++;
 					break;
 				}
 			}
 		}
 		this->offSet += length;
-		return theIndex;
+		return theFinalSize;
 	}
 
 	std::string ErlPacker::processAtom(const char* atom, uint32_t length) {
@@ -516,10 +520,8 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string ErlPacker::parseAtomUtf8Ext() {
-		uint16_t length = this->readBits<uint16_t>();
-		std::cout << "THE LENGTH OLD: " << length << std::endl;
+		uint32_t length = this->readBits<uint16_t>();
 		auto lengthNew = static_cast<uint32_t>(this->readString(length));
-		std::cout << "THE LENGTH NEW: " << lengthNew << std::endl;
 		return this->processAtom(this->bufferString.data(), lengthNew);
 	}
 
@@ -530,9 +532,7 @@ namespace DiscordCoreInternal {
 	std::string ErlPacker::parseBinaryExt() {
 		std::string theString{ "\"" };
 		uint32_t length = this->readBits<uint32_t>();
-		std::cout << "THE LENGTH OLD (BINARY): " << length << std::endl;
 		auto lengthNew = this->readString(length);
-		std::cout << "THE LENGTH NEW: (BINARY) " << lengthNew << std::endl;
 		theString += std::string{ this->bufferString.data(), lengthNew };
 		theString += "\"";
 		return theString;
@@ -542,7 +542,7 @@ namespace DiscordCoreInternal {
 		const uint8_t floatLength = 31;
 		size_t floatString = readString(floatLength);
 
-		if (floatString == 0) {
+		if (floatString == NULL) {
 			return std::string{};
 		}
 
