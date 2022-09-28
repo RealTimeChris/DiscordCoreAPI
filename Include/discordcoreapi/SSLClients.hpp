@@ -199,42 +199,6 @@ namespace DiscordCoreInternal {
 
 	enum class ProcessIOResult : int8_t { No_Error = 0, Error = 1 };
 
-	enum class RingBufferAccessType { Read = 0, Write = 1 };
-
-	struct DiscordCoreAPI_Dll RingBuffer {
-		RingBuffer() noexcept = default;
-		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
-		char* getCurrentTail();
-		char* getCurrentHead();
-		size_t getUsedSpace();
-		bool isItEmpty();
-		bool isItFull();
-		void clear();
-
-	  protected:
-		std::array<char, 1024 * 16> theArray{};
-		bool areWeFull{ false };
-		int64_t head{};
-		int64_t tail{};
-	};
-
-	struct DiscordCoreAPI_Dll RingBufferArray {
-		RingBufferArray() noexcept = default;
-		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
-		RingBuffer* getCurrentTail();
-		RingBuffer* getCurrentHead();
-		size_t getUsedSpace();
-		bool isItEmpty();
-		bool isItFull();
-		void clear();
-
-	  protected:
-		std::array<RingBuffer, 64> theArray{};
-		bool areWeFull{ false };
-		int64_t head{};
-		int64_t tail{};
-	};
-
 	class DiscordCoreAPI_Dll SSLDataInterface {
 	  public:
 		friend class HttpsClient;

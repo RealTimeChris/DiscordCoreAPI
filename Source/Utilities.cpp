@@ -1620,3 +1620,150 @@ namespace DiscordCoreAPI {
 
 	template<typename Object> std::unordered_map<std::string, UnboundedMessageBlock<Object>*> ObjectCollector<Object>::objectsBufferMap{};
 };
+
+namespace DiscordCoreInternal {
+
+	std::string_view StringBuffer::substr(size_t offSet, size_t size) {
+		std::string_view theString{ this->theString.data() + offSet, size };
+		return theString;
+	}
+
+	void StringBuffer::writeData(const char* thePtr, size_t theSize) {
+		if (this->theSize + theSize < this->theString.size()) {
+			memcpy(this->theString.data() + this->theSize, thePtr, theSize);
+			this->theSize += theSize;
+		}
+	}
+
+	StringBuffer::operator std::string_view(){
+		std::string_view theString{ this->theString.data(), this->theSize };
+		return theString;
+	}
+
+	char StringBuffer::operator[](size_t theIndex) {
+		return this->theString[theIndex];
+	}
+
+	size_t StringBuffer::size() {
+		return this->theSize;
+	}
+
+	void StringBuffer::clear() {
+		this->theSize = 0;
+	}
+
+	char* StringBuffer::data() {
+		return this->theString.data();
+	}
+
+	void RingBuffer::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
+		if (theType == RingBufferAccessType::Read) {
+			this->tail = (this->tail + theSize) % this->theArray.size();
+			if (this->tail != this->head) {
+				this->areWeFull = false;
+			}
+		} else {
+			this->head = (this->head + theSize) % this->theArray.size();
+			if (this->head == this->tail) {
+				this->areWeFull = true;
+			}
+			if (this->head != this->tail) {
+				this->areWeFull = false;
+			}
+		}
+	}
+
+	size_t RingBuffer::getUsedSpace() {
+		if (this->areWeFull) {
+			return this->theArray.size();
+		}
+		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
+			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+			return this->theArray.size() - freeSpace;
+		} else {
+			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+			return this->theArray.size() - freeSpace;
+		}
+	}
+
+	char* RingBuffer::getCurrentTail() {
+		return (this->theArray.data() + (this->tail % (this->theArray.size())));
+	}
+
+	char* RingBuffer::getCurrentHead() {
+		return (this->theArray.data() + (this->head % (this->theArray.size())));
+	}
+
+	bool RingBuffer::isItEmpty() {
+		if (this->areWeFull) {
+			return false;
+		}
+		return this->tail == this->head;
+	}
+
+	bool RingBuffer::isItFull() {
+		return this->areWeFull;
+	}
+
+	void RingBuffer::clear() {
+		this->areWeFull = false;
+		this->tail = 0;
+		this->head = 0;
+	}
+
+	void RingBufferArray::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
+		if (theType == RingBufferAccessType::Read) {
+			this->tail = (this->tail + theSize) % this->theArray.size();
+			if (this->tail != this->head) {
+				this->areWeFull = false;
+			}
+		} else {
+			this->head = (this->head + theSize) % this->theArray.size();
+			if (this->head == this->tail) {
+				this->areWeFull = true;
+			}
+			if (this->head != this->tail) {
+				this->areWeFull = false;
+			}
+		}
+	}
+
+	size_t RingBufferArray::getUsedSpace() {
+		if (this->areWeFull) {
+			return this->theArray.size();
+		}
+		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
+			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+			return this->theArray.size() - freeSpace;
+		} else {
+			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+			return this->theArray.size() - freeSpace;
+		}
+	}
+
+	RingBuffer* RingBufferArray::getCurrentTail() {
+		return (this->theArray.data() + (this->tail % (this->theArray.size())));
+	}
+
+	RingBuffer* RingBufferArray::getCurrentHead() {
+		return (this->theArray.data() + (this->head % (this->theArray.size())));
+	}
+
+	bool RingBufferArray::isItEmpty() {
+		if (this->areWeFull) {
+			return false;
+		}
+		return this->tail == this->head;
+	}
+
+	bool RingBufferArray::isItFull() {
+		return this->areWeFull;
+	}
+
+	void RingBufferArray::clear() {
+		this->areWeFull = false;
+		this->tail = 0;
+		this->head = 0;
+	}
+
+}

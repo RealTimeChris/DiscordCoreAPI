@@ -262,14 +262,17 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::parseMessage(VoiceConnection* theShard) noexcept {
-		this->currentMessage = WebSocketSSLShard::getInputBuffer();
+		if (this->currentMessage.size() < this->messageLength + this->messageOffset || this->currentMessage.size() == 0) {
+			auto theString = WebSocketSSLShard::getInputBuffer();
+			this->currentMessage.writeData(theString.data(), theString.size());
+		}
 		if (this->currentMessage.size() < 4) {
 			return false;
 		}
-		theShard->dataOpCode = static_cast<DiscordCoreInternal::WebSocketOpCode>(this->currentMessage[0] & ~webSocketFinishBit);
+		this->dataOpCode = static_cast<DiscordCoreInternal::WebSocketOpCode>(this->currentMessage[0] & ~webSocketFinishBit);
 		this->messageLength = 0;
 		this->messageOffset = 0;
-		switch (theShard->dataOpCode) {
+		switch (this->dataOpCode) {
 			case DiscordCoreInternal::WebSocketOpCode::Op_Continuation:
 				[[fallthrough]];
 			case DiscordCoreInternal::WebSocketOpCode::Op_Text:
@@ -280,34 +283,34 @@ namespace DiscordCoreAPI {
 				[[fallthrough]];
 			case DiscordCoreInternal::WebSocketOpCode::Op_Pong: {
 				uint8_t length01 = this->currentMessage[1];
-				theShard->messageOffset = 2;
+				this->messageOffset = 2;
 				if (length01 & webSocketMaskBit) {
 					return false;
 				}
-				theShard->messageLength = length01;
+				this->messageLength = length01;
 				if (length01 == webSocketPayloadLengthMagicLarge) {
 					if (this->currentMessage.size() < 8) {
 						return false;
 					}
 					uint8_t length03 = this->currentMessage[2];
 					uint8_t length04 = this->currentMessage[3];
-					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
-					theShard->messageOffset += 2;
+					this->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+					this->messageOffset += 2;
 				} else if (length01 == webSocketPayloadLengthMagicHuge) {
 					if (this->currentMessage.size() < 10) {
 						return false;
 					}
-					theShard->messageLength = 0;
+					this->messageLength = 0;
 					for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
 						uint8_t lengthNew = static_cast<uint8_t>(this->currentMessage[x]);
-						theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+						this->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
 					}
-					theShard->messageOffset += 8;
+					this->messageOffset += 8;
 				}
-				if (this->currentMessage.size() < theShard->messageOffset + theShard->messageLength) {
+				if (this->currentMessage.size() < this->messageOffset + this->messageLength) {
 					return false;
 				} else {
-					this->onMessageReceived(this->currentMessage.substr(theShard->messageOffset, theShard->messageLength));
+					this->onMessageReceived(this->currentMessage.substr(this->messageOffset, this->messageLength));
 					this->currentMessage.clear();
 					return true;
 				}
@@ -316,15 +319,15 @@ namespace DiscordCoreAPI {
 				uint16_t close = this->currentMessage[2] & 0xff;
 				close <<= 8;
 				close |= this->currentMessage[3] & 0xff;
-				theShard->closeCode = close;
-				if (theShard->closeCode) {
-					theShard->areWeResuming = true;
+				this->closeCode = close;
+				if (this->closeCode) {
+					this->areWeResuming = true;
 				}
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightRed()
 						 << "WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
 							std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + " Closed; Code: "
-						 << +static_cast<uint16_t>(theShard->closeCode) << DiscordCoreAPI::reset() << endl
+						 << +static_cast<uint16_t>(this->closeCode) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
 				this->onClosed();

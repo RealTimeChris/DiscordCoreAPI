@@ -234,10 +234,10 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
 		if (theShard->areWeStillConnected() && theShard->currentState.load() == SSLShardState::Upgrading && theShard->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
-			theShard->currentMessage = theShard->getInputBuffer();
-			auto theFindValue = theShard->currentMessage.find("\r\n\r\n");
+			auto theString = theShard->getInputBuffer();
+			theShard->currentMessage.writeData(theString.data(), theString.size());
+			auto theFindValue = static_cast<std::string_view>(theShard->currentMessage).find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
-				std::cout << "WERE HERE THIS IS IT: " << theShard->currentMessage << std::endl;
 				theShard->currentMessage.clear();
 				theShard->currentState.store(SSLShardState::Collecting_Hello);
 				return true;
@@ -248,14 +248,17 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard) noexcept {
 		if (theShard->inputBuffer.getUsedSpace() > 0) {
-			theShard->currentMessage += theShard->getInputBuffer();
+			if (theShard->currentMessage.size() < theShard->messageLength + theShard->messageOffset || theShard->currentMessage.size() == 0) {
+				auto theString = theShard->getInputBuffer();
+				theShard->currentMessage.writeData(theString.data(), theString.size());
+			}
 			if (theShard->currentMessage.size() < 4) {
-				return true;
+				return false;
 			}
 
 			theShard->dataOpCode = static_cast<WebSocketOpCode>(theShard->currentMessage[0] & ~webSocketFinishBit);
-			this->messageLength = 0;
-			this->messageOffset = 0;
+			theShard->messageLength = 0;
+			theShard->messageOffset = 0;
 			switch (theShard->dataOpCode) {
 				case WebSocketOpCode::Op_Continuation:
 					[[fallthrough]];
@@ -269,12 +272,12 @@ namespace DiscordCoreInternal {
 					uint8_t length01 = theShard->currentMessage[1];
 					theShard->messageOffset = 2;
 					if (length01 & webSocketMaskBit) {
-						return true;
+						return false;
 					}
 					theShard->messageLength = length01;
 					if (length01 == webSocketPayloadLengthMagicLarge) {
 						if (theShard->currentMessage.size() < 8) {
-							return true;
+							return false;
 						}
 						uint8_t length03 = theShard->currentMessage[2];
 						uint8_t length04 = theShard->currentMessage[3];
@@ -282,7 +285,7 @@ namespace DiscordCoreInternal {
 						theShard->messageOffset += 2;
 					} else if (length01 == webSocketPayloadLengthMagicHuge) {
 						if (theShard->currentMessage.size() < 10) {
-							return true;
+							return false;
 						}
 						theShard->messageLength = 0;
 						for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
@@ -292,11 +295,11 @@ namespace DiscordCoreInternal {
 						theShard->messageOffset += 8;
 					}
 					if (theShard->currentMessage.size() < theShard->messageOffset + theShard->messageLength) {
-						return true;
+						return false;
 					} else {
-						this->onMessageReceived(theShard->currentMessage.substr(theShard->messageOffset, theShard->messageOffset + theShard->messageLength));
-						theShard->currentMessage.erase(theShard->currentMessage.begin(), theShard->currentMessage.begin() + theShard->messageOffset + theShard->messageLength);
-						return true;
+						this->onMessageReceived(theShard->currentMessage.substr(theShard->messageOffset, theShard->messageLength));
+						theShard->currentMessage.clear();
+						return false;
 					}
 				}
 				case WebSocketOpCode::Op_Close: {
@@ -315,10 +318,10 @@ namespace DiscordCoreInternal {
 							 << endl;
 					}
 					this->onClosed();
-					return true;
+					return false;
 				}
 			}
-			return true;
+			return false;
 		} else {
 			return false;
 		}
@@ -455,8 +458,6 @@ namespace DiscordCoreInternal {
 							payloadJson.reserve(payloadJson.size() + simdjson::SIMDJSON_PADDING);
 							theDocument = this->theParser.iterate(simdjson::padded_string_view(payloadJson.data(), payloadJson.length(), payloadJson.capacity()));
 						}
-					} else {
-						returnValue = false;
 					}
 
 					auto thePayload = theDocument.get_value().value();
@@ -1490,6 +1491,8 @@ namespace DiscordCoreInternal {
 								break;
 							}
 						}
+					} else {
+						returnValue = false;
 					}
 					return returnValue;
 				} catch (...) {
@@ -1744,7 +1747,7 @@ namespace DiscordCoreInternal {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				theInt02.store(theInt02.load() + 1);
-				if (theInt02.load() % 100000 == 0) {
+				if (theInt02.load() % 1000 == 0) {
 					std::cout << "WEBSOCKETENTITIESLOOP 008" << std::endl;
 				}
 				this->disconnectVoiceInternal();

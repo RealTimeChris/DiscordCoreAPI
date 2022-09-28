@@ -186,116 +186,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void RingBuffer::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
-		if (theType == RingBufferAccessType::Read) {
-			this->tail = (this->tail + theSize) % this->theArray.size();
-			if (this->tail != this->head) {
-				this->areWeFull = false;
-			}
-		} else {
-			this->head = (this->head + theSize) % this->theArray.size();
-			if (this->head == this->tail) {
-				this->areWeFull = true;
-			}
-			if (this->head != this->tail) {
-				this->areWeFull = false;
-			}
-		}
-	}
-
-	size_t RingBuffer::getUsedSpace() {
-		if (this->areWeFull) {
-			return this->theArray.size();
-		}
-		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
-			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
-			return this->theArray.size() - freeSpace;
-		} else {
-			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
-			return this->theArray.size() - freeSpace;
-		}
-	}
-
-	char* RingBuffer::getCurrentTail() {
-		return (this->theArray.data() + (this->tail % (this->theArray.size())));
-	}
-
-	char* RingBuffer::getCurrentHead() {
-		return (this->theArray.data() + (this->head % (this->theArray.size())));
-	}
-
-	bool RingBuffer::isItEmpty() {
-		if (this->areWeFull) {
-			return false;
-		}
-		return this->tail == this->head;
-	}
-
-	bool RingBuffer::isItFull() {
-		return this->areWeFull;
-	}
-
-	void RingBuffer::clear() {
-		this->areWeFull = false;
-		this->tail = 0;
-		this->head = 0;
-	}
-
-	void RingBufferArray::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
-		if (theType == RingBufferAccessType::Read) {
-			this->tail = (this->tail + theSize) % this->theArray.size();
-			if (this->tail != this->head) {
-				this->areWeFull = false;
-			}
-		} else {
-			this->head = (this->head + theSize) % this->theArray.size();
-			if (this->head == this->tail) {
-				this->areWeFull = true;
-			}
-			if (this->head != this->tail) {
-				this->areWeFull = false;
-			}
-		}
-	}
-
-	size_t RingBufferArray::getUsedSpace() {
-		if (this->areWeFull) {
-			return this->theArray.size();
-		}
-		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
-			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
-			return this->theArray.size() - freeSpace;
-		} else {
-			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
-			return this->theArray.size() - freeSpace;
-		}
-	}
-
-	RingBuffer* RingBufferArray::getCurrentTail() {
-		return (this->theArray.data() + (this->tail % (this->theArray.size())));
-	}
-
-	RingBuffer* RingBufferArray::getCurrentHead() {
-		return (this->theArray.data() + (this->head % (this->theArray.size())));
-	}
-
-	bool RingBufferArray::isItEmpty() {
-		if (this->areWeFull) {
-			return false;
-		}
-		return this->tail == this->head;
-	}
-
-	bool RingBufferArray::isItFull() {
-		return this->areWeFull;
-	}
-
-	void RingBufferArray::clear() {
-		this->areWeFull = false;
-		this->tail = 0;
-		this->head = 0;
-	}
-
 	SSLDataInterface::SSLDataInterface() noexcept {
 		this->theFinalString.resize(1024 * 1024);
 	}
@@ -462,7 +352,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (readWriteSet.thePolls[x].revents & POLLIN) {
-				//std::cout << "SSL CLIENT WHILE 453453" << std::endl;
+				std::cout << "SSL CLIENT WHILE 453453" << std::endl;
 				if (!theVector[readWriteSet.theIndices[x]]->processReadData()) {
 					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
@@ -541,7 +431,7 @@ namespace DiscordCoreInternal {
 		}
 		pollfd readWriteSet{ .fd = static_cast<::SOCKET>(this->theSocket) };
 		if (this->outputBuffer.getUsedSpace() > 0) {
-			//std::cout << "SSL CLIENT WHILE 787878" << std::endl;
+			std::cout << "SSL CLIENT WHILE 787878" << std::endl;
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
 			std::cout << "SSL CLIENT WHILE 565656" << std::endl;
@@ -662,7 +552,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 				}
-				//std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
+				std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
 			} while (SSL_pending(this->ssl));
 		}
 		return true;

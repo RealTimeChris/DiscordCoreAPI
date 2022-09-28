@@ -121,8 +121,8 @@ namespace DiscordCoreInternal {
 		uint32_t lastNumberReceived{ 0 };
 		bool areWeHeartBeating{ false };
 		WebSocketClose closeCode{ 0 };
+		StringBuffer currentMessage{};
 		WebSocketOpCode dataOpCode{};
-		std::string currentMessage{};
 		bool areWeResuming{ false };
 		std::string resumeUrl{};
 		std::string sessionId{};

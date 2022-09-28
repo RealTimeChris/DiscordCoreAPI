@@ -1610,4 +1610,66 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 };
+
+namespace DiscordCoreInternal {
+
+	class StringBuffer {
+	  public:
+		std::string_view substr(size_t, size_t);
+
+		void writeData(const char*, size_t);
+
+		operator std::string_view();
+
+		char operator[](size_t);
+
+		size_t size();
+
+		void clear();
+
+		char* data();
+
+	  protected:
+		std::array<char, 1024 * 1024> theString{};
+		size_t theSize{};
+	};
+
+	enum class RingBufferAccessType { Read = 0, Write = 1 };
+
+	class DiscordCoreAPI_Dll RingBuffer {
+	  public:
+		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
+		char* getCurrentTail();
+		char* getCurrentHead();
+		size_t getUsedSpace();
+		bool isItEmpty();
+		bool isItFull();
+		void clear();
+
+	  protected:
+		std::array<char, 1024 * 16> theArray{};
+		bool areWeFull{ false };
+		int64_t head{};
+		int64_t tail{};
+	};
+
+	class DiscordCoreAPI_Dll RingBufferArray {
+	  public:
+		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
+		RingBuffer* getCurrentTail();
+		RingBuffer* getCurrentHead();
+		size_t getUsedSpace();
+		bool isItEmpty();
+		bool isItFull();
+		void clear();
+
+	  protected:
+		std::array<RingBuffer, 64> theArray{};
+		bool areWeFull{ false };
+		int64_t head{};
+		int64_t tail{};
+	};
+
+}
+
 #endif
