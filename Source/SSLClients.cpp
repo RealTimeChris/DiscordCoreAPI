@@ -500,7 +500,6 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_NONE: {
 					if (writtenBytes > 0) {
-						std::cout << "WRITTEN BYTES: " << this->outputBuffer.getCurrentTail()->getCurrentTail() << std::endl;
 						this->outputBuffer.getCurrentTail()->clear();
 						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 					}

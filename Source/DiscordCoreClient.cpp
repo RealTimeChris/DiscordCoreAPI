@@ -269,27 +269,22 @@ namespace DiscordCoreAPI {
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Gateway_Bot };
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/gateway/bot";
-		workload.callStack = "DiscordCoreClient::getGateWayBot()";
-		GatewayBotData theData{};
 		try {
+			DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Gateway_Bot };
+			workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
+			workload.relativePath = "/gateway/bot";
+			workload.callStack = "DiscordCoreClient::getGateWayBot()";
+			GatewayBotData theData{};
 			theData = this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
-		} catch (...) {
-			reportException("getGateWatBot()");
 			return theData;
+		} catch (...) {
+			reportException("DiscordCoreClient::getGatewayBot()");
+			return {};
 		}
-		return theData;
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
-		GatewayBotData gatewayData{};
-		try {
-			gatewayData = this->getGateWayBot();
-		} catch (...) {
-			reportException("DiscordCoreClient::instantiateWebSockets()");
-		}
+		GatewayBotData gatewayData{ this->getGateWayBot() };
 
 		if (gatewayData.url == "") {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {

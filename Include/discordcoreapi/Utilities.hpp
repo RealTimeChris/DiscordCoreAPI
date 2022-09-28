@@ -209,7 +209,6 @@ namespace DiscordCoreAPI {
 				this->theValues[key].theValues[key].theType = ValueType::String;
 				this->theValues[key].theValues[key].theKey = key;
 			}
-			std::cout << "THE KEY: " << this->theKey << std::endl;
 			theIndex++;
 			return *this;
 		}
@@ -1621,6 +1620,8 @@ namespace DiscordCoreInternal {
 
 		operator std::string_view();
 
+		void erase(size_t, size_t);
+
 		char operator[](size_t);
 
 		size_t size();
@@ -1630,7 +1631,9 @@ namespace DiscordCoreInternal {
 		char* data();
 
 	  protected:
-		std::array<char, 1024 * 1024> theString{};
+		std::array<char, 1024 * 1024> theString01{};
+		std::array<char, 1024 * 1024> theString02{};
+		size_t whichOneAreWeOn{ 0 };
 		size_t theSize{};
 	};
 

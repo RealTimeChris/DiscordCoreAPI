@@ -2855,7 +2855,7 @@ namespace DiscordCoreAPI {
 
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, SessionStartData& theData);
 
-	/// Data from the GetGatewatBot endpoint. \brief Data from the GetGatewatBot endpoint.
+	/// Data from the GetGatewayBot endpoint. \brief Data from the GetGatewayBot endpoint.
 	struct DiscordCoreAPI_Dll GatewayBotData {
 		SessionStartData sessionStartLimit{};///< Information on the current session start limit.
 		uint32_t shards{ 0 };///< The recommended number of shards to use when connecting.

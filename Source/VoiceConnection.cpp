@@ -154,7 +154,6 @@ namespace DiscordCoreAPI {
 				std::string theString{ theData };
 				theString.reserve(theString.size() + simdjson::SIMDJSON_PADDING);
 				simdjson::ondemand::parser theParser{};
-				std::cout << "THE STRING FINAL: " << theData << std::endl;
 				auto theDocument = theParser.iterate(theString.data(), theString.length(), theString.capacity());
 
 				auto thePayload = theDocument.get_value().value();

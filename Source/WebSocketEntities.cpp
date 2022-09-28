@@ -248,7 +248,8 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard) noexcept {
 		if (theShard->inputBuffer.getUsedSpace() > 0) {
-			if (theShard->currentMessage.size() < theShard->messageLength + theShard->messageOffset || theShard->currentMessage.size() == 0) {
+			if (theShard->currentMessage.size() < theShard->messageLength + theShard->messageOffset || theShard->currentMessage.size() == 0 ||
+				(theShard->messageLength + theShard->messageOffset == 0)) {
 				auto theString = theShard->getInputBuffer();
 				theShard->currentMessage.writeData(theString.data(), theString.size());
 			}
@@ -298,7 +299,9 @@ namespace DiscordCoreInternal {
 						return false;
 					} else {
 						this->onMessageReceived(theShard->currentMessage.substr(theShard->messageOffset, theShard->messageLength));
-						theShard->currentMessage.clear();
+						theShard->currentMessage.erase(0, theShard->messageLength + theShard->messageOffset);
+						theShard->messageOffset = 0;
+						theShard->messageLength = 0;
 						return false;
 					}
 				}
@@ -440,7 +443,6 @@ namespace DiscordCoreInternal {
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							try {
 								theStopWatchReal.resetTimer();
-								std::cout << "THE STRING REAL: " << theDataNew << std::endl;
 								payload = ErlPacker::parseEtfToJson(theDataNew);
 
 								payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);

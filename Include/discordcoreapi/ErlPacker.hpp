@@ -56,7 +56,7 @@ namespace DiscordCoreInternal {
 		Atom_Utf8_Ext = 118
 	};
 
-	class ErlPacker {
+	class DiscordCoreAPI_Dll ErlPacker {
 	  public:
 		ErlPacker() noexcept {};
 

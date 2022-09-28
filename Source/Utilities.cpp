@@ -1624,24 +1624,57 @@ namespace DiscordCoreAPI {
 namespace DiscordCoreInternal {
 
 	std::string_view StringBuffer::substr(size_t offSet, size_t size) {
-		std::string_view theString{ this->theString.data() + offSet, size };
-		return theString;
+		if (this->whichOneAreWeOn == 0) {
+			std::string_view theString{ this->theString01.data() + offSet, size };
+			return theString;
+		} else {
+			std::string_view theString{ this->theString02.data() + offSet, size };
+			return theString;
+		}
+	}
+
+	void StringBuffer::erase(size_t offSet, size_t amount) {
+		this->theSize = this->theSize - amount;
+		if (this->whichOneAreWeOn == 0) {
+			memcpy(this->theString02.data(), this->theString01.data() + amount, this->theSize);
+			this->whichOneAreWeOn = 1;
+		} else {
+			memcpy(this->theString01.data(), this->theString02.data() + amount, this->theSize);
+			this->whichOneAreWeOn = 0;
+		}
 	}
 
 	void StringBuffer::writeData(const char* thePtr, size_t theSize) {
-		if (this->theSize + theSize < this->theString.size()) {
-			memcpy(this->theString.data() + this->theSize, thePtr, theSize);
-			this->theSize += theSize;
+		if (this->whichOneAreWeOn == 0) {
+			if (this->theSize + theSize < this->theString01.size()) {
+				memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
+				this->theSize += theSize;
+			}
+		} else {
+			if (this->theSize + theSize < this->theString02.size()) {
+				memcpy(this->theString02.data() + this->theSize, thePtr, theSize);
+				this->theSize += theSize;
+			}
 		}
 	}
 
 	StringBuffer::operator std::string_view(){
-		std::string_view theString{ this->theString.data(), this->theSize };
-		return theString;
+		if (this->whichOneAreWeOn == 0) {
+			std::string_view theString{ this->theString01.data(), this->theSize };
+			return theString;
+		} else {
+			std::string_view theString{ this->theString02.data(), this->theSize };
+			return theString;
+		}
+		
 	}
 
 	char StringBuffer::operator[](size_t theIndex) {
-		return this->theString[theIndex];
+		if (this->whichOneAreWeOn == 0) {
+			return this->theString01[theIndex];
+		} else {
+			return this->theString02[theIndex];
+		}
 	}
 
 	size_t StringBuffer::size() {
@@ -1653,7 +1686,11 @@ namespace DiscordCoreInternal {
 	}
 
 	char* StringBuffer::data() {
-		return this->theString.data();
+		if (this->whichOneAreWeOn == 0) {
+			return this->theString01.data();
+		} else {
+			return this->theString02.data();
+		}
 	}
 
 	void RingBuffer::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
