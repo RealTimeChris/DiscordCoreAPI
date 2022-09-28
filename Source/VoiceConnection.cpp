@@ -159,9 +159,11 @@ namespace DiscordCoreAPI {
 
 				auto thePayload = theDocument.get_value();
 				DiscordCoreInternal::WebSocketMessage theMessage{};
+				std::string_view theStringNew{};
 				thePayload["s"].get(theMessage.s);
 				thePayload["op"].get(theMessage.op);
-				thePayload["t"].get(theMessage.t);
+				thePayload["t"].get(theStringNew);
+				theMessage.t = static_cast<std::string>(theStringNew);
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theData << reset() << endl << endl;

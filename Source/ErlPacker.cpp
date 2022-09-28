@@ -253,8 +253,8 @@ namespace DiscordCoreInternal {
 			}
 			throw ErlPackError{ "ErlPacker::readString() Error: readString() past end of buffer.\n\n" };
 		}
-		if (this->bufferString.size() <= length * 2) {
-			this->bufferString.resize(length * 2);
+		if (this->bufferString.size() <= static_cast<uint64_t>(length * 2)) {
+			this->bufferString.resize(static_cast<uint64_t>(length * 2));
 		}
 		char* theStringNew = ( char* )this->buffer.data() + this->offSet;
 		size_t theIndex{};

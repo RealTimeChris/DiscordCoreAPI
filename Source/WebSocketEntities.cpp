@@ -477,13 +477,15 @@ namespace DiscordCoreInternal {
 
 					auto thePayload = theDocument.get_value();
 					WebSocketMessage theMessage{};
+					std::string_view theString{};
 					simdjson::ondemand::value theObject{};
 					if (thePayload["d"].get(theObject) != simdjson::error_code::SUCCESS) {
 						throw std::runtime_error{ "Failed to collect the 'd'." };
 					}
 					if (thePayload["s"].get(theMessage.s) == simdjson::error_code::SUCCESS) {
 					}
-					if (thePayload["t"].get(theMessage.t) == simdjson::error_code::SUCCESS) {
+					if (thePayload["t"].get(theString) == simdjson::error_code::SUCCESS) {
+						theMessage.t = static_cast<std::string>(theString);
 					}
 					if (thePayload["op"].get(theMessage.op) == simdjson::error_code::SUCCESS) {
 					}
@@ -1733,7 +1735,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::disconnectVoiceInternal() noexcept {
 		if (this->voiceConnectionsToDisconnect.size() > 0) {
 			std::unique_lock theLock{ this->theMutex };
-			auto theDCData = this->voiceConnectionsToDisconnect.front();
+			DiscordCoreAPI::Snowflake theDCData{ this->voiceConnectionsToDisconnect.front() };
 			this->voiceConnectionsToDisconnect.pop_front();
 			theLock.unlock();
 			if (DiscordCoreAPI::Globals::voiceConnectionMap[theDCData]) {
