@@ -214,12 +214,12 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	template<> void parseObject(simdjson::ondemand::value theJsonData, OnVoiceServerUpdateData& theData) {
-		theData.endpoint = getString(theJsonData, "endpoint");
+	OnVoiceServerUpdateData::OnVoiceServerUpdateData(simdjson::ondemand::value theJsonData)	{
+		this->endpoint = getString(theJsonData, "endpoint");
 
-		theData.guildId = getId(theJsonData, "guild_id");
+		this->guildId = getId(theJsonData, "guild_id");
 
-		theData.token = getString(theJsonData, "token");
+		this->token = getString(theJsonData, "token");
 	};
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(

@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 
 		operator DiscordCoreAPI::JsonObject();
 	};
-
+	
 	/// For updating a User's presence. \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		std::vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
@@ -756,6 +756,8 @@ namespace DiscordCoreAPI {
 		bool mute{ false };///< Whether this User is muted by the server.
 		Snowflake guildId{};///< The Guild id this voice state is for.
 		Snowflake userId{};///< The User id this voice state is for.
+
+		VoiceStateData() noexcept = default;
 
 		VoiceStateData(simdjson::ondemand::value jsonObjectData);
 
@@ -3424,10 +3426,10 @@ namespace DiscordCoreAPI {
 
 		CommandData(InputEventData inputEventData);
 
+		CommandData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~CommandData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, CommandData& theData);
 
 	/// Base arguments for the command classes. \brief Base arguments for the command classes.
 	struct DiscordCoreAPI_Dll BaseFunctionArguments : public CommandData {

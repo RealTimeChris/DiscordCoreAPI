@@ -398,12 +398,12 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a voice server update event. \brief Data that is received as part of a voice server update event.
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData {
+		OnVoiceServerUpdateData() noexcept = default;
+		OnVoiceServerUpdateData(simdjson::ondemand::value);
 		std::string endpoint{};///< The new endpoint.
 		std::string token{};///< The token of the server update event.
 		Snowflake guildId{};///< The id of the Guild for which the server update is occurring.
 	};
-
-	template<> void parseObject(simdjson::ondemand::value theJsonData, OnVoiceServerUpdateData& theData);
 
 	/// Data that is received as part of a WebHook update event. \brief Data that is received as part of a WebHook update event.
 	struct DiscordCoreAPI_Dll OnWebhookUpdateData {

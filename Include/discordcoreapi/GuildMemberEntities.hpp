@@ -134,8 +134,6 @@ namespace DiscordCoreAPI {
 
 		GuildMember(simdjson::ondemand::value jsonObjectData);
 
-		GuildMember(simdjson::ondemand::value jsonObjectData);
-
 		virtual ~GuildMember() noexcept = default;
 	};
 
@@ -163,7 +161,6 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildMember related Discord endpoints. \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class GuildMemberData;

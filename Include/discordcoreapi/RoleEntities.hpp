@@ -182,7 +182,6 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Role related Discord endpoints. \brief An interface class for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class RoleData;

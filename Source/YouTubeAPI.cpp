@@ -76,7 +76,7 @@ namespace DiscordCoreInternal {
 												DiscordCoreAPI::Song searchResult{};
 												simdjson::ondemand::value theObject{};
 												if (iterator["videoRenderer"].get(theObject) == simdjson::error_code::SUCCESS) {
-													DiscordCoreAPI::parseObject(theObject, searchResult);
+													searchResult = DiscordCoreAPI::Song{ theObject };
 												}
 												searchResult.type = DiscordCoreAPI::SongType::YouTube;
 												searchResult.viewUrl = this->baseUrl + "/watch?v=" + searchResult.songId + "&hl=en";
@@ -125,8 +125,7 @@ namespace DiscordCoreInternal {
 			simdjson::ondemand::parser theParser{};
 			responseData.responseMessage.reserve(responseData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
 			auto jsonObject = theParser.iterate(responseData.responseMessage.data(), responseData.responseMessage.length(), responseData.responseMessage.capacity());
-			DiscordCoreAPI::YouTubeFormatVector theVector{};
-			DiscordCoreAPI::parseObject(jsonObject, theVector);
+			DiscordCoreAPI::YouTubeFormatVector theVector{ jsonObject };
 			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };
 			for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {

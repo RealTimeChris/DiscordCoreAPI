@@ -128,6 +128,8 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	struct DiscordCoreAPI_Dll ActivityData;
+
 	enum class ValueType { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Double = 4, Float = 5, String = 6, Bool = 7, Int64 = 8, Uint64 = 9, Unset = 10 };
 
 	struct DiscordCoreAPI_Dll JsonArray;
@@ -319,6 +321,8 @@ namespace DiscordCoreInternal {
 	class SoundCloudAPI;
 	class HttpsClient;
 	class YouTubeAPI;
+
+	struct DiscordCoreAPI_Dll UpdatePresenceData;
 
 	template<typename T> inline auto utCast(T x) -> std::enable_if_t<std::is_enum_v<T>, std::underlying_type_t<T>> {
 		return static_cast<std::underlying_type_t<T>>(x);
@@ -538,9 +542,13 @@ namespace DiscordCoreAPI {
 
 	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
+		DiscordCoreClientConfig& operator=(const DiscordCoreClientConfig&);
+		DiscordCoreClientConfig(const DiscordCoreClientConfig&);
+		DiscordCoreClientConfig() noexcept;
+
+		std::unique_ptr<DiscordCoreInternal::UpdatePresenceData> presenceData{};///< Presence data to initialize your bot with.
 		GatewayIntents theIntents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
-		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
 		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.

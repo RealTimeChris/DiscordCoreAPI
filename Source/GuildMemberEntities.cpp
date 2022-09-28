@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 		} catch (...) {
-			reportException("parseObject(GuildMemberData&)");
+			reportException("GuildMember::GuildMember()");
 		}
 		this->permissions = getString(jsonObjectData, "permissions");
 

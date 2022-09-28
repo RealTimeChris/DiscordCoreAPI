@@ -183,7 +183,7 @@ namespace DiscordCoreInternal {
 						simdjson::ondemand::value theObject{};
 						auto theResult = theDocument.get(theObject);
 						if (theObject.type() != simdjson::ondemand::json_type::null) {
-							DiscordCoreAPI::parseObject(theObject, theReturnValueNew);
+							theReturnValueNew = ReturnType{ theObject };
 						}
 					}
 				}
@@ -197,7 +197,7 @@ namespace DiscordCoreInternal {
 						simdjson::ondemand::value theObject{};
 						auto theResult = theDocument.get(theObject);
 						if (theObject.type() != simdjson::ondemand::json_type::null) {
-							DiscordCoreAPI::parseObject(theObject, *theReturnValue);
+							*theReturnValue = ReturnType{ theObject };
 						}
 					}
 				}

@@ -48,26 +48,6 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	UpdatePresenceData::operator DiscordCoreAPI::JsonObject() {
-		DiscordCoreAPI::JsonObject theData{};
-		theData["op"] = 3;
-		for (auto& value: this->activities) {
-			DiscordCoreAPI::JsonObject theDataNew{};
-			if (value.url != "") {
-				theDataNew["url"] = std::string{ value.url };
-			}
-			theDataNew["name"] = std::string{ value.name };
-			theDataNew["type"] = value.type;
-			theData["d"].pushBack("activities", theDataNew);
-		}
-		theData["status"] = this->status;
-		if (this->since != 0) {
-			theData["since"] = this->since;
-		}
-		theData["afk"] = this->afk;
-		return theData;
-	}
-
 	WebSocketIdentifyData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theSerializer{};
 		theSerializer["d"]["intents"] = this->intents;
@@ -110,6 +90,26 @@ namespace DiscordCoreInternal {
 		theData["d"]["data"]["address"] = this->externalIp;
 		return theData;
 	}
+
+	UpdatePresenceData::operator DiscordCoreAPI::JsonObject() {
+		DiscordCoreAPI::JsonObject theData{};
+		theData["op"] = 3;
+		for (auto& value: this->activities) {
+			DiscordCoreAPI::JsonObject theDataNew{};
+			if (value.url != "") {
+				theDataNew["url"] = std::string{ value.url };
+			}
+			theDataNew["name"] = std::string{ value.name };
+			theDataNew["type"] = value.type;
+			theData["d"].pushBack("activities", theDataNew);
+		}
+		theData["status"] = this->status;
+		if (this->since != 0) {
+			theData["since"] = this->since;
+		}
+		theData["afk"] = this->afk;
+		return theData;
+	}	
 
 	VoiceIdentifyData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
@@ -188,7 +188,7 @@ namespace DiscordCoreInternal {
 			}
 
 		} catch (...) {
-			DiscordCoreAPI::reportException("parseObject()");
+			DiscordCoreAPI::reportException("WebSocketMessage::WebSocketMessage()");
 		}
 	}
 
@@ -589,7 +589,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 		} catch (...) {
-			reportException("parseObject(GuildMemberData&)");
+			reportException("GuildMemberData::GuildMemberData()");
 		}
 
 		this->permissions = getString(jsonObjectData, "permissions");
@@ -3118,7 +3118,7 @@ namespace DiscordCoreAPI {
 			}
 
 		} catch (...) {
-			reportException("parseObject()");
+			reportException("Song::Song()");
 		}
 	}
 
@@ -3505,7 +3505,7 @@ namespace DiscordCoreAPI {
 		return this->theConnectionDatas;
 	}
 
-	ConnectionDataVector::ConnectionDataVector(simdjson::ondemand::value jsonObjectData) {
+	ConnectionDataVector::ConnectionDataVector(simdjson::ondemand::value jsonObjectData) noexcept {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);

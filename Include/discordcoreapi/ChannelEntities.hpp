@@ -224,7 +224,6 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Channel related endpoints. \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class ChannelData;

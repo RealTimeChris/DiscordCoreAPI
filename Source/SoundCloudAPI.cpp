@@ -49,9 +49,7 @@ namespace DiscordCoreInternal {
 			simdjson::ondemand::array theArray{};
 			auto theResult = theDocument.get_value().value().get_object().value()["collection"].get(theArray);
 			for (auto value: theArray) {
-				DiscordCoreAPI::Song newSong{};
-				auto theValue = value.value();
-				DiscordCoreAPI::parseObject(theValue, newSong);
+				DiscordCoreAPI::Song newSong{ value.value() };
 				if (newSong.songTitle == "") {
 					continue;
 				}
