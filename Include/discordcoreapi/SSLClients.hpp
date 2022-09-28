@@ -64,8 +64,10 @@
 namespace DiscordCoreInternal {
 
 #ifndef SOCKET_ERROR
-	#undef SOCKET_ERROR -1
+	#def SOCKET_ERROR -1
 #endif
+
+	using INT_PTR = signed long long;
 
 	using SOCKET = INT_PTR;
 

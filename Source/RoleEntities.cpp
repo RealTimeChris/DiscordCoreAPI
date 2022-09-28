@@ -298,7 +298,7 @@ namespace DiscordCoreAPI {
 			co_return theData;
 		}
 	}
-
+	StopWatch theStopWatchNew{ 5s };
 	void Roles::insertRole(RoleData role) {
 		if (role.id.operator size_t() == 0) {
 			return;
@@ -310,7 +310,7 @@ namespace DiscordCoreAPI {
 				Roles::cache.at(role) = std::move(role);
 			}
 			if (Roles::cache.size() % 1000 == 0) {
-				std::cout << "ROLE COUNT: " << Roles::cache.size() << std::endl;
+				std::cout << "ROLE COUNT: " << Roles::cache.size() << ", AFTER: " << theStopWatchNew.totalTimePassed() << "s" << std::endl;
 			}
 		}
 	}
