@@ -216,7 +216,6 @@ namespace DiscordCoreInternal {
 		virtual ~SSLDataInterface() noexcept = default;
 
 	  protected:
-		std::string theFinalString{};
 		RingBuffer outputBuffer{};
 		RingBuffer inputBuffer{};
 		int64_t bytesRead{ 0 };

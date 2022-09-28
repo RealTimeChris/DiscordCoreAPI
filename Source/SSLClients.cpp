@@ -186,9 +186,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	SSLDataInterface::SSLDataInterface() noexcept {
-		this->theFinalString.resize(static_cast<size_t>(1024 * 1024));
-	}
+	SSLDataInterface::SSLDataInterface() noexcept {}
 
 	bool SSLConnectionInterface::initialize() noexcept {
 		if (SSLConnectionInterface::context = SSL_CTX_new(TLS_client_method()); SSLConnectionInterface::context == nullptr) {
@@ -367,15 +365,14 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string_view SSLClient::getInputBuffer() noexcept {
-		size_t theSize{};
+		std::string_view theString{};
 		if (!this->inputBuffer.getCurrentTail()->isItEmpty()) {
-			theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
-			this->theFinalString.resize(theSize);
-			memcpy(this->theFinalString.data(), this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize);
+			size_t theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
+			theString = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize };
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
-		return std::string_view{ this->theFinalString.data(), theSize };
+		return theString;
 	}
 
 	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
