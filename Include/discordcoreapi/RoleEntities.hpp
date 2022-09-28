@@ -159,23 +159,19 @@ namespace DiscordCoreAPI {
 		virtual ~Role() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, Role& theData);
-
 	class DiscordCoreAPI_Dll RoleVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		RoleVector() noexcept = default;
 
 		operator std::vector<Role>();
+
+		RoleVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~RoleVector() noexcept = default;
 
 	  protected:
 		std::vector<Role> theRoles{};
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, RoleVector& theData);
 
 	/**@}*/
 
@@ -187,11 +183,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Roles {
 	  public:
 		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class RoleData;
 		friend class GuildData;
+		friend class Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 

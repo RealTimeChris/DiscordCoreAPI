@@ -28,6 +28,99 @@
 
 namespace DiscordCoreAPI {
 
+	Channel::Channel(simdjson::ondemand::value jsonObjectData) {
+		this->id = getId(jsonObjectData, "id");
+
+		this->flags = getUint8(jsonObjectData, "flags");
+
+		this->type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
+
+		this->guildId = getId(jsonObjectData, "guild_id");
+
+		this->defaultAutoArchiveDuration = getUint32(jsonObjectData, "default_auto_archive_duration");
+
+		this->position = getUint32(jsonObjectData, "position");
+
+		simdjson::ondemand::value theArray{};
+		auto theResult = jsonObjectData["permission_overwrites"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->permissionOverwrites.clear();
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				OverWriteData theDataNew{ value.value() };
+				this->permissionOverwrites.emplace_back(std::move(theDataNew));
+			}
+		}
+
+		this->name = getString(jsonObjectData, "name");
+
+		this->topic = getString(jsonObjectData, "topic");
+
+		this->permissions = getString(jsonObjectData, "permissions");
+
+		this->flags = setBool(this->flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
+
+		this->lastMessageId = getString(jsonObjectData, "last_message_id");
+
+		this->bitrate = getUint32(jsonObjectData, "bitrate");
+
+		this->userLimit = getUint32(jsonObjectData, "user_limit");
+
+		this->rateLimitPerUser = getUint32(jsonObjectData, "rate_limit_per_user");
+
+		theResult = jsonObjectData["recipients"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->recipients.clear();
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				UserData theDataNew{ value.value() };
+				this->recipients.emplace(theDataNew.id, std::move(theDataNew));
+			}
+		}
+
+		this->icon = getString(jsonObjectData, "icon");
+
+		this->ownerId = getId(jsonObjectData, "owner_id");
+
+		this->applicationId = getId(jsonObjectData, "application_id");
+
+		this->parentId = getId(jsonObjectData, "parent_id");
+
+		this->lastPinTimestamp = getString(jsonObjectData, "last_pin_timestamp");
+
+		this->rtcRegion = getString(jsonObjectData, "rtc_region");
+
+		this->videoQualityMode = getUint32(jsonObjectData, "video_quality_mode");
+
+		this->messageCount = getUint32(jsonObjectData, "message_count");
+
+		this->memberCount = getUint32(jsonObjectData, "member_count");
+
+		simdjson::ondemand::value theObject{};
+		theResult = jsonObjectData["thread_metadata"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->threadMetadata = ThreadMetadataData{ theObject };
+		}
+
+		theResult = jsonObjectData["member"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->member = ThreadMemberData{ theObject };
+		}
+	}
+
+	ChannelVector::ChannelVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->theChannels.reserve(theArray.count_elements().take_value());
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					Channel newData{ value.value() };
+					this->theChannels.push_back(std::move(newData));
+				}
+				this->theChannels.shrink_to_fit();
+			}
+		}
+	}
+
 	EditChannelPermissionOverwritesData::operator JsonObject() {
 		JsonObject theData{};
 		theData["allow"] = this->allow;

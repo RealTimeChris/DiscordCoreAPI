@@ -28,6 +28,20 @@
 
 namespace DiscordCoreAPI {
 
+	StageInstance::StageInstance(simdjson::ondemand::value jsonObjectData) {
+		this->id = getId(jsonObjectData, "id");
+
+		this->guildId = getId(jsonObjectData, "guild_id");
+
+		this->channelId = getId(jsonObjectData, "channel_id");
+
+		this->topic = getString(jsonObjectData, "topic");
+
+		this->privacyLevel = static_cast<StageInstancePrivacyLevel>(getUint8(jsonObjectData, "privacy_level"));
+
+		this->discoverableDisabled = getBool(jsonObjectData, "discoverable_disabled");
+	}
+
 	void StageInstances::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		StageInstances::httpsClient = theClient;
 	}

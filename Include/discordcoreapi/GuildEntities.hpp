@@ -331,6 +331,8 @@ namespace DiscordCoreAPI {
 
 		Guild(const GuildData&) noexcept;
 
+		Guild(simdjson::ondemand::value jsonObjectData);
+
 		std::string getDiscoverySplashUrl() noexcept;
 
 		std::string getBannerUrl() noexcept;
@@ -340,25 +342,21 @@ namespace DiscordCoreAPI {
 		virtual ~Guild() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, Guild& theData);
-
 	class DiscordCoreAPI_Dll GuildVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		friend class Guilds;
 
 		GuildVector() noexcept = default;
 
 		operator std::vector<Guild>();
 
+		GuildVector(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~GuildVector() noexcept = default;
 
 	  protected:
 		std::vector<Guild> theGuilds{};
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, GuildVector& theData);
 
 	/// For modifying the properties of a chosen Guild. \brief For modifying the properties of a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildData {
@@ -399,7 +397,6 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreClient;

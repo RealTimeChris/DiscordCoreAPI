@@ -28,6 +28,49 @@
 
 namespace DiscordCoreAPI {
 
+	Sticker::Sticker(simdjson::ondemand::value jsonObjectData) {
+		this->asset = getString(jsonObjectData, "asset");
+
+		this->description = getString(jsonObjectData, "description");
+
+		this->formatType = static_cast<StickerFormatType>(getUint8(jsonObjectData, "format_type"));
+
+		this->stickerFlags = setBool(this->stickerFlags, StickerFlags::Available, getBool(jsonObjectData, "available"));
+
+		this->guildId = getId(jsonObjectData, "guild_id");
+
+		this->packId = getString(jsonObjectData, "pack_id");
+
+		this->type = static_cast<StickerType>(getUint8(jsonObjectData, "type"));
+
+		this->sortValue = getUint32(jsonObjectData, "sort_value");
+
+		this->name = getString(jsonObjectData, "name");
+
+		this->id = getId(jsonObjectData, "id");
+
+		simdjson::ondemand::value theObject{};
+		auto theResult = jsonObjectData["user"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->user = UserData{ theObject };
+		}
+	}
+
+	StickerVector::StickerVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->theStickers.reserve(theArray.count_elements().take_value());
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					Sticker newData{ value.value() };
+					this->theStickers.push_back(std::move(newData));
+				}
+				this->theStickers.shrink_to_fit();
+			}
+		}
+	}
+
 	StickerVector::operator std::vector<Sticker>() {
 		return this->theStickers;
 	}

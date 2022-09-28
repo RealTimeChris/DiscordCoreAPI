@@ -28,6 +28,60 @@
 
 namespace DiscordCoreAPI {
 
+	GuildScheduledEvent::GuildScheduledEvent(simdjson::ondemand::value jsonObjectData) {
+		this->privacyLevel = static_cast<GuildScheduledEventPrivacyLevel>(getUint8(jsonObjectData, "privacy_level"));
+
+		this->entityType = static_cast<GuildScheduledEventEntityType>(getUint8(jsonObjectData, "entity_type"));
+
+		this->status = static_cast<GuildScheduledEventStatus>(getUint8(jsonObjectData, "status"));
+
+		simdjson::ondemand::value theObject{};
+		auto theResult = jsonObjectData["entity_metadata"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->entityMetadata = GuildScheduledEventMetadata{ theObject };
+		}
+
+		this->scheduledStartTime = getString(jsonObjectData, "scheduled_start_time");
+
+		this->scheduledEndTime = getString(jsonObjectData, "scheduled_end_time");
+
+		this->userCount = getUint32(jsonObjectData, "user_count");
+
+		this->description = getString(jsonObjectData, "description");
+
+		this->channelId = getId(jsonObjectData, "channel_id");
+
+		this->creatorId = std::to_string(getId(jsonObjectData, "creator_id"));
+
+		this->entityId = getString(jsonObjectData, "entity_id");
+
+		this->guildId = getId(jsonObjectData, "guild_id");
+
+		theResult = jsonObjectData["creator"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->creator = UserData{ theObject };
+		}
+
+		this->name = getString(jsonObjectData, "name");
+
+		this->id = getId(jsonObjectData, "id");
+	}
+
+	GuildScheduledEventVector::GuildScheduledEventVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->theGuildScheduledEvents.reserve(theArray.count_elements().take_value());
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					GuildScheduledEvent newData{ value.value() };
+					this->theGuildScheduledEvents.push_back(std::move(newData));
+				}
+				this->theGuildScheduledEvents.shrink_to_fit();
+			}
+		}
+	}
+
 	CreateGuildScheduledEventData::operator JsonObject() {
 		JsonObject theData{};
 		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {

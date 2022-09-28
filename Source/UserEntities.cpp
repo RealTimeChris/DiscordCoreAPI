@@ -95,6 +95,21 @@ namespace DiscordCoreAPI {
 		this->flags = getUint32(jsonObjectData, "public_flags");
 	}
 
+	UserVector::UserVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->theUsers.reserve(theArray.count_elements().take_value());
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					User newData{ value.value() };
+					this->theUsers.push_back(std::move(newData));
+				}
+				this->theUsers.shrink_to_fit();
+			}
+		}
+	}
+
 	UserVector::operator std::vector<User>() {
 		return this->theUsers;
 	}

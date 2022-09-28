@@ -101,26 +101,24 @@ namespace DiscordCoreAPI {
 	  public:
 		GuildScheduledEvent() noexcept = default;
 
-		virtual ~GuildScheduledEvent() noexcept = default;
-	};
+		GuildScheduledEvent(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, GuildScheduledEvent& theData);
+		virtual ~GuildScheduledEvent() noexcept = default;
+	};	 
 
 	class DiscordCoreAPI_Dll GuildScheduledEventVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		GuildScheduledEventVector() noexcept = default;
 
 		operator std::vector<GuildScheduledEvent>();
+
+		GuildScheduledEventVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~GuildScheduledEventVector() noexcept = default;
 
 	  protected:
 		std::vector<GuildScheduledEvent> theGuildScheduledEvents{};
-	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, GuildScheduledEventVector& theData);
+	};	
 
 	/**@}*/
 

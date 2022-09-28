@@ -30,6 +30,46 @@
 
 namespace DiscordCoreAPI {
 
+	Reaction::Reaction(simdjson::ondemand::value jsonObjectData) {
+		this->count = getUint32(jsonObjectData, "count");
+
+		this->me = getBool(jsonObjectData, "me");
+
+		simdjson::ondemand::value theObject{};
+		auto theResult = jsonObjectData["emoji"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->emoji = EmojiData{ theObject };
+		}
+
+		this->guildId = getId(jsonObjectData, "guild_id");
+
+		this->channelId = getId(jsonObjectData, "channel_id");
+
+		this->userId = getId(jsonObjectData, "user_id");
+
+		this->messageId = getId(jsonObjectData, "message_id");
+
+		theResult = jsonObjectData["member"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->member = GuildMemberData{ theObject };
+		}
+	}
+
+	ReactionVector::ReactionVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->theReactions.reserve(theArray.count_elements().take_value());
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					Reaction newData{ value.value() };
+					this->theReactions.push_back(std::move(newData));
+				}
+				this->theReactions.shrink_to_fit();
+			}
+		}
+	}
+
 	CreateGuildEmojiData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->roles) {

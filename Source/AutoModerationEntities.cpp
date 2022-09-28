@@ -27,6 +27,101 @@
 
 namespace DiscordCoreAPI {
 
+	 AutoModerationRule::AutoModerationRule(simdjson::ondemand::value jsonObjectData) {
+		this->name = getString(jsonObjectData, "name");
+
+		this->id = getId(jsonObjectData, "id");
+
+		this->enabled = getBool(jsonObjectData, "enabled");
+
+		this->triggerType = static_cast<TriggerType>(getUint64(jsonObjectData, "trigger_type"));
+
+		this->eventType = static_cast<EventType>(getUint64(jsonObjectData, "event_type"));
+
+		this->creatorId = getId(jsonObjectData, "creator_id");
+
+		simdjson::ondemand::array theArray{};
+		auto theResult = jsonObjectData["actions"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->actions.reserve(theArray.count_elements().take_value());
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				ActionData newData{ value.value() };
+				this->actions.push_back(std::move(newData));
+			}
+			this->actions.shrink_to_fit();
+		}
+
+		theResult = jsonObjectData["exempt_roles"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->exemptRoles.reserve(theArray.count_elements().take_value());
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				this->exemptRoles.push_back(Snowflake{ value.get_uint64().value() });
+			}
+			this->exemptRoles.shrink_to_fit();
+		}
+
+		theResult = jsonObjectData["exempt_channels"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->exemptChannels.reserve(theArray.count_elements().take_value());
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				this->exemptChannels.push_back(Snowflake{ value.get_uint64().value() });
+			}
+			this->exemptChannels.shrink_to_fit();
+		}
+
+		simdjson::ondemand::value theObject{};
+		theResult = jsonObjectData["trigger_metadata"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			TriggerMetaData theDataNew{ theObject };
+			this->triggerMetaData = theDataNew;
+		}
+
+		this->guildId = getId(jsonObjectData, "guild_id");
+	}
+
+	AutoModerationRuleVector::AutoModerationRuleVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->theAutoModerationRules.reserve(theArray.count_elements().take_value());
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					AutoModerationRule newData{ value.value() };
+					this->theAutoModerationRules.push_back(std::move(newData));
+				}
+				this->theAutoModerationRules.shrink_to_fit();
+			}
+		}
+	}
+
+	AutoModerationActionExecutionEventData::AutoModerationActionExecutionEventData(simdjson::ondemand::value jsonObjectData) {
+		this->alertSystemMessageId = getId(jsonObjectData, "alert_system_message_id");
+
+		this->ruleTriggerType = static_cast<TriggerType>(getUint8(jsonObjectData, "rule_trigger_type"));
+
+		this->matchedKeyword = getString(jsonObjectData, "matched_keyword");
+
+		this->matchedContent = getString(jsonObjectData, "matched_content");
+
+		simdjson::ondemand::value theObject{};
+		auto theResult = jsonObjectData["action"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->action = ActionData{ theObject };
+		}
+
+		this->content = getString(jsonObjectData, "content");
+
+		this->messageId = getId(jsonObjectData, "message_id");
+
+		this->channelId = getId(jsonObjectData, "channel_id");
+
+		this->guildId = getId(jsonObjectData, "guild_id");
+
+		this->ruleId = getId(jsonObjectData, "rule_id");
+
+		this->userId = getId(jsonObjectData, "user_id");
+	}
+
 	CreateAutoModerationRuleData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->actions) {

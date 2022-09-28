@@ -183,28 +183,26 @@ namespace DiscordCoreAPI {
 
 		Channel(const ChannelData&) noexcept;
 
+		Channel(simdjson::ondemand::value jsonObjectData);
+
 		~Channel() noexcept = default;
 
 		std::string getIconUrl() noexcept;
 	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, Channel& theData);
-
 	class DiscordCoreAPI_Dll ChannelVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		ChannelVector() noexcept = default;
 
 		operator std::vector<Channel>();
+
+		ChannelVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~ChannelVector() noexcept = default;
 
 	  protected:
 		std::vector<Channel> theChannels{};
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ChannelVector& theData);
 
 	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
@@ -227,11 +225,11 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channels {
 	  public:
 		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value theParser, ReturnType& theData);
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreClient;
 		friend class ChannelData;
 		friend class GuildData;
+		friend class Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManager);
 

@@ -230,26 +230,24 @@ namespace DiscordCoreAPI {
 	  public:
 		WebHook() noexcept = default;
 
+		WebHook(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~WebHook() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, WebHook& theData);
-
 	class DiscordCoreAPI_Dll WebHookVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		WebHookVector() noexcept = default;
 
 		operator std::vector<WebHook>();
+
+		WebHookVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~WebHookVector() noexcept = default;
 
 	  protected:
 		std::vector<WebHook> theWebHooks{};
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, WebHookVector& theData);
 
 	/**@}*/
 

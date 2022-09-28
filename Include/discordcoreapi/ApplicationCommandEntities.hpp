@@ -183,27 +183,26 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommand(simdjson::ondemand::value) noexcept;
 
-		virtual ~ApplicationCommand() noexcept = default;
-	};
+		ApplicationCommand(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ApplicationCommand& theData);
+		virtual ~ApplicationCommand() noexcept = default;
+	};	
 
 	class DiscordCoreAPI_Dll ApplicationCommandVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
 		friend class ApplicationCommands;
 
 		ApplicationCommandVector() noexcept = default;
 
 		operator std::vector<ApplicationCommand>();
 
+		ApplicationCommandVector(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ApplicationCommandVector() noexcept = default;
 
 	  protected:
 		std::vector<ApplicationCommand> theApplicationCommands{};
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ApplicationCommandVector& theData);
 
 	/**@}*/
 

@@ -456,6 +456,8 @@ namespace DiscordCoreAPI {
 
 		operator JsonObject();
 
+		AttachmentData() noexcept = default;
+
 		AttachmentData(simdjson::ondemand::value);
 
 		virtual ~AttachmentData() noexcept = default;
@@ -916,7 +918,7 @@ namespace DiscordCoreAPI {
 		Status_Dnd = 0b00011000
 	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, PresenceUpdateFlags& theData);
+	void parseObject(simdjson::ondemand::value jsonObjectData, PresenceUpdateFlags& theData);
 
 	/// Presence update data. \brief Presence update data.
 	struct DiscordCoreAPI_Dll PresenceUpdateData {
@@ -1101,10 +1103,10 @@ namespace DiscordCoreAPI {
 
 		ActionMetaData() noexcept = default;
 
+		ActionMetaData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ActionMetaData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ActionMetaData& theData);
 
 	/// Trigger metadata for auto-moderation-rules. \brief Trigger metadata for auto-moderation-rules.
 	struct DiscordCoreAPI_Dll TriggerMetaData {
@@ -1180,8 +1182,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildApplicationCommandPermissionsDataVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		GuildApplicationCommandPermissionsDataVector() noexcept = default;
 
 		operator std::vector<GuildApplicationCommandPermissionsData>();
@@ -1196,8 +1196,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll EmojiDataVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		EmojiDataVector() noexcept = default;
 
 		EmojiDataVector(simdjson::ondemand::value jsonObjectData);
@@ -1261,8 +1259,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll VoiceRegionDataVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		VoiceRegionDataVector() noexcept = default;
 
 		operator std::vector<VoiceRegionData>();
@@ -1426,7 +1422,7 @@ namespace DiscordCoreAPI {
 		AuthorizationInfoData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~AuthorizationInfoData() noexcept = default;
-	};	
+	};
 
 	/// Account data. \brief Account data.
 	class DiscordCoreAPI_Dll AccountData : public DiscordEntity {
@@ -1438,7 +1434,7 @@ namespace DiscordCoreAPI {
 		AccountData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~AccountData() noexcept = default;
-	};	
+	};
 
 	/// Guild Widget Data. \brief Guild Widget Data.
 	struct DiscordCoreAPI_Dll GuildWidgetData {
@@ -1479,7 +1475,7 @@ namespace DiscordCoreAPI {
 		GuildWidgetImageData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~GuildWidgetImageData() noexcept = default;
-	};	
+	};
 
 	/// Integration data. \brief Integration data.
 	class DiscordCoreAPI_Dll IntegrationData : public DiscordEntity {
@@ -1504,12 +1500,10 @@ namespace DiscordCoreAPI {
 		IntegrationData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~IntegrationData() noexcept = default;
-	};	
+	};
 
 	class DiscordCoreAPI_Dll IntegrationDataVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		IntegrationDataVector() noexcept = default;
 
 		operator std::vector<IntegrationData>();
@@ -1520,7 +1514,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<IntegrationData> theIntegrationDatas{};
-	};	
+	};
 
 	/// Audit log events. \brief Audit log events.
 	enum class AuditLogEvent : uint8_t {
@@ -1595,7 +1589,7 @@ namespace DiscordCoreAPI {
 		OptionalAuditEntryInfoData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~OptionalAuditEntryInfoData() noexcept = default;
-	};	
+	};
 
 	/// Audit log change data. \brief Audit log change data.
 	struct DiscordCoreAPI_Dll AuditLogChangeData {
@@ -1608,7 +1602,7 @@ namespace DiscordCoreAPI {
 		AuditLogChangeData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~AuditLogChangeData() noexcept = default;
-	};	 
+	};
 
 	/// Guild prune count data. \brief Guild prune count data.
 	struct DiscordCoreAPI_Dll GuildPruneCountData {
@@ -1619,7 +1613,7 @@ namespace DiscordCoreAPI {
 		GuildPruneCountData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~GuildPruneCountData() noexcept = default;
-	};	
+	};
 
 	/// Audit log entry data. \brief Audit log entry data.
 	class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity {
@@ -1637,7 +1631,7 @@ namespace DiscordCoreAPI {
 		AuditLogEntryData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~AuditLogEntryData() noexcept = default;
-	};	
+	};
 
 	/// Premium tier levels. \brief Premium tier levels.
 	enum class PremiumTier : uint8_t {
@@ -1688,7 +1682,7 @@ namespace DiscordCoreAPI {
 		WelcomeScreenChannelData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~WelcomeScreenChannelData() noexcept = default;
-	};	
+	};
 
 	/// Welcome screen data. \brief Welcome screen data.
 	struct DiscordCoreAPI_Dll WelcomeScreenData {
@@ -1700,7 +1694,7 @@ namespace DiscordCoreAPI {
 		WelcomeScreenData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~WelcomeScreenData() noexcept = default;
-	};	
+	};
 
 	/// Stage instance privacy levels. \brief Stage instance privacy levels.
 	enum class StageInstancePrivacyLevel : uint8_t {
@@ -1722,7 +1716,7 @@ namespace DiscordCoreAPI {
 		StageInstanceData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~StageInstanceData() noexcept = default;
-	};	
+	};
 
 	/// Sticker types. \brief Sticker types.
 	enum class StickerType : uint8_t {
@@ -1753,7 +1747,7 @@ namespace DiscordCoreAPI {
 		StickerData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~StickerData() noexcept = default;
-	};	
+	};
 
 	/// Data representing a single Guild preview. \brief Data representing a single Guild preview.
 	struct DiscordCoreAPI_Dll GuildPreviewData {
@@ -1865,11 +1859,9 @@ namespace DiscordCoreAPI {
 
 		virtual ~GuildData() noexcept = default;
 	};
-	
+
 	class DiscordCoreAPI_Dll GuildDataVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		friend class Guilds;
 
 		GuildDataVector() noexcept = default;
@@ -1882,7 +1874,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<GuildData> theGuildDatas{};
-	};	
+	};
 
 	/// Guild scheduled event privacy levels. \brief Guild scheduled event privacy levels.
 	enum class GuildScheduledEventPrivacyLevel : uint8_t {
@@ -1940,7 +1932,7 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~GuildScheduledEventData() noexcept = default;
-	};	
+	};
 
 	/// Data representing a single GuildScheduledEventUser. \brief Data representing a single GuildScheduledEventUser.
 	struct DiscordCoreAPI_Dll GuildScheduledEventUserData {
@@ -1953,12 +1945,10 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventUserData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~GuildScheduledEventUserData() noexcept = default;
-	};	
+	};
 
 	class DiscordCoreAPI_Dll GuildScheduledEventUserDataVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		GuildScheduledEventUserDataVector() noexcept = default;
 
 		operator std::vector<GuildScheduledEventUserData>();
@@ -1973,8 +1963,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildScheduledEventDataVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		GuildScheduledEventDataVector() noexcept = default;
 
 		operator std::vector<GuildScheduledEventData>();
@@ -1985,7 +1973,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<GuildScheduledEventData> theGuildScheduledEventDatas{};
-	};	
+	};
 
 	/// Invite data. \brief Invite data.
 	struct DiscordCoreAPI_Dll InviteData {
@@ -2013,12 +2001,10 @@ namespace DiscordCoreAPI {
 		InviteData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~InviteData() noexcept = default;
-	};	
+	};
 
 	class DiscordCoreAPI_Dll InviteDataVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		InviteDataVector() noexcept = default;
 
 		operator std::vector<InviteData>();
@@ -2029,7 +2015,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<InviteData> theInviteDatas{};
-	};	
+	};
 
 	/// Represents a Guild Template. \brief Represents a Guild Template.
 	struct DiscordCoreAPI_Dll GuildTemplateData {
@@ -2054,8 +2040,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll GuildTemplateDataVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		GuildTemplateDataVector() noexcept = default;
 
 		operator std::vector<GuildTemplateData>();
@@ -2066,7 +2050,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<GuildTemplateData> theGuildTemplateDatas{};
-	};	
+	};
 
 	/// Invite target types. \brief Invite target types.
 	enum class InviteTargetTypes : uint8_t {
@@ -2105,8 +2089,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll WebHookDataVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		WebHookDataVector() noexcept = default;
 
 		operator std::vector<WebHookData>();
@@ -2136,10 +2118,10 @@ namespace DiscordCoreAPI {
 
 		AuditLogData() noexcept = default;
 
+		AuditLogData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~AuditLogData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, AuditLogData& theData);
 
 	/// For removing a reaction. \brief For removing a reaction.
 	struct DiscordCoreAPI_Dll ReactionRemoveData {
@@ -2151,10 +2133,10 @@ namespace DiscordCoreAPI {
 
 		ReactionRemoveData() noexcept = default;
 
+		ReactionRemoveData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ReactionRemoveData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ReactionRemoveData& theData);
 
 	/// For storing Interaction-related values. \brief For storing Interaction-related values.
 	struct DiscordCoreAPI_Dll InteractionPackageData {
@@ -2187,10 +2169,10 @@ namespace DiscordCoreAPI {
 
 		operator JsonObject();
 
+		ApplicationCommandOptionChoiceData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ApplicationCommandOptionChoiceData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ApplicationCommandOptionChoiceData& theData);
 
 	/// Data structure representing an ApplicationCommand's option. \brief Data structure representing an ApplicationCommand's option.
 	struct DiscordCoreAPI_Dll ApplicationCommandOptionData {
@@ -2211,10 +2193,10 @@ namespace DiscordCoreAPI {
 
 		operator JsonObject();
 
+		ApplicationCommandOptionData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ApplicationCommandOptionData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ApplicationCommandOptionData& theData);
 
 	/// Representing "TypingStart" data. \brief Representing "TypingStart" data.
 	struct DiscordCoreAPI_Dll TypingStartData {
@@ -2226,10 +2208,10 @@ namespace DiscordCoreAPI {
 
 		TypingStartData() noexcept = default;
 
+		TypingStartData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~TypingStartData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, TypingStartData& theData);
 
 	struct DiscordCoreAPI_Dll YouTubeFormat {
 		std::string signatureCipher{};
@@ -2248,24 +2230,24 @@ namespace DiscordCoreAPI {
 		int32_t width{ 0 };
 		int32_t itag{ 0 };
 		int32_t fps{ 0 };
+		YouTubeFormat() noexcept = default;
+		YouTubeFormat(simdjson::ondemand::value);
 	};
 
 	/// YouTube format data. \brief YouTube format data.
 	class DiscordCoreAPI_Dll YouTubeFormatVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		YouTubeFormatVector() noexcept = default;
 
 		operator std::vector<YouTubeFormat>();
+
+		YouTubeFormatVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~YouTubeFormatVector() noexcept = default;
 
 	  protected:
 		std::vector<YouTubeFormat> theFormats{};
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, YouTubeFormatVector& theData);
 
 	/// Application command types. \brief Application command types.
 	enum class ApplicationCommandType : uint8_t {
@@ -2280,10 +2262,10 @@ namespace DiscordCoreAPI {
 
 		UserCommandInteractionData() noexcept = default;
 
+		UserCommandInteractionData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~UserCommandInteractionData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, UserCommandInteractionData& theData);
 
 	/// Message command interacction data. \brief Message command interacction data.
 	struct DiscordCoreAPI_Dll MessageCommandInteractionData {
@@ -2291,10 +2273,10 @@ namespace DiscordCoreAPI {
 
 		MessageCommandInteractionData() noexcept = default;
 
+		MessageCommandInteractionData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~MessageCommandInteractionData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, MessageCommandInteractionData& theData);
 
 	/// Component types. \brief Component types.
 	enum class ComponentType : uint8_t {
@@ -2312,10 +2294,10 @@ namespace DiscordCoreAPI {
 
 		ComponentInteractionData() noexcept = default;
 
+		ComponentInteractionData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ComponentInteractionData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ComponentInteractionData& theData);
 
 	/// Modal interaction data, for inputs from text modals. \brief Modal interaction data, for inputs from text modals.
 	struct DiscordCoreAPI_Dll ModalInteractionData {
@@ -2325,10 +2307,10 @@ namespace DiscordCoreAPI {
 
 		ModalInteractionData() noexcept = default;
 
-		virtual ~ModalInteractionData() noexcept = default;
-	};
+		ModalInteractionData(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ModalInteractionData& theData);
+		virtual ~ModalInteractionData() noexcept = default;
+	};	
 
 	/// Allowable mentions for a Message. \brief Allowable mentions for a Message.
 	class DiscordCoreAPI_Dll AllowedMentionsData {
@@ -2340,12 +2322,12 @@ namespace DiscordCoreAPI {
 
 		AllowedMentionsData() noexcept = default;
 
+		AllowedMentionsData(simdjson::ondemand::value jsonObjectData);
+
 		operator JsonObject();
 
 		virtual ~AllowedMentionsData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, AllowedMentionsData& theData);
 
 	/// Interaction types. \brief Interaction types.
 	enum class InteractionType : uint8_t {
@@ -2367,10 +2349,10 @@ namespace DiscordCoreAPI {
 
 		SelectOptionData() noexcept = default;
 
+		SelectOptionData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~SelectOptionData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, SelectOptionData& theData);
 
 	/// Button styles. \brief Button styles.
 	enum class ButtonStyle : uint8_t {
@@ -2399,6 +2381,8 @@ namespace DiscordCoreAPI {
 		int32_t style{};///< One of ButtonStyle, or TextInputStyle.
 		std::string url{};///< Url, for url types.
 		EmojiData emoji{};///< Emoji name, id, and animated.
+		ComponentData() noexcept = default;
+		ComponentData(simdjson::ondemand::value);
 	};
 
 	/// Action row data of Message components. \brief Action row data of Message components.
@@ -2410,10 +2394,10 @@ namespace DiscordCoreAPI {
 
 		operator JsonObject();
 
-		virtual ~ActionRowData() noexcept = default;
-	};
+		ActionRowData(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ActionRowData& theData);
+		virtual ~ActionRowData() noexcept = default;
+	};	
 
 	/// Interaction callback types. \brief Interaction callback types.
 	enum class InteractionCallbackType : uint8_t {
@@ -2458,10 +2442,10 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandData() noexcept = default;
 
+		ApplicationCommandData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ApplicationCommandData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ApplicationCommandData& theData);
 
 	/// Channel mention data. \brief Channel mention data.
 	class DiscordCoreAPI_Dll ChannelMentionData : public DiscordEntity {
@@ -2472,10 +2456,10 @@ namespace DiscordCoreAPI {
 
 		ChannelMentionData() noexcept = default;
 
+		ChannelMentionData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ChannelMentionData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ChannelMentionData& theData);
 
 	/// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
 	struct DiscordCoreAPI_Dll ChannelPinsUpdateEventData {
@@ -2485,10 +2469,10 @@ namespace DiscordCoreAPI {
 
 		ChannelPinsUpdateEventData() noexcept = default;
 
+		ChannelPinsUpdateEventData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ChannelPinsUpdateEventData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ChannelPinsUpdateEventData& theData);
 
 	/// Data for when threads are synced. \brief Data for when threads are synced.
 	struct DiscordCoreAPI_Dll ThreadListSyncData {
@@ -2499,10 +2483,10 @@ namespace DiscordCoreAPI {
 
 		ThreadListSyncData() noexcept = default;
 
-		virtual ~ThreadListSyncData() noexcept = default;
-	};
+		ThreadListSyncData(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ThreadListSyncData& theData);
+		virtual ~ThreadListSyncData() noexcept = default;
+	};	
 
 	/// Represents a Thread-members-update. \brief Represents a Thread-members-update.
 	class DiscordCoreAPI_Dll ThreadMembersUpdateData : public DiscordEntity {
@@ -2514,10 +2498,10 @@ namespace DiscordCoreAPI {
 
 		ThreadMembersUpdateData() noexcept = default;
 
+		ThreadMembersUpdateData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ThreadMembersUpdateData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ThreadMembersUpdateData& theData);
 
 	/// Message Interaction data. \brief Message Interaction data.
 	class DiscordCoreAPI_Dll MessageInteractionData : public DiscordEntity {
@@ -2529,10 +2513,10 @@ namespace DiscordCoreAPI {
 
 		MessageInteractionData() noexcept = default;
 
-		virtual ~MessageInteractionData() noexcept = default;
-	};
+		MessageInteractionData(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, MessageInteractionData& theData);
+		virtual ~MessageInteractionData() noexcept = default;
+	};	
 
 	/// Message types. \brief Message types.
 	enum class MessageType : uint8_t {
@@ -2600,10 +2584,10 @@ namespace DiscordCoreAPI {
 
 		StickerItemData() noexcept = default;
 
+		StickerItemData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~StickerItemData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, StickerItemData& theData);
 
 	/// The core of a Message's data structure. \brief The core of a Message's data structure.
 	class DiscordCoreAPI_Dll MessageDataOld : public DiscordEntity {
@@ -2640,11 +2624,11 @@ namespace DiscordCoreAPI {
 
 		MessageDataOld() noexcept = default;
 
+		MessageDataOld(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~MessageDataOld() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, MessageDataOld& theData);
-
+	
 	/// Data structure representing a single Message. \brief Data structure representing a single Message.
 	class DiscordCoreAPI_Dll MessageData : public MessageDataOld {
 	  public:
@@ -2656,10 +2640,10 @@ namespace DiscordCoreAPI {
 
 		MessageData() noexcept = default;
 
-		virtual ~MessageData() noexcept = default;
-	};
+		MessageData(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, MessageData& theData);
+		virtual ~MessageData() noexcept = default;
+	};	
 
 	/// Resolved data. \brief Resolved data.
 	struct DiscordCoreAPI_Dll ResolvedData {
@@ -2669,9 +2653,11 @@ namespace DiscordCoreAPI {
 		std::unordered_map<uint64_t, ChannelData> channels{};///< Map full of ChannelData.
 		std::unordered_map<uint64_t, UserData> users{};///< Map full of UserData.
 		std::unordered_map<uint64_t, RoleData> roles{};///< Map full of RoleData.
-	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ResolvedData& theData);
+		ResolvedData() noexcept = default;
+
+		ResolvedData(simdjson::ondemand::value jsonObjectData);
+	};
 
 	/// Represents a Sticker pack. \brief Represents a Sticker pack.
 	struct DiscordCoreAPI_Dll StickerPackData {
@@ -2685,26 +2671,24 @@ namespace DiscordCoreAPI {
 
 		StickerPackData() noexcept = default;
 
+		StickerPackData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~StickerPackData() noexcept = default;
 	};
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, StickerPackData& theData);
-
 	class DiscordCoreAPI_Dll StickerPackDataVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		StickerPackDataVector() noexcept = default;
 
 		operator std::vector<StickerPackData>();
+
+		StickerPackDataVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~StickerPackDataVector() noexcept = default;
 
 	  protected:
 		std::vector<StickerPackData> theStickerPackDatas{};
-	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, StickerPackDataVector& theData);
+	};	
 
 	/// Connection visibility types. \brief Connection visibility types.
 	enum class ConnectionVisibilityTypes : uint8_t {
@@ -2726,10 +2710,10 @@ namespace DiscordCoreAPI {
 
 		ConnectionData() noexcept = default;
 
+		ConnectionData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ConnectionData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ConnectionData& theData);
 
 	class DiscordCoreAPI_Dll ConnectionDataVector {
 	  public:
@@ -2760,10 +2744,10 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandInteractionDataOption() noexcept = default;
 
-		virtual ~ApplicationCommandInteractionDataOption() noexcept = default;
-	};
+		ApplicationCommandInteractionDataOption(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ApplicationCommandInteractionDataOption& theData);
+		virtual ~ApplicationCommandInteractionDataOption() noexcept = default;
+	};	
 
 	/// ApplicationCommand Interaction data. \brief ApplicationCommand Interaction data.
 	class DiscordCoreAPI_Dll ApplicationCommandInteractionData : public DiscordEntity {
@@ -2776,10 +2760,10 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandInteractionData() noexcept = default;
 
+		ApplicationCommandInteractionData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~ApplicationCommandInteractionData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, ApplicationCommandInteractionData& theData);
 
 	/// Interaction data data. \brief Interaction data data.
 	struct DiscordCoreAPI_Dll InteractionDataData {
@@ -2791,10 +2775,10 @@ namespace DiscordCoreAPI {
 
 		InteractionDataData() noexcept = default;
 
-		virtual ~InteractionDataData() noexcept = default;
-	};
+		InteractionDataData(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, InteractionDataData& theData);
+		virtual ~InteractionDataData() noexcept = default;
+	};	 
 
 	/// Interaction data. \brief Interaction data.
 	class DiscordCoreAPI_Dll InteractionData : public DiscordEntity {
@@ -2815,10 +2799,10 @@ namespace DiscordCoreAPI {
 
 		InteractionData() noexcept = default;
 
-		virtual ~InteractionData() noexcept = default;
-	};
+		InteractionData(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, InteractionData& theData);
+		virtual ~InteractionData() noexcept = default;
+	};	
 
 	/// Data from the SessionStart info. \brief Data from the SessionStart info.
 	struct DiscordCoreAPI_Dll SessionStartData {
@@ -2829,10 +2813,10 @@ namespace DiscordCoreAPI {
 
 		SessionStartData() noexcept = default;
 
-		virtual ~SessionStartData() noexcept = default;
-	};
+		SessionStartData(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, SessionStartData& theData);
+		virtual ~SessionStartData() noexcept = default;
+	};	
 
 	/// Data from the GetGatewayBot endpoint. \brief Data from the GetGatewayBot endpoint.
 	struct DiscordCoreAPI_Dll GatewayBotData {
@@ -2842,10 +2826,10 @@ namespace DiscordCoreAPI {
 
 		GatewayBotData() noexcept = default;
 
-		virtual ~GatewayBotData() noexcept = default;
-	};
+		GatewayBotData(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, GatewayBotData& theData);
+		virtual ~GatewayBotData() noexcept = default;
+	};	
 
 	/// Text input style for modals. \brief Text input style for modals.
 	enum class TextInputStyle : uint8_t {
@@ -2860,10 +2844,10 @@ namespace DiscordCoreAPI {
 
 		GuildEmojisUpdateEventData() noexcept = default;
 
-		virtual ~GuildEmojisUpdateEventData() noexcept = default;
-	};
+		GuildEmojisUpdateEventData(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, GuildEmojisUpdateEventData& theData);
+		virtual ~GuildEmojisUpdateEventData() noexcept = default;
+	};	
 
 	/// Data representing a Guild Sticker Update event. \brief Data representing a Guild Stickers Update event.
 	struct DiscordCoreAPI_Dll GuildStickersUpdateEventData {
@@ -2872,10 +2856,10 @@ namespace DiscordCoreAPI {
 
 		GuildStickersUpdateEventData() noexcept = default;
 
+		GuildStickersUpdateEventData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~GuildStickersUpdateEventData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, GuildStickersUpdateEventData& theData);
 
 	struct DiscordCoreAPI_Dll GuildMembersChunkEventData {
 		std::vector<PresenceUpdateData> presences{};
@@ -2888,10 +2872,10 @@ namespace DiscordCoreAPI {
 
 		GuildMembersChunkEventData() noexcept = default;
 
+		GuildMembersChunkEventData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~GuildMembersChunkEventData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, GuildMembersChunkEventData& theData);
 
 	/// Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input. \brief Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input.
 	class DiscordCoreAPI_Dll InputEventData {
@@ -3244,7 +3228,6 @@ namespace DiscordCoreAPI {
 	/// A song from the various platforms. \brief A song from the various platforms.
 	class DiscordCoreAPI_Dll Song {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
 		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
 		friend class DiscordCoreInternal::YouTubeRequestBuilder;
 		friend class DiscordCoreInternal::SoundCloudAPI;
@@ -3269,6 +3252,8 @@ namespace DiscordCoreAPI {
 
 		Song() noexcept = default;
 
+		Song(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~Song() noexcept = default;
 
 	  protected:
@@ -3276,8 +3261,6 @@ namespace DiscordCoreAPI {
 		bool doWeGetSaved{ false };
 		YouTubeFormat format{};
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, Song& theData);
 
 	/// Song completion event data. \brief Song completion event data.
 	struct DiscordCoreAPI_Dll SongCompletionEventData {
@@ -3488,6 +3471,8 @@ namespace DiscordCoreAPI {
 namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll ReadyData {
+		ReadyData(simdjson::ondemand::value);
+		ReadyData() noexcept = default;
 		DiscordCoreAPI::ApplicationData application{};
 		DiscordCoreAPI::UserData user{};
 		std::string resumeGatewayUrl{};
@@ -3495,20 +3480,6 @@ namespace DiscordCoreInternal {
 		uint32_t shard[2]{};
 		int32_t v{};
 	};
-
-	template<> inline void parseObject(simdjson::ondemand::value jsonObjectData, ReadyData& theData) {
-		theData.resumeGatewayUrl = DiscordCoreAPI::getString(jsonObjectData, "resume_gateway_url");
-
-		theData.sessionId = DiscordCoreAPI::getString(jsonObjectData, "session_id");
-
-		theData.v = DiscordCoreAPI::getUint32(jsonObjectData, "v");
-
-		simdjson::ondemand::value theUser{};
-		auto theResult = jsonObjectData["user"].get(theUser);
-		if (theResult == simdjson::error_code::SUCCESS) {
-			DiscordCoreAPI::parseObject(theUser, theData.user);
-		}
-	}
 }
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::DiscordEntity> {

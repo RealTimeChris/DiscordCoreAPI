@@ -29,6 +29,57 @@
 
 namespace DiscordCoreAPI {
 
+	WebHook::WebHook(simdjson::ondemand::value jsonObjectData) {
+		this->id = getId(jsonObjectData, "id");
+
+		this->type = static_cast<WebHookType>(getUint8(jsonObjectData, "type"));
+
+		this->guildId = getId(jsonObjectData, "guild_id");
+
+		this->channelId = getId(jsonObjectData, "channel_id");
+
+		simdjson::ondemand::value theObject{};
+		auto theResult = jsonObjectData["user"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->user = UserData{ theObject };
+		}
+
+		this->name = getString(jsonObjectData, "name");
+
+		this->avatar = getString(jsonObjectData, "avatar");
+
+		this->token = getString(jsonObjectData, "token");
+
+		this->applicationId = getId(jsonObjectData, "application_id");
+
+		theResult = jsonObjectData["source_guild"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->sourceGuild = GuildData{ theObject };
+		}
+
+		theResult = jsonObjectData["source_channel"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->sourceChannel = ChannelData{ theObject };
+		}
+
+		this->url = getString(jsonObjectData, "url");
+	}
+
+	WebHookVector::WebHookVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->theWebHooks.reserve(theArray.count_elements().take_value());
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					WebHook newData{ value.value() };
+					this->theWebHooks.push_back(std::move(newData));
+				}
+				this->theWebHooks.shrink_to_fit();
+			}
+		}
+	}
+
 	ExecuteWebHookData::ExecuteWebHookData(WebHookData dataNew) {
 		this->webhookToken = dataNew.token;
 		this->webHookId = dataNew.id;

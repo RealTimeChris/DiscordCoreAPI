@@ -42,26 +42,24 @@ namespace DiscordCoreAPI {
 	  public:
 		AutoModerationRule() noexcept = default;
 
-		virtual ~AutoModerationRule() noexcept = default;
-	};
+		AutoModerationRule(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, AutoModerationRule& theData);
+		virtual ~AutoModerationRule() noexcept = default;
+	};	
 
 	class DiscordCoreAPI_Dll AutoModerationRuleVector {
 	  public:
-		template<typename ReturnType> friend void parseObject(simdjson::ondemand::value jsonObjectData, ReturnType& theData);
-
 		AutoModerationRuleVector() noexcept = default;
 
 		operator std::vector<AutoModerationRule>();
+
+		AutoModerationRuleVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~AutoModerationRuleVector() noexcept = default;
 
 	  protected:
 		std::vector<AutoModerationRule> theAutoModerationRules{};
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, AutoModerationRuleVector& theData);
 
 	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild .
 	struct DiscordCoreAPI_Dll ListAutoModerationRulesForGuildData {
@@ -105,10 +103,10 @@ namespace DiscordCoreAPI {
 
 		AutoModerationActionExecutionEventData() noexcept = default;
 
+		AutoModerationActionExecutionEventData(simdjson::ondemand::value jsonObjectData);
+
 		virtual ~AutoModerationActionExecutionEventData() noexcept = default;
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, AutoModerationActionExecutionEventData& theData);
 
 	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.
 	struct DiscordCoreAPI_Dll ModifyAutoModerationRuleData {

@@ -29,6 +29,21 @@
 
 namespace DiscordCoreAPI {
 
+	GuildMemberVector::GuildMemberVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->theGuildMembers.reserve(theArray.count_elements().take_value());
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					GuildMember newData{ value.value() };
+					this->theGuildMembers.push_back(std::move(newData));
+				}
+				this->theGuildMembers.shrink_to_fit();
+			}
+		}
+	}
+
 	AddGuildMemberData::operator JsonObject() {
 		JsonObject theData{};
 		theData["access_token"] = this->accessToken;
@@ -122,8 +137,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::value theObject{};
 		auto theResult = jsonObjectData["user"].get(theObject);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			UserData theUser{};
-			parseObject(theObject, theUser);
+			UserData theUser{ theObject };
 			this->id = theUser.id;
 			Users::insertUser(std::move(theUser));
 		}

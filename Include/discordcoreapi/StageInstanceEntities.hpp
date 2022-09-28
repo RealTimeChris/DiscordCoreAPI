@@ -63,10 +63,10 @@ namespace DiscordCoreAPI {
 	  public:
 		StageInstance() noexcept = default;
 
-		virtual ~StageInstance() noexcept = default;
-	};
+		StageInstance(simdjson::ondemand::value jsonObjectData);
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, StageInstance& theData);
+		virtual ~StageInstance() noexcept = default;
+	};	 
 
 	/**
 	 * \addtogroup main_endpoints

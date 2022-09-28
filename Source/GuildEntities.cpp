@@ -110,6 +110,21 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
+	GuildVector::GuildVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->theGuilds.reserve(theArray.count_elements().take_value());
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					Guild newData{ value.value() };
+					this->theGuilds.push_back(std::move(newData));
+				}
+				this->theGuilds.shrink_to_fit();
+			}
+		}
+	}
+
 	Guild& Guild::operator=(GuildData&& other) noexcept {
 		if (this != &other) {
 			this->voiceConnectionPtr = other.voiceConnectionPtr;
@@ -236,6 +251,221 @@ namespace DiscordCoreAPI {
 
 	Guild::Guild(const GuildData& other) noexcept {
 		*this = other;
+	}
+
+	Guild::Guild(simdjson::ondemand::value jsonObjectData) {
+		this->id = getId(jsonObjectData, "id");
+
+		this->channels.clear();
+		simdjson::ondemand::array theArray{};
+		auto theResult = jsonObjectData["threads"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				Channel newChannel{ value.value() };
+				newChannel.guildId = this->id;
+				this->threads.emplace_back(newChannel);
+			}
+		}
+
+
+		theResult = jsonObjectData["stickers"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				Sticker newSticker{ value.value() };
+				newSticker.guildId = this->id;
+				this->stickers.emplace_back(newSticker);
+			}
+		}
+
+
+		theResult = jsonObjectData["guild_scheduled_events"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				GuildScheduledEvent newGuildEvent{ value.value() };
+				newGuildEvent.guildId = this->id;
+				this->guildScheduledEvents.emplace_back(newGuildEvent);
+			}
+		}
+
+		theResult = jsonObjectData["stage_instances"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				StageInstance newStageInstance{ value.value() };
+				newStageInstance.guildId = this->id;
+				this->stageInstances.emplace_back(newStageInstance);
+			}
+		}
+
+
+		theResult = jsonObjectData["emoji"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				EmojiData newEmojiData{ value.value() };
+				this->emoji.emplace_back(newEmojiData);
+			}
+		}
+
+		if (Roles::doWeCacheRoles) {
+			this->roles.clear();
+			theResult = jsonObjectData["roles"].get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					RoleData newData{ value.value() };
+					newData.guildId = this->id;
+					this->roles.emplace_back(newData);
+					Roles::insertRole(std::move(newData));
+				}
+			}
+		}
+
+		if (GuildMembers::doWeCacheGuildMembers) {
+			this->members.clear();
+			theResult = jsonObjectData["members"].get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					GuildMemberData newData{ value.value() };
+					newData.guildId = this->id;
+					this->members.emplace_back(std::move(newData));
+				}
+			}
+		}
+
+		if (GuildMembers::doWeCacheGuildMembers) {
+			theResult = jsonObjectData["voice_states"].get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					VoiceStateData theData{ value.value() };
+					GuildMemberData theDataNew{};
+					theDataNew.id = theData.userId;
+					theDataNew.guildId = this->id;
+					if (GuildMembers::cache.contains(theDataNew)) {
+						GuildMembers::cache.at(theDataNew).voiceChannelId = theData.channelId;
+					}
+				}
+			}
+		}
+
+		if (GuildMembers::doWeCacheGuildMembers) {
+			this->presences.clear();
+			theResult = jsonObjectData["presences"].get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					PresenceUpdateData newData{ value.value() };
+					auto userId = newData.userId;
+					newData.guildId = this->id;
+					this->presences.emplace(userId, std::move(newData));
+				}
+			}
+		}
+
+		if (Channels::doWeCacheChannels) {
+			this->channels.clear();
+			theResult = jsonObjectData["channels"].get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					ChannelData newData{ value.value() };
+					newData.guildId = this->id;
+					this->channels.emplace_back(newData);
+					Channels::insertChannel(std::move(newData));
+				}
+			}
+		}
+
+		this->afkChannelId = getId(jsonObjectData, "afk_channel_id");
+
+		this->icon = getString(jsonObjectData, "icon");
+
+		this->name = getString(jsonObjectData, "name");
+
+		this->icon = getString(jsonObjectData, "icon_hash");
+
+		this->splash = getString(jsonObjectData, "splash");
+
+		this->discoverySplash = getString(jsonObjectData, "discovery_splash");
+
+		this->flags = setBool(this->flags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
+
+		this->ownerId = getId(jsonObjectData, "owner_id");
+
+		this->preferredLocale = getString(jsonObjectData, "preferred_locale");
+
+		this->publicUpdatesChannelId = getId(jsonObjectData, "public_updates_channel_id");
+
+		this->vanityUrlCode = getString(jsonObjectData, "vanity_url_code");
+
+		this->description = getString(jsonObjectData, "description");
+
+		this->banner = getString(jsonObjectData, "banner");
+
+		this->rulesChannelId = getId(jsonObjectData, "rule_Channel_id");
+
+		this->applicationId = getId(jsonObjectData, "application_id");
+
+		this->joinedAt = getString(jsonObjectData, "joined_at");
+
+		this->widgetChannelId = getId(jsonObjectData, "widget_channel_id");
+
+		this->systemChannelId = getId(jsonObjectData, "system_channel_id");
+
+		this->region = getString(jsonObjectData, "region");
+
+		this->afkChannelId = getId(jsonObjectData, "afk_channel_id");
+
+		this->region = getString(jsonObjectData, "region");
+
+		theResult = jsonObjectData["features"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->features.clear();
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				this->features.emplace_back(std::string{ value.get_string().take_value().data() });
+			}
+		}
+
+		this->permissions = getString(jsonObjectData, "permissions");
+
+		this->afkTimeOut = static_cast<AfkTimeOutDurations>(getUint8(jsonObjectData, "afk_timeout"));
+
+		this->flags = setBool(this->flags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
+
+		this->flags = setBool(this->flags, GuildFlags::WidgetEnabled, getBool(jsonObjectData, "widget_enabled"));
+
+		this->verificationLevel = static_cast<VerificationLevel>(getUint8(jsonObjectData, "verification_level"));
+
+		this->defaultMessageNotifications = static_cast<DefaultMessageNotificationLevel>(getUint8(jsonObjectData, "default_message_notification_level"));
+
+		this->explicitContentFilter = static_cast<ExplicitContentFilterLevel>(getUint8(jsonObjectData, "explicit_content_filter_level"));
+
+		this->mfaLevel = static_cast<MFALevel>(getUint8(jsonObjectData, "mfa_level"));
+
+		this->systemChannelFlags = static_cast<SystemChannelFlags>(getUint8(jsonObjectData, "system_channel_flags"));
+
+		this->flags = setBool(this->flags, GuildFlags::Large, getBool(jsonObjectData, "large"));
+
+		this->flags = setBool(this->flags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
+
+		this->memberCount = getUint32(jsonObjectData, "member_count");
+
+		this->maxPresences = getUint32(jsonObjectData, "max_presences");
+
+		this->maxMembers = getUint32(jsonObjectData, "max_members");
+
+		this->premiumSubscriptionCount = getUint32(jsonObjectData, "premium_subscription_count");
+
+		this->premiumTier = static_cast<PremiumTier>(getUint8(jsonObjectData, "premium_tier"));
+
+		this->maxVideoChannelUsers = getUint32(jsonObjectData, "max_video_channel_users");
+
+		this->approximateMemberCount = getUint32(jsonObjectData, "approximate_member_count");
+
+		this->approximatePresenceCount = getUint32(jsonObjectData, "approximate_presence_count");
+
+		simdjson::ondemand::value theObject{};
+		theResult = jsonObjectData["welcome_screen"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->welcomeScreen = WelcomeScreenData{ theObject };
+		}
+
+		this->nsfwLevel = static_cast<GuildNSFWLevel>(getUint8(jsonObjectData, "nsfw_level"));
 	}
 
 	std::string Guild::getDiscoverySplashUrl() noexcept {

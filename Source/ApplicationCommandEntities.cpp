@@ -72,10 +72,23 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->options.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				ApplicationCommandOptionData theDataNew{};
-				auto& theObject = value.value();
-				parseObject(theObject, theDataNew);
+				ApplicationCommandOptionData theDataNew{ value.value() };
 				this->options.emplace_back(std::move(theDataNew));
+			}
+		}
+	}
+
+	ApplicationCommandVector::ApplicationCommandVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->theApplicationCommands.reserve(theArray.count_elements().take_value());
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					ApplicationCommand newData{ value.value() };
+					this->theApplicationCommands.push_back(std::move(newData));
+				}
+				this->theApplicationCommands.shrink_to_fit();
 			}
 		}
 	}

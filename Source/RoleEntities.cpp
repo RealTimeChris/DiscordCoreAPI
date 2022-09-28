@@ -110,9 +110,23 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::value theRoleTagsNew{};
 		auto theResult = jsonObjectData["tags"].get(theRoleTagsNew);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			RoleTagsData theRoleTags{};
-			parseObject(theRoleTagsNew, theRoleTags);
+			RoleTagsData theRoleTags{ theRoleTagsNew };
 			this->tags = std::move(theRoleTags);
+		}
+	}
+
+	RoleVector::RoleVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
+				this->theRoles.reserve(theArray.count_elements().take_value());
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					Role newData{ value.value() };
+					this->theRoles.push_back(std::move(newData));
+				}
+				this->theRoles.shrink_to_fit();
+			}
 		}
 	}
 
