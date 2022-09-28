@@ -127,9 +127,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
-			theData["allowed_mentions"]["roles"] = this->allowedMentions.roles;
-			theData["allowed_mentions"]["parse"] = this->allowedMentions.parse;
-			theData["allowed_mentions"]["users"] = this->allowedMentions.users;
+			theData["allowed_mentions"] = this->allowedMentions;
 		}
 		for (auto& value: this->stickerIds) {
 			theData.pushBack("sticker_ids", value);
@@ -194,9 +192,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
-			theData["allowed_mentions"]["roles"] = this->allowedMentions.roles;
-			theData["allowed_mentions"]["parse"] = this->allowedMentions.parse;
-			theData["allowed_mentions"]["users"] = this->allowedMentions.users;
+			theData["allowed_mentions"] = this->allowedMentions;
 		}
 		if (this->embeds.size() == 0) {
 			theData["embeds"] = ValueType::Null_Ext;

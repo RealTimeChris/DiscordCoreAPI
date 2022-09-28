@@ -49,9 +49,7 @@ namespace DiscordCoreAPI {
 	StartThreadInForumChannelData::operator JsonObject() {
 		JsonObject theData{};
 		if (this->message.allowedMentions.parse.size() > 0 || this->message.allowedMentions.roles.size() > 0 || this->message.allowedMentions.users.size() > 0) {
-			theData["message"]["allowed_mentions"]["roles"] = this->message.allowedMentions.roles;
-			theData["message"]["allowed_mentions"]["parse"] = this->message.allowedMentions.parse;
-			theData["message"]["allowed_mentions"]["users"] = this->message.allowedMentions.users;
+			theData["message"]["allowed_mentions"] = this->message.allowedMentions;
 		}
 		for (auto& value: this->message.attachments) {
 			theData["message"].pushBack("attachments", value);

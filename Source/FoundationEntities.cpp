@@ -1014,9 +1014,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (this->data.allowedMentions.parse.size() > 0 || this->data.allowedMentions.roles.size() > 0 || this->data.allowedMentions.users.size() > 0) {
-			theData["data"]["allowed_mentions"]["roles"] = this->data.allowedMentions.roles;
-			theData["data"]["allowed_mentions"]["parse"] = this->data.allowedMentions.parse;
-			theData["data"]["allowed_mentions"]["users"] = this->data.allowedMentions.users;
+			theData["data"]["allowed_mentions"] = this->data.allowedMentions;
 		}
 		if (this->data.choices.size() > 0) {
 			for (auto& value: this->data.choices) {

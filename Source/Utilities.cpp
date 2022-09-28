@@ -452,7 +452,7 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = theObject;
 			return this->theValues[theKey];
 		} else if (this->theKey == theKey && this->theType == ValueType::Object) {
-			//return *this;
+			return *this;
 		} else if (!this->theValues.contains(theKey)) {
 			JsonObject theObject{};
 			theObject.theKey = theKey;

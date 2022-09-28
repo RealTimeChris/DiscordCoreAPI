@@ -476,19 +476,16 @@ namespace DiscordCoreInternal {
 		return theReturnValue;
 	}
 
-	std::string& SSLClient::getInputBuffer() noexcept {
+	std::string SSLClient::getInputBuffer() noexcept {
+		std::string theStringNew{};
 		if (!this->inputBuffer.getCurrentTail()->isItEmpty()) {
-			auto theSize{ this->inputBuffer.getCurrentTail()->getUsedSpace() };
-			if (this->theFinalString.size() != theSize) {
-				this->theFinalString.resize(theSize);
-			}
-			memcpy(this->theFinalString.data(), this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize);
+			auto theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
+			theStringNew.resize(theSize);
+			memcpy(theStringNew.data(), this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize);
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-			std::cout << "THE STRING: GETTING BUFFER: SIZE: " << this->theFinalString.size() << std::endl;
 		}
-		std::cout << "THE VALUE: " << this->theFinalString;
-		return this->theFinalString;
+		return theStringNew;
 	}
 
 	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
