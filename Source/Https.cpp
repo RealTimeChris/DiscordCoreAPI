@@ -281,8 +281,7 @@ namespace DiscordCoreInternal {
 						this->areWeDoneTheRequest = true;
 						return false;
 					}
-					this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
-					this->resetStringBuffer();
+					this->theInputBufferReal += std::move(this->getInputBuffer());
 					this->parseCode(this->theInputBufferReal);
 					if (this->theData.responseCode == 400) {
 					}
@@ -299,8 +298,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					if (!this->doWeHaveHeaders) {
-						this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
-						this->resetStringBuffer();
+						this->theInputBufferReal += std::move(this->getInputBuffer());
 						this->parseHeaders(this->theInputBufferReal);
 						this->theData.theStopWatch.resetTimer();
 					}
@@ -312,8 +310,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 					if (!this->doWeHaveContentSize) {
-						this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
-						this->resetStringBuffer();
+						this->theInputBufferReal += std::move(this->getInputBuffer());
 						this->clearCRLF(this->theInputBufferReal);
 						this->parseSize(this->theInputBufferReal);
 						this->clearCRLF(this->theInputBufferReal);
@@ -322,8 +319,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 				case HttpsState::Collecting_Contents: {
-					this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
-					this->resetStringBuffer();
+					this->theInputBufferReal += std::move(this->getInputBuffer());
 					auto theResult = this->parseChunk(this->theInputBufferReal);
 					if ((this->theData.responseMessage.size() >= this->theData.contentSize && !theResult) || this->theData.theStopWatch.hasTimePassed() || !theResult ||
 						(this->theData.responseCode == -5 && this->theData.contentSize == -5)) {
@@ -350,7 +346,6 @@ namespace DiscordCoreInternal {
 	void HttpsConnection::resetValues() {
 		SSLDataInterface::outputBuffer.clear();
 		this->theInputBufferReal.clear();
-		this->outputBuffer.clear();
 		this->inputBuffer.clear();
 		this->theData = HttpsResponseData{};
 		this->doWeHaveContentSize = false;

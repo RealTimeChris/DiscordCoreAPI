@@ -297,6 +297,7 @@ namespace DiscordCoreInternal {
 	}
 
 	SSLDataInterface::SSLDataInterface() noexcept {
+		this->theFinalString.resize(1024 * 1024);
 	}
 
 	bool SSLConnectionInterface::initialize() noexcept {
@@ -318,7 +319,6 @@ namespace DiscordCoreInternal {
 	}
 
 	SSLClient::SSLClient() noexcept {
-		this->theFinalString.resize(1024 * 1024);
 	}
 
 	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
@@ -477,21 +477,16 @@ namespace DiscordCoreInternal {
 		return theReturnValue;
 	}
 
-	void SSLClient::resetStringBuffer() noexcept {
-		this->currentStringSize = 0;
-	}
-
-	std::string_view SSLClient::getInputBuffer() noexcept {
+	std::string SSLClient::getInputBuffer() noexcept {
+		std::string theStringNew{};
 		if (!this->inputBuffer.getCurrentTail()->isItEmpty()) {
 			auto theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
-			this->currentStringSize += theSize;
-			memcpy(this->theFinalString.data() + this->currentStringSize, this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize);
+			theStringNew.resize(theSize);
+			memcpy(theStringNew.data(), this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize);
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
-		std::string_view theString{ this->theFinalString.data(), static_cast<size_t>(this->currentStringSize) };
-		std::cout << "THE STRING: " << theString << std::endl;
-		return theString;
+		return theStringNew;
 	}
 
 	ProcessIOResult SSLClient::writeData(std::string& dataToWrite, bool priority) noexcept {
