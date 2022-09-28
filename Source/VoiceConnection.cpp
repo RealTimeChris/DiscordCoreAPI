@@ -182,7 +182,7 @@ namespace DiscordCoreAPI {
 				if (theMessage.op != 0) {
 					switch (theMessage.op) {
 						case 2: {
-							VoiceSocketReadyData theData{ thePayload };
+							VoiceSocketReadyData theData{ theMessage.d };
 							this->audioSSRC = theData.ssrc;
 							this->voiceIp = theData.ip;
 							this->port = theData.port;
