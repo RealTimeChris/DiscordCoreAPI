@@ -147,11 +147,11 @@ namespace DiscordCoreAPI {
 		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.send(std::move(frameData));
 	}
 
-	bool VoiceConnection::onMessageReceived(std::string_view theData) noexcept {
+	bool VoiceConnection::onMessageReceived() noexcept {
 		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
 		try {
-			if (theData.size() > 0) {
-				std::string theString{ theData };
+			if (WebSocketSSLShard::getInputBuffer().size() > 0) {
+				std::string theString{ WebSocketSSLShard::getInputBuffer() };
 				theString.reserve(theString.size() + simdjson::SIMDJSON_PADDING);
 				simdjson::ondemand::parser theParser{};
 				auto theDocument = theParser.iterate(theString.data(), theString.length(), theString.capacity());
@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 				thePayload["t"].get(theMessage.t);
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theData << reset() << endl << endl;
+					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << WebSocketSSLShard::getInputBuffer() << reset() << endl << endl;
 				}
 				if (theMessage.op != 0) {
 					switch (theMessage.op) {
@@ -266,19 +266,21 @@ namespace DiscordCoreAPI {
 
 	bool VoiceConnection::handleBuffer() noexcept {
 		if (this->currentState.load() == DiscordCoreInternal::SSLShardState::Upgrading) {
-			return this->parseConnectionHeaders(this);
+			return this->parseConnectionHeaders();
 		}
-		return VoiceConnection::parseMessage(this);
+		while (VoiceConnection::parseMessage()) {
+		}
+		return VoiceConnection::parseMessage();
 	}
 
-	bool VoiceConnection::parseMessage(VoiceConnection* theShard) noexcept {
-		if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 4) {
+	bool VoiceConnection::parseMessage() noexcept {
+		if (WebSocketSSLShard::getInputBuffer().size() < 4) {
 			return false;
 		}
-		theShard->dataOpCode = static_cast<DiscordCoreInternal::WebSocketOpCode>(WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[0] & ~webSocketFinishBit);
+		this->dataOpCode = static_cast<DiscordCoreInternal::WebSocketOpCode>(WebSocketSSLShard::getInputBuffer()[0] & ~webSocketFinishBit);
 		this->messageLength = 0;
 		this->messageOffset = 0;
-		switch (theShard->dataOpCode) {
+		switch (this->dataOpCode) {
 			case DiscordCoreInternal::WebSocketOpCode::Op_Continuation:
 				[[fallthrough]];
 			case DiscordCoreInternal::WebSocketOpCode::Op_Text:
@@ -288,51 +290,52 @@ namespace DiscordCoreAPI {
 			case DiscordCoreInternal::WebSocketOpCode::Op_Ping:
 				[[fallthrough]];
 			case DiscordCoreInternal::WebSocketOpCode::Op_Pong: {
-				uint8_t length01 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[1];
-				theShard->messageOffset = 2;
+				uint8_t length01 = WebSocketSSLShard::getInputBuffer()[1];
+				this->messageOffset = 2;
 				if (length01 & webSocketMaskBit) {
 					return false;
 				}
-				theShard->messageLength = length01;
+				this->messageLength = length01;
 				if (length01 == webSocketPayloadLengthMagicLarge) {
-					if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 8) {
+					if (WebSocketSSLShard::getInputBuffer().size() < 8) {
 						return false;
 					}
-					uint8_t length03 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[2];
-					uint8_t length04 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[3];
-					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
-					theShard->messageOffset += 2;
+					uint8_t length03 = WebSocketSSLShard::getInputBuffer()[2];
+					uint8_t length04 = WebSocketSSLShard::getInputBuffer()[3];
+					this->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
+					this->messageOffset += 2;
 				} else if (length01 == webSocketPayloadLengthMagicHuge) {
-					if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 10) {
+					if (WebSocketSSLShard::getInputBuffer().size() < 10) {
 						return false;
 					}
-					theShard->messageLength = 0;
+					this->messageLength = 0;
 					for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-						uint8_t lengthNew = static_cast<uint8_t>(WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[x]);
-						theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+						uint8_t lengthNew = static_cast<uint8_t>(WebSocketSSLShard::getInputBuffer()[x]);
+						this->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
 					}
-					theShard->messageOffset += 8;
+					this->messageOffset += 8;
 				}
-				if (WebSocketSSLShard::inputBuffer.getUsedSpace() < theShard->messageOffset + theShard->messageLength) {
+				if (WebSocketSSLShard::getInputBuffer().size() < this->messageOffset + this->messageLength) {
 					return false;
 				} else {
-					this->onMessageReceived(WebSocketSSLShard::getInputBuffer());
+					this->onMessageReceived();
+					this->resetStringBuffer();
 					return true;
 				}
 			}
 			case DiscordCoreInternal::WebSocketOpCode::Op_Close: {
-				uint16_t close = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[2] & 0xff;
+				uint16_t close = WebSocketSSLShard::getInputBuffer()[2] & 0xff;
 				close <<= 8;
-				close |= WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[3] & 0xff;
-				theShard->closeCode = close;
-				if (theShard->closeCode) {
-					theShard->areWeResuming = true;
+				close |= WebSocketSSLShard::getInputBuffer()[3] & 0xff;
+				this->closeCode = close;
+				if (this->closeCode) {
+					this->areWeResuming = true;
 				}
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightRed()
 						 << "WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
 							std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + " Closed; Code: "
-						 << +static_cast<uint16_t>(theShard->closeCode) << DiscordCoreAPI::reset() << endl
+						 << +static_cast<uint16_t>(this->closeCode) << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
 				this->onClosed();
@@ -452,7 +455,7 @@ namespace DiscordCoreAPI {
 				return false;
 			}
 			if (WebSocketSSLShard::inputBuffer.getUsedSpace() > 0) {
-				if (!VoiceConnection::parseMessage(this)) {
+				if (!VoiceConnection::parseMessage()) {
 					return true;
 				}
 			}
