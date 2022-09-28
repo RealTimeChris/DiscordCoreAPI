@@ -37,6 +37,25 @@
 
 namespace DiscordCoreInternal {
 
+	WebSocketMessage::WebSocketMessage(simdjson::ondemand::value jsonObjectData) {
+		try {
+			this->op = DiscordCoreAPI::getUint32(jsonObjectData, "op");
+
+			this->s = DiscordCoreAPI::getUint32(jsonObjectData, "s");
+
+			this->t = DiscordCoreAPI::getString(jsonObjectData, "t");
+
+			simdjson::ondemand::value theValue{};
+
+			if (jsonObjectData["d"].get(theValue) == simdjson::error_code::SUCCESS) {
+				this->d = theValue;
+			}
+
+		} catch (...) {
+			DiscordCoreAPI::reportException("parseObject()");
+		}
+	}
+
 	UpdatePresenceData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 3;

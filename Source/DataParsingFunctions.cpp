@@ -44,18 +44,6 @@
 
 namespace DiscordCoreInternal {
 
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, WebSocketMessage& theData) {
-		try {
-			theData.op = DiscordCoreAPI::getUint32(jsonObjectData, "op");
-
-			theData.s = DiscordCoreAPI::getUint32(jsonObjectData, "s");
-
-			theData.t = DiscordCoreAPI::getString(jsonObjectData, "t");
-		} catch (...) {
-			DiscordCoreAPI::reportException("parseObject()");
-		}
-	}
-
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, HelloData& theData) {
 		theData.heartbeatInterval = DiscordCoreAPI::getUint64(jsonObjectData, "heartbeat_interval");
 	}

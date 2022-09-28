@@ -154,14 +154,11 @@ namespace DiscordCoreAPI {
 				std::string theString{ theData };
 				theString.reserve(theString.size() + simdjson::SIMDJSON_PADDING);
 				simdjson::ondemand::parser theParser{};
+				std::cout << "THE STRING FINAL: " << theData << std::endl;
 				auto theDocument = theParser.iterate(theString.data(), theString.length(), theString.capacity());
-				uint64_t theOp{};
 
-				auto thePayload = theDocument.get_value();
-				DiscordCoreInternal::WebSocketMessage theMessage{};
-				thePayload["s"].get(theMessage.s);
-				thePayload["op"].get(theMessage.op);
-				thePayload["t"].get(theMessage.t);
+				auto thePayload = theDocument.get_value().value();
+				DiscordCoreInternal::WebSocketMessage theMessage{ thePayload };
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theData << reset() << endl << endl;
@@ -170,11 +167,7 @@ namespace DiscordCoreAPI {
 					switch (theMessage.op) {
 						case 2: {
 							VoiceSocketReadyData theData{};
-							simdjson::ondemand::value theObjectNew{};
-							if (thePayload["d"].get(theObjectNew) != simdjson::error_code::SUCCESS) {
-								throw std::runtime_error{ "Failed to collect the 'd' from Voice-socket-ready-data!" };
-							}
-							DiscordCoreAPI::parseObject(theObjectNew, theData);
+							DiscordCoreAPI::parseObject(theMessage.d, theData);
 							this->audioSSRC = theData.ssrc;
 							this->voiceIp = theData.ip;
 							this->port = theData.port;
@@ -183,24 +176,21 @@ namespace DiscordCoreAPI {
 							return true;
 						}
 						case 4: {
-							auto theObject = getObject(thePayload.value(), "d");
-							if (theObject.didItSucceed) {
-								auto theArray = getArray(theObject, "secret_key");
-								if (theArray.didItSucceed) {
-									std::string theSecretKey{};
-									for (auto iterator: theArray.theArray) {
-										theSecretKey.push_back(static_cast<uint8_t>(iterator.get_uint64().take_value()));
-									}
-									this->secretKeySend = theSecretKey;
+							auto theArray = getArray(theMessage.d, "secret_key");
+							if (theArray.didItSucceed) {
+								std::string theSecretKey{};
+								for (auto iterator: theArray.theArray) {
+									theSecretKey.push_back(static_cast<uint8_t>(iterator.get_uint64().take_value()));
 								}
+								this->secretKeySend = theSecretKey;
 							}
 							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 							return true;
 						}
 						case 5: {
-							uint32_t ssrc = getUint32(thePayload["d"], "ssrc");
+							uint32_t ssrc = getUint32(theMessage.d, "ssrc");
 							VoiceUser theUser{};
-							theUser.theUserId = stoull(getString(thePayload["d"], "user_id"));
+							theUser.theUserId = stoull(getString(theMessage.d, "user_id"));
 							theLock00.lock();
 							this->voiceUsers[ssrc] = std::move(theUser);
 							return true;
@@ -210,14 +200,14 @@ namespace DiscordCoreAPI {
 							return true;
 						}
 						case 8: {
-							auto theHeartBeat = static_cast<uint32_t>(getFloat(thePayload["d"], "heartbeat_interval"));
+							auto theHeartBeat = static_cast<uint32_t>(getFloat(theMessage.d, "heartbeat_interval"));
 							this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ theHeartBeat } };
 							this->areWeHeartBeating = true;
 							this->connectionState.store(VoiceConnectionState::Sending_Identify);
 							return true;
 						}
 						case 13: {
-							auto theUserId = stoull(getString(thePayload["d"], "user_id"));
+							auto theUserId = stoull(getString(theMessage.d, "user_id"));
 							for (auto& [key, value]: this->voiceUsers) {
 								if (theUserId == value.theUserId.operator size_t()) {
 									theLock00.lock();
@@ -272,10 +262,11 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::parseMessage(VoiceConnection* theShard) noexcept {
-		if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 4) {
+		this->currentMessage = WebSocketSSLShard::getInputBuffer();
+		if (this->currentMessage.size() < 4) {
 			return false;
 		}
-		theShard->dataOpCode = static_cast<DiscordCoreInternal::WebSocketOpCode>(WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[0] & ~webSocketFinishBit);
+		theShard->dataOpCode = static_cast<DiscordCoreInternal::WebSocketOpCode>(this->currentMessage[0] & ~webSocketFinishBit);
 		this->messageLength = 0;
 		this->messageOffset = 0;
 		switch (theShard->dataOpCode) {
@@ -288,42 +279,43 @@ namespace DiscordCoreAPI {
 			case DiscordCoreInternal::WebSocketOpCode::Op_Ping:
 				[[fallthrough]];
 			case DiscordCoreInternal::WebSocketOpCode::Op_Pong: {
-				uint8_t length01 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[1];
+				uint8_t length01 = this->currentMessage[1];
 				theShard->messageOffset = 2;
 				if (length01 & webSocketMaskBit) {
 					return false;
 				}
 				theShard->messageLength = length01;
 				if (length01 == webSocketPayloadLengthMagicLarge) {
-					if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 8) {
+					if (this->currentMessage.size() < 8) {
 						return false;
 					}
-					uint8_t length03 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[2];
-					uint8_t length04 = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[3];
+					uint8_t length03 = this->currentMessage[2];
+					uint8_t length04 = this->currentMessage[3];
 					theShard->messageLength = static_cast<uint64_t>((length03 << 8) | length04);
 					theShard->messageOffset += 2;
 				} else if (length01 == webSocketPayloadLengthMagicHuge) {
-					if (WebSocketSSLShard::inputBuffer.getUsedSpace() < 10) {
+					if (this->currentMessage.size() < 10) {
 						return false;
 					}
 					theShard->messageLength = 0;
 					for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-						uint8_t lengthNew = static_cast<uint8_t>(WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[x]);
+						uint8_t lengthNew = static_cast<uint8_t>(this->currentMessage[x]);
 						theShard->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
 					}
 					theShard->messageOffset += 8;
 				}
-				if (WebSocketSSLShard::inputBuffer.getUsedSpace() < theShard->messageOffset + theShard->messageLength) {
+				if (this->currentMessage.size() < theShard->messageOffset + theShard->messageLength) {
 					return false;
 				} else {
-					this->onMessageReceived(WebSocketSSLShard::getInputBuffer());
+					this->onMessageReceived(this->currentMessage.substr(theShard->messageOffset, theShard->messageLength));
+					this->currentMessage.clear();
 					return true;
 				}
 			}
 			case DiscordCoreInternal::WebSocketOpCode::Op_Close: {
-				uint16_t close = WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[2] & 0xff;
+				uint16_t close = this->currentMessage[2] & 0xff;
 				close <<= 8;
-				close |= WebSocketSSLShard::inputBuffer.getCurrentTail()->getCurrentTail()[3] & 0xff;
+				close |= this->currentMessage[3] & 0xff;
 				theShard->closeCode = close;
 				if (theShard->closeCode) {
 					theShard->areWeResuming = true;
@@ -744,6 +736,7 @@ namespace DiscordCoreAPI {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				cout << "VoiceConnection::connectInternal() Error: Failed to connect to voice channel!" << endl << endl;
 			}
+			std::cout << "FAILING TO CONNECT 0101" << std::endl;
 			return;
 		}
 		switch (this->connectionState.load()) {
@@ -755,6 +748,7 @@ namespace DiscordCoreAPI {
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING TO CONNECT 0202" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -767,6 +761,7 @@ namespace DiscordCoreAPI {
 				if (!WebSocketSSLShard::connect(this->baseUrl, "443", this->configManager->doWePrintWebSocketErrorMessages(), false)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING TO CONNECT 0303" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -779,12 +774,14 @@ namespace DiscordCoreAPI {
 				if (!this->sendTextMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING TO CONNECT 0404" << std::endl;
 					this->connectInternal();
 					return;
 				}
 				while (this->currentState.load() != DiscordCoreInternal::SSLShardState::Collecting_Hello) {
 					if (WebSocketSSLShard::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
+						std::cout << "FAILING TO CONNECT 0505" << std::endl;
 						this->connectInternal();
 						return;
 					}
@@ -797,11 +794,14 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify) {
 					if (theStopWatch.hasTimePassed()) {
+						std::cout << "FAILING TO CONNECT 0606" << std::endl;
 						this->onClosed();
+						this->connectInternal();
 						return;
 					}
 					if (WebSocketSSLShard::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
+						std::cout << "FAILING TO CONNECT 0707" << std::endl;
 						this->connectInternal();
 						return;
 					}
@@ -821,6 +821,7 @@ namespace DiscordCoreAPI {
 				if (!this->sendTextMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING TO CONNECT 0808" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -832,11 +833,14 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
 					if (theStopWatch.hasTimePassed()) {
+						std::cout << "FAILING TO CONNECT 0909" << std::endl;
 						this->onClosed();
+						this->connectInternal();
 						return;
 					}
 					if (WebSocketSSLShard::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
+						std::cout << "FAILING TO CONNECT 101010" << std::endl;
 						this->connectInternal();
 						return;
 					}
@@ -849,6 +853,7 @@ namespace DiscordCoreAPI {
 				if (!this->voiceConnect()) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING TO CONNECT 111111" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -866,6 +871,7 @@ namespace DiscordCoreAPI {
 				if (!this->sendTextMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
+					std::cout << "FAILING TO CONNECT 121212" << std::endl;
 					this->connectInternal();
 					return;
 				}
@@ -877,11 +883,14 @@ namespace DiscordCoreAPI {
 				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
 					if (theStopWatch.hasTimePassed()) {
+						std::cout << "FAILING TO CONNECT 131313" << std::endl;
 						this->onClosed();
+						this->connectInternal();
 						return;
 					}
 					if (WebSocketSSLShard::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
+						std::cout << "FAILING TO CONNECT 141414" << std::endl;
 						this->connectInternal();
 						return;
 					}

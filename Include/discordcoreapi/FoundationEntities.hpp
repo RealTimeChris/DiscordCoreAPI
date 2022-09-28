@@ -310,12 +310,12 @@ namespace DiscordCoreInternal {
 	template<> void parseObject(simdjson::ondemand::value jsonObjectData, HelloData& theData);
 
 	struct DiscordCoreAPI_Dll WebSocketMessage {
-		std::string_view t{};
+		WebSocketMessage(simdjson::ondemand::value);
 		uint64_t op{ static_cast<uint64_t>(-1) };
+		simdjson::ondemand::value d{};
+		std::string t{};
 		uint64_t s{};
 	};
-
-	template<> void parseObject(simdjson::ondemand::value jsonObjectData, WebSocketMessage& theData);
 
 	struct DiscordCoreAPI_Dll ReconnectData {};
 

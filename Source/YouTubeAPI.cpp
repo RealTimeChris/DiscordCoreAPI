@@ -316,7 +316,9 @@ namespace DiscordCoreInternal {
 						if (!stopToken.stop_requested()) {
 							if (streamSocket->areWeStillConnected()) {
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
-								std::string streamBuffer = streamSocket->getInputBuffer();
+								std::string streamBuffer{};
+								auto theString = streamSocket->getInputBuffer();
+								streamBuffer.insert(streamBuffer.begin(), theString.begin(), theString.end());
 								headerSize = static_cast<int32_t>(streamBuffer.size());
 							}
 						}
@@ -336,7 +338,9 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						std::string streamBuffer = streamSocket->getInputBuffer();
+						std::string streamBuffer{};
+						auto theString = streamSocket->getInputBuffer();
+						streamBuffer.insert(streamBuffer.begin(), theString.begin(), theString.end());
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
 							std::string submissionString{};
@@ -360,7 +364,11 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						std::string streamBuffer = streamSocket->getInputBuffer();
+						std::string streamBuffer{};
+						auto theString = streamSocket->getInputBuffer();
+						streamBuffer.insert(streamBuffer.begin(), theString.begin(), theString.end());
+						std::cout << "THE STRING REALER 0303 SIZE: " << streamBuffer.size() << std::endl;
+						
 						if (streamBuffer.size() > 0) {
 							theCurrentString.insert(theCurrentString.end(), streamBuffer.data(), streamBuffer.data() + streamBuffer.size());
 							while (theCurrentString.size() > 0) {

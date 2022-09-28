@@ -75,5 +75,7 @@ namespace DiscordCoreAPI {
 
 	ArrayReturnData getArray(ObjectReturnData jsonObjectData, const char* arrayName);
 
+	ArrayReturnData getArray(simdjson::ondemand::value jsonObjectData, const char* arrayName);
+
 };
 #endif
