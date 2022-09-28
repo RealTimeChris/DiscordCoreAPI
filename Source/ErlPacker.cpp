@@ -542,7 +542,7 @@ namespace DiscordCoreInternal {
 		const uint8_t floatLength = 31;
 		size_t floatString = readString(floatLength);
 
-		if (floatString == NULL) {
+		if (floatString == 0) {
 			return std::string{};
 		}
 

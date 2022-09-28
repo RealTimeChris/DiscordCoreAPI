@@ -346,7 +346,9 @@ namespace DiscordCoreInternal {
 		this->configManager = &theClient->configManager;
 		this->shard[0] = currentShardNew;
 		this->theConnections = theConnectionsNew;
-		this->theParser.allocate(1024ull * 1024ull);
+		if (this->theParser.allocate(1024ull * 1024ull) != simdjson::error_code::SUCCESS) {
+			throw std::runtime_error{ "Failed to allocate the parser's data." };
+		}
 		this->discordCoreClient = theClient;
 		this->doWeQuit = doWeQuitNew;
 		if (this->discordCoreClient) {
