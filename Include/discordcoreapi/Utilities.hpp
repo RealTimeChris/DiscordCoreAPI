@@ -636,6 +636,9 @@ namespace DiscordCoreAPI {
 	 */
 	template<typename ObjectType> class TSUnorderedSet {
 	  public:
+		  
+		using traits_t = std::allocator_traits<decltype(this->theAllocator)>;
+
 		TSUnorderedSet() noexcept {};
 
 		bool contains(ObjectType& theObject) {
@@ -650,14 +653,13 @@ namespace DiscordCoreAPI {
 
 		void emplace(ObjectType&& theObject) {
 			if (!this->contains(theObject)) {
-				using traits_t = std::allocator_traits<decltype(this->theAllocator)>;
 				if (this->currentlyAllocatedSize <= this->currentlyUsedAllocations + 1) {
-					std::unique_lock theLock{ this->theMutex };
 					auto thePtr = traits_t::allocate(this->theAllocator, this->currentlyAllocatedSize * 2);
 					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
 						traits_t::construct(this->theAllocator, thePtr + x, this->theArray[x]);
 					}
-
+										
+					std::unique_lock theLock{ this->theMutex };
 					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
 						traits_t::destroy(this->theAllocator, this->theArray + x);
 					}
@@ -679,14 +681,13 @@ namespace DiscordCoreAPI {
 
 		void emplace(ObjectType& theObject) {
 			if (!this->contains(theObject)) {
-				using traits_t = std::allocator_traits<decltype(this->theAllocator)>;
 				if (this->currentlyAllocatedSize <= this->currentlyUsedAllocations + 1) {
-					std::unique_lock theLock{ this->theMutex };
 					auto thePtr = traits_t::allocate(this->theAllocator, this->currentlyAllocatedSize * 2);
 					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
 						traits_t::construct(this->theAllocator, thePtr + x, this->theArray[x]);
 					}
 
+					std::unique_lock theLock{ this->theMutex };
 					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
 						traits_t::destroy(this->theAllocator, this->theArray + x);
 					}
@@ -742,7 +743,6 @@ namespace DiscordCoreAPI {
 						theIndex = x;
 					}
 				}
-				using traits_t = std::allocator_traits<decltype(this->theAllocator)>;
 
 				auto thePtr = new ObjectType[this->currentlyAllocatedSize];
 				size_t theOffset{};
@@ -752,7 +752,7 @@ namespace DiscordCoreAPI {
 						theOffset++;
 					}
 				}
-
+				std::unique_lock theLock{ this->theMutex };
 				this->currentlyUsedAllocations--;
 				traits_t::deallocate(this->theAllocator, this->theArray, this->currentlyAllocatedSize);
 				this->theArray = thePtr;
@@ -767,7 +767,6 @@ namespace DiscordCoreAPI {
 						theIndex = x;
 					}
 				}
-				using traits_t = std::allocator_traits<decltype(this->theAllocator)>;
 
 				auto thePtr = new ObjectType[this->currentlyAllocatedSize];
 				size_t theOffset{};
@@ -777,7 +776,7 @@ namespace DiscordCoreAPI {
 						theOffset++;
 					}
 				}
-
+				std::unique_lock theLock{ this->theMutex };
 				this->currentlyUsedAllocations--;
 				traits_t::deallocate(this->theAllocator, this->theArray, this->currentlyAllocatedSize);
 				this->theArray = thePtr;
