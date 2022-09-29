@@ -47,6 +47,10 @@ namespace DiscordCoreAPI {
 		this->channel = std::move(channelNew);
 	}
 
+	OnChannelUpdateData ::~OnChannelUpdateData() noexcept {
+		this->channel.release();
+	}
+
 	OnChannelUpdateData& OnChannelUpdateData::operator=(const OnChannelUpdateData& other) {
 		*this->channel = *other.channel;
 		return *this;
@@ -81,6 +85,10 @@ namespace DiscordCoreAPI {
 
 	OnGuildCreationData::OnGuildCreationData(const OnGuildCreationData& other) {
 		*this = other;
+	}
+
+	OnGuildCreationData::~OnGuildCreationData() noexcept {
+		this->guild.release();
 	}
 
 	OnGuildUpdateData::OnGuildUpdateData(std::unique_ptr<GuildData> guildNew, DiscordCoreClient* theClient) {

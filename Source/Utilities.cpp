@@ -58,185 +58,6 @@ namespace DiscordCoreInternal {
 	WebSocketClose::operator bool() {
 		return utCast(this->theValue) & utCast(WebSocketCloseCode::We_Do_Reconnect);
 	}
-
-	std::string_view StringBuffer::substr(size_t offSet, size_t size) {
-		if (this->whichOneAreWeOn == 0) {
-			std::string_view theString{ this->theString01.data() + offSet, size };
-			return theString;
-		} else {
-			std::string_view theString{ this->theString02.data() + offSet, size };
-			return theString;
-		}
-	}
-
-	void StringBuffer::erase(size_t offSet, size_t amount) {
-		this->theSize = this->theSize - amount;
-		if (this->whichOneAreWeOn == 0) {
-			memcpy(this->theString02.data(), this->theString01.data() + amount, this->theSize);
-			this->whichOneAreWeOn = 1;
-		} else {
-			memcpy(this->theString01.data(), this->theString02.data() + amount, this->theSize);
-			this->whichOneAreWeOn = 0;
-		}
-	}
-
-	void StringBuffer::writeData(const char* thePtr, size_t theSize) {
-		if (this->whichOneAreWeOn == 0) {
-			if (this->theSize + theSize < this->theString01.size()) {
-				memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
-				this->theSize += theSize;
-			}
-		} else {
-			if (this->theSize + theSize < this->theString02.size()) {
-				memcpy(this->theString02.data() + this->theSize, thePtr, theSize);
-				this->theSize += theSize;
-			}
-		}
-	}
-
-	StringBuffer::operator std::string_view() {
-		if (this->whichOneAreWeOn == 0) {
-			std::string_view theString{ this->theString01.data(), this->theSize };
-			return theString;
-		} else {
-			std::string_view theString{ this->theString02.data(), this->theSize };
-			return theString;
-		}
-	}
-
-	char StringBuffer::operator[](size_t theIndex) {
-		if (this->whichOneAreWeOn == 0) {
-			return this->theString01[theIndex];
-		} else {
-			return this->theString02[theIndex];
-		}
-	}
-
-	size_t StringBuffer::size() {
-		return this->theSize;
-	}
-
-	void StringBuffer::clear() {
-		this->theSize = 0;
-	}
-
-	char* StringBuffer::data() {
-		if (this->whichOneAreWeOn == 0) {
-			return this->theString01.data();
-		} else {
-			return this->theString02.data();
-		}
-	}
-
-	void RingBufferSlice::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
-		if (theType == RingBufferAccessType::Read) {
-			this->tail = (this->tail + theSize) % this->theArray.size();
-			if (this->tail != this->head) {
-				this->areWeFull = false;
-			}
-		} else {
-			this->head = (this->head + theSize) % this->theArray.size();
-			if (this->head == this->tail) {
-				this->areWeFull = true;
-			}
-			if (this->head != this->tail) {
-				this->areWeFull = false;
-			}
-		}
-	}
-
-	size_t RingBufferSlice::getUsedSpace() {
-		if (this->areWeFull) {
-			return this->theArray.size();
-		}
-		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
-			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
-			return this->theArray.size() - freeSpace;
-		} else {
-			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
-			return this->theArray.size() - freeSpace;
-		}
-	}
-
-	char* RingBufferSlice::getCurrentTail() {
-		return (this->theArray.data() + (this->tail % (this->theArray.size())));
-	}
-
-	char* RingBufferSlice::getCurrentHead() {
-		return (this->theArray.data() + (this->head % (this->theArray.size())));
-	}
-
-	bool RingBufferSlice::isItEmpty() {
-		if (this->areWeFull) {
-			return false;
-		}
-		return this->tail == this->head;
-	}
-
-	bool RingBufferSlice::isItFull() {
-		return this->areWeFull;
-	}
-
-	void RingBufferSlice::clear() {
-		this->areWeFull = false;
-		this->tail = 0;
-		this->head = 0;
-	}
-
-	void RingBuffer::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
-		if (theType == RingBufferAccessType::Read) {
-			this->tail = (this->tail + theSize) % this->theArray.size();
-			if (this->tail != this->head) {
-				this->areWeFull = false;
-			}
-		} else {
-			this->head = (this->head + theSize) % this->theArray.size();
-			if (this->head == this->tail) {
-				this->areWeFull = true;
-			}
-			if (this->head != this->tail) {
-				this->areWeFull = false;
-			}
-		}
-	}
-
-	size_t RingBuffer::getUsedSpace() {
-		if (this->areWeFull) {
-			return this->theArray.size();
-		}
-		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
-			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
-			return this->theArray.size() - freeSpace;
-		} else {
-			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
-			return this->theArray.size() - freeSpace;
-		}
-	}
-
-	RingBufferSlice* RingBuffer::getCurrentTail() {
-		return (this->theArray.data() + (this->tail % (this->theArray.size())));
-	}
-
-	RingBufferSlice* RingBuffer::getCurrentHead() {
-		return (this->theArray.data() + (this->head % (this->theArray.size())));
-	}
-
-	bool RingBuffer::isItEmpty() {
-		if (this->areWeFull) {
-			return false;
-		}
-		return this->tail == this->head;
-	}
-
-	bool RingBuffer::isItFull() {
-		return this->areWeFull;
-	}
-
-	void RingBuffer::clear() {
-		this->areWeFull = false;
-		this->tail = 0;
-		this->head = 0;
-	}
 }
 
 namespace DiscordCoreAPI {
@@ -629,7 +450,7 @@ namespace DiscordCoreAPI {
 			theObject.theKey = theKey;
 			theObject.theType = ValueType::Object;
 			this->theValues[theKey] = theObject;
-			return this->theValues[theKey];
+			return *static_cast<JsonObject*>(&this->theValues[theKey]);
 		} else if (this->theKey == theKey && this->theType == ValueType::Object) {
 			return *this;
 		} else if (!this->theValues.contains(theKey)) {
@@ -637,15 +458,15 @@ namespace DiscordCoreAPI {
 			theObject.theKey = theKey;
 			theObject.theType = ValueType::Object;
 			this->theValues[theKey] = theObject;
-			return this->theValues[theKey];
+			return *static_cast<JsonObject*>(&this->theValues[theKey]);
 		} else if (this->theValues.contains(theKey)) {
-			return this->theValues[theKey];
+			return *static_cast<JsonObject*>(&this->theValues[theKey]);
 		} else {
 			JsonObject theObject{};
 			theObject.theType = ValueType::Object;
 			theObject.theKey = theKey;
 			this->theValues[theKey] = theObject;
-			return this->theValues[theKey];
+			return *static_cast<JsonObject*>(&this->theValues[theKey]);
 		}
 	}
 
@@ -662,7 +483,8 @@ namespace DiscordCoreAPI {
 					if (doWeAddComma) {
 						theString += ",";
 					}
-					theString += valueNew;
+					theString += *static_cast<JsonObject*>(&valueNew);
+					
 					doWeAddComma = true;
 				}
 				theString += "}";
@@ -675,7 +497,7 @@ namespace DiscordCoreAPI {
 					if (doWeAddComma) {
 						theString += ",";
 					}
-					theString += valueNew;
+					theString += *static_cast<JsonObject*>(&valueNew);
 					doWeAddComma = true;
 				}
 				theString += "]";
@@ -726,11 +548,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		} else {
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		}
 	}
 
@@ -739,11 +561,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = std::move(theKey);
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = std::move(other);
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		} else {
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = std::move(other);
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		}
 	};
 
@@ -752,11 +574,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		} else {
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		}
 	}
 
@@ -765,11 +587,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		} else {
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		}
 	}
 
@@ -778,11 +600,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		} else {
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		}
 	}
 
@@ -791,11 +613,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		} else {
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		}
 	}
 
@@ -804,11 +626,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		} else {
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		}
 	}
 
@@ -817,11 +639,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		} else {
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		}
 	}
 
@@ -830,11 +652,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		} else {
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		}
 	}
 
@@ -843,11 +665,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		} else {
-			size_t theSize = this->theValues[theKey].theValues.size();
-			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
+			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
+			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
 		}
 	}
 
@@ -1799,3 +1621,187 @@ namespace DiscordCoreAPI {
 
 	template<typename Object> std::unordered_map<std::string, UnboundedMessageBlock<Object>*> ObjectCollector<Object>::objectsBufferMap{};
 };
+
+namespace DiscordCoreInternal {
+
+	std::string_view StringBuffer::substr(size_t offSet, size_t size) {
+		if (this->whichOneAreWeOn == 0) {
+			std::string_view theString{ this->theString01.data() + offSet, size };
+			return theString;
+		} else {
+			std::string_view theString{ this->theString02.data() + offSet, size };
+			return theString;
+		}
+	}
+
+	void StringBuffer::erase(size_t offSet, size_t amount) {
+		this->theSize = this->theSize - amount;
+		if (this->whichOneAreWeOn == 0) {
+			memcpy(this->theString02.data(), this->theString01.data() + amount, this->theSize);
+			this->whichOneAreWeOn = 1;
+		} else {
+			memcpy(this->theString01.data(), this->theString02.data() + amount, this->theSize);
+			this->whichOneAreWeOn = 0;
+		}
+	}
+
+	void StringBuffer::writeData(const char* thePtr, size_t theSize) {
+		if (this->whichOneAreWeOn == 0) {
+			if (this->theSize + theSize < this->theString01.size()) {
+				memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
+				this->theSize += theSize;
+			}
+		} else {
+			if (this->theSize + theSize < this->theString02.size()) {
+				memcpy(this->theString02.data() + this->theSize, thePtr, theSize);
+				this->theSize += theSize;
+			}
+		}
+	}
+
+	StringBuffer::operator std::string_view(){
+		if (this->whichOneAreWeOn == 0) {
+			std::string_view theString{ this->theString01.data(), this->theSize };
+			return theString;
+		} else {
+			std::string_view theString{ this->theString02.data(), this->theSize };
+			return theString;
+		}
+		
+	}
+
+	char StringBuffer::operator[](size_t theIndex) {
+		if (this->whichOneAreWeOn == 0) {
+			return this->theString01[theIndex];
+		} else {
+			return this->theString02[theIndex];
+		}
+	}
+
+	size_t StringBuffer::size() {
+		return this->theSize;
+	}
+
+	void StringBuffer::clear() {
+		this->theSize = 0;
+	}
+
+	char* StringBuffer::data() {
+		if (this->whichOneAreWeOn == 0) {
+			return this->theString01.data();
+		} else {
+			return this->theString02.data();
+		}
+	}
+
+	void RingBufferSlice::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
+		if (theType == RingBufferAccessType::Read) {
+			this->tail = (this->tail + theSize) % this->theArray.size();
+			if (this->tail != this->head) {
+				this->areWeFull = false;
+			}
+		} else {
+			this->head = (this->head + theSize) % this->theArray.size();
+			if (this->head == this->tail) {
+				this->areWeFull = true;
+			}
+			if (this->head != this->tail) {
+				this->areWeFull = false;
+			}
+		}
+	}
+
+	size_t RingBufferSlice::getUsedSpace() {
+		if (this->areWeFull) {
+			return this->theArray.size();
+		}
+		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
+			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+			return this->theArray.size() - freeSpace;
+		} else {
+			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+			return this->theArray.size() - freeSpace;
+		}
+	}
+
+	char* RingBufferSlice::getCurrentTail() {
+		return (this->theArray.data() + (this->tail % (this->theArray.size())));
+	}
+
+	char* RingBufferSlice::getCurrentHead() {
+		return (this->theArray.data() + (this->head % (this->theArray.size())));
+	}
+
+	bool RingBufferSlice::isItEmpty() {
+		if (this->areWeFull) {
+			return false;
+		}
+		return this->tail == this->head;
+	}
+
+	bool RingBufferSlice::isItFull() {
+		return this->areWeFull;
+	}
+
+	void RingBufferSlice::clear() {
+		this->areWeFull = false;
+		this->tail = 0;
+		this->head = 0;
+	}
+
+	void RingBuffer::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
+		if (theType == RingBufferAccessType::Read) {
+			this->tail = (this->tail + theSize) % this->theArray.size();
+			if (this->tail != this->head) {
+				this->areWeFull = false;
+			}
+		} else {
+			this->head = (this->head + theSize) % this->theArray.size();
+			if (this->head == this->tail) {
+				this->areWeFull = true;
+			}
+			if (this->head != this->tail) {
+				this->areWeFull = false;
+			}
+		}
+	}
+
+	size_t RingBuffer::getUsedSpace() {
+		if (this->areWeFull) {
+			return this->theArray.size();
+		}
+		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
+			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+			return this->theArray.size() - freeSpace;
+		} else {
+			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+			return this->theArray.size() - freeSpace;
+		}
+	}
+
+	RingBufferSlice* RingBuffer::getCurrentTail() {
+		return (this->theArray.data() + (this->tail % (this->theArray.size())));
+	}
+
+	RingBufferSlice* RingBuffer::getCurrentHead() {
+		return (this->theArray.data() + (this->head % (this->theArray.size())));
+	}
+
+	bool RingBuffer::isItEmpty() {
+		if (this->areWeFull) {
+			return false;
+		}
+		return this->tail == this->head;
+	}
+
+	bool RingBuffer::isItFull() {
+		return this->areWeFull;
+	}
+
+	void RingBuffer::clear() {
+		this->areWeFull = false;
+		this->tail = 0;
+		this->head = 0;
+	}
+
+}

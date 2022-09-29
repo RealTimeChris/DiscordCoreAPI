@@ -619,7 +619,7 @@ namespace DiscordCoreAPI {
 			Guilds::cache.emplace(theData);
 		}
 		Guild theDataNew{};
-		theDataNew = Guilds::cache.readOnly(theData);
+		theDataNew = Guilds::cache.at(theData);
 		theDataNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theDataNew);
 		theDataNew.discordCoreClient = Guilds::discordCoreClient;
 		Guilds::insertGuild(theDataNew);
@@ -635,7 +635,7 @@ namespace DiscordCoreAPI {
 			theGuild.discordCoreClient = Guilds::discordCoreClient;
 			co_return theGuild;
 		} else {
-			GuildData theGuild = Guilds::cache.readOnly(theData);
+			GuildData theGuild = Guilds::cache.at(theData);
 			theGuild.discordCoreClient = Guilds::discordCoreClient;
 			co_return theGuild;
 		}
@@ -666,7 +666,7 @@ namespace DiscordCoreAPI {
 			Guilds::cache.emplace(theData);
 		}
 		Guild theDataNew{};
-		theDataNew = Guilds::cache.readOnly(theData);
+		theDataNew = Guilds::cache.at(theData);
 		theDataNew = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &theDataNew);
 		theDataNew.discordCoreClient = Guilds::discordCoreClient;
 		Guilds::insertGuild(theDataNew);
@@ -1080,11 +1080,7 @@ namespace DiscordCoreAPI {
 		}
 		if (Guilds::doWeCacheGuilds) {
 			guild.discordCoreClient = Guilds::discordCoreClient;
-			if (!Guilds::cache.contains(guild)) {
-				Guilds::cache.emplace(std::move(guild));
-			} else {
-				Guilds::cache.at(guild) = std::move(guild);
-			}
+			Guilds::cache.emplace(std::move(guild));
 			if (Guilds::cache.size() % 100 == 0) {
 				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 			}
@@ -1099,7 +1095,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
-	ObjectCache<GuildData> Guilds::cache{};
+	TSUnorderedSet<GuildData> Guilds::cache{};
 	bool Guilds::doWeCacheGuilds{ false };
 
 }

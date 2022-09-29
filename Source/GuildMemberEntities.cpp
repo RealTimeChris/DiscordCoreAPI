@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 		theData.guildId = dataPackage.guildId;
 		theData.id = dataPackage.guildMemberId;
 		if (GuildMembers ::cache.contains(theData)) {
-			theData = GuildMembers::cache.readOnly(theData);
+			theData = GuildMembers::cache.at(theData);
 		}
 		theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &theData);
 		theData.guildId = dataPackage.guildId;
@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
 		theKey.id = dataPackage.guildMemberId;
 		theKey.guildId = dataPackage.guildId;
 		if (GuildMembers::cache.contains(theKey)) {
-			theKey = GuildMembers::cache.readOnly(theKey);
+			theKey = GuildMembers::cache.at(theKey);
 			co_return theKey;
 		}
 		co_return GuildMembers::getGuildMemberAsync(dataPackage).get();
@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
 		theData.id = dataPackage.guildMemberId;
 		theData.guildId = dataPackage.guildId;
 		if (GuildMembers ::cache.contains(theData)) {
-			theData = GuildMembers::cache.readOnly(theData);
+			theData = GuildMembers::cache.at(theData);
 		}
 		theData = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &theData);
 		theData.guildId = dataPackage.guildId;
@@ -343,11 +343,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (GuildMembers::doWeCacheGuildMembers) {
-			if (!GuildMembers::cache.contains(guildMember)) {
-				GuildMembers::cache.emplace(std::move(guildMember));
-			} else {
-				GuildMembers::cache.at(guildMember) = std::move(guildMember);
-			}
+			GuildMembers::cache.emplace(std::move(guildMember));
 			if (GuildMembers::cache.size() % 1000 == 0) {
 				std::cout << "THE GUILDMEMBER COUNT: " << GuildMembers::cache.size() << std::endl;
 			}
@@ -359,6 +355,6 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
-	ObjectCache<GuildMemberData> GuildMembers::cache{};
+	TSUnorderedSet<GuildMemberData> GuildMembers::cache{};
 	bool GuildMembers::doWeCacheGuildMembers{ false };
 };

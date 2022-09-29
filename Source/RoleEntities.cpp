@@ -291,7 +291,7 @@ namespace DiscordCoreAPI {
 			Roles::cache.emplace(theData);
 		}
 		Role theDataNew{};
-		theDataNew = Roles::cache.readOnly(theData);
+		theDataNew = Roles::cache.at(theData);
 		theDataNew = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload, &theDataNew);
 		Roles::insertRole(theDataNew);
 		co_return theDataNew;
@@ -345,7 +345,7 @@ namespace DiscordCoreAPI {
 		if (!Roles::cache.contains(theData)) {
 			co_return Roles::getRoleAsync(dataPackage).get();
 		} else if (Roles::cache.contains(theData)) {
-			theData = Roles::cache.readOnly(theData);
+			theData = Roles::cache.at(theData);
 			co_return theData;
 		}
 	}
@@ -355,11 +355,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Roles::doWeCacheRoles) {
-			if (!Roles::cache.contains(role)) {
-				Roles::cache.emplace(std::move(role));
-			} else {
-				Roles::cache.at(role) = std::move(role);
-			}
+			Roles::cache.emplace(std::move(role));
 			if (Roles::cache.size() % 1000 == 0) {
 				std::cout << "ROLE COUNT: " << Roles::cache.size() << ", AFTER: " << theStopWatchNew.totalTimePassed() << "s" << std::endl;
 			}
@@ -373,6 +369,6 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
-	ObjectCache<RoleData> Roles::cache{};
+	TSUnorderedSet<RoleData> Roles::cache{};
 	bool Roles::doWeCacheRoles{ false };
 }

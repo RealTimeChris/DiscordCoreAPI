@@ -88,7 +88,8 @@ namespace DiscordCoreAPI {
 		OnChannelUpdateData(std::unique_ptr<ChannelData>);
 		OnChannelUpdateData& operator=(const OnChannelUpdateData&);
 		OnChannelUpdateData(const OnChannelUpdateData&);
-		std::unique_ptr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The new Channel.
+		std::unique_ptr<ChannelData> channel{};///< The new Channel.
+		~OnChannelUpdateData() noexcept;
 	};
 
 	/// Data that is received as part of a Channel deletion event. \brief Data that is received as part of a Channel deletion event.
@@ -139,7 +140,8 @@ namespace DiscordCoreAPI {
 		OnGuildCreationData(std::unique_ptr<GuildData> guild, DiscordCoreClient*);
 		OnGuildCreationData& operator=(const OnGuildCreationData&);
 		OnGuildCreationData(const OnGuildCreationData&);
-		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The new Guild.
+		~OnGuildCreationData() noexcept;
+		std::unique_ptr<GuildData> guild{};///< The new Guild.
 	};
 
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.

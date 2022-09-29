@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<RoleData> cache;
+		static TSUnorderedSet<RoleData> cache;
 		static bool doWeCacheRoles;
 	};
 	/**@}*/

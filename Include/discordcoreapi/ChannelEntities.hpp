@@ -309,11 +309,11 @@ namespace DiscordCoreAPI {
 
 		static void insertChannel(ChannelData channel);
 
-		static void removeChannel(const Snowflake channelId);
+		static void removeChannel(Snowflake channelId);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<ChannelData> cache;
+		static TSUnorderedSet<ChannelData> cache;
 		static bool doWeCacheChannels;
 	};
 	/**@}*/

@@ -295,7 +295,7 @@ namespace DiscordCoreAPI {
 		if (!Channels::cache.contains(( ChannelData& )theData)) {
 			Channels::cache.emplace(( ChannelData& )theData);
 		}
-		theData = Channels::cache.readOnly(theData);
+		theData = Channels::cache.at(theData);
 		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
 		Channels::insertChannel(theData);
 		co_return theData;
@@ -308,7 +308,7 @@ namespace DiscordCoreAPI {
 		if (!Channels::cache.contains(theChannel)) {
 			co_return Channels::getChannelAsync(dataPackage).get();
 		} else {
-			theChannel = Channels::cache.readOnly(theChannel);
+			theChannel = Channels::cache.at(theChannel);
 			co_return theChannel;
 		}
 	}
@@ -328,7 +328,7 @@ namespace DiscordCoreAPI {
 		if (!Channels::cache.contains(theData)) {
 			Channels::cache.emplace(theData);
 		}
-		theData = Channels::cache.readOnly(theData);
+		theData = Channels::cache.at(theData);
 		theData = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &theData);
 		Channels::insertChannel(theData);
 		co_return theData;
@@ -473,24 +473,20 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Channels::doWeCacheChannels) {
-			if (!Channels::cache.contains(channel)) {
-				Channels::cache.emplace(std::move(channel));
-			} else {
-				Channels::cache.at(channel) = std::move(channel);
-			}
+			Channels::cache.emplace(std::move(channel));
 			if (Channels::cache.size() % 1000 == 0) {
 				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
 			}
 		}
 	}
 
-	void Channels::removeChannel(const Snowflake channelId) {
+	void Channels::removeChannel(Snowflake channelId) {
 		ChannelData theData{};
 		theData.id = channelId;
 		Channels::cache.erase(theData);
 	};
 
 	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
-	ObjectCache<ChannelData> Channels::cache{};
+	TSUnorderedSet<ChannelData> Channels::cache{};
 	bool Channels::doWeCacheChannels{ false };
 }

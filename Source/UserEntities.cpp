@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
 		if (!Users::cache.contains(theData)) {
 			Users::cache.emplace(theData);
 		}
-		theData = Users::cache.readOnly(theData);
+		theData = Users::cache.at(theData);
 		theData = Users::httpsClient->submitWorkloadAndGetResult<User>(workload, &theData);
 		Users::insertUser(theData);
 		co_return theData;
@@ -277,11 +277,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Users::doWeCacheUsers) {
-			if (!Users::cache.contains(user)) {
-				Users::cache.emplace(std::move(user));
-			} else {
-				Users::cache.at(user) = std::move(user);
-			}
+			Users::cache.emplace(std::move(user));
 			if (Users::cache.size() % 1000 == 0) {
 				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
 			}
@@ -289,6 +285,6 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
-	ObjectCache<UserData> Users::cache{};
+	TSUnorderedSet<UserData> Users::cache{};
 	bool Users::doWeCacheUsers{ false };
 }

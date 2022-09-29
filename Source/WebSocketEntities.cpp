@@ -547,24 +547,17 @@ namespace DiscordCoreInternal {
 										case 8: {
 											if (DiscordCoreAPI::Channels::doWeCacheChannels ||
 												this->discordCoreClient->eventManager.onChannelCreationEvent.theFunctions.size() > 0) {
-												DiscordCoreAPI::ChannelData* theChannelPtr{ nullptr };
-												DiscordCoreAPI::ChannelData theChannel{ theMessage.d };
-												DiscordCoreAPI::Snowflake channelId{ theChannel.id.operator size_t() };
-												DiscordCoreAPI::Snowflake guildId{ theChannel.guildId.operator size_t() };
+												std::unique_ptr<DiscordCoreAPI::ChannelData> theChannel{ std::make_unique<DiscordCoreAPI::ChannelData>(theMessage.d) };
 												DiscordCoreAPI::GuildData theGuild{};
-												theGuild.id = guildId.operator size_t();
+												theGuild.id = theChannel->guildId.operator size_t();
 												if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
-													DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache.at(theGuild);
-													guild->channels.emplace_back(channelId.operator size_t());
+													DiscordCoreAPI::Guilds::cache.at(theGuild).channels.emplace_back(theChannel->id.operator size_t());
 												}
 												if (DiscordCoreAPI::Channels::doWeCacheChannels) {
-													DiscordCoreAPI::Channels::insertChannel(theChannel);
-													theChannelPtr = &DiscordCoreAPI::Channels::cache.at(theChannel);
-												} else {
-													theChannelPtr = &theChannel;
+													DiscordCoreAPI::Channels::insertChannel(*theChannel);
 												}
 												if (this->discordCoreClient->eventManager.onChannelCreationEvent.theFunctions.size() > 0) {
-													DiscordCoreAPI::OnChannelCreationData dataPackage{ std::make_unique<DiscordCoreAPI::ChannelData>(*theChannelPtr) };
+													DiscordCoreAPI::OnChannelCreationData dataPackage{ std::move(theChannel) };
 													this->discordCoreClient->eventManager.onChannelCreationEvent(dataPackage);
 												}
 											}
@@ -572,18 +565,12 @@ namespace DiscordCoreInternal {
 										}
 										case 9: {
 											if (DiscordCoreAPI::Channels::doWeCacheChannels || this->discordCoreClient->eventManager.onChannelUpdateEvent.theFunctions.size() > 0) {
-												DiscordCoreAPI::ChannelData* theChannelPtr{ nullptr };
-												DiscordCoreAPI::ChannelData theChannel{ theMessage.d };
-												DiscordCoreAPI::Snowflake channelId{ theChannel.id.operator size_t() };
-												DiscordCoreAPI::Snowflake guildId{ theChannel.guildId.operator size_t() };
+												std::unique_ptr<DiscordCoreAPI::ChannelData> theChannel{ std::make_unique<DiscordCoreAPI::ChannelData>(theMessage.d) };
 												if (DiscordCoreAPI::Channels::doWeCacheChannels) {
-													DiscordCoreAPI::Channels::insertChannel(theChannel);
-													theChannelPtr = &DiscordCoreAPI::Channels::cache.at(theChannel);
-												} else {
-													theChannelPtr = &theChannel;
+													DiscordCoreAPI::Channels::insertChannel(*theChannel);
 												}
 												if (this->discordCoreClient->eventManager.onChannelUpdateEvent.theFunctions.size() > 0) {
-													DiscordCoreAPI::OnChannelUpdateData dataPackage{ std::make_unique<DiscordCoreAPI::ChannelData>(*theChannelPtr) };
+													DiscordCoreAPI::OnChannelUpdateData dataPackage{ std::move(theChannel) };
 													this->discordCoreClient->eventManager.onChannelUpdateEvent(dataPackage);
 												}
 											}
@@ -593,15 +580,13 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Channels::doWeCacheChannels ||
 												this->discordCoreClient->eventManager.onChannelDeletionEvent.theFunctions.size() > 0) {
 												std::unique_ptr<DiscordCoreAPI::ChannelData> theChannel = std::make_unique<DiscordCoreAPI::ChannelData>(theMessage.d);
-												DiscordCoreAPI::Snowflake channelId{ theChannel->id };
-												DiscordCoreAPI::Snowflake guildId{ theChannel->guildId.operator size_t() };
 												DiscordCoreAPI::GuildData theGuild{};
-												theGuild.id = guildId.operator size_t();
+												theGuild.id = theChannel->guildId.operator size_t();
 												if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
-													DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache.at(theGuild);
-													for (uint64_t x = 0; x < guild->channels.size(); ++x) {
-														if (guild->channels[x].operator size_t() == channelId.operator size_t()) {
-															guild->channels.erase(guild->channels.begin() + x);
+													DiscordCoreAPI::GuildData& guild = DiscordCoreAPI::Guilds::cache.at(theGuild);
+													for (uint64_t x = 0; x < guild.channels.size(); ++x) {
+														if (guild.channels[x].operator size_t() == theChannel->id.operator size_t()) {
+															guild.channels.erase(guild.channels.begin() + x);
 														}
 													}
 												}
@@ -687,8 +672,7 @@ namespace DiscordCoreInternal {
 													DiscordCoreAPI::Guilds::insertGuild(*theGuildPtr);
 												}
 												if (this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
-													DiscordCoreAPI::OnGuildCreationData dataPackage{ std::make_unique<DiscordCoreAPI::GuildData>(*theGuildPtr),
-														this->discordCoreClient };
+													DiscordCoreAPI::OnGuildCreationData dataPackage{ std::move(theGuildPtr), this->discordCoreClient };
 													this->discordCoreClient->eventManager.onGuildCreationEvent(dataPackage);
 												}
 											}

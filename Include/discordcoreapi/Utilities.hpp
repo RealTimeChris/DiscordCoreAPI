@@ -634,6 +634,172 @@ namespace DiscordCoreAPI {
 	 * \addtogroup utilities
 	 * @{
 	 */
+	template<typename ObjectType> class TSUnorderedSet {
+	  public:
+		TSUnorderedSet() noexcept {};
+
+		bool contains(ObjectType& theObject) {
+			std::shared_lock theLock{ this->theMutex };
+			for (size_t x = 0; x < currentlyUsedAllocations; ++x) {
+				if (this->theArray[x] == theObject) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		void emplace(ObjectType&& theObject) {
+			if (!this->contains(theObject)) {
+				using traits_t = std::allocator_traits<decltype(this->theAllocator)>;
+				if (this->currentlyAllocatedSize <= this->currentlyUsedAllocations + 1) {
+					std::unique_lock theLock{ this->theMutex };
+					auto thePtr = traits_t::allocate(this->theAllocator, this->currentlyAllocatedSize * 2);
+					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+						traits_t::construct(this->theAllocator, thePtr + x, this->theArray[x]);
+					}
+
+					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+						traits_t::destroy(this->theAllocator, this->theArray + x);
+					}
+					traits_t::deallocate(this->theAllocator, this->theArray, this->currentlyAllocatedSize);
+					this->theArray = thePtr;
+					this->currentlyAllocatedSize *= 2;
+				}
+				std::unique_lock theLock{ this->theMutex };
+				traits_t::construct(this->theAllocator, this->theArray + this->currentlyUsedAllocations, std::move(theObject));
+				this->currentlyUsedAllocations++;
+			} else {
+				for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+					if (this->theArray[x] == theObject) {
+						this->theArray[x] = std::move(theObject);
+					}
+				}
+			}
+		}
+
+		void emplace(ObjectType& theObject) {
+			if (!this->contains(theObject)) {
+				using traits_t = std::allocator_traits<decltype(this->theAllocator)>;
+				if (this->currentlyAllocatedSize <= this->currentlyUsedAllocations + 1) {
+					std::unique_lock theLock{ this->theMutex };
+					auto thePtr = traits_t::allocate(this->theAllocator, this->currentlyAllocatedSize * 2);
+					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+						traits_t::construct(this->theAllocator, thePtr + x, this->theArray[x]);
+					}
+
+					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+						traits_t::destroy(this->theAllocator, this->theArray + x);
+					}
+					traits_t::deallocate(this->theAllocator, this->theArray, this->currentlyAllocatedSize);
+					this->theArray = thePtr;
+					this->currentlyAllocatedSize *= 2;
+				}
+				std::unique_lock theLock{ this->theMutex };
+				traits_t::construct(this->theAllocator, this->theArray + this->currentlyUsedAllocations, theObject);
+				this->currentlyUsedAllocations++;
+			} else {
+				for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+					if (this->theArray[x] == theObject) {
+						this->theArray[x] = theObject;
+					}
+				}
+			}
+		}
+
+		ObjectType& at(ObjectType& theObject) {
+			std::shared_lock theLock{ this->theMutex };
+			for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+				if (this->theArray[x] == theObject) {
+					return this->theArray[x];
+				}
+			}
+			throw std::runtime_error{ "Sorry, but the object you were looking for cannot be found!" };
+		}
+
+		ObjectType& at(ObjectType&& theObject) {
+			std::shared_lock theLock{ this->theMutex };
+			for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+				if (this->theArray[x] == theObject) {
+					return this->theArray[x];
+				}
+			}
+			throw std::runtime_error{ "Sorry, but the object you were looking for cannot be found!" };
+		}
+
+		ObjectType* begin() {
+			return this->theArray;
+		}
+
+		ObjectType* end() {
+			return this->theArray + this->currentlyUsedAllocations;
+		}
+
+		void erase(ObjectType&& theObject) {
+			size_t theIndex{};
+			if (this->contains(theObject)) {
+				for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+					if (this->theArray[x] == theObject) {
+						theIndex = x;
+					}
+				}
+				using traits_t = std::allocator_traits<decltype(this->theAllocator)>;
+
+				auto thePtr = new ObjectType[this->currentlyAllocatedSize];
+				size_t theOffset{};
+				for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+					thePtr[x - theOffset] = this->theArray[x];
+					if (x == theIndex) {
+						theOffset++;
+					}
+				}
+
+				this->currentlyUsedAllocations--;
+				traits_t::deallocate(this->theAllocator, this->theArray, this->currentlyAllocatedSize);
+				this->theArray = thePtr;
+			}
+		}
+
+		void erase(ObjectType& theObject) {
+			size_t theIndex{};
+			if (this->contains(theObject)) {
+				for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+					if (this->theArray[x] == theObject) {
+						theIndex = x;
+					}
+				}
+				using traits_t = std::allocator_traits<decltype(this->theAllocator)>;
+
+				auto thePtr = new ObjectType[this->currentlyAllocatedSize];
+				size_t theOffset{};
+				for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+					thePtr[x - theOffset] = this->theArray[x];
+					if (x == theIndex) {
+						theOffset++;
+					}
+				}
+
+				this->currentlyUsedAllocations--;
+				traits_t::deallocate(this->theAllocator, this->theArray, this->currentlyAllocatedSize);
+				this->theArray = thePtr;
+			}
+		}
+
+		size_t size() {
+			return this->currentlyUsedAllocations;
+		}
+
+		~TSUnorderedSet() {
+		}
+
+	  protected:
+		std::allocator<ObjectType> theAllocator{};
+		size_t currentlyUsedAllocations{ 0 };
+		size_t currentlyAllocatedSize{ 1 };
+		ObjectType* theArray{ nullptr };
+		std::shared_mutex theMutex{};
+	};
+
+
 	template<typename ObjectType> class ObjectCache {
 	  public:
 		ObjectCache() noexcept {};
@@ -673,14 +839,13 @@ namespace DiscordCoreAPI {
 			return this->theMap.end();
 		}
 
-		bool contains(ObjectType& theKey) noexcept {
-			std::unique_lock theLock{ this->theMutex };
+		const bool contains(ObjectType& theKey) noexcept {
 			return this->theMap.contains(theKey);
 		}
 
 		void erase(ObjectType& theKey) {
-			std::unique_lock theLock{ this->theMutex };
 			if (this->theMap.contains(theKey)) {
+				std::unique_lock theLock{ this->theMutex };
 				this->theMap.erase(theKey);
 			}
 		}
