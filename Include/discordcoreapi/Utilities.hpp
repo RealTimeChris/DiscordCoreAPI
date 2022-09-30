@@ -709,7 +709,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		ObjectType& at(ObjectType& theObject) {
+		const ObjectType& at(ObjectType& theObject) {
 			std::shared_lock theLock{ this->theMutex };
 			for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
 				if (this->theArray[x] == theObject) {
@@ -719,7 +719,7 @@ namespace DiscordCoreAPI {
 			throw std::runtime_error{ "Sorry, but the object you were looking for cannot be found!" };
 		}
 
-		ObjectType& at(ObjectType&& theObject) {
+		const ObjectType& at(ObjectType&& theObject) {
 			std::shared_lock theLock{ this->theMutex };
 			for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
 				if (this->theArray[x] == theObject) {
