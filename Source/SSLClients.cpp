@@ -548,7 +548,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 				}
-				//std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
+				std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
 			} while (SSL_pending(this->ssl));
 		}
 		return true;

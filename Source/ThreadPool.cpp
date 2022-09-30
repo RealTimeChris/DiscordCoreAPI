@@ -120,12 +120,8 @@ namespace DiscordCoreInternal {
 	std::atomic_int32_t theIntNew{};
 	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
 		while (!stopToken.stop_requested()) {
-			theIntNew.store(theIntNew.load() + 1);
-			if (theIntNew.load() % 10000 == 0) {
-				std::cout << "THREAD POOL LOOP 000" << std::endl;
-			}
-			std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 			if (this->coroHandleCount.load() > 0) {
+				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 				if (theLock01.try_lock()) {
 					if (this->theCoroutineHandles.size() > 0) {
 						std::coroutine_handle<> coroHandle = this->theCoroutineHandles.front();
@@ -138,6 +134,7 @@ namespace DiscordCoreInternal {
 					}
 				}
 			} else if (this->currentCount.load() > this->threadCount.load()) {
+				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };
 				if (theLock01.try_lock()) {
 					for (auto& [key, value]: this->workerThreads) {
 						if (value.areWeCurrentlyWorking.load() && value.theThread.joinable()) {
