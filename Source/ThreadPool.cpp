@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 		auto theThread = std::jthread([=](std::stop_token stopToken) {
 			StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
 			while (true) {
-				std::cout << "THREAD POOL LOOP 000" << std::endl;
+				//////std::cout << "THREAD POOL LOOP 000" << std::endl;
 				stopWatch.resetTimer();
 				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
 				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {

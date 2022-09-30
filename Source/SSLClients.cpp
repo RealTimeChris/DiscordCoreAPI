@@ -343,14 +343,14 @@ namespace DiscordCoreInternal {
 
 		for (uint32_t x = 0; x < readWriteSet.theIndices.size(); ++x) {
 			if (readWriteSet.thePolls[x].revents & POLLOUT) {
-				std::cout << "SSL CLIENT WHILE 233434" << std::endl;
+				//std::cout << "SSL CLIENT WHILE 233434" << std::endl;
 				if (!theVector[readWriteSet.theIndices[x]]->processWriteData()) {
 					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
 				}
 			}
 			if (readWriteSet.thePolls[x].revents & POLLIN) {
-				//std::cout << "SSL CLIENT WHILE 453453" << std::endl;
+				////std::cout << "SSL CLIENT WHILE 453453" << std::endl;
 				if (!theVector[readWriteSet.theIndices[x]]->processReadData()) {
 					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
 					continue;
@@ -408,7 +408,7 @@ namespace DiscordCoreInternal {
 						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 						dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 						remainingBytes = dataToWrite.size();
-						//std::cout << "SSL CLIENT WHILE 0202" << std::endl;
+						////std::cout << "SSL CLIENT WHILE 0202" << std::endl;
 					}
 				} else {
 					memcpy(this->outputBuffer.getCurrentHead()->getCurrentHead(), dataToWrite.data(), dataToWrite.size());
@@ -426,10 +426,10 @@ namespace DiscordCoreInternal {
 		}
 		pollfd readWriteSet{ .fd = static_cast<::SOCKET>(this->theSocket) };
 		if (this->outputBuffer.getUsedSpace() > 0) {
-			std::cout << "SSL CLIENT WHILE 787878" << std::endl;
+			//std::cout << "SSL CLIENT WHILE 787878" << std::endl;
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
-			std::cout << "SSL CLIENT WHILE 565656" << std::endl;
+			//std::cout << "SSL CLIENT WHILE 565656" << std::endl;
 			readWriteSet.events = POLLIN;
 		}
 		ProcessIOResult theResult{ ProcessIOResult::No_Error };
@@ -441,7 +441,7 @@ namespace DiscordCoreInternal {
 		} else if (returnValue == 0) {
 			if (!this->areWeAStandaloneSocket) {
 				while (this->handleBuffer()) {
-					std::cout << "SSL CLIENT WHILE 0303" << std::endl;
+					//std::cout << "SSL CLIENT WHILE 0303" << std::endl;
 				}
 			}
 			theResult = ProcessIOResult::No_Error;
@@ -453,13 +453,13 @@ namespace DiscordCoreInternal {
 				return ProcessIOResult::Error;
 			}
 			if (readWriteSet.revents & POLLIN) {
-				std::cout << "SSL CLIENT WHILE 454545" << std::endl;
+				//std::cout << "SSL CLIENT WHILE 454545" << std::endl;
 				if (!this->processReadData()) {
 					return ProcessIOResult::Error;
 				}
 			}
 			if (readWriteSet.revents & POLLOUT) {
-				std::cout << "SSL CLIENT WHILE 343434" << std::endl;
+				//std::cout << "SSL CLIENT WHILE 343434" << std::endl;
 				if (!this->processWriteData()) {
 					return ProcessIOResult::Error;
 				}
@@ -467,7 +467,7 @@ namespace DiscordCoreInternal {
 		}
 		if (!this->areWeAStandaloneSocket) {
 			while (this->handleBuffer()) {
-				std::cout << "SSL CLIENT WHILE 0303" << std::endl;
+				//std::cout << "SSL CLIENT WHILE 0303" << std::endl;
 			}
 		}
 		return theResult;
@@ -548,7 +548,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 				}
-				std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
+				//std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
 			} while (SSL_pending(this->ssl));
 		}
 		return true;

@@ -120,7 +120,7 @@ namespace DiscordCoreInternal {
 				newString.insert(newString.begin(), other.begin(), other.begin() + other.find("\r\n\r\n") + std::string("\r\n\r\n").size());
 				other.erase(other.begin(), other.begin() + newString.size());
 				while (newString.size() > 0 && newString.find(":") != std::string::npos && newString.find("\r\n") != std::string::npos) {
-					std::cout << "HTTPS CLIENT LOOP 000" << std::endl;
+					//std::cout << "HTTPS CLIENT LOOP 000" << std::endl;
 					if (theStopWatch.hasTimePassed()) {
 						break;
 					}
@@ -158,7 +158,7 @@ namespace DiscordCoreInternal {
 			if (other.find("\r\n0\r\n\r\n") != std::string::npos) {
 				DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
 				while (other.find("\r\n") != other.find("\r\n0\r\n\r\n")) {
-					std::cout << "HTTPS CLIENT LOOP 001" << std::endl;
+					//std::cout << "HTTPS CLIENT LOOP 001" << std::endl;
 					if (theStopWatch.hasTimePassed()) {
 						break;
 					}
@@ -273,7 +273,7 @@ namespace DiscordCoreInternal {
 	bool HttpsConnection::handleBuffer() noexcept {
 		this->theData.theStopWatch.resetTimer();
 		while (true) {
-			//std::cout << "HTTPS CLIENT LOOP 002" << std::endl;
+			////std::cout << "HTTPS CLIENT LOOP 002" << std::endl;
 			switch (this->theData.theCurrentState) {
 				case HttpsState::Collecting_Code: {
 					if (this->theData.theStopWatch.hasTimePassed()) {
@@ -446,12 +446,12 @@ namespace DiscordCoreInternal {
 		rateLimitData.theSemaphore.release();
 
 		while (HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load() < workload.thisWorkerId.load() && workload.thisWorkerId.load() != 0) {
-			std::cout << "HTTPS CLIENT LOOP 003" << std::endl;
+			//std::cout << "HTTPS CLIENT LOOP 003" << std::endl;
 			std::this_thread::sleep_for(1ms);
 		}
 
 		while (!rateLimitData.theSemaphore.try_acquire()) {
-			std::cout << "HTTPS CLIENT LOOP 004" << std::endl;
+			//std::cout << "HTTPS CLIENT LOOP 004" << std::endl;
 			std::this_thread::sleep_for(1ms);
 		}
 
@@ -487,7 +487,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				theResult = httpsConnection.writeData(theRequest, true);
-				std::cout << "HTTPS CLIENT LOOP 005" << std::endl;
+				//std::cout << "HTTPS CLIENT LOOP 005" << std::endl;
 			} while (theResult == ProcessIOResult::Error);
 			if (theResult != ProcessIOResult::No_Error) {
 				httpsConnection.currentReconnectTries++;
@@ -542,7 +542,7 @@ namespace DiscordCoreInternal {
 				}
 				int64_t targetTime = currentTime + timeRemaining;
 				while (targetTime > currentTime) {
-					std::cout << "HTTPS CLIENT LOOP 006" << std::endl;
+					//std::cout << "HTTPS CLIENT LOOP 006" << std::endl;
 					currentTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 					timeRemaining = targetTime - currentTime;
 					if (timeRemaining <= 20) {
@@ -611,7 +611,7 @@ namespace DiscordCoreInternal {
 			ProcessIOResult theResult{};
 			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error) {
-				//std::cout << "HTTPS CLIENT LOOP 007" << std::endl;
+				////std::cout << "HTTPS CLIENT LOOP 007" << std::endl;
 				theResult = theConnection.processIO(1);
 				if (theStopWatch.hasTimePassed()) {
 					break;
