@@ -1692,8 +1692,6 @@ namespace DiscordCoreInternal {
 				bool areWeConnected{ false };
 				for (auto& value: theVector) {
 					if (value->areWeStillConnected()) {
-						while (static_cast<WebSocketSSLShard*>(value)->handleBuffer()) {
-						}
 						static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
 						areWeConnected = true;
 					}

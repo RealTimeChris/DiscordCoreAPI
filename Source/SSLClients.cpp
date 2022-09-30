@@ -356,6 +356,8 @@ namespace DiscordCoreInternal {
 					continue;
 				}
 			}
+			while (theVector[x]->handleBuffer()) {
+			};
 		}
 		return theReturnValue;
 	}
