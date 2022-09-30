@@ -302,7 +302,7 @@ namespace DiscordCoreInternal {
 						theShard->currentMessage.erase(0, theShard->messageLength + theShard->messageOffset);
 						theShard->messageOffset = 0;
 						theShard->messageLength = 0;
-						return false;
+						return true;
 					}
 				}
 				case WebSocketOpCode::Op_Close: {
@@ -1458,8 +1458,7 @@ namespace DiscordCoreInternal {
 		if (this->currentState.load() == SSLShardState::Upgrading) {
 			return this->parseConnectionHeaders(this);
 		}
-		this->parseMessage(this);
-		return false;
+		return this->parseMessage(this);
 	}
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
