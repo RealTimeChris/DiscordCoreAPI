@@ -315,14 +315,14 @@ namespace DiscordCoreInternal {
 		std::vector<SSLClient*> theReturnValue{};
 		PollFDWrapper readWriteSet{};
 		for (uint32_t x = 0; x < theVector.size(); ++x) {
-			pollfd theWrapper{ .fd = static_cast<::SOCKET>(theVector[x]->theSocket) };
+			pollfd theFdSet{ .fd = static_cast<::SOCKET>(theVector[x]->theSocket) };
 			if (!theVector[x]->outputBuffer.isItEmpty()) {
-				theWrapper.events = POLLIN | POLLOUT;
+				theFdSet.events = POLLIN | POLLOUT;
 			} else {
-				theWrapper.events = POLLIN;
+				theFdSet.events = POLLIN;
 			}
 			readWriteSet.theIndices.emplace_back(x);
-			readWriteSet.thePolls.emplace_back(theWrapper);
+			readWriteSet.thePolls.emplace_back(theFdSet);
 		}
 
 		if (readWriteSet.theIndices.size() == 0) {
