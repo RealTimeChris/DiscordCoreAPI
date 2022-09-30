@@ -1420,7 +1420,7 @@ namespace DiscordCoreInternal {
 				} catch (...) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
-						cout << payload << std::endl;
+						cout << "The payload: " << payload << std::endl;
 					}
 					this->inputBuffer.clear();
 					return false;

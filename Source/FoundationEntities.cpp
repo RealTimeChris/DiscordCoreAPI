@@ -2996,13 +2996,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	struct DiscordCoreAPI_Dll MediaTranscoding {
-		MediaTranscoding() noexcept = default;
-		MediaTranscoding(simdjson::ondemand::value);
-		std::string thePreset{};
-		std::string theUrl{};
-	};
-
 	MediaTranscoding::MediaTranscoding(simdjson::ondemand::value jsonObjectData) {
 		this->thePreset = getString(jsonObjectData, "preset");
 

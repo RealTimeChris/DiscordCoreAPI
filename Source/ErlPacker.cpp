@@ -42,14 +42,20 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string& ErlPacker::parseEtfToJson(std::string_view dataToParse) {
-		this->bufferString.clear();
+		if (this->bufferString.size() < dataToParse.size()) {
+			this->bufferString.resize(dataToParse.size() * 2);
+		}
 		this->offSet = 0;
 		this->buffer = dataToParse;
 		this->size = dataToParse.size();
 		if (this->readBits<uint8_t>() != formatVersion) {
 			throw ErlPackError{ "ErlPacker::parseEtfToJson() Error: Incorrect format version specified." };
 		}
-		this->bufferString = this->singleValueETFToJson();
+		auto theString = this->singleValueETFToJson();
+		memcpy(this->bufferString.data(), theString.data(), theString.size());
+		for (size_t x = theString.size(); x < this->bufferString.size(); ++x) {
+			this->bufferString[x] = '\0';
+		}
 		return this->bufferString;
 	}
 
