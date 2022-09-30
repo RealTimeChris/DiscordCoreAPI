@@ -778,30 +778,18 @@ namespace DiscordCoreInternal {
 										case 26: {
 											if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers ||
 												this->discordCoreClient->eventManager.onGuildMemberAddEvent.theFunctions.size() > 0) {
-												DiscordCoreAPI::GuildMemberData* theGuildMemberPtr{ nullptr };
-												DiscordCoreAPI::GuildMemberData theGuildMember{ theMessage.d };
-												DiscordCoreAPI::Snowflake userId{ theGuildMember.id };
-												DiscordCoreAPI::Snowflake guildId{ theGuildMember.guildId };
+												std::unique_ptr<DiscordCoreAPI::GuildMemberData> theGuildMember{ std::make_unique<DiscordCoreAPI::GuildMemberData>(theMessage.d) };
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
-													DiscordCoreAPI::GuildMembers::insertGuildMember(std::move(theGuildMember));
-													DiscordCoreAPI::GuildMemberData theDataNew{};
-													theDataNew.id = userId;
-													theDataNew.guildId = guildId;
+													DiscordCoreAPI::GuildMembers::insertGuildMember(*theGuildMember);
 													DiscordCoreAPI::GuildData theGuild{};
-													theGuild.id = guildId;
-													if (DiscordCoreAPI::GuildMembers::cache.contains(theDataNew)) {
-														theGuildMemberPtr = &DiscordCoreAPI::GuildMembers::cache.at(theDataNew);
-													}
+													theGuild.id = theGuildMember->guildId;
 													if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
 														DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache.at(theGuild);
 														guild->memberCount++;
 													}
-												} else {
-													theGuildMemberPtr = &theGuildMember;
 												}
 												if (this->discordCoreClient->eventManager.onGuildMemberAddEvent.theFunctions.size() > 0) {
-													DiscordCoreAPI::OnGuildMemberAddData dataPackage{ std::make_unique<DiscordCoreAPI::GuildMemberData>(*theGuildMemberPtr),
-														this->discordCoreClient };
+													DiscordCoreAPI::OnGuildMemberAddData dataPackage{ std::move(theGuildMember), this->discordCoreClient };
 													this->discordCoreClient->eventManager.onGuildMemberAddEvent(dataPackage);
 												}
 											}
@@ -810,13 +798,11 @@ namespace DiscordCoreInternal {
 										case 27: {
 											if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers ||
 												this->discordCoreClient->eventManager.onGuildMemberRemoveEvent.theFunctions.size() > 0) {
-												DiscordCoreAPI::GuildMemberData theGuildMember{ theMessage.d };
-												DiscordCoreAPI::Snowflake userId{ theGuildMember.id };
-												DiscordCoreAPI::Snowflake guildId{ theGuildMember.guildId };
-												DiscordCoreAPI::GuildData theGuild{};
-												theGuild.id = guildId;
+												std::unique_ptr<DiscordCoreAPI::GuildMemberData> theGuildMember{ std::make_unique<DiscordCoreAPI::GuildMemberData>(theMessage.d) };
 												if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers) {
-													DiscordCoreAPI::GuildMembers::removeGuildMember(theGuildMember);
+													DiscordCoreAPI::GuildData theGuild{};
+													theGuild.id = theGuildMember->guildId;
+													DiscordCoreAPI::GuildMembers::removeGuildMember(*theGuildMember);
 													if (DiscordCoreAPI::Guilds::cache.contains(theGuild)) {
 														DiscordCoreAPI::GuildData* guild = &DiscordCoreAPI::Guilds::cache.at(theGuild);
 														for (uint64_t x = 0; x < guild->members.size(); ++x) {

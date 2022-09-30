@@ -637,7 +637,7 @@ namespace DiscordCoreAPI {
 	template<typename ObjectType> class TSUnorderedSet {
 	  public:
 		  
-		using traits_t = std::allocator_traits<decltype(this->theAllocator)>;
+		using traits_t = std::allocator_traits<std::allocator<ObjectType>>;
 
 		TSUnorderedSet() noexcept {};
 
@@ -655,11 +655,12 @@ namespace DiscordCoreAPI {
 			if (!this->contains(theObject)) {
 				if (this->currentlyAllocatedSize <= this->currentlyUsedAllocations + 1) {
 					auto thePtr = traits_t::allocate(this->theAllocator, this->currentlyAllocatedSize * 2);
-					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
-						traits_t::construct(this->theAllocator, thePtr + x, this->theArray[x]);
-					}
-										
+
 					std::unique_lock theLock{ this->theMutex };
+					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+						traits_t::construct(this->theAllocator, thePtr + x, std::move(this->theArray[x]));
+					}
+
 					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
 						traits_t::destroy(this->theAllocator, this->theArray + x);
 					}
@@ -683,11 +684,12 @@ namespace DiscordCoreAPI {
 			if (!this->contains(theObject)) {
 				if (this->currentlyAllocatedSize <= this->currentlyUsedAllocations + 1) {
 					auto thePtr = traits_t::allocate(this->theAllocator, this->currentlyAllocatedSize * 2);
-					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
-						traits_t::construct(this->theAllocator, thePtr + x, this->theArray[x]);
-					}
 
 					std::unique_lock theLock{ this->theMutex };
+					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+						traits_t::construct(this->theAllocator, thePtr + x, std::move(this->theArray[x]));
+					}
+
 					for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
 						traits_t::destroy(this->theAllocator, this->theArray + x);
 					}
@@ -797,7 +799,6 @@ namespace DiscordCoreAPI {
 		ObjectType* theArray{ nullptr };
 		std::shared_mutex theMutex{};
 	};
-
 
 	template<typename ObjectType> class ObjectCache {
 	  public:
