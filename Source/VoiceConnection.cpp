@@ -1049,7 +1049,6 @@ namespace DiscordCoreAPI {
 			this->taskThread03.reset(nullptr);
 		}
 		this->areWeHeartBeating = false;
-		DatagramSocketClient::inputBuffer.clear();
 		DatagramSocketClient::outputBuffer.clear();
 		WebSocketSSLShard::outputBuffer.clear();
 		this->currentReconnectTries++;

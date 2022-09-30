@@ -1007,6 +1007,7 @@ namespace DiscordCoreInternal {
 											break;
 										}
 										case 41: {
+											std::cout << "WERE STARTING THE INTERACTION!" << std::endl;
 											std::unique_ptr<DiscordCoreAPI::InteractionData> interactionData{ std::make_unique<DiscordCoreAPI::InteractionData>() };
 											*interactionData = DiscordCoreAPI::InteractionData{ theMessage.d };
 											std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(*interactionData) };
@@ -1648,7 +1649,6 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::connectVoiceInternal() noexcept {
 		if (this->voiceConnections.size() > 0) {
 			while (!this->theVCStopWatch.hasTimePassed()) {
-				//std::cout << "WEBSOCKETENTITIESLOOP 007" << std::endl;
 				std::this_thread::sleep_for(1ms);
 			}
 			this->theVCStopWatch.resetTimer();
@@ -1667,10 +1667,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
-				theInt02.store(theInt02.load() + 1);
-				if (theInt02.load() % 1000 == 0) {
-					//std::cout << "WEBSOCKETENTITIESLOOP 008" << std::endl;
-				}
+				std::cout << "WEBSOCKETENTITIESLOOP 007" << std::endl;
 				this->disconnectVoiceInternal();
 				this->connectVoiceInternal();
 				std::vector<SSLClient*> theVector{};
@@ -1680,6 +1677,8 @@ namespace DiscordCoreInternal {
 					}
 				}
 				auto theResult = SSLClient::processIO(theVector);
+
+				std::cout << "WEBSOCKETENTITIESLOOP 008" << std::endl;
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1693,8 +1692,6 @@ namespace DiscordCoreInternal {
 				for (auto& value: theVector) {
 					if (value->areWeStillConnected()) {
 						static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
-						while (value->handleBuffer()) {
-						};
 						areWeConnected = true;
 					}
 				}
