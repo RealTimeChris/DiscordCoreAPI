@@ -313,7 +313,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static TSUnorderedSet<ChannelData> cache;
+		static ObjectCache<ChannelData> cache;
 		static bool doWeCacheChannels;
 	};
 	/**@}*/

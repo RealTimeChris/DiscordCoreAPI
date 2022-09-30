@@ -220,7 +220,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static TSUnorderedSet<GuildMemberData> cache;
+		static ObjectCache<GuildMemberData> cache;
 		static bool doWeCacheGuildMembers;
 	};
 	/**@}*/

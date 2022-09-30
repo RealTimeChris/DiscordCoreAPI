@@ -355,6 +355,6 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
-	TSUnorderedSet<GuildMemberData> GuildMembers::cache{};
+	ObjectCache<GuildMemberData> GuildMembers::cache{};
 	bool GuildMembers::doWeCacheGuildMembers{ false };
 };

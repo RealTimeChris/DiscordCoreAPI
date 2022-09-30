@@ -588,7 +588,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static TSUnorderedSet<GuildData> cache;
+		static ObjectCache<GuildData> cache;
 		static DiscordCoreClient* discordCoreClient;
 		static bool doWeCacheGuilds;
 

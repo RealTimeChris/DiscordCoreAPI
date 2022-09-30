@@ -285,6 +285,6 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
-	TSUnorderedSet<UserData> Users::cache{};
+	ObjectCache<UserData> Users::cache{};
 	bool Users::doWeCacheUsers{ false };
 }
