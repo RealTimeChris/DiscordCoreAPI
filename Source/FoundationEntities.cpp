@@ -1515,7 +1515,7 @@ namespace DiscordCoreAPI {
 					auto userId = getId(value.value(), "user_id");
 					theDataNew.id = userId;
 					theDataNew.guildId = this->id;
-					GuildMembers::cache.at(theDataNew).voiceChannelId = getId(value.value(), "channel_id");
+					GuildMembers::cache[theDataNew].voiceChannelId = getId(value.value(), "channel_id");
 				}
 			}
 		}

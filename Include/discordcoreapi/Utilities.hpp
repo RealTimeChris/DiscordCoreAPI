@@ -729,6 +729,26 @@ namespace DiscordCoreAPI {
 			throw std::runtime_error{ "Sorry, but the object you were looking for cannot be found!" };
 		}
 
+		ObjectType& operator[](ObjectType& theObject) {
+			std::shared_lock theLock{ this->theMutex };
+			for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+				if (this->theArray[x] == theObject) {
+					return this->theArray[x];
+				}
+			}
+			throw std::runtime_error{ "Sorry, but the object you were looking for cannot be found!" };
+		}
+
+		ObjectType& operator[](ObjectType&& theObject) {
+			std::shared_lock theLock{ this->theMutex };
+			for (size_t x = 0; x < this->currentlyUsedAllocations; ++x) {
+				if (this->theArray[x] == theObject) {
+					return this->theArray[x];
+				}
+			}
+			throw std::runtime_error{ "Sorry, but the object you were looking for cannot be found!" };
+		}
+	
 		ObjectType* begin() {
 			return this->theArray;
 		}

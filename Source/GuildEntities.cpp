@@ -339,7 +339,7 @@ namespace DiscordCoreAPI {
 					theDataNew.id = theData.userId;
 					theDataNew.guildId = this->id;
 					if (GuildMembers::cache.contains(theDataNew)) {
-						GuildMembers::cache.at(theDataNew).voiceChannelId = theData.channelId;
+						GuildMembers::cache[theDataNew].voiceChannelId = theData.channelId;
 					}
 				}
 			}
