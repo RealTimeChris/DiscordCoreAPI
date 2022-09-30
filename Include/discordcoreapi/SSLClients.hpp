@@ -264,9 +264,9 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult processIO(ProcessIOType theType) noexcept;
 
-		void writeData(std::string data) noexcept;
+		std::string_view getInputBuffer() noexcept;
 
-		std::string& getInputBuffer() noexcept;
+		void writeData(std::string data) noexcept;
 
 		bool areWeStillConnected() noexcept;
 
@@ -282,13 +282,12 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const int32_t maxBufferSize{ (1024 * 16) - 1 };
-		std::array<char, 1024 * 16> rawInputBuffer{};
-		std::deque<std::string> outputBuffer{};
 		DiscordCoreAPI::StreamType streamType{};
 		sockaddr_in theStreamTargetAddress{};
 		bool areWeStreamConnected{ false };
+		RingBuffer outputBuffer{};
 		SOCKETWrapper theSocket{};
-		std::string inputBuffer{};
+		RingBuffer inputBuffer{};
 		int64_t bytesRead{};
 	};
 }// namespace DiscordCoreInternal

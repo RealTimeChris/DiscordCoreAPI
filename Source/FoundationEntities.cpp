@@ -3011,23 +3011,23 @@ namespace DiscordCoreAPI {
 
 	Song::Song(simdjson::ondemand::value jsonObjectData) {
 		try {
-			this->duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData").theObject, "label");
+			this->duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData"), "label");
 			std::string newString =
-				getString(getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0).theObject, "text");
+				getString(getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0),"text");
 			if (newString.size() > 256) {
 				newString = newString.substr(0, 256);
 			}
 			this->description = utf8MakeValid(newString);
 
-			this->thumbnailUrl = getString(getObject(getArray(getObject(jsonObjectData, "thumbnail"), "thumbnails"), 0).theObject, "url");
-			std::string newTitle01 = getString(getObject(getArray(getObject(jsonObjectData, "title"), "runs"), 0).theObject, "text");
+			this->thumbnailUrl = getString(getObject(getArray(getObject(jsonObjectData, "thumbnail"), "thumbnails"), 0), "url");
+			std::string newTitle01 = getString(getObject(getArray(getObject(jsonObjectData, "title"), "runs"), 0), "text");
 			if (newTitle01.size() > 256) {
 				newTitle01 = newTitle01.substr(0, 256);
 			}
 			if (newTitle01.size() > 0) {
 				this->songTitle = utf8MakeValid(newTitle01);
 			}
-			std::string newTitle02 = getString(getObject(jsonObjectData, "title").theObject, "simpleText");
+			std::string newTitle02 = getString(getObject(jsonObjectData, "title"), "simpleText");
 			if (newTitle02.size() > 256) {
 				newTitle02 = newTitle02.substr(0, 256);
 			}
@@ -3102,7 +3102,7 @@ namespace DiscordCoreAPI {
 				this->thumbnailUrl = newString;
 			}
 
-			newString = getString(getObject(jsonObjectData, "user").theObject, "avatar_url");
+			newString = getString(getObject(jsonObjectData, "user"), "avatar_url");
 			if (newString.size() > 0) {
 				this->thumbnailUrl = newString;
 			}
