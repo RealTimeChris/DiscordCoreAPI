@@ -241,7 +241,7 @@ namespace DiscordCoreInternal {
 			}
 			return false;
 		}
-		/*
+		
 		const char optionValue{ true };
 		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
@@ -249,8 +249,7 @@ namespace DiscordCoreInternal {
 			}
 			return false;
 		}
-		*/
-		const char optionValue{ true };
+		
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("SSLClient::connect::setsockopt(), to: " + baseUrl) << endl;
@@ -536,6 +535,7 @@ namespace DiscordCoreInternal {
 							this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
 							this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 							this->bytesRead += readBytes;
+							std::cout << "THE READ BYTES: " << readBytes << std::endl;
 							if (!this->areWeAStandaloneSocket) {
 								this->handleBuffer();
 							}
@@ -557,7 +557,7 @@ namespace DiscordCoreInternal {
 		}
 		return true;
 	}
-
+	
 	int64_t SSLClient::getBytesRead() noexcept {
 		return this->bytesRead;
 	}
