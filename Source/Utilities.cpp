@@ -450,7 +450,7 @@ namespace DiscordCoreAPI {
 			theObject.theKey = theKey;
 			theObject.theType = ValueType::Object;
 			this->theValues[theKey] = theObject;
-			return *static_cast<JsonObject*>(&this->theValues[theKey]);
+			return this->theValues[theKey];
 		} else if (this->theKey == theKey && this->theType == ValueType::Object) {
 			return *this;
 		} else if (!this->theValues.contains(theKey)) {
@@ -458,15 +458,15 @@ namespace DiscordCoreAPI {
 			theObject.theKey = theKey;
 			theObject.theType = ValueType::Object;
 			this->theValues[theKey] = theObject;
-			return *static_cast<JsonObject*>(&this->theValues[theKey]);
+			return this->theValues[theKey];
 		} else if (this->theValues.contains(theKey)) {
-			return *static_cast<JsonObject*>(&this->theValues[theKey]);
+			return this->theValues[theKey];
 		} else {
 			JsonObject theObject{};
 			theObject.theType = ValueType::Object;
 			theObject.theKey = theKey;
 			this->theValues[theKey] = theObject;
-			return *static_cast<JsonObject*>(&this->theValues[theKey]);
+			return this->theValues[theKey];
 		}
 	}
 
@@ -483,8 +483,7 @@ namespace DiscordCoreAPI {
 					if (doWeAddComma) {
 						theString += ",";
 					}
-					theString += *static_cast<JsonObject*>(&valueNew);
-					
+					theString += valueNew;
 					doWeAddComma = true;
 				}
 				theString += "}";
@@ -497,7 +496,7 @@ namespace DiscordCoreAPI {
 					if (doWeAddComma) {
 						theString += ",";
 					}
-					theString += *static_cast<JsonObject*>(&valueNew);
+					theString += valueNew;
 					doWeAddComma = true;
 				}
 				theString += "]";
@@ -548,11 +547,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
 
@@ -561,11 +560,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = std::move(theKey);
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = std::move(other);
 		} else {
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = std::move(other);
 		}
 	};
 
@@ -574,11 +573,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
 
@@ -587,11 +586,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
 
@@ -600,11 +599,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
 
@@ -613,11 +612,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
 
@@ -626,11 +625,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
 
@@ -639,11 +638,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
 
@@ -652,11 +651,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
 
@@ -665,11 +664,11 @@ namespace DiscordCoreAPI {
 			this->theValues[theKey] = JsonObject{};
 			this->theValues[theKey].theType = ValueType::Array;
 			this->theValues[theKey].theKey = theKey;
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		} else {
-			size_t theSize = static_cast<JsonObject*>(&this->theValues[theKey])->theValues.size();
-			static_cast<JsonObject*>(&this->theValues[theKey])->theValues[std::to_string(theSize)] = JsonObject{ other };
+			size_t theSize = this->theValues[theKey].theValues.size();
+			this->theValues[theKey].theValues[std::to_string(theSize)] = other;
 		}
 	}
 
