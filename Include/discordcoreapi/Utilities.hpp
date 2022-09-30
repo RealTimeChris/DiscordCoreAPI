@@ -132,9 +132,9 @@ namespace DiscordCoreAPI {
 
 	enum class ValueType { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Double = 4, Float = 5, String = 6, Bool = 7, Int64 = 8, Uint64 = 9, Unset = 10 };
 
-	struct DiscordCoreAPI_Dll JsonArray;
+	class DiscordCoreAPI_Dll JsonArray;
 
-	struct DiscordCoreAPI_Dll JsonObject;
+	class DiscordCoreAPI_Dll JsonObject;
 
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
@@ -176,12 +176,16 @@ namespace DiscordCoreAPI {
 		bool vectorType{ false };
 	};
 
-	struct DiscordCoreAPI_Dll JsonObject {
+	class DiscordCoreAPI_Dll JsonObjectBase {
+	  public:
 		std::unordered_map<std::string, JsonObject> theValues{};
 		ValueType theType{ ValueType::Object };
 		std::string theKey{};
 		void* theValue{};
+	};
 
+	class DiscordCoreAPI_Dll JsonObject : public JsonObjectBase {
+	  public:
 		JsonObject() noexcept = default;
 
 		template<typename ObjectType> JsonObject& operator=(std::vector<ObjectType> theData) noexcept {
@@ -189,7 +193,6 @@ namespace DiscordCoreAPI {
 			int32_t theIndex{};
 			for (auto& value: theData) {
 				this->theValues[std::to_string(theIndex)] = value;
-
 				theIndex++;
 			}
 			return *this;
@@ -288,7 +291,8 @@ namespace DiscordCoreAPI {
 		void pushBack(const char* theKey, int8_t other) noexcept;
 	};
 
-	struct DiscordCoreAPI_Dll JsonArray : public JsonObject {
+	class DiscordCoreAPI_Dll JsonArray : public JsonObject {
+	  public:
 		JsonArray() noexcept = default;
 	};
 
