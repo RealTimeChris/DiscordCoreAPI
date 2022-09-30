@@ -251,6 +251,7 @@ namespace DiscordCoreInternal {
 			if (theShard->currentMessage.size() < theShard->messageLength + theShard->messageOffset || theShard->currentMessage.size() == 0 ||
 				(theShard->messageLength + theShard->messageOffset == 0)) {
 				auto theString = theShard->getInputBuffer();
+				std::cout << "THE STRING SIZE: " << theString.size() << std::endl;
 				theShard->currentMessage.writeData(theString.data(), theString.size());
 			}
 			if (theShard->currentMessage.size() < 4) {
@@ -1691,8 +1692,9 @@ namespace DiscordCoreInternal {
 				bool areWeConnected{ false };
 				for (auto& value: theVector) {
 					if (value->areWeStillConnected()) {
+						while (static_cast<WebSocketSSLShard*>(value)->handleBuffer()) {
+						}
 						static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
-						static_cast<WebSocketSSLShard*>(value)->handleBuffer();
 						areWeConnected = true;
 					}
 				}

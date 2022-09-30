@@ -356,10 +356,6 @@ namespace DiscordCoreInternal {
 					continue;
 				}
 			}
-
-			while (theVector[readWriteSet.theIndices[x]]->handleBuffer()) {
-				std::cout << "SSL CLIENT WHILE 0101" << std::endl;
-			}
 		}
 		return theReturnValue;
 	}
