@@ -1667,7 +1667,6 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
-				std::cout << "WEBSOCKETENTITIESLOOP 007" << std::endl;
 				this->disconnectVoiceInternal();
 				this->connectVoiceInternal();
 				std::vector<SSLClient*> theVector{};
@@ -1677,8 +1676,6 @@ namespace DiscordCoreInternal {
 					}
 				}
 				auto theResult = SSLClient::processIO(theVector);
-
-				std::cout << "WEBSOCKETENTITIESLOOP 008" << std::endl;
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {

@@ -700,13 +700,13 @@ namespace DiscordCoreInternal {
 
 	bool DatagramSocketClient::processWriteData() noexcept {
 		if (this->outputBuffer.size() > 0 && this->areWeStreamConnected) {
-			auto bytesToWrite{ this->outputBuffer.front().size() };
+			auto bytesToWrite{ this->outputBuffer.back().size() };
 			int32_t writtenBytes =
-				sendto(this->theSocket, this->outputBuffer.front().data(), static_cast<int32_t>(bytesToWrite), 0, ( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr));
+				sendto(this->theSocket, this->outputBuffer.back().data(), static_cast<int32_t>(bytesToWrite), 0, ( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr));
 			if (writtenBytes < 0) {
 				return false;
 			} else {
-				this->outputBuffer.pop_front();
+				this->outputBuffer.pop_back();
 				return true;
 			}
 		}
