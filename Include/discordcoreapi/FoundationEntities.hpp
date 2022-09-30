@@ -1928,7 +1928,7 @@ namespace DiscordCoreAPI {
 
 	/// Data representing a single GuildScheduledEventUser. \brief Data representing a single GuildScheduledEventUser.
 	struct DiscordCoreAPI_Dll GuildScheduledEventUserData {
-		std::string guildScheduledEventId{};///< The scheduled event id which the User subscribed to/
+		Snowflake guildScheduledEventId{};///< The scheduled event id which the User subscribed to/
 		GuildMemberData member{};///< Guild member data for this User for the Guild which this event belongs to, if any.
 		UserData user{};///< User which subscribed to an event.
 
