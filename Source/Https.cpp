@@ -270,7 +270,7 @@ namespace DiscordCoreInternal {
 
 	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
 
-	bool HttpsConnection::handleBuffer() noexcept {
+	void HttpsConnection::handleBuffer() noexcept {
 		this->theData.theStopWatch.resetTimer();
 		while (true) {
 			////std::cout << "HTTPS CLIENT LOOP 002" << std::endl;
@@ -278,7 +278,7 @@ namespace DiscordCoreInternal {
 				case HttpsState::Collecting_Code: {
 					if (this->theData.theStopWatch.hasTimePassed()) {
 						this->areWeDoneTheRequest = true;
-						return false;
+						return;
 					}
 					this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
 					this->parseCode(this->theInputBufferReal);
@@ -287,26 +287,26 @@ namespace DiscordCoreInternal {
 					this->theData.theStopWatch.resetTimer();
 					if (this->theData.responseCode == 204) {
 						this->areWeDoneTheRequest = true;
-						return false;
+						return;
 					}
-					return false;
+					return;
 				}
 				case HttpsState::Collecting_Headers: {
 					if (this->theData.theStopWatch.hasTimePassed()) {
 						this->areWeDoneTheRequest = true;
-						return false;
+						return;
 					}
 					if (!this->doWeHaveHeaders) {
 						this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
 						this->parseHeaders(this->theInputBufferReal);
 						this->theData.theStopWatch.resetTimer();
 					}
-					return false;
+					return;
 				}
 				case HttpsState::Collecting_Size: {
 					if (this->theData.theStopWatch.hasTimePassed()) {
 						this->areWeDoneTheRequest = true;
-						return false;
+						return;
 					}
 					if (!this->doWeHaveContentSize) {
 						this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
@@ -315,7 +315,7 @@ namespace DiscordCoreInternal {
 						this->clearCRLF(this->theInputBufferReal);
 						this->theData.theStopWatch.resetTimer();
 					}
-					return false;
+					return;
 				}
 				case HttpsState::Collecting_Contents: {
 					this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
@@ -323,16 +323,16 @@ namespace DiscordCoreInternal {
 					if ((this->theData.responseMessage.size() >= this->theData.contentSize && !theResult) || this->theData.theStopWatch.hasTimePassed() || !theResult ||
 						(this->theData.responseCode == -5 && this->theData.contentSize == -5)) {
 						this->areWeDoneTheRequest = true;
-						return false;
+						return;
 					} else {
 						this->theData.theStopWatch.resetTimer();
 					}
-					return false;
+					return;
 				}
 			}
 			std::this_thread::sleep_for(1ms);
 		}
-		return false;
+		return;
 	}
 
 	void HttpsConnection::disconnect(bool) noexcept {
@@ -343,8 +343,12 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpsConnection::resetValues() {
-		SSLDataInterface::outputBuffer.clear();
+		this->bytesRead = 0;
+		this->currentBaseUrl = "";
+		this->currentReconnectTries = 0;
+		this->isItChunked = false;
 		this->theInputBufferReal.clear();
+		this->outputBuffer.clear();
 		this->inputBuffer.clear();
 		this->theData = HttpsResponseData{};
 		this->doWeHaveContentSize = false;
@@ -610,18 +614,19 @@ namespace DiscordCoreInternal {
 			theConnection.resetValues();
 			ProcessIOResult theResult{};
 			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
-			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error) {
+			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error && !theStopWatch.hasTimePassed()) {
 				////std::cout << "HTTPS CLIENT LOOP 007" << std::endl;
-				theResult = theConnection.processIO(1);
-				if (theStopWatch.hasTimePassed()) {
-					break;
-				}
+				theResult = theConnection.processIO(500);
 			}
-			return theConnection.finalizeReturnValues(rateLimitData);
+			auto theData = theConnection.finalizeReturnValues(rateLimitData);
+			theConnection.resetValues();
+			return theData;
 		} catch (...) {
 			DiscordCoreAPI::reportException("httpsclient::getReturnData()");
 			theConnection.theData.responseCode = -1;
-			return theConnection.finalizeReturnValues(rateLimitData);
+			auto theData = theConnection.finalizeReturnValues(rateLimitData);
+			theConnection.resetValues();
+			return theData;
 		}
 	}
 }

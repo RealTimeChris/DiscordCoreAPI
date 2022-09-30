@@ -1674,16 +1674,18 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll RingBuffer {
 	  public:
-		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
-		RingBufferSlice* getCurrentTail();
-		RingBufferSlice* getCurrentHead();
-		size_t getUsedSpace();
-		bool isItEmpty();
-		bool isItFull();
-		void clear();
+		RingBuffer() noexcept = default;
+		RingBuffer(size_t theSliceCount) noexcept;
+		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept;
+		RingBufferSlice* getCurrentTail() noexcept;
+		RingBufferSlice* getCurrentHead() noexcept;
+		size_t getUsedSpace() noexcept;
+		bool isItEmpty() noexcept;
+		bool isItFull() noexcept;
+		void clear() noexcept;
 
 	  protected:
-		std::array<RingBufferSlice, 64> theArray{};
+		std::vector<RingBufferSlice> theArray{};
 		bool areWeFull{ false };
 		int64_t head{};
 		int64_t tail{};

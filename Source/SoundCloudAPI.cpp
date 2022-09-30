@@ -258,7 +258,7 @@ namespace DiscordCoreInternal {
 				HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
 				std::string baseUrl = newSong.finalDownloadUrls[counter].urlPath.substr(0, std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
 				std::string relativeUrl = newSong.finalDownloadUrls[counter].urlPath.substr(std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
-
+				std::cout << "THE CURRENT URL: " << relativeUrl << std::endl;
 				dataPackage03.baseUrl = baseUrl;
 				dataPackage03.relativePath = relativeUrl;
 				dataPackage03.workloadClass = HttpsWorkloadClass::Get;
@@ -267,7 +267,6 @@ namespace DiscordCoreInternal {
 					didWeGetZero = false;
 				}
 				int64_t amountToSubmitRemaining{ static_cast<int64_t>(result.responseMessage.size()) };
-				int64_t amountToSubmitRemainingFinal{ 0 };
 				int64_t amountSubmitted{ 0 };
 				while (amountToSubmitRemaining > 0) {
 					std::this_thread::sleep_for(1ms);
@@ -279,7 +278,7 @@ namespace DiscordCoreInternal {
 							amountToSubmitRemaining--;
 						}
 					} else {
-						amountToSubmitRemainingFinal = amountToSubmitRemaining;
+						int64_t amountToSubmitRemainingFinal{ amountToSubmitRemaining };
 						for (int64_t x = 0; x < amountToSubmitRemainingFinal; ++x) {
 							newerVector.push_back(result.responseMessage[amountSubmitted]);
 							amountSubmitted++;

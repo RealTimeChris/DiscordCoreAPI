@@ -50,15 +50,15 @@ namespace DiscordCoreInternal {
 	  public:
 		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
 
-		std::string stringifyJsonData(std::string& dataToSend, WebSocketOpCode theOpCode) noexcept;
-
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
-		bool parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept;
+		std::string stringifyJsonData(std::string& dataToSend, WebSocketOpCode theOpCode) noexcept;
 
 		virtual bool onMessageReceived(std::string_view theMessage) noexcept = 0;
 
-		bool parseMessage(WebSocketSSLShard* theShard) noexcept;
+		void parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept;
+
+		void parseMessage(WebSocketSSLShard* theShard) noexcept;
 
 		virtual void onClosed() noexcept = 0;
 
@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		virtual bool handleBuffer() noexcept;
+		virtual void handleBuffer() noexcept;
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 

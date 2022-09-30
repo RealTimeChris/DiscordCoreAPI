@@ -232,7 +232,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
+	void WebSocketMessageHandler::parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept {
 		if (theShard->areWeStillConnected() && theShard->currentState.load() == SSLShardState::Upgrading && theShard->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
 			auto theString = theShard->getInputBuffer();
 			theShard->currentMessage.writeData(theString.data(), theString.size());
@@ -240,22 +240,20 @@ namespace DiscordCoreInternal {
 			if (theFindValue != std::string::npos) {
 				theShard->currentMessage.clear();
 				theShard->currentState.store(SSLShardState::Collecting_Hello);
-				return true;
+				return;
 			}
 		}
-		return false;
+		return;
 	}
 
-	bool WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard) noexcept {
+	void WebSocketMessageHandler::parseMessage(WebSocketSSLShard* theShard) noexcept {
 		if (theShard->inputBuffer.getUsedSpace() > 0) {
-			if (theShard->currentMessage.size() < theShard->messageLength + theShard->messageOffset || theShard->currentMessage.size() == 0 ||
-				(theShard->messageLength + theShard->messageOffset == 0)) {
+			if (theShard->currentMessage.size() < theShard->messageLength + theShard->messageOffset || theShard->currentMessage.size() == 0) {
 				auto theString = theShard->getInputBuffer();
-				//std::cout << "THE STRING SIZE: " << theString.size() << std::endl;
 				theShard->currentMessage.writeData(theString.data(), theString.size());
 			}
 			if (theShard->currentMessage.size() < 4) {
-				return false;
+				return;
 			}
 
 			theShard->dataOpCode = static_cast<WebSocketOpCode>(theShard->currentMessage[0] & ~webSocketFinishBit);
@@ -274,12 +272,12 @@ namespace DiscordCoreInternal {
 					uint8_t length01 = theShard->currentMessage[1];
 					theShard->messageOffset = 2;
 					if (length01 & webSocketMaskBit) {
-						return false;
+						return;
 					}
 					theShard->messageLength = length01;
 					if (length01 == webSocketPayloadLengthMagicLarge) {
 						if (theShard->currentMessage.size() < 8) {
-							return false;
+							return;
 						}
 						uint8_t length03 = theShard->currentMessage[2];
 						uint8_t length04 = theShard->currentMessage[3];
@@ -287,7 +285,7 @@ namespace DiscordCoreInternal {
 						theShard->messageOffset += 2;
 					} else if (length01 == webSocketPayloadLengthMagicHuge) {
 						if (theShard->currentMessage.size() < 10) {
-							return false;
+							return;
 						}
 						theShard->messageLength = 0;
 						for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
@@ -297,13 +295,13 @@ namespace DiscordCoreInternal {
 						theShard->messageOffset += 8;
 					}
 					if (theShard->currentMessage.size() < theShard->messageOffset + theShard->messageLength) {
-						return false;
+						return;
 					} else {
 						this->onMessageReceived(theShard->currentMessage.substr(theShard->messageOffset, theShard->messageLength));
 						theShard->currentMessage.erase(0, theShard->messageLength + theShard->messageOffset);
 						theShard->messageOffset = 0;
 						theShard->messageLength = 0;
-						return true;
+						return;
 					}
 				}
 				case WebSocketOpCode::Op_Close: {
@@ -322,12 +320,9 @@ namespace DiscordCoreInternal {
 							 << endl;
 					}
 					this->onClosed();
-					return false;
+					return;
 				}
 			}
-			return false;
-		} else {
-			return false;
 		}
 	}
 
@@ -1456,11 +1451,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketSSLShard::handleBuffer() noexcept {
+	void WebSocketSSLShard::handleBuffer() noexcept {
 		if (this->currentState.load() == SSLShardState::Upgrading) {
-			return this->parseConnectionHeaders(this);
+			this->parseConnectionHeaders(this);
 		}
-		return this->parseMessage(this);
+		this->parseMessage(this);
 	}
 
 	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
@@ -1669,13 +1664,8 @@ namespace DiscordCoreInternal {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				this->disconnectVoiceInternal();
 				this->connectVoiceInternal();
-				std::vector<SSLClient*> theVector{};
-				for (auto& [key, value]: this->theShardMap) {
-					if (!value.get()->areWeConnecting.load()) {
-						theVector.emplace_back(value.get());
-					}
-				}
-				auto theResult = SSLClient::processIO(theVector);
+				auto theResult = SSLClient::processIO(this->theShardMap);
+				std::cout << "WEBSOCKET WHILE 56676767" << std::endl;
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -1685,10 +1675,11 @@ namespace DiscordCoreInternal {
 						}
 					}
 				}
+				std::cout << "WEBSOCKET WHILE 678678" << std::endl;
 				bool areWeConnected{ false };
-				for (auto& value: theVector) {
+				for (auto& [key,value]: this->theShardMap) {
 					if (value->areWeStillConnected()) {
-						static_cast<WebSocketSSLShard*>(value)->checkForAndSendHeartBeat();
+						static_cast<WebSocketSSLShard*>(value.get())->checkForAndSendHeartBeat();
 						areWeConnected = true;
 					}
 				}

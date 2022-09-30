@@ -120,9 +120,9 @@ namespace DiscordCoreInternal {
 
 		HttpsConnection(bool doWePrintErrorMessages);
 
-		bool handleBuffer() noexcept;
-
 		void disconnect(bool) noexcept;
+
+		void handleBuffer() noexcept;
 
 		void resetValues();
 

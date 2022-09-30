@@ -186,7 +186,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	SSLDataInterface::SSLDataInterface() noexcept {}
+	SSLDataInterface::SSLDataInterface() noexcept : outputBuffer(64), inputBuffer(64){};
 
 	bool SSLConnectionInterface::initialize() noexcept {
 		if (SSLConnectionInterface::context = SSL_CTX_new(TLS_client_method()); SSLConnectionInterface::context == nullptr) {
@@ -311,53 +311,68 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	std::vector<SSLClient*> SSLClient::processIO(std::vector<SSLClient*>& theVector) noexcept {
+	std::vector<SSLClient*> SSLClient::processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept {
 		std::vector<SSLClient*> theReturnValue{};
 		PollFDWrapper readWriteSet{};
-		for (uint32_t x = 0; x < theVector.size(); ++x) {
-			pollfd theFdSet{ .fd = static_cast<::SOCKET>(theVector[x]->theSocket) };
-			if (!theVector[x]->outputBuffer.isItEmpty()) {
-				theFdSet.events = POLLIN | POLLOUT;
-			} else {
-				theFdSet.events = POLLIN;
+		for (auto& [key, value]: theShardMap) {
+			if (value->areWeStillConnected() && !value->areWeConnecting.load()) {
+				pollfd theFdSet{ .fd = static_cast<::SOCKET>(value->theSocket) };
+				if (!value->outputBuffer.isItEmpty()) {
+					theFdSet.events = POLLIN | POLLOUT;
+				} else {
+					theFdSet.events = POLLIN;
+				}
+				readWriteSet.thePolls[key] = theFdSet;
 			}
-			readWriteSet.theIndices.emplace_back(x);
-			readWriteSet.thePolls.emplace_back(theFdSet);
 		}
 
-		if (readWriteSet.theIndices.size() == 0) {
+		if (readWriteSet.thePolls.size() == 0) {
 			return theReturnValue;
 		}
 
-		if (auto returnValue = poll(readWriteSet.thePolls.data(), static_cast<unsigned long>(readWriteSet.theIndices.size()), 1); returnValue == SOCKET_ERROR) {
-			for (uint32_t x = 0; x < readWriteSet.thePolls.size(); ++x) {
-				if (readWriteSet.thePolls[x].revents & POLLERR || readWriteSet.thePolls[x].revents & POLLHUP || readWriteSet.thePolls[x].revents & POLLNVAL) {
-					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
+		if (auto returnValue = poll(&readWriteSet.thePolls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.thePolls.size()), 1000); returnValue == SOCKET_ERROR) {
+			for (auto& [key,value]: readWriteSet.thePolls) {
+				if (readWriteSet.thePolls[key].revents & POLLERR || readWriteSet.thePolls[key].revents & POLLHUP || readWriteSet.thePolls[key].revents & POLLNVAL) {
+					theReturnValue.emplace_back(theShardMap[key].get());
 				}
 			}
 			return theReturnValue;
 
 		} else if (returnValue == 0) {
+			for (auto& [key, value]: theShardMap) {
+			std::cout << "SSL CLIENT WHILE 5675675675" << std::endl;
+			if (!value->areWeAStandaloneSocket) {
+				std::cout << "SSL CLIENT WHILE 45674567" << std::endl;
+				value->handleBuffer();
+			}
+		}
 			return theReturnValue;
 		}
 
-		for (uint32_t x = 0; x < readWriteSet.theIndices.size(); ++x) {
-			if (readWriteSet.thePolls[x].revents & POLLOUT) {
+		for (auto& [key, value]: readWriteSet.thePolls) {
+		
+			if (readWriteSet.thePolls[key].revents & POLLOUT) {
 				std::cout << "SSL CLIENT WHILE 233434" << std::endl;
-				if (!theVector[readWriteSet.theIndices[x]]->processWriteData()) {
-					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
+				if (!theShardMap[key]->processWriteData()) {
+					theReturnValue.emplace_back(theShardMap[key].get());
 					continue;
 				}
 			}
-			if (readWriteSet.thePolls[x].revents & POLLIN) {
+			if (readWriteSet.thePolls[key].revents & POLLIN) {
 				std::cout << "SSL CLIENT WHILE 453453" << std::endl;
-				if (!theVector[readWriteSet.theIndices[x]]->processReadData()) {
-					theReturnValue.emplace_back(theVector[readWriteSet.theIndices[x]]);
+				if (!theShardMap[key]->processReadData()) {
+					theReturnValue.emplace_back(theShardMap[key].get());
 					continue;
 				}
 			}
-			
-			std::cout << "SSL CLIENT WHILE 45674567" << std::endl;
+		}
+		std::cout << "CURRENT SIZE: " << theShardMap.size() << std::endl;
+		for (auto& [key, value]: theShardMap) {
+			std::cout << "SSL CLIENT WHILE 5675675675" << std::endl;
+			if (!value->areWeAStandaloneSocket) {
+				std::cout << "SSL CLIENT WHILE 45674567" << std::endl;
+				value->handleBuffer();
+			}
 		}
 		return theReturnValue;
 	}
@@ -440,9 +455,8 @@ namespace DiscordCoreInternal {
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
 			if (!this->areWeAStandaloneSocket) {
-				while (this->handleBuffer()) {
-					std::cout << "SSL CLIENT WHILE 0303" << std::endl;
-				}
+				std::cout << "SSL CLIENT WHILE 45674567" << std::endl;
+				this->handleBuffer();
 			}
 			theResult = ProcessIOResult::No_Error;
 		} else {
@@ -466,9 +480,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 		if (!this->areWeAStandaloneSocket) {
-			while (this->handleBuffer()) {
-				std::cout << "SSL CLIENT WHILE 0303" << std::endl;
-			}
+			this->handleBuffer();
 		}
 		return theResult;
 	}
@@ -532,13 +544,10 @@ namespace DiscordCoreInternal {
 					}
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
+							std::cout << "THE READ BYTES: " << readBytes << ": " << std::string{ this->inputBuffer.getCurrentHead()->getCurrentHead(), readBytes } << std::endl;
 							this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
 							this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 							this->bytesRead += readBytes;
-							std::cout << "THE READ BYTES: " << readBytes << std::endl;
-							if (!this->areWeAStandaloneSocket) {
-								this->handleBuffer();
-							}
 						}
 						break;
 					}
@@ -555,6 +564,10 @@ namespace DiscordCoreInternal {
 				std::cout << "SSL CLIENT WHILE 0505: " << std::endl;
 			} while (SSL_pending(this->ssl));
 		}
+
+		if (!this->areWeAStandaloneSocket) {
+			this->handleBuffer();
+		}
 		return true;
 	}
 	
@@ -562,7 +575,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept {
+	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept : outputBuffer(16){	
 		this->streamType = streamTypeNew;
 	}
 
@@ -663,6 +676,7 @@ namespace DiscordCoreInternal {
 		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
 			size_t remainingBytes{ dataToWrite.size() };
 			while (remainingBytes > 0) {
+				std::cout << "REMAINING BYTES: " << remainingBytes << std::endl;
 				std::string newString{};
 				size_t amountToCollect{};
 				if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
@@ -671,12 +685,16 @@ namespace DiscordCoreInternal {
 					amountToCollect = dataToWrite.size();
 				}
 				newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
-				this->outputBuffer.push_back(newString);
+				memcpy(this->outputBuffer.getCurrentHead()->getCurrentHead(), newString.data(), newString.size());
+				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, newString.size());
+				this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 				dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 				remainingBytes = dataToWrite.size();
 			}
 		} else {
-			this->outputBuffer.push_back(dataToWrite);
+			memcpy(this->outputBuffer.getCurrentHead()->getCurrentHead(), dataToWrite.data(), dataToWrite.size());
+			this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
+			this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 		}
 	}
 
@@ -699,14 +717,15 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::processWriteData() noexcept {
-		if (this->outputBuffer.size() > 0 && this->areWeStreamConnected) {
-			auto bytesToWrite{ this->outputBuffer.back().size() };
+		if (this->outputBuffer.getUsedSpace() > 0 && this->areWeStreamConnected) {
+			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
 			int32_t writtenBytes =
-				sendto(this->theSocket, this->outputBuffer.back().data(), static_cast<int32_t>(bytesToWrite), 0, ( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr));
+				sendto(this->theSocket, this->outputBuffer.getCurrentTail()->getCurrentTail(), static_cast<int32_t>(bytesToWrite), 0, ( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr));
 			if (writtenBytes < 0) {
 				return false;
 			} else {
-				this->outputBuffer.pop_back();
+				this->outputBuffer.getCurrentTail()->clear();
+				this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 				return true;
 			}
 		}

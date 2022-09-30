@@ -269,11 +269,13 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool VoiceConnection::handleBuffer() noexcept {
+	void VoiceConnection::handleBuffer() noexcept {
 		if (this->currentState.load() == DiscordCoreInternal::SSLShardState::Upgrading) {
-			return this->parseConnectionHeaders(this);
+			this->parseConnectionHeaders(this);
+			return;
 		}
-		return VoiceConnection::parseMessage(this);
+		VoiceConnection::parseMessage(this);
+		return;
 	}
 
 	bool VoiceConnection::parseMessage(VoiceConnection* theShard) noexcept {
@@ -1049,7 +1051,6 @@ namespace DiscordCoreAPI {
 			this->taskThread03.reset(nullptr);
 		}
 		this->areWeHeartBeating = false;
-		DatagramSocketClient::outputBuffer.clear();
 		WebSocketSSLShard::outputBuffer.clear();
 		this->currentReconnectTries++;
 		this->areWeConnectedBool.store(false);

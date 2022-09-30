@@ -72,8 +72,7 @@ namespace DiscordCoreInternal {
 	using SOCKET = INT_PTR;
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
-		std::vector<uint32_t> theIndices{};
-		std::vector<pollfd> thePolls{};
+		std::unordered_map<uint32_t, pollfd> thePolls{};
 	};
 
 #ifdef _WIN32
@@ -227,7 +226,7 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
 
-		static std::vector<SSLClient*> processIO(std::vector<SSLClient*>&) noexcept;
+		static std::vector<SSLClient*> processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept;
 
 		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
 
@@ -235,7 +234,7 @@ namespace DiscordCoreInternal {
 
 		std::string_view getInputBuffer() noexcept;
 
-		virtual bool handleBuffer() noexcept = 0;
+		virtual void handleBuffer() noexcept = 0;
 
 		bool areWeStillConnected() noexcept;
 
@@ -284,10 +283,10 @@ namespace DiscordCoreInternal {
 		const int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::array<char, 1024 * 16> inputBuffer{};
 		DiscordCoreAPI::StreamType streamType{};
-		std::deque<std::string> outputBuffer{};
 		sockaddr_in theStreamTargetAddress{};
 		bool areWeStreamConnected{ false };
 		size_t currentlyUsedSpace{};
+		RingBuffer outputBuffer{};
 		SOCKETWrapper theSocket{};
 		int64_t bytesRead{};
 	};

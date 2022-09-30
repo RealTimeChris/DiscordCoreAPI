@@ -1666,7 +1666,6 @@ namespace DiscordCoreInternal {
 			std::string_view theString{ this->theString02.data(), this->theSize };
 			return theString;
 		}
-		
 	}
 
 	char StringBuffer::operator[](size_t theIndex) {
@@ -1682,6 +1681,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void StringBuffer::clear() {
+		this->whichOneAreWeOn = 0;
 		this->theSize = 0;
 	}
 
@@ -1748,7 +1748,12 @@ namespace DiscordCoreInternal {
 		this->head = 0;
 	}
 
-	void RingBuffer::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) {
+	RingBuffer::RingBuffer(const size_t theSliceCount) noexcept {
+		this->theArray = std::vector<RingBufferSlice>{};
+		this->theArray.resize(theSliceCount);
+	}
+
+	void RingBuffer::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept {
 		if (theType == RingBufferAccessType::Read) {
 			this->tail = (this->tail + theSize) % this->theArray.size();
 			if (this->tail != this->head) {
@@ -1765,7 +1770,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	size_t RingBuffer::getUsedSpace() {
+	size_t RingBuffer::getUsedSpace() noexcept {
 		if (this->areWeFull) {
 			return this->theArray.size();
 		}
@@ -1778,26 +1783,29 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	RingBufferSlice* RingBuffer::getCurrentTail() {
+	RingBufferSlice* RingBuffer::getCurrentTail() noexcept {
 		return (this->theArray.data() + (this->tail % (this->theArray.size())));
 	}
 
-	RingBufferSlice* RingBuffer::getCurrentHead() {
+	RingBufferSlice* RingBuffer::getCurrentHead() noexcept {
 		return (this->theArray.data() + (this->head % (this->theArray.size())));
 	}
 
-	bool RingBuffer::isItEmpty() {
+	bool RingBuffer::isItEmpty() noexcept {
 		if (this->areWeFull) {
 			return false;
 		}
 		return this->tail == this->head;
 	}
 
-	bool RingBuffer::isItFull() {
+	bool RingBuffer::isItFull() noexcept {
 		return this->areWeFull;
 	}
 
-	void RingBuffer::clear() {
+	void RingBuffer::clear() noexcept {
+		for (auto& value: this->theArray) {
+			value.clear();
+		}
 		this->areWeFull = false;
 		this->tail = 0;
 		this->head = 0;

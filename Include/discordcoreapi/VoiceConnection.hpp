@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 
 		void sendVoiceData(std::string& responseData) noexcept;
 
-		bool handleBuffer() noexcept;
+		void handleBuffer() noexcept;
 
 		bool parseMessage(VoiceConnection* theShard) noexcept;
 
