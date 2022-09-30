@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll ActivityData;
 
-enum class ValueType { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Double = 4, Float = 5, String = 6, Bool = 7, Int64 = 8, Uint64 = 9, Unset = 10 };
+	enum class ValueType { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Double = 4, Float = 5, String = 6, Bool = 7, Int64 = 8, Uint64 = 9, Unset = 10 };
 
 	struct DiscordCoreAPI_Dll JsonArray;
 
