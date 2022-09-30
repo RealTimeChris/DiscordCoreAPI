@@ -87,10 +87,6 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnGuildCreationData::~OnGuildCreationData() noexcept {
-		this->guild.release();
-	}
-
 	OnGuildUpdateData::OnGuildUpdateData(std::unique_ptr<GuildData> guildNew, DiscordCoreClient* theClient) {
 		this->guild = std::move(guildNew);
 		this->guild->discordCoreClient = theClient;
