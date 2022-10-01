@@ -1633,10 +1633,6 @@ namespace DiscordCoreInternal {
 
 		void writeData(const char*, size_t);
 
-		std::string_view substr(size_t offSet, size_t length);
-
-		size_t find(const char* theString);
-
 		operator std::string_view();
 
 		void erase(size_t, size_t);
@@ -1645,13 +1641,9 @@ namespace DiscordCoreInternal {
 
 		size_t size();
 
-		char* begin();
-
 		void clear();
 
 		char* data();
-
-		char* end();
 
 	  protected:
 		std::array<char, 1024 * 1024> theString01{};
