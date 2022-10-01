@@ -439,7 +439,6 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-
 	JsonObject::JsonObject(bool theData) noexcept {
 		this->theValue = new bool{};
 		*static_cast<bool*>(this->theValue) = theData;
@@ -1634,6 +1633,55 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	std::string_view StringBuffer::substr(size_t offSet, size_t size) {
+		if (this->whichOneAreWeOn == 0) {
+			std::string_view theString{ this->theString01.data() + offSet, size };
+			return theString;
+		} else {
+			std::string_view theString{ this->theString02.data() + offSet, size };
+			return theString;
+		}
+	}
+
+	size_t StringBuffer::find(const char* theString) {
+		std::stringstream theStream{};
+		theStream << theString;
+		if (theStream.str().size() > this->theSize) {
+			return std::string::npos;
+		}
+		if (this->whichOneAreWeOn == 0) {
+			bool didWeFindAndEqual{ false };
+			size_t initialIndex{ std::string::npos };
+			for (size_t x = 0; x < theStream.str().size(); ++x) {
+				if (didWeFindAndEqual) {
+					if (this->theString01[x] != theStream.str()[x]) {
+						return std::string::npos;
+					}
+				}
+				if (!didWeFindAndEqual && this->theString01[x] == theStream.str()[x]) {
+					didWeFindAndEqual = true;
+					initialIndex = x;
+				}
+			}
+			return initialIndex;
+		} else {
+			bool didWeFindAndEqual{ false };
+			size_t initialIndex{ std::string::npos };
+			for (size_t x = 0; x < theStream.str().size(); ++x) {
+				if (didWeFindAndEqual) {
+					if (this->theString02[x] != theStream.str()[x]) {
+						return std::string::npos;
+					}
+				}
+				if (this->theString02[x] == theStream.str()[x]) {
+					didWeFindAndEqual = true;
+					initialIndex = x;
+				}
+			}
+			return initialIndex;
+		}
+	}
+
 	void StringBuffer::erase(size_t offSet, size_t amount) {
 		this->theSize = this->theSize - amount;
 		if (this->whichOneAreWeOn == 0) {
@@ -1687,6 +1735,22 @@ namespace DiscordCoreInternal {
 	}
 
 	char* StringBuffer::data() {
+		if (this->whichOneAreWeOn == 0) {
+			return this->theString01.data();
+		} else {
+			return this->theString02.data();
+		}
+	}
+
+	char* StringBuffer::end() {
+		if (this->whichOneAreWeOn == 0) {
+			return this->theString01.data() + this->theSize;
+		} else {
+			return this->theString02.data() + this->theSize;
+		}
+	}
+
+	char* StringBuffer::begin() {
 		if (this->whichOneAreWeOn == 0) {
 			return this->theString01.data();
 		} else {

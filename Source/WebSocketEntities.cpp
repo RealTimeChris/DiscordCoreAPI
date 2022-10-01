@@ -425,8 +425,7 @@ namespace DiscordCoreInternal {
 	std::atomic_int32_t theInt{};
 	bool WebSocketSSLShard::onMessageReceived(std::string_view theDataNew) noexcept {
 		if (this->discordCoreClient) {
-			std::string refString{};
-			std::string& payload{ refString };
+			std::string_view payload{};
 			if (this->areWeStillConnected()) {
 				try {
 					bool returnValue{ false };
@@ -439,9 +438,7 @@ namespace DiscordCoreInternal {
 							try {
 								theStopWatchReal.resetTimer();
 								payload = ErlPacker::parseEtfToJson(theDataNew);
-
-								payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
-								theDocument = this->theParser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity()));
+								theDocument = this->theParser.iterate(payload.data(), payload.length());
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");

@@ -60,21 +60,20 @@ namespace DiscordCoreInternal {
 	  public:
 		ErlPacker() noexcept {};
 
-		std::string parseJsonToEtf(std::string&& dataToParse);
+		std::string_view parseJsonToEtf(std::string&& dataToParse);
 
-		std::string& parseEtfToJson(std::string_view dataToParse);
+		std::string_view parseEtfToJson(std::string_view dataToParse);
 
 		~ErlPacker(){};
 
 	  protected:
-		std::string comparisongStringFalse{ "false" };
-		std::string comparisongStringNil{ "nil" };
-		std::string falseString{ "false" };
-		std::string nilString{ "nil" };
 		std::string bufferString{};
 		std::string_view buffer{};
+		uint64_t stringSize{};
 		uint64_t offSet{};
 		uint64_t size{};
+
+		void writeToString(const char*, size_t length);
 
 		void singleValueJsonToETF(simdjson::ondemand::value jsonData);
 
@@ -125,45 +124,45 @@ namespace DiscordCoreInternal {
 
 		size_t readString(uint32_t length);
 
-		std::string processAtom(const char* atom, uint32_t length);
+		void processAtom(const char* atom, uint32_t length);
 
-		std::string singleValueETFToJson();
+		void singleValueETFToJson();
 
-		std::string parseSmallIntegerExt();
+		void parseSmallIntegerExt();
 
-		std::string parseBigint(uint32_t);
+		void parseBigint(uint32_t);
 
-		std::string parseArray(uint32_t);
+		void parseArray(uint32_t);
 
-		std::string parseTuple(uint32_t);
+		void parseTuple(uint32_t);
 
-		std::string parseSmallTupleExt();
+		void parseSmallTupleExt();
 
-		std::string parseLargeTupleExt();
+		void parseLargeTupleExt();
 
-		std::string parseSmallAtomExt();
+		void parseSmallAtomExt();
 
-		std::string parseStringAsList();
+		void parseStringAsList();
 
-		std::string parseNewFloatExt();
+		void parseNewFloatExt();
 
-		std::string parseSmallBigExt();
+		void parseSmallBigExt();
 
-		std::string parseLargeBigExt();
+		void parseLargeBigExt();
 
-		std::string parseAtomUtf8Ext();
+		void parseAtomUtf8Ext();
 
-		std::string parseIntegerExt();
+		void parseIntegerExt();
 
-		std::string parseBinaryExt();
+		void parseBinaryExt();
 
-		std::string parseFloatExt();
+		void parseFloatExt();
 
-		std::string parseListExt();
+		void parseListExt();
 
-		std::string parseNilExt();
+		void parseNilExt();
 
-		std::string parseMapExt();
+		void parseMapExt();
 	};
 }// namespace DiscordCoreInternal
 #endif

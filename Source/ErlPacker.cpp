@@ -29,7 +29,7 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const std::string& message) : std::runtime_error(message.c_str()){};
 
-	std::string ErlPacker::parseJsonToEtf(std::string&& dataToParse) {
+	std::string_view ErlPacker::parseJsonToEtf(std::string&& dataToParse) {
 		this->bufferString.clear();
 		this->offSet = 0;
 		this->size = 0;
@@ -41,7 +41,7 @@ namespace DiscordCoreInternal {
 		return this->bufferString;
 	}
 
-	std::string& ErlPacker::parseEtfToJson(std::string_view dataToParse) {
+	std::string_view ErlPacker::parseEtfToJson(std::string_view dataToParse) {
 		if (this->bufferString.size() < dataToParse.size()) {
 			this->bufferString.resize(dataToParse.size() * 2);
 		}
@@ -51,12 +51,8 @@ namespace DiscordCoreInternal {
 		if (this->readBits<uint8_t>() != formatVersion) {
 			throw ErlPackError{ "ErlPacker::parseEtfToJson() Error: Incorrect format version specified." };
 		}
-		auto theString = this->singleValueETFToJson();
-		memcpy(this->bufferString.data(), theString.data(), theString.size());
-		for (size_t x = theString.size(); x < this->bufferString.size(); ++x) {
-			this->bufferString[x] = '\0';
-		}
-		return this->bufferString;
+		this->singleValueETFToJson();
+		return std::string_view{ this->bufferString.data(), this->stringSize };
 	}
 
 	void ErlPacker::singleValueJsonToETF(simdjson::ondemand::value jsonData) {
@@ -86,6 +82,14 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		}
+	}
+
+	void ErlPacker::writeToString(const char*theData, size_t length) {
+		if (this->bufferString.size() > this->stringSize + length) {
+			this->bufferString.resize((this->bufferString.size() + length) * 2);
+		}
+		memcpy(this->bufferString.data() + this->stringSize, theData, length);
+		this->stringSize += length;
 	}
 
 	void ErlPacker::writeObject(simdjson::ondemand::value jsonData) {
@@ -256,86 +260,85 @@ namespace DiscordCoreInternal {
 		}
 		size_t theFinalSize{};
 		char* theStringNew = ( char* )this->buffer.data() + this->offSet;
-		size_t theIndex{};
 		for (uint32_t x = 0; x < length; ++x) {
 			switch (static_cast<char>(theStringNew[x])) {
 				case 0x00: {
 					break;
 				}
 				case 0x27: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('\'');
+					this->bufferString[this->stringSize] = static_cast<char>('\\');
+					this->bufferString[this->stringSize + 1] = static_cast<char>('\'');
 					theFinalSize += 2;
-					theIndex += 2;
+					this->stringSize += 2;
 					break;
 				}
 				case 0x22: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('"');
+					this->bufferString[this->stringSize] = static_cast<char>('\\');
+					this->bufferString[this->stringSize + 1] = static_cast<char>('"');
 					theFinalSize += 2;
-					theIndex += 2;
+					this->stringSize += 2;
 					break;
 				}
 				case 0x5c: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('\\');
+					this->bufferString[this->stringSize] = static_cast<char>('\\');
+					this->bufferString[this->stringSize + 1] = static_cast<char>('\\');
 					theFinalSize += 2;
-					theIndex += 2;
+					this->stringSize += 2;
 					break;
 				}
 				case 0x07: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('a');
+					this->bufferString[this->stringSize] = static_cast<char>('\\');
+					this->bufferString[this->stringSize + 1] = static_cast<char>('a');
 					theFinalSize += 2;
-					theIndex += 2;
+					this->stringSize += 2;
 					break;
 				}
 				case 0x08: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('b');
+					this->bufferString[this->stringSize] = static_cast<char>('\\');
+					this->bufferString[this->stringSize + 1] = static_cast<char>('b');
 					theFinalSize += 2;
-					theIndex += 2;
+					this->stringSize += 2;
 					break;
 				}
 				case 0x0C: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('f');
+					this->bufferString[this->stringSize] = static_cast<char>('\\');
+					this->bufferString[this->stringSize + 1] = static_cast<char>('f');
 					theFinalSize += 2;
-					theIndex += 2;
+					this->stringSize += 2;
 					break;
 				}
 				case 0x0A: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('n');
+					this->bufferString[this->stringSize] = static_cast<char>('\\');
+					this->bufferString[this->stringSize + 1] = static_cast<char>('n');
 					theFinalSize += 2;
-					theIndex += 2;
+					this->stringSize += 2;
 					break;
 				}
 				case 0x0D: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('r');
+					this->bufferString[this->stringSize] = static_cast<char>('\\');
+					this->bufferString[this->stringSize + 1] = static_cast<char>('r');
 					theFinalSize += 2;
-					theIndex += 2;
+					this->stringSize += 2;
 					break;
 				}
 				case 0x0B: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('v');
+					this->bufferString[this->stringSize] = static_cast<char>('\\');
+					this->bufferString[this->stringSize + 1] = static_cast<char>('v');
 					theFinalSize += 2;
-					theIndex += 2;
+					this->stringSize += 2;
 					break;
 				}
 				case 0x09: {
-					this->bufferString[theIndex] = static_cast<char>('\\');
-					this->bufferString[theIndex + 1] = static_cast<char>('t');
+					this->bufferString[this->stringSize] = static_cast<char>('\\');
+					this->bufferString[this->stringSize + 1] = static_cast<char>('t');
 					theFinalSize += 2;
-					theIndex += 2;
+					this->stringSize += 2;
 					break;
 				}
 				default: {
-					this->bufferString[theIndex] = theStringNew[x];
+					this->bufferString[this->stringSize] = theStringNew[x];
 					theFinalSize++;
-					theIndex++;
+					this->stringSize++;
 					break;
 				}
 			}
@@ -344,28 +347,32 @@ namespace DiscordCoreInternal {
 		return theFinalSize;
 	}
 
-	std::string ErlPacker::processAtom(const char* atom, uint32_t length) {
+	void ErlPacker::processAtom(const char* atom, uint32_t length) {
 		if (atom == nullptr) {
-			return std::string{};
+			return;
 		}
 		if (length >= 3 && length <= 5) {
 			if (length == 3 && strncmp(atom, "nil", 3) == 0) {
-				return "null";
+				this->writeToString("null", 4);
+				return;
 			} else if (length == 4 && strncmp(atom, "null", 4) == 0) {
-				return "null";
+				this->writeToString("null", 4);
+				return;
 			} else if (length == 4 && strncmp(atom, "true", 4) == 0) {
-				return "true";
+				this->writeToString("true", 4);
+				return;
 			} else if (length == 5 && strncmp(atom, "false", 5) == 0) {
-				return "false";
+				this->writeToString("false", 5);
+				return;
 			}
 		}
-		std::string theValue{ "\"" };
-		theValue += std::string{ atom, length };
-		theValue += "\"";
-		return theValue;
+		this->writeToString("\"", 2);
+		this->writeToString(atom, length);
+		this->writeToString("\"", 2);
+		return;
 	}
 
-	std::string ErlPacker::singleValueETFToJson() {
+	void ErlPacker::singleValueETFToJson() {
 		if (this->offSet >= this->size) {
 			throw ErlPackError{ "ErlPacker::singleValueETFToJson() Error: Read past end of ETF buffer.\n\n" };
 		}
@@ -425,11 +432,12 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::string ErlPacker::parseSmallIntegerExt() {
-		return std::to_string(this->readBits<uint8_t>());
+	void ErlPacker::parseSmallIntegerExt() {
+		this->writeToString(( const char* )this->readBits<uint8_t>(), 1);
+		return;
 	}
 
-	std::string ErlPacker::parseBigint(uint32_t digits) {
+	void ErlPacker::parseBigint(uint32_t digits) {
 		uint8_t sign = this->readBits<uint8_t>();
 		if (digits > 8) {
 			throw ErlPackError{ "ErlPacker::parseBigint() Error: Integers larger than 8 bytes are not supported.\n\n" };
@@ -444,11 +452,14 @@ namespace DiscordCoreInternal {
 		}
 		if (digits <= 4) {
 			if (sign == 0) {
-				return std::to_string(value);
+				this->writeToString(reinterpret_cast<const char*>(&value), sizeof(value));
+				return;
 			}
 			const bool isSignBitAvailable = (value & 1ull << 31ull) == 0;
 			if (isSignBitAvailable) {
-				return std::to_string(-static_cast<int32_t>(value));
+				value = -value;
+				this->writeToString(reinterpret_cast<const char*>(&value), sizeof(value));
+				return;
 			}
 		}
 		char outBuffer[32] = { 0 };
@@ -460,96 +471,96 @@ namespace DiscordCoreInternal {
 		}
 		const uint8_t length = static_cast<uint8_t>(res);
 		std::string theReturnValue = std::string{ outBuffer, length };
-		return theReturnValue;
+		this->writeToString(reinterpret_cast<const char*>(&theReturnValue), sizeof(theReturnValue));
+		return;
 	}
 
-	std::string ErlPacker::parseArray(const uint32_t length) {
-		std::string array{};
+	void ErlPacker::parseArray(const uint32_t length) {
 		for (uint32_t x = 0; x < length; x++) {
-			array += std::move(this->singleValueETFToJson());
+			this->singleValueETFToJson();
 			if (x < length - 1) {
-				array += ",";
+				this->writeToString(",", 1);
 			}
 		}
-
-		return array;
+		return;
 	}
 
-	std::string ErlPacker::parseTuple(const uint32_t length) {
+	void ErlPacker::parseTuple(const uint32_t length) {
 		return this->parseArray(length);
 	}
 
-	std::string ErlPacker::parseSmallTupleExt() {
+	void ErlPacker::parseSmallTupleExt() {
 		return this->parseTuple(this->readBits<uint8_t>());
 	}
 
-	std::string ErlPacker::parseLargeTupleExt() {
+	void ErlPacker::parseLargeTupleExt() {
 		return this->parseTuple(this->readBits<uint32_t>());
 	}
 
-	std::string ErlPacker::parseSmallAtomExt() {
+	void ErlPacker::parseSmallAtomExt() {
 		uint8_t length = this->readBits<uint8_t>();
 		auto lengthNew = this->readString(length);
 		return this->processAtom(this->bufferString.data(), length);
 	};
 
-	std::string ErlPacker::parseStringAsList() {
-		std::string theString{ "\"" };
+	void ErlPacker::parseStringAsList() {
+		this->writeToString("\"", 2);
 		uint16_t length = this->readBits<uint16_t>();
 		if (static_cast<uint64_t>(this->offSet) + length > this->size) {
 			throw ErlPackError{ "ErlPacker::parseStringAsList() Error: String list past end of buffer.\n\n" };
 		}
-		theString.reserve(theString.size() + length);
 		for (uint16_t x = 0; x < length; ++x) {
-			theString.push_back(this->parseSmallIntegerExt()[0]);
+			this->parseSmallIntegerExt();
 		}
-		theString += "\"";
-		return theString;
+		this->writeToString("\"", 2);
+
+		return;
 	}
 
-	std::string ErlPacker::parseNewFloatExt() {
+	void ErlPacker::parseNewFloatExt() {
 		uint64_t theValue = readBits<uint64_t>();
 		void* thePtr{ &theValue };
-		std::string theValueNew = std::to_string(*static_cast<double*>(thePtr));
-		return theValueNew;
+		this->writeToString(reinterpret_cast<const char*>(thePtr), sizeof(double));
+		return ;
 	}
 
-	std::string ErlPacker::parseSmallBigExt() {
-		std::string theString{ "\"" };
-		theString += this->parseBigint(this->readBits<uint8_t>());
-		theString += "\"";
-		return theString;
+	void ErlPacker::parseSmallBigExt() {
+		this->writeToString("\"", 2);
+		this->parseBigint(this->readBits<uint8_t>());
+		this->writeToString("\"", 2);
+		return;
 	}
 
-	std::string ErlPacker::parseLargeBigExt() {
+	void ErlPacker::parseLargeBigExt() {
 		return this->parseBigint(this->readBits<uint32_t>());
 	}
 
-	std::string ErlPacker::parseAtomUtf8Ext() {
+	void ErlPacker::parseAtomUtf8Ext() {
 		uint32_t length = this->readBits<uint16_t>();
 		auto lengthNew = static_cast<uint32_t>(this->readString(length));
 		return this->processAtom(this->bufferString.data(), lengthNew);
 	}
 
-	std::string ErlPacker::parseIntegerExt() {
-		return std::to_string(this->readBits<uint32_t>());
+	void ErlPacker::parseIntegerExt() {
+		auto theInteger = this->readBits<uint32_t>();
+		this->writeToString(reinterpret_cast<const char*>(&theInteger), 4);
+		return;
 	}
 
-	std::string ErlPacker::parseBinaryExt() {
-		std::string theString{ "\"" };
+	void ErlPacker::parseBinaryExt() {
+		this->writeToString("\"", 2);
 		uint32_t length = this->readBits<uint32_t>();
-		auto lengthNew = this->readString(length);
-		theString += std::string{ this->bufferString.data(), lengthNew };
-		theString += "\"";
-		return theString;
+		this->readString(length);
+		this->writeToString("\"", 2);
+		return;
 	}
 
-	std::string ErlPacker::parseFloatExt() {
+	void ErlPacker::parseFloatExt() {
 		const uint8_t floatLength = 31;
 		size_t floatString = readString(floatLength);
 
 		if (floatString == NULL) {
-			return std::string{};
+			return;
 		}
 
 		double number{};
@@ -559,43 +570,43 @@ namespace DiscordCoreInternal {
 		auto count = sscanf(nullTerminated.data(), "%lf", &number);
 
 		if (count != 1) {
-			return std::string{};
+			return;
 		}
-
-		std::string returnValue = std::to_string(number);
-		return returnValue;
+		this->writeToString(reinterpret_cast<const char*>(&number), sizeof(number));
+		return;
 	}
 
-	std::string ErlPacker::parseListExt() {
+	void ErlPacker::parseListExt() {
 		uint32_t length = this->readBits<uint32_t>();
 		std::string theArray{};
-		theArray += "[";
-		theArray += std::move(this->parseArray(length));
-		theArray += "]";
+		this->writeToString("[", 1);
+		this->parseArray(length);
+		this->writeToString("]", 1);
 		uint8_t theValue = this->readBits<uint8_t>();
 		if (static_cast<ETFTokenType>(theValue) != ETFTokenType::Nil_Ext) {
-			return std::string{};
+			return;
 		}
-		return theArray;
+		return;
 	}
 
-	std::string ErlPacker::parseNilExt() {
-		return "[]";
+	void ErlPacker::parseNilExt() {
+		this->writeToString("[]", 2);
+		return;
 	}
 
-	std::string ErlPacker::parseMapExt() {
+	void ErlPacker::parseMapExt() {
 		uint32_t length = readBits<uint32_t>();
 		std::string map{};
-		map += "{";
+		this->writeToString("{", 1);
 		for (uint32_t i = 0; i < length; ++i) {
-			map += std::move(this->singleValueETFToJson());
-			map += ":";
-			map += std::move(this->singleValueETFToJson());
+			this->singleValueETFToJson();
+			this->writeToString(":", 1);
+			this->singleValueETFToJson();
 			if (i < length - 1) {
-				map += ",";
+				this->writeToString(",", 1);
 			}
 		}
-		map += "}";
-		return map;
+		this->writeToString("}", 1);
+		return;
 	}
 }
