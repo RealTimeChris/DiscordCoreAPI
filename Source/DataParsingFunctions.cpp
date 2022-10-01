@@ -143,8 +143,7 @@ namespace DiscordCoreAPI {
 	std::string getString(simdjson::ondemand::value jsonData, const char* theKey) {
 		try {
 			std::string_view theValue{};
-			if (jsonData.type() != simdjson::ondemand::json_type::null) {
-				jsonData[theKey].get(theValue);
+			if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
 				return std::string{ theValue.data(), theValue.size() };
 			} else {
 				return "";
