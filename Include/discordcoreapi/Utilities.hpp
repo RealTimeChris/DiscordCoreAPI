@@ -1701,13 +1701,6 @@ namespace DiscordCoreInternal {
 			return (this->theArray.data() + (this->head % (this->theArray.size())));
 		}
 
-		bool isItEmpty() noexcept {
-			if (this->areWeFull) {
-				return false;
-			}
-			return this->tail == this->head;
-		}
-
 		bool isItFull() noexcept {
 			return this->areWeFull;
 		}

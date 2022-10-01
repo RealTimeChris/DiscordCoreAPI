@@ -315,7 +315,7 @@ namespace DiscordCoreInternal {
 		for (auto& [key, value]: theShardMap) {
 			if (value->areWeStillConnected() && !value->areWeConnecting.load()) {
 				pollfd theFdSet{ .fd = static_cast<::SOCKET>(value->theSocket) };
-				if (!value->outputBuffer.isItEmpty()) {
+				if (value->outputBuffer.getUsedSpace() > 0) {
 					theFdSet.events = POLLIN | POLLOUT;
 				} else {
 					theFdSet.events = POLLIN;
@@ -370,7 +370,7 @@ namespace DiscordCoreInternal {
 
 	std::string_view SSLClient::getInputBuffer() noexcept {
 		std::string_view theString{};
-		if (!this->inputBuffer.getCurrentTail()->isItEmpty()) {
+		if (this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
 			size_t theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
 			theString = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize };
 			this->inputBuffer.getCurrentTail()->clear();
