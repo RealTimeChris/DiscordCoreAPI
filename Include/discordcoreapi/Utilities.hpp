@@ -801,8 +801,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
 		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
-		std::vector<uint8_t> data{};///< The audio data.
 		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
+		std::vector<uint8_t> data{};///< The audio data.
 
 		AudioFrameData() noexcept = default;
 

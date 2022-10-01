@@ -235,6 +235,7 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<DiscordCoreAPI::AudioEncoder> audioEncoder{ std::make_unique<DiscordCoreAPI::AudioEncoder>() };
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			bool didWeGetZero{ true };
+			std::vector<std::vector<uint8_t>> submittedFrames{};
 			while (counter < newSong.finalDownloadUrls.size()) {
 				if (counter == newSong.finalDownloadUrls.size() && didWeGetZero) {
 					audioDecoder.reset(nullptr);
@@ -258,7 +259,6 @@ namespace DiscordCoreInternal {
 				HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
 				std::string baseUrl = newSong.finalDownloadUrls[counter].urlPath.substr(0, std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
 				std::string relativeUrl = newSong.finalDownloadUrls[counter].urlPath.substr(std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
-				std::cout << "THE CURRENT URL: " << relativeUrl << std::endl;
 				dataPackage03.baseUrl = baseUrl;
 				dataPackage03.relativePath = relativeUrl;
 				dataPackage03.workloadClass = HttpsWorkloadClass::Get;
@@ -266,20 +266,20 @@ namespace DiscordCoreInternal {
 				if (result.responseMessage.size() != 0) {
 					didWeGetZero = false;
 				}
-				int64_t amountToSubmitRemaining{ static_cast<int64_t>(result.responseMessage.size()) };
-				int64_t amountSubmitted{ 0 };
+				uint64_t amountToSubmitRemaining{ result.contentLength };
+				uint64_t amountSubmitted{ 0 };
 				while (amountToSubmitRemaining > 0) {
 					std::this_thread::sleep_for(1ms);
 					std::string newerVector{};
 					if (amountToSubmitRemaining >= this->maxBufferSize) {
-						for (int64_t x = 0; x < this->maxBufferSize; ++x) {
+						for (uint64_t x = 0; x < this->maxBufferSize; ++x) {
 							newerVector.push_back(result.responseMessage[amountSubmitted]);
 							amountSubmitted++;
 							amountToSubmitRemaining--;
 						}
 					} else {
-						int64_t amountToSubmitRemainingFinal{ amountToSubmitRemaining };
-						for (int64_t x = 0; x < amountToSubmitRemainingFinal; ++x) {
+						uint64_t amountToSubmitRemainingFinal{ amountToSubmitRemaining };
+						for (uint64_t x = 0; x < amountToSubmitRemainingFinal; ++x) {
 							newerVector.push_back(result.responseMessage[amountSubmitted]);
 							amountSubmitted++;
 							amountToSubmitRemaining--;
@@ -300,6 +300,7 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					if (rawFrame.data.size() != 0) {
+						submittedFrames.emplace_back(rawFrame.data);
 						frames.emplace_back(std::move(rawFrame));
 					}
 				}

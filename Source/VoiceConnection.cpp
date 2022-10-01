@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 			for (uint64_t x = 0; x < this->theKeys.size(); ++x) {
 				encryptionKeys[x] = this->theKeys[x];
 			}
-			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, this->audioData.data(), this->audioData.size(), nonceForLibSodium.get(), encryptionKeys.get()) != 0) {
+			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize,this->audioData.data(), this->audioData.size(), nonceForLibSodium.get(), encryptionKeys.get()) != 0) {
 				return "";
 			};
 			std::string audioDataPacketNew{};

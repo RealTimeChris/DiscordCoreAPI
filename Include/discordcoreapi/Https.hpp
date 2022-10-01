@@ -51,10 +51,10 @@ namespace DiscordCoreInternal {
 		std::string responseMessage{};
 		std::string responseData{};
 		int64_t responseCode{ -1 };
+		size_t contentLength{};
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 500ms };
-		uint64_t contentSize{ 0 };
 		bool isItChunked{ false };
 	};
 
