@@ -1658,11 +1658,17 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll RingBufferSlice {
 	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
+
 		char* getCurrentTail();
+
 		char* getCurrentHead();
+
 		size_t getUsedSpace();
+
 		bool isItEmpty();
+
 		bool isItFull();
+
 		void clear();
 
 	  protected:
@@ -1675,11 +1681,17 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll RingBuffer {
 	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept;
+
 		RingBufferSlice* getCurrentTail() noexcept;
+
 		RingBufferSlice* getCurrentHead() noexcept;
+
 		size_t getUsedSpace() noexcept;
+
 		bool isItEmpty() noexcept;
+
 		bool isItFull() noexcept;
+
 		void clear() noexcept;
 
 	  protected:
@@ -1692,11 +1704,17 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll LightRingBuffer {
 	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept;
+
 		RingBufferSlice* getCurrentTail() noexcept;
+
 		RingBufferSlice* getCurrentHead() noexcept;
+
 		size_t getUsedSpace() noexcept;
+
 		bool isItEmpty() noexcept;
+
 		bool isItFull() noexcept;
+
 		void clear() noexcept;
 
 	  protected:
