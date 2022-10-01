@@ -327,7 +327,7 @@ namespace DiscordCoreAPI {
 				if (this->currentMessage.size() < this->messageOffset + this->messageLength) {
 					return false;
 				} else {
-					this->onMessageReceived(this->currentMessage.substr(this->messageOffset, this->messageLength));
+					this->onMessageReceived(this->currentMessage[DiscordCoreInternal::LengthData{ .offSet = this->messageOffset, .length = this->messageLength }]);
 					this->currentMessage.clear();
 					return true;
 				}

@@ -91,15 +91,15 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		virtual void handleBuffer() noexcept;
-
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 
 		void disconnect(bool doWeReconnect) noexcept;
 
+		virtual void handleBuffer() noexcept;
+
 		void onClosed() noexcept;
 
-		~WebSocketSSLShard() noexcept = default;
+		virtual ~WebSocketSSLShard() noexcept = default;
 
 	  protected:
 		std::unordered_map<uint64_t, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};

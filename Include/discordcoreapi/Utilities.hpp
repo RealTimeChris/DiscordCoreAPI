@@ -1628,9 +1628,14 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
+	struct LengthData {
+		size_t offSet{};
+		size_t length {};
+	};
+
 	class DiscordCoreAPI_Dll StringBuffer {
 	  public:
-		std::string_view substr(size_t, size_t);
+		std::string_view operator[](LengthData);
 
 		void writeData(const char*, size_t);
 

@@ -1623,12 +1623,12 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	std::string_view StringBuffer::substr(size_t offSet, size_t size) {
+	std::string_view StringBuffer::operator[](LengthData size) {
 		if (this->whichOneAreWeOn == 0) {
-			std::string_view theString{ this->theString01.data() + offSet, size };
+			std::string_view theString{ this->theString01.data() + size.offSet, size.length };
 			return theString;
 		} else {
-			std::string_view theString{ this->theString02.data() + offSet, size };
+			std::string_view theString{ this->theString02.data() + size.offSet, size.length };
 			return theString;
 		}
 	}

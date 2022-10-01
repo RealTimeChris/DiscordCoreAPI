@@ -297,7 +297,7 @@ namespace DiscordCoreInternal {
 					if (theShard->currentMessage.size() < theShard->messageOffset + theShard->messageLength) {
 						return;
 					} else {
-						this->onMessageReceived(theShard->currentMessage.substr(theShard->messageOffset, theShard->messageLength));
+						this->onMessageReceived(theShard->currentMessage[LengthData{ .offSet = theShard->messageOffset, .length = theShard->messageLength }]);
 						theShard->currentMessage.erase(0, theShard->messageLength + theShard->messageOffset);
 						theShard->messageOffset = 0;
 						theShard->messageLength = 0;
