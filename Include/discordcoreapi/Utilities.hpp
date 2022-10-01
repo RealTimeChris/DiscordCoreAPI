@@ -1674,8 +1674,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll RingBuffer {
 	  public:
-		RingBuffer() noexcept = default;
-		RingBuffer(size_t theSliceCount) noexcept;
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept;
 		RingBufferSlice* getCurrentTail() noexcept;
 		RingBufferSlice* getCurrentHead() noexcept;
@@ -1685,12 +1683,28 @@ namespace DiscordCoreInternal {
 		void clear() noexcept;
 
 	  protected:
-		std::vector<RingBufferSlice> theArray{};
+		std::array<RingBufferSlice, 32> theArray{};
 		bool areWeFull{ false };
 		int64_t head{};
 		int64_t tail{};
 	};
 
+	class DiscordCoreAPI_Dll LightRingBuffer {
+	  public:
+		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept;
+		RingBufferSlice* getCurrentTail() noexcept;
+		RingBufferSlice* getCurrentHead() noexcept;
+		size_t getUsedSpace() noexcept;
+		bool isItEmpty() noexcept;
+		bool isItFull() noexcept;
+		void clear() noexcept;
+
+	  protected:
+		std::array<RingBufferSlice, 4> theArray{};
+		bool areWeFull{ false };
+		int64_t head{};
+		int64_t tail{};
+	};
 }
 
 #endif

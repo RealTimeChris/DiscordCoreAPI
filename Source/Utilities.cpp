@@ -1748,11 +1748,6 @@ namespace DiscordCoreInternal {
 		this->head = 0;
 	}
 
-	RingBuffer::RingBuffer(const size_t theSliceCount) noexcept {
-		this->theArray = std::vector<RingBufferSlice>{};
-		this->theArray.resize(theSliceCount);
-	}
-
 	void RingBuffer::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept {
 		if (theType == RingBufferAccessType::Read) {
 			this->tail = (this->tail + theSize) % this->theArray.size();
@@ -1803,6 +1798,64 @@ namespace DiscordCoreInternal {
 	}
 
 	void RingBuffer::clear() noexcept {
+		for (auto& value: this->theArray) {
+			value.clear();
+		}
+		this->areWeFull = false;
+		this->tail = 0;
+		this->head = 0;
+	}
+
+	void LightRingBuffer::modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept {
+		if (theType == RingBufferAccessType::Read) {
+			this->tail = (this->tail + theSize) % this->theArray.size();
+			if (this->tail != this->head) {
+				this->areWeFull = false;
+			}
+		} else {
+			this->head = (this->head + theSize) % this->theArray.size();
+			if (this->head == this->tail) {
+				this->areWeFull = true;
+			}
+			if (this->head != this->tail) {
+				this->areWeFull = false;
+			}
+		}
+	}
+
+	size_t LightRingBuffer::getUsedSpace() noexcept {
+		if (this->areWeFull) {
+			return this->theArray.size();
+		}
+		if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
+			size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+			return this->theArray.size() - freeSpace;
+		} else {
+			size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+			return this->theArray.size() - freeSpace;
+		}
+	}
+
+	RingBufferSlice* LightRingBuffer::getCurrentTail() noexcept {
+		return (this->theArray.data() + (this->tail % (this->theArray.size())));
+	}
+
+	RingBufferSlice* LightRingBuffer::getCurrentHead() noexcept {
+		return (this->theArray.data() + (this->head % (this->theArray.size())));
+	}
+
+	bool LightRingBuffer::isItEmpty() noexcept {
+		if (this->areWeFull) {
+			return false;
+		}
+		return this->tail == this->head;
+	}
+
+	bool LightRingBuffer::isItFull() noexcept {
+		return this->areWeFull;
+	}
+
+	void LightRingBuffer::clear() noexcept {
 		for (auto& value: this->theArray) {
 			value.clear();
 		}

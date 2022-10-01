@@ -204,8 +204,6 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class HttpsClient;
 
-		SSLDataInterface() noexcept;
-
 		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
 
 		virtual std::string_view getInputBuffer() noexcept = 0;
@@ -277,16 +275,14 @@ namespace DiscordCoreInternal {
 
 		void disconnect() noexcept;
 
-		virtual ~DatagramSocketClient() noexcept;
-
 	  protected:
 		const int32_t maxBufferSize{ (1024 * 16) - 1 };
 		std::array<char, 1024 * 16> inputBuffer{};
 		DiscordCoreAPI::StreamType streamType{};
 		sockaddr_in theStreamTargetAddress{};
 		bool areWeStreamConnected{ false };
+		LightRingBuffer outputBuffer{};
 		size_t currentlyUsedSpace{};
-		RingBuffer outputBuffer{};
 		SOCKETWrapper theSocket{};
 		int64_t bytesRead{};
 	};

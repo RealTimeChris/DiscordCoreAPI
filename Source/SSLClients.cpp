@@ -186,8 +186,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	SSLDataInterface::SSLDataInterface() noexcept : outputBuffer(64), inputBuffer(64){};
-
 	bool SSLConnectionInterface::initialize() noexcept {
 		if (SSLConnectionInterface::context = SSL_CTX_new(TLS_client_method()); SSLConnectionInterface::context == nullptr) {
 			return false;
@@ -560,7 +558,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept : outputBuffer(16){	
+	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept {	
 		this->streamType = streamTypeNew;
 	}
 
@@ -683,12 +681,8 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string_view DatagramSocketClient::getInputBuffer() noexcept {
-		std::string_view theString{};
-		if (this->currentlyUsedSpace > 0) {
-			size_t theSize = this->currentlyUsedSpace;
-			theString = std::string_view{ this->inputBuffer.data(), theSize };
-			this->currentlyUsedSpace = 0;
-		}
+		std::string_view theString{ std::string_view{ this->inputBuffer.data(), this->currentlyUsedSpace } };
+		this->currentlyUsedSpace = 0;
 		return theString;
 	}
 
@@ -745,9 +739,6 @@ namespace DiscordCoreInternal {
 		this->theSocket = SOCKET_ERROR;
 		this->outputBuffer.clear();
 		this->currentlyUsedSpace = 0;
-	}
-
-	DatagramSocketClient::~DatagramSocketClient() noexcept {
 	}
 
 	SSL_CTXWrapper SSLConnectionInterface::context{};
