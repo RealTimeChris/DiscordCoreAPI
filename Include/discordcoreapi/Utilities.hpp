@@ -67,26 +67,20 @@ inline uint64_t ntohll(uint64_t x) {
 	#include <ctime>
 #endif
 
-#include <condition_variable>
 #include <source_location>
+#include <unordered_map>
 #include <unordered_set>
 #include <shared_mutex>
 #include <functional>
-#include <simdjson.h>
-#include <semaphore>
 #include <concepts>
 #include <iostream>
-#include <fstream>
-#include <bitset>
-#include <memory>
+#include <sstream>
+#include <iomanip>
+#include <vector>
 #include <random>
 #include <string>
-#include <vector>
-#include <thread>
-#include <mutex>
 #include <queue>
 #include <array>
-#include <map>
 
 #ifdef max
 	#undef max

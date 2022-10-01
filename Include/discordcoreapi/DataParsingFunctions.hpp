@@ -27,6 +27,7 @@
 #define DATA_PARSING_FUNCTIONS
 
 #include <simdjson.h>
+#include<map>
 
 namespace DiscordCoreAPI {
 

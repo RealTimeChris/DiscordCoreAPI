@@ -34,6 +34,7 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/Utilities.hpp>
+#include <fstream>
 
 namespace DiscordCoreInternal {
 

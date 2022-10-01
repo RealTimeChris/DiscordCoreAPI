@@ -26,6 +26,7 @@
 #include <discordcoreapi/WebSocketEntities.hpp>
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
+#include <random>
 
 namespace DiscordCoreAPI {
 	namespace Globals {
