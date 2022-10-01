@@ -373,7 +373,6 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::sendTextMessage(std::string& theMessage, bool priority) noexcept {
-		std ::cout << "Sending VoiceSocket Message: " << theMessage << std::endl;
 		return this->sendMessage(theMessage, priority);
 	}
 
