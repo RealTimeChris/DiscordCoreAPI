@@ -43,30 +43,24 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["actions"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->actions.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ActionData newData{ value.value() };
-				this->actions.push_back(std::move(newData));
+				this->actions.emplace_back(std::move(newData));
 			}
-			this->actions.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["exempt_roles"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->exemptRoles.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->exemptRoles.push_back(Snowflake{ value.get_uint64().value() });
+				this->exemptRoles.emplace_back(Snowflake{ value.get_uint64().value() });
 			}
-			this->exemptRoles.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["exempt_channels"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->exemptChannels.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->exemptChannels.push_back(Snowflake{ value.get_uint64().value() });
+				this->exemptChannels.emplace_back(Snowflake{ value.get_uint64().value() });
 			}
-			this->exemptChannels.shrink_to_fit();
 		}
 
 		simdjson::ondemand::value theObject{};
@@ -84,12 +78,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theAutoModerationRules.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					AutoModerationRule newData{ value.value() };
-					this->theAutoModerationRules.push_back(std::move(newData));
+					this->theAutoModerationRules.emplace_back(std::move(newData));
 				}
-				this->theAutoModerationRules.shrink_to_fit();
 			}
 		}
 	}

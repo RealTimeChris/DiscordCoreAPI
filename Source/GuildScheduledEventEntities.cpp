@@ -72,12 +72,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theGuildScheduledEvents.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					GuildScheduledEvent newData{ value.value() };
-					this->theGuildScheduledEvents.push_back(std::move(newData));
+					this->theGuildScheduledEvents.emplace_back(std::move(newData));
 				}
-				this->theGuildScheduledEvents.shrink_to_fit();
 			}
 		}
 	}

@@ -120,12 +120,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theRoles.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					Role newData{ value.value() };
-					this->theRoles.push_back(std::move(newData));
+					this->theRoles.emplace_back(std::move(newData));
 				}
-				this->theRoles.shrink_to_fit();
 			}
 		}
 	}

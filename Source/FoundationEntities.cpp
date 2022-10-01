@@ -432,12 +432,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theThreadMemberDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					ThreadMemberData newData{ value.value() };
-					this->theThreadMemberDatas.push_back(std::move(newData));
+					this->theThreadMemberDatas.emplace_back(std::move(newData));
 				}
-				this->theThreadMemberDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -505,12 +503,10 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["roles"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->roles.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				RoleData newData{ value.value() };
-				this->roles.push_back(std::move(newData));
+				this->roles.emplace_back(std::move(newData));
 			}
-			this->roles.shrink_to_fit();
 		}
 
 		simdjson::ondemand::value theObject{};
@@ -670,22 +666,18 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["threads"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->threads.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ChannelData newData{ value.value() };
-				this->threads.push_back(std::move(newData));
+				this->threads.emplace_back(std::move(newData));
 			}
-			this->threads.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["members"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->members.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ThreadMemberData newData{ value.value() };
-				this->members.push_back(std::move(newData));
+				this->members.emplace_back(std::move(newData));
 			}
-			this->members.shrink_to_fit();
 		}
 
 		this->hasMore = getBool(jsonObjectData, "has_more");
@@ -695,22 +687,18 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["threads"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->threads.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ChannelData newData{ value.value() };
-				this->threads.push_back(std::move(newData));
+				this->threads.emplace_back(std::move(newData));
 			}
-			this->threads.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["members"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->members.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ThreadMemberData newData{ value.value() };
-				this->members.push_back(std::move(newData));
+				this->members.emplace_back(std::move(newData));
 			}
-			this->members.shrink_to_fit();
 		}
 
 		this->hasMore = getBool(jsonObjectData, "has_more");
@@ -720,20 +708,16 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["keyword_filter"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->keywordFilter.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->keywordFilter.push_back(value.get_string().value().data());
+				this->keywordFilter.emplace_back(value.get_string().value().data());
 			}
-			this->keywordFilter.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["keyword_filter"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->presets.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->presets.push_back(static_cast<KeywordPresetType>(value.get_uint64().value()));
+				this->presets.emplace_back(static_cast<KeywordPresetType>(value.get_uint64().value()));
 			}
-			this->presets.shrink_to_fit();
 		}
 	}
 
@@ -769,12 +753,10 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["actions"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->actions.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ActionData newData{ value.value() };
-				this->actions.push_back(std::move(newData));
+				this->actions.emplace_back(std::move(newData));
 			}
-			this->actions.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["exempt_roles"].get(theArray);
@@ -833,12 +815,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theGuildApplicationCommandPermissionsDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					GuildApplicationCommandPermissionsData newData{ value.value() };
-					this->theGuildApplicationCommandPermissionsDatas.push_back(std::move(newData));
+					this->theGuildApplicationCommandPermissionsDatas.emplace_back(std::move(newData));
 				}
-				this->theGuildApplicationCommandPermissionsDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -848,12 +828,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theEmojiDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					EmojiData newData{ value.value() };
-					this->theEmojiDatas.push_back(std::move(newData));
+					this->theEmojiDatas.emplace_back(std::move(newData));
 				}
-				this->theEmojiDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -900,12 +878,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theVoiceRegionDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					VoiceRegionData newData{ value.value() };
-					this->theVoiceRegionDatas.push_back(std::move(newData));
+					this->theVoiceRegionDatas.emplace_back(std::move(newData));
 				}
-				this->theVoiceRegionDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -931,12 +907,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theBanDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					BanData newData{ value.value() };
-					this->theBanDatas.push_back(std::move(newData));
+					this->theBanDatas.emplace_back(std::move(newData));
 				}
-				this->theBanDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -949,11 +923,9 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["permissions"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->permissions.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->permissions.push_back(Permissions{ value.get_string().value().data() });
+				this->permissions.emplace_back(Permissions{ value.get_string().value().data() });
 			}
-			this->permissions.shrink_to_fit();
 		}
 
 		simdjson::ondemand::value theObject{};
@@ -971,12 +943,10 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["members"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->members.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				TeamMembersObjectData newData{ value.value() };
-				this->members.push_back(std::move(newData));
+				this->members.emplace_back(std::move(newData));
 			}
-			this->members.shrink_to_fit();
 		}
 
 		this->ownerUserId = getId(jsonObjectData, "owner_user_id");
@@ -986,11 +956,9 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["scopes"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->scopes.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->scopes.push_back(Permissions{ value.get_string().value().data() });
+				this->scopes.emplace_back(Permissions{ value.get_string().value().data() });
 			}
-			this->scopes.shrink_to_fit();
 		}
 
 		this->permissions = getString(jsonObjectData, "name");
@@ -1006,11 +974,9 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		theResult = jsonObjectData["tags"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->tags.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->tags.push_back(value.get_string().value().data());
+				this->tags.emplace_back(value.get_string().value().data());
 			}
-			this->tags.shrink_to_fit();
 		}
 
 		this->id = getId(jsonObjectData, "id");
@@ -1023,11 +989,9 @@ namespace DiscordCoreAPI {
 
 		theResult = jsonObjectData["rpc_origins"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->rpcOrigins.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->rpcOrigins.push_back(value.get_string().value().data());
+				this->rpcOrigins.emplace_back(value.get_string().value().data());
 			}
-			this->rpcOrigins.shrink_to_fit();
 		}
 
 		this->botPublic = getBool(jsonObjectData, "bot_public");
@@ -1150,12 +1114,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theIntegrationDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					IntegrationData newData{ value.value() };
-					this->theIntegrationDatas.push_back(std::move(newData));
+					this->theIntegrationDatas.emplace_back(std::move(newData));
 				}
-				this->theIntegrationDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -1196,12 +1158,10 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["changes"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->changes.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				AuditLogChangeData newData{ value.value() };
-				this->changes.push_back(std::move(newData));
+				this->changes.emplace_back(std::move(newData));
 			}
-			this->changes.shrink_to_fit();
 		}
 
 		this->userId = getId(jsonObjectData, "user_id");
@@ -1236,12 +1196,10 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["welcome_channels"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->welcomeChannels.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				WelcomeScreenChannelData newData{ value.value() };
-				this->welcomeChannels.push_back(std::move(newData));
+				this->welcomeChannels.emplace_back(std::move(newData));
 			}
-			this->welcomeChannels.shrink_to_fit();
 		}
 	}
 
@@ -1297,22 +1255,18 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["emojis"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->emojis.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				EmojiData newData{ value.value() };
-				this->emojis.push_back(std::move(newData));
+				this->emojis.emplace_back(std::move(newData));
 			}
-			this->emojis.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["stickers"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->stickers.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				StickerData newData{ value.value() };
-				this->stickers.push_back(std::move(newData));
+				this->stickers.emplace_back(std::move(newData));
 			}
-			this->stickers.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["features"].get(theArray);
@@ -1550,12 +1504,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theGuildDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					GuildData newData{ value.value() };
 					this->theGuildDatas.emplace_back(std::move(newData));
 				}
-				this->theGuildDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -1623,12 +1575,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theGuildScheduledEventUserDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					GuildScheduledEventUserData newData{ value.value() };
-					this->theGuildScheduledEventUserDatas.push_back(std::move(newData));
+					this->theGuildScheduledEventUserDatas.emplace_back(std::move(newData));
 				}
-				this->theGuildScheduledEventUserDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -1638,12 +1588,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			simdjson::error_code theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theGuildScheduledEventDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					GuildScheduledEventData newData{ value.value() };
-					this->theGuildScheduledEventDatas.push_back(std::move(newData));
+					this->theGuildScheduledEventDatas.emplace_back(std::move(newData));
 				}
-				this->theGuildScheduledEventDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -1713,12 +1661,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theInviteDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					InviteData newData{ value.value() };
-					this->theInviteDatas.push_back(std::move(newData));
+					this->theInviteDatas.emplace_back(std::move(newData));
 				}
-				this->theInviteDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -1759,12 +1705,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theGuildTemplateDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					GuildTemplateData newData{ value.value() };
-					this->theGuildTemplateDatas.push_back(std::move(newData));
+					this->theGuildTemplateDatas.emplace_back(std::move(newData));
 				}
-				this->theGuildTemplateDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -1810,12 +1754,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theWebHookDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					WebHookData newData{ value.value() };
-					this->theWebHookDatas.push_back(std::move(newData));
+					this->theWebHookDatas.emplace_back(std::move(newData));
 				}
-				this->theWebHookDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -1824,72 +1766,58 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["webhooks"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->webhooks.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				WebHookData newData{ value.value() };
-				this->webhooks.push_back(std::move(newData));
+				this->webhooks.emplace_back(std::move(newData));
 			}
-			this->webhooks.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["guild_scheduled_events"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->guildScheduledEvents.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				GuildScheduledEventData newData{ value.value() };
-				this->guildScheduledEvents.push_back(std::move(newData));
+				this->guildScheduledEvents.emplace_back(std::move(newData));
 			}
-			this->guildScheduledEvents.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["auto_moderation_rules"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->autoModerationRules.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				AutoModerationRuleData newData{ value.value() };
-				this->autoModerationRules.push_back(std::move(newData));
+				this->autoModerationRules.emplace_back(std::move(newData));
 			}
-			this->autoModerationRules.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["users"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->users.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				UserData newData{ value.value() };
-				this->users.push_back(std::move(newData));
+				this->users.emplace_back(std::move(newData));
 			}
-			this->users.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["audit_log_entries"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->auditLogEntries.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				AuditLogEntryData newData{ value.value() };
-				this->auditLogEntries.push_back(std::move(newData));
+				this->auditLogEntries.emplace_back(std::move(newData));
 			}
-			this->auditLogEntries.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["integrations"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->integrations.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				IntegrationData newData{ value.value() };
-				this->integrations.push_back(std::move(newData));
+				this->integrations.emplace_back(std::move(newData));
 			}
-			this->integrations.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["threads"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->threads.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ChannelData newData{ value.value() };
-				this->threads.push_back(std::move(newData));
+				this->threads.emplace_back(std::move(newData));
 			}
-			this->threads.shrink_to_fit();
 		}
 	}
 
@@ -1971,11 +1899,9 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		theResult = jsonObjectData["channel_types"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->channelTypes.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->channelTypes.push_back(static_cast<ChannelType>(value.get_uint64().value()));
+				this->channelTypes.emplace_back(static_cast<ChannelType>(value.get_uint64().value()));
 			}
-			this->channelTypes.shrink_to_fit();
 		}
 
 		this->minValue = getUint32(jsonObjectData, "min_value");
@@ -1992,19 +1918,15 @@ namespace DiscordCoreAPI {
 			auto theResult01 = jsonObjectData["options"].get(theArray);
 			auto theResult02 = jsonObjectData["choices"].get(theArray);
 			if (theResult01 == simdjson::error_code::SUCCESS) {
-				this->options.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					ApplicationCommandOptionData newData{ value.value() };
-					this->options.push_back(std::move(newData));
+					this->options.emplace_back(std::move(newData));
 				}
-				this->options.shrink_to_fit();
 			} else if (theResult02 == simdjson::error_code::SUCCESS) {
-				this->choices.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					ApplicationCommandOptionChoiceData newData{ value.value() };
-					this->choices.push_back(std::move(newData));
+					this->choices.emplace_back(std::move(newData));
 				}
-				this->choices.shrink_to_fit();
 			}
 		}
 	}
@@ -2130,29 +2052,23 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["parse"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->parse.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->parse.push_back(static_cast<std::string>(value.get_string().value()));
+				this->parse.emplace_back(static_cast<std::string>(value.get_string().value()));
 			}
-			this->parse.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["roles"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->roles.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->roles.push_back(static_cast<std::string>(value.get_string().value()));
+				this->roles.emplace_back(static_cast<std::string>(value.get_string().value()));
 			}
-			this->roles.shrink_to_fit();
 		}
 
 		theResult = jsonObjectData["users"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->users.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->users.push_back(static_cast<std::string>(value.get_string().value()));
+				this->users.emplace_back(static_cast<std::string>(value.get_string().value()));
 			}
-			this->users.shrink_to_fit();
 		}
 
 		this->repliedUser = getBool(jsonObjectData, "replied_user");
@@ -2699,12 +2615,10 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["stickers"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->stickers.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				StickerData newData{ value.value() };
-				this->stickers.push_back(std::move(newData));
+				this->stickers.emplace_back(std::move(newData));
 			}
-			this->stickers.shrink_to_fit();
 		}
 
 		this->coverStickerId = getString(jsonObjectData, "cover_sticker_id");
@@ -2725,12 +2639,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theStickerPackDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					StickerPackData newData{ value.value() };
-					this->theStickerPackDatas.push_back(std::move(newData));
+					this->theStickerPackDatas.emplace_back(std::move(newData));
 				}
-				this->theStickerPackDatas.shrink_to_fit();
 			}
 		}
 	}
@@ -2755,12 +2667,10 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["integrations"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->integrations.reserve(theArray.count_elements().take_value());
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				IntegrationData newData{ value.value() };
-				this->integrations.push_back(std::move(newData));
+				this->integrations.emplace_back(std::move(newData));
 			}
-			this->integrations.shrink_to_fit();
 		}
 	}
 
@@ -3040,7 +2950,7 @@ namespace DiscordCoreAPI {
 			if (theArrayNew.didItSucceed) {
 				for (auto value: theArrayNew.theArray) {
 					MediaTranscoding theDataNew{ value.value() };
-					theMedia.push_back(theDataNew);
+					theMedia.emplace_back(theDataNew);
 				}
 			}
 
@@ -3500,12 +3410,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theConnectionDatas.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					ConnectionData newData{ value.value() };
-					this->theConnectionDatas.push_back(std::move(newData));
+					this->theConnectionDatas.emplace_back(std::move(newData));
 				}
-				this->theConnectionDatas.shrink_to_fit();
 			}
 		}
 	}

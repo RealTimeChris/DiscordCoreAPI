@@ -1019,9 +1019,9 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::sendSilence() noexcept {
 		AudioFrameData newFrame{};
-		newFrame.data.push_back(0xf8);
-		newFrame.data.push_back(0xff);
-		newFrame.data.push_back(0xfe);
+		newFrame.data.emplace_back(0xf8);
+		newFrame.data.emplace_back(0xff);
+		newFrame.data.emplace_back(0xfe);
 		auto theFrame = this->encryptSingleAudioFrame(newFrame);
 		if (theFrame.size() > 0) {
 			this->sendVoiceData(theFrame);
@@ -1108,7 +1108,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::connect() noexcept {
 		if (this->baseSocketAgent) {
 			this->thePackage.currentShard = 1;
-			this->theConnections.push_back(this->thePackage);
+			this->theConnections.emplace_back(this->thePackage);
 			this->activeState.store(VoiceActiveState::Connecting);
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {

@@ -60,12 +60,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theReactions.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					Reaction newData{ value.value() };
-					this->theReactions.push_back(std::move(newData));
+					this->theReactions.emplace_back(std::move(newData));
 				}
-				this->theReactions.shrink_to_fit();
 			}
 		}
 	}

@@ -124,16 +124,14 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll ActivityData;
 
-	enum class ValueType { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Double = 4, Float = 5, String = 6, Bool = 7, Int64 = 8, Uint64 = 9, Unset = 10 };
+	enum class ValueType { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Float = 4, String = 5, Bool = 6, Int64 = 7, Uint64 = 8, Unset = 9 };
 
-	class DiscordCoreAPI_Dll JsonArray;
-
-	class DiscordCoreAPI_Dll JsonObject;
+	struct JsonArray;
 
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
 
-	struct DiscordCoreAPI_Dll EnumConverter {
+	struct EnumConverter {
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
 			this->thePtr = new uint64_t{};
 			*static_cast<uint64_t*>(this->thePtr) = static_cast<uint64_t>(other);
@@ -170,23 +168,119 @@ namespace DiscordCoreAPI {
 		bool vectorType{ false };
 	};
 
-	class DiscordCoreAPI_Dll JsonObjectBase {
+	class JsonObject {
 	  public:
-		std::unordered_map<std::string, JsonObject> theValues{};
-		ValueType theType{ ValueType::Object };
-		std::string theKey{};
-		void* theValue{};
-	};
+		template<typename ObjectType> using AllocatorType = std::allocator<ObjectType>;
+		using StringType = std::string;
+		using ObjectType = JsonObject;
+		using ArrayType = JsonArray;
+		using UintType = uint64_t;
+		using FloatType = double;
+		using IntType = int64_t;
+		using BoolType = bool;
 
-	class DiscordCoreAPI_Dll JsonObject : public JsonObjectBase {
-	  public:
+		std::unordered_map<std::string, std::unique_ptr<ObjectType>> theValues{};
+		ValueType theType{ ValueType::Object };
+		bool areWeStarting{ true };
+		bool areWeTopLevel{ true };
+		std::string theKey{};
+
+		union JsonValue {
+			ObjectType* object;
+			ArrayType* array;
+			StringType* string;
+			BoolType boolean;
+			IntType numberInt;
+			UintType numberUint;
+			FloatType numberDouble;
+			JsonValue() noexcept = default;
+
+			JsonValue& operator=(const char* theData) noexcept;
+
+			JsonValue& operator=(const std::string theData) noexcept;
+
+			JsonValue& operator=(uint64_t theData) noexcept;
+
+			JsonValue& operator=(uint32_t theData) noexcept;
+
+			JsonValue& operator=(uint16_t theData) noexcept;
+
+			JsonValue& operator=(uint8_t theData) noexcept;
+
+			JsonValue& operator=(int64_t theData) noexcept;
+
+			JsonValue& operator=(int32_t theData) noexcept;
+
+			JsonValue& operator=(int16_t theData) noexcept;
+
+			JsonValue& operator=(int8_t theData) noexcept;
+
+			JsonValue& operator=(double theData) noexcept;
+
+			JsonValue& operator=(float theData) noexcept;
+
+			JsonValue& operator=(bool theData) noexcept;
+
+			JsonValue& operator=(ValueType t) noexcept;
+
+			JsonValue(const char* theData) noexcept;
+
+			JsonValue(const std::string theData) noexcept;
+
+			JsonValue(uint64_t theData) noexcept;
+
+			JsonValue(uint32_t theData) noexcept;
+
+			JsonValue(uint16_t theData) noexcept;
+
+			JsonValue(uint8_t theData) noexcept;
+
+			JsonValue(int64_t theData) noexcept;
+
+			JsonValue(int32_t theData) noexcept;
+
+			JsonValue(int16_t theData) noexcept;
+
+			JsonValue(int8_t theData) noexcept;
+
+			JsonValue(double theData) noexcept;
+
+			JsonValue(float theData) noexcept;
+
+			JsonValue(bool theData) noexcept;
+
+			JsonValue(ValueType t) noexcept;
+		};
+
+		auto begin() {
+			return this->theValues.begin();
+		}
+		auto end() {
+			return this->theValues.end();
+		}
+
+		JsonValue theValue;
+
+		template<typename ObjectType, typename... Args> static ObjectType* create(Args&&... args) {
+			std::allocator<ObjectType> allocator{};
+
+			auto deleter = [&](ObjectType* obj) {
+				std::allocator_traits<AllocatorType<ObjectType>>::deallocate(allocator, obj, 1);
+			};
+			std::unique_ptr<ObjectType, decltype(deleter)> object(std::allocator_traits<AllocatorType<ObjectType>>::allocate(allocator, 1), deleter);
+			std::allocator_traits<AllocatorType<ObjectType>>::construct(allocator, object.get(), std::forward<Args>(args)...);
+			return object.release();
+		}
+
 		JsonObject() noexcept = default;
+
+		void clear();
 
 		template<typename ObjectType> JsonObject& operator=(std::vector<ObjectType> theData) noexcept {
 			this->theType = ValueType::Array;
 			int32_t theIndex{};
 			for (auto& value: theData) {
-				this->theValues[std::to_string(theIndex)] = value;
+				this->theValues[std::to_string(theIndex)] = std::make_unique<JsonObject>(value);
 				theIndex++;
 			}
 			return *this;
@@ -201,12 +295,11 @@ namespace DiscordCoreAPI {
 			this->theType = ValueType::Array;
 
 			for (auto& [key, value]: theData) {
-				this->theValues[key] = JsonObject{};
-				this->theValues[key].theType = ValueType::Object;
-				this->theValues[key].theValues[key] = JsonObject{};
-				this->theValues[key].theValues[key] = value;
-				this->theValues[key].theValues[key].theType = ValueType::String;
-				this->theValues[key].theValues[key].theKey = key;
+				this->theValues[key] = std::make_unique<JsonObject>();
+				this->theValues[key]->theType = ValueType::Object;
+				this->theValues[key]->theValues[key] = std::make_unique<JsonObject>(value);
+				this->theValues[key]->theValues[key]->theType = ValueType::String;
+				this->theValues[key]->theValues[key]->theKey = key;
 			}
 			theIndex++;
 			return *this;
@@ -222,6 +315,8 @@ namespace DiscordCoreAPI {
 		JsonObject& operator=(const JsonArray& theData) noexcept;
 		JsonObject(const JsonArray& theData) noexcept;
 
+		JsonObject(const JsonValue& theKey) noexcept;
+
 		JsonObject& operator=(const JsonObject& theKey) noexcept;
 		JsonObject(const JsonObject& theKey) noexcept;
 
@@ -230,11 +325,8 @@ namespace DiscordCoreAPI {
 		JsonObject& operator=(const char* theData) noexcept;
 		JsonObject(const char* theData) noexcept;
 
-		JsonObject& operator=(std::string theData) noexcept;
-		JsonObject(std::string) noexcept;
-
-		JsonObject& operator=(ValueType theType) noexcept;
-		JsonObject(ValueType theType) noexcept;
+		JsonObject& operator=(const std::string theData) noexcept;
+		JsonObject(const std::string) noexcept;
 
 		JsonObject& operator=(uint64_t theData) noexcept;
 		JsonObject(uint64_t) noexcept;
@@ -271,6 +363,10 @@ namespace DiscordCoreAPI {
 
 		JsonObject& operator[](const char* theKey) noexcept;
 
+		size_t size();
+
+		~JsonObject() noexcept;
+
 		operator std::string() noexcept;
 
 		void pushBack(const char* theKey, std::string other) noexcept;
@@ -285,9 +381,10 @@ namespace DiscordCoreAPI {
 		void pushBack(const char* theKey, int8_t other) noexcept;
 	};
 
-	class DiscordCoreAPI_Dll JsonArray : public JsonObject {
+	class JsonArray : public JsonObject {
 	  public:
 		JsonArray() noexcept = default;
+		~JsonArray() noexcept = default;
 	};
 
 	struct DiscordCoreAPI_Dll Snowflake;

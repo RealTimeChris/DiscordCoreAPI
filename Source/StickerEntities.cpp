@@ -61,12 +61,10 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array theArray{};
 			auto theResult = jsonObjectData.get(theArray);
 			if (theResult == simdjson::error_code::SUCCESS) {
-				this->theStickers.reserve(theArray.count_elements().take_value());
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					Sticker newData{ value.value() };
-					this->theStickers.push_back(std::move(newData));
+					this->theStickers.emplace_back(std::move(newData));
 				}
-				this->theStickers.shrink_to_fit();
 			}
 		}
 	}
