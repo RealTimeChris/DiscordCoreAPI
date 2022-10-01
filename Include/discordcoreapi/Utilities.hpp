@@ -1660,74 +1660,97 @@ namespace DiscordCoreInternal {
 
 	enum class RingBufferAccessType { Read = 0, Write = 1 };
 
-	class DiscordCoreAPI_Dll RingBufferSlice {
+	template<typename ObjectType , size_t theSize>
+	class RingBufferInterface {
 	  public:
-		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize);
+		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept {
+			if (theType == RingBufferAccessType::Read) {
+				this->tail = (this->tail + theSize) % this->theArray.size();
+				if (this->tail != this->head) {
+					this->areWeFull = false;
+				}
+			} else {
+				this->head = (this->head + theSize) % this->theArray.size();
+				if (this->head == this->tail) {
+					this->areWeFull = true;
+				}
+				if (this->head != this->tail) {
+					this->areWeFull = false;
+				}
+			}
+		}
 
-		char* getCurrentTail();
+		size_t getUsedSpace() noexcept {
+			if (this->areWeFull) {
+				return this->theArray.size();
+			}
+			if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
+				size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+				return this->theArray.size() - freeSpace;
+			} else {
+				size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+				return this->theArray.size() - freeSpace;
+			}
+		}
 
-		char* getCurrentHead();
+		ObjectType* getCurrentTail() noexcept {
+			return (this->theArray.data() + (this->tail % (this->theArray.size())));
+		}
 
-		size_t getUsedSpace();
+		ObjectType* getCurrentHead() noexcept {
+			return (this->theArray.data() + (this->head % (this->theArray.size())));
+		}
 
-		bool isItEmpty();
+		bool isItEmpty() noexcept {
+			if (this->areWeFull) {
+				return false;
+			}
+			return this->tail == this->head;
+		}
 
-		bool isItFull();
+		bool isItFull() noexcept {
+			return this->areWeFull;
+		}
 
-		void clear();
+		virtual void clear() noexcept {
+			this->areWeFull = false;
+			this->tail = 0;
+			this->head = 0;
+		}
 
 	  protected:
-		std::array<char, 1024 * 16> theArray{};
+		std::array<ObjectType, theSize> theArray{};
 		bool areWeFull{ false };
-		int64_t head{};
-		int64_t tail{};
+		size_t tail{};
+		size_t head{};
 	};
 
-	class DiscordCoreAPI_Dll RingBuffer {
+	class DiscordCoreAPI_Dll RingBufferSlice : public RingBufferInterface<char, 1024 * 16> {};
+
+	class DiscordCoreAPI_Dll RingBuffer : public RingBufferInterface<RingBufferSlice, 32> {
 	  public:
-		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept;
-
-		RingBufferSlice* getCurrentTail() noexcept;
-
-		RingBufferSlice* getCurrentHead() noexcept;
-
-		size_t getUsedSpace() noexcept;
-
-		bool isItEmpty() noexcept;
-
-		bool isItFull() noexcept;
-
-		void clear() noexcept;
-
-	  protected:
-		std::array<RingBufferSlice, 32> theArray{};
-		bool areWeFull{ false };
-		int64_t head{};
-		int64_t tail{};
+		void clear() noexcept {
+			for (auto& value: this->theArray) {
+				value.clear();
+			}
+			this->areWeFull = false;
+			this->tail = 0;
+			this->head = 0;
+		}
 	};
 
-	class DiscordCoreAPI_Dll LightRingBuffer {
+	class DiscordCoreAPI_Dll LightRingBuffer : public RingBufferInterface<RingBufferSlice, 4> {
 	  public:
-		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept;
-
-		RingBufferSlice* getCurrentTail() noexcept;
-
-		RingBufferSlice* getCurrentHead() noexcept;
-
-		size_t getUsedSpace() noexcept;
-
-		bool isItEmpty() noexcept;
-
-		bool isItFull() noexcept;
-
-		void clear() noexcept;
-
-	  protected:
-		std::array<RingBufferSlice, 4> theArray{};
-		bool areWeFull{ false };
-		int64_t head{};
-		int64_t tail{};
+		void clear() noexcept {
+			for (auto& value: this->theArray) {
+				value.clear();
+			}
+			this->areWeFull = false;
+			this->tail = 0;
+			this->head = 0;
+		}
 	};
+	  
 }
 
 #endif
