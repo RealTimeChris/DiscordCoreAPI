@@ -625,11 +625,9 @@ namespace DiscordCoreAPI {
 		std::string botToken{};///< Your bot's token.
 	};
 
-	enum class ObjectType : int8_t { Object = 0, Array = 1, String = 2, Boolean = 3, Number_Integer = 4, Number_Unsigned = 5, Number_Float = 6, Number_Double = 7, Null = 8 };
-
-	struct DiscordCoreAPI_Dll JsonValue {
+	struct DiscordCoreAPI_Dll JsonStringValue {
 		std::string theValue{};
-		ObjectType theType{};
+		ValueType theType{};
 	};
 
 	class DiscordCoreAPI_Dll ConfigManager {

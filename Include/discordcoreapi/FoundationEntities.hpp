@@ -1585,8 +1585,8 @@ namespace DiscordCoreAPI {
 
 	/// Audit log change data. \brief Audit log change data.
 	struct DiscordCoreAPI_Dll AuditLogChangeData {
-		JsonValue newValue{};///< New value.
-		JsonValue oldValue{};///< Old value.
+		JsonStringValue newValue{};///< New value.
+		JsonStringValue oldValue{};///< Old value.
 		std::string key{};///< The key of the audit log change.
 
 		AuditLogChangeData() noexcept = default;
@@ -2725,7 +2725,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ApplicationCommandInteractionDataOption {
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
 		ApplicationCommandOptionType type{};///< The type of ApplicationCommand options.
-		JsonValue value{};///< The value if it's an int32_t.
+		JsonStringValue value{};///< The value if it's an int32_t.
 		bool focused{ false };///< 	True if this option is the currently focused option for autocomplete.
 		std::string name{};///< The name of the current option.
 
@@ -3278,126 +3278,126 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	struct DiscordCoreAPI_Dll JsonValueReals {
-		std::unordered_map<std::string, JsonValue> theValues{};
+	struct DiscordCoreAPI_Dll JsonObjectValue {
+		std::unordered_map<std::string, JsonStringValue> theValues{};
 	};
 
-	template<typename ReturnType> auto getArgument(JsonValueReals& optionsArgs, std::string_view theArgName);
+	template<typename ReturnType> auto getArgument(JsonObjectValue& optionsArgs, std::string_view theArgName);
 
-	template<> inline auto getArgument<int64_t>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<int64_t>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Number_Integer: {
+			case ValueType::Int64: {
 				return stoll(theValue.theValue);
 			}
 		}
 		return 0ll;
 	}
 
-	template<> inline auto getArgument<int32_t>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<int32_t>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Number_Integer: {
+			case ValueType::Int64: {
 				return static_cast<int32_t>(stoll(theValue.theValue));
 			}
 		}
 		return 0;
 	}
 
-	template<> inline auto getArgument<int16_t>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<int16_t>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Number_Integer: {
+			case ValueType::Int64: {
 				return static_cast<int16_t>(stoll(theValue.theValue));
 			}
 		}
 		return static_cast<int16_t>(0);
 	}
 
-	template<> inline auto getArgument<int8_t>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<int8_t>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Number_Integer: {
+			case ValueType::Int64: {
 				return static_cast<int8_t>(stoll(theValue.theValue));
 			}
 		}
 		return static_cast<int8_t>(0);
 	}
 
-	template<> inline auto getArgument<uint64_t>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<uint64_t>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Number_Unsigned: {
+			case ValueType::Uint64: {
 				return stoull(theValue.theValue);
 			}
 		}
 		return 0ull;
 	}
 
-	template<> inline auto getArgument<uint32_t>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<uint32_t>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Number_Unsigned: {
+			case ValueType::Uint64: {
 				return static_cast<uint32_t>(stoull(theValue.theValue));
 			}
 		}
 		return static_cast<uint32_t>(0);
 	}
 
-	template<> inline auto getArgument<uint16_t>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<uint16_t>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Number_Unsigned: {
+			case ValueType::Uint64: {
 				return static_cast<uint16_t>(stoull(theValue.theValue));
 			}
 		}
 		return static_cast<uint16_t>(0);
 	}
 
-	template<> inline auto getArgument<uint8_t>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<uint8_t>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Number_Unsigned: {
+			case ValueType::Uint64: {
 				return static_cast<uint8_t>(stoull(theValue.theValue));
 			}
 		}
 		return static_cast<uint8_t>(0);
 	}
 
-	template<> inline auto getArgument<float>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<float>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Number_Float: {
+			case ValueType::Float: {
 				return stold(theValue.theValue);
 			}
 		}
 		return 0.0l;
 	}
 
-	template<> inline auto getArgument<double>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<double>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Number_Double: {
+			case ValueType::Float: {
 				return stold(theValue.theValue);
 			}
 		}
 		return 0.0L;
 	}
 
-	template<> inline auto getArgument<std::string>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<std::string>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::String: {
+			case ValueType::String: {
 				return theValue.theValue;
 			}
 		}
 		return std::string{};
 	}
 
-	template<> inline auto getArgument<bool>(JsonValueReals& optionsArgs, std::string_view theArgName) {
+	template<> inline auto getArgument<bool>(JsonObjectValue& optionsArgs, std::string_view theArgName) {
 		auto theValue = optionsArgs.theValues[theArgName.data()];
 		switch (theValue.theType) {
-			case ObjectType::Boolean: {
+			case ValueType::Bool: {
 				return static_cast<bool>(stoull(theValue.theValue));
 			}
 		}
@@ -3411,7 +3411,7 @@ namespace DiscordCoreAPI {
 		std::string subCommandName{};
 		InputEventData eventData{};
 		std::string commandName{};
-		JsonValueReals optionsArgs{};
+		JsonObjectValue optionsArgs{};
 
 		CommandData() noexcept = default;
 
