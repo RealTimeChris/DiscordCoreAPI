@@ -279,11 +279,11 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const int32_t maxBufferSize{ (1024 * 16) - 1 };
-		std::array<char, 1024 * 16> inputBuffer{};
 		DiscordCoreAPI::StreamType streamType{};
 		sockaddr_in theStreamTargetAddress{};
 		bool areWeStreamConnected{ false };
 		RingBuffer<4> outputBuffer{};
+		RingBuffer<1> inputBuffer{};
 		size_t currentlyUsedSpace{};
 		SOCKETWrapper theSocket{};
 		int64_t bytesRead{};

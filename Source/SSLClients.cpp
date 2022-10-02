@@ -681,8 +681,13 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string_view DatagramSocketClient::getInputBuffer() noexcept {
-		std::string_view theString{ std::string_view{ this->inputBuffer.data(), this->currentlyUsedSpace } };
-		this->currentlyUsedSpace = 0;
+		std::string_view theString{};
+		if (this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
+			size_t theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
+			theString = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize };
+			this->inputBuffer.getCurrentTail()->clear();
+			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+		}
 		return theString;
 	}
 
@@ -717,12 +722,14 @@ namespace DiscordCoreInternal {
 #else
 			socklen_t intSize{ sizeof(this->theStreamTargetAddress) };
 #endif
-			int32_t readBytes{ recvfrom(this->theSocket, this->inputBuffer.data(), static_cast<int32_t>(this->maxBufferSize), 0, ( sockaddr* )&this->theStreamTargetAddress,
-				&intSize) };
+			int32_t readBytes{ recvfrom(this->theSocket, this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(this->maxBufferSize), 0,
+				( sockaddr* )&this->theStreamTargetAddress, &intSize) };
 
 			if (readBytes < 0) {
 				return false;
 			} else {
+				this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
+				this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 				this->currentlyUsedSpace += readBytes;
 				this->bytesRead += readBytes;
 				return true;
