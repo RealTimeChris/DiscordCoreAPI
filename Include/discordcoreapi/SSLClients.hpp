@@ -175,9 +175,9 @@ namespace DiscordCoreInternal {
 
 		virtual bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept = 0;
 
-		virtual void disconnect(bool doWeReconnect) noexcept = 0;
-
 		virtual bool areWeStillConnected() noexcept = 0;
+
+		virtual void disconnect() noexcept = 0;
 
 		static bool initialize() noexcept;
 

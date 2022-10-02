@@ -332,7 +332,7 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	void HttpsConnection::disconnect(bool) noexcept {
+	void HttpsConnection::disconnect() noexcept {
 		if (this->theSocket != SOCKET_ERROR) {
 			this->theSocket = SOCKET_ERROR;
 		}
@@ -466,7 +466,7 @@ namespace DiscordCoreInternal {
 			httpsConnection.resetValues();
 			if (httpsConnection.currentReconnectTries >= httpsConnection.maxReconnectTries) {
 				httpsConnection.currentReconnectTries = 0;
-				httpsConnection.disconnect(true);
+				httpsConnection.disconnect();
 				return HttpsResponseData{};
 			}
 			if (workload.baseUrl != httpsConnection.currentBaseUrl || !httpsConnection.areWeStillConnected() || httpsConnection.doWeConnect) {

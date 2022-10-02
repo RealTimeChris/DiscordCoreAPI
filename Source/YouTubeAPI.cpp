@@ -271,7 +271,7 @@ namespace DiscordCoreInternal {
 			streamSocket->processIO(1000);
 			if (!streamSocket->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
-				streamSocket->disconnect(false);
+				streamSocket->disconnect();
 				this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 				return;
 			}
@@ -288,19 +288,19 @@ namespace DiscordCoreInternal {
 					frameData.sampleCount = 0;
 					DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frameData));
 					audioDecoder.reset(nullptr);
-					streamSocket->disconnect(false);
+					streamSocket->disconnect();
 					return;
 				}
 				bytesSubmittedPrevious = bytesReadTotal;
 				if (audioDecoder->haveWeFailed()) {
 					audioDecoder.reset(nullptr);
-					streamSocket->disconnect(false);
+					streamSocket->disconnect();
 					this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				}
 				if (stopToken.stop_requested()) {
 					audioDecoder.reset(nullptr);
-					streamSocket->disconnect(false);
+					streamSocket->disconnect();
 					return;
 				} else {
 					if (!areWeDoneHeaders) {
@@ -308,7 +308,7 @@ namespace DiscordCoreInternal {
 						streamSocket->processIO(10);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
-							streamSocket->disconnect(false);
+							streamSocket->disconnect();
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
@@ -324,14 +324,14 @@ namespace DiscordCoreInternal {
 					}
 					if (stopToken.stop_requested()) {
 						audioDecoder.reset(nullptr);
-						streamSocket->disconnect(false);
+						streamSocket->disconnect();
 						return;
 					}
 					if (counter == 0) {
 						streamSocket->processIO(10);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
-							streamSocket->disconnect(false);
+							streamSocket->disconnect();
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
@@ -355,7 +355,7 @@ namespace DiscordCoreInternal {
 						streamSocket->processIO(10);
 						if (!streamSocket->areWeStillConnected()) {
 							audioDecoder.reset(nullptr);
-							streamSocket->disconnect(false);
+							streamSocket->disconnect();
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
@@ -378,7 +378,7 @@ namespace DiscordCoreInternal {
 						}
 						if (stopToken.stop_requested()) {
 							audioDecoder.reset(nullptr);
-							streamSocket->disconnect(false);
+							streamSocket->disconnect();
 							return;
 						}
 						std::vector<DiscordCoreAPI::AudioFrameData> frames{};

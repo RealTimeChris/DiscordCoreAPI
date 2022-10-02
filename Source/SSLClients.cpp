@@ -386,7 +386,7 @@ namespace DiscordCoreInternal {
 				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
-					return ProcessIOResult::Error;
+					return ProcessIOResult::No_Error;
 				}
 
 				if (readWriteSet.revents & POLLOUT) {
@@ -500,12 +500,14 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
+					this->disconnect();
 					return false;
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
 						cout << reportSSLError("SSLClient::processWriteData()", errorValue, this->ssl) << endl;
 					}
+					this->disconnect();
 					return false;
 				}
 			}
@@ -541,12 +543,14 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
+						this->disconnect();
 						return false;
 					}
 					default: {
 						if (this->doWePrintErrorMessages) {
 							cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
 						}
+						this->disconnect();
 						return false;
 					}
 				}

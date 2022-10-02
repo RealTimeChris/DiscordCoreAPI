@@ -727,7 +727,7 @@ namespace DiscordCoreAPI {
 			this->taskThread03.reset(nullptr);
 		}
 		DatagramSocketClient::disconnect();
-		WebSocketSSLShard::disconnect(false);
+		WebSocketSSLShard::disconnect();
 		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
 			this->streamSocket->disconnect();
 		}
@@ -1045,7 +1045,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::reconnect() noexcept {
 		DatagramSocketClient::disconnect();
-		WebSocketSSLShard::disconnect(true);
+		WebSocketSSLShard::disconnect();
 		if (this->taskThread03) {
 			this->taskThread03.reset(nullptr);
 		}

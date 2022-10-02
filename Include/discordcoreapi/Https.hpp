@@ -121,9 +121,9 @@ namespace DiscordCoreInternal {
 
 		HttpsConnection(bool doWePrintErrorMessages);
 
-		void disconnect(bool) noexcept;
-
 		void handleBuffer() noexcept;
+
+		void disconnect() noexcept;
 
 		void resetValues();
 

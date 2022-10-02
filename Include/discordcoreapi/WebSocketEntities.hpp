@@ -93,9 +93,9 @@ namespace DiscordCoreInternal {
 
 		void checkForAndSendHeartBeat(bool = false) noexcept;
 
-		void disconnect(bool doWeReconnect) noexcept;
-
 		virtual void handleBuffer() noexcept;
+
+		void disconnect() noexcept;
 
 		void onClosed() noexcept;
 

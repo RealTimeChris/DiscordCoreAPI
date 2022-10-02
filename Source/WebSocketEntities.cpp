@@ -1456,7 +1456,7 @@ namespace DiscordCoreInternal {
 		this->parseMessage(this);
 	}
 
-	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
+	void WebSocketSSLShard::disconnect() noexcept {
 		if (this->theSocket != SOCKET_ERROR) {
 			this->theSocket = SOCKET_ERROR;
 			this->currentState.store(SSLShardState::Disconnected);
@@ -1465,7 +1465,7 @@ namespace DiscordCoreInternal {
 			this->inputBuffer.clear();
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
-			if (doWeReconnect && this->theConnections) {
+			if (this->theConnections) {
 				DiscordCoreAPI::ConnectionPackage theData{};
 				theData.currentReconnectTries = this->currentReconnectTries;
 				theData.areWeResuming = this->areWeResuming;
@@ -1477,7 +1477,7 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLShard::onClosed() noexcept {
 		if (this->maxReconnectTries > this->currentReconnectTries) {
-			this->disconnect(true);
+			this->disconnect();
 		} else {
 			if (this->doWeQuit) {
 				this->doWeQuit->store(true);
