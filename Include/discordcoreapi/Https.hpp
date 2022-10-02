@@ -50,7 +50,6 @@ namespace DiscordCoreInternal {
 		std::unordered_map<std::string, std::string> responseHeaders{};
 		HttpsState theCurrentState{ HttpsState::Collecting_Code };
 		std::string responseMessage{};
-		std::string responseData{};
 		int64_t responseCode{ -1 };
 		size_t contentLength{};
 
@@ -177,9 +176,9 @@ namespace DiscordCoreInternal {
 			if (theReturnValue == nullptr) {
 				ReturnType theReturnValueNew{};
 				simdjson::ondemand::parser theParser{};
-				if (returnData.responseData.size() > 0) {
-					returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
-					auto theDocument = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
+				if (returnData.responseMessage.size() > 0) {
+					returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
+					auto theDocument = theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
 					if (theDocument.type() != simdjson::ondemand::json_type::null) {
 						simdjson::ondemand::value theObject{};
 						auto theResult = theDocument.get(theObject);
@@ -191,9 +190,9 @@ namespace DiscordCoreInternal {
 				return theReturnValueNew;
 			} else {
 				simdjson::ondemand::parser theParser{};
-				if (returnData.responseData.size() > 0) {
-					returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
-					auto theDocument = theParser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
+				if (returnData.responseMessage.size() > 0) {
+					returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
+					auto theDocument = theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
 					if (theDocument.type() != simdjson::ondemand::json_type::null) {
 						simdjson::ondemand::value theObject{};
 						auto theResult = theDocument.get(theObject);

@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 		try {
 			if (static_cast<HttpsConnection*>(this)->theData.responseMessage.size() >= static_cast<HttpsConnection*>(this)->theData.contentLength &&
 				static_cast<HttpsConnection*>(this)->theData.contentLength > 0) {
-				static_cast<HttpsConnection*>(this)->theData.responseData =
+				static_cast<HttpsConnection*>(this)->theData.responseMessage =
 					static_cast<HttpsConnection*>(this)->theData.responseMessage.substr(0, static_cast<HttpsConnection*>(this)->theData.contentLength);
 			}
 		} catch (...) {

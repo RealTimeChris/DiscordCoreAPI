@@ -30,6 +30,7 @@
 #include <discordcoreapi/AudioEncoder.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
 #include <discordcoreapi/DataParsingFunctions.hpp>
+#include <nlohmann/json.hpp>
 
 namespace DiscordCoreInternal {
 
@@ -98,6 +99,7 @@ namespace DiscordCoreInternal {
 	}
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth) {
+		HttpsResponseData responseData{}; 
 		try {
 			DiscordCoreAPI::JsonObject theRequest{};
 			theRequest["videoId"] = newSong.songId;
@@ -115,16 +117,16 @@ namespace DiscordCoreInternal {
 			dataPackage02.relativePath = "/youtubei/v1/player?key=" + YouTubeRequestBuilder::apiKey;
 			dataPackage02.content = theRequest;
 			dataPackage02.workloadClass = HttpsWorkloadClass::Post;
-			HttpsResponseData responseData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
+			responseData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
 				cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData.responseCode << ", "
 					 << responseData.responseMessage << DiscordCoreAPI::reset() << endl
 					 << endl;
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
-			responseData.responseData.reserve(responseData.responseData.size() + simdjson::SIMDJSON_PADDING);
+			responseData.responseMessage.reserve(responseData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
 			simdjson::ondemand::parser theParser{};
-			auto jsonObject = theParser.iterate(responseData.responseData.data(), responseData.responseData.length(), responseData.responseData.capacity());
+			auto jsonObject = theParser.iterate(responseData.responseMessage.data(), responseData.responseMessage.length(), responseData.responseMessage.capacity());
 			DiscordCoreAPI::YouTubeFormatVector theVector{ jsonObject };
 			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };
@@ -176,6 +178,8 @@ namespace DiscordCoreInternal {
 				currentRecursionDepth++;
 				if (this->configManager->doWePrintHttpsErrorMessages()) {
 					DiscordCoreAPI::reportException("YouTubeRequestBuilder::constructDownloadInfo()");
+					std::cout << "THE MESSAGE: " << responseData.responseMessage << std::endl;
+					std::cout << "THE CONTENT LENGTH: " << responseData.contentLength << std::endl;
 				}
 				return this->constructDownloadInfo(newSong, currentRecursionDepth);
 			} else {
