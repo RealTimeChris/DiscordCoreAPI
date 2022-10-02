@@ -599,7 +599,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 
-				int32_t writtenBytes{ sendto(this->theSocket, clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
+				int32_t writtenBytes{ sendto(static_cast<SOCKET>(this->theSocket), clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
 					( sockaddr* )&this->theStreamTargetAddress, sizeof(this->theStreamTargetAddress)) };
 #ifdef _WIN32
 				int32_t intSize{ sizeof(this->theStreamTargetAddress) };
@@ -733,7 +733,7 @@ namespace DiscordCoreInternal {
 #else
 			socklen_t intSize{ sizeof(this->theStreamTargetAddress) };
 #endif
-			int32_t readBytes{ recvfrom(this->theSocket, this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(bytesToRead), 0,
+			int32_t readBytes{ recvfrom(static_cast<SOCKET>(this->theSocket), this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(bytesToRead), 0,
 				( sockaddr* )&this->theStreamTargetAddress, &intSize) };
 
 			if (readBytes < 0) {
@@ -741,7 +741,6 @@ namespace DiscordCoreInternal {
 			} else {
 				this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
 				this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-				this->currentlyUsedSpace += readBytes;
 				this->bytesRead += readBytes;
 				return true;
 			}
@@ -756,7 +755,6 @@ namespace DiscordCoreInternal {
 	void DatagramSocketClient::disconnect() noexcept {
 		this->theSocket = SOCKET_ERROR;
 		this->outputBuffer.clear();
-		this->currentlyUsedSpace = 0;
 	}
 
 	SSL_CTXWrapper SSLConnectionInterface::context{};
