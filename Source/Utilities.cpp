@@ -491,6 +491,7 @@ namespace DiscordCoreAPI {
 
 			return this->theValue.array->operator[](index);
 		}
+		throw std::runtime_error{ "Sorry, but that index could not be produced/accessed." };
 	}
 
 	JsonObject& JsonObject::operator[](size_t index) const {
@@ -507,6 +508,7 @@ namespace DiscordCoreAPI {
 			auto result = this->theValue.object->emplace(std::move(key), JsonObject{});
 			return result.first->second;
 		}
+		throw std::runtime_error{ "Sorry, but that item-key could not be produced/accessed." };
 	}
 
 	JsonObject& JsonObject::operator[](const typename ObjectType::key_type& key) const {
@@ -514,6 +516,7 @@ namespace DiscordCoreAPI {
 			auto result = this->theValue.object->emplace(key, nullptr);
 			return result.first->second;
 		}
+		throw std::runtime_error{ "Sorry, but that item-key could not be produced/accessed." };
 	}
 
 	void JsonObject::dump(const JsonObject& theData, std::string& theString) {
@@ -599,6 +602,26 @@ namespace DiscordCoreAPI {
 		this->dump(*this, theString);
 		return theString;
 	}
+
+	void JsonObject::pushBack(JsonObject other) noexcept {
+		if (this->theType == ValueType::Null) {
+			this->theType = ValueType::Array;
+			this->theValue = ValueType::Array;
+			this->theKey = theKey;
+		} else if (this->theType == ValueType::Object) {
+			this->theValue.object->emplace(theKey, ValueType::Array);
+			this->theValue.object->at(theKey).theValue.array->push_back(other);
+		}
+
+		if (this->theType == ValueType::Array) {
+			size_t index = this->theValue.array->size();
+			if (index >= this->theValue.array->size()) {
+				this->theValue.array->resize(index + 1);
+			}
+
+			this->theValue.array->operator[](index) = other;
+		}
+	};
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void )) {
 		outputSttream << theFunction();
