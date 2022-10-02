@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 			newData["name"] = std::string{ value.name };
 			newData["id"] = std::to_string(value.id);
 			newData["type"] = value.type;
-			theData.pushBack("channels", newData);
+			theData["channels"].pushBack(newData);
 		}
 		for (auto& value: this->roles) {
 			JsonObject newData{};
@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 			newData["hoist"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
 			newData["color"] = value.color.getIntColorValue();
 			newData["name"] = std::string{ value.name };
-			theData.pushBack("roles", newData);
+			theData["roles"].pushBack(newData);
 		}
 		if (this->systemChannelId.operator size_t() != 0) {
 			theData["system_channel_id"] = std::to_string(this->systemChannelId);
@@ -87,7 +87,7 @@ namespace DiscordCoreAPI {
 		JsonObject theData{};
 		theData["compute_prune_count"] = this->computePruneCount;
 		for (auto& value: this->includeRoles) {
-			theData.pushBack("include_roles", std::to_string(value));
+			theData["include_roles"].pushBack(std::to_string(value));
 		}
 		theData["days"] = this->days;
 		return theData;
@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 			if (value.emojiId.operator size_t() != 0) {
 				newData["emoji_id"] = std::to_string(value.emojiId);
 			}
-			theData.pushBack("welcome_channels", newData);
+			theData["welcome_channels"].pushBack(newData);
 		}
 		theData["description"] = this->description;
 		theData["enabled"] = this->enabled;

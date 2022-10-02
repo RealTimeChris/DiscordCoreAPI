@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 		theData["type"] = this->type;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData.pushBack("options", this->options[x]);
+				theData["options"].pushBack(this->options[x]);
 			}
 		}
 		return theData;
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 		theData["name"] = this->name;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData.pushBack("options", this->options[x]);
+				theData["options"].pushBack(this->options[x]);
 			}
 		}
 		return theData;
@@ -141,7 +141,7 @@ namespace DiscordCoreAPI {
 		theData["type"] = this->type;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData.pushBack("options", this->options[x]);
+				theData["options"].pushBack(this->options[x]);
 			}
 		}
 		return theData;
@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 		theData["name"] = this->name;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				theData.pushBack("options", this->options[x]);
+				theData["options"].pushBack(this->options[x]);
 			}
 		}
 		return theData;
@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 			newData["permission"] = value.permission;
 			newData["type"] = static_cast<uint8_t>(value.type);
 			newData["id"] = std::to_string(value.id);
-			theData.pushBack("permissions", newData);
+			theData["permissions"].pushBack(newData);
 		}
 		return theData;
 	}

@@ -46,7 +46,7 @@ namespace DiscordCoreAPI {
 		JsonObject theData{};
 		theData["access_token"] = this->accessToken;
 		for (auto& value: this->roles) {
-			theData.pushBack("roles", std::to_string(value.operator size_t()));
+			theData["roles"].pushBack(std::to_string(value.operator size_t()));
 		}
 		theData["deaf"] = this->deaf;
 		theData["mute"] = this->mute;
@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		theData["nick"] = this->nick;
 		theData["communication_disabled_until"] = static_cast<std::string>(this->communicationDisabledUntil);
 		for (auto& value: this->roleIds) {
-			theData.pushBack("roles", std::to_string(value.operator size_t()));
+			theData["roles"].pushBack(std::to_string(value.operator size_t()));
 		}
 		if (this->newVoiceChannelId.operator size_t() != 0) {
 			theData["channel_id"] = std::to_string(this->newVoiceChannelId);

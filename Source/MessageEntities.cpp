@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
 	CreateMessageData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->attachments) {
-			theData.pushBack("attachments", value);
+			theData["attachments"].pushBack(value);
 		}
 		if (this->messageReference.messageId.operator size_t() != 0) {
 			theData["message_reference"] = this->messageReference;
@@ -274,20 +274,20 @@ namespace DiscordCoreAPI {
 			theData["components"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->components) {
-				theData.pushBack("components", value);
+				theData["components"].pushBack(value);
 			}
 		}
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
 			theData["allowed_mentions"] = this->allowedMentions;
 		}
 		for (auto& value: this->stickerIds) {
-			theData.pushBack("sticker_ids", value);
+			theData["sticker_ids"].pushBack(value);
 		}
 		if (this->embeds.size() == 0) {
 			theData["embeds"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->embeds) {
-				theData.pushBack("embeds", JsonObject{ value });
+				theData["embeds"].pushBack(JsonObject{ value });
 			}
 		}
 		if (this->content != "") {
@@ -333,13 +333,13 @@ namespace DiscordCoreAPI {
 	EditMessageData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->attachments) {
-			theData.pushBack("attachments", value);
+			theData["attachments"].pushBack(value);
 		}
 		if (this->components.size() == 0) {
 			theData["components"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->components) {
-				theData.pushBack("components", value);
+				theData["components"].pushBack(value);
 			}
 		}
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
@@ -349,7 +349,7 @@ namespace DiscordCoreAPI {
 			theData["embeds"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->embeds) {
-				theData.pushBack("embeds", value);
+				theData["embeds"].pushBack(value);
 			}
 		}
 		if (this->content != "") {
@@ -363,7 +363,7 @@ namespace DiscordCoreAPI {
 	DeleteMessagesBulkData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->messageIds) {
-			theData.pushBack("messages", std::to_string(value));
+			theData["messages"].pushBack(std::to_string(value));
 		}
 		return theData;
 	}

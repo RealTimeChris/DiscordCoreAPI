@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 			theData["deny"] = value.deny;
 			theData["type"] = value.type;
 			theData["id"] = std::to_string(value.id);
-			theData.pushBack("permission_overwrites", newData);
+			theData["permission_overwrites"].pushBack(newData);
 		}
 		theData["default_auto_archive_duration"] = this->defaultAutoArchiveDuration;
 		theData["rate_limit_per_user"] = this->rateLimitPerUser;
@@ -182,7 +182,7 @@ namespace DiscordCoreAPI {
 			}
 			dataNew["position"] = value.position;
 			dataNew["id"] = std::to_string(value.id);
-			theData.pushBack("", dataNew);
+			theData.pushBack(dataNew);
 		}
 		return theData;
 	}
@@ -260,7 +260,7 @@ namespace DiscordCoreAPI {
 			newData["deny"] = value.deny;
 			newData["type"] = value.type;
 			newData["id"] = std::to_string(value.id);
-			theData.pushBack("permission_overwrites", newData);
+			theData["permission_overwrites"].pushBack(newData);
 		}
 		theData["default_auto_archive_duration"] = this->channelData.defaultAutoArchiveDuration;
 		theData["video_quality_mode"] = this->channelData.videoQualityMode;

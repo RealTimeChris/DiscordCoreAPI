@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 	CreateGuildEmojiData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->roles) {
-			theData.pushBack("roles", std::to_string(value));
+			theData["roles"].pushBack(std::to_string(value));
 		}
 		theData["images"] = this->imageDataFinal;
 		theData["name"] = this->name;
@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 	ModifyGuildEmojiData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->roles) {
-			theData.pushBack("roles", std::to_string(value));
+			theData["roles"].pushBack(std::to_string(value));
 		}
 		theData["name"] = this->name;
 		return theData;

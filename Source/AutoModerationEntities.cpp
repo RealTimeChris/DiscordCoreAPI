@@ -121,19 +121,19 @@ namespace DiscordCoreAPI {
 			dataNew["metadata"]["channel_id"] = std::to_string(value.metadata.channelId);
 			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
 			dataNew["type"] = value.type;
-			theData.pushBack("actions", dataNew);
+			theData["actions"].pushBack(dataNew);
 		}
 		theData["enabled"] = this->enabled;
 		theData["event_type"] = this->eventType;
 		for (auto& value: this->exemptChannels) {
-			theData.pushBack("exempt_channels", value);
+			theData["exempt_channels"].pushBack(value);
 		}
 		for (auto& value: this->exemptRoles) {
-			theData.pushBack("exempt_roles", value);
+			theData["exempt_roles"].pushBack(value);
 		}
 		theData["name"] = this->name;
 		for (auto& value: this->triggerMetadata.keywordFilter) {
-			theData["trigger_metadata"].pushBack("keyword_filter", value);
+			theData["trigger_metadata"]["keyword_filter"].pushBack(value);
 		}
 		theData["presets"] = this->triggerMetadata.presets;
 		theData["trigger_type"] = this->triggerType;
@@ -147,19 +147,19 @@ namespace DiscordCoreAPI {
 			dataNew["metadata"]["channel_id"] = std::to_string(value.metadata.channelId);
 			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
 			dataNew["type"] = value.type;
-			theData.pushBack("actions", dataNew);
+			theData["actions"].pushBack(dataNew);
 		}
 		theData["enabled"] = this->enabled;
 		theData["event_type"] = this->eventType;
 		for (auto& value: this->exemptChannels) {
-			theData.pushBack("exempt_channels", value);
+			theData["exempt_channels"].pushBack(value);
 		}
 		for (auto& value: this->exemptRoles) {
-			theData.pushBack("exempt_roles", value);
+			theData["exempt_roles"].pushBack(value);
 		}
 		theData["name"] = this->name;
 		for (auto& value: this->triggerMetadata.keywordFilter) {
-			theData["trigger_metadata"].pushBack("keyword_filter", value);
+			theData["trigger_metadata"]["keyword_filter"].pushBack(value);
 		}
 		theData["presets"] = this->triggerMetadata.presets;
 		return theData;

@@ -89,20 +89,20 @@ namespace DiscordCoreAPI {
 			theData["allowed_mentions"] = this->allowedMentions;
 		}
 		for (auto& value: this->attachments) {
-			theData.pushBack("attachments", JsonObject{ value });
+			theData["attachments"].pushBack(JsonObject{ value });
 		}
 		if (this->components.size() == 0) {
 			theData["components"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->components) {
-				theData.pushBack("components", value);
+				theData["components"].pushBack(JsonObject{ value });
 			}
 		}
 		if (this->embeds.size() == 0) {
 			theData["embeds"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->embeds) {
-				theData.pushBack("embeds", JsonObject{ value });
+				theData["embeds"].pushBack(JsonObject{ value });
 			}
 		}
 		if (this->avatarUrl != "") {
@@ -240,20 +240,20 @@ namespace DiscordCoreAPI {
 			theData["allowed_mentions"] = this->allowedMentions;
 		}
 		for (auto& value: this->attachments) {
-			theData.pushBack("attachments", value);
+			theData["attachments"].pushBack(JsonObject{ value });
 		}
 		if (this->components.size() == 0) {
 			theData["components"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->components) {
-				theData.pushBack("components", value);
+				theData["components"].pushBack(JsonObject{ value });
 			}
 		}
 		if (this->embeds.size() == 0) {
 			theData["embeds"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->embeds) {
-				theData.pushBack("embeds", JsonObject{ value });
+				theData["embeds"].pushBack(JsonObject{ value });
 			}
 		}
 		if (this->content != "") {

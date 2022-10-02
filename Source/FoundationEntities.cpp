@@ -58,8 +58,9 @@ namespace DiscordCoreInternal {
 				theSerializer02["url"] = value.url;
 			}
 			theSerializer02["name"] = value.name;
+			theSerializer02["name"] = value.name;
 			theSerializer02["type"] = value.type;
-			theSerializer["d"]["presence"].pushBack("activities", theSerializer02);
+			theSerializer["d"]["presence"]["activities"].pushBack(theSerializer02);
 		}
 		theSerializer["d"]["presence"]["afk"] = this->presence.afk;
 		if (this->presence.since != 0) {
@@ -74,8 +75,8 @@ namespace DiscordCoreInternal {
 #else
 		theSerializer["d"]["properties"]["os"] = "Linux";
 #endif
-		theSerializer["d"].pushBack("shard", this->currentShard);
-		theSerializer["d"].pushBack("shard", this->numberOfShards);
+		theSerializer["d"]["shard"].pushBack(this->currentShard);
+		theSerializer["d"]["shard"].pushBack(this->numberOfShards);
 		theSerializer["d"]["token"] = this->botToken;
 		theSerializer["op"] = 2;
 		return theSerializer;
@@ -101,7 +102,7 @@ namespace DiscordCoreInternal {
 			}
 			theDataNew["name"] = std::string{ value.name };
 			theDataNew["type"] = value.type;
-			theData["d"].pushBack("activities", theDataNew);
+			theData["d"]["activities"].pushBack(theDataNew);
 		}
 		theData["status"] = this->status;
 		if (this->since != 0) {
@@ -3047,7 +3048,7 @@ namespace DiscordCoreAPI {
 	EmbedData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value2: this->fields) {
-			theData.pushBack("fields", value2);
+			theData["fields"].pushBack(value2);
 		}
 		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
 		theData["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
@@ -3251,7 +3252,7 @@ namespace DiscordCoreAPI {
 		theData["type"] = this->type;
 		if (this->choices.size() > 0) {
 			for (auto& value: this->choices) {
-				theData.pushBack("choices", value);
+				theData["choices"].pushBack(value);
 			}
 		}
 		if (this->choices.size() == 0) {
@@ -3259,7 +3260,7 @@ namespace DiscordCoreAPI {
 		}
 		if (this->options.size() > 0) {
 			for (auto& value: this->options) {
-				theData.pushBack("options", value);
+				theData["options"].pushBack(value);
 			}
 		}
 		return theData;
@@ -3282,13 +3283,13 @@ namespace DiscordCoreAPI {
 	AllowedMentionsData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->parse) {
-			theData.pushBack("parse", value);
+			theData["parse"].pushBack(value);
 		}
 		for (auto& value: this->roles) {
-			theData.pushBack("roles", value);
+			theData["roles"].pushBack(value);
 		}
 		for (auto& value: this->users) {
-			theData.pushBack("users", value);
+			theData["users"].pushBack(value);
 		}
 		theData["replied_user"] = this->repliedUser;
 		return theData;
@@ -3312,7 +3313,7 @@ namespace DiscordCoreAPI {
 					component["style"] = valueNew.style;
 					component["type"] = valueNew.type;
 					component["url"] = valueNew.url;
-					theData.pushBack("components", component);
+					theData["components"].pushBack(component);
 				} else if (valueNew.type == ComponentType::SelectMenu) {
 					JsonObject component{};
 					for (auto& value01: valueNew.options) {
@@ -3326,7 +3327,7 @@ namespace DiscordCoreAPI {
 						option["default"] = value01._default;
 						option["label"] = value01.label;
 						option["value"] = value01.value;
-						component.pushBack("options", option);
+						component["options"].pushBack(option);
 					};
 					component["placeholder"] = valueNew.placeholder;
 					component["max_values"] = valueNew.maxValues;
@@ -3334,7 +3335,7 @@ namespace DiscordCoreAPI {
 					component["custom_id"] = valueNew.customId;
 					component["disabled"] = valueNew.disabled;
 					component["type"] = valueNew.type;
-					theData.pushBack("components", component);
+					theData["components"].pushBack(component);
 
 				} else if (valueNew.type == ComponentType::TextInput) {
 					JsonObject component{};
@@ -3347,7 +3348,7 @@ namespace DiscordCoreAPI {
 					component["label"] = valueNew.label;
 					component["value"] = valueNew.value;
 					component["type"] = valueNew.type;
-					theData.pushBack("components", component);
+					theData["components"].pushBack(component);
 				}
 			}
 		}
@@ -3825,14 +3826,14 @@ namespace DiscordCoreAPI {
 		theData["type"] = this->type;
 		if (this->data.attachments.size() > 0) {
 			for (auto& value: this->data.attachments) {
-				theData["data"].pushBack("attachments", value);
+				theData["data"]["attachments"].pushBack(value);
 			}
 		}
 		if (this->data.components.size() == 0) {
 			theData["data"]["components"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->data.components) {
-				theData["data"].pushBack("components", value);
+				theData["data"]["components"].pushBack(value);
 			}
 		}
 		if (this->data.allowedMentions.parse.size() > 0 || this->data.allowedMentions.roles.size() > 0 || this->data.allowedMentions.users.size() > 0) {
@@ -3861,14 +3862,14 @@ namespace DiscordCoreAPI {
 						break;
 					}
 				}
-				theData["data"].pushBack("choices", theValue);
+				theData["data"]["choices"].pushBack(theValue);
 			}
 		}
 		if (this->data.embeds.size() == 0) {
 			theData["data"]["embeds"] = ValueType::Null_Ext;
 		} else {
 			for (auto& value: this->data.embeds) {
-				theData["data"].pushBack("embeds", JsonObject{ value });
+				theData["data"]["embeds"].pushBack(JsonObject{ value });
 			}
 		}
 		if (this->data.customId != "") {
