@@ -213,8 +213,8 @@ namespace DiscordCoreInternal {
 		virtual ~SSLDataInterface() noexcept = default;
 
 	  protected:
-		RingBuffer outputBuffer{};
-		RingBuffer inputBuffer{};
+		RingBuffer<1024 / 16> outputBuffer{};
+		RingBuffer<1024 / 16> inputBuffer{};
 		int64_t bytesRead{ 0 };
 	};
 
@@ -281,7 +281,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StreamType streamType{};
 		sockaddr_in theStreamTargetAddress{};
 		bool areWeStreamConnected{ false };
-		LightRingBuffer outputBuffer{};
+		RingBuffer<4> outputBuffer{};
 		size_t currentlyUsedSpace{};
 		SOCKETWrapper theSocket{};
 		int64_t bytesRead{};
