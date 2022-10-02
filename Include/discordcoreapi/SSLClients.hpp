@@ -40,11 +40,6 @@
 	#include <WinSock2.h>
 	#include <WS2tcpip.h>
 	#define poll(fd_set, fd_count, timeout) WSAPoll(fd_set, fd_count, timeout)
-	using SOCKET = UINT_PTR;
-	#ifdef SOCKET_ERROR
-		#undef SOCKET_ERROR
-		#define SOCKET_ERROR -1ull
-	#endif
 	#ifdef max
 		#undef max
 	#endif
@@ -67,8 +62,6 @@
 #endif
 
 namespace DiscordCoreInternal {
-
-
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
 		std::unordered_map<uint32_t, pollfd> thePolls{};
@@ -141,7 +134,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ SOCKET_ERROR }, SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ -1ull }, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll sockaddrWrapper {
