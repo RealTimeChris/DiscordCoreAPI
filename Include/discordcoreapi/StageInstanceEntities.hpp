@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file StageInstanceEntities.hpp
 
+#pragma once
+
 #ifndef STAGE_INSTANCE_ENTITIES
 #define STAGE_INSTANCE_ENTITIES
 

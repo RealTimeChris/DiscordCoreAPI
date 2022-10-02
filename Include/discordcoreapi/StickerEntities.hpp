@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file StickerEntities.hpp
 
+#pragma once
+
 #ifndef STICKER_ENTITIES
 #define STICKER_ENTITIES
 

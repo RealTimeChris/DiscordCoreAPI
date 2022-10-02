@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file EventEntities.hpp
 
+#pragma once
+
 #ifndef EVENT_ENTITIES
 #define EVENT_ENTITIES
 

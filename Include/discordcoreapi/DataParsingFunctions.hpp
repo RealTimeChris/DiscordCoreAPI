@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file DataParsingFunctions.hpp
 
+#pragma once
+
 #ifndef DATA_PARSING_FUNCTIONS
 #define DATA_PARSING_FUNCTIONS
 

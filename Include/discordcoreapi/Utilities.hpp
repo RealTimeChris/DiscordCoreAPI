@@ -23,6 +23,9 @@
 /// https://discordcoreapi.com
 /// \file Utilities.hpp
 
+#pragma once
+
+#pragma once
 #ifndef UTILITIES
 #define UTILITIES
 

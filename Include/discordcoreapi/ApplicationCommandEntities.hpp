@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file ApplicationCommandEntities.hpp
 
+#pragma once
+
 #ifndef APPLICATION_COMMAND_ENTITIES
 #define APPLICATION_COMMAND_ENTITIES
 

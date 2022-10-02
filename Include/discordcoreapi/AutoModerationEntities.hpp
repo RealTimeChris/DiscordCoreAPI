@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file AutoModerationEntities.hpp
 
+#pragma once
+
 #ifndef AUTO_MODERATION_RULE_ENTITIES
 #define AUTO_MODERATION_RULE_ENTITIES
 

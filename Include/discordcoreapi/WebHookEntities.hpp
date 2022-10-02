@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file WebHookEntities.hpp
 
+#pragma once
+
 #ifndef WEBHOOK_ENTITIES
 #define WEBHOOK_ENTITIES
 

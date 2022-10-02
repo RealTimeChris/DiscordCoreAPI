@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file SongAPI.hpp
 
+#pragma once
+
 #ifndef SONG_API
 #define SONG_API
 
