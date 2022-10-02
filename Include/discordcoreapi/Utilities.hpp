@@ -1783,19 +1783,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll RingBufferSlice : public RingBufferInterface<char, 1024 * 16> {};
 
-	class DiscordCoreAPI_Dll RingBuffer : public RingBufferInterface<RingBufferSlice, 32> {
-	  public:
-		void clear() noexcept {
-			for (auto& value: this->theArray) {
-				value.clear();
-			}
-			this->areWeFull = false;
-			this->tail = 0;
-			this->head = 0;
-		}
-	};
-
-	class DiscordCoreAPI_Dll LightRingBuffer : public RingBufferInterface<RingBufferSlice, 4> {
+	template<size_t TheSliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice, TheSliceCount> {
 	  public:
 		void clear() noexcept {
 			for (auto& value: this->theArray) {
