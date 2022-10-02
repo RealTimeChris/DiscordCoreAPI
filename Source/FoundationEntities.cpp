@@ -1917,13 +1917,14 @@ namespace DiscordCoreAPI {
 
 		if (this->type == ApplicationCommandOptionType::Sub_Command_Group || this->type == ApplicationCommandOptionType::Sub_Command) {
 			auto theResult01 = jsonObjectData["options"].get(theArray);
-			auto theResult02 = jsonObjectData["choices"].get(theArray);
 			if (theResult01 == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					ApplicationCommandOptionData newData{ value.value() };
 					this->options.emplace_back(std::move(newData));
 				}
-			} else if (theResult02 == simdjson::error_code::SUCCESS) {
+			} 
+			auto theResult02 = jsonObjectData["choices"].get(theArray);
+			if (theResult02 == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					ApplicationCommandOptionChoiceData newData{ value.value() };
 					this->choices.emplace_back(std::move(newData));

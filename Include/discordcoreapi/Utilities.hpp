@@ -1751,6 +1751,10 @@ namespace DiscordCoreInternal {
 			}
 		}
 
+		size_t getFreeSpace() noexcept {
+			return this->theArray.size() - this->getUsedSpace();
+		}
+
 		ObjectType* getCurrentTail() noexcept {
 			return (this->theArray.data() + (this->tail % (this->theArray.size())));
 		}

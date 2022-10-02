@@ -517,7 +517,12 @@ namespace DiscordCoreInternal {
 		if (!this->inputBuffer.isItFull()) {
 			do {
 				size_t readBytes{ 0 };
-				int64_t bytesToRead{ static_cast<int64_t>(1024 * 16) };
+				size_t bytesToRead{};
+				if (this->maxBufferSize > this->inputBuffer.getCurrentHead()->getFreeSpace()) {
+					bytesToRead = this->inputBuffer.getCurrentHead()->getFreeSpace();
+				} else {
+					bytesToRead = this->maxBufferSize;
+				}
 				auto returnValue{ SSL_read_ex(this->ssl, this->inputBuffer.getCurrentHead()->getCurrentHead(), bytesToRead, &readBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
@@ -716,13 +721,19 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::processReadData() noexcept {
-		if (this->areWeStreamConnected) {
+		if (this->areWeStreamConnected && !this->inputBuffer.isItFull()) {
+			size_t bytesToRead{};
+			if (this->maxBufferSize > this->inputBuffer.getCurrentHead()->getFreeSpace()) {
+				bytesToRead = this->inputBuffer.getCurrentHead()->getFreeSpace();
+			} else {
+				bytesToRead = this->maxBufferSize;
+			}
 #ifdef _WIN32
 			int32_t intSize{ sizeof(this->theStreamTargetAddress) };
 #else
 			socklen_t intSize{ sizeof(this->theStreamTargetAddress) };
 #endif
-			int32_t readBytes{ recvfrom(this->theSocket, this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(this->maxBufferSize), 0,
+			int32_t readBytes{ recvfrom(this->theSocket, this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(bytesToRead), 0,
 				( sockaddr* )&this->theStreamTargetAddress, &intSize) };
 
 			if (readBytes < 0) {
