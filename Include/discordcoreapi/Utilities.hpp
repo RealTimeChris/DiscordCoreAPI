@@ -77,8 +77,10 @@ inline uint64_t ntohll(uint64_t x) {
 #include <sstream>
 #include <iomanip>
 #include <vector>
+#include <atomic>
 #include <random>
 #include <string>
+#include <thread>
 #include <mutex>
 #include <queue>
 #include <array>
