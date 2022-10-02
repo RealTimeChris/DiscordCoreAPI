@@ -55,12 +55,17 @@ namespace DiscordCoreInternal {
 		try {
 			if (static_cast<HttpsConnection*>(this)->theData.responseMessage.size() >= static_cast<HttpsConnection*>(this)->theData.contentLength &&
 				static_cast<HttpsConnection*>(this)->theData.contentLength > 0) {
-				if ((static_cast<HttpsConnection*>(this)->theData.responseMessage[0] == '{' &&
-						static_cast<HttpsConnection*>(this)->theData.responseMessage[static_cast<HttpsConnection*>(this)->theData.contentLength - 1] == '}') ||
-					(static_cast<HttpsConnection*>(this)->theData.responseMessage[0] == '[' &&
-						static_cast<HttpsConnection*>(this)->theData.responseMessage[static_cast<HttpsConnection*>(this)->theData.contentLength - 1] == ']')) {
-					static_cast<HttpsConnection*>(this)->theData.responseData =
-						static_cast<HttpsConnection*>(this)->theData.responseMessage.substr(0, static_cast<HttpsConnection*>(this)->theData.contentLength);
+				auto theFirstIndex = static_cast<HttpsConnection*>(this)->theData.responseMessage.find_first_of('{');
+				auto theSecondIndex = static_cast<HttpsConnection*>(this)->theData.responseMessage.find_first_of('[');
+				if (theFirstIndex != std::string::npos || theSecondIndex != std::string::npos) {
+					size_t theFinalIndex{};
+					if (theFirstIndex < theSecondIndex) {
+						theFinalIndex = static_cast<HttpsConnection*>(this)->theData.responseMessage.find_last_of('}');
+					} else {
+						theFinalIndex = static_cast<HttpsConnection*>(this)->theData.responseMessage.find_last_of(']');
+						theFirstIndex = theSecondIndex;
+					}
+					static_cast<HttpsConnection*>(this)->theData.responseData = static_cast<HttpsConnection*>(this)->theData.responseMessage.substr(theFirstIndex, theFinalIndex);
 				}
 			}
 		} catch (...) {
@@ -345,6 +350,12 @@ namespace DiscordCoreInternal {
 		this->currentReconnectTries = 0;
 		this->isItChunked = false;
 		this->theInputBufferReal.clear();
+		for (auto& value: this->inputBuffer) {
+			value.clear();
+		}
+		for (auto& value: this->outputBuffer) {
+			value.clear();
+		}
 		this->outputBuffer.clear();
 		this->inputBuffer.clear();
 		this->theData = HttpsResponseData{};

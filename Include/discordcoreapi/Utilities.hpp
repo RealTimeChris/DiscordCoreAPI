@@ -1727,7 +1727,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-
+		
 		size_t getUsedSpace() noexcept {
 			if (this->areWeFull) {
 				return this->theArray.size();
@@ -1761,6 +1761,14 @@ namespace DiscordCoreInternal {
 			this->areWeFull = false;
 			this->tail = 0;
 			this->head = 0;
+		}
+
+		auto begin() {
+			return this->theArray.begin();
+		}
+
+		auto end() {
+			return this->theArray.end();
 		}
 
 	  protected:

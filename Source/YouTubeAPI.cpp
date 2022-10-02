@@ -122,9 +122,9 @@ namespace DiscordCoreInternal {
 					 << endl;
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
+			responseData.responseData.reserve(responseData.responseData.size() + simdjson::SIMDJSON_PADDING);
 			simdjson::ondemand::parser theParser{};
-			responseData.responseMessage.reserve(responseData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-			auto jsonObject = theParser.iterate(responseData.responseMessage.data(), responseData.responseMessage.length(), responseData.responseMessage.capacity());
+			auto jsonObject = theParser.iterate(responseData.responseData.data(), responseData.responseData.length(), responseData.responseData.capacity());
 			DiscordCoreAPI::YouTubeFormatVector theVector{ jsonObject };
 			DiscordCoreAPI::YouTubeFormat format{};
 			bool isOpusFound{ false };
