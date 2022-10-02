@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file ReactionEntities.hpp
 
-#pragma once
-
 #ifndef REACTION_ENTITIES
 #define REACTION_ENTITIES
 

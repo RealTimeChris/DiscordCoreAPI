@@ -286,7 +286,7 @@ namespace DiscordCoreAPI {
 	JsonObject::JsonValue::JsonValue(ValueType theType) noexcept {
 		*this = theType;
 	}
-	
+
 	JsonObject& JsonObject::operator=(EnumConverter theData) noexcept {
 		this->theValue = uint64_t{ theData };
 		this->theValue.numberUint = uint64_t{ theData };
@@ -507,7 +507,7 @@ namespace DiscordCoreAPI {
 		}
 		throw std::runtime_error{ "Sorry, but that item-key could not be produced/accessed." };
 	}
-	
+
 	JsonObject::operator std::string() noexcept {
 		std::string theString{};
 		this->dump(*this, theString);
@@ -1311,9 +1311,9 @@ namespace DiscordCoreAPI {
 
 	std::string base64Encode(const std::string& theString, bool url) {
 		const char* base64CharsArray[2] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-										"abcdefghijklmnopqrstuvwxyz"
-										"0123456789"
-										"+/",
+											"abcdefghijklmnopqrstuvwxyz"
+											"0123456789"
+											"+/",
 
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			"abcdefghijklmnopqrstuvwxyz"
@@ -1598,7 +1598,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	StringBuffer::operator std::string_view(){
+	StringBuffer::operator std::string_view() {
 		if (this->whichOneAreWeOn == 0) {
 			std::string_view theString{ this->theString01.data(), this->theSize };
 			return theString;

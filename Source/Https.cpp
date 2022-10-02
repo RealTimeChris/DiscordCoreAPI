@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 
 	HttpsResponseData HttpsRnRBuilder::finalizeReturnValues(RateLimitData& rateLimitData) {
 		try {
-			if (static_cast<HttpsConnection*>(this)->theData.responseMessage.size() >= static_cast<HttpsConnection*>(this)->theData.contentLength&&
+			if (static_cast<HttpsConnection*>(this)->theData.responseMessage.size() >= static_cast<HttpsConnection*>(this)->theData.contentLength &&
 				static_cast<HttpsConnection*>(this)->theData.contentLength > 0) {
 				if ((static_cast<HttpsConnection*>(this)->theData.responseMessage[0] == '{' &&
 						static_cast<HttpsConnection*>(this)->theData.responseMessage[static_cast<HttpsConnection*>(this)->theData.contentLength - 1] == '}') ||
@@ -146,7 +146,7 @@ namespace DiscordCoreInternal {
 				return newString.size();
 			}
 		} catch (...) {
-			static_cast<HttpsConnection*>(this)->theData.contentLength= -5;
+			static_cast<HttpsConnection*>(this)->theData.contentLength = -5;
 			return 0;
 		}
 		return 0;

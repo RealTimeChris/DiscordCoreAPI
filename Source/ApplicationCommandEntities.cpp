@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 				this->nameLocalizations.emplace(value.unescaped_key().take_value().data(), value.value().get_string().take_value().data());
 			}
 		}
-		
+
 		theResult = jsonObjectData["description_localizations"].get(theMap);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->descriptionLocalizations.clear();

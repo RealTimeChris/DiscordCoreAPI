@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file CoRoutine.hpp
 
-#pragma once
-
 #ifndef COROUTINE
 #define COROUTINE
 

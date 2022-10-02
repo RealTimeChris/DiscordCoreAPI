@@ -239,7 +239,7 @@ namespace DiscordCoreInternal {
 			}
 			return false;
 		}
-		
+
 		const char optionValue{ true };
 		if (setsockopt(this->theSocket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
@@ -247,7 +247,7 @@ namespace DiscordCoreInternal {
 			}
 			return false;
 		}
-		
+
 		if (setsockopt(this->theSocket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("SSLClient::connect::setsockopt(), to: " + baseUrl) << endl;
@@ -329,7 +329,7 @@ namespace DiscordCoreInternal {
 		}
 
 		if (auto returnValue = poll(&readWriteSet.thePolls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.thePolls.size()), 1); returnValue == SOCKET_ERROR) {
-			for (auto& [key,value]: readWriteSet.thePolls) {
+			for (auto& [key, value]: readWriteSet.thePolls) {
 				if (readWriteSet.thePolls[key].revents & POLLERR || readWriteSet.thePolls[key].revents & POLLHUP || readWriteSet.thePolls[key].revents & POLLNVAL) {
 					theReturnValue.emplace_back(theShardMap[key].get());
 				}
@@ -338,15 +338,14 @@ namespace DiscordCoreInternal {
 
 		} else if (returnValue == 0) {
 			for (auto& [key, value]: theShardMap) {
-			if (!value->areWeAStandaloneSocket) {
-				value->handleBuffer();
+				if (!value->areWeAStandaloneSocket) {
+					value->handleBuffer();
+				}
 			}
-		}
 			return theReturnValue;
 		}
 
 		for (auto& [key, value]: readWriteSet.thePolls) {
-		
 			if (readWriteSet.thePolls[key].revents & POLLOUT) {
 				if (!theShardMap[key]->processWriteData()) {
 					theReturnValue.emplace_back(theShardMap[key].get());
@@ -400,7 +399,7 @@ namespace DiscordCoreInternal {
 			} else {
 				if (dataToWrite.size() >= static_cast<size_t>(16 * 1024)) {
 					size_t remainingBytes{ dataToWrite.size() };
-					while (remainingBytes > 0) { 
+					while (remainingBytes > 0) {
 						std::string newString{};
 						size_t amountToCollect{};
 						if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
@@ -562,12 +561,12 @@ namespace DiscordCoreInternal {
 		}
 		return true;
 	}
-	
+
 	int64_t SSLClient::getBytesRead() noexcept {
 		return this->bytesRead;
 	}
 
-	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept {	
+	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept {
 		this->streamType = streamTypeNew;
 	}
 
@@ -711,8 +710,8 @@ namespace DiscordCoreInternal {
 	bool DatagramSocketClient::processWriteData() noexcept {
 		if (this->outputBuffer.getUsedSpace() > 0 && this->areWeStreamConnected) {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
-			int32_t writtenBytes =
-				sendto(this->theSocket, this->outputBuffer.getCurrentTail()->getCurrentTail(), static_cast<int32_t>(bytesToWrite), 0, ( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr));
+			int32_t writtenBytes = sendto(this->theSocket, this->outputBuffer.getCurrentTail()->getCurrentTail(), static_cast<int32_t>(bytesToWrite), 0,
+				( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr));
 			if (writtenBytes < 0) {
 				return false;
 			} else {

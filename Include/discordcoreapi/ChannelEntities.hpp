@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file ChannelEntities.hpp
 
-#pragma once
-
 #ifndef CHANNEL_ENTITIES
 #define CHANNEL_ENTITIES
 

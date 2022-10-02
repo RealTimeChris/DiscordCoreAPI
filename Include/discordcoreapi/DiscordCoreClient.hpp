@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file DiscordCoreClient.hpp
 
-#pragma once
-
 #ifndef DISCORD_CORE_CLIENT
 #define DISCORD_CORE_CLIENT
 

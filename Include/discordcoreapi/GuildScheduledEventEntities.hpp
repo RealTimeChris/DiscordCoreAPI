@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file GuildScheduledEventEntities.hpp
 
-#pragma once
-
 #ifndef GUILD_SCHEDULED_EVENT_ENTITIES
 #define GUILD_SCHEDULED_EVENT_ENTITIES
 
@@ -106,7 +104,7 @@ namespace DiscordCoreAPI {
 		GuildScheduledEvent(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~GuildScheduledEvent() noexcept = default;
-	};	 
+	};
 
 	class DiscordCoreAPI_Dll GuildScheduledEventVector {
 	  public:
@@ -120,7 +118,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<GuildScheduledEvent> theGuildScheduledEvents{};
-	};	
+	};
 
 	/**@}*/
 

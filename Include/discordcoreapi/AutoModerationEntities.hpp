@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file AutoModerationEntities.hpp
 
-#pragma once
-
 #ifndef AUTO_MODERATION_RULE_ENTITIES
 #define AUTO_MODERATION_RULE_ENTITIES
 
@@ -47,7 +45,7 @@ namespace DiscordCoreAPI {
 		AutoModerationRule(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~AutoModerationRule() noexcept = default;
-	};	
+	};
 
 	class DiscordCoreAPI_Dll AutoModerationRuleVector {
 	  public:

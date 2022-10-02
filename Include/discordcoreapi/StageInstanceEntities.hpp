@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file StageInstanceEntities.hpp
 
-#pragma once
-
 #ifndef STAGE_INSTANCE_ENTITIES
 #define STAGE_INSTANCE_ENTITIES
 
@@ -68,7 +66,7 @@ namespace DiscordCoreAPI {
 		StageInstance(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~StageInstance() noexcept = default;
-	};	 
+	};
 
 	/**
 	 * \addtogroup main_endpoints

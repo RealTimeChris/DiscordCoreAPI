@@ -23,13 +23,11 @@
 /// https://discordcoreapi.com
 /// \file DataParsingFunctions.hpp
 
-#pragma once
-
 #ifndef DATA_PARSING_FUNCTIONS
 #define DATA_PARSING_FUNCTIONS
 
 #include <simdjson.h>
-#include<map>
+#include <map>
 
 namespace DiscordCoreAPI {
 

@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file Https.hpp
 
-#pragma once
-
 #ifndef HTTPS
 #define HTTPS
 

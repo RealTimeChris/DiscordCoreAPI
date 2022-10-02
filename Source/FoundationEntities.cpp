@@ -110,7 +110,7 @@ namespace DiscordCoreInternal {
 		}
 		theData["afk"] = this->afk;
 		return theData;
-	}	
+	}
 
 	VoiceIdentifyData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
@@ -1567,7 +1567,7 @@ namespace DiscordCoreAPI {
 
 		theResult = jsonObjectData["user"].get(theObject);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			this->user= UserData{ theObject };
+			this->user = UserData{ theObject };
 		}
 	}
 
@@ -1922,7 +1922,7 @@ namespace DiscordCoreAPI {
 					ApplicationCommandOptionData newData{ value.value() };
 					this->options.emplace_back(std::move(newData));
 				}
-			} 
+			}
 			auto theResult02 = jsonObjectData["choices"].get(theArray);
 			if (theResult02 == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
@@ -1949,7 +1949,7 @@ namespace DiscordCoreAPI {
 		this->timestamp = getUint32(jsonObjectData, "timestamp");
 	}
 
-	 YouTubeFormat::YouTubeFormat(simdjson::ondemand::value jsonObjectData) {
+	YouTubeFormat::YouTubeFormat(simdjson::ondemand::value jsonObjectData) {
 		this->audioQuality = getString(jsonObjectData, "audioQuality");
 
 		this->averageBitrate = getUint32(jsonObjectData, "averageBitrate");
@@ -2000,7 +2000,6 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array theArray{};
 		auto theResult = jsonObjectData["streamingData"]["formats"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
-			
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				YouTubeFormat newData{ value.value() };
 				this->theFormats.emplace_back(std::move(newData));
@@ -2147,7 +2146,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 	}
-		
+
 	ChannelMentionData::ChannelMentionData(simdjson::ondemand::value jsonObjectData) {
 		this->id = getId(jsonObjectData, "id");
 
@@ -2281,7 +2280,7 @@ namespace DiscordCoreAPI {
 
 		this->mentionEveryone = getBool(jsonObjectData, "mention_everyone");
 
-		
+
 		simdjson::ondemand::array theArray{};
 		theResult = jsonObjectData["mentions"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
@@ -2510,7 +2509,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->referencedMessage = std::make_unique<MessageDataOld>(theObject);
 		}
-		
+
 		theResult = jsonObjectData["message_reference"].get(theObject);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->messageReference = MessageReferenceData{ theObject };
@@ -2914,8 +2913,7 @@ namespace DiscordCoreAPI {
 	Song::Song(simdjson::ondemand::value jsonObjectData) {
 		try {
 			this->duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData"), "label");
-			std::string newString =
-				getString(getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0),"text");
+			std::string newString = getString(getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0), "text");
 			if (newString.size() > 256) {
 				newString = newString.substr(0, 256);
 			}

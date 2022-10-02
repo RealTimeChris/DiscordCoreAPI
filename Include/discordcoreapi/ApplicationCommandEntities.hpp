@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file ApplicationCommandEntities.hpp
 
-#pragma once
-
 #ifndef APPLICATION_COMMAND_ENTITIES
 #define APPLICATION_COMMAND_ENTITIES
 
@@ -186,7 +184,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommand(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~ApplicationCommand() noexcept = default;
-	};	
+	};
 
 	class DiscordCoreAPI_Dll ApplicationCommandVector {
 	  public:

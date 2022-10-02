@@ -27,7 +27,7 @@
 
 namespace DiscordCoreAPI {
 
-	 AutoModerationRule::AutoModerationRule(simdjson::ondemand::value jsonObjectData) {
+	AutoModerationRule::AutoModerationRule(simdjson::ondemand::value jsonObjectData) {
 		this->name = getString(jsonObjectData, "name");
 
 		this->id = getId(jsonObjectData, "id");

@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file EventManager.hpp
 
-#pragma once
-
 #ifndef EVENT_MANAGER
 #define EVENT_MANAGER
 

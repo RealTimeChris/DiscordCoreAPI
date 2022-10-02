@@ -24,36 +24,34 @@
 /// \file Utilities.hpp
 
 #pragma once
-
-#pragma once
 #ifndef UTILITIES
-#define UTILITIES
+	#define UTILITIES
 
-#pragma warning(push)
-#pragma warning(disable : 4275)
-#pragma warning(disable : 4244)
-#pragma warning(disable : 4251)
-#pragma warning(disable : 4996)
+	#pragma warning(push)
+	#pragma warning(disable : 4275)
+	#pragma warning(disable : 4244)
+	#pragma warning(disable : 4251)
+	#pragma warning(disable : 4996)
 
-#ifdef _WIN32
-	#ifdef DiscordCoreAPI_EXPORTS
-		#define DiscordCoreAPI_Dll __declspec(dllexport)
+	#ifdef _WIN32
+		#ifdef DiscordCoreAPI_EXPORTS
+			#define DiscordCoreAPI_Dll __declspec(dllexport)
+		#else
+			#define DiscordCoreAPI_Dll __declspec(dllimport)
+		#endif
+		#ifndef WIN32_LEAN_AND_MEAN
+			#define WIN32_LEAN_AND_MEAN
+		#endif
+		#ifndef WINRT_LEAN_AND_MEAN
+			#define WINRT_LEAN_AND_MEAN
+		#endif
+		#include <WinSock2.h>
 	#else
-		#define DiscordCoreAPI_Dll __declspec(dllimport)
-	#endif
-	#ifndef WIN32_LEAN_AND_MEAN
-		#define WIN32_LEAN_AND_MEAN
-	#endif
-	#ifndef WINRT_LEAN_AND_MEAN
-		#define WINRT_LEAN_AND_MEAN
-	#endif
-	#include <WinSock2.h>
-#else
-	#ifndef DiscordCoreAPI_Dll
-		#define DiscordCoreAPI_Dll
-	#endif
-	#include <cstdint>
-	#include <cstring>
+		#ifndef DiscordCoreAPI_Dll
+			#define DiscordCoreAPI_Dll
+		#endif
+		#include <cstdint>
+		#include <cstring>
 inline uint64_t ntohll(uint64_t x) {
 	uint8_t theData[8]{};
 	memcpy(&theData, &(x), sizeof(x));
@@ -63,39 +61,39 @@ inline uint64_t ntohll(uint64_t x) {
 	}
 	return theValue;
 }
-	#include <arpa/inet.h>
-	#include <pthread.h>
-	#include <sys/time.h>
-	#include <time.h>
-	#include <ctime>
-#endif
+		#include <arpa/inet.h>
+		#include <pthread.h>
+		#include <sys/time.h>
+		#include <time.h>
+		#include <ctime>
+	#endif
 
-#include <source_location>
-#include <unordered_map>
-#include <unordered_set>
-#include <shared_mutex>
-#include <functional>
-#include <concepts>
-#include <iostream>
-#include <sstream>
-#include <iomanip>
-#include <vector>
-#include <atomic>
-#include <random>
-#include <string>
-#include <thread>
-#include <mutex>
-#include <queue>
-#include <array>
-#include <map>
+	#include <source_location>
+	#include <unordered_map>
+	#include <unordered_set>
+	#include <shared_mutex>
+	#include <functional>
+	#include <concepts>
+	#include <iostream>
+	#include <sstream>
+	#include <iomanip>
+	#include <vector>
+	#include <atomic>
+	#include <random>
+	#include <string>
+	#include <thread>
+	#include <mutex>
+	#include <queue>
+	#include <array>
+	#include <map>
 
-#ifdef max
-	#undef max
-#endif
+	#ifdef max
+		#undef max
+	#endif
 
-#ifdef min
-	#undef min
-#endif
+	#ifdef min
+		#undef min
+	#endif
 
 /**
  * \defgroup main_endpoints Main Endpoints
@@ -178,10 +176,8 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll JsonObject {
 	  public:
 		using ObjectType = std::map<std::string, JsonObject, std::less<>, std::allocator<std::pair<const std::string, JsonObject>>>;
-		template<typename JsonObjectType>
-		using AllocatorType = std::allocator<JsonObjectType>;
-		template<typename JsonObjectType>
-		using AllocatorTraits = std::allocator_traits<AllocatorType<JsonObjectType>>;
+		template<typename JsonObjectType> using AllocatorType = std::allocator<JsonObjectType>;
+		template<typename JsonObjectType> using AllocatorTraits = std::allocator_traits<AllocatorType<JsonObjectType>>;
 		using ArrayType = std::vector<JsonObject>;
 		using StringType = std::string;
 		using UintType = uint64_t;
@@ -201,7 +197,7 @@ namespace DiscordCoreAPI {
 			IntType numberInt;
 			ArrayType* array;
 			BoolType boolean;
-			
+
 			JsonValue() noexcept = default;
 
 			JsonValue& operator=(const StringType theData) noexcept;
@@ -209,7 +205,7 @@ namespace DiscordCoreAPI {
 
 			JsonValue& operator=(const char* theData) noexcept;
 			JsonValue(const char* theData) noexcept;
-			
+
 			JsonValue& operator=(uint64_t theData) noexcept;
 			JsonValue(uint64_t theData) noexcept;
 
@@ -615,7 +611,6 @@ namespace DiscordCoreAPI {
 
 	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
-				
 		GatewayIntents theIntents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
@@ -1687,7 +1682,7 @@ namespace DiscordCoreInternal {
 
 	struct LengthData {
 		size_t offSet{};
-		size_t length {};
+		size_t length{};
 	};
 
 	class DiscordCoreAPI_Dll StringBuffer {
@@ -1717,8 +1712,7 @@ namespace DiscordCoreInternal {
 
 	enum class RingBufferAccessType { Read = 0, Write = 1 };
 
-	template<typename ObjectType , size_t TheSize>
-	class RingBufferInterface {
+	template<typename ObjectType, size_t TheSize> class RingBufferInterface {
 	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept {
 			if (theType == RingBufferAccessType::Read) {
@@ -1792,7 +1786,7 @@ namespace DiscordCoreInternal {
 			this->head = 0;
 		}
 	};
-	  
+
 }
 
 #endif

@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnVoiceServerUpdateData::OnVoiceServerUpdateData(simdjson::ondemand::value theJsonData)	{
+	OnVoiceServerUpdateData::OnVoiceServerUpdateData(simdjson::ondemand::value theJsonData) {
 		this->endpoint = getString(theJsonData, "endpoint");
 
 		this->guildId = getId(theJsonData, "guild_id");

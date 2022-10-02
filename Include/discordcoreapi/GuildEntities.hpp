@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file GuildEntities.hpp
 
-#pragma once
-
 #ifndef GUILD_ENTITIES
 #define GUILD_ENTITIES
 

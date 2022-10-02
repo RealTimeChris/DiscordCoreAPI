@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file VoiceConnection.hpp
 
-#pragma once
-
 #ifndef VOICE_CONNECTION
 #define VOICE_CONNECTION
 

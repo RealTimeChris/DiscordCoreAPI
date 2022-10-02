@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file FoundationEntities.hpp
 
-#pragma once
-
 #ifndef FOUNDATION_ENTITIES
 #define FOUNDATION_ENTITIES
 
@@ -2304,7 +2302,7 @@ namespace DiscordCoreAPI {
 		ModalInteractionData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~ModalInteractionData() noexcept = default;
-	};	
+	};
 
 	/// Allowable mentions for a Message. \brief Allowable mentions for a Message.
 	class DiscordCoreAPI_Dll AllowedMentionsData {
@@ -2391,7 +2389,7 @@ namespace DiscordCoreAPI {
 		ActionRowData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~ActionRowData() noexcept = default;
-	};	
+	};
 
 	/// Interaction callback types. \brief Interaction callback types.
 	enum class InteractionCallbackType : uint8_t {
@@ -2480,7 +2478,7 @@ namespace DiscordCoreAPI {
 		ThreadListSyncData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~ThreadListSyncData() noexcept = default;
-	};	
+	};
 
 	/// Represents a Thread-members-update. \brief Represents a Thread-members-update.
 	class DiscordCoreAPI_Dll ThreadMembersUpdateData : public DiscordEntity {
@@ -2510,7 +2508,7 @@ namespace DiscordCoreAPI {
 		MessageInteractionData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~MessageInteractionData() noexcept = default;
-	};	
+	};
 
 	/// Message types. \brief Message types.
 	enum class MessageType : uint8_t {
@@ -2622,7 +2620,7 @@ namespace DiscordCoreAPI {
 
 		virtual ~MessageDataOld() noexcept = default;
 	};
-	
+
 	/// Data structure representing a single Message. \brief Data structure representing a single Message.
 	class DiscordCoreAPI_Dll MessageData : public MessageDataOld {
 	  public:
@@ -2637,7 +2635,7 @@ namespace DiscordCoreAPI {
 		MessageData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~MessageData() noexcept = default;
-	};	
+	};
 
 	/// Resolved data. \brief Resolved data.
 	struct DiscordCoreAPI_Dll ResolvedData {
@@ -2682,7 +2680,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<StickerPackData> theStickerPackDatas{};
-	};	
+	};
 
 	/// Connection visibility types. \brief Connection visibility types.
 	enum class ConnectionVisibilityTypes : uint8_t {
@@ -2736,7 +2734,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandInteractionDataOption(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~ApplicationCommandInteractionDataOption() noexcept = default;
-	};	
+	};
 
 	/// ApplicationCommand Interaction data. \brief ApplicationCommand Interaction data.
 	class DiscordCoreAPI_Dll ApplicationCommandInteractionData : public DiscordEntity {
@@ -2767,7 +2765,7 @@ namespace DiscordCoreAPI {
 		InteractionDataData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~InteractionDataData() noexcept = default;
-	};	 
+	};
 
 	/// Interaction data. \brief Interaction data.
 	class DiscordCoreAPI_Dll InteractionData : public DiscordEntity {
@@ -2791,7 +2789,7 @@ namespace DiscordCoreAPI {
 		InteractionData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~InteractionData() noexcept = default;
-	};	
+	};
 
 	/// Data from the SessionStart info. \brief Data from the SessionStart info.
 	struct DiscordCoreAPI_Dll SessionStartData {
@@ -2805,7 +2803,7 @@ namespace DiscordCoreAPI {
 		SessionStartData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~SessionStartData() noexcept = default;
-	};	
+	};
 
 	/// Data from the GetGatewayBot endpoint. \brief Data from the GetGatewayBot endpoint.
 	struct DiscordCoreAPI_Dll GatewayBotData {
@@ -2818,7 +2816,7 @@ namespace DiscordCoreAPI {
 		GatewayBotData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~GatewayBotData() noexcept = default;
-	};	
+	};
 
 	/// Text input style for modals. \brief Text input style for modals.
 	enum class TextInputStyle : uint8_t {
@@ -2836,7 +2834,7 @@ namespace DiscordCoreAPI {
 		GuildEmojisUpdateEventData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~GuildEmojisUpdateEventData() noexcept = default;
-	};	
+	};
 
 	/// Data representing a Guild Sticker Update event. \brief Data representing a Guild Stickers Update event.
 	struct DiscordCoreAPI_Dll GuildStickersUpdateEventData {

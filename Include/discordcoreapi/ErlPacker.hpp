@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file ErlPacker.hpp
 
-#pragma once
-
 #ifndef ERL_PACKER
 #define ERL_PACKER
 

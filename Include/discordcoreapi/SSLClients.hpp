@@ -23,8 +23,6 @@
 /// https://discordcoreapi.com
 /// \file SSLClients.hpp
 
-#pragma once
-
 #ifndef SSL_CLIENTS
 #define SSL_CLIENTS
 
@@ -61,7 +59,7 @@
 	#include <sys/socket.h>
 	#include <sys/types.h>
 	#include <unistd.h>
-	using SOCKET = int32_t;
+using SOCKET = int32_t;
 #endif
 
 namespace DiscordCoreInternal {
