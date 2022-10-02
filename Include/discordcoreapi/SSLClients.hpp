@@ -63,13 +63,15 @@
 
 namespace DiscordCoreInternal {
 
-#ifndef SOCKET_ERROR
-	#define SOCKET_ERROR - 1
+#ifdef SOCKET_ERROR
+	#undef SOCKET_ERROR
 #endif
 
-	using INT_PTR = signed long long;
+#define SOCKET_ERROR -1ull
 
-	using SOCKET = INT_PTR;
+	using UINT_PTR = unsigned long long;
+
+	using SOCKET = UINT_PTR;
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
 		std::unordered_map<uint32_t, pollfd> thePolls{};
