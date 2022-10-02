@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
 			int32_t theIndex{};
 			for (auto& value: theData) {
 				this->theValue = ValueType::Array;
-				this->theValue.array->push_back(value);
+				this->theValue.array->push_back(JsonObject{ value });
 				theIndex++;
 			}
 			return *this;
