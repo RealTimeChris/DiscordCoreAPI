@@ -198,52 +198,47 @@ namespace DiscordCoreAPI {
 			ArrayType* array;
 			BoolType boolean;
 
-			JsonValue() noexcept = default;
+			JsonValue& operator=(JsonValue&&) noexcept = delete;
+
+			JsonValue(JsonValue&&) noexcept = delete;
+
+			JsonValue& operator=(const JsonValue&) noexcept = delete;
+
+			JsonValue(const JsonValue&) noexcept = delete;
 
 			JsonValue& operator=(const StringType theData) noexcept;
-			JsonValue(const StringType theData) noexcept;
 
 			JsonValue& operator=(const char* theData) noexcept;
-			JsonValue(const char* theData) noexcept;
 
 			JsonValue& operator=(uint64_t theData) noexcept;
-			JsonValue(uint64_t theData) noexcept;
 
 			JsonValue& operator=(uint32_t theData) noexcept;
-			JsonValue(uint32_t theData) noexcept;
 
 			JsonValue& operator=(uint16_t theData) noexcept;
-			JsonValue(uint16_t theData) noexcept;
 
 			JsonValue& operator=(uint8_t theData) noexcept;
-			JsonValue(uint8_t theData) noexcept;
 
 			JsonValue& operator=(int64_t theData) noexcept;
-			JsonValue(int64_t theData) noexcept;
 
 			JsonValue& operator=(int32_t theData) noexcept;
-			JsonValue(int32_t theData) noexcept;
 
 			JsonValue& operator=(int16_t theData) noexcept;
-			JsonValue(int16_t theData) noexcept;
 
 			JsonValue& operator=(int8_t theData) noexcept;
-			JsonValue(int8_t theData) noexcept;
 
 			JsonValue& operator=(double theData) noexcept;
-			JsonValue(double theData) noexcept;
 
 			JsonValue& operator=(float theData) noexcept;
-			JsonValue(float theData) noexcept;
 
 			JsonValue& operator=(bool theData) noexcept;
-			JsonValue(bool theData) noexcept;
 
 			JsonValue& operator=(ValueType t) noexcept;
 			JsonValue(ValueType t) noexcept;
+
+			void destroy(ValueType theType);
 		};
 
-		JsonValue theValue{};
+		JsonValue theValue{ ValueType::Null };
 
 		JsonObject() noexcept = default;
 
@@ -349,6 +344,8 @@ namespace DiscordCoreAPI {
 		void dump(const JsonObject& theData, std::string& theString);
 
 		void pushBack(JsonObject other) noexcept;
+
+		~JsonObject() noexcept;
 	};
 
 	struct DiscordCoreAPI_Dll Snowflake;
