@@ -79,6 +79,7 @@ inline uint64_t ntohll(uint64_t x) {
 #include <vector>
 #include <random>
 #include <string>
+#include <mutex>
 #include <queue>
 #include <array>
 #include <map>
@@ -1723,7 +1724,7 @@ namespace DiscordCoreInternal {
 
 	enum class RingBufferAccessType { Read = 0, Write = 1 };
 
-	template<typename ObjectType , size_t theSize>
+	template<typename ObjectType , size_t TheSize>
 	class RingBufferInterface {
 	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept {
@@ -1775,7 +1776,7 @@ namespace DiscordCoreInternal {
 		}
 
 	  protected:
-		std::array<ObjectType, theSize> theArray{};
+		std::array<ObjectType, TheSize> theArray{};
 		bool areWeFull{ false };
 		size_t tail{};
 		size_t head{};
