@@ -28,12 +28,13 @@
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/EventEntities.hpp>
-#include <openssl/err.h>
-#include <openssl/ssl.h>
 
 #ifndef OPENSSL_NO_DEPRECATED
 	#define OPENSSL_NO_DEPRECATED
 #endif
+
+#include <openssl/err.h>
+#include <openssl/ssl.h>
 
 #ifdef _WIN32
 	#pragma comment(lib, "Ws2_32.lib")
@@ -120,10 +121,6 @@ namespace DiscordCoreInternal {
 
 		SOCKETWrapper(SOCKETWrapper&&) noexcept;
 
-		SOCKETWrapper& operator=(const SOCKETWrapper&) noexcept = delete;
-
-		SOCKETWrapper(const SOCKETWrapper&) noexcept = delete;
-
 		SOCKETWrapper& operator=(SOCKET other) noexcept;
 
 		SOCKETWrapper(SOCKET other) noexcept;
@@ -135,7 +132,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ -1ull }, SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ -1 }, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll sockaddrWrapper {
