@@ -276,7 +276,6 @@ namespace DiscordCoreInternal {
 		bool areWeStreamConnected{ false };
 		RingBuffer<4> outputBuffer{};
 		RingBuffer<4> inputBuffer{};
-		size_t currentlyUsedSpace{};
 		SOCKETWrapper theSocket{};
 		int64_t bytesRead{};
 	};
