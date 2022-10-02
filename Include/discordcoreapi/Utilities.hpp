@@ -176,8 +176,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll JsonObject {
 	  public:
 		using ObjectType = std::map<std::string, JsonObject, std::less<>, std::allocator<std::pair<const std::string, JsonObject>>>;
-		template<typename JsonObjectType> using AllocatorType = std::allocator<JsonObjectType>;
-		template<typename JsonObjectType> using AllocatorTraits = std::allocator_traits<AllocatorType<JsonObjectType>>;
 		using ArrayType = std::vector<JsonObject>;
 		using StringType = std::string;
 		using UintType = uint64_t;
@@ -241,17 +239,6 @@ namespace DiscordCoreAPI {
 		JsonValue theValue{ ValueType::Null };
 
 		JsonObject() noexcept = default;
-
-		template<typename ObjectType, typename... Args> static ObjectType* create(Args&&... args) {
-			AllocatorType<ObjectType> allocator{};
-
-			auto deleter = [&](ObjectType* obj) {
-				AllocatorTraits<ObjectType>::deallocate(allocator, obj, 1);
-			};
-			std::unique_ptr<ObjectType, decltype(deleter)> object(AllocatorTraits<ObjectType>::allocate(allocator, 1), deleter);
-			AllocatorTraits<ObjectType>::construct(allocator, object.get(), std::forward<Args>(args)...);
-			return object.release();
-		}
 
 		template<typename ObjectType> JsonObject& operator=(std::vector<ObjectType> theData) noexcept {
 			this->theType = ValueType::Array;

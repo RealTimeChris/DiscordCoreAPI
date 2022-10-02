@@ -121,13 +121,13 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonObject::JsonValue& JsonObject::JsonValue::operator=(const StringType theData) noexcept {
-		this->string = JsonObject::create<StringType>();
+		*this = ValueType::String;
 		*this->string = theData;
 		return *this;
 	}
 
 	JsonObject::JsonValue& JsonObject::JsonValue::operator=(const char* theData) noexcept {
-		this->string = JsonObject::create<StringType>();
+		*this = ValueType::String;
 		*this->string = theData;
 		return *this;
 	}
