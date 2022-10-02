@@ -44,7 +44,7 @@
 	#ifdef max
 		#undef max
 	#endif
-
+	using SOCKET = uint64_t;
 	#ifdef min
 		#undef min
 	#endif
@@ -64,6 +64,10 @@
 #endif
 
 namespace DiscordCoreInternal {
+
+#ifndef SOCKET_ERROR
+	#define SOCKET_ERROR -1
+#endif
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
 		std::unordered_map<uint32_t, pollfd> thePolls{};
@@ -132,7 +136,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ -1 }, SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ static_cast<SOCKET>(SOCKET_ERROR) }, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll sockaddrWrapper {
