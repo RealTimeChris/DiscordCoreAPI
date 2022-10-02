@@ -58,7 +58,6 @@ namespace DiscordCoreInternal {
 				theSerializer02["url"] = value.url;
 			}
 			theSerializer02["name"] = value.name;
-			theSerializer02["name"] = value.name;
 			theSerializer02["type"] = value.type;
 			theSerializer["d"]["presence"]["activities"].pushBack(theSerializer02);
 		}
