@@ -130,6 +130,9 @@ namespace DiscordCoreAPI {
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
 
+	template<typename TheType>
+	concept IsString = std::same_as<TheType, std::string>;
+
 	struct DiscordCoreAPI_Dll EnumConverter {
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
 			this->thePtr = new uint64_t{};
@@ -177,13 +180,9 @@ namespace DiscordCoreAPI {
 		using FloatType = double;
 		using IntType = int64_t;
 		using BoolType = bool;
-		std::string theString{};
 
-		void dump(const JsonObject& theData, std::string& theString);
-		JsonObject() noexcept = default;
+		std::string theString{};
 		ValueType theType{ ValueType::Null };
-		bool areWeStarting{ true };
-		bool areWeTopLevel{ true };
 		std::string theKey{};
 
 		union JsonValue {
@@ -271,7 +270,7 @@ namespace DiscordCoreAPI {
 			int32_t theIndex{};
 			for (auto& value: theData) {
 				this->theValue = ValueType::Array;
-				this->theValue.array->push_back(JsonObject{ value });
+				this->theValue.array->push_back(value);
 				theIndex++;
 			}
 			return *this;
@@ -281,7 +280,7 @@ namespace DiscordCoreAPI {
 			*this = theData;
 		}
 
-		template<typename KeyType, typename ObjectType> JsonObject& operator=(std::unordered_map<KeyType, ObjectType> theData) noexcept {
+		template<IsString KeyType, IsString ObjectType> JsonObject& operator=(std::unordered_map<KeyType, ObjectType> theData) noexcept {
 			int32_t theIndex{};
 			this->theType = ValueType::Array;
 
@@ -293,10 +292,13 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		template<typename KeyType, typename ObjectType> JsonObject(std::unordered_map<KeyType, ObjectType> theData) noexcept {
+		template<IsString KeyType, IsString ObjectType> JsonObject(std::unordered_map<KeyType, ObjectType> theData) noexcept {
 			*this = theData;
 		};
 
+		JsonObject() noexcept = default;
+
+		JsonObject& operator=(ValueType) noexcept;
 		JsonObject(const char*, ValueType) noexcept;
 
 		JsonObject& operator=(EnumConverter theData) noexcept;
@@ -351,6 +353,8 @@ namespace DiscordCoreAPI {
 		JsonObject& operator[](const typename ObjectType::key_type& key) const;
 
 		operator std::string() noexcept;
+
+		void dump(const JsonObject& theData, std::string& theString);
 
 		void pushBack(JsonObject other) noexcept;
 	};
