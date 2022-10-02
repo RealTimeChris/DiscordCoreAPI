@@ -214,7 +214,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
-		SSLClient() noexcept;
+		SSLClient() noexcept = default;
 
 		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
 

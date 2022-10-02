@@ -55,18 +55,8 @@ namespace DiscordCoreInternal {
 		try {
 			if (static_cast<HttpsConnection*>(this)->theData.responseMessage.size() >= static_cast<HttpsConnection*>(this)->theData.contentLength &&
 				static_cast<HttpsConnection*>(this)->theData.contentLength > 0) {
-				auto theFirstIndex = static_cast<HttpsConnection*>(this)->theData.responseMessage.find_first_of('{');
-				auto theSecondIndex = static_cast<HttpsConnection*>(this)->theData.responseMessage.find_first_of('[');
-				if (theFirstIndex != std::string::npos || theSecondIndex != std::string::npos) {
-					size_t theFinalIndex{};
-					if (theFirstIndex < theSecondIndex) {
-						theFinalIndex = static_cast<HttpsConnection*>(this)->theData.responseMessage.find_last_of('}');
-					} else {
-						theFinalIndex = static_cast<HttpsConnection*>(this)->theData.responseMessage.find_last_of(']');
-						theFirstIndex = theSecondIndex;
-					}
-					static_cast<HttpsConnection*>(this)->theData.responseData = static_cast<HttpsConnection*>(this)->theData.responseMessage.substr(theFirstIndex, theFinalIndex);
-				}
+				static_cast<HttpsConnection*>(this)->theData.responseData =
+					static_cast<HttpsConnection*>(this)->theData.responseMessage.substr(0, static_cast<HttpsConnection*>(this)->theData.contentLength);
 			}
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
@@ -282,7 +272,7 @@ namespace DiscordCoreInternal {
 						this->areWeDoneTheRequest = true;
 						return;
 					}
-					this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
+					this->theInputBufferReal += this->getInputBuffer();
 					this->parseCode(this->theInputBufferReal);
 					if (this->theData.responseCode == 400) {
 					}
@@ -299,7 +289,7 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (!this->doWeHaveHeaders) {
-						this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
+						this->theInputBufferReal += this->getInputBuffer();
 						this->parseHeaders(this->theInputBufferReal);
 						this->theData.theStopWatch.resetTimer();
 					}
@@ -311,7 +301,7 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (!this->doWeHaveContentSize) {
-						this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
+						this->theInputBufferReal += this->getInputBuffer();
 						this->clearCRLF(this->theInputBufferReal);
 						this->parseSize(this->theInputBufferReal);
 						this->clearCRLF(this->theInputBufferReal);
@@ -320,7 +310,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				case HttpsState::Collecting_Contents: {
-					this->theInputBufferReal += static_cast<std::string>(this->getInputBuffer());
+					this->theInputBufferReal += this->getInputBuffer();
 					auto theResult = this->parseChunk(this->theInputBufferReal);
 					if ((this->theData.responseMessage.size() >= this->theData.contentLength && !theResult) || this->theData.theStopWatch.hasTimePassed() || !theResult ||
 						(this->theData.responseCode == -5 && this->theData.contentLength == -5)) {
@@ -619,7 +609,7 @@ namespace DiscordCoreInternal {
 			ProcessIOResult theResult{};
 			DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
 			while (!theConnection.areWeDoneTheRequest && theResult != ProcessIOResult::Error && !theStopWatch.hasTimePassed()) {
-				theResult = theConnection.processIO(500);
+				theResult = theConnection.processIO(1000);
 			}
 			auto theData = theConnection.finalizeReturnValues(rateLimitData);
 			theConnection.resetValues();

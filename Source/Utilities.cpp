@@ -595,16 +595,11 @@ namespace DiscordCoreAPI {
 			this->theKey = theKey;
 		} else if (this->theType == ValueType::Object) {
 			this->theValue.object->emplace(theKey, ValueType::Array);
-			this->theValue.object->at(theKey).theValue.array->push_back(other);
+			this->theValue.object->at(theKey).theValue.array->emplace_back(other);
 		}
 
 		if (this->theType == ValueType::Array) {
-			size_t index = this->theValue.array->size();
-			if (index >= this->theValue.array->size()) {
-				this->theValue.array->resize(index + 1);
-			}
-
-			this->theValue.array->operator[](index) = other;
+			this->theValue.array->emplace_back(other);
 		}
 	};
 

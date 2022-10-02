@@ -204,9 +204,6 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	SSLClient::SSLClient() noexcept {
-	}
-
 	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
