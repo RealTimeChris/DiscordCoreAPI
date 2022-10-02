@@ -44,7 +44,6 @@
 	#ifdef max
 		#undef max
 	#endif
-	using SOCKET = uint64_t;
 	#ifdef min
 		#undef min
 	#endif
