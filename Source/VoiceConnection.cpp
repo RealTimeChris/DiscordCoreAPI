@@ -257,7 +257,7 @@ namespace DiscordCoreAPI {
 				}
 				return;
 			} else {
-				DatagramSocketClient::writeDataAre(std::move(responseData));
+				DatagramSocketClient::writeData(std::move(responseData));
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
