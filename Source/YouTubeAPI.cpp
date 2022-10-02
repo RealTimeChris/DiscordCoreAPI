@@ -30,7 +30,6 @@
 #include <discordcoreapi/AudioEncoder.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
 #include <discordcoreapi/DataParsingFunctions.hpp>
-#include <nlohmann/json.hpp>
 
 namespace DiscordCoreInternal {
 
