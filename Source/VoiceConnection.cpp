@@ -274,11 +274,11 @@ namespace DiscordCoreAPI {
 			this->parseConnectionHeaders(this);
 			return;
 		}
-		VoiceConnection::parseMessage(this);
+		VoiceConnection::parseMessage();
 		return;
 	}
 
-	bool VoiceConnection::parseMessage(VoiceConnection* theShard) noexcept {
+	bool VoiceConnection::parseMessage() noexcept {
 		if (this->currentMessage.size() < this->messageLength + this->messageOffset || this->currentMessage.size() == 0) {
 			auto theString = WebSocketSSLShard::getInputBuffer();
 			this->currentMessage.writeData(theString.data(), theString.size());
@@ -462,7 +462,7 @@ namespace DiscordCoreAPI {
 				return false;
 			}
 			if (WebSocketSSLShard::inputBuffer.getUsedSpace() > 0) {
-				if (!VoiceConnection::parseMessage(this)) {
+				if (!VoiceConnection::parseMessage()) {
 					return true;
 				}
 			}
@@ -596,7 +596,8 @@ namespace DiscordCoreAPI {
 						this->audioData.sampleCount = 0;
 						this->audioData.type = AudioFrameType::Unset;
 						totalTime += std::chrono::steady_clock::now() - startingValue;
-						auto intervalCountNew = DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - totalTime.time_since_epoch() / frameCounter }.time_since_epoch().count();
+						auto intervalCountNew =
+							DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - (totalTime.time_since_epoch() / frameCounter) }.time_since_epoch().count();
 						intervalCount = DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew) } };
 						targetTime = std::chrono::steady_clock::now().time_since_epoch() + intervalCount;
 					}
@@ -1049,11 +1050,14 @@ namespace DiscordCoreAPI {
 		if (this->taskThread03) {
 			this->taskThread03.reset(nullptr);
 		}
-		this->areWeHeartBeating = false;
+		DatagramSocketClient::outputBuffer.clear();
+		DatagramSocketClient::inputBuffer.clear();
 		WebSocketSSLShard::outputBuffer.clear();
-		this->currentReconnectTries++;
+		WebSocketSSLShard::inputBuffer.clear();
 		this->areWeConnectedBool.store(false);
 		this->thePackage.currentShard = 0;
+		this->areWeHeartBeating = false;
+		this->currentReconnectTries++;
 	}
 
 	void VoiceConnection::mixAudio() noexcept {

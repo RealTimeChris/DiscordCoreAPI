@@ -185,23 +185,17 @@ namespace DiscordCoreAPI {
 
 		std::string encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
 
+		bool sendTextMessage(std::string& theMessage, bool priority) noexcept;
+
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
 		bool onMessageReceived(std::string_view theData) noexcept;
-
-		bool parseMessage(SSLClient* theShard) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
-		bool sendTextMessage(std::string& theMessage, bool priority) noexcept;
-
 		void sendVoiceData(std::string& responseData) noexcept;
-
-		void handleBuffer() noexcept;
-
-		bool parseMessage(VoiceConnection* theShard) noexcept;
 
 		void runWebSocket(std::stop_token) noexcept;
 
@@ -225,7 +219,11 @@ namespace DiscordCoreAPI {
 
 		void sendHeartBeat() noexcept;
 
+		bool parseMessage() noexcept;
+
 		bool voiceConnect() noexcept;
+
+		void handleBuffer() noexcept;
 
 		void sendSilence() noexcept;
 
