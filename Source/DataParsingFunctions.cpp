@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 
 	ArrayReturnData getArray(ObjectReturnData jsonData, const char* arrayName) {
 		ArrayReturnData theValue{};
-		if (jsonData.theObject[arrayName].get(theValue.theArray) == simdjson::error_code::SUCCESS) {
+		if (jsonData.didItSucceed && jsonData.theObject[arrayName].get(theValue.theArray) == simdjson::error_code::SUCCESS) {
 			theValue.didItSucceed = true;
 		}
 		return theValue;		

@@ -369,7 +369,7 @@ namespace DiscordCoreInternal {
 		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
 			auto theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
 			theString = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize };
-			this->inputBuffer.getCurrentTail()->modifyReadOrWritePosition(RingBufferAccessType::Read, theSize);
+			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
 		return theString;
@@ -690,7 +690,7 @@ namespace DiscordCoreInternal {
 		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
 			auto theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
 			theString = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize };
-			this->inputBuffer.getCurrentTail()->modifyReadOrWritePosition(RingBufferAccessType::Read, theSize);
+			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
 		return theString;

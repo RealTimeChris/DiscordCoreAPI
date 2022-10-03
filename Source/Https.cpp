@@ -340,12 +340,6 @@ namespace DiscordCoreInternal {
 		this->currentReconnectTries = 0;
 		this->isItChunked = false;
 		this->theInputBufferReal.clear();
-		for (auto& value: this->inputBuffer) {
-			value.clear();
-		}
-		for (auto& value: this->outputBuffer) {
-			value.clear();
-		}
 		this->outputBuffer.clear();
 		this->inputBuffer.clear();
 		this->theData = HttpsResponseData{};

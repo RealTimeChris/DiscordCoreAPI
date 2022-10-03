@@ -1700,12 +1700,10 @@ namespace DiscordCoreInternal {
 	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept {
 			if (theType == RingBufferAccessType::Read) {
-				this->tail = (this->tail + theSize) % this->theArray.size();
-				if (this->tail != this->head) {
-					this->areWeFull = false;
-				}
+				this->tail += theSize;
+				this->areWeFull = false;
 			} else {
-				this->head = (this->head + theSize) % this->theArray.size();
+				this->head += theSize;
 				if (this->head == this->tail) {
 					this->areWeFull = true;
 				}
@@ -1750,14 +1748,6 @@ namespace DiscordCoreInternal {
 			this->head = 0;
 		}
 
-		auto begin() {
-			return this->theArray.begin();
-		}
-
-		auto end() {
-			return this->theArray.end();
-		}
-
 	  protected:
 		std::array<ObjectType, TheSize> theArray{};
 		bool areWeFull{ false };
@@ -1770,8 +1760,8 @@ namespace DiscordCoreInternal {
 	template<size_t TheSliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice, TheSliceCount> {
 	  public:
 		void clear() noexcept {
-			for (auto& value: this->theArray) {
-				value.clear();
+			for (size_t x = 0; x < this->theArray.size();++x) {
+				this->theArray[x].clear();
 			}
 			this->areWeFull = false;
 			this->tail = 0;
