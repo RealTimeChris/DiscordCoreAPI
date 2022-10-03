@@ -621,7 +621,7 @@ namespace DiscordCoreAPI {
 				std::vector<Uint8> packet{};
 				packet.insert(packet.begin(), theBuffer.theRawData.begin(), theBuffer.theRawData.end());
 				theBuffer.theRawData.clear();
-				constexpr size_t headerSize{ 12 };
+				constexpr Uint64 headerSize{ 12 };
 				if (packet.size() < headerSize) {
 					return;
 				}
@@ -637,10 +637,10 @@ namespace DiscordCoreAPI {
 				for (Uint32 x = 0; x < headerSize; ++x) {
 					nonce[x] = packet[x];
 				}
-				const size_t csrcCount = packet[0] & 0b0000'1111;
+				const Uint64 csrcCount = packet[0] & 0b0000'1111;
 				const ptrdiff_t offsetToData = headerSize + sizeof(Uint32) * csrcCount;
 				Uint8* encryptedData = packet.data() + offsetToData;
-				const size_t encryptedDataLength = packet.size() - offsetToData;
+				const Uint64 encryptedDataLength = packet.size() - offsetToData;
 				std::vector<Uint8> theKey{};
 				theKey.insert(theKey.begin(), this->secretKeySend.begin(), this->secretKeySend.end());
 				std::vector<Uint8> decryptedData{};
@@ -653,11 +653,11 @@ namespace DiscordCoreAPI {
 				decryptedDataString.insert(decryptedDataString.begin(), decryptedData.begin(), decryptedData.end());
 
 				if ((packet[0] >> 4) & 0b0001) {
-					size_t extLen = 0;
+					Uint64 extLen = 0;
 					Uint16 extLengthInWords{ *reinterpret_cast<Uint16*>(decryptedDataString.data() + 2) };
 					extLengthInWords = ntohs(extLengthInWords);
 					extLen = sizeof(Uint32) * extLengthInWords;
-					constexpr size_t extHeaderLen = sizeof(Uint16) * 2;
+					constexpr Uint64 extHeaderLen = sizeof(Uint16) * 2;
 					decryptedDataString = decryptedDataString.substr(extHeaderLen + extLen);
 				}
 				if (decryptedDataString.size() > 0 && (decryptedDataString.size() - 16) > 0) {

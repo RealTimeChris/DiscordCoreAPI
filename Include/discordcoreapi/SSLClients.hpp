@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 		virtual ~SSLDataInterface() noexcept = default;
 
 	  protected:
-		const size_t maxBufferSize{ (1024 * 16) - 1 };
+		const Uint64 maxBufferSize{ (1024 * 16) - 1 };
 		RingBuffer<32> outputBuffer{};
 		RingBuffer<128> inputBuffer{};
 		Int64 bytesRead{ 0 };
@@ -270,7 +270,7 @@ namespace DiscordCoreInternal {
 		void disconnect() noexcept;
 
 	  protected:
-		const size_t maxBufferSize{ (1024 * 16) - 1 };
+		const Uint64 maxBufferSize{ (1024 * 16) - 1 };
 		DiscordCoreAPI::StreamType streamType{};
 		sockaddr_in theStreamTargetAddress{};
 		Bool areWeStreamConnected{ false };

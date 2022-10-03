@@ -111,7 +111,7 @@ namespace DiscordCoreInternal {
 		return theReturnString;
 	}
 
-	size_t HttpsRnRBuilder::parseHeaders(StringBuffer& other) {
+	Uint64 HttpsRnRBuilder::parseHeaders(StringBuffer& other) {
 		try {
 			if (static_cast<StringView>(other).find("\r\n\r\n") != String::npos) {
 				DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
@@ -181,7 +181,7 @@ namespace DiscordCoreInternal {
 			if (static_cast<HttpsConnection*>(this)->theData.contentLength == 0) {
 				return false;
 			}
-			if (other.size() >= static_cast<size_t>(static_cast<HttpsConnection*>(this)->theData.contentLength)) {
+			if (other.size() >= static_cast<Uint64>(static_cast<HttpsConnection*>(this)->theData.contentLength)) {
 				static_cast<HttpsConnection*>(this)->theData.responseMessage.insert(static_cast<HttpsConnection*>(this)->theData.responseMessage.end(), other.begin(),
 					other.begin() + static_cast<HttpsConnection*>(this)->theData.contentLength);
 				return false;
@@ -191,7 +191,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	size_t HttpsRnRBuilder::parseSize(StringBuffer& other) {
+	Uint64 HttpsRnRBuilder::parseSize(StringBuffer& other) {
 		try {
 			if (static_cast<HttpsConnection*>(this)->theData.responseHeaders.contains("Content-Length")) {
 				static_cast<HttpsConnection*>(this)->theData.contentLength = stoll(static_cast<HttpsConnection*>(this)->theData.responseHeaders["Content-Length"]);
@@ -227,12 +227,12 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	size_t HttpsRnRBuilder::parseCode(StringBuffer& other) {
+	Uint64 HttpsRnRBuilder::parseCode(StringBuffer& other) {
 		if (static_cast<StringView>(other).find("HTTP/1.") != String::npos) {
 			Uint64 firstNumberIndex{ 0 };
 			Uint64 lastNumberIndex{ 0 };
 			Bool haveWeStarted{ false };
-			for (size_t x = static_cast<StringView>(other).find("HTTP/1.") + String("HTTP/1.").size() + 1; x < static_cast<StringView>(other).size(); ++x) {
+			for (Uint64 x = static_cast<StringView>(other).find("HTTP/1.") + String("HTTP/1.").size() + 1; x < static_cast<StringView>(other).size(); ++x) {
 				if (!haveWeStarted && (isalnum(static_cast<Uint8>(other[x])) != 0)) {
 					firstNumberIndex = x;
 					haveWeStarted = true;

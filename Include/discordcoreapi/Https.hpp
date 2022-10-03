@@ -51,7 +51,7 @@ namespace DiscordCoreInternal {
 		HttpsState theCurrentState{ HttpsState::Collecting_Code };
 		String responseMessage{};
 		Int64 responseCode{ -1 };
-		size_t contentLength{};
+		Uint64 contentLength{};
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 500ms };
@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 
 		String buildRequest(const HttpsWorkloadData& workload);
 
-		size_t parseHeaders(StringBuffer& other);
+		Uint64 parseHeaders(StringBuffer& other);
 
 		Bool parseChunk(StringBuffer& other);
 
@@ -82,9 +82,9 @@ namespace DiscordCoreInternal {
 		Bool doWeHaveHeaders{ false };
 		Bool isItChunked{ false };
 
-		size_t parseSize(StringBuffer& other);
+		Uint64 parseSize(StringBuffer& other);
 
-		size_t parseCode(StringBuffer& other);
+		Uint64 parseCode(StringBuffer& other);
 
 		void clearCRLF(StringBuffer& other);
 	};

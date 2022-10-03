@@ -493,11 +493,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	JsonObject& JsonObject::operator[](size_t index) const {
+	JsonObject& JsonObject::operator[](Uint64 index) const {
 		return this->theValue.array->operator[](index);
 	}
 
-	JsonObject& JsonObject::operator[](size_t index) {
+	JsonObject& JsonObject::operator[](Uint64 index) {
 		if (this->theType == ValueType::Null) {
 			this->theType = ValueType::Array;
 			this->theValue = ValueType::Array;
@@ -570,7 +570,7 @@ namespace DiscordCoreAPI {
 
 				theString += '{';
 
-				size_t theIndex{};
+				Uint64 theIndex{};
 				for (auto iterator = this->theValue.object->cbegin(); iterator != this->theValue.object->cend(); ++iterator) {
 					theString += '\"';
 					theString += std::move(iterator->first);
@@ -649,7 +649,7 @@ namespace DiscordCoreAPI {
 
 				theString += '{';
 
-				size_t theIndex{};
+				Uint64 theIndex{};
 				for (auto iterator = this->theValue.object->cbegin(); iterator != this->theValue.object->cend(); ++iterator) {
 					theString += '\"';
 					theString += std::move(iterator->first);
@@ -914,7 +914,7 @@ namespace DiscordCoreAPI {
 		this->thePtr[theLength] = theChar;
 	}
 
-	size_t StringWrapper::size() {
+	Uint64 StringWrapper::size() {
 		StringStream theStream{};
 		if (this->thePtr) {
 			theStream << this->thePtr;
@@ -1426,7 +1426,7 @@ namespace DiscordCoreAPI {
 			"0123456789"
 			"-_" };
 
-		size_t encodedLength = (theString.size() + 2) / 3 * 4;
+		Uint64 encodedLength = (theString.size() + 2) / 3 * 4;
 
 		Uint8 trailing_char = url ? '.' : '=';
 
@@ -1578,7 +1578,7 @@ namespace DiscordCoreAPI {
 				time.tm_hour = time.tm_hour + 5;
 			}
 		}
-		size_t size = strftime(timeStamp.data(), 48, "%F %R", &time);
+		Uint64 size = strftime(timeStamp.data(), 48, "%F %R", &time);
 		timeStamp.resize(size);
 		return timeStamp;
 	}
@@ -1588,7 +1588,7 @@ namespace DiscordCoreAPI {
 		if (theStringNew.size() <= theString.size() * 2) {
 			theStringNew.resize(theString.size() * 2);
 		}
-		size_t theIndex{};
+		Uint64 theIndex{};
 		for (Uint32 x = 0; x < theString.size(); ++x) {
 			switch (static_cast<char>(theString[x])) {
 				case 0x00: {
@@ -1679,7 +1679,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void StringBuffer::erase(size_t offSet, size_t amount) {
+	void StringBuffer::erase(Uint64 offSet, Uint64 amount) {
 		this->theSize = this->theSize - amount;
 		if (this->whichOneAreWeOn == 0) {
 			memcpy(this->theString02.data(), this->theString01.data() + amount, this->theSize);
@@ -1690,7 +1690,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void StringBuffer::writeData(const char* thePtr, size_t theSize) {
+	void StringBuffer::writeData(const char* thePtr, Uint64 theSize) {
 		if (this->whichOneAreWeOn == 0) {
 			if (this->theSize + theSize < this->theString01.size()) {
 				memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
@@ -1714,7 +1714,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	char StringBuffer::operator[](size_t theIndex) {
+	char StringBuffer::operator[](Uint64 theIndex) {
 		if (this->whichOneAreWeOn == 0) {
 			return this->theString01[theIndex];
 		} else {
@@ -1722,7 +1722,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	size_t StringBuffer::size() {
+	Uint64 StringBuffer::size() {
 		return this->theSize;
 	}
 

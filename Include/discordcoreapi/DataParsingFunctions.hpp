@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 
 	String getString(ObjectReturnData jsonData, const char* theKey);
 
-	ObjectReturnData getObject(ArrayReturnData jsonObjectData, size_t objectIndex);
+	ObjectReturnData getObject(ArrayReturnData jsonObjectData, Uint64 objectIndex);
 
 	ObjectReturnData getObject(simdjson::ondemand::value jsonObjectData, const char* objectName);
 

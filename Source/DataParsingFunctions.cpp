@@ -113,7 +113,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	ObjectReturnData getObject(ArrayReturnData jsonData, size_t objectIndex) {
+	ObjectReturnData getObject(ArrayReturnData jsonData, Uint64 objectIndex) {
 		ObjectReturnData theValue{};
 		if (jsonData.didItSucceed && jsonData.theArray.at(objectIndex).get(theValue.theObject) == simdjson::error_code::SUCCESS) {
 			theValue.didItSucceed = true;
@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 		return theValue;
 	}
 
-	ObjectReturnData getObject(simdjson::ondemand::array jsonData, size_t objectIndex) {
+	ObjectReturnData getObject(simdjson::ondemand::array jsonData, Uint64 objectIndex) {
 		ObjectReturnData theValue{};
 		if (jsonData.at(objectIndex).get(theValue.theObject) == simdjson::error_code::SUCCESS) {
 			theValue.didItSucceed = true;

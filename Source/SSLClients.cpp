@@ -376,7 +376,7 @@ namespace DiscordCoreInternal {
 
 	ProcessIOResult SSLClient::writeData(String& dataToWrite, Bool priority) noexcept {
 		if (dataToWrite.size() > 0 && this->ssl) {
-			if (priority && dataToWrite.size() < static_cast<size_t>(16 * 1024)) {
+			if (priority && dataToWrite.size() < static_cast<Uint64>(16 * 1024)) {
 				pollfd readWriteSet{ .fd = static_cast<SOCKET>(this->theSocket), .events = POLLOUT };
 				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 					return ProcessIOResult::Error;
@@ -393,13 +393,13 @@ namespace DiscordCoreInternal {
 					}
 				}
 			} else {
-				if (dataToWrite.size() >= static_cast<size_t>(16 * 1024)) {
-					size_t remainingBytes{ dataToWrite.size() };
+				if (dataToWrite.size() >= static_cast<Uint64>(16 * 1024)) {
+					Uint64 remainingBytes{ dataToWrite.size() };
 					while (remainingBytes > 0) {
 						String newString{};
-						size_t amountToCollect{};
-						if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
-							amountToCollect = static_cast<size_t>(1024 * 16);
+						Uint64 amountToCollect{};
+						if (dataToWrite.size() >= static_cast<Uint64>(1024 * 16)) {
+							amountToCollect = static_cast<Uint64>(1024 * 16);
 						} else {
 							amountToCollect = dataToWrite.size();
 						}
@@ -475,9 +475,9 @@ namespace DiscordCoreInternal {
 
 	Bool SSLClient::processWriteData() noexcept {
 		if (this->outputBuffer.getUsedSpace() > 0) {
-			size_t bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
+			Uint64 bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
 
-			size_t writtenBytes{ 0 };
+			Uint64 writtenBytes{ 0 };
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.getCurrentTail()->getCurrentTail(), bytesToWrite, &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
@@ -513,8 +513,8 @@ namespace DiscordCoreInternal {
 	Bool SSLClient::processReadData() noexcept {
 		if (!this->inputBuffer.isItFull()) {
 			do {
-				size_t readBytes{ 0 };
-				size_t bytesToRead{};
+				Uint64 readBytes{ 0 };
+				Uint64 bytesToRead{};
 				if (this->maxBufferSize > this->inputBuffer.getCurrentHead()->getFreeSpace()) {
 					bytesToRead = this->inputBuffer.getCurrentHead()->getFreeSpace();
 				} else {
@@ -660,13 +660,13 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketClient::writeData(String dataToWrite) noexcept {
-		if (dataToWrite.size() > static_cast<size_t>(16 * 1024)) {
-			size_t remainingBytes{ dataToWrite.size() };
+		if (dataToWrite.size() > static_cast<Uint64>(16 * 1024)) {
+			Uint64 remainingBytes{ dataToWrite.size() };
 			while (remainingBytes > 0) {
 				String newString{};
-				size_t amountToCollect{};
-				if (dataToWrite.size() >= static_cast<size_t>(1024 * 16)) {
-					amountToCollect = static_cast<size_t>(1024 * 16);
+				Uint64 amountToCollect{};
+				if (dataToWrite.size() >= static_cast<Uint64>(1024 * 16)) {
+					amountToCollect = static_cast<Uint64>(1024 * 16);
 				} else {
 					amountToCollect = dataToWrite.size();
 				}
@@ -721,7 +721,7 @@ namespace DiscordCoreInternal {
 
 	Bool DatagramSocketClient::processReadData() noexcept {
 		if (this->areWeStreamConnected && !this->inputBuffer.isItFull()) {
-			size_t bytesToRead{};
+			Uint64 bytesToRead{};
 			if (this->maxBufferSize > this->inputBuffer.getCurrentHead()->getFreeSpace()) {
 				bytesToRead = this->inputBuffer.getCurrentHead()->getFreeSpace();
 			} else {

@@ -347,8 +347,8 @@ namespace DiscordCoreAPI {
 
 		JsonObject& operator=(ValueType) noexcept;
 
-		JsonObject& operator[](size_t idx) const;
-		JsonObject& operator[](size_t idx);
+		JsonObject& operator[](Uint64 idx) const;
+		JsonObject& operator[](Uint64 idx);
 
 		JsonObject& operator[](const typename ObjectType::key_type& key) const;
 		JsonObject& operator[](typename ObjectType::key_type key);
@@ -762,7 +762,7 @@ namespace DiscordCoreAPI {
 			return ( ObjectType& )*this->theMap.find(theKey);
 		}
 
-		size_t size() noexcept {
+		Uint64 size() noexcept {
 			std::unique_lock theLock{ this->theMutex };
 			return this->theMap.size();
 		}
@@ -796,7 +796,7 @@ namespace DiscordCoreAPI {
 
 		void emplace_back(char theChar);
 
-		size_t size();
+		Uint64 size();
 
 		const char* data();
 
@@ -1224,32 +1224,32 @@ namespace DiscordCoreAPI {
 			timeStamp.resize(48);
 			switch (timeFormat) {
 				case TimeFormat::LongDate: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G", &timeInfo);
+					Uint64 sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
 				case TimeFormat::LongDateTime: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%T", &timeInfo);
+					Uint64 sizeResponse = strftime(timeStamp.data(), 48, "%FT%T", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
 				case TimeFormat::LongTime: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &timeInfo);
+					Uint64 sizeResponse = strftime(timeStamp.data(), 48, "%T", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
 				case TimeFormat::ShortDate: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d/%m/%g", &timeInfo);
+					Uint64 sizeResponse = strftime(timeStamp.data(), 48, "%d/%m/%g", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
 				case TimeFormat::ShortDateTime: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G %R", &timeInfo);
+					Uint64 sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G %R", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
 				case TimeFormat::ShortTime: {
-					size_t sizeResponse = strftime(timeStamp.data(), 48, "%R", &timeInfo);
+					Uint64 sizeResponse = strftime(timeStamp.data(), 48, "%R", &timeInfo);
 					timeStamp.resize(sizeResponse);
 					break;
 				}
@@ -1691,23 +1691,23 @@ namespace DiscordCoreAPI {
 namespace DiscordCoreInternal {
 
 	struct LengthData {
-		size_t offSet{};
-		size_t length{};
+		Uint64 offSet{};
+		Uint64 length{};
 	};
 
 	class DiscordCoreAPI_Dll StringBuffer {
 	  public:
 		StringView operator[](LengthData);
 
-		void writeData(const char*, size_t);
+		void writeData(const char*, Uint64);
 
 		operator StringView();
 
-		void erase(size_t, size_t);
+		void erase(Uint64, Uint64);
 
-		char operator[](size_t);
+		char operator[](Uint64);
 
-		size_t size();
+		Uint64 size();
 
 		auto begin() {
 			if (this->whichOneAreWeOn == 0) {
@@ -1732,15 +1732,15 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::array<char, 1024 * 1024> theString01{};
 		std::array<char, 1024 * 1024> theString02{};
-		size_t whichOneAreWeOn{ 0 };
-		size_t theSize{};
+		Uint64 whichOneAreWeOn{ 0 };
+		Uint64 theSize{};
 	};
 
 	enum class RingBufferAccessType { Read = 0, Write = 1 };
 
-	template<typename ObjectType, size_t TheSize> class RingBufferInterface {
+	template<typename ObjectType, Uint64 TheSize> class RingBufferInterface {
 	  public:
-		void modifyReadOrWritePosition(RingBufferAccessType theType, size_t theSize) noexcept {
+		void modifyReadOrWritePosition(RingBufferAccessType theType, Uint64 theSize) noexcept {
 			if (theType == RingBufferAccessType::Read) {
 				this->tail += theSize;
 				this->areWeFull = false;
@@ -1755,20 +1755,20 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		size_t getUsedSpace() noexcept {
+		Uint64 getUsedSpace() noexcept {
 			if (this->areWeFull) {
 				return this->theArray.size();
 			}
 			if ((this->head % this->theArray.size()) >= (this->tail % this->theArray.size())) {
-				size_t freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
+				Uint64 freeSpace = this->theArray.size() - ((this->head % this->theArray.size()) - (this->tail % this->theArray.size()));
 				return this->theArray.size() - freeSpace;
 			} else {
-				size_t freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
+				Uint64 freeSpace = (this->tail % this->theArray.size()) - (this->head % this->theArray.size());
 				return this->theArray.size() - freeSpace;
 			}
 		}
 
-		size_t getFreeSpace() noexcept {
+		Uint64 getFreeSpace() noexcept {
 			return this->theArray.size() - this->getUsedSpace();
 		}
 
@@ -1793,16 +1793,16 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::array<ObjectType, TheSize> theArray{};
 		Bool areWeFull{ false };
-		size_t tail{};
-		size_t head{};
+		Uint64 tail{};
+		Uint64 head{};
 	};
 
 	class DiscordCoreAPI_Dll RingBufferSlice : public RingBufferInterface<char, 1024 * 16> {};
 
-	template<size_t TheSliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice, TheSliceCount> {
+	template<Uint64 TheSliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice, TheSliceCount> {
 	  public:
 		void clear() noexcept {
-			for (size_t x = 0; x < this->theArray.size(); ++x) {
+			for (Uint64 x = 0; x < this->theArray.size(); ++x) {
 				this->theArray[x].clear();
 			}
 			this->areWeFull = false;

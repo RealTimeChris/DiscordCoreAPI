@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 		}
 		auto theString = this->singleValueETFToJson();
 		memcpy(this->bufferString.data(), theString.data(), theString.size());
-		for (size_t x = theString.size(); x < this->bufferString.size(); ++x) {
+		for (Uint64 x = theString.size(); x < this->bufferString.size(); ++x) {
 			this->bufferString[x] = '\0';
 		}
 		return this->bufferString;
@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 			if (theStopWatch.hasTimePassed()) {
 				break;
 			}
-			bufferNew[static_cast<size_t>(3) + bytesToEncode] = value & 0xF;
+			bufferNew[static_cast<Uint64>(3) + bytesToEncode] = value & 0xF;
 			value >>= 8;
 			bytesToEncode++;
 		}
@@ -246,16 +246,16 @@ namespace DiscordCoreInternal {
 		this->writeToBuffer(bufferNew);
 	}
 
-	size_t ErlPacker::readString(Uint32 length) {
+	Uint64 ErlPacker::readString(Uint32 length) {
 		if (this->offSet + static_cast<Uint64>(length) > this->size) {
 			throw ErlPackError{ "this->readString() Error: readString() past end of buffer.\n\n" };
 		}
 		if (this->bufferString.size() <= length * 2) {
 			this->bufferString.resize(length * 2);
 		}
-		size_t theFinalSize{};
+		Uint64 theFinalSize{};
 		char* theStringNew = ( char* )this->buffer.data() + this->offSet;
-		size_t theIndex{};
+		Uint64 theIndex{};
 		for (Uint32 x = 0; x < length; ++x) {
 			switch (static_cast<char>(theStringNew[x])) {
 				case 0x00: {
@@ -545,7 +545,7 @@ namespace DiscordCoreInternal {
 
 	String ErlPacker::parseFloatExt() {
 		const Uint8 FloatLength = 31;
-		size_t FloatString = readString(FloatLength);
+		Uint64 FloatString = readString(FloatLength);
 
 		if (FloatString == 0) {
 			return String{};
