@@ -52,12 +52,12 @@
 		#endif
 		#include <cstdint>
 		#include <cstring>
-inline Uint64 ntohll(Uint64 x) {
-	Uint8 theData[8]{};
+inline uint64_t ntohll(uint64_t x) {
+	uint8_t theData[8]{};
 	memcpy(&theData, &(x), sizeof(x));
-	Uint64 theValue{};
-	for (Uint32 y = 0; y < sizeof(Uint64); ++y) {
-		theValue |= static_cast<Uint64>(theData[y]) << 8 * (sizeof(Uint64) - y - 1);
+	uint64_t theValue{};
+	for (uint32_t y = 0; y < sizeof(uint64_t); ++y) {
+		theValue |= static_cast<uint64_t>(theData[y]) << 8 * (sizeof(uint64_t) - y - 1);
 	}
 	return theValue;
 }
