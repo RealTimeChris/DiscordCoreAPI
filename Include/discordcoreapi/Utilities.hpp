@@ -442,7 +442,7 @@ namespace DiscordCoreAPI {
 		Snowflake& operator=(const std::string) noexcept;
 		explicit Snowflake(const std::string) noexcept;
 		Snowflake& operator=(const size_t) noexcept;
-		Snowflake(const size_t) noexcept;
+		explicit Snowflake(const size_t) noexcept;
 		operator size_t() noexcept;
 
 	  protected:
