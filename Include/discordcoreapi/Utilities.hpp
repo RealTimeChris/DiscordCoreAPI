@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 	using Snowflake = Uint64;
 	using Bool = bool;
 
-	enum class ValueType { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Float = 4, String = 5, Bool = 6, Int64 = 7, Uint64 = 8, Unset = 9 };
+	enum class ValueType : Int8 { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Float = 4, String = 5, Bool = 6, Int64 = 7, Uint64 = 8, Unset = 9 };
 
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
