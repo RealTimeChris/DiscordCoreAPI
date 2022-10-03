@@ -59,7 +59,7 @@
 	#include <sys/socket.h>
 	#include <sys/types.h>
 	#include <unistd.h>
-using SOCKET = Int32;
+using SOCKET = int32_t;
 #endif
 
 namespace DiscordCoreInternal {
