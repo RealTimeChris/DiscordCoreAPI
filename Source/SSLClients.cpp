@@ -707,8 +707,8 @@ namespace DiscordCoreInternal {
 	bool DatagramSocketClient::processWriteData() noexcept {
 		if (this->outputBuffer.getUsedSpace() > 0 && this->areWeStreamConnected) {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
-			int32_t writtenBytes = sendto(this->theSocket, this->outputBuffer.getCurrentTail()->getCurrentTail(), static_cast<int32_t>(bytesToWrite), 0,
-				( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr));
+			auto writtenBytes{ sendto(this->theSocket, this->outputBuffer.getCurrentTail()->getCurrentTail(), static_cast<int32_t>(bytesToWrite), 0,
+				( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr)) };
 			if (writtenBytes < 0) {
 				return false;
 			} else {
@@ -733,7 +733,7 @@ namespace DiscordCoreInternal {
 #else
 			uint32_t intSize{ sizeof(this->theStreamTargetAddress) };
 #endif
-			int32_t readBytes{ recvfrom(static_cast<SOCKET>(this->theSocket), this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(bytesToRead), 0,
+			auto readBytes{ recvfrom(static_cast<SOCKET>(this->theSocket), this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(bytesToRead), 0,
 				( sockaddr* )&this->theStreamTargetAddress, &intSize) };
 
 			if (readBytes < 0) {
