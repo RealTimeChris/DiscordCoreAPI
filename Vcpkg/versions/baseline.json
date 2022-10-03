@@ -552,7 +552,7 @@
       "baseline": "9.0.3",
       "port-version": 3
     },
-    "Boolinq": {
+    "boolinq": {
       "baseline": "3.0.4",
       "port-version": 0
     },
@@ -1996,7 +1996,7 @@
       "baseline": "2.4.9",
       "port-version": 0
     },
-    "Double-conversion": {
+    "double-conversion": {
       "baseline": "3.2.0",
       "port-version": 0
     },
@@ -2232,7 +2232,7 @@
       "baseline": "2021-01-03",
       "port-version": 1
     },
-    "fast-Float": {
+    "fast-float": {
       "baseline": "3.5.1",
       "port-version": 0
     },
