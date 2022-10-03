@@ -1164,7 +1164,7 @@ namespace DiscordCoreInternal {
 											simdjson::ondemand::array theArray{};
 											theMessage.d["ids"].get(theArray);
 											for (auto value: theArray) {
-												dataPackage->ids.emplace_back(DiscordCoreAPI::strtoull(value.get_string().take_value().data()));
+												dataPackage->ids.emplace_back(DiscordCoreAPI::strtoull(value.get_string().take_value()));
 											}
 											this->discordCoreClient->eventManager.onMessageDeleteBulkEvent(*dataPackage);
 											break;

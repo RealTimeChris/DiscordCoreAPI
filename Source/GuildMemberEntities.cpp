@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 			if (theResult == simdjson::error_code::SUCCESS) {
 				this->roles.clear();
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-					this->roles.emplace_back(stoull(std::string{ value.get_string().take_value().data() }));
+					this->roles.emplace_back(stoull(std::string{ value.get_string().take_value() }));
 				}
 			}
 		} catch (...) {

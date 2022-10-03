@@ -193,37 +193,30 @@ namespace DiscordCoreAPI {
 				this->object = new ObjectType{};
 				break;
 			}
-
 			case ValueType::Array: {
 				this->array = new ArrayType{};
 				break;
 			}
-
 			case ValueType::String: {
 				this->string = new StringType{};
 				break;
 			}
-
 			case ValueType::Bool: {
 				this->boolean = static_cast<BoolType>(false);
 				break;
 			}
-
 			case ValueType::Int64: {
 				this->numberInt = static_cast<IntType>(0);
 				break;
 			}
-
 			case ValueType::Uint64: {
 				this->numberUint = static_cast<UintType>(0);
 				break;
 			}
-
 			case ValueType::Float: {
 				this->numberDouble = static_cast<FloatType>(0.0);
 				break;
 			}
-
 			case ValueType::Null: {
 				break;
 			}
@@ -264,6 +257,9 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonObject& JsonObject::operator=(const JsonObject& theKey) noexcept {
+		if (this->theType != ValueType::Null) {
+			this->theValue.destroy(this->theType);
+		}
 		switch (theKey.theType) {
 			case ValueType::Object: {
 				this->theValue = ValueType::Object;
@@ -272,7 +268,6 @@ namespace DiscordCoreAPI {
 				}
 				break;
 			}
-
 			case ValueType::Array: {
 				this->theValue = ValueType::Array;
 				for (auto& value: *theKey.theValue.array) {
@@ -280,33 +275,27 @@ namespace DiscordCoreAPI {
 				}
 				break;
 			}
-
 			case ValueType::String: {
 				this->theValue = ValueType::String;
 				*this->theValue.string = *theKey.theValue.string;
 				break;
 			}
-
 			case ValueType::Bool: {
 				this->theValue.boolean = theKey.theValue.boolean;
 				break;
 			}
-
 			case ValueType::Int64: {
 				this->theValue.numberInt = theKey.theValue.numberInt;
 				break;
 			}
-
 			case ValueType::Uint64: {
 				this->theValue.numberUint = theKey.theValue.numberUint;
 				break;
 			}
-
 			case ValueType::Float: {
 				this->theValue.numberDouble = theKey.theValue.numberDouble;
 				break;
 			}
-
 			case ValueType::Null: {
 				break;
 			}

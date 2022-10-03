@@ -53,13 +53,13 @@ namespace DiscordCoreInternal {
 		theSerializer["d"]["intents"] = this->intents;
 		theSerializer["d"]["large_threshold"] = 250;
 		for (auto& value: this->presence.activities) {
-			DiscordCoreAPI::JsonObject theSerializer02{};
+			DiscordCoreAPI::JsonObject theSerializer01{};
 			if (value.url != "") {
-				theSerializer02["url"] = value.url;
+				theSerializer01["url"] = value.url;
 			}
-			theSerializer02["name"] = value.name;
-			theSerializer02["type"] = value.type;
-			theSerializer["d"]["presence"]["activities"].pushBack(theSerializer02);
+			theSerializer01["name"] = value.name;
+			theSerializer01["type"] = value.type;
+			theSerializer["d"]["presence"]["activities"].pushBack(theSerializer01);
 		}
 		theSerializer["d"]["presence"]["afk"] = this->presence.afk;
 		if (this->presence.since != 0) {
@@ -578,7 +578,7 @@ namespace DiscordCoreAPI {
 			if (theResult == simdjson::error_code::SUCCESS) {
 				this->roles.clear();
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-					this->roles.emplace_back(stoull(std::string{ value.get_string().take_value().data() }));
+					this->roles.emplace_back(stoull(std::string{ value.get_string().take_value() }));
 				}
 			}
 		} catch (...) {
@@ -763,7 +763,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->exemptRoles.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->exemptRoles.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value().data() }));
+				this->exemptRoles.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value() }));
 			}
 		}
 
@@ -771,7 +771,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->exemptChannels.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->exemptChannels.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value().data() }));
+				this->exemptChannels.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value() }));
 			}
 		}
 
@@ -1039,7 +1039,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->scopes.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->scopes.emplace_back(std::string{ value.get_string().take_value().data() });
+				this->scopes.emplace_back(std::string{ value.get_string().take_value() });
 			}
 		}
 
@@ -1273,7 +1273,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->features.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->features.emplace_back(value.get_string().take_value().data());
+				this->features.emplace_back(value.get_string().take_value());
 			}
 		}
 
@@ -1869,7 +1869,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->nameLocalizations.clear();
 			for (auto value: theMap) {
-				this->nameLocalizations.emplace(value.unescaped_key().take_value().data(), value.value().get_string().take_value().data());
+				this->nameLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
 			}
 		}
 	}
@@ -1882,7 +1882,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->nameLocalizations.clear();
 			for (auto value: theMap) {
-				this->nameLocalizations.emplace(value.unescaped_key().take_value().data(), value.value().get_string().take_value().data());
+				this->nameLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
 			}
 		}
 
@@ -1890,7 +1890,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->descriptionLocalizations.clear();
 			for (auto value: theMap) {
-				this->descriptionLocalizations.emplace(value.unescaped_key().take_value().data(), value.value().get_string().take_value().data());
+				this->descriptionLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
 			}
 		}
 
@@ -2028,7 +2028,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->values.clear();
 			for (auto iterator = theArray.begin(); iterator != theArray.end(); ++iterator) {
-				this->values.emplace_back(iterator.value().operator*().get_string().take_value().data());
+				this->values.emplace_back(iterator.value().operator*().get_string().take_value());
 			}
 		}
 
@@ -2171,7 +2171,7 @@ namespace DiscordCoreAPI {
 		auto theResult = jsonObjectData["channel_ids"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->channelIds.emplace_back(value.get_string().take_value().data());
+				this->channelIds.emplace_back(value.get_string().take_value());
 			}
 		}
 
@@ -2219,7 +2219,7 @@ namespace DiscordCoreAPI {
 		theResult = jsonObjectData["removed_member_ids"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->removedMemberIds.emplace_back(value.get_string().take_value().data());
+				this->removedMemberIds.emplace_back(value.get_string().take_value());
 			}
 		}
 	}
@@ -2294,7 +2294,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->mentionRoles.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				auto theObject = value.get_string().take_value().data();
+				auto theObject = value.get_string().take_value();
 				this->mentionRoles.emplace_back(std::move(theObject));
 			}
 		}
@@ -2443,7 +2443,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->mentionRoles.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				auto theObject = value.get_string().take_value().data();
+				auto theObject = value.get_string().take_value();
 				this->mentionRoles.emplace_back(std::move(theObject));
 			}
 		}
@@ -2890,7 +2890,7 @@ namespace DiscordCoreAPI {
 		theResult = jsonObjectData["not_found"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->notFound.emplace_back(value.get_string().take_value().data());
+				this->notFound.emplace_back(value.get_string().take_value());
 			}
 		}
 

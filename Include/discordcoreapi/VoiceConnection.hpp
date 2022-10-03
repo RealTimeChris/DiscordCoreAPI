@@ -46,8 +46,6 @@ namespace DiscordCoreAPI {
 		std::string theKey{};
 	};
 
-	struct DiscordCoreAPI_Dll SpeakingPayloadData {};
-
 	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
 		struct DiscordCoreAPI_Dll OpusDecoderDeleter {
 			void operator()(OpusDecoder*) noexcept;

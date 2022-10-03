@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 		theResult = jsonObjectData["mention_roles"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->mentionRoles.emplace_back(value.get_string().take_value().data());
+				this->mentionRoles.emplace_back(value.get_string().take_value());
 			}
 		}
 

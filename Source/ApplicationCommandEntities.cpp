@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->nameLocalizations.clear();
 			for (auto value: theMap) {
-				this->nameLocalizations.emplace(value.unescaped_key().take_value().data(), value.value().get_string().take_value().data());
+				this->nameLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
 			}
 		}
 
@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->descriptionLocalizations.clear();
 			for (auto value: theMap) {
-				this->descriptionLocalizations.emplace(value.unescaped_key().take_value().data(), value.value().get_string().take_value().data());
+				this->descriptionLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
 			}
 		}
 

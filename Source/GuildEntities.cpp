@@ -415,7 +415,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->features.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->features.emplace_back(std::string{ value.get_string().take_value().data() });
+				this->features.emplace_back(std::string{ value.get_string().take_value() });
 			}
 		}
 
