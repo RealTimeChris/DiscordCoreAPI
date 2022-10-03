@@ -70,9 +70,9 @@ namespace DiscordCoreInternal {
 
 		std::string buildRequest(const HttpsWorkloadData& workload);
 
-		size_t parseHeaders(std::string&);
+		size_t parseHeaders(StringBuffer& other);
 
-		bool parseChunk(std::string&);
+		bool parseChunk(StringBuffer& other);
 
 		virtual ~HttpsRnRBuilder() noexcept = default;
 
@@ -82,11 +82,11 @@ namespace DiscordCoreInternal {
 		bool doWeHaveHeaders{ false };
 		bool isItChunked{ false };
 
-		size_t parseSize(std::string&);
+		size_t parseSize(StringBuffer& other);
 
-		size_t parseCode(std::string& otherNew);
+		size_t parseCode(StringBuffer& other);
 
-		void clearCRLF(std::string&);
+		void clearCRLF(StringBuffer& other);
 	};
 
 	struct DiscordCoreAPI_Dll RateLimitData {
@@ -113,7 +113,7 @@ namespace DiscordCoreInternal {
 		const int32_t maxReconnectTries{ 10 };
 		int32_t currentReconnectTries{ 0 };
 		bool areWeDoneTheRequest{ false };
-		std::string theInputBufferReal{};
+		StringBuffer theInputBufferReal{};
 		std::string currentBaseUrl{};
 		HttpsResponseData theData{};
 		bool doWeConnect{ true };

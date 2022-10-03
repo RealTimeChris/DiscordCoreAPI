@@ -330,13 +330,10 @@ namespace DiscordCoreAPI {
 
 		operator std::string() const noexcept;
 
-		void dump(const JsonObject& theData, std::string& theString);
-
 		void pushBack(JsonObject other) noexcept;
 
 		~JsonObject() noexcept;
 	};
-
 
 	struct DiscordCoreAPI_Dll Snowflake;
 
@@ -1685,6 +1682,22 @@ namespace DiscordCoreInternal {
 		char operator[](size_t);
 
 		size_t size();
+
+		auto begin() {
+			if (this->whichOneAreWeOn == 0) {
+				return this->theString01.begin();
+			} else {
+				return this->theString02.begin();
+			}
+		}
+
+		auto end() {
+			if (this->whichOneAreWeOn == 0) {
+				return this->theString01.end();
+			} else {
+				return this->theString02.end();
+			}
+		}
 
 		void clear();
 

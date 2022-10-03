@@ -107,13 +107,13 @@ namespace DiscordCoreInternal {
 		return theReturnString;
 	}
 
-	size_t HttpsRnRBuilder::parseHeaders(std::string& other) {
+	size_t HttpsRnRBuilder::parseHeaders(StringBuffer& other) {
 		try {
-			if (other.find("\r\n\r\n") != std::string::npos) {
+			if (static_cast<std::string_view>(other).find("\r\n\r\n") != std::string::npos) {
 				DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
 				std::string newString{};
-				newString.insert(newString.begin(), other.begin(), other.begin() + other.find("\r\n\r\n") + std::string("\r\n\r\n").size());
-				other.erase(other.begin(), other.begin() + newString.size());
+				newString.insert(newString.begin(), other.begin(), other.begin() + static_cast<std::string_view>(other).find("\r\n\r\n") + std::string("\r\n\r\n").size());
+				other.erase(0, +newString.size());
 				while (newString.size() > 0 && newString.find(":") != std::string::npos && newString.find("\r\n") != std::string::npos) {
 					if (theStopWatch.hasTimePassed()) {
 						break;
@@ -147,25 +147,25 @@ namespace DiscordCoreInternal {
 		return 0;
 	}
 
-	bool HttpsRnRBuilder::parseChunk(std::string& other) {
+	bool HttpsRnRBuilder::parseChunk(StringBuffer& other) {
 		if (this->isItChunked) {
-			if (other.find("\r\n0\r\n\r\n") != std::string::npos) {
+			if (static_cast<std::string_view>(other).find("\r\n0\r\n\r\n") != std::string::npos) {
 				DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
-				while (other.find("\r\n") != other.find("\r\n0\r\n\r\n")) {
+				while (static_cast<std::string_view>(other).find("\r\n") != static_cast<std::string_view>(other).find("\r\n0\r\n\r\n")) {
 					if (theStopWatch.hasTimePassed()) {
 						break;
 					}
 					this->clearCRLF(other);
 					this->parseSize(other);
 					this->clearCRLF(other);
-					if (other.find("\r\n") != other.find("\r\n0\r\n\r\n")) {
+					if (static_cast<std::string_view>(other).find("\r\n") != static_cast<std::string_view>(other).find("\r\n0\r\n\r\n")) {
 						static_cast<HttpsConnection*>(this)->theData.responseMessage.insert(static_cast<HttpsConnection*>(this)->theData.responseMessage.end(), other.begin(),
-							other.begin() + other.find("\r\n"));
-						other.erase(other.begin(), other.begin() + other.find("\r\n") + 2);
+							other.begin() + static_cast<std::string_view>(other).find("\r\n"));
+						other.erase(0, static_cast<std::string_view>(other).find("\r\n") + 2);
 					}
 				}
 				static_cast<HttpsConnection*>(this)->theData.responseMessage.insert(static_cast<HttpsConnection*>(this)->theData.responseMessage.end(), other.begin(),
-					other.begin() + other.find("\r\n0\r\n\r\n"));
+					other.begin() + static_cast<std::string_view>(other).find("\r\n0\r\n\r\n"));
 				return false;
 			} else {
 				return true;
@@ -187,7 +187,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	size_t HttpsRnRBuilder::parseSize(std::string& other) {
+	size_t HttpsRnRBuilder::parseSize(StringBuffer& other) {
 		try {
 			if (static_cast<HttpsConnection*>(this)->theData.responseHeaders.contains("Content-Length")) {
 				static_cast<HttpsConnection*>(this)->theData.contentLength = stoll(static_cast<HttpsConnection*>(this)->theData.responseHeaders["Content-Length"]);
@@ -212,7 +212,7 @@ namespace DiscordCoreInternal {
 				return 0;
 			} else {
 				static_cast<HttpsConnection*>(this)->theData.contentLength += stoll(theValueString, nullptr, 16);
-				other.erase(other.begin(), other.begin() + hexIndex);
+				other.erase(0, hexIndex);
 				this->doWeHaveContentSize = true;
 				static_cast<HttpsConnection*>(this)->theData.theCurrentState = HttpsState::Collecting_Contents;
 				return hexIndex;
@@ -223,25 +223,25 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	size_t HttpsRnRBuilder::parseCode(std::string& otherNew) {
-		if (otherNew.find("HTTP/1.") != std::string::npos) {
+	size_t HttpsRnRBuilder::parseCode(StringBuffer& other) {
+		if (static_cast<std::string_view>(other).find("HTTP/1.") != std::string::npos) {
 			uint64_t firstNumberIndex{ 0 };
 			uint64_t lastNumberIndex{ 0 };
 			bool haveWeStarted{ false };
-			for (size_t x = otherNew.find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < otherNew.size(); ++x) {
-				if (!haveWeStarted && (isalnum(static_cast<uint8_t>(otherNew[x])) != 0)) {
+			for (size_t x = static_cast<std::string_view>(other).find("HTTP/1.") + std::string("HTTP/1.").size() + 1; x < static_cast<std::string_view>(other).size(); ++x) {
+				if (!haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) != 0)) {
 					firstNumberIndex = x;
 					haveWeStarted = true;
-				} else if (haveWeStarted && (isalnum(static_cast<uint8_t>(otherNew[x])) == 0)) {
+				} else if (haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) == 0)) {
 					lastNumberIndex = x;
 					break;
 				}
 			}
-			static_cast<HttpsConnection*>(this)->theData.responseCode = stoll(otherNew.substr(firstNumberIndex, lastNumberIndex - firstNumberIndex));
-			otherNew.erase(otherNew.begin(), otherNew.begin() + otherNew.find("\r\n"));
+			static_cast<HttpsConnection*>(this)->theData.responseCode = stoll(static_cast<std::string>(other[LengthData{ firstNumberIndex, lastNumberIndex - firstNumberIndex }]));
+			other.erase(0, static_cast<std::string_view>(other).find("\r\n"));
 			static_cast<HttpsConnection*>(this)->theData.theCurrentState = HttpsState::Collecting_Headers;
-			return otherNew.find("\r\n");
-		} else if (otherNew.size() > 200 && otherNew.find("HTTP/1.") == std::string::npos) {
+			return static_cast<std::string_view>(other).find("\r\n");
+		} else if (static_cast<std::string_view>(other).size() > 200 && static_cast<std::string_view>(other).find("HTTP/1.") == std::string::npos) {
 			static_cast<HttpsConnection*>(this)->theData.responseCode = 200;
 			static_cast<HttpsConnection*>(this)->theData.theCurrentState = HttpsState::Collecting_Contents;
 			return 0;
@@ -249,7 +249,7 @@ namespace DiscordCoreInternal {
 		return 0;
 	}
 
-	void HttpsRnRBuilder::clearCRLF(std::string& other) {
+	void HttpsRnRBuilder::clearCRLF(StringBuffer& other) {
 		uint64_t theCount{ 0 };
 		for (uint64_t x = 0; x < other.size(); ++x) {
 			if (isspace(static_cast<uint8_t>(other[x])) != 0) {
@@ -258,7 +258,7 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		}
-		other.erase(other.begin(), other.begin() + theCount);
+		other.erase(0, theCount);
 	}
 
 	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
@@ -272,7 +272,10 @@ namespace DiscordCoreInternal {
 						this->areWeDoneTheRequest = true;
 						return;
 					}
-					this->theInputBufferReal += this->getInputBuffer();
+					auto stringView = this->getInputBuffer();
+					if (stringView.size() > 0) {
+						this->theInputBufferReal.writeData(stringView.data(), stringView.size());
+					}
 					this->parseCode(this->theInputBufferReal);
 					if (this->theData.responseCode == 400) {
 					}
@@ -289,7 +292,10 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (!this->doWeHaveHeaders) {
-						this->theInputBufferReal += this->getInputBuffer();
+						auto stringView = this->getInputBuffer();
+						if (stringView.size() > 0) {
+							this->theInputBufferReal.writeData(stringView.data(), stringView.size());
+						}
 						this->parseHeaders(this->theInputBufferReal);
 						this->theData.theStopWatch.resetTimer();
 					}
@@ -301,7 +307,10 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (!this->doWeHaveContentSize) {
-						this->theInputBufferReal += this->getInputBuffer();
+						auto stringView = this->getInputBuffer();
+						if (stringView.size() > 0) {
+							this->theInputBufferReal.writeData(stringView.data(), stringView.size());
+						}
 						this->clearCRLF(this->theInputBufferReal);
 						this->parseSize(this->theInputBufferReal);
 						this->clearCRLF(this->theInputBufferReal);
@@ -310,7 +319,10 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				case HttpsState::Collecting_Contents: {
-					this->theInputBufferReal += this->getInputBuffer();
+					auto stringView = this->getInputBuffer();
+					if (stringView.size() > 0) {
+						this->theInputBufferReal.writeData(stringView.data(), stringView.size());
+					}
 					auto theResult = this->parseChunk(this->theInputBufferReal);
 					if ((this->theData.responseMessage.size() >= this->theData.contentLength && !theResult) || this->theData.theStopWatch.hasTimePassed() || !theResult ||
 						(this->theData.responseCode == -5 && this->theData.contentLength == -5)) {
