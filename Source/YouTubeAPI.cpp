@@ -125,28 +125,31 @@ namespace DiscordCoreInternal {
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
 			responseData.responseMessage.reserve(responseData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
 			simdjson::ondemand::parser theParser{};
-			auto jsonObject = theParser.iterate(responseData.responseMessage.data(), responseData.responseMessage.length(), responseData.responseMessage.capacity());
-			DiscordCoreAPI::YouTubeFormatVector theVector{ jsonObject };
-			DiscordCoreAPI::YouTubeFormat format{};
-			bool isOpusFound{ false };
-			for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {
-				if (value.mimeType.find("opus") != std::string::npos) {
-					if (value.audioQuality == "AUDIO_QUALITY_LOW") {
-						isOpusFound = true;
-						format = value;
-					}
-					if (value.audioQuality == "AUDIO_QUALITY_MEDIUM") {
-						isOpusFound = true;
-						format = value;
-					}
-					if (value.audioQuality == "AUDIO_QUALITY_HIGH") {
-						isOpusFound = true;
-						format = value;
+			simdjson::ondemand::value theValue{};
+			if (theParser.iterate(responseData.responseMessage.data(), responseData.responseMessage.length(), responseData.responseMessage.capacity()).get(theValue) ==
+				simdjson::error_code::SUCCESS) {
+				DiscordCoreAPI::YouTubeFormatVector theVector{ theValue };
+				DiscordCoreAPI::YouTubeFormat format{};
+				bool isOpusFound{ false };
+				for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {
+					if (value.mimeType.find("opus") != std::string::npos) {
+						if (value.audioQuality == "AUDIO_QUALITY_LOW") {
+							isOpusFound = true;
+							format = value;
+						}
+						if (value.audioQuality == "AUDIO_QUALITY_MEDIUM") {
+							isOpusFound = true;
+							format = value;
+						}
+						if (value.audioQuality == "AUDIO_QUALITY_HIGH") {
+							isOpusFound = true;
+							format = value;
+						}
 					}
 				}
-			}
-			if (isOpusFound) {
-				newSong.format = format;
+				if (isOpusFound) {
+					newSong.format = format;
+				}
 			}
 			std::string downloadBaseUrl{};
 			auto httpsFind = newSong.format.downloadUrl.find("https://");
@@ -246,9 +249,11 @@ namespace DiscordCoreInternal {
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				if (!streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true)) {
+					this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				}
 			} else {
+				this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 				return;
 			}
 			bool areWeDoneHeaders{ false };

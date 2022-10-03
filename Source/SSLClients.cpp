@@ -599,7 +599,7 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 				
-				int32_t writtenBytes{ sendto(static_cast<SOCKET>(this->theSocket), clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
+				int32_t writtenBytes{ sendto(static_cast<int32_t>(this->theSocket), clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
 					( sockaddr* )&this->theStreamTargetAddress, static_cast<int32_t>(sizeof(this->theStreamTargetAddress))) };
 #ifdef _WIN32
 				int32_t intSize{ sizeof(this->theStreamTargetAddress) };
@@ -733,7 +733,7 @@ namespace DiscordCoreInternal {
 #else
 			uint32_t intSize{ sizeof(this->theStreamTargetAddress) };
 #endif
-			int32_t readBytes{ recvfrom(static_cast<SOCKET>(this->theSocket), this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(bytesToRead), 0,
+			int32_t readBytes{ recvfrom(static_cast<int32_t>(this->theSocket), this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(bytesToRead), 0,
 				( sockaddr* )&this->theStreamTargetAddress, &intSize) };
 
 			if (readBytes < 0) {
