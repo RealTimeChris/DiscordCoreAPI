@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file YouTubeAPI.hpp
 
+#pragma once
+
 #ifndef YOUTUBE_API
 #define YOUTUBE_API
 

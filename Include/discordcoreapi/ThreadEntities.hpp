@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file ThreadEntities.hpp
 
+#pragma once
+
 #ifndef THREAD_ENTITIES
 #define THREAD_ENTITIES
 

@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file RoleEntities.hpp
 
+#pragma once
+
 #ifndef ROLE_ENTITIES
 #define ROLE_ENTITIES
 

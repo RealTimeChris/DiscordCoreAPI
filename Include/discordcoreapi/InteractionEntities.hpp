@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file InteractionEntities.hpp
 
+#pragma once
+
 #ifndef INTERACTION_ENTITIES
 #define INTERACTION_ENTITIES
 

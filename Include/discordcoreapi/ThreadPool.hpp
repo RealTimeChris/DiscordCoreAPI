@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file ThreadPool.hpp
 
+#pragma once
+
 #ifndef THREAD_POOL
 #define THREAD_POOL
 

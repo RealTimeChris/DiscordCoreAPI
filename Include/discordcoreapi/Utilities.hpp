@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 	template<typename TheType>
 	concept IsString = std::same_as<TheType, String>;
 
-	struct EnumConverter {
+	struct DiscordCoreAPI_Dll EnumConverter {
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
 			this->thePtr = new Uint64{};
 			*static_cast<Uint64*>(this->thePtr) = static_cast<Uint64>(other);
@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 		void* thePtr{ nullptr };
 	};
 
-	class JsonObject {
+	class DiscordCoreAPI_Dll JsonObject {
 	  public:
 		using ObjectType = std::map<String, JsonObject, std::less<>, std::allocator<std::pair<const String, JsonObject>>>;
 		using ArrayType = std::vector<JsonObject>;
@@ -206,7 +206,7 @@ namespace DiscordCoreAPI {
 
 		ValueType theType{ ValueType::Null };
 
-		union JsonValue {
+		union DiscordCoreAPI_Dll JsonValue {
 			FloatType numberDouble;
 			UintType numberUint;
 			ObjectType* object;

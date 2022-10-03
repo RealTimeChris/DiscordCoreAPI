@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file InputEvents.hpp
 
+#pragma once
+
 #ifndef INPUT_EVENTS
 #define INPUT_EVENTS
 

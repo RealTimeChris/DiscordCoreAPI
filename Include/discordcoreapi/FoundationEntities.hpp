@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file FoundationEntities.hpp
 
+#pragma once
+
 #ifndef FOUNDATION_ENTITIES
 #define FOUNDATION_ENTITIES
 

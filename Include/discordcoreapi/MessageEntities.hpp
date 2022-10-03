@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file MessageEntities.hpp
 
+#pragma once
+
 #ifndef MESSAGE_ENTITIES
 #define MESSAGE_ENTITIES
 

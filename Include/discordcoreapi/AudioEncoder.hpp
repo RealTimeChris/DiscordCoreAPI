@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file AudioEncoder.hpp
 
+#pragma once
+
 #ifndef AUDIO_ENCODER
 #define AUDIO_ENCODER
 

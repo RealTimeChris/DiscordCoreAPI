@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file SSLClients.hpp
 
+#pragma once
+
 #ifndef SSL_CLIENTS
 #define SSL_CLIENTS
 

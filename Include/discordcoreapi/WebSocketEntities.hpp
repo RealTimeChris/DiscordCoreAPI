@@ -23,6 +23,8 @@
 /// https://discordcoreapi.com
 /// \file WebSocketEntities.hpp
 
+#pragma once
+
 #ifndef WEBSOCKET_ENTITIES
 #define WEBSOCKET_ENTITIES
 
