@@ -609,7 +609,7 @@ namespace DiscordCoreInternal {
 				std::string serverToClientBuffer{};
 
 				serverToClientBuffer.resize(11);
-				int32_t readBytes{ recvfrom(this->theSocket, serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
+				int32_t readBytes{ recvfrom(static_cast<int32_t>(this->theSocket), serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
 					reinterpret_cast<sockaddr*>(&this->theStreamTargetAddress), &intSize) };
 				if (readBytes >= 0) {
 					break;
@@ -733,7 +733,7 @@ namespace DiscordCoreInternal {
 #else
 			uint32_t intSize{ sizeof(this->theStreamTargetAddress) };
 #endif
-			int32_t readBytes{ recvfrom(static_cast<int32_t>(this->theSocket), this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(bytesToRead), 0,
+			int32_t readBytes{ recvfrom(static_cast<SOCKET>(this->theSocket), this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(bytesToRead), 0,
 				( sockaddr* )&this->theStreamTargetAddress, &intSize) };
 
 			if (readBytes < 0) {

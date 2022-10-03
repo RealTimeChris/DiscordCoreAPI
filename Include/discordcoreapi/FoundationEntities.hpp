@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 		std::string sessionId{};
 		std::string botToken{};
 
-		operator DiscordCoreAPI::JsonObject();
+		operator std::string();
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
@@ -64,7 +64,7 @@ namespace DiscordCoreInternal {
 		std::string botToken{};
 		int64_t intents{};
 
-		operator DiscordCoreAPI::JsonObject();
+		operator std::string();
 	};
 
 	struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadData {
@@ -72,14 +72,14 @@ namespace DiscordCoreInternal {
 		std::string externalIp{};
 		uint64_t voicePort{};
 
-		operator DiscordCoreAPI::JsonObject();
+		operator std::string();
 	};
 
 	struct DiscordCoreAPI_Dll VoiceIdentifyData {
 		VoiceConnectInitData connectInitData{};
 		VoiceConnectionData connectionData{};
 
-		operator DiscordCoreAPI::JsonObject();
+		operator std::string();
 	};
 
 	enum class SendSpeakingType : uint8_t {
@@ -94,7 +94,7 @@ namespace DiscordCoreInternal {
 		int32_t delay{};
 		int32_t ssrc{};
 
-		operator DiscordCoreAPI::JsonObject();
+		operator std::string();
 	};
 
 	enum class HttpsWorkloadClass : uint8_t { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
@@ -652,7 +652,7 @@ namespace DiscordCoreAPI {
 
 		MessageReferenceData(simdjson::ondemand::value jsonObjectData);
 
-		operator JsonObject();
+		operator std::string();
 
 		virtual ~MessageReferenceData() noexcept = default;
 	};
@@ -1331,7 +1331,7 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< Id of the desired voice Channel. Leave blank to disconnect.
 		Snowflake guildId{};///< The id of the Guild fo which we would like to establish a voice connection.
 
-		operator JsonObject();
+		operator std::string();
 	};
 
 	/// Team object data. \brief Team object data.
@@ -2316,7 +2316,7 @@ namespace DiscordCoreAPI {
 
 		AllowedMentionsData(simdjson::ondemand::value jsonObjectData);
 
-		operator JsonObject();
+		operator std::string();
 
 		virtual ~AllowedMentionsData() noexcept = default;
 	};
@@ -3176,7 +3176,7 @@ namespace DiscordCoreAPI {
 
 		InteractionResponseData() noexcept = default;
 
-		operator JsonObject();
+		operator std::string();
 
 		InteractionCallbackData data{};///< Interaction ApplicationCommand callback data.
 		InteractionCallbackType type{};///< Interaction callback type.

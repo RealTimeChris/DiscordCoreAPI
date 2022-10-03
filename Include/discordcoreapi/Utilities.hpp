@@ -328,12 +328,15 @@ namespace DiscordCoreAPI {
 
 		operator std::string() noexcept;
 
+		operator std::string() const noexcept;
+
 		void dump(const JsonObject& theData, std::string& theString);
 
 		void pushBack(JsonObject other) noexcept;
 
 		~JsonObject() noexcept;
 	};
+
 
 	struct DiscordCoreAPI_Dll Snowflake;
 
@@ -424,7 +427,7 @@ namespace DiscordCoreInternal {
 		int64_t since{ 0 };///< When was the activity started?
 		bool afk{ false };///< Are we afk.
 
-		operator DiscordCoreAPI::JsonObject();
+		operator std::string();
 	};
 
 }// namespace DiscordCoreInternal
@@ -439,7 +442,7 @@ namespace DiscordCoreAPI {
 		Snowflake& operator=(const std::string) noexcept;
 		explicit Snowflake(const std::string) noexcept;
 		Snowflake& operator=(const size_t) noexcept;
-		explicit Snowflake(const size_t) noexcept;
+		Snowflake(const size_t) noexcept;
 		operator size_t() noexcept;
 
 	  protected:

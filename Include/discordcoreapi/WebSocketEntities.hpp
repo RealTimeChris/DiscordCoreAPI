@@ -83,7 +83,7 @@ namespace DiscordCoreInternal {
 		friend class SSLClient;
 
 		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections, int32_t currentShardNew,
-			std::atomic_bool* doWeQuitNew) noexcept;
+			std::atomic_bool* doWeQuitNew);
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 

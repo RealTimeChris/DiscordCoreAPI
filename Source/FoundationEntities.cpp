@@ -39,7 +39,7 @@
 
 namespace DiscordCoreInternal {
 
-	WebSocketResumeData::operator DiscordCoreAPI::JsonObject() {
+	WebSocketResumeData::operator std::string() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 6;
 		theData["d"]["seq"] = this->lastNumberReceived;
@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	WebSocketIdentifyData::operator DiscordCoreAPI::JsonObject() {
+	WebSocketIdentifyData::operator std::string() {
 		DiscordCoreAPI::JsonObject theSerializer{};
 		theSerializer["d"]["intents"] = this->intents;
 		theSerializer["d"]["large_threshold"] = 250;
@@ -81,7 +81,7 @@ namespace DiscordCoreInternal {
 		return theSerializer;
 	}
 
-	VoiceSocketProtocolPayloadData::operator DiscordCoreAPI::JsonObject() {
+	VoiceSocketProtocolPayloadData::operator std::string() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 1;
 		theData["d"]["protocol"] = "udp";
@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	UpdatePresenceData::operator DiscordCoreAPI::JsonObject() {
+	UpdatePresenceData::operator std::string() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 3;
 		for (auto& value: this->activities) {
@@ -111,7 +111,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	VoiceIdentifyData::operator DiscordCoreAPI::JsonObject() {
+	VoiceIdentifyData::operator std::string() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 0;
 		theData["d"]["session_id"] = this->connectionData.sessionId;
@@ -121,7 +121,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	SendSpeakingData::operator DiscordCoreAPI::JsonObject() {
+	SendSpeakingData::operator std::string() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 5;
 		theData["d"]["speaking"] = this->type;
@@ -3130,7 +3130,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageReferenceData::operator JsonObject() {
+	MessageReferenceData::operator std::string() {
 		JsonObject theData{};
 		theData["fail_if_not_exists"] = this->failIfNotExists;
 		theData["message_id"] = std::to_string(this->messageId);
@@ -3147,7 +3147,7 @@ namespace DiscordCoreAPI {
 		return this->theBanDatas;
 	}
 
-	UpdateVoiceStateData::operator JsonObject() {
+	UpdateVoiceStateData::operator std::string() {
 		JsonObject theData{};
 		theData["op"] = 4;
 		if (this->channelId == 0) {
@@ -3278,7 +3278,7 @@ namespace DiscordCoreAPI {
 		this->data.clear();
 	}
 
-	AllowedMentionsData::operator JsonObject() {
+	AllowedMentionsData::operator std::string() {
 		JsonObject theData{};
 		for (auto& value: this->parse) {
 			theData["parse"].pushBack(value);
@@ -3819,7 +3819,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	InteractionResponseData::operator JsonObject() {
+	InteractionResponseData::operator std::string() {
 		JsonObject theData{};
 		theData["type"] = this->type;
 		if (this->data.attachments.size() > 0) {

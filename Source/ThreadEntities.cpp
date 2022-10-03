@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 		*this = *static_cast<Thread*>(theChannel.get());
 	}
 
-	StartThreadWithMessageData::operator JsonObject() {
+	StartThreadWithMessageData::operator std::string() {
 		JsonObject theData{};
 		theData["auto_archive_duration"] = this->autoArchiveDuration;
 		theData["rate_limit_per_user"] = this->rateLimitPerUser;
@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	StartThreadWithoutMessageData::operator JsonObject() {
+	StartThreadWithoutMessageData::operator std::string() {
 		JsonObject theData{};
 		theData["auto_archive_duration"] = this->autoArchiveDuration;
 		theData["rate_limit_per_user"] = this->rateLimitPerUser;
@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	StartThreadInForumChannelData::operator JsonObject() {
+	StartThreadInForumChannelData::operator std::string() {
 		JsonObject theData{};
 		if (this->message.allowedMentions.parse.size() > 0 || this->message.allowedMentions.roles.size() > 0 || this->message.allowedMentions.users.size() > 0) {
 			theData["message"]["allowed_mentions"] = this->message.allowedMentions;
@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/threads";
-		workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
+		workload.content = dataPackage.operator std::string();
 		workload.callStack = "Threads::startThreadWithMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/threads";
-		workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
+		workload.content = dataPackage.operator std::string();
 		workload.callStack = "Threads::startThreadWithoutMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/threads";
-		workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
+		workload.content = dataPackage.operator std::string();
 		workload.callStack = "Threads::startThreadInForumChannelAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

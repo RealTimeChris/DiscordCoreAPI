@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CreateGuildScheduledEventData::operator JsonObject() {
+	CreateGuildScheduledEventData::operator std::string() {
 		JsonObject theData{};
 		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
 			theData["channel_id"] = ValueType::Null;
@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ModifyGuildScheduledEventData::operator JsonObject() {
+	ModifyGuildScheduledEventData::operator std::string() {
 		JsonObject theData{};
 		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
 			theData["channel_id"] = ValueType::Null;
@@ -136,7 +136,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events";
-		workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
+		workload.content = dataPackage.operator std::string();
 		workload.callStack = "GuildScheduledEvents::createGuildScheduledEventAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEvent>(workload);
 	}
@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId);
-		workload.content = dataPackage.operator DiscordCoreAPI::JsonObject();
+		workload.content = dataPackage.operator std::string();
 		workload.callStack = "GuildScheduledEvents::modifyGuildScheduledEventAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEvent>(workload);
 	}

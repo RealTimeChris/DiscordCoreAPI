@@ -493,90 +493,6 @@ namespace DiscordCoreAPI {
 		throw std::runtime_error{ "Sorry, but that item-key could not be produced/accessed." };
 	}
 
-	JsonObject::operator std::string() noexcept {
-		std::string theString{};
-		this->dump(*this, theString);
-		return theString;
-	}
-
-	void JsonObject::dump(const JsonObject& theData, std::string& theString) {
-		switch (theData.theType) {
-			case ValueType::Object: {
-				if (theData.theValue.object->empty()) {
-					theString += "{}";
-				}
-
-				theString += '{';
-
-				size_t theIndex{};
-				for (auto iterator = theData.theValue.object->cbegin(); iterator != theData.theValue.object->cend(); ++iterator) {
-					theString += '\"';
-					theString += iterator->first;
-					theString += "\":";
-					dump(iterator->second, theString);
-					if (theIndex < theData.theValue.object->size() - 1) {
-						theString += ',';
-					}
-					theIndex++;
-				}
-				theString += '}';
-				break;
-			}
-			case ValueType::Array: {
-				if (theData.theValue.array->empty()) {
-					theString += "[]";
-					break;
-				}
-
-				theString += '[';
-
-				for (auto iterator = theData.theValue.array->cbegin(); iterator != theData.theValue.array->cend() - 1; ++iterator) {
-					dump(*iterator, theString);
-					theString += ',';
-				}
-
-				dump(theData.theValue.array->back(), theString);
-
-				theString += ']';
-				break;
-			}
-
-			case ValueType::String: {
-				theString += '\"';
-				theString += *theData.theValue.string;
-				theString += '\"';
-				break;
-			}
-			case ValueType::Bool: {
-				std::stringstream theStream{};
-				theStream << std::boolalpha << theData.theValue.boolean;
-				theString += theStream.str();
-				break;
-			}
-			case ValueType::Float: {
-				theString += std::to_string(theData.theValue.numberDouble);
-				break;
-			}
-			case ValueType::Uint64: {
-				theString += std::to_string(theData.theValue.numberUint);
-				break;
-			}
-			case ValueType::Int64: {
-				theString += std::to_string(theData.theValue.numberInt);
-				break;
-			}
-			case ValueType::Null: {
-				theString += "null";
-				break;
-			}
-			case ValueType::Null_Ext: {
-				theString += "[]";
-				break;
-			}
-		}
-		return;
-	}
-
 	void JsonObject::pushBack(JsonObject other) noexcept {
 		if (this->theType == ValueType::Null) {
 			this->theType = ValueType::Array;
@@ -595,6 +511,165 @@ namespace DiscordCoreAPI {
 	JsonObject::~JsonObject() noexcept {
 		this->theValue.destroy(this->theType);
 	}
+
+	JsonObject::operator std::string() noexcept {
+		std::string theString{};
+		switch (this->theType) {
+			case ValueType::Object: {
+				if (this->theValue.object->empty()) {
+					theString += "{}";
+				}
+
+				theString += '{';
+
+				size_t theIndex{};
+				for (auto iterator = this->theValue.object->cbegin(); iterator != this->theValue.object->cend(); ++iterator) {
+					theString += '\"';
+					theString += iterator->first;
+					theString += "\":";
+					theString += static_cast<std::string>(iterator->second);
+					if (theIndex < this->theValue.object->size() - 1) {
+						theString += ',';
+					}
+					theIndex++;
+				}
+				theString += '}';
+				break;
+			}
+			case ValueType::Array: {
+				if (this->theValue.array->empty()) {
+					theString += "[]";
+					break;
+				}
+
+				theString += '[';
+
+				for (auto iterator = this->theValue.array->cbegin(); iterator != this->theValue.array->cend() - 1; ++iterator) {
+					theString += *iterator;
+					theString += ',';
+				}
+
+				theString += this->theValue.array->back();
+
+				theString += ']';
+				break;
+			}
+
+			case ValueType::String: {
+				theString += '\"';
+				theString += *this->theValue.string;
+				theString += '\"';
+				break;
+			}
+			case ValueType::Bool: {
+				std::stringstream theStream{};
+				theStream << std::boolalpha << this->theValue.boolean;
+				theString += theStream.str();
+				break;
+			}
+			case ValueType::Float: {
+				theString += std::to_string(this->theValue.numberDouble);
+				break;
+			}
+			case ValueType::Uint64: {
+				theString += std::to_string(this->theValue.numberUint);
+				break;
+			}
+			case ValueType::Int64: {
+				theString += std::to_string(this->theValue.numberInt);
+				break;
+			}
+			case ValueType::Null: {
+				theString += "null";
+				break;
+			}
+			case ValueType::Null_Ext: {
+				theString += "[]";
+				break;
+			}
+		}
+		return theString;
+	}
+
+	JsonObject::operator std::string() const noexcept {
+		std::string theString{};
+		switch (this->theType) {
+			case ValueType::Object: {
+				if (this->theValue.object->empty()) {
+					theString += "{}";
+				}
+
+				theString += '{';
+
+				size_t theIndex{};
+				for (auto iterator = this->theValue.object->cbegin(); iterator != this->theValue.object->cend(); ++iterator) {
+					theString += '\"';
+					theString += iterator->first;
+					theString += "\":";
+					theString += static_cast<std::string>(iterator->second);
+					if (theIndex < this->theValue.object->size() - 1) {
+						theString += ',';
+					}
+					theIndex++;
+				}
+				theString += '}';
+				break;
+			}
+			case ValueType::Array: {
+				if (this->theValue.array->empty()) {
+					theString += "[]";
+					break;
+				}
+
+				theString += '[';
+
+				for (auto iterator = this->theValue.array->cbegin(); iterator != this->theValue.array->cend() - 1; ++iterator) {
+					theString += *iterator;
+					theString += ',';
+				}
+
+				theString += this->theValue.array->back();
+
+				theString += ']';
+				break;
+			}
+
+			case ValueType::String: {
+				theString += '\"';
+				theString += *this->theValue.string;
+				theString += '\"';
+				break;
+			}
+			case ValueType::Bool: {
+				std::stringstream theStream{};
+				theStream << std::boolalpha << this->theValue.boolean;
+				theString += theStream.str();
+				break;
+			}
+			case ValueType::Float: {
+				theString += std::to_string(this->theValue.numberDouble);
+				break;
+			}
+			case ValueType::Uint64: {
+				theString += std::to_string(this->theValue.numberUint);
+				break;
+			}
+			case ValueType::Int64: {
+				theString += std::to_string(this->theValue.numberInt);
+				break;
+			}
+			case ValueType::Null: {
+				theString += "null";
+				break;
+			}
+			case ValueType::Null_Ext: {
+				theString += "[]";
+				break;
+			}
+		}
+		return theString;
+	}
+
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void )) {
 		outputSttream << theFunction();

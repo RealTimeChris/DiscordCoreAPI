@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 		std::string token{};///< The user's access token.
 		std::string nick{};///< The user's nickname.
 
-		operator JsonObject();
+		operator std::string();
 	};
 
 	/// For removing a User from a group Dm. \brief For removing a User from a group Dm.

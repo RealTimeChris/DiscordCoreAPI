@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 
 		CreateMessageData() noexcept = default;
 
-		operator JsonObject();
+		operator std::string();
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 
 		EditMessageData(RespondToInputEventData dataPackage);
 
-		operator JsonObject();
+		operator std::string();
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
@@ -129,7 +129,7 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< Channel within which to delete the Messages.
 		std::string reason{};///< The reason for deleting the Messages.
 
-		operator JsonObject();
+		operator std::string();
 	};
 
 	/// For getting a collection of pinned Messages. \brief For getting a collection of pinned Messages.

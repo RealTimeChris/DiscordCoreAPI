@@ -328,7 +328,7 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, int32_t currentShardNew,
-		std::atomic_bool* doWeQuitNew) noexcept
+		std::atomic_bool* doWeQuitNew) 
 		: WebSocketMessageHandler(&theClient->configManager) {
 		this->configManager = &theClient->configManager;
 		this->shard[0] = currentShardNew;
@@ -358,7 +358,7 @@ namespace DiscordCoreInternal {
 				dataPackage.selfDeaf = doWeCollect.selfDeaf;
 				dataPackage.selfMute = doWeCollect.selfMute;
 				this->userId = doWeCollect.userId;
-				std::string newData = dataPackage.operator DiscordCoreAPI::JsonObject();
+				std::string newData = dataPackage.operator std::string();
 				std::string theString = this->stringifyJsonData(newData, this->dataOpCode);
 				bool didWeWrite{ false };
 				if (!this->sendMessage(theString, true)) {
@@ -368,7 +368,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				dataPackage.channelId = static_cast<VoiceConnectInitData>(doWeCollect).channelId;
-				newData = dataPackage.operator DiscordCoreAPI::JsonObject();
+				newData = dataPackage.operator std::string();
 				std::string theString02 = this->stringifyJsonData(newData, this->dataOpCode);
 				this->areWeCollectingData = true;
 				if (!this->sendMessage(theString02, true)) {
@@ -1384,7 +1384,7 @@ namespace DiscordCoreInternal {
 									resumeData.botToken = this->configManager->getBotToken();
 									resumeData.sessionId = this->sessionId;
 									resumeData.lastNumberReceived = this->lastNumberReceived;
-									std::string resumePayload = resumeData.operator DiscordCoreAPI::JsonObject();
+									std::string resumePayload = resumeData.operator std::string();
 									std::string theString = this->stringifyJsonData(resumePayload, this->dataOpCode);
 									if (!this->sendMessage(theString, true)) {
 										returnValue = true;
@@ -1397,7 +1397,7 @@ namespace DiscordCoreInternal {
 									identityData.numberOfShards = this->shard[1];
 									identityData.intents = static_cast<int64_t>(this->configManager->getGatewayIntents());
 									identityData.presence = this->configManager->getPresenceData();
-									std::string identityJson = identityData.operator DiscordCoreAPI::JsonObject();
+									std::string identityJson = identityData.operator std::string();
 									std::string theString = this->stringifyJsonData(identityJson, this->dataOpCode);
 									if (!this->sendMessage(theString, true)) {
 										returnValue = true;

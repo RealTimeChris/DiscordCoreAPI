@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 		this->webHookId = dataNew.id;
 	}
 
-	ExecuteWebHookData::operator JsonObject() {
+	ExecuteWebHookData::operator std::string() {
 		JsonObject theData{};
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
 			theData["allowed_mentions"] = this->allowedMentions;
@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 		this->webHookId = dataNew.id;
 	}
 
-	EditWebHookData::operator JsonObject() {
+	EditWebHookData::operator std::string() {
 		JsonObject theData{};
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
 			theData["allowed_mentions"] = this->allowedMentions;
@@ -398,9 +398,9 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage.operator DiscordCoreAPI::JsonObject(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage.operator std::string(), dataPackage.files);
 		} else {
-			workload.content = dataPackage.operator JsonObject();
+			workload.content = dataPackage.operator std::string();
 		}
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -427,9 +427,9 @@ namespace DiscordCoreAPI {
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage.operator DiscordCoreAPI::JsonObject(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage.operator std::string(), dataPackage.files);
 		} else {
-			workload.content = dataPackage.operator JsonObject();
+			workload.content = dataPackage.operator std::string();
 		}
 		workload.callStack = "WebHooks::editWebHookMessageAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);

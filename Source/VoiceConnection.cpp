@@ -364,7 +364,7 @@ namespace DiscordCoreAPI {
 			theData.type = DiscordCoreInternal::SendSpeakingType::Microphone;
 			theData.delay = 0;
 			theData.ssrc = this->audioSSRC;
-			std::string newString = theData.operator DiscordCoreAPI::JsonObject();
+			std::string newString = theData.operator std::string();
 			std::string theString = this->stringifyJsonData(newString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			if (!this->sendTextMessage(theString, true)) {
 				this->onClosed();
@@ -824,7 +824,7 @@ namespace DiscordCoreAPI {
 				DiscordCoreInternal::VoiceIdentifyData identifyData{};
 				identifyData.connectInitData = this->voiceConnectInitData;
 				identifyData.connectionData = this->voiceConnectionData;
-				std::string theData{ identifyData.operator DiscordCoreAPI::JsonObject() };
+				std::string theData{ identifyData.operator std::string() };
 				std::string sendVector = this->stringifyJsonData(theData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendTextMessage(sendVector, true)) {
 					this->currentReconnectTries++;
@@ -870,7 +870,7 @@ namespace DiscordCoreAPI {
 				protocolPayloadData.voiceEncryptionMode = this->audioEncryptionMode;
 				protocolPayloadData.externalIp = this->externalIp;
 				protocolPayloadData.voicePort = this->port;
-				std::string protocolPayloadSelectString = protocolPayloadData.operator DiscordCoreAPI::JsonObject();
+				std::string protocolPayloadSelectString = protocolPayloadData.operator std::string();
 				std::string sendVector = this->stringifyJsonData(protocolPayloadSelectString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendTextMessage(sendVector, true)) {
 					this->currentReconnectTries++;

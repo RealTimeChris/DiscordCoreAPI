@@ -111,7 +111,7 @@ namespace DiscordCoreAPI {
 		std::string name{};///< Name of the emoji.
 		ImageType type{};///< The type of image being uploaded.
 
-		operator JsonObject();
+		operator std::string();
 
 	  protected:
 		std::string imageDataFinal{};
@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< Reason for modifying the Emoji.
 		std::string name{};///< Name of the Emoji.
 
-		operator JsonObject();
+		operator std::string();
 	};
 
 	/// For deleting a Guild Emoji.
