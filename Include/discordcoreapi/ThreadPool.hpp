@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 	using TimeElapsedHandlerNoArgs = std::function<void(void)>;
 
-	constexpr float thePercentage{ 10.0f / 100.0f };
+	constexpr Float thePercentage{ 10.0f / 100.0f };
 
 	class DiscordCoreAPI_Dll ThreadPool {
 	  public:
@@ -54,14 +54,14 @@ namespace DiscordCoreAPI {
 
 		ThreadPool() noexcept = default;
 
-		static std::string storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval);
+		static String storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, Int64 timeInterval);
 
 		template<typename... ArgTypes>
-		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeDelay, bool blockForCompletion, ArgTypes... args) {
+		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, Int64 timeDelay, Bool blockForCompletion, ArgTypes... args) {
 			std::jthread theThread = std::jthread([=](std::stop_token stopToken) {
 				StopWatch stopWatch{ std::chrono::milliseconds{ timeDelay } };
 				stopWatch.resetTimer();
-				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeDelay) * thePercentage)) });
+				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<Int64>(std::ceil(static_cast<Float>(timeDelay) * thePercentage)) });
 				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
 					std::this_thread::sleep_for(1ms);
 				}
@@ -84,12 +84,12 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void stopThread(const std::string& theKey);
+		void stopThread(const String& theKey);
 
 		~ThreadPool() noexcept = default;
 
 	  protected:
-		static std::unordered_map<std::string, std::jthread> threads;
+		static std::unordered_map<String, std::jthread> threads;
 	};
 }
 
@@ -104,7 +104,7 @@ namespace DiscordCoreInternal {
 
 		~WorkerThread() noexcept = default;
 
-		std::atomic_bool areWeCurrentlyWorking{ false };
+		AtomicBool areWeCurrentlyWorking{ false };
 		std::jthread theThread{};
 	};
 
@@ -118,14 +118,14 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::deque<std::coroutine_handle<>> theCoroutineHandles{};
-		std::unordered_map<int64_t, WorkerThread> workerThreads{};
-		std::atomic_int64_t coroHandleCount{ 0 };
-		std::atomic_int64_t currentCount{ 0 };
-		std::atomic_int64_t currentIndex{ 0 };
-		std::atomic_uint32_t threadCount{};
+		std::unordered_map<Int64, WorkerThread> workerThreads{};
+		AtomicInt64 coroHandleCount{ 0 };
+		AtomicInt64 currentCount{ 0 };
+		AtomicInt64 currentIndex{ 0 };
+		AtomicUint32 threadCount{};
 		std::mutex theMutex{};
 
-		void threadFunction(std::stop_token stopToken, int64_t theIndex);
+		void threadFunction(std::stop_token stopToken, Int64 theIndex);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

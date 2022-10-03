@@ -8,7 +8,7 @@ Skip {#Skip}
 namespace DiscordCoreAPI {
 	class Skip : public BaseFunction {
 	  public:
-		static std::unordered_map<uint64_t, int64_t> timeOfLastSkip;
+		static std::unordered_map<Uint64, Int64> timeOfLastSkip;
 
 		Skip() {
 			this->commandName = "skip";
@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 				Guild guild = Guilds::getCachedGuildAsync({ .guildId = newArgs.eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild);
 
-				bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
+				Bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
 				if (!areWeAllowed) {
 					return;
@@ -41,15 +41,15 @@ namespace DiscordCoreAPI {
 				GuildMember guildMember =
 					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
-				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
+				Bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 
 				if (!doWeHaveControl) {
 					return;
 				}
 				InputEventData newEvent = newArgs.eventData;
 
-				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-				int64_t previousSkippedTime{ 0 };
+				Int64 currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+				Int64 previousSkippedTime{ 0 };
 				if (Skip::timeOfLastSkip.contains(newArgs.eventData.getGuildId())) {
 					previousSkippedTime = Skip::timeOfLastSkip.at(newArgs.eventData.getGuildId());
 				}
@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				if (voiceStateData.channelId == 0 || voiceStateData.channelId.operator size_t() != voiceConnection->getChannelId()) {
+				if (voiceStateData.channelId == 0 || voiceStateData.channelId != voiceConnection->getChannelId()) {
 					EmbedData newEmbed{};
 					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (!guild.areWeConnected() || !SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					std::string msgString = "------\n**There's no music playing to be skipped!**\n------";
+					String msgString = "------\n**There's no music playing to be skipped!**\n------";
 					EmbedData msgEmbed;
 					msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					msgEmbed.setColor(discordGuild.data.borderColor);
@@ -136,7 +136,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (!SongAPI::isThereAnySongs(guild.id)) {
-					std::string msgString = "------\n**There's no more songs for us to skip to!**\n------";
+					String msgString = "------\n**There's no more songs for us to skip to!**\n------";
 					EmbedData msgEmbed02;
 					msgEmbed02.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					msgEmbed02.setColor(discordGuild.data.borderColor);
@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 					return;
 				} else {
 					if (SongAPI::areWeCurrentlyPlaying(guild.id) && SongAPI::isThereAnySongs(guild.id)) {
-						std::string msgString = "------\n**We're skipping to the next song!**\n------";
+						String msgString = "------\n**We're skipping to the next song!**\n------";
 						EmbedData msgEmbed02{};
 						msgEmbed02.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl())
 							.setColor(discordGuild.data.borderColor)
@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
 						InputEvents::respondToInputEventAsync(dataPackage02).get();
 						return;
 					} else {
-						std::string msgString = "------\n**There's no music playing to be skipped!**\n------";
+						String msgString = "------\n**There's no music playing to be skipped!**\n------";
 						EmbedData msgEmbed02;
 						msgEmbed02.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 						msgEmbed02.setColor(discordGuild.data.borderColor);
@@ -207,6 +207,6 @@ namespace DiscordCoreAPI {
 		}
 		~Skip(){};
 	};
-	std::unordered_map<uint64_t, int64_t> Skip::timeOfLastSkip{};
+	std::unordered_map<Uint64, Int64> Skip::timeOfLastSkip{};
 }
 ```

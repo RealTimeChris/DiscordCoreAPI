@@ -39,7 +39,7 @@
 
 namespace DiscordCoreInternal {
 
-	WebSocketResumeData::operator std::string() {
+	WebSocketResumeData::operator String() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 6;
 		theData["d"]["seq"] = this->lastNumberReceived;
@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	WebSocketIdentifyData::operator std::string() {
+	WebSocketIdentifyData::operator String() {
 		DiscordCoreAPI::JsonObject theSerializer{};
 		theSerializer["d"]["intents"] = this->intents;
 		theSerializer["d"]["large_threshold"] = 250;
@@ -81,7 +81,7 @@ namespace DiscordCoreInternal {
 		return theSerializer;
 	}
 
-	VoiceSocketProtocolPayloadData::operator std::string() {
+	VoiceSocketProtocolPayloadData::operator String() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 1;
 		theData["d"]["protocol"] = "udp";
@@ -91,15 +91,15 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	UpdatePresenceData::operator std::string() {
+	UpdatePresenceData::operator String() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 3;
 		for (auto& value: this->activities) {
 			DiscordCoreAPI::JsonObject theDataNew{};
 			if (value.url != "") {
-				theDataNew["url"] = std::string{ value.url };
+				theDataNew["url"] = String{ value.url };
 			}
-			theDataNew["name"] = std::string{ value.name };
+			theDataNew["name"] = String{ value.name };
 			theDataNew["type"] = value.type;
 			theData["d"]["activities"].pushBack(theDataNew);
 		}
@@ -111,7 +111,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	VoiceIdentifyData::operator std::string() {
+	VoiceIdentifyData::operator String() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 0;
 		theData["d"]["session_id"] = this->connectionData.sessionId;
@@ -121,7 +121,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	SendSpeakingData::operator std::string() {
+	SendSpeakingData::operator String() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 5;
 		theData["d"]["speaking"] = this->type;
@@ -151,8 +151,8 @@ namespace DiscordCoreInternal {
 
 	HttpsWorkloadData::HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType) noexcept {
 		if (!HttpsWorkloadData::workloadIdsExternal.contains(theType)) {
-			std::unique_ptr<std::atomic_int64_t> theInt{ std::make_unique<std::atomic_int64_t>() };
-			std::unique_ptr<std::atomic_int64_t> theInt02{ std::make_unique<std::atomic_int64_t>() };
+			std::unique_ptr<AtomicInt64> theInt{ std::make_unique<AtomicInt64>() };
+			std::unique_ptr<AtomicInt64> theInt02{ std::make_unique<AtomicInt64>() };
 			HttpsWorkloadData::workloadIdsExternal[theType] = std::move(theInt);
 			HttpsWorkloadData::workloadIdsInternal[theType] = std::move(theInt02);
 		}
@@ -160,14 +160,14 @@ namespace DiscordCoreInternal {
 		this->workloadType = theType;
 	}
 
-	int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept {
-		int64_t theValue{ HttpsWorkloadData::workloadIdsExternal[workloadType]->load() };
+	Int64 HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept {
+		Int64 theValue{ HttpsWorkloadData::workloadIdsExternal[workloadType]->load() };
 		HttpsWorkloadData::workloadIdsExternal[workloadType]->store(theValue + 1);
 		return theValue;
 	}
 
-	std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsExternal{};
-	std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsInternal{};
+	std::unordered_map<HttpsWorkloadType, std::unique_ptr<AtomicInt64>> HttpsWorkloadData::workloadIdsExternal{};
+	std::unordered_map<HttpsWorkloadType, std::unique_ptr<AtomicInt64>> HttpsWorkloadData::workloadIdsInternal{};
 
 	HelloData::HelloData(simdjson::ondemand::value jsonObjectData) {
 		this->heartbeatInterval = DiscordCoreAPI::getUint64(jsonObjectData, "heartbeat_interval");
@@ -210,8 +210,8 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
-		TimeStamp<std::chrono::milliseconds> timeStamp{ (static_cast<uint64_t>(this->id) >> 22) + 1420070400000, timeFormat };
+	String DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
+		TimeStamp<std::chrono::milliseconds> timeStamp{ (static_cast<Uint64>(this->id) >> 22) + 1420070400000, timeFormat };
 		return timeStamp;
 	}
 
@@ -223,7 +223,7 @@ namespace DiscordCoreAPI {
 
 	UserData::UserData(simdjson::ondemand::value jsonObjectData) {
 		this->id = getId(jsonObjectData, "id");
-		if (this->id.operator size_t() == 0) {
+		if (this->id == 0) {
 			return;
 		}
 
@@ -244,8 +244,8 @@ namespace DiscordCoreAPI {
 		this->discriminator = getString(jsonObjectData, "discriminator");
 	}
 
-	std::string UserData::getAvatarUrl() {
-		std::string theStringNew{ "https://cdn.discordapp.com/" };
+	String UserData::getAvatarUrl() {
+		String theStringNew{ "https://cdn.discordapp.com/" };
 		theStringNew += "avatars/" + std::to_string(this->id) + "/" + this->avatar.getIconHash();
 		return theStringNew;
 	}
@@ -471,13 +471,13 @@ namespace DiscordCoreAPI {
 
 		this->name = getString(jsonObjectData, "name");
 
-		std::stringstream theStream{};
+		StringStream theStream{};
 		theStream << getString(jsonObjectData, "unicode_emoji");
 		for (auto& value: theStream.str()) {
 			this->unicodeEmoji.emplace_back(value);
 		}
 		if (this->unicodeEmoji.size() > 3) {
-			this->unicodeEmoji = static_cast<std::string>(this->unicodeEmoji).substr(1, this->unicodeEmoji.size() - 3);
+			this->unicodeEmoji = static_cast<String>(this->unicodeEmoji).substr(1, this->unicodeEmoji.size() - 3);
 		}
 
 		this->guildId = getId(jsonObjectData, "guild_id");
@@ -540,7 +540,7 @@ namespace DiscordCoreAPI {
 		PresenceUpdateFlags theFlags{};
 		parseObject(jsonObjectData, theFlags);
 
-		this->theStatus |= static_cast<uint8_t>(theFlags);
+		this->theStatus |= static_cast<Uint8>(theFlags);
 	}
 
 	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
@@ -578,7 +578,7 @@ namespace DiscordCoreAPI {
 			if (theResult == simdjson::error_code::SUCCESS) {
 				this->roles.clear();
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-					this->roles.emplace_back(stoull(std::string{ value.get_string().take_value() }));
+					this->roles.emplace_back(stoull(String{ value.get_string().take_value() }));
 				}
 			}
 		} catch (...) {
@@ -602,9 +602,9 @@ namespace DiscordCoreAPI {
 		this->nick = getString(jsonObjectData, "nick");
 	}
 
-	std::string GuildMemberData::getAvatarUrl() {
+	String GuildMemberData::getAvatarUrl() {
 		if (this->avatar.getIconHash() != "") {
-			std::string theStringNew{ "https://cdn.discordapp.com/" };
+			String theStringNew{ "https://cdn.discordapp.com/" };
 			theStringNew += "guilds/" + std::to_string(this->guildId) + "/users/" + std::to_string(this->id) + "/avatars/" + this->avatar.getIconHash();
 			return theStringNew;
 		} else {
@@ -613,7 +613,7 @@ namespace DiscordCoreAPI {
 	}
 
 	UserData GuildMemberData::getUserData() {
-		if (this->id.operator size_t() != 0) {
+		if (this->id != 0) {
 			return Users::getCachedUserAsync({ .userId = this->id }).get();
 		} else {
 			return {};
@@ -763,7 +763,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->exemptRoles.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->exemptRoles.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value() }));
+				this->exemptRoles.emplace_back(DiscordCoreAPI::strtoull(String{ value.get_string().take_value() }));
 			}
 		}
 
@@ -771,7 +771,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->exemptChannels.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->exemptChannels.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value() }));
+				this->exemptChannels.emplace_back(DiscordCoreAPI::strtoull(String{ value.get_string().take_value() }));
 			}
 		}
 
@@ -1039,7 +1039,7 @@ namespace DiscordCoreAPI {
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->scopes.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->scopes.emplace_back(std::string{ value.get_string().take_value() });
+				this->scopes.emplace_back(String{ value.get_string().take_value() });
 			}
 		}
 
@@ -1288,31 +1288,31 @@ namespace DiscordCoreAPI {
 		this->id = getId(jsonObjectData, "id");
 	}
 
-	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute, StreamType streamTypeNew,
+	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, Bool selfDeaf, Bool selfMute, StreamType streamTypeNew,
 		StreamInfo streamInfoNew) {
 		if (DiscordCoreClient::getVoiceConnection(this->id) && DiscordCoreClient::getVoiceConnection(this->id)->areWeConnected()) {
 			this->voiceConnectionPtr = DiscordCoreClient::getVoiceConnection(this->id);
 			return this->voiceConnectionPtr;
-		} else if (static_cast<Snowflake>(guildMemberId).operator size_t() != 0 || static_cast<Snowflake>(channelId).operator size_t() != 0) {
+		} else if (static_cast<Snowflake>(guildMemberId) != 0 || static_cast<Snowflake>(channelId) != 0) {
 			Snowflake theChannelId{};
-			if (static_cast<Snowflake>(guildMemberId).operator size_t() != 0) {
+			if (static_cast<Snowflake>(guildMemberId) != 0) {
 				auto guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = guildMemberId, .guildId = this->id }).get();
-				if (guildMember.voiceChannelId.operator size_t() != 0) {
+				if (guildMember.voiceChannelId != 0) {
 					theChannelId = guildMember.voiceChannelId;
 				}
 			} else {
 				theChannelId = channelId;
 			}
-			uint64_t theShardId{ (this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount() };
-			auto theBaseSocketAgentIndex{ static_cast<int32_t>(floor(static_cast<float>(theShardId) /
-				static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount()) * this->discordCoreClient->baseSocketAgentMap.size())) };
+			Uint64 theShardId{ (this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount() };
+			auto theBaseSocketAgentIndex{ static_cast<Int32>(floor(static_cast<Float>(theShardId) /
+				static_cast<Float>(this->discordCoreClient->configManager.getTotalShardCount()) * this->discordCoreClient->baseSocketAgentMap.size())) };
 			DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.currentShard = theShardId;
 			voiceConnectInitData.streamType = streamTypeNew;
 			voiceConnectInitData.streamInfo = streamInfoNew;
-			voiceConnectInitData.channelId = std::to_string(theChannelId);
-			voiceConnectInitData.guildId = std::to_string(this->id);
-			voiceConnectInitData.userId = std::to_string(this->discordCoreClient->getBotUser().id);
+			voiceConnectInitData.channelId = theChannelId;
+			voiceConnectInitData.guildId = this->id;
+			voiceConnectInitData.userId = this->discordCoreClient->getBotUser().id;
 			voiceConnectInitData.selfDeaf = selfDeaf;
 			voiceConnectInitData.selfMute = selfMute;
 			StopWatch theStopWatch{ 10000ms };
@@ -1330,20 +1330,20 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string GuildData::getIconUrl() noexcept {
-		std::string theStringNew{ "https://cdn.discordapp.com/" };
+	String GuildData::getIconUrl() noexcept {
+		String theStringNew{ "https://cdn.discordapp.com/" };
 		theStringNew += "icons/" + std::to_string(this->id) + "/" + this->icon.getIconHash() + ".png";
 		return theStringNew;
 	}
 
-	bool GuildData::areWeConnected() {
+	Bool GuildData::areWeConnected() {
 		return DiscordCoreClient::getVoiceConnection(this->id)->areWeConnected();
 	}
 
 	void GuildData::disconnect() {
 		if (DiscordCoreClient::getVoiceConnection(this->id)) {
 			UpdateVoiceStateData updateVoiceData{};
-			updateVoiceData.channelId = "";
+			updateVoiceData.channelId = 0;
 			updateVoiceData.selfDeaf = false;
 			updateVoiceData.selfMute = false;
 			updateVoiceData.guildId = this->id;
@@ -1838,13 +1838,13 @@ namespace DiscordCoreAPI {
 	}
 
 	ApplicationCommandOptionChoiceData::ApplicationCommandOptionChoiceData(simdjson::ondemand::value jsonObjectData) {
-		std::string_view theString{};
+		StringView theString{};
 		auto theResult01 = jsonObjectData["value"].get(theString);
-		uint64_t theInt{};
+		Uint64 theInt{};
 		auto theResult02 = jsonObjectData["value"].get(theInt);
-		bool theBool{};
+		Bool theBool{};
 		auto theResult03 = jsonObjectData["value"].get(theBool);
-		double theDouble{};
+		Double theDouble{};
 		auto theResult04 = jsonObjectData["value"].get(theDouble);
 
 		if (theResult01 == simdjson::error_code::SUCCESS) {
@@ -1975,7 +1975,7 @@ namespace DiscordCoreAPI {
 
 		this->quality = getString(jsonObjectData, "quality");
 
-		std::string theString = getString(jsonObjectData, "signatureCipher");
+		String theString = getString(jsonObjectData, "signatureCipher");
 		if (theString == "") {
 			theString = getString(jsonObjectData, "cipher");
 		}
@@ -1983,12 +1983,12 @@ namespace DiscordCoreAPI {
 		this->signatureCipher = theString;
 
 		auto ampersandSpFind = this->signatureCipher.find("&sp");
-		if (ampersandSpFind != std::string::npos) {
+		if (ampersandSpFind != String::npos) {
 			this->signature = this->signatureCipher.substr(0, ampersandSpFind);
 		}
 
 		auto urlFind = this->signatureCipher.find("url");
-		if (urlFind != std::string::npos) {
+		if (urlFind != String::npos) {
 			this->downloadUrl = this->signatureCipher.substr(urlFind + 4);
 		} else {
 			this->downloadUrl = getString(jsonObjectData, "url");
@@ -2053,21 +2053,21 @@ namespace DiscordCoreAPI {
 		auto theResult = jsonObjectData["parse"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->parse.emplace_back(static_cast<std::string>(value.get_string().value()));
+				this->parse.emplace_back(static_cast<String>(value.get_string().value()));
 			}
 		}
 
 		theResult = jsonObjectData["roles"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->roles.emplace_back(static_cast<std::string>(value.get_string().value()));
+				this->roles.emplace_back(static_cast<String>(value.get_string().value()));
 			}
 		}
 
 		theResult = jsonObjectData["users"].get(theArray);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->users.emplace_back(static_cast<std::string>(value.get_string().value()));
+				this->users.emplace_back(static_cast<String>(value.get_string().value()));
 			}
 		}
 
@@ -2691,7 +2691,7 @@ namespace DiscordCoreAPI {
 		}
 
 		this->value.theType = ValueType::Null;
-		bool theBool{};
+		Bool theBool{};
 		theResult = jsonObjectData["value"].get(theBool);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->value.theType = ValueType::Bool;
@@ -2699,7 +2699,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		uint64_t theInteger{};
+		Uint64 theInteger{};
 		theResult = jsonObjectData["value"].get(theInteger);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->value.theType = ValueType::Uint64;
@@ -2707,7 +2707,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		std::string_view theString{};
+		StringView theString{};
 		theResult = jsonObjectData["value"].get(theString);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->value.theType = ValueType::String;
@@ -2715,7 +2715,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		double theFloat{};
+		Double theFloat{};
 		theResult = jsonObjectData["value"].get(theFloat);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->value.theType = ValueType::Float;
@@ -2750,7 +2750,7 @@ namespace DiscordCoreAPI {
 	}
 
 	InteractionDataData::InteractionDataData(simdjson::ondemand::value jsonObjectData) {
-		std::string_view theObject{};
+		StringView theObject{};
 		auto theResult = jsonObjectData["id"].get(theObject);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->applicationCommandData = ApplicationCommandInteractionData{ jsonObjectData };
@@ -2762,7 +2762,7 @@ namespace DiscordCoreAPI {
 			this->userInteractionData = UserCommandInteractionData{ jsonObjectData };
 		}
 
-		uint64_t componentType{};
+		Uint64 componentType{};
 		theResult = jsonObjectData["component_type"].get(componentType);
 		if (theResult == simdjson::error_code::SUCCESS) {
 			this->componentData = ComponentInteractionData{ jsonObjectData };
@@ -2912,21 +2912,21 @@ namespace DiscordCoreAPI {
 	Song::Song(simdjson::ondemand::value jsonObjectData) {
 		try {
 			this->duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData"), "label");
-			std::string newString = getString(getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0), "text");
+			String newString = getString(getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0), "text");
 			if (newString.size() > 256) {
 				newString = newString.substr(0, 256);
 			}
 			this->description = utf8MakeValid(newString);
 
 			this->thumbnailUrl = getString(getObject(getArray(getObject(jsonObjectData, "thumbnail"), "thumbnails"), 0), "url");
-			std::string newTitle01 = getString(getObject(getArray(getObject(jsonObjectData, "title"), "runs"), 0), "text");
+			String newTitle01 = getString(getObject(getArray(getObject(jsonObjectData, "title"), "runs"), 0), "text");
 			if (newTitle01.size() > 256) {
 				newTitle01 = newTitle01.substr(0, 256);
 			}
 			if (newTitle01.size() > 0) {
 				this->songTitle = utf8MakeValid(newTitle01);
 			}
-			std::string newTitle02 = getString(getObject(jsonObjectData, "title"), "simpleText");
+			String newTitle02 = getString(getObject(jsonObjectData, "title"), "simpleText");
 			if (newTitle02.size() > 256) {
 				newTitle02 = newTitle02.substr(0, 256);
 			}
@@ -2953,7 +2953,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 
-			bool isItFound{ false };
+			Bool isItFound{ false };
 			for (auto& value: theMedia) {
 				if (value.thePreset == "opus_0_0") {
 					isItFound = true;
@@ -2962,7 +2962,7 @@ namespace DiscordCoreAPI {
 					this->doWeGetSaved = true;
 				}
 			}
-			bool isItFound2{ false };
+			Bool isItFound2{ false };
 			if (!isItFound) {
 				for (auto& value: theMedia) {
 					if (value.thePreset == "mp3_0_0") {
@@ -3006,7 +3006,7 @@ namespace DiscordCoreAPI {
 				this->thumbnailUrl = newString;
 			}
 
-			uint32_t theDuration = getUint32(jsonObjectData, "duration");
+			Uint32 theDuration = getUint32(jsonObjectData, "duration");
 			if (theDuration != 0) {
 				this->duration = TimeStamp<std::chrono::milliseconds>::convertMsToDurationString(theDuration);
 			}
@@ -3048,7 +3048,7 @@ namespace DiscordCoreAPI {
 		for (auto& value2: this->fields) {
 			theData["fields"].pushBack(value2);
 		}
-		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
+		String realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
 		theData["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
 		theData["footer"]["icon_url"] = this->footer.iconUrl;
 		theData["footer"]["text"] = escapeCharacters(this->footer.text);
@@ -3079,24 +3079,24 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	EmbedData& EmbedData::setAuthor(const std::string& authorName, const std::string& authorAvatarUrl) {
+	EmbedData& EmbedData::setAuthor(const String& authorName, const String& authorAvatarUrl) {
 		this->author.name = authorName;
 		this->author.iconUrl = authorAvatarUrl;
 		return *this;
 	}
 
-	EmbedData& EmbedData::setFooter(const std::string& footerText, const std::string& footerIconUrlText) {
+	EmbedData& EmbedData::setFooter(const String& footerText, const String& footerIconUrlText) {
 		this->footer.text = footerText;
 		this->footer.iconUrl = footerIconUrlText;
 		return *this;
 	}
 
-	EmbedData& EmbedData::setTimeStamp(const std::string& timeStamp) {
+	EmbedData& EmbedData::setTimeStamp(const String& timeStamp) {
 		this->timestamp = timeStamp;
 		return *this;
 	}
 
-	EmbedData& EmbedData::addField(const std::string& name, const std::string& value, bool Inline) {
+	EmbedData& EmbedData::addField(const String& name, const String& value, Bool Inline) {
 		EmbedFieldData field{};
 		field.Inline = Inline;
 		field.value = value;
@@ -3105,32 +3105,32 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	EmbedData& EmbedData::setDescription(const std::string& descriptionNew) {
+	EmbedData& EmbedData::setDescription(const String& descriptionNew) {
 		this->description = descriptionNew;
 		return *this;
 	}
 
-	EmbedData& EmbedData::setColor(const std::string& hexColorValueNew) {
+	EmbedData& EmbedData::setColor(const String& hexColorValueNew) {
 		this->hexColorValue = hexColorValueNew;
 		return *this;
 	}
 
-	EmbedData& EmbedData::setThumbnail(const std::string& thumbnailUrl) {
+	EmbedData& EmbedData::setThumbnail(const String& thumbnailUrl) {
 		this->thumbnail.url = thumbnailUrl;
 		return *this;
 	}
 
-	EmbedData& EmbedData::setTitle(const std::string& titleNew) {
+	EmbedData& EmbedData::setTitle(const String& titleNew) {
 		this->title = titleNew;
 		return *this;
 	}
 
-	EmbedData& EmbedData::setImage(const std::string& imageUrl) {
+	EmbedData& EmbedData::setImage(const String& imageUrl) {
 		this->image.url = imageUrl;
 		return *this;
 	}
 
-	MessageReferenceData::operator std::string() {
+	MessageReferenceData::operator String() {
 		JsonObject theData{};
 		theData["fail_if_not_exists"] = this->failIfNotExists;
 		theData["message_id"] = std::to_string(this->messageId);
@@ -3147,7 +3147,7 @@ namespace DiscordCoreAPI {
 		return this->theBanDatas;
 	}
 
-	UpdateVoiceStateData::operator std::string() {
+	UpdateVoiceStateData::operator String() {
 		JsonObject theData{};
 		theData["op"] = 4;
 		if (this->channelId == 0) {
@@ -3278,7 +3278,7 @@ namespace DiscordCoreAPI {
 		this->data.clear();
 	}
 
-	AllowedMentionsData::operator std::string() {
+	AllowedMentionsData::operator String() {
 		JsonObject theData{};
 		for (auto& value: this->parse) {
 			theData["parse"].pushBack(value);
@@ -3301,8 +3301,8 @@ namespace DiscordCoreAPI {
 				if (valueNew.type == ComponentType::Button) {
 					JsonObject component{};
 					component["emoji"]["animated"] = valueNew.emoji.animated;
-					component["emoji"]["name"] = std::string{ valueNew.emoji.name };
-					if (valueNew.emoji.id.operator size_t() != 0) {
+					component["emoji"]["name"] = String{ valueNew.emoji.name };
+					if (valueNew.emoji.id != 0) {
 						component["emoji"]["id"] = std::to_string(valueNew.emoji.id);
 					}
 					component["custom_id"] = valueNew.customId;
@@ -3317,8 +3317,8 @@ namespace DiscordCoreAPI {
 					for (auto& value01: valueNew.options) {
 						JsonObject option{};
 						component["emoji"]["animated"] = valueNew.emoji.animated;
-						component["emoji"]["name"] = std::string{ valueNew.emoji.name };
-						if (valueNew.emoji.id.operator size_t() != 0) {
+						component["emoji"]["name"] = String{ valueNew.emoji.name };
+						if (valueNew.emoji.id != 0) {
 							component["emoji"]["id"] = std::to_string(valueNew.emoji.id);
 						}
 						option["description"] = value01.description;
@@ -3458,11 +3458,11 @@ namespace DiscordCoreAPI {
 		*this = interactionData;
 	}
 
-	std::string InputEventData::getUserName() const {
+	String InputEventData::getUserName() const {
 		return this->interactionData->user.userName;
 	}
 
-	std::string InputEventData::getAvatarUrl() const {
+	String InputEventData::getAvatarUrl() const {
 		if (this->interactionData->member.getUserData().getAvatarUrl() != "") {
 			return this->interactionData->member.getUserData().getAvatarUrl();
 		} else {
@@ -3494,7 +3494,7 @@ namespace DiscordCoreAPI {
 		return this->interactionData->channelId;
 	}
 
-	std::string InputEventData::getInteractionToken() const {
+	String InputEventData::getInteractionToken() const {
 		return this->interactionData->token;
 	}
 
@@ -3541,8 +3541,8 @@ namespace DiscordCoreAPI {
 		*this = dataPackage;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	RespondToInputEventData& RespondToInputEventData::addButton(Bool disabled, const String& customIdNew, const String& buttonLabel, ButtonStyle buttonStyle,
+		const String& emojiName, Snowflake emojiId, const String& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3553,7 +3553,7 @@ namespace DiscordCoreAPI {
 				component.type = ComponentType::Button;
 				component.emoji.name = emojiName;
 				component.label = buttonLabel;
-				component.style = static_cast<int32_t>(buttonStyle);
+				component.style = static_cast<Int32>(buttonStyle);
 				component.customId = customIdNew;
 				component.disabled = disabled;
 				component.emoji.id = emojiId;
@@ -3567,8 +3567,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues) {
+	RespondToInputEventData& RespondToInputEventData::addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options,
+		const String& placeholder, Int32 maxValues, Int32 minValues) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3592,8 +3592,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+	RespondToInputEventData& RespondToInputEventData::addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew,
+		const String& customIdNew, Bool required, Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label, const String& placeholder) {
 		this->title = topTitleNew;
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {
@@ -3605,7 +3605,7 @@ namespace DiscordCoreAPI {
 				ComponentData component{};
 				component.type = ComponentType::TextInput;
 				component.customId = customIdNew;
-				component.style = static_cast<int32_t>(inputStyle);
+				component.style = static_cast<Int32>(inputStyle);
 				component.title = titleNew;
 				component.maxLength = maxLength;
 				component.minLength = minLength;
@@ -3646,18 +3646,18 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addContent(const std::string& dataPackage) {
+	RespondToInputEventData& RespondToInputEventData::addContent(const String& dataPackage) {
 		this->content = dataPackage;
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::setTTSStatus(bool enabledTTs) {
+	RespondToInputEventData& RespondToInputEventData::setTTSStatus(Bool enabledTTs) {
 		this->tts = enabledTTs;
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(simdjson::ondemand::object theValue, const std::string& theName,
-		std::unordered_map<std::string, std::string> theNameLocalizations) {
+	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(simdjson::ondemand::object theValue, const String& theName,
+		std::unordered_map<String, String> theNameLocalizations) {
 		ApplicationCommandOptionChoiceData choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name = theName;
@@ -3691,8 +3691,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	MessageResponseBase& MessageResponseBase::addButton(Bool disabled, const String& customIdNew, const String& buttonLabel, ButtonStyle buttonStyle,
+		const String& emojiName, Snowflake emojiId, const String& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3703,7 +3703,7 @@ namespace DiscordCoreAPI {
 				component.type = ComponentType::Button;
 				component.emoji.name = emojiName;
 				component.label = buttonLabel;
-				component.style = static_cast<int32_t>(buttonStyle);
+				component.style = static_cast<Int32>(buttonStyle);
 				component.customId = customIdNew;
 				component.disabled = disabled;
 				component.emoji.id = emojiId;
@@ -3717,8 +3717,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
-		int32_t maxValues, int32_t minValues) {
+	MessageResponseBase& MessageResponseBase::addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder,
+		Int32 maxValues, Int32 minValues) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3742,8 +3742,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+	MessageResponseBase& MessageResponseBase::addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew,
+		const String& customIdNew, Bool required, Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label, const String& placeholder) {
 		this->title = topTitleNew;
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {
@@ -3755,7 +3755,7 @@ namespace DiscordCoreAPI {
 				ComponentData component{};
 				component.type = ComponentType::TextInput;
 				component.customId = customIdNew;
-				component.style = static_cast<int32_t>(inputStyle);
+				component.style = static_cast<Int32>(inputStyle);
 				component.title = titleNew;
 				component.maxLength = maxLength;
 				component.minLength = minLength;
@@ -3791,12 +3791,12 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addContent(const std::string& dataPackage) {
+	MessageResponseBase& MessageResponseBase::addContent(const String& dataPackage) {
 		this->content = dataPackage;
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::setTTSStatus(bool enabledTTs) {
+	MessageResponseBase& MessageResponseBase::setTTSStatus(Bool enabledTTs) {
 		this->tts = enabledTTs;
 		return *this;
 	}
@@ -3819,7 +3819,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	InteractionResponseData::operator std::string() {
+	InteractionResponseData::operator String() {
 		JsonObject theData{};
 		theData["type"] = this->type;
 		if (this->data.attachments.size() > 0) {
@@ -3884,7 +3884,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	void parseCommandDataOption(std::unordered_map<std::string, JsonStringValue>& theValues, ApplicationCommandInteractionDataOption& theData) {
+	void parseCommandDataOption(std::unordered_map<String, JsonStringValue>& theValues, ApplicationCommandInteractionDataOption& theData) {
 		JsonStringValue theValue{};
 		theValue.theType = theData.value.theType;
 		theValue.theValue = theData.value.theValue;
@@ -3902,10 +3902,10 @@ namespace DiscordCoreAPI {
 		if (inputEventData.interactionData->data.applicationCommandData.name != "") {
 			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
 		}
-		if (inputEventData.interactionData->data.messageInteractionData.targetId.operator size_t() != 0) {
+		if (inputEventData.interactionData->data.messageInteractionData.targetId != 0) {
 			this->optionsArgs.theValues.emplace("target_id",
 				JsonStringValue{ .theValue = std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId), .theType = ValueType::String });
-		} else if (inputEventData.interactionData->data.userInteractionData.targetId.operator size_t() != 0) {
+		} else if (inputEventData.interactionData->data.userInteractionData.targetId != 0) {
 			this->optionsArgs.theValues.emplace("target_id",
 				JsonStringValue{ .theValue = std::to_string(inputEventData.interactionData->data.userInteractionData.targetId), .theType = ValueType::String });
 		}
@@ -3927,10 +3927,10 @@ namespace DiscordCoreAPI {
 		this->discordCoreClient = discordCoreClientNew;
 	}
 
-	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,
-		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
+	MoveThroughMessagePagesData moveThroughMessagePages(const String& userID, InputEventData originalEvent, Uint32 currentPageIndex,
+		const std::vector<EmbedData>& messageEmbeds, Bool deleteAfter, Uint32 waitForMaxMs, Bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
-		uint32_t newCurrentPageIndex = currentPageIndex;
+		Uint32 newCurrentPageIndex = currentPageIndex;
 		std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };
 		if (messageEmbeds.size() > 0) {
 			dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
@@ -3985,7 +3985,7 @@ namespace DiscordCoreAPI {
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
 					newCurrentPageIndex--;
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
-					newCurrentPageIndex = static_cast<uint32_t>(messageEmbeds.size()) - 1;
+					newCurrentPageIndex = static_cast<Uint32>(messageEmbeds.size()) - 1;
 				}
 				std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
 				*dataPackage = RespondToInputEventData{ *interactionData };

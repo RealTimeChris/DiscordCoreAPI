@@ -37,35 +37,35 @@ namespace DiscordCoreInternal {
 		YouTubeRequestBuilder() noexcept = default;
 
 	  protected:
-		static std::string apiKey;
+		static String apiKey;
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		std::string baseUrl{ "https://www.youtube.com" };
+		String baseUrl{ "https://www.youtube.com" };
 		HttpsClient* httpsClient{ nullptr };
 
-		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
+		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong, Int32 currentRecursionDepth);
 
-		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
+		std::vector<DiscordCoreAPI::Song> collectSearchResults(const String& theString);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
 
-		std::string collectApiKey();
+		String collectApiKey();
 	};
 
 	class DiscordCoreAPI_Dll YouTubeAPI : public YouTubeRequestBuilder {
 	  public:
 		YouTubeAPI(DiscordCoreAPI::ConfigManager*, HttpsClient* httpsClient, const DiscordCoreAPI::Snowflake guildId);
 
-		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
+		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
 
-		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
+		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
 
-		std::vector<DiscordCoreAPI::Song> searchForSong(const std::string& searchQuery);
+		std::vector<DiscordCoreAPI::Song> searchForSong(const String& searchQuery);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
 
 	  protected:
 		DiscordCoreAPI::Snowflake guildId{};
-		const int32_t maxBufferSize{ 8192 };
+		const Int32 maxBufferSize{ 8192 };
 		DiscordCoreAPI::Song theSong{};
 	};
 

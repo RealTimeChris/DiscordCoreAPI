@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 		VoiceConnectionMap voiceConnectionMap{};
 		SoundCloudAPIMap soundCloudAPIMap{};
 		YouTubeAPIMap youtubeAPIMap{};
-		std::atomic_bool doWeQuit{ false };
+		AtomicBool doWeQuit{ false };
 	}
 
 	DiscordCoreInternal::SoundCloudAPI* DiscordCoreClient::getSoundCloudAPI(Snowflake guildId) {
@@ -64,8 +64,8 @@ namespace DiscordCoreAPI {
 		theGuildNew.id = guildId;
 		GuildData* theGuild = &Guilds::cache[theGuildNew];
 		if (!Globals::voiceConnectionMap.contains(guildId)) {
-			uint64_t theShardId{ (guildId >> 22) % theGuild->discordCoreClient->configManager.getTotalShardCount() };
-			uint64_t baseSocketIndex{ theShardId % theGuild->discordCoreClient->baseSocketAgentMap.size() };
+			Uint64 theShardId{ (guildId >> 22) % theGuild->discordCoreClient->configManager.getTotalShardCount() };
+			Uint64 baseSocketIndex{ theShardId % theGuild->discordCoreClient->baseSocketAgentMap.size() };
 			auto baseSocketAgent = theGuild->discordCoreClient->baseSocketAgentMap[baseSocketIndex].get();
 			Globals::voiceConnectionMap[guildId] = std::make_unique<VoiceConnection>(baseSocketAgent, baseSocketAgent->theShardMap[theShardId].get(),
 				DiscordCoreInternal::VoiceConnectInitData{}, &theGuild->discordCoreClient->configManager, &Globals::doWeQuit, StreamType::None);
@@ -85,19 +85,19 @@ namespace DiscordCoreAPI {
 		Globals::doWeQuit.store(true);
 	}
 
-	SIGTERMError::SIGTERMError(std::string theString) : std::runtime_error(theString){};
+	SIGTERMError::SIGTERMError(String theString) : std::runtime_error(theString){};
 
-	SIGSEGVError::SIGSEGVError(std::string theString) : std::runtime_error(theString){};
+	SIGSEGVError::SIGSEGVError(String theString) : std::runtime_error(theString){};
 
-	SIGINTError::SIGINTError(std::string theString) : std::runtime_error(theString){};
+	SIGINTError::SIGINTError(String theString) : std::runtime_error(theString){};
 
-	SIGILLError::SIGILLError(std::string theString) : std::runtime_error(theString){};
+	SIGILLError::SIGILLError(String theString) : std::runtime_error(theString){};
 
-	SIGABRTError::SIGABRTError(std::string theString) : std::runtime_error(theString){};
+	SIGABRTError::SIGABRTError(String theString) : std::runtime_error(theString){};
 
-	SIGFPEError::SIGFPEError(std::string theString) : std::runtime_error(theString){};
+	SIGFPEError::SIGFPEError(String theString) : std::runtime_error(theString){};
 
-	void signalHandler(int32_t theValue) {
+	void signalHandler(Int32 theValue) {
 		try {
 			switch (theValue) {
 				case SIGTERM: {
@@ -177,8 +177,8 @@ namespace DiscordCoreAPI {
 		this->didWeStartCorrectly = true;
 	}
 
-	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
-		bool alwaysRegister) {
+	void DiscordCoreClient::registerFunction(const std::vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+		Bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 		this->commandsToRegister.emplace_back(commandData);
@@ -197,19 +197,19 @@ namespace DiscordCoreAPI {
 			this->commandsToRegister.pop_front();
 			theData.applicationId = this->getBotUser().id;
 			if (theData.alwaysRegister) {
-				if (theData.guildId.operator size_t() != 0) {
+				if (theData.guildId != 0) {
 					ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&theData)).get();
 				} else {
 					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();
 				}
 			} else {
 				std::vector<ApplicationCommand> theGuildCommands{};
-				if (theData.guildId.operator size_t() != 0) {
+				if (theData.guildId != 0) {
 					theGuildCommands =
 						ApplicationCommands::getGuildApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id, .guildId = theData.guildId })
 							.get();
 				}
-				bool doesItExist{ false };
+				Bool doesItExist{ false };
 				for (auto& value: theCommands) {
 					if (value.name == theData.name) {
 						doesItExist = true;
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 					}
 				}
 				if (!doesItExist) {
-					if (theData.guildId.operator size_t() != 0) {
+					if (theData.guildId != 0) {
 						ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&theData)).get();
 					} else {
 						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();
@@ -283,7 +283,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool DiscordCoreClient::instantiateWebSockets() {
+	Bool DiscordCoreClient::instantiateWebSockets() {
 		GatewayBotData gatewayData{ this->getGateWayBot() };
 
 		if (gatewayData.url == "") {
@@ -304,15 +304,15 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		uint32_t theWorkerCount =
+		Uint32 theWorkerCount =
 			this->configManager.getTotalShardCount() <= std::thread::hardware_concurrency() ? this->configManager.getTotalShardCount() : std::thread::hardware_concurrency();
 		if (this->configManager.getConnectionAddress() == "") {
-			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
+			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + String("wss://").size()));
 		}
 		if (this->configManager.getConnectionPort() == "") {
 			this->configManager.setConnectionPort("443");
 		}
-		for (uint32_t x = 0; x < this->configManager.getTotalShardCount(); ++x) {
+		for (Uint32 x = 0; x < this->configManager.getTotalShardCount(); ++x) {
 			if (!this->baseSocketAgentMap.contains(x % theWorkerCount)) {
 				this->baseSocketAgentMap[x % theWorkerCount] = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);
 			}

@@ -31,7 +31,7 @@
 
 namespace DiscordCoreAPI {
 
-	inline bool operator==(const DiscordCoreAPI::ChannelData& lhs, const DiscordCoreAPI::ChannelData& rhs) {
+	inline Bool operator==(const DiscordCoreAPI::ChannelData& lhs, const DiscordCoreAPI::ChannelData& rhs) {
 		if (lhs.id == rhs.id) {
 			return true;
 		} else {
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 	/// For deleting or closing a Channel. \brief For deleting or closing a Channel.
 	struct DiscordCoreAPI_Dll DeleteOrCloseChannelData {
 		Snowflake channelId{};///< The id of the Channel to close/delete.
-		std::string reason{};///< The reason for deleting/closing the Channel.
+		String reason{};///< The reason for deleting/closing the Channel.
 	};
 
 	/// For editing the PermissionTypes overwrites of a given Channel, for a given Role or User. \brief For editing the PermissionTypes overwrites of a given Channel, for a given Role or User.
@@ -60,11 +60,11 @@ namespace DiscordCoreAPI {
 		PermissionOverwritesType type{};///< The type of overwrite.
 		Snowflake roleOrUserId{};///< The Role or User Id to modify the permissions for.
 		Snowflake channelId{};///< The Channel id of the desired Channel to modify the permissions for.
-		std::string reason{};///< Reason for editing the permission overwrites.
-		std::string allow{};///< The permissions to list as "allowed".
-		std::string deny{};///< The permissions to list as "deny".
+		String reason{};///< Reason for editing the permission overwrites.
+		String allow{};///< The permissions to list as "allowed".
+		String deny{};///< The permissions to list as "deny".
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For collecting the invites to a given Channel. \brief For collecting the invites to a given Channel.
@@ -77,21 +77,21 @@ namespace DiscordCoreAPI {
 		Snowflake targetApplicationId{};///< The id of the embedded application to open for this invite, required if target_type is 2.
 		InviteTargetTypes targetType{};///<	The type of target for this voice Channel invite.
 		Snowflake targetUserId{};///< Id of the user whose stream to display for this invite, required if target_type is 1.
-		bool temporary{ false };///< Whether this invite only grants temporary membership.
+		Bool temporary{ false };///< Whether this invite only grants temporary membership.
 		Snowflake channelId{};///< The id of the Channel to create the invite for.
-		std::string reason{};///< Reason for creating the invite.
-		bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
-		int32_t maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
-		int32_t maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
+		String reason{};///< Reason for creating the invite.
+		Bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
+		Int32 maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
+		Int32 maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For deleting the PermissionTypes overwrites of a given Channel for a given Role or User. \brief For deleting the PermissionTypes overwrites of a given Channel for a given Role or User.
 	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
 		Snowflake roleOrUserId{};///< The Role or User id for whom to delete the PermissionTypes overwrites.
 		Snowflake channelId{};///< The id of the Channel to modify permissions for.
-		std::string reason{};///< Reason for deleting these permission overwrites.
+		String reason{};///< Reason for deleting these permission overwrites.
 	};
 
 	/// For following a news Channel. \brief For following a news Channel.
@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 		Snowflake targetChannelId{};
 		Snowflake channelId{};
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For triggering the typing indicator in a given Channel. \brief For triggering the typing indicator in a given Channel.
@@ -115,26 +115,26 @@ namespace DiscordCoreAPI {
 	/// For creating a new Channel within a chosen Guild. \brief For creating a new Channel within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildChannelData {
 		std::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the Channel's permission overwrites.
-		int32_t defaultAutoArchiveDuration{ 0 };///< Defualt duration of time before archiving a thread.
-		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600).
-		int32_t userLimit{ 0 };///< The user limit of the voice Channel(voice only).
-		int32_t position{ 0 };///< Sorting position of the Channel.
-		int32_t bitrate{ 0 };///< The bitrate(in bits) of the voice Channel(voice only).
-		std::string reason{};///< Reason for creating the Channel.
+		Int32 defaultAutoArchiveDuration{ 0 };///< Defualt duration of time before archiving a thread.
+		Int32 rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600).
+		Int32 userLimit{ 0 };///< The user limit of the voice Channel(voice only).
+		Int32 position{ 0 };///< Sorting position of the Channel.
+		Int32 bitrate{ 0 };///< The bitrate(in bits) of the voice Channel(voice only).
+		String reason{};///< Reason for creating the Channel.
 		Snowflake parentId{};///< Id of the parent category for a Channel.
-		std::string topic{};///< Channel topic(0 - 1024 characters).
-		std::string name{};///< The name of the Channel.
+		String topic{};///< Channel topic(0 - 1024 characters).
+		String name{};///< The name of the Channel.
 		ChannelType type{};///< The type of Channel.
-		bool nsfw{ false };///<  Whether the Channel is nsfw.
+		Bool nsfw{ false };///<  Whether the Channel is nsfw.
 		Snowflake guildId{};///< The Guild within which to create the Channel.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For modifying the Channel position responseData of a single Channel. \brief For modifying the Channel position responseData of a single Channel.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionData {
-		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
-		int32_t position{ 0 };///< Sorting position of the Channel.
+		Bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
+		Int32 position{ 0 };///< Sorting position of the Channel.
 		Snowflake parentId{};///< The new parent ID for the Channel that is moved.
 		Snowflake id{};///< Channel id.
 	};
@@ -142,10 +142,10 @@ namespace DiscordCoreAPI {
 	/// For modifying the current positions of one or more Channels in the Guild. \brief For modifying the current positions of one or more Channels in the Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionsData {
 		std::vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's responseData.
-		std::string reason{};///< Reason for re-ordering the Channel positions.
+		String reason{};///< Reason for re-ordering the Channel positions.
 		Snowflake guildId{};///< Guild within which to re-order the Channel positions.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For collecting a direct-messaging Channel. \brief For collecting a direct-messaging Channel.
@@ -157,20 +157,20 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	  public:
 		TimeStamp<std::chrono::milliseconds> lastPinTimestamp{};///< Timestamp of the last pinned Message.
-		std::unordered_map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
-		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
+		std::unordered_map<Uint64, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
+		Int32 defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
-		int32_t videoQualityMode{ 0 };///< Video quality mode.
-		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
+		Int32 videoQualityMode{ 0 };///< Video quality mode.
+		Int32 rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
 		StringWrapper lastMessageId{};///< Id of the last Message.
 		StringWrapper permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
 		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
-		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
+		Int32 messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
 		Snowflake applicationId{};///< Application id of the current application.
 		StringWrapper rtcRegion{};///< Real-time clock region.
-		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
+		Int32 userLimit{ 0 };///< User limit, in the case of voice channels.
 		StringWrapper topic{};///< The Channel's topic.
-		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
+		Int32 bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
 		IconHash icon{};///< Icon for the Channel, if applicable.
 
 		Channel() noexcept = default;
@@ -187,7 +187,7 @@ namespace DiscordCoreAPI {
 
 		~Channel() noexcept = default;
 
-		std::string getIconUrl() noexcept;
+		String getIconUrl() noexcept;
 	};
 
 	class DiscordCoreAPI_Dll ChannelVector {
@@ -208,9 +208,9 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyChannelData {
 		UpdateChannelData channelData{};///< The responseData of the Channel to be updated.
 		Snowflake channelId{};///< The id of the Channel to modify.
-		std::string reason{};///< A reason for modifying the Channel.
+		String reason{};///< A reason for modifying the Channel.
 
-		operator std::string();
+		operator String();
 
 		ModifyChannelData(Channel newData);
 	};
@@ -314,7 +314,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<ChannelData> cache;
-		static bool doWeCacheChannels;
+		static Bool doWeCacheChannels;
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

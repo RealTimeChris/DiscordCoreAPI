@@ -44,70 +44,70 @@
 
 namespace DiscordCoreAPI {
 
-	JsonParseError::JsonParseError(int32_t theCode) : std::runtime_error(theErrors[theCode]){};
+	JsonParseError::JsonParseError(Int32 theCode) : std::runtime_error(theErrors[theCode]){};
 
 	Snowflake getId(simdjson::ondemand::value jsonData, const char* theKey) {
 		return Snowflake{ DiscordCoreAPI::strtoull(getString(jsonData, theKey)) };
 	}
 
-	float getFloat(simdjson::ondemand::value jsonData, const char* theKey) {
-		double theValue{};
+	Float getFloat(simdjson::ondemand::value jsonData, const char* theKey) {
+		Double theValue{};
 		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
-			return double{ theValue };
+			return Double{ theValue };
 		} else {
 			return 0.0f;
 		}
 	}
 
-	bool getBool(simdjson::ondemand::value jsonData, const char* theKey) {
-		bool theValue{};
+	Bool getBool(simdjson::ondemand::value jsonData, const char* theKey) {
+		Bool theValue{};
 		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
-			return bool{ theValue };
+			return Bool{ theValue };
 		} else {
 			return false;
 		}
 	}
 
-	uint8_t getUint8(simdjson::ondemand::value jsonData, const char* theKey) {
-		uint64_t theValue{};
+	Uint8 getUint8(simdjson::ondemand::value jsonData, const char* theKey) {
+		Uint64 theValue{};
 		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
-			return static_cast<uint8_t>(theValue);
+			return static_cast<Uint8>(theValue);
 		} else {
 			return 0;
 		}
 	}
 
-	uint16_t getUint16(simdjson::ondemand::value jsonData, const char* theKey) {
-		uint64_t theValue{};
+	Uint16 getUint16(simdjson::ondemand::value jsonData, const char* theKey) {
+		Uint64 theValue{};
 		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
-			return static_cast<uint16_t>(theValue);
+			return static_cast<Uint16>(theValue);
 		} else {
 			return 0;
 		}
 	}
 
-	uint32_t getUint32(simdjson::ondemand::value jsonData, const char* theKey) {
-		uint64_t theValue{};
+	Uint32 getUint32(simdjson::ondemand::value jsonData, const char* theKey) {
+		Uint64 theValue{};
 		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
-			return static_cast<uint32_t>(theValue);
+			return static_cast<Uint32>(theValue);
 		} else {
 			return 0;
 		}
 	}
 
-	uint64_t getUint64(simdjson::ondemand::value jsonData, const char* theKey) {
-		uint64_t theValue{};
+	Uint64 getUint64(simdjson::ondemand::value jsonData, const char* theKey) {
+		Uint64 theValue{};
 		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
-			return uint64_t{ theValue };
+			return Uint64{ theValue };
 		} else {
 			return 0;
 		}
 	}
 
-	std::string getString(simdjson::ondemand::value jsonData, const char* theKey) {
-		std::string_view theValue{};
+	String getString(simdjson::ondemand::value jsonData, const char* theKey) {
+		StringView theValue{};
 		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
-			return std::string{ theValue.data(), theValue.size() };
+			return String{ theValue.data(), theValue.size() };
 		} else {
 			return "";
 		}
@@ -161,16 +161,16 @@ namespace DiscordCoreAPI {
 		return theValue;
 	}
 
-	std::string getString(ObjectReturnData jsonData, const char* theKey) {
-		std::string_view theValue{};
+	String getString(ObjectReturnData jsonData, const char* theKey) {
+		StringView theValue{};
 		if (jsonData.didItSucceed && jsonData.theObject[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
-			return static_cast<std::string>(theValue);
+			return static_cast<String>(theValue);
 		}
-		return static_cast<std::string>(theValue);
+		return static_cast<String>(theValue);
 	}
 
 	void parseObject(simdjson::ondemand::value jsonData, PresenceUpdateFlags& theData) {
-		uint8_t theDataNew = static_cast<uint8_t>(theData);
+		Uint8 theDataNew = static_cast<Uint8>(theData);
 
 		auto theStringNew = getString(jsonData, "dekstop");
 

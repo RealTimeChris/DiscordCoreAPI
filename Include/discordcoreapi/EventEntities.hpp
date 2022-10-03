@@ -41,18 +41,18 @@ namespace DiscordCoreInternal {
 
 		template<typename ReturnType, typename... ArgTypes> friend class Event;
 
-		friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
+		friend inline Bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-		friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
+		friend inline Bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
 		EventDelegateToken() noexcept = default;
 
 	  protected:
-		std::string handlerId{};
-		std::string eventId{};
+		String handlerId{};
+		String eventId{};
 	};
 
-	inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+	inline Bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
 		if (lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId) {
 			return true;
 		} else {
@@ -60,7 +60,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+	inline Bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
 		if (stoll(lhs.handlerId) < stoll(rhs.handlerId)) {
 			return true;
 		} else {
@@ -126,7 +126,7 @@ namespace DiscordCoreInternal {
 				this->theFunctions.swap(other.theFunctions);
 				other.theFunctions = std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>{};
 				this->eventId = std::move(other.eventId);
-				other.eventId = std::string{};
+				other.eventId = String{};
 			}
 			return *this;
 		}
@@ -166,7 +166,7 @@ namespace DiscordCoreInternal {
 		}
 
 	  protected:
-		std::string eventId{};
+		String eventId{};
 	};
 
 }// namespace DiscordCoreAPI

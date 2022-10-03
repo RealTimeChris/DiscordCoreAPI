@@ -68,37 +68,37 @@ namespace DiscordCoreAPI {
 
 	/// For collecting an auto-moderation-rule for a particular AutoModerationRule. \brief For collecting an auto-moderation-rule for a particular AutoModerationRule.
 	struct DiscordCoreAPI_Dll GetAutoModerationRuleData {
-		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to collect.
+		Uint64 autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to collect.
 		Snowflake guildId{};///< The id of the Guild from which you would like to collect the auto-moderation-rule from.
 	};
 
 	/// For creating an auto-moderation-rule. \brief For creating an auto-moderation-rule.
 	struct DiscordCoreAPI_Dll CreateAutoModerationRuleData {
-		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
-		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		std::vector<Uint64> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
+		std::vector<Uint64> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		TriggerMetaData triggerMetadata{};///< The trigger metadata.
 		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
 		TriggerType triggerType{};///< The trigger type.
 		EventType eventType{};///< The event type.
 		Snowflake guildId{};///< The Guild within which to create the AutoModerationRule.
-		std::string name{};///< The rule name.
-		bool enabled{};///< Whether the rule is enabled(False by default).
+		String name{};///< The rule name.
+		Bool enabled{};///< Whether the rule is enabled(False by default).
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For when an auto-moderation-rule is executed. \brief For when an auto-moderation-rule is executed.
 	struct DiscordCoreAPI_Dll AutoModerationActionExecutionEventData {
-		uint64_t alertSystemMessageId{};///< The id of any system auto moderation messages posted as a result of this action.
+		Uint64 alertSystemMessageId{};///< The id of any system auto moderation messages posted as a result of this action.
 		TriggerType ruleTriggerType{};///< The trigger type of rule which was triggered.
-		std::string matchedKeyword{};///< The word or phrase configured in the rule that triggered the rule
-		std::string matchedContent{};///< The substring in content that triggered the rule.
-		std::string content{};///< The user generated text content.
+		String matchedKeyword{};///< The word or phrase configured in the rule that triggered the rule
+		String matchedContent{};///< The substring in content that triggered the rule.
+		String content{};///< The user generated text content.
 		Snowflake channelId{};///< The id of the channel in which user content was posted.
 		Snowflake messageId{};///< The id of any user message which content belongs to.
 		ActionData action{};///< The action which was executed.
 		Snowflake guildId{};///< The id of the guild in which action was executed.
-		uint64_t ruleId{};///< The id of the rule which action belongs to.
+		Uint64 ruleId{};///< The id of the rule which action belongs to.
 		Snowflake userId{};///< The id of the user which generated the content which triggered the rule.
 
 		AutoModerationActionExecutionEventData() noexcept = default;
@@ -110,22 +110,22 @@ namespace DiscordCoreAPI {
 
 	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.
 	struct DiscordCoreAPI_Dll ModifyAutoModerationRuleData {
-		std::vector<uint64_t> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
-		std::vector<uint64_t> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		std::vector<Uint64> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
+		std::vector<Uint64> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		TriggerMetaData triggerMetadata{};///< The trigger metadata.
 		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
-		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to modify.
+		Uint64 autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to modify.
 		EventType eventType{};///< The event type.
 		Snowflake guildId{};///< The AutoModerationRule within which to modify the auto-moderation-rule.
-		std::string name{};///< The rule name.
-		bool enabled{};///< Whether the rule is enabled(False by default).
+		String name{};///< The rule name.
+		Bool enabled{};///< Whether the rule is enabled(False by default).
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For deleting an auto-moderation-rule. \brief For deleting an auto-moderation-rule.
 	struct DiscordCoreAPI_Dll DeleteAutoModerationRuleData {
-		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to delete.
+		Uint64 autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to delete.
 		Snowflake guildId{};///< Guild within which to delete the auto-moderation-rule.
 	};
 

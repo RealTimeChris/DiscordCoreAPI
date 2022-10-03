@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll CreateReactionData {
 		Snowflake channelId{};///< The Channel for which to add the Reaction.
 		Snowflake messageId{};///< The Message on which to add the Reaction.
-		std::string emojiName{};///< The emoji name of the Reaction to add.
+		String emojiName{};///< The emoji name of the Reaction to add.
 		Snowflake emojiId{};///< The emoji id of the Reaction to add.
 	};
 
@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DeleteOwnReactionData {
 		Snowflake channelId{};///< The Channel from which to remove the Reaction.
 		Snowflake messageId{};///< The Message from which to remove the Reaction.
-		std::string emojiName{};///< The emoji name for which to remove the emoji.
+		String emojiName{};///< The emoji name for which to remove the emoji.
 		Snowflake emojiId{};///< The emoji id for which to remove the emoji.
 	};
 
@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DeleteUserReactionData {
 		Snowflake channelId{};///< The Channel from which to remove the Reaction.
 		Snowflake messageId{};///< The Message from which to remove the Reaction.
-		std::string emojiName{};///< The name of which emoji to remove.
+		String emojiName{};///< The name of which emoji to remove.
 		Snowflake emojiId{};///< The id of which emoji to remove.
 		Snowflake userId{};///< The User id for whom to remove their emoji.
 	};
@@ -65,8 +65,8 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The Channel from which to acquire the reactors.
 		Snowflake messageId{};///< The Message from which to acquire the reactors.
 		Snowflake afterId{};///< Get users after this user ID.
-		std::string emoji{};///< The emoji name for which to acquire the reactors.
-		int32_t limit{ 0 };///< The maximum number of reactors to collect.
+		String emoji{};///< The emoji name for which to acquire the reactors.
+		Int32 limit{ 0 };///< The maximum number of reactors to collect.
 	};
 
 	/// For deleting all of the Reactions on a particular Message. \brief For deleting all of the Reactions on a particular Message.
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DeleteReactionsByEmojiData {
 		Snowflake channelId{};///< The Channel from which you would like to remove the emoji.
 		Snowflake messageId{};///< The Message from which you would like to remove the emoji.
-		std::string emojiName{};///< The name of which emoji to remove.
+		String emojiName{};///< The name of which emoji to remove.
 		Snowflake emojiId{};///< The id of which emoji to remove.
 	};
 
@@ -105,16 +105,16 @@ namespace DiscordCoreAPI {
 		friend Reactions;
 
 		std::vector<Snowflake> roles{};///< Roles that can use this Emoji.
-		std::string imageFilePath{};///< The image responseData.
+		String imageFilePath{};///< The image responseData.
 		Snowflake guildId{};///< The Guild within which to create the Emoji.
-		std::string reason{};///< Reason for creating the new Emoji.
-		std::string name{};///< Name of the emoji.
+		String reason{};///< Reason for creating the new Emoji.
+		String name{};///< Name of the emoji.
 		ImageType type{};///< The type of image being uploaded.
 
-		operator std::string();
+		operator String();
 
 	  protected:
-		std::string imageDataFinal{};
+		String imageDataFinal{};
 	};
 
 	/// For modifying a Guild Emoji.
@@ -122,17 +122,17 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> roles{};///< Roles that can use this Emoji.
 		Snowflake guildId{};///< The Guild within which to modify the Emoji.
 		Snowflake emojiId{};///< The id of the Emoji to modify.
-		std::string reason{};///< Reason for modifying the Emoji.
-		std::string name{};///< Name of the Emoji.
+		String reason{};///< Reason for modifying the Emoji.
+		String name{};///< Name of the Emoji.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For deleting a Guild Emoji.
 	struct DiscordCoreAPI_Dll DeleteGuildEmojiData {
 		Snowflake guildId{};///< The Guild within which to delete the Emoji.
 		Snowflake emojiId{};///< The id of the Emoji to delete.
-		std::string reason{};///< Reason for deleting the Emoji.
+		String reason{};///< Reason for deleting the Emoji.
 	};
 
 	/// A single Reaction. \brief A single Reaction.

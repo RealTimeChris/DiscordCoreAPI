@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 		/// \param searchQuery The Song to search for.
 		/// \param guildId The Guild id to search for the Song within.
 		/// \returns A vector of Song objects representing the search results.
-		static std::vector<Song> searchForSong(const std::string& searchQuery, const Snowflake guildId);
+		static std::vector<Song> searchForSong(const String& searchQuery, const Snowflake guildId);
 
 		/// Adds a Song to the current Playlist's queue. \brief Adds a Song to the current Playlist's queue.
 		/// \param guildMember The GuildMember that is adding the Song to the queue.
@@ -70,19 +70,19 @@ namespace DiscordCoreAPI {
 
 		/// Checks to see if there are any playable Songs in the current Playlist. \brief Checks to see if there are any playable Songs in the current Playlist.
 		/// \param guildId The id of the Guild for which we would like to check its Playlist for Songs.
-		/// \returns A bool representing whether there are any playable Songs.
-		static bool isThereAnySongs(const Snowflake guildId);
+		/// \returns A Bool representing whether there are any playable Songs.
+		static Bool isThereAnySongs(const Snowflake guildId);
 
 		/// Send the next playable song off of the current Guild's Playlist to be played.
 		/// \brief Send the next playable song off of the current Guild's Playlist to be played.
 		/// \param guildMember The GuildMember who is requesting the Song to be sent.
-		/// \returns A bool suggesting the success status of the send.
-		static bool sendNextSong(const GuildMember& guildMember);
+		/// \returns A Bool suggesting the success status of the send.
+		static Bool sendNextSong(const GuildMember& guildMember);
 
 		/// Plays the current Song. (Assuming that you are currently connected to a VoiceConnection). \brief Plays the current Song. (Assuming that you are currently connected to a VoiceConnection).
 		/// \param guildId The id of the Guild within which to play the current Song.
-		/// \returns A bool suggesting the success or failure of the play command.
-		static bool play(const Snowflake guildId);
+		/// \returns A Bool suggesting the success or failure of the play command.
+		static Bool play(const Snowflake guildId);
 
 		/// Skips to the next Song in the queue, if applicable. \brief Skips to the next Song in the queue, if applicable.
 		/// \param guildMember The GuildMember structure of the individual who is skipping the Song.
@@ -98,8 +98,8 @@ namespace DiscordCoreAPI {
 
 		/// Checks if there is currently playing music for the current Guild. \brief Checks if there is currently playing music for the current Guild.
 		/// \param guildId The id for the desired Guild to check the current playing status.
-		/// \returns A bool representing the currently playing status.
-		static bool areWeCurrentlyPlaying(const Snowflake guildId);
+		/// \returns A Bool representing the currently playing status.
+		static Bool areWeCurrentlyPlaying(const Snowflake guildId);
 
 		/// Collects the Playlist from the SongAPI. \brief Collects the Playlist from the SongAPI.
 		/// \param guildId The Guild for which to collect the Playlist from.
@@ -113,28 +113,28 @@ namespace DiscordCoreAPI {
 
 		/// Returns the current loop-all status of the current Guild's Playlist. \brief Returns the current loop-all status of the current Guild's Playlist.
 		/// \param guildId The id of the Guild for which you would like to check the loop-all status of.
-		/// \returns A bool representing the current loop-all status.
-		static bool isLoopAllEnabled(const Snowflake guildId);
+		/// \returns A Bool representing the current loop-all status.
+		static Bool isLoopAllEnabled(const Snowflake guildId);
 
 		/// Enables or disables the loop-all status of the playlist. \brief Enables or disables the loop-all status of the playlist.
-		/// \param enabled A bool representing whether or not to enable the loop-all status.
+		/// \param enabled A Bool representing whether or not to enable the loop-all status.
 		/// \param guildId The Guild id for which Guild to update this status in.
-		static void setLoopAllStatus(bool enabled, const Snowflake guildId);
+		static void setLoopAllStatus(Bool enabled, const Snowflake guildId);
 
 		/// Returns the current loop-song of the current Guild's Playlist. \brief Returns the current loop-song of the current Guild's Playlist.
-		/// \param guildId The id of the Guild for which you would like to check the loop-song status of. \returns A bool representing the current loop-song status.
-		static bool isLoopSongEnabled(const Snowflake guildId);
+		/// \param guildId The id of the Guild for which you would like to check the loop-song status of. \returns A Bool representing the current loop-song status.
+		static Bool isLoopSongEnabled(const Snowflake guildId);
 
 		/// Enables or disables the loop-song status of the playlist. \brief Enables or disables the loop-song status of the playlist.
-		/// \param enabled A bool representing whether or not to enable the loop-song status.
+		/// \param enabled A Bool representing whether or not to enable the loop-song status.
 		/// \param guildId The Guild id for which Guild to update this status in.
-		static void setLoopSongStatus(bool enabled, const Snowflake guildId);
+		static void setLoopSongStatus(Bool enabled, const Snowflake guildId);
 
 		/// Sets the position of a Song in the current Playlist's song queue. \brief Sets the position of a Song in the current Playlist's song queue.
 		/// \param firstSongPosition The first Song's initial position.
 		/// \param secondSongPosition The first Song's final position.
 		/// \param guildId The id of the desired Guild to update the Song positions in.
-		static void modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, const Snowflake guildId);
+		static void modifyQueue(Int32 firstSongPosition, Int32 secondSongPosition, const Snowflake guildId);
 
 		/// Collects the currently playing Song. \brief Collects the currently playing Song.
 		/// \param guildId The id for which Guild to collect the current Song of.
@@ -152,14 +152,14 @@ namespace DiscordCoreAPI {
 		static std::mutex accessMutex;
 
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
-		bool areWeInstantiated{ false };
+		Bool areWeInstantiated{ false };
 		Snowflake guildId{};
 
 		void sendNextSongFinal(const GuildMember& guildMember);
 
 		void cancelCurrentSong();
 
-		bool sendNextSong();
+		Bool sendNextSong();
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

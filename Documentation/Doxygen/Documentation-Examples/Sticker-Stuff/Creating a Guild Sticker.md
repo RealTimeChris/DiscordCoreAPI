@@ -38,10 +38,10 @@ namespace DiscordCoreAPI {
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.name = "TEST STICKER";
 				dataPackage.tags = "testing";
-				vector<uint8_t> fileData { };
+				vector<Uint8> fileData { };
 				fileData.resize(128 * 128);
-				for (uint32_t x = 0; x < 128 * 128; ++x) {
-					fileData[x] = static_cast<uint8_t>(static_cast<float>(x)/static_cast<float>(128 * 128)) * 255;
+				for (Uint32 x = 0; x < 128 * 128; ++x) {
+					fileData[x] = static_cast<Uint8>(static_cast<Float>(x)/static_cast<Float>(128 * 128)) * 255;
 				}
 				dataPackage.file = fileData;
 

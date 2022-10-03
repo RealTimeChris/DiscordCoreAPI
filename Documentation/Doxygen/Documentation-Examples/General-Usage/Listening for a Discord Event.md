@@ -14,8 +14,8 @@ static void onGuildCreation(DiscordCoreAPI::OnGuildCreationData dataPackage) {
 	cout << "Guild Name: " << dataPackage.guild.data.name << endl;
 }
 
-int32_t main() {
-	std::string botToken {"YOUR_BOT_TOKEN_HERE"};
+Int32 main() {
+	String botToken {"YOUR_BOT_TOKEN_HERE"};
 	auto thePtr = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(botToken, "!");
 	thePtr->eventManager->onGuildCreation(&onGuildCreation);
 	thePtr->runBot();

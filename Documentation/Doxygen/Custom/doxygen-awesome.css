@@ -624,7 +624,7 @@ html.dark-mode iframe#MSearchResults {
     }
 
     #main-menu > li:last-child {
-        float: none !important;
+        Float: none !important;
     }
 
     #MSearchField {
@@ -665,7 +665,7 @@ html.dark-mode iframe#MSearchResults {
         margin-top: 0;
         margin-bottom: 0;
         flex-grow: 2;
-        float: left;
+        Float: left;
     }
 }
 
@@ -791,7 +791,7 @@ div.header .title {
 div.header .summary {
     width: auto;
     display: block;
-    float: none;
+    Float: none;
     padding: 0 var(--spacing-large);
 }
 
@@ -925,7 +925,7 @@ div.toc ul li.level2, div.toc ul li.level3 {
 
 @media screen and (max-width: 767px) {
     div.toc {
-        float: none;
+        Float: none;
         width: auto;
         margin: 0 0 var(--spacing-medium) 0;
     }

@@ -16,7 +16,7 @@ Collecting Autocomplete Input {#collectingautocompleteinput}
 
 void theAutoCompleteFunction(DiscordCoreAPI::OnAutoCompleteEntryData dataPackage) {
 	DiscordCoreAPI::RespondToInputEventData dataPackageNew{ dataPackage.inputEvent };
-	if (dataPackage.inputEvent.getInteractionData().data.applicationCommandData.options[0].valueString.find("tes") != std::string::npos) {
+	if (dataPackage.inputEvent.getInteractionData().data.applicationCommandData.options[0].valueString.find("tes") != String::npos) {
 		dataPackageNew.setAutoCompleteChoice("The Test Value", "test_value_name");
 		dataPackageNew.setResponseType(DiscordCoreAPI::InputEventResponseType::Application_Command_AutoComplete_Result);
 		DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackageNew).get();
@@ -26,11 +26,11 @@ void theAutoCompleteFunction(DiscordCoreAPI::OnAutoCompleteEntryData dataPackage
 	}
 }
 
-int32_t main() {
-	std::string botToken = "YOUR_BOT_TOKEN_HERE";
+Int32 main() {
+	String botToken = "YOUR_BOT_TOKEN_HERE";
 	DiscordCoreAPI::DiscordCoreClient theClient{ botToken };
 	theClient.eventManager.onAutoCompleteEntry(&theAutoCompleteFunction);
-	theClient.registerFunction(std::vector<std::string>{ "test" }, std::make_unique<DiscordCoreAPI::Test>());
+	theClient.registerFunction(std::vector<String>{ "test" }, std::make_unique<DiscordCoreAPI::Test>());
 	theClient.runBot();
 	return 0;
 }

@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 			try {
 				Channel channel = Channels::getCachedChannelAsync({ .channelId = argsNew.eventData.getChannelId() }).get();
 
-				bool areWeInADm = areWeInADM(argsNew.eventData, channel);
+				Bool areWeInADm = areWeInADM(argsNew.eventData, channel);
 
 				if (areWeInADm) {
 					return;

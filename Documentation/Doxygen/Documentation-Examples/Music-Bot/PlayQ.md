@@ -11,7 +11,7 @@ namespace DiscordCoreAPI {
 
 	class PlayQ : public BaseFunction {
 	  public:
-		static std::unordered_map<uint64_t, int64_t> timeOfLastPlay;
+		static std::unordered_map<Uint64, Int64> timeOfLastPlay;
 
 		PlayQ() {
 			this->commandName = "playq";
@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 				Guild guild = Guilds::getCachedGuildAsync({ newArgs.eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild);
 
-				bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
+				Bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
 				if (!areWeAllowed) {
 					return;
@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 				GuildMember guildMember =
 					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
-				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
+				Bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 
 				if (!doWeHaveControl) {
 					return;
@@ -52,8 +52,8 @@ namespace DiscordCoreAPI {
 
 				InputEventData newEvent = newArgs.eventData;
 
-				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-				int64_t previousPlayedTime{ 0 };
+				Int64 currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+				Int64 previousPlayedTime{ 0 };
 				if (PlayQ::timeOfLastPlay.contains(newArgs.eventData.getGuildId())) {
 					previousPlayedTime = PlayQ::timeOfLastPlay.at(newArgs.eventData.getGuildId());
 				}
@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				int32_t trackNumber = stoi(newArgs.optionsArgs[0]) - 1;
+				Int32 trackNumber = stoi(newArgs.optionsArgs[0]) - 1;
 
 				if (trackNumber >= SongAPI::getPlaylist(guild.id).songQueue.size()) {
 					std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
@@ -353,6 +353,6 @@ namespace DiscordCoreAPI {
 		};
 		~PlayQ(){};
 	};
-	std::unordered_map<uint64_t, int64_t> PlayQ::timeOfLastPlay{};
+	std::unordered_map<Uint64, Int64> PlayQ::timeOfLastPlay{};
 
 }```

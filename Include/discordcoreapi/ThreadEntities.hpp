@@ -40,38 +40,38 @@ namespace DiscordCoreAPI {
 	/// For starting a Thread, based on a Message. \brief For starting a Thread, based on a Message.
 	struct DiscordCoreAPI_Dll StartThreadWithMessageData {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
-		int32_t rateLimitPerUser{ 0 };///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
-		std::string threadName{};///< The name of the new Thread.
+		Int32 rateLimitPerUser{ 0 };///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
+		String threadName{};///< The name of the new Thread.
 		Snowflake messageId{};///< The Message Id to base the Thread off of.
 		Snowflake channelId{};///< The Channel to start the Thread in.
-		std::string reason{};///< Reason for starting the Thread.
+		String reason{};///< Reason for starting the Thread.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For starting a Thread, not based on a Message. \brief For starting a Thread, not based on a Message.
 	struct DiscordCoreAPI_Dll StartThreadWithoutMessageData {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Shortest };///< The duration before it is auto-archived, in minutes.
 		ThreadType type{ ThreadType::Guild_Public_Thread };///< Type of Thread to create.
-		int32_t rateLimitPerUser{ 0 };///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
-		std::string threadName{};///< The name of the new Thread.
+		Int32 rateLimitPerUser{ 0 };///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
+		String threadName{};///< The name of the new Thread.
 		Snowflake channelId{};///< The Channel to start the Thread in.
-		bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
-		std::string reason{};///< Reason for starting the Thread.
+		Bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
+		String reason{};///< Reason for starting the Thread.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For starting a Thread, in a forum channel. \brief For starting a Thread, in a forum channel.
 	struct DiscordCoreAPI_Dll StartThreadInForumChannelData {
 		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Longest };/// Duration in minutes to automatically archive the thread.
 		ForumThreadMessageData message{};///< A forum thread message params object contents of the first message in the forum thread.
-		int32_t rateLimitPerUser{};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
+		Int32 rateLimitPerUser{};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
 		Snowflake channelId{};///< The id of the channel.
-		std::string reason{};///< Reason for starting the Thread.
-		std::string name{};///< 1-100 character channel name auto_archive_duration.
+		String reason{};///< Reason for starting the Thread.
+		String name{};///< 1-100 character channel name auto_archive_duration.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For joining a Thread. \brief For joining a Thread.
@@ -115,22 +115,22 @@ namespace DiscordCoreAPI {
 	/// For collecting puiblic archived Threads from a given Channel. \brief For collecting puiblic archived Threads from a given Channel.
 	struct DiscordCoreAPI_Dll GetPublicArchivedThreadsData {
 		Snowflake channelId{};///< The Channel to acquire the Threads from.
-		std::string before{};///< Returns threads before this timestamp.
-		int32_t limit{ 0 };///< Maximum number of threads to return.
+		String before{};///< Returns threads before this timestamp.
+		Int32 limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting private archived Threads from a given Channel. \brief For collecting private archived Threads from a given Channel.
 	struct DiscordCoreAPI_Dll GetPrivateArchivedThreadsData {
 		Snowflake channelId{};///< The Channel to acquire the Threads from.
-		std::string before{};///< Returns threads before this timestamp.
-		int32_t limit{ 0 };///< Maximum number of threads to return.
+		String before{};///< Returns threads before this timestamp.
+		Int32 limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting joined private archived Threads from a given Channel. \brief For collecting joined private archived Threads from a given Channel.
 	struct DiscordCoreAPI_Dll GetJoinedPrivateArchivedThreadsData {
 		Snowflake channelId{};///< The Channel to acquire the Threads from.
-		std::string before{};///< Returns threads before this timestamp.
-		int32_t limit{ 0 };///< Maximum number of threads to return.
+		String before{};///< Returns threads before this timestamp.
+		Int32 limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For listing the active Threads in a chosen Guild. \brief For listing the active Threads in a chosen Guild.

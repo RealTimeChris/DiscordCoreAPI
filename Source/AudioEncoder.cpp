@@ -60,7 +60,7 @@ namespace DiscordCoreAPI {
 	}
 
 	AudioEncoder::AudioEncoder() {
-		int32_t error{};
+		Int32 error{};
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
 		auto theResult = opus_encoder_ctl(this->encoder, OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
 		if (theResult != OPUS_OK) {
@@ -69,9 +69,9 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(std::vector<opus_int16>& inputFrame) {
-		std::vector<uint8_t> newBuffer{};
+		std::vector<Uint8> newBuffer{};
 		newBuffer.resize(this->maxBufferSize);
-		int32_t count = opus_encode(this->encoder, inputFrame.data(), static_cast<int32_t>(inputFrame.size() / 2), newBuffer.data(), this->maxBufferSize);
+		Int32 count = opus_encode(this->encoder, inputFrame.data(), static_cast<Int32>(inputFrame.size() / 2), newBuffer.data(), this->maxBufferSize);
 		if (count <= 0 || count > newBuffer.size()) {
 			return DiscordCoreAPI::AudioFrameData();
 		}
@@ -84,15 +84,15 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame) {
 		std::vector<opus_int16> newVector{};
-		for (uint64_t x = 0; x < inputFrame.data.size() / 2; ++x) {
+		for (Uint64 x = 0; x < inputFrame.data.size() / 2; ++x) {
 			opus_int16 newValue{};
 			newValue |= inputFrame.data[x * 2] << 0;
 			newValue |= inputFrame.data[x * 2 + 1] << 8;
 			newVector.emplace_back(newValue);
 		}
-		std::vector<uint8_t> newBuffer{};
+		std::vector<Uint8> newBuffer{};
 		newBuffer.resize(this->maxBufferSize);
-		int32_t count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount, newBuffer.data(), this->maxBufferSize);
+		Int32 count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount, newBuffer.data(), this->maxBufferSize);
 		if (count <= 0 || count > newBuffer.size()) {
 			return DiscordCoreAPI::AudioFrameData();
 		}

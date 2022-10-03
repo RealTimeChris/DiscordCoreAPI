@@ -32,12 +32,12 @@ namespace DiscordCoreInternal {
 
 	struct ErlPackError : public std::runtime_error {
 	  public:
-		explicit ErlPackError(const std::string& message);
+		explicit ErlPackError(const String& message);
 	};
 
-	constexpr uint8_t formatVersion{ 131 };
+	constexpr Uint8 formatVersion{ 131 };
 
-	enum class ETFTokenType : uint8_t {
+	enum class ETFTokenType : Uint8 {
 		New_Float_Ext = 70,
 		Small_Integer_Ext = 97,
 		Integer_Ext = 98,
@@ -60,21 +60,21 @@ namespace DiscordCoreInternal {
 	  public:
 		ErlPacker() noexcept {};
 
-		std::string parseJsonToEtf(std::string&& dataToParse);
+		String parseJsonToEtf(String&& dataToParse);
 
-		std::string& parseEtfToJson(std::string_view dataToParse);
+		String& parseEtfToJson(StringView dataToParse);
 
 		~ErlPacker(){};
 
 	  protected:
-		std::string comparisongStringFalse{ "false" };
-		std::string comparisongStringNil{ "nil" };
-		std::string falseString{ "false" };
-		std::string nilString{ "nil" };
-		std::string bufferString{};
-		std::string_view buffer{};
-		uint64_t offSet{};
-		uint64_t size{};
+		String comparisongStringFalse{ "false" };
+		String comparisongStringNil{ "nil" };
+		String falseString{ "false" };
+		String nilString{ "nil" };
+		String bufferString{};
+		StringView buffer{};
+		Uint64 offSet{};
+		Uint64 size{};
 
 		void singleValueJsonToETF(simdjson::ondemand::value jsonData);
 
@@ -88,21 +88,21 @@ namespace DiscordCoreInternal {
 
 		void writeBool(simdjson::ondemand::value jsonData);
 
-		void writeToBuffer(const std::string&);
+		void writeToBuffer(const String&);
 
-		void appendBinaryExt(const std::string&, uint32_t);
+		void appendBinaryExt(const String&, Uint32);
 
-		void appendUnsignedLongLong(uint64_t);
+		void appendUnsignedLongLong(Uint64);
 
-		void appendSmallIntegerExt(uint8_t);
+		void appendSmallIntegerExt(Uint8);
 
-		void appendIntegerExt(uint32_t);
+		void appendIntegerExt(Uint32);
 
-		void appendListHeader(uint32_t);
+		void appendListHeader(Uint32);
 
-		void appendMapHeader(uint32_t);
+		void appendMapHeader(Uint32);
 
-		void appendNewFloatExt(double);
+		void appendNewFloatExt(Double);
 
 		void appendVersion();
 
@@ -123,47 +123,47 @@ namespace DiscordCoreInternal {
 			return DiscordCoreAPI::reverseByteOrder<const ReturnType>(newValue);
 		}
 
-		size_t readString(uint32_t length);
+		size_t readString(Uint32 length);
 
-		std::string processAtom(const char* atom, uint32_t length);
+		String processAtom(const char* atom, Uint32 length);
 
-		std::string singleValueETFToJson();
+		String singleValueETFToJson();
 
-		std::string parseSmallIntegerExt();
+		String parseSmallIntegerExt();
 
-		std::string parseBigint(uint32_t);
+		String parseBigint(Uint32);
 
-		std::string parseArray(uint32_t);
+		String parseArray(Uint32);
 
-		std::string parseTuple(uint32_t);
+		String parseTuple(Uint32);
 
-		std::string parseSmallTupleExt();
+		String parseSmallTupleExt();
 
-		std::string parseLargeTupleExt();
+		String parseLargeTupleExt();
 
-		std::string parseSmallAtomExt();
+		String parseSmallAtomExt();
 
-		std::string parseStringAsList();
+		String parseStringAsList();
 
-		std::string parseNewFloatExt();
+		String parseNewFloatExt();
 
-		std::string parseSmallBigExt();
+		String parseSmallBigExt();
 
-		std::string parseLargeBigExt();
+		String parseLargeBigExt();
 
-		std::string parseAtomUtf8Ext();
+		String parseAtomUtf8Ext();
 
-		std::string parseIntegerExt();
+		String parseIntegerExt();
 
-		std::string parseBinaryExt();
+		String parseBinaryExt();
 
-		std::string parseFloatExt();
+		String parseFloatExt();
 
-		std::string parseListExt();
+		String parseListExt();
 
-		std::string parseNilExt();
+		String parseNilExt();
 
-		std::string parseMapExt();
+		String parseMapExt();
 	};
 }// namespace DiscordCoreInternal
 #endif

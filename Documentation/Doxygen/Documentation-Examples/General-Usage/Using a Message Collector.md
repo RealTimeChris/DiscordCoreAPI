@@ -1,12 +1,12 @@
 Using a Message Collector {#usingmessagecollector}
 ============
-- First, define a filtering function-which is one that takes a `DiscordCoreAPI::Message` as its one argument, that returns a `bool`. Define it so that if it returns true, the message is "collected".
+- First, define a filtering function-which is one that takes a `DiscordCoreAPI::Message` as its one argument, that returns a `Bool`. Define it so that if it returns true, the message is "collected".
 - Instantiate the `DiscordCoreAPI::MessageCollector` class with arguments to define how many messages are collected, for how long in milliseconds the collection runs, a userId, and the filter function.
 - Execute the `DiscordCoreAPI::MessageCollector::collectMessages` function.
 - This function returns a struct of type `DiscordCoreAPI::MessageCollectorReturnData`, which contains a vector of collected `DiscordCoreAPI::Message`s.
  
 ```cpp
-function<bool(DiscordCoreAPI::Message)> messageFilter = [=](DiscordCoreAPI::Message message)-> bool {
+function<Bool(DiscordCoreAPI::Message)> messageFilter = [=](DiscordCoreAPI::Message message)-> Bool {
 	if (userID == message.author.id) {
 		return true;
 	} else {
@@ -22,7 +22,7 @@ if (returnedMessages.messages.size() == 0) {
 	break;
 }
 std::vector<string> args2;
-std::string newString = convertToLowerCase(returnedMessages.messages.at(0).content);
+String newString = convertToLowerCase(returnedMessages.messages.at(0).content);
 std::regex wordRegex("[a-z]{1,12}");
 smatch wordRegexMatch;
 std::regex_search(newString, wordRegexMatch, wordRegex,

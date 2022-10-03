@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 		this->webHookId = dataNew.id;
 	}
 
-	ExecuteWebHookData::operator std::string() {
+	ExecuteWebHookData::operator String() {
 		JsonObject theData{};
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
 			theData["allowed_mentions"] = this->allowedMentions;
@@ -119,8 +119,8 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	ExecuteWebHookData& ExecuteWebHookData::addButton(Bool disabled, const String& customIdNew, const String& buttonLabel, ButtonStyle buttonStyle,
+		const String& emojiName, Snowflake emojiId, const String& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 				component.type = ComponentType::Button;
 				component.emoji.name = emojiName;
 				component.label = buttonLabel;
-				component.style = static_cast<int32_t>(buttonStyle);
+				component.style = static_cast<Int32>(buttonStyle);
 				component.customId = customIdNew;
 				component.disabled = disabled;
 				component.emoji.id = emojiId;
@@ -145,8 +145,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData ExecuteWebHookData::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
-		int32_t maxValues, int32_t minValues) {
+	ExecuteWebHookData ExecuteWebHookData::addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder,
+		Int32 maxValues, Int32 minValues) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -170,8 +170,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
-		bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+	ExecuteWebHookData& ExecuteWebHookData::addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew, const String& customIdNew,
+		Bool required, Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label, const String& placeholder) {
 		this->title = topTitleNew;
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {
@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 				ComponentData component{};
 				component.type = ComponentType::TextInput;
 				component.customId = customIdNew;
-				component.style = static_cast<int32_t>(inputStyle);
+				component.style = static_cast<Int32>(inputStyle);
 				component.title = titleNew;
 				component.maxLength = maxLength;
 				component.minLength = minLength;
@@ -219,12 +219,12 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addContent(const std::string& dataPackage) {
+	ExecuteWebHookData& ExecuteWebHookData::addContent(const String& dataPackage) {
 		this->content = dataPackage;
 		return *this;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::setTTSStatus(bool enabledTTs) {
+	ExecuteWebHookData& ExecuteWebHookData::setTTSStatus(Bool enabledTTs) {
 		this->tts = enabledTTs;
 		return *this;
 	}
@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 		this->webHookId = dataNew.id;
 	}
 
-	EditWebHookData::operator std::string() {
+	EditWebHookData::operator String() {
 		JsonObject theData{};
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
 			theData["allowed_mentions"] = this->allowedMentions;
@@ -335,7 +335,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.name != "") {
 			responseData["name"] = dataPackage.name;
 		}
-		if (dataPackage.channelId.operator size_t() != 0) {
+		if (dataPackage.channelId != 0) {
 			responseData["channel_id"] = std::to_string(dataPackage.channelId);
 		}
 		workload.content = responseData;
@@ -355,7 +355,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.name != "") {
 			responseData["name"] = dataPackage.name;
 		}
-		if (dataPackage.channelId.operator size_t() != 0) {
+		if (dataPackage.channelId != 0) {
 			responseData["channel_id"] = std::to_string(dataPackage.channelId);
 		}
 		workload.content = responseData;
@@ -389,18 +389,18 @@ namespace DiscordCoreAPI {
 		workload.callStack = "WebHooks::executeWebHookAsync()";
 		if (dataPackage.wait) {
 			workload.relativePath += "?wait=true";
-			if (dataPackage.threadId.operator size_t() != 0) {
+			if (dataPackage.threadId != 0) {
 				workload.relativePath += "&thread_id=" + std::to_string(dataPackage.threadId);
 			}
 		}
-		if (dataPackage.threadId.operator size_t() != 0) {
+		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage.operator std::string(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage.operator String(), dataPackage.files);
 		} else {
-			workload.content = dataPackage.operator std::string();
+			workload.content = dataPackage.operator String();
 		}
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -410,7 +410,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId) + "/" + dataPackage.webhookToken + "/messages/" + std::to_string(dataPackage.messageId);
-		if (dataPackage.threadId.operator size_t() != 0) {
+		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
 		workload.callStack = "WebHooks::getWebHookMessageAsync()";
@@ -422,14 +422,14 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId) + "/" + dataPackage.webhookToken + "/messages/" + std::to_string(dataPackage.messageId);
-		if (dataPackage.threadId.operator size_t() != 0) {
+		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage.operator std::string(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage.operator String(), dataPackage.files);
 		} else {
-			workload.content = dataPackage.operator std::string();
+			workload.content = dataPackage.operator String();
 		}
 		workload.callStack = "WebHooks::editWebHookMessageAsync()";
 		co_return WebHooks::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -440,7 +440,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.webHookId) + "/" + dataPackage.webhookToken + "/messages/" + std::to_string(dataPackage.messageId);
-		if (dataPackage.threadId.operator size_t() != 0) {
+		if (dataPackage.threadId != 0) {
 			workload.relativePath += "?thread_id=" + std::to_string(dataPackage.threadId);
 		}
 		workload.callStack = "WebHooks::deleteWebHookMessageAsync()";

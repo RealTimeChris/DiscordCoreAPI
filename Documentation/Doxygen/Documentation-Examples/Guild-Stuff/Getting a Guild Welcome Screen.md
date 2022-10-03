@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 				auto responseData = DiscordCoreAPI::Guilds::getGuildWelcomeScreenAsync(dataPackage01).get();
 
-				cout << boolalpha << responseData.welcomeChannels.at(0).channelId << endl;
+				cout << Boolalpha << responseData.welcomeChannels.at(0).channelId << endl;
 
 			} catch (...) {
 				rethrowException("Test::execute()");

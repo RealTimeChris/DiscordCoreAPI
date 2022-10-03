@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 				Guild guild = Guilds::getCachedGuildAsync({ .guildId = newArgs.eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild);
 
-				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
+				Bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
 				if (!checkIfAllowedInChannel) {
 					return;
@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 				GuildMember guildMember =
 					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
-				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
+				Bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 
 				if (!doWeHaveControl) {
 					return;
@@ -47,8 +47,8 @@ namespace DiscordCoreAPI {
 
 				InputEventData newEvent = newArgs.eventData;
 
-				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-				int64_t previousPlayedTime{ 0 };
+				Int64 currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+				Int64 previousPlayedTime{ 0 };
 				if (Play::timeOfLastPlay.contains(newArgs.eventData.getGuildId())) {
 					previousPlayedTime = Play::timeOfLastPlay.at(newArgs.eventData.getGuildId());
 				}
@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				if (voiceStateData.channelId == 0 || voiceStateData.channelId.operator size_t() != voiceConnection->getChannelId()) {
+				if (voiceStateData.channelId == 0 || voiceStateData.channelId != voiceConnection->getChannelId()) {
 					EmbedData newEmbed{};
 					newEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed.setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (!guild.areWeConnected() || !SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					std::string msgString = "------\n**There's no music playing to be stopped!**\n------";
+					String msgString = "------\n**There's no music playing to be stopped!**\n------";
 					EmbedData msgEmbed;
 					msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					msgEmbed.setColor(discordGuild.data.borderColor);

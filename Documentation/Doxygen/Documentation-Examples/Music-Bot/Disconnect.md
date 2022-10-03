@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 				GuildData guild = Guilds::getCachedGuildAsync({ newArgs.eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild);
 
-				bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
+				Bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
 				if (!areWeAllowed) {
 					return;
@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 				GuildMember guildMember =
 					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
-				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
+				Bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 
 				if (!doWeHaveControl) {
 					return;

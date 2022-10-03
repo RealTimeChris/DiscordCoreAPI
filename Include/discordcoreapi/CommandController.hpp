@@ -39,20 +39,20 @@ namespace DiscordCoreAPI {
 		/// Registers a function to be called. \brief Registers a function to be called.
 		/// \param functionNames A vector of strings to be accepted as function names.
 		/// \param baseFunction A unique_ptr to the function to be called.
-		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction);
+		void registerFunction(const std::vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction);
 
 		/// For returning the contained map of functions. \brief For returning the contained map of functions.
 		/// \returns A map containing the function names as well as unique_ptrs to the functions.
-		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& getFunctions();
+		std::map<std::vector<String>, std::unique_ptr<BaseFunction>>& getFunctions();
 
 		CoRoutine<void> checkForAndRunCommand(const CommandData commandData);
 
 	  protected:
 		DiscordCoreClient* discordCoreClient{ nullptr };
 
-		std::unique_ptr<BaseFunction> createFunction(const std::string& functionName);
+		std::unique_ptr<BaseFunction> createFunction(const String& functionName);
 
-		std::unique_ptr<BaseFunction> getCommand(const std::string& commandName);
+		std::unique_ptr<BaseFunction> getCommand(const String& commandName);
 	};
 
 };// namespace DiscordCoreAPI

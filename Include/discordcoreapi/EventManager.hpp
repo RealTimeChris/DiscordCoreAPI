@@ -302,7 +302,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnInviteDeletionData {
 		Snowflake channelId{};///< The id of the Channel for which the Invite existed.
 		Snowflake guildId{};///< The id of the Guild for which the Invite existed.
-		std::string code{};///< The code of the Invite.
+		String code{};///< The code of the Invite.
 	};
 
 	/// Data that is received as part of an Interaction creation event. \brief Data that is received as part of an Interaction creation event.
@@ -401,8 +401,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData {
 		OnVoiceServerUpdateData() noexcept = default;
 		OnVoiceServerUpdateData(simdjson::ondemand::value);
-		std::string endpoint{};///< The new endpoint.
-		std::string token{};///< The token of the server update event.
+		String endpoint{};///< The new endpoint.
+		String token{};///< The token of the server update event.
 		Snowflake guildId{};///< The id of the Guild for which the server update is occurring.
 	};
 
@@ -417,7 +417,7 @@ namespace DiscordCoreAPI {
 		InputEventData inputEvent{};///< The input-event representing the autocomplete entry.
 	};
 
-	/// Class for handling the assignment of event-handling functions. \brief Class for handling the assignment of event-handling functions.int32_t
+	/// Class for handling the assignment of event-handling functions. \brief Class for handling the assignment of event-handling functions.Int32
 	class DiscordCoreAPI_Dll EventManager {
 	  public:
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.

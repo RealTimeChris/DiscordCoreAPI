@@ -3,7 +3,7 @@
 # This file describes the settings to be used by the documentation system
 # doxygen (www.doxygen.org) for a project.
 #
-# All text after a double hash (##) is considered a comment and is placed in
+# All text after a Double hash (##) is considered a comment and is placed in
 # front of the TAG it is preceding.
 #
 # All text after a single hash (#) is considered a comment and will be ignored.
@@ -36,7 +36,7 @@
 DOXYFILE_ENCODING      = UTF-8
 
 # The PROJECT_NAME tag is a single word (or a sequence of words surrounded by
-# double-quotes, unless you are using Doxywizard) that should identify the
+# Double-quotes, unless you are using Doxywizard) that should identify the
 # project for which the documentation is generated. This name is used in the
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
@@ -82,7 +82,7 @@ CREATE_SUBDIRS         = YES
 
 # Controls the number of sub-directories that will be created when
 # CREATE_SUBDIRS tag is set to YES. Level 0 represents 16 directories, and every
-# level increment doubles the number of directories, resulting in 4096
+# level increment Doubles the number of directories, resulting in 4096
 # directories at level 8 which is the default and also the maximum value. The
 # sub-directories are organized in 2 levels, the first level always has a fixed
 # numer of 16 directories.
@@ -280,7 +280,7 @@ TAB_SIZE               = 4
 # file. When you need a literal { or } or , in the value part of an alias you
 # have to escape them by means of a backslash (\), this can lead to conflicts
 # with the commands \{ and \} for these it is advised to use the version @{ and
-# @} or use a double escape (\\{ and \\})
+# @} or use a Double escape (\\{ and \\})
 
 ALIASES                =
 
@@ -370,11 +370,11 @@ TOC_INCLUDE_HEADINGS   = 5
 
 AUTOLINK_SUPPORT       = YES
 
-# If you use STL classes (i.e. std::string, std::vector, etc.) but do not want
+# If you use STL classes (i.e. String, std::vector, etc.) but do not want
 # to include (a tag file for) the STL sources as input, then you should set this
 # tag to YES in order to let doxygen match functions declarations and
-# definitions whose arguments contain STL classes (e.g. func(std::string);
-# versus func(std::string) {}). This also make the inheritance and collaboration
+# definitions whose arguments contain STL classes (e.g. func(String);
+# versus func(String) {}). This also make the inheritance and collaboration
 # diagrams that involve STL classes more complete and accurate.
 # The default value is: NO.
 
@@ -643,7 +643,7 @@ SHOW_INCLUDE_FILES     = YES
 SHOW_GROUPED_MEMB_INC  = NO
 
 # If the FORCE_LOCAL_INCLUDES tag is set to YES then doxygen will list include
-# files with double quotes in the documentation rather than with sharp brackets.
+# files with Double quotes in the documentation rather than with sharp brackets.
 # The default value is: NO.
 
 FORCE_LOCAL_INCLUDES   = NO

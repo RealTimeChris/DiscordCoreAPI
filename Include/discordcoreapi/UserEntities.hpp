@@ -31,7 +31,7 @@
 
 namespace DiscordCoreAPI {
 
-	inline bool operator==(const DiscordCoreAPI::UserData& lhs, const DiscordCoreAPI::UserData& rhs) {
+	inline Bool operator==(const DiscordCoreAPI::UserData& lhs, const DiscordCoreAPI::UserData& rhs) {
 		if (lhs.id == rhs.id) {
 			return true;
 		} else {
@@ -48,10 +48,10 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
 		Snowflake channelId{};///< The Channel Id of the Dm.
 		Snowflake userId{};///< The user's Id.
-		std::string token{};///< The user's access token.
-		std::string nick{};///< The user's nickname.
+		String token{};///< The user's access token.
+		String nick{};///< The user's nickname.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For removing a User from a group Dm. \brief For removing a User from a group Dm.
@@ -62,16 +62,16 @@ namespace DiscordCoreAPI {
 
 	/// For updating the bot's current voice state. \brief For updating the bot's current voice state.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
-		std::string requestToSpeakTimestamp{};///< ISO8601 timestamp.
+		String requestToSpeakTimestamp{};///< ISO8601 timestamp.
 		Snowflake channelId{};///< The id of the Channel the user is currently in.
-		bool suppress{ false };///< Toggles the user's suppress state.
+		Bool suppress{ false };///< Toggles the user's suppress state.
 		Snowflake guildId{};///< The Guild within which to update the bot's voice state.
 	};
 
 	/// For modifying a User's voice state. \brief For modifying a User's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
 		Snowflake channelId{};///< The id of the Channel the user is currently in.
-		bool suppress{ false };///< Toggles the user's suppress state.
+		Bool suppress{ false };///< Toggles the user's suppress state.
 		Snowflake guildId{};///< The Guild within which you would like to modify their voice state.
 		Snowflake userId{};///< The user for which you would like to modify the voice state of.
 	};
@@ -83,17 +83,17 @@ namespace DiscordCoreAPI {
 
 	/// For modifying the Bot's User responseData. \brief For modifying the Bot's User responseData.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserData {
-		std::vector<uint8_t> avatar{};///< If passed, modifies the user's avatar.
-		std::string userName{};///< User's userName, if changed may cause the user's discriminator to be randomized.
+		std::vector<Uint8> avatar{};///< If passed, modifies the user's avatar.
+		String userName{};///< User's userName, if changed may cause the user's discriminator to be randomized.
 	};
 
 	/// A single User. \brief A single User.
 	class DiscordCoreAPI_Dll User : public UserData {
 	  public:
 		PremiumType premiumType{};///< The type of Nitro subscription on a user ' s account.
-		int32_t accentColor{ 0 };///< The user 's banner color encoded as an integer representation of hexadecimal color code.
-		std::string locale{};///< The user' s chosen language option.
-		std::string email{};///< The user's email.
+		Int32 accentColor{ 0 };///< The user 's banner color encoded as an integer representation of hexadecimal color code.
+		String locale{};///< The user' s chosen language option.
+		String email{};///< The user's email.
 		IconHash banner{};///< The user's banner hash.
 
 		User() noexcept = default;
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<UserData> cache;
-		static bool doWeCacheUsers;
+		static Bool doWeCacheUsers;
 	};
 	/**@}*/
 

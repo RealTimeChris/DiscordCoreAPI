@@ -38,54 +38,30 @@
 
 namespace DiscordCoreInternal {
 
-	WebSocketClose& WebSocketClose::operator=(uint16_t theValueNew) {
+	WebSocketClose& WebSocketClose::operator=(Uint16 theValueNew) {
 		this->theValue = this->mappingValues[theValueNew];
 		return *this;
 	};
 
-	WebSocketClose::WebSocketClose(uint16_t theValueNew) {
+	WebSocketClose::WebSocketClose(Uint16 theValueNew) {
 		*this = theValueNew;
 	};
 
-	WebSocketClose::operator uint16_t() {
+	WebSocketClose::operator Uint16() {
 		for (auto& [key, value]: this->mappingValues) {
 			if (theValue == value) {
 				return key;
 			}
 		}
-		return uint16_t{};
+		return Uint16{};
 	}
 
-	WebSocketClose::operator bool() {
+	WebSocketClose::operator Bool() {
 		return utCast(this->theValue) & utCast(WebSocketCloseCode::We_Do_Reconnect);
 	}
 }
 
 namespace DiscordCoreAPI {
-
-	Snowflake& Snowflake::operator=(const std::string other) noexcept {
-		if (!other.empty()) {
-			this->theId = stoull(other);
-		}
-		return *this;
-	}
-
-	Snowflake::Snowflake(const std::string other) noexcept {
-		*this = other;
-	}
-
-	Snowflake& Snowflake::operator=(const size_t other) noexcept {
-		this->theId = other;
-		return *this;
-	}
-
-	Snowflake::Snowflake(const size_t other) noexcept {
-		*this = other;
-	}
-
-	Snowflake::operator size_t() noexcept {
-		return this->theId;
-	}
 
 	EnumConverter& EnumConverter::operator=(EnumConverter&& other) noexcept {
 		this->thePtr = other.thePtr;
@@ -98,24 +74,24 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	EnumConverter::operator std::vector<uint64_t>() {
-		std::vector<uint64_t> theObject{};
-		for (auto& value: *static_cast<std::vector<uint64_t>*>(this->thePtr)) {
+	EnumConverter::operator std::vector<Uint64>() {
+		std::vector<Uint64> theObject{};
+		for (auto& value: *static_cast<std::vector<Uint64>*>(this->thePtr)) {
 			theObject.emplace_back(value);
 		}
 		return theObject;
 	}
 
-	EnumConverter::operator uint64_t() {
-		return uint64_t{ *static_cast<uint64_t*>(this->thePtr) };
+	EnumConverter::operator Uint64() {
+		return Uint64{ *static_cast<Uint64*>(this->thePtr) };
 	}
 
 	EnumConverter::~EnumConverter() {
 		if (this->thePtr) {
 			if (this->vectorType) {
-				delete static_cast<std::vector<uint64_t>*>(this->thePtr);
+				delete static_cast<std::vector<Uint64>*>(this->thePtr);
 			} else {
-				delete static_cast<uint64_t*>(this->thePtr);
+				delete static_cast<Uint64*>(this->thePtr);
 			}
 		}
 	}
@@ -132,58 +108,58 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(uint64_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Uint64 theData) noexcept {
 		this->numberUint = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(uint32_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Uint32 theData) noexcept {
 		this->numberUint = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(uint16_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Uint16 theData) noexcept {
 		this->numberUint = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(uint8_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Uint8 theData) noexcept {
 		this->numberUint = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(int64_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Int64 theData) noexcept {
 		this->numberInt = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(int32_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Int32 theData) noexcept {
 		this->numberInt = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(int16_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Int16 theData) noexcept {
 		this->numberInt = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(int8_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Int8 theData) noexcept {
 		this->numberInt = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(double theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Double theData) noexcept {
 		this->numberDouble = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(float theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Float theData) noexcept {
 		this->numberDouble = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(bool theData) noexcept {
-		this->boolean = theData;
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Bool theData) noexcept {
+		this->Boolean = theData;
 		return *this;
 	}
 
@@ -202,7 +178,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case ValueType::Bool: {
-				this->boolean = static_cast<BoolType>(false);
+				this->Boolean = static_cast<BoolType>(false);
 				break;
 			}
 			case ValueType::Int64: {
@@ -246,8 +222,8 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonObject& JsonObject::operator=(EnumConverter theData) noexcept {
-		this->theValue = uint64_t{ theData };
-		this->theValue.numberUint = uint64_t{ theData };
+		this->theValue = Uint64{ theData };
+		this->theValue.numberUint = Uint64{ theData };
 		this->theType = ValueType::Uint64;
 		return *this;
 	}
@@ -281,7 +257,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case ValueType::Bool: {
-				this->theValue.boolean = theKey.theValue.boolean;
+				this->theValue.Boolean = theKey.theValue.Boolean;
 				break;
 			}
 			case ValueType::Int64: {
@@ -310,13 +286,13 @@ namespace DiscordCoreAPI {
 		*this = theKey;
 	}
 
-	JsonObject& JsonObject::operator=(const std::string theData) noexcept {
+	JsonObject& JsonObject::operator=(const String theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::String;
 		return *this;
 	}
 
-	JsonObject::JsonObject(const std::string theData) noexcept {
+	JsonObject::JsonObject(const String theData) noexcept {
 		*this = theData;
 	}
 
@@ -330,113 +306,113 @@ namespace DiscordCoreAPI {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(uint64_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Uint64 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Uint64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(uint64_t theData) noexcept {
+	JsonObject::JsonObject(Uint64 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(uint32_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Uint32 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Uint64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(uint32_t theData) noexcept {
+	JsonObject::JsonObject(Uint32 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(uint16_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Uint16 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Uint64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(uint16_t theData) noexcept {
+	JsonObject::JsonObject(Uint16 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(uint8_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Uint8 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Uint64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(uint8_t theData) noexcept {
+	JsonObject::JsonObject(Uint8 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(int64_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Int64 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Int64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(int64_t theData) noexcept {
+	JsonObject::JsonObject(Int64 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(int32_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Int32 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Int64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(int32_t theData) noexcept {
+	JsonObject::JsonObject(Int32 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(int16_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Int16 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Int64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(int16_t theData) noexcept {
+	JsonObject::JsonObject(Int16 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(int8_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Int8 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Int64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(int8_t theData) noexcept {
+	JsonObject::JsonObject(Int8 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(double theData) noexcept {
+	JsonObject& JsonObject::operator=(Double theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Float;
 		return *this;
 	}
 
-	JsonObject::JsonObject(double theData) noexcept {
+	JsonObject::JsonObject(Double theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(float theData) noexcept {
+	JsonObject& JsonObject::operator=(Float theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Float;
 		return *this;
 	}
 
-	JsonObject::JsonObject(float theData) noexcept {
+	JsonObject::JsonObject(Float theData) noexcept {
 		this->theValue = theData;
 	}
 
-	JsonObject& JsonObject::operator=(bool theData) noexcept {
+	JsonObject& JsonObject::operator=(Bool theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Bool;
 		return *this;
 	}
 
-	JsonObject::JsonObject(bool theData) noexcept {
+	JsonObject::JsonObject(Bool theData) noexcept {
 		*this = theData;
 	}
 
@@ -512,8 +488,8 @@ namespace DiscordCoreAPI {
 		this->theValue.destroy(this->theType);
 	}
 
-	JsonObject::operator std::string() noexcept {
-		std::string theString{};
+	JsonObject::operator String() noexcept {
+		String theString{};
 		switch (this->theType) {
 			case ValueType::Object: {
 				if (this->theValue.object->empty()) {
@@ -527,7 +503,7 @@ namespace DiscordCoreAPI {
 					theString += '\"';
 					theString += iterator->first;
 					theString += "\":";
-					theString += static_cast<std::string>(iterator->second);
+					theString += static_cast<String>(iterator->second);
 					if (theIndex < this->theValue.object->size() - 1) {
 						theString += ',';
 					}
@@ -562,8 +538,8 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case ValueType::Bool: {
-				std::stringstream theStream{};
-				theStream << std::boolalpha << this->theValue.boolean;
+				StringStream theStream{};
+				theStream << std::boolalpha << this->theValue.Boolean;
 				theString += theStream.str();
 				break;
 			}
@@ -591,8 +567,8 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
-	JsonObject::operator std::string() const noexcept {
-		std::string theString{};
+	JsonObject::operator String() const noexcept {
+		String theString{};
 		switch (this->theType) {
 			case ValueType::Object: {
 				if (this->theValue.object->empty()) {
@@ -606,7 +582,7 @@ namespace DiscordCoreAPI {
 					theString += '\"';
 					theString += iterator->first;
 					theString += "\":";
-					theString += static_cast<std::string>(iterator->second);
+					theString += static_cast<String>(iterator->second);
 					if (theIndex < this->theValue.object->size() - 1) {
 						theString += ',';
 					}
@@ -641,8 +617,8 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case ValueType::Bool: {
-				std::stringstream theStream{};
-				theStream << std::boolalpha << this->theValue.boolean;
+				StringStream theStream{};
+				theStream << std::boolalpha << this->theValue.Boolean;
 				theString += theStream.str();
 				break;
 			}
@@ -671,7 +647,7 @@ namespace DiscordCoreAPI {
 	}
 
 
-	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void )) {
+	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const String& (*theFunction)( void )) {
 		outputSttream << theFunction();
 		return outputSttream;
 	}
@@ -680,51 +656,51 @@ namespace DiscordCoreAPI {
 		this->theConfig = theConfigNew;
 	}
 
-	const bool ConfigManager::doWePrintWebSocketSuccessMessages() {
+	const Bool ConfigManager::doWePrintWebSocketSuccessMessages() {
 		return this->theConfig.logOptions.logWebSocketSuccessMessages;
 	}
 
-	const bool ConfigManager::doWePrintWebSocketErrorMessages() {
+	const Bool ConfigManager::doWePrintWebSocketErrorMessages() {
 		return this->theConfig.logOptions.logWebSocketErrorMessages;
 	}
 
-	const bool ConfigManager::doWePrintHttpsSuccessMessages() {
+	const Bool ConfigManager::doWePrintHttpsSuccessMessages() {
 		return this->theConfig.logOptions.logHttpsSuccessMessages;
 	}
 
-	const bool ConfigManager::doWePrintHttpsErrorMessages() {
+	const Bool ConfigManager::doWePrintHttpsErrorMessages() {
 		return this->theConfig.logOptions.logHttpsErrorMessages;
 	}
 
-	const bool ConfigManager::doWePrintFFMPEGSuccessMessages() {
+	const Bool ConfigManager::doWePrintFFMPEGSuccessMessages() {
 		return this->theConfig.logOptions.logFFMPEGSuccessMessages;
 	}
 
-	const bool ConfigManager::doWePrintFFMPEGErrorMessages() {
+	const Bool ConfigManager::doWePrintFFMPEGErrorMessages() {
 		return this->theConfig.logOptions.logFFMPEGErrorMessages;
 	}
 
-	const bool ConfigManager::doWePrintGeneralSuccessMessages() {
+	const Bool ConfigManager::doWePrintGeneralSuccessMessages() {
 		return this->theConfig.logOptions.logGeneralSuccessMessages;
 	}
 
-	const bool ConfigManager::doWePrintGeneralErrorMessages() {
+	const Bool ConfigManager::doWePrintGeneralErrorMessages() {
 		return this->theConfig.logOptions.logGeneralErrorMessages;
 	}
 
-	const bool ConfigManager::doWeCacheChannels() {
+	const Bool ConfigManager::doWeCacheChannels() {
 		return this->theConfig.cacheOptions.cacheChannels;
 	}
 
-	const bool ConfigManager::doWeCacheUsers() {
+	const Bool ConfigManager::doWeCacheUsers() {
 		return this->theConfig.cacheOptions.cacheUsers;
 	}
 
-	const bool ConfigManager::doWeCacheGuilds() {
+	const Bool ConfigManager::doWeCacheGuilds() {
 		return this->theConfig.cacheOptions.cacheGuilds;
 	}
 
-	const bool ConfigManager::doWeCacheRoles() {
+	const Bool ConfigManager::doWeCacheRoles() {
 		return this->theConfig.cacheOptions.cacheRoles;
 	}
 
@@ -732,35 +708,35 @@ namespace DiscordCoreAPI {
 		return this->theConfig.presenceData;
 	}
 
-	const std::string ConfigManager::getBotToken() {
+	const String ConfigManager::getBotToken() {
 		return this->theConfig.botToken;
 	}
 
-	const uint32_t ConfigManager::getTotalShardCount() {
+	const Uint32 ConfigManager::getTotalShardCount() {
 		return this->theConfig.shardOptions.totalNumberOfShards;
 	}
 
-	const uint32_t ConfigManager::getStartingShard() {
+	const Uint32 ConfigManager::getStartingShard() {
 		return this->theConfig.shardOptions.startingShard;
 	}
 
-	const uint32_t ConfigManager::getShardCountForThisProcess() {
+	const Uint32 ConfigManager::getShardCountForThisProcess() {
 		return this->theConfig.shardOptions.numberOfShardsForThisProcess;
 	}
 
-	const std::string ConfigManager::getConnectionAddress() {
+	const String ConfigManager::getConnectionAddress() {
 		return this->theConfig.connectionAddress;
 	}
 
-	void ConfigManager::setConnectionAddress(const std::string& connectionAddressNew) {
+	void ConfigManager::setConnectionAddress(const String& connectionAddressNew) {
 		this->theConfig.connectionAddress = connectionAddressNew;
 	}
 
-	const std::string ConfigManager::getConnectionPort() {
+	const String ConfigManager::getConnectionPort() {
 		return this->theConfig.connectionPort;
 	}
 
-	void ConfigManager::setConnectionPort(const std::string& connectionPortNew) {
+	void ConfigManager::setConnectionPort(const String& connectionPortNew) {
 		this->theConfig.connectionPort = connectionPortNew;
 	}
 
@@ -793,13 +769,13 @@ namespace DiscordCoreAPI {
 	StringWrapper& StringWrapper::operator=(const StringWrapper& other) {
 		if (this != &other) {
 			this->thePtr.reset(nullptr);
-			std::stringstream theStream{};
+			StringStream theStream{};
 			if (other.thePtr) {
 				theStream << other.thePtr;
 			}
 			auto theLength = theStream.str().size();
 			this->thePtr = std::make_unique<char[]>(theLength + 1);
-			for (uint64_t x = 0; x < theLength; ++x) {
+			for (Uint64 x = 0; x < theLength; ++x) {
 				this->thePtr[x] = other.thePtr[x];
 			}
 		}
@@ -810,28 +786,28 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	StringWrapper& StringWrapper::operator=(const std::string& theString) {
+	StringWrapper& StringWrapper::operator=(const String& theString) {
 		auto theLength = theString.size();
 		this->thePtr.reset(nullptr);
 		this->thePtr = std::make_unique<char[]>(theLength + 1);
-		for (int32_t x = 0; x < theLength; ++x) {
+		for (Int32 x = 0; x < theLength; ++x) {
 			this->thePtr[x] = theString[x];
 		}
 		return *this;
 	}
 
-	StringWrapper::StringWrapper(const std::string& theString) {
+	StringWrapper::StringWrapper(const String& theString) {
 		*this = theString;
 	}
 
 	StringWrapper& StringWrapper::operator=(const char* theString) {
 		if (theString) {
 			this->thePtr.reset(nullptr);
-			std::stringstream theStream{};
+			StringStream theStream{};
 			theStream << theString;
-			int64_t theLength = theStream.str().size();
+			Int64 theLength = theStream.str().size();
 			this->thePtr = std::make_unique<char[]>(theLength + 1);
-			for (int64_t x = 0; x < theLength; ++x) {
+			for (Int64 x = 0; x < theLength; ++x) {
 				this->thePtr[x] = theString[x];
 			}
 		}
@@ -843,32 +819,32 @@ namespace DiscordCoreAPI {
 	}
 
 	StringWrapper::operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>() {
-		std::stringstream theStream{};
+		StringStream theStream{};
 		if (this->thePtr) {
 			theStream << this->thePtr;
 		}
-		std::string theString{};
-		for (uint32_t x = 0; x < theStream.str().size(); ++x) {
+		String theString{};
+		for (Uint32 x = 0; x < theStream.str().size(); ++x) {
 			theString.push_back(theStream.str()[x]);
 		}
 		return theString;
 	}
 
 	void StringWrapper::emplace_back(char theChar) {
-		std::stringstream theStream{};
+		StringStream theStream{};
 		if (this->thePtr) {
 			theStream << this->thePtr;
 		}
 		auto theLength = theStream.str().size();
 		this->thePtr = std::make_unique<char[]>(theLength + 2);
-		for (uint64_t x = 0; x < theLength; ++x) {
+		for (Uint64 x = 0; x < theLength; ++x) {
 			this->thePtr[x] = theStream.str()[x];
 		}
 		this->thePtr[theLength] = theChar;
 	}
 
 	size_t StringWrapper::size() {
-		std::stringstream theStream{};
+		StringStream theStream{};
 		if (this->thePtr) {
 			theStream << this->thePtr;
 		}
@@ -880,11 +856,11 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
-	ColorValue::ColorValue(uint32_t theColorValue) {
+	ColorValue::ColorValue(Uint32 theColorValue) {
 		this->theColor = theColorValue;
 	}
 
-	ColorValue::ColorValue(std::string theHexColorValue) {
+	ColorValue::ColorValue(String theHexColorValue) {
 		if (theHexColorValue == "") {
 			theHexColorValue = "fefefe";
 		}
@@ -892,9 +868,9 @@ namespace DiscordCoreAPI {
 	}
 
 	RGBColorValue ColorValue::getRgbColorValue() {
-		uint8_t red = static_cast<uint8_t>(this->theColor >> 16);
-		uint8_t green = static_cast<uint8_t>(this->theColor >> 8);
-		uint8_t blue = static_cast<uint8_t>(this->theColor);
+		Uint8 red = static_cast<Uint8>(this->theColor >> 16);
+		Uint8 green = static_cast<Uint8>(this->theColor >> 8);
+		Uint8 blue = static_cast<Uint8>(this->theColor);
 		RGBColorValue theColor{};
 		theColor.blue = blue;
 		theColor.green = green;
@@ -903,17 +879,17 @@ namespace DiscordCoreAPI {
 	}
 
 	HexColorValue ColorValue::getHexColorValue() {
-		std::stringstream theStream{};
+		StringStream theStream{};
 		theStream << std::hex << this->theColor;
 		return theStream.str();
 	}
 
-	uint32_t ColorValue::getIntColorValue() {
+	Uint32 ColorValue::getIntColorValue() {
 		return this->theColor;
 	}
 
-	IconHash& IconHash::operator=(const std::string theString) {
-		std::string newHash{ theString };
+	IconHash& IconHash::operator=(const String theString) {
+		String newHash{ theString };
 		if (newHash.empty() || newHash == "0") {
 			this->highBits = 0;
 			this->lowBits = 0;
@@ -925,28 +901,28 @@ namespace DiscordCoreAPI {
 		if (newHash.length() != 32 && newHash.length() != 33) {
 			throw std::length_error("IconHash must be exactly 32 characters in length, passed value is: '" + std::to_string(newHash.size()) + "', in length.");
 		}
-		this->lowBits = fromString<uint64_t>(newHash.substr(0, 16), std::hex);
-		this->highBits = fromString<uint64_t>(newHash.substr(16, 16), std::hex);
+		this->lowBits = fromString<Uint64>(newHash.substr(0, 16), std::hex);
+		this->highBits = fromString<Uint64>(newHash.substr(16, 16), std::hex);
 		return *this;
 	}
 
-	IconHash::IconHash(const std::string theString) noexcept {
+	IconHash::IconHash(const String theString) noexcept {
 		*this = theString;
 	}
 
-	std::string IconHash::getIconHash() noexcept {
+	String IconHash::getIconHash() noexcept {
 		if (this->highBits == 0 || this->lowBits == 0) {
 			return {};
 		} else {
-			return std::string{ toHex(this->lowBits) + toHex(this->highBits) };
+			return String{ toHex(this->lowBits) + toHex(this->highBits) };
 		}
 	}
 
-	bool IconHash::operator==(const IconHash& other) {
+	Bool IconHash::operator==(const IconHash& other) {
 		return this->lowBits == other.lowBits && this->highBits == other.highBits;
 	}
 
-	uint64_t strtoull(const std::string& theString) {
+	Uint64 strtoull(const String& theString) {
 		for (auto& value: theString) {
 			if (!isdigit(value)) {
 				return 0;
@@ -960,7 +936,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(Permission&& other) {
-		this->thePermissions = static_cast<uint64_t>(other);
+		this->thePermissions = static_cast<Uint64>(other);
 		return *this;
 	}
 
@@ -969,7 +945,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(const Permission& other) {
-		this->thePermissions = static_cast<uint64_t>(other);
+		this->thePermissions = static_cast<Uint64>(other);
 		return *this;
 	}
 
@@ -977,7 +953,7 @@ namespace DiscordCoreAPI {
 		*this = permsNew;
 	}
 
-	Permissions& Permissions::operator=(std::string&& other) {
+	Permissions& Permissions::operator=(String&& other) {
 		if (other.size() == 0 || other == "") {
 			this->thePermissions = 0;
 		} else {
@@ -989,11 +965,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Permissions::Permissions(std::string&& permsNew) {
+	Permissions::Permissions(String&& permsNew) {
 		*this = std::move(permsNew);
 	}
 
-	Permissions& Permissions::operator=(const std::string& other) {
+	Permissions& Permissions::operator=(const String& other) {
 		if (other.size() == 0 || other == "") {
 			this->thePermissions = 0;
 		} else {
@@ -1002,72 +978,72 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Permissions::Permissions(const std::string& permsNew) {
+	Permissions::Permissions(const String& permsNew) {
 		*this = permsNew;
 	}
 
 
-	Permissions& Permissions::operator=(uint64_t other) {
+	Permissions& Permissions::operator=(Uint64 other) {
 		this->thePermissions = other;
 		return *this;
 	}
 
-	Permissions::Permissions(uint64_t permsNew) {
+	Permissions::Permissions(Uint64 permsNew) {
 		*this = permsNew;
 	}
 
-	Permissions::operator uint64_t() {
+	Permissions::operator Uint64() {
 		return this->thePermissions;
 	}
 
-	Permissions::operator std::string() {
-		return std::string{ std::to_string(this->thePermissions) };
+	Permissions::operator String() {
+		return String{ std::to_string(this->thePermissions) };
 	}
 
-	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
-		std::string permsString = Permissions::computePermissions(guildMember, channel);
+	String Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
+		String permsString = Permissions::computePermissions(guildMember, channel);
 		return permsString;
 	}
 
-	bool Permissions::checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission) {
-		std::string permissionsString = Permissions::computePermissions(guildMember, channel);
-		if ((stoull(permissionsString) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
+	Bool Permissions::checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission) {
+		String permissionsString = Permissions::computePermissions(guildMember, channel);
+		if ((stoull(permissionsString) & static_cast<Uint64>(permission)) == static_cast<Uint64>(permission)) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	std::string Permissions::getCurrentGuildPermissions(const GuildMember& guildMember) {
-		std::string permissions = Permissions::computeBasePermissions(guildMember);
+	String Permissions::getCurrentGuildPermissions(const GuildMember& guildMember) {
+		String permissions = Permissions::computeBasePermissions(guildMember);
 		return permissions;
 	}
 
 	void Permissions::removePermissions(const std::vector<Permission>& permissionsToRemove) {
-		uint64_t permissionsInteger = this->thePermissions;
+		Uint64 permissionsInteger = this->thePermissions;
 		for (auto value: permissionsToRemove) {
-			permissionsInteger &= ~static_cast<uint64_t>(value);
+			permissionsInteger &= ~static_cast<Uint64>(value);
 		}
-		std::stringstream sstream{};
+		StringStream sstream{};
 		sstream << permissionsInteger;
 		*this = sstream.str();
 	}
 
 	void Permissions::addPermissions(const std::vector<Permission>& permissionsToAdd) {
-		uint64_t permissionsInteger = this->thePermissions;
+		Uint64 permissionsInteger = this->thePermissions;
 		for (auto value: permissionsToAdd) {
-			permissionsInteger |= static_cast<uint64_t>(value);
+			permissionsInteger |= static_cast<Uint64>(value);
 		}
-		std::stringstream sstream{};
+		StringStream sstream{};
 		sstream << permissionsInteger;
 		*this = sstream.str();
 	}
 
-	std::vector<std::string> Permissions::displayPermissions() {
-		std::vector<std::string> returnVector{};
-		uint64_t permissionsInteger = this->thePermissions;
+	std::vector<String> Permissions::displayPermissions() {
+		std::vector<String> returnVector{};
+		Uint64 permissionsInteger = this->thePermissions;
 		if (permissionsInteger & (1ll << 3)) {
-			for (uint64_t x = 0; x < 41; ++x) {
+			for (Uint64 x = 0; x < 41; ++x) {
 				permissionsInteger |= 1ll << x;
 			}
 		}
@@ -1197,28 +1173,28 @@ namespace DiscordCoreAPI {
 		return returnVector;
 	}
 
-	std::string Permissions::getCurrentPermissionString() {
-		std::string theReturnString = std::to_string(this->thePermissions);
+	String Permissions::getCurrentPermissionString() {
+		String theReturnString = std::to_string(this->thePermissions);
 		return theReturnString;
 	}
 
-	std::string Permissions::getAllPermissions() {
-		uint64_t allPerms{ 0 };
-		for (uint64_t x = 0; x < 41; ++x) {
+	String Permissions::getAllPermissions() {
+		Uint64 allPerms{ 0 };
+		for (Uint64 x = 0; x < 41; ++x) {
 			allPerms |= 1ll << x;
 		}
-		std::stringstream stream{};
+		StringStream stream{};
 		stream << allPerms;
 		return stream.str();
 	}
 
-	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel) {
-		if ((stoull(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) == static_cast<uint64_t>(Permission::Administrator)) {
+	String Permissions::computeOverwrites(const String& basePermissions, const GuildMember& guildMember, ChannelData& channel) {
+		if ((stoull(basePermissions) & static_cast<Uint64>(Permission::Administrator)) == static_cast<Uint64>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
 
-		uint64_t permissions = stoull(basePermissions);
-		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+		Uint64 permissions = stoull(basePermissions);
+		for (Int32 x = 0; x < channel.permissionOverwrites.size(); ++x) {
 			if (channel.permissionOverwrites[x].id == guildMember.guildId) {
 				permissions &= ~channel.permissionOverwrites[x].deny;
 				permissions |= channel.permissionOverwrites[x].allow;
@@ -1229,10 +1205,10 @@ namespace DiscordCoreAPI {
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRoleAsync({ .guildId = guildMember.guildId, .roleId = value }).get());
 		}
-		uint64_t allow{ 0 };
-		uint64_t deny{ 0 };
+		Uint64 allow{ 0 };
+		Uint64 deny{ 0 };
 		for (auto& value: guildMemberRoles) {
-			for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+			for (Int32 x = 0; x < channel.permissionOverwrites.size(); ++x) {
 				if (value.id == channel.permissionOverwrites[x].id) {
 					allow |= channel.permissionOverwrites[x].allow;
 					deny |= channel.permissionOverwrites[x].deny;
@@ -1241,7 +1217,7 @@ namespace DiscordCoreAPI {
 		}
 		permissions &= ~deny;
 		permissions |= allow;
-		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
+		for (Int32 x = 0; x < channel.permissionOverwrites.size(); ++x) {
 			if (channel.permissionOverwrites[x].id == guildMember.id) {
 				permissions &= ~channel.permissionOverwrites[x].deny;
 				permissions |= channel.permissionOverwrites[x].allow;
@@ -1251,13 +1227,13 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	std::string Permissions::computePermissions(const GuildMember& guildMember, ChannelData& channel) {
-		std::string permissions = Permissions::computeBasePermissions(guildMember);
+	String Permissions::computePermissions(const GuildMember& guildMember, ChannelData& channel) {
+		String permissions = Permissions::computeBasePermissions(guildMember);
 		permissions = Permissions::computeOverwrites(permissions, guildMember, channel);
 		return permissions;
 	}
 
-	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
+	String Permissions::computeBasePermissions(const GuildMember& guildMember) {
 		const GuildData guild = Guilds::getCachedGuildAsync({ .guildId = guildMember.guildId }).get();
 		if (guild.ownerId == guildMember.id) {
 			return Permissions::getAllPermissions();
@@ -1272,7 +1248,7 @@ namespace DiscordCoreAPI {
 				roleEveryone = value;
 			}
 		}
-		uint64_t permissions{};
+		Uint64 permissions{};
 		if (roleEveryone.permissions != 0) {
 			permissions = roleEveryone.permissions;
 		}
@@ -1287,21 +1263,21 @@ namespace DiscordCoreAPI {
 			permissions |= value.permissions;
 		}
 
-		if ((permissions & static_cast<uint64_t>(Permission::Administrator)) == static_cast<uint64_t>(Permission::Administrator)) {
+		if ((permissions & static_cast<Uint64>(Permission::Administrator)) == static_cast<Uint64>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
 
 		return std::to_string(permissions);
 	}
 
-	void reportException(const std::string& currentFunctionName, std::source_location theLocation) {
+	void reportException(const String& currentFunctionName, std::source_location theLocation) {
 		try {
 			auto currentException = std::current_exception();
 			if (currentException) {
 				std::rethrow_exception(currentException);
 			}
 		} catch (const std::exception& e) {
-			std::stringstream theStream{};
+			StringStream theStream{};
 			theStream << shiftToBrightRed() << "Error Report: \n"
 					  << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
 					  << std::to_string(theLocation.column()) << ")"
@@ -1313,14 +1289,14 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void rethrowException(const std::string& currentFunctionName, std::source_location theLocation) {
+	void rethrowException(const String& currentFunctionName, std::source_location theLocation) {
 		try {
 			auto currentException = std::current_exception();
 			if (currentException) {
 				std::rethrow_exception(currentException);
 			}
 		} catch (const std::exception& e) {
-			std::stringstream theStream{};
+			StringStream theStream{};
 			theStream << shiftToBrightRed() << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
 					  << std::to_string(theLocation.column()) << ")"
 					  << "\nThe Error: \n"
@@ -1333,11 +1309,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string constructMultiPartData(std::string theData, const std::vector<File>& files) {
-		const std::string boundary("boundary25");
-		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
+	String constructMultiPartData(String theData, const std::vector<File>& files) {
+		const String boundary("boundary25");
+		const String partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
 
-		std::string content("--" + boundary);
+		String content("--" + boundary);
 
 		content += "\r\nContent-Type: application/json\r\nContent-Disposition: form-data; "
 				   "name=\"payload_json\"\r\n\r\n";
@@ -1346,7 +1322,7 @@ namespace DiscordCoreAPI {
 			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
 			content += files[0].data;
 		} else {
-			for (uint8_t x = 0; x < files.size(); ++x) {
+			for (Uint8 x = 0; x < files.size(); ++x) {
 				content += partStart + "name=\"files[" + std::to_string(x) + "]\"; filename=\"" + files[x].fileName + "\"\r\n\r\n";
 				content += files[x].data;
 				content += "\r\n";
@@ -1356,11 +1332,11 @@ namespace DiscordCoreAPI {
 		return content;
 	}
 
-	std::string convertToLowerCase(const std::string& stringToConvert) {
-		std::string newString;
+	String convertToLowerCase(const String& stringToConvert) {
+		String newString;
 		for (auto& value: stringToConvert) {
-			if (isupper(static_cast<uint8_t>(value))) {
-				newString += static_cast<char>(tolower(static_cast<uint8_t>(value)));
+			if (isupper(static_cast<Uint8>(value))) {
+				newString += static_cast<char>(tolower(static_cast<Uint8>(value)));
 			} else {
 				newString += value;
 			}
@@ -1368,7 +1344,7 @@ namespace DiscordCoreAPI {
 		return newString;
 	}
 
-	std::string base64Encode(const std::string& theString, bool url) {
+	String base64Encode(const String& theString, Bool url) {
 		const char* base64CharsArray[2] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 											"abcdefghijklmnopqrstuvwxyz"
 											"0123456789"
@@ -1381,32 +1357,32 @@ namespace DiscordCoreAPI {
 
 		size_t encodedLength = (theString.size() + 2) / 3 * 4;
 
-		uint8_t trailing_char = url ? '.' : '=';
+		Uint8 trailing_char = url ? '.' : '=';
 
 		const char* base64Chars = base64CharsArray[url];
 
-		std::string theReturnString{};
+		String theReturnString{};
 		theReturnString.reserve(encodedLength);
 		DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
-		uint64_t pos = 0;
+		Uint64 pos = 0;
 		while (pos < theString.size()) {
 			if (theStopWatch.hasTimePassed()) {
 				break;
 			}
-			theReturnString.push_back(base64Chars[(theString[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
+			theReturnString.push_back(base64Chars[(theString[static_cast<Uint64>(pos + 0)] & 0xfc) >> 2]);
 
-			if (static_cast<uint64_t>(pos + 1) < theString.size()) {
-				theReturnString.push_back(base64Chars[((theString[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((theString[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
+			if (static_cast<Uint64>(pos + 1) < theString.size()) {
+				theReturnString.push_back(base64Chars[((theString[static_cast<Int64>(pos + 0)] & 0x03) << 4) + ((theString[static_cast<Int64>(pos + 1)] & 0xf0) >> 4)]);
 
-				if (static_cast<uint64_t>(pos + 2) < theString.size()) {
-					theReturnString.push_back(base64Chars[((theString[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((theString[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
-					theReturnString.push_back(base64Chars[theString[static_cast<int64_t>(pos + 2)] & 0x3f]);
+				if (static_cast<Uint64>(pos + 2) < theString.size()) {
+					theReturnString.push_back(base64Chars[((theString[static_cast<Int64>(pos + 1)] & 0x0f) << 2) + ((theString[static_cast<Int64>(pos + 2)] & 0xc0) >> 6)]);
+					theReturnString.push_back(base64Chars[theString[static_cast<Int64>(pos + 2)] & 0x3f]);
 				} else {
-					theReturnString.push_back(base64Chars[(theString[static_cast<int64_t>(pos + 1)] & 0x0f) << 2]);
+					theReturnString.push_back(base64Chars[(theString[static_cast<Int64>(pos + 1)] & 0x0f) << 2]);
 					theReturnString.push_back(trailing_char);
 				}
 			} else {
-				theReturnString.push_back(base64Chars[(theString[static_cast<int64_t>(pos + 0)] & 0x03) << 4]);
+				theReturnString.push_back(base64Chars[(theString[static_cast<Int64>(pos + 0)] & 0x03) << 4]);
 				theReturnString.push_back(trailing_char);
 				theReturnString.push_back(trailing_char);
 			}
@@ -1417,18 +1393,18 @@ namespace DiscordCoreAPI {
 		return theReturnString;
 	}
 
-	std::string loadFileContents(const std::string& filePath) {
+	String loadFileContents(const String& filePath) {
 		std::ifstream file(filePath, std::ios::in | std::ios::binary);
 		std::ostringstream stream{};
 		stream << file.rdbuf();
 		return stream.str();
 	}
 
-	std::string utf8MakeValid(const std::string& inputString) {
-		std::string theReturnString{};
+	String utf8MakeValid(const String& inputString) {
+		String theReturnString{};
 		for (auto& value: inputString) {
 			if (value >= 128 || value < 0) {
-				int32_t theDifference = 0 - value;
+				Int32 theDifference = 0 - value;
 				theReturnString.push_back(value + theDifference);
 			} else {
 				theReturnString.push_back(value);
@@ -1437,13 +1413,13 @@ namespace DiscordCoreAPI {
 		return theReturnString;
 	}
 
-	std::string urlEncode(const std::string& inputString) {
+	String urlEncode(const String& inputString) {
 		std::ostringstream escaped{};
 		escaped.fill('0');
 		escaped << std::hex;
 
-		for (std::string::const_iterator i = inputString.begin(), n = inputString.end(); i != n; ++i) {
-			std::string::value_type c = (*i);
+		for (String::const_iterator i = inputString.begin(), n = inputString.end(); i != n; ++i) {
+			String::value_type c = (*i);
 
 			if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
 				escaped << c;
@@ -1451,44 +1427,44 @@ namespace DiscordCoreAPI {
 			}
 
 			escaped << std::uppercase;
-			escaped << '%' << std::setw(2) << int32_t(static_cast<uint8_t>(c));
+			escaped << '%' << std::setw(2) << Int32(static_cast<Uint8>(c));
 			escaped << std::nouppercase;
 		}
 		return escaped.str();
 	}
 
-	void spinLock(uint64_t timeInNsToSpinLockFor) {
-		uint64_t startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-		uint64_t timePassed{ 0 };
+	void spinLock(Uint64 timeInNsToSpinLockFor) {
+		Uint64 startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+		Uint64 timePassed{ 0 };
 		while (timePassed < timeInNsToSpinLockFor) {
 			timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() - startTime;
 		}
 	}
 
-	std::string generateBase64EncodedKey() {
-		std::string theReturnString{};
+	String generateBase64EncodedKey() {
+		String theReturnString{};
 		theReturnString.resize(16);
-		std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::steady_clock::now().time_since_epoch().count()) };
-		for (uint32_t x = 0; x < 16; ++x) {
-			theReturnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
+		std::mt19937_64 randomEngine{ static_cast<Uint64>(std::chrono::steady_clock::now().time_since_epoch().count()) };
+		for (Uint32 x = 0; x < 16; ++x) {
+			theReturnString[x] = static_cast<Uint8>((static_cast<Float>(randomEngine()) / static_cast<Float>(randomEngine.max())) * 255.0f);
 		}
 		theReturnString = base64Encode(theReturnString, false);
 		return theReturnString;
 	}
 
-	std::string shiftToBrightGreen() {
-		return std::string("\033[1;40;92m");
+	String shiftToBrightGreen() {
+		return String("\033[1;40;92m");
 	}
 
-	std::string shiftToBrightBlue() {
-		return std::string("\033[1;40;96m");
+	String shiftToBrightBlue() {
+		return String("\033[1;40;96m");
 	}
 
-	std::string shiftToBrightRed() {
-		return std::string("\033[1;40;91m");
+	String shiftToBrightRed() {
+		return String("\033[1;40;91m");
 	}
 
-	bool nanoSleep(int64_t ns) {
+	Bool nanoSleep(Int64 ns) {
 #ifdef _WIN32
 		HANDLE timer = CreateWaitableTimerExW(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
 		LARGE_INTEGER largeInt{ .QuadPart = -ns / 100 };
@@ -1508,14 +1484,14 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
-	std::string reset() {
-		return std::string("\033[0m");
+	String reset() {
+		return String("\033[0m");
 	}
 
-	std::string getTimeAndDate() {
+	String getTimeAndDate() {
 		const time_t now = std::time(nullptr);
 		tm time = *std::localtime(&now);
-		std::string timeStamp{};
+		String timeStamp{};
 		timeStamp.resize(48);
 		if (time.tm_isdst) {
 			if (time.tm_hour + 4 >= 24) {
@@ -1536,13 +1512,13 @@ namespace DiscordCoreAPI {
 		return timeStamp;
 	}
 
-	std::string escapeCharacters(std::string_view theString) {
-		std::string theStringNew{};
+	String escapeCharacters(StringView theString) {
+		String theStringNew{};
 		if (theStringNew.size() <= theString.size() * 2) {
 			theStringNew.resize(theString.size() * 2);
 		}
 		size_t theIndex{};
-		for (uint32_t x = 0; x < theString.size(); ++x) {
+		for (Uint32 x = 0; x < theString.size(); ++x) {
 			switch (static_cast<char>(theString[x])) {
 				case 0x00: {
 					break;
@@ -1617,17 +1593,17 @@ namespace DiscordCoreAPI {
 		return theStringNew;
 	}
 
-	template<typename Object> std::unordered_map<std::string, UnboundedMessageBlock<Object>*> ObjectCollector<Object>::objectsBufferMap{};
+	template<typename Object> std::unordered_map<String, UnboundedMessageBlock<Object>*> ObjectCollector<Object>::objectsBufferMap{};
 };
 
 namespace DiscordCoreInternal {
 
-	std::string_view StringBuffer::operator[](LengthData size) {
+	StringView StringBuffer::operator[](LengthData size) {
 		if (this->whichOneAreWeOn == 0) {
-			std::string_view theString{ this->theString01.data() + size.offSet, size.length };
+			StringView theString{ this->theString01.data() + size.offSet, size.length };
 			return theString;
 		} else {
-			std::string_view theString{ this->theString02.data() + size.offSet, size.length };
+			StringView theString{ this->theString02.data() + size.offSet, size.length };
 			return theString;
 		}
 	}
@@ -1657,12 +1633,12 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	StringBuffer::operator std::string_view() {
+	StringBuffer::operator StringView() {
 		if (this->whichOneAreWeOn == 0) {
-			std::string_view theString{ this->theString01.data(), this->theSize };
+			StringView theString{ this->theString01.data(), this->theSize };
 			return theString;
 		} else {
-			std::string_view theString{ this->theString02.data(), this->theSize };
+			StringView theString{ this->theString02.data(), this->theSize };
 			return theString;
 		}
 	}

@@ -32,7 +32,7 @@
 
 namespace DiscordCoreAPI {
 
-	inline bool operator==(const DiscordCoreAPI::GuildMemberData& lhs, const DiscordCoreAPI::GuildMemberData& rhs) {
+	inline Bool operator==(const DiscordCoreAPI::GuildMemberData& lhs, const DiscordCoreAPI::GuildMemberData& rhs) {
 		if ((lhs.guildId == rhs.guildId) && (lhs.id == rhs.id)) {
 			return true;
 		} else {
@@ -55,34 +55,34 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ListGuildMembersData {
 		Snowflake guildId{};///< Guild from which to list the GuildMembers.
 		Snowflake after{};///< The highest user id in the previous page.
-		int32_t limit{ 0 };///< Max number of members to return (1 - 1000).
+		Int32 limit{ 0 };///< Max number of members to return (1 - 1000).
 	};
 
 	/// For searching for one or more GuildMembers within a chosen Guild. \brief For searching for one or more GuildMembers within a chosen Guild.
 	struct DiscordCoreAPI_Dll SearchGuildMembersData {
 		Snowflake guildId{};///< Guild within which to search for the GuildMembers.
-		std::string query{};///< Query std::string to match userName(s) and nickname(s) against.
-		int32_t limit{ 0 };///< Max number of members to return (1 - 1000).
+		String query{};///< Query String to match userName(s) and nickname(s) against.
+		Int32 limit{ 0 };///< Max number of members to return (1 - 1000).
 	};
 
 	/// For adding a new GuildMember to a chosen Guild. \brief For adding a new GuildMember to a chosen Guild.
 	struct DiscordCoreAPI_Dll AddGuildMemberData {
 		std::vector<Snowflake> roles{};///< Array of Role ids the member is assigned.
-		std::string accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
+		String accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
 		Snowflake guildId{};///< The Guild to add the new GuildMember to.
 		Snowflake userId{};///< The User id of the user you wish to add.
-		std::string nick{};///< Value to set users nickname to.
-		bool mute{};///< Whether the user is muted in voice channels.
-		bool deaf{};///< Whether the user is deafened in voice channels.
+		String nick{};///< Value to set users nickname to.
+		Bool mute{};///< Whether the user is muted in voice channels.
+		Bool deaf{};///< Whether the user is deafened in voice channels.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For modifying the Current GuildMember's values. \brief For modifying the current GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyCurrentGuildMemberData {
 		Snowflake guildId{};///< The Guild within which to modify the current user's values.
-		std::string reason{};///< A reason for modifying the current user's values.
-		std::string nick{};///< A new nickname for the current user.
+		String reason{};///< A reason for modifying the current user's values.
+		String nick{};///< A new nickname for the current user.
 	};
 
 	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
@@ -93,19 +93,19 @@ namespace DiscordCoreAPI {
 		Snowflake currentChannelId{};///< The current voice Channel, if applicaple.
 		Snowflake guildMemberId{};///< The user id of the desired Guild memeber.
 		Snowflake guildId{};///< The id of the Guild for which you would like to modify a member.
-		std::string reason{};///< Reason for modifying this GuildMember.
-		std::string nick{};///< Their new display/nick name.
-		bool mute{ false };///< Whether or not to mute them in voice.
-		bool deaf{ false };///< Whether or not to deafen them, in voice.
+		String reason{};///< Reason for modifying this GuildMember.
+		String nick{};///< Their new display/nick name.
+		Bool mute{ false };///< Whether or not to mute them in voice.
+		Bool deaf{ false };///< Whether or not to deafen them, in voice.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For removing a GuildMember from a chosen Guild. \brief For removing a GuildMember from a chosen Guild.
 	struct DiscordCoreAPI_Dll RemoveGuildMemberData {
 		Snowflake guildMemberId{};///< Id of the chosen GuildMember to kick.
 		Snowflake guildId{};///< Guild from which to kick the chosen GuildMember.
-		std::string reason{};///< Reason for kicking the GuildMember.
+		String reason{};///< Reason for kicking the GuildMember.
 	};
 
 	/// For timing out a GuildMember. \brief For timing out a GuildMember.
@@ -113,14 +113,14 @@ namespace DiscordCoreAPI {
 		TimeoutDurations numOfMinutesToTimeoutFor{};///< The number of minutes to time-out the GuildMember for.
 		Snowflake guildMemberId{};///< The id of the GuildMember to be timed-out.
 		Snowflake guildId{};///< The id of the Guild from which you would like to acquire a member.
-		std::string reason{};///< Reason for timing them out.
+		String reason{};///< Reason for timing them out.
 	};
 
 	/// A single GuildMember. \brief A single GuildMember.
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	  public:
 		TimeStamp<std::chrono::milliseconds> communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
-		std::string premiumSince{};///< If applicable, when they first boosted the server.
+		String premiumSince{};///< If applicable, when they first boosted the server.
 
 		GuildMember() noexcept = default;
 
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<GuildMemberData> cache;
-		static bool doWeCacheGuildMembers;
+		static Bool doWeCacheGuildMembers;
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

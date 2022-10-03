@@ -28,11 +28,11 @@
 
 namespace DiscordCoreAPI {
 
-	CreateGuildRoleData::operator std::string() {
-		int32_t roleColorInt = stol(this->hexColorValue, 0, 16);
-		std::stringstream stream;
+	CreateGuildRoleData::operator String() {
+		Int32 roleColorInt = stol(this->hexColorValue, 0, 16);
+		StringStream stream;
 		stream << std::setbase(10) << roleColorInt;
-		std::string roleColorReal = stream.str();
+		String roleColorReal = stream.str();
 		JsonObject theData{};
 		theData["permissions"] = this->permissions.getCurrentPermissionString();
 		theData["mentionable"] = this->mentionable;
@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ModifyGuildRolePositionsData::operator std::string() {
+	ModifyGuildRolePositionsData::operator String() {
 		JsonObject theData{};
 		for (auto& value: this->rolePositions) {
 			JsonObject newData{};
@@ -59,11 +59,11 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ModifyGuildRoleData::operator std::string() {
-		int32_t roleColorInt = stol(this->hexColorValue, 0, 16);
-		std::stringstream stream;
+	ModifyGuildRoleData::operator String() {
+		Int32 roleColorInt = stol(this->hexColorValue, 0, 16);
+		StringStream stream;
 		stream << std::setbase(10) << roleColorInt;
-		std::string roleColorReal = stream.str();
+		String roleColorReal = stream.str();
 		JsonObject theData{};
 		theData["permissions"] = this->permissions.getCurrentPermissionString();
 		theData["mentionable"] = this->mentionable;
@@ -86,13 +86,13 @@ namespace DiscordCoreAPI {
 
 		this->name = getString(jsonObjectData, "name");
 
-		std::stringstream theStream{};
+		StringStream theStream{};
 		theStream << getString(jsonObjectData, "unicode_emoji");
 		for (auto& value: theStream.str()) {
 			this->unicodeEmoji.emplace_back(value);
 		}
 		if (this->unicodeEmoji.size() > 3) {
-			this->unicodeEmoji = static_cast<std::string>(this->unicodeEmoji).substr(1, this->unicodeEmoji.size() - 3);
+			this->unicodeEmoji = static_cast<String>(this->unicodeEmoji).substr(1, this->unicodeEmoji.size() - 3);
 		}
 
 		this->color = getUint32(jsonObjectData, "color");
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<Role>> Roles::getGuildRolesAsync(GetGuildRolesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Roles };
 		co_await NewThreadAwaitable<std::vector<Role>>();
-		if (dataPackage.guildId.operator size_t() == 0) {
+		if (dataPackage.guildId == 0) {
 			throw std::runtime_error{ "Roles::getGuildRolesAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -216,7 +216,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles";
-		workload.content = dataPackage.operator std::string();
+		workload.content = dataPackage.operator String();
 		workload.callStack = "Roles::createGuildRoleAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
 		dataPackage.rolePositions.emplace_back(newDataPos);
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles";
-		workload.content = dataPackage.operator std::string();
+		workload.content = dataPackage.operator String();
 		workload.callStack = "Roles::modifyGuildRolePositionsAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -278,7 +278,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles/" + std::to_string(dataPackage.roleId);
-		workload.content = dataPackage.operator std::string();
+		workload.content = dataPackage.operator String();
 		workload.callStack = "Roles::modifyGuildRoleAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -324,7 +324,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<Role> Roles::getRoleAsync(GetRoleData dataPackage) {
 		co_await NewThreadAwaitable<Role>();
 		auto roles = getGuildRolesAsync({ .guildId = dataPackage.guildId }).get();
-		if (dataPackage.guildId.operator size_t() == 0) {
+		if (dataPackage.guildId == 0) {
 			throw std::runtime_error{ "Roles::getRoleAsync() Error: Sorry, but you forgot to set the guildId!\n\n" };
 		}
 		for (auto& value: roles) {
@@ -349,7 +349,7 @@ namespace DiscordCoreAPI {
 	}
 	StopWatch theStopWatchNew{ 5s };
 	void Roles::insertRole(RoleData role) {
-		if (role.id.operator size_t() == 0) {
+		if (role.id == 0) {
 			return;
 		}
 		if (Roles::doWeCacheRoles) {
@@ -368,5 +368,5 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
 	ObjectCache<RoleData> Roles::cache{};
-	bool Roles::doWeCacheRoles{ false };
+	Bool Roles::doWeCacheRoles{ false };
 }

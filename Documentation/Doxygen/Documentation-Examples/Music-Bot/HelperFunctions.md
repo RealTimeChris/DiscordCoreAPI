@@ -5,11 +5,11 @@ Helper Functions {#HelperFunctions}
 
 	namespace DiscordCoreAPI {
 
-	bool areWeInADM(InputEventData eventData, Channel channel, bool displayResponse = true) {
+	Bool areWeInADM(InputEventData eventData, Channel channel, Bool displayResponse = true) {
 		auto currentChannelType = channel.type;
 		if (currentChannelType == ChannelType::Dm) {
 			if (displayResponse) {
-				std::string msgString = "------\n**Sorry, but we can't do that in a direct message!**\n------";
+				String msgString = "------\n**Sorry, but we can't do that in a direct message!**\n------";
 				std::unique_ptr<EmbedData> msgEmbed(new EmbedData());
 				msgEmbed->setAuthor(eventData.getMessageData().interaction.user.userName, eventData.getMessageData().author.avatar);
 				msgEmbed->setColor("FEFEFE");
@@ -26,11 +26,11 @@ Helper Functions {#HelperFunctions}
 		return false;
 	}
 
-	bool checkIfAllowedPlayingInChannel(InputEventData eventData, DiscordGuild discordGuild) {
-		bool isItFound = true;
+	Bool checkIfAllowedPlayingInChannel(InputEventData eventData, DiscordGuild discordGuild) {
+		Bool isItFound = true;
 		if (discordGuild.data.musicChannelIds.size() > 0) {
 			isItFound = false;
-			std::string msgString = "------\n**Sorry, but please do that in one of the following channels:**\n------\n";
+			String msgString = "------\n**Sorry, but please do that in one of the following channels:**\n------\n";
 			std::unique_ptr<EmbedData> msgEmbed(new EmbedData());
 			for (auto& value: discordGuild.data.musicChannelIds) {
 				if (eventData.getChannelId() == value) {
@@ -56,11 +56,11 @@ Helper Functions {#HelperFunctions}
 		return isItFound;
 	}
 
-	bool checkIfWeHaveControl(InputEventData eventData, DiscordGuild guildData, GuildMember guildMember) {
+	Bool checkIfWeHaveControl(InputEventData eventData, DiscordGuild guildData, GuildMember guildMember) {
 		if (guildData.data.djRoleId == 0) {
 			return true;
 		}
-		bool doWeHaveControl = false;
+		Bool doWeHaveControl = false;
 		DiscordGuildMember guildMemberData(guildMember);
 
 		auto myRoles = Roles::getGuildMemberRolesAsync({.guildMember = guildMember, .guildId = guildData.data.guildId}).get();
@@ -72,7 +72,7 @@ Helper Functions {#HelperFunctions}
 		}
 
 		if (!doWeHaveControl) {
-			std::string msgString = "------\n**Sorry, but you lack the permissions to do that!**\n------";
+			String msgString = "------\n**Sorry, but you lack the permissions to do that!**\n------";
 			std::unique_ptr<EmbedData> msgEmbed(new EmbedData());
 			msgEmbed->setAuthor(guildMember.user.userName, guildMember.user.avatar);
 			msgEmbed->setDescription(msgString);
@@ -87,8 +87,8 @@ Helper Functions {#HelperFunctions}
 		return doWeHaveControl;
 	}
 
-	bool checkForBotCommanderStatus(GuildMember guildMember, DiscordUser discordUser) {
-		bool areWeACommander;
+	Bool checkForBotCommanderStatus(GuildMember guildMember, DiscordUser discordUser) {
+		Bool areWeACommander;
 		for (auto& value: discordUser.data.botCommanders) {
 			if (guildMember.user.id == value) {
 				areWeACommander = true;
@@ -99,15 +99,15 @@ Helper Functions {#HelperFunctions}
 		return false;
 	}
 
-	bool doWeHaveAdminPermissions(BaseFunctionArguments args, InputEventData eventData, DiscordGuild discordGuild, Channel channel, GuildMember guildMember,
-								  bool displayResponse = true) {
-		bool doWeHaveAdmin = guildMember.permissions.checkForPermission(guildMember, channel, PermissionTypes::Administrator);
+	Bool doWeHaveAdminPermissions(BaseFunctionArguments args, InputEventData eventData, DiscordGuild discordGuild, Channel channel, GuildMember guildMember,
+								  Bool displayResponse = true) {
+		Bool doWeHaveAdmin = guildMember.permissions.checkForPermission(guildMember, channel, PermissionTypes::Administrator);
 
 		if (doWeHaveAdmin) {
 			return true;
 		}
 
-		bool areWeACommander =
+		Bool areWeACommander =
 			checkForBotCommanderStatus(guildMember, DiscordUser(args.discordCoreClient->getBotUser().userName, args.discordCoreClient->getBotUser().id));
 
 		if (areWeACommander) {
@@ -115,7 +115,7 @@ Helper Functions {#HelperFunctions}
 		}
 
 		if (displayResponse) {
-			std::string msgString = "------\n**Sorry, but you don't have the permissions required for that!**\n------";
+			String msgString = "------\n**Sorry, but you don't have the permissions required for that!**\n------";
 			std::unique_ptr<EmbedData> msgEmbed(new EmbedData());
 			msgEmbed->setAuthor(guildMember.user.userName, guildMember.user.avatar);
 			msgEmbed->setColor(discordGuild.data.borderColor);
@@ -130,22 +130,22 @@ Helper Functions {#HelperFunctions}
 		return false;
 	}
 
-	float applyAsymptoticTransform(float inputModValue, float horizontalStretch, float ceiling) {
-		float finalModValue = 0;
-		float newInputModValue = inputModValue;
+	Float applyAsymptoticTransform(Float inputModValue, Float horizontalStretch, Float ceiling) {
+		Float finalModValue = 0;
+		Float newInputModValue = inputModValue;
 		if (newInputModValue == 0) {
 			newInputModValue++;
 		}
 		if (newInputModValue <= 0) {
-			float newInputValue = newInputModValue * -1;
+			Float newInputValue = newInputModValue * -1;
 
 			finalModValue =
-				-1 * (float)trunc((ceiling * pow(newInputValue, 3))/((pow(newInputValue, 3) + (int64_t)horizontalStretch * (int64_t)newInputValue)));
+				-1 * (Float)trunc((ceiling * pow(newInputValue, 3))/((pow(newInputValue, 3) + (Int64)horizontalStretch * (Int64)newInputValue)));
 			return finalModValue;
 		}
 
 		finalModValue =
-			(float)trunc((ceiling * pow(newInputModValue, 3))/((pow(newInputModValue, 3) + (int64_t)horizontalStretch * (int64_t)newInputModValue)));
+			(Float)trunc((ceiling * pow(newInputModValue, 3))/((pow(newInputModValue, 3) + (Int64)horizontalStretch * (Int64)newInputModValue)));
 
 		return finalModValue;
 	}

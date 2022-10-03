@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 
 	/// An error type for CoRoutines. \brief An error type for CoRoutines.
 	struct DiscordCoreAPI_Dll CoRoutineError : public std::runtime_error {
-		CoRoutineError(const std::string& theMessage);
+		CoRoutineError(const String& theMessage);
 	};
 
 	class DiscordCoreAPI_Dll CoRoutineBase {
@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 				this->areWeStoppedBool.store(true);
 			}
 
-			bool areWeStopped() {
+			Bool areWeStopped() {
 				return this->areWeStoppedBool.load();
 			}
 
@@ -102,8 +102,8 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{ nullptr };
-			std::atomic_bool areWeStoppedBool{ false };
-			std::atomic_bool* areWeDone{ nullptr };
+			AtomicBool areWeStoppedBool{ false };
+			AtomicBool* areWeDone{ nullptr };
 			ReturnType result{};
 		};
 
@@ -213,7 +213,7 @@ namespace DiscordCoreAPI {
 		std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandle{ nullptr };
 		std::atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
 		UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
-		std::atomic_bool areWeDone{};
+		AtomicBool areWeDone{};
 		ReturnType result{};
 	};
 
@@ -229,7 +229,7 @@ namespace DiscordCoreAPI {
 				this->areWeStoppedBool.store(true);
 			}
 
-			bool areWeStopped() {
+			Bool areWeStopped() {
 				return this->areWeStoppedBool.load();
 			}
 
@@ -259,8 +259,8 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{ nullptr };
-			std::atomic_bool areWeStoppedBool{ false };
-			std::atomic_bool* areWeDone{ nullptr };
+			AtomicBool areWeStoppedBool{ false };
+			AtomicBool* areWeDone{ nullptr };
 		};
 
 		CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
@@ -361,14 +361,14 @@ namespace DiscordCoreAPI {
 		std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandle{ nullptr };
 		std::atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
 		UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
-		std::atomic_bool areWeDone{};
+		AtomicBool areWeDone{};
 	};
 
 	/// An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution. \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
 	/// \tparam ReturnType The type of value returned by the containing CoRoutine.
 	template<typename ReturnType> class NewThreadAwaiter {
 	  public:
-		bool await_ready() const noexcept {
+		Bool await_ready() const noexcept {
 			return false;
 		}
 

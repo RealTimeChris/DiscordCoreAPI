@@ -37,38 +37,38 @@ namespace DiscordCoreInternal {
 		SoundCloudRequestBuilder() noexcept = default;
 
 	  protected:
-		static std::string clientId;
+		static String clientId;
 
-		const std::string baseUrl02{ "https://api-v2.soundcloud.com" };
+		const String baseUrl02{ "https://api-v2.soundcloud.com" };
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		const std::string baseUrl{ "https://soundcloud.com" };
-		const std::string appVersion{ "1654762087" };
+		const String baseUrl{ "https://soundcloud.com" };
+		const String appVersion{ "1654762087" };
 		HttpsClient* httpsClient{ nullptr };
 
-		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& theString);
+		std::vector<DiscordCoreAPI::Song> collectSearchResults(const String& theString);
 
 		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
 
-		std::string collectClientId();
+		String collectClientId();
 	};
 
 	class DiscordCoreAPI_Dll SoundCloudAPI : public SoundCloudRequestBuilder {
 	  public:
 		SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClient, const DiscordCoreAPI::Snowflake guildId);
 
-		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
+		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
 
-		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries);
+		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
 
-		std::vector<DiscordCoreAPI::Song> searchForSong(const std::string& searchQuery);
+		std::vector<DiscordCoreAPI::Song> searchForSong(const String& searchQuery);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
 
 	  protected:
 		DiscordCoreAPI::Snowflake guildId{};
-		const int32_t maxBufferSize{ 8192 };
+		const Int32 maxBufferSize{ 8192 };
 		DiscordCoreAPI::Song theSong{};
 	};
 

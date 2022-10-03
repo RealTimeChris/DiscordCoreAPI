@@ -42,11 +42,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	AddGuildMemberData::operator std::string() {
+	AddGuildMemberData::operator String() {
 		JsonObject theData{};
 		theData["access_token"] = this->accessToken;
 		for (auto& value: this->roles) {
-			theData["roles"].pushBack(std::to_string(value.operator size_t()));
+			theData["roles"].pushBack(std::to_string(value));
 		}
 		theData["deaf"] = this->deaf;
 		theData["mute"] = this->mute;
@@ -54,14 +54,14 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ModifyGuildMemberData::operator std::string() {
+	ModifyGuildMemberData::operator String() {
 		JsonObject theData{};
 		theData["nick"] = this->nick;
-		theData["communication_disabled_until"] = static_cast<std::string>(this->communicationDisabledUntil);
+		theData["communication_disabled_until"] = static_cast<String>(this->communicationDisabledUntil);
 		for (auto& value: this->roleIds) {
-			theData["roles"].pushBack(std::to_string(value.operator size_t()));
+			theData["roles"].pushBack(std::to_string(value));
 		}
-		if (this->newVoiceChannelId.operator size_t() != 0) {
+		if (this->newVoiceChannelId != 0) {
 			theData["channel_id"] = std::to_string(this->newVoiceChannelId);
 			theData["mute"] = this->mute;
 			theData["deaf"] = this->deaf;
@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 			if (theResult == simdjson::error_code::SUCCESS) {
 				this->roles.clear();
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-					this->roles.emplace_back(stoull(std::string{ value.get_string().take_value() }));
+					this->roles.emplace_back(stoull(String{ value.get_string().take_value() }));
 				}
 			}
 		} catch (...) {
@@ -195,7 +195,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<std::vector<GuildMember>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members";
-		if (dataPackage.after.operator size_t() != 0) {
+		if (dataPackage.after != 0) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.after);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
@@ -229,7 +229,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId);
-		workload.content = dataPackage.operator std::string();
+		workload.content = dataPackage.operator String();
 		workload.callStack = "GuildMembers::addGuildMemberAsync()";
 		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
 	}
@@ -254,7 +254,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
-		workload.content = dataPackage.operator std::string();
+		workload.content = dataPackage.operator String();
 		workload.callStack = "GuildMembers::modifyGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -288,10 +288,10 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMember>();
 		GuildMemberData guildMember = GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId }).get();
 		ModifyGuildMemberData dataPackage01{};
-		dataPackage01.deaf = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Deaf);
+		dataPackage01.deaf = getBool<Int8, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Deaf);
 		dataPackage01.guildId = guildMember.guildId;
 		dataPackage01.guildMemberId = guildMember.id;
-		dataPackage01.mute = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Mute);
+		dataPackage01.mute = getBool<Int8, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Mute);
 		dataPackage01.roleIds = guildMember.roles;
 		dataPackage01.nick = guildMember.nick;
 		dataPackage01.reason = dataPackage.reason;
@@ -337,7 +337,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
-		if (guildMember.id.operator size_t() == 0) {
+		if (guildMember.id == 0) {
 			return;
 		}
 		if (GuildMembers::doWeCacheGuildMembers) {
@@ -354,5 +354,5 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
 	ObjectCache<GuildMemberData> GuildMembers::cache{};
-	bool GuildMembers::doWeCacheGuildMembers{ false };
+	Bool GuildMembers::doWeCacheGuildMembers{ false };
 };

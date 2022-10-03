@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CreateGuildEmojiData::operator std::string() {
+	CreateGuildEmojiData::operator String() {
 		JsonObject theData{};
 		for (auto& value: this->roles) {
 			theData["roles"].pushBack(std::to_string(value));
@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ModifyGuildEmojiData::operator std::string() {
+	ModifyGuildEmojiData::operator String() {
 		JsonObject theData{};
 		for (auto& value: this->roles) {
 			theData["roles"].pushBack(std::to_string(value));
@@ -98,8 +98,8 @@ namespace DiscordCoreAPI {
 	CoRoutine<Reaction> Reactions::createReactionAsync(CreateReactionData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Reaction };
 		co_await NewThreadAwaitable<Reaction>();
-		std::string emoji;
-		if (dataPackage.emojiId.operator size_t() != 0) {
+		String emoji;
+		if (dataPackage.emojiId != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 		} else {
 			emoji = dataPackage.emojiName;
@@ -114,8 +114,8 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Reactions::deleteOwnReactionAsync(DeleteOwnReactionData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Own_Reaction };
 		co_await NewThreadAwaitable<void>();
-		std::string emoji;
-		if (dataPackage.emojiId.operator size_t() != 0) {
+		String emoji;
+		if (dataPackage.emojiId != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 		} else {
 			emoji = dataPackage.emojiName;
@@ -130,8 +130,8 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Reactions::deleteUserReactionAsync(DeleteUserReactionData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_User_Reaction };
 		co_await NewThreadAwaitable<void>();
-		std::string emoji;
-		if (dataPackage.emojiId.operator size_t() != 0) {
+		String emoji;
+		if (dataPackage.emojiId != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 
 		} else {
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<UserVector>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/reactions/" + dataPackage.emoji;
-		if (dataPackage.afterId.operator size_t() != 0) {
+		if (dataPackage.afterId != 0) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.afterId);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
@@ -174,8 +174,8 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Reactions::deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Reactions_By_Emoji };
 		co_await NewThreadAwaitable<void>();
-		std::string emoji;
-		if (dataPackage.emojiId.operator size_t() != 0) {
+		String emoji;
+		if (dataPackage.emojiId != 0) {
 			emoji += ":" + dataPackage.emojiName + ":" + std::to_string(dataPackage.emojiId);
 		} else {
 			emoji = dataPackage.emojiName;
@@ -210,11 +210,11 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		std::ifstream fin(dataPackage.imageFilePath, std::ios::binary);
 		fin.seekg(0, std::ios::end);
-		std::string data{};
+		String data{};
 		data.resize(fin.tellg());
 		fin.seekg(0, std::ios::beg);
 		fin.read(data.data(), data.size());
-		std::string newerFile = base64Encode(data);
+		String newerFile = base64Encode(data);
 		switch (dataPackage.type) {
 			case ImageType::Jpg: {
 				dataPackage.imageDataFinal = "data:image/jpeg;base64,";
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis";
-		workload.content = dataPackage.operator std::string();
+		workload.content = dataPackage.operator String();
 		workload.callStack = "Reactions::createGuildEmojiAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis/" + std::to_string(dataPackage.emojiId);
-		workload.content = dataPackage.operator std::string();
+		workload.content = dataPackage.operator String();
 		workload.callStack = "Reactions::modifyGuildEmojiAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

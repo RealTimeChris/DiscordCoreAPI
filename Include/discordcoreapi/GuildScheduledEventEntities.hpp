@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 	 */
 	/// For collecting a list of a Guild's scheduled events. \brief For collecting a list of a Guild's scheduled events.
 	struct DiscordCoreAPI_Dll GetGuildScheduledEventsData {
-		bool withUserCount{ false };///< Do we collect the user counts?
+		Bool withUserCount{ false };///< Do we collect the user counts?
 		Snowflake guildId{};///< Guild from which we would like to collect the events.
 	};
 
@@ -46,20 +46,20 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventPrivacyLevel privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};/// The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
-		std::string scheduledStartTime{};///< The time to schedule the scheduled event.
-		std::string scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
-		std::string description{};///< The description of the scheduled event.
+		String scheduledStartTime{};///< The time to schedule the scheduled event.
+		String scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
+		String description{};///< The description of the scheduled event.
 		Snowflake channelId{};///< The Channel id of the scheduled event.
 		Snowflake guildId{};///< The Guild within which to create the event.
-		std::string name{};///< The name of the scheduled event.
+		String name{};///< The name of the scheduled event.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For collecting a single Guild scheduled event. \brief For collecting a single Guild scheduled event.
 	struct DiscordCoreAPI_Dll GetGuildScheduledEventData {
 		Snowflake guildScheduledEventId{};///< The id of the desired scheduled event.
-		bool withUserCount{ false };///< Do we collect the user counts?
+		Bool withUserCount{ false };///< Do we collect the user counts?
 		Snowflake guildId{};///< Guild from which we would like to collect the events.
 	};
 
@@ -70,14 +70,14 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventMetadata entityMetadata{};///< The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
 		Snowflake guildScheduledEventId{};///< The id of the event to modify.
-		std::string scheduledStartTime{};///< The time to schedule the scheduled event.
-		std::string scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
-		std::string description{};///< The description of the scheduled event.
+		String scheduledStartTime{};///< The time to schedule the scheduled event.
+		String scheduledEndTime{};///< The time when the scheduled event is scheduled to end.
+		String description{};///< The description of the scheduled event.
 		Snowflake channelId{};///< The Channel id of the scheduled event, set to null if changing entity type to External.
 		Snowflake guildId{};///< The Guild within which to modify the event.
-		std::string name{};///< The name of the scheduled event.
+		String name{};///< The name of the scheduled event.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For deleting a single Guild Scheduled Event. \brief For deleting a single Guild Scheduled Event.
@@ -89,11 +89,11 @@ namespace DiscordCoreAPI {
 	/// For collecting a list of Guild Scheduled Event Users. \brief For collecting a list of Guild Scheduled Event Users.
 	struct DiscordCoreAPI_Dll GetGuildScheduledEventUsersData {
 		Snowflake guildScheduledEventId{};///< The id of the event to modify.
-		bool withMember{ false };///< Include Guild member responseData if it exists.
+		Bool withMember{ false };///< Include Guild member responseData if it exists.
 		Snowflake guildId{};///< The Guild within which to modify the event.
 		Snowflake before{};///< Consider only users before given user id.
 		Snowflake after{};///< Consider only users after given user id.
-		uint32_t limit{ 0 };///< How many users to receive from the event.
+		Uint32 limit{ 0 };///< How many users to receive from the event.
 	};
 
 	/// A single GuildScheduledEvent responseData structure. \brief A single GuildScheduledEvent responseData structure.

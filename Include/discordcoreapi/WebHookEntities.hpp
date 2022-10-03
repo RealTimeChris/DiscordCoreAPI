@@ -38,9 +38,9 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new WebHook. \brief For creating a new WebHook.
 	struct DiscordCoreAPI_Dll CreateWebHookData {
-		std::vector<uint8_t> avatar{};///< Image for the default webhook avatar.
+		std::vector<Uint8> avatar{};///< Image for the default webhook avatar.
 		Snowflake channelId{};///< The Channel within which to create the WebHook.
-		std::string name{};///< Name of the webhook(1 - 80 characters).
+		String name{};///< Name of the webhook(1 - 80 characters).
 	};
 
 	/// For executing a WebHook. \brief For executing a WebHook.
@@ -53,13 +53,13 @@ namespace DiscordCoreAPI {
 		friend class WebHooks;
 
 		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
-		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
+		Bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData() noexcept = default;
 
 		ExecuteWebHookData(WebHookData dataNew);
 
-		operator std::string();
+		operator String();
 
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
@@ -69,8 +69,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			Snowflake emojiId = Snowflake{ 0 }, const std::string& url = "");
+		ExecuteWebHookData& addButton(Bool disabled, const String& customIdNew, const String& buttonLabel, ButtonStyle buttonStyle, const String& emojiName = "",
+			Snowflake emojiId = Snowflake{ 0 }, const String& url = "");
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -79,8 +79,8 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		ExecuteWebHookData addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
-			int32_t minValues);
+		ExecuteWebHookData addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder, Int32 maxValues,
+			Int32 minValues);
 
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.
@@ -94,8 +94,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		ExecuteWebHookData& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
-			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
+		ExecuteWebHookData& addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew, const String& customIdNew, Bool required,
+			Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label = "", const String& placeholder = "");
 
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
@@ -116,27 +116,27 @@ namespace DiscordCoreAPI {
 
 		/// For setting the Message content in a response. \brief For setting the content in a response.
 		/// \param dataPackage A string, containing the content.
-		ExecuteWebHookData& addContent(const std::string& dataPackage);
+		ExecuteWebHookData& addContent(const String& dataPackage);
 
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
-		/// \param enabledTTs A bool.
-		ExecuteWebHookData& setTTSStatus(bool enabledTTs);
+		/// \param enabledTTs A Bool.
+		ExecuteWebHookData& setTTSStatus(Bool enabledTTs);
 
 	  protected:
 		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
 		std::vector<ActionRowData> components{};///< Array of message component the components to include with the message.
 		AllowedMentionsData allowedMentions{};///< Allowed mention object.
 		std::vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
-		std::string webhookToken{};///< The WebHook token you would like to execute.
+		String webhookToken{};///< The WebHook token you would like to execute.
 		std::vector<File> files{};///< File contents the contents of the file being sent.
-		std::string avatarUrl{};///< Override the default avatar of the webhook.
+		String avatarUrl{};///< Override the default avatar of the webhook.
 		Snowflake webHookId{};///< The WebHook you would like to execute.
-		std::string userName{};///< Override the default userName of the webhook.
-		std::string customId{};///< Custom id for the modal.
-		std::string content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
-		std::string title{};///< Title for the modal.
-		int32_t flags{ 0 };///< Flags combined as a bitfield.
-		bool tts{ false };///< True if this is a TTS message.
+		String userName{};///< Override the default userName of the webhook.
+		String customId{};///< Custom id for the modal.
+		String content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
+		String title{};///< Title for the modal.
+		Int32 flags{ 0 };///< Flags combined as a bitfield.
+		Bool tts{ false };///< True if this is a TTS message.
 	};
 
 	/// For editing a WebHook Message. \brief For editing a WebHook Message.
@@ -149,15 +149,15 @@ namespace DiscordCoreAPI {
 
 		Snowflake messageId{};///< The Message Id to collect.
 		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
-		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
+		Bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
 
-		ExecuteWebHookData& setTTSStatus(bool) = delete;
+		ExecuteWebHookData& setTTSStatus(Bool) = delete;
 
 		EditWebHookData() noexcept = default;
 
 		EditWebHookData(WebHookData dataNew);
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For collecting a list of WebHooks from a chosen Channel. \brief For collecting a list of WebHooks from a chosen Channel.
@@ -177,25 +177,25 @@ namespace DiscordCoreAPI {
 
 	/// Collects a single WebHook, using the Token and Id. \brief Collects a single WebHook, using the Token and Id.
 	struct DiscordCoreAPI_Dll GetWebHookWithTokenData {
-		std::string webhookToken{};///< Token of the desired WebHook.
+		String webhookToken{};///< Token of the desired WebHook.
 		Snowflake webHookId{};///< Id of the desired WebHook.
 	};
 
 	/// For modifying a WebHook. \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookData {
-		std::vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
+		std::vector<Uint8> avatar{};///< Image responseData for the default webhook avatar.
 		Snowflake channelId{};///< The new Channel id this webhook should be moved to.
 		Snowflake webHookId{};///< The WebHook to be modified.
-		std::string name{};///< The default name of the webhook.
+		String name{};///< The default name of the webhook.
 	};
 
 	/// For modifying a WebHook. \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookWithTokenData {
-		std::string webhookToken{};///< Token of the desired WebHook.
-		std::vector<uint8_t> avatar{};///< Image responseData for the default webhook avatar.
+		String webhookToken{};///< Token of the desired WebHook.
+		std::vector<Uint8> avatar{};///< Image responseData for the default webhook avatar.
 		Snowflake channelId{};///< The new Channel id this webhook should be moved to.
 		Snowflake webHookId{};///< The WebHook to be modified.
-		std::string name{};///< The default name of the webhook.
+		String name{};///< The default name of the webhook.
 	};
 
 	/// For deleting a WebHook. \brief For deleting a WebHook.
@@ -205,13 +205,13 @@ namespace DiscordCoreAPI {
 
 	/// For deleting a WebHook, using its Token. \brief For deleting a WebHook, using its Token.
 	struct DiscordCoreAPI_Dll DeleteWebHookWithTokenData {
-		std::string webhookToken{};///< Token of the desired WebHook.
+		String webhookToken{};///< Token of the desired WebHook.
 		Snowflake webHookId{};///< The desired WebHook to delete.
 	};
 
 	/// For getting a WebHook Message. \brief For getting a WebHook Message.
 	struct DiscordCoreAPI_Dll GetWebHookMessageData {
-		std::string webhookToken{};///< The WebHook token you would like to collect.
+		String webhookToken{};///< The WebHook token you would like to collect.
 		Snowflake webHookId{};///< The WebHook you would like to collect.
 		Snowflake messageId{};///< The Message Id to collect.
 		Snowflake threadId{};///< The thread that the Message is in.
@@ -219,7 +219,7 @@ namespace DiscordCoreAPI {
 
 	/// For deleting a WebHook Message. \brief For deleting a WebHook Message.
 	struct DiscordCoreAPI_Dll DeleteWebHookMessageData {
-		std::string webhookToken{};///< The WebHook token you would like to collect.
+		String webhookToken{};///< The WebHook token you would like to collect.
 		Snowflake webHookId{};///< The WebHook you would like to collect.
 		Snowflake messageId{};///< The Message Id to collect.
 		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.

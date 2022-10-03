@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 				auto responseData = DiscordCoreAPI::Guilds::getGuildWidgetImageAsync(dataPackage01).get();
 
-				cout << boolalpha << responseData.url << endl;
+				cout << Boolalpha << responseData.url << endl;
 
 			} catch (...) {
 				rethrowException("Test::execute()");

@@ -31,7 +31,7 @@ namespace DiscordCoreAPI {
 				Guild guild = Guilds::getCachedGuildAsync({ newArgs.eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild);
 
-				bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
+				Bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
 				if (!areWeAllowed) {
 					return;
@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 				GuildMember guildMember =
 					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
-				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
+				Bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 
 				if (!doWeHaveControl) {
 					return;
@@ -48,8 +48,8 @@ namespace DiscordCoreAPI {
 
 				InputEventData newEvent = newArgs.eventData;
 
-				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-				int64_t previousPlayedTime{ 0 };
+				Int64 currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+				Int64 previousPlayedTime{ 0 };
 				if (Play::timeOfLastPlay.contains(newEvent.getGuildId())) {
 					previousPlayedTime = Play::timeOfLastPlay.at(newEvent.getGuildId());
 				}
@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 				}
 
 				std::vector<EmbedData> embedsFromSearch;
-				uint32_t x = 0;
+				Uint32 x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
 					std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
@@ -203,16 +203,16 @@ namespace DiscordCoreAPI {
 							songVector.resize(playlist.songQueue.size() + 2);
 							songVector[1] = playlist.currentSong;
 							songVector[0] = song;
-							for (uint8_t y = 0; y < playlist.songQueue.size(); y += 1) {
-								songVector[static_cast<int64_t>(y) + 2] = playlist.songQueue[static_cast<int64_t>(y)];
+							for (Uint8 y = 0; y < playlist.songQueue.size(); y += 1) {
+								songVector[static_cast<Int64>(y) + 2] = playlist.songQueue[static_cast<Int64>(y)];
 							}
 
 						} else {
 							songVector.resize(playlist.songQueue.size() + 1);
 							songVector[0] = song;
 
-							for (uint8_t y = 0; y < playlist.songQueue.size(); y += 1) {
-								songVector[static_cast<int64_t>(y) + 1] = playlist.songQueue[static_cast<int64_t>(y)];
+							for (Uint8 y = 0; y < playlist.songQueue.size(); y += 1) {
+								songVector[static_cast<Int64>(y) + 1] = playlist.songQueue[static_cast<Int64>(y)];
 							}
 						}
 					} else {

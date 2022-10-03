@@ -32,7 +32,7 @@
 
 namespace DiscordCoreAPI {
 
-	inline bool operator==(const DiscordCoreAPI::RoleData& lhs, const DiscordCoreAPI::RoleData& rhs) {
+	inline Bool operator==(const DiscordCoreAPI::RoleData& lhs, const DiscordCoreAPI::RoleData& rhs) {
 		if (lhs.id == rhs.id) {
 			return true;
 		} else {
@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild within which to assign the Role.
 		Snowflake userId{};///< The id of the User to whom to assign the Role.
 		Snowflake roleId{};///< The id of the Role to be assigned.
-		std::string reason{};///< Reason for adding the GuildMember's Role.
+		String reason{};///< Reason for adding the GuildMember's Role.
 	};
 
 	/// For removing a Role from a GuildMember. \brief For removing a Role from a GuildMember.
@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild within which to remove the Role.
 		Snowflake userId{};///< The id of the User from whom to remove the Role.
 		Snowflake roleId{};///< The id of the Role to be removed.
-		std::string reason{};///< Reason for removing the GuildMember's Role.
+		String reason{};///< Reason for removing the GuildMember's Role.
 	};
 
 	/// For getting a chosen Guild's Roles. \brief For getting a chosen Guild's Roles.
@@ -68,23 +68,23 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Role within a chosen Guild. \brief For creating a new Role within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildRoleData {
-		std::string hexColorValue{};///< Hex color-value between 0 and ffffff.
-		std::vector<uint8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
-		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
+		String hexColorValue{};///< Hex color-value between 0 and ffffff.
+		std::vector<Uint8> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		String unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		Permissions permissions{};///< The base permissions to give the Role.
-		bool mentionable{ false };///< Is it mentionable by others in the Guild.
-		int32_t position{ 0 };///< The position amongst the other roles.
+		Bool mentionable{ false };///< Is it mentionable by others in the Guild.
+		Int32 position{ 0 };///< The position amongst the other roles.
 		Snowflake guildId{};///< Which Guild to make the Role in.
-		std::string reason{};///< Reason for creating the Role.
-		bool hoist{ false };///< Is this Role hoisted above the rest of them?
-		std::string name{};///< The name of the Role.
+		String reason{};///< Reason for creating the Role.
+		Bool hoist{ false };///< Is this Role hoisted above the rest of them?
+		String name{};///< The name of the Role.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For updating the positions of the roles. \brief For updating the positions of the roles.
 	struct DiscordCoreAPI_Dll RolePositionData {
-		int32_t rolePosition{ 0 };///< The new Role position.
+		Int32 rolePosition{ 0 };///< The new Role position.
 		Snowflake roleId{};///< The Role to update.
 	};
 
@@ -93,11 +93,11 @@ namespace DiscordCoreAPI {
 		friend class Roles;
 
 		Snowflake guildId{};///< The Guild within which to move the Role.
-		int32_t newPosition{ 0 };///< The new position of the Role.
+		Int32 newPosition{ 0 };///< The new position of the Role.
 		Snowflake roleId{};///< The id of the Role to move.
-		std::string reason{};///< Reason for modifying the Role positions.
+		String reason{};///< Reason for modifying the Role positions.
 
-		operator std::string();
+		operator String();
 
 	  protected:
 		std::vector<RolePositionData> rolePositions;
@@ -106,24 +106,24 @@ namespace DiscordCoreAPI {
 	/// For updating a Role's options within a chosen Guild. \brief For updating a Role's options within a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
 		Permissions permissions{ "0" };///< Base Guild permissions for the Role.
-		std::string hexColorValue{};///< A hex-color value between 0x00 and 0xFFFFFF.
-		std::vector<uint8_t> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
-		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
-		bool mentionable{ false };///< Is it mentionable?
+		String hexColorValue{};///< A hex-color value between 0x00 and 0xFFFFFF.
+		std::vector<Uint8> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		String unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
+		Bool mentionable{ false };///< Is it mentionable?
 		Snowflake guildId{};///< The id of the Guild within which to update the Role.
 		Snowflake roleId{};///< The id of the Role to update.
-		std::string reason{};///<< Reason for modifying the Role.
-		std::string name{};///< What the name of the Role is going to be.
-		bool hoist{ false };///< Is this Role hoisted above the others?
+		String reason{};///<< Reason for modifying the Role.
+		String name{};///< What the name of the Role is going to be.
+		Bool hoist{ false };///< Is this Role hoisted above the others?
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For removing a Role from a chosen Guild. \brief For removing a Role from a chosen Guild.
 	struct DiscordCoreAPI_Dll RemoveGuildRoleData {
 		Snowflake guildId{};///< The id of the Guild from which to remove the Role.
 		Snowflake roleId{};///< The id of the Role to remove.
-		std::string reason{};///< Reason for removing this Role.
+		String reason{};///< Reason for removing this Role.
 	};
 
 	/// For getting a chosen GuildMember's Roles. \brief For getting a chosen GuildMember's Roles.
@@ -247,7 +247,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<RoleData> cache;
-		static bool doWeCacheRoles;
+		static Bool doWeCacheRoles;
 	};
 	/**@}*/
 

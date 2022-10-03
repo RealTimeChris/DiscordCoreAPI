@@ -38,57 +38,57 @@ namespace DiscordCoreAPI {
 
 	/// For getting all of the Global Application Commands. \brief For getting all of the Global Application Commands.
 	struct DiscordCoreAPI_Dll GetGlobalApplicationCommandsData {
-		bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
+		Bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 	};
 
 	/// For collecting a single global ApplicationCommand. \brief For collecting a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetGlobalApplicationCommandData {
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
-		std::string commandId{};///< The id of the command which you would like to collect.
+		String commandId{};///< The id of the command which you would like to collect.
 	};
 
 	/// For creating an application command.
 	struct DiscordCoreAPI_Dll CreateApplicationCommandData {
 		friend class DiscordCoreClient;
 
-		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		std::unordered_map<String, String> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		std::unordered_map<String, String> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
-		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
-		std::string description{};///< A description of the command.
+		Bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
+		String description{};///< A description of the command.
 		Snowflake applicationId{};///< Application id.
 		Snowflake guildId{};///< Set this to a guild id to create a command specific to that guild.
-		std::string name{};///< A name for the new command.
+		String name{};///< A name for the new command.
 	  protected:
-		bool alwaysRegister{ false };
+		Bool alwaysRegister{ false };
 	};
 
 	/// For creating a single global ApplicationCommand. \brief For creating a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData : public CreateApplicationCommandData {
-		operator std::string();
+		operator String();
 	};
 
 	/// For editing a single global ApplicationCommand. \brief For editing a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGlobalApplicationCommandData {
-		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		std::unordered_map<String, String> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		std::unordered_map<String, String> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
-		std::string description{};///< A description of the command.
+		Bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
+		String description{};///< A description of the command.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
-		std::string name{};///< A name for the new command.
+		String name{};///< A name for the new command.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For deleting a single global ApplicationCommand. \brief For deleting a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll DeleteGlobalApplicationCommandData {
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
-		std::string name{};///< The name of the command to delete.
+		String name{};///< The name of the command to delete.
 	};
 
 	/// For bulk-overwriting a collection of global ApplicationCommands. \brief For bulk-overwriting a collection of global ApplicationCommands.
@@ -99,43 +99,43 @@ namespace DiscordCoreAPI {
 
 	/// For acquiring all of the Guild ApplicationCommands of a single Guild. \brief For acquiring all of the Guild ApplicationCommands of a single Guild.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandsData {
-		bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
+		Bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Snowflake guildId{};///< The id of the Guild for which you would like to acquire the ApplicationCommands from.
 	};
 
 	/// For creating a single Guild ApplicationCommand. \brief For creating a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateApplicationCommandData {
-		operator std::string();
+		operator String();
 	};
 
 	/// For acquiring a single Guild ApplicationCommand. \brief For acquiring a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandData {
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
-		uint64_t commandId{};///< The command id which you would like to acquire.
+		Uint64 commandId{};///< The command id which you would like to acquire.
 		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the ApplicationCommand from.
 	};
 
 	/// For editing a single Guild ApplicationCommand. \brief For editing a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGuildApplicationCommandData {
-		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		std::unordered_map<String, String> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		std::unordered_map<String, String> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
-		std::string description{};///< A description of the command.
+		Bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
+		String description{};///< A description of the command.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Snowflake guildId{};///< The id of the Guild which you would like to add the new command to.
-		std::string name{};///< A name for the new command.
+		String name{};///< A name for the new command.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For deleting a single Guild ApplicationCommand. \brief For deleting a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll DeleteGuildApplicationCommandData {
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Snowflake guildId{};///< The id of the Guild which you would like to delete the command from.
-		std::string name{};///< A name of the command which you would like to delete.
+		String name{};///< A name of the command which you would like to delete.
 	};
 
 	/// For bulk-overwriting a collection of Guild ApplicationCommands. \brief For bulk-overwriting a collection of Guild ApplicationCommands.
@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 
 	/// For acquiring the permissions of a single Guild ApplicationCommand. \brief For acquiring the permissions of a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetApplicationCommandPermissionsData {
-		std::string commandName{};///< The name of the command which you would like to collect the permissions of.
+		String commandName{};///< The name of the command which you would like to collect the permissions of.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the command permissions.
 	};
@@ -161,12 +161,12 @@ namespace DiscordCoreAPI {
 	/// For editing the permissions of a single Guild ApplicationCommand. \brief For editing the permissions of a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGuildApplicationCommandPermissionsData {
 		std::vector<ApplicationCommandPermissionData> permissions{};///< A vector of ApplicationCommand permissions.
-		std::string commandName{};///< The command name which you would like to edit the permissions of.
+		String commandName{};///< The command name which you would like to edit the permissions of.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
-		uint64_t commandId{};///< The command id which you would like to edit the permissions of.
+		Uint64 commandId{};///< The command id which you would like to edit the permissions of.
 		Snowflake guildId{};///< The Guild id of the Guild for which you would like to edit the command permissions.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For batch editing the permissions of a collection of Guild ApplicationCommands. \brief For batch editing the permissions of a collection of Guild ApplicationCommands.

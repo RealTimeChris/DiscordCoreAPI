@@ -47,29 +47,29 @@ namespace DiscordCoreAPI {
 
 	/// For creating a single Sticker. \brief For creating a single Sticker.
 	struct DiscordCoreAPI_Dll CreateGuildStickerData {
-		std::vector<uint8_t> file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
-		std::string description{};///< Description of the Sticker.
+		std::vector<Uint8> file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
+		String description{};///< Description of the Sticker.
 		Snowflake guildId{};///< The Guild within which to create the Sticker.
-		std::string reason{};///< The reason for creating the Sticker.
-		std::string name{};///< Name of the Sticker.
-		std::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
+		String reason{};///< The reason for creating the Sticker.
+		String name{};///< Name of the Sticker.
+		String tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
 
 	/// For modifying a single Sticker. \brief For modifying a single Sticker.
 	struct DiscordCoreAPI_Dll ModifyGuildStickerData {
-		std::string description{};///< Description of the Sticker.
+		String description{};///< Description of the Sticker.
 		Snowflake stickerId{};///< The Sticker you wish to modify.
 		Snowflake guildId{};///< The Guild within which to modify the Sticker.
-		std::string reason{};///< The reason for modifying the Sticker.
-		std::string name{};///< Name of the Sticker.
-		std::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
+		String reason{};///< The reason for modifying the Sticker.
+		String name{};///< Name of the Sticker.
+		String tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
 
 	/// For deleting a single Sticker. \brief For deleting a single Sticker.
 	struct DiscordCoreAPI_Dll DeleteGuildStickerData {
 		Snowflake stickerId{};///< The Sticker you wish to delete.
 		Snowflake guildId{};///< The Guild within which to delete the Sticker.
-		std::string reason{};///< The reason for deleting the Sticker.
+		String reason{};///< The reason for deleting the Sticker.
 	};
 
 	/// A single Sticker. \brief A single Sticker.

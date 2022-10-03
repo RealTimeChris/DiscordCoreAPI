@@ -78,7 +78,7 @@ namespace DiscordCoreInternal {
 		AVFormatContextWrapper01() noexcept = default;
 
 		AVFormatContext* theContext{ nullptr };
-		bool didItInitialize{ false };
+		Bool didItInitialize{ false };
 	};
 
 	struct DiscordCoreAPI_Dll AVFormatContextWrapper {
@@ -90,7 +90,7 @@ namespace DiscordCoreInternal {
 
 		AVFormatContextWrapper(AVFormatContext* other);
 
-		bool* getBoolPtr();
+		Bool* getBoolPtr();
 
 		AVFormatContext* operator->();
 
@@ -162,45 +162,45 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll BuildAudioDecoderData {
 	  public:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		int64_t totalFileSize{ 0 };
-		int64_t bufferMaxSize{ 0 };
+		Int64 totalFileSize{ 0 };
+		Int64 bufferMaxSize{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll AudioDecoder {
 	  public:
 		AudioDecoder(const BuildAudioDecoderData& dataPackage);
 
-		bool getFrame(DiscordCoreAPI::AudioFrameData& dataPackage);
+		Bool getFrame(DiscordCoreAPI::AudioFrameData& dataPackage);
 
-		void submitDataForDecoding(std::string dataToDecode);
+		void submitDataForDecoding(String dataToDecode);
 
-		bool haveWeFailed();
+		Bool haveWeFailed();
 
 		void startMe();
 
 		~AudioDecoder();
 
 	  protected:
-		int64_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, totalFileSize{ 0 };
+		Int64 audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, totalFileSize{ 0 };
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreAPI::AudioFrameData> outDataBuffer{};
-		DiscordCoreAPI::UnboundedMessageBlock<std::string> inputDataBuffer{};
+		DiscordCoreAPI::UnboundedMessageBlock<String> inputDataBuffer{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		std::atomic_int32_t refreshTimeForBuffer{ 10000 };
-		std::atomic_bool haveWeFailedBool{ false };
+		AtomicInt32 refreshTimeForBuffer{ 10000 };
+		AtomicBool haveWeFailedBool{ false };
 		AVCodecContextWrapper audioDecodeContext{};
-		std::atomic_bool areWeQuitting{ false };
+		AtomicBool areWeQuitting{ false };
 		AVFormatContextWrapper formatContext{};
 		AVFrameWrapper frame{}, newFrame{};
 		AVIOContextWrapper ioContext{};
 		SwrContextWrapper swrContext{};
-		std::string currentBuffer{};
-		bool haveWeBooted{ false };
+		String currentBuffer{};
+		Bool haveWeBooted{ false };
 		AVPacketWrapper packet{};
 		AVStream* audioStream{};
 		AVCodec* codec{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 
-		static int32_t ReadBufferData(void* opaque, uint8_t* buf, int32_t);
+		static Int32 ReadBufferData(void* opaque, Uint8* buf, Int32);
 
 		void run(std::stop_token stopToken);
 

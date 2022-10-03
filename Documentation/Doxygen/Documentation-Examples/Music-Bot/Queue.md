@@ -9,11 +9,11 @@ Queue {#Queue}
 namespace DiscordCoreAPI {
 
 	std::vector<EmbedData> updateMessageEmbeds(std::vector<Song> playlist, DiscordGuild* discordGuild, InputEventData interaction, InputEventData originalEvent, User theUser,
-		int32_t currentPageIndex) {
+		Int32 currentPageIndex) {
 		std::vector<std::vector<EmbedFieldData>> msgEmbedFields{};
 		msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
-		int32_t msgEmbedFieldsPage{ 0 };
-		for (int32_t y = 0; y < playlist.size(); y += 1) {
+		Int32 msgEmbedFieldsPage{ 0 };
+		for (Int32 y = 0; y < playlist.size(); y += 1) {
 			if (y % 25 == 0 && y > 0) {
 				msgEmbedFieldsPage += 1;
 				msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 		}
 		msgEmbedFieldsPage = 0;
 		std::vector<EmbedData> newMsgEmbeds{};
-		for (int32_t y = 0; y < msgEmbedFields.size(); y += 1) {
+		for (Int32 y = 0; y < msgEmbedFields.size(); y += 1) {
 			std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
 			newEmbed->setAuthor(theUser.userName, theUser.avatar);
 			newEmbed->setColor(discordGuild->data.borderColor);
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 				std::unique_ptr<Guild> guild{ std::make_unique<Guild>(Guilds::getCachedGuildAsync({ .guildId = newArgs.eventData.getGuildId() }).get()) };
 				std::unique_ptr<DiscordGuild> discordGuild(std::make_unique<DiscordGuild>(*guild));
 
-				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, *discordGuild);
+				Bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, *discordGuild);
 
 				if (!checkIfAllowedInChannel) {
 					return;
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 				GuildMember guildMember =
 					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
-				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, *discordGuild, guildMember);
+				Bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, *discordGuild, guildMember);
 
 				if (!doWeHaveControl) {
 					return;
@@ -107,12 +107,12 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				int32_t currentPageIndex = 0;
+				Int32 currentPageIndex = 0;
 
 				std::vector<std::vector<EmbedFieldData>> msgEmbedFields;
 				msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
-				int32_t msgEmbedFieldsPage{ 0 };
-				for (int32_t y = 0; y < SongAPI::getPlaylist(guild->id).songQueue.size(); y += 1) {
+				Int32 msgEmbedFieldsPage{ 0 };
+				for (Int32 y = 0; y < SongAPI::getPlaylist(guild->id).songQueue.size(); y += 1) {
 					if (y % 25 == 0 && y > 0) {
 						if (y > 0) {
 							msgEmbedFieldsPage += 1;
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 				}
 				std::vector<EmbedData> msgEmbeds;
 				msgEmbedFieldsPage = 0;
-				for (int32_t y = 0; y < msgEmbedFields.size(); y += 1) {
+				for (Int32 y = 0; y < msgEmbedFields.size(); y += 1) {
 					std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
 					newEmbed->setColor(discordGuild->data.borderColor)
 						.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl())
@@ -150,12 +150,12 @@ namespace DiscordCoreAPI {
 				dataPackage0.addButton(false, "next", "Next", ButtonStyle::Success, "▶️");
 				dataPackage0.addButton(false, "exit", "Exit", ButtonStyle::Success, "❌");
 				newEvent = InputEvents::respondToInputEventAsync(dataPackage0).get();
-				for (int32_t y = 0; y < 1; y) {
-					bool doWeQuit{ false };
+				for (Int32 y = 0; y < 1; y) {
+					Bool doWeQuit{ false };
 					std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(newEvent) };
 					auto buttonCollectedData = button->collectButtonData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					newEvent = *buttonCollectedData[0].interactionData;
-					uint64_t userID = newArgs.eventData.getAuthorId();
+					Uint64 userID = newArgs.eventData.getAuthorId();
 					if (buttonCollectedData.size() == 0 || buttonCollectedData.at(0).buttonId == "exit" || buttonCollectedData.at(0).buttonId == "empty" || doWeQuit) {
 						RespondToInputEventData dataPackage02(*buttonCollectedData.at(0).interactionData);
 						dataPackage02.setResponseType(InputEventResponseType::Edit_Interaction_Response);
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 						newEvent = InputEvents::respondToInputEventAsync(*dataPackage02).get();
 						continue;
 					} else if (buttonCollectedData.at(0).buttonId == "back" && (currentPageIndex == 0)) {
-						currentPageIndex = ( int32_t )msgEmbeds.size() - 1;
+						currentPageIndex = ( Int32 )msgEmbeds.size() - 1;
 						std::unique_ptr<RespondToInputEventData> dataPackage02{ std::make_unique<RespondToInputEventData>(*buttonCollectedData.at(0).interactionData) };
 						dataPackage02->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						dataPackage02->addMessageEmbed(msgEmbeds[currentPageIndex]);
@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 							dataPackage02->addContent("");
 							newEvent = InputEvents::respondToInputEventAsync(*dataPackage02).get();
 
-							std::function<bool(Message)> messageFilter = [=](Message message) -> bool {
+							std::function<Bool(Message)> messageFilter = [=](Message message) -> Bool {
 								if (userID == message.author.id) {
 									return true;
 								} else {
@@ -249,8 +249,8 @@ namespace DiscordCoreAPI {
 								doWeQuit = true;
 								break;
 							}
-							std::vector<std::string> args2;
-							std::string newString = convertToLowerCase(returnedMessages.messages.at(0).content);
+							std::vector<String> args2;
+							String newString = convertToLowerCase(returnedMessages.messages.at(0).content);
 							std::regex wordRegex("[a-z]{1,12}");
 							std::smatch wordRegexMatch;
 							regex_search(newString, wordRegexMatch, wordRegex,
@@ -337,7 +337,7 @@ namespace DiscordCoreAPI {
 									newEvent = InputEvents::respondToInputEventAsync(dataPackage03).get();
 									continue;
 								}
-								int32_t removeIndex = ( int32_t )stoll(args2[1]);
+								Int32 removeIndex = ( Int32 )stoll(args2[1]);
 
 								auto playlist = SongAPI::getPlaylist(guild->id);
 								playlist.songQueue.erase(playlist.songQueue.begin() + removeIndex - 1, playlist.songQueue.begin() + removeIndex);
@@ -396,8 +396,8 @@ namespace DiscordCoreAPI {
 									continue;
 								}
 
-								int32_t sourceIndex = ( int32_t )stoll(args2[1]) - 1;
-								int32_t destinationIndex = ( int32_t )stoll(args2[2]) - 1;
+								Int32 sourceIndex = ( Int32 )stoll(args2[1]) - 1;
+								Int32 destinationIndex = ( Int32 )stoll(args2[2]) - 1;
 								SongAPI::modifyQueue(sourceIndex, destinationIndex, guild->id);
 								Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timestamp,
 																 .channelId = returnedMessages.messages[0].channelId,
@@ -413,10 +413,10 @@ namespace DiscordCoreAPI {
 								auto oldSongArray = SongAPI::getPlaylist(guild->id);
 								std::vector<Song> newVector{};
 								while (oldSongArray.songQueue.size() > 0) {
-									std::mt19937_64 randomEngine{ static_cast<uint32_t>(
+									std::mt19937_64 randomEngine{ static_cast<Uint32>(
 										std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()) };
-									int32_t randomIndex = static_cast<uint32_t>(
-										(static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max()) * static_cast<float>(oldSongArray.songQueue.size())));
+									Int32 randomIndex = static_cast<Uint32>(
+										(static_cast<Float>(randomEngine()) / static_cast<Float>(randomEngine.max()) * static_cast<Float>(oldSongArray.songQueue.size())));
 									newVector.emplace_back(oldSongArray.songQueue.at(randomIndex));
 									oldSongArray.songQueue.erase(oldSongArray.songQueue.begin() + randomIndex, oldSongArray.songQueue.begin() + randomIndex + 1);
 								}

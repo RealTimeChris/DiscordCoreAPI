@@ -31,8 +31,8 @@
 
 namespace DiscordCoreAPI {
 
-	InteractionResponseBase& InteractionResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	InteractionResponseBase& InteractionResponseBase::addButton(Bool disabled, const String& customIdNew, const String& buttonLabel, ButtonStyle buttonStyle,
+		const String& emojiName, Snowflake emojiId, const String& url) {
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
 			this->data.data.components.emplace_back(actionRowData);
@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 				component.type = ComponentType::Button;
 				component.emoji.name = emojiName;
 				component.label = buttonLabel;
-				component.style = static_cast<int32_t>(buttonStyle);
+				component.style = static_cast<Int32>(buttonStyle);
 				component.customId = customIdNew;
 				component.disabled = disabled;
 				component.emoji.id = emojiId;
@@ -57,8 +57,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues) {
+	InteractionResponseBase& InteractionResponseBase::addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options,
+		const String& placeholder, Int32 maxValues, Int32 minValues) {
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
 			this->data.data.components.emplace_back(actionRowData);
@@ -82,8 +82,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+	InteractionResponseBase& InteractionResponseBase::addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew,
+		const String& customIdNew, Bool required, Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label, const String& placeholder) {
 		this->data.data.title = topTitleNew;
 		this->data.data.customId = topCustomIdNew;
 		if (this->data.data.components.size() == 0) {
@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 				ComponentData component{};
 				component.type = ComponentType::TextInput;
 				component.customId = customIdNew;
-				component.style = static_cast<int32_t>(inputStyle);
+				component.style = static_cast<Int32>(inputStyle);
 				component.title = titleNew;
 				component.maxLength = maxLength;
 				component.minLength = minLength;
@@ -136,12 +136,12 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addContent(const std::string& dataPackage) {
+	InteractionResponseBase& InteractionResponseBase::addContent(const String& dataPackage) {
 		this->data.data.content = dataPackage;
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::setTTSStatus(bool enabledTTs) {
+	InteractionResponseBase& InteractionResponseBase::setTTSStatus(Bool enabledTTs) {
 		this->data.data.tts = enabledTTs;
 		return *this;
 	}
@@ -426,9 +426,9 @@ namespace DiscordCoreAPI {
 			"/interactions/" + std::to_string(dataPackage.interactionPackage.interactionId) + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage.data.operator std::string(), dataPackage.data.data.files);
+			workload.content = constructMultiPartData(dataPackage.data.operator String(), dataPackage.data.data.files);
 		} else {
-			workload.content = dataPackage.data.operator std::string();
+			workload.content = dataPackage.data.operator String();
 		}
 		workload.callStack = "Interactions::createInteractionResponseAsync()";
 		Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
@@ -459,9 +459,9 @@ namespace DiscordCoreAPI {
 			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage.data.operator std::string(), dataPackage.data.files);
+			workload.content = constructMultiPartData(dataPackage.data.operator String(), dataPackage.data.files);
 		} else {
-			workload.content = dataPackage.data.operator std::string();
+			workload.content = dataPackage.data.operator String();
 		}
 		workload.callStack = "Interactions::editInteractionResponseAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -485,9 +485,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage.operator std::string(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage.operator String(), dataPackage.files);
 		} else {
-			workload.content = dataPackage.operator std::string();
+			workload.content = dataPackage.operator String();
 		}
 		workload.callStack = "Interactions::createFollowUpMessageAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -511,9 +511,9 @@ namespace DiscordCoreAPI {
 			std::to_string(dataPackage.messagePackage.messageId);
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage.data.operator std::string(), dataPackage.data.files);
+			workload.content = constructMultiPartData(dataPackage.data.operator String(), dataPackage.data.files);
 		} else {
-			workload.content = dataPackage.data.operator std::string();
+			workload.content = dataPackage.data.operator String();
 		}
 		workload.callStack = "Interactions::editFollowUpMessageAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -538,15 +538,15 @@ namespace DiscordCoreAPI {
 		SelectMenuCollector::selectMenuInteractionBufferMap[this->bufferMapKey] = &this->selectMenuIncomingInteractionBuffer;
 	}
 
-	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
-		int32_t maxCollectedSelectMenuCountNew, Snowflake targetUser) {
+	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(Bool getSelectMenuDataForAllNew, Int32 maxWaitTimeInMsNew,
+		Int32 maxCollectedSelectMenuCountNew, Snowflake targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
-		if (targetUser.operator size_t() == 0 && !getSelectMenuDataForAllNew) {
+		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;
 		} else {
 			this->getSelectMenuDataForAll = getSelectMenuDataForAllNew;
 		}
-		if (targetUser.operator size_t() != 0) {
+		if (targetUser != 0) {
 			this->userId = targetUser;
 		}
 		this->maxCollectedSelectMenuCount = maxCollectedSelectMenuCountNew;
@@ -575,7 +575,7 @@ namespace DiscordCoreAPI {
 					response->messageId = this->messageId;
 					response->userId = selectMenuInteractionData->user.id;
 					*response->interactionData = *this->interactionData;
-					response->values = std::vector<std::string>{ "empty" };
+					response->values = std::vector<String>{ "empty" };
 					this->responseVector.emplace_back(*response);
 					break;
 				}
@@ -625,7 +625,7 @@ namespace DiscordCoreAPI {
 					response->messageId = this->messageId;
 					response->userId = selectMenuInteractionData->user.id;
 					*response->interactionData = *this->interactionData;
-					response->values = std::vector<std::string>{ "empty" };
+					response->values = std::vector<String>{ "empty" };
 					this->responseVector.emplace_back(*response);
 					break;
 				}
@@ -666,14 +666,14 @@ namespace DiscordCoreAPI {
 		ButtonCollector::buttonInteractionBufferMap[this->bufferMapKey] = &this->buttonIncomingInteractionBuffer;
 	}
 
-	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
+	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(Bool getButtonDataForAllNew, Int32 maxWaitTimeInMsNew, Int32 maxNumberOfPressesNew,
 		Snowflake targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
-		if (targetUser.operator size_t() == 0 && !getButtonDataForAllNew) {
+		if (targetUser == 0 && !getButtonDataForAllNew) {
 			throw std::runtime_error{ "ButtonCollector::collectButtonData(), You've failed to "
 									  "properly set the collectButtonData() parameters!\n\n" };
 		}
-		if (targetUser.operator size_t() != 0) {
+		if (targetUser != 0) {
 			this->userId = targetUser;
 		}
 		this->maxCollectedButtonCount = maxNumberOfPressesNew;
@@ -786,7 +786,7 @@ namespace DiscordCoreAPI {
 		ModalCollector::modalInteractionBufferMap[std::to_string(this->channelId)] = &this->modalIncomingInteractionBuffer;
 	}
 
-	CoRoutine<ModalResponseData> ModalCollector::collectModalData(int32_t maxWaitTimeInMsNew) {
+	CoRoutine<ModalResponseData> ModalCollector::collectModalData(Int32 maxWaitTimeInMsNew) {
 		co_await NewThreadAwaitable<ModalResponseData>();
 		this->maxTimeInMs = maxWaitTimeInMsNew;
 		this->run();
@@ -826,8 +826,8 @@ namespace DiscordCoreAPI {
 		ModalCollector::modalInteractionBufferMap.erase(std::to_string(this->channelId));
 	}
 
-	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBufferMap{};
-	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBufferMap{};
-	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBufferMap{};
+	std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBufferMap{};
+	std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBufferMap{};
+	std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBufferMap{};
 	DiscordCoreInternal::HttpsClient* Interactions::httpsClient{ nullptr };
 };

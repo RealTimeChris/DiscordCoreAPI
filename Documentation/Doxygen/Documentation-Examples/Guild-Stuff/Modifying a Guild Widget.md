@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 				auto responseData = DiscordCoreAPI::Guilds::modifyGuildWidgetAsync(dataPackage01).get();
 
-				cout << boolalpha << responseData.enabled << endl;
+				cout << Boolalpha << responseData.enabled << endl;
 
 			} catch (...) {
 				rethrowException("Test::execute()");

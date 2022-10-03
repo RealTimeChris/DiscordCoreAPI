@@ -36,14 +36,14 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll VoiceSocketReadyData {
 		VoiceSocketReadyData(simdjson::ondemand::value);
-		std::string mode{};
-		std::string ip{};
-		uint64_t port{};
-		uint32_t ssrc{};
+		String mode{};
+		String ip{};
+		Uint64 port{};
+		Uint32 ssrc{};
 	};
 
 	struct DiscordCoreAPI_Dll SessionDescriptionData {
-		std::string theKey{};
+		String theKey{};
 	};
 
 	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll VoicePayload {
 		std::vector<opus_int16> decodedData{};
-		std::vector<uint8_t> theRawData{};
+		std::vector<Uint8> theRawData{};
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
@@ -75,30 +75,30 @@ namespace DiscordCoreAPI {
 		Snowflake theUserId{};
 	};
 
-	using DoubleNanoSecond = std::chrono::duration<double, std::nano>;
+	using DoubleNanoSecond = std::chrono::duration<Double, std::nano>;
 
-	using DoubleMilliSecond = std::chrono::duration<double, std::milli>;
+	using DoubleMilliSecond = std::chrono::duration<Double, std::milli>;
 
 	using DoubleTimePointNs = std::chrono::time_point<std::chrono::steady_clock, DoubleNanoSecond>;
 
 	using DoubleTimePointMs = std::chrono::time_point<std::chrono::steady_clock, DoubleMilliSecond>;
 
 	struct DiscordCoreAPI_Dll RTPPacket {
-		std::vector<uint8_t> audioData{};
-		uint8_t version{ 0x80 };
-		uint8_t flags{ 0x78 };
-		std::string theKeys{};
-		uint32_t timestamp{};
-		uint16_t sequence{};
-		uint32_t ssrc{};
+		std::vector<Uint8> audioData{};
+		Uint8 version{ 0x80 };
+		Uint8 flags{ 0x78 };
+		String theKeys{};
+		Uint32 timestamp{};
+		Uint16 sequence{};
+		Uint32 ssrc{};
 
-		RTPPacket(uint32_t timestampNew, uint16_t sequenceNew, uint32_t ssrcNew, std::vector<uint8_t>& audioDataNew, const std::string& theKeys) noexcept;
+		RTPPacket(Uint32 timestampNew, Uint16 sequenceNew, Uint32 ssrcNew, std::vector<Uint8>& audioDataNew, const String& theKeys) noexcept;
 
-		operator std::string() noexcept;
+		operator String() noexcept;
 	};
 
 	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
-	enum class VoiceConnectionState : int8_t {
+	enum class VoiceConnectionState : Int8 {
 		Collecting_Init_Data = 0,///< Collecting initialization data.
 		Initializing_WebSocket = 1,///< Initializing the WebSocket.
 		Collecting_Hello = 2,///< Collecting the client hello.
@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For the various active states of the VoiceConnection class. \brief For the various active states of the VoiceConnection class.
-	enum class VoiceActiveState : int8_t {
+	enum class VoiceActiveState : Int8 {
 		Connecting = -1,///< Connecting - it hasn't started or it's reconnecting.
 		Playing = 1,///< Playing.
 		Stopped = 2,///< Stopped.
@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 
 		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, DiscordCoreInternal::WebSocketSSLShard* baseShard,
-			const DiscordCoreInternal::VoiceConnectInitData& initDataNew, DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew, StreamType streamTypeNew,
+			const DiscordCoreInternal::VoiceConnectInitData& initDataNew, DiscordCoreAPI::ConfigManager* configManagerNew, AtomicBool* doWeQuitNew, StreamType streamTypeNew,
 			StreamInfo streamInfoNew = StreamInfo{}) noexcept;
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
@@ -155,45 +155,45 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
-		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};
+		std::unordered_map<Uint64, VoiceUser> voiceUsers{};
 		std::deque<ConnectionPackage> theConnections{};
-		std::atomic_bool areWeConnectedBool{ false };
+		AtomicBool areWeConnectedBool{ false };
 		std::deque<VoicePayload> theFrameQueue{};
-		std::atomic_bool areWePlaying{ false };
-		const int64_t maxReconnectTries{ 10 };
-		int64_t currentReconnectTries{ 0 };
-		std::string audioEncryptionMode{};
+		AtomicBool areWePlaying{ false };
+		const Int64 maxReconnectTries{ 10 };
+		Int64 currentReconnectTries{ 0 };
+		String audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		ConnectionPackage thePackage{};
-		std::string secretKeySend{};
+		String secretKeySend{};
 		std::mutex voiceUserMutex{};
-		uint16_t sequenceIndex{ 0 };
+		Uint16 sequenceIndex{ 0 };
 		AudioFrameData audioData{};
 		StreamInfo theStreamInfo{};
 		AudioEncoder theEncoder{};
-		std::string externalIp{};
+		String externalIp{};
 		StreamType streamType{};
-		uint32_t timeStamp{ 0 };
-		std::string voiceIp{};
-		std::string baseUrl{};
-		uint32_t audioSSRC{};
-		uint64_t port{};
+		Uint32 timeStamp{ 0 };
+		String voiceIp{};
+		String baseUrl{};
+		Uint32 audioSSRC{};
+		Uint64 port{};
 
-		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
+		Bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
 
-		std::string encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
+		String encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
 
-		bool sendTextMessage(std::string& theMessage, bool priority) noexcept;
+		Bool sendTextMessage(String& theMessage, Bool priority) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
-		bool onMessageReceived(std::string_view theData) noexcept;
+		Bool onMessageReceived(StringView theData) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
-		void sendSpeakingMessage(const bool isSpeaking) noexcept;
+		void sendSpeakingMessage(const Bool isSpeaking) noexcept;
 
-		void sendVoiceData(std::string& responseData) noexcept;
+		void sendVoiceData(String& responseData) noexcept;
 
 		void runWebSocket(std::stop_token) noexcept;
 
@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 
 		void parseIncomingVoiceData() noexcept;
 
-		bool areWeCurrentlyPlaying() noexcept;
+		Bool areWeCurrentlyPlaying() noexcept;
 
 		void disconnectInternal() noexcept;
 
@@ -213,13 +213,13 @@ namespace DiscordCoreAPI {
 
 		void clearAudioData() noexcept;
 
-		bool areWeConnected() noexcept;
+		Bool areWeConnected() noexcept;
 
 		void sendHeartBeat() noexcept;
 
-		bool parseMessage() noexcept;
+		Bool parseMessage() noexcept;
 
-		bool voiceConnect() noexcept;
+		Bool voiceConnect() noexcept;
 
 		void handleBuffer() noexcept;
 
@@ -237,9 +237,9 @@ namespace DiscordCoreAPI {
 
 		void connect() noexcept;
 
-		bool stop() noexcept;
+		Bool stop() noexcept;
 
-		bool play() noexcept;
+		Bool play() noexcept;
 	};
 	/**@}*/
 

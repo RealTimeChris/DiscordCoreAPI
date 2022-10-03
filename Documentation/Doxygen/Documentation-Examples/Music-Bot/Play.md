@@ -8,11 +8,11 @@ Play {#Play}
 
 namespace DiscordCoreAPI {
 
-	MoveThroughMessagePagesData recurseThroughOptions(MoveThroughMessagePagesData returnData, int32_t currentPageIndex, InputEventData newEvent,
-		std::vector<EmbedData> embedsFromSearch, BaseFunctionArguments& newArgs, std::vector<int32_t> arrayOfIndices, GuildMember guildMember, std::vector<Song> searchResults) {
+	MoveThroughMessagePagesData recurseThroughOptions(MoveThroughMessagePagesData returnData, Int32 currentPageIndex, InputEventData newEvent,
+		std::vector<EmbedData> embedsFromSearch, BaseFunctionArguments& newArgs, std::vector<Int32> arrayOfIndices, GuildMember guildMember, std::vector<Song> searchResults) {
 		if (returnData.buttonId == "exit") {
 			auto currentQueue = SongAPI::getPlaylist(guildMember.guildId);
-			int32_t songSize = currentQueue.songQueue.size();
+			Int32 songSize = currentQueue.songQueue.size();
 			arrayOfIndices.erase(arrayOfIndices.end() - 1, arrayOfIndices.end());
 			for (auto& value: arrayOfIndices) {
 				if (value != -1) {
@@ -20,10 +20,10 @@ namespace DiscordCoreAPI {
 				}
 			}
 			std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
-			std::string descriptionString{};
+			String descriptionString{};
 			currentQueue = SongAPI::getPlaylist(guildMember.guildId);
 			descriptionString = "------\n__**Added the following songs to the queue:\n";
-			for (uint32_t x = 0; x < arrayOfIndices.size(); x += 1) {
+			for (Uint32 x = 0; x < arrayOfIndices.size(); x += 1) {
 				descriptionString += "[" + searchResults[arrayOfIndices[x]].songTitle + "](" + searchResults[arrayOfIndices[x]].viewUrl + ")\n" +
 					"Position: " + std::to_string(songSize + x + 1) + "\n";
 			}
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 
 	class Play : public BaseFunction {
 	  public:
-		static std::unordered_map<int64_t, int64_t> timeOfLastPlay;
+		static std::unordered_map<Int64, Int64> timeOfLastPlay;
 
 		Play() {
 			this->commandName = "play";
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 				Guild guild = Guilds::getCachedGuildAsync({ newArgs.eventData.getGuildId() }).get();
 				DiscordGuild discordGuild(guild);
 
-				bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
+				Bool areWeAllowed = checkIfAllowedPlayingInChannel(newArgs.eventData, discordGuild);
 
 				if (!areWeAllowed) {
 					return;
@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 				GuildMember guildMember =
 					GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newArgs.eventData.getAuthorId(), .guildId = newArgs.eventData.getGuildId() }).get();
 
-				bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
+				Bool doWeHaveControl = checkIfWeHaveControl(newArgs.eventData, discordGuild, guildMember);
 
 				if (!doWeHaveControl) {
 					return;
@@ -93,8 +93,8 @@ namespace DiscordCoreAPI {
 
 				InputEventData newEvent = newArgs.eventData;
 
-				int64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-				int64_t previousPlayedTime{ 0 };
+				Int64 currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+				Int64 previousPlayedTime{ 0 };
 				if (Play::timeOfLastPlay.contains(newArgs.eventData.getGuildId())) {
 					previousPlayedTime = Play::timeOfLastPlay.at(newArgs.eventData.getGuildId());
 				}
@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 				}
 
 				std::vector<EmbedData> embedsFromSearch;
-				uint32_t x = 0;
+				Uint32 x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
 					std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
@@ -217,9 +217,9 @@ namespace DiscordCoreAPI {
 					embedsFromSearch.emplace_back(*newEmbed);
 				}
 
-				uint32_t currentPageIndex = 0;
+				Uint32 currentPageIndex = 0;
 				MoveThroughMessagePagesData returnData{};
-				std::vector<int32_t> arrayOfIndices{};
+				std::vector<Int32> arrayOfIndices{};
 				if (embedsFromSearch.size() > 0) {
 					RespondToInputEventData dataPackage0(newEvent);
 					dataPackage0.setResponseType(InputEventResponseType::Follow_Up_Message);
@@ -441,7 +441,7 @@ namespace DiscordCoreAPI {
 		};
 		~Play(){};
 	};
-	std::unordered_map<int64_t, int64_t> Play::timeOfLastPlay{};
+	std::unordered_map<Int64, Int64> Play::timeOfLastPlay{};
 
 };
 ```

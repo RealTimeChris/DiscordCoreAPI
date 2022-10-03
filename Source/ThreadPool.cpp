@@ -27,14 +27,14 @@
 
 namespace DiscordCoreAPI {
 
-	std::string ThreadPool::storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval) {
-		std::string threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+	String ThreadPool::storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, Int64 timeInterval) {
+		String threadId = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 
 		auto theThread = std::jthread([=](std::stop_token stopToken) {
 			StopWatch stopWatch{ std::chrono::milliseconds{ timeInterval } };
 			while (true) {
 				stopWatch.resetTimer();
-				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * thePercentage)) });
+				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<Int64>(std::ceil(static_cast<Float>(timeInterval) * thePercentage)) });
 				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
 					std::this_thread::sleep_for(1ms);
 				}
@@ -53,14 +53,14 @@ namespace DiscordCoreAPI {
 		return threadId;
 	}
 
-	void ThreadPool::stopThread(const std::string& theKey) {
+	void ThreadPool::stopThread(const String& theKey) {
 		if (ThreadPool::threads.contains(theKey)) {
 			ThreadPool::threads[theKey].request_stop();
 			ThreadPool::threads.erase(theKey);
 		}
 	}
 
-	std::unordered_map<std::string, std::jthread> ThreadPool::threads{};
+	std::unordered_map<String, std::jthread> ThreadPool::threads{};
 }
 
 namespace DiscordCoreInternal {
@@ -82,11 +82,11 @@ namespace DiscordCoreInternal {
 		if (this->threadCount.load() < 1) {
 			this->threadCount.store(1);
 		}
-		for (uint32_t x = 0; x < this->threadCount.load(); ++x) {
+		for (Uint32 x = 0; x < this->threadCount.load(); ++x) {
 			WorkerThread workerThread{};
 			this->currentIndex.store(this->currentIndex.load() + 1);
 			this->currentCount.store(this->currentCount.load() + 1);
-			int64_t theIndexNew = this->currentIndex.load();
+			Int64 theIndexNew = this->currentIndex.load();
 			workerThread.theThread = std::jthread([=, this](std::stop_token stopToken) {
 				this->threadFunction(stopToken, theIndexNew);
 			});
@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 
 	void CoRoutineThreadPool::submitTask(std::coroutine_handle<> coro) noexcept {
 		std::unique_lock theLock{ this->theMutex };
-		bool areWeAllBusy{ true };
+		Bool areWeAllBusy{ true };
 		for (auto& [key, value]: this->workerThreads) {
 			if (!value.areWeCurrentlyWorking.load()) {
 				areWeAllBusy = false;
@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 			WorkerThread workerThread{};
 			this->currentIndex.store(this->currentIndex.load() + 1);
 			this->currentCount.store(this->currentCount.load() + 1);
-			int64_t theIndexNew = this->currentIndex.load();
+			Int64 theIndexNew = this->currentIndex.load();
 			workerThread.theThread = std::jthread([=, this](std::stop_token stopToken) {
 				this->threadFunction(stopToken, theIndexNew);
 			});
@@ -116,8 +116,8 @@ namespace DiscordCoreInternal {
 		this->theCoroutineHandles.emplace_back(coro);
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
-	std::atomic_int32_t theIntNew{};
-	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t theIndex) {
+	AtomicInt32 theIntNew{};
+	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, Int64 theIndex) {
 		while (!stopToken.stop_requested()) {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };

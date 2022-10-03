@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	using AutoCompleteEntryFunction = std::function<std::string(std::string)>;
+	using AutoCompleteEntryFunction = std::function<String(String)>;
 
 	class DiscordCoreAPI_Dll InteractionResponseBase {
 	  public:
@@ -49,8 +49,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		InteractionResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-			const std::string& emojiName = "", Snowflake emojiId = Snowflake{ 0 }, const std::string& url = "");
+		InteractionResponseBase& addButton(Bool disabled, const String& customIdNew, const String& buttonLabel, ButtonStyle buttonStyle,
+			const String& emojiName = "", Snowflake emojiId = Snowflake{ 0 }, const String& url = "");
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -59,8 +59,8 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		InteractionResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
-			int32_t maxValues, int32_t minValues);
+		InteractionResponseBase& addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder,
+			Int32 maxValues, Int32 minValues);
 
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.
@@ -74,8 +74,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		InteractionResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
-			bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
+		InteractionResponseBase& addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew, const String& customIdNew,
+			Bool required, Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label = "", const String& placeholder = "");
 
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
@@ -100,11 +100,11 @@ namespace DiscordCoreAPI {
 
 		/// For setting the Message content in a response. \brief For setting the content in a response.
 		/// \param dataPackage A string, containing the content.
-		InteractionResponseBase& addContent(const std::string& dataPackage);
+		InteractionResponseBase& addContent(const String& dataPackage);
 
 		/// For setting the tts status of a response. \brief For setting the tts status of a response.
-		/// \param enabledTTs A bool.
-		InteractionResponseBase& setTTSStatus(bool enabledTTs);
+		/// \param enabledTTs A Bool.
+		InteractionResponseBase& setTTSStatus(Bool enabledTTs);
 
 		InteractionResponseData getInteractionResponseData();
 
@@ -174,7 +174,7 @@ namespace DiscordCoreAPI {
 
 	/// For getting an Interaction response. \brief For getting an Interaction response.
 	struct DiscordCoreAPI_Dll GetInteractionResponseData {
-		std::string interactionToken{};///< Interaction token.
+		String interactionToken{};///< Interaction token.
 		Snowflake applicationId{};///< application id.
 	};
 
@@ -204,7 +204,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		InteractionPackageData interactionPackage{};
-		uint32_t timeDelay{ 0 };
+		Uint32 timeDelay{ 0 };
 	};
 
 	/// For creating an ephemeral follow up Message. \brief For creating an ephemeral follow up Message.
@@ -248,7 +248,7 @@ namespace DiscordCoreAPI {
 
 	/// For getting a follow-up Message. \brief For getting a follow-up Message.
 	struct DiscordCoreAPI_Dll GetFollowUpMessageData {
-		std::string interactionToken{};///< Interaction token.
+		String interactionToken{};///< Interaction token.
 		Snowflake applicationId{};///< application id.
 		Snowflake messageId{};///< Message id.
 	};
@@ -281,7 +281,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		InteractionPackageData interactionPackage{};
 		MessagePackageData messagePackage{};
-		uint32_t timeDelay{ 0 };
+		Uint32 timeDelay{ 0 };
 	};
 
 	/// A single Interaction.
@@ -400,8 +400,8 @@ namespace DiscordCoreAPI {
 		SelectMenuResponseData() noexcept = default;
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
-		std::vector<std::string> values{};///< A vector of the chosen values.
-		std::string selectionId{};///< Selection id.
+		std::vector<String> values{};///< A vector of the chosen values.
+		String selectionId{};///< Selection id.
 		Snowflake channelId{};///< The Channel id where it took place.
 		Snowflake messageId{};///< The Message id where it took place.
 		Snowflake userId{};///< The User id who selected the menu options.
@@ -414,7 +414,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBufferMap;
+		static std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
@@ -426,7 +426,7 @@ namespace DiscordCoreAPI {
 		/// \param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping.
 		/// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
 		/// \returns A vector of SelectMenuResponseData.
-		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew,
+		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(Bool getSelectMenuDataForAllNew, Int32 maxWaitTimeInMsNew, Int32 maxCollectedSelectMenuCountNew,
 			Snowflake targetUserId = Snowflake{ 0 });
 
 		~SelectMenuCollector();
@@ -435,14 +435,14 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> selectMenuIncomingInteractionBuffer{};
 		std::vector<SelectMenuResponseData> responseVector{};
-		int32_t currentCollectedSelectMenuCount{ 0 };
-		int32_t maxCollectedSelectMenuCount{ 0 };
-		bool getSelectMenuDataForAll{ false };
-		std::vector<std::string> values{};
-		std::string bufferMapKey{};
-		std::string selectMenuId{};
-		uint32_t maxTimeInMs{ 0 };
-		bool doWeQuit{ false };
+		Int32 currentCollectedSelectMenuCount{ 0 };
+		Int32 maxCollectedSelectMenuCount{ 0 };
+		Bool getSelectMenuDataForAll{ false };
+		std::vector<String> values{};
+		String bufferMapKey{};
+		String selectMenuId{};
+		Uint32 maxTimeInMs{ 0 };
+		Bool doWeQuit{ false };
 		Snowflake channelId{};
 		Snowflake messageId{};
 		Snowflake userId{};
@@ -491,8 +491,8 @@ namespace DiscordCoreAPI {
 		ButtonResponseData() noexcept = default;
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
-		std::string emojiName{};///< The emoji name, if applicable.
-		std::string buttonId{};///< The id of the button, for identification.
+		String emojiName{};///< The emoji name, if applicable.
+		String buttonId{};///< The id of the button, for identification.
 		Snowflake channelId{};///< The Channel id where it took place.
 		Snowflake messageId{};///< The Message id where it took place.
 		Snowflake userId{};///< The User id who selected the menu options.
@@ -503,7 +503,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
+		static std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
@@ -515,7 +515,7 @@ namespace DiscordCoreAPI {
 		/// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
 		/// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
 		/// \returns A vector of ButtonResponseData.
-		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
+		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(Bool getButtonDataForAllNew, Int32 maxWaitTimeInMsNew, Int32 maxNumberOfPressesNew,
 			Snowflake targetUserId = Snowflake{ 0 });
 
 		~ButtonCollector();
@@ -524,14 +524,14 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> buttonIncomingInteractionBuffer{};
 		std::vector<ButtonResponseData> responseVector{};
-		int32_t currentCollectedButtonCount{ 0 };
-		int32_t maxCollectedButtonCount{ 0 };
-		bool getButtonDataForAll{ false };
-		std::vector<std::string> values{};
-		std::string bufferMapKey{};
-		uint32_t maxTimeInMs{ 0 };
-		bool doWeQuit{ false };
-		std::string buttonId{};
+		Int32 currentCollectedButtonCount{ 0 };
+		Int32 maxCollectedButtonCount{ 0 };
+		Bool getButtonDataForAll{ false };
+		std::vector<String> values{};
+		String bufferMapKey{};
+		Uint32 maxTimeInMs{ 0 };
+		Bool doWeQuit{ false };
+		String buttonId{};
 		Snowflake channelId{};
 		Snowflake messageId{};
 		Snowflake userId{};
@@ -580,10 +580,10 @@ namespace DiscordCoreAPI {
 		ModalResponseData() noexcept = default;
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
-		std::string customIdSmall{};///< The customId of the particular input.
-		std::string customId{};///< The customId of the modal component.
+		String customIdSmall{};///< The customId of the particular input.
+		String customId{};///< The customId of the modal component.
 		Snowflake channelId{};///< The Channel id where it took place.
-		std::string value{};/// The input value of the modal component.
+		String value{};/// The input value of the modal component.
 		Snowflake userId{};///< The User id who selected the menu options.
 	};
 
@@ -592,7 +592,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBufferMap;
+		static std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> modalInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
@@ -601,16 +601,16 @@ namespace DiscordCoreAPI {
 		/// Used to collect the button inputs from one or more users. \brief Used to collect the button inputs from one or more users.
 		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
 		/// \returns A vector of ButtonResponseData.
-		CoRoutine<ModalResponseData> collectModalData(int32_t maxWaitTimeInMsNew);
+		CoRoutine<ModalResponseData> collectModalData(Int32 maxWaitTimeInMsNew);
 
 		~ModalCollector();
 
 	  protected:
 		UnboundedMessageBlock<InteractionData> modalIncomingInteractionBuffer{};
-		int32_t currentCollectedButtonCount{ 0 };
+		Int32 currentCollectedButtonCount{ 0 };
 		ModalResponseData responseData{};
-		uint32_t maxTimeInMs{ 0 };
-		bool doWeQuit{ false };
+		Uint32 maxTimeInMs{ 0 };
+		Bool doWeQuit{ false };
 		Snowflake channelId{};
 
 		void run();

@@ -23,8 +23,8 @@ void onBoot02(DiscordCoreAPI::DiscordCoreClients* thePtr) {
 	thePtr->getBotUser().updatePresence({.activities = activities, .status = "online", .afk = false});
 }
 
-int32_t main() {
-	std::string botToken = "YOUR_BOT_TOKEN_HERE";
+Int32 main() {
+	String botToken = "YOUR_BOT_TOKEN_HERE";
 	std::vector<DiscordCoreAPI::RepeatedFunctionData> functionVector;
 	DiscordCoreAPI::RepeatedFunctionData function01;
 	function01.function = onBoot02;

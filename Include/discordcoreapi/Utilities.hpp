@@ -52,12 +52,12 @@
 		#endif
 		#include <cstdint>
 		#include <cstring>
-inline uint64_t ntohll(uint64_t x) {
-	uint8_t theData[8]{};
+inline Uint64 ntohll(Uint64 x) {
+	Uint8 theData[8]{};
 	memcpy(&theData, &(x), sizeof(x));
-	uint64_t theValue{};
-	for (uint32_t y = 0; y < sizeof(uint64_t); ++y) {
-		theValue |= static_cast<uint64_t>(theData[y]) << 8 * (sizeof(uint64_t) - y - 1);
+	Uint64 theValue{};
+	for (Uint32 y = 0; y < sizeof(Uint64); ++y) {
+		theValue |= static_cast<Uint64>(theData[y]) << 8 * (sizeof(Uint64) - y - 1);
 	}
 	return theValue;
 }
@@ -127,18 +127,39 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	using AtomicUint64 = std::atomic_uint64_t;
+	using AtomicUint32 = std::atomic_uint32_t;
+	using AtomicInt64 = std::atomic_int64_t;
+	using AtomicInt32 = std::atomic_int32_t;
+	using AtomicBool = std::atomic_bool;
+	using StringStream = std::stringstream;
+	using StringView = std::string_view;
+	using String = std::string;
+	using Uint64 = uint64_t;
+	using Uint32 = uint32_t;
+	using Uint16 = uint16_t;
+	using Uint8 = uint8_t;
+	using Int64 = int64_t;
+	using Int32 = int32_t;
+	using Int16 = int16_t;
+	using Int8 = int8_t;;
+	using Float = float;
+	using Double = double;
+	using Snowflake = Uint64;
+	using Bool = bool;
+
 	enum class ValueType { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Float = 4, String = 5, Bool = 6, Int64 = 7, Uint64 = 8, Unset = 9 };
 
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
 
 	template<typename TheType>
-	concept IsString = std::same_as<TheType, std::string>;
+	concept IsString = std::same_as<TheType, String>;
 
 	struct DiscordCoreAPI_Dll EnumConverter {
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
-			this->thePtr = new uint64_t{};
-			*static_cast<uint64_t*>(this->thePtr) = static_cast<uint64_t>(other);
+			this->thePtr = new Uint64{};
+			*static_cast<Uint64*>(this->thePtr) = static_cast<Uint64>(other);
 		};
 
 		EnumConverter& operator=(EnumConverter&&) noexcept;
@@ -150,9 +171,9 @@ namespace DiscordCoreAPI {
 		EnumConverter(EnumConverter&) noexcept = delete;
 
 		template<IsEnum EnumType> EnumConverter& operator=(std::vector<EnumType> other) {
-			this->thePtr = new std::vector<uint64_t>{};
+			this->thePtr = new std::vector<Uint64>{};
 			for (auto& value: other) {
-				static_cast<std::vector<uint64_t>*>(this->thePtr)->emplace_back(static_cast<uint64_t>(value));
+				static_cast<std::vector<Uint64>*>(this->thePtr)->emplace_back(static_cast<Uint64>(value));
 			}
 			this->vectorType = true;
 			return *this;
@@ -162,26 +183,26 @@ namespace DiscordCoreAPI {
 			*this = other;
 		};
 
-		operator std::vector<uint64_t>();
+		operator std::vector<Uint64>();
 
-		explicit operator uint64_t();
+		explicit operator Uint64();
 
 		~EnumConverter();
 
 	  protected:
-		bool vectorType{ false };
+		Bool vectorType{ false };
 		void* thePtr{ nullptr };
 	};
 
 	class DiscordCoreAPI_Dll JsonObject {
 	  public:
-		using ObjectType = std::map<std::string, JsonObject, std::less<>, std::allocator<std::pair<const std::string, JsonObject>>>;
+		using ObjectType = std::map<String, JsonObject, std::less<>, std::allocator<std::pair<const String, JsonObject>>>;
 		using ArrayType = std::vector<JsonObject>;
-		using StringType = std::string;
-		using UintType = uint64_t;
-		using FloatType = double;
-		using IntType = int64_t;
-		using BoolType = bool;
+		using StringType = String;
+		using UintType = Uint64;
+		using FloatType = Double;
+		using IntType = Int64;
+		using BoolType = Bool;
 
 		ValueType theType{ ValueType::Null };
 		StringType theString{};
@@ -194,7 +215,7 @@ namespace DiscordCoreAPI {
 			StringType* string;
 			IntType numberInt;
 			ArrayType* array;
-			BoolType boolean;
+			BoolType Boolean;
 
 			JsonValue& operator=(JsonValue&&) noexcept = delete;
 
@@ -208,27 +229,27 @@ namespace DiscordCoreAPI {
 
 			JsonValue& operator=(const char* theData) noexcept;
 
-			JsonValue& operator=(uint64_t theData) noexcept;
+			JsonValue& operator=(Uint64 theData) noexcept;
 
-			JsonValue& operator=(uint32_t theData) noexcept;
+			JsonValue& operator=(Uint32 theData) noexcept;
 
-			JsonValue& operator=(uint16_t theData) noexcept;
+			JsonValue& operator=(Uint16 theData) noexcept;
 
-			JsonValue& operator=(uint8_t theData) noexcept;
+			JsonValue& operator=(Uint8 theData) noexcept;
 
-			JsonValue& operator=(int64_t theData) noexcept;
+			JsonValue& operator=(Int64 theData) noexcept;
 
-			JsonValue& operator=(int32_t theData) noexcept;
+			JsonValue& operator=(Int32 theData) noexcept;
 
-			JsonValue& operator=(int16_t theData) noexcept;
+			JsonValue& operator=(Int16 theData) noexcept;
 
-			JsonValue& operator=(int8_t theData) noexcept;
+			JsonValue& operator=(Int8 theData) noexcept;
 
-			JsonValue& operator=(double theData) noexcept;
+			JsonValue& operator=(Double theData) noexcept;
 
-			JsonValue& operator=(float theData) noexcept;
+			JsonValue& operator=(Float theData) noexcept;
 
-			JsonValue& operator=(bool theData) noexcept;
+			JsonValue& operator=(Bool theData) noexcept;
 
 			JsonValue& operator=(ValueType t) noexcept;
 			JsonValue(ValueType t) noexcept;
@@ -242,7 +263,7 @@ namespace DiscordCoreAPI {
 
 		template<typename ObjectType> JsonObject& operator=(std::vector<ObjectType> theData) noexcept {
 			this->theType = ValueType::Array;
-			int32_t theIndex{};
+			Int32 theIndex{};
 			for (auto& value: theData) {
 				this->theValue = ValueType::Array;
 				this->theValue.array->push_back(JsonObject{ value });
@@ -256,7 +277,7 @@ namespace DiscordCoreAPI {
 		}
 
 		template<IsString KeyType, IsString ObjectType> JsonObject& operator=(std::unordered_map<KeyType, ObjectType> theData) noexcept {
-			int32_t theIndex{};
+			Int32 theIndex{};
 			this->theType = ValueType::Array;
 
 			for (auto& [key, value]: theData) {
@@ -283,38 +304,38 @@ namespace DiscordCoreAPI {
 		JsonObject& operator=(const char* theData) noexcept;
 		JsonObject(const char* theData) noexcept;
 
-		JsonObject& operator=(uint64_t theData) noexcept;
-		JsonObject(uint64_t) noexcept;
+		JsonObject& operator=(Uint64 theData) noexcept;
+		JsonObject(Uint64) noexcept;
 
-		JsonObject& operator=(uint32_t theData) noexcept;
-		JsonObject(uint32_t) noexcept;
+		JsonObject& operator=(Uint32 theData) noexcept;
+		JsonObject(Uint32) noexcept;
 
-		JsonObject& operator=(uint16_t theData) noexcept;
-		JsonObject(uint16_t) noexcept;
+		JsonObject& operator=(Uint16 theData) noexcept;
+		JsonObject(Uint16) noexcept;
 
-		JsonObject& operator=(uint8_t theData) noexcept;
-		JsonObject(uint8_t) noexcept;
+		JsonObject& operator=(Uint8 theData) noexcept;
+		JsonObject(Uint8) noexcept;
 
-		JsonObject& operator=(int64_t theData) noexcept;
-		JsonObject(int64_t) noexcept;
+		JsonObject& operator=(Int64 theData) noexcept;
+		JsonObject(Int64) noexcept;
 
-		JsonObject& operator=(int32_t theData) noexcept;
-		JsonObject(int32_t) noexcept;
+		JsonObject& operator=(Int32 theData) noexcept;
+		JsonObject(Int32) noexcept;
 
-		JsonObject& operator=(int16_t theData) noexcept;
-		JsonObject(int16_t) noexcept;
+		JsonObject& operator=(Int16 theData) noexcept;
+		JsonObject(Int16) noexcept;
 
-		JsonObject& operator=(int8_t theData) noexcept;
-		JsonObject(int8_t) noexcept;
+		JsonObject& operator=(Int8 theData) noexcept;
+		JsonObject(Int8) noexcept;
 
-		JsonObject& operator=(double theData) noexcept;
-		JsonObject(double) noexcept;
+		JsonObject& operator=(Double theData) noexcept;
+		JsonObject(Double) noexcept;
 
-		JsonObject& operator=(float theData) noexcept;
-		JsonObject(float) noexcept;
+		JsonObject& operator=(Float theData) noexcept;
+		JsonObject(Float) noexcept;
 
-		JsonObject& operator=(bool theData) noexcept;
-		JsonObject(bool) noexcept;
+		JsonObject& operator=(Bool theData) noexcept;
+		JsonObject(Bool) noexcept;
 
 		JsonObject(const char*, ValueType) noexcept;
 
@@ -326,16 +347,14 @@ namespace DiscordCoreAPI {
 		JsonObject& operator[](const typename ObjectType::key_type& key) const;
 		JsonObject& operator[](typename ObjectType::key_type key);
 
-		operator std::string() noexcept;
+		operator String() noexcept;
 
-		operator std::string() const noexcept;
+		operator String() const noexcept;
 
 		void pushBack(JsonObject other) noexcept;
 
 		~JsonObject() noexcept;
 	};
-
-	struct DiscordCoreAPI_Dll Snowflake;
 
 	struct DiscordCoreAPI_Dll ActivityData;
 
@@ -344,14 +363,34 @@ namespace DiscordCoreAPI {
 
 	/// For connecting two bots to stream the VC contents between the two. \brief For connecting two bots to stream the VC contents between the two.
 	struct DiscordCoreAPI_Dll StreamInfo {
-		std::string address{};///< The address to connect to.
-		std::string port{};///< The port to connect to.
+		String address{};///< The address to connect to.
+		String port{};///< The port to connect to.
 	};
 
 };
 
 namespace DiscordCoreInternal {
 
+	using AtomicUint64 = std::atomic_uint64_t;
+	using AtomicUint32 = std::atomic_uint32_t;
+	using AtomicInt64 = std::atomic_int64_t;
+	using AtomicInt32 = std::atomic_int32_t;
+	using AtomicBool = std::atomic_bool;
+	using StringStream = std::stringstream;
+	using StringView = std::string_view;
+	using String = std::string;
+	using Uint64 = uint64_t;
+	using Uint32 = uint32_t;
+	using Uint16 = uint16_t;
+	using Uint8 = uint8_t;
+	using Int64 = int64_t;
+	using Int32 = int32_t;
+	using Int16 = int16_t;
+	using Int8 = int8_t;;
+	using Float = float;
+	using Double = double;
+	using Snowflake = Uint64;
+	using Bool = bool;
 	using namespace std::literals;
 	using std::cout;
 	using std::endl;
@@ -371,13 +410,13 @@ namespace DiscordCoreInternal {
 		return static_cast<std::underlying_type_t<T>>(x);
 	}
 
-	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
+	enum class WebSocketOpCode : Int8 { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
 	/// Websocket close codes. \brief Websocket close codes.
 	class DiscordCoreAPI_Dll WebSocketClose {
 	  public:
 		/// Websocket close codes. \brief Websocket close codes.
-		enum class WebSocketCloseCode : uint16_t {
+		enum class WebSocketCloseCode : Uint16 {
 			Unset = 1 << 0,///< Unset.
 			Normal_Close = 1 << 1,///< Normal close.
 			Unknown_Error = 1 << 2,///< We're not sure what went wrong. Try reconnecting?
@@ -399,7 +438,7 @@ namespace DiscordCoreInternal {
 			We_Do_Not_Reconnect = Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
 		};
 
-		std::unordered_map<uint16_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset }, { 1000, WebSocketCloseCode::Normal_Close },
+		std::unordered_map<Uint16, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset }, { 1000, WebSocketCloseCode::Normal_Close },
 			{ 4000, WebSocketCloseCode::Unknown_Error }, { 4001, WebSocketCloseCode::Unknown_Opcode }, { 4002, WebSocketCloseCode::Decode_Error },
 			{ 4003, WebSocketCloseCode::Not_Authenticated }, { 4004, WebSocketCloseCode::Authentication_Failed }, { 4005, WebSocketCloseCode::Already_Authenticated },
 			{ 4007, WebSocketCloseCode::Invalid_Seq }, { 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed },
@@ -408,47 +447,29 @@ namespace DiscordCoreInternal {
 
 		WebSocketCloseCode theValue{};
 
-		WebSocketClose& operator=(uint16_t theValueNew);
+		WebSocketClose& operator=(Uint16 theValueNew);
 
-		explicit WebSocketClose(uint16_t theValueNew);
+		explicit WebSocketClose(Uint16 theValueNew);
 
-		operator uint16_t();
+		operator Uint16();
 
-		operator bool();
+		operator Bool();
 	};
 
 	/// For updating a User's presence. \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		std::vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
-		std::string status{};///< Current status.
-		int64_t since{ 0 };///< When was the activity started?
-		bool afk{ false };///< Are we afk.
+		String status{};///< Current status.
+		Int64 since{ 0 };///< When was the activity started?
+		Bool afk{ false };///< Are we afk.
 
-		operator std::string();
+		operator String();
 	};
 
 }// namespace DiscordCoreInternal
 
 
 namespace DiscordCoreAPI {
-
-	/// For ids of DiscordEntities. \brief For ids of DiscordEntities.
-	struct DiscordCoreAPI_Dll Snowflake {
-		friend inline bool operator==(const Snowflake, const Snowflake);
-		Snowflake() noexcept = default;
-		Snowflake& operator=(const std::string) noexcept;
-		explicit Snowflake(const std::string) noexcept;
-		Snowflake& operator=(const size_t) noexcept;
-		explicit Snowflake(const size_t) noexcept;
-		operator size_t() noexcept;
-
-	  protected:
-		mutable uint64_t theId{};
-	};
-
-	inline bool operator==(const Snowflake lhs, const Snowflake rhs) {
-		return (lhs.theId == rhs.theId);
-	}
 
 	using namespace std::literals;
 	using std::cout;
@@ -508,10 +529,10 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType, typename... ArgTypes> class Event;
 	template<typename ReturnType> class CoRoutine;
 
-	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*theFunction)( void ));
+	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const String& (*theFunction)( void ));
 
 	/// Input event response types. \brief Input event response types.
-	enum class InputEventResponseType : int8_t {
+	enum class InputEventResponseType : Int8 {
 		Unset = 0,///< Unset.
 		Deferred_Response = 1,
 		Ephemeral_Deferred_Response = 2,///< Deferred ephemeral response.
@@ -526,7 +547,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Gateway intents. \brief Gateway intents.
-	enum class GatewayIntents : int32_t {
+	enum class GatewayIntents : Int32 {
 		Guilds = 1 << 0,///< Intent for receipt of Guild information.
 		Guild_Members = 1 << 1,///< Intent for receipt of Guild members.
 		Guild_Bans = 1 << 2,///< Intent for receipt of Guild bans.
@@ -553,44 +574,44 @@ namespace DiscordCoreAPI {
 	/// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
 	struct DiscordCoreAPI_Dll RepeatedFunctionData {
 		std::function<void(DiscordCoreClient*)> function{ nullptr };///< The std::function pointer to be loaded.
-		uint32_t intervalInMs{ 0 };///< The time interval at which to call the std::function.
-		bool repeated{ false };///< Whether or not the std::function is repeating.
-		int64_t dummyArg{ 0 };
+		Uint32 intervalInMs{ 0 };///< The time interval at which to call the std::function.
+		Bool repeated{ false };///< Whether or not the std::function is repeating.
+		Int64 dummyArg{ 0 };
 	};
 
 	/// Represents which text format to use for websocket transfer. \brief Represents which text format to use for websocket transfer.
-	enum class TextFormat : int8_t {
+	enum class TextFormat : Int8 {
 		Etf = 0x00,///< Etf format.
 		Json = 0x01///< Json format.
 	};
 
 	/// Sharding options for the library. \brief Sharding options for the library.
 	struct DiscordCoreAPI_Dll ShardingOptions {
-		uint32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
-		uint32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
-		uint32_t startingShard{ 0 };///< The first shard to start on this process.
+		Uint32 numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
+		Uint32 totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
+		Uint32 startingShard{ 0 };///< The first shard to start on this process.
 	};
 
 	/**@}*/
 
 	/// Logging options for the library. \brief Loggin options for the library.
 	struct DiscordCoreAPI_Dll LoggingOptions {
-		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages to cout?
-		bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages to cout?
-		bool logGeneralSuccessMessages{ false };///< Do we log general success messages to cout?
-		bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages to cout?
-		bool logGeneralErrorMessages{ false };///< Do we log general error messages to cout?
-		bool logHttpsSuccessMessages{ false };///< Do we log Http response success messages to cout?
-		bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages to cout?
-		bool logHttpsErrorMessages{ false };///< Do we log Http response error messages to cout?
+		Bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages to cout?
+		Bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages to cout?
+		Bool logGeneralSuccessMessages{ false };///< Do we log general success messages to cout?
+		Bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages to cout?
+		Bool logGeneralErrorMessages{ false };///< Do we log general error messages to cout?
+		Bool logHttpsSuccessMessages{ false };///< Do we log Http response success messages to cout?
+		Bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages to cout?
+		Bool logHttpsErrorMessages{ false };///< Do we log Http response error messages to cout?
 	};
 
 	/// For selecting the caching style of the library. \brief For selecting the caching style of the library.
 	struct DiscordCoreAPI_Dll CacheOptions {
-		bool cacheChannels{ true };///< Do we cache Channels?
-		bool cacheGuilds{ true };///< Do we cache Guilds?
-		bool cacheRoles{ true };///< Do we cache Roles?
-		bool cacheUsers{ true };///< Do we cache Users/GuildMembers?
+		Bool cacheChannels{ true };///< Do we cache Channels?
+		Bool cacheGuilds{ true };///< Do we cache Guilds?
+		Bool cacheRoles{ true };///< Do we cache Roles?
+		Bool cacheUsers{ true };///< Do we cache Users/GuildMembers?
 	};
 
 	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
@@ -599,16 +620,16 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
-		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
+		String connectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
-		std::string connectionPort{};///< A potentially alternative connection port for the websocket.
+		String connectionPort{};///< A potentially alternative connection port for the websocket.
 		LoggingOptions logOptions{};///< Options for the output/logging of the library.
 		CacheOptions cacheOptions{};///< Options for the cache of the library.
-		std::string botToken{};///< Your bot's token.
+		String botToken{};///< Your bot's token.
 	};
 
 	struct DiscordCoreAPI_Dll JsonStringValue {
-		std::string theValue{};
+		String theValue{};
 		ValueType theType{};
 	};
 
@@ -618,47 +639,47 @@ namespace DiscordCoreAPI {
 
 		explicit ConfigManager(const DiscordCoreClientConfig&);
 
-		const bool doWePrintWebSocketSuccessMessages();
+		const Bool doWePrintWebSocketSuccessMessages();
 
-		const bool doWePrintWebSocketErrorMessages();
+		const Bool doWePrintWebSocketErrorMessages();
 
-		const bool doWePrintHttpsSuccessMessages();
+		const Bool doWePrintHttpsSuccessMessages();
 
-		const bool doWePrintHttpsErrorMessages();
+		const Bool doWePrintHttpsErrorMessages();
 
-		const bool doWePrintFFMPEGSuccessMessages();
+		const Bool doWePrintFFMPEGSuccessMessages();
 
-		const bool doWePrintFFMPEGErrorMessages();
+		const Bool doWePrintFFMPEGErrorMessages();
 
-		const bool doWePrintGeneralSuccessMessages();
+		const Bool doWePrintGeneralSuccessMessages();
 
-		const bool doWePrintGeneralErrorMessages();
+		const Bool doWePrintGeneralErrorMessages();
 
-		const bool doWeCacheChannels();
+		const Bool doWeCacheChannels();
 
-		const bool doWeCacheUsers();
+		const Bool doWeCacheUsers();
 
-		const bool doWeCacheGuilds();
+		const Bool doWeCacheGuilds();
 
-		const bool doWeCacheRoles();
+		const Bool doWeCacheRoles();
 
 		const DiscordCoreInternal::UpdatePresenceData getPresenceData();
 
-		const std::string getBotToken();
+		const String getBotToken();
 
-		const uint32_t getTotalShardCount();
+		const Uint32 getTotalShardCount();
 
-		const uint32_t getStartingShard();
+		const Uint32 getStartingShard();
 
-		const uint32_t getShardCountForThisProcess();
+		const Uint32 getShardCountForThisProcess();
 
-		const std::string getConnectionAddress();
+		const String getConnectionAddress();
 
-		void setConnectionAddress(const std::string& connectionAddressNew);
+		void setConnectionAddress(const String& connectionAddressNew);
 
-		const std::string getConnectionPort();
+		const String getConnectionPort();
 
-		void setConnectionPort(const std::string& connectionPortNew);
+		void setConnectionPort(const String& connectionPortNew);
 
 		const std::vector<RepeatedFunctionData> getFunctionsToExecute();
 
@@ -714,7 +735,7 @@ namespace DiscordCoreAPI {
 			return this->theMap.end();
 		}
 
-		const bool contains(ObjectType& theKey) noexcept {
+		const Bool contains(ObjectType& theKey) noexcept {
 			return this->theMap.contains(theKey);
 		}
 
@@ -757,9 +778,9 @@ namespace DiscordCoreAPI {
 
 		StringWrapper(const StringWrapper& other);
 
-		StringWrapper& operator=(const std::string& theString);
+		StringWrapper& operator=(const String& theString);
 
-		explicit StringWrapper(const std::string& theString);
+		explicit StringWrapper(const String& theString);
 
 		StringWrapper& operator=(const char* theString);
 
@@ -778,40 +799,40 @@ namespace DiscordCoreAPI {
 	};
 
 	inline std::basic_ostream<char>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
-		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(rhs))) {
+		for (auto& value: static_cast<String>(static_cast<StringWrapper>(rhs))) {
 			lhs.put(value);
 		}
 		return lhs;
 	}
 
 	inline std::basic_string<char> operator+(const std::basic_string<char, std::char_traits<char>, std::allocator<char>>& lhs, StringWrapper rhs) {
-		std::stringstream theStream{};
+		StringStream theStream{};
 		theStream << lhs << rhs;
 		return theStream.str();
 	}
 
 	inline std::basic_string<char> operator+(const char* lhs, StringWrapper rhs) {
-		std::stringstream theStream{};
+		StringStream theStream{};
 		theStream << lhs << rhs;
 		return theStream.str();
 	}
 
-	inline bool operator==(StringWrapper lhs, const char* rhs) {
-		if (std::string(lhs) == std::string(rhs)) {
+	inline Bool operator==(StringWrapper lhs, const char* rhs) {
+		if (String(lhs) == String(rhs)) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	inline bool operator!=(StringWrapper lhs, const char* rhs) {
-		if (static_cast<std::string>(lhs) == rhs) {
+	inline Bool operator!=(StringWrapper lhs, const char* rhs) {
+		if (static_cast<String>(lhs) == rhs) {
 			return false;
 		}
 		return true;
 	}
 
-	inline bool operator==(std::string& lhs, StringWrapper& rhs) {
+	inline Bool operator==(String& lhs, StringWrapper& rhs) {
 		if (lhs == rhs) {
 			return true;
 		}
@@ -826,7 +847,7 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// Audio frame types. \brief Audio frame types.
-	enum class AudioFrameType : int8_t {
+	enum class AudioFrameType : Int8 {
 		Unset = 0,///< Unset.
 		Encoded = 1,///< Encoded.
 		RawPCM = 2,///< Raw PCM.
@@ -836,9 +857,9 @@ namespace DiscordCoreAPI {
 	/// Represents a single frame of audio data. \brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
-		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
-		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
-		std::vector<uint8_t> data{};///< The audio data.
+		Int64 sampleCount{ -1ll };///< The number of samples per this frame.
+		Uint64 guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
+		std::vector<Uint8> data{};///< The audio data.
 
 		AudioFrameData() noexcept = default;
 
@@ -870,44 +891,44 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	DiscordCoreAPI_Dll uint64_t strtoull(const std::string& theString);
+	DiscordCoreAPI_Dll Uint64 strtoull(const String& theString);
 
-	template<typename ReturnType> ReturnType fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
+	template<typename ReturnType> ReturnType fromString(const String& string, std::ios_base& (*type)( std::ios_base& )) {
 		ReturnType theValue{};
 		std::istringstream theStream(string);
 		theStream >> type, theStream >> theValue;
 		return theValue;
 	}
 
-	template<typename ReturnType> std::string toHex(ReturnType inputValue) {
-		std::stringstream theStream{};
+	template<typename ReturnType> String toHex(ReturnType inputValue) {
+		StringStream theStream{};
 		theStream << std::setfill('0') << std::setw(sizeof(ReturnType) * 2) << std::hex << inputValue;
 		return theStream.str();
 	}
 
 	class DiscordCoreAPI_Dll RGBColorValue {
 	  public:
-		uint8_t green{};
-		uint8_t blue{};
-		uint8_t red{};
+		Uint8 green{};
+		Uint8 blue{};
+		Uint8 red{};
 	};
 
-	using HexColorValue = std::string;
+	using HexColorValue = String;
 
 	class DiscordCoreAPI_Dll ColorValue {
 	  public:
-		ColorValue(std::string theHexColorValue);
+		ColorValue(String theHexColorValue);
 
-		ColorValue(uint32_t theColorValue);
+		ColorValue(Uint32 theColorValue);
 
 		RGBColorValue getRgbColorValue();
 
 		HexColorValue getHexColorValue();
 
-		uint32_t getIntColorValue();
+		Uint32 getIntColorValue();
 
 	  protected:
-		uint32_t theColor{};
+		Uint32 theColor{};
 	};
 
 	enum class HashType { User_Avatar = 0, Channel_Icon = 1, GuildMember_Avatar = 2, Guild_Icon = 3, Guild_Splash = 4, Guild_Banner = 5, Guild_Discovery = 6 };
@@ -916,19 +937,19 @@ namespace DiscordCoreAPI {
 	  public:
 		IconHash() noexcept = default;
 
-		IconHash& operator=(const std::string theString);
+		IconHash& operator=(const String theString);
 
-		IconHash(const std::string theString) noexcept;
+		IconHash(const String theString) noexcept;
 
-		bool operator==(const IconHash& other);
+		Bool operator==(const IconHash& other);
 
-		std::string getIconHash() noexcept;
+		String getIconHash() noexcept;
 
 		~IconHash() noexcept = default;
 
 	  protected:
-		uint64_t highBits{};
-		uint64_t lowBits{};
+		Uint64 highBits{};
+		Uint64 lowBits{};
 	};
 
 	template<typename TimeType>
@@ -939,37 +960,37 @@ namespace DiscordCoreAPI {
 			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		}
 
-		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second, TimeFormat theFormatNew) {
+		TimeStamp(String year, String month, String day, String hour, String minute, String second, TimeFormat theFormatNew) {
 			this->getTimeSinceEpoch(stoull(year), stoull(month), stoull(day), stoull(hour), stoull(minute), stoull(second));
 		}
 
-		operator std::string() {
+		operator String() {
 			return getISO8601TimeStamp(TimeFormat::LongDateTime);
 		}
 
-		operator uint64_t() {
+		operator Uint64() {
 			return this->timeStampInTimeUnits;
 		}
 
-		TimeStamp<TimeType>& operator=(std::string&& originalTimeStampNew) {
-			std::string theString = originalTimeStampNew;
+		TimeStamp<TimeType>& operator=(String&& originalTimeStampNew) {
+			String theString = originalTimeStampNew;
 			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, theString);
 			this->getISO8601TimeStamp(TimeFormat::LongDateTime);
 			return *this;
 		}
 
-		explicit TimeStamp(std::string&& originalTimeStampNew) {
+		explicit TimeStamp(String&& originalTimeStampNew) {
 			*this = std::move(originalTimeStampNew);
 		}
 
-		TimeStamp<TimeType>& operator=(std::string& originalTimeStampNew) {
-			std::string theString = originalTimeStampNew;
+		TimeStamp<TimeType>& operator=(String& originalTimeStampNew) {
+			String theString = originalTimeStampNew;
 			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, theString);
 			this->getISO8601TimeStamp(TimeFormat::LongDateTime);
 			return *this;
 		}
 
-		explicit TimeStamp(std::string& originalTimeStampNew) {
+		explicit TimeStamp(String& originalTimeStampNew) {
 			*this = originalTimeStampNew;
 		}
 
@@ -982,32 +1003,32 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, TimeFormat theFormatNew) {
+		TimeStamp(Int32 year, Int32 month, Int32 day, Int32 hour, Int32 minute, Int32 second, TimeFormat theFormatNew) {
 			this->getTimeSinceEpoch(year, month, day, hour, minute, second);
 		};
 
-		TimeStamp(uint64_t timeInTimeUnits, TimeFormat theFormatNew) {
+		TimeStamp(Uint64 timeInTimeUnits, TimeFormat theFormatNew) {
 			this->timeStampInTimeUnits = TimeType{ timeInTimeUnits }.count();
 			this->getISO8601TimeStamp(theFormatNew);
 		}
 
-		static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd,
+		static String convertToFutureISO8601TimeStamp(Int32 minutesToAdd, Int32 hoursToAdd, Int32 daysToAdd, Int32 monthsToAdd, Int32 yearsToAdd,
 			TimeFormat theFormatNew) {
 			std::time_t result = std::time(nullptr);
-			int32_t secondsPerMinute{ 60 };
-			int32_t minutesPerHour{ 60 };
-			int32_t secondsPerHour{ minutesPerHour * secondsPerMinute };
-			int32_t hoursPerDay{ 24 };
-			int32_t secondsPerDay{ secondsPerHour * hoursPerDay };
-			int32_t daysPerMonth{ 30 };
-			int32_t secondsPerMonth{ secondsPerDay * daysPerMonth };
-			int32_t daysPerYear{ 365 };
-			int32_t secondsPerYear{ secondsPerDay * daysPerYear };
-			int32_t secondsToAdd =
+			Int32 secondsPerMinute{ 60 };
+			Int32 minutesPerHour{ 60 };
+			Int32 secondsPerHour{ minutesPerHour * secondsPerMinute };
+			Int32 hoursPerDay{ 24 };
+			Int32 secondsPerDay{ secondsPerHour * hoursPerDay };
+			Int32 daysPerMonth{ 30 };
+			Int32 secondsPerMonth{ secondsPerDay * daysPerMonth };
+			Int32 daysPerYear{ 365 };
+			Int32 secondsPerYear{ secondsPerDay * daysPerYear };
+			Int32 secondsToAdd =
 				(yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + (hoursToAdd * secondsPerHour) + (minutesToAdd * secondsPerMinute);
 			result += secondsToAdd;
 			auto resultTwo = std::localtime(&result);
-			std::string theReturnString{};
+			String theReturnString{};
 			if (resultTwo->tm_isdst) {
 				if (resultTwo->tm_hour + 4 >= 24) {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
@@ -1016,7 +1037,7 @@ namespace DiscordCoreAPI {
 				TimeStamp theTimeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
 					std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), theFormatNew };
 				theTimeStamp.getISO8601TimeStamp(theFormatNew);
-				theReturnString = static_cast<std::string>(theTimeStamp);
+				theReturnString = static_cast<String>(theTimeStamp);
 			} else {
 				if (resultTwo->tm_hour + 5 >= 24) {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
@@ -1025,15 +1046,15 @@ namespace DiscordCoreAPI {
 				TimeStamp theTimeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
 					std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), theFormatNew };
 				theTimeStamp.getISO8601TimeStamp(theFormatNew);
-				theReturnString = static_cast<std::string>(theTimeStamp);
+				theReturnString = static_cast<String>(theTimeStamp);
 			}
 			return theReturnString;
 		}
 
-		static std::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
+		static String convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
 			std::time_t result = std::time(nullptr);
 			auto resultTwo = std::localtime(&result);
-			std::string theReturnString{};
+			String theReturnString{};
 			if (resultTwo->tm_isdst) {
 				if (resultTwo->tm_hour + 4 >= 24) {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
@@ -1054,15 +1075,15 @@ namespace DiscordCoreAPI {
 			return theReturnString;
 		}
 
-		bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) {
+		Bool hasTimeElapsed(Uint64 days, Uint64 hours, Uint64 minutes) {
 			if (this->timeStampInTimeUnits == 0) {
 				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
-			uint64_t startTimeRaw = this->timeStampInTimeUnits;
+			Uint64 startTimeRaw = this->timeStampInTimeUnits;
 			auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			uint64_t secondsPerMinute = 60;
-			uint64_t secondsPerHour = secondsPerMinute * 60;
-			uint64_t secondsPerDay = secondsPerHour * 24;
+			Uint64 secondsPerMinute = 60;
+			Uint64 secondsPerHour = secondsPerMinute * 60;
+			Uint64 secondsPerDay = secondsPerHour * 24;
 			auto targetElapsedTime = ((days * secondsPerDay) + (hours * secondsPerHour) + (minutes * secondsPerMinute)) * 1000;
 			auto actualElapsedTime = currentTime - startTimeRaw;
 			if (actualElapsedTime >= targetElapsedTime) {
@@ -1072,16 +1093,16 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		static std::string convertMsToDurationString(uint64_t durationInMs) {
-			std::string newString{};
-			uint64_t msPerSecond{ 1000 };
-			uint64_t secondsPerMinute{ 60 };
-			uint64_t minutesPerHour{ 60 };
-			uint64_t msPerMinute{ msPerSecond * secondsPerMinute };
-			uint64_t msPerHour{ msPerMinute * minutesPerHour };
-			uint64_t hoursLeft = static_cast<uint64_t>(trunc(durationInMs / msPerHour));
-			uint64_t minutesLeft = static_cast<uint64_t>(trunc((durationInMs % msPerHour) / msPerMinute));
-			uint64_t secondsLeft = static_cast<uint64_t>(trunc(((durationInMs % msPerHour) % msPerMinute) / msPerSecond));
+		static String convertMsToDurationString(Uint64 durationInMs) {
+			String newString{};
+			Uint64 msPerSecond{ 1000 };
+			Uint64 secondsPerMinute{ 60 };
+			Uint64 minutesPerHour{ 60 };
+			Uint64 msPerMinute{ msPerSecond * secondsPerMinute };
+			Uint64 msPerHour{ msPerMinute * minutesPerHour };
+			Uint64 hoursLeft = static_cast<Uint64>(trunc(durationInMs / msPerHour));
+			Uint64 minutesLeft = static_cast<Uint64>(trunc((durationInMs % msPerHour) / msPerMinute));
+			Uint64 secondsLeft = static_cast<Uint64>(trunc(((durationInMs % msPerHour) % msPerMinute) / msPerSecond));
 			if (hoursLeft >= 1) {
 				newString += std::to_string(hoursLeft) + " Hours, ";
 				newString += std::to_string(minutesLeft) + " Minutes, ";
@@ -1096,26 +1117,26 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		uint64_t timeStampInTimeUnits{};
+		Uint64 timeStampInTimeUnits{};
 
-		void getTimeSinceEpoch(int64_t year, int64_t month, int64_t day, int64_t hour, int64_t minute, int64_t second) {
-			const uint32_t secondsInJan{ 31 * 24 * 60 * 60 };
-			const uint32_t secondsInFeb{ 28 * 24 * 60 * 60 };
-			const uint32_t secondsInMar{ 31 * 24 * 60 * 60 };
-			const uint32_t secondsInApr{ 30 * 24 * 60 * 60 };
-			const uint32_t secondsInMay{ 31 * 24 * 60 * 60 };
-			const uint32_t secondsInJun{ 30 * 24 * 60 * 60 };
-			const uint32_t secondsInJul{ 31 * 24 * 60 * 60 };
-			const uint32_t secondsInAug{ 31 * 24 * 60 * 60 };
-			const uint32_t secondsInSep{ 30 * 24 * 60 * 60 };
-			const uint32_t secondsInOct{ 31 * 24 * 60 * 60 };
-			const uint32_t secondsInNov{ 30 * 24 * 60 * 60 };
-			const uint32_t secondsInDec{ 31 * 24 * 60 * 60 };
-			const uint32_t secondsPerMinute{ 60 };
-			const uint32_t secondsPerHour{ 60 * 60 };
-			const uint32_t secondsPerDay{ 60 * 60 * 24 };
+		void getTimeSinceEpoch(Int64 year, Int64 month, Int64 day, Int64 hour, Int64 minute, Int64 second) {
+			const Uint32 secondsInJan{ 31 * 24 * 60 * 60 };
+			const Uint32 secondsInFeb{ 28 * 24 * 60 * 60 };
+			const Uint32 secondsInMar{ 31 * 24 * 60 * 60 };
+			const Uint32 secondsInApr{ 30 * 24 * 60 * 60 };
+			const Uint32 secondsInMay{ 31 * 24 * 60 * 60 };
+			const Uint32 secondsInJun{ 30 * 24 * 60 * 60 };
+			const Uint32 secondsInJul{ 31 * 24 * 60 * 60 };
+			const Uint32 secondsInAug{ 31 * 24 * 60 * 60 };
+			const Uint32 secondsInSep{ 30 * 24 * 60 * 60 };
+			const Uint32 secondsInOct{ 31 * 24 * 60 * 60 };
+			const Uint32 secondsInNov{ 30 * 24 * 60 * 60 };
+			const Uint32 secondsInDec{ 31 * 24 * 60 * 60 };
+			const Uint32 secondsPerMinute{ 60 };
+			const Uint32 secondsPerHour{ 60 * 60 };
+			const Uint32 secondsPerDay{ 60 * 60 * 24 };
 			TimeType theValue{};
-			for (int32_t x = 1970; x < year; ++x) {
+			for (Int32 x = 1970; x < year; ++x) {
 				theValue += TimeType{ secondsInJan };
 				theValue += TimeType{ secondsInFeb };
 				theValue += TimeType{ secondsInMar };
@@ -1133,9 +1154,9 @@ namespace DiscordCoreAPI {
 				}
 			}
 			if (month > 0) {
-				theValue += TimeType{ static_cast<uint64_t>((day - 1) * secondsPerDay) };
-				theValue += TimeType{ static_cast<uint64_t>(hour * secondsPerHour) };
-				theValue += TimeType{ static_cast<uint64_t>(minute * secondsPerMinute) };
+				theValue += TimeType{ static_cast<Uint64>((day - 1) * secondsPerDay) };
+				theValue += TimeType{ static_cast<Uint64>(hour * secondsPerHour) };
+				theValue += TimeType{ static_cast<Uint64>(minute * secondsPerMinute) };
 				theValue += TimeType{ second };
 			}
 			if (month > 1) {
@@ -1174,12 +1195,12 @@ namespace DiscordCoreAPI {
 			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(theValue).count() * 1000;
 		}
 
-		void convertTimeStampToTimeUnits(TimeFormat theFormatNew, std::string originalTimeStamp) {
+		void convertTimeStampToTimeUnits(TimeFormat theFormatNew, String originalTimeStamp) {
 			try {
 				if (originalTimeStamp != "" && originalTimeStamp != "0") {
 					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)), stoi(originalTimeStamp.substr(8, 9)),
 						stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)), stoi(originalTimeStamp.substr(17, 18)), theFormatNew };
-					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) }.count();
+					this->timeStampInTimeUnits = TimeType{ static_cast<Uint64>(timeValue) }.count();
 				} else {
 					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count();
 				}
@@ -1187,14 +1208,14 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		std::string getISO8601TimeStamp(TimeFormat timeFormat) {
+		String getISO8601TimeStamp(TimeFormat timeFormat) {
 			if (this->timeStampInTimeUnits == 0) {
 				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
-			uint64_t timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(TimeType{ this->timeStampInTimeUnits }).count()) / 1000;
+			Uint64 timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(TimeType{ this->timeStampInTimeUnits }).count()) / 1000;
 			time_t rawTime(timeValue);
 			tm timeInfo = *localtime(&rawTime);
-			std::string timeStamp{};
+			String timeStamp{};
 			timeStamp.resize(48);
 			switch (timeFormat) {
 				case TimeFormat::LongDate: {
@@ -1243,7 +1264,7 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
-	enum class Permission : uint64_t {
+	enum class Permission : Uint64 {
 		Create_Instant_Invite = 1ull << 0,///< Create Instant Invite.
 		Kick_Members = 1ull << 1,///< Kick Members.
 		Ban_Members = 1ull << 2,///< Ban Members.
@@ -1300,39 +1321,39 @@ namespace DiscordCoreAPI {
 
 		explicit Permissions(const Permission& permsNew);
 
-		Permissions& operator=(std::string&& other);
+		Permissions& operator=(String&& other);
 
-		explicit Permissions(std::string&& permsNew);
+		explicit Permissions(String&& permsNew);
 
-		Permissions& operator=(const std::string& other);
+		Permissions& operator=(const String& other);
 
-		explicit Permissions(const std::string& permsNew);
+		explicit Permissions(const String& permsNew);
 
-		Permissions& operator=(const uint64_t other);
+		Permissions& operator=(const Uint64 other);
 
-		explicit Permissions(const uint64_t permsNew);
+		explicit Permissions(const Uint64 permsNew);
 
-		operator uint64_t();
+		operator Uint64();
 
-		operator std::string();
+		operator String();
 
 		/// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
 		/// \param guildMember The GuildMember who's Permissions to analyze.
 		/// \param channel The Channel withint which to check for Permissions.
-		/// \returns std::string A string containing the final Permission's value for a given Channel.
-		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
+		/// \returns String A string containing the final Permission's value for a given Channel.
+		static String getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
 
 		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
 		/// \param guildMember The GuildMember who to check the Permissions of.
 		/// \param channel The Channel within which to check for the Permission's presence.
 		/// \param permission A Permission to check the current Channel for.
-		/// \returns bool A bool suggesting the presence of the chosen Permission.
-		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
+		/// \returns Bool A Bool suggesting the presence of the chosen Permission.
+		Bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
 
 		/// Returns a string containing the currently held Permissions in a given Guild. \brief Returns a string containing the currently held Permissions in a given Guild.
 		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
-		/// \returns std::string A string containing the current Permissions.
-		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
+		/// \returns String A string containing the current Permissions.
+		static String getCurrentGuildPermissions(const GuildMember& guildMember);
 
 		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
 		/// \param permissionsToRemove A vector containing the Permissions you wish to remove.
@@ -1343,65 +1364,65 @@ namespace DiscordCoreAPI {
 		void addPermissions(const std::vector<Permission>& permissionsToAdd);
 
 		/// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
-		/// \returns std::vector A vector full of strings of the Permissions that are in the input std::string's value.
-		std::vector<std::string> displayPermissions();
+		/// \returns std::vector A vector full of strings of the Permissions that are in the input String's value.
+		std::vector<String> displayPermissions();
 
 		/// Returns a string containing the currently held Permissions. \brief Returns a string containing the currently held Permissions.
-		/// \returns std::string A string containing the current Permissions.
-		std::string getCurrentPermissionString();
+		/// \returns String A string containing the current Permissions.
+		String getCurrentPermissionString();
 
 		/// Returns a string containing ALL of the possible Permissions. \brief Returns a string containing ALL of the possible Permissions.
-		/// \returns std::string A string containing all of the possible Permissions.
-		static std::string getAllPermissions();
+		/// \returns String A string containing all of the possible Permissions.
+		static String getAllPermissions();
 
 	  protected:
-		uint64_t thePermissions{};
+		Uint64 thePermissions{};
 
-		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
+		static String computeOverwrites(const String& basePermissions, const GuildMember& guildMember, ChannelData& channel);
 
-		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
+		static String computePermissions(const GuildMember& guildMember, ChannelData& channel);
 
-		static std::string computeBasePermissions(const GuildMember& guildMember);
+		static String computeBasePermissions(const GuildMember& guildMember);
 	};
 
 	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
 	/// \param currentFunctionName A string to display the current function's name.
 	/// \param theLocation For deriving the current file, line, and column - do not set this value.
-	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
+	DiscordCoreAPI_Dll void reportException(const String& currentFunctionName, std::source_location theLocation = std::source_location::current());
 
-	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
+	DiscordCoreAPI_Dll void rethrowException(const String& currentFunctionName, std::source_location theLocation = std::source_location::current());
 
-	DiscordCoreAPI_Dll std::string constructMultiPartData(std::string theData, const std::vector<File>& files);
+	DiscordCoreAPI_Dll String constructMultiPartData(String theData, const std::vector<File>& files);
 
-	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
+	DiscordCoreAPI_Dll String convertToLowerCase(const String& stringToConvert);
 
-	DiscordCoreAPI_Dll std::string base64Encode(const std::string&, bool = false);
+	DiscordCoreAPI_Dll String base64Encode(const String&, Bool = false);
 
-	DiscordCoreAPI_Dll std::string loadFileContents(const std::string& filePath);
+	DiscordCoreAPI_Dll String loadFileContents(const String& filePath);
 
-	DiscordCoreAPI_Dll std::string utf8MakeValid(const std::string& inputString);
+	DiscordCoreAPI_Dll String utf8MakeValid(const String& inputString);
 
-	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
+	DiscordCoreAPI_Dll String urlEncode(const String& inputString);
 
-	DiscordCoreAPI_Dll void spinLock(uint64_t timeInNsToSpinLockFor);
+	DiscordCoreAPI_Dll void spinLock(Uint64 timeInNsToSpinLockFor);
 
-	DiscordCoreAPI_Dll std::string generateBase64EncodedKey();
+	DiscordCoreAPI_Dll String generateBase64EncodedKey();
 
-	DiscordCoreAPI_Dll std::string shiftToBrightGreen();
+	DiscordCoreAPI_Dll String shiftToBrightGreen();
 
-	DiscordCoreAPI_Dll std::string shiftToBrightBlue();
+	DiscordCoreAPI_Dll String shiftToBrightBlue();
 
-	DiscordCoreAPI_Dll std::string shiftToBrightRed();
+	DiscordCoreAPI_Dll String shiftToBrightRed();
 
-	DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
+	DiscordCoreAPI_Dll Bool nanoSleep(Int64 ns);
 
-	DiscordCoreAPI_Dll std::string escapeCharacters(std::string_view theString);
+	DiscordCoreAPI_Dll String escapeCharacters(StringView theString);
 
-	DiscordCoreAPI_Dll std::string reset();
+	DiscordCoreAPI_Dll String reset();
 
 	/// Acquires a timestamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timestamp with the current time and date - suitable for use in message-embeds.
-	/// \returns std::string A string containing the current date-time stamp.
-	DiscordCoreAPI_Dll std::string getTimeAndDate();
+	/// \returns String A string containing the current date-time stamp.
+	DiscordCoreAPI_Dll String getTimeAndDate();
 
 	template<typename ReturnType> ReturnType reverseByteOrder(const ReturnType net) {
 		switch (sizeof(ReturnType)) {
@@ -1421,15 +1442,15 @@ namespace DiscordCoreAPI {
 		return ReturnType{};
 	}
 
-	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
-		const uint8_t byteSize{ 8 };
+	template<typename ReturnType> void storeBits(String& to, ReturnType num) {
+		const Uint8 byteSize{ 8 };
 		ReturnType newValue = reverseByteOrder<ReturnType>(num);
-		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
-			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+		for (Uint32 x = 0; x < sizeof(ReturnType); ++x) {
+			to.push_back(static_cast<Uint8>(newValue >> (byteSize * x)));
 		}
 	}
 
-	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
+	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, Bool enabled) {
 		if (enabled) {
 			inputFlag |= static_cast<StoredAsType>(theFlag);
 			return inputFlag;
@@ -1439,7 +1460,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	template<typename StoredAsType, typename FlagType> bool getBool(StoredAsType inputFlag, FlagType theFlag) {
+	template<typename StoredAsType, typename FlagType> Bool getBool(StoredAsType inputFlag, FlagType theFlag) {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
 
@@ -1491,8 +1512,8 @@ namespace DiscordCoreAPI {
 
 		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
 		/// \param theObject A reference of type ObjectType for placing the potentially received object.
-		/// \returns bool A bool, denoting whether or not we received an object.
-		bool tryReceive(ObjectType& theObject) {
+		/// \returns Bool A Bool, denoting whether or not we received an object.
+		Bool tryReceive(ObjectType& theObject) {
 			std::unique_lock theLock{ this->accessMutex };
 			if (this->theQueue.size() > 0) {
 				theObject = std::move(this->theQueue.front());
@@ -1517,7 +1538,7 @@ namespace DiscordCoreAPI {
 	}
 
 	/// Typedef for the message filter. \brief Typedef for the message filter.
-	template<typename Object> using ObjectFilter = std::function<bool(Object)>;
+	template<typename Object> using ObjectFilter = std::function<Bool(Object)>;
 
 	/// ObjectCollectorReturnData responseData. \brief ObjectCollectorReturnData responseData.
 	template<typename Object> struct DiscordCoreAPI_Dll ObjectCollectorReturnData {
@@ -1527,7 +1548,7 @@ namespace DiscordCoreAPI {
 	/// ObjectCollector, for collecting Objects from a Channel. \brief Object collector, for collecting Objects from a Channel.
 	template<typename Object> class DiscordCoreAPI_Dll ObjectCollector {
 	  public:
-		static std::unordered_map<std::string, UnboundedMessageBlock<Object>*> objectsBufferMap;
+		static std::unordered_map<String, UnboundedMessageBlock<Object>*> objectsBufferMap;
 
 		ObjectCollector() noexcept = default;
 
@@ -1536,7 +1557,7 @@ namespace DiscordCoreAPI {
 		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Objects before returning the results.
 		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
 		/// \returns A ObjectCollectorReturnData structure.
-		CoRoutine<ObjectCollectorReturnData<Object>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<Object> filteringFunctionNew) {
+		CoRoutine<ObjectCollectorReturnData<Object>> collectObjects(Int32 quantityToCollect, Int32 msToCollectForNew, ObjectFilter<Object> filteringFunctionNew) {
 			co_await NewThreadAwaitable<ObjectCollectorReturnData<Object>>();
 			this->quantityOfObjectToCollect = quantityToCollect;
 			this->filteringFunction = filteringFunctionNew;
@@ -1548,15 +1569,15 @@ namespace DiscordCoreAPI {
 		}
 
 		void run() {
-			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
-			int64_t elapsedTime{ 0 };
+			Int64 startingTime = static_cast<Int64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+			Int64 elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
 				Object message{};
-				waitForTimeToPass<Object>(this->messagesBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
+				waitForTimeToPass<Object>(this->messagesBuffer, message, static_cast<Int32>(this->msToCollectFor - elapsedTime));
 				if (this->filteringFunction(message)) {
 					this->messageReturnData.objects.emplace_back(message);
 				}
-				if (static_cast<int32_t>(this->messageReturnData.objects.size()) >= this->quantityOfObjectToCollect) {
+				if (static_cast<Int32>(this->messageReturnData.objects.size()) >= this->quantityOfObjectToCollect) {
 					break;
 				}
 
@@ -1574,9 +1595,9 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<Object> messagesBuffer{};
 		ObjectCollectorReturnData<Object> messageReturnData{};
 		ObjectFilter<Object> filteringFunction{ nullptr };
-		int32_t quantityOfObjectToCollect{ 0 };
-		std::string collectorId{};
-		int32_t msToCollectFor{ 0 };
+		Int32 quantityOfObjectToCollect{ 0 };
+		String collectorId{};
+		Int32 msToCollectFor{ 0 };
 	};
 
 	template<typename TimeType> class StopWatch {
@@ -1622,12 +1643,12 @@ namespace DiscordCoreAPI {
 			this->resetTimer();
 		}
 
-		uint64_t totalTimePassed() {
+		Uint64 totalTimePassed() {
 			auto elapsedTime = std::chrono::duration_cast<TimeType>(std::chrono::steady_clock::now().time_since_epoch()).count() - this->startTime.load();
 			return elapsedTime;
 		}
 
-		bool hasTimePassed() {
+		Bool hasTimePassed() {
 			auto elapsedTime = std::chrono::duration_cast<TimeType>(std::chrono::steady_clock::now().time_since_epoch()).count() - this->startTime.load();
 			if (elapsedTime >= this->maxNumberOfTimeUnits.load()) {
 				return true;
@@ -1636,7 +1657,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void resetTimer(uint64_t theNewTime = 0) {
+		void resetTimer(Uint64 theNewTime = 0) {
 			if (theNewTime != 0) {
 				this->maxNumberOfTimeUnits.store(TimeType{ theNewTime }.count());
 			}
@@ -1644,11 +1665,11 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::atomic_uint64_t maxNumberOfTimeUnits{};
-		std::atomic_uint64_t startTime{};
+		AtomicUint64 maxNumberOfTimeUnits{};
+		AtomicUint64 startTime{};
 	};
 
-	template<typename ObjectType> bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
+	template<typename ObjectType> Bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, Int32 timeInMsNew) {
 		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
 		while (!outBuffer.tryReceive(argOne)) {
 			std::this_thread::sleep_for(1ms);
@@ -1671,11 +1692,11 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll StringBuffer {
 	  public:
-		std::string_view operator[](LengthData);
+		StringView operator[](LengthData);
 
 		void writeData(const char*, size_t);
 
-		operator std::string_view();
+		operator StringView();
 
 		void erase(size_t, size_t);
 
@@ -1754,7 +1775,7 @@ namespace DiscordCoreInternal {
 			return (this->theArray.data() + (this->head % (this->theArray.size())));
 		}
 
-		bool isItFull() noexcept {
+		Bool isItFull() noexcept {
 			return this->areWeFull;
 		}
 
@@ -1766,7 +1787,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::array<ObjectType, TheSize> theArray{};
-		bool areWeFull{ false };
+		Bool areWeFull{ false };
 		size_t tail{};
 		size_t head{};
 	};

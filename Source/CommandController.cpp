@@ -28,18 +28,18 @@
 namespace DiscordCoreAPI {
 
 	namespace Globals {
-		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>> functions{};
+		std::map<std::vector<String>, std::unique_ptr<BaseFunction>> functions{};
 	}
 
 	CommandController::CommandController(DiscordCoreClient* discordCoreClientNew) {
 		this->discordCoreClient = discordCoreClientNew;
 	}
 
-	void CommandController::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
+	void CommandController::registerFunction(const std::vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
 		Globals::functions[functionNames] = std::move(baseFunction);
 	}
 
-	std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& CommandController::getFunctions() {
+	std::map<std::vector<String>, std::unique_ptr<BaseFunction>>& CommandController::getFunctions() {
 		return Globals::functions;
 	};
 
@@ -59,13 +59,13 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	std::unique_ptr<BaseFunction> CommandController::getCommand(const std::string& commandName) {
-		std::string functionName{};
-		bool isItFound{ false };
+	std::unique_ptr<BaseFunction> CommandController::getCommand(const String& commandName) {
+		String functionName{};
+		Bool isItFound{ false };
 		if (commandName.size() > 0) {
 			for (auto const& [keyFirst, value]: Globals::functions) {
 				for (auto& key: keyFirst) {
-					if (key.find(convertToLowerCase(commandName)) != std::string::npos) {
+					if (key.find(convertToLowerCase(commandName)) != String::npos) {
 						isItFound = true;
 						functionName = convertToLowerCase(commandName.substr(0, key.length()));
 						break;
@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 		return nullptr;
 	}
 
-	std::unique_ptr<BaseFunction> CommandController::createFunction(const std::string& functionName) {
+	std::unique_ptr<BaseFunction> CommandController::createFunction(const String& functionName) {
 		for (auto& [key01, value01]: Globals::functions) {
 			for (auto& value02: key01) {
 				if (functionName == value02) {

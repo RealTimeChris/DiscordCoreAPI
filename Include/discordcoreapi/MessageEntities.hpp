@@ -38,11 +38,11 @@ namespace DiscordCoreAPI {
 
 	/// For getting a collection of Messages. \brief For getting a collection of Messages.
 	struct DiscordCoreAPI_Dll GetMessagesData {
-		uint64_t aroundThisId{};///< Around this id.
+		Uint64 aroundThisId{};///< Around this id.
 		Snowflake beforeThisId{};///< Before this id.
 		Snowflake afterThisId{};///< After this id.
 		Snowflake channelId{};///< Channel from which to collect the Messages.
-		int32_t limit{ 0 };///< Limit of Messages to collect.
+		Int32 limit{ 0 };///< Limit of Messages to collect.
 	};
 
 	/// For getting a Message. \brief For getting a Message.
@@ -67,12 +67,12 @@ namespace DiscordCoreAPI {
 
 		CreateMessageData() noexcept = default;
 
-		operator std::string();
+		operator String();
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
 		MessageReferenceData messageReference{};
-		std::vector<std::string> stickerIds{};
+		std::vector<String> stickerIds{};
 	};
 
 	/// For sending a direct-message. \brief For sending a direct-message.
@@ -102,13 +102,13 @@ namespace DiscordCoreAPI {
 
 		EditMessageData(RespondToInputEventData dataPackage);
 
-		operator std::string();
+		operator String();
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
 		Snowflake channelId{};
 		Snowflake messageId{};
-		int32_t flags{ 0 };
+		Int32 flags{ 0 };
 
 		EditMessageData() noexcept = default;
 	};
@@ -119,17 +119,17 @@ namespace DiscordCoreAPI {
 		TimeStamp<std::chrono::milliseconds> timeStamp{ "" };///< The created-at timestamp of the original message.
 		Snowflake channelId{};///< The channel Id of the Message to delete.
 		Snowflake messageId{};///< The message Id of the Message to delete.
-		int32_t timeDelay{ 0 };///< Number of std::chrono::milliseconds to wait before deleting the Message.
-		std::string reason{};///< The reason for deleting the Message.
+		Int32 timeDelay{ 0 };///< Number of std::chrono::milliseconds to wait before deleting the Message.
+		String reason{};///< The reason for deleting the Message.
 	};
 
 	/// For deleting a bulk of Messages. \brief For deleting a bulk of Messages.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
 		std::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
 		Snowflake channelId{};///< Channel within which to delete the Messages.
-		std::string reason{};///< The reason for deleting the Messages.
+		String reason{};///< The reason for deleting the Messages.
 
-		operator std::string();
+		operator String();
 	};
 
 	/// For getting a collection of pinned Messages. \brief For getting a collection of pinned Messages.
@@ -141,14 +141,14 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll PinMessageData {
 		Snowflake channelId{};///< The Channel within which to pin the Message.
 		Snowflake messageId{};///< The Message which you would like to pin.
-		std::string reason{};///< Reason for pinning this Message.
+		String reason{};///< Reason for pinning this Message.
 	};
 
 	/// For unpinning a single Message. \brief For unpinning a single Message.
 	struct DiscordCoreAPI_Dll UnpinMessageData {
 		Snowflake channelId{};///< The Channel within which to unpin the Message.
 		Snowflake messageId{};///< The Message which you would like to unpin.
-		std::string reason{};///< Reason for pinning this Message.
+		String reason{};///< Reason for pinning this Message.
 	};
 
 	/// A single Message. \brief A single Message.

@@ -59,7 +59,7 @@
 	#include <sys/socket.h>
 	#include <sys/types.h>
 	#include <unistd.h>
-using SOCKET = int32_t;
+using SOCKET = Int32;
 #endif
 
 namespace DiscordCoreInternal {
@@ -69,7 +69,7 @@ namespace DiscordCoreInternal {
 #endif
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
-		std::unordered_map<uint32_t, pollfd> thePolls{};
+		std::unordered_map<Uint32, pollfd> thePolls{};
 	};
 
 #ifdef _WIN32
@@ -166,20 +166,20 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		addrinfo* thePtr{ new addrinfo{} };
-		bool doWeClearAddrInfo{ false };
+		Bool doWeClearAddrInfo{ false };
 	};
 
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
 	  public:
 		SSLConnectionInterface() noexcept = default;
 
-		virtual bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept = 0;
+		virtual Bool connect(const String& baseUrl, const String& portNew, Bool doWePrintErrorMessages, Bool areWeAStandaloneSocket) noexcept = 0;
 
-		virtual bool areWeStillConnected() noexcept = 0;
+		virtual Bool areWeStillConnected() noexcept = 0;
 
 		virtual void disconnect() noexcept = 0;
 
-		static bool initialize() noexcept;
+		static Bool initialize() noexcept;
 
 		virtual ~SSLConnectionInterface() noexcept = default;
 
@@ -191,17 +191,17 @@ namespace DiscordCoreInternal {
 		SSLWrapper ssl{};
 	};
 
-	enum class ProcessIOResult : int8_t { No_Error = 0, Error = 1 };
+	enum class ProcessIOResult : Int8 { No_Error = 0, Error = 1 };
 
 	class DiscordCoreAPI_Dll SSLDataInterface {
 	  public:
 		friend class HttpsClient;
 
-		virtual ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept = 0;
+		virtual ProcessIOResult writeData(String& dataToWrite, Bool priority) noexcept = 0;
 
-		virtual std::string_view getInputBuffer() noexcept = 0;
+		virtual StringView getInputBuffer() noexcept = 0;
 
-		virtual int64_t getBytesRead() noexcept = 0;
+		virtual Int64 getBytesRead() noexcept = 0;
 
 		virtual ~SSLDataInterface() noexcept = default;
 
@@ -209,38 +209,38 @@ namespace DiscordCoreInternal {
 		const size_t maxBufferSize{ (1024 * 16) - 1 };
 		RingBuffer<32> outputBuffer{};
 		RingBuffer<128> inputBuffer{};
-		int64_t bytesRead{ 0 };
+		Int64 bytesRead{ 0 };
 	};
 
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
 		SSLClient() noexcept = default;
 
-		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
+		Bool connect(const String& baseUrl, const String& portNew, Bool doWePrintErrorMessages, Bool areWeAStandaloneSocket) noexcept;
 
-		static std::vector<SSLClient*> processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept;
+		static std::vector<SSLClient*> processIO(std::unordered_map<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept;
 
-		ProcessIOResult writeData(std::string& dataToWrite, bool priority) noexcept;
+		ProcessIOResult writeData(String& dataToWrite, Bool priority) noexcept;
 
-		ProcessIOResult processIO(int32_t msToWait) noexcept;
+		ProcessIOResult processIO(Int32 msToWait) noexcept;
 
-		std::string_view getInputBuffer() noexcept;
+		StringView getInputBuffer() noexcept;
 
 		virtual void handleBuffer() noexcept = 0;
 
-		bool areWeStillConnected() noexcept;
+		Bool areWeStillConnected() noexcept;
 
-		bool processWriteData() noexcept;
+		Bool processWriteData() noexcept;
 
-		bool processReadData() noexcept;
+		Bool processReadData() noexcept;
 
-		int64_t getBytesRead() noexcept;
+		Int64 getBytesRead() noexcept;
 
 		virtual ~SSLClient() noexcept = default;
 
 	  protected:
-		bool doWePrintErrorMessages{ false };
-		bool areWeAStandaloneSocket{ false };
+		Bool doWePrintErrorMessages{ false };
+		Bool areWeAStandaloneSocket{ false };
 	};
 
 	enum class ProcessIOType { Both = 0, Read_Only = 1, Write_Only = 2 };
@@ -251,21 +251,21 @@ namespace DiscordCoreInternal {
 
 		DatagramSocketClient(DiscordCoreAPI::StreamType streamType) noexcept;
 
-		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
+		Bool connect(const String& baseUrlNew, const String& portNew) noexcept;
 
 		ProcessIOResult processIO(ProcessIOType theType) noexcept;
 
-		std::string_view getInputBuffer() noexcept;
+		StringView getInputBuffer() noexcept;
 
-		void writeData(std::string data) noexcept;
+		void writeData(String data) noexcept;
 
-		bool areWeStillConnected() noexcept;
+		Bool areWeStillConnected() noexcept;
 
-		bool processWriteData() noexcept;
+		Bool processWriteData() noexcept;
 
-		bool processReadData() noexcept;
+		Bool processReadData() noexcept;
 
-		int64_t getBytesRead() noexcept;
+		Int64 getBytesRead() noexcept;
 
 		void disconnect() noexcept;
 
@@ -273,11 +273,11 @@ namespace DiscordCoreInternal {
 		const size_t maxBufferSize{ (1024 * 16) - 1 };
 		DiscordCoreAPI::StreamType streamType{};
 		sockaddr_in theStreamTargetAddress{};
-		bool areWeStreamConnected{ false };
+		Bool areWeStreamConnected{ false };
 		RingBuffer<4> outputBuffer{};
 		RingBuffer<4> inputBuffer{};
 		SOCKETWrapper theSocket{};
-		int64_t bytesRead{};
+		Int64 bytesRead{};
 	};
 }// namespace DiscordCoreInternal
 #endif

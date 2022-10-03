@@ -38,7 +38,7 @@ namespace DiscordCoreAPI {
 	/// ObjectCollector, for collecting Objects from a Channel. \brief Object collector, for collecting Objects from a Channel.
 	template<> class DiscordCoreAPI_Dll ObjectCollector<Message> {
 	  public:
-		inline static std::unordered_map<std::string, UnboundedMessageBlock<Message>*> objectsBufferMap{};
+		inline static std::unordered_map<String, UnboundedMessageBlock<Message>*> objectsBufferMap{};
 
 		ObjectCollector() noexcept = default;
 
@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Objects before returning the results.
 		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
 		/// \returns A ObjectCollectorReturnData structure.
-		CoRoutine<ObjectCollectorReturnData<Message>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<Message> filteringFunctionNew) {
+		CoRoutine<ObjectCollectorReturnData<Message>> collectObjects(Int32 quantityToCollect, Int32 msToCollectForNew, ObjectFilter<Message> filteringFunctionNew) {
 			co_await NewThreadAwaitable<ObjectCollectorReturnData<Message>>();
 			this->quantityOfObjectToCollect = quantityToCollect;
 			this->filteringFunction = filteringFunctionNew;
@@ -59,15 +59,15 @@ namespace DiscordCoreAPI {
 		}
 
 		void run() {
-			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
-			int64_t elapsedTime{ 0 };
+			Int64 startingTime = static_cast<Int64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+			Int64 elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
 				Message message{};
-				waitForTimeToPass<Message>(this->messagesBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
+				waitForTimeToPass<Message>(this->messagesBuffer, message, static_cast<Int32>(this->msToCollectFor - elapsedTime));
 				if (this->filteringFunction(message)) {
 					this->messageReturnData.messages.emplace_back(message);
 				}
-				if (static_cast<int32_t>(this->messageReturnData.messages.size()) >= this->quantityOfObjectToCollect) {
+				if (static_cast<Int32>(this->messageReturnData.messages.size()) >= this->quantityOfObjectToCollect) {
 					break;
 				}
 
@@ -85,9 +85,9 @@ namespace DiscordCoreAPI {
 		ObjectCollectorReturnData<Message> messageReturnData{};
 		ObjectFilter<Message> filteringFunction{ nullptr };
 		UnboundedMessageBlock<Message> messagesBuffer{};
-		int32_t quantityOfObjectToCollect{ 0 };
-		int32_t msToCollectFor{ 0 };
-		std::string collectorId{};
+		Int32 quantityOfObjectToCollect{ 0 };
+		Int32 msToCollectFor{ 0 };
+		String collectorId{};
 	};
 
 	Message::Message(simdjson::ondemand::value jsonObjectData) {
@@ -262,12 +262,12 @@ namespace DiscordCoreAPI {
 		this->channelId = dataPackage.getChannelId();
 	}
 
-	CreateMessageData::operator std::string() {
+	CreateMessageData::operator String() {
 		JsonObject theData{};
 		for (auto& value: this->attachments) {
 			theData["attachments"].pushBack(value);
 		}
-		if (this->messageReference.messageId.operator size_t() != 0) {
+		if (this->messageReference.messageId != 0) {
 			theData["message_reference"] = this->messageReference;
 		}
 		if (this->components.size() == 0) {
@@ -330,7 +330,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	EditMessageData::operator std::string() {
+	EditMessageData::operator String() {
 		JsonObject theData{};
 		for (auto& value: this->attachments) {
 			theData["attachments"].pushBack(value);
@@ -360,7 +360,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	DeleteMessagesBulkData::operator std::string() {
+	DeleteMessagesBulkData::operator String() {
 		JsonObject theData{};
 		for (auto& value: this->messageIds) {
 			theData["messages"].pushBack(std::to_string(value));
@@ -388,14 +388,14 @@ namespace DiscordCoreAPI {
 			} else {
 				workload.relativePath += "&limit=1";
 			}
-		} else if (dataPackage.beforeThisId.operator size_t() != 0) {
+		} else if (dataPackage.beforeThisId != 0) {
 			workload.relativePath += "?before=" + std::to_string(dataPackage.beforeThisId);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
-		} else if (dataPackage.afterThisId.operator size_t() != 0) {
+		} else if (dataPackage.afterThisId != 0) {
 			workload.relativePath += "?after=" + std::to_string(dataPackage.afterThisId);
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
@@ -429,9 +429,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage.operator std::string(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage.operator String(), dataPackage.files);
 		} else {
-			workload.content = dataPackage.operator std::string();
+			workload.content = dataPackage.operator String();
 		}
 		workload.callStack = "Messages::createMessageAsync()";
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -453,9 +453,9 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			workload.content = constructMultiPartData(dataPackage.operator std::string(), dataPackage.files);
+			workload.content = constructMultiPartData(dataPackage.operator String(), dataPackage.files);
 		} else {
-			workload.content = dataPackage.operator std::string();
+			workload.content = dataPackage.operator String();
 		}
 		workload.callStack = "Messages::editMessageAsync()";
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
@@ -463,7 +463,7 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Message_Old };
-		bool hasTimeElapsedNew = dataPackage.timeStamp.hasTimeElapsed(14, 0, 0);
+		Bool hasTimeElapsedNew = dataPackage.timeStamp.hasTimeElapsed(14, 0, 0);
 		if (!hasTimeElapsedNew) {
 			workload = DiscordCoreInternal::HttpsWorkloadType::Delete_Message;
 		}
@@ -483,7 +483,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/bulk-delete";
-		workload.content = dataPackage.operator std::string();
+		workload.content = dataPackage.operator String();
 		workload.callStack = "Messages::deleteMessagesBulkAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
