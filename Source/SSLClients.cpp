@@ -106,8 +106,8 @@ namespace DiscordCoreInternal {
 	SSLWrapper::operator SSL*() {
 		return this->thePtr.get();
 	}
-
 	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
+
 		if (*other != SOCKET_ERROR) {
 #ifdef _WIN32
 			shutdown(*other, SD_BOTH);
@@ -366,10 +366,10 @@ namespace DiscordCoreInternal {
 
 	std::string_view SSLClient::getInputBuffer() noexcept {
 		std::string_view theString{};
-		if (this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
-			size_t theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
+		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
+			auto theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
 			theString = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize };
-			this->inputBuffer.getCurrentTail()->clear();
+			this->inputBuffer.getCurrentTail()->modifyReadOrWritePosition(RingBufferAccessType::Read, theSize);
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
 		return theString;
@@ -687,10 +687,10 @@ namespace DiscordCoreInternal {
 
 	std::string_view DatagramSocketClient::getInputBuffer() noexcept {
 		std::string_view theString{};
-		if (this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
-			size_t theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
+		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
+			auto theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
 			theString = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize };
-			this->inputBuffer.getCurrentTail()->clear();
+			this->inputBuffer.getCurrentTail()->modifyReadOrWritePosition(RingBufferAccessType::Read, theSize);
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
 		return theString;
