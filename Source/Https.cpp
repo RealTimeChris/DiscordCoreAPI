@@ -57,12 +57,11 @@ namespace DiscordCoreInternal {
 				static_cast<HttpsConnection*>(this)->theData.contentLength > 0) {
 				String theString = static_cast<HttpsConnection*>(this)->theData.responseMessage.substr(0, static_cast<HttpsConnection*>(this)->theData.contentLength);
 				static_cast<HttpsConnection*>(this)->theData.responseMessage = std::move(theString);
-			}
-			else {
+			} else {
 				static_cast<HttpsConnection*>(this)->theData.responseMessage =
-					static_cast<std::string>(static_cast<HttpsConnection*>(this)->theInputBufferReal.operator std::basic_string_view<char, std::char_traits<char>>());
+					static_cast<String>(static_cast<HttpsConnection*>(this)->theInputBufferReal.operator std::basic_string_view<char, std::char_traits<char>>());
 			}
-			
+
 		} catch (...) {
 			if (this->doWePrintErrorMessages) {
 				DiscordCoreAPI::reportException("HttpsRnRBuilder::finalizeReturnValues()");

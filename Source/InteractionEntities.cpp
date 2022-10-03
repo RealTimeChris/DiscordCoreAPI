@@ -57,8 +57,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options,
-		const String& placeholder, Int32 maxValues, Int32 minValues) {
+	InteractionResponseBase& InteractionResponseBase::addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder,
+		Int32 maxValues, Int32 minValues) {
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
 			this->data.data.components.emplace_back(actionRowData);
@@ -82,8 +82,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew,
-		const String& customIdNew, Bool required, Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label, const String& placeholder) {
+	InteractionResponseBase& InteractionResponseBase::addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew, const String& customIdNew,
+		Bool required, Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label, const String& placeholder) {
 		this->data.data.title = topTitleNew;
 		this->data.data.customId = topCustomIdNew;
 		if (this->data.data.components.size() == 0) {

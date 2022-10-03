@@ -107,7 +107,6 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
-
 		if (*other != SOCKET_ERROR) {
 #ifdef _WIN32
 			shutdown(*other, SD_BOTH);
@@ -598,7 +597,7 @@ namespace DiscordCoreInternal {
 				if (auto theResult = bind(this->theSocket, ( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr)); theResult != 0) {
 					return false;
 				}
-				
+
 				auto writtenBytes{ sendto(static_cast<Int32>(this->theSocket), clientToServerString.data(), static_cast<Int32>(clientToServerString.size()), 0,
 					( sockaddr* )&this->theStreamTargetAddress, static_cast<Int32>(sizeof(this->theStreamTargetAddress))) };
 #ifdef _WIN32

@@ -2987,8 +2987,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addButton(Bool disabled, const String& customIdNew, const String& buttonLabel, ButtonStyle buttonStyle,
-			const String& emojiName = "", Snowflake emojiId = Snowflake{ 0 }, const String& url = "");
+		RespondToInputEventData& addButton(Bool disabled, const String& customIdNew, const String& buttonLabel, ButtonStyle buttonStyle, const String& emojiName = "",
+			Snowflake emojiId = Snowflake{ 0 }, const String& url = "");
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -2998,8 +2998,8 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder,
-			Int32 maxValues, Int32 minValues);
+		RespondToInputEventData& addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder, Int32 maxValues,
+			Int32 minValues);
 
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.
@@ -3013,8 +3013,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew, const String& customIdNew,
-			Bool required, Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label = "", const String& placeholder = "");
+		RespondToInputEventData& addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew, const String& customIdNew, Bool required,
+			Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label = "", const String& placeholder = "");
 
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
@@ -3056,8 +3056,7 @@ namespace DiscordCoreAPI {
 		/// \param theName A string for the name of the choice.
 		/// \param theNameLocalizations A std::unordered_map<String, String> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setAutoCompleteChoice(simdjson::ondemand::object theValue, const String& theName,
-			std::unordered_map<String, String> theNameLocalizations);
+		RespondToInputEventData& setAutoCompleteChoice(simdjson::ondemand::object theValue, const String& theName, std::unordered_map<String, String> theNameLocalizations);
 
 		/// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.
 		/// \param targetUserIdNew A string, containing the target User's id.
@@ -3123,8 +3122,8 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew, const String& customIdNew, Bool required,
-			Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label = "", const String& placeholder = "");
+		MessageResponseBase& addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew, const String& customIdNew, Bool required, Int32 minLength,
+			Int32 maxLength, TextInputStyle inputStyle, const String& label = "", const String& placeholder = "");
 
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.

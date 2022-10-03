@@ -119,8 +119,8 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addButton(Bool disabled, const String& customIdNew, const String& buttonLabel, ButtonStyle buttonStyle,
-		const String& emojiName, Snowflake emojiId, const String& url) {
+	ExecuteWebHookData& ExecuteWebHookData::addButton(Bool disabled, const String& customIdNew, const String& buttonLabel, ButtonStyle buttonStyle, const String& emojiName,
+		Snowflake emojiId, const String& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -170,8 +170,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew, const String& customIdNew,
-		Bool required, Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label, const String& placeholder) {
+	ExecuteWebHookData& ExecuteWebHookData::addModal(const String& topTitleNew, const String& topCustomIdNew, const String& titleNew, const String& customIdNew, Bool required,
+		Int32 minLength, Int32 maxLength, TextInputStyle inputStyle, const String& label, const String& placeholder) {
 		this->title = topTitleNew;
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {

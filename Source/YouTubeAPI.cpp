@@ -98,7 +98,7 @@ namespace DiscordCoreInternal {
 	}
 
 	DiscordCoreAPI::Song YouTubeRequestBuilder::constructDownloadInfo(DiscordCoreAPI::Song& newSong, Int32 currentRecursionDepth) {
-		HttpsResponseData responseData{}; 
+		HttpsResponseData responseData{};
 		try {
 			DiscordCoreAPI::JsonObject theRequest{};
 			theRequest["videoId"] = newSong.songId;
@@ -202,8 +202,7 @@ namespace DiscordCoreInternal {
 		HttpsResponseData responseData01 = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
 		String apiKey{};
 		if (responseData01.responseMessage.find("\"innertubeApiKey\":\"") != String::npos) {
-			String newString =
-				responseData01.responseMessage.substr(responseData01.responseMessage.find("\"innertubeApiKey\":\"") + String{ "\"innertubeApiKey\":\"" }.size());
+			String newString = responseData01.responseMessage.substr(responseData01.responseMessage.find("\"innertubeApiKey\":\"") + String{ "\"innertubeApiKey\":\"" }.size());
 			String apiKeyNew = newString.substr(0, newString.find_first_of('"'));
 			apiKey = apiKeyNew;
 		}

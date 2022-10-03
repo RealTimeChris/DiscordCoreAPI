@@ -150,10 +150,9 @@ namespace DiscordCoreInternal {
 	}
 
 	String SoundCloudRequestBuilder::collectClientId() {
-		std::unordered_map<String, String> theHeaders{
-			std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"),
-			std::pair("Path", "/search?q=testValue")
-		};
+		std::unordered_map<String, String> theHeaders{ std::pair("User-Agent",
+														   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"),
+			std::pair("Path", "/search?q=testValue") };
 		HttpsWorkloadData dataPackage02{ HttpsWorkloadType::SoundCloudGetSearchResults };
 		dataPackage02.baseUrl = this->baseUrl;
 		dataPackage02.relativePath = "/search?q=testValue";
@@ -182,7 +181,7 @@ namespace DiscordCoreInternal {
 			newerString02.insert(newerString02.begin(), returnData02.responseMessage.begin(), returnData02.responseMessage.end());
 			std::cout << "THE STRING: " << newerString02 << std::endl;
 			String newString03 = newerString02.substr(newerString02.find("JSON.stringify({client_id:\"") + String{ "JSON.stringify({client_id:\"" }.size());
-			
+
 
 			if (newString03.find("\",nonce:e.nonce}))))") != String::npos) {
 				clientIdNew = newString03.substr(0, newString03.find("\",nonce:e.nonce}))))"));

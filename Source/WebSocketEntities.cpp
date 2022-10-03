@@ -328,7 +328,7 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, Int32 currentShardNew,
-		AtomicBool* doWeQuitNew) 
+		AtomicBool* doWeQuitNew)
 		: WebSocketMessageHandler(&theClient->configManager) {
 		this->configManager = &theClient->configManager;
 		this->shard[0] = currentShardNew;
@@ -1436,8 +1436,7 @@ namespace DiscordCoreInternal {
 						}
 						return returnValue;
 					}
-				}
-				catch (...) {
+				} catch (...) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 						cout << "The payload: " << payload << std::endl;

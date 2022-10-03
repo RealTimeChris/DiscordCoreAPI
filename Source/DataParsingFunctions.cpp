@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 		if (jsonData.didItSucceed && jsonData.theObject[arrayName].get(theValue.theArray) == simdjson::error_code::SUCCESS) {
 			theValue.didItSucceed = true;
 		}
-		return theValue;		
+		return theValue;
 	}
 
 	ObjectReturnData getObject(simdjson::ondemand::array jsonData, size_t objectIndex) {

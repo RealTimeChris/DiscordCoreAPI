@@ -231,14 +231,13 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::appendFalse() {
-		String bufferNew{ static_cast<Uint8>(ETFTokenType::Small_Atom_Ext), 5, static_cast<Uint8>('f'), static_cast<Uint8>('a'), static_cast<Uint8>('l'),
-			static_cast<Uint8>('s'), static_cast<Uint8>('e') };
+		String bufferNew{ static_cast<Uint8>(ETFTokenType::Small_Atom_Ext), 5, static_cast<Uint8>('f'), static_cast<Uint8>('a'), static_cast<Uint8>('l'), static_cast<Uint8>('s'),
+			static_cast<Uint8>('e') };
 		this->writeToBuffer(bufferNew);
 	}
 
 	void ErlPacker::appendTrue() {
-		String bufferNew{ static_cast<Uint8>(ETFTokenType::Small_Atom_Ext), 4, static_cast<Uint8>('t'), static_cast<Uint8>('r'), static_cast<Uint8>('u'),
-			static_cast<Uint8>('e') };
+		String bufferNew{ static_cast<Uint8>(ETFTokenType::Small_Atom_Ext), 4, static_cast<Uint8>('t'), static_cast<Uint8>('r'), static_cast<Uint8>('u'), static_cast<Uint8>('e') };
 		this->writeToBuffer(bufferNew);
 	}
 

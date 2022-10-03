@@ -74,24 +74,24 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	EnumConverter::operator std::vector<uint64_t>() {
-		std::vector<uint64_t> theObject{};
-		for (auto& value: *static_cast<std::vector<uint64_t>*>(this->thePtr)) {
+	EnumConverter::operator std::vector<Uint64>() {
+		std::vector<Uint64> theObject{};
+		for (auto& value: *static_cast<std::vector<Uint64>*>(this->thePtr)) {
 			theObject.emplace_back(value);
 		}
 		return theObject;
 	}
 
-	EnumConverter::operator uint64_t() {
-		return uint64_t{ *static_cast<uint64_t*>(this->thePtr) };
+	EnumConverter::operator Uint64() {
+		return Uint64{ *static_cast<Uint64*>(this->thePtr) };
 	}
 
 	EnumConverter::~EnumConverter() {
 		if (this->thePtr) {
 			if (this->vectorType) {
-				delete static_cast<std::vector<uint64_t>*>(this->thePtr);
+				delete static_cast<std::vector<Uint64>*>(this->thePtr);
 			} else {
-				delete static_cast<uint64_t*>(this->thePtr);
+				delete static_cast<Uint64*>(this->thePtr);
 			}
 		}
 	}
@@ -114,57 +114,57 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(uint64_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Uint64 theData) noexcept {
 		this->numberUint = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(uint32_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Uint32 theData) noexcept {
 		this->numberUint = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(uint16_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Uint16 theData) noexcept {
 		this->numberUint = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(uint8_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Uint8 theData) noexcept {
 		this->numberUint = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(int64_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Int64 theData) noexcept {
 		this->numberInt = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(int32_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Int32 theData) noexcept {
 		this->numberInt = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(int16_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Int16 theData) noexcept {
 		this->numberInt = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(int8_t theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Int8 theData) noexcept {
 		this->numberInt = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(double theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Double theData) noexcept {
 		this->numberDouble = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(float theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Float theData) noexcept {
 		this->numberDouble = theData;
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(bool theData) noexcept {
+	JsonObject::JsonValue& JsonObject::JsonValue::operator=(Bool theData) noexcept {
 		this->boolean = theData;
 		return *this;
 	}
@@ -228,8 +228,8 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonObject& JsonObject::operator=(EnumConverter theData) noexcept {
-		this->theValue = uint64_t{ theData };
-		this->theValue.numberUint = uint64_t{ theData };
+		this->theValue = Uint64{ theData };
+		this->theValue.numberUint = Uint64{ theData };
 		this->theType = ValueType::Uint64;
 		return *this;
 	}
@@ -342,23 +342,23 @@ namespace DiscordCoreAPI {
 		*this = std::move(theKey);
 	}
 
-	JsonObject& JsonObject::operator=(const std::string& theData) noexcept {
+	JsonObject& JsonObject::operator=(const String& theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::String;
 		return *this;
 	}
 
-	JsonObject::JsonObject(const std::string& theData) noexcept {
+	JsonObject::JsonObject(const String& theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(std::string&& theData) noexcept {
+	JsonObject& JsonObject::operator=(String&& theData) noexcept {
 		this->theValue = std::move(theData);
 		this->theType = ValueType::String;
 		return *this;
 	}
 
-	JsonObject::JsonObject(std::string&& theData) noexcept {
+	JsonObject::JsonObject(String&& theData) noexcept {
 		*this = std::move(theData);
 	}
 
@@ -372,113 +372,113 @@ namespace DiscordCoreAPI {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(uint64_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Uint64 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Uint64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(uint64_t theData) noexcept {
+	JsonObject::JsonObject(Uint64 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(uint32_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Uint32 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Uint64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(uint32_t theData) noexcept {
+	JsonObject::JsonObject(Uint32 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(uint16_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Uint16 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Uint64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(uint16_t theData) noexcept {
+	JsonObject::JsonObject(Uint16 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(uint8_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Uint8 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Uint64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(uint8_t theData) noexcept {
+	JsonObject::JsonObject(Uint8 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(int64_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Int64 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Int64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(int64_t theData) noexcept {
+	JsonObject::JsonObject(Int64 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(int32_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Int32 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Int64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(int32_t theData) noexcept {
+	JsonObject::JsonObject(Int32 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(int16_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Int16 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Int64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(int16_t theData) noexcept {
+	JsonObject::JsonObject(Int16 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(int8_t theData) noexcept {
+	JsonObject& JsonObject::operator=(Int8 theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Int64;
 		return *this;
 	}
 
-	JsonObject::JsonObject(int8_t theData) noexcept {
+	JsonObject::JsonObject(Int8 theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(double theData) noexcept {
+	JsonObject& JsonObject::operator=(Double theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Float;
 		return *this;
 	}
 
-	JsonObject::JsonObject(double theData) noexcept {
+	JsonObject::JsonObject(Double theData) noexcept {
 		*this = theData;
 	}
 
-	JsonObject& JsonObject::operator=(float theData) noexcept {
+	JsonObject& JsonObject::operator=(Float theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Float;
 		return *this;
 	}
 
-	JsonObject::JsonObject(float theData) noexcept {
+	JsonObject::JsonObject(Float theData) noexcept {
 		this->theValue = theData;
 	}
 
-	JsonObject& JsonObject::operator=(bool theData) noexcept {
+	JsonObject& JsonObject::operator=(Bool theData) noexcept {
 		this->theValue = theData;
 		this->theType = ValueType::Bool;
 		return *this;
 	}
 
-	JsonObject::JsonObject(bool theData) noexcept {
+	JsonObject::JsonObject(Bool theData) noexcept {
 		*this = theData;
 	}
 
@@ -560,8 +560,8 @@ namespace DiscordCoreAPI {
 		this->theValue.destroy(this->theType);
 	}
 
-	JsonObject::operator std::string() noexcept {
-		std::string theString{};
+	JsonObject::operator String() noexcept {
+		String theString{};
 		switch (this->theType) {
 			case ValueType::Object: {
 				if (this->theValue.object->empty()) {
@@ -639,8 +639,8 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
-	JsonObject::operator std::string() const noexcept {
-		std::string theString{};
+	JsonObject::operator String() const noexcept {
+		String theString{};
 		switch (this->theType) {
 			case ValueType::Object: {
 				if (this->theValue.object->empty()) {
