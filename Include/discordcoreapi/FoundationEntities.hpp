@@ -3475,37 +3475,37 @@ namespace DiscordCoreInternal {
 }
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::DiscordEntity> {
-	std::Uint64 operator()(DiscordCoreAPI::DiscordEntity const& object) const noexcept {
+	DiscordCoreAPI::Uint64 operator()(DiscordCoreAPI::DiscordEntity const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
 	}
 };
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::ChannelData> {
-	std::Uint64 operator()(DiscordCoreAPI::ChannelData const& object) const noexcept {
+	DiscordCoreAPI::Uint64 operator()(DiscordCoreAPI::ChannelData const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
 	}
 };
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::GuildData> {
-	std::Uint64 operator()(DiscordCoreAPI::GuildData const& object) const noexcept {
+	DiscordCoreAPI::Uint64 operator()(DiscordCoreAPI::GuildData const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
 	}
 };
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::RoleData> {
-	std::Uint64 operator()(DiscordCoreAPI::RoleData const& object) const noexcept {
+	DiscordCoreAPI::Uint64 operator()(DiscordCoreAPI::RoleData const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
 	}
 };
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::UserData> {
-	std::Uint64 operator()(DiscordCoreAPI::UserData const& object) const noexcept {
+	DiscordCoreAPI::Uint64 operator()(DiscordCoreAPI::UserData const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
 	}
 };
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::GuildMemberData> {
-	std::Uint64 operator()(DiscordCoreAPI::GuildMemberData const& object) const noexcept {
+	DiscordCoreAPI::Uint64 operator()(DiscordCoreAPI::GuildMemberData const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.guildId) ^ (static_cast<DiscordCoreAPI::Snowflake>(object.id) << 1);
 	}
 };
