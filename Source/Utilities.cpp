@@ -294,15 +294,14 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonObject& JsonObject::operator=(const JsonObject& theKey) noexcept {
-		if (this->theType != ValueType::Null) {
-			this->theValue.destroy(this->theType);
-		}
+		this->theValue.destroy(this->theType);
 		switch (theKey.theType) {
 			case ValueType::Object: {
 				this->theValue = ValueType::Object;
 				for (auto& [key, value]: *theKey.theValue.object) {
 					this->theValue.object->emplace(key, std::move(value));
 				}
+				this->theType = ValueType::Object;
 				break;
 			}
 			case ValueType::Array: {
@@ -310,30 +309,37 @@ namespace DiscordCoreAPI {
 				for (auto& value: *theKey.theValue.array) {
 					this->theValue.array->emplace_back(std::move(value));
 				}
+				this->theType = ValueType::Array;
 				break;
 			}
 			case ValueType::String: {
 				this->theValue = ValueType::String;
 				*this->theValue.string = *theKey.theValue.string;
+				this->theType = ValueType::String;
 				break;
 			}
 			case ValueType::Bool: {
 				this->theValue.boolean = theKey.theValue.boolean;
+				this->theType = ValueType::Bool;
 				break;
 			}
 			case ValueType::Int64: {
 				this->theValue.numberInt = theKey.theValue.numberInt;
+				this->theType = ValueType::Int64;
 				break;
 			}
 			case ValueType::Uint64: {
 				this->theValue.numberUint = theKey.theValue.numberUint;
+				this->theType = ValueType::Uint64;
 				break;
 			}
 			case ValueType::Float: {
 				this->theValue.numberDouble = theKey.theValue.numberDouble;
+				this->theType = ValueType::Float;
 				break;
 			}
 			case ValueType::Null: {
+				this->theType = ValueType::Null;
 				break;
 			}
 			default: {
