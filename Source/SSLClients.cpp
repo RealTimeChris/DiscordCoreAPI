@@ -531,6 +531,7 @@ namespace DiscordCoreInternal {
 					}
 					case SSL_ERROR_NONE: {
 						if (readBytes > 0) {
+							std::cout << "THE READ BYTES: " << this->inputBuffer.getCurrentHead()->getCurrentHead() << std::endl;
 							this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
 							this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 							this->bytesRead += readBytes;
