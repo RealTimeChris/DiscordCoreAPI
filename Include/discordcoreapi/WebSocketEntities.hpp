@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 
 		void createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept;
 
-		String stringifyJsonData(String& dataToSend, WebSocketOpCode theOpCode) noexcept;
+		String stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept;
 
 		virtual Bool onMessageReceived(StringView theMessage) noexcept = 0;
 

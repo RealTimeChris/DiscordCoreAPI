@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	AddGuildMemberData::operator String() {
+	AddGuildMemberData::operator JsonObject() {
 		JsonObject theData{};
 		theData["access_token"] = this->accessToken;
 		for (auto& value: this->roles) {
@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ModifyGuildMemberData::operator String() {
+	ModifyGuildMemberData::operator JsonObject() {
 		JsonObject theData{};
 		theData["nick"] = this->nick;
 		theData["communication_disabled_until"] = static_cast<String>(this->communicationDisabledUntil);
@@ -229,7 +229,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId);
-		workload.content = dataPackage.operator String();
+		workload.content = dataPackage.operator JsonObject();
 		workload.callStack = "GuildMembers::addGuildMemberAsync()";
 		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
 	}
@@ -254,7 +254,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
-		workload.content = dataPackage.operator String();
+		workload.content = dataPackage.operator JsonObject();
 		workload.callStack = "GuildMembers::modifyGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

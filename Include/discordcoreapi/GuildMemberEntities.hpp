@@ -77,7 +77,7 @@ namespace DiscordCoreAPI {
 		Bool mute{};///< Whether the user is muted in voice channels.
 		Bool deaf{};///< Whether the user is deafened in voice channels.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For modifying the Current GuildMember's values. \brief For modifying the current GuildMember's values.
@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 		Bool mute{ false };///< Whether or not to mute them in voice.
 		Bool deaf{ false };///< Whether or not to deafen them, in voice.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For removing a GuildMember from a chosen Guild. \brief For removing a GuildMember from a chosen Guild.

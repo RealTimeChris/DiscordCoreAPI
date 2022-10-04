@@ -62,11 +62,9 @@ namespace DiscordCoreInternal {
 	  public:
 		ErlPacker() noexcept {};
 
-		String parseJsonToEtf(String&& dataToParse);
+		String& parseJsonToEtf(DiscordCoreAPI::JsonObject&& dataToParse);
 
 		String& parseEtfToJson(StringView dataToParse);
-
-		void singleValueJsonToETF(simdjson::ondemand::value jsonData);
 
 		~ErlPacker(){};
 
@@ -80,15 +78,25 @@ namespace DiscordCoreInternal {
 		Uint64 offSet{};
 		Uint64 size{};
 
-		void writeObject(simdjson::ondemand::value jsonData);
+		void singleValueJsonToETF(DiscordCoreAPI::JsonObject dataToParse);
 
-		void writeString(simdjson::ondemand::value jsonData);
+		void writeObject(DiscordCoreAPI::JsonObject::ObjectType jsonData);
 
-		void writeNumber(simdjson::ondemand::value jsonData);
+		void writeString(DiscordCoreAPI::JsonObject::StringType jsonData);
 
-		void writeArray(simdjson::ondemand::value jsonData);
+		void writeNullExt();
 
-		void writeBool(simdjson::ondemand::value jsonData);
+		void writeNull();
+
+		void writeInt(DiscordCoreAPI::JsonObject::IntType jsonData);
+
+		void writeUint(DiscordCoreAPI::JsonObject::UintType jsonData);
+
+		void writeFloat(DiscordCoreAPI::JsonObject::FloatType jsonData);
+
+		void writeArray(DiscordCoreAPI::JsonObject::ArrayType jsonData);
+
+		void writeBool(DiscordCoreAPI::JsonObject ::BoolType jsonData);
 
 		void writeToBuffer(const String&);
 
@@ -167,5 +175,6 @@ namespace DiscordCoreInternal {
 
 		String parseMapExt();
 	};
+
 }// namespace DiscordCoreInternal
 #endif

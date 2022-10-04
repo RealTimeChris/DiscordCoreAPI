@@ -364,7 +364,7 @@ namespace DiscordCoreAPI {
 			theData.type = DiscordCoreInternal::SendSpeakingType::Microphone;
 			theData.delay = 0;
 			theData.ssrc = this->audioSSRC;
-			String newString = theData.operator String();
+			String newString = theData.operator JsonObject();
 			String theString = this->stringifyJsonData(newString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			if (!this->sendTextMessage(theString, true)) {
 				this->onClosed();
@@ -824,7 +824,7 @@ namespace DiscordCoreAPI {
 				DiscordCoreInternal::VoiceIdentifyData identifyData{};
 				identifyData.connectInitData = this->voiceConnectInitData;
 				identifyData.connectionData = this->voiceConnectionData;
-				String theData{ identifyData.operator String() };
+				String theData{ identifyData.operator JsonObject() };
 				String sendVector = this->stringifyJsonData(theData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendTextMessage(sendVector, true)) {
 					this->currentReconnectTries++;
@@ -870,7 +870,7 @@ namespace DiscordCoreAPI {
 				protocolPayloadData.voiceEncryptionMode = this->audioEncryptionMode;
 				protocolPayloadData.externalIp = this->externalIp;
 				protocolPayloadData.voicePort = this->port;
-				String protocolPayloadSelectString = protocolPayloadData.operator String();
+				String protocolPayloadSelectString = protocolPayloadData.operator JsonObject();
 				String sendVector = this->stringifyJsonData(protocolPayloadSelectString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!this->sendTextMessage(sendVector, true)) {
 					this->currentReconnectTries++;

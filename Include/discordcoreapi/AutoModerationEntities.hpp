@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 		String name{};///< The rule name.
 		Bool enabled{};///< Whether the rule is enabled(False by default).
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For when an auto-moderation-rule is executed. \brief For when an auto-moderation-rule is executed.
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 		String name{};///< The rule name.
 		Bool enabled{};///< Whether the rule is enabled(False by default).
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For deleting an auto-moderation-rule. \brief For deleting an auto-moderation-rule.

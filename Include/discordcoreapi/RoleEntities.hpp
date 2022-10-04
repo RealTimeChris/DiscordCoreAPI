@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 		Bool hoist{ false };///< Is this Role hoisted above the rest of them?
 		String name{};///< The name of the Role.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For updating the positions of the roles. \brief For updating the positions of the roles.
@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 		Snowflake roleId{};///< The id of the Role to move.
 		String reason{};///< Reason for modifying the Role positions.
 
-		operator String();
+		operator JsonObject();
 
 	  protected:
 		std::vector<RolePositionData> rolePositions;
@@ -118,7 +118,7 @@ namespace DiscordCoreAPI {
 		String name{};///< What the name of the Role is going to be.
 		Bool hoist{ false };///< Is this Role hoisted above the others?
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For removing a Role from a chosen Guild. \brief For removing a Role from a chosen Guild.

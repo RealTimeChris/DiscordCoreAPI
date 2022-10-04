@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild within which to create the event.
 		String name{};///< The name of the scheduled event.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For collecting a single Guild scheduled event. \brief For collecting a single Guild scheduled event.
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild within which to modify the event.
 		String name{};///< The name of the scheduled event.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For deleting a single Guild Scheduled Event. \brief For deleting a single Guild Scheduled Event.

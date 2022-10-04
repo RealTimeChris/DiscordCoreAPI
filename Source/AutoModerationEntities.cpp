@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 		this->userId = getId(jsonObjectData, "user_id");
 	}
 
-	CreateAutoModerationRuleData::operator String() {
+	CreateAutoModerationRuleData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->actions) {
 			JsonObject dataNew{};
@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ModifyAutoModerationRuleData::operator String() {
+	ModifyAutoModerationRuleData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->actions) {
 			JsonObject dataNew{};
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules";
-		workload.content = dataPackage.operator String();
+		workload.content = dataPackage.operator JsonObject();
 		workload.callStack = "AutoModerationRules::createAutoModerationRuleAsync()";
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
 	}
@@ -206,7 +206,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<AutoModerationRule>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules/" + std::to_string(dataPackage.autoModerationRuleId);
-		workload.content = dataPackage.operator String();
+		workload.content = dataPackage.operator JsonObject();
 		workload.callStack = "AutoModerationRules::modifyAutoModerationRuleAsync()";
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
 	}

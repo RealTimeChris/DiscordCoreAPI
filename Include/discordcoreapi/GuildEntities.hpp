@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 		String region{};///< The region that the servers are in.
 		String name{};///< The name of the new Guild.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For getting a Guild from the library's cache or a Discord server. \brief For getting a Guild from the library's cache or a Discord server.
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild from which to ban the member.
 		String reason{};///< The reason for the ban.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For removing a previous created Ban. \brief For removing a previous created Ban.
@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< Guild within which to perform the prune.
 		Int32 days{ 0 };/// Number of days after which to prune a given GuildMember.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For collecting a list of Guild voice regions. \brief For collecting a list of Guild voice regions.
@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 		String reason{};///< The reason for modifying the welcome screen.
 		Snowflake guildId{};///< The Guild for which to modify the welcome screen of.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For collecting a Guild's template. \brief For collecting a Guild's template.
@@ -386,7 +386,7 @@ namespace DiscordCoreAPI {
 
 		ModifyGuildData(Guild dataPackage);
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/**@}*/

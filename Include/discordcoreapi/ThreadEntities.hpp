@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The Channel to start the Thread in.
 		String reason{};///< Reason for starting the Thread.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For starting a Thread, not based on a Message. \brief For starting a Thread, not based on a Message.
@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 		Bool invitable{ false };///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
 		String reason{};///< Reason for starting the Thread.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For starting a Thread, in a forum channel. \brief For starting a Thread, in a forum channel.
@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 		String reason{};///< Reason for starting the Thread.
 		String name{};///< 1-100 character channel name auto_archive_duration.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For joining a Thread. \brief For joining a Thread.

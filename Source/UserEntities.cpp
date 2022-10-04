@@ -30,7 +30,7 @@
 
 namespace DiscordCoreAPI {
 
-	AddRecipientToGroupDMData::operator String() {
+	AddRecipientToGroupDMData::operator JsonObject() {
 		JsonObject theData{};
 		theData["access_token"] = this->token;
 		theData["nick"] = this->nick;
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData& dataPackage) {
 		if (this->baseSocketAgent) {
-			String payload = dataPackage.operator String();
+			String payload = dataPackage.operator JsonObject();
 			String theString{};
 			Uint32 shardId = (dataPackage.guildId >> 22) % this->baseSocketAgent->configManager->getTotalShardCount();
 			Uint32 basesocketAgentIndex{ shardId % this->baseSocketAgent->configManager->getTotalShardCount() };
@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 
 	void BotUser::updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage) {
 		if (this->baseSocketAgent) {
-			String payload = dataPackage.operator String();
+			String payload = dataPackage.operator JsonObject();
 			String theString{};
 			Uint32 shardId = 0;
 			Uint32 basesocketAgentIndex{ 0 };
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/recipients/" + std::to_string(dataPackage.userId);
-		workload.content = dataPackage.operator String();
+		workload.content = dataPackage.operator JsonObject();
 		workload.callStack = "Users::addRecipientToGroupDMAsync()";
 		co_return Users::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}

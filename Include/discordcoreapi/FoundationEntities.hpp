@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 		String sessionId{};
 		String botToken{};
 
-		operator String();
+		operator DiscordCoreAPI::JsonObject();
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
@@ -66,7 +66,7 @@ namespace DiscordCoreInternal {
 		String botToken{};
 		Int64 intents{};
 
-		operator String();
+		operator DiscordCoreAPI::JsonObject();
 	};
 
 	struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadData {
@@ -74,14 +74,14 @@ namespace DiscordCoreInternal {
 		String externalIp{};
 		Uint64 voicePort{};
 
-		operator String();
+		operator DiscordCoreAPI::JsonObject();
 	};
 
 	struct DiscordCoreAPI_Dll VoiceIdentifyData {
 		VoiceConnectInitData connectInitData{};
 		VoiceConnectionData connectionData{};
 
-		operator String();
+		operator DiscordCoreAPI::JsonObject();
 	};
 
 	enum class SendSpeakingType : Uint8 {
@@ -96,7 +96,7 @@ namespace DiscordCoreInternal {
 		Int32 delay{};
 		Int32 ssrc{};
 
-		operator String();
+		operator DiscordCoreAPI::JsonObject();
 	};
 
 	enum class HttpsWorkloadClass : Uint8 { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
@@ -658,7 +658,7 @@ namespace DiscordCoreAPI {
 
 		MessageReferenceData(simdjson::ondemand::value jsonObjectData);
 
-		operator String();
+		operator JsonObject();
 
 		virtual ~MessageReferenceData() noexcept = default;
 	};
@@ -1337,7 +1337,7 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< Id of the desired voice Channel. Leave blank to disconnect.
 		Snowflake guildId{};///< The id of the Guild fo which we would like to establish a voice connection.
 
-		operator String();
+		operator DiscordCoreAPI::JsonObject();
 	};
 
 	/// Team object data. \brief Team object data.
@@ -2322,7 +2322,7 @@ namespace DiscordCoreAPI {
 
 		AllowedMentionsData(simdjson::ondemand::value jsonObjectData);
 
-		operator String();
+		operator JsonObject();
 
 		virtual ~AllowedMentionsData() noexcept = default;
 	};
@@ -3181,7 +3181,7 @@ namespace DiscordCoreAPI {
 
 		InteractionResponseData() noexcept = default;
 
-		operator String();
+		operator JsonObject();
 
 		InteractionCallbackData data{};///< Interaction ApplicationCommand callback data.
 		InteractionCallbackType type{};///< Interaction callback type.

@@ -28,7 +28,7 @@
 
 namespace DiscordCoreAPI {
 
-	CreateGuildRoleData::operator String() {
+	CreateGuildRoleData::operator JsonObject() {
 		Int32 roleColorInt = stol(this->hexColorValue, 0, 16);
 		StringStream stream;
 		stream << std::setbase(10) << roleColorInt;
@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ModifyGuildRolePositionsData::operator String() {
+	ModifyGuildRolePositionsData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->rolePositions) {
 			JsonObject newData{};
@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ModifyGuildRoleData::operator String() {
+	ModifyGuildRoleData::operator JsonObject() {
 		Int32 roleColorInt = stol(this->hexColorValue, 0, 16);
 		StringStream stream;
 		stream << std::setbase(10) << roleColorInt;
@@ -216,7 +216,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles";
-		workload.content = dataPackage.operator String();
+		workload.content = dataPackage.operator JsonObject();
 		workload.callStack = "Roles::createGuildRoleAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
 		dataPackage.rolePositions.emplace_back(newDataPos);
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles";
-		workload.content = dataPackage.operator String();
+		workload.content = dataPackage.operator JsonObject();
 		workload.callStack = "Roles::modifyGuildRolePositionsAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -278,7 +278,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Role>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/roles/" + std::to_string(dataPackage.roleId);
-		workload.content = dataPackage.operator String();
+		workload.content = dataPackage.operator JsonObject();
 		workload.callStack = "Roles::modifyGuildRoleAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

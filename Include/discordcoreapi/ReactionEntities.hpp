@@ -113,7 +113,7 @@ namespace DiscordCoreAPI {
 		String name{};///< Name of the emoji.
 		ImageType type{};///< The type of image being uploaded.
 
-		operator String();
+		operator JsonObject();
 
 	  protected:
 		String imageDataFinal{};
@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 		String reason{};///< Reason for modifying the Emoji.
 		String name{};///< Name of the Emoji.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For deleting a Guild Emoji.

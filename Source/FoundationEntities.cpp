@@ -39,7 +39,7 @@
 
 namespace DiscordCoreInternal {
 
-	WebSocketResumeData::operator String() {
+	WebSocketResumeData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 6;
 		theData["d"]["seq"] = this->lastNumberReceived;
@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	WebSocketIdentifyData::operator String() {
+	WebSocketIdentifyData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theSerializer{};
 		theSerializer["d"]["intents"] = this->intents;
 		theSerializer["d"]["large_threshold"] = 250;
@@ -81,7 +81,7 @@ namespace DiscordCoreInternal {
 		return theSerializer;
 	}
 
-	VoiceSocketProtocolPayloadData::operator String() {
+	VoiceSocketProtocolPayloadData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 1;
 		theData["d"]["protocol"] = "udp";
@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	UpdatePresenceData::operator String() {
+	UpdatePresenceData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 3;
 		for (auto& value: this->activities) {
@@ -111,7 +111,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	VoiceIdentifyData::operator String() {
+	VoiceIdentifyData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 0;
 		theData["d"]["session_id"] = this->connectionData.sessionId;
@@ -121,7 +121,7 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	SendSpeakingData::operator String() {
+	SendSpeakingData::operator DiscordCoreAPI::JsonObject() {
 		DiscordCoreAPI::JsonObject theData{};
 		theData["op"] = 5;
 		theData["d"]["speaking"] = this->type;
@@ -208,7 +208,7 @@ namespace DiscordCoreAPI {
 
 	String DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
 		TimeStamp<std::chrono::milliseconds> timeStamp{ (static_cast<Uint64>(this->id) >> 22) + 1420070400000, timeFormat };
-		return timeStamp;
+		return timeStamp.operator DiscordCoreAPI::String();
 	}
 
 	RoleTagsData::RoleTagsData(simdjson::ondemand::value jsonObjectData) {
@@ -3126,7 +3126,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageReferenceData::operator String() {
+	MessageReferenceData::operator JsonObject() {
 		JsonObject theData{};
 		theData["fail_if_not_exists"] = this->failIfNotExists;
 		theData["message_id"] = std::to_string(this->messageId);
@@ -3143,7 +3143,7 @@ namespace DiscordCoreAPI {
 		return this->theBanDatas;
 	}
 
-	UpdateVoiceStateData::operator String() {
+	UpdateVoiceStateData::operator JsonObject() {
 		JsonObject theData{};
 		theData["op"] = 4;
 		if (this->channelId == 0) {
@@ -3274,7 +3274,7 @@ namespace DiscordCoreAPI {
 		this->data.clear();
 	}
 
-	AllowedMentionsData::operator String() {
+	AllowedMentionsData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->parse) {
 			theData["parse"].pushBack(value);
@@ -3815,7 +3815,7 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	InteractionResponseData::operator String() {
+	InteractionResponseData::operator JsonObject() {
 		JsonObject theData{};
 		theData["type"] = this->type;
 		if (this->data.attachments.size() > 0) {

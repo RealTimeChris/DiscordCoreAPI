@@ -469,7 +469,7 @@ namespace DiscordCoreInternal {
 		Int64 since{ 0 };///< When was the activity started?
 		Bool afk{ false };///< Are we afk.
 
-		operator String();
+		operator DiscordCoreAPI::JsonObject();
 	};
 
 }// namespace DiscordCoreInternal

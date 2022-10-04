@@ -29,15 +29,12 @@ namespace DiscordCoreInternal {
 
 	ErlPackError::ErlPackError(const String& message) : std::runtime_error(message.c_str()){};
 
-	String ErlPacker::parseJsonToEtf(String&& dataToParse) {
+	String& ErlPacker::parseJsonToEtf(DiscordCoreAPI::JsonObject&& dataToParse) {
 		this->bufferString.clear();
 		this->offSet = 0;
 		this->size = 0;
 		this->appendVersion();
-		dataToParse.reserve(dataToParse.size() + simdjson::SIMDJSON_PADDING);
-		simdjson::ondemand::parser theParser{};
-		auto theDocument = theParser.iterate(dataToParse.data(), dataToParse.length(), dataToParse.capacity());
-		this->singleValueJsonToETF(theDocument);
+		this->singleValueJsonToETF(std::move(dataToParse));
 		return this->bufferString;
 	}
 
@@ -59,96 +56,118 @@ namespace DiscordCoreInternal {
 		return this->bufferString;
 	}
 
-	void ErlPacker::singleValueJsonToETF(simdjson::ondemand::value jsonData) {
-		switch (jsonData.type()) {
-			case simdjson::ondemand::json_type::array: {
-				this->writeArray(jsonData);
+	void ErlPacker::singleValueJsonToETF(DiscordCoreAPI::JsonObject jsonData) {
+		switch (jsonData.theType) {
+			case DiscordCoreAPI::ValueType::Array: {
+				this->writeArray(*jsonData.theValue.array);
 				break;
 			}
-			case simdjson::ondemand::json_type::object: {
-				this->writeObject(jsonData);
+			case DiscordCoreAPI::ValueType::Object: {
+				this->writeObject(*jsonData.theValue.object);
 				break;
 			}
-			case simdjson::ondemand::json_type::number: {
-				this->writeNumber(jsonData);
+			case DiscordCoreAPI::ValueType::Bool: {
+				this->writeBool(jsonData.theValue.boolean);
 				break;
 			}
-			case simdjson::ondemand::json_type::string: {
-				this->writeString(jsonData);
+			case DiscordCoreAPI::ValueType::Float: {
+				this->writeFloat(jsonData.theValue.numberDouble);
 				break;
 			}
-			case simdjson::ondemand::json_type::boolean: {
-				this->writeBool(jsonData);
+			case DiscordCoreAPI::ValueType::Int64: {
+				this->writeInt(jsonData.theValue.numberInt);
 				break;
 			}
-			case simdjson::ondemand::json_type::null: {
-				this->appendNil();
+			case DiscordCoreAPI::ValueType::Uint64: {
+				this->writeBool(jsonData.theValue.numberUint);
+				break;
+			}
+			case DiscordCoreAPI::ValueType::String: {
+				this->writeString(*jsonData.theValue.string);
+				break;
+			}
+			case DiscordCoreAPI::ValueType::Null: {
+				this->writeNull();
+				break;
+			}
+			case DiscordCoreAPI::ValueType::Null_Ext: {
+				this->writeNullExt();
 				break;
 			}
 		}
 	}
 
-	void ErlPacker::writeObject(simdjson::ondemand::value jsonData) {
+	void ErlPacker::writeNullExt() {
+		this->writeToBuffer("[]");
+	}
+
+	void ErlPacker::writeNull() {
+		this->writeToBuffer("null");
+	}
+
+	void ErlPacker::writeObject(DiscordCoreAPI::JsonObject::ObjectType jsonData) {
 		Bool add_comma{ false };
-		this->appendMapHeader(static_cast<Uint32>(jsonData.count_fields().take_value()));
-		for (auto field: jsonData.get_object()) {
+		this->appendMapHeader(static_cast<Uint32>(jsonData.size()));
+		for (auto field: jsonData) {
 			if (add_comma) {
 			}
 			StringStream theStream{};
-			theStream << field.key();
+			theStream << field.first;
 			String theKey = theStream.str();
 
 			auto theSize = theKey.size();
 			this->appendBinaryExt(theKey, static_cast<Uint32>(theSize));
-			this->singleValueJsonToETF(field.value());
+			this->singleValueJsonToETF(field.second);
 			add_comma = true;
 		}
 	}
 
-	void ErlPacker::writeString(simdjson::ondemand::value jsonData) {
+	void ErlPacker::writeString(DiscordCoreAPI::JsonObject::StringType jsonData) {
 		StringStream theStream{};
-		theStream << jsonData.get_string().take_value();
+		theStream << jsonData;
 		auto theSize = static_cast<Uint32>(theStream.str().size());
 		this->appendBinaryExt(theStream.str(), theSize);
 	}
 
-	void ErlPacker::writeNumber(simdjson::ondemand::value jsonData) {
-		if (jsonData.get_number_type() == simdjson::ondemand::number_type::floating_point_number) {
-			auto theFloat = jsonData.get_double().take_value();
-			this->appendNewFloatExt(theFloat);
-		} else if (jsonData.get_number_type() == simdjson::ondemand::number_type::unsigned_integer) {
-			auto theInt = jsonData.get_uint64().take_value();
-			if (theInt <= 255 && theInt >= 0) {
-				this->appendSmallIntegerExt(static_cast<Uint8>(theInt));
-			} else if (theInt <= std::numeric_limits<Uint32>::max() && theInt >= 0) {
-				this->appendIntegerExt(static_cast<Uint32>(theInt));
-			} else {
-				this->appendUnsignedLongLong(theInt);
-			}
-		} else if (jsonData.get_number_type() == simdjson::ondemand::number_type::signed_integer) {
-			auto theInt = jsonData.get_int64().take_value();
-			if (theInt <= 127 && theInt >= -127) {
-				this->appendSmallIntegerExt(static_cast<Uint8>(theInt));
-			} else if (theInt <= std::numeric_limits<Int32>::max() && theInt >= std::numeric_limits<Int32>::min()) {
-				this->appendIntegerExt(static_cast<Uint32>(theInt));
-			} else {
-				this->appendUnsignedLongLong(static_cast<Uint64>(theInt));
-			}
+	void ErlPacker::writeFloat(DiscordCoreAPI::JsonObject::FloatType jsonData) {
+		auto theFloat = jsonData;
+		this->appendNewFloatExt(theFloat);
+	}
+
+	void ErlPacker::writeUint(DiscordCoreAPI::JsonObject::UintType jsonData) {
+		auto theInt = jsonData;
+		if (theInt <= 255 && theInt >= 0) {
+			this->appendSmallIntegerExt(static_cast<Uint8>(theInt));
+		} else if (theInt <= std::numeric_limits<Uint32>::max() && theInt >= 0) {
+			this->appendIntegerExt(static_cast<Uint32>(theInt));
+		} else {
+			this->appendUnsignedLongLong(theInt);
 		}
 	}
 
-	void ErlPacker::writeArray(simdjson::ondemand::value jsonData) {
+	void ErlPacker::writeInt(DiscordCoreAPI::JsonObject::IntType jsonData) {
+		auto theInt = jsonData;
+		if (theInt <= 127 && theInt >= -127) {
+			this->appendSmallIntegerExt(static_cast<Uint8>(theInt));
+		} else if (theInt <= std::numeric_limits<Int32>::max() && theInt >= std::numeric_limits<Int32>::min()) {
+			this->appendIntegerExt(static_cast<Uint32>(theInt));
+		} else {
+			this->appendUnsignedLongLong(static_cast<Uint64>(theInt));
+		}
+	}
+
+	void ErlPacker::writeArray(DiscordCoreAPI::JsonObject::ArrayType jsonData) {
 		Bool add_comma{ false };
-		this->appendListHeader(static_cast<Uint32>(jsonData.count_elements().take_value()));
-		for (auto element: jsonData.get_array()) {
-			this->singleValueJsonToETF(element.value());
+		this->appendListHeader(static_cast<Uint32>(jsonData.size()));
+		for (auto element: jsonData) {
+			this->singleValueJsonToETF(element);
 			add_comma = true;
 		}
 		this->appendNilExt();
 	}
 
-	void ErlPacker::writeBool(simdjson::ondemand::value jsonData) {
-		auto theBool = jsonData.get_bool().take_value();
+	void ErlPacker::writeBool(DiscordCoreAPI::JsonObject::BoolType jsonData) {
+		auto theBool = jsonData;
 		if (theBool) {
 			this->appendTrue();
 		} else {
@@ -172,7 +191,7 @@ namespace DiscordCoreInternal {
 		String bufferNew{};
 		bufferNew.resize(static_cast<Uint64>(1) + 2 + sizeof(Uint64));
 		bufferNew[0] = static_cast<Uint8>(ETFTokenType::Small_Big_Ext);
-		DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
+		DiscordCoreAPI::StopWatch theStopWatch{ std::chrono::milliseconds{ 1500 } };
 		Uint8 bytesToEncode = 0;
 		while (value > 0) {
 			if (theStopWatch.hasTimePassed()) {
@@ -597,4 +616,5 @@ namespace DiscordCoreInternal {
 		map += "}";
 		return map;
 	}
+
 }

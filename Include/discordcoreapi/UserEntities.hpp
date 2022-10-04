@@ -53,7 +53,7 @@ namespace DiscordCoreAPI {
 		String token{};///< The user's access token.
 		String nick{};///< The user's nickname.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For removing a User from a group Dm. \brief For removing a User from a group Dm.

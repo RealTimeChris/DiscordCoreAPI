@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a single global ApplicationCommand. \brief For creating a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData : public CreateApplicationCommandData {
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For editing a single global ApplicationCommand. \brief For editing a single global ApplicationCommand.
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		String name{};///< A name for the new command.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For deleting a single global ApplicationCommand. \brief For deleting a single global ApplicationCommand.
@@ -108,7 +108,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a single Guild ApplicationCommand. \brief For creating a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateApplicationCommandData {
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For acquiring a single Guild ApplicationCommand. \brief For acquiring a single Guild ApplicationCommand.
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild which you would like to add the new command to.
 		String name{};///< A name for the new command.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For deleting a single Guild ApplicationCommand. \brief For deleting a single Guild ApplicationCommand.
@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 		Uint64 commandId{};///< The command id which you would like to edit the permissions of.
 		Snowflake guildId{};///< The Guild id of the Guild for which you would like to edit the command permissions.
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For batch editing the permissions of a collection of Guild ApplicationCommands. \brief For batch editing the permissions of a collection of Guild ApplicationCommands.

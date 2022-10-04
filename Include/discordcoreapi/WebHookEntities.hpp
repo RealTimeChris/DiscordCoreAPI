@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 
 		ExecuteWebHookData(WebHookData dataNew);
 
-		operator String();
+		operator JsonObject();
 
 		/// Adds a button to the response Message. \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 
 		EditWebHookData(WebHookData dataNew);
 
-		operator String();
+		operator JsonObject();
 	};
 
 	/// For collecting a list of WebHooks from a chosen Channel. \brief For collecting a list of WebHooks from a chosen Channel.

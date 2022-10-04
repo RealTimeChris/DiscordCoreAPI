@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CreateGuildEmojiData::operator String() {
+	CreateGuildEmojiData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->roles) {
 			theData["roles"].pushBack(std::to_string(value));
@@ -78,7 +78,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ModifyGuildEmojiData::operator String() {
+	ModifyGuildEmojiData::operator JsonObject() {
 		JsonObject theData{};
 		for (auto& value: this->roles) {
 			theData["roles"].pushBack(std::to_string(value));
@@ -233,7 +233,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis";
-		workload.content = dataPackage.operator String();
+		workload.content = dataPackage.operator JsonObject();
 		workload.callStack = "Reactions::createGuildEmojiAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<EmojiData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/emojis/" + std::to_string(dataPackage.emojiId);
-		workload.content = dataPackage.operator String();
+		workload.content = dataPackage.operator JsonObject();
 		workload.callStack = "Reactions::modifyGuildEmojiAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

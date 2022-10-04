@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 		this->configManager = configManagerNew;
 	}
 
-	String WebSocketMessageHandler::stringifyJsonData(String& dataToSend, WebSocketOpCode theOpCode) noexcept {
+	String WebSocketMessageHandler::stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept {
 		String theVector{};
 		String header{};
 
@@ -186,14 +186,14 @@ namespace DiscordCoreInternal {
 			cout << DiscordCoreAPI::shiftToBrightBlue()
 				 << "Sending WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
 					std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + String("'s Message: ")
-				 << dataToSend << endl
+				 << static_cast<std::string>(dataToSend) << endl
 				 << endl
 				 << DiscordCoreAPI::reset();
 		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
-			theVector = ErlPacker::parseJsonToEtf(static_cast<String>(dataToSend));
+			theVector = ErlPacker::parseJsonToEtf(std::move(dataToSend));
 		} else {
-			theVector = dataToSend;
+			theVector = static_cast<std::string>(dataToSend);
 		}
 		this->createHeader(header, theVector.size(), theOpCode);
 		String theVectorNew{};
@@ -358,8 +358,7 @@ namespace DiscordCoreInternal {
 				dataPackage.selfDeaf = doWeCollect.selfDeaf;
 				dataPackage.selfMute = doWeCollect.selfMute;
 				this->userId = doWeCollect.userId;
-				String newData = dataPackage.operator String();
-				String theString = this->stringifyJsonData(newData, this->dataOpCode);
+				String theString = this->stringifyJsonData(dataPackage.operator DiscordCoreAPI::JsonObject(), this->dataOpCode);
 				Bool didWeWrite{ false };
 				if (!this->sendMessage(theString, true)) {
 					return;
@@ -368,8 +367,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				dataPackage.channelId = static_cast<VoiceConnectInitData>(doWeCollect).channelId;
-				newData = dataPackage.operator String();
-				String theString02 = this->stringifyJsonData(newData, this->dataOpCode);
+				String theString02 = this->stringifyJsonData(dataPackage, this->dataOpCode);
 				this->areWeCollectingData = true;
 				if (!this->sendMessage(theString02, true)) {
 					return;
@@ -1415,8 +1413,7 @@ namespace DiscordCoreInternal {
 										resumeData.botToken = this->configManager->getBotToken();
 										resumeData.sessionId = this->sessionId;
 										resumeData.lastNumberReceived = this->lastNumberReceived;
-										String resumePayload = resumeData.operator String();
-										String theString = this->stringifyJsonData(resumePayload, this->dataOpCode);
+										String theString = this->stringifyJsonData(resumeData, this->dataOpCode);
 										if (!this->sendMessage(theString, true)) {
 											returnValue = true;
 										}
@@ -1428,8 +1425,7 @@ namespace DiscordCoreInternal {
 										identityData.numberOfShards = this->shard[1];
 										identityData.intents = static_cast<Int64>(this->configManager->getGatewayIntents());
 										identityData.presence = this->configManager->getPresenceData();
-										String identityJson = identityData.operator String();
-										String theString = this->stringifyJsonData(identityJson, this->dataOpCode);
+										String theString = this->stringifyJsonData(identityData, this->dataOpCode);
 										if (!this->sendMessage(theString, true)) {
 											returnValue = true;
 										}
