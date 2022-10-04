@@ -723,7 +723,7 @@ namespace DiscordCoreInternal {
 												StringView theString{};
 												theD["guild_id"].get(theString);
 												dataPackage->user = DiscordCoreAPI::UserData{ theD };
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												this->discordCoreClient->eventManager.onGuildBanAddEvent(*dataPackage);
 												break;
 											}
@@ -732,7 +732,7 @@ namespace DiscordCoreInternal {
 												StringView theString{};
 												theD["guild_id"].get(theString);
 												dataPackage->user = DiscordCoreAPI::UserData{ theD };
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												this->discordCoreClient->eventManager.onGuildBanRemoveEvent(*dataPackage);
 												break;
 											}
@@ -772,7 +772,7 @@ namespace DiscordCoreInternal {
 												};
 												StringView theString{};
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												this->discordCoreClient->eventManager.onGuildIntegrationsUpdateEvent(*dataPackage);
 												break;
 											}
@@ -960,11 +960,11 @@ namespace DiscordCoreInternal {
 												};
 												StringView theString{};
 												theD["user_id"].get(theString);
-												dataPackage->userId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->userId = DiscordCoreAPI::strtoull(theString);
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												theD["guild_scheduled_event_id"].get(theString);
-												dataPackage->guildScheduledEventId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildScheduledEventId = DiscordCoreAPI::strtoull(theString);
 												this->discordCoreClient->eventManager.onGuildScheduledEventUserAddEvent(*dataPackage);
 												break;
 											}
@@ -974,11 +974,11 @@ namespace DiscordCoreInternal {
 												};
 												StringView theString{};
 												theD["user_id"].get(theString);
-												dataPackage->userId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->userId = DiscordCoreAPI::strtoull(theString);
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												theD["guild_scheduled_event_id"].get(theString);
-												dataPackage->guildScheduledEventId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildScheduledEventId = DiscordCoreAPI::strtoull(theString);
 												this->discordCoreClient->eventManager.onGuildScheduledEventUserRemoveEvent(*dataPackage);
 												break;
 											}
@@ -988,7 +988,7 @@ namespace DiscordCoreInternal {
 												};
 												StringView theString{};
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												simdjson::ondemand::value theObjectNew = theD["integration"].value();
 												dataPackage->integrationData = DiscordCoreAPI::IntegrationData{ theObjectNew };
 												this->discordCoreClient->eventManager.onIntegrationCreationEvent(*dataPackage);
@@ -998,7 +998,7 @@ namespace DiscordCoreInternal {
 												std::unique_ptr<DiscordCoreAPI::OnIntegrationUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnIntegrationUpdateData>() };
 												StringView theString{};
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												simdjson::ondemand::value theObjectNew = theD["integration"].value();
 												dataPackage->integrationData = DiscordCoreAPI::IntegrationData{ theObjectNew };
 												this->discordCoreClient->eventManager.onIntegrationUpdateEvent(*dataPackage);
@@ -1010,11 +1010,11 @@ namespace DiscordCoreInternal {
 												};
 												StringView theString{};
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												theD["application_id"].get(theString);
-												dataPackage->applicationId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->applicationId = DiscordCoreAPI::strtoull(theString);
 												theD["id"].get(theString);
-												dataPackage->id = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->id = DiscordCoreAPI::strtoull(theString);
 												this->discordCoreClient->eventManager.onIntegrationDeletionEvent(*dataPackage);
 												break;
 											}
@@ -1124,11 +1124,11 @@ namespace DiscordCoreInternal {
 												std::unique_ptr<DiscordCoreAPI::OnInviteDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInviteDeletionData>() };
 												StringView theString{};
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												theD["channel_id"].get(theString);
-												dataPackage->channelId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->channelId = DiscordCoreAPI::strtoull(theString);
 												theD["code"].get(theString);
-												dataPackage->code = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->code = DiscordCoreAPI::strtoull(theString);
 												this->discordCoreClient->eventManager.onInviteDeletionEvent(*dataPackage);
 												break;
 											}
@@ -1164,11 +1164,11 @@ namespace DiscordCoreInternal {
 												std::unique_ptr<DiscordCoreAPI::OnMessageDeletionData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageDeletionData>() };
 												StringView theString{};
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												theD["channel_id"].get(theString);
-												dataPackage->channelId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->channelId = DiscordCoreAPI::strtoull(theString);
 												theD["id"].get(theString);
-												dataPackage->messageId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->messageId = DiscordCoreAPI::strtoull(theString);
 												this->discordCoreClient->eventManager.onMessageDeletionEvent(*dataPackage);
 												break;
 											}
@@ -1176,13 +1176,13 @@ namespace DiscordCoreInternal {
 												std::unique_ptr<DiscordCoreAPI::OnMessageDeleteBulkData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageDeleteBulkData>() };
 												StringView theString{};
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												theD["channel_id"].get(theString);
-												dataPackage->channelId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->channelId = DiscordCoreAPI::strtoull(theString);
 												simdjson::ondemand::array theArray{};
 												theD["ids"].get(theArray);
 												for (auto value: theArray) {
-													dataPackage->ids.emplace_back(DiscordCoreAPI::strtoull(value.get_string().take_value().data()));
+													dataPackage->ids.emplace_back(DiscordCoreAPI::strtoull(value.get_string().take_value()));
 												}
 												this->discordCoreClient->eventManager.onMessageDeleteBulkEvent(*dataPackage);
 												break;
@@ -1203,11 +1203,11 @@ namespace DiscordCoreInternal {
 												std::unique_ptr<DiscordCoreAPI::OnReactionRemoveAllData> dataPackage{ std::make_unique<DiscordCoreAPI::OnReactionRemoveAllData>() };
 												StringView theString{};
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												theD["channel_id"].get(theString);
-												dataPackage->channelId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->channelId = DiscordCoreAPI::strtoull(theString);
 												theD["message_id"].get(theString);
-												dataPackage->messageId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->messageId = DiscordCoreAPI::strtoull(theString);
 												this->discordCoreClient->eventManager.onReactionRemoveAllEvent(*dataPackage);
 												break;
 											}
@@ -1217,11 +1217,11 @@ namespace DiscordCoreInternal {
 												};
 												StringView theString{};
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												theD["channel_id"].get(theString);
-												dataPackage->channelId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->channelId = DiscordCoreAPI::strtoull(theString);
 												theD["message_id"].get(theString);
-												dataPackage->messageId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->messageId = DiscordCoreAPI::strtoull(theString);
 												simdjson::ondemand::value theObjectNew = theD["emoji"].value();
 												dataPackage->emoji = DiscordCoreAPI::EmojiData{ theD };
 												this->discordCoreClient->eventManager.onReactionRemoveEmojiEvent(*dataPackage);
@@ -1343,9 +1343,9 @@ namespace DiscordCoreInternal {
 												std::unique_ptr<DiscordCoreAPI::OnWebhookUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnWebhookUpdateData>() };
 												StringView theString{};
 												theD["guild_id"].get(theString);
-												dataPackage->guildId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->guildId = DiscordCoreAPI::strtoull(theString);
 												theD["channel_id"].get(theString);
-												dataPackage->channelId = DiscordCoreAPI::strtoull(theString.data());
+												dataPackage->channelId = DiscordCoreAPI::strtoull(theString);
 												this->discordCoreClient->eventManager.onWebhookUpdateEvent(*dataPackage);
 												break;
 											}

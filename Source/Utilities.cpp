@@ -993,6 +993,19 @@ namespace DiscordCoreAPI {
 		return this->lowBits == other.lowBits && this->highBits == other.highBits;
 	}
 
+	Uint64 strtoull(const StringView theString) {
+		for (auto& value: theString) {
+			if (!isdigit(value)) {
+				return 0;
+			}
+		}
+		if (!theString.empty() && theString != "") {
+			return stoull(std::string{ theString });
+		} else {
+			return 0;
+		}
+	}
+
 	Uint64 strtoull(const String& theString) {
 		for (auto& value: theString) {
 			if (!isdigit(value)) {
@@ -1687,9 +1700,15 @@ namespace DiscordCoreInternal {
 	void StringBuffer::erase(Uint64 offSet, Uint64 amount) {
 		this->theSize = this->theSize - amount;
 		if (this->whichOneAreWeOn == 0) {
+			if (this->theString02.size() < this->theString01.size()) {
+				this->theString02.resize(this->theString01.size());
+			}
 			memcpy(this->theString02.data(), this->theString01.data() + amount, this->theSize);
 			this->whichOneAreWeOn = 1;
 		} else {
+			if (this->theString01.size() < this->theString02.size()) {
+				this->theString01.resize(this->theString02.size());
+			}
 			memcpy(this->theString01.data(), this->theString02.data() + amount, this->theSize);
 			this->whichOneAreWeOn = 0;
 		}

@@ -2557,7 +2557,7 @@ namespace DiscordCoreAPI {
 			this->attachments.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: theArray) {
 				AttachmentData newData{ value.value() };
-				this->attachments[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
+				this->attachments[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
 		}
 
@@ -2566,7 +2566,7 @@ namespace DiscordCoreAPI {
 			this->users.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: theArray) {
 				UserData newData{ value.value() };
-				this->users[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
+				this->users[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
 		}
 
@@ -2575,7 +2575,7 @@ namespace DiscordCoreAPI {
 			this->channels.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: theArray) {
 				ChannelData newData{ value.value() };
-				this->channels[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
+				this->channels[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
 		}
 
@@ -2584,7 +2584,7 @@ namespace DiscordCoreAPI {
 			this->roles.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: theArray) {
 				RoleData newData{ value.value() };
-				this->roles[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
+				this->roles[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
 		}
 
@@ -2593,7 +2593,7 @@ namespace DiscordCoreAPI {
 			this->members.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: theArray) {
 				GuildMemberData newData{ value.value() };
-				this->members[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
+				this->members[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
 		}
 
@@ -2602,7 +2602,7 @@ namespace DiscordCoreAPI {
 			this->messages.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: theArray) {
 				MessageData newData{ value.value() };
-				this->messages[DiscordCoreAPI::strtoull(value.key().take_value().raw())] = std::move(newData);
+				this->messages[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
 		}
 	}
