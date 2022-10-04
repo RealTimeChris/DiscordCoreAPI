@@ -174,8 +174,6 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
 	  public:
-		SSLConnectionInterface() noexcept = default;
-
 		virtual Bool connect(const String& baseUrl, const String& portNew, Bool doWePrintErrorMessages, Bool areWeAStandaloneSocket) noexcept = 0;
 
 		virtual Bool areWeStillConnected() noexcept = 0;
@@ -217,11 +215,10 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
-		SSLClient() noexcept = default;
-
-		Bool connect(const String& baseUrl, const String& portNew, Bool doWePrintErrorMessages, Bool areWeAStandaloneSocket) noexcept;
 
 		static std::vector<SSLClient*> processIO(std::unordered_map<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept;
+
+		Bool connect(const String& baseUrl, const String& portNew, Bool doWePrintErrorMessages, Bool areWeAStandaloneSocket) noexcept;
 
 		ProcessIOResult writeData(String& dataToWrite, Bool priority) noexcept;
 

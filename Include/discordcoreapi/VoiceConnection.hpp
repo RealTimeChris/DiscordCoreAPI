@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 	/// VoiceConnection class - represents the connection to a given voice Channel. \brief VoiceConnection class - represents the connection to a given voice Channel.
-	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketSSLShard, public DiscordCoreInternal::DatagramSocketClient {
+	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketMessageHandler, public DiscordCoreInternal::DatagramSocketClient {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreInternal::SoundCloudAPI;
@@ -158,6 +158,7 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
 		std::unordered_map<Uint64, VoiceUser> voiceUsers{};
+		DiscordCoreClient* discordCoreClient{ nullptr };
 		std::deque<ConnectionPackage> theConnections{};
 		AtomicBool areWeConnectedBool{ false };
 		std::deque<VoicePayload> theFrameQueue{};
@@ -167,6 +168,7 @@ namespace DiscordCoreAPI {
 		String audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		ConnectionPackage thePackage{};
+		AtomicBool* doWeQuit{ nullptr };
 		String secretKeySend{};
 		std::mutex voiceUserMutex{};
 		Uint16 sequenceIndex{ 0 };
@@ -215,13 +217,7 @@ namespace DiscordCoreAPI {
 
 		Bool areWeConnected() noexcept;
 
-		void sendHeartBeat() noexcept;
-
-		Bool parseMessage() noexcept;
-
 		Bool voiceConnect() noexcept;
-
-		void handleBuffer() noexcept;
 
 		void sendSilence() noexcept;
 

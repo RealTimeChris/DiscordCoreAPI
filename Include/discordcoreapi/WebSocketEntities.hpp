@@ -48,33 +48,54 @@ namespace DiscordCoreInternal {
 		String theEvent{};
 	};
 
-	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker {
-	  public:
-		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager);
+	enum class SSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
-		void createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept;
+	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker, public SSLClient {
+	  public:
+		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections, String typeOfWebSocket);
 
 		String stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept;
 
+		void createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept;
+
 		virtual Bool onMessageReceived(StringView theMessage) noexcept = 0;
 
-		void parseConnectionHeaders(WebSocketSSLShard* theShard) noexcept;
+		Bool sendMessage(String& dataToSend, Bool priority) noexcept;
 
-		void parseMessage(WebSocketSSLShard* theShard) noexcept;
+		void checkForAndSendHeartBeat(Bool = false) noexcept;
+
+		void parseConnectionHeaders() noexcept;
+
+		virtual void disconnect() noexcept = 0;
 
 		virtual void onClosed() noexcept = 0;
+
+		void handleBuffer() noexcept;
+
+		void parseMessage() noexcept;
 
 		virtual ~WebSocketMessageHandler() noexcept = default;
 
 	  protected:
+		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
+		std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
 		DiscordCoreAPI::ConfigManager* configManager{};
+		std::atomic<SSLShardState> currentState{};
+		Bool haveWeReceivedHeartbeatAck{ true };
+		AtomicBool areWeConnecting{ true };
+		Bool areWeHeartBeating{ false };
+		Uint32 lastNumberReceived{ 0 };
+		WebSocketClose closeCode{ 0 };
+		StringBuffer currentMessage{};
+		WebSocketOpCode dataOpCode{};
+		Bool areWeResuming{ false };
+		String typeOfWebSocket{};
 		Uint64 messageLength{};
 		Uint64 messageOffset{};
+		Uint32 shard[2]{};
 	};
 
-	enum class SSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
-
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public SSLClient, public WebSocketMessageHandler {
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketMessageHandler {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
@@ -89,13 +110,7 @@ namespace DiscordCoreInternal {
 
 		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
-		virtual Bool onMessageReceived(StringView theMessage) noexcept;
-
-		Bool sendMessage(String& dataToSend, Bool priority) noexcept;
-
-		void checkForAndSendHeartBeat(Bool = false) noexcept;
-
-		virtual void handleBuffer() noexcept;
+		Bool onMessageReceived(StringView theMessage) noexcept;
 
 		void disconnect() noexcept;
 
@@ -105,31 +120,18 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::unordered_map<Uint64, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
-		std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
-		std::atomic<SSLShardState> currentState{};
-		Bool haveWeReceivedHeartbeatAck{ true };
 		simdjson::ondemand::parser theParser{};
 		DiscordCoreAPI::Snowflake userId{ 0 };
 		const Uint32 maxReconnectTries{ 10 };
 		Bool serverUpdateCollected{ false };
-		AtomicBool areWeConnecting{ true };
 		Bool stateUpdateCollected{ false };
 		Bool areWeCollectingData{ false };
 		Uint32 currentReconnectTries{ 0 };
-		Bool areWeHeartBeating{ false };
 		AtomicBool* doWeQuit{ nullptr };
-		Uint32 lastNumberReceived{ 0 };
-		WebSocketClose closeCode{ 0 };
-		StringBuffer currentMessage{};
-		WebSocketOpCode dataOpCode{};
-		Bool areWeResuming{ false };
-		String typeOfWebSocket{};
 		String resumeUrl{};
 		String sessionId{};
-		Uint32 shard[2]{};
 	};
 
 	class DiscordCoreAPI_Dll BaseSocketAgent {
