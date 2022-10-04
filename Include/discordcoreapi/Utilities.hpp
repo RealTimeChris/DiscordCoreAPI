@@ -1697,6 +1697,8 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll StringBuffer {
 	  public:
+		StringBuffer() noexcept;
+
 		StringView operator[](LengthData);
 
 		void writeData(const char*, Uint64);
@@ -1730,9 +1732,9 @@ namespace DiscordCoreInternal {
 		char* data();
 
 	  protected:
-		std::array<char, 1024 * 1024> theString01{};
-		std::array<char, 1024 * 1024> theString02{};
 		Uint64 whichOneAreWeOn{ 0 };
+		std::string theString01{};
+		std::string theString02{};
 		Uint64 theSize{};
 	};
 

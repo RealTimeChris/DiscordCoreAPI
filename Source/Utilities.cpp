@@ -1669,6 +1669,11 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
+	StringBuffer::StringBuffer() noexcept {
+		this->theString01.resize(1024 * 16);
+		this->theString02.resize(1024 * 16);
+	}
+
 	StringView StringBuffer::operator[](LengthData size) {
 		if (this->whichOneAreWeOn == 0) {
 			StringView theString{ this->theString01.data() + size.offSet, size.length };
@@ -1696,8 +1701,17 @@ namespace DiscordCoreInternal {
 				memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
 				this->theSize += theSize;
 			}
+			else {
+				this->theString01.resize(this->theString01.size() * 2);
+				memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
+				this->theSize += theSize;
+			}
 		} else {
 			if (this->theSize + theSize < this->theString02.size()) {
+				memcpy(this->theString02.data() + this->theSize, thePtr, theSize);
+				this->theSize += theSize;
+			} else {
+				this->theString02.resize(this->theString02.size() * 2);
 				memcpy(this->theString02.data() + this->theSize, thePtr, theSize);
 				this->theSize += theSize;
 			}

@@ -311,8 +311,12 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketMessage {
+		WebSocketMessage() noexcept = default;
 		WebSocketMessage(simdjson::ondemand::value);
 		Uint64 op{ static_cast<Uint64>(-1) };
+		template<typename ReturnType> ReturnType processJsonMessage() {
+			return ReturnType{ this->d };
+		}
 		simdjson::ondemand::value d{};
 		String t{};
 		Uint64 s{};

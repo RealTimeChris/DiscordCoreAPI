@@ -66,6 +66,8 @@ namespace DiscordCoreInternal {
 
 		String& parseEtfToJson(StringView dataToParse);
 
+		void singleValueJsonToETF(simdjson::ondemand::value jsonData);
+
 		~ErlPacker(){};
 
 	  protected:
@@ -77,8 +79,6 @@ namespace DiscordCoreInternal {
 		StringView buffer{};
 		Uint64 offSet{};
 		Uint64 size{};
-
-		void singleValueJsonToETF(simdjson::ondemand::value jsonData);
 
 		void writeObject(simdjson::ondemand::value jsonData);
 

@@ -179,7 +179,7 @@ namespace DiscordCoreInternal {
 			HttpsResponseData returnData02 = this->httpsClient->submitWorkloadAndGetResult(dataPackage03);
 			String newerString02{};
 			newerString02.insert(newerString02.begin(), returnData02.responseMessage.begin(), returnData02.responseMessage.end());
-			std::cout << "THE STRING: " << newerString02 << std::endl;
+			
 			String newString03 = newerString02.substr(newerString02.find("JSON.stringify({client_id:\"") + String{ "JSON.stringify({client_id:\"" }.size());
 
 
