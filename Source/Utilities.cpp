@@ -241,6 +241,58 @@ namespace DiscordCoreAPI {
 		*this = std::move(theData);
 	}
 
+	JsonObject& JsonObject::operator=(JsonObject&& theKey) noexcept {
+		if (this->theType != ValueType::Null) {
+			this->theValue.destroy(this->theType);
+		}
+		switch (theKey.theType) {
+			case ValueType::Object: {
+				this->theValue = ValueType::Object;
+				for (auto& [key, value]: *theKey.theValue.object) {
+					this->theValue.object->emplace(key, std::move(value));
+				}
+				break;
+			}
+			case ValueType::Array: {
+				this->theValue = ValueType::Array;
+				for (auto& value: *theKey.theValue.array) {
+					this->theValue.array->emplace_back(std::move(value));
+				}
+				break;
+			}
+			case ValueType::String: {
+				this->theValue = ValueType::String;
+				*this->theValue.string = std::move(*theKey.theValue.string);
+				break;
+			}
+			case ValueType::Bool: {
+				this->theValue.boolean = theKey.theValue.boolean;
+				break;
+			}
+			case ValueType::Int64: {
+				this->theValue.numberInt = theKey.theValue.numberInt;
+				break;
+			}
+			case ValueType::Uint64: {
+				this->theValue.numberUint = theKey.theValue.numberUint;
+				break;
+			}
+			case ValueType::Float: {
+				this->theValue.numberDouble = theKey.theValue.numberDouble;
+				break;
+			}
+			case ValueType::Null: {
+				break;
+			}
+		}
+		this->theType = theKey.theType;
+		return *this;
+	}
+
+	JsonObject::JsonObject(JsonObject&& theKey) noexcept {
+		*this = std::move(theKey);
+	}
+
 	JsonObject& JsonObject::operator=(const JsonObject& theKey) noexcept {
 		if (this->theType != ValueType::Null) {
 			this->theValue.destroy(this->theType);
@@ -296,56 +348,14 @@ namespace DiscordCoreAPI {
 		*this = theKey;
 	}
 
-	JsonObject& JsonObject::operator=(JsonObject&& theKey) noexcept {
-		if (this->theType != ValueType::Null) {
-			this->theValue.destroy(this->theType);
-		}
-		switch (theKey.theType) {
-			case ValueType::Object: {
-				this->theValue = ValueType::Object;
-				for (auto& [key, value]: *theKey.theValue.object) {
-					this->theValue.object->emplace(key, std::move(value));
-				}
-				break;
-			}
-			case ValueType::Array: {
-				this->theValue = ValueType::Array;
-				for (auto& value: *theKey.theValue.array) {
-					this->theValue.array->emplace_back(std::move(value));
-				}
-				break;
-			}
-			case ValueType::String: {
-				this->theValue = ValueType::String;
-				*this->theValue.string = std::move(*theKey.theValue.string);
-				break;
-			}
-			case ValueType::Bool: {
-				this->theValue.boolean = theKey.theValue.boolean;
-				break;
-			}
-			case ValueType::Int64: {
-				this->theValue.numberInt = theKey.theValue.numberInt;
-				break;
-			}
-			case ValueType::Uint64: {
-				this->theValue.numberUint = theKey.theValue.numberUint;
-				break;
-			}
-			case ValueType::Float: {
-				this->theValue.numberDouble = theKey.theValue.numberDouble;
-				break;
-			}
-			case ValueType::Null: {
-				break;
-			}
-		}
-		this->theType = theKey.theType;
+	JsonObject& JsonObject::operator=(String&& theData) noexcept {
+		this->theValue = std::move(theData);
+		this->theType = ValueType::String;
 		return *this;
 	}
 
-	JsonObject::JsonObject(JsonObject&& theKey) noexcept {
-		*this = std::move(theKey);
+	JsonObject::JsonObject(String&& theData) noexcept {
+		*this = std::move(theData);
 	}
 
 	JsonObject& JsonObject::operator=(const String& theData) noexcept {
@@ -356,16 +366,6 @@ namespace DiscordCoreAPI {
 
 	JsonObject::JsonObject(const String& theData) noexcept {
 		*this = theData;
-	}
-
-	JsonObject& JsonObject::operator=(String&& theData) noexcept {
-		this->theValue = std::move(theData);
-		this->theType = ValueType::String;
-		return *this;
-	}
-
-	JsonObject::JsonObject(String&& theData) noexcept {
-		*this = std::move(theData);
 	}
 
 	JsonObject& JsonObject::operator=(const char* theData) noexcept {
@@ -557,10 +557,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	JsonObject::~JsonObject() noexcept {
-		this->theValue.destroy(this->theType);
-	}
-
 	JsonObject::operator String() const noexcept {
 		String theString{};
 		switch (this->theType) {
@@ -717,6 +713,10 @@ namespace DiscordCoreAPI {
 			}
 		}
 		return theString;
+	}
+
+	JsonObject::~JsonObject() noexcept {
+		this->theValue.destroy(this->theType);
 	}
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const String& (*theFunction)( void )) {

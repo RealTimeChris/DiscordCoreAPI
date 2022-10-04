@@ -295,17 +295,17 @@ namespace DiscordCoreAPI {
 		JsonObject& operator=(EnumConverter theData) noexcept;
 		JsonObject(EnumConverter) noexcept;
 
-		JsonObject& operator=(const JsonObject& theKey) noexcept;
-		JsonObject(const JsonObject& theKey) noexcept;
-
 		JsonObject& operator=(JsonObject&& theKey) noexcept;
 		JsonObject(JsonObject&& theKey) noexcept;
 
-		JsonObject& operator=(const StringType& theData) noexcept;
-		JsonObject(const StringType&) noexcept;
+		JsonObject& operator=(const JsonObject& theKey) noexcept;
+		JsonObject(const JsonObject& theKey) noexcept;
 
 		JsonObject& operator=(StringType&& theData) noexcept;
 		JsonObject(StringType&&) noexcept;
+
+		JsonObject& operator=(const StringType& theData) noexcept;
+		JsonObject(const StringType&) noexcept;
 
 		JsonObject& operator=(const char* theData) noexcept;
 		JsonObject(const char* theData) noexcept;
