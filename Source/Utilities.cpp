@@ -535,17 +535,6 @@ namespace DiscordCoreAPI {
 		throw std::runtime_error{ "Sorry, but that item-key could not be produced/accessed." };
 	}
 
-	void JsonObject::pushBack(JsonObject& other) noexcept {
-		if (this->theType == ValueType::Null) {
-			this->theType = ValueType::Array;
-			this->theValue = ValueType::Array;
-		}
-
-		if (this->theType == ValueType::Array) {
-			this->theValue.array->emplace_back(std::move(other));
-		}
-	};
-
 	void JsonObject::pushBack(JsonObject&& other) noexcept {
 		if (this->theType == ValueType::Null) {
 			this->theType = ValueType::Array;
@@ -555,13 +544,24 @@ namespace DiscordCoreAPI {
 		if (this->theType == ValueType::Array) {
 			this->theValue.array->emplace_back(std::move(other));
 		}
-	};
+	}
+
+	void JsonObject::pushBack(JsonObject& other) noexcept {
+		if (this->theType == ValueType::Null) {
+			this->theType = ValueType::Array;
+			this->theValue = ValueType::Array;
+		}
+
+		if (this->theType == ValueType::Array) {
+			this->theValue.array->emplace_back(std::move(other));
+		}
+	}
 
 	JsonObject::~JsonObject() noexcept {
 		this->theValue.destroy(this->theType);
 	}
 
-	JsonObject::operator String() noexcept {
+	JsonObject::operator String() const noexcept {
 		String theString{};
 		switch (this->theType) {
 			case ValueType::Object: {
@@ -640,7 +640,7 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
-	JsonObject::operator String() const noexcept {
+	JsonObject::operator String() noexcept {
 		String theString{};
 		switch (this->theType) {
 			case ValueType::Object: {
