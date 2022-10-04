@@ -170,20 +170,19 @@ namespace DiscordCoreAPI {
 				String theString{ theData };
 				theString.reserve(theString.size() + simdjson::SIMDJSON_PADDING);
 				simdjson::ondemand::parser theParser{};
-				auto theDocument = theParser.iterate(theString.data(), theString.length(), theString.capacity());
-
-				auto thePayload = theDocument.get_value().value();
-				DiscordCoreInternal::WebSocketMessage theMessage{ thePayload };
+				DiscordCoreInternal::WebSocketMessage theMessage{};
+				simdjson::ondemand::value theValue{};
+				if (theParser.iterate(theString.data(), theString.length(), theString.capacity()).get(theValue) == simdjson::error_code::SUCCESS) {
+					theMessage = DiscordCoreInternal::WebSocketMessage{ theValue };
+				}
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theData << reset() << endl << endl;
 				}
-				simdjson::ondemand::value theD{};
-				thePayload["d"].get(theD);
 				if (theMessage.op != 0) {
 					switch (theMessage.op) {
 						case 2: {
-							VoiceSocketReadyData theData{ theD };
+							VoiceSocketReadyData theData{ theMessage.d };
 							this->audioSSRC = theData.ssrc;
 							this->voiceIp = theData.ip;
 							this->port = theData.port;
@@ -192,7 +191,7 @@ namespace DiscordCoreAPI {
 							return true;
 						}
 						case 4: {
-							auto theArray = getArray(theD, "secret_key");
+							auto theArray = getArray(theMessage.d, "secret_key");
 							if (theArray.didItSucceed) {
 								String theSecretKey{};
 								for (auto iterator: theArray.theArray) {
@@ -204,9 +203,9 @@ namespace DiscordCoreAPI {
 							return true;
 						}
 						case 5: {
-							Uint32 ssrc = getUint32(theD, "ssrc");
+							Uint32 ssrc = getUint32(theMessage.d, "ssrc");
 							VoiceUser theUser{};
-							theUser.theUserId = stoull(getString(theD, "user_id"));
+							theUser.theUserId = stoull(getString(theMessage.d, "user_id"));
 							theLock00.lock();
 							this->voiceUsers[ssrc] = std::move(theUser);
 							return true;
@@ -216,14 +215,14 @@ namespace DiscordCoreAPI {
 							return true;
 						}
 						case 8: {
-							auto theHeartBeat = static_cast<Uint32>(getFloat(theD, "heartbeat_interval"));
+							auto theHeartBeat = static_cast<Uint32>(getFloat(theMessage.d, "heartbeat_interval"));
 							this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ theHeartBeat } };
 							this->areWeHeartBeating = true;
 							this->connectionState.store(VoiceConnectionState::Sending_Identify);
 							return true;
 						}
 						case 13: {
-							auto theUserId = stoull(getString(theD, "user_id"));
+							auto theUserId = stoull(getString(theMessage.d, "user_id"));
 							for (auto& [key, value]: this->voiceUsers) {
 								if (theUserId == value.theUserId) {
 									theLock00.lock();
