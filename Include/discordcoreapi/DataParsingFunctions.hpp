@@ -33,17 +33,6 @@
 
 namespace DiscordCoreAPI {
 
-	static std::map<Int32, String> theErrors{ { 0, "SUCCESS" }, { 1, "CAPACITY" }, { 2, "MEMALLOC" }, { 3, "TAPE_ERRPR" }, { 4, "DEPTH_ERROR" }, { 5, "STRING_ERROR" },
-		{ 6, "T_ATOM_ERROR" }, { 7, "F_ATOM_ERROR" }, { 8, "N_ATOM_ERROR" }, { 9, "NUMBER_ERROR" }, { 10, "UTF8_ERROR" }, { 11, "UNINITIALIZED" }, { 12, "EMPTY" },
-		{ 13, "UNESCAPED_CHARS" }, { 14, "UNCLOSED_STRING" }, { 15, "UNSUPPORTED_ARCHITECTURE" }, { 16, "INCORRECT_TYPE" }, { 17, "NUMBER_OUT_OF_RANGE" },
-		{ 18, "INDEX_OUT_OF_BOUNDS" }, { 19, "NO_SUCH_FIELD" }, { 20, "IO_ERROR" }, { 21, "INVALID_JSON_POINTER" }, { 22, "INVALID_URI_FRAGMENT" }, { 23, "UNEXPECTED_ERROR" },
-		{ 24, "PARSER_IN_USE" }, { 25, "OUT_OF_ORDER_ITERATION" }, { 26, "INSUFFICIENT_PADDING" }, { 27, "INCOMPLETE_ARRAY_OR_OBJECT" }, { 28, "SCALAR_DOCUMENT_AS_VALUE" },
-		{ 29, "OUT_OF_BOUNDS" }, { 30, "NUM_ERROR_CODES " } };
-
-	struct JsonParseError : public std::runtime_error {
-		explicit JsonParseError(Int32 theCode);
-	};
-
 	struct DiscordCoreAPI_Dll ObjectReturnData {
 		simdjson::ondemand::value theObject{};
 		Bool didItSucceed{ false };
@@ -58,17 +47,17 @@ namespace DiscordCoreAPI {
 
 	Snowflake getId(simdjson::ondemand::value jsonObjectData);
 
-	Bool getBool(simdjson::ondemand::value jsonData, const char* theKey);
-
-	Uint8 getUint8(simdjson::ondemand::value jsonData, const char* theKey);
-
-	Uint16 getUint16(simdjson::ondemand::value jsonData, const char* theKey);
+	Uint64 getUint64(simdjson::ondemand::value jsonData, const char* theKey);
 
 	Uint32 getUint32(simdjson::ondemand::value jsonData, const char* theKey);
 
+	Uint16 getUint16(simdjson::ondemand::value jsonData, const char* theKey);
+
+	Uint8 getUint8(simdjson::ondemand::value jsonData, const char* theKey);
+
 	Float getFloat(simdjson::ondemand::value jsonData, const char* theKey);
 
-	Uint64 getUint64(simdjson::ondemand::value jsonData, const char* theKey);
+	Bool getBool(simdjson::ondemand::value jsonData, const char* theKey);
 
 	String getString(simdjson::ondemand::value jsonData, const char* theKey);
 
@@ -76,15 +65,15 @@ namespace DiscordCoreAPI {
 
 	String getString(simdjson::ondemand::value jsonData);
 
-	ObjectReturnData getObject(ArrayReturnData jsonObjectData, Uint64 objectIndex);
-
 	ObjectReturnData getObject(simdjson::ondemand::value jsonObjectData, const char* objectName);
 
 	ObjectReturnData getObject(ObjectReturnData jsonObjectData, const char* objectName);
 
-	ArrayReturnData getArray(ObjectReturnData jsonObjectData, const char* arrayName);
+	ObjectReturnData getObject(ArrayReturnData jsonObjectData, Uint64 objectIndex);
 
 	ArrayReturnData getArray(simdjson::ondemand::value jsonObjectData, const char* arrayName);
+
+	ArrayReturnData getArray(ObjectReturnData jsonObjectData, const char* arrayName);
 
 };
 #endif
