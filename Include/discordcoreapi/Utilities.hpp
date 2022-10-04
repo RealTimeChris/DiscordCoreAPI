@@ -343,8 +343,6 @@ namespace DiscordCoreAPI {
 		JsonObject& operator=(Bool theData) noexcept;
 		JsonObject(Bool) noexcept;
 
-		JsonObject(const char*, ValueType) noexcept;
-
 		JsonObject& operator=(ValueType) noexcept;
 
 		JsonObject& operator[](Uint64 idx) const;

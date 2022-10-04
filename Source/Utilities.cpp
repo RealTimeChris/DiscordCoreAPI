@@ -488,11 +488,6 @@ namespace DiscordCoreAPI {
 		*this = theData;
 	}
 
-	JsonObject::JsonObject(const char* theKey, ValueType theType) noexcept {
-		this->theType = theType;
-		this->theValue = this->theType;
-	}
-
 	JsonObject& JsonObject::operator=(ValueType theType) noexcept {
 		this->theValue = theType;
 		this->theType = theType;
