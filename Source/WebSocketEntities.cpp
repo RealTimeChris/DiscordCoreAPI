@@ -454,6 +454,7 @@ namespace DiscordCoreInternal {
 							}
 						} else {
 							std::string theData{ theDataNew };
+							payload = theData;
 							theData.reserve(theData.size() + simdjson::SIMDJSON_PADDING);
 							theMessage = WebSocketMessage{ this->theParser.iterate(simdjson::padded_string_view(theData.data(), theData.length(), theData.capacity())) };
 						}
@@ -465,7 +466,7 @@ namespace DiscordCoreInternal {
 						}
 						if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 							cout << DiscordCoreAPI::shiftToBrightGreen()
-								 << "Message received from WebSocket [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + String(": ") << theDataNew
+								 << "Message received from WebSocket [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + String(": ") << payload
 								 << DiscordCoreAPI::reset() << endl
 								 << endl;
 						}
@@ -1440,7 +1441,7 @@ namespace DiscordCoreInternal {
 				} catch (...) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
-						cout << "The payload: " << theDataNew << std::endl;
+						cout << "The payload: " << payload << std::endl;
 					}
 					this->inputBuffer.clear();
 					return false;
