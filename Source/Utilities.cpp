@@ -824,14 +824,11 @@ namespace DiscordCoreAPI {
 	}
 
 	StringWrapper& StringWrapper::operator=(StringWrapper&& other) noexcept {
-		if (this != &other && other.thePtr) {
+		if (this != &other) {
 			this->thePtr.reset(nullptr);
 			this->thePtr = std::move(other.thePtr);
 			other.thePtr.reset(nullptr);
 			other.thePtr = nullptr;
-		} else {
-			this->thePtr = std::make_unique<char[]>(1);
-			this->thePtr[0] = '\0';
 		}
 		return *this;
 	}
@@ -841,7 +838,7 @@ namespace DiscordCoreAPI {
 	}
 
 	StringWrapper& StringWrapper::operator=(const StringWrapper& other) {
-		if (this != &other && other.thePtr) {
+		if (this != &other) {
 			this->thePtr.reset(nullptr);
 			StringStream theStream{};
 			if (other.thePtr) {
@@ -852,9 +849,6 @@ namespace DiscordCoreAPI {
 			for (Uint64 x = 0; x < theLength; ++x) {
 				this->thePtr[x] = other.thePtr[x];
 			}
-		} else {
-			this->thePtr = std::make_unique<char[]>(1);
-			this->thePtr[0] = '\0';
 		}
 		return *this;
 	}

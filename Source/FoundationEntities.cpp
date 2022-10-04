@@ -174,15 +174,14 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketMessage::WebSocketMessage(simdjson::ondemand::value jsonObjectData) {
-		std::cout << "WERE LEAVING 0101" << std::endl;
 		this->op = DiscordCoreAPI::getUint32(jsonObjectData, "op");
-		std::cout << "WERE LEAVING 0202" << std::endl;
+
 		this->s = DiscordCoreAPI::getUint32(jsonObjectData, "s");
-		std::cout << "WERE LEAVING 0303" << std::endl;
+
 		this->t = DiscordCoreAPI::getString(jsonObjectData, "t");
-		std::cout << "WERE LEAVING 0404" << std::endl;
+
 		simdjson::ondemand::value theValue{};
-		std::cout << "WERE LEAVING 0505" << std::endl;
+
 		if (jsonObjectData["d"].get(theValue) == simdjson::error_code::SUCCESS) {
 			this->d = theValue;
 		} else {
