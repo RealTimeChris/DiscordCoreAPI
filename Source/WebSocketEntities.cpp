@@ -1438,6 +1438,9 @@ namespace DiscordCoreInternal {
 								this->haveWeReceivedHeartbeatAck = true;
 								break;
 							}
+							default: {
+								break;
+							}
 						}
 					} else {
 						returnValue = false;
