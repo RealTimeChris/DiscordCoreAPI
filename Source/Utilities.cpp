@@ -1012,7 +1012,7 @@ namespace DiscordCoreAPI {
 				return 0;
 			}
 		}
-		if (theString != "") {
+		if (!theString.empty() && theString != "") {
 			return stoull(theString);
 		} else {
 			return 0;
