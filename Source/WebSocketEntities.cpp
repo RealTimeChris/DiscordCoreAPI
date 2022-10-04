@@ -344,6 +344,9 @@ namespace DiscordCoreInternal {
 	void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
 		if (this->currentState.load() == SSLShardState::Authenticated) {
 			try {
+				while (!this->areWeStillConnected()) {
+					std::this_thread::sleep_for(1ms);
+				}
 				Int32 theCurrentIndex = this->shard[0];
 				DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 				dataPackage.channelId = 0;
