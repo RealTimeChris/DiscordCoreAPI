@@ -509,7 +509,7 @@ namespace DiscordCoreInternal {
 	String ErlPacker::parseSmallAtomExt() {
 		Uint8 length = this->readBits<Uint8>();
 		auto lengthNew = this->readString(length);
-		return this->processAtom(this->bufferString.data(), length);
+		return this->processAtom(this->bufferString.data(), lengthNew);
 	};
 
 	String ErlPacker::parseStringAsList() {

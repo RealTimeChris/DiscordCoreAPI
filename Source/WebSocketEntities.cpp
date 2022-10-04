@@ -342,46 +342,44 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
-		if (this->currentState.load() == SSLShardState::Authenticated) {
-			try {
-				while (!this->areWeStillConnected()) {
-					std::this_thread::sleep_for(1ms);
-				}
-				Int32 theCurrentIndex = this->shard[0];
-				DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
-				dataPackage.channelId = 0;
-				dataPackage.guildId = static_cast<VoiceConnectInitData>(doWeCollect).guildId;
-				dataPackage.selfDeaf = doWeCollect.selfDeaf;
-				dataPackage.selfMute = doWeCollect.selfMute;
-				this->userId = doWeCollect.userId;
-				String theString = this->stringifyJsonData(dataPackage, this->dataOpCode);
-				Bool didWeWrite{ false };
-				if (!this->sendMessage(theString, true)) {
-					return;
-				}
-				if (DiscordCoreAPI::Snowflake{ doWeCollect.channelId } == 0) {
-					return;
-				}
-				dataPackage.channelId = static_cast<VoiceConnectInitData>(doWeCollect).channelId;
-				String theString02 = this->stringifyJsonData(dataPackage, this->dataOpCode);
-				this->areWeCollectingData = true;
-				if (!this->sendMessage(theString02, true)) {
-					return;
-				}
-				DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
-				while (this->areWeCollectingData) {
-					if (theStopWatch.hasTimePassed()) {
-						break;
-					}
-					std::this_thread::sleep_for(1ms);
-				}
-			} catch (...) {
-				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
-				}
-				this->onClosed();
+		try {
+			while (this->currentState.load() != SSLShardState::Authenticated) {
+				std::this_thread::sleep_for(1ms);
 			}
-		}
+			Int32 theCurrentIndex = this->shard[0];
+			DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
+			dataPackage.channelId = 0;
+			dataPackage.guildId = static_cast<VoiceConnectInitData>(doWeCollect).guildId;
+			dataPackage.selfDeaf = doWeCollect.selfDeaf;
+			dataPackage.selfMute = doWeCollect.selfMute;
+			this->userId = doWeCollect.userId;
+			String theString = this->stringifyJsonData(dataPackage, this->dataOpCode);
+			Bool didWeWrite{ false };
+			if (!this->sendMessage(theString, true)) {
+				return;
+			}
+			if (DiscordCoreAPI::Snowflake{ doWeCollect.channelId } == 0) {
+				return;
+			}
+			dataPackage.channelId = static_cast<VoiceConnectInitData>(doWeCollect).channelId;
+			String theString02 = this->stringifyJsonData(dataPackage, this->dataOpCode);
+			this->areWeCollectingData = true;
+			if (!this->sendMessage(theString02, true)) {
+				return;
+			}
+			DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theStopWatch{ 5500ms };
+			while (this->areWeCollectingData) {
+				if (theStopWatch.hasTimePassed()) {
+					break;
+				}
+				std::this_thread::sleep_for(1ms);
+			}
+		} catch (...) {
+			if (this->configManager->doWePrintWebSocketErrorMessages()) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::getVoiceConnectionData()");
+			}
+			this->onClosed();
+		}		
 	}
 
 	Bool WebSocketSSLShard::sendMessage(String& dataToSend, Bool priority) noexcept {
