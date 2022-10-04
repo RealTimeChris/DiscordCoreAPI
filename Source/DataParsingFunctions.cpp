@@ -50,6 +50,10 @@ namespace DiscordCoreAPI {
 		return Snowflake{ DiscordCoreAPI::strtoull(getString(jsonData, theKey)) };
 	}
 
+	Snowflake getId(simdjson::ondemand::value jsonObjectData) {
+		return Snowflake{ DiscordCoreAPI::strtoull(getString(jsonObjectData)) };
+	}
+
 	Float getFloat(simdjson::ondemand::value jsonData, const char* theKey) {
 		Double theValue{};
 		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
@@ -107,6 +111,15 @@ namespace DiscordCoreAPI {
 	String getString(simdjson::ondemand::value jsonData, const char* theKey) {
 		StringView theValue{};
 		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
+			return String{ theValue.data(), theValue.size() };
+		} else {
+			return "";
+		}
+	}
+
+	String getString(simdjson::ondemand::value jsonData) {
+		StringView theValue{};
+		if (jsonData.get(theValue) == simdjson::error_code::SUCCESS) {
 			return String{ theValue.data(), theValue.size() };
 		} else {
 			return "";
