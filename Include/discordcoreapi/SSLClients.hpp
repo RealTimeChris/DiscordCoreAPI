@@ -61,14 +61,15 @@
 	#include <sys/socket.h>
 	#include <sys/types.h>
 	#include <unistd.h>
-using SOCKET = int32_t;
 #endif
 
 namespace DiscordCoreInternal {
 
 #ifndef SOCKET_ERROR
-	#define SOCKET_ERROR -1
+	#define SOCKET_ERROR (-1)
 #endif
+
+	using SOCKET = Int32;
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
 		std::unordered_map<Uint32, pollfd> thePolls{};
