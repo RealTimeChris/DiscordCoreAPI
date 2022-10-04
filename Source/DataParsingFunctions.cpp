@@ -52,36 +52,6 @@ namespace DiscordCoreAPI {
 		return Snowflake{ DiscordCoreAPI::strtoull(getString(jsonObjectData)) };
 	}
 
-	Uint64 getUint64(simdjson::ondemand::value jsonData, const char* theKey);
-
-	Uint32 getUint32(simdjson::ondemand::value jsonData, const char* theKey);
-
-	Uint16 getUint16(simdjson::ondemand::value jsonData, const char* theKey);
-
-	Uint8 getUint8(simdjson::ondemand::value jsonData, const char* theKey);
-
-	Float getFloat(simdjson::ondemand::value jsonData, const char* theKey);
-
-	Bool getBool(simdjson::ondemand::value jsonData, const char* theKey);
-
-	String getString(simdjson::ondemand::value jsonData, const char* theKey);
-
-	String getString(ObjectReturnData jsonData, const char* theKey);
-
-	String getString(simdjson::ondemand::value jsonData);
-
-	ObjectReturnData getObject(simdjson::ondemand::value jsonObjectData, const char* objectName);
-
-	ObjectReturnData getObject(ObjectReturnData jsonObjectData, const char* objectName);
-
-	ObjectReturnData getObject(ArrayReturnData jsonObjectData, Uint64 objectIndex);
-
-	ArrayReturnData getArray(simdjson::ondemand::value jsonObjectData, const char* arrayName);
-
-	ArrayReturnData getArray(ObjectReturnData jsonObjectData, const char* arrayName);
-
-
-
 	Uint64 getUint64(simdjson::ondemand::value jsonData, const char* theKey) {
 		Uint64 theValue{};
 		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
@@ -156,6 +126,86 @@ namespace DiscordCoreAPI {
 	String getString(simdjson::ondemand::value jsonData) {
 		StringView theValue{};
 		if (jsonData.get(theValue) == simdjson::error_code::SUCCESS) {
+			return String{ theValue.data(), theValue.size() };
+		} else {
+			return "";
+		}
+	}
+
+	Snowflake getId(simdjson::ondemand::object jsonData, const char* theKey) {
+		return Snowflake{ DiscordCoreAPI::strtoull(getString(jsonData, theKey)) };
+	}
+
+	Snowflake getId(simdjson::ondemand::object jsonObjectData) {
+		return Snowflake{ DiscordCoreAPI::strtoull(getString(jsonObjectData)) };
+	}
+
+	Uint64 getUint64(simdjson::ondemand::object jsonData, const char* theKey) {
+		Uint64 theValue{};
+		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
+			return Uint64{ theValue };
+		} else {
+			return 0;
+		}
+	}
+
+	Uint32 getUint32(simdjson::ondemand::object jsonData, const char* theKey) {
+		Uint64 theValue{};
+		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
+			return static_cast<Uint32>(theValue);
+		} else {
+			return 0;
+		}
+	}
+
+	Uint16 getUint16(simdjson::ondemand::object jsonData, const char* theKey) {
+		Uint64 theValue{};
+		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
+			return static_cast<Uint16>(theValue);
+		} else {
+			return 0;
+		}
+	}
+
+	Uint8 getUint8(simdjson::ondemand::object jsonData, const char* theKey) {
+		Uint64 theValue{};
+		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
+			return static_cast<Uint8>(theValue);
+		} else {
+			return 0;
+		}
+	}
+
+	Float getFloat(simdjson::ondemand::object jsonData, const char* theKey) {
+		Double theValue{};
+		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
+			return Double{ theValue };
+		} else {
+			return 0.0f;
+		}
+	}
+
+	Bool getBool(simdjson::ondemand::object jsonData, const char* theKey) {
+		Bool theValue{};
+		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
+			return Bool{ theValue };
+		} else {
+			return false;
+		}
+	}
+
+	String getString(simdjson::ondemand::object jsonData, const char* theKey) {
+		StringView theValue{};
+		if (jsonData[theKey].get(theValue) == simdjson::error_code::SUCCESS) {
+			return String{ theValue.data(), theValue.size() };
+		} else {
+			return "";
+		}
+	}
+
+	String getString(simdjson::ondemand::object jsonData) {
+		StringView theValue{};
+		if (jsonData.begin().value().operator*().value().get(theValue) == simdjson::error_code::SUCCESS) {
 			return String{ theValue.data(), theValue.size() };
 		} else {
 			return "";

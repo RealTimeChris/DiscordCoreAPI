@@ -174,14 +174,17 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketMessage::WebSocketMessage(simdjson::ondemand::value jsonObjectData) {
-		this->op = DiscordCoreAPI::getUint32(jsonObjectData, "op");
+		simdjson::ondemand::object theValue{};
+		if (jsonObjectData.get(theValue) == simdjson::error_code::SUCCESS) {
+			this->op = DiscordCoreAPI::getUint32(theValue, "op");
 
-		this->s = DiscordCoreAPI::getUint32(jsonObjectData, "s");
+			this->s = DiscordCoreAPI::getUint32(theValue, "s");
 
-		this->t = DiscordCoreAPI::getString(jsonObjectData, "t");
+			this->t = DiscordCoreAPI::getString(theValue, "t");
 
-		if (jsonObjectData["d"].get(this->d) != simdjson::error_code::SUCCESS) {
-			throw std::runtime_error{ "Failed to collect the 'd'." };
+			if (jsonObjectData["d"].get(this->d) != simdjson::error_code::SUCCESS) {
+				throw std::runtime_error{ "Failed to collect the 'd'." };
+			}
 		}
 	}
 

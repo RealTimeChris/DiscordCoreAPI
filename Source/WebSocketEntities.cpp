@@ -175,7 +175,7 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketMessageHandler::WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManagerNew, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew,
-		String typeOfWebSocketNew) {		
+		String typeOfWebSocketNew) {
 		this->typeOfWebSocket = typeOfWebSocketNew;
 		this->theConnections = theConnectionsNew;
 		this->configManager = configManagerNew;
@@ -450,7 +450,6 @@ namespace DiscordCoreInternal {
 									simdjson::error_code::SUCCESS) {
 									theMessage = WebSocketMessage{ theValue };
 								}
-
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
@@ -1444,7 +1443,7 @@ namespace DiscordCoreInternal {
 	void WebSocketMessageHandler::checkForAndSendHeartBeat(Bool isImmediate) noexcept {
 		try {
 			if ((this->currentState.load() == SSLShardState::Authenticated && this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
-				String theString{}; 
+				String theString{};
 				if (this->typeOfWebSocket != "Voice WebSocket") {
 					DiscordCoreAPI::JsonObject heartbeat{};
 					heartbeat["d"] = this->lastNumberReceived;

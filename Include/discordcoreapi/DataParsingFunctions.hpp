@@ -65,6 +65,28 @@ namespace DiscordCoreAPI {
 
 	String getString(simdjson::ondemand::value jsonData);
 
+	Snowflake getId(simdjson::ondemand::object jsonObjectData, const char* theKey);
+
+	Snowflake getId(simdjson::ondemand::object jsonObjectData);
+
+	Uint64 getUint64(simdjson::ondemand::object jsonData, const char* theKey);
+
+	Uint32 getUint32(simdjson::ondemand::object jsonData, const char* theKey);
+
+	Uint16 getUint16(simdjson::ondemand::object jsonData, const char* theKey);
+
+	Uint8 getUint8(simdjson::ondemand::object jsonData, const char* theKey);
+
+	Float getFloat(simdjson::ondemand::object jsonData, const char* theKey);
+
+	Bool getBool(simdjson::ondemand::object jsonData, const char* theKey);
+
+	String getString(simdjson::ondemand::object jsonData, const char* theKey);
+
+	String getString(ObjectReturnData jsonData, const char* theKey);
+
+	String getString(simdjson::ondemand::object jsonData);
+
 	ObjectReturnData getObject(simdjson::ondemand::value jsonObjectData, const char* objectName);
 
 	ObjectReturnData getObject(ObjectReturnData jsonObjectData, const char* objectName);
