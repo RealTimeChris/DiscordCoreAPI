@@ -78,15 +78,11 @@ namespace DiscordCoreInternal {
 		Uint64 offSet{};
 		Uint64 size{};
 
-		void singleValueJsonToETF(DiscordCoreAPI::JsonObject dataToParse);
+		void singleValueJsonToETF(DiscordCoreAPI::JsonObject&& dataToParse);
 
-		void writeObject(DiscordCoreAPI::JsonObject::ObjectType jsonData);
+		void writeObject(DiscordCoreAPI::JsonObject::ObjectType&& jsonData);
 
-		void writeString(DiscordCoreAPI::JsonObject::StringType jsonData);
-
-		void writeNullExt();
-
-		void writeNull();
+		void writeString(DiscordCoreAPI::JsonObject::StringType&& jsonData);
 
 		void writeInt(DiscordCoreAPI::JsonObject::IntType jsonData);
 
@@ -94,13 +90,17 @@ namespace DiscordCoreInternal {
 
 		void writeFloat(DiscordCoreAPI::JsonObject::FloatType jsonData);
 
-		void writeArray(DiscordCoreAPI::JsonObject::ArrayType jsonData);
+		void writeArray(DiscordCoreAPI::JsonObject::ArrayType&& jsonData);
 
-		void writeBool(DiscordCoreAPI::JsonObject ::BoolType jsonData);
+		void writeBool(DiscordCoreAPI::JsonObject::BoolType jsonData);
 
-		void writeToBuffer(const String&);
+		void writeNullExt();
 
-		void appendBinaryExt(const String&, Uint32);
+		void writeNull();
+
+		void writeToBuffer(String&&);
+
+		void appendBinaryExt(String&&, Uint32);
 
 		void appendUnsignedLongLong(Uint64);
 
