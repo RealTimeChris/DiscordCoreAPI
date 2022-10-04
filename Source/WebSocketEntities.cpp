@@ -186,7 +186,6 @@ namespace DiscordCoreInternal {
 			theVector = ErlPacker::parseJsonToEtf(std::move(dataToSend));
 		} else {
 			theVector = static_cast<std::string>(dataToSend);
-			std::cout << "THE FINAL STRING: " << theVector;
 		}
 		this->createHeader(header, theVector.size(), theOpCode);
 		String theVectorNew{};
