@@ -570,9 +570,9 @@ namespace DiscordCoreAPI {
 				Uint64 theIndex{};
 				for (auto iterator = this->theValue.object->cbegin(); iterator != this->theValue.object->cend(); ++iterator) {
 					theString += '\"';
-					theString += std::move(iterator->first);
+					theString += iterator->first;
 					theString += "\":";
-					theString += std::move(iterator->second);
+					theString += iterator->second;
 					if (theIndex < this->theValue.object->size() - 1) {
 						theString += ',';
 					}
@@ -590,7 +590,7 @@ namespace DiscordCoreAPI {
 				theString += '[';
 
 				for (auto iterator = this->theValue.array->cbegin(); iterator != this->theValue.array->cend() - 1; ++iterator) {
-					theString += std::move(*iterator);
+					theString += *iterator;
 					theString += ',';
 				}
 
@@ -649,9 +649,9 @@ namespace DiscordCoreAPI {
 				Uint64 theIndex{};
 				for (auto iterator = this->theValue.object->cbegin(); iterator != this->theValue.object->cend(); ++iterator) {
 					theString += '\"';
-					theString += std::move(iterator->first);
+					theString += iterator->first;
 					theString += "\":";
-					theString += std::move(iterator->second);
+					theString += iterator->second;
 					if (theIndex < this->theValue.object->size() - 1) {
 						theString += ',';
 					}
@@ -669,7 +669,7 @@ namespace DiscordCoreAPI {
 				theString += '[';
 
 				for (auto iterator = this->theValue.array->cbegin(); iterator != this->theValue.array->cend() - 1; ++iterator) {
-					theString += std::move(*iterator);
+					theString += *iterator;
 					theString += ',';
 				}
 
