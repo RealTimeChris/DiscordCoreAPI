@@ -26,9 +26,9 @@
 #pragma once
 
 #ifndef EVENT_ENTITIES
-#define EVENT_ENTITIES
+	#define EVENT_ENTITIES
 
-#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
 
 namespace DiscordCoreInternal {
 

@@ -26,48 +26,48 @@
 #pragma once
 
 #ifndef SSL_CLIENTS
-#define SSL_CLIENTS
+	#define SSL_CLIENTS
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/EventEntities.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/EventEntities.hpp>
 
-#ifndef OPENSSL_NO_DEPRECATED
-	#define OPENSSL_NO_DEPRECATED
-#endif
-
-#include <openssl/err.h>
-#include <openssl/ssl.h>
-
-#ifdef _WIN32
-	#pragma comment(lib, "Ws2_32.lib")
-	#include <WinSock2.h>
-	#include <WS2tcpip.h>
-	#define poll(fd_set, fd_count, timeout) WSAPoll(fd_set, fd_count, timeout)
-	#ifdef max
-		#undef max
+	#ifndef OPENSSL_NO_DEPRECATED
+		#define OPENSSL_NO_DEPRECATED
 	#endif
-	#ifdef min
-		#undef min
+
+	#include <openssl/err.h>
+	#include <openssl/ssl.h>
+
+	#ifdef _WIN32
+		#pragma comment(lib, "Ws2_32.lib")
+		#include <WinSock2.h>
+		#include <WS2tcpip.h>
+		#define poll(fd_set, fd_count, timeout) WSAPoll(fd_set, fd_count, timeout)
+		#ifdef max
+			#undef max
+		#endif
+		#ifdef min
+			#undef min
+		#endif
+	#else
+		#include <fcntl.h>
+		#include <netdb.h>
+		#include <netinet/in.h>
+		#include <netinet/tcp.h>
+		#include <stdint.h>
+		#include <sys/epoll.h>
+		#include <poll.h>
+		#include <arpa/inet.h>
+		#include <sys/socket.h>
+		#include <sys/types.h>
+		#include <unistd.h>
 	#endif
-#else
-	#include <fcntl.h>
-	#include <netdb.h>
-	#include <netinet/in.h>
-	#include <netinet/tcp.h>
-	#include <stdint.h>
-	#include <sys/epoll.h>
-	#include <poll.h>
-	#include <arpa/inet.h>
-	#include <sys/socket.h>
-	#include <sys/types.h>
-	#include <unistd.h>
-#endif
 
 namespace DiscordCoreInternal {
 
-#ifndef SOCKET_ERROR
-	#define SOCKET_ERROR (-1)
-#endif
+	#ifndef SOCKET_ERROR
+		#define SOCKET_ERROR (-1)
+	#endif
 
 	using SOCKET = Int32;
 
@@ -75,7 +75,7 @@ namespace DiscordCoreInternal {
 		std::unordered_map<Uint32, pollfd> thePolls{};
 	};
 
-#ifdef _WIN32
+	#ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADataWrapper {
 		struct DiscordCoreAPI_Dll WSADataDeleter {
 			void operator()(WSADATA* other);
@@ -86,7 +86,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unique_ptr<WSADATA, WSADataDeleter> thePtr{ new WSADATA{}, WSADataDeleter{} };
 	};
-#endif
+	#endif
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
 		struct DiscordCoreAPI_Dll SSL_CTXDeleter {

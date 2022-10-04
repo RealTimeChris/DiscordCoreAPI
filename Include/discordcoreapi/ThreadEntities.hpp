@@ -26,11 +26,11 @@
 #pragma once
 
 #ifndef THREAD_ENTITIES
-#define THREAD_ENTITIES
+	#define THREAD_ENTITIES
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/ChannelEntities.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/CoRoutine.hpp>
+	#include <discordcoreapi/ChannelEntities.hpp>
 
 namespace DiscordCoreAPI {
 

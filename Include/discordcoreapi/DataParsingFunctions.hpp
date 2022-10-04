@@ -26,10 +26,10 @@
 #pragma once
 
 #ifndef DATA_PARSING_FUNCTIONS
-#define DATA_PARSING_FUNCTIONS
+	#define DATA_PARSING_FUNCTIONS
 
-#include <simdjson.h>
-#include <map>
+	#include <simdjson.h>
+	#include <map>
 
 namespace DiscordCoreAPI {
 

@@ -26,10 +26,10 @@
 #pragma once
 
 #ifndef FOUNDATION_ENTITIES
-#define FOUNDATION_ENTITIES
+	#define FOUNDATION_ENTITIES
 
-#include <discordcoreapi/Utilities.hpp>
-#include <discordcoreapi/DataParsingFunctions.hpp>
+	#include <discordcoreapi/Utilities.hpp>
+	#include <discordcoreapi/DataParsingFunctions.hpp>
 
 namespace DiscordCoreInternal {
 

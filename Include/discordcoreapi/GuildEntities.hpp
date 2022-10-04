@@ -26,15 +26,15 @@
 #pragma once
 
 #ifndef GUILD_ENTITIES
-#define GUILD_ENTITIES
+	#define GUILD_ENTITIES
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/VoiceConnection.hpp>
-#include <discordcoreapi/RoleEntities.hpp>
-#include <discordcoreapi/ChannelEntities.hpp>
-#include <discordcoreapi/StickerEntities.hpp>
-#include <discordcoreapi/GuildScheduledEventEntities.hpp>
-#include <discordcoreapi/StageInstanceEntities.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/VoiceConnection.hpp>
+	#include <discordcoreapi/RoleEntities.hpp>
+	#include <discordcoreapi/ChannelEntities.hpp>
+	#include <discordcoreapi/StickerEntities.hpp>
+	#include <discordcoreapi/GuildScheduledEventEntities.hpp>
+	#include <discordcoreapi/StageInstanceEntities.hpp>
 
 namespace DiscordCoreAPI {
 

@@ -26,10 +26,10 @@
 #pragma once
 
 #ifndef WEBHOOK_ENTITIES
-#define WEBHOOK_ENTITIES
+	#define WEBHOOK_ENTITIES
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/MessageEntities.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/MessageEntities.hpp>
 
 namespace DiscordCoreAPI {
 

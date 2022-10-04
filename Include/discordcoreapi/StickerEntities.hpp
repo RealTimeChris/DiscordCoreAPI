@@ -26,10 +26,10 @@
 #pragma once
 
 #ifndef STICKER_ENTITIES
-#define STICKER_ENTITIES
+	#define STICKER_ENTITIES
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/CoRoutine.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
 

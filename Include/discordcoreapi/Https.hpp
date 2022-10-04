@@ -26,10 +26,10 @@
 #pragma once
 
 #ifndef HTTPS
-#define HTTPS
+	#define HTTPS
 
-#include <discordcoreapi/SSLClients.hpp>
-#include <semaphore>
+	#include <discordcoreapi/SSLClients.hpp>
+	#include <semaphore>
 
 namespace DiscordCoreInternal {
 

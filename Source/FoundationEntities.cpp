@@ -179,9 +179,9 @@ namespace DiscordCoreInternal {
 		this->s = DiscordCoreAPI::getUint32(jsonObjectData, "s");
 
 		this->t = DiscordCoreAPI::getString(jsonObjectData, "t");
-		
+
 		if (jsonObjectData["d"].get(this->d) != simdjson::error_code::SUCCESS) {
-			throw std::runtime_error{ "Faile to collect the 'd'." };
+			throw std::runtime_error{ "Failed to collect the 'd'." };
 		}
 	}
 

@@ -26,11 +26,11 @@
 #pragma once
 
 #ifndef THREAD_POOL
-#define THREAD_POOL
+	#define THREAD_POOL
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/Https.hpp>
-#include <coroutine>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/Https.hpp>
+	#include <coroutine>
 
 namespace DiscordCoreAPI {
 	/**

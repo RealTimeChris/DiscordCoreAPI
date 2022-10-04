@@ -26,13 +26,13 @@
 #pragma once
 
 #ifndef VOICE_CONNECTION
-#define VOICE_CONNECTION
+	#define VOICE_CONNECTION
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/AudioEncoder.hpp>
-#include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/WebSocketEntities.hpp>
-#include <sodium.h>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/AudioEncoder.hpp>
+	#include <discordcoreapi/CoRoutine.hpp>
+	#include <discordcoreapi/WebSocketEntities.hpp>
+	#include <sodium.h>
 
 namespace DiscordCoreAPI {
 

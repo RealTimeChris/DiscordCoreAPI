@@ -26,10 +26,10 @@
 #pragma once
 
 #ifndef STAGE_INSTANCE_ENTITIES
-#define STAGE_INSTANCE_ENTITIES
+	#define STAGE_INSTANCE_ENTITIES
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/Https.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 

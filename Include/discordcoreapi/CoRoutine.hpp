@@ -26,10 +26,10 @@
 #pragma once
 
 #ifndef COROUTINE
-#define COROUTINE
+	#define COROUTINE
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/ThreadPool.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/ThreadPool.hpp>
 
 namespace DiscordCoreAPI {
 	/**

@@ -26,15 +26,15 @@
 #pragma once
 
 #ifndef WEBSOCKET_ENTITIES
-#define WEBSOCKET_ENTITIES
+	#define WEBSOCKET_ENTITIES
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/AudioDecoder.hpp>
-#include <discordcoreapi/CommandController.hpp>
-#include <discordcoreapi/ErlPacker.hpp>
-#include <discordcoreapi/EventEntities.hpp>
-#include <discordcoreapi/SSLClients.hpp>
-#include <discordcoreapi/ThreadPool.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/AudioDecoder.hpp>
+	#include <discordcoreapi/CommandController.hpp>
+	#include <discordcoreapi/ErlPacker.hpp>
+	#include <discordcoreapi/EventEntities.hpp>
+	#include <discordcoreapi/SSLClients.hpp>
+	#include <discordcoreapi/ThreadPool.hpp>
 
 namespace DiscordCoreInternal {
 

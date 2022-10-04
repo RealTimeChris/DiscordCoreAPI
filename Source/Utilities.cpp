@@ -1726,8 +1726,7 @@ namespace DiscordCoreInternal {
 			if (this->theSize + theSize < this->theString01.size()) {
 				memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
 				this->theSize += theSize;
-			}
-			else {
+			} else {
 				this->theString01.resize(this->theString01.size() * 2);
 				memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
 				this->theSize += theSize;

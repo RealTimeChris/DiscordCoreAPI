@@ -207,7 +207,7 @@ namespace DiscordCoreInternal {
 		this->writeToBuffer(std::move(bufferNew));
 	}
 
-		void ErlPacker::appendSmallIntegerExt(Uint8 value) {
+	void ErlPacker::appendSmallIntegerExt(Uint8 value) {
 		String bufferNew{ static_cast<Uint8>(ETFTokenType::Small_Integer_Ext), static_cast<char>(value) };
 		this->writeToBuffer(std::move(bufferNew));
 	}

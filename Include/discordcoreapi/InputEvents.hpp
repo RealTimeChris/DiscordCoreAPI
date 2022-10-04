@@ -26,11 +26,11 @@
 #pragma once
 
 #ifndef INPUT_EVENTS
-#define INPUT_EVENTS
+	#define INPUT_EVENTS
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/InteractionEntities.hpp>
-#include <discordcoreapi/MessageEntities.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/InteractionEntities.hpp>
+	#include <discordcoreapi/MessageEntities.hpp>
 
 namespace DiscordCoreAPI {
 

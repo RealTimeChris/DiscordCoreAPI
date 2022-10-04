@@ -26,37 +26,37 @@
 #pragma once
 
 #ifndef DISCORD_CORE_CLIENT
-#define DISCORD_CORE_CLIENT
+	#define DISCORD_CORE_CLIENT
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/ApplicationCommandEntities.hpp>
-#include <discordcoreapi/AutoModerationEntities.hpp>
-#include <discordcoreapi/ChannelEntities.hpp>
-#include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/CommandController.hpp>
-#include <discordcoreapi/EventEntities.hpp>
-#include <discordcoreapi/EventManager.hpp>
-#include <discordcoreapi/GuildEntities.hpp>
-#include <discordcoreapi/GuildMemberEntities.hpp>
-#include <discordcoreapi/GuildScheduledEventEntities.hpp>
-#include <discordcoreapi/Https.hpp>
-#include <discordcoreapi/InputEvents.hpp>
-#include <discordcoreapi/InteractionEntities.hpp>
-#include <discordcoreapi/MessageEntities.hpp>
-#include <discordcoreapi/ReactionEntities.hpp>
-#include <discordcoreapi/RoleEntities.hpp>
-#include <discordcoreapi/SSLClients.hpp>
-#include <discordcoreapi/SongAPI.hpp>
-#include <discordcoreapi/SoundCloudAPI.hpp>
-#include <discordcoreapi/StageInstanceEntities.hpp>
-#include <discordcoreapi/StickerEntities.hpp>
-#include <discordcoreapi/ThreadEntities.hpp>
-#include <discordcoreapi/ThreadPool.hpp>
-#include <discordcoreapi/UserEntities.hpp>
-#include <discordcoreapi/VoiceConnection.hpp>
-#include <discordcoreapi/WebHookEntities.hpp>
-#include <discordcoreapi/WebSocketEntities.hpp>
-#include <discordcoreapi/YouTubeAPI.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/ApplicationCommandEntities.hpp>
+	#include <discordcoreapi/AutoModerationEntities.hpp>
+	#include <discordcoreapi/ChannelEntities.hpp>
+	#include <discordcoreapi/CoRoutine.hpp>
+	#include <discordcoreapi/CommandController.hpp>
+	#include <discordcoreapi/EventEntities.hpp>
+	#include <discordcoreapi/EventManager.hpp>
+	#include <discordcoreapi/GuildEntities.hpp>
+	#include <discordcoreapi/GuildMemberEntities.hpp>
+	#include <discordcoreapi/GuildScheduledEventEntities.hpp>
+	#include <discordcoreapi/Https.hpp>
+	#include <discordcoreapi/InputEvents.hpp>
+	#include <discordcoreapi/InteractionEntities.hpp>
+	#include <discordcoreapi/MessageEntities.hpp>
+	#include <discordcoreapi/ReactionEntities.hpp>
+	#include <discordcoreapi/RoleEntities.hpp>
+	#include <discordcoreapi/SSLClients.hpp>
+	#include <discordcoreapi/SongAPI.hpp>
+	#include <discordcoreapi/SoundCloudAPI.hpp>
+	#include <discordcoreapi/StageInstanceEntities.hpp>
+	#include <discordcoreapi/StickerEntities.hpp>
+	#include <discordcoreapi/ThreadEntities.hpp>
+	#include <discordcoreapi/ThreadPool.hpp>
+	#include <discordcoreapi/UserEntities.hpp>
+	#include <discordcoreapi/VoiceConnection.hpp>
+	#include <discordcoreapi/WebHookEntities.hpp>
+	#include <discordcoreapi/WebSocketEntities.hpp>
+	#include <discordcoreapi/YouTubeAPI.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -159,9 +159,9 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theConnectionStopWatch{ 5300ms };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
-#ifdef _WIN32
+	#ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
-#endif
+	#endif
 		std::deque<ConnectionPackage> theConnections{};
 		CommandController commandController{ this };
 		Bool didWeStartCorrectly{ false };

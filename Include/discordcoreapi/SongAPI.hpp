@@ -26,12 +26,12 @@
 #pragma once
 
 #ifndef SONG_API
-#define SONG_API
+	#define SONG_API
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/EventEntities.hpp>
-#include <discordcoreapi/GuildMemberEntities.hpp>
-#include <discordcoreapi/VoiceConnection.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/EventEntities.hpp>
+	#include <discordcoreapi/GuildMemberEntities.hpp>
+	#include <discordcoreapi/VoiceConnection.hpp>
 
 namespace DiscordCoreAPI {
 

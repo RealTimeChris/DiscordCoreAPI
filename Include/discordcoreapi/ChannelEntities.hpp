@@ -26,10 +26,10 @@
 #pragma once
 
 #ifndef CHANNEL_ENTITIES
-#define CHANNEL_ENTITIES
+	#define CHANNEL_ENTITIES
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/Https.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 

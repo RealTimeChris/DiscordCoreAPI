@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 
 	ArrayReturnData getArray(ObjectReturnData jsonObjectData, const char* arrayName);
 
-	
+
 
 	Uint64 getUint64(simdjson::ondemand::value jsonData, const char* theKey) {
 		Uint64 theValue{};

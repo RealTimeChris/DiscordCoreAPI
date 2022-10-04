@@ -26,14 +26,14 @@
 #pragma once
 
 #ifndef AUDIO_DECODER
-#define AUDIO_DECODER
+	#define AUDIO_DECODER
 
-#include <discordcoreapi/EventEntities.hpp>
-#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/EventEntities.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
 
 extern "C" {
-#include <libavformat/avformat.h>
-#include <libswresample/swresample.h>
+	#include <libavformat/avformat.h>
+	#include <libswresample/swresample.h>
 }
 
 namespace DiscordCoreInternal {

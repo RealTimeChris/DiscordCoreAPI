@@ -26,11 +26,11 @@
 #pragma once
 
 #ifndef YOUTUBE_API
-#define YOUTUBE_API
+	#define YOUTUBE_API
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/AudioDecoder.hpp>
-#include <discordcoreapi/CoRoutine.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/AudioDecoder.hpp>
+	#include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreInternal {
 

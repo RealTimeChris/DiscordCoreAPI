@@ -26,10 +26,10 @@
 #pragma once
 
 #ifndef COMMAND_CONTROLLER
-#define COMMAND_CONTROLLER
+	#define COMMAND_CONTROLLER
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/CoRoutine.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
 

@@ -26,20 +26,20 @@
 #pragma once
 
 #ifndef EVENT_MANAGER
-#define EVENT_MANAGER
+	#define EVENT_MANAGER
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/ApplicationCommandEntities.hpp>
-#include <discordcoreapi/AutoModerationEntities.hpp>
-#include <discordcoreapi/ChannelEntities.hpp>
-#include <discordcoreapi/EventEntities.hpp>
-#include <discordcoreapi/GuildEntities.hpp>
-#include <discordcoreapi/GuildMemberEntities.hpp>
-#include <discordcoreapi/MessageEntities.hpp>
-#include <discordcoreapi/ReactionEntities.hpp>
-#include <discordcoreapi/RoleEntities.hpp>
-#include <discordcoreapi/ThreadEntities.hpp>
-#include <discordcoreapi/UserEntities.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/ApplicationCommandEntities.hpp>
+	#include <discordcoreapi/AutoModerationEntities.hpp>
+	#include <discordcoreapi/ChannelEntities.hpp>
+	#include <discordcoreapi/EventEntities.hpp>
+	#include <discordcoreapi/GuildEntities.hpp>
+	#include <discordcoreapi/GuildMemberEntities.hpp>
+	#include <discordcoreapi/MessageEntities.hpp>
+	#include <discordcoreapi/ReactionEntities.hpp>
+	#include <discordcoreapi/RoleEntities.hpp>
+	#include <discordcoreapi/ThreadEntities.hpp>
+	#include <discordcoreapi/UserEntities.hpp>
 
 namespace DiscordCoreAPI {
 

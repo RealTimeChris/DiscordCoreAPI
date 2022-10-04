@@ -26,8 +26,8 @@
 #pragma once
 
 #ifndef INDEX
-#define INDEX
+	#define INDEX
 
-#include <discordcoreapi/DiscordCoreClient.hpp>
+	#include <discordcoreapi/DiscordCoreClient.hpp>
 
 #endif

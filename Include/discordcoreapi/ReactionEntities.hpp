@@ -26,10 +26,10 @@
 #pragma once
 
 #ifndef REACTION_ENTITIES
-#define REACTION_ENTITIES
+	#define REACTION_ENTITIES
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/UserEntities.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/UserEntities.hpp>
 
 namespace DiscordCoreAPI {
 

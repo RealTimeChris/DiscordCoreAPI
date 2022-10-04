@@ -26,11 +26,11 @@
 #pragma once
 
 #ifndef AUTO_MODERATION_RULE_ENTITIES
-#define AUTO_MODERATION_RULE_ENTITIES
+	#define AUTO_MODERATION_RULE_ENTITIES
 
-#include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/Https.hpp>
+	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <discordcoreapi/CoRoutine.hpp>
+	#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 
