@@ -792,7 +792,7 @@ namespace DiscordCoreAPI {
 
 		StringWrapper(const char* theString);
 
-		operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>();
+		operator String();
 
 		void emplace_back(char theChar);
 

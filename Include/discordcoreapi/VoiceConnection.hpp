@@ -185,15 +185,13 @@ namespace DiscordCoreAPI {
 
 		String encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
 
-		Bool sendTextMessage(String& theMessage, Bool priority) noexcept;
-
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
-		Bool onMessageReceived(StringView theData) noexcept;
+		void sendSpeakingMessage(const Bool isSpeaking) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
-		void sendSpeakingMessage(const Bool isSpeaking) noexcept;
+		Bool onMessageReceived(StringView theData) noexcept;
 
 		void sendVoiceData(String& responseData) noexcept;
 

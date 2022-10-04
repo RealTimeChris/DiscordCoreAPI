@@ -33,6 +33,7 @@ namespace DiscordCoreInternal {
 		this->bufferString.clear();
 		this->offSet = 0;
 		this->size = 0;
+		this->buffer = {};
 		this->appendVersion();
 		this->singleValueJsonToETF(std::move(dataToParse));
 		return this->bufferString;
@@ -79,7 +80,7 @@ namespace DiscordCoreInternal {
 				break;
 			}
 			case DiscordCoreAPI::ValueType::Uint64: {
-				this->writeBool(jsonData.theValue.numberUint);
+				this->writeUint(jsonData.theValue.numberUint);
 				break;
 			}
 			case DiscordCoreAPI::ValueType::String: {
@@ -98,11 +99,11 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlPacker::writeNullExt() {
-		this->writeToBuffer("[]");
+		this->appendNilExt();
 	}
 
 	void ErlPacker::writeNull() {
-		this->writeToBuffer("null");
+		this->appendNil();
 	}
 
 	void ErlPacker::writeObject(DiscordCoreAPI::JsonObject::ObjectType jsonData) {
@@ -206,7 +207,7 @@ namespace DiscordCoreInternal {
 		this->writeToBuffer(bufferNew);
 	}
 
-	void ErlPacker::appendSmallIntegerExt(Uint8 value) {
+		void ErlPacker::appendSmallIntegerExt(Uint8 value) {
 		String bufferNew{ static_cast<Uint8>(ETFTokenType::Small_Integer_Ext), static_cast<char>(value) };
 		this->writeToBuffer(bufferNew);
 	}
@@ -449,7 +450,7 @@ namespace DiscordCoreInternal {
 
 	String ErlPacker::parseBigint(Uint32 digits) {
 		Uint8 sign = this->readBits<Uint8>();
-		if (digits > 8) {
+		if (digits > 128) {
 			throw ErlPackError{ "ErlPacker::parseBigint() Error: Integers larger than 8 bytes are not supported.\n\n" };
 		}
 		Uint64 value = 0;
@@ -616,5 +617,4 @@ namespace DiscordCoreInternal {
 		map += "}";
 		return map;
 	}
-
 }

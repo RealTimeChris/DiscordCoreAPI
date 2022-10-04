@@ -182,18 +182,11 @@ namespace DiscordCoreInternal {
 		String theVector{};
 		String header{};
 
-		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-			cout << DiscordCoreAPI::shiftToBrightBlue()
-				 << "Sending WebSocket [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
-					std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + String("'s Message: ")
-				 << static_cast<std::string>(dataToSend) << endl
-				 << endl
-				 << DiscordCoreAPI::reset();
-		}
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
 			theVector = ErlPacker::parseJsonToEtf(std::move(dataToSend));
 		} else {
 			theVector = static_cast<std::string>(dataToSend);
+			std::cout << "THE FINAL STRING: " << theVector;
 		}
 		this->createHeader(header, theVector.size(), theOpCode);
 		String theVectorNew{};
@@ -346,6 +339,7 @@ namespace DiscordCoreInternal {
 				this->dataOpCode = WebSocketOpCode::Op_Text;
 			}
 		}
+		this->typeOfWebSocket = "WebSocket";
 	}
 
 	void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
@@ -358,7 +352,7 @@ namespace DiscordCoreInternal {
 				dataPackage.selfDeaf = doWeCollect.selfDeaf;
 				dataPackage.selfMute = doWeCollect.selfMute;
 				this->userId = doWeCollect.userId;
-				String theString = this->stringifyJsonData(dataPackage.operator DiscordCoreAPI::JsonObject(), this->dataOpCode);
+				String theString = this->stringifyJsonData(dataPackage, this->dataOpCode);
 				Bool didWeWrite{ false };
 				if (!this->sendMessage(theString, true)) {
 					return;
@@ -393,6 +387,14 @@ namespace DiscordCoreInternal {
 			try {
 				if (dataToSend.size() == 0) {
 					return false;
+				}
+				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+					cout << DiscordCoreAPI::shiftToBrightBlue()
+						 << "Sending " + this->typeOfWebSocket + " [" + std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[0]) + "," +
+							std::to_string(static_cast<WebSocketSSLShard*>(this)->shard[1]) + "]" + String("'s Message: ")
+						 << static_cast<std::string>(dataToSend) << endl
+						 << endl
+						 << DiscordCoreAPI::reset();
 				}
 				ProcessIOResult didWeWrite{ false };
 				DiscordCoreAPI::StopWatch theStopWatch{ 5000ms };
@@ -1463,8 +1465,7 @@ namespace DiscordCoreInternal {
 					DiscordCoreAPI::JsonObject heartbeat{};
 					heartbeat["d"] = this->lastNumberReceived;
 					heartbeat["op"] = 1;
-					String stringReal = heartbeat;
-					String theString = this->stringifyJsonData(stringReal, this->dataOpCode);
+					String theString = this->stringifyJsonData(std::move(heartbeat), this->dataOpCode);
 					if (!this->sendMessage(theString, true)) {
 						return;
 					}

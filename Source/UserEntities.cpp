@@ -114,11 +114,10 @@ namespace DiscordCoreAPI {
 
 	void BotUser::updateVoiceStatus(UpdateVoiceStateData& dataPackage) {
 		if (this->baseSocketAgent) {
-			String payload = dataPackage.operator JsonObject();
 			String theString{};
 			Uint32 shardId = (dataPackage.guildId >> 22) % this->baseSocketAgent->configManager->getTotalShardCount();
 			Uint32 basesocketAgentIndex{ shardId % this->baseSocketAgent->configManager->getTotalShardCount() };
-			theString = this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->stringifyJsonData(payload,
+			theString = this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->stringifyJsonData(dataPackage,
 				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId].get())
 					->dataOpCode);
 			this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->sendMessage(theString, true);
@@ -127,11 +126,10 @@ namespace DiscordCoreAPI {
 
 	void BotUser::updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage) {
 		if (this->baseSocketAgent) {
-			String payload = dataPackage.operator JsonObject();
 			String theString{};
 			Uint32 shardId = 0;
 			Uint32 basesocketAgentIndex{ 0 };
-			theString = this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->stringifyJsonData(payload,
+			theString = this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->stringifyJsonData(dataPackage,
 				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId].get())
 					->dataOpCode);
 			this->baseSocketAgent->discordCoreClient->baseSocketAgentMap[basesocketAgentIndex]->theShardMap[shardId]->sendMessage(theString, true);

@@ -202,6 +202,9 @@ namespace DiscordCoreAPI {
 			case ValueType::Null: {
 				break;
 			}
+			default: {
+				break;
+			}
 		}
 		return *this;
 	}
@@ -279,6 +282,9 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case ValueType::Null: {
+				break;
+			}
+			default: {
 				break;
 			}
 		}
@@ -889,7 +895,7 @@ namespace DiscordCoreAPI {
 		*this = theString;
 	}
 
-	StringWrapper::operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>() {
+	StringWrapper::operator String() {
 		StringStream theStream{};
 		if (this->thePtr) {
 			theStream << this->thePtr;

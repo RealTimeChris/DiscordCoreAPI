@@ -131,6 +131,7 @@ namespace DiscordCoreAPI {
 		: WebSocketSSLShard(BaseSocketAgentNew->discordCoreClient, &this->theConnections, initDataNew.currentShard, this->doWeQuit), DatagramSocketClient(StreamType::None) {
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->baseSocketAgent = BaseSocketAgentNew;
+		this->typeOfWebSocket = "Voice WebSocket";
 		this->voiceConnectInitData = initDataNew;
 		this->configManager = configManagerNew;
 		this->theStreamInfo = streamInfoNew;
@@ -364,16 +365,11 @@ namespace DiscordCoreAPI {
 			theData.type = DiscordCoreInternal::SendSpeakingType::Microphone;
 			theData.delay = 0;
 			theData.ssrc = this->audioSSRC;
-			String newString = theData.operator JsonObject();
-			String theString = this->stringifyJsonData(newString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-			if (!this->sendTextMessage(theString, true)) {
+			String theString = this->stringifyJsonData(theData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+			if (!this->sendMessage(theString, true)) {
 				this->onClosed();
 			}
 		}
-	}
-
-	Bool VoiceConnection::sendTextMessage(String& theMessage, Bool priority) noexcept {
-		return this->sendMessage(theMessage, priority);
 	}
 
 	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
@@ -783,7 +779,7 @@ namespace DiscordCoreAPI {
 					"\r\nSec-WebSocket-Version: 13\r\n\r\n";
 				this->shard[0] = 0;
 				this->shard[1] = 1;
-				if (!this->sendTextMessage(sendVector, true)) {
+				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					this->connectInternal();
@@ -824,9 +820,8 @@ namespace DiscordCoreAPI {
 				DiscordCoreInternal::VoiceIdentifyData identifyData{};
 				identifyData.connectInitData = this->voiceConnectInitData;
 				identifyData.connectionData = this->voiceConnectionData;
-				String theData{ identifyData.operator JsonObject() };
-				String sendVector = this->stringifyJsonData(theData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				if (!this->sendTextMessage(sendVector, true)) {
+				String sendVector = this->stringifyJsonData(identifyData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					this->connectInternal();
@@ -870,9 +865,8 @@ namespace DiscordCoreAPI {
 				protocolPayloadData.voiceEncryptionMode = this->audioEncryptionMode;
 				protocolPayloadData.externalIp = this->externalIp;
 				protocolPayloadData.voicePort = this->port;
-				String protocolPayloadSelectString = protocolPayloadData.operator JsonObject();
-				String sendVector = this->stringifyJsonData(protocolPayloadSelectString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				if (!this->sendTextMessage(sendVector, true)) {
+				String sendVector = this->stringifyJsonData(protocolPayloadData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				if (!this->sendMessage(sendVector, true)) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					this->connectInternal();
@@ -939,9 +933,8 @@ namespace DiscordCoreAPI {
 				JsonObject theData{};
 				theData["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 				theData["op"] = Int32(3);
-				String theNewString{ theData };
-				String theString = this->stringifyJsonData(theNewString, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				if (!this->sendTextMessage(theString, true)) {
+				String theString = this->stringifyJsonData(std::move(theData), DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				if (!this->sendMessage(theString, true)) {
 					this->onClosed();
 				}
 				this->haveWeReceivedHeartbeatAck = false;
@@ -1143,4 +1136,4 @@ namespace DiscordCoreAPI {
 		this->disconnectInternal();
 	}
 
-};
+}
