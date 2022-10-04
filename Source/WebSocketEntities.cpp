@@ -1442,25 +1442,32 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketMessageHandler::checkForAndSendHeartBeat(Bool isImmediate) noexcept {
-		if (this->currentState.load() == SSLShardState::Authenticated) {
-			try {
-				if ((this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
+		try {
+			if ((this->currentState.load() == SSLShardState::Authenticated && this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
+				String theString{}; 
+				if (this->typeOfWebSocket != "Voice WebSocket") {
 					DiscordCoreAPI::JsonObject heartbeat{};
 					heartbeat["d"] = this->lastNumberReceived;
 					heartbeat["op"] = 1;
-					String theString = this->stringifyJsonData(std::move(heartbeat), this->dataOpCode);
-					if (!this->sendMessage(theString, true)) {
-						return;
-					}
-					this->haveWeReceivedHeartbeatAck = false;
-					this->heartBeatStopWatch.resetTimer();
+					theString = this->stringifyJsonData(std::move(heartbeat), this->dataOpCode);
+				} else {
+					DiscordCoreAPI::JsonObject theData{};
+					theData["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+					theData["op"] = 3;
+					String theNewString{ theData };
+					theString = this->stringifyJsonData(std::move(theData), this->dataOpCode);
 				}
-			} catch (...) {
-				if (this->configManager->doWePrintWebSocketErrorMessages()) {
-					DiscordCoreAPI::reportException("BaseSocketAgent::checkForAndSendHeartBeat()");
+				if (!this->sendMessage(theString, true)) {
+					return;
 				}
-				this->onClosed();
+				this->haveWeReceivedHeartbeatAck = false;
+				this->heartBeatStopWatch.resetTimer();
 			}
+		} catch (...) {
+			if (this->configManager->doWePrintWebSocketErrorMessages()) {
+				DiscordCoreAPI::reportException("BaseSocketAgent::checkForAndSendHeartBeat()");
+			}
+			this->onClosed();
 		}
 	}
 

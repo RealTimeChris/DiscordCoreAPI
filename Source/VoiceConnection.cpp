@@ -222,6 +222,7 @@ namespace DiscordCoreAPI {
 							this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ theHeartBeat } };
 							this->areWeHeartBeating = true;
 							this->connectionState.store(VoiceConnectionState::Sending_Identify);
+							this->currentState.store(DiscordCoreInternal::SSLShardState::Authenticated);
 							this->haveWeReceivedHeartbeatAck = true;
 							return true;
 						}
