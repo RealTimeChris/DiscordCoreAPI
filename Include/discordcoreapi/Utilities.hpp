@@ -349,8 +349,8 @@ namespace DiscordCoreAPI {
 		JsonObject& operator=(ValueType) noexcept;
 		JsonObject(ValueType) noexcept;
 
-		JsonObject& operator[](Uint64 idx) const;
-		JsonObject& operator[](Uint64 idx);
+		JsonObject& operator[](Uint64 index) const;
+		JsonObject& operator[](Uint64 index);
 
 		JsonObject& operator[](const typename ObjectType::key_type& key) const;
 		JsonObject& operator[](typename ObjectType::key_type key);
@@ -362,11 +362,11 @@ namespace DiscordCoreAPI {
 		void pushBack(JsonObject&& other) noexcept;
 		void pushBack(JsonObject& other) noexcept;
 
-		void set(std::unique_ptr<String> p);
+		void set(std::unique_ptr<String> pointer);
 
-		void set(std::unique_ptr<ArrayType> p);
+		void set(std::unique_ptr<ArrayType> pointer);
 
-		void set(std::unique_ptr<ObjectType> p);
+		void set(std::unique_ptr<ObjectType> pointer);
 
 		void destroy() noexcept;
 

@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 
 		virtual Bool areWeStillConnected() noexcept = 0;
 
-		virtual void disconnect() noexcept = 0;
+		virtual void disconnect(bool) noexcept = 0;
 
 		static Bool initialize() noexcept;
 

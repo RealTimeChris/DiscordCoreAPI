@@ -278,7 +278,7 @@ namespace DiscordCoreInternal {
 		Uint64 theIndex{};
 		for (Uint32 x = 0; x < length; ++x) {
 			switch (static_cast<char>(theStringNew[x])) {
-				case 0x00: {
+				case '\0': {
 					break;
 				}
 				case 0x27: {

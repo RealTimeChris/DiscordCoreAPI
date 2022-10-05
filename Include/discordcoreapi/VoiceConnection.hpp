@@ -217,13 +217,13 @@ namespace DiscordCoreAPI {
 
 		Bool areWeConnected() noexcept;
 
+		void disconnect(bool) noexcept;
+
 		Bool voiceConnect() noexcept;
 
 		void sendSilence() noexcept;
 
 		void pauseToggle() noexcept;
-
-		void disconnect() noexcept;
 
 		void reconnect() noexcept;
 

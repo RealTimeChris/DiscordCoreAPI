@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 
 		virtual Bool onMessageReceived(StringView theMessage) noexcept = 0;
 
-		virtual void disconnect() noexcept = 0;
+		virtual void disconnect(bool) noexcept = 0;
 
 		virtual void onClosed() noexcept = 0;
 
@@ -112,7 +112,7 @@ namespace DiscordCoreInternal {
 
 		Bool onMessageReceived(StringView theMessage) noexcept;
 
-		void disconnect() noexcept;
+		void disconnect(bool) noexcept;
 
 		void onClosed() noexcept;
 

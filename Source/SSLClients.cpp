@@ -495,14 +495,14 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					this->disconnect();
+					this->disconnect(false);
 					return false;
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
 						cout << reportSSLError("SSLClient::processWriteData()", errorValue, this->ssl) << endl;
 					}
-					this->disconnect();
+					this->disconnect(true);
 					return false;
 				}
 			}
@@ -538,14 +538,14 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect();
+						this->disconnect(false);
 						return false;
 					}
 					default: {
 						if (this->doWePrintErrorMessages) {
 							cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
 						}
-						this->disconnect();
+						this->disconnect(true);
 						return false;
 					}
 				}

@@ -310,7 +310,8 @@ namespace DiscordCoreInternal {
 		if (this->currentState.load() == SSLShardState::Upgrading) {
 			this->parseConnectionHeaders();
 		}
-		this->parseMessage();
+		while (this->parseMessage()) {
+		}
 	}
 
 	Bool WebSocketMessageHandler::parseMessage() noexcept {
@@ -420,7 +421,6 @@ namespace DiscordCoreInternal {
 			while (this->currentState.load() != SSLShardState::Authenticated) {
 				std::this_thread::sleep_for(1ms);
 			}
-			Int32 theCurrentIndex = this->shard[0];
 			DiscordCoreAPI::UpdateVoiceStateData dataPackage{};
 			dataPackage.channelId = 0;
 			dataPackage.guildId = static_cast<VoiceConnectInitData>(doWeCollect).guildId;
@@ -428,7 +428,6 @@ namespace DiscordCoreInternal {
 			dataPackage.selfMute = doWeCollect.selfMute;
 			this->userId = doWeCollect.userId;
 			String theString = this->stringifyJsonData(dataPackage, this->dataOpCode);
-			Bool didWeWrite{ false };
 			this->sendMessage(theString, true);
 			if (DiscordCoreAPI::Snowflake{ doWeCollect.channelId } == 0) {
 				return;
@@ -684,9 +683,7 @@ namespace DiscordCoreInternal {
 									}
 									theInt.store(theInt.load() + 1);
 									std::unique_ptr<DiscordCoreAPI::GuildData> theGuildPtr{ std::make_unique<DiscordCoreAPI::GuildData>(theMessage.d) };
-									DiscordCoreAPI::Snowflake guildId{};
 									theStopWatchReal.resetTimer();
-									guildId = theGuildPtr->id;
 									if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildCreationEvent.theFunctions.size() > 0) {
 										if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 											DiscordCoreAPI::Guilds::insertGuild(*theGuildPtr);
@@ -701,7 +698,6 @@ namespace DiscordCoreInternal {
 								case 19: {
 									if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildUpdateEvent.theFunctions.size() > 0) {
 										std::unique_ptr<DiscordCoreAPI::GuildData> theGuildPtr{ std::make_unique<DiscordCoreAPI::GuildData>(theMessage.d) };
-										DiscordCoreAPI::Snowflake guildId{};
 										if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 											DiscordCoreAPI::Guilds::insertGuild(*theGuildPtr);
 										}
@@ -715,14 +711,9 @@ namespace DiscordCoreInternal {
 								case 20: {
 									if (DiscordCoreAPI::Guilds::doWeCacheGuilds || this->discordCoreClient->eventManager.onGuildDeletionEvent.theFunctions.size() > 0) {
 										std::unique_ptr<DiscordCoreAPI::GuildData> theGuild = std::make_unique<DiscordCoreAPI::GuildData>(theMessage.d);
-										DiscordCoreAPI::Snowflake guildId{};
-										*theGuild = DiscordCoreAPI::Guilds::getCachedGuildAsync({ .guildId = guildId }).get();
-										if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
-											DiscordCoreAPI::Guilds::removeGuild(theGuild->id);
-										}
 										for (auto& value: theGuild->members) {
 											DiscordCoreAPI::GuildMemberData theGuildMember =
-												DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value, .guildId = guildId }).get();
+												DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = value, .guildId = theGuild->id }).get();
 											DiscordCoreAPI::GuildMembers::removeGuildMember(theGuildMember);
 										}
 										for (auto& value: theGuild->channels) {
@@ -730,6 +721,9 @@ namespace DiscordCoreInternal {
 										}
 										for (auto& value: theGuild->roles) {
 											DiscordCoreAPI::Roles::removeRole(value);
+										}
+										if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
+											DiscordCoreAPI::Guilds::removeGuild(theGuild->id);
 										}
 										if (this->discordCoreClient->eventManager.onGuildDeletionEvent.theFunctions.size() > 0) {
 											DiscordCoreAPI::OnGuildDeletionData dataPackage{ std::move(theGuild) };
@@ -1376,7 +1370,7 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	void WebSocketSSLShard::disconnect() noexcept {
+	void WebSocketSSLShard::disconnect(bool doWeReconnect) noexcept {
 		if (this->theSocket != SOCKET_ERROR) {
 			this->theSocket = SOCKET_ERROR;
 			this->currentState.store(SSLShardState::Disconnected);
@@ -1385,7 +1379,7 @@ namespace DiscordCoreInternal {
 			this->inputBuffer.clear();
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
-			if (this->theConnections) {
+			if (this->theConnections && doWeReconnect) {
 				DiscordCoreAPI::ConnectionPackage theData{};
 				theData.currentReconnectTries = this->currentReconnectTries;
 				theData.areWeResuming = this->areWeResuming;
@@ -1397,7 +1391,7 @@ namespace DiscordCoreInternal {
 
 	void WebSocketSSLShard::onClosed() noexcept {
 		if (this->maxReconnectTries > this->currentReconnectTries) {
-			this->disconnect();
+			this->disconnect(true);
 		} else {
 			if (this->doWeQuit) {
 				this->doWeQuit->store(true);

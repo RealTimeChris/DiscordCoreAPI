@@ -639,7 +639,6 @@ namespace DiscordCoreAPI {
 			this->taskThread03.reset(nullptr);
 		}
 		DatagramSocketClient::disconnect();
-		VoiceConnection::disconnect();
 		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
 			this->streamSocket->disconnect();
 		}
@@ -832,7 +831,7 @@ namespace DiscordCoreAPI {
 		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
 			this->reconnect();
 		} else if (this->currentReconnectTries >= this->maxReconnectTries) {
-			VoiceConnection::disconnect();
+			VoiceConnection::disconnect(false);
 		}
 	}
 
@@ -910,7 +909,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::disconnect() noexcept {
+	void VoiceConnection::disconnect(bool doWeReconnect) noexcept {
 		this->baseSocketAgent->disconnectVoice(this->voiceConnectInitData.guildId);
 		this->activeState.store(VoiceActiveState::Exiting);
 	}
