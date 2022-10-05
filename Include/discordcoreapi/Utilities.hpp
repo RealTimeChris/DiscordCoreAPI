@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	using AtomicUint64 = std::atomic_uint64_t;
+using AtomicUint64 = std::atomic_uint64_t;
 	using AtomicUint32 = std::atomic_uint32_t;
 	using AtomicInt64 = std::atomic_int64_t;
 	using AtomicInt32 = std::atomic_int32_t;
@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 	template<typename TheType>
 	concept IsString = std::same_as<TheType, String>;
 
-	struct DiscordCoreAPI_Dll EnumConverter {
+	struct EnumConverter {
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
 			this->thePtr = new Uint64{};
 			*static_cast<Uint64*>(this->thePtr) = static_cast<Uint64>(other);
@@ -194,9 +194,10 @@ namespace DiscordCoreAPI {
 		void* thePtr{ nullptr };
 	};
 
-	class DiscordCoreAPI_Dll JsonObject {
+	class JsonObject {
 	  public:
 		using ObjectType = std::map<String, JsonObject, std::less<>, std::allocator<std::pair<const String, JsonObject>>>;
+		template<typename Type> using AllocatorType = std::allocator<Type>;
 		using ArrayType = std::vector<JsonObject>;
 		using StringType = String;
 		using UintType = Uint64;
@@ -206,14 +207,16 @@ namespace DiscordCoreAPI {
 
 		ValueType theType{ ValueType::Null };
 
-		union DiscordCoreAPI_Dll JsonValue {
+		union JsonValue {
+			std::unique_ptr<ObjectType> object;
+			std::unique_ptr<StringType> string;
+			std::unique_ptr<ArrayType> array;
 			FloatType numberDouble;
 			UintType numberUint;
-			ObjectType* object;
-			StringType* string;
 			IntType numberInt;
-			ArrayType* array;
 			BoolType boolean;
+
+			JsonValue() noexcept;
 
 			JsonValue& operator=(JsonValue&&) noexcept = delete;
 
@@ -251,23 +254,17 @@ namespace DiscordCoreAPI {
 
 			JsonValue& operator=(Bool theData) noexcept;
 
-			JsonValue& operator=(ValueType t) noexcept;
-			JsonValue(ValueType t) noexcept;
-
-			void destroy(ValueType theType);
+			~JsonValue() noexcept;
 		};
 
-		JsonValue theValue{ ValueType::Null };
+		JsonValue theValue{};
 
 		JsonObject() noexcept = default;
 
 		template<typename ObjectType> JsonObject& operator=(std::vector<ObjectType> theData) noexcept {
-			this->theType = ValueType::Array;
-			Int32 theIndex{};
+			this->set(std::make_unique<ArrayType>());
 			for (auto& value: theData) {
-				this->theValue = ValueType::Array;
 				this->theValue.array->push_back(JsonObject{ value });
-				theIndex++;
 			}
 			return *this;
 		}
@@ -277,14 +274,10 @@ namespace DiscordCoreAPI {
 		}
 
 		template<IsString KeyType, IsString ObjectType> JsonObject& operator=(std::unordered_map<KeyType, ObjectType> theData) noexcept {
-			Int32 theIndex{};
-			this->theType = ValueType::Array;
-
+			this->set(std::make_unique<ObjectType>());
 			for (auto& [key, value]: theData) {
-				this->theValue = ValueType::Object;
 				this->theValue.object->at(key) = JsonObject{ value };
 			}
-			theIndex++;
 			return *this;
 		}
 
@@ -344,6 +337,7 @@ namespace DiscordCoreAPI {
 		JsonObject(Bool) noexcept;
 
 		JsonObject& operator=(ValueType) noexcept;
+		JsonObject(ValueType) noexcept;
 
 		JsonObject& operator[](Uint64 idx) const;
 		JsonObject& operator[](Uint64 idx);
@@ -357,6 +351,14 @@ namespace DiscordCoreAPI {
 
 		void pushBack(JsonObject&& other) noexcept;
 		void pushBack(JsonObject& other) noexcept;
+
+		void set(std::unique_ptr<String> p);
+
+		void set(std::unique_ptr<ArrayType> p);
+
+		void set(std::unique_ptr<ObjectType> p);
+
+		void destroy() noexcept;
 
 		~JsonObject() noexcept;
 	};

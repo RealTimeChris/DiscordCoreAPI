@@ -453,8 +453,6 @@ namespace DiscordCoreInternal {
 							} catch (...) {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
-									this->messageLength = 0;
-									this->messageOffset = 0;
 								}
 								returnValue = false;
 							}

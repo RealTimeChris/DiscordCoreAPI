@@ -96,20 +96,19 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	JsonObject::JsonValue::JsonValue() noexcept {};
+
 	JsonObject::JsonValue& JsonObject::JsonValue::operator=(const StringType& theData) noexcept {
-		this->string = new StringType{};
 		*this->string = theData;
 		return *this;
 	}
 
 	JsonObject::JsonValue& JsonObject::JsonValue::operator=(StringType&& theData) noexcept {
-		this->string = new StringType{};
-		*this->string = std::move(theData);
+		*this->string = theData;
 		return *this;
 	}
 
 	JsonObject::JsonValue& JsonObject::JsonValue::operator=(const char* theData) noexcept {
-		*this = ValueType::String;
 		*this->string = theData;
 		return *this;
 	}
@@ -169,66 +168,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	JsonObject::JsonValue& JsonObject::JsonValue::operator=(ValueType theType) noexcept {
-		switch (theType) {
-			case ValueType::Object: {
-				this->object = new ObjectType{};
-				break;
-			}
-			case ValueType::Array: {
-				this->array = new ArrayType{};
-				break;
-			}
-			case ValueType::String: {
-				this->string = new StringType{};
-				break;
-			}
-			case ValueType::Bool: {
-				this->boolean = static_cast<BoolType>(false);
-				break;
-			}
-			case ValueType::Int64: {
-				this->numberInt = static_cast<IntType>(0);
-				break;
-			}
-			case ValueType::Uint64: {
-				this->numberUint = static_cast<UintType>(0);
-				break;
-			}
-			case ValueType::Float: {
-				this->numberDouble = static_cast<FloatType>(0.0);
-				break;
-			}
-			case ValueType::Null: {
-				break;
-			}
-			default: {
-				break;
-			}
-		}
-		return *this;
-	}
-
-	JsonObject::JsonValue::JsonValue(ValueType theType) noexcept {
-		*this = theType;
-	}
-
-	void JsonObject::JsonValue::destroy(ValueType theType) {
-		switch (theType) {
-			case ValueType::Array: {
-				delete this->array;
-				break;
-			}
-			case ValueType::Object: {
-				delete this->object;
-				break;
-			}
-			case ValueType::String: {
-				delete this->string;
-				break;
-			}
-		}
-	}
+	JsonObject::JsonValue::~JsonValue() noexcept {};
 
 	JsonObject& JsonObject::operator=(EnumConverter theData) noexcept {
 		this->theValue = Uint64{ theData };
@@ -242,27 +182,21 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonObject& JsonObject::operator=(JsonObject&& theKey) noexcept {
-		if (this->theType != ValueType::Null) {
-			this->theValue.destroy(this->theType);
-		}
 		switch (theKey.theType) {
 			case ValueType::Object: {
-				this->theValue = ValueType::Object;
-				for (auto& [key, value]: *theKey.theValue.object) {
-					this->theValue.object->emplace(key, std::move(value));
-				}
+				this->set(std::make_unique<ObjectType>());
+				*this->theValue.object = *theKey.theValue.object;
 				break;
 			}
 			case ValueType::Array: {
-				this->theValue = ValueType::Array;
-				for (auto& value: *theKey.theValue.array) {
-					this->theValue.array->emplace_back(std::move(value));
-				}
+				this->set(std::make_unique<ArrayType>());
+				*this->theValue.array = *theKey.theValue.array;
 				break;
 			}
 			case ValueType::String: {
-				this->theValue = ValueType::String;
-				*this->theValue.string = std::move(*theKey.theValue.string);
+				this->set(std::make_unique<StringType>());
+				*this->theValue.string = *theKey.theValue.string;
+				break;
 				break;
 			}
 			case ValueType::Bool: {
@@ -294,10 +228,9 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonObject& JsonObject::operator=(const JsonObject& theKey) noexcept {
-		this->theValue.destroy(this->theType);
 		switch (theKey.theType) {
 			case ValueType::Object: {
-				this->theValue = ValueType::Object;
+				this->set(std::make_unique<ObjectType>());
 				for (auto& [key, value]: *theKey.theValue.object) {
 					this->theValue.object->emplace(key, std::move(value));
 				}
@@ -305,7 +238,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case ValueType::Array: {
-				this->theValue = ValueType::Array;
+				this->set(std::make_unique<ArrayType>());
 				for (auto& value: *theKey.theValue.array) {
 					this->theValue.array->emplace_back(std::move(value));
 				}
@@ -313,7 +246,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case ValueType::String: {
-				this->theValue = ValueType::String;
+				this->set(std::make_unique<StringType>());
 				*this->theValue.string = *theKey.theValue.string;
 				this->theType = ValueType::String;
 				break;
@@ -355,7 +288,8 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonObject& JsonObject::operator=(String&& theData) noexcept {
-		this->theValue = std::move(theData);
+		this->set(std::make_unique<StringType>());
+		*this->theValue.string = theData;
 		this->theType = ValueType::String;
 		return *this;
 	}
@@ -365,7 +299,8 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonObject& JsonObject::operator=(const String& theData) noexcept {
-		this->theValue = theData;
+		this->set(std::make_unique<StringType>());
+		*this->theValue.string = theData;
 		this->theType = ValueType::String;
 		return *this;
 	}
@@ -375,7 +310,8 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonObject& JsonObject::operator=(const char* theData) noexcept {
-		this->theValue = theData;
+		this->set(std::make_unique<StringType>());
+		*this->theValue.string = theData;
 		this->theType = ValueType::String;
 		return *this;
 	}
@@ -495,9 +431,12 @@ namespace DiscordCoreAPI {
 	}
 
 	JsonObject& JsonObject::operator=(ValueType theType) noexcept {
-		this->theValue = theType;
 		this->theType = theType;
 		return *this;
+	}
+
+	JsonObject::JsonObject(ValueType theType) noexcept {
+		*this = theType;
 	}
 
 	JsonObject& JsonObject::operator[](Uint64 index) const {
@@ -506,8 +445,8 @@ namespace DiscordCoreAPI {
 
 	JsonObject& JsonObject::operator[](Uint64 index) {
 		if (this->theType == ValueType::Null) {
+			this->set(std::make_unique<ArrayType>());
 			this->theType = ValueType::Array;
-			this->theValue = ValueType::Array;
 		}
 
 		if (this->theType == ValueType::Array) {
@@ -530,8 +469,8 @@ namespace DiscordCoreAPI {
 
 	JsonObject& JsonObject::operator[](typename ObjectType::key_type key) {
 		if (this->theType == ValueType::Null) {
+			this->set(std::make_unique<ObjectType>());
 			this->theType = ValueType::Object;
-			this->theValue = ValueType::Object;
 		}
 
 		if (this->theType == ValueType::Object) {
@@ -543,8 +482,8 @@ namespace DiscordCoreAPI {
 
 	void JsonObject::pushBack(JsonObject&& other) noexcept {
 		if (this->theType == ValueType::Null) {
+			this->set(std::make_unique<ArrayType>());
 			this->theType = ValueType::Array;
-			this->theValue = ValueType::Array;
 		}
 
 		if (this->theType == ValueType::Array) {
@@ -554,8 +493,8 @@ namespace DiscordCoreAPI {
 
 	void JsonObject::pushBack(JsonObject& other) noexcept {
 		if (this->theType == ValueType::Null) {
+			this->set(std::make_unique<ArrayType>());
 			this->theType = ValueType::Array;
-			this->theValue = ValueType::Array;
 		}
 
 		if (this->theType == ValueType::Array) {
@@ -721,8 +660,43 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
+	void JsonObject::set(std::unique_ptr<String> p) {
+		destroy();
+		new (&this->theValue.string) std::unique_ptr<String>{ std::move(p) };
+		this->theType = ValueType::String;
+	}
+
+	void JsonObject::set(std::unique_ptr<ArrayType> p) {
+		destroy();
+		new (&this->theValue.string) std::unique_ptr<ArrayType>{ std::move(p) };
+		this->theType = ValueType::Array;
+	}
+
+	void JsonObject::set(std::unique_ptr<ObjectType> p) {
+		destroy();
+		new (&this->theValue.string) std::unique_ptr<ObjectType>{ std::move(p) };
+		this->theType = ValueType::Object;
+	}
+
+	void JsonObject::destroy() noexcept {
+		switch (this->theType) {
+			case ValueType::Array: {
+				this->theValue.array.reset(nullptr);
+				break;
+			}
+			case ValueType::Object: {
+				this->theValue.object.reset(nullptr);
+				break;
+			}
+			case ValueType::String: {
+				this->theValue.string.reset(nullptr);
+				break;
+			}
+		}
+	}
+
 	JsonObject::~JsonObject() noexcept {
-		this->theValue.destroy(this->theType);
+		this->destroy();
 	}
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const String& (*theFunction)( void )) {
