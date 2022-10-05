@@ -35,9 +35,7 @@ jobs:
                 sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                 sudo bash -c "echo $'0' >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
                 sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake" &&
-                sudo bash -c "cat ./CMake/Raw-Files/Top-Of-Version-File.txt > ./Vcpkg/ports/discordcoreapi/vcpkg.json" &&
-                sudo truncate -s -1 ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
-                sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Version-File.txt >> ./Vcpkg/ports/discordcoreapi/vcpkg.json"
+                sudo truncate -s -1 ./Vcpkg/ports/discordcoreapi/vcpkg.json
 
          - name: Attempt to install the library, to collect the SHA512 value.
            run: |
