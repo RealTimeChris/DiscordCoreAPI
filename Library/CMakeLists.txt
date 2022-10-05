@@ -110,7 +110,6 @@ target_compile_options(
 	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
 	"$<$<PLATFORM_ID:Linux>:-fpermissive>"
-	"$<$<PLATFORM_ID:Linux>:-fpic>"
 )
 
 target_compile_definitions(
