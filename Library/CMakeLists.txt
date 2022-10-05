@@ -113,6 +113,11 @@ target_compile_options(
 	"$<$<PLATFORM_ID:Linux>:-fpic>"
 )
 
+target_compile_definitions(
+	"${LIB_NAME}" PUBLIC
+	"$<$<PLATFORM_ID:Linux>:-fpic>"
+)
+
 target_link_options(
 	"${LIB_NAME}" PUBLIC
 	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
