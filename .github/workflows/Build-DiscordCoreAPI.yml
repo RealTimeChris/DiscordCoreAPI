@@ -1,9 +1,8 @@
 name: Prepare release for VCPKG
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch:
+  push:
+
 
 jobs:
   Collect-Vcpkg-Info:
@@ -73,6 +72,7 @@ jobs:
                 sudo /usr/local/share/vcpkg/vcpkg x-add-version discordcoreapi &&
                 cd /home/runner/work/DiscordCoreAPI/DiscordCoreAPI/discordcoreapi &&
                 sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./vcpkg/ports/discordcoreapi/vcpkg.json &&
+                sudo cp -v -R /usr/local/share/vcpkg/versions/baseline.json ./vcpkg/versions/baseline.json &&
                 sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./vcpkg/versions/d-/discordcoreapi.json &&
                 cat ./vcpkg/versions/d-/discordcoreapi.json &&
                 sudo rm -rf InstallOutput.txt &&
