@@ -1,4 +1,4 @@
-name: Prepare release for VCPKG
+name: Build DiscordCoreAPI and a test bot.
 
 on:
   push:
