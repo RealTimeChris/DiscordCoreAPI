@@ -64,6 +64,8 @@ jobs:
                 sudo cp -v -R ./Vcpkg/ports/* /usr/local/share/vcpkg/ports/ &&
                 cd /usr/local/share/vcpkg &&
                 sudo ./vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json &&
+                sudo git add . &&
+                sudo git commit -m "[bot] VCPKG info update" &&
                 sudo ./vcpkg x-add-version --overwrite-version --all &&
                 sudo git add . &&
                 sudo git commit -m "[bot] VCPKG info update"  &&
