@@ -110,11 +110,7 @@ target_compile_options(
 	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
 	"$<$<PLATFORM_ID:Linux>:-fpermissive>"
-)
-
-target_compile_definitions(
-	"${LIB_NAME}" PUBLIC
-	"$<$<PLATFORM_ID:Linux>:-fpic>"
+	"$<$<PLATFORM_ID:Linux>:-fPIC>"
 )
 
 target_link_options(
