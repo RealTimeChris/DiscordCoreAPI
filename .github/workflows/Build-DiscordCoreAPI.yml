@@ -63,7 +63,7 @@ jobs:
                 sudo cp -v -R ./CMake/Raw-Files/Portfile-The-Second.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake &&
                 sudo cp -v -R ./Vcpkg/ports/* /usr/local/share/vcpkg/ports/ &&
                 cd /usr/local/share/vcpkg &&
-                sudo ./Vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json &&
+                sudo ./vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json &&
                 sudo git add . &&
                 sudo git commit -m "[bot] VCPKG info update"  &&
                 cat /usr/local/share/vcpkg/versions/d-/discordcoreapi.json && 
