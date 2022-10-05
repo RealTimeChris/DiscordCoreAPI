@@ -108,8 +108,7 @@ namespace DiscordCoreAPI {
 		this->flags |= setBool(this->flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
 
 		simdjson::ondemand::value theRoleTagsNew{};
-		auto theResult = jsonObjectData["tags"].get(theRoleTagsNew);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["tags"].get(theRoleTagsNew) == simdjson::error_code::SUCCESS) {
 			RoleTagsData theRoleTags{ theRoleTagsNew };
 			this->tags = std::move(theRoleTags);
 		}
@@ -118,8 +117,7 @@ namespace DiscordCoreAPI {
 	RoleVector::RoleVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
-			auto theResult = jsonObjectData.get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					Role newData{ value.value() };
 					this->theRoles.emplace_back(std::move(newData));

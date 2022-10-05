@@ -334,7 +334,7 @@ namespace DiscordCoreInternal {
 
 		} else if (returnValue == 0) {
 			return theReturnValue;
-		}		
+		}
 		for (auto& [key, value]: theShardMap) {
 			if (!value->areWeAStandaloneSocket) {
 				value->handleBuffer();

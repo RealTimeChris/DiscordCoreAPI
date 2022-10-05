@@ -36,8 +36,7 @@ namespace DiscordCoreAPI {
 		this->me = getBool(jsonObjectData, "me");
 
 		simdjson::ondemand::value theObject{};
-		auto theResult = jsonObjectData["emoji"].get(theObject);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["emoji"].get(theObject) == simdjson::error_code::SUCCESS) {
 			this->emoji = EmojiData{ theObject };
 		}
 
@@ -49,8 +48,7 @@ namespace DiscordCoreAPI {
 
 		this->messageId = getId(jsonObjectData, "message_id");
 
-		theResult = jsonObjectData["member"].get(theObject);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["member"].get(theObject) == simdjson::error_code::SUCCESS) {
 			this->member = GuildMemberData{ theObject };
 		}
 	}
@@ -58,8 +56,7 @@ namespace DiscordCoreAPI {
 	ReactionVector::ReactionVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
-			auto theResult = jsonObjectData.get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					Reaction newData{ value.value() };
 					this->theReactions.emplace_back(std::move(newData));

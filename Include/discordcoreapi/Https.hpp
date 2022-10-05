@@ -180,13 +180,10 @@ namespace DiscordCoreInternal {
 				simdjson::ondemand::parser theParser{};
 				if (returnData.responseMessage.size() > 0) {
 					returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-					auto theDocument = theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
-					if (theDocument.type() != simdjson::ondemand::json_type::null) {
-						simdjson::ondemand::value theObject{};
-						auto theResult = theDocument.get(theObject);
-						if (theObject.type() != simdjson::ondemand::json_type::null) {
-							theReturnValueNew = ReturnType{ theObject };
-						}
+					simdjson::ondemand::value theObject{};
+					if (theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity()).get(theObject) ==
+						simdjson::error_code::SUCCESS) {
+						theReturnValueNew = ReturnType{ theObject };
 					}
 				}
 				return theReturnValueNew;
@@ -194,13 +191,10 @@ namespace DiscordCoreInternal {
 				simdjson::ondemand::parser theParser{};
 				if (returnData.responseMessage.size() > 0) {
 					returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-					auto theDocument = theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
-					if (theDocument.type() != simdjson::ondemand::json_type::null) {
-						simdjson::ondemand::value theObject{};
-						auto theResult = theDocument.get(theObject);
-						if (theObject.type() != simdjson::ondemand::json_type::null) {
-							*theReturnValue = ReturnType{ theObject };
-						}
+					simdjson::ondemand::value theObject{};
+					if (theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity()).get(theObject) ==
+						simdjson::error_code::SUCCESS) {
+						*theReturnValue = ReturnType{ theObject };
 					}
 				}
 				return *theReturnValue;

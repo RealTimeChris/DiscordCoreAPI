@@ -62,8 +62,7 @@ namespace DiscordCoreAPI {
 	AudioEncoder::AudioEncoder() {
 		Int32 error{};
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
-		auto theResult = opus_encoder_ctl(this->encoder, OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
-		if (theResult != OPUS_OK) {
+		if (opus_encoder_ctl(this->encoder, OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC)) != OPUS_OK) {
 			throw std::runtime_error{ "Failed to set the Opus signal type." };
 		}
 	}

@@ -42,8 +42,7 @@ namespace DiscordCoreAPI {
 		this->position = getUint32(jsonObjectData, "position");
 
 		simdjson::ondemand::value theArray{};
-		auto theResult = jsonObjectData["permission_overwrites"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["permission_overwrites"].get(theArray) == simdjson::error_code::SUCCESS) {
 			this->permissionOverwrites.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				OverWriteData theDataNew{ value.value() };
@@ -67,8 +66,7 @@ namespace DiscordCoreAPI {
 
 		this->rateLimitPerUser = getUint32(jsonObjectData, "rate_limit_per_user");
 
-		theResult = jsonObjectData["recipients"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["recipients"].get(theArray) == simdjson::error_code::SUCCESS) {
 			this->recipients.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				UserData theDataNew{ value.value() };
@@ -95,13 +93,11 @@ namespace DiscordCoreAPI {
 		this->memberCount = getUint32(jsonObjectData, "member_count");
 
 		simdjson::ondemand::value theObject{};
-		theResult = jsonObjectData["thread_metadata"].get(theObject);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["thread_metadata"].get(theObject) == simdjson::error_code::SUCCESS) {
 			this->threadMetadata = ThreadMetadataData{ theObject };
 		}
 
-		theResult = jsonObjectData["member"].get(theObject);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["member"].get(theObject) == simdjson::error_code::SUCCESS) {
 			this->member = ThreadMemberData{ theObject };
 		}
 	}
@@ -109,8 +105,7 @@ namespace DiscordCoreAPI {
 	ChannelVector::ChannelVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
-			auto theResult = jsonObjectData.get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					Channel newData{ value.value() };
 					this->theChannels.emplace_back(std::move(newData));

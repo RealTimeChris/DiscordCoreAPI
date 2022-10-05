@@ -113,8 +113,7 @@ namespace DiscordCoreAPI {
 	GuildVector::GuildVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
-			auto theResult = jsonObjectData.get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					Guild newData{ value.value() };
 					this->theGuilds.emplace_back(std::move(newData));
@@ -256,8 +255,7 @@ namespace DiscordCoreAPI {
 
 		this->channels.clear();
 		simdjson::ondemand::array theArray{};
-		auto theResult = jsonObjectData["threads"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["threads"].get(theArray) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				Channel newChannel{ value.value() };
 				newChannel.guildId = this->id;
@@ -265,9 +263,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-
-		theResult = jsonObjectData["stickers"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["stickers"].get(theArray) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				Sticker newSticker{ value.value() };
 				newSticker.guildId = this->id;
@@ -275,9 +271,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-
-		theResult = jsonObjectData["guild_scheduled_events"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["guild_scheduled_events"].get(theArray) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				GuildScheduledEvent newGuildEvent{ value.value() };
 				newGuildEvent.guildId = this->id;
@@ -285,8 +279,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		theResult = jsonObjectData["stage_instances"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["stage_instances"].get(theArray) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				StageInstance newStageInstance{ value.value() };
 				newStageInstance.guildId = this->id;
@@ -294,9 +287,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-
-		theResult = jsonObjectData["emoji"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["emoji"].get(theArray) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				EmojiData newEmojiData{ value.value() };
 				this->emoji.emplace_back(newEmojiData);
@@ -305,8 +296,7 @@ namespace DiscordCoreAPI {
 
 		if (Roles::doWeCacheRoles) {
 			this->roles.clear();
-			theResult = jsonObjectData["roles"].get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData["roles"].get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					RoleData newData{ value.value() };
 					newData.guildId = this->id;
@@ -318,8 +308,7 @@ namespace DiscordCoreAPI {
 
 		if (GuildMembers::doWeCacheGuildMembers) {
 			this->members.clear();
-			theResult = jsonObjectData["members"].get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData["members"].get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					GuildMemberData newData{ value.value() };
 					newData.guildId = this->id;
@@ -329,8 +318,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (GuildMembers::doWeCacheGuildMembers) {
-			theResult = jsonObjectData["voice_states"].get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData["voice_states"].get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					VoiceStateData theData{ value.value() };
 					GuildMemberData theDataNew{};
@@ -345,8 +333,7 @@ namespace DiscordCoreAPI {
 
 		if (GuildMembers::doWeCacheGuildMembers) {
 			this->presences.clear();
-			theResult = jsonObjectData["presences"].get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData["presences"].get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					PresenceUpdateData newData{ value.value() };
 					auto userId = newData.userId;
@@ -358,8 +345,7 @@ namespace DiscordCoreAPI {
 
 		if (Channels::doWeCacheChannels) {
 			this->channels.clear();
-			theResult = jsonObjectData["channels"].get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData["channels"].get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					ChannelData newData{ value.value() };
 					newData.guildId = this->id;
@@ -411,8 +397,7 @@ namespace DiscordCoreAPI {
 
 		this->region = getString(jsonObjectData, "region");
 
-		theResult = jsonObjectData["features"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["features"].get(theArray) == simdjson::error_code::SUCCESS) {
 			this->features.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				this->features.emplace_back(String{ value.get_string().take_value() });
@@ -458,8 +443,7 @@ namespace DiscordCoreAPI {
 		this->approximatePresenceCount = getUint32(jsonObjectData, "approximate_presence_count");
 
 		simdjson::ondemand::value theObject{};
-		theResult = jsonObjectData["welcome_screen"].get(theObject);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["welcome_screen"].get(theObject) == simdjson::error_code::SUCCESS) {
 			this->welcomeScreen = WelcomeScreenData{ theObject };
 		}
 
