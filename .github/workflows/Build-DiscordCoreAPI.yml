@@ -5,7 +5,7 @@ on:
 
 
 jobs:
-  Collect-Vcpkg-Info:
+  Build-DiscordCoreAPI:
     runs-on: ubuntu-22.04
     steps:
 

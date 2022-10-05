@@ -195,7 +195,6 @@ namespace DiscordCoreAPI {
 	}
 
 	OnRoleDeletionData& OnRoleDeletionData::operator=(const OnRoleDeletionData& other) {
-		this->role = std::make_unique<RoleData>();
 		this->guildId = other.guildId;
 		*this->role = *other.role;
 		return *this;

@@ -225,8 +225,8 @@ namespace DiscordCoreAPI {
 		OnRoleCreationData(std::unique_ptr<RoleData> theRole, Snowflake guildId);
 		OnRoleCreationData& operator=(const OnRoleCreationData&);
 		OnRoleCreationData(const OnRoleCreationData&);
-		Snowflake guildId{};///< The id of the Guild within which the Role was created.
 		std::unique_ptr<RoleData> role{ std::make_unique<RoleData>() };///< The new Role.
+		Snowflake guildId{};///< The id of the Guild within which the Role was created.
 	};
 
 	/// Data that is received as part of a Role update event. \brief Data that is received as part of a Role update event.
@@ -234,8 +234,8 @@ namespace DiscordCoreAPI {
 		OnRoleUpdateData(std::unique_ptr<RoleData>, Snowflake);
 		OnRoleUpdateData& operator=(const OnRoleUpdateData&);
 		OnRoleUpdateData(const OnRoleUpdateData&);
-		Snowflake guildId{};///< The id of the Guild within which the Role was updated.
 		std::unique_ptr<RoleData> role{ std::make_unique<RoleData>() };///< The new Role.
+		Snowflake guildId{};///< The id of the Guild within which the Role was updated.
 	};
 
 	/// Data that is received as part of a Role deletion event. \brief Data that is received as part of a Role deletion event.
@@ -403,9 +403,9 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData {
 		OnVoiceServerUpdateData() noexcept = default;
 		OnVoiceServerUpdateData(simdjson::ondemand::value);
+		Snowflake guildId{};///< The id of the Guild for which the server update is occurring.
 		String endpoint{};///< The new endpoint.
 		String token{};///< The token of the server update event.
-		Snowflake guildId{};///< The id of the Guild for which the server update is occurring.
 	};
 
 	/// Data that is received as part of a WebHook update event. \brief Data that is received as part of a WebHook update event.
