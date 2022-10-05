@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-using AtomicUint64 = std::atomic_uint64_t;
+	using AtomicUint64 = std::atomic_uint64_t;
 	using AtomicUint32 = std::atomic_uint32_t;
 	using AtomicInt64 = std::atomic_int64_t;
 	using AtomicInt32 = std::atomic_int32_t;
@@ -148,7 +148,7 @@ using AtomicUint64 = std::atomic_uint64_t;
 	using Snowflake = Uint64;
 	using Bool = bool;
 
-	enum class ValueType : Int8 { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Float = 4, String = 5, Bool = 6, Int64 = 7, Uint64 = 8, Unset = 9 };
+	enum class ValueType : Int8 { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Float = 4, String = 5, Bool = 6, Int64 = 7, Uint64 = 8 };
 
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
@@ -157,9 +157,13 @@ using AtomicUint64 = std::atomic_uint64_t;
 	concept IsString = std::same_as<TheType, String>;
 
 	struct EnumConverter {
+		template<IsEnum EnumType> EnumConverter& operator=(EnumType other) {
+			this->theUint = static_cast<Uint64>(other);
+			return *this;
+		};
+
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
-			this->thePtr = new Uint64{};
-			*static_cast<Uint64*>(this->thePtr) = static_cast<Uint64>(other);
+			*this = other;
 		};
 
 		EnumConverter& operator=(EnumConverter&&) noexcept;
@@ -171,11 +175,7 @@ using AtomicUint64 = std::atomic_uint64_t;
 		EnumConverter(EnumConverter&) noexcept = delete;
 
 		template<IsEnum EnumType> EnumConverter& operator=(std::vector<EnumType> other) {
-			this->thePtr = new std::vector<Uint64>{};
-			for (auto& value: other) {
-				static_cast<std::vector<Uint64>*>(this->thePtr)->emplace_back(static_cast<Uint64>(value));
-			}
-			this->vectorType = true;
+			this->theVector = std::move(other);
 			return *this;
 		};
 
@@ -183,15 +183,22 @@ using AtomicUint64 = std::atomic_uint64_t;
 			*this = other;
 		};
 
-		operator std::vector<Uint64>();
+		operator std::vector<Uint64>() const noexcept;
 
-		explicit operator Uint64();
+		operator std::vector<Uint64>() noexcept;
 
-		~EnumConverter();
+		explicit operator Uint64() const noexcept;
+
+		explicit operator Uint64() noexcept;
+
+		bool isItAVector() const noexcept;
+
+		bool isItAVector() noexcept;
 
 	  protected:
+		std::vector<Uint64> theVector{};
 		Bool vectorType{ false };
-		void* thePtr{ nullptr };
+		Uint64 theUint{};
 	};
 
 	class JsonObject {
@@ -285,8 +292,11 @@ using AtomicUint64 = std::atomic_uint64_t;
 			*this = theData;
 		};
 
-		JsonObject& operator=(EnumConverter theData) noexcept;
-		JsonObject(EnumConverter) noexcept;
+		JsonObject& operator=(EnumConverter&& theData) noexcept;
+		JsonObject(EnumConverter&&) noexcept;
+
+		JsonObject& operator=(const EnumConverter& theData) noexcept;
+		JsonObject(const EnumConverter&) noexcept;
 
 		JsonObject& operator=(JsonObject&& theKey) noexcept;
 		JsonObject(JsonObject&& theKey) noexcept;

@@ -64,9 +64,9 @@ namespace DiscordCoreInternal {
 namespace DiscordCoreAPI {
 
 	EnumConverter& EnumConverter::operator=(EnumConverter&& other) noexcept {
-		this->thePtr = other.thePtr;
-		other.thePtr = nullptr;
+		this->theVector = std::move(other.theVector);
 		this->vectorType = other.vectorType;
+		this->theUint = other.theUint;
 		return *this;
 	}
 
@@ -74,26 +74,36 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	EnumConverter::operator std::vector<Uint64>() {
+	EnumConverter::operator std::vector<Uint64>() const noexcept {
 		std::vector<Uint64> theObject{};
-		for (auto& value: *static_cast<std::vector<Uint64>*>(this->thePtr)) {
+		for (auto& value: this->theVector) {
 			theObject.emplace_back(value);
 		}
 		return theObject;
 	}
 
-	EnumConverter::operator Uint64() {
-		return Uint64{ *static_cast<Uint64*>(this->thePtr) };
+	EnumConverter::operator std::vector<Uint64>() noexcept {
+		std::vector<Uint64> theObject{};
+		for (auto& value: this->theVector) {
+			theObject.emplace_back(value);
+		}
+		return theObject;
 	}
 
-	EnumConverter::~EnumConverter() {
-		if (this->thePtr) {
-			if (this->vectorType) {
-				delete static_cast<std::vector<Uint64>*>(this->thePtr);
-			} else {
-				delete static_cast<Uint64*>(this->thePtr);
-			}
-		}
+	EnumConverter::operator Uint64() const noexcept {
+		return this->theUint;
+	}
+
+	EnumConverter::operator Uint64() noexcept {
+		return this->theUint;
+	}
+
+	bool EnumConverter::isItAVector() const noexcept {
+		return this->vectorType;
+	}
+
+	bool EnumConverter::isItAVector() noexcept {
+		return this->vectorType;
 	}
 
 	JsonObject::JsonValue::JsonValue() noexcept {};
@@ -170,15 +180,38 @@ namespace DiscordCoreAPI {
 
 	JsonObject::JsonValue::~JsonValue() noexcept {};
 
-	JsonObject& JsonObject::operator=(EnumConverter theData) noexcept {
-		this->theValue = Uint64{ theData };
-		this->theValue.numberUint = Uint64{ theData };
-		this->theType = ValueType::Uint64;
+	JsonObject& JsonObject::operator=(EnumConverter&& theData) noexcept {
+		if (theData.isItAVector()) {
+			this->set(std::make_unique<ArrayType>());
+			for (auto& value: theData.operator std::vector<Uint64, std::allocator<Uint64>>()) {
+				this->theValue.array->push_back(value);
+			}
+		} else {
+			this->theValue.numberUint = Uint64{ theData };
+			this->theType = ValueType::Uint64;
+		}
 		return *this;
 	}
 
-	JsonObject::JsonObject(EnumConverter theData) noexcept {
+	JsonObject::JsonObject(EnumConverter&& theData) noexcept {
 		*this = std::move(theData);
+	}
+
+	JsonObject& JsonObject::operator=(const EnumConverter& theData) noexcept {
+		if (theData.isItAVector()) {
+			this->set(std::make_unique<ArrayType>());
+			for (auto& value: theData.operator std::vector<Uint64, std::allocator<Uint64>>()) {
+				this->theValue.array->push_back(value);
+			}
+		} else {
+			this->theValue.numberUint = Uint64{ theData };
+			this->theType = ValueType::Uint64;
+		}
+		return *this;
+	}
+
+	JsonObject::JsonObject(const EnumConverter& theData) noexcept {
+		*this = theData;
 	}
 
 	JsonObject& JsonObject::operator=(JsonObject&& theKey) noexcept {
