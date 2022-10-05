@@ -1337,7 +1337,8 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< Id of the desired voice Channel. Leave blank to disconnect.
 		Snowflake guildId{};///< The id of the Guild fo which we would like to establish a voice connection.
 
-		operator DiscordCoreAPI::JsonObject();
+		/// For converting this data structure into a string. \brief For converting this data structure into a string.
+		operator JsonObject();
 	};
 
 	/// Team object data. \brief Team object data.
