@@ -81,3 +81,19 @@ jobs:
                 sudo git pull &&
                 sudo git push origin main &&
                 sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux
+
+         - name: Download, install, and run a template-bot.
+           run: |
+                sudo git clone https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI --depth=1
+                cd Bot-Template-For-DiscordCoreAPI
+                sudo touch TempCMake.txt
+                sudo bash -c "echo $'set(VCPKG_ROOT_DIR \"/usr/local/share/vcpkg\")' >> TempCMake.txt"
+                sudo sed -i '1,2d' CMakeLists.txt
+                sudo bash -c "cat CMakeLists.txt >> TempCMake.txt"
+                sudo bash -c "cat TempCMake.txt > CMakeLists.txt"
+                sudo apt-get install -y ninja-build
+                sudo cmake -S . --preset Linux-Release
+                sudo cmake --build --preset Linux-Release
+                sudo cmake --install ./Build/Release
+                cd "Output Files/Release"
+                sudo ./DiscordCoreAPI-Bot-Cpp
