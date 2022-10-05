@@ -71,7 +71,7 @@ jobs:
                 sudo git commit -m "Vcpkg info update." &&
                 cat /usr/local/share/vcpkg/versions/d-/discordcoreapi.json && 
                 sudo /usr/local/share/vcpkg/vcpkg x-add-version discordcoreapi &&
-                cd /home/runner/work/DiscordCoreAPI/DiscordCoreAPI/ &&
+                cd /home/runner/work/DiscordCoreAPI/DiscordCoreAPI/discordcoreapi &&
                 sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json &&
                 sudo cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json &&
                 cat ./Vcpkg/versions/d-/discordcoreapi.json &&
