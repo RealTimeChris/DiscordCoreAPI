@@ -69,7 +69,7 @@ namespace DiscordCoreInternal {
 		#define SOCKET_ERROR (-1)
 	#endif
 
-	using SOCKET = Int32;
+	using SOCKET = Uint32;
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
 		std::unordered_map<Uint32, pollfd> thePolls{};
