@@ -182,7 +182,7 @@ namespace DiscordCoreInternal {
 
 			this->t = DiscordCoreAPI::getString(theValue, "t");
 
-			if (jsonObjectData["d"].get(this->d) != simdjson::error_code::SUCCESS) {
+			if (theValue["d"].get(this->d) != simdjson::error_code::SUCCESS) {
 				throw std::runtime_error{ "Failed to collect the 'd'." };
 			}
 		}

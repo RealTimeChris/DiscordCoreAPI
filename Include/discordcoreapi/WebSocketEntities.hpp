@@ -58,21 +58,21 @@ namespace DiscordCoreInternal {
 
 		void createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept;
 
-		virtual Bool onMessageReceived(StringView theMessage) noexcept = 0;
-
-		Bool sendMessage(String& dataToSend, Bool priority) noexcept;
+		void sendMessage(String& dataToSend, Bool priority) noexcept;
 
 		void checkForAndSendHeartBeat(Bool = false) noexcept;
 
 		void parseConnectionHeaders() noexcept;
 
+		void handleBuffer() noexcept;
+
+		Bool parseMessage() noexcept;
+
+		virtual Bool onMessageReceived(StringView theMessage) noexcept = 0;
+
 		virtual void disconnect() noexcept = 0;
 
 		virtual void onClosed() noexcept = 0;
-
-		void handleBuffer() noexcept;
-
-		void parseMessage() noexcept;
 
 		virtual ~WebSocketMessageHandler() noexcept = default;
 

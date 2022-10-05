@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 		} catch (...) {
-			rethrowException("InputEvents::respondToInputEventAsync()");
+			reportException("InputEvents::respondToInputEventAsync()");
 			co_return InputEventData();
 		}
 	}

@@ -285,9 +285,7 @@ namespace DiscordCoreAPI {
 			theData.delay = 0;
 			theData.ssrc = this->audioSSRC;
 			String theString = this->stringifyJsonData(theData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-			if (!this->sendMessage(theString, true)) {
-				this->onClosed();
-			}
+			this->sendMessage(theString, true);
 		}
 	}
 
@@ -696,12 +694,7 @@ namespace DiscordCoreAPI {
 					"\r\nSec-WebSocket-Version: 13\r\n\r\n";
 				this->shard[0] = 0;
 				this->shard[1] = 1;
-				if (!this->sendMessage(sendVector, true)) {
-					this->currentReconnectTries++;
-					this->onClosed();
-					this->connectInternal();
-					return;
-				}
+				this->sendMessage(sendVector, true);
 				while (this->currentState.load() != DiscordCoreInternal::SSLShardState::Collecting_Hello) {
 					if (WebSocketMessageHandler::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
@@ -738,12 +731,7 @@ namespace DiscordCoreAPI {
 				identifyData.connectInitData = this->voiceConnectInitData;
 				identifyData.connectionData = this->voiceConnectionData;
 				String sendVector = this->stringifyJsonData(identifyData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				if (!this->sendMessage(sendVector, true)) {
-					this->currentReconnectTries++;
-					this->onClosed();
-					this->connectInternal();
-					return;
-				}
+				this->sendMessage(sendVector, true);
 				this->connectionState.store(VoiceConnectionState::Collecting_Ready);
 				this->connectInternal();
 				break;
@@ -783,12 +771,7 @@ namespace DiscordCoreAPI {
 				protocolPayloadData.externalIp = this->externalIp;
 				protocolPayloadData.voicePort = this->port;
 				String sendVector = this->stringifyJsonData(protocolPayloadData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				if (!this->sendMessage(sendVector, true)) {
-					this->currentReconnectTries++;
-					this->onClosed();
-					this->connectInternal();
-					return;
-				}
+				this->sendMessage(sendVector, true);
 				this->connectionState.store(VoiceConnectionState::Collecting_Session_Description);
 				this->connectInternal();
 				break;
