@@ -26,7 +26,7 @@ jobs:
 
          - name: Construct the original portfile and version file.
            run: |
-                cd ./discordcoreapi &&
+                cd ./DiscordCoreAPI &&
                 sudo touch ./CMake/Raw-Files/Portfile-The-First.cmake &&
                 sudo touch ./CMake/Raw-Files/Portfile-The-Second.cmake &&
                 sudo touch ./vcpkg/ports/discordcoreapi/vcpkg.json &&
@@ -41,7 +41,7 @@ jobs:
 
          - name: Attempt to install the library, to collect the SHA512 value.
            run: |
-                cd ./discordcoreapi &&
+                cd ./DiscordCoreAPI &&
                 sudo mkdir /usr/local/share/vcpkg/ports/discordcoreapi/ &&
                 [ -f /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ] && echo "File exists." || sudo cp -v -R ./vcpkg/ports/discordcoreapi/vcpkg.json /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json  &&
                 sudo cp -v -R ./CMake/Raw-Files/Portfile-The-First.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake &&
@@ -49,7 +49,7 @@ jobs:
 
          - name:  Update the portfile and download/install the library.
            run: |
-                cd ./discordcoreapi &&
+                cd ./DiscordCoreAPI &&
                 sudo sed -i '/Actual hash/,$!d' InstallOutput.txt &&
                 sudo sed -i 's/^.....................//' InstallOutput.txt &&
                 sudo sed -i '2,250d' InstallOutput.txt &&
