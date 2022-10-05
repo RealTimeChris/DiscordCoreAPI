@@ -80,5 +80,5 @@ jobs:
                 sudo git commit -m "[bot] VCPKG info update [skip ci]" &&
                 sudo git config pull.rebase false &&
                 sudo git pull &&
-                sudo git push origin master &&
+                sudo git push origin main &&
                 sudo /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux
