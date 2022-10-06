@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 
 	Bool VoiceConnection::onMessageReceived() noexcept {
 		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
-		StringView theStringView = StringView{ this->currentMessage.data() + this->messageOffset, this->messageLength };
+		StringView theStringView = StringView{ this->currentMessageFinal.data() + this->messageOffset, this->messageLength };
 		try {
 			if (theStringView.size() > 0) {
 				DiscordCoreInternal::WebSocketMessage theMessage{};

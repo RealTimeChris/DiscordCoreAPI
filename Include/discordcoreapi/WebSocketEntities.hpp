@@ -87,10 +87,11 @@ namespace DiscordCoreInternal {
 		Bool areWeHeartBeating{ false };
 		Uint32 lastNumberReceived{ 0 };
 		WebSocketClose closeCode{ 0 };
-		StringBuffer currentMessage{};
+		//StringBuffer currentMessageFinal{};
 		String currentMessageFinal{};
 		WebSocketOpCode dataOpCode{};
 		Bool areWeResuming{ false };
+		StringView currentMessage{};
 		String typeOfWebSocket{};
 		Uint64 messageLength{};
 		Uint64 messageOffset{};
