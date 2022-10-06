@@ -315,12 +315,8 @@ namespace DiscordCoreInternal {
 
 	Bool WebSocketMessageHandler::parseMessage() noexcept {
 		if (this->inputBuffer.getUsedSpace() > 0) {
-			if (this->currentMessage.size() < this->messageLength + this->messageOffset || this->currentMessage.size() == 0) {
-				auto theString = this->getInputBuffer();
-				this->currentMessage.writeData(theString.data(), theString.size());
-				std::cout << "THE NON-FINAL STRING: " << this->currentMessage.operator std::basic_string_view<char, std::char_traits<char>>() << std::endl;
-				std::cout << "THE NON-FINAL STRING SIZE: " << theString.size() << std::endl;
-			}
+			auto theString = this->getInputBuffer();
+			this->currentMessage.writeData(theString.data(), theString.size());
 			if (this->currentMessage.size() < 4) {
 				return false;
 			}
@@ -371,7 +367,7 @@ namespace DiscordCoreInternal {
 						this->theMessage =
 							StringView{ this->currentMessage[LengthData{ .offSet = this->messageOffset, .length = this->messageLength + simdjson::SIMDJSON_PADDING }] };
 						auto theResult = this->onMessageReceived();
-						this->currentMessage.erase(0, this->messageLength + this->messageOffset + simdjson::SIMDJSON_PADDING);
+						this->currentMessage.erase(0, this->messageLength + this->messageOffset);
 						this->messageOffset = 0;
 						this->messageLength = 0;
 						return theResult;
@@ -470,15 +466,11 @@ namespace DiscordCoreInternal {
 					try {
 						theStopWatchReal.resetTimer();
 						simdjson::ondemand::value theValue{};
-						std::cout << "THE STRING: " << this->theMessage << std::endl;
-						std::cout << "THE STRING: " << this->theMessage.size() << std::endl;
 						payload = ErlPacker::parseEtfToJson(this->theMessage);
 						payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 						if (auto theResult = this->theParser.iterate(payload.data(), payload.size(), payload.capacity()).get(theValue);
 							theResult == simdjson::error_code::SUCCESS) {
 							theMessage = WebSocketMessage{ theValue };
-						} else {
-							std::cout << "THE RESULT: " << theResult << std::endl;
 						}
 					} catch (...) {
 						if (this->configManager->doWePrintGeneralErrorMessages()) {
@@ -488,14 +480,10 @@ namespace DiscordCoreInternal {
 					}
 				} else {
 					simdjson::ondemand::value theValue{};
-					std::cout << "THE STRING: " << this->theMessage << std::endl;
-					std::cout << "THE STRING: " << this->theMessage.size() << std::endl;
 					if (auto theResult =
 							this->theParser.iterate(this->theMessage.data(), this->theMessage.size() - simdjson::SIMDJSON_PADDING, this->theMessage.size()).get(theValue);
 						theResult == simdjson::error_code::SUCCESS) {
 						theMessage = WebSocketMessage{ theValue };
-					} else {
-						std::cout << "THE RESULT: " << theResult << std::endl;
 					}
 				}
 

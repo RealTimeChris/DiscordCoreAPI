@@ -335,11 +335,6 @@ namespace DiscordCoreInternal {
 		} else if (returnValue == 0) {
 			return theReturnValue;
 		}
-		for (auto& [key, value]: theShardMap) {
-			if (!value->areWeAStandaloneSocket) {
-				value->handleBuffer();
-			}
-		}
 		for (auto& [key, value]: readWriteSet.thePolls) {
 			if (readWriteSet.thePolls[key].revents & POLLOUT) {
 				if (!theShardMap[key]->processWriteData()) {
@@ -365,7 +360,6 @@ namespace DiscordCoreInternal {
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
-		std::cout << "THE INPUT BUFFER: " << theString << std::endl;
 		return theString;
 	}
 
@@ -484,11 +478,10 @@ namespace DiscordCoreInternal {
 				}
 				case SSL_ERROR_NONE: {
 					if (writtenBytes > 0) {
-						std::cout << "WRITTEN BYTES: " << this->outputBuffer.getCurrentTail()->getCurrentTail() << std::endl;
 						this->outputBuffer.getCurrentTail()->clear();
 						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-					}
 					return true;
+					}
 				}
 				case SSL_ERROR_ZERO_RETURN: {
 					this->disconnect(false);
@@ -530,6 +523,9 @@ namespace DiscordCoreInternal {
 							this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
 							this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 							this->bytesRead += readBytes;
+							if (!this->areWeAStandaloneSocket) {
+								this->handleBuffer();
+							}
 						}
 						break;
 					}
@@ -546,10 +542,6 @@ namespace DiscordCoreInternal {
 					}
 				}
 			} while (SSL_pending(this->ssl));
-		}
-
-		if (!this->areWeAStandaloneSocket) {
-			this->handleBuffer();
 		}
 		return true;
 	}
