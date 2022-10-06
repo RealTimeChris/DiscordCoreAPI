@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::StopWatch theStopWatch{ 1500ms };
 				String newString{};
 				newString.insert(newString.begin(), other.begin(), other.begin() + static_cast<StringView>(other).find("\r\n\r\n") + String("\r\n\r\n").size());
-				other.erase(0, +newString.size());
+				other.erase(newString.size());
 				while (newString.size() > 0 && newString.find(":") != String::npos && newString.find("\r\n") != String::npos) {
 					if (theStopWatch.hasTimePassed()) {
 						break;
@@ -165,7 +165,7 @@ namespace DiscordCoreInternal {
 					if (static_cast<StringView>(other).find("\r\n") != static_cast<StringView>(other).find("\r\n0\r\n\r\n")) {
 						static_cast<HttpsConnection*>(this)->theData.responseMessage.insert(static_cast<HttpsConnection*>(this)->theData.responseMessage.end(), other.begin(),
 							other.begin() + static_cast<StringView>(other).find("\r\n"));
-						other.erase(0, static_cast<StringView>(other).find("\r\n") + 2);
+						other.erase(static_cast<StringView>(other).find("\r\n") + 2);
 					}
 				}
 				static_cast<HttpsConnection*>(this)->theData.responseMessage.insert(static_cast<HttpsConnection*>(this)->theData.responseMessage.end(), other.begin(),
@@ -216,7 +216,7 @@ namespace DiscordCoreInternal {
 				return 0;
 			} else {
 				static_cast<HttpsConnection*>(this)->theData.contentLength += stoll(theValueString, nullptr, 16);
-				other.erase(0, hexIndex);
+				other.erase(hexIndex);
 				this->doWeHaveContentSize = true;
 				static_cast<HttpsConnection*>(this)->theData.theCurrentState = HttpsState::Collecting_Contents;
 				return hexIndex;
@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			static_cast<HttpsConnection*>(this)->theData.responseCode = stoll(static_cast<String>(other[LengthData{ firstNumberIndex, lastNumberIndex - firstNumberIndex }]));
-			other.erase(0, static_cast<StringView>(other).find("\r\n"));
+			other.erase(static_cast<StringView>(other).find("\r\n"));
 			static_cast<HttpsConnection*>(this)->theData.theCurrentState = HttpsState::Collecting_Headers;
 			return static_cast<StringView>(other).find("\r\n");
 		} else if (static_cast<StringView>(other).size() > 200 && static_cast<StringView>(other).find("HTTP/1.") == String::npos) {
@@ -262,7 +262,7 @@ namespace DiscordCoreInternal {
 				break;
 			}
 		}
-		other.erase(0, theCount);
+		other.erase(theCount);
 	}
 
 	HttpsConnection::HttpsConnection(Bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
