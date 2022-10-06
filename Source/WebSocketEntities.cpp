@@ -294,7 +294,7 @@ namespace DiscordCoreInternal {
 						return;
 					} else {
 						this->onMessageReceived(this->currentMessage[LengthData{ .offSet = this->messageOffset, .length = this->messageLength }]);
-						this->currentMessage.erase(this->messageLength + this->messageOffset);
+						this->currentMessage.erase(0, this->messageLength + this->messageOffset);
 						this->messageOffset = 0;
 						this->messageLength = 0;
 						return;
