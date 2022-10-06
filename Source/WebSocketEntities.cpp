@@ -1503,11 +1503,6 @@ namespace DiscordCoreInternal {
 		});
 	}
 
-	Void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
-		std::unique_lock theLock{ this->theMutex };
-		this->voiceConnections.emplace_back(theData);
-	}
-
 	Void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage thePackageNew) noexcept {
 		try {
 			if (thePackageNew.currentShard != -1) {
@@ -1626,45 +1621,9 @@ namespace DiscordCoreInternal {
 		return this->taskThread.get();
 	}
 
-	Void BaseSocketAgent::disconnectVoiceInternal() noexcept {
-		if (this->voiceConnectionsToDisconnect.size() > 0) {
-			std::unique_lock theLock{ this->theMutex };
-			auto theDCData = this->voiceConnectionsToDisconnect.front();
-			this->voiceConnectionsToDisconnect.pop_front();
-			theLock.unlock();
-			if (DiscordCoreAPI::Globals::voiceConnectionMap[theDCData]) {
-				DiscordCoreAPI::Globals::voiceConnectionMap[theDCData]->disconnectInternal();
-			}
-		}
-	}
-
-	Void BaseSocketAgent::disconnectVoice(Uint64 theDCData) noexcept {
-		std::unique_lock theLock{ this->theMutex };
-		this->voiceConnectionsToDisconnect.emplace_back(theDCData);
-	}
-
-	Void BaseSocketAgent::connectVoiceInternal() noexcept {
-		if (this->voiceConnections.size() > 0) {
-			while (!this->theVCStopWatch.hasTimePassed()) {
-				std::this_thread::sleep_for(1ms);
-			}
-			this->theVCStopWatch.resetTimer();
-			std::unique_lock theLock{ this->theMutex };
-			VoiceConnectInitData theConnectionData = this->voiceConnections.front();
-			this->voiceConnections.pop_front();
-			theLock.unlock();
-			DiscordCoreAPI::Globals::voiceConnectionMap[theConnectionData.guildId] =
-				std::make_unique<DiscordCoreAPI::VoiceConnection>(this, this->theShardMap[theConnectionData.currentShard].get(), theConnectionData,
-					&this->discordCoreClient->configManager, this->doWeQuit, theConnectionData.streamType, theConnectionData.streamInfo);
-			DiscordCoreAPI::Globals::voiceConnectionMap[theConnectionData.guildId]->connect();
-		}
-	}
-
 	Void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
-				this->disconnectVoiceInternal();
-				this->connectVoiceInternal();
 				auto theResult = SSLClient::processIO(this->theShardMap);
 				if (theResult.size() > 0) {
 					for (auto& value: theResult) {

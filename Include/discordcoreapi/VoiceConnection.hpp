@@ -189,6 +189,8 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
+		Void connect(DiscordCoreInternal::VoiceConnectInitData) noexcept;
+
 		Void sendSpeakingMessage(const Bool isSpeaking) noexcept;
 
 		Void sendSingleFrame(AudioFrameData& frameData) noexcept;
@@ -206,8 +208,6 @@ namespace DiscordCoreAPI {
 		Void parseIncomingVoiceData() noexcept;
 
 		Bool areWeCurrentlyPlaying() noexcept;
-
-		Void disconnectInternal() noexcept;
 
 		Void reconnectStream() noexcept;
 
@@ -230,8 +230,6 @@ namespace DiscordCoreAPI {
 		Void onClosed() noexcept;
 
 		Void mixAudio() noexcept;
-
-		Void connect() noexcept;
 
 		Bool stop() noexcept;
 

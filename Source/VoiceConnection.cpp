@@ -615,45 +615,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	Void VoiceConnection::disconnectInternal() noexcept {
-		if (this->taskThread01) {
-			this->taskThread01->request_stop();
-			if (this->taskThread01->joinable()) {
-				this->taskThread01->join();
-			}
-			this->taskThread01.reset(nullptr);
-		}
-		if (this->taskThread02) {
-			this->taskThread02->request_stop();
-			if (this->taskThread02->joinable()) {
-				this->taskThread02->join();
-			}
-			this->taskThread02.reset(nullptr);
-		}
-		if (this->taskThread03) {
-			if (this->streamSocket) {
-				this->streamSocket->disconnect();
-			}
-			this->taskThread03->request_stop();
-			if (this->taskThread03->joinable()) {
-				this->taskThread03->join();
-			}
-			this->taskThread03.reset(nullptr);
-		}
-		DatagramSocketClient::disconnect();
-		VoiceConnection::disconnect();
-		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
-			this->streamSocket->disconnect();
-		}
-		if (DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)) {
-			DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)
-				->onSongCompletionEvent.remove(DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->eventToken);
-		}
-		this->areWeConnectedBool.store(false);
-		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-		this->activeState.store(VoiceActiveState::Connecting);
-	}
-
 	Void VoiceConnection::connectInternal() noexcept {
 		StopWatch theStopWatch{ 5000ms };
 		if (this->thePackage.currentShard == -1) {
@@ -884,7 +845,9 @@ namespace DiscordCoreAPI {
 						}
 					}
 					String message{};
-					message.insert(message.begin(), inputString.begin() + 8, inputString.begin() + 64);
+					if (inputString.size() > 64) {
+						message.insert(message.begin(), inputString.begin() + 8, inputString.begin() + 64);
+					}
 					auto endLineFind = message.find('\u0000', 5);
 					if (endLineFind != String::npos) {
 						message = message.substr(0, endLineFind);
@@ -928,8 +891,42 @@ namespace DiscordCoreAPI {
 	}
 
 	Void VoiceConnection::disconnect() noexcept {
-		this->baseSocketAgent->disconnectVoice(this->voiceConnectInitData.guildId);
 		this->activeState.store(VoiceActiveState::Exiting);
+		if (this->taskThread01) {
+			this->taskThread01->request_stop();
+			if (this->taskThread01->joinable()) {
+				this->taskThread01->join();
+			}
+			this->taskThread01.reset(nullptr);
+		}
+		if (this->taskThread02) {
+			this->taskThread02->request_stop();
+			if (this->taskThread02->joinable()) {
+				this->taskThread02->join();
+			}
+			this->taskThread02.reset(nullptr);
+		}
+		if (this->taskThread03) {
+			if (this->streamSocket) {
+				this->streamSocket->disconnect();
+			}
+			this->taskThread03->request_stop();
+			if (this->taskThread03->joinable()) {
+				this->taskThread03->join();
+			}
+			this->taskThread03.reset(nullptr);
+		}
+		DatagramSocketClient::disconnect();
+		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
+			this->streamSocket->disconnect();
+		}
+		if (DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)) {
+			DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)
+				->onSongCompletionEvent.remove(DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->eventToken);
+		}
+		this->areWeConnectedBool.store(false);
+		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+		this->activeState.store(VoiceActiveState::Connecting);
 	}
 
 	Void VoiceConnection::reconnect() noexcept {
@@ -1012,8 +1009,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	Void VoiceConnection::connect() noexcept {
+	Void VoiceConnection::connect(DiscordCoreInternal::VoiceConnectInitData theData) noexcept {
 		if (this->baseSocketAgent) {
+			this->voiceConnectInitData = theData;
 			this->thePackage.currentShard = 1;
 			this->theConnections.emplace_back(this->thePackage);
 			this->activeState.store(VoiceActiveState::Connecting);
@@ -1043,7 +1041,6 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceConnection::~VoiceConnection() {
-		this->disconnectInternal();
 	}
 
 }
