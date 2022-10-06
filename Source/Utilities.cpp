@@ -1711,20 +1711,21 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Void StringBuffer::erase(Uint64 offSet, Uint64 amount) {
-		this->theSize = this->theSize - amount;
+	char StringBuffer::operator[](Uint64 theIndex) {
 		if (this->whichOneAreWeOn == 0) {
-			if (this->theString02.size() < this->theString01.size()) {
-				this->theString02.resize(this->theString01.size());
-			}
-			memcpy(this->theString02.data(), this->theString01.data() + amount, this->theSize);
-			this->whichOneAreWeOn = 1;
+			return this->theString01[theIndex];
 		} else {
-			if (this->theString01.size() < this->theString02.size()) {
-				this->theString01.resize(this->theString02.size());
-			}
-			memcpy(this->theString01.data(), this->theString02.data() + amount, this->theSize);
-			this->whichOneAreWeOn = 0;
+			return this->theString02[theIndex];
+		}
+	}
+
+	StringBuffer::operator StringView() {
+		if (this->whichOneAreWeOn == 0) {
+			StringView theString{ this->theString01.data(), this->theSize };
+			return theString;
+		} else {
+			StringView theString{ this->theString02.data(), this->theSize };
+			return theString;
 		}
 	}
 
@@ -1750,21 +1751,36 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	StringBuffer::operator StringView() {
+	String::iterator StringBuffer::begin() {
 		if (this->whichOneAreWeOn == 0) {
-			StringView theString{ this->theString01.data(), this->theSize };
-			return theString;
+			return this->theString01.begin();
 		} else {
-			StringView theString{ this->theString02.data(), this->theSize };
-			return theString;
+			return this->theString02.begin();
 		}
 	}
 
-	char StringBuffer::operator[](Uint64 theIndex) {
+	String::iterator StringBuffer::end() {
 		if (this->whichOneAreWeOn == 0) {
-			return this->theString01[theIndex];
+			return this->theString01.end();
 		} else {
-			return this->theString02[theIndex];
+			return this->theString02.end();
+		}
+	}
+
+	Void StringBuffer::erase(Uint64 amount) {
+		this->theSize = this->theSize - amount;
+		if (this->whichOneAreWeOn == 0) {
+			if (this->theString02.size() < this->theString01.size()) {
+				this->theString02.resize(this->theString01.size());
+			}
+			memcpy(this->theString02.data(), this->theString01.data() + amount, this->theSize);
+			this->whichOneAreWeOn = 1;
+		} else {
+			if (this->theString01.size() < this->theString02.size()) {
+				this->theString01.resize(this->theString02.size());
+			}
+			memcpy(this->theString01.data(), this->theString02.data() + amount, this->theSize);
+			this->whichOneAreWeOn = 0;
 		}
 	}
 

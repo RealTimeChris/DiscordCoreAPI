@@ -262,7 +262,7 @@ namespace DiscordCoreAPI {
 				return;
 			} else {
 				if (DatagramSocketClient::areWeStillConnected()) {
-					DatagramSocketClient::writeData(std::move(responseData));
+					DatagramSocketClient::writeData(responseData);
 				}
 			}
 		} catch (...) {
@@ -832,7 +832,7 @@ namespace DiscordCoreAPI {
 					packet[6] = static_cast<Uint8>(this->audioSSRC >> 8);
 					packet[7] = static_cast<Uint8>(this->audioSSRC);
 					DatagramSocketClient::getInputBuffer();
-					DatagramSocketClient::writeData(std::move(packet));
+					DatagramSocketClient::writeData(packet);
 					String inputString{};
 					StopWatch theStopWatch{ 2500ms };
 					while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {

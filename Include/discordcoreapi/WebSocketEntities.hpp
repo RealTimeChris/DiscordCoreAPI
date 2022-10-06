@@ -60,7 +60,7 @@ namespace DiscordCoreInternal {
 
 		virtual Bool onMessageReceived(StringView theMessage) noexcept = 0;
 
-		Bool sendMessage(String& dataToSend, Bool priority) noexcept;
+		Bool sendMessage(StringView dataToSend, Bool priority) noexcept;
 
 		Void checkForAndSendHeartBeat(Bool = false) noexcept;
 

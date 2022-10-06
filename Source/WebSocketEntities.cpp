@@ -384,7 +384,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Bool WebSocketMessageHandler::sendMessage(String& dataToSend, Bool priority) noexcept {
+	Bool WebSocketMessageHandler::sendMessage(StringView dataToSend, Bool priority) noexcept {
 		if (this->areWeStillConnected()) {
 			try {
 				if (dataToSend.size() == 0) {

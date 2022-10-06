@@ -1667,17 +1667,13 @@ namespace DiscordCoreInternal {
 
 		StringView operator[](LengthData);
 
-		Void writeData(const char*, Uint64);
+		char operator[](Uint64);
 
 		operator StringView();
 
-		Void erase(Uint64, Uint64);
+		Void writeData(const char*, Uint64);
 
-		char operator[](Uint64);
-
-		Uint64 size();
-
-		auto begin() {
+		String::iterator begin() {
 			if (this->whichOneAreWeOn == 0) {
 				return this->theString01.begin();
 			} else {
@@ -1685,13 +1681,17 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		auto end() {
+		String::iterator end() {
 			if (this->whichOneAreWeOn == 0) {
 				return this->theString01.end();
 			} else {
 				return this->theString02.end();
 			}
 		}
+
+		Void erase(Uint64);
+
+		Uint64 size();
 
 		Void clear();
 

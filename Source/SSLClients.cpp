@@ -374,7 +374,7 @@ namespace DiscordCoreInternal {
 		return theString;
 	}
 
-	ProcessIOResult SSLClient::writeData(String& dataToWrite, Bool priority) noexcept {
+	ProcessIOResult SSLClient::writeData(StringView dataToWrite, Bool priority) noexcept {
 		if (dataToWrite.size() > 0 && this->ssl) {
 			if (priority && dataToWrite.size() < static_cast<Uint64>(16 * 1024)) {
 				pollfd readWriteSet{ .fd = static_cast<uint32_t>(this->theSocket), .events = POLLOUT };
@@ -393,22 +393,21 @@ namespace DiscordCoreInternal {
 					}
 				}
 			} else {
-				if (dataToWrite.size() >= static_cast<Uint64>(16 * 1024)) {
+				if (dataToWrite.size() > static_cast<Uint64>(16 * 1024)) {
 					Uint64 remainingBytes{ dataToWrite.size() };
+					Uint64 amountCollected{};
 					while (remainingBytes > 0) {
-						String newString{};
 						Uint64 amountToCollect{};
 						if (dataToWrite.size() >= static_cast<Uint64>(1024 * 16)) {
 							amountToCollect = static_cast<Uint64>(1024 * 16);
 						} else {
 							amountToCollect = dataToWrite.size();
 						}
-						newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
-						memcpy(this->outputBuffer.getCurrentHead()->getCurrentHead(), newString.data(), newString.size());
-						this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, newString.size());
+						memcpy(this->outputBuffer.getCurrentHead()->getCurrentHead(), dataToWrite.data() + amountCollected, amountToCollect);
+						this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
 						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-						dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 						remainingBytes = dataToWrite.size();
+						amountCollected += amountToCollect;
 					}
 				} else {
 					memcpy(this->outputBuffer.getCurrentHead()->getCurrentHead(), dataToWrite.data(), dataToWrite.size());

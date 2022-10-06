@@ -198,7 +198,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class HttpsClient;
 
-		virtual ProcessIOResult writeData(String& dataToWrite, Bool priority) noexcept = 0;
+		virtual ProcessIOResult writeData(StringView dataToWrite, Bool priority) noexcept = 0;
 
 		virtual StringView getInputBuffer() noexcept = 0;
 
@@ -219,13 +219,13 @@ namespace DiscordCoreInternal {
 
 		Bool connect(const String& baseUrl, const String& portNew, Bool doWePrintErrorMessages, Bool areWeAStandaloneSocket) noexcept;
 
-		ProcessIOResult writeData(String& dataToWrite, Bool priority) noexcept;
+		ProcessIOResult writeData(StringView dataToWrite, Bool priority) noexcept;
 
 		ProcessIOResult processIO(Int32 msToWait) noexcept;
 
-		StringView getInputBuffer() noexcept;
-
 		virtual Void handleBuffer() noexcept = 0;
+
+		StringView getInputBuffer() noexcept;
 
 		Bool areWeStillConnected() noexcept;
 
