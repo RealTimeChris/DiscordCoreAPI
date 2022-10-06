@@ -38,9 +38,9 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<typename... ArgTypes> using TimeElapsedHandler = std::function<Void(ArgTypes...)>;
+	template<typename... ArgTypes> using TimeElapsedHandler = std::function<void(ArgTypes...)>;
 
-	using TimeElapsedHandlerNoArgs = std::function<Void(Void)>;
+	using TimeElapsedHandlerNoArgs = std::function<void(void)>;
 
 	constexpr Float thePercentage{ 10.0f / 100.0f };
 

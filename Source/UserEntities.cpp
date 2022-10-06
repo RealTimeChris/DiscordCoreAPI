@@ -187,8 +187,11 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/@me";
 		workload.callStack = "Users::getCurrentUserAsync()";
+		std::cout << "WERE LEAVING LEAVING LEAVING 213123132" << std::endl;
 		auto userData = Users::httpsClient->submitWorkloadAndGetResult<UserData>(workload);
+		std::cout << "WERE LEAVING LEAVING LEAVING 234234234" << std::endl;
 		Users::insertUser(userData);
+		std::cout << "WERE LEAVING LEAVING LEAVING 243445345345" << std::endl;
 		co_return userData;
 	}
 
