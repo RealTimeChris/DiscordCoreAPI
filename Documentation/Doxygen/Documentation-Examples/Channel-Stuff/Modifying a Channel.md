@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				Channel channel = Channels::getCachedChannelAsync({.channelId = args.eventData.getChannelId()}).get();
 				DiscordCoreAPI::ModifyChannelData dataPackage {channel};

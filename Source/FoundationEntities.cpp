@@ -166,8 +166,8 @@ namespace DiscordCoreInternal {
 		return theValue;
 	}
 
-	std::unordered_map<HttpsWorkloadType, std::unique_ptr<AtomicInt64>> HttpsWorkloadData::workloadIdsExternal{};
-	std::unordered_map<HttpsWorkloadType, std::unique_ptr<AtomicInt64>> HttpsWorkloadData::workloadIdsInternal{};
+	UMap<HttpsWorkloadType, std::unique_ptr<AtomicInt64>> HttpsWorkloadData::workloadIdsExternal{};
+	UMap<HttpsWorkloadType, std::unique_ptr<AtomicInt64>> HttpsWorkloadData::workloadIdsInternal{};
 
 	HelloData::HelloData(simdjson::ondemand::value jsonObjectData) {
 		this->heartbeatInterval = DiscordCoreAPI::getUint64(jsonObjectData, "heartbeat_interval");
@@ -1339,7 +1339,7 @@ namespace DiscordCoreAPI {
 		return DiscordCoreClient::getVoiceConnection(this->id)->areWeConnected();
 	}
 
-	void GuildData::disconnect() {
+	Void GuildData::disconnect() {
 		if (DiscordCoreClient::getVoiceConnection(this->id)) {
 			UpdateVoiceStateData updateVoiceData{};
 			updateVoiceData.channelId = 0;
@@ -2943,7 +2943,7 @@ namespace DiscordCoreAPI {
 
 			this->trackAuthorization = getString(jsonObjectData, "track_authorization");
 
-			std::vector<MediaTranscoding> theMedia{};
+			Vector<MediaTranscoding> theMedia{};
 			auto theArrayNew = getArray(getObject(jsonObjectData, "media"), "transcodings");
 			if (theArrayNew.didItSucceed) {
 				for (auto value: theArrayNew.theArray) {
@@ -3138,11 +3138,11 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	GuildApplicationCommandPermissionsDataVector::operator std::vector<GuildApplicationCommandPermissionsData>() {
+	GuildApplicationCommandPermissionsDataVector::operator Vector<GuildApplicationCommandPermissionsData>() {
 		return this->theGuildApplicationCommandPermissionsDatas;
 	}
 
-	BanDataVector::operator std::vector<BanData>() {
+	BanDataVector::operator Vector<BanData>() {
 		return this->theBanDatas;
 	}
 
@@ -3160,27 +3160,27 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	GuildDataVector::operator std::vector<GuildData>() {
+	GuildDataVector::operator Vector<GuildData>() {
 		return this->theGuildDatas;
 	}
 
-	GuildScheduledEventUserDataVector::operator std::vector<GuildScheduledEventUserData>() {
+	GuildScheduledEventUserDataVector::operator Vector<GuildScheduledEventUserData>() {
 		return this->theGuildScheduledEventUserDatas;
 	}
 
-	GuildScheduledEventDataVector::operator std::vector<GuildScheduledEventData>() {
+	GuildScheduledEventDataVector::operator Vector<GuildScheduledEventData>() {
 		return this->theGuildScheduledEventDatas;
 	}
 
-	InviteDataVector::operator std::vector<InviteData>() {
+	InviteDataVector::operator Vector<InviteData>() {
 		return this->theInviteDatas;
 	}
 
-	GuildTemplateDataVector::operator std::vector<GuildTemplateData>() {
+	GuildTemplateDataVector::operator Vector<GuildTemplateData>() {
 		return this->theGuildTemplateDatas;
 	}
 
-	WebHookDataVector::operator std::vector<WebHookData>() {
+	WebHookDataVector::operator Vector<WebHookData>() {
 		return this->theWebHookDatas;
 	}
 
@@ -3263,14 +3263,14 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	ThreadMemberDataVector::operator std::vector<ThreadMemberData>() {
+	ThreadMemberDataVector::operator Vector<ThreadMemberData>() {
 		return this->theThreadMemberDatas;
 	}
-	YouTubeFormatVector::operator std::vector<YouTubeFormat>() {
+	YouTubeFormatVector::operator Vector<YouTubeFormat>() {
 		return this->theFormats;
 	}
 
-	void AudioFrameData::clearData() noexcept {
+	Void AudioFrameData::clearData() noexcept {
 		this->type = AudioFrameType::Unset;
 		this->guildMemberId = 0;
 		this->sampleCount = -1;
@@ -3395,11 +3395,11 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	StickerPackDataVector::operator std::vector<StickerPackData>() {
+	StickerPackDataVector::operator Vector<StickerPackData>() {
 		return this->theStickerPackDatas;
 	}
 
-	ConnectionDataVector::operator std::vector<ConnectionData>() {
+	ConnectionDataVector::operator Vector<ConnectionData>() {
 		return this->theConnectionDatas;
 	}
 
@@ -3416,11 +3416,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	VoiceRegionDataVector::operator std::vector<VoiceRegionData>() {
+	VoiceRegionDataVector::operator Vector<VoiceRegionData>() {
 		return this->theVoiceRegionDatas;
 	}
 
-	IntegrationDataVector::operator std::vector<IntegrationData>() {
+	IntegrationDataVector::operator Vector<IntegrationData>() {
 		return this->theIntegrationDatas;
 	}
 
@@ -3469,11 +3469,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::vector<EmbedData> InputEventData::getEmbeds() const {
+	Vector<EmbedData> InputEventData::getEmbeds() const {
 		return this->interactionData->message.embeds;
 	}
 
-	std::vector<ActionRowData> InputEventData::getComponents() const {
+	Vector<ActionRowData> InputEventData::getComponents() const {
 		return this->interactionData->message.components;
 	}
 
@@ -3566,7 +3566,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder,
+	RespondToInputEventData& RespondToInputEventData::addSelectMenu(Bool disabled, const String& customIdNew, Vector<SelectOptionData> options, const String& placeholder,
 		Int32 maxValues, Int32 minValues) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
@@ -3655,8 +3655,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(simdjson::ondemand::object theValue, const String& theName,
-		std::unordered_map<String, String> theNameLocalizations) {
+	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(simdjson::ondemand::object theValue, const String& theName, UMap<String, String> theNameLocalizations) {
 		ApplicationCommandOptionChoiceData choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name = theName;
@@ -3716,8 +3715,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder,
-		Int32 maxValues, Int32 minValues) {
+	MessageResponseBase& MessageResponseBase::addSelectMenu(Bool disabled, const String& customIdNew, Vector<SelectOptionData> options, const String& placeholder, Int32 maxValues,
+		Int32 minValues) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3883,7 +3882,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	void parseCommandDataOption(std::unordered_map<String, JsonStringValue>& theValues, ApplicationCommandInteractionDataOption& theData) {
+	Void parseCommandDataOption(UMap<String, JsonStringValue>& theValues, ApplicationCommandInteractionDataOption& theData) {
 		JsonStringValue theValue{};
 		theValue.theType = theData.value.theType;
 		theValue.theValue = theData.value.theValue;
@@ -3926,7 +3925,7 @@ namespace DiscordCoreAPI {
 		this->discordCoreClient = discordCoreClientNew;
 	}
 
-	MoveThroughMessagePagesData moveThroughMessagePages(const String& userID, InputEventData originalEvent, Uint32 currentPageIndex, const std::vector<EmbedData>& messageEmbeds,
+	MoveThroughMessagePagesData moveThroughMessagePages(const String& userID, InputEventData originalEvent, Uint32 currentPageIndex, const Vector<EmbedData>& messageEmbeds,
 		Bool deleteAfter, Uint32 waitForMaxMs, Bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
 		Uint32 newCurrentPageIndex = currentPageIndex;
@@ -3947,7 +3946,7 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(1ms);
 			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
 
-			std::vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, Snowflake{ stoull(userID) }).get() };
+			Vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, Snowflake{ stoull(userID) }).get() };
 
 			if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
 				std::unique_ptr<RespondToInputEventData> dataPackage02{ std::make_unique<RespondToInputEventData>(originalEvent) };

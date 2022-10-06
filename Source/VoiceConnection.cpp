@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		this->port = getUint64(jsonObjectData, "port");
 	}
 
-	void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) noexcept {
+	Void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) noexcept {
 		if (other) {
 			opus_decoder_destroy(other);
 			other = nullptr;
@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
-	RTPPacket::RTPPacket(Uint32 timestampNew, Uint16 sequenceNew, Uint32 ssrcNew, std::vector<Uint8>& audioDataNew, const String& theKeysNew) noexcept {
+	RTPPacket::RTPPacket(Uint32 timestampNew, Uint16 sequenceNew, Uint32 ssrcNew, Vector<Uint8>& audioDataNew, const String& theKeysNew) noexcept {
 		this->audioData = std::move(audioDataNew);
 		this->timestamp = timestampNew;
 		this->sequence = sequenceNew;
@@ -162,7 +162,7 @@ namespace DiscordCoreAPI {
 		return this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer;
 	}
 
-	void VoiceConnection::sendSingleFrame(AudioFrameData& frameData) noexcept {
+	Void VoiceConnection::sendSingleFrame(AudioFrameData& frameData) noexcept {
 		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.send(std::move(frameData));
 	}
 
@@ -250,11 +250,11 @@ namespace DiscordCoreAPI {
 		return false;
 	}
 
-	void VoiceConnection::reconnectStream() noexcept {
+	Void VoiceConnection::reconnectStream() noexcept {
 		this->streamSocket->connect(this->theStreamInfo.address, this->theStreamInfo.port);
 	}
 
-	void VoiceConnection::sendVoiceData(String& responseData) noexcept {
+	Void VoiceConnection::sendVoiceData(String& responseData) noexcept {
 		try {
 			if (responseData.size() == 0) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -274,7 +274,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::sendSpeakingMessage(const Bool isSpeaking) noexcept {
+	Void VoiceConnection::sendSpeakingMessage(const Bool isSpeaking) noexcept {
 		DiscordCoreInternal::SendSpeakingData theData{};
 		if (!isSpeaking) {
 			theData.type = static_cast<DiscordCoreInternal::SendSpeakingType>(0);
@@ -291,7 +291,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
+	Void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				if (this->theConnections.size() > 0) {
@@ -333,7 +333,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::runBridge(std::stop_token theToken) noexcept {
+	Void VoiceConnection::runBridge(std::stop_token theToken) noexcept {
 		StopWatch theStopWatch{ 20ms };
 		Int32 timeToWaitInMs{ 20 };
 		Int32 timeTakesToSleep{ 0 };
@@ -387,7 +387,7 @@ namespace DiscordCoreAPI {
 		return false;
 	}
 
-	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
+	Void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
 		StopWatch theStopWatch{ 20000ms };
 		StopWatch theSendSilenceStopWatch{ 5000ms };
 		while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
@@ -527,12 +527,12 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	void VoiceConnection::parseIncomingVoiceData() noexcept {
+	Void VoiceConnection::parseIncomingVoiceData() noexcept {
 		while (this->theFrameQueue.size() > 0) {
 			VoicePayload theBuffer = this->theFrameQueue.front();
 			this->theFrameQueue.pop_front();
 			if (theBuffer.theRawData.size() > 0 && this->secretKeySend.size() > 0) {
-				std::vector<Uint8> packet{};
+				Vector<Uint8> packet{};
 				packet.insert(packet.begin(), theBuffer.theRawData.begin(), theBuffer.theRawData.end());
 				theBuffer.theRawData.clear();
 				constexpr Uint64 headerSize{ 12 };
@@ -546,7 +546,7 @@ namespace DiscordCoreAPI {
 				Uint32 speakerSsrc{ *reinterpret_cast<Uint32*>(packet.data() + 8) };
 				speakerSsrc = ntohl(speakerSsrc);
 
-				std::vector<Uint8> nonce{};
+				Vector<Uint8> nonce{};
 				nonce.resize(24);
 				for (Uint32 x = 0; x < headerSize; ++x) {
 					nonce[x] = packet[x];
@@ -555,9 +555,9 @@ namespace DiscordCoreAPI {
 				const ptrdiff_t offsetToData = headerSize + sizeof(Uint32) * csrcCount;
 				Uint8* encryptedData = packet.data() + offsetToData;
 				const Uint64 encryptedDataLength = packet.size() - offsetToData;
-				std::vector<Uint8> theKey{};
+				Vector<Uint8> theKey{};
 				theKey.insert(theKey.begin(), this->secretKeySend.begin(), this->secretKeySend.end());
-				std::vector<Uint8> decryptedData{};
+				Vector<Uint8> decryptedData{};
 				decryptedData.resize(encryptedDataLength);
 				if (crypto_secretbox_open_easy(decryptedData.data(), encryptedData, encryptedDataLength, nonce.data(), theKey.data())) {
 					return;
@@ -615,7 +615,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::disconnectInternal() noexcept {
+	Void VoiceConnection::disconnectInternal() noexcept {
 		if (this->taskThread01) {
 			this->taskThread01->request_stop();
 			if (this->taskThread01->joinable()) {
@@ -654,7 +654,7 @@ namespace DiscordCoreAPI {
 		this->activeState.store(VoiceActiveState::Connecting);
 	}
 
-	void VoiceConnection::connectInternal() noexcept {
+	Void VoiceConnection::connectInternal() noexcept {
 		StopWatch theStopWatch{ 5000ms };
 		if (this->thePackage.currentShard == -1) {
 			return;
@@ -826,7 +826,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::clearAudioData() noexcept {
+	Void VoiceConnection::clearAudioData() noexcept {
 		if (this->audioData.data.size() != 0) {
 			this->audioData.data.clear();
 			this->audioData = AudioFrameData();
@@ -844,7 +844,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::onClosed() noexcept {
+	Void VoiceConnection::onClosed() noexcept {
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
 			this->reconnect();
@@ -906,7 +906,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::sendSilence() noexcept {
+	Void VoiceConnection::sendSilence() noexcept {
 		AudioFrameData newFrame{};
 		newFrame.data.emplace_back(0xf8);
 		newFrame.data.emplace_back(0xff);
@@ -917,7 +917,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::pauseToggle() noexcept {
+	Void VoiceConnection::pauseToggle() noexcept {
 		if (this) {
 			if (this->activeState.load() == VoiceActiveState::Paused) {
 				this->activeState.store(VoiceActiveState::Playing);
@@ -927,12 +927,12 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::disconnect() noexcept {
+	Void VoiceConnection::disconnect() noexcept {
 		this->baseSocketAgent->disconnectVoice(this->voiceConnectInitData.guildId);
 		this->activeState.store(VoiceActiveState::Exiting);
 	}
 
-	void VoiceConnection::reconnect() noexcept {
+	Void VoiceConnection::reconnect() noexcept {
 		DatagramSocketClient::disconnect();
 		if (WebSocketMessageHandler::theSocket != SOCKET_ERROR) {
 			WebSocketMessageHandler::theSocket = SOCKET_ERROR;
@@ -963,10 +963,10 @@ namespace DiscordCoreAPI {
 		this->currentReconnectTries++;
 	}
 
-	void VoiceConnection::mixAudio() noexcept {
+	Void VoiceConnection::mixAudio() noexcept {
 		if (this->voiceUsers.size() > 0) {
 			opus_int32 voiceUserCount{};
-			std::vector<opus_int32> theUpsampledVector{};
+			Vector<opus_int32> theUpsampledVector{};
 			for (auto& [key, value]: this->voiceUsers) {
 				if (value.thePayloads.size() > 0) {
 					std::unique_lock theLock00{ this->voiceUserMutex };
@@ -993,7 +993,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 			if (theUpsampledVector.size() > 0) {
-				std::vector<opus_int16> theDownsampledVector{};
+				Vector<opus_int16> theDownsampledVector{};
 				theDownsampledVector.resize(theUpsampledVector.size());
 				for (Int32 x = 0; x < theUpsampledVector.size(); ++x) {
 					theDownsampledVector[x] = static_cast<opus_int16>(theUpsampledVector[x] / voiceUserCount);
@@ -1012,7 +1012,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::connect() noexcept {
+	Void VoiceConnection::connect() noexcept {
 		if (this->baseSocketAgent) {
 			this->thePackage.currentShard = 1;
 			this->theConnections.emplace_back(this->thePackage);

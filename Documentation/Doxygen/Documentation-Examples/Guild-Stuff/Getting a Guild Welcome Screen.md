@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::GetGuildWelcomeScreenData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();

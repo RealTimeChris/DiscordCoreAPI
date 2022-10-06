@@ -74,16 +74,16 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	EnumConverter::operator std::vector<Uint64>() const noexcept {
-		std::vector<Uint64> theObject{};
+	EnumConverter::operator Vector<Uint64>() const noexcept {
+		Vector<Uint64> theObject{};
 		for (auto& value: this->theVector) {
 			theObject.emplace_back(value);
 		}
 		return theObject;
 	}
 
-	EnumConverter::operator std::vector<Uint64>() noexcept {
-		std::vector<Uint64> theObject{};
+	EnumConverter::operator Vector<Uint64>() noexcept {
+		Vector<Uint64> theObject{};
 		for (auto& value: this->theVector) {
 			theObject.emplace_back(value);
 		}
@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 	JsonObject& JsonObject::operator=(EnumConverter&& theData) noexcept {
 		if (theData.isItAVector()) {
 			this->set(std::make_unique<ArrayType>());
-			for (auto& value: theData.operator std::vector<Uint64, std::allocator<Uint64>>()) {
+			for (auto& value: theData.operator Vector<Uint64>()) {
 				this->theValue.array->push_back(value);
 			}
 		} else {
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 	JsonObject& JsonObject::operator=(const EnumConverter& theData) noexcept {
 		if (theData.isItAVector()) {
 			this->set(std::make_unique<ArrayType>());
-			for (auto& value: theData.operator std::vector<Uint64, std::allocator<Uint64>>()) {
+			for (auto& value: theData.operator Vector<Uint64>()) {
 				this->theValue.array->push_back(value);
 			}
 		} else {
@@ -513,7 +513,7 @@ namespace DiscordCoreAPI {
 		throw std::runtime_error{ "Sorry, but that item-key could not be produced/accessed." };
 	}
 
-	void JsonObject::pushBack(JsonObject&& other) noexcept {
+	Void JsonObject::pushBack(JsonObject&& other) noexcept {
 		if (this->theType == ValueType::Null) {
 			this->set(std::make_unique<ArrayType>());
 			this->theType = ValueType::Array;
@@ -524,7 +524,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void JsonObject::pushBack(JsonObject& other) noexcept {
+	Void JsonObject::pushBack(JsonObject& other) noexcept {
 		if (this->theType == ValueType::Null) {
 			this->set(std::make_unique<ArrayType>());
 			this->theType = ValueType::Array;
@@ -585,7 +585,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case ValueType::Bool: {
-				std::stringstream theStream{};
+				StringStream theStream{};
 				theStream << std::boolalpha << this->theValue.boolean;
 				theString += theStream.str();
 				break;
@@ -664,7 +664,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case ValueType::Bool: {
-				std::stringstream theStream{};
+				StringStream theStream{};
 				theStream << std::boolalpha << this->theValue.boolean;
 				theString += theStream.str();
 				break;
@@ -693,25 +693,25 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
-	void JsonObject::set(std::unique_ptr<String> p) {
+	Void JsonObject::set(std::unique_ptr<String> p) {
 		destroy();
 		new (&this->theValue.string) std::unique_ptr<String>{ std::move(p) };
 		this->theType = ValueType::String;
 	}
 
-	void JsonObject::set(std::unique_ptr<ArrayType> p) {
+	Void JsonObject::set(std::unique_ptr<ArrayType> p) {
 		destroy();
 		new (&this->theValue.string) std::unique_ptr<ArrayType>{ std::move(p) };
 		this->theType = ValueType::Array;
 	}
 
-	void JsonObject::set(std::unique_ptr<ObjectType> p) {
+	Void JsonObject::set(std::unique_ptr<ObjectType> p) {
 		destroy();
 		new (&this->theValue.string) std::unique_ptr<ObjectType>{ std::move(p) };
 		this->theType = ValueType::Object;
 	}
 
-	void JsonObject::destroy() noexcept {
+	Void JsonObject::destroy() noexcept {
 		switch (this->theType) {
 			case ValueType::Array: {
 				this->theValue.array.reset(nullptr);
@@ -732,7 +732,7 @@ namespace DiscordCoreAPI {
 		this->destroy();
 	}
 
-	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const String& (*theFunction)( void )) {
+	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const String& (*theFunction)(Void)) {
 		outputSttream << theFunction();
 		return outputSttream;
 	}
@@ -813,7 +813,7 @@ namespace DiscordCoreAPI {
 		return this->theConfig.connectionAddress;
 	}
 
-	void ConfigManager::setConnectionAddress(const String& connectionAddressNew) {
+	Void ConfigManager::setConnectionAddress(const String& connectionAddressNew) {
 		this->theConfig.connectionAddress = connectionAddressNew;
 	}
 
@@ -821,11 +821,11 @@ namespace DiscordCoreAPI {
 		return this->theConfig.connectionPort;
 	}
 
-	void ConfigManager::setConnectionPort(const String& connectionPortNew) {
+	Void ConfigManager::setConnectionPort(const String& connectionPortNew) {
 		this->theConfig.connectionPort = connectionPortNew;
 	}
 
-	const std::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() {
+	const Vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() {
 		return this->theConfig.functionsToExecute;
 	}
 
@@ -915,7 +915,7 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
-	void StringWrapper::emplace_back(char theChar) {
+	Void StringWrapper::emplace_back(char theChar) {
 		StringStream theStream{};
 		if (this->thePtr) {
 			theStream << this->thePtr;
@@ -1117,7 +1117,7 @@ namespace DiscordCoreAPI {
 		return permissions;
 	}
 
-	void Permissions::removePermissions(const std::vector<Permission>& permissionsToRemove) {
+	Void Permissions::removePermissions(const Vector<Permission>& permissionsToRemove) {
 		Uint64 permissionsInteger = this->thePermissions;
 		for (auto value: permissionsToRemove) {
 			permissionsInteger &= ~static_cast<Uint64>(value);
@@ -1127,7 +1127,7 @@ namespace DiscordCoreAPI {
 		*this = sstream.str();
 	}
 
-	void Permissions::addPermissions(const std::vector<Permission>& permissionsToAdd) {
+	Void Permissions::addPermissions(const Vector<Permission>& permissionsToAdd) {
 		Uint64 permissionsInteger = this->thePermissions;
 		for (auto value: permissionsToAdd) {
 			permissionsInteger |= static_cast<Uint64>(value);
@@ -1137,8 +1137,8 @@ namespace DiscordCoreAPI {
 		*this = sstream.str();
 	}
 
-	std::vector<String> Permissions::displayPermissions() {
-		std::vector<String> returnVector{};
+	Vector<String> Permissions::displayPermissions() {
+		Vector<String> returnVector{};
 		Uint64 permissionsInteger = this->thePermissions;
 		if (permissionsInteger & (1ll << 3)) {
 			for (Uint64 x = 0; x < 41; ++x) {
@@ -1299,7 +1299,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 		}
-		std::vector<RoleData> guildMemberRoles{};
+		Vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRoleAsync({ .guildId = guildMember.guildId, .roleId = value }).get());
 		}
@@ -1336,7 +1336,7 @@ namespace DiscordCoreAPI {
 		if (guild.ownerId == guildMember.id) {
 			return Permissions::getAllPermissions();
 		}
-		std::vector<RoleData> guildRoles{};
+		Vector<RoleData> guildRoles{};
 		for (auto& value: guild.roles) {
 			guildRoles.emplace_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
 		}
@@ -1353,7 +1353,7 @@ namespace DiscordCoreAPI {
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
 		getRolesData.guildId = guildMember.guildId;
-		std::vector<RoleData> guildMemberRoles{};
+		Vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRoleAsync({ .guildId = guild.id, .roleId = value }).get());
 		}
@@ -1368,7 +1368,7 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	void reportException(const String& currentFunctionName, std::source_location theLocation) {
+	Void reportException(const String& currentFunctionName, std::source_location theLocation) {
 		try {
 			auto currentException = std::current_exception();
 			if (currentException) {
@@ -1387,7 +1387,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void rethrowException(const String& currentFunctionName, std::source_location theLocation) {
+	Void rethrowException(const String& currentFunctionName, std::source_location theLocation) {
 		try {
 			auto currentException = std::current_exception();
 			if (currentException) {
@@ -1407,7 +1407,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	String constructMultiPartData(String theData, const std::vector<File>& files) {
+	String constructMultiPartData(String theData, const Vector<File>& files) {
 		const String boundary("boundary25");
 		const String partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
 
@@ -1531,7 +1531,7 @@ namespace DiscordCoreAPI {
 		return escaped.str();
 	}
 
-	void spinLock(Uint64 timeInNsToSpinLockFor) {
+	Void spinLock(Uint64 timeInNsToSpinLockFor) {
 		Uint64 startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 		Uint64 timePassed{ 0 };
 		while (timePassed < timeInNsToSpinLockFor) {
@@ -1691,7 +1691,7 @@ namespace DiscordCoreAPI {
 		return theStringNew;
 	}
 
-	template<typename Object> std::unordered_map<String, UnboundedMessageBlock<Object>*> ObjectCollector<Object>::objectsBufferMap{};
+	template<typename Object> UMap<String, UnboundedMessageBlock<Object>*> ObjectCollector<Object>::objectsBufferMap{};
 };
 
 namespace DiscordCoreInternal {
@@ -1711,7 +1711,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void StringBuffer::erase(Uint64 offSet, Uint64 amount) {
+	Void StringBuffer::erase(Uint64 offSet, Uint64 amount) {
 		this->theSize = this->theSize - amount;
 		if (this->whichOneAreWeOn == 0) {
 			if (this->theString02.size() < this->theString01.size()) {
@@ -1728,7 +1728,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void StringBuffer::writeData(const char* thePtr, Uint64 theSize) {
+	Void StringBuffer::writeData(const char* thePtr, Uint64 theSize) {
 		if (this->whichOneAreWeOn == 0) {
 			if (this->theSize + theSize < this->theString01.size()) {
 				memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
@@ -1772,7 +1772,7 @@ namespace DiscordCoreInternal {
 		return this->theSize;
 	}
 
-	void StringBuffer::clear() {
+	Void StringBuffer::clear() {
 		this->whichOneAreWeOn = 0;
 		this->theSize = 0;
 	}

@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& newArgs) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& newArgs) {
 			try {
 				
 				DiscordCoreAPI::CreateGlobalApplicationCommandData createTestData;

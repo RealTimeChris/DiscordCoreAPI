@@ -484,7 +484,7 @@ namespace DiscordCoreAPI {
 		return theStringNew;
 	}
 
-	GuildVector::operator std::vector<Guild>() {
+	GuildVector::operator Vector<Guild>() {
 		return this->theGuilds;
 	}
 
@@ -541,7 +541,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
+	Void Guilds::initialize(DiscordCoreInternal::HttpsClient* theClient, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
 		Guilds::doWeCacheGuilds = configManagerNew->doWeCacheGuilds();
 		Guilds::discordCoreClient = discordCoreClientNew;
 		Guilds::httpsClient = theClient;
@@ -595,8 +595,8 @@ namespace DiscordCoreAPI {
 		co_return theData;
 	}
 
-	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
-		co_await NewThreadAwaitable<std::vector<GuildData>>();
+	CoRoutine<Vector<GuildData>> Guilds::getAllGuildsAsync() {
+		co_await NewThreadAwaitable<Vector<GuildData>>();
 		GuildDataVector guildVector{};
 		for (auto value: Guilds::cache) {
 			value.discordCoreClient = Guilds::discordCoreClient;
@@ -671,18 +671,18 @@ namespace DiscordCoreAPI {
 		co_return theDataNew;
 	}
 
-	CoRoutine<void> Guilds::deleteGuildAsync(DeleteGuildData dataPackage) {
+	CoRoutine<Void> Guilds::deleteGuildAsync(DeleteGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId);
 		workload.callStack = "Guilds::deleteGuildAsync()";
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
-	CoRoutine<std::vector<BanData>> Guilds::getGuildBansAsync(GetGuildBansData dataPackage) {
+	CoRoutine<Vector<BanData>> Guilds::getGuildBansAsync(GetGuildBansData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Bans };
-		co_await NewThreadAwaitable<std::vector<BanData>>();
+		co_await NewThreadAwaitable<Vector<BanData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/bans";
 		if (dataPackage.after != 0) {
@@ -715,9 +715,9 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<BanData>(workload, &theData);
 	}
 
-	CoRoutine<void> Guilds::createGuildBanAsync(CreateGuildBanData dataPackage) {
+	CoRoutine<Void> Guilds::createGuildBanAsync(CreateGuildBanData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Ban };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/bans/" + std::to_string(dataPackage.guildMemberId);
 		workload.content = dataPackage.operator JsonObject();
@@ -725,19 +725,19 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
-	CoRoutine<void> Guilds::removeGuildBanAsync(RemoveGuildBanData dataPackage) {
+	CoRoutine<Void> Guilds::removeGuildBanAsync(RemoveGuildBanData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Ban };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/bans/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Guilds::removeGuildBanAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
 	CoRoutine<GuildPruneCountData> Guilds::getGuildPruneCountAsync(GetGuildPruneCountData dataPackage) {
@@ -783,43 +783,43 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildPruneCountData>(workload);
 	}
 
-	CoRoutine<std::vector<VoiceRegionData>> Guilds::getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage) {
+	CoRoutine<Vector<VoiceRegionData>> Guilds::getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Voice_Regions };
-		co_await NewThreadAwaitable<std::vector<VoiceRegionData>>();
+		co_await NewThreadAwaitable<Vector<VoiceRegionData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/regions";
 		workload.callStack = "Guilds::getGuildVoiceRegionsAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<VoiceRegionDataVector>(workload);
 	}
 
-	CoRoutine<std::vector<InviteData>> Guilds::getGuildInvitesAsync(GetGuildInvitesData dataPackage) {
+	CoRoutine<Vector<InviteData>> Guilds::getGuildInvitesAsync(GetGuildInvitesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Invites };
-		co_await NewThreadAwaitable<std::vector<InviteData>>();
+		co_await NewThreadAwaitable<Vector<InviteData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/invites";
 		workload.callStack = "Guilds::getGuildInvitesAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<InviteDataVector>(workload);
 	}
 
-	CoRoutine<std::vector<IntegrationData>> Guilds::getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage) {
+	CoRoutine<Vector<IntegrationData>> Guilds::getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Integrations };
-		co_await NewThreadAwaitable<std::vector<IntegrationData>>();
+		co_await NewThreadAwaitable<Vector<IntegrationData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/integrations";
 		workload.callStack = "Guilds::getGuildIntegrationsAsync()";
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<IntegrationDataVector>(workload);
 	}
 
-	CoRoutine<void> Guilds::deleteGuildIntegrationAsync(DeleteGuildIntegrationData dataPackage) {
+	CoRoutine<Void> Guilds::deleteGuildIntegrationAsync(DeleteGuildIntegrationData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Integration };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/integrations/" + std::to_string(dataPackage.integrationId);
 		workload.callStack = "Guilds::deleteGuildIntegrationAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
 	CoRoutine<GuildWidgetData> Guilds::getGuildWidgetSettingsAsync(GetGuildWidgetSettingsData dataPackage) {
@@ -942,9 +942,9 @@ namespace DiscordCoreAPI {
 		co_return newGuild;
 	}
 
-	CoRoutine<std::vector<GuildTemplateData>> Guilds::getGuildTemplatesAsync(GetGuildTemplatesData dataPackage) {
+	CoRoutine<Vector<GuildTemplateData>> Guilds::getGuildTemplatesAsync(GetGuildTemplatesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Templates };
-		co_await NewThreadAwaitable<std::vector<GuildTemplateData>>();
+		co_await NewThreadAwaitable<Vector<GuildTemplateData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/templates";
 		workload.callStack = "Guilds::getGuildTemplatesAsync()";
@@ -986,13 +986,13 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(workload);
 	}
 
-	CoRoutine<void> Guilds::deleteGuildTemplateAsync(DeleteGuildTemplateData dataPackage) {
+	CoRoutine<Void> Guilds::deleteGuildTemplateAsync(DeleteGuildTemplateData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Template };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/templates/" + dataPackage.templateCode;
 		workload.callStack = "Guilds::deleteGuildTemplateAsync()";
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
 	CoRoutine<InviteData> Guilds::getInviteAsync(GetInviteData dataPackage) {
@@ -1021,21 +1021,21 @@ namespace DiscordCoreAPI {
 		co_return Guilds::httpsClient->submitWorkloadAndGetResult<InviteData>(workload);
 	}
 
-	CoRoutine<void> Guilds::deleteInviteAsync(DeleteInviteData dataPackage) {
+	CoRoutine<Void> Guilds::deleteInviteAsync(DeleteInviteData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Invite };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/invites/" + dataPackage.inviteId;
 		workload.callStack = "Guilds::deleteInviteAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
-	CoRoutine<std::vector<Guild>> Guilds::getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage) {
+	CoRoutine<Vector<Guild>> Guilds::getCurrentUserGuildsAsync(GetCurrentUserGuildsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Current_User_Guilds };
-		co_await NewThreadAwaitable<std::vector<Guild>>();
+		co_await NewThreadAwaitable<Vector<Guild>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/@me/guilds";
 		if (dataPackage.after != 0) {
@@ -1062,17 +1062,17 @@ namespace DiscordCoreAPI {
 		co_return guildVector;
 	}
 
-	CoRoutine<void> Guilds::leaveGuildAsync(LeaveGuildData dataPackage) {
+	CoRoutine<Void> Guilds::leaveGuildAsync(LeaveGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Leave_Guild };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/users/@me/guilds/" + std::to_string(dataPackage.guildId);
 		workload.callStack = "Guilds::leaveGuildAsync()";
-		co_return Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Guilds::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
 	StopWatch theStopWatch{ 5s };
-	void Guilds::insertGuild(GuildData guild) {
+	Void Guilds::insertGuild(GuildData guild) {
 		if (guild.id == 0) {
 			return;
 		}
@@ -1085,7 +1085,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Guilds::removeGuild(const Snowflake guildId) {
+	Void Guilds::removeGuild(const Snowflake guildId) {
 		GuildData theData{};
 		theData.id = guildId;
 		Guilds::cache.erase(theData);

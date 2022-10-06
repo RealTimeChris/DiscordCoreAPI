@@ -1,6 +1,6 @@
 Deleting an Interaction Response {#deletinganinteractionresponse}
 ============
-- Execute the, `DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync()` function, while passing in a data structure of type `DiscordCoreAPI::InputEventData`, with a return value of type `void`.
+- Execute the, `DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync()` function, while passing in a data structure of type `DiscordCoreAPI::InputEventData`, with a return value of type `Void`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
 			DiscordCoreAPI::RespondToInputEventData dataPackage02 {args.eventData};

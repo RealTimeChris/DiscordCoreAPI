@@ -197,7 +197,7 @@ namespace DiscordCoreInternal {
 		return theVectorNew;
 	}
 
-	void WebSocketMessageHandler::createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept {
+	Void WebSocketMessageHandler::createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept {
 		try {
 			outBuffer.push_back(static_cast<Uint8>(opCode) | webSocketFinishBit);
 
@@ -228,7 +228,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketMessageHandler::parseConnectionHeaders() noexcept {
+	Void WebSocketMessageHandler::parseConnectionHeaders() noexcept {
 		if (this->areWeStillConnected() && this->currentState.load() == SSLShardState::Upgrading && this->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
 			auto theString = this->getInputBuffer();
 			this->currentMessage.writeData(theString.data(), theString.size());
@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	void WebSocketMessageHandler::parseMessage() noexcept {
+	Void WebSocketMessageHandler::parseMessage() noexcept {
 		if (this->inputBuffer.getUsedSpace() > 0) {
 			if (this->currentMessage.size() < this->messageLength + this->messageOffset || this->currentMessage.size() == 0) {
 				auto theString = this->getInputBuffer();
@@ -343,7 +343,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
+	Void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
 		try {
 			while (this->currentState.load() != SSLShardState::Authenticated) {
 				std::this_thread::sleep_for(1ms);
@@ -1427,7 +1427,7 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	void WebSocketMessageHandler::checkForAndSendHeartBeat(Bool isImmediate) noexcept {
+	Void WebSocketMessageHandler::checkForAndSendHeartBeat(Bool isImmediate) noexcept {
 		try {
 			if ((this->currentState.load() == SSLShardState::Authenticated && this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
 				String theString{};
@@ -1457,14 +1457,14 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketMessageHandler::handleBuffer() noexcept {
+	Void WebSocketMessageHandler::handleBuffer() noexcept {
 		if (this->currentState.load() == SSLShardState::Upgrading) {
 			this->parseConnectionHeaders();
 		}
 		this->parseMessage();
 	}
 
-	void WebSocketSSLShard::disconnect() noexcept {
+	Void WebSocketSSLShard::disconnect() noexcept {
 		if (this->theSocket != SOCKET_ERROR) {
 			this->theSocket = SOCKET_ERROR;
 			this->currentState.store(SSLShardState::Disconnected);
@@ -1483,7 +1483,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::onClosed() noexcept {
+	Void WebSocketSSLShard::onClosed() noexcept {
 		if (this->maxReconnectTries > this->currentReconnectTries) {
 			this->disconnect();
 		} else {
@@ -1503,12 +1503,12 @@ namespace DiscordCoreInternal {
 		});
 	}
 
-	void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
+	Void BaseSocketAgent::connectVoiceChannel(VoiceConnectInitData theData) noexcept {
 		std::unique_lock theLock{ this->theMutex };
 		this->voiceConnections.emplace_back(theData);
 	}
 
-	void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage thePackageNew) noexcept {
+	Void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage thePackageNew) noexcept {
 		try {
 			if (thePackageNew.currentShard != -1) {
 				if (!this->theShardMap.contains(thePackageNew.currentShard)) {
@@ -1626,7 +1626,7 @@ namespace DiscordCoreInternal {
 		return this->taskThread.get();
 	}
 
-	void BaseSocketAgent::disconnectVoiceInternal() noexcept {
+	Void BaseSocketAgent::disconnectVoiceInternal() noexcept {
 		if (this->voiceConnectionsToDisconnect.size() > 0) {
 			std::unique_lock theLock{ this->theMutex };
 			auto theDCData = this->voiceConnectionsToDisconnect.front();
@@ -1638,12 +1638,12 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::disconnectVoice(Uint64 theDCData) noexcept {
+	Void BaseSocketAgent::disconnectVoice(Uint64 theDCData) noexcept {
 		std::unique_lock theLock{ this->theMutex };
 		this->voiceConnectionsToDisconnect.emplace_back(theDCData);
 	}
 
-	void BaseSocketAgent::connectVoiceInternal() noexcept {
+	Void BaseSocketAgent::connectVoiceInternal() noexcept {
 		if (this->voiceConnections.size() > 0) {
 			while (!this->theVCStopWatch.hasTimePassed()) {
 				std::this_thread::sleep_for(1ms);
@@ -1660,7 +1660,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
+	Void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				this->disconnectVoiceInternal();

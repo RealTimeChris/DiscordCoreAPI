@@ -8,15 +8,15 @@ Queue {#Queue}
 
 namespace DiscordCoreAPI {
 
-	std::vector<EmbedData> updateMessageEmbeds(std::vector<Song> playlist, DiscordGuild* discordGuild, InputEventData interaction, InputEventData originalEvent, User theUser,
+	Vector<EmbedData> updateMessageEmbeds(Vector<Song> playlist, DiscordGuild* discordGuild, InputEventData interaction, InputEventData originalEvent, User theUser,
 		Int32 currentPageIndex) {
-		std::vector<std::vector<EmbedFieldData>> msgEmbedFields{};
-		msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
+		Vector<Vector<EmbedFieldData>> msgEmbedFields{};
+		msgEmbedFields.emplace_back(Vector<EmbedFieldData>());
 		Int32 msgEmbedFieldsPage{ 0 };
 		for (Int32 y = 0; y < playlist.size(); y += 1) {
 			if (y % 25 == 0 && y > 0) {
 				msgEmbedFieldsPage += 1;
-				msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
+				msgEmbedFields.emplace_back(Vector<EmbedFieldData>());
 			}
 			EmbedFieldData msgEmbedField{};
 			msgEmbedField.Inline = false;
@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
 			msgEmbedFields[msgEmbedFieldsPage].emplace_back(msgEmbedField);
 		}
 		msgEmbedFieldsPage = 0;
-		std::vector<EmbedData> newMsgEmbeds{};
+		Vector<EmbedData> newMsgEmbeds{};
 		for (Int32 y = 0; y < msgEmbedFields.size(); y += 1) {
 			std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
 			newEmbed->setAuthor(theUser.userName, theUser.avatar);
@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<TheQueue>();
 		}
 
-		void execute(BaseFunctionArguments& newArgs) {
+		Void execute(BaseFunctionArguments& newArgs) {
 			try {
 
 				std::unique_ptr<Channel> channel{ std::make_unique<Channel>(Channels::getCachedChannelAsync({ newArgs.eventData.getChannelId() }).get()) };
@@ -109,15 +109,15 @@ namespace DiscordCoreAPI {
 
 				Int32 currentPageIndex = 0;
 
-				std::vector<std::vector<EmbedFieldData>> msgEmbedFields;
-				msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
+				Vector<Vector<EmbedFieldData>> msgEmbedFields;
+				msgEmbedFields.emplace_back(Vector<EmbedFieldData>());
 				Int32 msgEmbedFieldsPage{ 0 };
 				for (Int32 y = 0; y < SongAPI::getPlaylist(guild->id).songQueue.size(); y += 1) {
 					if (y % 25 == 0 && y > 0) {
 						if (y > 0) {
 							msgEmbedFieldsPage += 1;
 						}
-						msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
+						msgEmbedFields.emplace_back(Vector<EmbedFieldData>());
 					}
 					EmbedFieldData msgEmbedField{};
 					msgEmbedField.Inline = false;
@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 					msgEmbedField.name = "__**" + std::to_string(y + 1) + " of " + std::to_string(SongAPI::getPlaylist(guild->id).songQueue.size()) + "**__";
 					msgEmbedFields[msgEmbedFieldsPage].emplace_back(msgEmbedField);
 				}
-				std::vector<EmbedData> msgEmbeds;
+				Vector<EmbedData> msgEmbeds;
 				msgEmbedFieldsPage = 0;
 				for (Int32 y = 0; y < msgEmbedFields.size(); y += 1) {
 					std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
@@ -249,7 +249,7 @@ namespace DiscordCoreAPI {
 								doWeQuit = true;
 								break;
 							}
-							std::vector<String> args2;
+							Vector<String> args2;
 							String newString = convertToLowerCase(returnedMessages.messages.at(0).content);
 							std::regex wordRegex("[a-z]{1,12}");
 							std::smatch wordRegexMatch;
@@ -411,7 +411,7 @@ namespace DiscordCoreAPI {
 								break;
 							} else if (convertToLowerCase(args2[0]) == "shuffle") {
 								auto oldSongArray = SongAPI::getPlaylist(guild->id);
-								std::vector<Song> newVector{};
+								Vector<Song> newVector{};
 								while (oldSongArray.songQueue.size() > 0) {
 									std::mt19937_64 randomEngine{ static_cast<Uint32>(
 										std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()) };

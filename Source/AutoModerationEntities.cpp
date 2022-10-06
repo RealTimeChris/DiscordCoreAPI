@@ -165,17 +165,17 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	AutoModerationRuleVector::operator std::vector<AutoModerationRule>() {
+	AutoModerationRuleVector::operator Vector<AutoModerationRule>() {
 		return this->theAutoModerationRules;
 	}
 
-	void AutoModerationRules::initialize(DiscordCoreInternal::HttpsClient* HttpsClientNew) {
+	Void AutoModerationRules::initialize(DiscordCoreInternal::HttpsClient* HttpsClientNew) {
 		AutoModerationRules::httpsClient = HttpsClientNew;
 	}
 
-	CoRoutine<std::vector<AutoModerationRule>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
+	CoRoutine<Vector<AutoModerationRule>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules };
-		co_await NewThreadAwaitable<std::vector<AutoModerationRule>>();
+		co_await NewThreadAwaitable<Vector<AutoModerationRule>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules";
 		workload.callStack = "AutoModerationRules::listAutoModerationRulesForGuildAsync()";
@@ -211,13 +211,13 @@ namespace DiscordCoreAPI {
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
 	}
 
-	CoRoutine<void> AutoModerationRules::deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage) {
+	CoRoutine<Void> AutoModerationRules::deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Auto_Moderation_Rule };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules/" + std::to_string(dataPackage.autoModerationRuleId);
 		workload.callStack = "AutoModerationRules::deleteAutoModerationRuleAsync()";
-		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
 	DiscordCoreInternal::HttpsClient* AutoModerationRules::httpsClient{ nullptr };

@@ -21,7 +21,7 @@ if (returnedMessages.messages.size() == 0) {
 	doWeQuit = true;
 	break;
 }
-std::vector<string> args2;
+Vector<string> args2;
 String newString = convertToLowerCase(returnedMessages.messages.at(0).content);
 std::regex wordRegex("[a-z]{1,12}");
 smatch wordRegexMatch;

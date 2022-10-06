@@ -30,9 +30,9 @@
 
 namespace DiscordCoreInternal {
 
-	std::vector<DiscordCoreAPI::Song> SoundCloudRequestBuilder::collectSearchResults(const String& songQuery) {
+	Vector<DiscordCoreAPI::Song> SoundCloudRequestBuilder::collectSearchResults(const String& songQuery) {
 		try {
-			std::unordered_map<String, String> theHeaders{
+			UMap<String, String> theHeaders{
 				std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"),
 			};
 			HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };
@@ -42,7 +42,7 @@ namespace DiscordCoreInternal {
 			dataPackage.headersToInsert = theHeaders;
 			dataPackage.workloadClass = HttpsWorkloadClass::Get;
 			HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
-			std::vector<DiscordCoreAPI::Song> results{};
+			Vector<DiscordCoreAPI::Song> results{};
 			simdjson::ondemand::parser theParser{};
 			returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
 			auto theDocument = theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
@@ -119,10 +119,9 @@ namespace DiscordCoreInternal {
 					newSong.contentLength += value.contentSize;
 				}
 			} else {
-				std::unordered_map<String, String> theHeaders{
-					std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"),
-					std::pair("Path", newSong.secondDownloadUrl)
-				};
+				UMap<String, String> theHeaders{ std::pair("User-Agent",
+													 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"),
+					std::pair("Path", newSong.secondDownloadUrl) };
 				HttpsWorkloadData dataPackage02{ HttpsWorkloadType::SoundCloudGetSearchResults };
 				dataPackage02.baseUrl = newSong.secondDownloadUrl;
 				dataPackage02.headersToInsert = theHeaders;
@@ -150,8 +149,7 @@ namespace DiscordCoreInternal {
 	}
 
 	String SoundCloudRequestBuilder::collectClientId() {
-		std::unordered_map<String, String> theHeaders{ std::pair("User-Agent",
-														   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"),
+		UMap<String, String> theHeaders{ std::pair("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"),
 			std::pair("Path", "/search?q=testValue") };
 		HttpsWorkloadData dataPackage02{ HttpsWorkloadType::SoundCloudGetSearchResults };
 		dataPackage02.baseUrl = this->baseUrl;
@@ -159,7 +157,7 @@ namespace DiscordCoreInternal {
 		dataPackage02.headersToInsert = theHeaders;
 		dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
-		std::vector<String> assetPaths{};
+		Vector<String> assetPaths{};
 		String newString01 = "crossorigin src=";
 		String newerString{};
 		newerString = returnData.responseMessage;
@@ -204,7 +202,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries) {
+	Void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries) {
 		currentReconnectTries++;
 		DiscordCoreAPI::GuildMemberData guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
@@ -228,7 +226,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries) {
+	Void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries) {
 		try {
 			Int32 counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
@@ -238,7 +236,7 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<DiscordCoreAPI::AudioEncoder> audioEncoder{ std::make_unique<DiscordCoreAPI::AudioEncoder>() };
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			Bool didWeGetZero{ true };
-			std::vector<std::vector<Uint8>> submittedFrames{};
+			Vector<Vector<Uint8>> submittedFrames{};
 			while (counter < newSong.finalDownloadUrls.size()) {
 				if (counter == newSong.finalDownloadUrls.size() && didWeGetZero) {
 					audioDecoder.reset(nullptr);
@@ -293,7 +291,7 @@ namespace DiscordCoreInternal {
 				if (counter == 0) {
 					audioDecoder->startMe();
 				}
-				std::vector<DiscordCoreAPI::AudioFrameData> frames{};
+				Vector<DiscordCoreAPI::AudioFrameData> frames{};
 				Bool doWeBreak{ false };
 				while (!doWeBreak) {
 					DiscordCoreAPI::AudioFrameData rawFrame{};
@@ -342,7 +340,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	std::vector<DiscordCoreAPI::Song> SoundCloudAPI::searchForSong(const String& searchQuery) {
+	Vector<DiscordCoreAPI::Song> SoundCloudAPI::searchForSong(const String& searchQuery) {
 		return this->collectSearchResults(searchQuery);
 	}
 

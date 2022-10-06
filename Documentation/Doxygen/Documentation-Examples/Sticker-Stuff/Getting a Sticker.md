@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::GetStickerData dataPackage;
 				dataPackage.stickerId = "YOUR_STICKER_ID_HERE";

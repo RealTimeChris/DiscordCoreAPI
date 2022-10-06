@@ -127,6 +127,9 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	template<typename KeyType, typename ObjectType> using UMap = std::unordered_map<KeyType, ObjectType>;
+	template<typename KeyType, typename ObjectType> using Map = std::map<KeyType, ObjectType>;
+	template<typename ObjectType> using Vector = std::vector<ObjectType>;
 	using AtomicUint64 = std::atomic_uint64_t;
 	using AtomicUint32 = std::atomic_uint32_t;
 	using AtomicInt64 = std::atomic_int64_t;
@@ -147,73 +150,63 @@ namespace DiscordCoreAPI {
 	using Double = double;
 	using Snowflake = Uint64;
 	using Bool = bool;
+	typedef void Void;
 
 	enum class ValueType : Int8 { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Float = 4, String = 5, Bool = 6, Int64 = 7, Uint64 = 8 };
 
 	template<typename TheType>
 	concept IsEnum = std::is_enum<TheType>::value;
-
 	template<typename TheType>
 	concept IsString = std::same_as<TheType, String>;
-
 	struct EnumConverter {
 		template<IsEnum EnumType> EnumConverter& operator=(EnumType other) {
 			this->theUint = static_cast<Uint64>(other);
 			return *this;
 		};
-
 		template<IsEnum EnumType> EnumConverter(EnumType other) {
 			*this = other;
 		};
-
 		EnumConverter& operator=(EnumConverter&&) noexcept;
-
 		EnumConverter(EnumConverter&&) noexcept;
-
 		EnumConverter& operator=(EnumConverter&) noexcept = delete;
 
 		EnumConverter(EnumConverter&) noexcept = delete;
 
-		template<IsEnum EnumType> EnumConverter& operator=(std::vector<EnumType> other) {
+		template<IsEnum EnumType> EnumConverter& operator=(Vector<EnumType> other) {
 			this->theVector = std::move(other);
 			return *this;
 		};
 
-		template<IsEnum EnumType> EnumConverter(std::vector<EnumType> other) {
+		template<IsEnum EnumType> EnumConverter(Vector<EnumType> other) {
 			*this = other;
 		};
 
-		operator std::vector<Uint64>() const noexcept;
+		operator Vector<Uint64>() const noexcept;
 
-		operator std::vector<Uint64>() noexcept;
+		operator Vector<Uint64>() noexcept;
 
 		explicit operator Uint64() const noexcept;
 
 		explicit operator Uint64() noexcept;
-
 		bool isItAVector() const noexcept;
-
 		bool isItAVector() noexcept;
 
 	  protected:
-		std::vector<Uint64> theVector{};
+		Vector<Uint64> theVector{};
 		Bool vectorType{ false };
 		Uint64 theUint{};
 	};
-
 	class JsonObject {
 	  public:
 		using ObjectType = std::map<String, JsonObject, std::less<>, std::allocator<std::pair<const String, JsonObject>>>;
 		template<typename Type> using AllocatorType = std::allocator<Type>;
-		using ArrayType = std::vector<JsonObject>;
+		using ArrayType = Vector<JsonObject>;
 		using StringType = String;
 		using UintType = Uint64;
 		using FloatType = Double;
 		using IntType = Int64;
 		using BoolType = Bool;
-
 		ValueType theType{ ValueType::Null };
-
 		union JsonValue {
 			std::unique_ptr<ObjectType> object;
 			std::unique_ptr<StringType> string;
@@ -222,53 +215,32 @@ namespace DiscordCoreAPI {
 			UintType numberUint;
 			IntType numberInt;
 			BoolType boolean;
-
 			JsonValue() noexcept;
-
 			JsonValue& operator=(JsonValue&&) noexcept = delete;
-
 			JsonValue(JsonValue&&) noexcept = delete;
-
 			JsonValue& operator=(const JsonValue&) noexcept = delete;
-
 			JsonValue(const JsonValue&) noexcept = delete;
-
 			JsonValue& operator=(const StringType& theData) noexcept;
-
 			JsonValue& operator=(StringType&& theData) noexcept;
-
 			JsonValue& operator=(const char* theData) noexcept;
-
 			JsonValue& operator=(Uint64 theData) noexcept;
-
 			JsonValue& operator=(Uint32 theData) noexcept;
-
 			JsonValue& operator=(Uint16 theData) noexcept;
-
 			JsonValue& operator=(Uint8 theData) noexcept;
-
 			JsonValue& operator=(Int64 theData) noexcept;
-
 			JsonValue& operator=(Int32 theData) noexcept;
-
 			JsonValue& operator=(Int16 theData) noexcept;
-
 			JsonValue& operator=(Int8 theData) noexcept;
-
 			JsonValue& operator=(Double theData) noexcept;
-
 			JsonValue& operator=(Float theData) noexcept;
-
 			JsonValue& operator=(Bool theData) noexcept;
-
 			~JsonValue() noexcept;
 		};
-
 		JsonValue theValue{};
 
 		JsonObject() noexcept = default;
 
-		template<typename ObjectType> JsonObject& operator=(std::vector<ObjectType> theData) noexcept {
+		template<typename ObjectType> JsonObject& operator=(Vector<ObjectType> theData) noexcept {
 			this->set(std::make_unique<ArrayType>());
 			for (auto& value: theData) {
 				this->theValue.array->push_back(JsonObject{ value });
@@ -276,11 +248,11 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		template<typename ObjectType> JsonObject(std::vector<ObjectType> theData) noexcept {
+		template<typename ObjectType> JsonObject(Vector<ObjectType> theData) noexcept {
 			*this = theData;
 		}
 
-		template<IsString KeyType, IsString ObjectType> JsonObject& operator=(std::unordered_map<KeyType, ObjectType> theData) noexcept {
+		template<IsString KeyType, IsString ObjectType> JsonObject& operator=(UMap<KeyType, ObjectType> theData) noexcept {
 			this->set(std::make_unique<ObjectType>());
 			for (auto& [key, value]: theData) {
 				this->theValue.object->at(key) = JsonObject{ value };
@@ -288,106 +260,86 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		template<IsString KeyType, IsString ObjectType> JsonObject(std::unordered_map<KeyType, ObjectType> theData) noexcept {
+		template<IsString KeyType, IsString ObjectType> JsonObject(UMap<KeyType, ObjectType> theData) noexcept {
 			*this = theData;
 		};
 
 		JsonObject& operator=(EnumConverter&& theData) noexcept;
 		JsonObject(EnumConverter&&) noexcept;
-
 		JsonObject& operator=(const EnumConverter& theData) noexcept;
 		JsonObject(const EnumConverter&) noexcept;
-
 		JsonObject& operator=(JsonObject&& theKey) noexcept;
 		JsonObject(JsonObject&& theKey) noexcept;
-
 		JsonObject& operator=(const JsonObject& theKey) noexcept;
 		JsonObject(const JsonObject& theKey) noexcept;
-
 		JsonObject& operator=(StringType&& theData) noexcept;
 		JsonObject(StringType&&) noexcept;
-
 		JsonObject& operator=(const StringType& theData) noexcept;
 		JsonObject(const StringType&) noexcept;
-
 		JsonObject& operator=(const char* theData) noexcept;
 		JsonObject(const char* theData) noexcept;
-
 		JsonObject& operator=(Uint64 theData) noexcept;
 		JsonObject(Uint64) noexcept;
-
 		JsonObject& operator=(Uint32 theData) noexcept;
 		JsonObject(Uint32) noexcept;
-
 		JsonObject& operator=(Uint16 theData) noexcept;
 		JsonObject(Uint16) noexcept;
-
 		JsonObject& operator=(Uint8 theData) noexcept;
 		JsonObject(Uint8) noexcept;
-
 		JsonObject& operator=(Int64 theData) noexcept;
 		JsonObject(Int64) noexcept;
-
 		JsonObject& operator=(Int32 theData) noexcept;
 		JsonObject(Int32) noexcept;
-
 		JsonObject& operator=(Int16 theData) noexcept;
 		JsonObject(Int16) noexcept;
-
 		JsonObject& operator=(Int8 theData) noexcept;
 		JsonObject(Int8) noexcept;
-
 		JsonObject& operator=(Double theData) noexcept;
 		JsonObject(Double) noexcept;
-
 		JsonObject& operator=(Float theData) noexcept;
 		JsonObject(Float) noexcept;
-
 		JsonObject& operator=(Bool theData) noexcept;
 		JsonObject(Bool) noexcept;
-
 		JsonObject& operator=(ValueType) noexcept;
 		JsonObject(ValueType) noexcept;
 
-		JsonObject& operator[](Uint64 idx) const;
-		JsonObject& operator[](Uint64 idx);
+		JsonObject& operator[](Uint64 index) const;
+		JsonObject& operator[](Uint64 index);
 
 		JsonObject& operator[](const typename ObjectType::key_type& key) const;
 		JsonObject& operator[](typename ObjectType::key_type key);
-
 		operator String() const noexcept;
 
 		operator String() noexcept;
 
-		void pushBack(JsonObject&& other) noexcept;
-		void pushBack(JsonObject& other) noexcept;
+		Void pushBack(JsonObject&& other) noexcept;
+		Void pushBack(JsonObject& other) noexcept;
 
-		void set(std::unique_ptr<String> p);
+		Void set(std::unique_ptr<String> pointer);
 
-		void set(std::unique_ptr<ArrayType> p);
+		Void set(std::unique_ptr<ArrayType> pointer);
 
-		void set(std::unique_ptr<ObjectType> p);
+		Void set(std::unique_ptr<ObjectType> pointer);
 
-		void destroy() noexcept;
+		Void destroy() noexcept;
 
 		~JsonObject() noexcept;
 	};
-
 	struct DiscordCoreAPI_Dll ActivityData;
-
 	/// For selecting the type of streamer that the given bot is, one must be one server and one of client per connection. \brief For selecting the type of streamer that the given bot is, one must be one server and one of client per connection.
 	enum class StreamType { None = 0, Client = 1, Server = 2 };
-
 	/// For connecting two bots to stream the VC contents between the two. \brief For connecting two bots to stream the VC contents between the two.
 	struct DiscordCoreAPI_Dll StreamInfo {
 		String address{};///< The address to connect to.
 		String port{};///< The port to connect to.
 	};
-
 };
 
 namespace DiscordCoreInternal {
 
+	template<typename KeyType, typename ObjectType> using UMap = std::unordered_map<KeyType, ObjectType>;
+	template<typename KeyType, typename ObjectType> using Map = std::map<KeyType, ObjectType>;
+	template<typename ObjectType> using Vector = std::vector<ObjectType>;
 	using AtomicUint64 = std::atomic_uint64_t;
 	using AtomicUint32 = std::atomic_uint32_t;
 	using AtomicInt64 = std::atomic_int64_t;
@@ -408,6 +360,7 @@ namespace DiscordCoreInternal {
 	using Double = double;
 	using Snowflake = Uint64;
 	using Bool = bool;
+	typedef void Void;
 	using namespace std::literals;
 	using std::cout;
 	using std::endl;
@@ -455,12 +408,12 @@ namespace DiscordCoreInternal {
 			We_Do_Not_Reconnect = Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
 		};
 
-		std::unordered_map<Uint16, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset }, { 1000, WebSocketCloseCode::Normal_Close },
-			{ 4000, WebSocketCloseCode::Unknown_Error }, { 4001, WebSocketCloseCode::Unknown_Opcode }, { 4002, WebSocketCloseCode::Decode_Error },
-			{ 4003, WebSocketCloseCode::Not_Authenticated }, { 4004, WebSocketCloseCode::Authentication_Failed }, { 4005, WebSocketCloseCode::Already_Authenticated },
-			{ 4007, WebSocketCloseCode::Invalid_Seq }, { 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed },
-			{ 4010, WebSocketCloseCode::Invalid_Shard }, { 4011, WebSocketCloseCode::Sharding_Required }, { 4012, WebSocketCloseCode::Invalid_API_Version },
-			{ 4013, WebSocketCloseCode::Invalid_Intent }, { 4014, WebSocketCloseCode::Disallowed_Intent } };
+		UMap<Uint16, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset }, { 1000, WebSocketCloseCode::Normal_Close }, { 4000, WebSocketCloseCode::Unknown_Error },
+			{ 4001, WebSocketCloseCode::Unknown_Opcode }, { 4002, WebSocketCloseCode::Decode_Error }, { 4003, WebSocketCloseCode::Not_Authenticated },
+			{ 4004, WebSocketCloseCode::Authentication_Failed }, { 4005, WebSocketCloseCode::Already_Authenticated }, { 4007, WebSocketCloseCode::Invalid_Seq },
+			{ 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed }, { 4010, WebSocketCloseCode::Invalid_Shard },
+			{ 4011, WebSocketCloseCode::Sharding_Required }, { 4012, WebSocketCloseCode::Invalid_API_Version }, { 4013, WebSocketCloseCode::Invalid_Intent },
+			{ 4014, WebSocketCloseCode::Disallowed_Intent } };
 
 		WebSocketCloseCode theValue{};
 
@@ -475,7 +428,7 @@ namespace DiscordCoreInternal {
 
 	/// For updating a User's presence. \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
-		std::vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
+		Vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
 		String status{};///< Current status.
 		Int64 since{ 0 };///< When was the activity started?
 		Bool afk{ false };///< Are we afk.
@@ -546,7 +499,7 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType, typename... ArgTypes> class Event;
 	template<typename ReturnType> class CoRoutine;
 
-	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const String& (*theFunction)( void ));
+	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const String& (*theFunction)(Void));
 
 	/// Input event response types. \brief Input event response types.
 	enum class InputEventResponseType : Int8 {
@@ -590,7 +543,7 @@ namespace DiscordCoreAPI {
 
 	/// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
 	struct DiscordCoreAPI_Dll RepeatedFunctionData {
-		std::function<void(DiscordCoreClient*)> function{ nullptr };///< The std::function pointer to be loaded.
+		std::function<Void(DiscordCoreClient*)> function{ nullptr };///< The std::function pointer to be loaded.
 		Uint32 intervalInMs{ 0 };///< The time interval at which to call the std::function.
 		Bool repeated{ false };///< Whether or not the std::function is repeating.
 		Int64 dummyArg{ 0 };
@@ -635,7 +588,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
 		GatewayIntents theIntents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
-		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
+		Vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
 		String connectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
@@ -692,13 +645,13 @@ namespace DiscordCoreAPI {
 
 		const String getConnectionAddress();
 
-		void setConnectionAddress(const String& connectionAddressNew);
+		Void setConnectionAddress(const String& connectionAddressNew);
 
 		const String getConnectionPort();
 
-		void setConnectionPort(const String& connectionPortNew);
+		Void setConnectionPort(const String& connectionPortNew);
 
-		const std::vector<RepeatedFunctionData> getFunctionsToExecute();
+		const Vector<RepeatedFunctionData> getFunctionsToExecute();
 
 		const TextFormat getTextFormat();
 
@@ -717,12 +670,12 @@ namespace DiscordCoreAPI {
 	  public:
 		ObjectCache() noexcept {};
 
-		void emplace(ObjectType&& theData) noexcept {
+		Void emplace(ObjectType&& theData) noexcept {
 			std::unique_lock theLock{ this->theMutex };
 			this->theMap.emplace(std::move(theData));
 		}
 
-		void emplace(ObjectType& theData) noexcept {
+		Void emplace(ObjectType& theData) noexcept {
 			std::unique_lock theLock{ this->theMutex };
 			this->theMap.emplace(theData);
 		}
@@ -756,7 +709,7 @@ namespace DiscordCoreAPI {
 			return this->theMap.contains(theKey);
 		}
 
-		void erase(ObjectType& theKey) {
+		Void erase(ObjectType& theKey) {
 			if (this->theMap.contains(theKey)) {
 				std::unique_lock theLock{ this->theMutex };
 				this->theMap.erase(theKey);
@@ -805,7 +758,7 @@ namespace DiscordCoreAPI {
 
 		operator std::basic_string<char, std::char_traits<char>, std::allocator<char>>();
 
-		void emplace_back(char theChar);
+		Void emplace_back(char theChar);
 
 		Uint64 size();
 
@@ -876,7 +829,7 @@ namespace DiscordCoreAPI {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
 		Int64 sampleCount{ -1ll };///< The number of samples per this frame.
 		Uint64 guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
-		std::vector<Uint8> data{};///< The audio data.
+		Vector<Uint8> data{};///< The audio data.
 
 		AudioFrameData() noexcept = default;
 
@@ -888,7 +841,7 @@ namespace DiscordCoreAPI {
 
 		AudioFrameData(const AudioFrameData&) noexcept = default;
 
-		void clearData() noexcept;
+		Void clearData() noexcept;
 	};
 
 	/**@}*/
@@ -1137,7 +1090,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		Uint64 timeStampInTimeUnits{};
 
-		void getTimeSinceEpoch(Int64 year, Int64 month, Int64 day, Int64 hour, Int64 minute, Int64 second) {
+		Void getTimeSinceEpoch(Int64 year, Int64 month, Int64 day, Int64 hour, Int64 minute, Int64 second) {
 			const Uint32 secondsInJan{ 31 * 24 * 60 * 60 };
 			const Uint32 secondsInFeb{ 28 * 24 * 60 * 60 };
 			const Uint32 secondsInMar{ 31 * 24 * 60 * 60 };
@@ -1213,7 +1166,7 @@ namespace DiscordCoreAPI {
 			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(theValue).count() * 1000;
 		}
 
-		void convertTimeStampToTimeUnits(TimeFormat theFormatNew, String originalTimeStamp) {
+		Void convertTimeStampToTimeUnits(TimeFormat theFormatNew, String originalTimeStamp) {
 			try {
 				if (originalTimeStamp != "" && originalTimeStamp != "0") {
 					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)), stoi(originalTimeStamp.substr(8, 9)),
@@ -1375,15 +1328,15 @@ namespace DiscordCoreAPI {
 
 		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
 		/// \param permissionsToRemove A vector containing the Permissions you wish to remove.
-		void removePermissions(const std::vector<Permission>& permissionsToRemove);
+		Void removePermissions(const Vector<Permission>& permissionsToRemove);
 
 		/// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
 		/// \param permissionsToAdd A vector containing the Permissions you wish to add.
-		void addPermissions(const std::vector<Permission>& permissionsToAdd);
+		Void addPermissions(const Vector<Permission>& permissionsToAdd);
 
 		/// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
-		/// \returns std::vector A vector full of strings of the Permissions that are in the input String's value.
-		std::vector<String> displayPermissions();
+		/// \returns Vector A vector full of strings of the Permissions that are in the input String's value.
+		Vector<String> displayPermissions();
 
 		/// Returns a string containing the currently held Permissions. \brief Returns a string containing the currently held Permissions.
 		/// \returns String A string containing the current Permissions.
@@ -1406,11 +1359,11 @@ namespace DiscordCoreAPI {
 	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
 	/// \param currentFunctionName A string to display the current function's name.
 	/// \param theLocation For deriving the current file, line, and column - do not set this value.
-	DiscordCoreAPI_Dll void reportException(const String& currentFunctionName, std::source_location theLocation = std::source_location::current());
+	DiscordCoreAPI_Dll Void reportException(const String& currentFunctionName, std::source_location theLocation = std::source_location::current());
 
-	DiscordCoreAPI_Dll void rethrowException(const String& currentFunctionName, std::source_location theLocation = std::source_location::current());
+	DiscordCoreAPI_Dll Void rethrowException(const String& currentFunctionName, std::source_location theLocation = std::source_location::current());
 
-	DiscordCoreAPI_Dll String constructMultiPartData(String theData, const std::vector<File>& files);
+	DiscordCoreAPI_Dll String constructMultiPartData(String theData, const Vector<File>& files);
 
 	DiscordCoreAPI_Dll String convertToLowerCase(const String& stringToConvert);
 
@@ -1422,7 +1375,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll String urlEncode(const String& inputString);
 
-	DiscordCoreAPI_Dll void spinLock(Uint64 timeInNsToSpinLockFor);
+	DiscordCoreAPI_Dll Void spinLock(Uint64 timeInNsToSpinLockFor);
 
 	DiscordCoreAPI_Dll String generateBase64EncodedKey();
 
@@ -1460,7 +1413,7 @@ namespace DiscordCoreAPI {
 		return ReturnType{};
 	}
 
-	template<typename ReturnType> void storeBits(String& to, ReturnType num) {
+	template<typename ReturnType> Void storeBits(String& to, ReturnType num) {
 		const Uint8 byteSize{ 8 };
 		ReturnType newValue = reverseByteOrder<ReturnType>(num);
 		for (Uint32 x = 0; x < sizeof(ReturnType); ++x) {
@@ -1509,20 +1462,20 @@ namespace DiscordCoreAPI {
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
-		void send(ObjectType&& theObject) {
+		Void send(ObjectType&& theObject) {
 			std::unique_lock theLock{ this->accessMutex };
 			this->theQueue.emplace_back(std::move(theObject));
 		}
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param theObject An object of ObjectType.
-		void send(ObjectType& theObject) {
+		Void send(ObjectType& theObject) {
 			std::unique_lock theLock{ this->accessMutex };
 			this->theQueue.emplace_back(theObject);
 		}
 
 		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
-		void clearContents() {
+		Void clearContents() {
 			std::unique_lock theLock{ this->accessMutex };
 			this->theQueue.clear();
 			this->theQueue = std::deque<ObjectType>{};
@@ -1560,13 +1513,13 @@ namespace DiscordCoreAPI {
 
 	/// ObjectCollectorReturnData responseData. \brief ObjectCollectorReturnData responseData.
 	template<typename Object> struct DiscordCoreAPI_Dll ObjectCollectorReturnData {
-		std::vector<Object> objects{};///< A vector of collected Objects.
+		Vector<Object> objects{};///< A vector of collected Objects.
 	};
 
 	/// ObjectCollector, for collecting Objects from a Channel. \brief Object collector, for collecting Objects from a Channel.
 	template<typename Object> class DiscordCoreAPI_Dll ObjectCollector {
 	  public:
-		static std::unordered_map<String, UnboundedMessageBlock<Object>*> objectsBufferMap;
+		static UMap<String, UnboundedMessageBlock<Object>*> objectsBufferMap;
 
 		ObjectCollector() noexcept = default;
 
@@ -1586,7 +1539,7 @@ namespace DiscordCoreAPI {
 			co_return this->messageReturnData;
 		}
 
-		void run() {
+		Void run() {
 			Int64 startingTime = static_cast<Int64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 			Int64 elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
@@ -1675,7 +1628,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void resetTimer(Uint64 theNewTime = 0) {
+		Void resetTimer(Uint64 theNewTime = 0) {
 			if (theNewTime != 0) {
 				this->maxNumberOfTimeUnits.store(TimeType{ theNewTime }.count());
 			}
@@ -1714,11 +1667,11 @@ namespace DiscordCoreInternal {
 
 		StringView operator[](LengthData);
 
-		void writeData(const char*, Uint64);
+		Void writeData(const char*, Uint64);
 
 		operator StringView();
 
-		void erase(Uint64, Uint64);
+		Void erase(Uint64, Uint64);
 
 		char operator[](Uint64);
 
@@ -1740,7 +1693,7 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		void clear();
+		Void clear();
 
 		char* data();
 
@@ -1755,7 +1708,7 @@ namespace DiscordCoreInternal {
 
 	template<typename ObjectType, Uint64 TheSize> class RingBufferInterface {
 	  public:
-		void modifyReadOrWritePosition(RingBufferAccessType theType, Uint64 theSize) noexcept {
+		Void modifyReadOrWritePosition(RingBufferAccessType theType, Uint64 theSize) noexcept {
 			if (theType == RingBufferAccessType::Read) {
 				this->tail += theSize;
 				this->areWeFull = false;
@@ -1799,7 +1752,7 @@ namespace DiscordCoreInternal {
 			return this->areWeFull;
 		}
 
-		virtual void clear() noexcept {
+		virtual Void clear() noexcept {
 			this->areWeFull = false;
 			this->tail = 0;
 			this->head = 0;
@@ -1816,7 +1769,7 @@ namespace DiscordCoreInternal {
 
 	template<Uint64 TheSliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice, TheSliceCount> {
 	  public:
-		void clear() noexcept {
+		Void clear() noexcept {
 			for (Uint64 x = 0; x < this->theArray.size(); ++x) {
 				this->theArray[x].clear();
 			}

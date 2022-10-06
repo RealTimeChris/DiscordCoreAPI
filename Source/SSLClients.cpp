@@ -58,7 +58,7 @@ namespace DiscordCoreInternal {
 	}
 
 #ifdef _WIN32
-	void WSADataWrapper::WSADataDeleter::operator()(WSADATA* other) {
+	Void WSADataWrapper::WSADataDeleter::operator()(WSADATA* other) {
 		WSACleanup();
 		delete other;
 	}
@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 	}
 #endif
 
-	void SSL_CTXWrapper::SSL_CTXDeleter::operator()(SSL_CTX* other) {
+	Void SSL_CTXWrapper::SSL_CTXDeleter::operator()(SSL_CTX* other) {
 		if (other) {
 			SSL_CTX_free(other);
 			other = nullptr;
@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	void SSLWrapper::SSLDeleter::operator()(SSL* other) {
+	Void SSLWrapper::SSLDeleter::operator()(SSL* other) {
 		if (other) {
 			SSL_shutdown(other);
 			SSL_free(other);
@@ -106,7 +106,7 @@ namespace DiscordCoreInternal {
 	SSLWrapper::operator SSL*() {
 		return this->thePtr.get();
 	}
-	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
+	Void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
 		if (*other != SOCKET_ERROR) {
 #ifdef _WIN32
 			shutdown(*other, SD_BOTH);
@@ -305,8 +305,8 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	std::vector<SSLClient*> SSLClient::processIO(std::unordered_map<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept {
-		std::vector<SSLClient*> theReturnValue{};
+	Vector<SSLClient*> SSLClient::processIO(UMap<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept {
+		Vector<SSLClient*> theReturnValue{};
 		PollFDWrapper readWriteSet{};
 		for (auto& [key, value]: theShardMap) {
 			if (value->areWeStillConnected() && !value->areWeConnecting.load()) {
@@ -659,7 +659,7 @@ namespace DiscordCoreInternal {
 		return theResult;
 	}
 
-	void DatagramSocketClient::writeData(String dataToWrite) noexcept {
+	Void DatagramSocketClient::writeData(String dataToWrite) noexcept {
 		if (dataToWrite.size() > static_cast<Uint64>(16 * 1024)) {
 			Uint64 remainingBytes{ dataToWrite.size() };
 			while (remainingBytes > 0) {
@@ -751,7 +751,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	void DatagramSocketClient::disconnect() noexcept {
+	Void DatagramSocketClient::disconnect() noexcept {
 		this->theSocket = SOCKET_ERROR;
 		this->outputBuffer.clear();
 	}

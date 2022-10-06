@@ -25,7 +25,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Pause>();
 		}
 
-		void execute(BaseFunctionArguments& newArgs) {
+		Void execute(BaseFunctionArguments& newArgs) {
 			try {
 				Channel channel = Channels::getCachedChannelAsync({ .channelId = newArgs.eventData.getChannelId() }).get();
 

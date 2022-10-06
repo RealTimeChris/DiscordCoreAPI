@@ -36,7 +36,7 @@ namespace DiscordCoreInternal {
 		this->doWePrintErrorMessages = doWePrintErrorMessagesNew;
 	}
 
-	void HttpsRnRBuilder::updateRateLimitData(RateLimitData& rateLimitData, std::unordered_map<String, String>& headersNew) {
+	Void HttpsRnRBuilder::updateRateLimitData(RateLimitData& rateLimitData, UMap<String, String>& headersNew) {
 		if (static_cast<HttpsConnection*>(this)->theData.responseHeaders.contains("x-ratelimit-bucket")) {
 			rateLimitData.bucket = static_cast<HttpsConnection*>(this)->theData.responseHeaders["x-ratelimit-bucket"];
 		}
@@ -253,7 +253,7 @@ namespace DiscordCoreInternal {
 		return 0;
 	}
 
-	void HttpsRnRBuilder::clearCRLF(StringBuffer& other) {
+	Void HttpsRnRBuilder::clearCRLF(StringBuffer& other) {
 		Uint64 theCount{ 0 };
 		for (Uint64 x = 0; x < other.size(); ++x) {
 			if (isspace(static_cast<Uint8>(other[x])) != 0) {
@@ -267,7 +267,7 @@ namespace DiscordCoreInternal {
 
 	HttpsConnection::HttpsConnection(Bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
 
-	void HttpsConnection::handleBuffer() noexcept {
+	Void HttpsConnection::handleBuffer() noexcept {
 		this->theData.theStopWatch.resetTimer();
 		while (true) {
 			switch (this->theData.theCurrentState) {
@@ -343,14 +343,14 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	void HttpsConnection::disconnect() noexcept {
+	Void HttpsConnection::disconnect() noexcept {
 		if (this->theSocket != SOCKET_ERROR) {
 			this->theSocket = SOCKET_ERROR;
 		}
 		this->resetValues();
 	}
 
-	void HttpsConnection::resetValues() {
+	Void HttpsConnection::resetValues() {
 		this->bytesRead = 0;
 		this->currentBaseUrl = "";
 		this->currentReconnectTries = 0;
@@ -370,11 +370,11 @@ namespace DiscordCoreInternal {
 		this->configManager = configManagerNew;
 	}
 
-	std::unordered_map<String, std::unique_ptr<RateLimitData>>& HttpsConnectionManager::getRateLimitValues() {
+	UMap<String, std::unique_ptr<RateLimitData>>& HttpsConnectionManager::getRateLimitValues() {
 		return this->rateLimitValues;
 	}
 
-	std::unordered_map<HttpsWorkloadType, String>& HttpsConnectionManager::getRateLimitValueBuckets() {
+	UMap<HttpsWorkloadType, String>& HttpsConnectionManager::getRateLimitValueBuckets() {
 		return this->rateLimitValueBuckets;
 	}
 
@@ -392,7 +392,7 @@ namespace DiscordCoreInternal {
 		return this->httpsConnections[this->currentIndex].get();
 	}
 
-	void HttpsConnectionManager::initialize() {
+	Void HttpsConnectionManager::initialize() {
 		for (Int64 enumOne = static_cast<Int64>(HttpsWorkloadType::Unset); enumOne != static_cast<Int64>(HttpsWorkloadType::LAST); enumOne++) {
 			std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
 			rateLimitData->tempBucket = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
@@ -406,7 +406,7 @@ namespace DiscordCoreInternal {
 		this->connectionManager.initialize();
 	};
 
-	template<> void HttpsClient::submitWorkloadAndGetResult<void>(const HttpsWorkloadData& workload, void* theReturnValue) {
+	template<> Void HttpsClient::submitWorkloadAndGetResult<Void>(const HttpsWorkloadData& workload, Void* theReturnValue) {
 		workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 		workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
 		if (workload.payloadType == PayloadType::Application_Json) {

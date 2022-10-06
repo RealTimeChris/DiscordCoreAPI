@@ -47,7 +47,7 @@ namespace DiscordCoreInternal {
 		const String appVersion{ "1654762087" };
 		HttpsClient* httpsClient{ nullptr };
 
-		std::vector<DiscordCoreAPI::Song> collectSearchResults(const String& theString);
+		Vector<DiscordCoreAPI::Song> collectSearchResults(const String& theString);
 
 		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong);
 
@@ -60,11 +60,11 @@ namespace DiscordCoreInternal {
 	  public:
 		SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClient, const DiscordCoreAPI::Snowflake guildId);
 
-		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
+		Void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
 
-		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
+		Void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
 
-		std::vector<DiscordCoreAPI::Song> searchForSong(const String& searchQuery);
+		Vector<DiscordCoreAPI::Song> searchForSong(const String& searchQuery);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
 

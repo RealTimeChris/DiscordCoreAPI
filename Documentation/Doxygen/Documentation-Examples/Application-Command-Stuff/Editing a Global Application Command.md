@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::EditGlobalApplicationCommandData dataPackage;
 			dataPackage.description = "Displays info about the current bot.";
 			dataPackage.name = "botinfo";

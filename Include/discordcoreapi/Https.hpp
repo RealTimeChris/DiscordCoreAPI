@@ -49,7 +49,7 @@ namespace DiscordCoreInternal {
 		friend class HttpsConnection;
 		friend class HttpsClient;
 
-		std::unordered_map<String, String> responseHeaders{};
+		UMap<String, String> responseHeaders{};
 		HttpsState theCurrentState{ HttpsState::Collecting_Code };
 		String responseMessage{};
 		Int64 responseCode{ -1 };
@@ -66,7 +66,7 @@ namespace DiscordCoreInternal {
 
 		HttpsRnRBuilder(Bool doWePrintErrorMessages);
 
-		void updateRateLimitData(RateLimitData& theConnection, std::unordered_map<String, String>& headers);
+		Void updateRateLimitData(RateLimitData& theConnection, UMap<String, String>& headers);
 
 		HttpsResponseData finalizeReturnValues(RateLimitData& rateLimitData);
 
@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 
 		Uint64 parseCode(StringBuffer& other);
 
-		void clearCRLF(StringBuffer& other);
+		Void clearCRLF(StringBuffer& other);
 	};
 
 	struct DiscordCoreAPI_Dll RateLimitData {
@@ -122,11 +122,11 @@ namespace DiscordCoreInternal {
 
 		HttpsConnection(Bool doWePrintErrorMessages);
 
-		void handleBuffer() noexcept;
+		Void handleBuffer() noexcept;
 
-		void disconnect() noexcept;
+		Void disconnect() noexcept;
 
-		void resetValues();
+		Void resetValues();
 
 		virtual ~HttpsConnection() noexcept = default;
 	};
@@ -135,25 +135,25 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpsConnectionManager(DiscordCoreAPI::ConfigManager*);
 
-		std::unordered_map<String, std::unique_ptr<RateLimitData>>& getRateLimitValues();
+		UMap<String, std::unique_ptr<RateLimitData>>& getRateLimitValues();
 
-		std::unordered_map<HttpsWorkloadType, String>& getRateLimitValueBuckets();
+		UMap<HttpsWorkloadType, String>& getRateLimitValueBuckets();
 
 		HttpsConnection* getConnection();
 
-		void initialize();
+		Void initialize();
 
 	  protected:
-		std::unordered_map<String, std::unique_ptr<RateLimitData>> rateLimitValues{};
-		std::unordered_map<Int64, std::unique_ptr<HttpsConnection>> httpsConnections{};
-		std::unordered_map<HttpsWorkloadType, String> rateLimitValueBuckets{};
+		UMap<String, std::unique_ptr<RateLimitData>> rateLimitValues{};
+		UMap<Int64, std::unique_ptr<HttpsConnection>> httpsConnections{};
+		UMap<HttpsWorkloadType, String> rateLimitValueBuckets{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		Int64 currentIndex{};
 		std::mutex theMutex{};
 	};
 
 	template<typename ObjectType>
-	concept SameAsVoid = std::same_as<void, ObjectType>;
+	concept SameAsVoid = std::same_as<Void, ObjectType>;
 
 	class DiscordCoreAPI_Dll HttpsClient {
 	  public:

@@ -56,23 +56,23 @@ namespace DiscordCoreInternal {
 
 		String stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept;
 
-		void createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept;
+		Void createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept;
 
 		virtual Bool onMessageReceived(StringView theMessage) noexcept = 0;
 
 		Bool sendMessage(String& dataToSend, Bool priority) noexcept;
 
-		void checkForAndSendHeartBeat(Bool = false) noexcept;
+		Void checkForAndSendHeartBeat(Bool = false) noexcept;
 
-		void parseConnectionHeaders() noexcept;
+		Void parseConnectionHeaders() noexcept;
 
-		virtual void disconnect() noexcept = 0;
+		virtual Void disconnect() noexcept = 0;
 
-		virtual void onClosed() noexcept = 0;
+		virtual Void onClosed() noexcept = 0;
 
-		void handleBuffer() noexcept;
+		Void handleBuffer() noexcept;
 
-		void parseMessage() noexcept;
+		Void parseMessage() noexcept;
 
 		virtual ~WebSocketMessageHandler() noexcept = default;
 
@@ -108,18 +108,18 @@ namespace DiscordCoreInternal {
 		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections, Int32 currentShardNew,
 			AtomicBool* doWeQuitNew);
 
-		void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
+		Void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 
 		Bool onMessageReceived(StringView theMessage) noexcept;
 
-		void disconnect() noexcept;
+		Void disconnect() noexcept;
 
-		void onClosed() noexcept;
+		Void onClosed() noexcept;
 
 		virtual ~WebSocketSSLShard() noexcept = default;
 
 	  protected:
-		std::unordered_map<Uint64, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
+		UMap<Uint64, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBufferMap{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		simdjson::ondemand::parser theParser{};
@@ -143,16 +143,16 @@ namespace DiscordCoreInternal {
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, AtomicBool* doWeQuitNew, Int32 currentBaseSocket) noexcept;
 
-		void connectVoiceChannel(VoiceConnectInitData theData) noexcept;
+		Void connectVoiceChannel(VoiceConnectInitData theData) noexcept;
 
-		void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
+		Void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
 
 		std::jthread* getTheTask() noexcept;
 
 		~BaseSocketAgent() noexcept;
 
 	  protected:
-		std::unordered_map<Uint32, std::unique_ptr<WebSocketSSLShard>> theShardMap{};
+		UMap<Uint32, std::unique_ptr<WebSocketSSLShard>> theShardMap{};
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 250ms };
 		std::deque<DiscordCoreAPI::Snowflake> voiceConnectionsToDisconnect{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
@@ -164,13 +164,13 @@ namespace DiscordCoreInternal {
 		Int32 heartbeatInterval{ 0 };
 		std::mutex theMutex{};
 
-		void disconnectVoiceInternal() noexcept;
+		Void disconnectVoiceInternal() noexcept;
 
-		void disconnectVoice(Uint64) noexcept;
+		Void disconnectVoice(Uint64) noexcept;
 
-		void connectVoiceInternal() noexcept;
+		Void connectVoiceInternal() noexcept;
 
-		void run(std::stop_token) noexcept;
+		Void run(std::stop_token) noexcept;
 	};
 
 }// namespace DiscordCoreInternal

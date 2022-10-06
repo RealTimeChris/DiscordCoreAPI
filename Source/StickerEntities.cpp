@@ -69,11 +69,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	StickerVector::operator std::vector<Sticker>() {
+	StickerVector::operator Vector<Sticker>() {
 		return this->theStickers;
 	}
 
-	void Stickers::initialize(DiscordCoreInternal::HttpsClient* theClient) {
+	Void Stickers::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		Stickers::httpsClient = theClient;
 	}
 
@@ -86,18 +86,18 @@ namespace DiscordCoreAPI {
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
 
-	CoRoutine<std::vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
+	CoRoutine<Vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Nitro_Sticker_Packs };
-		co_await NewThreadAwaitable<std::vector<StickerPackData>>();
+		co_await NewThreadAwaitable<Vector<StickerPackData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/sticker-packs";
 		workload.callStack = "Stickers::getNitroStickerPacksAsync()";
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<StickerPackDataVector>(workload);
 	}
 
-	CoRoutine<std::vector<Sticker>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
+	CoRoutine<Vector<Sticker>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Stickers };
-		co_await NewThreadAwaitable<std::vector<Sticker>>();
+		co_await NewThreadAwaitable<Vector<Sticker>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";
 		workload.callStack = "Stickers::getGuildStickersAsync()";
@@ -139,16 +139,16 @@ namespace DiscordCoreAPI {
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
 
-	CoRoutine<void> Stickers::deleteGuildStickerAsync(DeleteGuildStickerData dataPackage) {
+	CoRoutine<Void> Stickers::deleteGuildStickerAsync(DeleteGuildStickerData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Sticker };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + std::to_string(dataPackage.stickerId);
 		workload.callStack = "Stickers::deleteGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Stickers::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 	DiscordCoreInternal::HttpsClient* Stickers::httpsClient{ nullptr };
 };

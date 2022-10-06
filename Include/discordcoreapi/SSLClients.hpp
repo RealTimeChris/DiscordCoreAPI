@@ -72,13 +72,13 @@ namespace DiscordCoreInternal {
 	using SOCKET = Int32;
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
-		std::unordered_map<Uint32, pollfd> thePolls{};
+		UMap<Uint32, pollfd> thePolls{};
 	};
 
 	#ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADataWrapper {
 		struct DiscordCoreAPI_Dll WSADataDeleter {
-			void operator()(WSADATA* other);
+			Void operator()(WSADATA* other);
 		};
 
 		WSADataWrapper();
@@ -90,7 +90,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
 		struct DiscordCoreAPI_Dll SSL_CTXDeleter {
-			void operator()(SSL_CTX* other);
+			Void operator()(SSL_CTX* other);
 		};
 
 		SSL_CTXWrapper& operator=(SSL_CTX* other);
@@ -105,7 +105,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSLWrapper {
 		struct DiscordCoreAPI_Dll SSLDeleter {
-			void operator()(SSL* other);
+			Void operator()(SSL* other);
 		};
 
 		SSLWrapper& operator=(SSL* other);
@@ -120,7 +120,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
-			void operator()(SOCKET* other);
+			Void operator()(SOCKET* other);
 		};
 
 		SOCKETWrapper& operator=(SOCKETWrapper&&) noexcept;
@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 
 		virtual Bool areWeStillConnected() noexcept = 0;
 
-		virtual void disconnect() noexcept = 0;
+		virtual Void disconnect() noexcept = 0;
 
 		static Bool initialize() noexcept;
 
@@ -215,7 +215,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
-		static std::vector<SSLClient*> processIO(std::unordered_map<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept;
+		static Vector<SSLClient*> processIO(UMap<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept;
 
 		Bool connect(const String& baseUrl, const String& portNew, Bool doWePrintErrorMessages, Bool areWeAStandaloneSocket) noexcept;
 
@@ -225,7 +225,7 @@ namespace DiscordCoreInternal {
 
 		StringView getInputBuffer() noexcept;
 
-		virtual void handleBuffer() noexcept = 0;
+		virtual Void handleBuffer() noexcept = 0;
 
 		Bool areWeStillConnected() noexcept;
 
@@ -256,7 +256,7 @@ namespace DiscordCoreInternal {
 
 		StringView getInputBuffer() noexcept;
 
-		void writeData(String data) noexcept;
+		Void writeData(String data) noexcept;
 
 		Bool areWeStillConnected() noexcept;
 
@@ -266,7 +266,7 @@ namespace DiscordCoreInternal {
 
 		Int64 getBytesRead() noexcept;
 
-		void disconnect() noexcept;
+		Void disconnect() noexcept;
 
 	  protected:
 		const Uint64 maxBufferSize{ (1024 * 16) - 1 };

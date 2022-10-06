@@ -1,6 +1,6 @@
 Getting a List of Guild Scheduled Events {#gettingalistofguildscheduledevents}
 ============
-- Execute the, from the `DiscordCoreAPI::GuildScheduledEvents::getGuildScheduledEventsAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildScheduledEventsData`, with a return value of type `auto` or `std::vector<DiscordCoreAPI::GuildScheduledEvent>`.
+- Execute the, from the `DiscordCoreAPI::GuildScheduledEvents::getGuildScheduledEventsAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildScheduledEventsData`, with a return value of type `auto` or `Vector<DiscordCoreAPI::GuildScheduledEvent>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::GetGuildScheduledEventsData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();

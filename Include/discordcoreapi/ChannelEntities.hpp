@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Channel within a chosen Guild. \brief For creating a new Channel within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildChannelData {
-		std::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the Channel's permission overwrites.
+		Vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the Channel's permission overwrites.
 		Int32 defaultAutoArchiveDuration{ 0 };///< Defualt duration of time before archiving a thread.
 		Int32 rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600).
 		Int32 userLimit{ 0 };///< The user limit of the voice Channel(voice only).
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 
 	/// For modifying the current positions of one or more Channels in the Guild. \brief For modifying the current positions of one or more Channels in the Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionsData {
-		std::vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's responseData.
+		Vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's responseData.
 		String reason{};///< Reason for re-ordering the Channel positions.
 		Snowflake guildId{};///< Guild within which to re-order the Channel positions.
 
@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	  public:
 		TimeStamp<std::chrono::milliseconds> lastPinTimestamp{};///< Timestamp of the last pinned Message.
-		std::unordered_map<Uint64, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
+		UMap<Uint64, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
 		Int32 defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		Int32 videoQualityMode{ 0 };///< Video quality mode.
@@ -196,14 +196,14 @@ namespace DiscordCoreAPI {
 	  public:
 		ChannelVector() noexcept = default;
 
-		operator std::vector<Channel>();
+		operator Vector<Channel>();
 
 		ChannelVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~ChannelVector() noexcept = default;
 
 	  protected:
-		std::vector<Channel> theChannels{};
+		Vector<Channel> theChannels{};
 	};
 
 	/// For modifying a Channel's properties. \brief For modifying a Channel's properties.
@@ -232,7 +232,7 @@ namespace DiscordCoreAPI {
 		friend class GuildData;
 		friend class Guild;
 
-		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManager);
+		static Void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManager);
 
 		/// Collects a Channel from the Discord servers. \brief Collects a Channel from the Discord servers.
 		/// \param dataPackage A GetChannelData structure.
@@ -252,17 +252,17 @@ namespace DiscordCoreAPI {
 		/// Delete a Channel, or close a private message. \brief Delete a Channel, or close a private message.
 		/// \param dataPackage A DeleteOrCloseChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
-		static CoRoutine<void> deleteOrCloseChannelAsync(DeleteOrCloseChannelData dataPackage);
+		static CoRoutine<Void> deleteOrCloseChannelAsync(DeleteOrCloseChannelData dataPackage);
 
 		/// Edit the given Permissions overwrites for a given User or Role. \brief Edit the given Permissions overwrites for a given User or Role.
 		/// \param dataPackage An EditChannelPermissionOverwritesData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> editChannelPermissionOverwritesAsync(EditChannelPermissionOverwritesData dataPackage);
 
 		/// Collects a vector of the invites to a given Channel. \brief Collects a vector of the invites to a given Channel.
 		/// \param dataPackage A GetChannelInvitesData structure.
 		/// \returns A CoRoutine containing a InviteDataVector.
-		static CoRoutine<std::vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
+		static CoRoutine<Vector<InviteData>> getChannelInvitesAsync(GetChannelInvitesData dataPackage);
 
 		/// Creates an invite to a selected Channel. \brief Creates an invite to a selected Channel.
 		/// \param dataPackage A CreateChannelInviteData structure.
@@ -271,8 +271,8 @@ namespace DiscordCoreAPI {
 
 		/// Delete the given Permissions overwrites for a given User or Role. \brief Delete the given Permissions overwrites for a given User or Role.
 		/// \param dataPackage A DeleteChannelPermissionOverwritesData structure
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage);
 
 		/// Follows a given new Channel with another Channel. \brief Follows a given new Channel with another Channel.
 		/// \param dataPackage A FollowNewsChannelData structure.
@@ -281,13 +281,13 @@ namespace DiscordCoreAPI {
 
 		/// Triggers the typing indicator for the bot in the given Channel. \brief Triggers the typing indicator for the bot in the given Channel.
 		/// \param dataPackage A TriggerTypingIndicatorData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> triggerTypingIndicatorAsync(TriggerTypingIndicatorData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> triggerTypingIndicatorAsync(TriggerTypingIndicatorData dataPackage);
 
 		/// Collects a list of Channels from a chosen Guild. \brief Collects a list of Channels from a chosen Guild.
 		/// \param dataPackage A GetGuildChannelsData structure.
 		/// \returns A CoRoutine containing a ChannelVector.
-		static CoRoutine<std::vector<Channel>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
+		static CoRoutine<Vector<Channel>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
 
 		/// Creates a new Channel within a chosen Guild. \brief Creates a new Channel within a chosen Guild.
 		/// \param dataPackage A CreateGuildChannelData structure.
@@ -296,8 +296,8 @@ namespace DiscordCoreAPI {
 
 		/// Re-orders the Channel positions, within a chosen Guild. \brief Re-orders the Channel positions, within a chosen Guild.
 		/// \param dataPackage A ModifyGuildChannelPositionsData  structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> modifyGuildChannelPositionsAsync(ModifyGuildChannelPositionsData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> modifyGuildChannelPositionsAsync(ModifyGuildChannelPositionsData dataPackage);
 
 		/// Collect a direct-Message Channel between the bot and the User. \brief Collect a direct-Message Channel between the bot and the User.
 		/// \param dataPackage A CreateDMChannelData structure.
@@ -307,11 +307,11 @@ namespace DiscordCoreAPI {
 		/// Collect a list of voice regions that are usable for the RTC-Region option of a given Channel.
 		/// \brief Collect a list of voice regions that are usable for the RTC-Region option of a given Channel.
 		/// \returns A CoRoutine containing a VoiceRegionDataVector.
-		static CoRoutine<std::vector<VoiceRegionData>> getVoiceRegionsAsync();
+		static CoRoutine<Vector<VoiceRegionData>> getVoiceRegionsAsync();
 
-		static void insertChannel(ChannelData channel);
+		static Void insertChannel(ChannelData channel);
 
-		static void removeChannel(Snowflake channelId);
+		static Void removeChannel(Snowflake channelId);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

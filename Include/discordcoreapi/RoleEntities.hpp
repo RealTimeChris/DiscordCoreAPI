@@ -71,7 +71,7 @@ namespace DiscordCoreAPI {
 	/// For creating a new Role within a chosen Guild. \brief For creating a new Role within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildRoleData {
 		String hexColorValue{};///< Hex color-value between 0 and ffffff.
-		std::vector<Uint8> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		Vector<Uint8> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		String unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		Permissions permissions{};///< The base permissions to give the Role.
 		Bool mentionable{ false };///< Is it mentionable by others in the Guild.
@@ -102,14 +102,14 @@ namespace DiscordCoreAPI {
 		operator JsonObject();
 
 	  protected:
-		std::vector<RolePositionData> rolePositions;
+		Vector<RolePositionData> rolePositions;
 	};
 
 	/// For updating a Role's options within a chosen Guild. \brief For updating a Role's options within a chosen Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
 		Permissions permissions{ "0" };///< Base Guild permissions for the Role.
 		String hexColorValue{};///< A hex-color value between 0x00 and 0xFFFFFF.
-		std::vector<Uint8> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		Vector<Uint8> icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		String unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		Bool mentionable{ false };///< Is it mentionable?
 		Snowflake guildId{};///< The id of the Guild within which to update the Role.
@@ -165,14 +165,14 @@ namespace DiscordCoreAPI {
 	  public:
 		RoleVector() noexcept = default;
 
-		operator std::vector<Role>();
+		operator Vector<Role>();
 
 		RoleVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~RoleVector() noexcept = default;
 
 	  protected:
-		std::vector<Role> theRoles{};
+		Vector<Role> theRoles{};
 	};
 
 	/**@}*/
@@ -190,22 +190,22 @@ namespace DiscordCoreAPI {
 		friend class GuildData;
 		friend class Guild;
 
-		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
+		static Void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
 		/// Adds a Role to a chosen Guild member. \brief Adds a Role to a chosen Guild member.
 		/// \param dataPackage An AddGuildMemberRoleData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> addGuildMemberRoleAsync(AddGuildMemberRoleData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> addGuildMemberRoleAsync(AddGuildMemberRoleData dataPackage);
 
 		/// Removes a given Role from a chosen GuildMember. \brief Removes a given Role from a chosen GuildMember.
 		/// \param dataPackage A RemoveGuildMemberRoleData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> removeGuildMemberRoleAsync(RemoveGuildMemberRoleData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> removeGuildMemberRoleAsync(RemoveGuildMemberRoleData dataPackage);
 
 		/// Collects the Roles that a Guild has. \brief Collects the Roles that a Guild has.
 		/// \param dataPackage A GetGuildRolesData structure.
 		/// \returns A CoRoutine containing a RoleVector.
-		static CoRoutine<std::vector<Role>> getGuildRolesAsync(GetGuildRolesData dataPackage);
+		static CoRoutine<Vector<Role>> getGuildRolesAsync(GetGuildRolesData dataPackage);
 
 		/// Creates a new Role within the given Guild. \brief Creates a new Role within the given Guild.
 		/// \param dataPackage A CreateGuildRoleData structure.
@@ -215,7 +215,7 @@ namespace DiscordCoreAPI {
 		/// Updates a Role's positions. \brief Updates a Role's positions.
 		/// \param dataPackage A ModifyGuildRolePositionsData structure.
 		/// \returns A CoRoutine containing a RoleVector.
-		static CoRoutine<std::vector<Role>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
+		static CoRoutine<Vector<Role>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
 
 		/// Updates a given Role's properties. \brief Updates a given Role's properties.
 		/// \param dataPackage A ModifyGuildRoleData structure.
@@ -224,13 +224,13 @@ namespace DiscordCoreAPI {
 
 		/// Removes a given Role from a Guild. \brief Removes a given Role from a Guild.
 		/// \param dataPackage A RemoveGuildRoleData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> removeGuildRoleAsync(RemoveGuildRoleData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> removeGuildRoleAsync(RemoveGuildRoleData dataPackage);
 
 		/// Collects the Roles that a GuildMember has. \brief Collects the Roles that a GuildMember has.
 		/// \param dataPackage A GetGuildMemberRolesData structure.
 		/// \returns A CoRoutine containing a RoleVector.
-		static CoRoutine<std::vector<Role>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
+		static CoRoutine<Vector<Role>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
 
 		/// Collects a Role from the Discord servers. \brief Collects a Role from the Discord servers.
 		/// \param dataPackage A GetRoleData structure.
@@ -242,9 +242,9 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Role.
 		static CoRoutine<RoleData> getCachedRoleAsync(GetRoleData dataPackage);
 
-		static void insertRole(RoleData role);
+		static Void insertRole(RoleData role);
 
-		static void removeRole(const Snowflake roleId);
+		static Void removeRole(const Snowflake roleId);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

@@ -53,14 +53,14 @@ namespace DiscordCoreAPI {
 	  public:
 		AutoModerationRuleVector() noexcept = default;
 
-		operator std::vector<AutoModerationRule>();
+		operator Vector<AutoModerationRule>();
 
 		AutoModerationRuleVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~AutoModerationRuleVector() noexcept = default;
 
 	  protected:
-		std::vector<AutoModerationRule> theAutoModerationRules{};
+		Vector<AutoModerationRule> theAutoModerationRules{};
 	};
 
 	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild .
@@ -76,10 +76,10 @@ namespace DiscordCoreAPI {
 
 	/// For creating an auto-moderation-rule. \brief For creating an auto-moderation-rule.
 	struct DiscordCoreAPI_Dll CreateAutoModerationRuleData {
-		std::vector<Uint64> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
-		std::vector<Uint64> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		Vector<Uint64> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
+		Vector<Uint64> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		TriggerMetaData triggerMetadata{};///< The trigger metadata.
-		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
+		Vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
 		TriggerType triggerType{};///< The trigger type.
 		EventType eventType{};///< The event type.
 		Snowflake guildId{};///< The Guild within which to create the AutoModerationRule.
@@ -112,10 +112,10 @@ namespace DiscordCoreAPI {
 
 	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.
 	struct DiscordCoreAPI_Dll ModifyAutoModerationRuleData {
-		std::vector<Uint64> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
-		std::vector<Uint64> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		Vector<Uint64> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
+		Vector<Uint64> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
 		TriggerMetaData triggerMetadata{};///< The trigger metadata.
-		std::vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
+		Vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
 		Uint64 autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to modify.
 		EventType eventType{};///< The event type.
 		Snowflake guildId{};///< The AutoModerationRule within which to modify the auto-moderation-rule.
@@ -140,11 +140,11 @@ namespace DiscordCoreAPI {
 	/// An interface class for the AutoModerationRule related Discord endpoints. \brief An interface class for the AutoModerationRule related Discord endpoints.
 	class DiscordCoreAPI_Dll AutoModerationRules {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static Void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Get all of the Guild's Auto-Moderation-Rules. \brief Get all of the Guild's Auto-Moderation-Rules.
 		/// \returns A CoRoutine containing a vector<AutoModerationRule>.
-		CoRoutine<std::vector<AutoModerationRule>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
+		CoRoutine<Vector<AutoModerationRule>> listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage);
 
 		/// Get a particular Auto-Moderation-Rule. \brief Get a particular Auto-Moderation-Rule
 		/// \returns A CoRoutine containing a AutoModerationRule.
@@ -159,8 +159,8 @@ namespace DiscordCoreAPI {
 		CoRoutine<AutoModerationRule> modifyAutoModerationRuleAsync(ModifyAutoModerationRuleData dataPackage);
 
 		/// Delete a particular Auto-Moderation-Rule. \brief Delete a particular Auto-Moderation-Rule
-		/// \returns A CoRoutine containing a void.
-		CoRoutine<void> deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage);
+		/// \returns A CoRoutine containing a Void.
+		CoRoutine<Void> deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

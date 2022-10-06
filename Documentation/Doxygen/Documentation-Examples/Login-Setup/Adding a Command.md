@@ -15,7 +15,7 @@ Adding a Command {#addingcommand}
 - Create a new class, within the `DiscordCoreAPI` namespace, derived from the `DiscordCoreAPI::BaseFunction` class.
 - Set the `commandName`, `helpDescription`, and `helpEmbed` members of the class.
 - Add a `create()` function, where the return value is a `unique_ptr` to the class type of the current command.
-- Add a `virtual void DiscordCoreAPI::BaseFunction::execute()` function with an argument of type `DiscordCoreAPI::BaseFunctionArguments&`.
+- Add a `virtual Void DiscordCoreAPI::BaseFunction::execute()` function with an argument of type `DiscordCoreAPI::BaseFunctionArguments&`.
 - CONTINUED FURTHER DOWN.
 
 ```cpp
@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& argsNew) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& argsNew) {
 
 			DiscordCoreAPI::RespondToInputEventData dataPackage{ argsNew.eventData };
 			dataPackage.setResponseType(DiscordCoreAPI::InputEventResponseType::Interaction_Response);
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 Int32 main() {
 	String botToken = "YOUR_BOT_TOKEN_HERE";
 	auto thePtr = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(botToken);
-	thePtr->registerFunction(std::vector<String> {"test"}, std::make_unique<DiscordCoreAPI::Test>());
+	thePtr->registerFunction(Vector<String> {"test"}, std::make_unique<DiscordCoreAPI::Test>());
 	thePtr->runBot();
 }
 ```

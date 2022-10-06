@@ -1,6 +1,6 @@
 Getting Guild Application Commands {#getguildcommands}
 =============
-- Execute the `DiscordCoreAPI::ApplicationCommands::getGuildApplicationCommandsAsync()` function, while passing in an argument of type `DiscordCoreAPI::GetGuildApplicationCommandsData`, with a return value of type `auto` or `std::vector<DiscordCoreAPI::ApplicationCommand>`.
+- Execute the `DiscordCoreAPI::ApplicationCommands::getGuildApplicationCommandsAsync()` function, while passing in an argument of type `DiscordCoreAPI::GetGuildApplicationCommandsData`, with a return value of type `auto` or `Vector<DiscordCoreAPI::ApplicationCommand>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
 			DiscordCoreAPI::GetGuildApplicationCommandsData dataPackage;

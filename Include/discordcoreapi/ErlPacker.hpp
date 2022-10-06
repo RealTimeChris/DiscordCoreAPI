@@ -78,51 +78,51 @@ namespace DiscordCoreInternal {
 		Uint64 offSet{};
 		Uint64 size{};
 
-		void singleValueJsonToETF(DiscordCoreAPI::JsonObject&& dataToParse);
+		Void singleValueJsonToETF(DiscordCoreAPI::JsonObject&& dataToParse);
 
-		void writeObject(DiscordCoreAPI::JsonObject::ObjectType&& jsonData);
+		Void writeObject(DiscordCoreAPI::JsonObject::ObjectType&& jsonData);
 
-		void writeString(DiscordCoreAPI::JsonObject::StringType&& jsonData);
+		Void writeString(DiscordCoreAPI::JsonObject::StringType&& jsonData);
 
-		void writeInt(DiscordCoreAPI::JsonObject::IntType jsonData);
+		Void writeInt(DiscordCoreAPI::JsonObject::IntType jsonData);
 
-		void writeUint(DiscordCoreAPI::JsonObject::UintType jsonData);
+		Void writeUint(DiscordCoreAPI::JsonObject::UintType jsonData);
 
-		void writeFloat(DiscordCoreAPI::JsonObject::FloatType jsonData);
+		Void writeFloat(DiscordCoreAPI::JsonObject::FloatType jsonData);
 
-		void writeArray(DiscordCoreAPI::JsonObject::ArrayType&& jsonData);
+		Void writeArray(DiscordCoreAPI::JsonObject::ArrayType&& jsonData);
 
-		void writeBool(DiscordCoreAPI::JsonObject::BoolType jsonData);
+		Void writeBool(DiscordCoreAPI::JsonObject::BoolType jsonData);
 
-		void writeNullExt();
+		Void writeNullExt();
 
-		void writeNull();
+		Void writeNull();
 
-		void writeToBuffer(String&&);
+		Void writeToBuffer(String&&);
 
-		void appendBinaryExt(String&&, Uint32);
+		Void appendBinaryExt(String&&, Uint32);
 
-		void appendUnsignedLongLong(Uint64);
+		Void appendUnsignedLongLong(Uint64);
 
-		void appendSmallIntegerExt(Uint8);
+		Void appendSmallIntegerExt(Uint8);
 
-		void appendIntegerExt(Uint32);
+		Void appendIntegerExt(Uint32);
 
-		void appendListHeader(Uint32);
+		Void appendListHeader(Uint32);
 
-		void appendMapHeader(Uint32);
+		Void appendMapHeader(Uint32);
 
-		void appendNewFloatExt(Double);
+		Void appendNewFloatExt(Double);
 
-		void appendVersion();
+		Void appendVersion();
 
-		void appendNilExt();
+		Void appendNilExt();
 
-		void appendFalse();
+		Void appendFalse();
 
-		void appendTrue();
+		Void appendTrue();
 
-		void appendNil();
+		Void appendNil();
 
 		template<typename ReturnType> ReturnType readBits() {
 			if (this->offSet + sizeof(ReturnType) > this->size) {

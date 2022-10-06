@@ -1,6 +1,6 @@
 Deleting a Guild {#deletingaguild}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::deleteGuildAsync()` function, while passing in a value of type `DiscordCoreAPI::DeleteGuildData`, with a return value of type `void`.
+- Execute the, `DiscordCoreAPI::Guilds::deleteGuildAsync()` function, while passing in a value of type `DiscordCoreAPI::DeleteGuildData`, with a return value of type `Void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				vector<DiscordCoreAPI::Guild> guilds = DiscordCoreAPI::Guilds::getAllGuildsAsync().get();
 				for (auto value: guilds) {

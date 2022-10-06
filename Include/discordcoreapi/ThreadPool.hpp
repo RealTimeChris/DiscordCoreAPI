@@ -38,9 +38,9 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<typename... ArgTypes> using TimeElapsedHandler = std::function<void(ArgTypes...)>;
+	template<typename... ArgTypes> using TimeElapsedHandler = std::function<Void(ArgTypes...)>;
 
-	using TimeElapsedHandlerNoArgs = std::function<void(void)>;
+	using TimeElapsedHandlerNoArgs = std::function<Void(Void)>;
 
 	constexpr Float thePercentage{ 10.0f / 100.0f };
 
@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		static String storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, Int64 timeInterval);
 
 		template<typename... ArgTypes>
-		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, Int64 timeDelay, Bool blockForCompletion, ArgTypes... args) {
+		static Void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, Int64 timeDelay, Bool blockForCompletion, ArgTypes... args) {
 			std::jthread theThread = std::jthread([=](std::stop_token stopToken) {
 				StopWatch stopWatch{ std::chrono::milliseconds{ timeDelay } };
 				stopWatch.resetTimer();
@@ -86,12 +86,12 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		void stopThread(const String& theKey);
+		Void stopThread(const String& theKey);
 
 		~ThreadPool() noexcept = default;
 
 	  protected:
-		static std::unordered_map<String, std::jthread> threads;
+		static UMap<String, std::jthread> threads;
 	};
 }
 
@@ -116,18 +116,18 @@ namespace DiscordCoreInternal {
 
 		CoRoutineThreadPool();
 
-		void submitTask(std::coroutine_handle<> coro) noexcept;
+		Void submitTask(std::coroutine_handle<> coro) noexcept;
 
 	  protected:
 		std::deque<std::coroutine_handle<>> theCoroutineHandles{};
-		std::unordered_map<Int64, WorkerThread> workerThreads{};
+		UMap<Int64, WorkerThread> workerThreads{};
 		AtomicInt64 coroHandleCount{ 0 };
 		AtomicInt64 currentCount{ 0 };
 		AtomicInt64 currentIndex{ 0 };
 		AtomicUint32 threadCount{};
 		std::mutex theMutex{};
 
-		void threadFunction(std::stop_token stopToken, Int64 theIndex);
+		Void threadFunction(std::stop_token stopToken, Int64 theIndex);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

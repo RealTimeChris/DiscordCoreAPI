@@ -9,7 +9,7 @@ Play {#Play}
 namespace DiscordCoreAPI {
 
 	MoveThroughMessagePagesData recurseThroughOptions(MoveThroughMessagePagesData returnData, Int32 currentPageIndex, InputEventData newEvent,
-		std::vector<EmbedData> embedsFromSearch, BaseFunctionArguments& newArgs, std::vector<Int32> arrayOfIndices, GuildMember guildMember, std::vector<Song> searchResults) {
+		Vector<EmbedData> embedsFromSearch, BaseFunctionArguments& newArgs, Vector<Int32> arrayOfIndices, GuildMember guildMember, Vector<Song> searchResults) {
 		if (returnData.buttonId == "exit") {
 			auto currentQueue = SongAPI::getPlaylist(guildMember.guildId);
 			Int32 songSize = currentQueue.songQueue.size();
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 
 	class Play : public BaseFunction {
 	  public:
-		static std::unordered_map<Int64, Int64> timeOfLastPlay;
+		static UMap<Int64, Int64> timeOfLastPlay;
 
 		Play() {
 			this->commandName = "play";
@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Play>();
 		}
 
-		void execute(BaseFunctionArguments& newArgs) {
+		Void execute(BaseFunctionArguments& newArgs) {
 			try {
 				Channel channel = Channels::getCachedChannelAsync({ newArgs.eventData.getChannelId() }).get();
 
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				std::vector<Song> searchResults{};
+				Vector<Song> searchResults{};
 				if (newArgs.optionsArgs.size() > 0) {
 					searchResults = SongAPI::searchForSong(newArgs.optionsArgs[0], guild.id);
 				}
@@ -202,7 +202,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				std::vector<EmbedData> embedsFromSearch;
+				Vector<EmbedData> embedsFromSearch;
 				Uint32 x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
@@ -219,7 +219,7 @@ namespace DiscordCoreAPI {
 
 				Uint32 currentPageIndex = 0;
 				MoveThroughMessagePagesData returnData{};
-				std::vector<Int32> arrayOfIndices{};
+				Vector<Int32> arrayOfIndices{};
 				if (embedsFromSearch.size() > 0) {
 					RespondToInputEventData dataPackage0(newEvent);
 					dataPackage0.setResponseType(InputEventResponseType::Follow_Up_Message);
@@ -232,8 +232,8 @@ namespace DiscordCoreAPI {
 				}
 				auto channelId = newArgs.eventData.getChannelId();
 				if (!SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					auto theTask = [=](SongCompletionEventData eventData) mutable noexcept -> CoRoutine<void> {
-						co_await NewThreadAwaitable<void>();
+					auto theTask = [=](SongCompletionEventData eventData) mutable noexcept -> CoRoutine<Void> {
+						co_await NewThreadAwaitable<Void>();
 						std::this_thread::sleep_for(150ms);
 						if (SongAPI::isThereAnySongs(guild.id)) {
 							std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
@@ -441,7 +441,7 @@ namespace DiscordCoreAPI {
 		};
 		~Play(){};
 	};
-	std::unordered_map<Int64, Int64> Play::timeOfLastPlay{};
+	UMap<Int64, Int64> Play::timeOfLastPlay{};
 
 };
 ```

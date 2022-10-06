@@ -32,13 +32,13 @@ namespace DiscordCoreAPI {
 
 	/// ObjectCollectorReturnData responseData. \brief ObjectCollectorReturnData responseData.
 	template<> struct DiscordCoreAPI_Dll ObjectCollectorReturnData<Message> {
-		std::vector<Message> messages{};///< A vector of collected Objects.
+		Vector<Message> messages{};///< A vector of collected Objects.
 	};
 
 	/// ObjectCollector, for collecting Objects from a Channel. \brief Object collector, for collecting Objects from a Channel.
 	template<> class DiscordCoreAPI_Dll ObjectCollector<Message> {
 	  public:
-		inline static std::unordered_map<String, UnboundedMessageBlock<Message>*> objectsBufferMap{};
+		inline static UMap<String, UnboundedMessageBlock<Message>*> objectsBufferMap{};
 
 		ObjectCollector() noexcept = default;
 
@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 			co_return this->messageReturnData;
 		}
 
-		void run() {
+		Void run() {
 			Int64 startingTime = static_cast<Int64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 			Int64 elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
@@ -368,17 +368,17 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	MessageVector::operator std::vector<Message>() {
+	MessageVector::operator Vector<Message>() {
 		return this->theMessages;
 	}
 
-	void Messages::initialize(DiscordCoreInternal::HttpsClient* theClient) {
+	Void Messages::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		Messages::httpsClient = theClient;
 	}
 
-	CoRoutine<std::vector<Message>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
+	CoRoutine<Vector<Message>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Messages };
-		co_await NewThreadAwaitable<std::vector<Message>>();
+		co_await NewThreadAwaitable<Vector<Message>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
 		if (dataPackage.aroundThisId != 0) {
@@ -461,13 +461,13 @@ namespace DiscordCoreAPI {
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
-	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
+	CoRoutine<Void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Message_Old };
 		Bool hasTimeElapsedNew = dataPackage.timeStamp.hasTimeElapsed(14, 0, 0);
 		if (!hasTimeElapsedNew) {
 			workload = DiscordCoreInternal::HttpsWorkloadType::Delete_Message;
 		}
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
@@ -475,12 +475,12 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
-	CoRoutine<void> Messages::deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage) {
+	CoRoutine<Void> Messages::deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Bulk_Delete_Messages };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/bulk-delete";
 		workload.content = dataPackage.operator JsonObject();
@@ -488,40 +488,40 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
-	CoRoutine<std::vector<Message>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
+	CoRoutine<Vector<Message>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Pinned_Messages };
-		co_await NewThreadAwaitable<std::vector<Message>>();
+		co_await NewThreadAwaitable<Vector<Message>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins";
 		workload.callStack = "Messages::getPinnedMessagesAsync()";
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<MessageVector>(workload);
 	}
 
-	CoRoutine<void> Messages::pinMessageAsync(PinMessageData dataPackage) {
+	CoRoutine<Void> Messages::pinMessageAsync(PinMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Pin_Message };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Messages::pinMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
-	CoRoutine<void> Messages::unpinMessageAsync(UnpinMessageData dataPackage) {
+	CoRoutine<Void> Messages::unpinMessageAsync(UnpinMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Pin_Message };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Messages::unpinMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
 	DiscordCoreInternal::HttpsClient* Messages::httpsClient{ nullptr };
