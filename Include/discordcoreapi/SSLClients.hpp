@@ -215,15 +215,15 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
-		static Vector<SSLClient*> processIO(UMap<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept;
+		virtual Void handleBuffer() noexcept = 0;
 
 		Bool connect(const String& baseUrl, const String& portNew, Bool doWePrintErrorMessages, Bool areWeAStandaloneSocket) noexcept;
+
+		static Vector<SSLClient*> processIO(UMap<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept;
 
 		ProcessIOResult writeData(StringView dataToWrite, Bool priority) noexcept;
 
 		ProcessIOResult processIO(Int32 msToWait) noexcept;
-
-		virtual Void handleBuffer() noexcept = 0;
 
 		StringView getInputBuffer() noexcept;
 

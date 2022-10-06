@@ -1674,9 +1674,9 @@ namespace DiscordCoreInternal {
 		Void writeData(const char*, Uint64);
 
 		String::iterator begin();
-		
+
 		String::iterator end();
-		
+
 		Void erase(Uint64);
 
 		Uint64 size();

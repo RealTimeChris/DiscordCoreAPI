@@ -363,17 +363,6 @@ namespace DiscordCoreInternal {
 		return theReturnValue;
 	}
 
-	StringView SSLClient::getInputBuffer() noexcept {
-		StringView theString{};
-		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
-			auto theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
-			theString = StringView{ this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize };
-			this->inputBuffer.getCurrentTail()->clear();
-			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-		}
-		return theString;
-	}
-
 	ProcessIOResult SSLClient::writeData(StringView dataToWrite, Bool priority) noexcept {
 		if (dataToWrite.size() > 0 && this->ssl) {
 			if (priority && dataToWrite.size() < static_cast<Uint64>(16 * 1024)) {
@@ -462,6 +451,17 @@ namespace DiscordCoreInternal {
 			this->handleBuffer();
 		}
 		return theResult;
+	}
+
+	StringView SSLClient::getInputBuffer() noexcept {
+		StringView theString{};
+		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
+			auto theSize = this->inputBuffer.getCurrentTail()->getUsedSpace();
+			theString = StringView{ this->inputBuffer.getCurrentTail()->getCurrentTail(), theSize };
+			this->inputBuffer.getCurrentTail()->clear();
+			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+		}
+		return theString;
 	}
 
 	Bool SSLClient::areWeStillConnected() noexcept {

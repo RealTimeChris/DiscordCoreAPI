@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 		this->ssrc = ssrcNew;
 	}
 
-	StringView RTPPacketEncrypter::encryptPacket(AudioFrameData&audioData) noexcept {
+	StringView RTPPacketEncrypter::encryptPacket(AudioFrameData& audioData) noexcept {
 		if (this->theKeys.size() > 0) {
 			this->sequence++;
 			this->timeStamp += audioData.sampleCount;
@@ -119,7 +119,8 @@ namespace DiscordCoreAPI {
 			for (Uint64 x = 0; x < this->theKeys.size(); ++x) {
 				encryptionKeys[x] = this->theKeys[x];
 			}
-			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->theData.data()) + headerSize, audioData.data.data(), audioData.data.size(), nonceForLibSodium.get(), encryptionKeys.get()) != 0) {
+			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->theData.data()) + headerSize, audioData.data.data(), audioData.data.size(), nonceForLibSodium.get(),
+					encryptionKeys.get()) != 0) {
 				return "";
 			};
 			StringView returnString{ this->theData.data(), numOfBytes };
@@ -151,7 +152,6 @@ namespace DiscordCoreAPI {
 
 	StringView VoiceConnection::encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept {
 		if (this->secretKeySend.size() > 0) {
-			
 			return this->packetEncrypter.encryptPacket(bufferToSend);
 		}
 		return {};

@@ -268,7 +268,7 @@ namespace DiscordCoreInternal {
 
 	Uint64 ErlPacker::readString(Uint32 length) {
 		if (this->offSet + static_cast<Uint64>(length) > this->size) {
-			throw ErlPackError{ "this->readString() Error: readString() past end of buffer.\n\n" };
+			!throw ErlPackError{ "this->readString() Error: readString() past end of buffer.\n\n" };
 		}
 		if (this->bufferString.size() <= length * 2) {
 			this->bufferString.resize(length * 2);
