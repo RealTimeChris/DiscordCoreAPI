@@ -362,7 +362,7 @@ namespace DiscordCoreAPI {
 		Snowflake id{};///< The identifier "snowflake" of the given entity.
 		/// Converts the snowflake-id into a time and date stamp. \brief Converts the
 		/// snowflake-id into a time and date stamp. \returns String A
-		/// String containing the timestamp.
+		/// String containing the timeStamp.
 		String getCreatedAtTimestamp(TimeFormat timeFormat);
 
 		virtual ~DiscordEntity() noexcept = default;
@@ -582,7 +582,7 @@ namespace DiscordCoreAPI {
 		String description{};///< Description of the embed.
 		EmbedFooterData footer{};///< Embed footer data.
 		EmbedAuthorData author{};///< Embed author data.
-		String timestamp{};///< Timestamp to be placed on the embed.
+		String timeStamp{};///< Timestamp to be placed on the embed.
 		EmbedImageData image{};///< Embed image data.
 		EmbedVideoData video{};///< Embed video data.
 		String title{};///< Title of the embed.
@@ -605,8 +605,8 @@ namespace DiscordCoreAPI {
 		/// \returns EmbedData& A reference to this embed.
 		EmbedData& setFooter(const String& footerText, const String& footerIconUrlText = "");
 
-		/// Sets the timestamp on the embed. \brief Sets the timestamp on the embed.
-		/// \param timeStamp The timestamp to be set.
+		/// Sets the timeStamp on the embed. \brief Sets the timeStamp on the embed.
+		/// \param timeStamp The timeStamp to be set.
 		/// \returns EmbedData& A reference to this embed.
 		EmbedData& setTimeStamp(const String& timeStamp);
 
@@ -854,8 +854,8 @@ namespace DiscordCoreAPI {
 
 	/// Timestamp data. \brief Timestamp data.
 	struct DiscordCoreAPI_Dll TimestampData {
-		Int64 start{ 0 };///< Unix timestamp - Send this to have an "elapsed" timer.
-		Int64 end{ 0 };///< Unix timestamp - send this to have a "remaining" timer.
+		Int64 start{ 0 };///< Unix timeStamp - Send this to have an "elapsed" timer.
+		Int64 end{ 0 };///< Unix timeStamp - send this to have a "remaining" timer.
 
 		TimestampData() noexcept = default;
 
@@ -2199,7 +2199,7 @@ namespace DiscordCoreAPI {
 	/// Representing "TypingStart" data. \brief Representing "TypingStart" data.
 	struct DiscordCoreAPI_Dll TypingStartData {
 		GuildMemberData member{};
-		Int32 timestamp{ 0 };
+		Int32 timeStamp{ 0 };
 		Snowflake channelId{};
 		Snowflake guildId{};
 		Snowflake userId{};
@@ -2592,7 +2592,7 @@ namespace DiscordCoreAPI {
 	  public:
 		TimeStamp<std::chrono::milliseconds> editedTimestamp{};///< The time at which it was edited.
 		Vector<ChannelMentionData> mentionChannels{};///< array of Channel mention data.
-		TimeStamp<std::chrono::milliseconds> timestamp{};///< The timestamp of when the Message was created.
+		TimeStamp<std::chrono::milliseconds> timeStamp{};///< The timeStamp of when the Message was created.
 		Vector<StickerItemData> stickerItems{};///< Array of Message Sticker item data.
 		Vector<AttachmentData> attachments{};///< Array of attachment data.
 		MessageReferenceData messageReference{};///< Message reference data.

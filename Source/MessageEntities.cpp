@@ -110,7 +110,7 @@ namespace DiscordCoreAPI {
 			this->member = GuildMemberData{ theObject };
 		}
 
-		this->timestamp = getString(jsonObjectData, "timestamp");
+		this->timeStamp = getString(jsonObjectData, "timeStamp");
 
 		this->editedTimestamp = getString(jsonObjectData, "edited_timestamp");
 

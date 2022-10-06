@@ -85,18 +85,20 @@ namespace DiscordCoreAPI {
 
 	using DoubleTimePointMs = std::chrono::time_point<std::chrono::steady_clock, DoubleMilliSecond>;
 
-	struct DiscordCoreAPI_Dll RTPPacket {
-		Vector<Uint8> audioData{};
+	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
 		Uint8 version{ 0x80 };
 		Uint8 flags{ 0x78 };
-		String theKeys{};
-		Uint32 timestamp{};
+		Uint32 timeStamp{};
 		Uint16 sequence{};
+		String theKeys{};
+		String theData{};
 		Uint32 ssrc{};
 
-		RTPPacket(Uint32 timestampNew, Uint16 sequenceNew, Uint32 ssrcNew, Vector<Uint8>& audioDataNew, const String& theKeys) noexcept;
+		RTPPacketEncrypter() noexcept = default;
 
-		operator String() noexcept;
+		RTPPacketEncrypter(Uint32 ssrcNew, const String& theKeys) noexcept;
+
+		StringView encryptPacket(AudioFrameData& audioDataNew) noexcept;
 	};
 
 	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
@@ -157,35 +159,35 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
-		UMap<Uint64, VoiceUser> voiceUsers{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		std::deque<ConnectionPackage> theConnections{};
-		AtomicBool areWeConnectedBool{ false };
 		std::deque<VoicePayload> theFrameQueue{};
-		AtomicBool areWePlaying{ false };
+		AtomicBool areWeConnectedBool{ false };
+		UMap<Uint64, VoiceUser> voiceUsers{};
+		RTPPacketEncrypter packetEncrypter{};
 		const Int64 maxReconnectTries{ 10 };
+		AtomicBool areWePlaying{ false };
 		Int64 currentReconnectTries{ 0 };
-		String audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
-		ConnectionPackage thePackage{};
 		AtomicBool* doWeQuit{ nullptr };
-		String secretKeySend{};
+		ConnectionPackage thePackage{};
+		String audioEncryptionMode{};
 		std::mutex voiceUserMutex{};
-		Uint16 sequenceIndex{ 0 };
 		AudioFrameData audioData{};
 		StreamInfo theStreamInfo{};
+		Uint16 sequenceIndex{ 0 };
 		AudioEncoder theEncoder{};
-		String externalIp{};
 		StreamType streamType{};
-		Uint32 timeStamp{ 0 };
+		String secretKeySend{};
+		String externalIp{};
+		Uint32 audioSSRC{};
 		String voiceIp{};
 		String baseUrl{};
-		Uint32 audioSSRC{};
 		Uint64 port{};
 
 		Bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
 
-		String encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
+		StringView encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
@@ -195,9 +197,9 @@ namespace DiscordCoreAPI {
 
 		Void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
-		Bool onMessageReceived(StringView theData) noexcept;
+		Void sendVoiceData(StringView responseData) noexcept;
 
-		Void sendVoiceData(String& responseData) noexcept;
+		Bool onMessageReceived(StringView theData) noexcept;
 
 		Void runWebSocket(std::stop_token) noexcept;
 

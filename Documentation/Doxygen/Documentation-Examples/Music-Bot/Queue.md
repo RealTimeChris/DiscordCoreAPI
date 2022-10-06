@@ -267,7 +267,7 @@ namespace DiscordCoreAPI {
 
 							std::regex digitRegex("\\d{1,3}");
 							if (args2.size() == 0 || convertToLowerCase(args2[0]) == "exit") {
-								Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timestamp,
+								Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																 .channelId = returnedMessages.messages[0].channelId,
 																 .messageId = returnedMessages.messages[0].id,
 																 .reason = "Deleting the message!" })
@@ -285,7 +285,7 @@ namespace DiscordCoreAPI {
 								msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType "
 																	  "'swap <sourceTrackNumber> <destinationTrackNumber>' to swap "
 																	  "tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
-								Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timestamp,
+								Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																 .channelId = returnedMessages.messages[0].channelId,
 																 .messageId = returnedMessages.messages[0].id,
 																 .reason = "Deleting the message!" })
@@ -305,7 +305,7 @@ namespace DiscordCoreAPI {
 									msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType "
 																		  "'swap <sourceTrackNumber> <destinationTrackNumber>' to swap "
 																		  "tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
-									Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timestamp,
+									Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																	 .channelId = returnedMessages.messages[0].channelId,
 																	 .messageId = returnedMessages.messages[0].id,
 																	 .reason = "Deleting the message!" })
@@ -325,7 +325,7 @@ namespace DiscordCoreAPI {
 									msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType "
 																		  "'swap <sourceTrackNumber> <destinationTrackNumber>' to swap "
 																		  "tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
-									Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timestamp,
+									Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																	 .channelId = returnedMessages.messages[0].channelId,
 																	 .messageId = returnedMessages.messages[0].id,
 																	 .reason = "Deleting the message!" })
@@ -342,7 +342,7 @@ namespace DiscordCoreAPI {
 								auto playlist = SongAPI::getPlaylist(guild->id);
 								playlist.songQueue.erase(playlist.songQueue.begin() + removeIndex - 1, playlist.songQueue.begin() + removeIndex);
 								SongAPI::setPlaylist(playlist, guild->id);
-								Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timestamp,
+								Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																 .channelId = returnedMessages.messages[0].channelId,
 																 .messageId = returnedMessages.messages[0].id,
 																 .reason = "Deleting the message!" })
@@ -361,7 +361,7 @@ namespace DiscordCoreAPI {
 									msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType "
 																		  "'swap <sourceTrackNumber> <destinationTrackNumber>' to swap "
 																		  "tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
-									Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timestamp,
+									Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																	 .channelId = returnedMessages.messages[0].channelId,
 																	 .messageId = returnedMessages.messages[0].id,
 																	 .reason = "Deleting the message!" })
@@ -383,7 +383,7 @@ namespace DiscordCoreAPI {
 									msgEmbeds[currentPageIndex].setFooter("PLEASE ENTER A PROPER INPUT!\nType 'remove <trackNumber>' to remove a track.\nType "
 																		  "'swap <sourceTrackNumber> <destinationTrackNumber>' to swap "
 																		  "tracks.\nType 'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
-									Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timestamp,
+									Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																	 .channelId = returnedMessages.messages[0].channelId,
 																	 .messageId = returnedMessages.messages[0].id,
 																	 .reason = "Deleting the message!" })
@@ -399,7 +399,7 @@ namespace DiscordCoreAPI {
 								Int32 sourceIndex = ( Int32 )stoll(args2[1]) - 1;
 								Int32 destinationIndex = ( Int32 )stoll(args2[2]) - 1;
 								SongAPI::modifyQueue(sourceIndex, destinationIndex, guild->id);
-								Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timestamp,
+								Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																 .channelId = returnedMessages.messages[0].channelId,
 																 .messageId = returnedMessages.messages[0].id,
 																 .reason = "Deleting the message!" })
@@ -422,7 +422,7 @@ namespace DiscordCoreAPI {
 								}
 								oldSongArray.songQueue = newVector;
 								SongAPI::setPlaylist(oldSongArray, guild->id);
-								Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timestamp,
+								Messages::deleteMessageAsync({ .timeStamp = returnedMessages.messages[0].timeStamp,
 																 .channelId = returnedMessages.messages[0].channelId,
 																 .messageId = returnedMessages.messages[0].id,
 																 .reason = "Deleting the message!" })

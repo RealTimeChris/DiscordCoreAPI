@@ -80,16 +80,18 @@ namespace DiscordCoreAPI {
 		return this->thePtr.get();
 	}
 
-	RTPPacket::RTPPacket(Uint32 timestampNew, Uint16 sequenceNew, Uint32 ssrcNew, Vector<Uint8>& audioDataNew, const String& theKeysNew) noexcept {
-		this->audioData = std::move(audioDataNew);
-		this->timestamp = timestampNew;
-		this->sequence = sequenceNew;
+	RTPPacketEncrypter::RTPPacketEncrypter(Uint32 ssrcNew, const String& theKeysNew) noexcept {
 		this->theKeys = theKeysNew;
 		this->ssrc = ssrcNew;
 	}
 
-	RTPPacket::operator String() noexcept {
+	StringView RTPPacketEncrypter::encryptPacket(AudioFrameData&audioData) noexcept {
 		if (this->theKeys.size() > 0) {
+			this->sequence++;
+			this->timeStamp += audioData.sampleCount;
+			if (this->timeStamp > INT16_MAX && this->sequence < 100) {
+				this->timeStamp = 0;
+			}
 			const Uint8 nonceSize{ crypto_secretbox_NONCEBYTES };
 			const Uint8 headerSize{ 12 };
 			const Uint8 byteSize{ 8 };
@@ -97,7 +99,7 @@ namespace DiscordCoreAPI {
 			storeBits(header, this->version);
 			storeBits(header, this->flags);
 			storeBits(header, this->sequence);
-			storeBits(header, this->timestamp);
+			storeBits(header, this->timeStamp);
 			storeBits(header, this->ssrc);
 			std::unique_ptr<Uint8[]> nonceForLibSodium{ std::make_unique<Uint8[]>(nonceSize) };
 			for (Uint8 x = 0; x < headerSize; ++x) {
@@ -106,21 +108,22 @@ namespace DiscordCoreAPI {
 			for (Uint8 x = headerSize; x < nonceSize; ++x) {
 				nonceForLibSodium[x] = 0;
 			}
-			Uint64 numOfBytes{ headerSize + this->audioData.size() + crypto_secretbox_MACBYTES };
-			std::unique_ptr<Uint8[]> audioDataPacket{ std::make_unique<Uint8[]>(numOfBytes) };
+			Uint64 numOfBytes{ headerSize + audioData.data.size() + crypto_secretbox_MACBYTES };
+			if (this->theData.size() < numOfBytes) {
+				this->theData.resize(numOfBytes);
+			}
 			for (Uint8 x = 0; x < headerSize; ++x) {
-				audioDataPacket[x] = header[x];
+				this->theData[x] = header[x];
 			}
 			std::unique_ptr<Uint8[]> encryptionKeys{ std::make_unique<Uint8[]>(this->theKeys.size()) };
 			for (Uint64 x = 0; x < this->theKeys.size(); ++x) {
 				encryptionKeys[x] = this->theKeys[x];
 			}
-			if (crypto_secretbox_easy(audioDataPacket.get() + headerSize, this->audioData.data(), this->audioData.size(), nonceForLibSodium.get(), encryptionKeys.get()) != 0) {
+			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->theData.data()) + headerSize, audioData.data.data(), audioData.data.size(), nonceForLibSodium.get(), encryptionKeys.get()) != 0) {
 				return "";
 			};
-			String audioDataPacketNew{};
-			audioDataPacketNew.insert(audioDataPacketNew.begin(), audioDataPacket.get(), audioDataPacket.get() + numOfBytes);
-			return audioDataPacketNew;
+			StringView returnString{ this->theData.data(), numOfBytes };
+			return returnString;
 		}
 		return {};
 	}
@@ -146,14 +149,10 @@ namespace DiscordCoreAPI {
 		return this->voiceConnectInitData.channelId;
 	}
 
-	String VoiceConnection::encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept {
+	StringView VoiceConnection::encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept {
 		if (this->secretKeySend.size() > 0) {
-			this->sequenceIndex++;
-			this->timeStamp += bufferToSend.sampleCount;
-			if (this->timeStamp > INT16_MAX && this->sequenceIndex < 100) {
-				this->timeStamp = 0;
-			}
-			return RTPPacket{ this->timeStamp, this->sequenceIndex, this->audioSSRC, bufferToSend.data, this->secretKeySend };
+			
+			return this->packetEncrypter.encryptPacket(bufferToSend);
 		}
 		return {};
 	}
@@ -254,7 +253,7 @@ namespace DiscordCoreAPI {
 		this->streamSocket->connect(this->theStreamInfo.address, this->theStreamInfo.port);
 	}
 
-	Void VoiceConnection::sendVoiceData(String& responseData) noexcept {
+	Void VoiceConnection::sendVoiceData(StringView responseData) noexcept {
 		try {
 			if (responseData.size() == 0) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {

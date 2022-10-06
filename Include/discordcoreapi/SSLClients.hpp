@@ -254,9 +254,9 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult processIO(ProcessIOType theType) noexcept;
 
-		StringView getInputBuffer() noexcept;
+		Void writeData(StringView dataToWrite) noexcept;
 
-		Void writeData(String data) noexcept;
+		StringView getInputBuffer() noexcept;
 
 		Bool areWeStillConnected() noexcept;
 

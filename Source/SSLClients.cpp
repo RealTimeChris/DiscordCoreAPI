@@ -659,23 +659,22 @@ namespace DiscordCoreInternal {
 		return theResult;
 	}
 
-	Void DatagramSocketClient::writeData(String dataToWrite) noexcept {
+	Void DatagramSocketClient::writeData(StringView dataToWrite) noexcept {
 		if (dataToWrite.size() > static_cast<Uint64>(16 * 1024)) {
 			Uint64 remainingBytes{ dataToWrite.size() };
+			Uint64 amountCollected{};
 			while (remainingBytes > 0) {
-				String newString{};
 				Uint64 amountToCollect{};
 				if (dataToWrite.size() >= static_cast<Uint64>(1024 * 16)) {
 					amountToCollect = static_cast<Uint64>(1024 * 16);
 				} else {
 					amountToCollect = dataToWrite.size();
 				}
-				newString.insert(newString.begin(), dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
-				memcpy(this->outputBuffer.getCurrentHead()->getCurrentHead(), newString.data(), newString.size());
-				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, newString.size());
+				memcpy(this->outputBuffer.getCurrentHead()->getCurrentHead(), dataToWrite.data() + amountCollected, amountToCollect);
+				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
 				this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-				dataToWrite.erase(dataToWrite.begin(), dataToWrite.begin() + amountToCollect);
 				remainingBytes = dataToWrite.size();
+				amountCollected += amountToCollect;
 			}
 		} else {
 			memcpy(this->outputBuffer.getCurrentHead()->getCurrentHead(), dataToWrite.data(), dataToWrite.size());

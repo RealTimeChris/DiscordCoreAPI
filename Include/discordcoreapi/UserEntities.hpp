@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 
 	/// For updating the bot's current voice state. \brief For updating the bot's current voice state.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
-		String requestToSpeakTimestamp{};///< ISO8601 timestamp.
+		String requestToSpeakTimestamp{};///< ISO8601 timeStamp.
 		Snowflake channelId{};///< The id of the Channel the user is currently in.
 		Bool suppress{ false };///< Toggles the user's suppress state.
 		Snowflake guildId{};///< The Guild within which to update the bot's voice state.

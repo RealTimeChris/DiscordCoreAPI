@@ -342,7 +342,7 @@ namespace DiscordCoreAPI {
 
 		this->url = getString(jsonObjectData, "url");
 
-		this->timestamp = getString(jsonObjectData, "timestamp");
+		this->timeStamp = getString(jsonObjectData, "timeStamp");
 
 		this->hexColorValue = getUint32(jsonObjectData, "color");
 
@@ -1934,7 +1934,7 @@ namespace DiscordCoreAPI {
 
 		this->userId = getId(jsonObjectData, "user_id");
 
-		this->timestamp = getUint32(jsonObjectData, "timestamp");
+		this->timeStamp = getUint32(jsonObjectData, "timeStamp");
 	}
 
 	YouTubeFormat::YouTubeFormat(simdjson::ondemand::value jsonObjectData) {
@@ -2260,7 +2260,7 @@ namespace DiscordCoreAPI {
 			this->member = GuildMemberData{ theObject };
 		}
 
-		this->timestamp = getString(jsonObjectData, "timestamp");
+		this->timeStamp = getString(jsonObjectData, "timeStamp");
 
 		this->editedTimestamp = getString(jsonObjectData, "edited_timestamp");
 
@@ -2409,7 +2409,7 @@ namespace DiscordCoreAPI {
 			this->member = GuildMemberData{ theObject };
 		}
 
-		this->timestamp = getString(jsonObjectData, "timestamp");
+		this->timeStamp = getString(jsonObjectData, "timeStamp");
 
 		this->editedTimestamp = getString(jsonObjectData, "edited_timestamp");
 
@@ -3060,7 +3060,7 @@ namespace DiscordCoreAPI {
 		theData["provider"]["name"] = this->provider.name;
 		theData["provider"]["url"] = this->provider.url;
 		theData["description"] = escapeCharacters(this->description);
-		theData["timestamp"] = this->timestamp;
+		theData["timeStamp"] = this->timeStamp;
 		theData["title"] = escapeCharacters(this->title);
 		theData["color"] = realColorVal;
 		theData["type"] = this->type;
@@ -3081,7 +3081,7 @@ namespace DiscordCoreAPI {
 	}
 
 	EmbedData& EmbedData::setTimeStamp(const String& timeStamp) {
-		this->timestamp = timeStamp;
+		this->timeStamp = timeStamp;
 		return *this;
 	}
 
@@ -3358,7 +3358,7 @@ namespace DiscordCoreAPI {
 			this->interaction = other.interaction;
 			this->attachments = other.attachments;
 			this->components = other.components;
-			this->timestamp = other.timestamp;
+			this->timeStamp = other.timeStamp;
 			this->channelId = other.channelId;
 			this->webHookId = other.webHookId;
 			this->reactions = other.reactions;

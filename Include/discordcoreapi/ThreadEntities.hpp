@@ -117,21 +117,21 @@ namespace DiscordCoreAPI {
 	/// For collecting puiblic archived Threads from a given Channel. \brief For collecting puiblic archived Threads from a given Channel.
 	struct DiscordCoreAPI_Dll GetPublicArchivedThreadsData {
 		Snowflake channelId{};///< The Channel to acquire the Threads from.
-		String before{};///< Returns threads before this timestamp.
+		String before{};///< Returns threads before this timeStamp.
 		Int32 limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting private archived Threads from a given Channel. \brief For collecting private archived Threads from a given Channel.
 	struct DiscordCoreAPI_Dll GetPrivateArchivedThreadsData {
 		Snowflake channelId{};///< The Channel to acquire the Threads from.
-		String before{};///< Returns threads before this timestamp.
+		String before{};///< Returns threads before this timeStamp.
 		Int32 limit{ 0 };///< Maximum number of threads to return.
 	};
 
 	/// For collecting joined private archived Threads from a given Channel. \brief For collecting joined private archived Threads from a given Channel.
 	struct DiscordCoreAPI_Dll GetJoinedPrivateArchivedThreadsData {
 		Snowflake channelId{};///< The Channel to acquire the Threads from.
-		String before{};///< Returns threads before this timestamp.
+		String before{};///< Returns threads before this timeStamp.
 		Int32 limit{ 0 };///< Maximum number of threads to return.
 	};
 

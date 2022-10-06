@@ -925,7 +925,7 @@ namespace DiscordCoreAPI {
 	};
 
 	template<typename TimeType>
-	/// Class for representing a timestamp, as well as working with time-related values. \brief Class for representing a timestamp, as well as working with time-related values.
+	/// Class for representing a timeStamp, as well as working with time-related values. \brief Class for representing a timeStamp, as well as working with time-related values.
 	class DiscordCoreAPI_Dll TimeStamp {
 	  public:
 		explicit TimeStamp(TimeFormat theFormatNew = TimeFormat::LongDateTime) {
@@ -1391,7 +1391,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll String reset();
 
-	/// Acquires a timestamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timestamp with the current time and date - suitable for use in message-embeds.
+	/// Acquires a timeStamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timeStamp with the current time and date - suitable for use in message-embeds.
 	/// \returns String A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll String getTimeAndDate();
 
