@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::CreateStageInstanceData dataPackage;
 				dataPackage.privacyLevel = StageInstancePrivacyLevel::GUILD_ONLY;

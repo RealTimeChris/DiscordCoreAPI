@@ -1,6 +1,6 @@
 Batch Editing Guild Application Command's Permissions {#batcheditguildcommandpermissions}
 ============
-- Execute the `DiscordCoreAPI::ApplicationCommands::batchEditGuildApplicationCommandPermissionsAsync()` function, while passing in a data structure of type `DiscordCoreAPI::BatchEditGuildApplicationCommandPermissionsData`, with a return value of type `auto` or `Vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>`.
+- Execute the `DiscordCoreAPI::ApplicationCommands::batchEditGuildApplicationCommandPermissionsAsync()` function, while passing in a data structure of type `DiscordCoreAPI::BatchEditGuildApplicationCommandPermissionsData`, with a return value of type `auto` or `std::vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,11 +30,11 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
 			DiscordCoreAPI::BatchEditGuildApplicationCommandPermissionsData dataPackage01;
-			Vector<DiscordCoreAPI::EditGuildApplicationCommandPermissionsData> dataPackage02 {
+			std::vector<DiscordCoreAPI::EditGuildApplicationCommandPermissionsData> dataPackage02 {
 				{.permissions = {{.type = ApplicationCommandPermissionType::User, .permission = false, .id = "859853159115259905"}},
 				 .commandName = "selldrugs"}};
 			dataPackage01.guildId = args.eventData.getGuildId();

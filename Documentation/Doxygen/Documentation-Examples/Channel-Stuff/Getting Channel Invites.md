@@ -1,6 +1,6 @@
 Getting Channel Invites {#gettingchannelinvites}
 ============
-- Execute the `DiscordCoreAPI::Channels::getChannelInvitesAsync()` function, while passing in a data structure of type `DiscordCoreAPI::GetChannelInvitesData`, with a return value of `auto` or `Vector<DiscordCoreAPI::InviteData>`.
+- Execute the `DiscordCoreAPI::Channels::getChannelInvitesAsync()` function, while passing in a data structure of type `DiscordCoreAPI::GetChannelInvitesData`, with a return value of `auto` or `std::vector<DiscordCoreAPI::InviteData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::GetChannelInvitesData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();

@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			auto globalApplicationCommands = DiscordCoreAPI::ApplicationCommands::getGlobalApplicationCommandsAsync().get();
 
 			DiscordCoreAPI::GetGlobalApplicationCommandData dataPackage;

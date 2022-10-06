@@ -30,7 +30,7 @@ Instantiating/Creating a Modal-Input {#instantiatingcreatingmodal}
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::RespondToInputEventData dataPackage {args.eventData};
 				dataPackage.addModal("Test Modal", "test_modal", "Test Modal Small", "test_modal", true, 1, 46, TextInputStyle::Paragraph, "TEST MODAL",

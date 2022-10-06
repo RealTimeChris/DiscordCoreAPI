@@ -30,7 +30,7 @@ Instantiating/Creating a Select-Menu {#instantiatingcreatingselectmenu}
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
 			DiscordCoreAPI::SelectOptionData selectOption;
@@ -39,7 +39,7 @@ Instantiating/Creating a Select-Menu {#instantiatingcreatingselectmenu}
 			selectOption.description = "Select Menu";
 			selectOption.emoji.name = "🏁";
 			selectOption.value = "select_menu";
-			Vector<DiscordCoreAPI::SelectOptionData> selectMenuOptions {selectOption};
+			std::vector<DiscordCoreAPI::SelectOptionData> selectMenuOptions {selectOption};
 			DiscordCoreAPI::RespondToInputEventData dataPackage {args.eventData};
 			dataPackage.addSelectMenu(false, "test_button", selectMenuOptions, "Select-Menu", 1, 1);
 			dataPackage.addContent("Test Response");

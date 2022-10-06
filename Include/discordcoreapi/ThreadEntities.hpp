@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Thread related endpoints. \brief An interface class for the Thread related endpoints.
 	class DiscordCoreAPI_Dll Threads {
 	  public:
-		static Void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Starts a Thread, based on a starting Message. \brief Starts a Thread, based on a starting Message.
 		/// \param dataPackage A StartThreadWithMessageData structure.
@@ -178,23 +178,23 @@ namespace DiscordCoreAPI {
 
 		/// Joins a Thread. \brief Joins a Thread.
 		/// \param dataPackage A JoinThreadData structure.
-		/// \returns A CoRoutine containing Void.
-		static CoRoutine<Void> joinThreadAsync(JoinThreadData dataPackage);
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> joinThreadAsync(JoinThreadData dataPackage);
 
 		/// Adds a new User to a chosen Thread. \brief Adds a new User to a chosen Thread.
 		/// \param dataPackage An AddThreadMemberData structure.
-		/// \returns A CoRoutine containing Void.
-		static CoRoutine<Void> addThreadMemberAsync(AddThreadMemberData dataPackage);
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> addThreadMemberAsync(AddThreadMemberData dataPackage);
 
 		/// Leaves a Thread. \brief Leaves a Thread.
 		/// \param dataPackage A LeaveThreadData  structure.
-		/// \returns A CoRoutine containing Void.
-		static CoRoutine<Void> leaveThreadAsync(LeaveThreadData dataPackage);
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> leaveThreadAsync(LeaveThreadData dataPackage);
 
 		/// Removes a User from a chosen Thread. \brief Removes a User from a chosen Thread.
 		/// \param dataPackage A RemoveThreadMemberData  structure.
-		/// \returns A CoRoutine containing Void.
-		static CoRoutine<Void> removeThreadMemberAsync(RemoveThreadMemberData dataPackage);
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeThreadMemberAsync(RemoveThreadMemberData dataPackage);
 
 		/// Collects a ThreadMember if they exist. \brief Collects a ThreadMember if they exist.
 		/// \param dataPackage A GetThreadMemberData structure.
@@ -204,7 +204,7 @@ namespace DiscordCoreAPI {
 		/// Collects a list of ThreadMembers if they exist. \brief Collects a list of ThreadMembers if they exist.
 		/// \param dataPackage A GetThreadMembersData structure.
 		/// returns A CoRoutine containing a vector<ThreadMemberData>.
-		static CoRoutine<Vector<ThreadMemberData>> getThreadMembersAsync(GetThreadMembersData dataPackage);
+		static CoRoutine<std::vector<ThreadMemberData>> getThreadMembersAsync(GetThreadMembersData dataPackage);
 
 		/// Collects a list of Threads from a given Channel. \brief Collects a list of Threads from a given Channel.
 		/// \param dataPackage A GetActiveThreadsData structure.

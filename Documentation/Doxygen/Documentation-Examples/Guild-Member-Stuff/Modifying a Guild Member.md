@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::ModifyGuildMemberData dataPackage01;
 			dataPackage01.currentChannelId = "";
 			dataPackage01.deaf = false;

@@ -53,14 +53,14 @@ namespace DiscordCoreAPI {
 		return threadId;
 	}
 
-	Void ThreadPool::stopThread(const String& theKey) {
+	void ThreadPool::stopThread(const String& theKey) {
 		if (ThreadPool::threads.contains(theKey)) {
 			ThreadPool::threads[theKey].request_stop();
 			ThreadPool::threads.erase(theKey);
 		}
 	}
 
-	UMap<String, std::jthread> ThreadPool::threads{};
+	std::unordered_map<String, std::jthread> ThreadPool::threads{};
 }
 
 namespace DiscordCoreInternal {
@@ -94,7 +94,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Void CoRoutineThreadPool::submitTask(std::coroutine_handle<> coro) noexcept {
+	void CoRoutineThreadPool::submitTask(std::coroutine_handle<> coro) noexcept {
 		std::unique_lock theLock{ this->theMutex };
 		Bool areWeAllBusy{ true };
 		for (auto& [key, value]: this->workerThreads) {
@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
 	AtomicInt32 theIntNew{};
-	Void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, Int64 theIndex) {
+	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, Int64 theIndex) {
 		while (!stopToken.stop_requested()) {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock theLock01{ this->theMutex, std::defer_lock_t{} };

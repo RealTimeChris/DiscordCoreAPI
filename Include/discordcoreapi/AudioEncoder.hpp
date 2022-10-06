@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
 		struct DiscordCoreAPI_Dll OpusEncoderDeleter {
-			Void operator()(OpusEncoder*) noexcept;
+			void operator()(OpusEncoder*) noexcept;
 		};
 
 		OpusEncoderWrapper& operator=(OpusEncoderWrapper&&) noexcept;
@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame);
 
-		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(Vector<opus_int16>& inputFrame);
+		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(std::vector<opus_int16>& inputFrame);
 
 	  protected:
 		const Int32 maxBufferSize{ 1276 };

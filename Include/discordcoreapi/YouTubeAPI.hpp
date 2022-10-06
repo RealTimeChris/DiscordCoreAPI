@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 
 		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong, Int32 currentRecursionDepth);
 
-		Vector<DiscordCoreAPI::Song> collectSearchResults(const String& theString);
+		std::vector<DiscordCoreAPI::Song> collectSearchResults(const String& theString);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
 
@@ -57,11 +57,11 @@ namespace DiscordCoreInternal {
 	  public:
 		YouTubeAPI(DiscordCoreAPI::ConfigManager*, HttpsClient* httpsClient, const DiscordCoreAPI::Snowflake guildId);
 
-		Void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
+		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
 
-		Void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
+		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries);
 
-		Vector<DiscordCoreAPI::Song> searchForSong(const String& searchQuery);
+		std::vector<DiscordCoreAPI::Song> searchForSong(const String& searchQuery);
 
 		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
 

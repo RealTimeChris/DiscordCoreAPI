@@ -58,7 +58,7 @@ namespace DiscordCoreInternal {
 	}
 
 #ifdef _WIN32
-	Void WSADataWrapper::WSADataDeleter::operator()(WSADATA* other) {
+	void WSADataWrapper::WSADataDeleter::operator()(WSADATA* other) {
 		WSACleanup();
 		delete other;
 	}
@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 	}
 #endif
 
-	Void SSL_CTXWrapper::SSL_CTXDeleter::operator()(SSL_CTX* other) {
+	void SSL_CTXWrapper::SSL_CTXDeleter::operator()(SSL_CTX* other) {
 		if (other) {
 			SSL_CTX_free(other);
 			other = nullptr;
@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	Void SSLWrapper::SSLDeleter::operator()(SSL* other) {
+	void SSLWrapper::SSLDeleter::operator()(SSL* other) {
 		if (other) {
 			SSL_shutdown(other);
 			SSL_free(other);
@@ -106,7 +106,7 @@ namespace DiscordCoreInternal {
 	SSLWrapper::operator SSL*() {
 		return this->thePtr.get();
 	}
-	Void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
+	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
 		if (*other != SOCKET_ERROR) {
 #ifdef _WIN32
 			shutdown(*other, SD_BOTH);
@@ -305,12 +305,12 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	Vector<SSLClient*> SSLClient::processIO(UMap<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept {
-		Vector<SSLClient*> theReturnValue{};
+	std::vector<SSLClient*> SSLClient::processIO(std::unordered_map<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept {
+		std::vector<SSLClient*> theReturnValue{};
 		PollFDWrapper readWriteSet{};
 		for (auto& [key, value]: theShardMap) {
 			if (value->areWeStillConnected() && !value->areWeConnecting.load()) {
-				pollfd theFdSet{ .fd = static_cast<SOCKET>(value->theSocket) };
+				pollfd theFdSet{ .fd = static_cast<uint32_t>(value->theSocket) };
 				if (value->outputBuffer.getUsedSpace() > 0) {
 					theFdSet.events = POLLIN | POLLOUT;
 				} else {
@@ -321,13 +321,6 @@ namespace DiscordCoreInternal {
 		}
 
 		if (readWriteSet.thePolls.size() == 0) {
-			for (auto& [key, value]: theShardMap) {
-				if (value->areWeStillConnected()) {
-					if (!value->areWeAStandaloneSocket) {
-						value->handleBuffer();
-					}
-				}
-			}
 			return theReturnValue;
 		}
 
@@ -340,8 +333,14 @@ namespace DiscordCoreInternal {
 			return theReturnValue;
 
 		} else if (returnValue == 0) {
+			for (auto& [key, value]: theShardMap) {
+				if (!value->areWeAStandaloneSocket) {
+					value->handleBuffer();
+				}
+			}
 			return theReturnValue;
 		}
+
 		for (auto& [key, value]: readWriteSet.thePolls) {
 			if (readWriteSet.thePolls[key].revents & POLLOUT) {
 				if (!theShardMap[key]->processWriteData()) {
@@ -356,15 +355,11 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-
-		for (auto& [key, value]: theShardMap){
-			if (value->areWeStillConnected()) {
-				if (!value->areWeAStandaloneSocket) {
-					value->handleBuffer();
-				}
+		for (auto& [key, value]: theShardMap) {
+			if (!value->areWeAStandaloneSocket) {
+				value->handleBuffer();
 			}
 		}
-
 		return theReturnValue;
 	}
 
@@ -382,7 +377,7 @@ namespace DiscordCoreInternal {
 	ProcessIOResult SSLClient::writeData(String& dataToWrite, Bool priority) noexcept {
 		if (dataToWrite.size() > 0 && this->ssl) {
 			if (priority && dataToWrite.size() < static_cast<Uint64>(16 * 1024)) {
-				pollfd readWriteSet{ .fd = static_cast<SOCKET>(this->theSocket), .events = POLLOUT };
+				pollfd readWriteSet{ .fd = static_cast<uint32_t>(this->theSocket), .events = POLLOUT };
 				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
@@ -429,7 +424,7 @@ namespace DiscordCoreInternal {
 		if (!this->areWeStillConnected()) {
 			return ProcessIOResult::Error;
 		}
-		pollfd readWriteSet{ .fd = static_cast<SOCKET>(this->theSocket) };
+		pollfd readWriteSet{ .fd = static_cast<uint32_t>(this->theSocket) };
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
@@ -496,18 +491,18 @@ namespace DiscordCoreInternal {
 					if (writtenBytes > 0) {
 						this->outputBuffer.getCurrentTail()->clear();
 						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-					return true;
 					}
+					return true;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					this->disconnect(false);
+					this->disconnect();
 					return false;
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
 						cout << reportSSLError("SSLClient::processWriteData()", errorValue, this->ssl) << endl;
 					}
-					this->disconnect(true);
+					this->disconnect();
 					return false;
 				}
 			}
@@ -539,26 +534,24 @@ namespace DiscordCoreInternal {
 							this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
 							this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 							this->bytesRead += readBytes;
-							if (!this->areWeAStandaloneSocket) {
-								this->handleBuffer();
-							}
 						}
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect(false);
+						this->disconnect();
 						return false;
 					}
 					default: {
 						if (this->doWePrintErrorMessages) {
 							cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
 						}
-						this->disconnect(true);
+						this->disconnect();
 						return false;
 					}
 				}
 			} while (SSL_pending(this->ssl));
 		}
+
 		if (!this->areWeAStandaloneSocket) {
 			this->handleBuffer();
 		}
@@ -666,7 +659,7 @@ namespace DiscordCoreInternal {
 		return theResult;
 	}
 
-	Void DatagramSocketClient::writeData(String dataToWrite) noexcept {
+	void DatagramSocketClient::writeData(String dataToWrite) noexcept {
 		if (dataToWrite.size() > static_cast<Uint64>(16 * 1024)) {
 			Uint64 remainingBytes{ dataToWrite.size() };
 			while (remainingBytes > 0) {
@@ -758,7 +751,7 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	Void DatagramSocketClient::disconnect() noexcept {
+	void DatagramSocketClient::disconnect() noexcept {
 		this->theSocket = SOCKET_ERROR;
 		this->outputBuffer.clear();
 	}

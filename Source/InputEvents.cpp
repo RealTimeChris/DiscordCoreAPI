@@ -101,14 +101,14 @@ namespace DiscordCoreAPI {
 				}
 			}
 		} catch (...) {
-			reportException("InputEvents::respondToInputEventAsync()");
+			rethrowException("InputEvents::respondToInputEventAsync()");
 			co_return InputEventData();
 		}
 	}
 
-	CoRoutine<Void> InputEvents::deleteInputEventResponseAsync(InputEventData& dataPackage, Int32 timeDelayNew) {
+	CoRoutine<void> InputEvents::deleteInputEventResponseAsync(InputEventData& dataPackage, Int32 timeDelayNew) {
 		InputEventData newPackage = dataPackage;
-		co_await NewThreadAwaitable<Void>();
+		co_await NewThreadAwaitable<void>();
 		if (newPackage.responseType == InputEventResponseType::Follow_Up_Message || newPackage.responseType == InputEventResponseType::Edit_Follow_Up_Message) {
 			RespondToInputEventData dataPackageNew{ newPackage };
 			DeleteFollowUpMessageData dataPackageNewer{ dataPackageNew };

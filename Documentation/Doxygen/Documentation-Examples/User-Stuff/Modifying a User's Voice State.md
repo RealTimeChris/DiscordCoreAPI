@@ -1,6 +1,6 @@
 Modifying a User's Voice State {#modifyingausersvoicestate}
 ============
-- Execute the, `DiscordCoreAPI::Users::modifyUserVoiceStateAsync()` function, while passing in a value of type `DiscordCoreAPI::ModifyUserVoiceStateData`, with a return value of type `Void`.
+- Execute the, `DiscordCoreAPI::Users::modifyUserVoiceStateAsync()` function, while passing in a value of type `DiscordCoreAPI::ModifyUserVoiceStateData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::ModifyUserVoiceStateData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();

@@ -121,12 +121,12 @@ namespace DiscordCoreInternal {
 
 	template<typename ReturnType, typename... ArgTypes> class Event {
 	  public:
-		Map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
+		std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>> theFunctions{};
 
 		Event<ReturnType, ArgTypes...>& operator=(Event<ReturnType, ArgTypes...>&& other) noexcept {
 			if (this != &other) {
 				this->theFunctions.swap(other.theFunctions);
-				other.theFunctions = Map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>{};
+				other.theFunctions = std::map<EventDelegateToken, EventDelegate<ReturnType, ArgTypes...>>{};
 				this->eventId = std::move(other.eventId);
 				other.eventId = String{};
 			}
@@ -153,14 +153,14 @@ namespace DiscordCoreInternal {
 			return eventToken;
 		}
 
-		Void remove(EventDelegateToken eventToken) {
+		void remove(EventDelegateToken eventToken) {
 			if (this->theFunctions.contains(eventToken)) {
 				this->theFunctions.erase(eventToken);
 			}
 		}
 
-		Vector<ReturnType> operator()(ArgTypes&... args) {
-			Vector<ReturnType> theVector{};
+		std::vector<ReturnType> operator()(ArgTypes&... args) {
+			std::vector<ReturnType> theVector{};
 			for (auto& [key, value]: this->theFunctions) {
 				theVector.emplace_back(value.theFunction(args...));
 			}

@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		this->discoverableDisabled = getBool(jsonObjectData, "discoverable_disabled");
 	}
 
-	Void StageInstances::initialize(DiscordCoreInternal::HttpsClient* theClient) {
+	void StageInstances::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		StageInstances::httpsClient = theClient;
 	}
 
@@ -88,16 +88,16 @@ namespace DiscordCoreAPI {
 		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(workload);
 	}
 
-	CoRoutine<Void> StageInstances::deleteStageInstanceAsync(DeleteStageInstanceData dataPackage) {
+	CoRoutine<void> StageInstances::deleteStageInstanceAsync(DeleteStageInstanceData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Stage_Instance };
-		co_await NewThreadAwaitable<Void>();
+		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/stage-instances/" + std::to_string(dataPackage.channelId);
 		workload.callStack = "StageInstances::deleteStageInstanceAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<Void>(workload);
+		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 	DiscordCoreInternal::HttpsClient* StageInstances::httpsClient{ nullptr };
 }

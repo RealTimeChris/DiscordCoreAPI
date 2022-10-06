@@ -40,7 +40,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll AVFrameWrapper {
 		struct DiscordCoreAPI_Dll AVFrameDeleter {
-			Void operator()(AVFrame* other);
+			void operator()(AVFrame* other);
 		};
 
 		AVFrameWrapper& operator=(AVFrame* other);
@@ -59,7 +59,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll AVCodecContextWrapper {
 		struct DiscordCoreAPI_Dll AVCodecContextDeleter {
-			Void operator()(AVCodecContext* other);
+			void operator()(AVCodecContext* other);
 		};
 
 		AVCodecContextWrapper& operator=(AVCodecContext* other);
@@ -85,7 +85,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll AVFormatContextWrapper {
 		struct DiscordCoreAPI_Dll AVFormatContextDeleter {
-			Void operator()(AVFormatContextWrapper01* other);
+			void operator()(AVFormatContextWrapper01* other);
 		};
 
 		AVFormatContextWrapper& operator=(AVFormatContext* other);
@@ -108,7 +108,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SwrContextWrapper {
 		struct DiscordCoreAPI_Dll SwrContextDeleter {
-			Void operator()(SwrContext* other);
+			void operator()(SwrContext* other);
 		};
 
 		SwrContextWrapper& operator=(SwrContext* other);
@@ -125,7 +125,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll AVIOContextWrapper {
 		struct DiscordCoreAPI_Dll AVIOContextDeleter {
-			Void operator()(AVIOContext* other);
+			void operator()(AVIOContext* other);
 		};
 
 		AVIOContextWrapper& operator=(AVIOContext* other);
@@ -144,7 +144,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll AVPacketWrapper {
 		struct DiscordCoreAPI_Dll AVPacketDeleter {
-			Void operator()(AVPacket* other);
+			void operator()(AVPacket* other);
 		};
 
 		AVPacketWrapper& operator=(AVPacket* other);
@@ -174,11 +174,11 @@ namespace DiscordCoreInternal {
 
 		Bool getFrame(DiscordCoreAPI::AudioFrameData& dataPackage);
 
-		Void submitDataForDecoding(String dataToDecode);
+		void submitDataForDecoding(String dataToDecode);
 
 		Bool haveWeFailed();
 
-		Void startMe();
+		void startMe();
 
 		~AudioDecoder();
 
@@ -202,11 +202,11 @@ namespace DiscordCoreInternal {
 		AVCodec* codec{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 
-		static Int32 ReadBufferData(Void* opaque, Uint8* buf, Int32);
+		static Int32 ReadBufferData(void* opaque, Uint8* buf, Int32);
 
-		Void run(std::stop_token stopToken);
+		void run(std::stop_token stopToken);
 
-		Void cancelMe();
+		void cancelMe();
 	};
 
 }// namespace DiscordCoreAPI

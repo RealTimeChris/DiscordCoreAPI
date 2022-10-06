@@ -1,6 +1,6 @@
 Triggering the Typing Indicator {#triggeringthetypingindicator}
 ============
-- Execute the, `DiscordCoreAPI::Channels::triggerTypingIndicatorAsync()` function, while passing in a data structure of type `DiscordCoreAPI::TriggerTypingIndicatorData` with a return value of `Void`.
+- Execute the, `DiscordCoreAPI::Channels::triggerTypingIndicatorAsync()` function, while passing in a data structure of type `DiscordCoreAPI::TriggerTypingIndicatorData` with a return value of `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::TriggerTypingIndicatorData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();

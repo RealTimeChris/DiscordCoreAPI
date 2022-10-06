@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::Guild guild01 = DiscordCoreAPI::Guilds::getCachedGuildAsync({args.eventData.getGuildId()}).get();
 
 			DiscordCoreAPI::Guild guild02 = DiscordCoreAPI::Guilds::getGuildAsync({args.eventData.getGuildId()}).get();

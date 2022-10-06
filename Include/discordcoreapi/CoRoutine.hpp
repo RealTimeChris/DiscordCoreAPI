@@ -52,12 +52,9 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll CoRoutineBase {
 	  public:
-		template<typename ObjectType> friend class NewThreadAwaiter;
-		virtual ~CoRoutineBase() noexcept = default;
-
-	  protected:
 		static DiscordCoreInternal::CoRoutineThreadPool threadPool;
-		
+
+		virtual ~CoRoutineBase() noexcept = default;
 	};
 
 	/// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.

@@ -1,6 +1,6 @@
 Deleting a Guild Integration {#deletingaguildintegration}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::deleteGuildIntegrationAsync()` function, while passing in a value of type `DiscordCoreAPI::DeleteGuildIntegrationData`, with a return value of type `Void`.
+- Execute the, `DiscordCoreAPI::Guilds::deleteGuildIntegrationAsync()` function, while passing in a value of type `DiscordCoreAPI::DeleteGuildIntegrationData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::DeleteGuildIntegrationData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();

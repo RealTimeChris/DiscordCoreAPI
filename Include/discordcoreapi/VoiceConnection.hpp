@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
 		struct DiscordCoreAPI_Dll OpusDecoderDeleter {
-			Void operator()(OpusDecoder*) noexcept;
+			void operator()(OpusDecoder*) noexcept;
 		};
 
 		OpusDecoderWrapper& operator=(OpusDecoderWrapper&&) noexcept;
@@ -66,8 +66,8 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll VoicePayload {
-		Vector<opus_int16> decodedData{};
-		Vector<Uint8> theRawData{};
+		std::vector<opus_int16> decodedData{};
+		std::vector<Uint8> theRawData{};
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
@@ -85,20 +85,18 @@ namespace DiscordCoreAPI {
 
 	using DoubleTimePointMs = std::chrono::time_point<std::chrono::steady_clock, DoubleMilliSecond>;
 
-	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
+	struct DiscordCoreAPI_Dll RTPPacket {
+		std::vector<Uint8> audioData{};
 		Uint8 version{ 0x80 };
 		Uint8 flags{ 0x78 };
-		Uint32 timeStamp{};
-		String theString{};
-		Uint16 sequence{};
 		String theKeys{};
+		Uint32 timestamp{};
+		Uint16 sequence{};
 		Uint32 ssrc{};
 
-		RTPPacketEncrypter() noexcept = default;
+		RTPPacket(Uint32 timestampNew, Uint16 sequenceNew, Uint32 ssrcNew, std::vector<Uint8>& audioDataNew, const String& theKeys) noexcept;
 
-		RTPPacketEncrypter(Uint32 ssrcNew, const String& theKeys) noexcept;
-
-		StringView encryptPacket(AudioFrameData& audioDataNew) noexcept;
+		operator String() noexcept;
 	};
 
 	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
@@ -138,7 +136,7 @@ namespace DiscordCoreAPI {
 
 		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, DiscordCoreInternal::WebSocketSSLShard* baseShard,
 			const DiscordCoreInternal::VoiceConnectInitData& initDataNew, DiscordCoreAPI::ConfigManager* configManagerNew, AtomicBool* doWeQuitNew, StreamType streamTypeNew,
-			StreamInfo streamInfoNew = StreamInfo{});
+			StreamInfo streamInfoNew = StreamInfo{}) noexcept;
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
 		/// \returns DiscordCoreAPI::Snowflake A Snowflake containing the Channel's id.
@@ -159,81 +157,81 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
-		UMap<Uint64, VoiceUser> voiceUsers{};
+		std::unordered_map<Uint64, VoiceUser> voiceUsers{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		std::deque<ConnectionPackage> theConnections{};
-		std::deque<VoicePayload> theFrameQueue{};
 		AtomicBool areWeConnectedBool{ false };
-		simdjson::ondemand::parser theParser{};
-		const Int64 maxReconnectTries{ 10 };
-		RTPPacketEncrypter theEncrypter{};
+		std::deque<VoicePayload> theFrameQueue{};
 		AtomicBool areWePlaying{ false };
-		Snowflake currentGuildMemberId{};
+		const Int64 maxReconnectTries{ 10 };
 		Int64 currentReconnectTries{ 0 };
-		AtomicBool* doWeQuit{ nullptr };
-		ConnectionPackage thePackage{};
 		String audioEncryptionMode{};
+		Snowflake currentGuildMemberId{};
+		ConnectionPackage thePackage{};
+		AtomicBool* doWeQuit{ nullptr };
+		String secretKeySend{};
 		std::mutex voiceUserMutex{};
+		Uint16 sequenceIndex{ 0 };
 		AudioFrameData audioData{};
 		StreamInfo theStreamInfo{};
 		AudioEncoder theEncoder{};
-		StreamType streamType{};
-		String secretKeySend{};
 		String externalIp{};
-		Uint32 audioSSRC{};
+		StreamType streamType{};
+		Uint32 timeStamp{ 0 };
 		String voiceIp{};
 		String baseUrl{};
+		Uint32 audioSSRC{};
 		Uint64 port{};
 
 		Bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
 
-		StringView encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
+		String encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
-		Void sendSpeakingMessage(const Bool isSpeaking) noexcept;
+		void sendSpeakingMessage(const Bool isSpeaking) noexcept;
 
-		Void sendSingleFrame(AudioFrameData& frameData) noexcept;
+		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
-		Void sendVoiceData(StringView responseData) noexcept;
+		Bool onMessageReceived(StringView theData) noexcept;
 
-		Void runWebSocket(std::stop_token) noexcept;
+		void sendVoiceData(String& responseData) noexcept;
 
-		Void runBridge(std::stop_token) noexcept;
+		void runWebSocket(std::stop_token) noexcept;
 
-		Void runVoice(std::stop_token) noexcept;
+		void runBridge(std::stop_token) noexcept;
 
-		Void parseIncomingVoiceData() noexcept;
+		void runVoice(std::stop_token) noexcept;
+
+		void parseIncomingVoiceData() noexcept;
 
 		Bool areWeCurrentlyPlaying() noexcept;
 
-		Void disconnectInternal() noexcept;
+		void disconnectInternal() noexcept;
 
-		Bool onMessageReceived() noexcept;
+		void reconnectStream() noexcept;
 
-		Void reconnectStream() noexcept;
+		void connectInternal() noexcept;
 
-		Void connectInternal() noexcept;
-
-		Void clearAudioData() noexcept;
+		void clearAudioData() noexcept;
 
 		Bool areWeConnected() noexcept;
 
-		Void disconnect(bool) noexcept;
-
 		Bool voiceConnect() noexcept;
 
-		Void sendSilence() noexcept;
+		void sendSilence() noexcept;
 
-		Void pauseToggle() noexcept;
+		void pauseToggle() noexcept;
 
-		Void reconnect() noexcept;
+		void disconnect() noexcept;
 
-		Void onClosed() noexcept;
+		void reconnect() noexcept;
 
-		Void mixAudio() noexcept;
+		void onClosed() noexcept;
 
-		Void connect() noexcept;
+		void mixAudio() noexcept;
+
+		void connect() noexcept;
 
 		Bool stop() noexcept;
 

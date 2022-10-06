@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage;
 			dataPackage.allow = PermissionsConverter::addPermissionsToString(
 				dataPackage.allow, vector<DiscordCoreAPI::Permission> {DiscordCoreAPI::Permission::Add_Reactions, DiscordCoreAPI::Permission::Manage_Messages});

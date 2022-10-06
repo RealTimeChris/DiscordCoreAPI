@@ -32,13 +32,13 @@ namespace DiscordCoreAPI {
 
 	/// ObjectCollectorReturnData responseData. \brief ObjectCollectorReturnData responseData.
 	template<> struct DiscordCoreAPI_Dll ObjectCollectorReturnData<Message> {
-		Vector<Message> messages{};///< A vector of collected Objects.
+		std::vector<Message> messages{};///< A vector of collected Objects.
 	};
 
 	/// ObjectCollector, for collecting Objects from a Channel. \brief Object collector, for collecting Objects from a Channel.
 	template<> class DiscordCoreAPI_Dll ObjectCollector<Message> {
 	  public:
-		inline static UMap<String, UnboundedMessageBlock<Message>*> objectsBufferMap{};
+		inline static std::unordered_map<String, UnboundedMessageBlock<Message>*> objectsBufferMap{};
 
 		ObjectCollector() noexcept = default;
 
@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 			co_return this->messageReturnData;
 		}
 
-		Void run() {
+		void run() {
 			Int64 startingTime = static_cast<Int64>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 			Int64 elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
@@ -100,11 +100,13 @@ namespace DiscordCoreAPI {
 		this->guildId = getId(jsonObjectData, "guild_id");
 
 		simdjson::ondemand::value theObject{};
-		if (jsonObjectData["author"].get(theObject) == simdjson::error_code::SUCCESS) {
+		auto theResult = jsonObjectData["author"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			this->author = UserData{ theObject };
 		}
 
-		if (jsonObjectData["member"].get(theObject) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["member"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			this->member = GuildMemberData{ theObject };
 		}
 
@@ -117,41 +119,47 @@ namespace DiscordCoreAPI {
 		this->mentionEveryone = getBool(jsonObjectData, "mention_everyone");
 
 		simdjson::ondemand::array theArray{};
-		if (jsonObjectData["mentions"].get(theArray) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["mentions"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				UserData newData{ value.value() };
 				this->mentions.emplace_back(std::move(newData));
 			}
 		}
 
-		if (jsonObjectData["mention_roles"].get(theArray) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["mention_roles"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				this->mentionRoles.emplace_back(value.get_string().take_value());
 			}
 		}
 
-		if (jsonObjectData["mention_channels"].get(theArray) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["mention_channels"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ChannelMentionData newData{ value.value() };
 				this->mentionChannels.emplace_back(std::move(newData));
 			}
 		}
 
-		if (jsonObjectData["attachments"].get(theArray) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["attachments"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				AttachmentData newData{ value.value() };
 				this->attachments.emplace_back(std::move(newData));
 			}
 		}
 
-		if (jsonObjectData["embeds"].get(theArray) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["embeds"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				EmbedData newData{ value.value() };
 				this->embeds.emplace_back(std::move(newData));
 			}
 		}
 
-		if (jsonObjectData["reactions"].get(theArray) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["reactions"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ReactionData newData{ value.value() };
 				this->reactions.emplace_back(std::move(newData));
@@ -166,48 +174,56 @@ namespace DiscordCoreAPI {
 
 		this->type = static_cast<MessageType>(getUint8(jsonObjectData, "type"));
 
-		if (jsonObjectData["activity"].get(theObject) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["activity"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			this->activity = MessageActivityData{ theObject };
 		}
 
-		if (jsonObjectData["application"].get(theObject) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["application"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			this->application = ApplicationData{ theObject };
 		}
 
 		this->applicationId = getId(jsonObjectData, "application_id");
 
-		if (jsonObjectData["message_reference"].get(theObject) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["message_reference"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			this->messageReference = MessageReferenceData{ theObject };
 		}
 
 		this->flags = getUint32(jsonObjectData, "flags");
 
-		if (jsonObjectData["sticker_items"].get(theArray) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["sticker_items"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				StickerItemData newData{ value.value() };
 				this->stickerItems.emplace_back(std::move(newData));
 			}
 		}
 
-		if (jsonObjectData["stickers"].get(theArray) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["stickers"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				StickerData newData{ value.value() };
 				this->stickers.emplace_back(std::move(newData));
 			}
 		}
 
-		if (jsonObjectData["interaction"].get(theObject) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["interaction"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			this->interaction = MessageInteractionData{ theObject };
 		}
 
-		if (jsonObjectData["components"].get(theArray) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["components"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ActionRowData newData{ value.value() };
 				this->components.emplace_back(std::move(newData));
 			}
 		}
 
-		if (jsonObjectData["thread"].get(theObject) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["thread"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			this->thread = ChannelData{ theObject };
 		}
 	}
@@ -215,7 +231,8 @@ namespace DiscordCoreAPI {
 	MessageVector::MessageVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
-			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					Message newData{ value.value() };
 					this->theMessages.emplace_back(std::move(newData));
@@ -351,17 +368,17 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	MessageVector::operator Vector<Message>() {
+	MessageVector::operator std::vector<Message>() {
 		return this->theMessages;
 	}
 
-	Void Messages::initialize(DiscordCoreInternal::HttpsClient* theClient) {
+	void Messages::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		Messages::httpsClient = theClient;
 	}
 
-	CoRoutine<Vector<Message>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
+	CoRoutine<std::vector<Message>> Messages::getMessagesAsync(GetMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Messages };
-		co_await NewThreadAwaitable<Vector<Message>>();
+		co_await NewThreadAwaitable<std::vector<Message>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
 		if (dataPackage.aroundThisId != 0) {
@@ -444,13 +461,13 @@ namespace DiscordCoreAPI {
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
-	CoRoutine<Void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
+	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Message_Old };
 		Bool hasTimeElapsedNew = dataPackage.timeStamp.hasTimeElapsed(14, 0, 0);
 		if (!hasTimeElapsedNew) {
 			workload = DiscordCoreInternal::HttpsWorkloadType::Delete_Message;
 		}
-		co_await NewThreadAwaitable<Void>();
+		co_await NewThreadAwaitable<void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
@@ -458,12 +475,12 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<Void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<Void> Messages::deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage) {
+	CoRoutine<void> Messages::deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Bulk_Delete_Messages };
-		co_await NewThreadAwaitable<Void>();
+		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/bulk-delete";
 		workload.content = dataPackage.operator JsonObject();
@@ -471,40 +488,40 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<Void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<Vector<Message>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
+	CoRoutine<std::vector<Message>> Messages::getPinnedMessagesAsync(GetPinnedMessagesData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Pinned_Messages };
-		co_await NewThreadAwaitable<Vector<Message>>();
+		co_await NewThreadAwaitable<std::vector<Message>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins";
 		workload.callStack = "Messages::getPinnedMessagesAsync()";
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<MessageVector>(workload);
 	}
 
-	CoRoutine<Void> Messages::pinMessageAsync(PinMessageData dataPackage) {
+	CoRoutine<void> Messages::pinMessageAsync(PinMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Pin_Message };
-		co_await NewThreadAwaitable<Void>();
+		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Messages::pinMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<Void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
-	CoRoutine<Void> Messages::unpinMessageAsync(UnpinMessageData dataPackage) {
+	CoRoutine<void> Messages::unpinMessageAsync(UnpinMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Pin_Message };
-		co_await NewThreadAwaitable<Void>();
+		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins/" + std::to_string(dataPackage.messageId);
 		workload.callStack = "Messages::unpinMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<Void>(workload);
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	DiscordCoreInternal::HttpsClient* Messages::httpsClient{ nullptr };

@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 		return Globals::songAPIMap[guildId].get();
 	}
 
-	Void atexitHandler() {
+	void atexitHandler() {
 		Globals::doWeQuit.store(true);
 	}
 
@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 
 	SIGFPEError::SIGFPEError(String theString) : std::runtime_error(theString){};
 
-	Void signalHandler(Int32 theValue) {
+	void signalHandler(Int32 theValue) {
 		try {
 			switch (theValue) {
 				case SIGTERM: {
@@ -177,15 +177,15 @@ namespace DiscordCoreAPI {
 		this->didWeStartCorrectly = true;
 	}
 
-	Void DiscordCoreClient::registerFunction(const Vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+	void DiscordCoreClient::registerFunction(const std::vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
 		Bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 		this->commandsToRegister.emplace_back(commandData);
 	}
 
-	Void DiscordCoreClient::registerFunctionsInternal() {
-		Vector<ApplicationCommand> theCommands{};
+	void DiscordCoreClient::registerFunctionsInternal() {
+		std::vector<ApplicationCommand> theCommands{};
 		try {
 			theCommands = ApplicationCommands::getGlobalApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get();
 		} catch (...) {
@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();
 				}
 			} else {
-				Vector<ApplicationCommand> theGuildCommands{};
+				std::vector<ApplicationCommand> theGuildCommands{};
 				if (theData.guildId != 0) {
 					theGuildCommands =
 						ApplicationCommands::getGuildApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id, .guildId = theData.guildId })
@@ -243,7 +243,7 @@ namespace DiscordCoreAPI {
 		return this->currentUser;
 	}
 
-	Void DiscordCoreClient::runBot() {
+	void DiscordCoreClient::runBot() {
 		if (!this->didWeStartCorrectly) {
 			return;
 		}
@@ -324,14 +324,14 @@ namespace DiscordCoreAPI {
 			this->theConnections.emplace_back(theData);
 		}
 		try {
-			auto theUser = Users::getCurrentUserAsync().get();
-			this->currentUser = BotUser{ theUser, this->baseSocketAgentMap[this->configManager.getStartingShard()].get() };
+			this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[this->configManager.getStartingShard()].get() };
 		} catch (...) {
 			reportException("DiscordCoreClient::instantiateWebSockets()");
 		}
+
 		for (auto& value: this->configManager.getFunctionsToExecute()) {
 			if (value.repeated) {
-				TimeElapsedHandlerNoArgs onSend = [=, this]() -> void{
+				TimeElapsedHandlerNoArgs onSend = [=, this]() -> void {
 					value.function(this);
 				};
 				ThreadPool::storeThread(onSend, value.intervalInMs);
@@ -339,11 +339,18 @@ namespace DiscordCoreAPI {
 				TimeElapsedHandler<void*> onSend = [=, this](void*) -> void {
 					value.function(this);
 				};
-				ThreadPool::executeFunctionAfterTimePeriod(onSend, value.intervalInMs, false, static_cast<void*>(this));
+				ThreadPool::executeFunctionAfterTimePeriod(onSend, value.intervalInMs, false, static_cast<void*>(&onSend));
 			}
 		}
 		return true;
 	}
 
-	DiscordCoreClient::~DiscordCoreClient() noexcept {};
+	DiscordCoreClient::~DiscordCoreClient() noexcept {
+		for (auto& [key, value]: CoRoutineBase::threadPool.workerThreads) {
+			if (value.theThread.joinable()) {
+				value.theThread.request_stop();
+				value.theThread.join();
+			}
+		}
+	}
 }

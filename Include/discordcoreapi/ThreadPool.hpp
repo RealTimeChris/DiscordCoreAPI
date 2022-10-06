@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		static String storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, Int64 timeInterval);
 
 		template<typename... ArgTypes>
-		static Void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, Int64 timeDelay, Bool blockForCompletion, ArgTypes... args) {
+		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, Int64 timeDelay, Bool blockForCompletion, ArgTypes... args) {
 			std::jthread theThread = std::jthread([=](std::stop_token stopToken) {
 				StopWatch stopWatch{ std::chrono::milliseconds{ timeDelay } };
 				stopWatch.resetTimer();
@@ -86,12 +86,12 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		Void stopThread(const String& theKey);
+		void stopThread(const String& theKey);
 
 		~ThreadPool() noexcept = default;
 
 	  protected:
-		static UMap<String, std::jthread> threads;
+		static std::unordered_map<String, std::jthread> threads;
 	};
 }
 
@@ -116,18 +116,18 @@ namespace DiscordCoreInternal {
 
 		CoRoutineThreadPool();
 
-		Void submitTask(std::coroutine_handle<> coro) noexcept;
+		void submitTask(std::coroutine_handle<> coro) noexcept;
 
 	  protected:
 		std::deque<std::coroutine_handle<>> theCoroutineHandles{};
-		UMap<Int64, WorkerThread> workerThreads{};
+		std::unordered_map<Int64, WorkerThread> workerThreads{};
 		AtomicInt64 coroHandleCount{ 0 };
 		AtomicInt64 currentCount{ 0 };
 		AtomicInt64 currentIndex{ 0 };
 		AtomicUint32 threadCount{};
 		std::mutex theMutex{};
 
-		Void threadFunction(std::stop_token stopToken, Int64 theIndex);
+		void threadFunction(std::stop_token stopToken, Int64 theIndex);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

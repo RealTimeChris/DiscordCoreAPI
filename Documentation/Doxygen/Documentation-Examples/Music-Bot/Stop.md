@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<BaseFunction> create() {
 			return std::make_unique<Stop>();
 		}
-		Void execute(BaseFunctionArguments& newArgs) {
+		void execute(BaseFunctionArguments& newArgs) {
 			try {
 				Channel channel = Channels::getCachedChannelAsync({ .channelId = newArgs.eventData.getChannelId() }).get();
 

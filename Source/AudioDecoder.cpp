@@ -28,7 +28,7 @@
 
 namespace DiscordCoreInternal {
 
-	Void AVFrameWrapper::AVFrameDeleter::operator()(AVFrame* other) {
+	void AVFrameWrapper::AVFrameDeleter::operator()(AVFrame* other) {
 		if (other) {
 			av_frame_unref(other);
 			av_frame_free(&other);
@@ -53,7 +53,7 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	Void AVCodecContextWrapper::AVCodecContextDeleter::operator()(AVCodecContext* other) {
+	void AVCodecContextWrapper::AVCodecContextDeleter::operator()(AVCodecContext* other) {
 		if (other) {
 			avcodec_free_context(&other);
 		}
@@ -77,7 +77,7 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	Void AVFormatContextWrapper::AVFormatContextDeleter::operator()(AVFormatContextWrapper01* other) {
+	void AVFormatContextWrapper::AVFormatContextDeleter::operator()(AVFormatContextWrapper01* other) {
 		if (other->didItInitialize) {
 			avformat_free_context(other->theContext);
 		}
@@ -108,7 +108,7 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get()->theContext;
 	}
 
-	Void SwrContextWrapper::SwrContextDeleter::operator()(SwrContext* other) {
+	void SwrContextWrapper::SwrContextDeleter::operator()(SwrContext* other) {
 		if (other) {
 			swr_free(&other);
 		}
@@ -128,7 +128,7 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	Void AVIOContextWrapper::AVIOContextDeleter::operator()(AVIOContext* other) {
+	void AVIOContextWrapper::AVIOContextDeleter::operator()(AVIOContext* other) {
 		if (other) {
 			if (other->buffer) {
 				av_freep(&other->buffer);
@@ -155,7 +155,7 @@ namespace DiscordCoreInternal {
 		return this->thePtr.get();
 	}
 
-	Void AVPacketWrapper::AVPacketDeleter::operator()(AVPacket* other) {
+	void AVPacketWrapper::AVPacketDeleter::operator()(AVPacket* other) {
 		if (other) {
 			av_packet_free(&other);
 		}
@@ -196,7 +196,7 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	Void AudioDecoder::submitDataForDecoding(String dataToDecode) {
+	void AudioDecoder::submitDataForDecoding(String dataToDecode) {
 		this->inputDataBuffer.send(std::move(dataToDecode));
 	}
 
@@ -204,13 +204,13 @@ namespace DiscordCoreInternal {
 		return this->haveWeFailedBool.load();
 	}
 
-	Void AudioDecoder::startMe() {
+	void AudioDecoder::startMe() {
 		this->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 			this->run(stopToken);
 		});
 	};
 
-	Int32 AudioDecoder::ReadBufferData(Void* opaque, Uint8* buf, Int32) {
+	Int32 AudioDecoder::ReadBufferData(void* opaque, Uint8* buf, Int32) {
 		AudioDecoder* stream = static_cast<AudioDecoder*>(opaque);
 		stream->bytesRead = 0;
 		stream->currentBuffer = String();
@@ -241,7 +241,7 @@ namespace DiscordCoreInternal {
 		return static_cast<Int32>(stream->bytesRead);
 	}
 
-	Void AudioDecoder::run(std::stop_token stopToken) {
+	void AudioDecoder::run(std::stop_token stopToken) {
 		if (!this->haveWeBooted) {
 			auto theBuffer = static_cast<Uint8*>(av_malloc(this->bufferMaxSize));
 			if (theBuffer == nullptr) {
@@ -471,7 +471,7 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	Void AudioDecoder::cancelMe() {
+	void AudioDecoder::cancelMe() {
 		this->refreshTimeForBuffer.store(10);
 		this->inputDataBuffer.clearContents();
 		this->inputDataBuffer.send(String());

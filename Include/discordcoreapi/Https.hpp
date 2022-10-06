@@ -49,7 +49,7 @@ namespace DiscordCoreInternal {
 		friend class HttpsConnection;
 		friend class HttpsClient;
 
-		UMap<String, String> responseHeaders{};
+		std::unordered_map<String, String> responseHeaders{};
 		HttpsState theCurrentState{ HttpsState::Collecting_Code };
 		String responseMessage{};
 		Int64 responseCode{ -1 };
@@ -66,7 +66,7 @@ namespace DiscordCoreInternal {
 
 		HttpsRnRBuilder(Bool doWePrintErrorMessages);
 
-		Void updateRateLimitData(RateLimitData& theConnection, UMap<String, String>& headers);
+		void updateRateLimitData(RateLimitData& theConnection, std::unordered_map<String, String>& headers);
 
 		HttpsResponseData finalizeReturnValues(RateLimitData& rateLimitData);
 
@@ -88,7 +88,7 @@ namespace DiscordCoreInternal {
 
 		Uint64 parseCode(StringBuffer& other);
 
-		Void clearCRLF(StringBuffer& other);
+		void clearCRLF(StringBuffer& other);
 	};
 
 	struct DiscordCoreAPI_Dll RateLimitData {
@@ -97,11 +97,11 @@ namespace DiscordCoreInternal {
 		friend class HttpsClient;
 
 	  protected:
-		std::counting_semaphore<1> theSemaphore{ 1 };
 		AtomicBool areWeASpecialBucket{ false };
+		std::counting_semaphore<1> theSemaphore{ 1 };
 		AtomicBool didWeHitRateLimit{ false };
-		AtomicBool haveWeGoneYet{ false };
 		AtomicInt64 sampledTimeInMs{ 0 };
+		AtomicBool haveWeGoneYet{ false };
 		AtomicInt64 getsRemaining{ 0 };
 		AtomicBool doWeWait{ false };
 		AtomicInt64 msRemain{ 0 };
@@ -113,20 +113,20 @@ namespace DiscordCoreInternal {
 	  public:
 		AtomicBool areWeCheckedOut{ false };
 		const Int32 maxReconnectTries{ 10 };
-		StringBuffer theInputBufferReal{};
-		Bool areWeDoneTheRequest{ false };
 		Int32 currentReconnectTries{ 0 };
+		Bool areWeDoneTheRequest{ false };
+		StringBuffer theInputBufferReal{};
+		String currentBaseUrl{};
 		HttpsResponseData theData{};
 		Bool doWeConnect{ true };
-		String currentBaseUrl{};
 
 		HttpsConnection(Bool doWePrintErrorMessages);
 
-		Void disconnect(bool) noexcept;
+		void handleBuffer() noexcept;
 
-		Void handleBuffer() noexcept;
+		void disconnect() noexcept;
 
-		Void resetValues();
+		void resetValues();
 
 		virtual ~HttpsConnection() noexcept = default;
 	};
@@ -135,25 +135,25 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpsConnectionManager(DiscordCoreAPI::ConfigManager*);
 
-		UMap<String, std::unique_ptr<RateLimitData>>& getRateLimitValues();
+		std::unordered_map<String, std::unique_ptr<RateLimitData>>& getRateLimitValues();
 
-		UMap<HttpsWorkloadType, String>& getRateLimitValueBuckets();
+		std::unordered_map<HttpsWorkloadType, String>& getRateLimitValueBuckets();
 
 		HttpsConnection* getConnection();
 
-		Void initialize();
+		void initialize();
 
 	  protected:
-		UMap<String, std::unique_ptr<RateLimitData>> rateLimitValues{};
-		UMap<Int64, std::unique_ptr<HttpsConnection>> httpsConnections{};
-		UMap<HttpsWorkloadType, String> rateLimitValueBuckets{};
+		std::unordered_map<String, std::unique_ptr<RateLimitData>> rateLimitValues{};
+		std::unordered_map<Int64, std::unique_ptr<HttpsConnection>> httpsConnections{};
+		std::unordered_map<HttpsWorkloadType, String> rateLimitValueBuckets{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		Int64 currentIndex{};
 		std::mutex theMutex{};
 	};
 
 	template<typename ObjectType>
-	concept SameAsVoid = std::same_as<Void, ObjectType>;
+	concept SameAsVoid = std::same_as<void, ObjectType>;
 
 	class DiscordCoreAPI_Dll HttpsClient {
 	  public:
@@ -180,10 +180,13 @@ namespace DiscordCoreInternal {
 				simdjson::ondemand::parser theParser{};
 				if (returnData.responseMessage.size() > 0) {
 					returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-					simdjson::ondemand::value theObject{};
-					if (theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity()).get(theObject) ==
-						simdjson::error_code::SUCCESS) {
-						theReturnValueNew = ReturnType{ theObject };
+					auto theDocument = theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
+					if (theDocument.type() != simdjson::ondemand::json_type::null) {
+						simdjson::ondemand::value theObject{};
+						auto theResult = theDocument.get(theObject);
+						if (theObject.type() != simdjson::ondemand::json_type::null) {
+							theReturnValueNew = ReturnType{ theObject };
+						}
 					}
 				}
 				return theReturnValueNew;
@@ -191,10 +194,13 @@ namespace DiscordCoreInternal {
 				simdjson::ondemand::parser theParser{};
 				if (returnData.responseMessage.size() > 0) {
 					returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-					simdjson::ondemand::value theObject{};
-					if (theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity()).get(theObject) ==
-						simdjson::error_code::SUCCESS) {
-						*theReturnValue = ReturnType{ theObject };
+					auto theDocument = theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
+					if (theDocument.type() != simdjson::ondemand::json_type::null) {
+						simdjson::ondemand::value theObject{};
+						auto theResult = theDocument.get(theObject);
+						if (theObject.type() != simdjson::ondemand::json_type::null) {
+							*theReturnValue = ReturnType{ theObject };
+						}
 					}
 				}
 				return *theReturnValue;

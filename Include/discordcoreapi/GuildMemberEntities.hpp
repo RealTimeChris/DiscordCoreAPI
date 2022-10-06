@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 
 	/// For adding a new GuildMember to a chosen Guild. \brief For adding a new GuildMember to a chosen Guild.
 	struct DiscordCoreAPI_Dll AddGuildMemberData {
-		Vector<Snowflake> roles{};///< Array of Role ids the member is assigned.
+		std::vector<Snowflake> roles{};///< Array of Role ids the member is assigned.
 		String accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
 		Snowflake guildId{};///< The Guild to add the new GuildMember to.
 		Snowflake userId{};///< The User id of the user you wish to add.
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 	/// For modifying a GuildMember's values. \brief For modifying a GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
 		TimeStamp<std::chrono::milliseconds> communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
-		Vector<Snowflake> roleIds{};///< A collection of Role id's to be applied to them.
+		std::vector<Snowflake> roleIds{};///< A collection of Role id's to be applied to them.
 		Snowflake newVoiceChannelId{};///< The new voice Channel to move them into.
 		Snowflake currentChannelId{};///< The current voice Channel, if applicaple.
 		Snowflake guildMemberId{};///< The user id of the desired Guild memeber.
@@ -143,14 +143,14 @@ namespace DiscordCoreAPI {
 	  public:
 		GuildMemberVector() noexcept = default;
 
-		operator Vector<GuildMember>();
+		operator std::vector<GuildMember>();
 
 		GuildMemberVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~GuildMemberVector() noexcept = default;
 
 	  protected:
-		Vector<GuildMember> theGuildMembers{};
+		std::vector<GuildMember> theGuildMembers{};
 	};
 
 	/**@}*/
@@ -169,7 +169,7 @@ namespace DiscordCoreAPI {
 		friend class GuildData;
 		friend class Guild;
 
-		static Void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
+		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
 		/// Collects a GuildMember from the Discord servers. \brief Collects a GuildMember from the Discord servers.
 		/// \param dataPackage A GetGuildMemberData structure.
@@ -184,12 +184,12 @@ namespace DiscordCoreAPI {
 		/// Lists all of the GuildMembers of a chosen Guild. \brief Lists all of the GuildMembers of a chosen Guild.
 		/// \param dataPackage A ListGuildMembersData structure.
 		/// \returns A CoRoutine containing a vector<GuildMembers>.
-		static CoRoutine<Vector<GuildMember>> listGuildMembersAsync(ListGuildMembersData dataPackage);
+		static CoRoutine<std::vector<GuildMember>> listGuildMembersAsync(ListGuildMembersData dataPackage);
 
 		/// Searches for a list of GuildMembers of a chosen Guild. \brief Searches for a list of GuildMembers of a chosen Guild.
 		/// \param dataPackage A SearchGuildMembersData structure.
 		/// \returns A CoRoutine containing a vector<GuildMembers>.
-		static CoRoutine<Vector<GuildMember>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
+		static CoRoutine<std::vector<GuildMember>> searchGuildMembersAsync(SearchGuildMembersData dataPackage);
 
 		/// Adds a GuildMember to a chosen Guild. \brief Adds a GuildMember to a chosen Guild.
 		/// \param dataPackage An AddGuildMemberData structure.
@@ -208,17 +208,17 @@ namespace DiscordCoreAPI {
 
 		/// Removes a chosen GuildMember from a chosen Guild. \brief Removes a chosen GuildMember from a chosen Guild.
 		/// \param dataPackage A RemoveGuildMemberData structure.
-		/// \returns A CoRoutine containing Void.
-		static CoRoutine<Void> removeGuildMemberAsync(RemoveGuildMemberData dataPackage);
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> removeGuildMemberAsync(RemoveGuildMemberData dataPackage);
 
 		/// Times-out a chosen GuildMember from a chosen Guild. \brief Times-out a chosen GuildMember from a chosen Guild.
 		/// \param dataPackage A TimeoutGuildMemberData structure.
 		/// \returns A CoRoutine containing GuildMember.
 		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
-		static Void insertGuildMember(GuildMemberData guildMember);
+		static void insertGuildMember(GuildMemberData guildMember);
 
-		static Void removeGuildMember(GuildMemberData guildMemberId);
+		static void removeGuildMember(GuildMemberData guildMemberId);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

@@ -41,27 +41,31 @@ namespace DiscordCoreAPI {
 		this->creatorId = getId(jsonObjectData, "creator_id");
 
 		simdjson::ondemand::array theArray{};
-		if (jsonObjectData["actions"].get(theArray) == simdjson::error_code::SUCCESS) {
+		auto theResult = jsonObjectData["actions"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ActionData newData{ value.value() };
 				this->actions.emplace_back(std::move(newData));
 			}
 		}
 
-		if (jsonObjectData["exempt_roles"].get(theArray) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["exempt_roles"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				this->exemptRoles.emplace_back(Snowflake{ value.get_uint64().value() });
 			}
 		}
 
-		if (jsonObjectData["exempt_channels"].get(theArray) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["exempt_channels"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				this->exemptChannels.emplace_back(Snowflake{ value.get_uint64().value() });
 			}
 		}
 
 		simdjson::ondemand::value theObject{};
-		if (jsonObjectData["trigger_metadata"].get(theObject) == simdjson::error_code::SUCCESS) {
+		theResult = jsonObjectData["trigger_metadata"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			TriggerMetaData theDataNew{ theObject };
 			this->triggerMetaData = theDataNew;
 		}
@@ -72,7 +76,8 @@ namespace DiscordCoreAPI {
 	AutoModerationRuleVector::AutoModerationRuleVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
-			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					AutoModerationRule newData{ value.value() };
 					this->theAutoModerationRules.emplace_back(std::move(newData));
@@ -91,7 +96,8 @@ namespace DiscordCoreAPI {
 		this->matchedContent = getString(jsonObjectData, "matched_content");
 
 		simdjson::ondemand::value theObject{};
-		if (jsonObjectData["action"].get(theObject) == simdjson::error_code::SUCCESS) {
+		auto theResult = jsonObjectData["action"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			this->action = ActionData{ theObject };
 		}
 
@@ -159,17 +165,17 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	AutoModerationRuleVector::operator Vector<AutoModerationRule>() {
+	AutoModerationRuleVector::operator std::vector<AutoModerationRule>() {
 		return this->theAutoModerationRules;
 	}
 
-	Void AutoModerationRules::initialize(DiscordCoreInternal::HttpsClient* HttpsClientNew) {
+	void AutoModerationRules::initialize(DiscordCoreInternal::HttpsClient* HttpsClientNew) {
 		AutoModerationRules::httpsClient = HttpsClientNew;
 	}
 
-	CoRoutine<Vector<AutoModerationRule>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
+	CoRoutine<std::vector<AutoModerationRule>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules };
-		co_await NewThreadAwaitable<Vector<AutoModerationRule>>();
+		co_await NewThreadAwaitable<std::vector<AutoModerationRule>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules";
 		workload.callStack = "AutoModerationRules::listAutoModerationRulesForGuildAsync()";
@@ -205,13 +211,13 @@ namespace DiscordCoreAPI {
 		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<AutoModerationRule>(workload);
 	}
 
-	CoRoutine<Void> AutoModerationRules::deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage) {
+	CoRoutine<void> AutoModerationRules::deleteAutoModerationRuleAsync(DeleteAutoModerationRuleData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Auto_Moderation_Rule };
-		co_await NewThreadAwaitable<Void>();
+		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/auto-moderation/rules/" + std::to_string(dataPackage.autoModerationRuleId);
 		workload.callStack = "AutoModerationRules::deleteAutoModerationRuleAsync()";
-		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<Void>(workload);
+		co_return AutoModerationRules::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
 	DiscordCoreInternal::HttpsClient* AutoModerationRules::httpsClient{ nullptr };

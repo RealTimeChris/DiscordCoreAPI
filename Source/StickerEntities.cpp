@@ -50,7 +50,8 @@ namespace DiscordCoreAPI {
 		this->id = getId(jsonObjectData, "id");
 
 		simdjson::ondemand::value theObject{};
-		if (jsonObjectData["user"].get(theObject) == simdjson::error_code::SUCCESS) {
+		auto theResult = jsonObjectData["user"].get(theObject);
+		if (theResult == simdjson::error_code::SUCCESS) {
 			this->user = UserData{ theObject };
 		}
 	}
@@ -58,7 +59,8 @@ namespace DiscordCoreAPI {
 	StickerVector::StickerVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
-			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
+			auto theResult = jsonObjectData.get(theArray);
+			if (theResult == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					Sticker newData{ value.value() };
 					this->theStickers.emplace_back(std::move(newData));
@@ -67,11 +69,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	StickerVector::operator Vector<Sticker>() {
+	StickerVector::operator std::vector<Sticker>() {
 		return this->theStickers;
 	}
 
-	Void Stickers::initialize(DiscordCoreInternal::HttpsClient* theClient) {
+	void Stickers::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		Stickers::httpsClient = theClient;
 	}
 
@@ -84,18 +86,18 @@ namespace DiscordCoreAPI {
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
 
-	CoRoutine<Vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
+	CoRoutine<std::vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Nitro_Sticker_Packs };
-		co_await NewThreadAwaitable<Vector<StickerPackData>>();
+		co_await NewThreadAwaitable<std::vector<StickerPackData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/sticker-packs";
 		workload.callStack = "Stickers::getNitroStickerPacksAsync()";
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<StickerPackDataVector>(workload);
 	}
 
-	CoRoutine<Vector<Sticker>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
+	CoRoutine<std::vector<Sticker>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Stickers };
-		co_await NewThreadAwaitable<Vector<Sticker>>();
+		co_await NewThreadAwaitable<std::vector<Sticker>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers";
 		workload.callStack = "Stickers::getGuildStickersAsync()";
@@ -137,16 +139,16 @@ namespace DiscordCoreAPI {
 		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload);
 	}
 
-	CoRoutine<Void> Stickers::deleteGuildStickerAsync(DeleteGuildStickerData dataPackage) {
+	CoRoutine<void> Stickers::deleteGuildStickerAsync(DeleteGuildStickerData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Sticker };
-		co_await NewThreadAwaitable<Void>();
+		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/stickers/" + std::to_string(dataPackage.stickerId);
 		workload.callStack = "Stickers::deleteGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Void>(workload);
+		co_return Stickers::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 	DiscordCoreInternal::HttpsClient* Stickers::httpsClient{ nullptr };
 };

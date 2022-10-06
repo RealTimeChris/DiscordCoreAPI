@@ -1,6 +1,6 @@
 Listing Guild Members {#listingguildmembers}
 ============
-- Execute the, `DiscordCoreAPI::GuildMembers::listGuildMembersAsync()` function, while passing in a value of type `DiscordCoreAPI::ListGuildMembersData`, with a return value of type `auto` or `Vector<DiscordCoreAPI::GuildMember>`.
+- Execute the, `DiscordCoreAPI::GuildMembers::listGuildMembersAsync()` function, while passing in a value of type `DiscordCoreAPI::ListGuildMembersData`, with a return value of type `auto` or `std::vector<DiscordCoreAPI::GuildMember>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::ListGuildMembersData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();

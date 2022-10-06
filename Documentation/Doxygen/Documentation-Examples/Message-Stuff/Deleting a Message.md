@@ -1,6 +1,6 @@
 Deleting a Message {#deletingamessage}
 ============
-- Execute the, from the `DiscordCoreAPI::Messages::deleteMessageAsync()` function, while passing in a data structure of type `DiscordCoreAPI::DeleteMessageData`, with a return value of type `Void`.
+- Execute the, from the `DiscordCoreAPI::Messages::deleteMessageAsync()` function, while passing in a data structure of type `DiscordCoreAPI::DeleteMessageData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::DeleteMessageData dataPackage;
 				dataPackage.timeDelay = 500;

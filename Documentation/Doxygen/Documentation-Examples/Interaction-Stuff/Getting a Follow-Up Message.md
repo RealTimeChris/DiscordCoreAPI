@@ -29,7 +29,7 @@ Getting a Follow-Up Message {#gettingafollowupmessage}
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::GetFollowUpMessageData dataPackage;
 				dataPackage.applicationId = getBotUser().id;

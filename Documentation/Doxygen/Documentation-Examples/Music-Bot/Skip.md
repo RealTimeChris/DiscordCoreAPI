@@ -8,7 +8,7 @@ Skip {#Skip}
 namespace DiscordCoreAPI {
 	class Skip : public BaseFunction {
 	  public:
-		static UMap<Uint64, Int64> timeOfLastSkip;
+		static std::unordered_map<Uint64, Int64> timeOfLastSkip;
 
 		Skip() {
 			this->commandName = "skip";
@@ -25,7 +25,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Skip>();
 		}
 
-		Void execute(BaseFunctionArguments& newArgs) {
+		void execute(BaseFunctionArguments& newArgs) {
 			try {
 				Channel channel = Channels::getCachedChannelAsync({ .channelId = newArgs.eventData.getChannelId() }).get();
 
@@ -207,6 +207,6 @@ namespace DiscordCoreAPI {
 		}
 		~Skip(){};
 	};
-	UMap<Uint64, Int64> Skip::timeOfLastSkip{};
+	std::unordered_map<Uint64, Int64> Skip::timeOfLastSkip{};
 }
 ```

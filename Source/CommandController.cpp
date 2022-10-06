@@ -28,24 +28,24 @@
 namespace DiscordCoreAPI {
 
 	namespace Globals {
-		Map<Vector<String>, std::unique_ptr<BaseFunction>> functions{};
+		std::map<std::vector<String>, std::unique_ptr<BaseFunction>> functions{};
 	}
 
 	CommandController::CommandController(DiscordCoreClient* discordCoreClientNew) {
 		this->discordCoreClient = discordCoreClientNew;
 	}
 
-	Void CommandController::registerFunction(const Vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
+	void CommandController::registerFunction(const std::vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
 		Globals::functions[functionNames] = std::move(baseFunction);
 	}
 
-	Map<Vector<String>, std::unique_ptr<BaseFunction>>& CommandController::getFunctions() {
+	std::map<std::vector<String>, std::unique_ptr<BaseFunction>>& CommandController::getFunctions() {
 		return Globals::functions;
 	};
 
-	CoRoutine<Void> CommandController::checkForAndRunCommand(CommandData commandData) {
+	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
 		try {
-			co_await NewThreadAwaitable<Void>();
+			co_await NewThreadAwaitable<void>();
 			std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
 			if (!functionPointer.get()) {
 				co_return;

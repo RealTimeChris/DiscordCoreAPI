@@ -72,9 +72,9 @@ namespace DiscordCoreAPI {
 		operator JsonObject();
 
 	  protected:
-		Vector<AttachmentData> attachments{};
+		std::vector<AttachmentData> attachments{};
 		MessageReferenceData messageReference{};
-		Vector<String> stickerIds{};
+		std::vector<String> stickerIds{};
 	};
 
 	/// For sending a direct-message. \brief For sending a direct-message.
@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 		operator JsonObject();
 
 	  protected:
-		Vector<AttachmentData> attachments{};
+		std::vector<AttachmentData> attachments{};
 		Snowflake channelId{};
 		Snowflake messageId{};
 		Int32 flags{ 0 };
@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 
 	/// For deleting a bulk of Messages. \brief For deleting a bulk of Messages.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
-		Vector<Snowflake> messageIds{};///< Array of Message ids to delete.
+		std::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
 		Snowflake channelId{};///< Channel within which to delete the Messages.
 		String reason{};///< The reason for deleting the Messages.
 
@@ -167,14 +167,14 @@ namespace DiscordCoreAPI {
 	  public:
 		MessageVector() noexcept = default;
 
-		operator Vector<Message>();
+		operator std::vector<Message>();
 
 		MessageVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~MessageVector() noexcept = default;
 
 	  protected:
-		Vector<Message> theMessages{};
+		std::vector<Message> theMessages{};
 	};
 
 	/**@}*/
@@ -193,12 +193,12 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Message related Discord endpoints. \brief An interface class for the Message related Discord endpoints;
 	class DiscordCoreAPI_Dll Messages {
 	  public:
-		static Void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers
 		/// \param dataPackage A GetMessagesData structure.
 		/// \returns A CoRoutine containing a MessageVector.
-		static CoRoutine<Vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
+		static CoRoutine<std::vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
 
 		/// Collects a Message from the Discord servers. \brief Collects a Message from the Discord servers.
 		/// \param dataPackage A GetMessageData structure.
@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 
 		/// Crossposts a message from a News Channel to the following Channels. \brief Crossposts a message from a News Channel to the following Channels.
 		/// \param dataPackage A CrosspostMessageData structure.
-		/// \returns A CoRoutine containing Void.
+		/// \returns A CoRoutine containing void.
 		static CoRoutine<Message> crosspostMessageAsync(CrosspostMessageData dataPackage);
 
 		/// Edit a Message. \brief Edit a Message.
@@ -222,28 +222,28 @@ namespace DiscordCoreAPI {
 
 		/// Deletes a Message. \brief Deletes a Message.
 		/// \param dataPackage A DeleteMessageData structure.
-		/// \returns A CoRoutine containing Void.
-		static CoRoutine<Void> deleteMessageAsync(DeleteMessageData dataPackage);
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteMessageAsync(DeleteMessageData dataPackage);
 
 		/// Deletes a collection of Messages. \brief Deletes a collection of Messages.
 		/// \param dataPackage A DeleteMessagesBulkData structure.
-		/// \returns A CoRoutine containing Void.
-		static CoRoutine<Void> deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage);
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage);
 
 		/// Collects a collection of pinned Messages from the Discord servers. \brief Collects a collection of pinned Messages from the Discord servers.
 		/// \param dataPackage A GetPinnedMessagesData structure.
 		/// \returns A CoRoutine containing a MessageVector.
-		static CoRoutine<Vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
+		static CoRoutine<std::vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
 
 		/// Pins a Message to a given Channel. \brief Pins a Message to a given Channel.
 		/// \param dataPackage A PinMessageData structure.
-		/// \returns A CoRoutine containing Void.
-		static CoRoutine<Void> pinMessageAsync(PinMessageData dataPackage);
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> pinMessageAsync(PinMessageData dataPackage);
 
 		/// Unpins a Message from a given Channel. \brief Unpins a Message from a given Channel.
 		/// \param dataPackage An UnpinMessageData structure.
-		/// \returns A CoRoutine containing Void.
-		static CoRoutine<Void> unpinMessageAsync(UnpinMessageData dataPackage);
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> unpinMessageAsync(UnpinMessageData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

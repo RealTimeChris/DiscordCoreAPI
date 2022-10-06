@@ -26,7 +26,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<SetMusicChannel>();
 		}
 
-		Void execute(BaseFunctionArguments& newArgs) {
+		void execute(BaseFunctionArguments& newArgs) {
 			try {
 				Channel channel = Channels::getCachedChannelAsync({ newArgs.eventData.getChannelId() }).get();
 
@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 
 						msgString += "------\n__**The music commands will now work in ANY CHANNEL!**__";
 
-						discordGuild.data.musicChannelIds = Vector<Uint64>();
+						discordGuild.data.musicChannelIds = std::vector<Uint64>();
 						discordGuild.writeDataToDB();
 					} else {
 						msgString += "------\n**Sorry, but there are no channels to remove!**\n------";

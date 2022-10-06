@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData);
 
 			auto returnVector = DiscordCoreAPI::ApplicationCommands::getGuildApplicationCommandsAsync({.guildId = args.eventData.getGuildId()}).get();

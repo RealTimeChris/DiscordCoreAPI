@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a single Sticker. \brief For creating a single Sticker.
 	struct DiscordCoreAPI_Dll CreateGuildStickerData {
-		Vector<Uint8> file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
+		std::vector<Uint8> file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
 		String description{};///< Description of the Sticker.
 		Snowflake guildId{};///< The Guild within which to create the Sticker.
 		String reason{};///< The reason for creating the Sticker.
@@ -88,14 +88,14 @@ namespace DiscordCoreAPI {
 	  public:
 		StickerVector() noexcept = default;
 
-		operator Vector<Sticker>();
+		operator std::vector<Sticker>();
 
 		StickerVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~StickerVector() noexcept = default;
 
 	  protected:
-		Vector<Sticker> theStickers{};
+		std::vector<Sticker> theStickers{};
 	};
 
 	/**@}*/
@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Sticker related Discord endpoints. \brief An interface class for the Sticker related Discord endpoints.
 	class DiscordCoreAPI_Dll Stickers {
 	  public:
-		static Void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Gets a single Sticker item. \brief Gets a single Sticker item.
 		/// \param dataPackage A GetStickerData structure.
@@ -116,12 +116,12 @@ namespace DiscordCoreAPI {
 
 		/// Gets a list of nitro-available Sticker packs. \brief Gets a list of nitro-available Sticker packs
 		/// \returns A CoRoutine containing a StickerPackDataVector.
-		static CoRoutine<Vector<StickerPackData>> getNitroStickerPacksAsync();
+		static CoRoutine<std::vector<StickerPackData>> getNitroStickerPacksAsync();
 
 		/// Gets a list of Stickers from a Guild. \brief Gets a list of Stickers from a Guild.
 		/// \param dataPackage A GetGuildStickersData structure.
 		/// \returns A CoRoutine containing a StickerVector.
-		static CoRoutine<Vector<Sticker>> getGuildStickersAsync(GetGuildStickersData dataPackage);
+		static CoRoutine<std::vector<Sticker>> getGuildStickersAsync(GetGuildStickersData dataPackage);
 
 		/// Creates a new Sticker within a chosen Guild. \brief Creates a new Sticker within a chosen Guild.
 		/// \param dataPackage A CreateGuildStickerData structure.
@@ -135,8 +135,8 @@ namespace DiscordCoreAPI {
 
 		/// Deletes a Sticker within a chosen Guild. \brief Deletes a Sticker within a chosen Guild.
 		/// \param dataPackage A DeleteGuildStickerData structure.
-		/// \returns A CoRoutine containing Void.
-		static CoRoutine<Void> deleteGuildStickerAsync(DeleteGuildStickerData dataPackage);
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteGuildStickerAsync(DeleteGuildStickerData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

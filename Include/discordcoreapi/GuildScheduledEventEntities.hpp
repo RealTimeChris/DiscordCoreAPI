@@ -112,14 +112,14 @@ namespace DiscordCoreAPI {
 	  public:
 		GuildScheduledEventVector() noexcept = default;
 
-		operator Vector<GuildScheduledEvent>();
+		operator std::vector<GuildScheduledEvent>();
 
 		GuildScheduledEventVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~GuildScheduledEventVector() noexcept = default;
 
 	  protected:
-		Vector<GuildScheduledEvent> theGuildScheduledEvents{};
+		std::vector<GuildScheduledEvent> theGuildScheduledEvents{};
 	};
 
 	/**@}*/
@@ -131,12 +131,12 @@ namespace DiscordCoreAPI {
 	/// An interface class for the GuildScheduledEvent related Discord endpoints. \brief An interface class for the GuildScheduledEvent related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildScheduledEvents {
 	  public:
-		static Void initialize(DiscordCoreInternal::HttpsClient*);
+		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Gets a list of a given Guild's scheduled events. \brief Gets a list of a given Guild's scheduled events.
 		/// \param dataPackage A GetGuildScheduledEventsDatastructure.
 		/// \returns A CoRoutine containing a vector<GuildScheduledEvent>.
-		static CoRoutine<Vector<GuildScheduledEvent>> getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage);
+		static CoRoutine<std::vector<GuildScheduledEvent>> getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage);
 
 		/// Creates a new GuildScheduledEvent within a chosen Guild. \brief Creates a new GuildScheduledEvent within a chosen Guild.
 		/// \param dataPackage A CreateGuildScheduledEventData structure.
@@ -155,13 +155,13 @@ namespace DiscordCoreAPI {
 
 		/// Deletes a single GuildScheduledEvent. \brief Deletes a single GuildScheduledEvent.
 		/// \param dataPackage A DeleteGuildScheduledEventData structure.
-		/// \returns A CoRoutine containing Void.
-		static CoRoutine<Void> deleteGuildScheduledEventAsync(DeleteGuildScheduledEventData dataPackage);
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> deleteGuildScheduledEventAsync(DeleteGuildScheduledEventData dataPackage);
 
 		/// Collects a list of Users for a given GuildScheduledEvent. \brief Collects a list of Users for a given GuildScheduledEvent.
 		/// \param dataPackage A GetGuildScheduledEventUsersData structure.
 		/// \returns A CoRoutine containing a vector<GuildScheduledEventUser>.
-		static CoRoutine<Vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage);
+		static CoRoutine<std::vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

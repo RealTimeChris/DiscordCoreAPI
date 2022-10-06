@@ -33,7 +33,7 @@
 
 namespace DiscordCoreInternal {
 
-	Vector<DiscordCoreAPI::Song> YouTubeRequestBuilder::collectSearchResults(const String& searchQuery) {
+	std::vector<DiscordCoreAPI::Song> YouTubeRequestBuilder::collectSearchResults(const String& searchQuery) {
 		HttpsWorkloadData dataPackage{ HttpsWorkloadType::YouTubeGetSearchResults };
 		dataPackage.baseUrl = this->baseUrl;
 		dataPackage.relativePath = "/results?search_query=" + DiscordCoreAPI::urlEncode(searchQuery.c_str());
@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 		}
 		simdjson::ondemand::value partialSearchResultsJson{};
 
-		Vector<DiscordCoreAPI::Song> searchResults{};
+		std::vector<DiscordCoreAPI::Song> searchResults{};
 		auto varInitFind = returnData.responseMessage.find("var ytInitialData = ");
 		if (varInitFind != String::npos) {
 			String newString00 = "var ytInitialData = ";
@@ -131,7 +131,7 @@ namespace DiscordCoreInternal {
 				DiscordCoreAPI::YouTubeFormatVector theVector{ theValue };
 				DiscordCoreAPI::YouTubeFormat format{};
 				Bool isOpusFound{ false };
-				for (auto& value: static_cast<Vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {
+				for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(theVector)) {
 					if (value.mimeType.find("opus") != String::npos) {
 						if (value.audioQuality == "AUDIO_QUALITY_LOW") {
 							isOpusFound = true;
@@ -218,7 +218,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries) {
+	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries) {
 		currentReconnectTries++;
 		DiscordCoreAPI::GuildMemberData guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId }).get();
@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries) {
+	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries) {
 		try {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr) };
 			auto bytesRead{ static_cast<Int32>(streamSocket->getBytesRead()) };
@@ -276,7 +276,7 @@ namespace DiscordCoreInternal {
 			streamSocket->processIO(1000);
 			if (!streamSocket->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
-				streamSocket->disconnect(false);
+				streamSocket->disconnect();
 				this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 				return;
 			}
@@ -292,19 +292,19 @@ namespace DiscordCoreInternal {
 					frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
 					frameData.sampleCount = 0;
 					DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frameData));
-					streamSocket->disconnect(false);
+					streamSocket->disconnect();
 					audioDecoder.reset(nullptr);
 					return;
 				}
 				bytesSubmittedPrevious = bytesReadTotal;
 				if (audioDecoder->haveWeFailed()) {
-					streamSocket->disconnect(false);
+					streamSocket->disconnect();
 					audioDecoder.reset(nullptr);
 					this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				}
 				if (stopToken.stop_requested()) {
-					streamSocket->disconnect(false);
+					streamSocket->disconnect();
 					audioDecoder.reset(nullptr);
 					return;
 				} else {
@@ -312,7 +312,7 @@ namespace DiscordCoreInternal {
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
 						streamSocket->processIO(10);
 						if (!streamSocket->areWeStillConnected()) {
-							streamSocket->disconnect(false);
+							streamSocket->disconnect();
 							audioDecoder.reset(nullptr);
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
@@ -328,14 +328,14 @@ namespace DiscordCoreInternal {
 						areWeDoneHeaders = true;
 					}
 					if (stopToken.stop_requested()) {
-						streamSocket->disconnect(false);
+						streamSocket->disconnect();
 						audioDecoder.reset(nullptr);
 						return;
 					}
 					if (counter == 0) {
 						streamSocket->processIO(10);
 						if (!streamSocket->areWeStillConnected()) {
-							streamSocket->disconnect(false);
+							streamSocket->disconnect();
 							audioDecoder.reset(nullptr);
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
@@ -359,7 +359,7 @@ namespace DiscordCoreInternal {
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
 						streamSocket->processIO(10);
 						if (!streamSocket->areWeStillConnected()) {
-							streamSocket->disconnect(false);
+							streamSocket->disconnect();
 							audioDecoder.reset(nullptr);
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
@@ -382,11 +382,11 @@ namespace DiscordCoreInternal {
 							}
 						}
 						if (stopToken.stop_requested()) {
-							streamSocket->disconnect(false);
+							streamSocket->disconnect();
 							audioDecoder.reset(nullptr);
 							return;
 						}
-						Vector<DiscordCoreAPI::AudioFrameData> frames{};
+						std::vector<DiscordCoreAPI::AudioFrameData> frames{};
 						Bool doWeContinue{ true };
 						while (doWeContinue) {
 							DiscordCoreAPI::AudioFrameData rawFrame{};
@@ -429,7 +429,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Vector<DiscordCoreAPI::Song> YouTubeAPI::searchForSong(const String& searchQuery) {
+	std::vector<DiscordCoreAPI::Song> YouTubeAPI::searchForSong(const String& searchQuery) {
 		return this->collectSearchResults(searchQuery);
 	}
 

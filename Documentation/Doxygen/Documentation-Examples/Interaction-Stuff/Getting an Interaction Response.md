@@ -29,7 +29,7 @@ Getting an Interaction Response {#gettinganinteractionresponse}
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::GetInteractionResponseData dataPackage;
 				dataPackage.applicationId = getBotUser().id;

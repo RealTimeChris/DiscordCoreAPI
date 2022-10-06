@@ -11,7 +11,7 @@ namespace DiscordCoreAPI {
 
 	class PlayQ : public BaseFunction {
 	  public:
-		static UMap<Uint64, Int64> timeOfLastPlay;
+		static std::unordered_map<Uint64, Int64> timeOfLastPlay;
 
 		PlayQ() {
 			this->commandName = "playq";
@@ -28,7 +28,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<PlayQ>();
 		}
 
-		Void execute(BaseFunctionArguments& newArgs) {
+		void execute(BaseFunctionArguments& newArgs) {
 			try {
 				Channel channel = Channels::getCachedChannelAsync({ newArgs.eventData.getChannelId() }).get();
 
@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 				auto currentSong = SongAPI::getCurrentSong(guild.id);
 				Song currentNew = currentPlaylist.songQueue.at(trackNumber);
 				currentPlaylist.songQueue.erase(currentPlaylist.songQueue.begin() + trackNumber);
-				Vector<Song> newVector{};
+				std::vector<Song> newVector{};
 				Playlist newPlaylist{};
 				newVector.emplace_back(currentNew);
 				newVector.emplace_back(currentSong);
@@ -195,8 +195,8 @@ namespace DiscordCoreAPI {
 				savePlaylist(discordGuild);
 				auto channelId = newArgs.eventData.getChannelId();
 				if (!SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					std::function<CoRoutine<Void>(SongCompletionEventData)> theTask = [=](SongCompletionEventData eventData) mutable noexcept -> CoRoutine<Void> {
-						co_await NewThreadAwaitable<Void>();
+					std::function<CoRoutine<void>(SongCompletionEventData)> theTask = [=](SongCompletionEventData eventData) mutable noexcept -> CoRoutine<void> {
+						co_await NewThreadAwaitable<void>();
 						if (SongAPI::isThereAnySongs(guild.id)) {
 							std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
 							if (!eventData.wasItAFail) {
@@ -353,6 +353,6 @@ namespace DiscordCoreAPI {
 		};
 		~PlayQ(){};
 	};
-	UMap<Uint64, Int64> PlayQ::timeOfLastPlay{};
+	std::unordered_map<Uint64, Int64> PlayQ::timeOfLastPlay{};
 
 }```

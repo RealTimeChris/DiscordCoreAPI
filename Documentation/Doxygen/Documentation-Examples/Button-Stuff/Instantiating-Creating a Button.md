@@ -29,7 +29,7 @@ Instantiating/Creating a Button {#instantiatingcreatingbutton}
 			return std::make_unique<Test>();
 		}
 
-		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
 			DiscordCoreAPI::RespondToInputEventData dataPackage {args.eventData};
