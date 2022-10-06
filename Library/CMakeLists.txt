@@ -35,8 +35,6 @@ generate_product_version(
 	VERSION_REVISION "0"
 )
 
-set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
-
 file(GLOB SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 
 if (WIN32)
