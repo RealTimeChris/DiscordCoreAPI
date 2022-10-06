@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 		String theEvent{};
 	};
 
-	enum class SSLShardState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
+	enum class WebSocketState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
 	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker, public SSLClient {
 	  public:
@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
 		DiscordCoreAPI::ConfigManager* configManager{};
-		std::atomic<SSLShardState> currentState{};
+		std::atomic<WebSocketState> currentState{};
 		Bool haveWeReceivedHeartbeatAck{ true };
 		AtomicBool areWeConnecting{ true };
 		Bool areWeHeartBeating{ false };

@@ -222,7 +222,7 @@ namespace DiscordCoreAPI {
 							this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ theHeartBeat } };
 							this->areWeHeartBeating = true;
 							this->connectionState.store(VoiceConnectionState::Sending_Identify);
-							this->currentState.store(DiscordCoreInternal::SSLShardState::Authenticated);
+							this->currentState.store(DiscordCoreInternal::WebSocketState::Authenticated);
 							this->haveWeReceivedHeartbeatAck = true;
 							return true;
 						}
@@ -304,7 +304,7 @@ namespace DiscordCoreAPI {
 					}
 					this->activeState.store(VoiceActiveState::Connecting);
 					this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-					while (!stopToken.stop_requested() && this->baseShard->currentState.load() != DiscordCoreInternal::SSLShardState::Authenticated) {
+					while (!stopToken.stop_requested() && this->baseShard->currentState.load() != DiscordCoreInternal::WebSocketState::Authenticated) {
 						if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
 							return;
 						}
@@ -651,7 +651,7 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
-				WebSocketMessageHandler::currentState.store(DiscordCoreInternal::SSLShardState::Upgrading);
+				WebSocketMessageHandler::currentState.store(DiscordCoreInternal::WebSocketState::Upgrading);
 				String sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + generateBase64EncodedKey() +
 					"\r\nSec-WebSocket-Version: 13\r\n\r\n";
@@ -663,7 +663,7 @@ namespace DiscordCoreAPI {
 					this->connectInternal();
 					return;
 				}
-				while (this->currentState.load() != DiscordCoreInternal::SSLShardState::Collecting_Hello) {
+				while (this->currentState.load() != DiscordCoreInternal::WebSocketState::Collecting_Hello) {
 					if (WebSocketMessageHandler::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
 						this->connectInternal();
@@ -933,7 +933,7 @@ namespace DiscordCoreAPI {
 		DatagramSocketClient::disconnect();
 		if (WebSocketMessageHandler::theSocket != SOCKET_ERROR) {
 			WebSocketMessageHandler::theSocket = SOCKET_ERROR;
-			this->currentState.store(DiscordCoreInternal::SSLShardState::Disconnected);
+			this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
 			WebSocketMessageHandler::areWeConnecting.store(true);
 			WebSocketMessageHandler::outputBuffer.clear();
 			WebSocketMessageHandler::inputBuffer.clear();
