@@ -113,13 +113,13 @@ target_compile_options(
 	"$<$<PLATFORM_ID:Linux>:-fPIC>"
 )
 
-#set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
+if (UNIX)
+	set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
+endif()
 
 target_link_options(
 	"${LIB_NAME}" PUBLIC
-	"$<$<PLATFORM_ID:Windows>:/DEBUG>" 
-	"$<$<PLATFORM_ID:Linux>:-W>"
-	"$<$<PLATFORM_ID:Linux>:-Bsymbolic>"
+	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
 )
 
 set(CONFIG_FILE_NAME "${PROJECT_NAME}Config.cmake")
