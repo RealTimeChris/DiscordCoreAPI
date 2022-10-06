@@ -118,7 +118,7 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
 target_link_options(
 	"${LIB_NAME}" PUBLIC
 	"$<$<PLATFORM_ID:Windows>:/DEBUG>" 
-	"$<$<PLATFORM_ID:Linux>:-Wl>"
+	"$<$<PLATFORM_ID:Linux>:-W>"
 	"$<$<PLATFORM_ID:Linux>:-Bsymbolic>"
 )
 
