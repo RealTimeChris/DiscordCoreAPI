@@ -176,6 +176,7 @@ namespace DiscordCoreInternal {
 
 	WebSocketMessageHandler::WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManagerNew, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew,
 		String typeOfWebSocketNew) {
+		std::cout << "WERE HERE THIS IS IT!" << typeOfWebSocketNew << std::endl;
 		this->typeOfWebSocket = typeOfWebSocketNew;
 		this->theConnections = theConnectionsNew;
 		this->configManager = configManagerNew;

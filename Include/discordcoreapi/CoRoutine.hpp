@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 			}
 
 			CoRoutine<ReturnType> get_return_object() {
-				return CoRoutine<ReturnType>{ std::coroutine_handle<CoRoutine<ReturnType>::promise_type>::from_promise(*this) };
+				return CoRoutine<ReturnType>{ std::coroutine_handle<CoRoutine<ReturnType>::promise_type>::from_address(this) };
 			}
 
 			std::suspend_never initial_suspend() {
@@ -239,7 +239,7 @@ namespace DiscordCoreAPI {
 			}
 
 			CoRoutine<Void> get_return_object() {
-				return CoRoutine<Void>{ std::coroutine_handle<CoRoutine<Void>::promise_type>::from_promise(*this) };
+				return CoRoutine<Void>{ std::coroutine_handle<CoRoutine<Void>::promise_type>::from_address(this) };
 			}
 
 			std::suspend_never initial_suspend() {

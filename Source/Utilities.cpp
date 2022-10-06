@@ -732,7 +732,7 @@ namespace DiscordCoreAPI {
 		this->destroy();
 	}
 
-	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const String& (*theFunction)(Void)) {
+	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const String& (*theFunction)( Void )) {
 		outputSttream << theFunction();
 		return outputSttream;
 	}
