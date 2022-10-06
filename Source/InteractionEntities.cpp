@@ -57,7 +57,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder,
+	InteractionResponseBase& InteractionResponseBase::addSelectMenu(Bool disabled, const String& customIdNew, Vector<SelectOptionData> options, const String& placeholder,
 		Int32 maxValues, Int32 minValues) {
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 		return this->data;
 	}
 
-	void Interactions::initialize(DiscordCoreInternal::HttpsClient* theClient) {
+	Void Interactions::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		Interactions::httpsClient = theClient;
 	}
 
@@ -431,7 +431,7 @@ namespace DiscordCoreAPI {
 			workload.content = dataPackage.data.operator JsonObject();
 		}
 		workload.callStack = "Interactions::createInteractionResponseAsync()";
-		Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Interactions::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 		GetInteractionResponseData dataPackage01{};
 		dataPackage01.applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackage01.interactionToken = dataPackage.interactionPackage.interactionToken;
@@ -467,15 +467,15 @@ namespace DiscordCoreAPI {
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
-	CoRoutine<void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
+	CoRoutine<Void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Interaction_Response };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath =
 			"/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
 		workload.callStack = "Interactions::deleteInteractionResponseAsync()";
-		co_return Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
 	CoRoutine<Message> Interactions::createFollowUpMessageAsync(CreateFollowUpMessageData dataPackage) {
@@ -519,15 +519,15 @@ namespace DiscordCoreAPI {
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
 
-	CoRoutine<void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
+	CoRoutine<Void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Followup_Message };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/webhooks/" + std::to_string(dataPackage.interactionPackage.applicationId) + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
 			std::to_string(dataPackage.messagePackage.messageId);
 		workload.callStack = "Interactions::deleteFollowUpMessageToBeWrappe()";
-		co_return Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
 	SelectMenuCollector::SelectMenuCollector(InputEventData& dataPackage) {
@@ -538,9 +538,9 @@ namespace DiscordCoreAPI {
 		SelectMenuCollector::selectMenuInteractionBufferMap[this->bufferMapKey] = &this->selectMenuIncomingInteractionBuffer;
 	}
 
-	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(Bool getSelectMenuDataForAllNew, Int32 maxWaitTimeInMsNew,
+	CoRoutine<Vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(Bool getSelectMenuDataForAllNew, Int32 maxWaitTimeInMsNew,
 		Int32 maxCollectedSelectMenuCountNew, Snowflake targetUser) {
-		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
+		co_await NewThreadAwaitable<Vector<SelectMenuResponseData>>();
 		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;
 		} else {
@@ -562,7 +562,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void SelectMenuCollector::run() {
+	Void SelectMenuCollector::run() {
 		StopWatch theStopWatch{ std::chrono::milliseconds{ this->maxTimeInMs } };
 		while (!this->doWeQuit && !theStopWatch.hasTimePassed()) {
 			if (this->getSelectMenuDataForAll == false) {
@@ -575,7 +575,7 @@ namespace DiscordCoreAPI {
 					response->messageId = this->messageId;
 					response->userId = selectMenuInteractionData->user.id;
 					*response->interactionData = *this->interactionData;
-					response->values = std::vector<String>{ "empty" };
+					response->values = Vector<String>{ "empty" };
 					this->responseVector.emplace_back(*response);
 					break;
 				}
@@ -625,7 +625,7 @@ namespace DiscordCoreAPI {
 					response->messageId = this->messageId;
 					response->userId = selectMenuInteractionData->user.id;
 					*response->interactionData = *this->interactionData;
-					response->values = std::vector<String>{ "empty" };
+					response->values = Vector<String>{ "empty" };
 					this->responseVector.emplace_back(*response);
 					break;
 				}
@@ -666,9 +666,9 @@ namespace DiscordCoreAPI {
 		ButtonCollector::buttonInteractionBufferMap[this->bufferMapKey] = &this->buttonIncomingInteractionBuffer;
 	}
 
-	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(Bool getButtonDataForAllNew, Int32 maxWaitTimeInMsNew, Int32 maxNumberOfPressesNew,
+	CoRoutine<Vector<ButtonResponseData>> ButtonCollector::collectButtonData(Bool getButtonDataForAllNew, Int32 maxWaitTimeInMsNew, Int32 maxNumberOfPressesNew,
 		Snowflake targetUser) {
-		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
+		co_await NewThreadAwaitable<Vector<ButtonResponseData>>();
 		if (targetUser == 0 && !getButtonDataForAllNew) {
 			throw std::runtime_error{ "ButtonCollector::collectButtonData(), You've failed to "
 									  "properly set the collectButtonData() parameters!\n\n" };
@@ -689,7 +689,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void ButtonCollector::run() {
+	Void ButtonCollector::run() {
 		StopWatch theStopWatch{ std::chrono::milliseconds{ this->maxTimeInMs } };
 		while (!this->doWeQuit && !theStopWatch.hasTimePassed()) {
 			if (this->getButtonDataForAll == false) {
@@ -799,7 +799,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void ModalCollector::run() {
+	Void ModalCollector::run() {
 		StopWatch theStopWatch{ std::chrono::milliseconds{ this->maxTimeInMs } };
 		while (!this->doWeQuit && !theStopWatch.hasTimePassed()) {
 			auto buttonInteractionData = std::make_unique<InteractionData>();
@@ -826,8 +826,8 @@ namespace DiscordCoreAPI {
 		ModalCollector::modalInteractionBufferMap.erase(std::to_string(this->channelId));
 	}
 
-	std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBufferMap{};
-	std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBufferMap{};
-	std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBufferMap{};
+	UMap<String, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBufferMap{};
+	UMap<String, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBufferMap{};
+	UMap<String, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBufferMap{};
 	DiscordCoreInternal::HttpsClient* Interactions::httpsClient{ nullptr };
 };

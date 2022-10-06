@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(std::unique_pt<DiscordCoreAPI::BarseFunctionArguments> args) {
+		virtual Void execute(std::unique_pt<DiscordCoreAPI::BarseFunctionArguments> args) {
 			Channel channel = Channels::createDMChannelAsync({.userId = args.eventData.getAuthorId()}).get();
 		}
 	};

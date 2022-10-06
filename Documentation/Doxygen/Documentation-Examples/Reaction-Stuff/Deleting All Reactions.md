@@ -1,6 +1,6 @@
 Deleting All Reactions {#deletingallreactions}
 ============
-- Execute the, `DiscordCoreAPI::Reactions::deleteAllReactionsAsync()` function, while passing in a data structure of type `DiscordCoreAPI::DeleteAllReactionsData`, with a return value of type `void`.
+- Execute the, `DiscordCoreAPI::Reactions::deleteAllReactionsAsync()` function, while passing in a data structure of type `DiscordCoreAPI::DeleteAllReactionsData`, with a return value of type `Void`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::DeleteAllReactionsData dataPackage;
 				dataPackage.messageId = args.eventData.getMessageId();

@@ -30,9 +30,9 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
-				std::vector<DiscordCoreAPI::WelcomeScreenChannelData> theVector;
+				Vector<DiscordCoreAPI::WelcomeScreenChannelData> theVector;
 				DiscordCoreAPI::WelcomeScreenChannelData channelData;
 				channelData.channelId = args.eventData.getChannelId();
 				channelData.description = "TESTING CHANNEL!";

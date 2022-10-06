@@ -90,13 +90,13 @@ namespace DiscordCoreAPI {
 		SIGFPEError(String theString);
 	};
 
-	using SoundCloudAPIMap = std::unordered_map<Uint64, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
+	using SoundCloudAPIMap = UMap<Uint64, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
 
-	using YouTubeAPIMap = std::unordered_map<Uint64, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
+	using YouTubeAPIMap = UMap<Uint64, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
 
-	using VoiceConnectionMap = std::unordered_map<Uint64, std::unique_ptr<VoiceConnection>>;
+	using VoiceConnectionMap = UMap<Uint64, std::unique_ptr<VoiceConnection>>;
 
-	using SongAPIMap = std::unordered_map<Uint64, std::unique_ptr<SongAPI>>;
+	using SongAPIMap = UMap<Uint64, std::unique_ptr<SongAPI>>;
 
 	/**
 	 * \addtogroup main_endpoints
@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 		/// \param baseFunction A unique_ptr to the command to be registered.
 		/// \param commandData A CreateApplicationCommandData structure describing the current function.
 		/// \param alwaysRegister Whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of registered commands.
-		void registerFunction(const std::vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+		Void registerFunction(const Vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
 			Bool alwaysRegister = false);
 
 		/// For collecting a reference to the CommandController. \brief For collecting a reference to the CommandController.
@@ -150,12 +150,12 @@ namespace DiscordCoreAPI {
 		BotUser getBotUser();
 
 		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
-		void runBot();
+		Void runBot();
 
 		~DiscordCoreClient() noexcept;
 
 	  protected:
-		std::unordered_map<Uint32, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
+		UMap<Uint32, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theConnectionStopWatch{ 5300ms };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
@@ -169,7 +169,7 @@ namespace DiscordCoreAPI {
 		EventManager eventManager{};
 		BotUser currentUser{};
 
-		void registerFunctionsInternal();
+		Void registerFunctionsInternal();
 
 		GatewayBotData getGateWayBot();
 

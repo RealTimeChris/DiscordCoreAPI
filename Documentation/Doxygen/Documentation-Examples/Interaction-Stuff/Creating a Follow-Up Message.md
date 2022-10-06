@@ -29,7 +29,7 @@ Creating a Follow-Up Message {#creatingafollowupmessage}
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::RespondToInputEventData dataPackage {args.eventData};
 				dataPackage.type = DiscordCoreAPI::InputEventResponseType::Follow_Up_Message;

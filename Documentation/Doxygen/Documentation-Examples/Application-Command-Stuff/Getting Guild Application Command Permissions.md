@@ -1,6 +1,6 @@
 Getting Guild Application Command Permissions {#getguildcommandpermissions}
 ============
-- Execute the `DiscordCoreAPI::ApplicationCommands::getGuildApplicationCommandPermissionsAsync()` function, while passing in an argument of type `DiscordCoreAPI::GetGuildApplicationCommandPermissionsData`, with a return value of type `auto` or `std::vector<DiscordCoreAPI::GuildApplicationCommandPermissionData>`.
+- Execute the `DiscordCoreAPI::ApplicationCommands::getGuildApplicationCommandPermissionsAsync()` function, while passing in an argument of type `DiscordCoreAPI::GetGuildApplicationCommandPermissionsData`, with a return value of type `auto` or `Vector<DiscordCoreAPI::GuildApplicationCommandPermissionData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
 			DiscordCoreAPI::GetGuildApplicationCommandPermissionsData dataPackage;

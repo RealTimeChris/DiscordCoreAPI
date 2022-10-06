@@ -1,6 +1,6 @@
 Removing a Recipient from a Group DM {#removingarecipientfromagroupdm}
 ============
-- Execute the, `DiscordCoreAPI::Users::removeRecipientFromGroupDMAsync()` function, while passing in a value of type `DiscordCoreAPI::RemoveRecipientFromGroupDMData`, with a return value of type `void`.
+- Execute the, `DiscordCoreAPI::Users::removeRecipientFromGroupDMAsync()` function, while passing in a value of type `DiscordCoreAPI::RemoveRecipientFromGroupDMData`, with a return value of type `Void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::GuildMember guildMember = DiscordCoreAPI::GuildMembers::getCachedGuildMemberAsync(
 															  {.guildMemberId = args.eventData.getAuthorId(), .guildId = args.eventData.getGuildId()})

@@ -1,6 +1,6 @@
 Getting Guild Voice Regions {#gettingguildvoiceregions}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::getGuildVoiceRegionsAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildVoiceRegionsData`, with a return value of type `auto` or `std::vector<DiscordCoreAPI::VoiceRegionData>`.
+- Execute the, `DiscordCoreAPI::Guilds::getGuildVoiceRegionsAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildVoiceRegionsData`, with a return value of type `auto` or `Vector<DiscordCoreAPI::VoiceRegionData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::GetGuildVoiceRegionsData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();

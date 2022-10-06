@@ -35,10 +35,10 @@ namespace DiscordCoreAPI {
 		this->guildId = guildId;
 	}
 
-	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake guildId) {
+	Void SongAPI::onSongCompletion(std::function<CoRoutine<Void>(SongCompletionEventData)> handler, const Snowflake guildId) {
 		SongAPI* returnValue = DiscordCoreClient::getSongAPI(guildId);
 		returnValue->onSongCompletionEvent.remove(returnValue->eventToken);
-		returnValue->eventToken = returnValue->onSongCompletionEvent.add(DiscordCoreInternal::EventDelegate<CoRoutine<void>, SongCompletionEventData>{ handler });
+		returnValue->eventToken = returnValue->onSongCompletionEvent.add(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, SongCompletionEventData>{ handler });
 	}
 
 	Bool SongAPI::sendNextSong() {
@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 		return DiscordCoreClient::getVoiceConnection(guildId)->play();
 	}
 
-	void SongAPI::pauseToggle(const Snowflake guildId) {
+	Void SongAPI::pauseToggle(const Snowflake guildId) {
 		DiscordCoreClient::getVoiceConnection(guildId)->pauseToggle();
 	}
 
@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 		return DiscordCoreClient::getVoiceConnection(guildId)->areWeCurrentlyPlaying();
 	}
 
-	void SongAPI::skip(const GuildMember& guildMember) {
+	Void SongAPI::skip(const GuildMember& guildMember) {
 		DiscordCoreClient::getSongAPI(guildMember.guildId)->cancelCurrentSong();
 		if (SongAPI::isLoopAllEnabled(guildMember.guildId) || SongAPI::isLoopSongEnabled(guildMember.guildId)) {
 			DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.songQueue.emplace_back(DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.currentSong);
@@ -141,10 +141,10 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient::getSongAPI(guildMember.guildId)->audioDataBuffer.send(frameData);
 	}
 
-	void SongAPI::stop(const Snowflake guildId) {
+	Void SongAPI::stop(const Snowflake guildId) {
 		DiscordCoreClient::getVoiceConnection(guildId)->stop();
 		DiscordCoreClient::getSongAPI(guildId)->cancelCurrentSong();
-		std::vector<Song> newVector02;
+		Vector<Song> newVector02;
 		newVector02.emplace_back(DiscordCoreClient::getSongAPI(guildId)->playlist.currentSong);
 		for (auto& value: DiscordCoreClient::getSongAPI(guildId)->playlist.songQueue) {
 			newVector02.emplace_back(value);
@@ -157,11 +157,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::vector<Song> SongAPI::searchForSong(const String& searchQuery, const Snowflake guildId) {
+	Vector<Song> SongAPI::searchForSong(const String& searchQuery, const Snowflake guildId) {
 		auto vector01 = DiscordCoreClient::getSoundCloudAPI(guildId)->searchForSong(searchQuery);
 		auto vector02 = DiscordCoreClient::getYouTubeAPI(guildId)->searchForSong(searchQuery);
 		Int32 totalLength = static_cast<Int32>(vector01.size() + vector02.size());
-		std::vector<Song> newVector{};
+		Vector<Song> newVector{};
 		Int32 vector01Used{ 0 };
 		Int32 vector02Used{ 0 };
 		for (Int32 x = 0; x < totalLength; ++x) {
@@ -178,7 +178,7 @@ namespace DiscordCoreAPI {
 		return newVector;
 	}
 
-	void SongAPI::setLoopAllStatus(Bool enabled, const Snowflake guildId) {
+	Void SongAPI::setLoopAllStatus(Bool enabled, const Snowflake guildId) {
 		DiscordCoreClient::getSongAPI(guildId)->playlist.isLoopAllEnabled = enabled;
 	}
 
@@ -186,7 +186,7 @@ namespace DiscordCoreAPI {
 		return DiscordCoreClient::getSongAPI(guildId)->playlist.isLoopAllEnabled;
 	}
 
-	void SongAPI::setLoopSongStatus(Bool enabled, const Snowflake guildId) {
+	Void SongAPI::setLoopSongStatus(Bool enabled, const Snowflake guildId) {
 		DiscordCoreClient::getSongAPI(guildId)->playlist.isLoopSongEnabled = enabled;
 	}
 
@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 		return song;
 	}
 
-	void SongAPI::setPlaylist(const Playlist& playlistNew, const Snowflake guildId) {
+	Void SongAPI::setPlaylist(const Playlist& playlistNew, const Snowflake guildId) {
 		DiscordCoreClient::getSongAPI(guildId)->playlist = playlistNew;
 	}
 
@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 		return DiscordCoreClient::getSongAPI(guildId)->playlist;
 	}
 
-	void SongAPI::modifyQueue(Int32 firstSongPosition, Int32 secondSongPosition, const Snowflake guildId) {
+	Void SongAPI::modifyQueue(Int32 firstSongPosition, Int32 secondSongPosition, const Snowflake guildId) {
 		Song tempSong = DiscordCoreClient::getSongAPI(guildId)->playlist.songQueue[firstSongPosition];
 		DiscordCoreClient::getSongAPI(guildId)->playlist.songQueue[firstSongPosition] = DiscordCoreClient::getSongAPI(guildId)->playlist.songQueue[secondSongPosition];
 		DiscordCoreClient::getSongAPI(guildId)->playlist.songQueue[secondSongPosition] = tempSong;
@@ -242,11 +242,11 @@ namespace DiscordCoreAPI {
 		};
 	}
 
-	void SongAPI::setCurrentSong(const Song& song, const Snowflake guildId) {
+	Void SongAPI::setCurrentSong(const Song& song, const Snowflake guildId) {
 		DiscordCoreClient::getSongAPI(guildId)->playlist.currentSong = song;
 	}
 
-	void SongAPI::sendNextSongFinal(const GuildMember& guildMember) {
+	Void SongAPI::sendNextSongFinal(const GuildMember& guildMember) {
 		DiscordCoreClient::getSongAPI(guildMember.guildId)->cancelCurrentSong();
 		if (DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.currentSong.type == SongType::SoundCloud) {
 			Song newerSong = DiscordCoreClient::getSoundCloudAPI(guildMember.guildId)->collectFinalSong(DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.currentSong);
@@ -284,7 +284,7 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
-	void SongAPI::cancelCurrentSong() {
+	Void SongAPI::cancelCurrentSong() {
 		if (this->taskThread) {
 			this->taskThread->request_stop();
 			if (this->taskThread->joinable()) {

@@ -81,7 +81,7 @@ namespace DiscordCoreAPI {
 		return Globals::songAPIMap[guildId].get();
 	}
 
-	void atexitHandler() {
+	Void atexitHandler() {
 		Globals::doWeQuit.store(true);
 	}
 
@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 
 	SIGFPEError::SIGFPEError(String theString) : std::runtime_error(theString){};
 
-	void signalHandler(Int32 theValue) {
+	Void signalHandler(Int32 theValue) {
 		try {
 			switch (theValue) {
 				case SIGTERM: {
@@ -177,15 +177,15 @@ namespace DiscordCoreAPI {
 		this->didWeStartCorrectly = true;
 	}
 
-	void DiscordCoreClient::registerFunction(const std::vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+	Void DiscordCoreClient::registerFunction(const Vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
 		Bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 		this->commandsToRegister.emplace_back(commandData);
 	}
 
-	void DiscordCoreClient::registerFunctionsInternal() {
-		std::vector<ApplicationCommand> theCommands{};
+	Void DiscordCoreClient::registerFunctionsInternal() {
+		Vector<ApplicationCommand> theCommands{};
 		try {
 			theCommands = ApplicationCommands::getGlobalApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get();
 		} catch (...) {
@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&theData)).get();
 				}
 			} else {
-				std::vector<ApplicationCommand> theGuildCommands{};
+				Vector<ApplicationCommand> theGuildCommands{};
 				if (theData.guildId != 0) {
 					theGuildCommands =
 						ApplicationCommands::getGuildApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id, .guildId = theData.guildId })
@@ -243,7 +243,7 @@ namespace DiscordCoreAPI {
 		return this->currentUser;
 	}
 
-	void DiscordCoreClient::runBot() {
+	Void DiscordCoreClient::runBot() {
 		if (!this->didWeStartCorrectly) {
 			return;
 		}
@@ -331,15 +331,15 @@ namespace DiscordCoreAPI {
 
 		for (auto& value: this->configManager.getFunctionsToExecute()) {
 			if (value.repeated) {
-				TimeElapsedHandlerNoArgs onSend = [=, this]() -> void {
+				TimeElapsedHandlerNoArgs onSend = [=, this]() -> Void {
 					value.function(this);
 				};
 				ThreadPool::storeThread(onSend, value.intervalInMs);
 			} else {
-				TimeElapsedHandler<void*> onSend = [=, this](void*) -> void {
+				TimeElapsedHandler<Void*> onSend = [=, this](Void*) -> Void {
 					value.function(this);
 				};
-				ThreadPool::executeFunctionAfterTimePeriod(onSend, value.intervalInMs, false, static_cast<void*>(&onSend));
+				ThreadPool::executeFunctionAfterTimePeriod(onSend, value.intervalInMs, false, static_cast<Void*>(&onSend));
 			}
 		}
 		return true;

@@ -24,7 +24,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<PlayRN>();
 		}
 
-		void execute(BaseFunctionArguments& newArgs) {
+		Void execute(BaseFunctionArguments& newArgs) {
 			try {
 				Channel channel = Channels::getCachedChannelAsync({ newArgs.eventData.getChannelId() }).get();
 
@@ -170,12 +170,12 @@ namespace DiscordCoreAPI {
 				}
 
 
-				std::vector<Song> searchResults{};
+				Vector<Song> searchResults{};
 				if (newArgs.optionsArgs.size() > 0) {
 					searchResults = SongAPI::searchForSong(newArgs.optionsArgs[0], guild.id);
 				}
 
-				std::vector<EmbedData> embedsFromSearch;
+				Vector<EmbedData> embedsFromSearch;
 				Uint32 x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
@@ -196,7 +196,7 @@ namespace DiscordCoreAPI {
 					song.addedByUserId = guildMember.id;
 					song.addedByUserName = guildMember.userName;
 
-					std::vector<Song> songVector{};
+					Vector<Song> songVector{};
 
 					if (playlist.songQueue.size() > 0) {
 						if (playlist.currentSong.songId != "") {
@@ -234,8 +234,8 @@ namespace DiscordCoreAPI {
 				}
 				auto newChannelId = newArgs.eventData.getChannelId();
 				if (!SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					std::function<CoRoutine<void>(SongCompletionEventData)> theTask = [=](SongCompletionEventData eventData) mutable noexcept -> CoRoutine<void> {
-						co_await NewThreadAwaitable<void>();
+					std::function<CoRoutine<Void>(SongCompletionEventData)> theTask = [=](SongCompletionEventData eventData) mutable noexcept -> CoRoutine<Void> {
+						co_await NewThreadAwaitable<Void>();
 						if (SongAPI::isThereAnySongs(guild.id)) {
 							std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
 							if (!eventData.wasItAFail) {

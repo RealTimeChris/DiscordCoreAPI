@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::GetRoleData dataPackage;
 			dataPackage.guildId = args.eventData.getGuildId();
 			dataPackage.roleId = "YOUR_ROLE_ID_HERE";

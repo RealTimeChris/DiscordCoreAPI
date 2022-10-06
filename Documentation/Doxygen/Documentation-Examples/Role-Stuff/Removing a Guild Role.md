@@ -1,6 +1,6 @@
 Removing a Guild Role {#removingaguildrole}
 =============
-- Execute the, `DiscordCoreAPI::Roles::removeGuildRoleAsync()` function, while passing in a value of type `DiscordCoreAPI::RemoveGuildRoleData`, with a return value of type `void`.
+- Execute the, `DiscordCoreAPI::Roles::removeGuildRoleAsync()` function, while passing in a value of type `DiscordCoreAPI::RemoveGuildRoleData`, with a return value of type `Void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			try {
 				DiscordCoreAPI::RemoveGuildRoleData dataPackage01;
 				dataPackage01.roleId = "886366417316896799";

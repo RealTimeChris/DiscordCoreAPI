@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		InteractionResponseBase& addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder, Int32 maxValues,
+		InteractionResponseBase& addSelectMenu(Bool disabled, const String& customIdNew, Vector<SelectOptionData> options, const String& placeholder, Int32 maxValues,
 			Int32 minValues);
 
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
@@ -308,7 +308,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 		friend class EventManager;
 
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static Void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Creates a response to an input Interaction. \brief Creates a response to an input Interaction.
 		/// \param dataPackage A CreateInteractionResponseData structure.
@@ -327,8 +327,8 @@ namespace DiscordCoreAPI {
 
 		/// Deletes an Interaction respnose. \brief Deletes an Interaction respnose.
 		/// \param dataPackage A DeleteInteractionResponseData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage);
 
 		/// Creates a follow up Message to an input Interaction. \brief Creates a follow up Message to an input Interaction.
 		/// \param dataPackage A CreateFollowUpMessageData structure.
@@ -347,8 +347,8 @@ namespace DiscordCoreAPI {
 
 		/// Deletes a follow up Message. \brief Deletes a follow up Message.
 		/// \param dataPackage A DeleteFollowUpMessageData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
@@ -402,7 +402,7 @@ namespace DiscordCoreAPI {
 		SelectMenuResponseData() noexcept = default;
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
-		std::vector<String> values{};///< A vector of the chosen values.
+		Vector<String> values{};///< A vector of the chosen values.
 		String selectionId{};///< Selection id.
 		Snowflake channelId{};///< The Channel id where it took place.
 		Snowflake messageId{};///< The Message id where it took place.
@@ -416,7 +416,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBufferMap;
+		static UMap<String, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
@@ -428,7 +428,7 @@ namespace DiscordCoreAPI {
 		/// \param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping.
 		/// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
 		/// \returns A vector of SelectMenuResponseData.
-		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(Bool getSelectMenuDataForAllNew, Int32 maxWaitTimeInMsNew, Int32 maxCollectedSelectMenuCountNew,
+		CoRoutine<Vector<SelectMenuResponseData>> collectSelectMenuData(Bool getSelectMenuDataForAllNew, Int32 maxWaitTimeInMsNew, Int32 maxCollectedSelectMenuCountNew,
 			Snowflake targetUserId = Snowflake{ 0 });
 
 		~SelectMenuCollector();
@@ -436,11 +436,11 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> selectMenuIncomingInteractionBuffer{};
-		std::vector<SelectMenuResponseData> responseVector{};
+		Vector<SelectMenuResponseData> responseVector{};
 		Int32 currentCollectedSelectMenuCount{ 0 };
 		Int32 maxCollectedSelectMenuCount{ 0 };
 		Bool getSelectMenuDataForAll{ false };
-		std::vector<String> values{};
+		Vector<String> values{};
 		String bufferMapKey{};
 		String selectMenuId{};
 		Uint32 maxTimeInMs{ 0 };
@@ -449,7 +449,7 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};
 		Snowflake userId{};
 
-		void run();
+		Void run();
 	};
 
 	/// Button response data. \brief Button response data.
@@ -505,7 +505,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
+		static UMap<String, UnboundedMessageBlock<InteractionData>*> buttonInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
@@ -517,7 +517,7 @@ namespace DiscordCoreAPI {
 		/// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
 		/// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
 		/// \returns A vector of ButtonResponseData.
-		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(Bool getButtonDataForAllNew, Int32 maxWaitTimeInMsNew, Int32 maxNumberOfPressesNew,
+		CoRoutine<Vector<ButtonResponseData>> collectButtonData(Bool getButtonDataForAllNew, Int32 maxWaitTimeInMsNew, Int32 maxNumberOfPressesNew,
 			Snowflake targetUserId = Snowflake{ 0 });
 
 		~ButtonCollector();
@@ -525,11 +525,11 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> buttonIncomingInteractionBuffer{};
-		std::vector<ButtonResponseData> responseVector{};
+		Vector<ButtonResponseData> responseVector{};
 		Int32 currentCollectedButtonCount{ 0 };
 		Int32 maxCollectedButtonCount{ 0 };
 		Bool getButtonDataForAll{ false };
-		std::vector<String> values{};
+		Vector<String> values{};
 		String bufferMapKey{};
 		Uint32 maxTimeInMs{ 0 };
 		Bool doWeQuit{ false };
@@ -538,7 +538,7 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};
 		Snowflake userId{};
 
-		void run();
+		Void run();
 	};
 
 	/// Button response data. \brief Button response data.
@@ -594,7 +594,7 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class DiscordCoreClient;
 
-		static std::unordered_map<String, UnboundedMessageBlock<InteractionData>*> modalInteractionBufferMap;
+		static UMap<String, UnboundedMessageBlock<InteractionData>*> modalInteractionBufferMap;
 
 		/// Constructor. \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
@@ -615,7 +615,7 @@ namespace DiscordCoreAPI {
 		Bool doWeQuit{ false };
 		Snowflake channelId{};
 
-		void run();
+		Void run();
 	};
 
 	/**@}*/

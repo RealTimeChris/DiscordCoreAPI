@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new WebHook. \brief For creating a new WebHook.
 	struct DiscordCoreAPI_Dll CreateWebHookData {
-		std::vector<Uint8> avatar{};///< Image for the default webhook avatar.
+		Vector<Uint8> avatar{};///< Image for the default webhook avatar.
 		Snowflake channelId{};///< The Channel within which to create the WebHook.
 		String name{};///< Name of the webhook(1 - 80 characters).
 	};
@@ -81,8 +81,7 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		ExecuteWebHookData addSelectMenu(Bool disabled, const String& customIdNew, std::vector<SelectOptionData> options, const String& placeholder, Int32 maxValues,
-			Int32 minValues);
+		ExecuteWebHookData addSelectMenu(Bool disabled, const String& customIdNew, Vector<SelectOptionData> options, const String& placeholder, Int32 maxValues, Int32 minValues);
 
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.
@@ -125,12 +124,12 @@ namespace DiscordCoreAPI {
 		ExecuteWebHookData& setTTSStatus(Bool enabledTTs);
 
 	  protected:
-		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
-		std::vector<ActionRowData> components{};///< Array of message component the components to include with the message.
+		Vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
+		Vector<ActionRowData> components{};///< Array of message component the components to include with the message.
 		AllowedMentionsData allowedMentions{};///< Allowed mention object.
-		std::vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
+		Vector<EmbedData> embeds{};///< Array of up to 10 embed objects.
 		String webhookToken{};///< The WebHook token you would like to execute.
-		std::vector<File> files{};///< File contents the contents of the file being sent.
+		Vector<File> files{};///< File contents the contents of the file being sent.
 		String avatarUrl{};///< Override the default avatar of the webhook.
 		Snowflake webHookId{};///< The WebHook you would like to execute.
 		String userName{};///< Override the default userName of the webhook.
@@ -185,7 +184,7 @@ namespace DiscordCoreAPI {
 
 	/// For modifying a WebHook. \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookData {
-		std::vector<Uint8> avatar{};///< Image responseData for the default webhook avatar.
+		Vector<Uint8> avatar{};///< Image responseData for the default webhook avatar.
 		Snowflake channelId{};///< The new Channel id this webhook should be moved to.
 		Snowflake webHookId{};///< The WebHook to be modified.
 		String name{};///< The default name of the webhook.
@@ -194,7 +193,7 @@ namespace DiscordCoreAPI {
 	/// For modifying a WebHook. \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookWithTokenData {
 		String webhookToken{};///< Token of the desired WebHook.
-		std::vector<Uint8> avatar{};///< Image responseData for the default webhook avatar.
+		Vector<Uint8> avatar{};///< Image responseData for the default webhook avatar.
 		Snowflake channelId{};///< The new Channel id this webhook should be moved to.
 		Snowflake webHookId{};///< The WebHook to be modified.
 		String name{};///< The default name of the webhook.
@@ -241,14 +240,14 @@ namespace DiscordCoreAPI {
 	  public:
 		WebHookVector() noexcept = default;
 
-		operator std::vector<WebHook>();
+		operator Vector<WebHook>();
 
 		WebHookVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~WebHookVector() noexcept = default;
 
 	  protected:
-		std::vector<WebHook> theWebHooks{};
+		Vector<WebHook> theWebHooks{};
 	};
 
 	/**@}*/
@@ -260,7 +259,7 @@ namespace DiscordCoreAPI {
 	/// An interface class for the WebHook related Discord endpoints. \brief An interface class for the WebHook related Discord endpoints;
 	class DiscordCoreAPI_Dll WebHooks {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static Void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Creates a new WebHook. \brief Creates a new WebHook.
 		/// \param dataPackage A GetMessageData structure.
@@ -270,12 +269,12 @@ namespace DiscordCoreAPI {
 		/// Collects a list of WebHooks from a chosen Channel. \brief Collects a list of WebHooks from a chosen Channel.
 		/// \param dataPackage A GetChannelWebHooksData structure.
 		/// \returns A CoRoutine containing a WebHookVector.
-		static CoRoutine<std::vector<WebHook>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
+		static CoRoutine<Vector<WebHook>> getChannelWebHooksAsync(GetChannelWebHooksData dataPackage);
 
 		/// Collects a list of WebHooks from a chosen Guild. \brief Collects a list of WebHooks from a chosen Guild.
 		/// \param dataPackage A GetGuildWebHooksData structure.
 		/// \returns A CoRoutine containing a WebHookVector.
-		static CoRoutine<std::vector<WebHook>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
+		static CoRoutine<Vector<WebHook>> getGuildWebHooksAsync(GetGuildWebHooksData dataPackage);
 
 		/// Collects a single WebHook. \brief Collects a single WebHook.
 		/// \param dataPackage A GetWebHookData structure.
@@ -299,13 +298,13 @@ namespace DiscordCoreAPI {
 
 		/// Deletes a single WebHook. \brief Deletes a single WebHook.
 		/// \param dataPackage A DeleteWebHookData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteWebHookAsync(DeleteWebHookData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> deleteWebHookAsync(DeleteWebHookData dataPackage);
 
 		/// Deletes a single WebHook, using its Token. \brief Deletes a single WebHook, using its Token.
 		/// \param dataPackage A DeleteWebHookWithTokenData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteWebHookWithTokenAsync(DeleteWebHookWithTokenData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> deleteWebHookWithTokenAsync(DeleteWebHookWithTokenData dataPackage);
 
 		/// Executes a single WebHook. \brief Executes a single WebHook.
 		/// \param dataPackage An ExecuteWebHookData structure.
@@ -325,7 +324,7 @@ namespace DiscordCoreAPI {
 		/// Deletes a WebHook Message. \brief Deletes a WebHook Message.
 		/// \param dataPackage An DeleteWebHookMessageData structure.
 		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<void> deleteWebHookMessageAsync(DeleteWebHookMessageData dataPackage);
+		static CoRoutine<Void> deleteWebHookMessageAsync(DeleteWebHookMessageData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::GetGuildAuditLogsData dataPackage;
 			dataPackage.actionType = AuditLogEvent::MEMBER_BAN_ADD;
 			dataPackage.guildId = args.eventData.getGuildId();

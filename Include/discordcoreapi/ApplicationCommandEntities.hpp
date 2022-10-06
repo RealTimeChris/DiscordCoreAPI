@@ -54,9 +54,9 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll CreateApplicationCommandData {
 		friend class DiscordCoreClient;
 
-		std::unordered_map<String, String> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<String, String> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
-		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
+		UMap<String, String> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		UMap<String, String> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		Vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
 		Bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
@@ -75,9 +75,9 @@ namespace DiscordCoreAPI {
 
 	/// For editing a single global ApplicationCommand. \brief For editing a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGlobalApplicationCommandData {
-		std::unordered_map<String, String> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<String, String> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
-		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
+		UMap<String, String> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		UMap<String, String> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		Vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		Bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
 		String description{};///< A description of the command.
@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 
 	/// For bulk-overwriting a collection of global ApplicationCommands. \brief For bulk-overwriting a collection of global ApplicationCommands.
 	struct DiscordCoreAPI_Dll BulkOverwriteGlobalApplicationCommandsData {
-		std::vector<CreateGlobalApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
+		Vector<CreateGlobalApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 	};
 
@@ -120,9 +120,9 @@ namespace DiscordCoreAPI {
 
 	/// For editing a single Guild ApplicationCommand. \brief For editing a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGuildApplicationCommandData {
-		std::unordered_map<String, String> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<String, String> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
-		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
+		UMap<String, String> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		UMap<String, String> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		Vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		Bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
 		String description{};///< A description of the command.
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 
 	/// For bulk-overwriting a collection of Guild ApplicationCommands. \brief For bulk-overwriting a collection of Guild ApplicationCommands.
 	struct DiscordCoreAPI_Dll BulkOverwriteGuildApplicationCommandsData {
-		std::vector<CreateGuildApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
+		Vector<CreateGuildApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Snowflake guildId{};///< The id of the Guild which you would like to overwrite the commands of.
 	};
@@ -162,7 +162,7 @@ namespace DiscordCoreAPI {
 
 	/// For editing the permissions of a single Guild ApplicationCommand. \brief For editing the permissions of a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGuildApplicationCommandPermissionsData {
-		std::vector<ApplicationCommandPermissionData> permissions{};///< A vector of ApplicationCommand permissions.
+		Vector<ApplicationCommandPermissionData> permissions{};///< A vector of ApplicationCommand permissions.
 		String commandName{};///< The command name which you would like to edit the permissions of.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Uint64 commandId{};///< The command id which you would like to edit the permissions of.
@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 
 	/// For batch editing the permissions of a collection of Guild ApplicationCommands. \brief For batch editing the permissions of a collection of Guild ApplicationCommands.
 	struct DiscordCoreAPI_Dll BatchEditGuildApplicationCommandPermissionsData {
-		std::vector<GuildApplicationCommandPermissionsData> permissions{};///< A vector of edit-Guild-application-permissions responseData to edit.
+		Vector<GuildApplicationCommandPermissionsData> permissions{};///< A vector of edit-Guild-application-permissions responseData to edit.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Snowflake guildId{};///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
 	};
@@ -194,14 +194,14 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandVector() noexcept = default;
 
-		operator std::vector<ApplicationCommand>();
+		operator Vector<ApplicationCommand>();
 
 		ApplicationCommandVector(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~ApplicationCommandVector() noexcept = default;
 
 	  protected:
-		std::vector<ApplicationCommand> theApplicationCommands{};
+		Vector<ApplicationCommand> theApplicationCommands{};
 	};
 
 	/**@}*/
@@ -213,11 +213,11 @@ namespace DiscordCoreAPI {
 	/// An interface class for the ApplicationCommand related Discord endpoints. \brief An interface class for the ApplicationCommand related Discord endpoints.
 	class DiscordCoreAPI_Dll ApplicationCommands {
 	  public:
-		static void initialize(DiscordCoreInternal::HttpsClient*);
+		static Void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Get all of the global ApplicationCommands for this bot. \brief Get all of the global ApplicationCommands for this bot.
 		/// \returns A CoRoutine containing a vector<ApplicationCommand>.
-		static CoRoutine<std::vector<ApplicationCommand>> getGlobalApplicationCommandsAsync(GetGlobalApplicationCommandsData dataPackage);
+		static CoRoutine<Vector<ApplicationCommand>> getGlobalApplicationCommandsAsync(GetGlobalApplicationCommandsData dataPackage);
 
 		/// Create a global ApplicationCommand for this bot. \brief Create a global ApplicationCommand for this bot.
 		/// \param dataPackage A CreateGlobalApplicationCommandData structure.
@@ -236,18 +236,18 @@ namespace DiscordCoreAPI {
 
 		/// Delete a global ApplicationCommand for this bot. \brief Delete a global ApplicationCommand for this bot.
 		/// \param dataPackage A DeleteGlobalApplicationCommandData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteGlobalApplicationCommandAsync(DeleteGlobalApplicationCommandData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> deleteGlobalApplicationCommandAsync(DeleteGlobalApplicationCommandData dataPackage);
 
 		/// Bulk overwrites a collection of global ApplicationCommands. \brief Bulk overwrites a collection of global ApplicationCommands.
 		/// \param dataPackage A BulkOverwriteGlobalApplicationCommandsData structure.
 		/// \returns A CoRoutine containing a vector<ApplicationCommand>.
-		static CoRoutine<std::vector<ApplicationCommand>> bulkOverwriteGlobalApplicationCommandsAsync(BulkOverwriteGlobalApplicationCommandsData dataPackage);
+		static CoRoutine<Vector<ApplicationCommand>> bulkOverwriteGlobalApplicationCommandsAsync(BulkOverwriteGlobalApplicationCommandsData dataPackage);
 
 		/// Get all of the Guild ApplicationCommands for a single Guild for this bot. \brief Get all of the Guild ApplicationCommands for a single Guild for this bot.
 		/// \param dataPackage A GetGuildApplicationCommandsData structure.
 		/// \returns A CoRoutine containing a vector<ApplicationCommand>.
-		static CoRoutine<std::vector<ApplicationCommand>> getGuildApplicationCommandsAsync(GetGuildApplicationCommandsData dataPackage);
+		static CoRoutine<Vector<ApplicationCommand>> getGuildApplicationCommandsAsync(GetGuildApplicationCommandsData dataPackage);
 
 		/// Create a Guild ApplicationCommand for a single server for this bot. \brief Create a Guild ApplicationCommand for a single server for this bot.
 		/// \param dataPackage A CreateGuildApplicationCommandData structure.
@@ -266,18 +266,18 @@ namespace DiscordCoreAPI {
 
 		/// Delete a single Guild ApplicationCommand for a single server for this bot. \brief Delete a single Guild ApplicationCommand for a single server for this bot.
 		/// \param dataPackage A DeleteGuildApplicationCommandData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteGuildApplicationCommandAsync(DeleteGuildApplicationCommandData dataPackage);
+		/// \returns A CoRoutine containing Void.
+		static CoRoutine<Void> deleteGuildApplicationCommandAsync(DeleteGuildApplicationCommandData dataPackage);
 
 		/// Bulk overwrites some Guild ApplicationCommands for this bot. \brief Bulkoverwrites some Guild ApplicationCommands for this bot.
 		/// \param dataPackage A BulkOverwriteGuildApplicationCommandsData structure.
 		/// \returns A CoRoutine containing a vector<ApplicationCommand>.
-		static CoRoutine<std::vector<ApplicationCommand>> bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage);
+		static CoRoutine<Vector<ApplicationCommand>> bulkOverwriteGuildApplicationCommandsAsync(BulkOverwriteGuildApplicationCommandsData dataPackage);
 
 		/// Gets Guild ApplicationCommand permissions for a single server on this bot. \brief Gets Guild ApplicationCommand permissions for a single server on this bot.
 		/// \param dataPackage A GetGuildApplicationCommandPermissionsData structure.
 		/// \returns A CoRoutine containing a vector<GuildApplicationCommandPermissionsData>.
-		static CoRoutine<std::vector<GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(GetGuildApplicationCommandPermissionsData dataPackage);
+		static CoRoutine<Vector<GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(GetGuildApplicationCommandPermissionsData dataPackage);
 
 		/// Get ApplicationCommand permissions for a single command on this bot. \brief Get ApplicationCommand permissions for a single command on this bot.
 		/// \param dataPackage A GetApplicationCommandPermissionsData structure.

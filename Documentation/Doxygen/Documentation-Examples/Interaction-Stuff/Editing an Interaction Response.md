@@ -29,7 +29,7 @@ Editing an Interaction Response {#editinganinteractionresponse}
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
 			DiscordCoreAPI::RespondToInputEventData dataPackage02 {args.eventData};

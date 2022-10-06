@@ -30,7 +30,7 @@ Connecting To/Disconnecting From a Voice Channel {#connectingtodisconnecting}
 			return std::make_unique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual Void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
 			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData);
 
 			DiscordCoreAPI::GuildMember guildMember =

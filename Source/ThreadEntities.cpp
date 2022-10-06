@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 		return theData;
 	}
 
-	void Threads::initialize(DiscordCoreInternal::HttpsClient* theClient) {
+	Void Threads::initialize(DiscordCoreInternal::HttpsClient* theClient) {
 		Threads::httpsClient = theClient;
 	}
 
@@ -129,40 +129,40 @@ namespace DiscordCoreAPI {
 		co_return Threads::httpsClient->submitWorkloadAndGetResult<Thread>(workload);
 	}
 
-	CoRoutine<void> Threads::joinThreadAsync(JoinThreadData dataPackage) {
+	CoRoutine<Void> Threads::joinThreadAsync(JoinThreadData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Self_In_Thread };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/thread-members/@me";
 		workload.callStack = "Threads::joinThreadAsync()";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
-	CoRoutine<void> Threads::addThreadMemberAsync(AddThreadMemberData dataPackage) {
+	CoRoutine<Void> Threads::addThreadMemberAsync(AddThreadMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Thread_Member };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/thread-members/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Threads::addThreadMemberAsync()";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
-	CoRoutine<void> Threads::leaveThreadAsync(LeaveThreadData dataPackage) {
+	CoRoutine<Void> Threads::leaveThreadAsync(LeaveThreadData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Self_From_Thread };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/thread-members/@me";
 		workload.callStack = "Threads::leaveThreadAsync()";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
-	CoRoutine<void> Threads::removeThreadMemberAsync(RemoveThreadMemberData dataPackage) {
+	CoRoutine<Void> Threads::removeThreadMemberAsync(RemoveThreadMemberData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Thread_Member };
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/thread-members/" + std::to_string(dataPackage.userId);
 		workload.callStack = "Threads::removeThreadMemberAsync()";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<Void>(workload);
 	}
 
 	CoRoutine<ThreadMemberData> Threads::getThreadMemberAsync(GetThreadMemberData dataPackage) {
@@ -174,9 +174,9 @@ namespace DiscordCoreAPI {
 		co_return Threads::httpsClient->submitWorkloadAndGetResult<ThreadMemberData>(workload);
 	}
 
-	CoRoutine<std::vector<ThreadMemberData>> Threads::getThreadMembersAsync(GetThreadMembersData dataPackage) {
+	CoRoutine<Vector<ThreadMemberData>> Threads::getThreadMembersAsync(GetThreadMembersData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Thread_Members };
-		co_await NewThreadAwaitable<std::vector<ThreadMemberData>>();
+		co_await NewThreadAwaitable<Vector<ThreadMemberData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/thread-members";
 		workload.callStack = "Threads::getThreadMembersAsync()";

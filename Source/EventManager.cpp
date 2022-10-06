@@ -226,491 +226,491 @@ namespace DiscordCoreAPI {
 	};
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnApplicationCommandPermissionsUpdateData> handler) {
+		DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnApplicationCommandPermissionsUpdateData> handler) {
 		return this->onApplicationCommandPermissionsUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onApplicationCommandsPermissionsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onApplicationCommandsPermissionsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onApplicationCommandPermissionsUpdateEvent.remove(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleCreationData> handler) {
+		DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnAutoModerationRuleCreationData> handler) {
 		return this->onAutoModerationRuleCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onAutoModerationRuleCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onAutoModerationRuleCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onAutoModerationRuleCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnAutoModerationRuleUpdateData> handler) {
 		return this->onAutoModerationRuleUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onAutoModerationRuleUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onAutoModerationRuleUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onAutoModerationRuleUpdateEvent.remove(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleDeletionData> handler) {
+		DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnAutoModerationRuleDeletionData> handler) {
 		return this->onAutoModerationRuleDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onAutoModerationRuleDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onAutoModerationRuleDeletion(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onAutoModerationRuleDeletionEvent.remove(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationActionExecution(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationActionExecutionData> handler) {
+		DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnAutoModerationActionExecutionData> handler) {
 		return this->onAutoModerationActionExecutionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onAutoModerationActionExecution(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onAutoModerationActionExecution(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onAutoModerationActionExecutionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onAutoCompleteEntry(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoCompleteEntryData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onAutoCompleteEntry(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnAutoCompleteEntryData> handler) {
 		return this->onAutoCompleteEntryEvent.add(std::move(handler));
 	}
 
-	void EventManager::onAutoCompleteEntry(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onAutoCompleteEntry(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onInputEventCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInputEventCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInputEventCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInputEventCreation(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnInputEventCreationData> handler) {
 		return this->onInputEventCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onInputEventCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onInputEventCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onInputEventCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelCreation(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnChannelCreationData> handler) {
 		return this->onChannelCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onChannelCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onChannelCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		onChannelCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnChannelUpdateData> handler) {
 		return this->onChannelUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onChannelUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onChannelUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onChannelUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnChannelDeletionData> handler) {
 		return this->onChannelDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onChannelDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onChannelDeletion(DiscordCoreInternal::EventDelegateToken& token) {
 		onChannelDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onChannelPinsUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelPinsUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onChannelPinsUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnChannelPinsUpdateData> handler) {
 		return this->onChannelPinsUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onChannelPinsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onChannelPinsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onChannelPinsUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadCreation(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnThreadCreationData> handler) {
 		return this->onThreadCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onThreadCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onThreadCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnThreadUpdateData> handler) {
 		return this->onThreadUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onThreadUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onThreadUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnThreadDeletionData> handler) {
 		return this->onThreadDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onThreadDeletion(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onThreadDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadListSync(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadListSyncData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadListSync(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnThreadListSyncData> handler) {
 		return this->onThreadListSyncEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadListSync(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onThreadListSync(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onThreadListSyncEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMemberUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnThreadMemberUpdateData> handler) {
 		return this->onThreadMemberUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadMemberUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onThreadMemberUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onThreadMemberUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMembersUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMembersUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMembersUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnThreadMembersUpdateData> handler) {
 		return this->onThreadMembersUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onThreadMembersUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onThreadMembersUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		return this->onThreadMembersUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildCreation(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildCreationData> handler) {
 		return this->onGuildCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildUpdateData> handler) {
 		return this->onGuildUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildDeletionData> handler) {
 		return this->onGuildDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildBanAddData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanAdd(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildBanAddData> handler) {
 		return this->onGuildBanAddEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildBanAdd(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildBanAdd(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildBanAddEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildBanRemoveData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanRemove(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildBanRemoveData> handler) {
 		return this->onGuildBanRemoveEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildBanRemove(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildBanRemove(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildBanRemoveEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildEmojisUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildEmojisUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildEmojisUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildEmojisUpdateData> handler) {
 		return this->onGuildEmojisUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildEmojisUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildEmojisUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildEmojisUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildStickersUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildStickersUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildStickersUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildStickersUpdateData> handler) {
 		return this->onGuildStickersUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildStickersUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildStickersUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildStickersUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildIntegrationsUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildIntegrationsUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildIntegrationsUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildIntegrationsUpdateData> handler) {
 		return this->onGuildIntegrationsUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildIntegrationsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildIntegrationsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildIntegrationsUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMembersChunk(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMembersChunkData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMembersChunk(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildMembersChunkData> handler) {
 		return this->onGuildMembersChunkEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildMembersChunk(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildMembersChunk(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildMembersChunkEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberAddData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberAdd(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildMemberAddData> handler) {
 		return this->onGuildMemberAddEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildMemberAdd(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildMemberAdd(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildMemberAddEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberRemoveData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberRemove(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildMemberRemoveData> handler) {
 		return this->onGuildMemberRemoveEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildMemberRemove(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildMemberRemove(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildMemberRemoveEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildMemberUpdateData> handler) {
 		return this->onGuildMemberUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildMemberUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildMemberUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildMemberUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onRoleCreation(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnRoleCreationData> handler) {
 		return this->onRoleCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onRoleCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onRoleCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		onRoleCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onRoleUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnRoleUpdateData> handler) {
 		return this->onRoleUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onRoleUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onRoleUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onRoleUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onRoleDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onRoleDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnRoleDeletionData> handler) {
 		return this->onRoleDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onRoleDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onRoleDeletion(DiscordCoreInternal::EventDelegateToken& token) {
 		onRoleDeletionEvent.remove(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventCreation(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventCreationData> handler) {
+		DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildScheduledEventCreationData> handler) {
 		return this->onGuildScheduledEventCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildScheduledEventCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildScheduledEventCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildScheduledEventCreationEvent.remove(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUpdate(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUpdateData> handler) {
+		DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildScheduledEventUpdateData> handler) {
 		return this->onGuildScheduledEventUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildScheduledEventUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildScheduledEventUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildScheduledEventUpdateEvent.remove(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventDeletion(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventDeletionData> handler) {
+		DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildScheduledEventDeletionData> handler) {
 		return this->onGuildScheduledEventDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildScheduledEventDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildScheduledEventDeletion(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildScheduledEventDeletionEvent.remove(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUserAdd(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserAddData> handler) {
+		DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildScheduledEventUserAddData> handler) {
 		return this->onGuildScheduledEventUserAddEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildScheduledEventUserAdd(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildScheduledEventUserAdd(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildScheduledEventUserAddEvent.remove(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUserRemove(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserRemoveData> handler) {
+		DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnGuildScheduledEventUserRemoveData> handler) {
 		return this->onGuildScheduledEventUserRemoveEvent.add(std::move(handler));
 	}
 
-	void EventManager::onGuildScheduledEventUserRemove(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onGuildScheduledEventUserRemove(DiscordCoreInternal::EventDelegateToken& token) {
 		onGuildScheduledEventUserRemoveEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationCreation(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnIntegrationCreationData> handler) {
 		return this->onIntegrationCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onIntegrationCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onIntegrationCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		onIntegrationCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnIntegrationUpdateData> handler) {
 		return this->onIntegrationUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onIntegrationUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onIntegrationUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onIntegrationUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnIntegrationDeletionData> handler) {
 		return this->onIntegrationDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onIntegrationDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onIntegrationDeletion(DiscordCoreInternal::EventDelegateToken& token) {
 		onIntegrationDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInteractionCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInteractionCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInteractionCreation(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnInteractionCreationData> handler) {
 		return this->onInteractionCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onInteractionCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onInteractionCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		onInteractionCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInviteCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInviteCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInviteCreation(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnInviteCreationData> handler) {
 		return this->onInviteCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onInviteCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onInviteCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		onInviteCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onInviteDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInviteDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onInviteDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnInviteDeletionData> handler) {
 		return this->onInviteDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onInviteDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onInviteDeletion(DiscordCoreInternal::EventDelegateToken& token) {
 		onInviteDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageCreation(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnMessageCreationData> handler) {
 		return this->onMessageCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onMessageCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onMessageCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		onMessageCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnMessageUpdateData> handler) {
 		return this->onMessageUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onMessageUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onMessageUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onMessageUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnMessageDeletionData> handler) {
 		return this->onMessageDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onMessageDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onMessageDeletion(DiscordCoreInternal::EventDelegateToken& token) {
 		onMessageDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeleteBulk(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeleteBulkData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeleteBulk(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnMessageDeleteBulkData> handler) {
 		return this->onMessageDeleteBulkEvent.add(std::move(handler));
 	}
 
-	void EventManager::onMessageDeleteBulk(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onMessageDeleteBulk(DiscordCoreInternal::EventDelegateToken& token) {
 		onMessageDeleteBulkEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionAdd(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionAddData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionAdd(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnReactionAddData> handler) {
 		return this->onReactionAddEvent.add(std::move(handler));
 	}
 
-	void EventManager::onReactionAdd(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onReactionAdd(DiscordCoreInternal::EventDelegateToken& token) {
 		onReactionAddEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemove(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemove(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnReactionRemoveData> handler) {
 		return this->onReactionRemoveEvent.add(std::move(handler));
 	}
 
-	void EventManager::onReactionRemove(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onReactionRemove(DiscordCoreInternal::EventDelegateToken& token) {
 		onReactionRemoveEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveAll(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveAllData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveAll(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnReactionRemoveAllData> handler) {
 		return this->onReactionRemoveAllEvent.add(std::move(handler));
 	}
 
-	void EventManager::onReactionRemoveAll(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onReactionRemoveAll(DiscordCoreInternal::EventDelegateToken& token) {
 		onReactionRemoveAllEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveEmoji(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveEmojiData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveEmoji(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnReactionRemoveEmojiData> handler) {
 		return this->onReactionRemoveEmojiEvent.add(std::move(handler));
 	}
 
-	void EventManager::onReactionRemoveEmoji(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onReactionRemoveEmoji(DiscordCoreInternal::EventDelegateToken& token) {
 		onReactionRemoveEmojiEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onPresenceUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnPresenceUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onPresenceUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnPresenceUpdateData> handler) {
 		return this->onPresenceUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onPresenceUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onPresenceUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onPresenceUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceCreation(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceCreationData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceCreation(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnStageInstanceCreationData> handler) {
 		return this->onStageInstanceCreationEvent.add(std::move(handler));
 	}
 
-	void EventManager::onStageInstanceCreation(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onStageInstanceCreation(DiscordCoreInternal::EventDelegateToken& token) {
 		onStageInstanceCreationEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnStageInstanceUpdateData> handler) {
 		return this->onStageInstanceUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onStageInstanceUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onStageInstanceUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onStageInstanceUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceDeletionData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceDeletion(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnStageInstanceDeletionData> handler) {
 		return this->onStageInstanceDeletionEvent.add(std::move(handler));
 	}
 
-	void EventManager::onStageInstanceDeletion(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onStageInstanceDeletion(DiscordCoreInternal::EventDelegateToken& token) {
 		onStageInstanceDeletionEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onTypingStart(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnTypingStartData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onTypingStart(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnTypingStartData> handler) {
 		return this->onTypingStartEvent.add(std::move(handler));
 	}
 
-	void EventManager::onTypingStart(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onTypingStart(DiscordCoreInternal::EventDelegateToken& token) {
 		onTypingStartEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onUserUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnUserUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onUserUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnUserUpdateData> handler) {
 		return this->onUserUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onUserUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onUserUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onUserUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceStateUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceStateUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceStateUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnVoiceStateUpdateData> handler) {
 		return this->onVoiceStateUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onVoiceStateUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onVoiceStateUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onVoiceStateUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceServerUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceServerUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceServerUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnVoiceServerUpdateData> handler) {
 		return this->onVoiceServerUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onVoiceServerUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onVoiceServerUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onVoiceServerUpdateEvent.remove(token);
 	}
 
-	DiscordCoreInternal::EventDelegateToken EventManager::onWebhookUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnWebhookUpdateData> handler) {
+	DiscordCoreInternal::EventDelegateToken EventManager::onWebhookUpdate(DiscordCoreInternal::EventDelegate<CoRoutine<Void>, OnWebhookUpdateData> handler) {
 		return this->onWebhookUpdateEvent.add(std::move(handler));
 	}
 
-	void EventManager::onWebhookUpdate(DiscordCoreInternal::EventDelegateToken& token) {
+	Void EventManager::onWebhookUpdate(DiscordCoreInternal::EventDelegateToken& token) {
 		onWebhookUpdateEvent.remove(token);
 	}
 

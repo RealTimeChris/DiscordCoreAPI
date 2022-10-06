@@ -1,7 +1,7 @@
 Running a Function on a Timer {#runningfunctiontimer}
 ============
-- Create a function who's argument is of type `DiscordCoreAPI::DiscordCoreClient*`, with a return type of `void`.
-- Create a data value of type `std::vector<DiscordCoreAPI::RepeatedFunctionData>`.
+- Create a function who's argument is of type `DiscordCoreAPI::DiscordCoreClient*`, with a return type of `Void`.
+- Create a data value of type `Vector<DiscordCoreAPI::RepeatedFunctionData>`.
 - Create a data value of type `DiscordCoreAPI::RepeatedFunctionData`, and fill out its members, and stuff it inside the vector. Be sure to set `repeated` to true if you would like the function call to be recurring.
 - Pass this vector as a second argument to the `DiscordCoreAPI::DiscordCoreClient` constructor - now the functions it contains will run on a schedule defined by the `intervalInMs` member of the data structure.
 - Do this with as many functions as you would like!
@@ -14,8 +14,8 @@ Running a Function on a Timer {#runningfunctiontimer}
 #include <../Include/Index.hpp>
 #include "Commands/CommandsList.hpp"
 
-void onBoot02(DiscordCoreAPI::DiscordCoreClients* thePtr) {
-	std::vector<DiscordCoreAPI::ActivityData> activities;
+Void onBoot02(DiscordCoreAPI::DiscordCoreClients* thePtr) {
+	Vector<DiscordCoreAPI::ActivityData> activities;
 	DiscordCoreAPI::ActivityData activity;
 	activity.name = "!help for my commands!";
 	activity.type = DiscordCoreAPI::ActivityType::Game;
@@ -25,7 +25,7 @@ void onBoot02(DiscordCoreAPI::DiscordCoreClients* thePtr) {
 
 Int32 main() {
 	String botToken = "YOUR_BOT_TOKEN_HERE";
-	std::vector<DiscordCoreAPI::RepeatedFunctionData> functionVector;
+	Vector<DiscordCoreAPI::RepeatedFunctionData> functionVector;
 	DiscordCoreAPI::RepeatedFunctionData function01;
 	function01.function = onBoot02;
 	function01.intervalInMs = 500;

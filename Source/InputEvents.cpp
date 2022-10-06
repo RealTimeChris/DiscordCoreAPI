@@ -106,9 +106,9 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CoRoutine<void> InputEvents::deleteInputEventResponseAsync(InputEventData& dataPackage, Int32 timeDelayNew) {
+	CoRoutine<Void> InputEvents::deleteInputEventResponseAsync(InputEventData& dataPackage, Int32 timeDelayNew) {
 		InputEventData newPackage = dataPackage;
-		co_await NewThreadAwaitable<void>();
+		co_await NewThreadAwaitable<Void>();
 		if (newPackage.responseType == InputEventResponseType::Follow_Up_Message || newPackage.responseType == InputEventResponseType::Edit_Follow_Up_Message) {
 			RespondToInputEventData dataPackageNew{ newPackage };
 			DeleteFollowUpMessageData dataPackageNewer{ dataPackageNew };

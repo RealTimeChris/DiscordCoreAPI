@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 			return std::make_unique<RegisterApplicationCommands>();
 		}
 
-		virtual void execute(BaseFunctionArguments& argsNew) {
+		virtual Void execute(BaseFunctionArguments& argsNew) {
 			try {
 				Channel channel = Channels::getCachedChannelAsync({ .channelId = argsNew.eventData.getChannelId() }).get();
 

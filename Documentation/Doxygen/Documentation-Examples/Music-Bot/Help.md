@@ -25,19 +25,19 @@ namespace DiscordCoreAPI {
 			return std::make_unique<Help>();
 		}
 
-		void execute(BaseFunctionArguments& newArgs) {
+		Void execute(BaseFunctionArguments& newArgs) {
 			try {
 				Bool isItFirst{ true };
 				InputEventData newEvent01(newArgs.eventData);
 
 				while (1) {
 					RespondToInputEventData responseData{ newEvent01 };
-					std::vector<std::vector<SelectOptionData>> selectOptions;
+					Vector<Vector<SelectOptionData>> selectOptions;
 					Int32 counter{ 0 };
 					Int32 currentHelpPage{ 0 };
 					for (auto& [key, value]: newArgs.discordCoreClient->getCommandController().getFunctions()) {
 						if (counter % 24 == 0) {
-							selectOptions.emplace_back(std::vector<SelectOptionData>());
+							selectOptions.emplace_back(Vector<SelectOptionData>());
 							currentHelpPage += 1;
 						}
 						String newString;
@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 					newData.description = "Go back to the previous menu.";
 					newData.value = "go back";
 					newData.emoji.name = "❌";
-					std::vector<std::vector<SelectOptionData>> selectOptionsNew;
+					Vector<Vector<SelectOptionData>> selectOptionsNew;
 					for (auto& value: selectOptions) {
 						value.emplace_back(newData);
 						selectOptionsNew.emplace_back(value);
@@ -89,13 +89,13 @@ namespace DiscordCoreAPI {
 						"Please, select one of my commands from the drop-down menu below, to gain more information about them! (Or select 'Go Back' to go back "
 						"to the previous menu)\n------";
 					InputEventData newEvent{};
-					std::vector<String> numberEmojiNames{
+					Vector<String> numberEmojiNames{
 						"✅",
 						"🍬",
 						"🅱",
 						"❌",
 					};
-					std::vector<String> numberEmojiId;
+					Vector<String> numberEmojiId;
 
 					responseData.addMessageEmbed(msgEmbed);
 					for (Uint32 x = 0; x < selectOptionsNew.size(); x += 1) {
@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 					std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(newEvent01) };
 					auto buttonData = button->collectButtonData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					Int32 counter03{ 0 };
-					std::vector<RespondToInputEventData> editInteractionResponseData00;
+					Vector<RespondToInputEventData> editInteractionResponseData00;
 					for (auto& value: selectOptionsNew) {
 						EmbedData msgEmbed00;
 						msgEmbed00.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
