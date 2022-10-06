@@ -1711,7 +1711,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Void StringBuffer::erase(Uint64 offSet, Uint64 amount) {
+	void StringBuffer::erase(Uint64 amount) {
 		this->theSize = this->theSize - amount;
 		if (this->whichOneAreWeOn == 0) {
 			if (this->theString02.size() < this->theString01.size()) {
@@ -1728,16 +1728,16 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Void StringBuffer::writeData(const char* thePtr, Uint64 theSize) {
+	void StringBuffer::writeData(const char* thePtr, Uint64 theSize) {
 		if (this->whichOneAreWeOn == 0) {
 			if (this->theSize + theSize > this->theString01.size()) {
-				this->theString01.resize(this->theString01.size() * 2);
+				this->theString01.resize(this->theString01.size() + theSize);
 			}
 			memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
 			this->theSize += theSize;
 		} else {
 			if (this->theSize + theSize > this->theString02.size()) {
-				this->theString02.resize(this->theString02.size() * 2);
+				this->theString02.resize(this->theString02.size() + theSize);
 			}
 			memcpy(this->theString02.data() + this->theSize, thePtr, theSize);
 			this->theSize += theSize;
@@ -1754,6 +1754,14 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	StringBuffer::operator DiscordCoreInternal::String&() {
+		if (this->whichOneAreWeOn == 0) {
+			return this->theString01;			
+		} else {
+			return this->theString02;			
+		}
+	}
+
 	char StringBuffer::operator[](Uint64 theIndex) {
 		if (this->whichOneAreWeOn == 0) {
 			return this->theString01[theIndex];
@@ -1762,11 +1770,27 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	String::iterator StringBuffer::begin() {
+		if (this->whichOneAreWeOn == 0) {
+			return this->theString01.begin();
+		} else {
+			return this->theString02.begin();
+		}
+	}
+
+	String::iterator StringBuffer::end() {
+		if (this->whichOneAreWeOn == 0) {
+			return this->theString01.end();
+		} else {
+			return this->theString02.end();
+		}
+	}
+
 	Uint64 StringBuffer::size() {
 		return this->theSize;
 	}
 
-	Void StringBuffer::clear() {
+	void StringBuffer::clear() {
 		this->whichOneAreWeOn = 0;
 		this->theSize = 0;
 	}

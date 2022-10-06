@@ -345,12 +345,5 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
-	DiscordCoreClient::~DiscordCoreClient() noexcept {
-		for (auto& [key, value]: CoRoutineBase::threadPool.workerThreads) {
-			if (value.theThread.joinable()) {
-				value.theThread.request_stop();
-				value.theThread.join();
-			}
-		}
-	}
+	DiscordCoreClient::~DiscordCoreClient() noexcept {};
 }

@@ -1722,31 +1722,21 @@ namespace DiscordCoreInternal {
 
 		StringView operator[](LengthData);
 
+		char operator[](Uint64);
+
 		operator StringView();
+
+		operator String&();
 
 		Void writeData(const char* thePtr, Uint64 theSize);
 
-		Void erase(Uint64, Uint64);
+		String::iterator begin();
 
-		char operator[](Uint64);
+		String::iterator end();
+
+		Void erase(Uint64);
 
 		Uint64 size();
-
-		auto begin() {
-			if (this->whichOneAreWeOn == 0) {
-				return this->theString01.begin();
-			} else {
-				return this->theString02.begin();
-			}
-		}
-
-		auto end() {
-			if (this->whichOneAreWeOn == 0) {
-				return this->theString01.end();
-			} else {
-				return this->theString02.end();
-			}
-		}
 
 		Void clear();
 

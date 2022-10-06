@@ -171,19 +171,17 @@ namespace DiscordCoreAPI {
 
 	Bool VoiceConnection::onMessageReceived() noexcept {
 		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
+		StringView theStringView = StringView{ this->currentMessage.data() + this->messageOffset, this->messageLength };
 		try {
-			if (this->theMessage.size() > 0) {
-				String theString{ this->theMessage };
-				theString.reserve(theString.size() + simdjson::SIMDJSON_PADDING);
-				simdjson::ondemand::parser theParser{};
+			if (theStringView.size() > 0) {
 				DiscordCoreInternal::WebSocketMessage theMessage{};
 				simdjson::ondemand::value theValue{};
-				if (theParser.iterate(this->theMessage.data()).get(theValue) == simdjson::error_code::SUCCESS) {
+				if (theParser.iterate(theStringView.data()).get(theValue) == simdjson::error_code::SUCCESS) {
 					theMessage = DiscordCoreInternal::WebSocketMessage{ theValue };
 				}
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << this->theMessage << reset() << endl << endl;
+					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theStringView << reset() << endl << endl;
 				}
 				if (theMessage.op != 0) {
 					switch (theMessage.op) {

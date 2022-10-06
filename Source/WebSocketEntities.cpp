@@ -39,8 +39,8 @@ namespace DiscordCoreInternal {
 	constexpr Uint16 webSocketMaxPayloadLengthLarge{ 65535u };
 	constexpr Uint8 webSocketPayloadLengthMagicLarge{ 126u };
 	constexpr Uint8 webSocketPayloadLengthMagicHuge{ 127u };
-	constexpr Uint8 maxHeaderSize{ sizeof(Uint64) + 2u };
 	constexpr Uint8 webSocketMaxPayloadLengthSmall{ 125u };
+	constexpr Uint8 maxHeaderSize{ sizeof(Uint64) + 2u };
 	constexpr Uint8 webSocketFinishBit{ (1u << 7u) };
 	constexpr Uint8 webSocketMaskBit{ (1u << 7u) };
 
@@ -186,8 +186,10 @@ namespace DiscordCoreInternal {
 		String header{};
 		if (theOpCode == WebSocketOpCode::Op_Binary) {
 			theVector = ErlPacker::parseJsonToEtf(std::move(dataToSend));
+			this->theFormat = DiscordCoreAPI::TextFormat::Etf;
 		} else {
 			theVector = static_cast<std::string>(dataToSend);
+			this->theFormat = DiscordCoreAPI::TextFormat::Json;
 		}
 		this->createHeader(header, theVector.size(), theOpCode);
 		String theVectorNew{};
@@ -294,7 +296,7 @@ namespace DiscordCoreInternal {
 	Void WebSocketMessageHandler::parseConnectionHeaders() noexcept {
 		if (this->areWeStillConnected() && this->currentState.load() == SSLShardState::Upgrading && this->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
 			auto theString = this->getInputBuffer();
-			this->currentMessage.writeData(theString.data(), theString.size());
+			this->currentMessage.writeData( theString.data(), theString.size());
 			auto theFindValue = static_cast<StringView>(this->currentMessage).find("\r\n\r\n");
 			if (theFindValue != String::npos) {
 				this->currentMessage.clear();
@@ -306,18 +308,25 @@ namespace DiscordCoreInternal {
 	}
 
 	Void WebSocketMessageHandler::handleBuffer() noexcept {
+		std::cout << "HANDLE BUFFER 0101" << std::endl;
 		if (this->currentState.load() == SSLShardState::Upgrading) {
 			this->parseConnectionHeaders();
+			std::cout << "HANDLE BUFFER 0202" << std::endl;
 		}
 		while (this->parseMessage()) {
+			std::cout << "HANDLE BUFFER 0303" << std::endl;
 		}
+		std::cout << "HANDLE BUFFER 0404" << std::endl;
 	}
 
 	Bool WebSocketMessageHandler::parseMessage() noexcept {
 		if (this->inputBuffer.getUsedSpace() > 0) {
 			auto theString = this->getInputBuffer();
+			//std::cout << "THE REAL STRING: " << theString << std::endl;
+			//std::cout << "THE ACTUAL STRING: " << this->currentMessage[DiscordCoreInternal::LengthData{ .offSet = 0, .length = this->currentMessage.size() }] << std::endl;
 			this->currentMessage.writeData(theString.data(), theString.size());
 			if (this->currentMessage.size() < 4) {
+				std::cout << "THE CURRENT STRING: 0101 " << this->currentMessage.operator std::basic_string_view<char, std::char_traits<char>>() << std::endl;
 				return false;
 			}
 
@@ -337,11 +346,13 @@ namespace DiscordCoreInternal {
 					Uint8 length01 = this->currentMessage[1];
 					this->messageOffset = 2;
 					if (length01 & webSocketMaskBit) {
+						std::cout << "THE CURRENT STRING: 0202 " << this->currentMessage.operator std::basic_string_view<char, std::char_traits<char>>() << std::endl;
 						return false;
 					}
 					this->messageLength = length01;
 					if (length01 == webSocketPayloadLengthMagicLarge) {
 						if (this->currentMessage.size() < 8) {
+							std::cout << "THE CURRENT STRING: 0303 " << this->currentMessage.operator std::basic_string_view<char, std::char_traits<char>>() << std::endl;
 							return false;
 						}
 						Uint8 length03 = this->currentMessage[2];
@@ -350,6 +361,7 @@ namespace DiscordCoreInternal {
 						this->messageOffset += 2;
 					} else if (length01 == webSocketPayloadLengthMagicHuge) {
 						if (this->currentMessage.size() < 10) {
+							std::cout << "THE CURRENT STRING: 0404 " << this->currentMessage.operator std::basic_string_view<char, std::char_traits<char>>() << std::endl;
 							return false;
 						}
 						this->messageLength = 0;
@@ -360,14 +372,21 @@ namespace DiscordCoreInternal {
 						this->messageOffset += 8;
 					}
 					if (this->currentMessage.size() < this->messageOffset + this->messageLength) {
+						std::cout << "THE CURRENT STRING: 0505 " << this->currentMessage.operator std::basic_string_view<char, std::char_traits<char>>() << std::endl;
 						return false;
 					} else {
-						char theString[simdjson::SIMDJSON_PADDING]{ ' ' };
-						this->currentMessage.writeData(theString, simdjson::SIMDJSON_PADDING);
-						this->theMessage =
-							StringView{ this->currentMessage[LengthData{ .offSet = this->messageOffset, .length = this->messageLength + simdjson::SIMDJSON_PADDING }] };
+						if (this->theFormat == DiscordCoreAPI::TextFormat::Json && this->currentMessageFinal.size() < this->messageLength + simdjson::SIMDJSON_PADDING) {
+							this->currentMessageFinal.resize(this->messageLength + simdjson::SIMDJSON_PADDING);
+						} else if (this->theFormat == DiscordCoreAPI::TextFormat::Etf && this->currentMessageFinal.size() < this->messageLength) {
+							this->currentMessageFinal.resize(this->messageLength);
+						}
+						memcpy(this->currentMessageFinal.data(), this->currentMessage.data() + this->messageOffset, this->messageLength);
+						char emptyChar{ ' ' };
+						this->currentMessageFinal.copy(&emptyChar, this->currentMessageFinal.size());
+						std::cout << "THE STRING NEW: " << StringView{ this->currentMessageFinal.data(), this->messageLength} << std::endl;
 						auto theResult = this->onMessageReceived();
-						this->currentMessage.erase(0, this->messageLength + this->messageOffset);
+						this->currentMessage.erase(this->messageLength + this->messageOffset);
+						std::cout << "THE STRING NEWER: " << StringView{ this->currentMessage.data(), this->currentMessage.size() } << std::endl;
 						this->messageOffset = 0;
 						this->messageLength = 0;
 						return theResult;
@@ -389,9 +408,15 @@ namespace DiscordCoreInternal {
 							 << endl;
 					}
 					this->onClosed();
+					this->messageLength = 0;
+					this->messageOffset = 0;
 					return false;
 				}
+				default: {
+					std::cout << "WERE HERE THIS IS IT!" << std::endl;
+				}
 			}
+			
 		}
 		return false;
 	}
@@ -456,9 +481,7 @@ namespace DiscordCoreInternal {
 	DiscordCoreAPI::StopWatch theStopWatchReal{ 50us };
 	AtomicInt32 theInt{};
 	Bool WebSocketSSLShard::onMessageReceived() noexcept {
-		String refString{};
-		String& payload{ refString };
-		if (this->areWeStillConnected() && this->theMessage.size() > 0) {
+		if (this->areWeStillConnected() && this->currentMessage.size() > 0) {
 			try {
 				WebSocketMessage theMessage{};
 
@@ -466,11 +489,15 @@ namespace DiscordCoreInternal {
 					try {
 						theStopWatchReal.resetTimer();
 						simdjson::ondemand::value theValue{};
-						payload = ErlPacker::parseEtfToJson(this->theMessage);
+						//std::cout << "THE STRING: " << this->currentMessage.operator DiscordCoreInternal::String&() << std::endl;
+						StringView theStringView{ this->currentMessageFinal.data(), this->messageLength };
+						auto payload = ErlPacker::parseEtfToJson(theStringView);
 						payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 						if (auto theResult = this->theParser.iterate(payload.data(), payload.size(), payload.capacity()).get(theValue);
 							theResult == simdjson::error_code::SUCCESS) {
 							theMessage = WebSocketMessage{ theValue };
+						} else {
+							std::cout << "THE RESULT: " << theResult << std::endl;
 						}
 					} catch (...) {
 						if (this->configManager->doWePrintGeneralErrorMessages()) {
@@ -480,10 +507,14 @@ namespace DiscordCoreInternal {
 					}
 				} else {
 					simdjson::ondemand::value theValue{};
-					if (auto theResult =
-							this->theParser.iterate(this->theMessage.data(), this->theMessage.size() - simdjson::SIMDJSON_PADDING, this->theMessage.size()).get(theValue);
+					//std::cout << "THE STRING: " << this->currentMessage.operator DiscordCoreInternal::String&() << std::endl;
+					StringView theStringView{ this->currentMessageFinal.data(), this->messageLength + simdjson::SIMDJSON_PADDING };
+					std::cout << "THE STRING: " << theStringView.size() << std::endl;
+					if (auto theResult = this->theParser.iterate(theStringView.data() , theStringView.length() , theStringView.size() + simdjson::SIMDJSON_PADDING).get(theValue);
 						theResult == simdjson::error_code::SUCCESS) {
 						theMessage = WebSocketMessage{ theValue };
+					} else {
+						std::cout << "THE RESULT: " << theResult << std::endl;
 					}
 				}
 
@@ -493,7 +524,7 @@ namespace DiscordCoreInternal {
 
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightGreen()
-						 << "Message received from WebSocket [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + String(": ") << this->theMessage
+						 << "Message received from WebSocket [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + String(": ") //
 						 << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
@@ -1358,7 +1389,7 @@ namespace DiscordCoreInternal {
 			} catch (...) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
-					cout << "The payload: " << payload << std::endl;
+					cout << "The payload: " << static_cast<String&>(this->currentMessage) << std::endl;
 				}
 				this->inputBuffer.clear();
 				return false;

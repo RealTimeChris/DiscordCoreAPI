@@ -321,6 +321,13 @@ namespace DiscordCoreInternal {
 		}
 
 		if (readWriteSet.thePolls.size() == 0) {
+			for (auto& [key, value]: theShardMap) {
+				if (value->areWeStillConnected()) {
+					if (!value->areWeAStandaloneSocket) {
+						value->handleBuffer();
+					}
+				}
+			}
 			return theReturnValue;
 		}
 
@@ -349,6 +356,15 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
+
+		for (auto& [key, value]: theShardMap){
+			if (value->areWeStillConnected()) {
+				if (!value->areWeAStandaloneSocket) {
+					value->handleBuffer();
+				}
+			}
+		}
+
 		return theReturnValue;
 	}
 
@@ -542,6 +558,9 @@ namespace DiscordCoreInternal {
 					}
 				}
 			} while (SSL_pending(this->ssl));
+		}
+		if (!this->areWeAStandaloneSocket) {
+			this->handleBuffer();
 		}
 		return true;
 	}

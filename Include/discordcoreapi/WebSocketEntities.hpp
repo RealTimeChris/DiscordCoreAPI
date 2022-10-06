@@ -82,15 +82,16 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic<SSLShardState> currentState{};
 		Bool haveWeReceivedHeartbeatAck{ true };
+		DiscordCoreAPI::TextFormat theFormat{};
 		AtomicBool areWeConnecting{ true };
 		Bool areWeHeartBeating{ false };
 		Uint32 lastNumberReceived{ 0 };
 		WebSocketClose closeCode{ 0 };
 		StringBuffer currentMessage{};
+		String currentMessageFinal{};
 		WebSocketOpCode dataOpCode{};
 		Bool areWeResuming{ false };
 		String typeOfWebSocket{};
-		StringView theMessage{};
 		Uint64 messageLength{};
 		Uint64 messageOffset{};
 		Uint32 shard[2]{};
