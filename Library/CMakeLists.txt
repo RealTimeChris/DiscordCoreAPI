@@ -35,18 +35,18 @@ generate_product_version(
 	VERSION_REVISION "0"
 )
 
+file(GLOB HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
 file(GLOB SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 
 if (WIN32)
 	add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
 elseif (UNIX)
 	add_library("${LIB_NAME}" SHARED "${SOURCES}")
+	set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
 	find_package(Threads REQUIRED)
 endif()
 
 add_library("${PROJECT_NAME}::${LIB_NAME}" ALIAS "${LIB_NAME}")
-
-file(GLOB HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
 
 set_target_properties(
 	"${LIB_NAME}" PROPERTIES
@@ -57,7 +57,8 @@ set_target_properties(
 )
 
 target_include_directories(
-	"${LIB_NAME}" PUBLIC
+	"${LIB_NAME}" 
+	PUBLIC
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
 	PRIVATE
 	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
@@ -108,14 +109,10 @@ target_compile_options(
 	"${LIB_NAME}" PRIVATE
 	"$<$<NOT:$<PLATFORM_ID:Linux>>:/bigobj>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
-	"$<$<PLATFORM_ID:Linux>:-O3>"
 	"$<$<PLATFORM_ID:Linux>:-fpermissive>"
 	"$<$<PLATFORM_ID:Linux>:-fPIC>"
+	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
-
-if (UNIX)
-	set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
-endif()
 
 target_link_options(
 	"${LIB_NAME}" PUBLIC
