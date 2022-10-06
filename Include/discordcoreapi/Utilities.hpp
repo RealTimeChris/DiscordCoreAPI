@@ -1673,10 +1673,22 @@ namespace DiscordCoreInternal {
 
 		Void writeData(const char*, Uint64);
 
-		String::iterator begin();
+		String::iterator begin() {
+			if (this->whichOneAreWeOn == 0) {
+				return this->theString01.begin();
+			} else {
+				return this->theString02.begin();
+			}
+		}
 
-		String::iterator end();
-		
+		String::iterator end() {
+			if (this->whichOneAreWeOn == 0) {
+				return this->theString01.end();
+			} else {
+				return this->theString02.end();
+			}
+		}
+
 		Void erase(Uint64);
 
 		Uint64 size();
