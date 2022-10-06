@@ -201,6 +201,7 @@ namespace DiscordCoreAPI {
 								}
 								this->secretKeySend = theSecretKey;
 							}
+							this->packetEncrypter = RTPPacketEncrypter{ this->audioSSRC, this->secretKeySend };
 							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 							return true;
 						}

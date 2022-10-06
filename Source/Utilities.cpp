@@ -1751,22 +1751,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	String::iterator StringBuffer::begin() {
-		if (this->whichOneAreWeOn == 0) {
-			return this->theString01.begin();
-		} else {
-			return this->theString02.begin();
-		}
-	}
-
-	String::iterator StringBuffer::end() {
-		if (this->whichOneAreWeOn == 0) {
-			return this->theString01.end();
-		} else {
-			return this->theString02.end();
-		}
-	}
-
 	Void StringBuffer::erase(Uint64 amount) {
 		this->theSize = this->theSize - amount;
 		if (this->whichOneAreWeOn == 0) {
