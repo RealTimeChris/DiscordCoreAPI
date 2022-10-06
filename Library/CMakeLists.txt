@@ -115,7 +115,7 @@ target_compile_options(
 
 target_link_options(
 	"${LIB_NAME}" PUBLIC
-	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
+	"$<$<PLATFORM_ID:Windows>:/DEBUG>" 
 )
 
 set(CONFIG_FILE_NAME "${PROJECT_NAME}Config.cmake")
