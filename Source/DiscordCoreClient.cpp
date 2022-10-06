@@ -251,9 +251,7 @@ namespace DiscordCoreAPI {
 			Globals::doWeQuit.store(true);
 			return;
 		}
-		std::cout << "WERE HERE THIS IS IT! 080808" << std::endl;
 		while (!Globals::doWeQuit.load()) {
-			std::cout << "WERE HERE THIS IS IT! 080808" << std::endl;
 			if (this->theConnections.size() > 0 && this->theConnectionStopWatch.hasTimePassed()) {
 				this->theConnectionStopWatch.resetTimer();
 				auto theData = this->theConnections.front();
@@ -299,7 +297,6 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		std::cout << "WERE HERE THIS IS IT! 060606" << std::endl;
 		if (this->configManager.getStartingShard() + this->configManager.getShardCountForThisProcess() > this->configManager.getTotalShardCount()) {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {
 				cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << endl << endl;
@@ -316,49 +313,35 @@ namespace DiscordCoreAPI {
 			this->configManager.setConnectionPort("443");
 		}
 		for (Uint32 x = 0; x < this->configManager.getTotalShardCount(); ++x) {
-			std::cout << "WERE HERE THIS IS IT! 070707" << std::endl;
 			if (!this->baseSocketAgentMap.contains(x % theWorkerCount)) {
 				this->baseSocketAgentMap[x % theWorkerCount] = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);
 			}
-			std::cout << "WERE HERE THIS IS IT! 088008" << std::endl;
 			ConnectionPackage theData{};
 			theData.currentShard = x;
 			theData.currentReconnectTries = 0;
 			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x] =
 				std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, &this->theConnections, x, &Globals::doWeQuit);
 			this->theConnections.emplace_back(theData);
-			std::cout << "WERE HERE THIS IS IT! 090909" << std::endl;
 		}
 		try {
-			std::cout << "WERE HERE THIS IS IT! 2334234234" << std::endl;
-			this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[this->configManager.getStartingShard()].get() };
-			std::cout << "WERE HERE THIS IS IT! 45345345" << std::endl;
+			auto theUser = Users::getCurrentUserAsync().get();
+			this->currentUser = BotUser{ theUser, this->baseSocketAgentMap[this->configManager.getStartingShard()].get() };
 		} catch (...) {
 			reportException("DiscordCoreClient::instantiateWebSockets()");
 		}
-		std::cout << "WERE HERE THIS IS IT! 0890808" << std::endl;
 		for (auto& value: this->configManager.getFunctionsToExecute()) {
-			std::cout << "WERE HERE THIS IS IT! 090909" << std::endl;
-			std::cout << "REPEATED?" << std::boolalpha << value.repeated << std::endl;
 			if (value.repeated) {
-				std::cout << "WERE HERE THIS IS IT! 1212121" << std::endl;
 				TimeElapsedHandlerNoArgs onSend = [=, this]() -> void{
 					value.function(this);
 				};
-				std::cout << "WERE HERE THIS IS IT! 131313" << std::endl;
 				ThreadPool::storeThread(onSend, value.intervalInMs);
-				std::cout << "WERE HERE THIS IS IT! 141414" << std::endl;
 			} else {
-				std::cout << "WERE HERE THIS IS IT! 151515" << std::endl;
 				TimeElapsedHandler<void*> onSend = [=, this](void*) -> void {
 					value.function(this);
 				};
-				std::cout << "WERE HERE THIS IS IT! 161616" << std::endl;
 				ThreadPool::executeFunctionAfterTimePeriod(onSend, value.intervalInMs, false, static_cast<void*>(this));
-				std::cout << "WERE HERE THIS IS IT! 1717171" << std::endl;
 			}
 		}
-		std::cout << "WERE HERE THIS IS IT! 121212121" << std::endl;
 		return true;
 	}
 

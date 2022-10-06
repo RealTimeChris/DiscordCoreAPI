@@ -176,7 +176,6 @@ namespace DiscordCoreInternal {
 
 	WebSocketMessageHandler::WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManagerNew, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew,
 		String typeOfWebSocketNew) {
-		std::cout << "WERE HERE THIS IS IT!" << typeOfWebSocketNew << std::endl;
 		this->typeOfWebSocket = typeOfWebSocketNew;
 		this->theConnections = theConnectionsNew;
 		this->configManager = configManagerNew;
@@ -404,15 +403,12 @@ namespace DiscordCoreInternal {
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, Int32 currentShardNew,
 		AtomicBool* doWeQuitNew)
 		: WebSocketMessageHandler(&theClient->configManager, this->theConnections, "WebSocket") {
-		std::cout << "WERE LEAVING LEAVING LEAVING 010101" << std::endl;
 		this->configManager = &theClient->configManager;
 		this->theConnections = theConnectionsNew;
 		this->shard[0] = currentShardNew;
-		std::cout << "WERE LEAVING LEAVING LEAVING 020202" << std::endl;
 		if (this->theParser.allocate(1024ull * 1024ull) != simdjson::error_code::SUCCESS) {
 			throw std::runtime_error{ "Failed to allocate the parser's memory." };
 		}
-		std::cout << "WERE LEAVING LEAVING LEAVING 030303" << std::endl;
 		this->discordCoreClient = theClient;
 		this->doWeQuit = doWeQuitNew;
 		if (this->discordCoreClient) {
@@ -423,7 +419,6 @@ namespace DiscordCoreInternal {
 				this->dataOpCode = WebSocketOpCode::Op_Text;
 			}
 		}
-		std::cout << "WERE LEAVING LEAVING LEAVING 040404" << std::endl;
 	}
 
 	Void WebSocketSSLShard::getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept {
@@ -1419,9 +1414,7 @@ namespace DiscordCoreInternal {
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->discordCoreClient = discordCoreClientNew;
 		this->doWeQuit = doWeQuitNew;
-		std::cout << "WERE HERE THIS IS IT!" << std::endl;
 		this->taskThread = std::make_unique<std::jthread>([this](std::stop_token stopToken) {
-			std::cout << "WERE HERE THIS IS IT! 0202" << std::endl;
 			this->run(stopToken);
 		});
 	}
@@ -1433,7 +1426,6 @@ namespace DiscordCoreInternal {
 
 	Void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage thePackageNew) noexcept {
 		try {
-			std::cout << "WERE HERE THIS IS IT! 0404" << std::endl;
 			if (thePackageNew.currentShard != -1) {
 				if (!this->theShardMap.contains(thePackageNew.currentShard)) {
 					this->theShardMap[thePackageNew.currentShard] =
@@ -1464,7 +1456,6 @@ namespace DiscordCoreInternal {
 					isItFirstIteraion = false;
 					didWeConnect = this->theShardMap[thePackageNew.currentShard]->connect(connectionUrl, this->configManager->getConnectionPort(),
 						this->configManager->doWePrintWebSocketErrorMessages(), false);
-					std::cout << "WERE HERE THIS IS IT! 050505" << std::endl;
 					if (didWeConnect == false) {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
 							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed for WebSocket [" << thePackageNew.currentShard << ","
@@ -1588,7 +1579,6 @@ namespace DiscordCoreInternal {
 	Void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
-				std::cout << "WERE HERE THIS IS IT! 0303" << std::endl;
 				this->disconnectVoiceInternal();
 				this->connectVoiceInternal();
 				auto theResult = SSLClient::processIO(this->theShardMap);
