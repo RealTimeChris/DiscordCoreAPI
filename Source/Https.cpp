@@ -58,8 +58,8 @@ namespace DiscordCoreInternal {
 				String theString = static_cast<HttpsConnection*>(this)->theData.responseMessage.substr(0, static_cast<HttpsConnection*>(this)->theData.contentLength);
 				static_cast<HttpsConnection*>(this)->theData.responseMessage = std::move(theString);
 			} else {
-				static_cast<HttpsConnection*>(this)->theData.responseMessage =
-					static_cast<String>(static_cast<HttpsConnection*>(this)->theInputBufferReal.operator std::basic_string_view<char, std::char_traits<char>>());
+				static_cast<HttpsConnection*>(this)->theData.responseMessage = static_cast<String>(
+					static_cast<HttpsConnection*>(this)->theInputBufferReal[LengthData{ .offSet = 0, .length = static_cast<HttpsConnection*>(this)->theData.contentLength }]);
 			}
 
 		} catch (...) {

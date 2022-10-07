@@ -1719,8 +1719,6 @@ namespace DiscordCoreInternal {
 
 		char operator[](Uint64);
 
-		operator StringView();
-
 		Void writeData(const char*, Uint64);
 
 		String::iterator begin();

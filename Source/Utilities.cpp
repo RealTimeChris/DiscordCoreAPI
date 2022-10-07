@@ -1709,11 +1709,6 @@ namespace DiscordCoreInternal {
 		return this->theString01[theIndex];
 	}
 
-	StringBuffer::operator StringView() {
-		StringView theString{ this->theString01.data(), this->theSize };
-		return theString;
-	}
-
 	Void StringBuffer::writeData(const char* thePtr, Uint64 theSize) {
 		if (this->theSize + theSize > this->theString01.size()) {
 			this->theString01.resize(this->theString01.size() + theSize);
