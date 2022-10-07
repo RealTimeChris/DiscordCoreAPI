@@ -109,8 +109,8 @@ namespace DiscordCoreAPI {
 		friend DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeAPI* getYouTubeAPI(Snowflake guildId);
 		friend DiscordCoreAPI_Dll VoiceConnection* getVoiceConnection(Snowflake guildId);
 		friend DiscordCoreAPI_Dll SongAPI* getSongAPI(Snowflake guildId);
-		friend class DiscordCoreInternal::WebSocketMessageHandler;
 		friend class DiscordCoreInternal::WebSocketSSLShard;
+		friend class DiscordCoreInternal::WebSocketSSLCore;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class VoiceConnection;
 		friend class GuildData;

@@ -50,9 +50,9 @@ namespace DiscordCoreInternal {
 
 	enum class WebSocketState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
-	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker, public SSLClient {
+	class DiscordCoreAPI_Dll WebSocketSSLCore : public ErlPacker, public SSLClient {
 	  public:
-		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections, String typeOfWebSocket);
+		WebSocketSSLCore(DiscordCoreAPI::ConfigManager* configManager, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections, String typeOfWebSocket);
 
 		String stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept;
 
@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 
 		Void parseMessage() noexcept;
 
-		virtual ~WebSocketMessageHandler() noexcept = default;
+		virtual ~WebSocketSSLCore() noexcept = default;
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
@@ -82,11 +82,13 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic<WebSocketState> currentState{};
 		Bool haveWeReceivedHeartbeatAck{ true };
+		StringBuffer messageCollectionBuffer{};
+		const Uint32 maxReconnectTries{ 10 };
 		AtomicBool areWeConnecting{ true };
+		Uint32 currentReconnectTries{ 0 };
 		Bool areWeHeartBeating{ false };
 		Uint32 lastNumberReceived{ 0 };
 		WebSocketClose closeCode{ 0 };
-		StringBuffer currentMessage{};
 		WebSocketOpCode dataOpCode{};
 		Bool areWeResuming{ false };
 		String typeOfWebSocket{};
@@ -95,11 +97,11 @@ namespace DiscordCoreInternal {
 		Uint32 shard[2]{};
 	};
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketMessageHandler {
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketSSLCore {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
-		friend class WebSocketMessageHandler;
+		friend class WebSocketSSLCore;
 		friend class DiscordCoreAPI::BotUser;
 		friend class BaseSocketAgent;
 		friend class YouTubeAPI;
@@ -123,12 +125,10 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		simdjson::ondemand::parser theParser{};
-		DiscordCoreAPI::Snowflake userId{ 0 };
-		const Uint32 maxReconnectTries{ 10 };
+		DiscordCoreAPI::Snowflake userId{ 0 };		
 		Bool serverUpdateCollected{ false };
 		Bool stateUpdateCollected{ false };
 		Bool areWeCollectingData{ false };
-		Uint32 currentReconnectTries{ 0 };
 		AtomicBool* doWeQuit{ nullptr };
 		String resumeUrl{};
 		String sessionId{};

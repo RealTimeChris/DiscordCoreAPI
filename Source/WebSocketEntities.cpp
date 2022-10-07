@@ -174,14 +174,14 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketMessageHandler::WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManagerNew, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew,
+	WebSocketSSLCore::WebSocketSSLCore(DiscordCoreAPI::ConfigManager* configManagerNew, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew,
 		String typeOfWebSocketNew) {
 		this->typeOfWebSocket = typeOfWebSocketNew;
 		this->theConnections = theConnectionsNew;
 		this->configManager = configManagerNew;
 	}
 
-	String WebSocketMessageHandler::stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept {
+	String WebSocketSSLCore::stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept {
 		String theVector{};
 		String header{};
 
@@ -197,7 +197,7 @@ namespace DiscordCoreInternal {
 		return theVectorNew;
 	}
 
-	Void WebSocketMessageHandler::createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept {
+	Void WebSocketSSLCore::createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept {
 		try {
 			outBuffer.push_back(static_cast<Uint8>(opCode) | webSocketFinishBit);
 
@@ -223,18 +223,18 @@ namespace DiscordCoreInternal {
 			outBuffer.push_back(0);
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
-				DiscordCoreAPI::reportException("WebSocketMessageHandler::createHeader()");
+				DiscordCoreAPI::reportException("WebSocketSSLCore::createHeader()");
 			}
 		}
 	}
 
-	Void WebSocketMessageHandler::parseConnectionHeaders() noexcept {
+	Void WebSocketSSLCore::parseConnectionHeaders() noexcept {
 		if (this->areWeStillConnected() && this->currentState.load() == WebSocketState::Upgrading && this->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
 			auto theString = this->getInputBuffer();
-			this->currentMessage.writeData(theString.data(), theString.size());
-			auto theFindValue = static_cast<StringView>(this->currentMessage).find("\r\n\r\n");
+			this->messageCollectionBuffer.writeData(theString.data(), theString.size());
+			auto theFindValue = static_cast<StringView>(this->messageCollectionBuffer).find("\r\n\r\n");
 			if (theFindValue != String::npos) {
-				this->currentMessage.clear();
+				this->messageCollectionBuffer.clear();
 				this->currentState.store(WebSocketState::Collecting_Hello);
 				return;
 			}
@@ -242,17 +242,17 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	Void WebSocketMessageHandler::parseMessage() noexcept {
+	Void WebSocketSSLCore::parseMessage() noexcept {
 		if (this->inputBuffer.getUsedSpace() > 0) {
-			if (this->currentMessage.size() < this->messageLength + this->messageOffset || this->currentMessage.size() == 0) {
+			if (this->messageCollectionBuffer.size() < this->messageLength + this->messageOffset || this->messageCollectionBuffer.size() == 0) {
 				auto theString = this->getInputBuffer();
-				this->currentMessage.writeData(theString.data(), theString.size());
+				this->messageCollectionBuffer.writeData(theString.data(), theString.size());
 			}
-			if (this->currentMessage.size() < 4) {
+			if (this->messageCollectionBuffer.size() < 4) {
 				return;
 			}
 
-			this->dataOpCode = static_cast<WebSocketOpCode>(this->currentMessage[0] & ~webSocketFinishBit);
+			this->dataOpCode = static_cast<WebSocketOpCode>(this->messageCollectionBuffer[0] & ~webSocketFinishBit);
 			this->messageLength = 0;
 			this->messageOffset = 0;
 			switch (this->dataOpCode) {
@@ -265,45 +265,45 @@ namespace DiscordCoreInternal {
 				case WebSocketOpCode::Op_Ping:
 					[[fallthrough]];
 				case WebSocketOpCode::Op_Pong: {
-					Uint8 length01 = this->currentMessage[1];
+					Uint8 length01 = this->messageCollectionBuffer[1];
 					this->messageOffset = 2;
 					if (length01 & webSocketMaskBit) {
 						return;
 					}
 					this->messageLength = length01;
 					if (length01 == webSocketPayloadLengthMagicLarge) {
-						if (this->currentMessage.size() < 8) {
+						if (this->messageCollectionBuffer.size() < 8) {
 							return;
 						}
-						Uint8 length03 = this->currentMessage[2];
-						Uint8 length04 = this->currentMessage[3];
+						Uint8 length03 = this->messageCollectionBuffer[2];
+						Uint8 length04 = this->messageCollectionBuffer[3];
 						this->messageLength = static_cast<Uint64>((length03 << 8) | length04);
 						this->messageOffset += 2;
 					} else if (length01 == webSocketPayloadLengthMagicHuge) {
-						if (this->currentMessage.size() < 10) {
+						if (this->messageCollectionBuffer.size() < 10) {
 							return;
 						}
 						this->messageLength = 0;
 						for (Uint64 x = 2, shift = 56; x < 10; ++x, shift -= 8) {
-							Uint8 lengthNew = static_cast<Uint8>(this->currentMessage[x]);
+							Uint8 lengthNew = static_cast<Uint8>(this->messageCollectionBuffer[x]);
 							this->messageLength |= static_cast<Uint64>((lengthNew & static_cast<Uint64>(0xff)) << static_cast<Uint64>(shift));
 						}
 						this->messageOffset += 8;
 					}
-					if (this->currentMessage.size() < this->messageOffset + this->messageLength) {
+					if (this->messageCollectionBuffer.size() < this->messageOffset + this->messageLength) {
 						return;
 					} else {
-						this->onMessageReceived(this->currentMessage[LengthData{ .offSet = this->messageOffset, .length = this->messageLength }]);
-						this->currentMessage.erase(this->messageLength + this->messageOffset);
+						this->onMessageReceived(this->messageCollectionBuffer[LengthData{ .offSet = this->messageOffset, .length = this->messageLength }]);
+						this->messageCollectionBuffer.erase(this->messageLength + this->messageOffset);
 						this->messageOffset = 0;
 						this->messageLength = 0;
 						return;
 					}
 				}
 				case WebSocketOpCode::Op_Close: {
-					Uint16 close = this->currentMessage[2] & 0xff;
+					Uint16 close = this->messageCollectionBuffer[2] & 0xff;
 					close <<= 8;
-					close |= this->currentMessage[3] & 0xff;
+					close |= this->messageCollectionBuffer[3] & 0xff;
 					this->closeCode = close;
 					if (this->closeCode) {
 						this->areWeResuming = true;
@@ -324,7 +324,7 @@ namespace DiscordCoreInternal {
 
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, Int32 currentShardNew,
 		AtomicBool* doWeQuitNew)
-		: WebSocketMessageHandler(&theClient->configManager, this->theConnections, "WebSocket") {
+		: WebSocketSSLCore(&theClient->configManager, this->theConnections, "WebSocket") {
 		this->configManager = &theClient->configManager;
 		this->theConnections = theConnectionsNew;
 		this->shard[0] = currentShardNew;
@@ -384,7 +384,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Bool WebSocketMessageHandler::sendMessage(StringView dataToSend, Bool priority) noexcept {
+	Bool WebSocketSSLCore::sendMessage(StringView dataToSend, Bool priority) noexcept {
 		if (this->areWeStillConnected()) {
 			try {
 				if (dataToSend.size() == 0) {
@@ -1427,7 +1427,7 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	Void WebSocketMessageHandler::checkForAndSendHeartBeat(Bool isImmediate) noexcept {
+	Void WebSocketSSLCore::checkForAndSendHeartBeat(Bool isImmediate) noexcept {
 		try {
 			if ((this->currentState.load() == WebSocketState::Authenticated && this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
 				String theString{};
@@ -1457,7 +1457,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Void WebSocketMessageHandler::handleBuffer() noexcept {
+	Void WebSocketSSLCore::handleBuffer() noexcept {
 		if (this->currentState.load() == WebSocketState::Upgrading) {
 			this->parseConnectionHeaders();
 		}
