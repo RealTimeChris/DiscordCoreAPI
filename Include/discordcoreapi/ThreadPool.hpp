@@ -38,7 +38,8 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<typename... ArgTypes> using TimeElapsedHandler = std::function<Void(ArgTypes...)>;
+	template<typename... ArgTypes>
+	using TimeElapsedHandler = std::function<Void(ArgTypes...)>;
 
 	using TimeElapsedHandlerNoArgs = std::function<Void(Void)>;
 
@@ -50,13 +51,37 @@ namespace DiscordCoreAPI {
 
 		ThreadPool(const ThreadPool&) = delete;
 
-		ThreadPool& operator=(ThreadPool&) = delete;
-
-		ThreadPool(ThreadPool&) = delete;
-
 		ThreadPool() noexcept = default;
 
 		static String storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, Int64 timeInterval);
+
+		template<typename... ArgTypes>
+		static Void executeFunctionAfterTimePeriod(TimeElapsedHandlerNoArgs timeElapsedHandler, Int64 timeDelay, Bool blockForCompletion) {
+			std::jthread theThread = std::jthread([=](std::stop_token stopToken) {
+				StopWatch stopWatch{ std::chrono::milliseconds{ timeDelay } };
+				stopWatch.resetTimer();
+				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<Int64>(std::ceil(static_cast<Float>(timeDelay) * thePercentage)) });
+				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
+					std::this_thread::sleep_for(1ms);
+				}
+				if (stopToken.stop_requested()) {
+					return;
+				}
+				timeElapsedHandler();
+				if (stopToken.stop_requested()) {
+					return;
+				}
+			});
+			if (blockForCompletion) {
+				if (theThread.joinable()) {
+					theThread.join();
+				}
+			} else {
+				if (theThread.joinable()) {
+					theThread.detach();
+				}
+			}
+		}
 
 		template<typename... ArgTypes>
 		static Void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, Int64 timeDelay, Bool blockForCompletion, ArgTypes... args) {

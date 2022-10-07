@@ -336,10 +336,10 @@ namespace DiscordCoreAPI {
 				};
 				ThreadPool::storeThread(onSend, value.intervalInMs);
 			} else {
-				TimeElapsedHandler<Void*> onSend = [=, this](Void*) -> Void {
+				TimeElapsedHandlerNoArgs onSend = [=, this]() -> Void {
 					value.function(this);
 				};
-				ThreadPool::executeFunctionAfterTimePeriod(onSend, value.intervalInMs, false, static_cast<Void*>(&onSend));
+				ThreadPool::executeFunctionAfterTimePeriod(onSend, value.intervalInMs, false);
 			}
 		}
 		return true;
