@@ -174,8 +174,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketCore::WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew,
-		String typeOfWebSocketNew) {
+	WebSocketCore::WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, String typeOfWebSocketNew) {
 		this->typeOfWebSocket = typeOfWebSocketNew;
 		this->theConnections = theConnectionsNew;
 		this->configManager = configManagerNew;
