@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 	/// VoiceConnection class - represents the connection to a given voice Channel. \brief VoiceConnection class - represents the connection to a given voice Channel.
-	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketSSLCore, public DiscordCoreInternal::DatagramSocketClient {
+	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketMessageHandler, public DiscordCoreInternal::DatagramSocketClient {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreInternal::SoundCloudAPI;
@@ -160,12 +160,14 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
 		DiscordCoreClient* discordCoreClient{ nullptr };
-		std::deque<ConnectionPackage> connections{};
+		std::deque<ConnectionPackage> theConnections{};
 		std::deque<VoicePayload> theFrameQueue{};
 		AtomicBool areWeConnectedBool{ false };
 		UMap<Uint64, VoiceUser> voiceUsers{};
 		RTPPacketEncrypter packetEncrypter{};
+		const Int64 maxReconnectTries{ 10 };
 		AtomicBool areWePlaying{ false };
+		Int64 currentReconnectTries{ 0 };
 		Snowflake currentGuildMemberId{};
 		AtomicBool* doWeQuit{ nullptr };
 		ConnectionPackage thePackage{};
@@ -173,6 +175,7 @@ namespace DiscordCoreAPI {
 		std::mutex voiceUserMutex{};
 		AudioFrameData audioData{};
 		StreamInfo theStreamInfo{};
+		Uint16 sequenceIndex{ 0 };
 		AudioEncoder theEncoder{};
 		StreamType streamType{};
 		String secretKeySend{};
