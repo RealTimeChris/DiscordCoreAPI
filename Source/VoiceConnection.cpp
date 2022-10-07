@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, DiscordCoreInternal::WebSocketSSLShard* baseShard,
 		const DiscordCoreInternal::VoiceConnectInitData& initDataNew, DiscordCoreAPI::ConfigManager* configManagerNew, AtomicBool* doWeQuitNew, StreamType streamTypeNew,
 		StreamInfo streamInfoNew) noexcept
-		: WebSocketCore(configManagerNew, &this->theConnections, "Voice WebSocket"), DatagramSocketClient(StreamType::None) {
+		: WebSocketCore(configManagerNew, &this->connections, "Voice WebSocket"), DatagramSocketClient(StreamType::None) {
 		this->dataOpCode = DiscordCoreInternal::WebSocketOpCode::Op_Text;
 		this->discordCoreClient = BaseSocketAgentNew->discordCoreClient;
 		this->activeState.store(VoiceActiveState::Connecting);
@@ -293,8 +293,8 @@ namespace DiscordCoreAPI {
 	}
 
 	Void VoiceConnection::checkForConnections() {
-		if (this->theConnections.size() > 0) {
-			this->theConnections.pop_front();
+		if (this->connections.size() > 0) {
+			this->connections.pop_front();
 			StopWatch theStopWatch{ 10000ms };
 			if (this->activeState.load() == VoiceActiveState::Connecting) {
 				this->lastActiveState.store(VoiceActiveState::Stopped);
@@ -1041,7 +1041,7 @@ namespace DiscordCoreAPI {
 		if (this->baseSocketAgent) {
 			this->voiceConnectInitData = theData;
 			this->thePackage.currentShard = 1;
-			this->theConnections.emplace_back(this->thePackage);
+			this->connections.emplace_back(this->thePackage);
 			this->activeState.store(VoiceActiveState::Connecting);
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {

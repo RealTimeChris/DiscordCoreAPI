@@ -82,7 +82,9 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic<WebSocketState> currentState{};
 		Bool haveWeReceivedHeartbeatAck{ true };
+		const Uint32 maxReconnectTries{ 10 };
 		AtomicBool areWeConnecting{ true };
+		Uint32 currentReconnectTries{ 0 };
 		Bool areWeHeartBeating{ false };
 		Uint32 lastNumberReceived{ 0 };
 		WebSocketClose closeCode{ 0 };
@@ -124,11 +126,9 @@ namespace DiscordCoreInternal {
 		VoiceConnectionData voiceConnectionData{};
 		simdjson::ondemand::parser theParser{};
 		DiscordCoreAPI::Snowflake userId{ 0 };
-		const Uint32 maxReconnectTries{ 10 };
 		Bool serverUpdateCollected{ false };
 		Bool stateUpdateCollected{ false };
 		Bool areWeCollectingData{ false };
-		Uint32 currentReconnectTries{ 0 };
 		AtomicBool* doWeQuit{ nullptr };
 		String resumeUrl{};
 		String sessionId{};

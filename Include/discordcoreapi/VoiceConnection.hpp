@@ -160,14 +160,12 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unique_ptr<std::jthread> taskThread03{ nullptr };
 		DiscordCoreClient* discordCoreClient{ nullptr };
-		std::deque<ConnectionPackage> theConnections{};
+		std::deque<ConnectionPackage> connections{};
 		std::deque<VoicePayload> theFrameQueue{};
 		AtomicBool areWeConnectedBool{ false };
 		UMap<Uint64, VoiceUser> voiceUsers{};
 		RTPPacketEncrypter packetEncrypter{};
-		const Int64 maxReconnectTries{ 10 };
 		AtomicBool areWePlaying{ false };
-		Int64 currentReconnectTries{ 0 };
 		Snowflake currentGuildMemberId{};
 		AtomicBool* doWeQuit{ nullptr };
 		ConnectionPackage thePackage{};
