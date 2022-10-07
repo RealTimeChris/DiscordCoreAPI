@@ -1716,7 +1716,7 @@ namespace DiscordCoreInternal {
 
 	Void StringBuffer::writeData(const char* thePtr, Uint64 theSize) {
 		if (this->theSize + theSize > this->theString01.size()) {
-			this->theString01.resize(this->theString01.size() * 2);
+			this->theString01.resize(this->theString01.size() + theSize);
 		}
 		memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
 		this->theSize += theSize;
