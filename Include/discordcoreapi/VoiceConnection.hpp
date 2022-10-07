@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 		Bool areWeCurrentlyPlaying() noexcept;
 
 		Void reconnectStream() noexcept;
-
+		
 		Void connectInternal() noexcept;
 
 		Void clearAudioData() noexcept;
@@ -224,6 +224,8 @@ namespace DiscordCoreAPI {
 		Void sendSilence() noexcept;
 
 		Void pauseToggle() noexcept;
+
+		Void checkForConnections();
 
 		Void disconnect() noexcept;
 
