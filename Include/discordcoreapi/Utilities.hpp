@@ -1686,9 +1686,7 @@ namespace DiscordCoreInternal {
 		char* data();
 
 	  protected:
-		Uint64 whichOneAreWeOn{ 0 };
 		std::string theString01{};
-		std::string theString02{};
 		Uint64 theSize{};
 	};
 

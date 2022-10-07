@@ -1698,90 +1698,41 @@ namespace DiscordCoreInternal {
 
 	StringBuffer::StringBuffer() noexcept {
 		this->theString01.resize(1024 * 16);
-		this->theString02.resize(1024 * 16);
 	}
 
 	StringView StringBuffer::operator[](LengthData size) {
-		if (this->whichOneAreWeOn == 0) {
-			StringView theString{ this->theString01.data() + size.offSet, size.length };
-			return theString;
-		} else {
-			StringView theString{ this->theString02.data() + size.offSet, size.length };
-			return theString;
-		}
+		StringView theString{ this->theString01.data() + size.offSet, size.length };
+		return theString;
 	}
 
 	char StringBuffer::operator[](Uint64 theIndex) {
-		if (this->whichOneAreWeOn == 0) {
-			return this->theString01[theIndex];
-		} else {
-			return this->theString02[theIndex];
-		}
+		return this->theString01[theIndex];
 	}
 
 	StringBuffer::operator StringView() {
-		if (this->whichOneAreWeOn == 0) {
-			StringView theString{ this->theString01.data(), this->theSize };
-			return theString;
-		} else {
-			StringView theString{ this->theString02.data(), this->theSize };
-			return theString;
-		}
+		StringView theString{ this->theString01.data(), this->theSize };
+		return theString;
 	}
 
 	Void StringBuffer::writeData(const char* thePtr, Uint64 theSize) {
-		if (this->whichOneAreWeOn == 0) {
-			if (this->theSize + theSize < this->theString01.size()) {
-				memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
-				this->theSize += theSize;
-			} else {
-				this->theString01.resize(this->theString01.size() * 2);
-				memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
-				this->theSize += theSize;
-			}
-		} else {
-			if (this->theSize + theSize < this->theString02.size()) {
-				memcpy(this->theString02.data() + this->theSize, thePtr, theSize);
-				this->theSize += theSize;
-			} else {
-				this->theString02.resize(this->theString02.size() * 2);
-				memcpy(this->theString02.data() + this->theSize, thePtr, theSize);
-				this->theSize += theSize;
-			}
+		if (this->theSize + theSize > this->theString01.size()) {
+			this->theString01.resize(this->theString01.size() * 2);
 		}
+		memcpy(this->theString01.data() + this->theSize, thePtr, theSize);
+		this->theSize += theSize;
 	}
 
 	String::iterator StringBuffer::begin() {
-		if (this->whichOneAreWeOn == 0) {
-			return this->theString01.begin();
-		} else {
-			return this->theString02.begin();
-		}
+		return this->theString01.begin();
 	}
 
 	String::iterator StringBuffer::end() {
-		if (this->whichOneAreWeOn == 0) {
-			return this->theString01.end();
-		} else {
-			return this->theString02.end();
-		}
+		return this->theString01.end();
 	}
 
 	Void StringBuffer::erase(Uint64 amount) {
 		this->theSize = this->theSize - amount;
-		if (this->whichOneAreWeOn == 0) {
-			if (this->theString02.size() < this->theString01.size()) {
-				this->theString02.resize(this->theString01.size());
-			}
-			memcpy(this->theString02.data(), this->theString01.data() + amount, this->theSize);
-			this->whichOneAreWeOn = 1;
-		} else {
-			if (this->theString01.size() < this->theString02.size()) {
-				this->theString01.resize(this->theString02.size());
-			}
-			memcpy(this->theString01.data(), this->theString02.data() + amount, this->theSize);
-			this->whichOneAreWeOn = 0;
-		}
+		memcpy(this->theString01.data(), this->theString01.data() + amount, this->theSize);
 	}
 
 	Uint64 StringBuffer::size() {
@@ -1789,15 +1740,10 @@ namespace DiscordCoreInternal {
 	}
 
 	Void StringBuffer::clear() {
-		this->whichOneAreWeOn = 0;
 		this->theSize = 0;
 	}
 
 	char* StringBuffer::data() {
-		if (this->whichOneAreWeOn == 0) {
-			return this->theString01.data();
-		} else {
-			return this->theString02.data();
-		}
+		return this->theString01.data();
 	}
 }
