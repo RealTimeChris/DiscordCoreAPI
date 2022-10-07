@@ -316,21 +316,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	Void VoiceConnection::runWebSocket(std::stop_token stopToken) noexcept {
-		try {
-			while (!stopToken.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
-				this->checkForConnections();
-				this->runVoice(stopToken);
-				std::this_thread::sleep_for(1ms);
-			}
-		} catch (...) {
-			if (this->configManager->doWePrintWebSocketErrorMessages()) {
-				reportException("VoiceConnection::run()");
-			}
-			this->onClosed();
-		}
-	}
-
 	Void VoiceConnection::runBridge(std::stop_token theToken) noexcept {
 		StopWatch theStopWatch{ 20ms };
 		Int32 timeToWaitInMs{ 20 };
@@ -1063,7 +1048,7 @@ namespace DiscordCoreAPI {
 			this->activeState.store(VoiceActiveState::Connecting);
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-					this->runWebSocket(stopToken);
+					this->runVoice(stopToken);
 				});
 			}
 			/*

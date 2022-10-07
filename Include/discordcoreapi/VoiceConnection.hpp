@@ -201,8 +201,6 @@ namespace DiscordCoreAPI {
 
 		Bool onMessageReceived(StringView theData) noexcept;
 
-		Void runWebSocket(std::stop_token) noexcept;
-
 		Void runBridge(std::stop_token) noexcept;
 
 		Void runVoice(std::stop_token) noexcept;
