@@ -210,7 +210,7 @@ namespace DiscordCoreAPI {
 		Bool areWeCurrentlyPlaying() noexcept;
 
 		Void reconnectStream() noexcept;
-		
+
 		Void connectInternal() noexcept;
 
 		Void clearAudioData() noexcept;

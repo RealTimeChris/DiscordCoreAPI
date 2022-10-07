@@ -38,8 +38,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<typename... ArgTypes>
-	using TimeElapsedHandler = std::function<Void(ArgTypes...)>;
+	template<typename... ArgTypes> using TimeElapsedHandler = std::function<Void(ArgTypes...)>;
 
 	using TimeElapsedHandlerNoArgs = std::function<Void(Void)>;
 
@@ -55,8 +54,7 @@ namespace DiscordCoreAPI {
 
 		static String storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, Int64 timeInterval);
 
-		template<typename... ArgTypes>
-		static Void executeFunctionAfterTimePeriod(TimeElapsedHandlerNoArgs timeElapsedHandler, Int64 timeDelay, Bool blockForCompletion) {
+		template<typename... ArgTypes> static Void executeFunctionAfterTimePeriod(TimeElapsedHandlerNoArgs timeElapsedHandler, Int64 timeDelay, Bool blockForCompletion) {
 			std::jthread theThread = std::jthread([=](std::stop_token stopToken) {
 				StopWatch stopWatch{ std::chrono::milliseconds{ timeDelay } };
 				stopWatch.resetTimer();

@@ -303,7 +303,7 @@ namespace DiscordCoreAPI {
 			}
 			this->activeState.store(VoiceActiveState::Connecting);
 			this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-			while (this->baseShard->currentState.load() != DiscordCoreInternal::WebSocketState::Authenticated){
+			while (this->baseShard->currentState.load() != DiscordCoreInternal::WebSocketState::Authenticated) {
 				if (theStopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
 					return;
 				}
