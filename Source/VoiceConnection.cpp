@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, DiscordCoreInternal::WebSocketSSLShard* baseShard,
 		const DiscordCoreInternal::VoiceConnectInitData& initDataNew, DiscordCoreAPI::ConfigManager* configManagerNew, AtomicBool* doWeQuitNew, StreamType streamTypeNew,
 		StreamInfo streamInfoNew) noexcept
-		: WebSocketMessageHandler(configManagerNew, &this->theConnections, "Voice WebSocket"), DatagramSocketClient(StreamType::None) {
+		: WebSocketCore(configManagerNew, &this->theConnections, "Voice WebSocket"), DatagramSocketClient(StreamType::None) {
 		this->dataOpCode = DiscordCoreInternal::WebSocketOpCode::Op_Text;
 		this->discordCoreClient = BaseSocketAgentNew->discordCoreClient;
 		this->activeState.store(VoiceActiveState::Connecting);
@@ -310,7 +310,6 @@ namespace DiscordCoreAPI {
 				std::this_thread::sleep_for(1ms);
 			}
 			this->connectInternal();
-			this->sendSpeakingMessage(false);
 			this->sendSpeakingMessage(true);
 			this->activeState.store(this->lastActiveState.load());
 		}
@@ -351,15 +350,15 @@ namespace DiscordCoreAPI {
 		StopWatch theStopWatch{ 2500ms };
 		theStopWatch.resetTimer();
 		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor) {
-			if (WebSocketMessageHandler::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
+			if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 				this->onClosed();
 				return false;
 			}
-			if (!WebSocketMessageHandler::areWeStillConnected()) {
+			if (!WebSocketCore::areWeStillConnected()) {
 				return false;
 			}
-			if (WebSocketMessageHandler::inputBuffer.getUsedSpace() > 0) {
-				WebSocketMessageHandler::parseMessage();
+			if (WebSocketCore::inputBuffer.getUsedSpace() > 0) {
+				WebSocketCore::parseMessage();
 				return true;
 			}
 			if (theStopWatch.hasTimePassed()) {
@@ -378,12 +377,12 @@ namespace DiscordCoreAPI {
 				case VoiceActiveState::Connecting: {
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Connecting) {
 						std::this_thread::sleep_for(1ms);
-						if (!stopToken.stop_requested() && WebSocketMessageHandler::areWeStillConnected()) {
-							if (WebSocketMessageHandler::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
+						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+							if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
 						}
-						if (!stopToken.stop_requested() && WebSocketMessageHandler::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
 							this->checkForAndSendHeartBeat();
 						}
 						this->checkForConnections();
@@ -398,16 +397,15 @@ namespace DiscordCoreAPI {
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
-							this->sendSpeakingMessage(true);
 							this->sendSpeakingMessage(false);
 						}
 						std::this_thread::sleep_for(1ms);
-						if (!stopToken.stop_requested() && WebSocketMessageHandler::areWeStillConnected()) {
-							if (WebSocketMessageHandler::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
+						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+							if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
 						}
-						if (!stopToken.stop_requested() && WebSocketMessageHandler::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
 							this->checkForAndSendHeartBeat();
 						}
 						this->checkForConnections();
@@ -420,16 +418,15 @@ namespace DiscordCoreAPI {
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
 						if (theSendSilenceStopWatch.hasTimePassed()) {
 							theSendSilenceStopWatch.resetTimer();
-							this->sendSpeakingMessage(true);
 							this->sendSpeakingMessage(false);
 						}
 						std::this_thread::sleep_for(1ms);
-						if (!stopToken.stop_requested() && WebSocketMessageHandler::areWeStillConnected()) {
-							if (WebSocketMessageHandler::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
+						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+							if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
 						}
-						if (!stopToken.stop_requested() && WebSocketMessageHandler::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
 							this->checkForAndSendHeartBeat();
 						}
 						this->checkForConnections();
@@ -456,19 +453,19 @@ namespace DiscordCoreAPI {
 							return;
 						}
 						std::this_thread::sleep_for(1ms);
-						if (!stopToken.stop_requested() && WebSocketMessageHandler::areWeStillConnected()) {
-							if (WebSocketMessageHandler::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
+						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+							if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
 						}
-						if (!stopToken.stop_requested() && WebSocketMessageHandler::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
 							this->checkForAndSendHeartBeat();
 						}
 						this->checkForConnections();
 					}
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
-						if (!stopToken.stop_requested() && WebSocketMessageHandler::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
 							this->checkForAndSendHeartBeat();
 						}
 						this->checkForConnections();
@@ -514,8 +511,8 @@ namespace DiscordCoreAPI {
 						}
 						auto waitTime = targetTime - std::chrono::steady_clock::now();
 						if (waitTime.count() >= 18000000) {
-							if (!stopToken.stop_requested() && WebSocketMessageHandler::areWeStillConnected()) {
-								if (WebSocketMessageHandler::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
+							if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+								if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
 									this->onClosed();
 								}
 							}
@@ -676,13 +673,13 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Initializing_WebSocket: {
-				if (!WebSocketMessageHandler::connect(this->baseUrl, "443", this->configManager->doWePrintWebSocketErrorMessages(), false)) {
+				if (!WebSocketCore::connect(this->baseUrl, "443", this->configManager->doWePrintWebSocketErrorMessages(), false)) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					this->connectInternal();
 					return;
 				}
-				WebSocketMessageHandler::currentState.store(DiscordCoreInternal::WebSocketState::Upgrading);
+				WebSocketCore::currentState.store(DiscordCoreInternal::WebSocketState::Upgrading);
 				String sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
 					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + generateBase64EncodedKey() +
 					"\r\nSec-WebSocket-Version: 13\r\n\r\n";
@@ -695,7 +692,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				while (this->currentState.load() != DiscordCoreInternal::WebSocketState::Collecting_Hello) {
-					if (WebSocketMessageHandler::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
+					if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
 						this->connectInternal();
 						return;
@@ -713,7 +710,7 @@ namespace DiscordCoreAPI {
 						this->connectInternal();
 						return;
 					}
-					if (WebSocketMessageHandler::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
+					if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
 						this->connectInternal();
 						return;
@@ -748,7 +745,7 @@ namespace DiscordCoreAPI {
 						this->connectInternal();
 						return;
 					}
-					if (WebSocketMessageHandler::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
+					if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
 						this->connectInternal();
 						return;
@@ -793,7 +790,7 @@ namespace DiscordCoreAPI {
 						this->connectInternal();
 						return;
 					}
-					if (WebSocketMessageHandler::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
+					if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->onClosed();
 						this->connectInternal();
 						return;
@@ -962,20 +959,20 @@ namespace DiscordCoreAPI {
 
 	Void VoiceConnection::reconnect() noexcept {
 		DatagramSocketClient::disconnect();
-		if (WebSocketMessageHandler::theSocket != SOCKET_ERROR) {
-			WebSocketMessageHandler::theSocket = SOCKET_ERROR;
+		if (WebSocketCore::theSocket != SOCKET_ERROR) {
+			WebSocketCore::theSocket = SOCKET_ERROR;
 			this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
-			WebSocketMessageHandler::areWeConnecting.store(true);
-			WebSocketMessageHandler::outputBuffer.clear();
-			WebSocketMessageHandler::inputBuffer.clear();
+			WebSocketCore::areWeConnecting.store(true);
+			WebSocketCore::outputBuffer.clear();
+			WebSocketCore::inputBuffer.clear();
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
-			if (WebSocketMessageHandler::theConnections) {
+			if (WebSocketCore::theConnections) {
 				DiscordCoreAPI::ConnectionPackage theData{};
 				theData.currentReconnectTries = this->currentReconnectTries;
 				theData.areWeResuming = this->areWeResuming;
 				theData.currentShard = this->shard[0];
-				WebSocketMessageHandler::theConnections->emplace_back(theData);
+				WebSocketCore::theConnections->emplace_back(theData);
 			}
 		}
 		if (this->taskThread03) {
@@ -983,8 +980,8 @@ namespace DiscordCoreAPI {
 		}
 		DatagramSocketClient::outputBuffer.clear();
 		DatagramSocketClient::inputBuffer.clear();
-		WebSocketMessageHandler::outputBuffer.clear();
-		WebSocketMessageHandler::inputBuffer.clear();
+		WebSocketCore::outputBuffer.clear();
+		WebSocketCore::inputBuffer.clear();
 		this->areWeConnectedBool.store(false);
 		this->thePackage.currentShard = 0;
 		this->areWeHeartBeating = false;

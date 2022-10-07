@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 	/// VoiceConnection class - represents the connection to a given voice Channel. \brief VoiceConnection class - represents the connection to a given voice Channel.
-	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketMessageHandler, public DiscordCoreInternal::DatagramSocketClient {
+	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketCore, public DiscordCoreInternal::DatagramSocketClient {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreInternal::SoundCloudAPI;

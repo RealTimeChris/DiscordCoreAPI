@@ -50,9 +50,9 @@ namespace DiscordCoreInternal {
 
 	enum class WebSocketState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
-	class DiscordCoreAPI_Dll WebSocketMessageHandler : public ErlPacker, public SSLClient {
+	class DiscordCoreAPI_Dll WebSocketCore : public ErlPacker, public SSLClient {
 	  public:
-		WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManager, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections, String typeOfWebSocket);
+		WebSocketCore(DiscordCoreAPI::ConfigManager* configManager, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections, String typeOfWebSocket);
 
 		String stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept;
 
@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 
 		Void parseMessage() noexcept;
 
-		virtual ~WebSocketMessageHandler() noexcept = default;
+		virtual ~WebSocketCore() noexcept = default;
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
@@ -95,11 +95,11 @@ namespace DiscordCoreInternal {
 		Uint32 shard[2]{};
 	};
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketMessageHandler {
+	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketCore {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
-		friend class WebSocketMessageHandler;
+		friend class WebSocketCore;
 		friend class DiscordCoreAPI::BotUser;
 		friend class BaseSocketAgent;
 		friend class YouTubeAPI;

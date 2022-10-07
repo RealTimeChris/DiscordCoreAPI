@@ -174,14 +174,14 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketMessageHandler::WebSocketMessageHandler(DiscordCoreAPI::ConfigManager* configManagerNew, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew,
+	WebSocketCore::WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew,
 		String typeOfWebSocketNew) {
 		this->typeOfWebSocket = typeOfWebSocketNew;
 		this->theConnections = theConnectionsNew;
 		this->configManager = configManagerNew;
 	}
 
-	String WebSocketMessageHandler::stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept {
+	String WebSocketCore::stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept {
 		String theVector{};
 		String header{};
 
@@ -197,7 +197,7 @@ namespace DiscordCoreInternal {
 		return theVectorNew;
 	}
 
-	Void WebSocketMessageHandler::createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept {
+	Void WebSocketCore::createHeader(String& outBuffer, Uint64 sendLength, WebSocketOpCode opCode) noexcept {
 		try {
 			outBuffer.push_back(static_cast<Uint8>(opCode) | webSocketFinishBit);
 
@@ -223,12 +223,12 @@ namespace DiscordCoreInternal {
 			outBuffer.push_back(0);
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
-				DiscordCoreAPI::reportException("WebSocketMessageHandler::createHeader()");
+				DiscordCoreAPI::reportException("WebSocketCore::createHeader()");
 			}
 		}
 	}
 
-	Void WebSocketMessageHandler::parseConnectionHeaders() noexcept {
+	Void WebSocketCore::parseConnectionHeaders() noexcept {
 		if (this->areWeStillConnected() && this->currentState.load() == WebSocketState::Upgrading && this->inputBuffer.getCurrentTail()->getUsedSpace() > 100) {
 			auto theString = this->getInputBuffer();
 			this->currentMessage.writeData(theString.data(), theString.size());
@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 		return;
 	}
 
-	Void WebSocketMessageHandler::parseMessage() noexcept {
+	Void WebSocketCore::parseMessage() noexcept {
 		if (this->inputBuffer.getUsedSpace() > 0) {
 			if (this->currentMessage.size() < this->messageLength + this->messageOffset || this->currentMessage.size() == 0) {
 				auto theString = this->getInputBuffer();
@@ -324,7 +324,7 @@ namespace DiscordCoreInternal {
 
 	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, Int32 currentShardNew,
 		AtomicBool* doWeQuitNew)
-		: WebSocketMessageHandler(&theClient->configManager, this->theConnections, "WebSocket") {
+		: WebSocketCore(&theClient->configManager, this->theConnections, "WebSocket") {
 		this->configManager = &theClient->configManager;
 		this->theConnections = theConnectionsNew;
 		this->shard[0] = currentShardNew;
@@ -384,7 +384,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Bool WebSocketMessageHandler::sendMessage(StringView dataToSend, Bool priority) noexcept {
+	Bool WebSocketCore::sendMessage(StringView dataToSend, Bool priority) noexcept {
 		if (this->areWeStillConnected()) {
 			try {
 				if (dataToSend.size() == 0) {
@@ -1427,7 +1427,7 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	Void WebSocketMessageHandler::checkForAndSendHeartBeat(Bool isImmediate) noexcept {
+	Void WebSocketCore::checkForAndSendHeartBeat(Bool isImmediate) noexcept {
 		try {
 			if ((this->currentState.load() == WebSocketState::Authenticated && this->heartBeatStopWatch.hasTimePassed() && this->haveWeReceivedHeartbeatAck) || isImmediate) {
 				String theString{};
@@ -1457,7 +1457,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	Void WebSocketMessageHandler::handleBuffer() noexcept {
+	Void WebSocketCore::handleBuffer() noexcept {
 		if (this->currentState.load() == WebSocketState::Upgrading) {
 			this->parseConnectionHeaders();
 		}
