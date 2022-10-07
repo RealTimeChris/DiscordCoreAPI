@@ -1625,13 +1625,11 @@ namespace DiscordCoreInternal {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				auto theResult = SSLClient::processIO(this->theShardMap);
-				if (theResult.size() > 0) {
-					for (auto& value: theResult) {
-						if (this->configManager->doWePrintWebSocketErrorMessages()) {
-							cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << static_cast<WebSocketSSLShard*>(value)->shard[0] << ","
-								 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
-								 << endl;
-						}
+				for (auto& value: theResult) {
+					if (this->configManager->doWePrintWebSocketErrorMessages()) {
+						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << static_cast<WebSocketSSLShard*>(value)->shard[0] << ","
+							 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
+							 << endl;
 					}
 				}
 				Bool areWeConnected{ false };
