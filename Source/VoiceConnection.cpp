@@ -101,7 +101,8 @@ namespace DiscordCoreAPI {
 			storeBits(header, this->sequence);
 			storeBits(header, this->timeStamp);
 			storeBits(header, this->ssrc);
-			std::unique_ptr<Uint8[]> nonceForLibSodium{ std::make_unique<Uint8[]>(nonceSize) };
+			Vector<Uint8> nonceForLibSodium{};
+			nonceForLibSodium.resize(nonceSize);
 			for (Uint8 x = 0; x < headerSize; ++x) {
 				nonceForLibSodium[x] = header[x];
 			}
@@ -115,16 +116,16 @@ namespace DiscordCoreAPI {
 			for (Uint8 x = 0; x < headerSize; ++x) {
 				this->theData[x] = header[x];
 			}
-			std::unique_ptr<Uint8[]> encryptionKeys{ std::make_unique<Uint8[]>(this->theKeys.size()) };
+			Vector<Uint8> encryptionKeys{};
+			encryptionKeys.resize(this->theKeys.size());
 			for (Uint64 x = 0; x < this->theKeys.size(); ++x) {
 				encryptionKeys[x] = this->theKeys[x];
 			}
-			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->theData.data()) + headerSize, audioData.data.data(), audioData.data.size(), nonceForLibSodium.get(),
-					encryptionKeys.get()) != 0) {
+			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->theData.data()) + headerSize, audioData.data.data(), audioData.data.size(), nonceForLibSodium.data(),
+					encryptionKeys.data()) != 0) {
 				return "";
-			};
-			StringView returnString{ this->theData.data(), numOfBytes };
-			return returnString;
+			}
+			return StringView{ this->theData.data(), numOfBytes };
 		}
 		return {};
 	}
