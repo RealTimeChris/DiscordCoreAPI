@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 	using Double = double;
 	using Snowflake = Uint64;
 	using Bool = bool;
-	typedef void Void;
+	using Void = void;
 
 	enum class ValueType : Int8 { Null = 0, Null_Ext = 1, Object = 2, Array = 3, Float = 4, String = 5, Bool = 6, Int64 = 7, Uint64 = 8 };
 
@@ -410,7 +410,7 @@ namespace DiscordCoreInternal {
 	using Double = double;
 	using Snowflake = Uint64;
 	using Bool = bool;
-	typedef void Void;
+	using Void = void;
 	using namespace std::literals;
 	using std::cout;
 	using std::endl;
