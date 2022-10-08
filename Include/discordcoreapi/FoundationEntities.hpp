@@ -2191,6 +2191,8 @@ namespace DiscordCoreAPI {
 
 		operator JsonObject();
 
+		friend bool operator==(const ApplicationCommandOptionData&, const ApplicationCommandOptionData&);
+
 		ApplicationCommandOptionData(simdjson::ondemand::value jsonObjectData);
 
 		virtual ~ApplicationCommandOptionData() noexcept = default;

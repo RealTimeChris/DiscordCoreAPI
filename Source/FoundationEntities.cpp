@@ -1921,6 +1921,46 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	bool operator==(const ApplicationCommandOptionData&lhs, const ApplicationCommandOptionData&rhs) {
+		if (lhs.autocomplete != rhs.autocomplete) {
+			return false;
+		}
+		if (lhs.channelTypes != rhs.channelTypes) {
+			return false;
+		}
+		if (lhs.choices != rhs.choices) {
+			return false;
+		}
+		if (lhs.description != rhs.description) {
+			return false;
+		}
+		if (lhs.descriptionLocalizations != rhs.descriptionLocalizations) {
+			return false;
+		}
+		if (lhs.maxValue != rhs.maxValue) {
+			return false;
+		}
+		if (lhs.minValue!= rhs.minValue) {
+			return false;
+		}
+		if (lhs.name!= rhs.name) {
+			return false;
+		}
+		if (lhs.nameLocalizations != rhs.nameLocalizations) {
+			return false;
+		}
+		if (lhs.options != rhs.options) {
+			return false;
+		}
+		if (lhs.required != rhs.required) {
+			return false;
+		}
+		if (lhs.type != rhs.type) {
+			return false;
+		}
+		return true;
+	}
+
 	ApplicationCommandData::ApplicationCommandData(simdjson::ondemand::value jsonObjectData) {
 		this->id = getId(jsonObjectData, "id");
 
@@ -1982,7 +2022,7 @@ namespace DiscordCoreAPI {
 			return false;
 		}
 		for (size_t x = 0; x < lhs.options.size();++x) {
-			if (lhs.options[x].name != rhs.options[x].name) {
+			if (lhs.options[x] != rhs.options[x]) {
 				return false;
 			}
 		}
