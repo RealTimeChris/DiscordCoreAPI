@@ -1,4 +1,4 @@
-name: Build-DiscordCoreAPI
+name: Build-DiscordCoreAPI-Linux
 on:
   push:
 
