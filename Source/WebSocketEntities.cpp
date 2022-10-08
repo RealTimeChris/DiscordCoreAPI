@@ -428,8 +428,6 @@ namespace DiscordCoreInternal {
 	AtomicInt32 theInt{};
 	Bool WebSocketSSLShard::onMessageReceived(StringView theDataNew) noexcept {
 		if (this->discordCoreClient) {
-			String refString{};
-			String& payload{ refString };
 			if (this->areWeStillConnected()) {
 				try {
 					Bool returnValue{ false };
@@ -442,7 +440,7 @@ namespace DiscordCoreInternal {
 						if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 							try {
 								theStopWatchReal.resetTimer();
-								payload = ErlPacker::parseEtfToJson(theDataNew);
+								String& payload = ErlPacker::parseEtfToJson(theDataNew);
 								payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 								simdjson::ondemand::value theValue{};
 								if (this->theParser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity())).get(theValue) ==
@@ -462,10 +460,9 @@ namespace DiscordCoreInternal {
 							}
 						} else {
 							std::string theData{ theDataNew };
-							payload = theData;
-							payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
+							theData.reserve(theData.size() + simdjson::SIMDJSON_PADDING);
 							simdjson::ondemand::value theValue{};
-							if (this->theParser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity())).get(theValue) ==
+							if (this->theParser.iterate(simdjson::padded_string_view(theData.data(), theData.length(), theData.capacity())).get(theValue) ==
 								simdjson::error_code::SUCCESS) {
 								theMessage = WebSocketMessage{ theValue };
 							}
@@ -478,7 +475,7 @@ namespace DiscordCoreInternal {
 
 					if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightGreen()
-							 << "Message received from WebSocket [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + String(": ") << payload
+							 << "Message received from WebSocket [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" + String(": ") << theDataNew
 							 << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
@@ -1421,7 +1418,7 @@ namespace DiscordCoreInternal {
 				} catch (...) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
-						cout << "The payload: " << payload << std::endl;
+						cout << "The payload: " << theDataNew << std::endl;
 					}
 					this->currentMessage.clear();
 					this->inputBuffer.clear();
