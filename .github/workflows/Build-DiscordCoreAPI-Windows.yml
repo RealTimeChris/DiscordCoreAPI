@@ -23,10 +23,10 @@ jobs:
          - name: Construct the original portfile and version file.
            run: |
                 cd ./DiscordCoreAPI
-                echo "./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake"
-                sudo git rev-parse HEAD | sudo tee ./CMake/Raw-Files/Portfile-The-First.cmake -a
-                sudo bash -c "cat ./CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake"
-                sudo bash -c "echo $'0' >> ./CMake/Raw-Files/Portfile-The-First.cmake"
+                echo ./CMake/Raw-Files/Top-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake
+                echo git rev-parse HEAD >> ./CMake/Raw-Files/Portfile-The-First.cmake -a
+                echo .CMake/Raw-Files/Middle-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake
+                echo ./CMake/Raw-Files/Portfile-The-First.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake
                 sudo bash -c "cat ./CMake/Raw-Files/Bottom-Of-Portfile.cmake >> ./CMake/Raw-Files/Portfile-The-First.cmake"
 
          - name: Attempt to install the library, to collect the SHA512 value.
