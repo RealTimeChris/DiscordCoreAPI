@@ -142,7 +142,7 @@ namespace DiscordCoreInternal {
 		Void submitTask(std::coroutine_handle<> coro) noexcept;
 
 	  protected:
-		std::deque<std::coroutine_handle<>> theCoroutineHandles{};
+		Deque<std::coroutine_handle<>> theCoroutineHandles{};
 		UMap<Int64, WorkerThread> workerThreads{};
 		AtomicInt64 coroHandleCount{ 0 };
 		AtomicInt64 currentCount{ 0 };

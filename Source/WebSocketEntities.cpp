@@ -174,7 +174,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketCore::WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, String typeOfWebSocketNew) {
+	WebSocketCore::WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, Deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, String typeOfWebSocketNew) {
 		this->typeOfWebSocket = typeOfWebSocketNew;
 		this->theConnections = theConnectionsNew;
 		this->configManager = configManagerNew;
@@ -322,7 +322,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, Int32 currentShardNew,
+	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, Deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, Int32 currentShardNew,
 		AtomicBool* doWeQuitNew)
 		: WebSocketCore(&theClient->configManager, this->theConnections, "WebSocket") {
 		this->configManager = &theClient->configManager;

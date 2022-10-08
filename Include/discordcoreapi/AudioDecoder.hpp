@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 		AVFrameWrapper() noexcept = default;
 
 	  protected:
-		UniquePtr<AVFrame, AVFrameDeleter> thePtr{ nullptr, AVFrameDeleter{} };
+		UniquePtrD<AVFrame, AVFrameDeleter> thePtr{ nullptr, AVFrameDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVCodecContextWrapper {
@@ -73,7 +73,7 @@ namespace DiscordCoreInternal {
 		AVCodecContextWrapper() noexcept = default;
 
 	  protected:
-		UniquePtr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr, AVCodecContextDeleter{} };
+		UniquePtrD<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr, AVCodecContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVFormatContextWrapper01 {
@@ -103,7 +103,7 @@ namespace DiscordCoreInternal {
 		AVFormatContextWrapper() noexcept = default;
 
 	  protected:
-		UniquePtr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
+		UniquePtrD<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SwrContextWrapper {
@@ -120,7 +120,7 @@ namespace DiscordCoreInternal {
 		SwrContextWrapper() noexcept = default;
 
 	  protected:
-		UniquePtr<SwrContext, SwrContextDeleter> thePtr{ nullptr, SwrContextDeleter{} };
+		UniquePtrD<SwrContext, SwrContextDeleter> thePtr{ nullptr, SwrContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVIOContextWrapper {
@@ -139,7 +139,7 @@ namespace DiscordCoreInternal {
 		AVIOContextWrapper() noexcept = default;
 
 	  protected:
-		UniquePtr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr, AVIOContextDeleter{} };
+		UniquePtrD<AVIOContext, AVIOContextDeleter> thePtr{ nullptr, AVIOContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVPacketWrapper {
@@ -158,7 +158,7 @@ namespace DiscordCoreInternal {
 		AVPacketWrapper() noexcept = default;
 
 	  protected:
-		UniquePtr<AVPacket, AVPacketDeleter> thePtr{ nullptr, AVPacketDeleter{} };
+		UniquePtrD<AVPacket, AVPacketDeleter> thePtr{ nullptr, AVPacketDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll BuildAudioDecoderData {

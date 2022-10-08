@@ -84,7 +84,7 @@ namespace DiscordCoreInternal {
 		WSADataWrapper();
 
 	  protected:
-		UniquePtr<WSADATA, WSADataDeleter> thePtr{ new WSADATA{}, WSADataDeleter{} };
+		UniquePtrD<WSADATA, WSADataDeleter> thePtr{ new WSADATA{}, WSADataDeleter{} };
 	};
 	#endif
 
@@ -100,7 +100,7 @@ namespace DiscordCoreInternal {
 		SSL_CTXWrapper() noexcept = default;
 
 	  protected:
-		UniquePtr<SSL_CTX, SSL_CTXDeleter> thePtr{ nullptr, SSL_CTXDeleter{} };
+		UniquePtrD<SSL_CTX, SSL_CTXDeleter> thePtr{ nullptr, SSL_CTXDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SSLWrapper {
@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 		SSLWrapper() noexcept = default;
 
 	  protected:
-		UniquePtr<SSL, SSLDeleter> thePtr{ nullptr, SSLDeleter{} };
+		UniquePtrD<SSL, SSLDeleter> thePtr{ nullptr, SSLDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
@@ -138,7 +138,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper() noexcept = default;
 
 	  protected:
-		UniquePtr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ static_cast<SOCKET>(SOCKET_ERROR) }, SOCKETDeleter{} };
+		UniquePtrD<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ static_cast<SOCKET>(SOCKET_ERROR) }, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll sockaddrWrapper {

@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketCore : public ErlPacker, public SSLClient {
 	  public:
-		WebSocketCore(DiscordCoreAPI::ConfigManager* configManager, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections, String typeOfWebSocket);
+		WebSocketCore(DiscordCoreAPI::ConfigManager* configManager, Deque<DiscordCoreAPI::ConnectionPackage>* theConnections, String typeOfWebSocket);
 
 		String stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept;
 
@@ -78,7 +78,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
-		std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
+		Deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
 		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic<WebSocketState> currentState{};
 		Bool haveWeReceivedHeartbeatAck{ true };
@@ -107,7 +107,7 @@ namespace DiscordCoreInternal {
 		friend class YouTubeAPI;
 		friend class SSLClient;
 
-		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, std::deque<DiscordCoreAPI::ConnectionPackage>* theConnections, Int32 currentShardNew,
+		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, Deque<DiscordCoreAPI::ConnectionPackage>* theConnections, Int32 currentShardNew,
 			AtomicBool* doWeQuitNew);
 
 		Void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
@@ -151,11 +151,11 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> theVCStopWatch{ 250ms };
-		std::deque<DiscordCoreAPI::Snowflake> voiceConnectionsToDisconnect{};
+		Deque<DiscordCoreAPI::Snowflake> voiceConnectionsToDisconnect{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		UMap<Uint32, UniquePtr<WebSocketSSLShard>> theShardMap{};
 		UniquePtr<std::jthread> taskThread{ nullptr };
-		std::deque<VoiceConnectInitData> voiceConnections{};
+		Deque<VoiceConnectInitData> voiceConnections{};
 		DiscordCoreAPI::ConfigManager* configManager{};
 		AtomicBool* doWeQuit{ nullptr };
 		Uint32 currentBaseSocketAgent{};

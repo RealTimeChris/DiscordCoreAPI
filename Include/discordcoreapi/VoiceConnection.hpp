@@ -48,6 +48,11 @@ namespace DiscordCoreAPI {
 		String theKey{};
 	};
 
+	struct DecodeData {
+		Vector<opus_int16> theData{};
+		Uint32 sampleCount{};
+	};
+
 	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
 		struct DiscordCoreAPI_Dll OpusDecoderDeleter {
 			Void operator()(OpusDecoder*) noexcept;
@@ -59,10 +64,12 @@ namespace DiscordCoreAPI {
 
 		OpusDecoderWrapper();
 
+		DecodeData decodeData(Vector<Uint8>&& dataToDecode);
+
 		operator OpusDecoder*() noexcept;
 
 	  protected:
-		UniquePtr<OpusDecoder, OpusDecoderDeleter> thePtr{ nullptr, OpusDecoderDeleter{} };
+		UniquePtrD<OpusDecoder, OpusDecoderDeleter> thePtr{ nullptr, OpusDecoderDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll VoicePayload {
@@ -160,8 +167,8 @@ namespace DiscordCoreAPI {
 		UniquePtr<std::jthread> taskThread02{ nullptr };
 		UniquePtr<std::jthread> taskThread03{ nullptr };
 		DiscordCoreClient* discordCoreClient{ nullptr };
-		std::deque<ConnectionPackage> connections{};
-		std::deque<VoicePayload> theFrameQueue{};
+		Deque<ConnectionPackage> connections{};
+		Deque<VoicePayload> theFrameQueue{};
 		AtomicBool areWeConnectedBool{ false };
 		UMap<Uint64, VoiceUser> voiceUsers{};
 		RTPPacketEncrypter packetEncrypter{};

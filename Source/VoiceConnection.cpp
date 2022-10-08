@@ -76,6 +76,13 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	DecodeData OpusDecoderWrapper::decodeData(Vector<Uint8>&& dataToDecode) {
+		DecodeData theData{};
+		theData.theData.resize(23040);
+		theData.sampleCount = opus_decode(*this, dataToDecode.data(), static_cast<opus_int32>(dataToDecode.size()), theData.theData.data(), 5760, 0);
+		return theData;
+	}
+
 	OpusDecoderWrapper::operator OpusDecoder*() noexcept {
 		return this->thePtr.get();
 	}
@@ -448,8 +455,8 @@ namespace DiscordCoreAPI {
 					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
 					Int64 frameCounter{ 0 };
 					DoubleTimePointNs totalTime{ std::chrono::nanoseconds{ 0 } };
+					this->sendSpeakingMessage(true);
 					if (!this->areWePlaying.load()) {
-						this->sendSpeakingMessage(true);
 						this->areWePlaying.store(true);
 					}
 
@@ -613,17 +620,16 @@ namespace DiscordCoreAPI {
 				}
 				if (decryptedDataString.size() > 0 && (decryptedDataString.size() - 16) > 0) {
 					theBuffer.theRawData.insert(theBuffer.theRawData.begin(), decryptedDataString.begin(), decryptedDataString.end() - 16);
-					theBuffer.decodedData.resize(23040);
 					std::unique_lock theLock00{ this->voiceUserMutex };
 					if (this->voiceUsers.contains(speakerSsrc)) {
-						auto sampleCount = opus_decode(this->voiceUsers[speakerSsrc].theDecoder, theBuffer.theRawData.data(), static_cast<opus_int32>(theBuffer.theRawData.size()),
-							theBuffer.decodedData.data(), 5760, 0);
-						if (sampleCount <= 0) {
+						auto result = this->voiceUsers[speakerSsrc].theDecoder.decodeData(std::move(theBuffer.theRawData));
+						if (result.sampleCount <= 0) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
 								cout << "Failed to decode user's voice payload." << std::endl;
 							}
 						} else {
-							theBuffer.decodedData.resize(static_cast<Uint64>(sampleCount) * 2);
+							theBuffer.decodedData = std::move(result.theData);
+							theBuffer.decodedData.resize(static_cast<Uint64>(result.sampleCount) * 2);
 							this->voiceUsers[speakerSsrc].thePayloads.push(std::move(theBuffer));
 						}
 					}
@@ -1051,19 +1057,14 @@ namespace DiscordCoreAPI {
 			this->voiceConnectInitData = theData;
 			this->thePackage.currentShard = 1;
 			this->connections.emplace_back(this->thePackage);
+			this->theStreamInfo = theData.streamInfo;
+			this->streamType = theData.streamType;
 			this->activeState.store(VoiceActiveState::Connecting);
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 					this->runVoice(stopToken);
 				});
 			}
-			/*
-			if (!this->taskThread02) {
-				this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-					this->runVoice(stopToken);
-				});
-			}
-			*/
 		}
 	}
 

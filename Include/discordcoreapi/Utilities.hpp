@@ -126,11 +126,12 @@ namespace DiscordCoreAPI {
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
-
+	template<typename ObjectType, typename DeleterType = void> using UniquePtrD = std::unique_ptr<ObjectType, DeleterType>;
 	template<typename KeyType, typename ObjectType> using UMap = std::unordered_map<KeyType, ObjectType>;
 	template<typename KeyType, typename ObjectType> using Map = std::map<KeyType, ObjectType>;
 	template<typename ObjectType> using UniquePtr = std::unique_ptr<ObjectType>;
 	template<typename ObjectType> using Vector = std::vector<ObjectType>;
+	template<typename ObjectType> using Deque = std::deque<ObjectType>;
 	using AtomicUint64 = std::atomic_uint64_t;
 	using AtomicUint32 = std::atomic_uint32_t;
 	using AtomicInt64 = std::atomic_int64_t;
@@ -388,10 +389,12 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
+	template<typename ObjectType, typename DeleterType = void> using UniquePtrD = std::unique_ptr<ObjectType, DeleterType>;
 	template<typename KeyType, typename ObjectType> using UMap = std::unordered_map<KeyType, ObjectType>;
 	template<typename KeyType, typename ObjectType> using Map = std::map<KeyType, ObjectType>;
 	template<typename ObjectType> using UniquePtr = std::unique_ptr<ObjectType>;
 	template<typename ObjectType> using Vector = std::vector<ObjectType>;
+	template<typename ObjectType> using Deque = std::deque<ObjectType>;
 	using AtomicUint64 = std::atomic_uint64_t;
 	using AtomicUint32 = std::atomic_uint32_t;
 	using AtomicInt64 = std::atomic_int64_t;
@@ -1530,7 +1533,7 @@ namespace DiscordCoreAPI {
 		Void clearContents() {
 			std::unique_lock theLock{ this->accessMutex };
 			this->theQueue.clear();
-			this->theQueue = std::deque<ObjectType>{};
+			this->theQueue = Deque<ObjectType>{};
 		}
 
 		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
@@ -1548,7 +1551,7 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::deque<ObjectType> theQueue{};
+		Deque<ObjectType> theQueue{};
 		std::mutex accessMutex{};
 	};
 
