@@ -154,11 +154,11 @@ namespace DiscordCoreAPI {
 		~VoiceConnection() noexcept;
 
 	  protected:
-		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
+		Atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
-		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
+		Atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
 		UniquePtr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
-		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
+		Atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};

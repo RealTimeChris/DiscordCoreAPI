@@ -130,6 +130,7 @@ namespace DiscordCoreAPI {
 	template<typename KeyType, typename ObjectType> using UMap = std::unordered_map<KeyType, ObjectType>;
 	template<typename KeyType, typename ObjectType> using Map = std::map<KeyType, ObjectType>;
 	template<typename ObjectType> using UniquePtr = std::unique_ptr<ObjectType>;
+	template<typename ObjectType> using Atomic = std::atomic<ObjectType>;
 	template<typename ObjectType> using Vector = std::vector<ObjectType>;
 	template<typename ObjectType> using Deque = std::deque<ObjectType>;
 	using AtomicUint64 = std::atomic_uint64_t;
@@ -393,6 +394,7 @@ namespace DiscordCoreInternal {
 	template<typename KeyType, typename ObjectType> using UMap = std::unordered_map<KeyType, ObjectType>;
 	template<typename KeyType, typename ObjectType> using Map = std::map<KeyType, ObjectType>;
 	template<typename ObjectType> using UniquePtr = std::unique_ptr<ObjectType>;
+	template<typename ObjectType> using Atomic = std::atomic<ObjectType>;
 	template<typename ObjectType> using Vector = std::vector<ObjectType>;
 	template<typename ObjectType> using Deque = std::deque<ObjectType>;
 	using AtomicUint64 = std::atomic_uint64_t;

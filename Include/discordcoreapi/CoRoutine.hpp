@@ -61,11 +61,13 @@ namespace DiscordCoreAPI {
 	/// \tparam ReturnType The type of parameter that is returned by the CoRoutine.
 	template<typename ReturnType> class CoRoutine : public CoRoutineBase {
 	  public:
+		using VoidType = void;
+
 		class DiscordCoreAPI_Dll promise_type {
 		  public:
 			template<typename ReturnType02> friend class CoRoutine;
 
-			void requestStop() {
+			VoidType requestStop() {
 				this->areWeStoppedBool.store(true);
 			}
 
@@ -96,7 +98,7 @@ namespace DiscordCoreAPI {
 				return {};
 			}
 
-			void unhandled_exception() {
+			VoidType unhandled_exception() {
 				if (this->exceptionBuffer) {
 					this->exceptionBuffer->send(std::current_exception());
 				}
@@ -213,21 +215,23 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::coroutine_handle<CoRoutine<ReturnType>::promise_type> coroutineHandle{ nullptr };
-		std::atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
+		Atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
 		UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
 		AtomicBool areWeDone{};
 		ReturnType result{};
 	};
 
 	/// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
-	/// \tparam void The type of parameter that is returned by the CoRoutine.
+	/// \tparam VoidType The type of parameter that is returned by the CoRoutine.
 	template<> class CoRoutine<void> : public CoRoutineBase {
 	  public:
+		using VoidType = void;
+
 		class DiscordCoreAPI_Dll promise_type {
 		  public:
 			template<typename ReturnType> friend class CoRoutine;
 
-			void requestStop() {
+			VoidType requestStop() {
 				this->areWeStoppedBool.store(true);
 			}
 
@@ -238,8 +242,8 @@ namespace DiscordCoreAPI {
 			void return_void() {
 			}
 
-			CoRoutine<void> get_return_object() {
-				return CoRoutine<void>{ std::coroutine_handle<CoRoutine<void>::promise_type>::from_promise(*this) };
+			CoRoutine<VoidType> get_return_object() {
+				return CoRoutine<VoidType>{ std::coroutine_handle<CoRoutine<VoidType>::promise_type>::from_promise(*this) };
 			}
 
 			std::suspend_never initial_suspend() {
@@ -253,7 +257,7 @@ namespace DiscordCoreAPI {
 				return {};
 			}
 
-			void unhandled_exception() {
+			VoidType unhandled_exception() {
 				if (this->exceptionBuffer) {
 					this->exceptionBuffer->send(std::current_exception());
 				}
@@ -265,7 +269,7 @@ namespace DiscordCoreAPI {
 			AtomicBool* areWeDone{ nullptr };
 		};
 
-		CoRoutine<void>& operator=(CoRoutine<void>&& other) noexcept {
+		CoRoutine<VoidType>& operator=(CoRoutine<VoidType>&& other) noexcept {
 			if (this != &other) {
 				this->coroutineHandle = other.coroutineHandle;
 				other.coroutineHandle = nullptr;
@@ -277,26 +281,26 @@ namespace DiscordCoreAPI {
 			return *this;
 		};
 
-		CoRoutine(CoRoutine<void>&& other) noexcept {
+		CoRoutine(CoRoutine<VoidType>&& other) noexcept {
 			*this = std::move(other);
 		};
 
-		CoRoutine<void>& operator=(const CoRoutine<void>& other) = delete;
+		CoRoutine<VoidType>& operator=(const CoRoutine<VoidType>& other) = delete;
 
-		CoRoutine(const CoRoutine<void>& other) = delete;
+		CoRoutine(const CoRoutine<VoidType>& other) = delete;
 
-		CoRoutine<void>& operator=(CoRoutine<void>& other) = delete;
+		CoRoutine<VoidType>& operator=(CoRoutine<VoidType>& other) = delete;
 
-		CoRoutine(CoRoutine<void>& other) = delete;
+		CoRoutine(CoRoutine<VoidType>& other) = delete;
 
-		CoRoutine<void>& operator=(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) {
+		CoRoutine<VoidType>& operator=(std::coroutine_handle<CoRoutine<VoidType>::promise_type> coroutineHandleNew) {
 			this->coroutineHandle = coroutineHandleNew;
 			this->coroutineHandle.promise().exceptionBuffer = &this->exceptionBuffer;
 			this->coroutineHandle.promise().areWeDone = &this->areWeDone;
 			return *this;
 		}
 
-		explicit CoRoutine(std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandleNew) {
+		explicit CoRoutine(std::coroutine_handle<CoRoutine<VoidType>::promise_type> coroutineHandleNew) {
 			*this = coroutineHandleNew;
 		};
 
@@ -324,7 +328,7 @@ namespace DiscordCoreAPI {
 		}
 
 		/// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
-		void get() {
+		VoidType get() {
 			if (this && this->coroutineHandle) {
 				while (!this->areWeDone.load()) {
 					std::this_thread::sleep_for(1ms);
@@ -342,7 +346,7 @@ namespace DiscordCoreAPI {
 		}
 
 		/// Cancels the currently executing CoRoutine and returns the current result. \brief Cancels the currently executing CoRoutine and returns the current result.
-		void cancel() {
+		VoidType cancel() {
 			if (this && this->coroutineHandle) {
 				if (!this->coroutineHandle.done()) {
 					this->coroutineHandle.promise().requestStop();
@@ -360,8 +364,8 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::coroutine_handle<CoRoutine<void>::promise_type> coroutineHandle{ nullptr };
-		std::atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
+		std::coroutine_handle<CoRoutine<VoidType>::promise_type> coroutineHandle{ nullptr };
+		Atomic<CoRoutineStatus> currentStatus{ CoRoutineStatus::Idle };
 		UnboundedMessageBlock<std::exception_ptr> exceptionBuffer{};
 		AtomicBool areWeDone{};
 	};
@@ -370,11 +374,13 @@ namespace DiscordCoreAPI {
 	/// \tparam ReturnType The type of value returned by the containing CoRoutine.
 	template<typename ReturnType> class NewThreadAwaiter {
 	  public:
+		using VoidType = void;
+
 		Bool await_ready() const noexcept {
 			return false;
 		}
 
-		void await_suspend(std::coroutine_handle<typename CoRoutine<ReturnType>::promise_type> coroHandleNew) noexcept {
+		VoidType await_suspend(std::coroutine_handle<typename CoRoutine<ReturnType>::promise_type> coroHandleNew) noexcept {
 			CoRoutine<ReturnType>::threadPool.submitTask(coroHandleNew);
 			this->coroHandle = coroHandleNew;
 		}
