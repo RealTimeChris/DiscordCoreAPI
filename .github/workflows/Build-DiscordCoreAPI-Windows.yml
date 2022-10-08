@@ -13,6 +13,7 @@ jobs:
                 ./bootstrap-vcpkg.bat
                 git pull
                 ./vcpkg upgrade --no-dry-run
+                choco install nano -y
 
          - name: Collect the repo.
            run: |   
