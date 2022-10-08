@@ -241,13 +241,25 @@ namespace DiscordCoreAPI {
 					}
 				}
 			} else {
+				this->currentMessage.clear();
+				WebSocketCore::inputBuffer.clear();
+				this->messageLength = 0;
+				this->messageOffset = 0;
 				return false;
 			}
 		} catch (...) {
 			reportException("VoiceConnection::onMessageReceived()");
 			this->onClosed();
+			this->currentMessage.clear();
+			WebSocketCore::inputBuffer.clear();
+			this->messageLength = 0;
+			this->messageOffset = 0;
 			return false;
 		}
+		this->currentMessage.clear();
+		WebSocketCore::inputBuffer.clear();
+		this->messageLength = 0;
+		this->messageOffset = 0;
 		return false;
 	}
 

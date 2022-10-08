@@ -292,10 +292,11 @@ namespace DiscordCoreInternal {
 					if (this->currentMessage.size() < this->messageOffset + this->messageLength) {
 						return;
 					} else {
-						this->onMessageReceived(this->currentMessage[LengthData{ .offSet = this->messageOffset, .length = this->messageLength }]);
-						this->currentMessage.erase(this->messageLength + this->messageOffset);
-						this->messageOffset = 0;
-						this->messageLength = 0;
+						if (this->onMessageReceived(this->currentMessage[LengthData{ .offSet = this->messageOffset, .length = this->messageLength }])) {
+							this->currentMessage.erase(this->messageLength + this->messageOffset);
+							this->messageOffset = 0;
+							this->messageLength = 0;
+						}
 						return;
 					}
 				}
@@ -430,7 +431,7 @@ namespace DiscordCoreInternal {
 		if (this->discordCoreClient) {
 			String theString{};
 			String& payload{ theString };
-			if (this->areWeStillConnected()) {
+			if (this->areWeStillConnected() && this->currentMessage.size() > 0) {
 				try {
 					Bool returnValue{ false };
 
@@ -458,7 +459,6 @@ namespace DiscordCoreInternal {
 								this->messageLength = 0;
 								this->messageOffset = 0;
 								return false;
-								returnValue = false;
 							}
 						} else {
 							std::string theData{ theDataNew };
@@ -1431,6 +1431,10 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
+		this->currentMessage.clear();
+		this->inputBuffer.clear();
+		this->messageLength = 0;
+		this->messageOffset = 0;
 		return false;
 	}
 
