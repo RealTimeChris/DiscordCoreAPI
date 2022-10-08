@@ -10,17 +10,16 @@ jobs:
          - name: Update Vcpkg and install other dependencies.
            run: | 
                 sudo apt-get install nasm
-                cd /usr/local/share/vcpkg
-                ./bootstrap-vcpkg.sh
-                sudo git stash
-                sudo git pull
-                sudo vcpkg update
+                cd C:/vcpkg
+                ./bootstrap-vcpkg.bat
+                git pull
+                ./vcpkg upgrade --no-dry-run
 
          - name: Collect the repo.
            run: |   
-                sudo git config --global user.email "40668522+RealTimeChris@users.noreply.github.com"
-                sudo git config --global user.name "realtimechris"
-                sudo git clone https://realtimechris:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/realtimechris/DiscordCoreAPI.git ./DiscordCoreAPI --depth=1
+                git config --global user.email "40668522+RealTimeChris@users.noreply.github.com"
+                git config --global user.name "realtimechris"
+                git clone https://realtimechris:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/realtimechris/DiscordCoreAPI.git ./DiscordCoreAPI --depth=1
 
          - name: Construct the original portfile and version file.
            run: |
