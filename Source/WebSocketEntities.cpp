@@ -453,6 +453,11 @@ namespace DiscordCoreInternal {
 								if (this->configManager->doWePrintGeneralErrorMessages()) {
 									DiscordCoreAPI::reportException("ErlPacker::parseEtfToJson()");
 								}
+								this->currentMessage.clear();
+								this->inputBuffer.clear();
+								this->messageLength = 0;
+								this->messageOffset = 0;
+								return false;
 								returnValue = false;
 							}
 						} else {
@@ -1418,7 +1423,10 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::reportException("BaseSocketAgent::onMessageReceived()");
 						cout << "The payload: " << payload << std::endl;
 					}
+					this->currentMessage.clear();
 					this->inputBuffer.clear();
+					this->messageLength = 0;
+					this->messageOffset = 0;
 					return false;
 				}
 			}
