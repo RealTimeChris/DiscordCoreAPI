@@ -9,7 +9,6 @@ jobs:
     steps:
          - name: Update Vcpkg and install other dependencies.
            run: | 
-                sudo apt-get install nasm
                 cd C:/vcpkg
                 ./bootstrap-vcpkg.bat
                 git pull
