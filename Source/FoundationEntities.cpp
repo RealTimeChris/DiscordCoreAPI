@@ -1921,6 +1921,74 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	ApplicationCommandData::ApplicationCommandData(simdjson::ondemand::value jsonObjectData) {
+		this->id = getId(jsonObjectData, "id");
+
+		this->defaultMemberPermissions = getString(jsonObjectData, "default_member_permissions");
+
+		this->dmPermission = getBool(jsonObjectData, "dm_permission");
+
+		this->version = getString(jsonObjectData, "version");
+
+		this->type = static_cast<ApplicationCommandType>(getUint8(jsonObjectData, "type"));
+
+		simdjson::ondemand::object theMap{};
+		auto theResult = jsonObjectData["name_localizations"].get(theMap);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->nameLocalizations.clear();
+			for (auto value: theMap) {
+				this->nameLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
+			}
+		}
+
+		theResult = jsonObjectData["description_localizations"].get(theMap);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->descriptionLocalizations.clear();
+			for (auto value: theMap) {
+				this->descriptionLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
+			}
+		}
+
+		this->applicationId = getId(jsonObjectData, "application_id");
+
+		this->name = getString(jsonObjectData, "name");
+
+		this->description = getString(jsonObjectData, "description");
+
+		this->version = getString(jsonObjectData, "version");
+
+		simdjson::ondemand::array theArray{};
+		theResult = jsonObjectData["options"].get(theArray);
+		if (theResult == simdjson::error_code::SUCCESS) {
+			this->options.clear();
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				ApplicationCommandOptionData theDataNew{ value.value() };
+				this->options.emplace_back(std::move(theDataNew));
+			}
+		}
+	}
+
+	bool operator==(const ApplicationCommandData&lhs, const CreateApplicationCommandData&rhs) {
+		if (lhs.description != rhs.description) {
+			return false;
+		}
+		if (lhs.name != rhs.name) {
+			return false;
+		}
+		if (lhs.type != rhs.type) {
+			return false;
+		}
+		if (lhs.options.size() != rhs.options.size()) {
+			return false;
+		}
+		for (size_t x = 0; x < lhs.options.size();++x) {
+			if (lhs.options[x].name != rhs.options[x].name) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	TypingStartData::TypingStartData(simdjson::ondemand::value jsonObjectData) {
 		this->channelId = getId(jsonObjectData, "channel_id");
 

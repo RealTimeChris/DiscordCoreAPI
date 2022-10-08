@@ -2423,6 +2423,8 @@ namespace DiscordCoreAPI {
 		Bool tts{ false };///< Is it TTS?
 	};
 
+	struct CreateApplicationCommandData;
+
 	/// Data structure representing an ApplicationCommand. \brief Data structure representing an ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {
 	  public:
@@ -2441,6 +2443,8 @@ namespace DiscordCoreAPI {
 		ApplicationCommandData() noexcept = default;
 
 		ApplicationCommandData(simdjson::ondemand::value jsonObjectData);
+
+		friend bool operator==(const ApplicationCommandData&, const CreateApplicationCommandData&);
 
 		virtual ~ApplicationCommandData() noexcept = default;
 	};

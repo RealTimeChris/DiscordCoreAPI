@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 				}
 				Bool doesItExist{ false };
 				for (auto& value: theCommands) {
-					if (value.name == theData.name) {
+					if (value.name == theData.name && *static_cast<ApplicationCommandData*>(&value) == theData) {
 						doesItExist = true;
 					}
 				}
@@ -329,17 +329,14 @@ namespace DiscordCoreAPI {
 			reportException("DiscordCoreClient::instantiateWebSockets()");
 		}
 
-		for (auto& value: this->configManager.getFunctionsToExecute()) {
+		for (auto value: this->configManager.getFunctionsToExecute()) {
 			if (value.repeated) {
 				TimeElapsedHandlerNoArgs onSend = [=, this]() -> Void {
 					value.function(this);
 				};
 				ThreadPool::storeThread(onSend, value.intervalInMs);
 			} else {
-				TimeElapsedHandlerNoArgs onSend = [=, this]() -> Void {
-					value.function(this);
-				};
-				ThreadPool::executeFunctionAfterTimePeriod(onSend, value.intervalInMs, false);
+				ThreadPool::executeFunctionAfterTimePeriod(value.function, value.intervalInMs, false, this);
 			}
 		}
 		return true;
