@@ -43,7 +43,7 @@ namespace DiscordCoreInternal {
 		StringStream theStream{};
 		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
 #ifdef _WIN32
-		std::unique_ptr<char[]> string{ std::make_unique<char[]>(1024) };
+		UniquePtr<char[]> string{ std::make_unique<char[]>(1024) };
 	#ifdef UWP
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), ( LPWSTR )string.get(), 1024,
 			NULL);
@@ -305,7 +305,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	Vector<SSLClient*> SSLClient::processIO(UMap<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept {
+	Vector<SSLClient*> SSLClient::processIO(UMap<Uint32, UniquePtr<WebSocketSSLShard>>& theShardMap) noexcept {
 		Vector<SSLClient*> theReturnValue{};
 		PollFDWrapper readWriteSet{};
 		for (auto& [key, value]: theShardMap) {

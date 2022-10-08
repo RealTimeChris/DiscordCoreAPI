@@ -43,11 +43,11 @@ namespace DiscordCoreAPI {
 	  public:
 		/// Responds to one of a number of types of "InputEvents". \brief Responds to one of a number of types of "InputEvents".
 		/// \param dataPackage A RespondToInputEventData structure.
-		/// \returns An std::unique_ptr containing an InputEventData structure.
+		/// \returns An UniquePtr containing an InputEventData structure.
 		static CoRoutine<InputEventData> respondToInputEventAsync(RespondToInputEventData dataPackage);
 
 		/// Deletes a previously sent "input-event-response". \brief Deletes a previously sent "input-event-response".
-		/// \param dataPackage A std::unique_ptr containing an InputEventData structure.
+		/// \param dataPackage A UniquePtr containing an InputEventData structure.
 		/// \param timeDelayNew An Int32 representing the desired delay until the message is deleted, in std::chrono::milliseconds.
 		/// \returns A CoRoutine containing Void.
 		static CoRoutine<Void> deleteInputEventResponseAsync(InputEventData& dataPackage, Int32 timeDelayNew = 0);

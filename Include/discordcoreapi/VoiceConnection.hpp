@@ -62,7 +62,7 @@ namespace DiscordCoreAPI {
 		operator OpusDecoder*() noexcept;
 
 	  protected:
-		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> thePtr{ nullptr, OpusDecoderDeleter{} };
+		UniquePtr<OpusDecoder, OpusDecoderDeleter> thePtr{ nullptr, OpusDecoderDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll VoicePayload {
@@ -150,15 +150,15 @@ namespace DiscordCoreAPI {
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
-		std::unique_ptr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
+		UniquePtr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
-		std::unique_ptr<std::jthread> taskThread01{ nullptr };
-		std::unique_ptr<std::jthread> taskThread02{ nullptr };
-		std::unique_ptr<std::jthread> taskThread03{ nullptr };
+		UniquePtr<std::jthread> taskThread01{ nullptr };
+		UniquePtr<std::jthread> taskThread02{ nullptr };
+		UniquePtr<std::jthread> taskThread03{ nullptr };
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		std::deque<ConnectionPackage> connections{};
 		std::deque<VoicePayload> theFrameQueue{};

@@ -401,7 +401,7 @@ namespace DiscordCoreAPI {
 
 		SelectMenuResponseData() noexcept = default;
 
-		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
+		UniquePtr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		Vector<String> values{};///< A vector of the chosen values.
 		String selectionId{};///< Selection id.
 		Snowflake channelId{};///< The Channel id where it took place.
@@ -434,7 +434,7 @@ namespace DiscordCoreAPI {
 		~SelectMenuCollector();
 
 	  protected:
-		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
+		UniquePtr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> selectMenuIncomingInteractionBuffer{};
 		Vector<SelectMenuResponseData> responseVector{};
 		Int32 currentCollectedSelectMenuCount{ 0 };
@@ -492,7 +492,7 @@ namespace DiscordCoreAPI {
 
 		ButtonResponseData() noexcept = default;
 
-		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
+		UniquePtr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		String emojiName{};///< The emoji name, if applicable.
 		String buttonId{};///< The id of the button, for identification.
 		Snowflake channelId{};///< The Channel id where it took place.
@@ -523,7 +523,7 @@ namespace DiscordCoreAPI {
 		~ButtonCollector();
 
 	  protected:
-		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
+		UniquePtr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> buttonIncomingInteractionBuffer{};
 		Vector<ButtonResponseData> responseVector{};
 		Int32 currentCollectedButtonCount{ 0 };
@@ -581,7 +581,7 @@ namespace DiscordCoreAPI {
 
 		ModalResponseData() noexcept = default;
 
-		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
+		UniquePtr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
 		String customIdSmall{};///< The customId of the particular input.
 		String customId{};///< The customId of the modal component.
 		Snowflake channelId{};///< The Channel id where it took place.

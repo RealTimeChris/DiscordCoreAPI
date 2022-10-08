@@ -129,6 +129,7 @@ namespace DiscordCoreAPI {
 
 	template<typename KeyType, typename ObjectType> using UMap = std::unordered_map<KeyType, ObjectType>;
 	template<typename KeyType, typename ObjectType> using Map = std::map<KeyType, ObjectType>;
+	template<typename ObjectType> using UniquePtr = std::unique_ptr<ObjectType>;
 	template<typename ObjectType> using Vector = std::vector<ObjectType>;
 	using AtomicUint64 = std::atomic_uint64_t;
 	using AtomicUint32 = std::atomic_uint32_t;
@@ -216,9 +217,9 @@ namespace DiscordCoreAPI {
 		ValueType theType{ ValueType::Null };
 
 		union JsonValue {
-			std::unique_ptr<ObjectType> object;
-			std::unique_ptr<StringType> string;
-			std::unique_ptr<ArrayType> array;
+			UniquePtr<ObjectType> object;
+			UniquePtr<StringType> string;
+			UniquePtr<ArrayType> array;
 			FloatType numberDouble;
 			UintType numberUint;
 			IntType numberInt;
@@ -361,11 +362,11 @@ namespace DiscordCoreAPI {
 		Void pushBack(JsonObject&& other) noexcept;
 		Void pushBack(JsonObject& other) noexcept;
 
-		Void set(std::unique_ptr<String> pointer);
+		Void set(UniquePtr<String> pointer);
 
-		Void set(std::unique_ptr<ArrayType> pointer);
+		Void set(UniquePtr<ArrayType> pointer);
 
-		Void set(std::unique_ptr<ObjectType> pointer);
+		Void set(UniquePtr<ObjectType> pointer);
 
 		Void destroy() noexcept;
 
@@ -389,6 +390,7 @@ namespace DiscordCoreInternal {
 
 	template<typename KeyType, typename ObjectType> using UMap = std::unordered_map<KeyType, ObjectType>;
 	template<typename KeyType, typename ObjectType> using Map = std::map<KeyType, ObjectType>;
+	template<typename ObjectType> using UniquePtr = std::unique_ptr<ObjectType>;
 	template<typename ObjectType> using Vector = std::vector<ObjectType>;
 	using AtomicUint64 = std::atomic_uint64_t;
 	using AtomicUint32 = std::atomic_uint32_t;
@@ -815,7 +817,7 @@ namespace DiscordCoreAPI {
 		const char* data();
 
 	  protected:
-		std::unique_ptr<char[]> thePtr{};
+		UniquePtr<char[]> thePtr{};
 	};
 
 	inline std::basic_ostream<char>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {

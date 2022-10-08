@@ -29,7 +29,7 @@
 namespace DiscordCoreAPI {
 
 	Thread::Thread(simdjson::ondemand::value jsonObjectData) {
-		std::unique_ptr<Channel> theChannel{ std::make_unique<Channel>(jsonObjectData) };
+		UniquePtr<Channel> theChannel{ std::make_unique<Channel>(jsonObjectData) };
 		*this = *static_cast<Thread*>(theChannel.get());
 	}
 

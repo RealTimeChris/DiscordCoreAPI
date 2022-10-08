@@ -151,8 +151,8 @@ namespace DiscordCoreInternal {
 
 	HttpsWorkloadData::HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType) noexcept {
 		if (!HttpsWorkloadData::workloadIdsExternal.contains(theType)) {
-			std::unique_ptr<AtomicInt64> theInt{ std::make_unique<AtomicInt64>() };
-			std::unique_ptr<AtomicInt64> theInt02{ std::make_unique<AtomicInt64>() };
+			UniquePtr<AtomicInt64> theInt{ std::make_unique<AtomicInt64>() };
+			UniquePtr<AtomicInt64> theInt02{ std::make_unique<AtomicInt64>() };
 			HttpsWorkloadData::workloadIdsExternal[theType] = std::move(theInt);
 			HttpsWorkloadData::workloadIdsInternal[theType] = std::move(theInt02);
 		}
@@ -166,8 +166,8 @@ namespace DiscordCoreInternal {
 		return theValue;
 	}
 
-	UMap<HttpsWorkloadType, std::unique_ptr<AtomicInt64>> HttpsWorkloadData::workloadIdsExternal{};
-	UMap<HttpsWorkloadType, std::unique_ptr<AtomicInt64>> HttpsWorkloadData::workloadIdsInternal{};
+	UMap<HttpsWorkloadType, UniquePtr<AtomicInt64>> HttpsWorkloadData::workloadIdsExternal{};
+	UMap<HttpsWorkloadType, UniquePtr<AtomicInt64>> HttpsWorkloadData::workloadIdsInternal{};
 
 	HelloData::HelloData(simdjson::ondemand::value jsonObjectData) {
 		this->heartbeatInterval = DiscordCoreAPI::getUint64(jsonObjectData, "heartbeat_interval");
@@ -3919,7 +3919,7 @@ namespace DiscordCoreAPI {
 		Bool deleteAfter, Uint32 waitForMaxMs, Bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
 		Uint32 newCurrentPageIndex = currentPageIndex;
-		std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };
+		UniquePtr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };
 		if (messageEmbeds.size() > 0) {
 			dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
 		}
@@ -3934,16 +3934,16 @@ namespace DiscordCoreAPI {
 		StopWatch theStopWatch{ std::chrono::milliseconds{ waitForMaxMs } };
 		while (!theStopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
-			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
+			UniquePtr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
 
 			Vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, Snowflake{ stoull(userID) }).get() };
 
 			if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
-				std::unique_ptr<RespondToInputEventData> dataPackage02{ std::make_unique<RespondToInputEventData>(originalEvent) };
+				UniquePtr<RespondToInputEventData> dataPackage02{ std::make_unique<RespondToInputEventData>(originalEvent) };
 				if (buttonIntData.at(0).buttonId == "empty") {
 					*dataPackage02 = originalEvent;
 				} else {
-					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
+					UniquePtr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
 					*dataPackage02 = RespondToInputEventData{ *interactionData };
 				}
 
@@ -3975,7 +3975,7 @@ namespace DiscordCoreAPI {
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
 					newCurrentPageIndex = static_cast<Uint32>(messageEmbeds.size()) - 1;
 				}
-				std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
+				UniquePtr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
 				*dataPackage = RespondToInputEventData{ *interactionData };
 				dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 				for (auto& value: originalEvent.getComponents()) {
@@ -3988,7 +3988,7 @@ namespace DiscordCoreAPI {
 					InputEventData dataPackage03{ originalEvent };
 					InputEvents::deleteInputEventResponseAsync(dataPackage03);
 				} else {
-					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
+					UniquePtr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
 					*dataPackage = RespondToInputEventData{ *interactionData };
 					dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);

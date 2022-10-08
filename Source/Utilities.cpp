@@ -693,21 +693,21 @@ namespace DiscordCoreAPI {
 		return theString;
 	}
 
-	Void JsonObject::set(std::unique_ptr<String> p) {
+	Void JsonObject::set(UniquePtr<String> p) {
 		destroy();
-		new (&this->theValue.string) std::unique_ptr<String>{ std::move(p) };
+		new (&this->theValue.string) UniquePtr<String>{ std::move(p) };
 		this->theType = ValueType::String;
 	}
 
-	Void JsonObject::set(std::unique_ptr<ArrayType> p) {
+	Void JsonObject::set(UniquePtr<ArrayType> p) {
 		destroy();
-		new (&this->theValue.string) std::unique_ptr<ArrayType>{ std::move(p) };
+		new (&this->theValue.string) UniquePtr<ArrayType>{ std::move(p) };
 		this->theType = ValueType::Array;
 	}
 
-	Void JsonObject::set(std::unique_ptr<ObjectType> p) {
+	Void JsonObject::set(UniquePtr<ObjectType> p) {
 		destroy();
-		new (&this->theValue.string) std::unique_ptr<ObjectType>{ std::move(p) };
+		new (&this->theValue.string) UniquePtr<ObjectType>{ std::move(p) };
 		this->theType = ValueType::Object;
 	}
 

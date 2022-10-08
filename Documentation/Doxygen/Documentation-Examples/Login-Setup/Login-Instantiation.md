@@ -20,7 +20,7 @@ Login/Instantiation {#logininstantiation}
 Int32 main()
 {
 	String botToken {"YOUR_BOT_TOKEN_HERE"};
-	std::unique_ptr<DiscordCoreAPI::DiscordCoreClient> thePtr = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(
+	UniquePtr<DiscordCoreAPI::DiscordCoreClient> thePtr = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(
 		botToken, "!", functionVector,
 		DiscordCoreAPI::CacheOptions {.cacheGuildMembers = true, .cacheChannels = true, .cacheGuilds = true, .cacheRoles = true, .cacheUsers = true}, 1);
 	thePtr->runBot();

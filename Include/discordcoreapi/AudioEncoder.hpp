@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 		operator OpusEncoder*() noexcept;
 
 	  protected:
-		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr, OpusEncoderDeleter{} };
+		UniquePtr<OpusEncoder, OpusEncoderDeleter> thePtr{ nullptr, OpusEncoderDeleter{} };
 	};
 
 	class DiscordCoreAPI_Dll AudioEncoder {

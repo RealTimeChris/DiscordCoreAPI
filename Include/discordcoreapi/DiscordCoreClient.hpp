@@ -90,13 +90,13 @@ namespace DiscordCoreAPI {
 		SIGFPEError(String theString);
 	};
 
-	using SoundCloudAPIMap = UMap<Uint64, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
+	using SoundCloudAPIMap = UMap<Uint64, UniquePtr<DiscordCoreInternal::SoundCloudAPI>>;
 
-	using YouTubeAPIMap = UMap<Uint64, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
+	using YouTubeAPIMap = UMap<Uint64, UniquePtr<DiscordCoreInternal::YouTubeAPI>>;
 
-	using VoiceConnectionMap = UMap<Uint64, std::unique_ptr<VoiceConnection>>;
+	using VoiceConnectionMap = UMap<Uint64, UniquePtr<VoiceConnection>>;
 
-	using SongAPIMap = UMap<Uint64, std::unique_ptr<SongAPI>>;
+	using SongAPIMap = UMap<Uint64, UniquePtr<SongAPI>>;
 
 	/**
 	 * \addtogroup main_endpoints
@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 		/// \param baseFunction A unique_ptr to the command to be registered.
 		/// \param commandData A CreateApplicationCommandData structure describing the current function.
 		/// \param alwaysRegister Whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of registered commands.
-		Void registerFunction(const Vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+		Void registerFunction(const Vector<String>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
 			Bool alwaysRegister = false);
 
 		/// For collecting a reference to the CommandController. \brief For collecting a reference to the CommandController.
@@ -155,8 +155,8 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient() noexcept;
 
 	  protected:
-		UMap<Uint32, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
-		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
+		UMap<Uint32, UniquePtr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
+		UniquePtr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theConnectionStopWatch{ 5300ms };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
 	#ifdef _WIN32

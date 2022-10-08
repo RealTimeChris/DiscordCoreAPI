@@ -21,7 +21,7 @@ namespace DiscordCoreAPI {
 			this->helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<BaseFunction> create() {
+		UniquePtr<BaseFunction> create() {
 			return std::make_unique<Help>();
 		}
 
@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 						responseData.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						newEvent01 = InputEvents::respondToInputEventAsync(responseData).get();
 					}
-					std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(newEvent01) };
+					UniquePtr<ButtonCollector> button{ std::make_unique<ButtonCollector>(newEvent01) };
 					auto buttonData = button->collectButtonData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					Int32 counter03{ 0 };
 					Vector<RespondToInputEventData> editInteractionResponseData00;
@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 					} else {
 						break;
 					}
-					std::unique_ptr<SelectMenuCollector> selectMenu{ std::make_unique<SelectMenuCollector>(newEvent01) };
+					UniquePtr<SelectMenuCollector> selectMenu{ std::make_unique<SelectMenuCollector>(newEvent01) };
 					auto selectMenuReturnData = selectMenu->collectSelectMenuData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					EmbedData newEmbed{};
 					for (auto& [key, value]: newArgs.discordCoreClient->getCommandController().getFunctions()) {

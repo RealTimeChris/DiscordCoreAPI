@@ -244,7 +244,7 @@ namespace DiscordCoreInternal {
 
 	Void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries) {
 		try {
-			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr) };
+			UniquePtr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr) };
 			auto bytesRead{ static_cast<Int32>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				if (!streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true)) {
@@ -269,8 +269,8 @@ namespace DiscordCoreInternal {
 			dataPackage.totalFileSize = static_cast<Uint64>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
 			dataPackage.configManager = this->configManager;
-			std::unique_ptr<DiscordCoreAPI::AudioEncoder> audioEncoder{ std::make_unique<DiscordCoreAPI::AudioEncoder>() };
-			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
+			UniquePtr<DiscordCoreAPI::AudioEncoder> audioEncoder{ std::make_unique<DiscordCoreAPI::AudioEncoder>() };
+			UniquePtr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			String theString = newSong.finalDownloadUrls[1].urlPath;
 			streamSocket->writeData(theString, true);
 			streamSocket->processIO(1000);

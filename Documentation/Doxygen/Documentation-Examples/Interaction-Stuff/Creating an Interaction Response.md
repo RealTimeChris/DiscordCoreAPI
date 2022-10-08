@@ -1,6 +1,6 @@
 Creating an Interaction Response {#creatinganinteractionresponse}
 ============
-- Execute the, `DiscordCoreAPI::InputEvents::respondToInputEventAsync()` function, while passing in a data structure of type `DiscordCoreAPI::RespondToInputEventData` with a type set to either `DiscordCoreAPI::InputEventResponseType::Deferred_Response`, `DiscordCoreAPI::InputEventResponseType::Interaction_Response`, or `DiscordCoreAPI::InputEventResponseType::Ephemeral_Interaction_Response`, with a return value of type `auto` or `std::unique_ptr<DiscordCoreAPI::InputEventData>`.
+- Execute the, `DiscordCoreAPI::InputEvents::respondToInputEventAsync()` function, while passing in a data structure of type `DiscordCoreAPI::RespondToInputEventData` with a type set to either `DiscordCoreAPI::InputEventResponseType::Deferred_Response`, `DiscordCoreAPI::InputEventResponseType::Interaction_Response`, or `DiscordCoreAPI::InputEventResponseType::Ephemeral_Interaction_Response`, with a return value of type `auto` or `UniquePtr<DiscordCoreAPI::InputEventData>`.
 ```cpp
 /// Test.hpp-Header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -24,7 +24,7 @@ Creating an Interaction Response {#creatinganinteractionresponse}
 			this->helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<DiscordCoreAPI::BaseFunction> create() {
+		UniquePtr<DiscordCoreAPI::BaseFunction> create() {
 			return std::make_unique<Test>();
 		}
 

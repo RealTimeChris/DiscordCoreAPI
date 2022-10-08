@@ -370,7 +370,7 @@ namespace DiscordCoreInternal {
 		this->configManager = configManagerNew;
 	}
 
-	UMap<String, std::unique_ptr<RateLimitData>>& HttpsConnectionManager::getRateLimitValues() {
+	UMap<String, UniquePtr<RateLimitData>>& HttpsConnectionManager::getRateLimitValues() {
 		return this->rateLimitValues;
 	}
 
@@ -394,7 +394,7 @@ namespace DiscordCoreInternal {
 
 	Void HttpsConnectionManager::initialize() {
 		for (Int64 enumOne = static_cast<Int64>(HttpsWorkloadType::Unset); enumOne != static_cast<Int64>(HttpsWorkloadType::LAST); enumOne++) {
-			std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
+			UniquePtr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
 			rateLimitData->tempBucket = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 			this->getRateLimitValueBuckets()[static_cast<HttpsWorkloadType>(enumOne)] = rateLimitData->tempBucket;
 			this->getRateLimitValues()[rateLimitData->tempBucket] = std::move(rateLimitData);
@@ -571,7 +571,7 @@ namespace DiscordCoreInternal {
 			}
 			String currentBucket = rateLimitData.bucket;
 			if (!this->connectionManager.getRateLimitValues().contains(rateLimitData.bucket)) {
-				std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
+				UniquePtr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
 				this->connectionManager.getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]].swap(rateLimitData);
 				this->connectionManager.getRateLimitValueBuckets()[workload.workloadType] = currentBucket;
 				this->connectionManager.getRateLimitValues()[currentBucket] = std::move(rateLimitData);

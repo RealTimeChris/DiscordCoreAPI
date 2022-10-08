@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		static std::mutex accessMutex;
 
-		std::unique_ptr<std::jthread> taskThread{ nullptr };
+		UniquePtr<std::jthread> taskThread{ nullptr };
 		Bool areWeInstantiated{ false };
 		Snowflake guildId{};
 

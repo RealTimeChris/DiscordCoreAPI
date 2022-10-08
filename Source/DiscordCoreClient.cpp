@@ -177,7 +177,7 @@ namespace DiscordCoreAPI {
 		this->didWeStartCorrectly = true;
 	}
 
-	Void DiscordCoreClient::registerFunction(const Vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
+	Void DiscordCoreClient::registerFunction(const Vector<String>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
 		Bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));

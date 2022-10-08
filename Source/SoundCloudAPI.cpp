@@ -233,8 +233,8 @@ namespace DiscordCoreInternal {
 			dataPackage.totalFileSize = static_cast<Uint64>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
 			dataPackage.configManager = this->configManager;
-			std::unique_ptr<DiscordCoreAPI::AudioEncoder> audioEncoder{ std::make_unique<DiscordCoreAPI::AudioEncoder>() };
-			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
+			UniquePtr<DiscordCoreAPI::AudioEncoder> audioEncoder{ std::make_unique<DiscordCoreAPI::AudioEncoder>() };
+			UniquePtr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			Bool didWeGetZero{ true };
 			Vector<Vector<Uint8>> submittedFrames{};
 			while (counter < newSong.finalDownloadUrls.size()) {

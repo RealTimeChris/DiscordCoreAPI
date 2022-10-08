@@ -84,7 +84,7 @@ namespace DiscordCoreInternal {
 		WSADataWrapper();
 
 	  protected:
-		std::unique_ptr<WSADATA, WSADataDeleter> thePtr{ new WSADATA{}, WSADataDeleter{} };
+		UniquePtr<WSADATA, WSADataDeleter> thePtr{ new WSADATA{}, WSADataDeleter{} };
 	};
 	#endif
 
@@ -100,7 +100,7 @@ namespace DiscordCoreInternal {
 		SSL_CTXWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> thePtr{ nullptr, SSL_CTXDeleter{} };
+		UniquePtr<SSL_CTX, SSL_CTXDeleter> thePtr{ nullptr, SSL_CTXDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SSLWrapper {
@@ -115,7 +115,7 @@ namespace DiscordCoreInternal {
 		SSLWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<SSL, SSLDeleter> thePtr{ nullptr, SSLDeleter{} };
+		UniquePtr<SSL, SSLDeleter> thePtr{ nullptr, SSLDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
@@ -138,7 +138,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ static_cast<SOCKET>(SOCKET_ERROR) }, SOCKETDeleter{} };
+		UniquePtr<SOCKET, SOCKETDeleter> thePtr{ new SOCKET{ static_cast<SOCKET>(SOCKET_ERROR) }, SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll sockaddrWrapper {
@@ -219,7 +219,7 @@ namespace DiscordCoreInternal {
 
 		Bool connect(const String& baseUrl, const String& portNew, Bool doWePrintErrorMessages, Bool areWeAStandaloneSocket) noexcept;
 
-		static Vector<SSLClient*> processIO(UMap<Uint32, std::unique_ptr<WebSocketSSLShard>>& theShardMap) noexcept;
+		static Vector<SSLClient*> processIO(UMap<Uint32, UniquePtr<WebSocketSSLShard>>& theShardMap) noexcept;
 
 		ProcessIOResult writeData(StringView dataToWrite, Bool priority) noexcept;
 

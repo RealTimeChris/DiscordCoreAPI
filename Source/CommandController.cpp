@@ -28,25 +28,25 @@
 namespace DiscordCoreAPI {
 
 	namespace Globals {
-		Map<Vector<String>, std::unique_ptr<BaseFunction>> functions{};
+		Map<Vector<String>, UniquePtr<BaseFunction>> functions{};
 	}
 
 	CommandController::CommandController(DiscordCoreClient* discordCoreClientNew) {
 		this->discordCoreClient = discordCoreClientNew;
 	}
 
-	Void CommandController::registerFunction(const Vector<String>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
+	Void CommandController::registerFunction(const Vector<String>& functionNames, UniquePtr<BaseFunction> baseFunction) {
 		Globals::functions[functionNames] = std::move(baseFunction);
 	}
 
-	Map<Vector<String>, std::unique_ptr<BaseFunction>>& CommandController::getFunctions() {
+	Map<Vector<String>, UniquePtr<BaseFunction>>& CommandController::getFunctions() {
 		return Globals::functions;
 	};
 
 	CoRoutine<Void> CommandController::checkForAndRunCommand(CommandData commandData) {
 		try {
 			co_await NewThreadAwaitable<Void>();
-			std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
+			UniquePtr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
 			if (!functionPointer.get()) {
 				co_return;
 			}
@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	std::unique_ptr<BaseFunction> CommandController::getCommand(const String& commandName) {
+	UniquePtr<BaseFunction> CommandController::getCommand(const String& commandName) {
 		String functionName{};
 		Bool isItFound{ false };
 		if (commandName.size() > 0) {
@@ -74,13 +74,13 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (isItFound) {
-			std::unique_ptr<BaseFunction> newValue = this->createFunction(functionName);
+			UniquePtr<BaseFunction> newValue = this->createFunction(functionName);
 			return newValue;
 		}
 		return nullptr;
 	}
 
-	std::unique_ptr<BaseFunction> CommandController::createFunction(const String& functionName) {
+	UniquePtr<BaseFunction> CommandController::createFunction(const String& functionName) {
 		for (auto& [key01, value01]: Globals::functions) {
 			for (auto& value02: key01) {
 				if (functionName == value02) {

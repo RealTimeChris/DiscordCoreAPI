@@ -281,8 +281,8 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class HttpsClient;
 
-		static UMap<HttpsWorkloadType, std::unique_ptr<AtomicInt64>> workloadIdsExternal;
-		static UMap<HttpsWorkloadType, std::unique_ptr<AtomicInt64>> workloadIdsInternal;
+		static UMap<HttpsWorkloadType, UniquePtr<AtomicInt64>> workloadIdsExternal;
+		static UMap<HttpsWorkloadType, UniquePtr<AtomicInt64>> workloadIdsInternal;
 
 		mutable UMap<String, String> headersToInsert{};
 		PayloadType payloadType{ PayloadType::Application_Json };
@@ -2630,7 +2630,7 @@ namespace DiscordCoreAPI {
 	/// Data structure representing a single Message. \brief Data structure representing a single Message.
 	class DiscordCoreAPI_Dll MessageData : public MessageDataOld {
 	  public:
-		std::unique_ptr<MessageDataOld> referencedMessage{ std::make_unique<MessageDataOld>() };///< The referenced Message, to reply to.
+		UniquePtr<MessageDataOld> referencedMessage{ std::make_unique<MessageDataOld>() };///< The referenced Message, to reply to.
 
 		MessageData& operator=(const MessageData& other);
 
@@ -2954,7 +2954,7 @@ namespace DiscordCoreAPI {
 		virtual ~InputEventData() noexcept = default;
 
 	  protected:
-		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
+		UniquePtr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 	};
 
 	/// \brief Data for responding to an input-event.
@@ -3448,7 +3448,7 @@ namespace DiscordCoreAPI {
 		/// The base function for the command's execute function. \brief The base function for the command's execute function.
 		/// \param args A reference to an instance of BaseFunctionArguments.
 		virtual Void execute(BaseFunctionArguments& args) = 0;
-		virtual std::unique_ptr<BaseFunction> create() = 0;
+		virtual UniquePtr<BaseFunction> create() = 0;
 		virtual ~BaseFunction() noexcept = default;
 	};
 

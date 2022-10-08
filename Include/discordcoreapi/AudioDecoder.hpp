@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 		AVFrameWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<AVFrame, AVFrameDeleter> thePtr{ nullptr, AVFrameDeleter{} };
+		UniquePtr<AVFrame, AVFrameDeleter> thePtr{ nullptr, AVFrameDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVCodecContextWrapper {
@@ -73,7 +73,7 @@ namespace DiscordCoreInternal {
 		AVCodecContextWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr, AVCodecContextDeleter{} };
+		UniquePtr<AVCodecContext, AVCodecContextDeleter> thePtr{ nullptr, AVCodecContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVFormatContextWrapper01 {
@@ -103,7 +103,7 @@ namespace DiscordCoreInternal {
 		AVFormatContextWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
+		UniquePtr<AVFormatContextWrapper01, AVFormatContextDeleter> thePtr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SwrContextWrapper {
@@ -120,7 +120,7 @@ namespace DiscordCoreInternal {
 		SwrContextWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<SwrContext, SwrContextDeleter> thePtr{ nullptr, SwrContextDeleter{} };
+		UniquePtr<SwrContext, SwrContextDeleter> thePtr{ nullptr, SwrContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVIOContextWrapper {
@@ -139,7 +139,7 @@ namespace DiscordCoreInternal {
 		AVIOContextWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr, AVIOContextDeleter{} };
+		UniquePtr<AVIOContext, AVIOContextDeleter> thePtr{ nullptr, AVIOContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll AVPacketWrapper {
@@ -158,7 +158,7 @@ namespace DiscordCoreInternal {
 		AVPacketWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<AVPacket, AVPacketDeleter> thePtr{ nullptr, AVPacketDeleter{} };
+		UniquePtr<AVPacket, AVPacketDeleter> thePtr{ nullptr, AVPacketDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll BuildAudioDecoderData {
@@ -200,7 +200,7 @@ namespace DiscordCoreInternal {
 		AVPacketWrapper packet{};
 		AVStream* audioStream{};
 		AVCodec* codec{};
-		std::unique_ptr<std::jthread> taskThread{ nullptr };
+		UniquePtr<std::jthread> taskThread{ nullptr };
 
 		static Int32 ReadBufferData(Void* opaque, Uint8* buf, Int32);
 

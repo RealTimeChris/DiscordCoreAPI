@@ -135,7 +135,7 @@ namespace DiscordCoreInternal {
 	  public:
 		HttpsConnectionManager(DiscordCoreAPI::ConfigManager*);
 
-		UMap<String, std::unique_ptr<RateLimitData>>& getRateLimitValues();
+		UMap<String, UniquePtr<RateLimitData>>& getRateLimitValues();
 
 		UMap<HttpsWorkloadType, String>& getRateLimitValueBuckets();
 
@@ -144,8 +144,8 @@ namespace DiscordCoreInternal {
 		Void initialize();
 
 	  protected:
-		UMap<String, std::unique_ptr<RateLimitData>> rateLimitValues{};
-		UMap<Int64, std::unique_ptr<HttpsConnection>> httpsConnections{};
+		UMap<String, UniquePtr<RateLimitData>> rateLimitValues{};
+		UMap<Int64, UniquePtr<HttpsConnection>> httpsConnections{};
 		UMap<HttpsWorkloadType, String> rateLimitValueBuckets{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		Int64 currentIndex{};

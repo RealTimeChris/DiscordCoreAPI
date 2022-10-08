@@ -79,27 +79,27 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Channel creation event. \brief Data that is received as part of a Channel creation event.
 	struct DiscordCoreAPI_Dll OnChannelCreationData {
-		OnChannelCreationData(std::unique_ptr<ChannelData>);
+		OnChannelCreationData(UniquePtr<ChannelData>);
 		OnChannelCreationData& operator=(const OnChannelCreationData&);
 		OnChannelCreationData(const OnChannelCreationData&);
-		std::unique_ptr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The new Channel.
+		UniquePtr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The new Channel.
 	};
 
 	/// Data that is received as part of a Channel update event. \brief Data that is received as part of a Channel update event.
 	struct DiscordCoreAPI_Dll OnChannelUpdateData {
-		OnChannelUpdateData(std::unique_ptr<ChannelData>);
+		OnChannelUpdateData(UniquePtr<ChannelData>);
 		OnChannelUpdateData& operator=(const OnChannelUpdateData&);
 		OnChannelUpdateData(const OnChannelUpdateData&);
-		std::unique_ptr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The new Channel.
+		UniquePtr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The new Channel.
 		~OnChannelUpdateData() noexcept;
 	};
 
 	/// Data that is received as part of a Channel deletion event. \brief Data that is received as part of a Channel deletion event.
 	struct DiscordCoreAPI_Dll OnChannelDeletionData {
-		OnChannelDeletionData(std::unique_ptr<ChannelData>);
+		OnChannelDeletionData(UniquePtr<ChannelData>);
 		OnChannelDeletionData& operator=(const OnChannelDeletionData&);
 		OnChannelDeletionData(const OnChannelDeletionData&);
-		std::unique_ptr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The deleted Channel.
+		UniquePtr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The deleted Channel.
 	};
 
 	/// Data that is received as part of a Channel pins update event. \brief Data that is received as part of a Channel pins update event.
@@ -139,26 +139,26 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Guild creation event. \brief Data that is received as part of a Guild creation event.
 	struct DiscordCoreAPI_Dll OnGuildCreationData {
-		OnGuildCreationData(std::unique_ptr<GuildData> guild, DiscordCoreClient*);
+		OnGuildCreationData(UniquePtr<GuildData> guild, DiscordCoreClient*);
 		OnGuildCreationData& operator=(const OnGuildCreationData&);
 		OnGuildCreationData(const OnGuildCreationData&);
-		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The new Guild.
+		UniquePtr<GuildData> guild{ std::make_unique<GuildData>() };///< The new Guild.
 	};
 
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
 	struct DiscordCoreAPI_Dll OnGuildUpdateData {
-		OnGuildUpdateData(std::unique_ptr<GuildData> guild, DiscordCoreClient*);
+		OnGuildUpdateData(UniquePtr<GuildData> guild, DiscordCoreClient*);
 		OnGuildUpdateData& operator=(const OnGuildUpdateData&);
 		OnGuildUpdateData(const OnGuildUpdateData&);
-		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The new Guild.
+		UniquePtr<GuildData> guild{ std::make_unique<GuildData>() };///< The new Guild.
 	};
 
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
 	struct DiscordCoreAPI_Dll OnGuildDeletionData {
-		OnGuildDeletionData(std::unique_ptr<GuildData>);
+		OnGuildDeletionData(UniquePtr<GuildData>);
 		OnGuildDeletionData& operator=(const OnGuildDeletionData&);
 		OnGuildDeletionData(const OnGuildDeletionData&);
-		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The deleted Guild.
+		UniquePtr<GuildData> guild{ std::make_unique<GuildData>() };///< The deleted Guild.
 	};
 
 	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
@@ -190,28 +190,28 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a GuildMember add event. \brief Data that is received as part of a GuildMember add event.
 	struct DiscordCoreAPI_Dll OnGuildMemberAddData {
-		OnGuildMemberAddData(std::unique_ptr<GuildMemberData>, DiscordCoreClient*);
+		OnGuildMemberAddData(UniquePtr<GuildMemberData>, DiscordCoreClient*);
 		OnGuildMemberAddData& operator=(const OnGuildMemberAddData&);
 		OnGuildMemberAddData(const OnGuildMemberAddData&);
 		DiscordCoreClient* discordCoreClient{ nullptr };
-		std::unique_ptr<GuildMemberData> guildMember{ std::make_unique<GuildMemberData>() };///< The new GuildMember.
+		UniquePtr<GuildMemberData> guildMember{ std::make_unique<GuildMemberData>() };///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMember update event. \brief Data that is received as part of a GuildMember update event.
 	struct DiscordCoreAPI_Dll OnGuildMemberUpdateData {
-		OnGuildMemberUpdateData(std::unique_ptr<GuildMemberData>);
+		OnGuildMemberUpdateData(UniquePtr<GuildMemberData>);
 		OnGuildMemberUpdateData& operator=(const OnGuildMemberUpdateData&);
 		OnGuildMemberUpdateData(const OnGuildMemberUpdateData&);
-		std::unique_ptr<GuildMemberData> guildMember{ std::make_unique<GuildMemberData>() };///< The new GuildMember.
+		UniquePtr<GuildMemberData> guildMember{ std::make_unique<GuildMemberData>() };///< The new GuildMember.
 	};
 
 	/// Data that is received as part of a GuildMember remove event. \brief Data that is received as part of a GuildMember remove event.
 	struct DiscordCoreAPI_Dll OnGuildMemberRemoveData {
-		OnGuildMemberRemoveData(std::unique_ptr<UserData>, DiscordCoreClient*, Snowflake);
+		OnGuildMemberRemoveData(UniquePtr<UserData>, DiscordCoreClient*, Snowflake);
 		OnGuildMemberRemoveData& operator=(const OnGuildMemberRemoveData&);
 		OnGuildMemberRemoveData(const OnGuildMemberRemoveData&);
 		DiscordCoreClient* discordCoreClient{ nullptr };
-		std::unique_ptr<UserData> user{ std::make_unique<UserData>() };///< The User responseData of the removed GuildMember.
+		UniquePtr<UserData> user{ std::make_unique<UserData>() };///< The User responseData of the removed GuildMember.
 		Snowflake guildId{};///< The id of the Guild from which they were removed.
 	};
 
@@ -222,28 +222,28 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a Role creation event. \brief Data that is received as part of a Role creation event.
 	struct DiscordCoreAPI_Dll OnRoleCreationData {
-		OnRoleCreationData(std::unique_ptr<RoleData> theRole, Snowflake guildId);
+		OnRoleCreationData(UniquePtr<RoleData> theRole, Snowflake guildId);
 		OnRoleCreationData& operator=(const OnRoleCreationData&);
 		OnRoleCreationData(const OnRoleCreationData&);
 		Snowflake guildId{};///< The id of the Guild within which the Role was created.
-		std::unique_ptr<RoleData> role{ std::make_unique<RoleData>() };///< The new Role.
+		UniquePtr<RoleData> role{ std::make_unique<RoleData>() };///< The new Role.
 	};
 
 	/// Data that is received as part of a Role update event. \brief Data that is received as part of a Role update event.
 	struct DiscordCoreAPI_Dll OnRoleUpdateData {
-		OnRoleUpdateData(std::unique_ptr<RoleData>, Snowflake);
+		OnRoleUpdateData(UniquePtr<RoleData>, Snowflake);
 		OnRoleUpdateData& operator=(const OnRoleUpdateData&);
 		OnRoleUpdateData(const OnRoleUpdateData&);
 		Snowflake guildId{};///< The id of the Guild within which the Role was updated.
-		std::unique_ptr<RoleData> role{ std::make_unique<RoleData>() };///< The new Role.
+		UniquePtr<RoleData> role{ std::make_unique<RoleData>() };///< The new Role.
 	};
 
 	/// Data that is received as part of a Role deletion event. \brief Data that is received as part of a Role deletion event.
 	struct DiscordCoreAPI_Dll OnRoleDeletionData {
-		OnRoleDeletionData(std::unique_ptr<RoleData>, Snowflake);
+		OnRoleDeletionData(UniquePtr<RoleData>, Snowflake);
 		OnRoleDeletionData& operator=(const OnRoleDeletionData&);
 		OnRoleDeletionData(const OnRoleDeletionData&);
-		std::unique_ptr<RoleData> role{ std::make_unique<RoleData>() };///< The deleted Role.
+		UniquePtr<RoleData> role{ std::make_unique<RoleData>() };///< The deleted Role.
 		Snowflake guildId{};///< The id of the Guild from which the Role was deleted.
 	};
 
@@ -388,10 +388,10 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a User update event. \brief Data that is received as part of a User update event.
 	struct DiscordCoreAPI_Dll OnUserUpdateData {
-		OnUserUpdateData(std::unique_ptr<UserData>);
+		OnUserUpdateData(UniquePtr<UserData>);
 		OnUserUpdateData& operator=(const OnUserUpdateData&);
 		OnUserUpdateData(const OnUserUpdateData&);
-		std::unique_ptr<UserData> user{ std::make_unique<UserData>() };///< The new User.
+		UniquePtr<UserData> user{ std::make_unique<UserData>() };///< The new User.
 	};
 
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.

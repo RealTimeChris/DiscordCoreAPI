@@ -26,7 +26,7 @@ Connecting To/Disconnecting From a Voice Channel {#connectingtodisconnecting}
 			this->helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<DiscordCoreAPI::BaseFunction> create() {
+		UniquePtr<DiscordCoreAPI::BaseFunction> create() {
 			return std::make_unique<Test>();
 		}
 
