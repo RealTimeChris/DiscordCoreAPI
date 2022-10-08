@@ -361,7 +361,7 @@ namespace DiscordCoreAPI {
 	Bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
 		StopWatch theStopWatch{ 2500ms };
 		theStopWatch.resetTimer();
-		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor) {
+		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor && !theStopWatch.hasTimePassed()) {
 			if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 				this->onClosed();
 				return false;
@@ -372,9 +372,6 @@ namespace DiscordCoreAPI {
 			if (WebSocketCore::inputBuffer.getUsedSpace() > 0) {
 				WebSocketCore::parseMessage();
 				return true;
-			}
-			if (theStopWatch.hasTimePassed()) {
-				return false;
 			}
 			std::this_thread::sleep_for(1ms);
 		}
