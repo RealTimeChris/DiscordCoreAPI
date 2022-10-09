@@ -93,7 +93,7 @@ target_compile_definitions(
 	"$<$<STREQUAL:${VCPKG_TARGET_TRIPLET},x64-uwp>:UWP>"
 	"$<$<PLATFORM_ID:Windows>:SIMDJSON_USING_WINDOWS_DYNAMIC_LIBRARY=1>"
 )
-message("$ENV{EnableASAN}")
+
 target_compile_options(
 	"${LIB_NAME}" PRIVATE
 	"$<$<NOT:$<PLATFORM_ID:Linux>>:/bigobj>"
