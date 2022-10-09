@@ -93,17 +93,17 @@ namespace DiscordCoreAPI {
 	using DoubleTimePointMs = std::chrono::time_point<std::chrono::steady_clock, DoubleMilliSecond>;
 
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
+		Vector<unsigned char> theKeys{};
 		Uint8 version{ 0x80 };
 		Uint8 flags{ 0x78 };
 		Uint32 timeStamp{};
 		Uint16 sequence{};
-		String theKeys{};
 		String theData{};
 		Uint32 ssrc{};
 
 		RTPPacketEncrypter() noexcept = default;
 
-		RTPPacketEncrypter(Uint32 ssrcNew, const String& theKeys) noexcept;
+		RTPPacketEncrypter(Uint32 ssrcNew, const Vector<unsigned char>& theKeysNew) noexcept;
 
 		StringView encryptPacket(AudioFrameData& audioDataNew) noexcept;
 	};
@@ -156,7 +156,6 @@ namespace DiscordCoreAPI {
 	  protected:
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		Atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
-		Atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
 		Atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		UniquePtr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
@@ -166,7 +165,9 @@ namespace DiscordCoreAPI {
 		UniquePtr<std::jthread> taskThread01{ nullptr };
 		UniquePtr<std::jthread> taskThread02{ nullptr };
 		DiscordCoreClient* discordCoreClient{ nullptr };
+		simdjson::ondemand::parser theParser{};
 		Deque<ConnectionPackage> connections{};
+		Vector<unsigned char> secretKeySend{};
 		UMap<Uint64, VoiceUser> voiceUsers{};
 		RTPPacketEncrypter packetEncrypter{};
 		Deque<VoicePayload> theFrameQueue{};
@@ -181,7 +182,6 @@ namespace DiscordCoreAPI {
 		Uint16 sequenceIndex{ 0 };
 		AudioEncoder theEncoder{};
 		StreamType streamType{};
-		String secretKeySend{};
 		String externalIp{};
 		Uint32 audioSSRC{};
 		String voiceIp{};
@@ -214,7 +214,7 @@ namespace DiscordCoreAPI {
 
 		Void reconnectStream() noexcept;
 
-		Void connectInternal() noexcept;
+		Void connect() noexcept;
 
 		Void clearAudioData() noexcept;
 

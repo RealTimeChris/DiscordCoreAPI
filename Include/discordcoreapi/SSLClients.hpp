@@ -43,6 +43,7 @@
 		#include <WinSock2.h>
 		#include <WS2tcpip.h>
 		#define poll(fd_set, fd_count, timeout) WSAPoll(fd_set, fd_count, timeout)
+		#define pollfd WSAPOLLFD
 		#ifdef max
 			#undef max
 		#endif

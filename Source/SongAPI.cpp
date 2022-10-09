@@ -250,24 +250,12 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient::getSongAPI(guildMember.guildId)->cancelCurrentSong();
 		if (DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.currentSong.type == SongType::SoundCloud) {
 			Song newerSong = DiscordCoreClient::getSoundCloudAPI(guildMember.guildId)->collectFinalSong(DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.currentSong);
-			if (DiscordCoreClient::getSongAPI(this->guildId)->taskThread) {
-				DiscordCoreClient::getSongAPI(this->guildId)->taskThread->request_stop();
-				if (DiscordCoreClient::getSongAPI(this->guildId)->taskThread->joinable()) {
-					DiscordCoreClient::getSongAPI(this->guildId)->taskThread->join();
-				}
-			}
 			DiscordCoreClient::getSongAPI(this->guildId)->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
 				DiscordCoreClient::getSoundCloudAPI(this->guildId)->downloadAndStreamAudio(newerSong, eventToken, 0);
 			});
 
 		} else if (DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.currentSong.type == SongType::YouTube) {
 			Song newerSong = DiscordCoreClient::getYouTubeAPI(guildMember.guildId)->collectFinalSong(DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.currentSong);
-			if (DiscordCoreClient::getSongAPI(this->guildId)->taskThread) {
-				DiscordCoreClient::getSongAPI(this->guildId)->taskThread->request_stop();
-				if (DiscordCoreClient::getSongAPI(this->guildId)->taskThread->joinable()) {
-					DiscordCoreClient::getSongAPI(this->guildId)->taskThread->join();
-				}
-			}
 			DiscordCoreClient::getSongAPI(this->guildId)->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
 				DiscordCoreClient::getYouTubeAPI(this->guildId)->downloadAndStreamAudio(newerSong, eventToken, 0);
 			});
@@ -288,7 +276,7 @@ namespace DiscordCoreAPI {
 		if (this->taskThread) {
 			this->taskThread->request_stop();
 			if (this->taskThread->joinable()) {
-				this->taskThread->join();
+				this->taskThread->detach();
 			}
 			this->taskThread.reset(nullptr);
 		}

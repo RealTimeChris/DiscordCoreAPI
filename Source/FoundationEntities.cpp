@@ -3184,6 +3184,22 @@ namespace DiscordCoreAPI {
 		return this->theFormats;
 	}
 
+	bool operator==(const AudioFrameData& lhs, const AudioFrameData& rhs) {
+		if (lhs.data != rhs.data) {
+			return false;
+		}
+		if (lhs.guildMemberId != rhs.guildMemberId) {
+			return false;
+		}
+		if (lhs.sampleCount != rhs.sampleCount) {
+			return false;
+		}
+		if (lhs.type != rhs.type) {
+			return false;
+		}
+		return true;
+	}
+
 	Void AudioFrameData::clearData() noexcept {
 		this->type = AudioFrameType::Unset;
 		this->guildMemberId = 0;

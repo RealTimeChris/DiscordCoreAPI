@@ -79,7 +79,7 @@ namespace DiscordCoreInternal {
 
 	SSL_CTXWrapper& SSL_CTXWrapper::operator=(SSL_CTX* other) {
 		this->thePtr.reset(nullptr);
-		this->thePtr.reset(other);
+		this->thePtr = UniquePtrD<SSL_CTX, SSL_CTXDeleter>(other, SSL_CTXDeleter{});
 		return *this;
 	}
 
@@ -97,7 +97,7 @@ namespace DiscordCoreInternal {
 
 	SSLWrapper& SSLWrapper::operator=(SSL* other) {
 		this->thePtr.reset(nullptr);
-		this->thePtr.reset(other);
+		this->thePtr = UniquePtrD<SSL, SSLDeleter>(other, SSLDeleter{});
 		return *this;
 	}
 
@@ -119,7 +119,8 @@ namespace DiscordCoreInternal {
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper&& other) noexcept {
 		if (*this->thePtr != SOCKET_ERROR) {
-			this->thePtr.reset(new SOCKET{});
+			this->thePtr.reset(nullptr);
+			this->thePtr = UniquePtrD<SOCKET, SOCKETDeleter>(new SOCKET{}, SOCKETDeleter{});
 		}
 		*this->thePtr = *other.thePtr;
 		*other.thePtr = SOCKET_ERROR;
@@ -132,7 +133,8 @@ namespace DiscordCoreInternal {
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) noexcept {
 		if (*this->thePtr != SOCKET_ERROR) {
-			this->thePtr.reset(new SOCKET{});
+			this->thePtr.reset(nullptr);
+			this->thePtr = UniquePtrD<SOCKET, SOCKETDeleter>(new SOCKET{}, SOCKETDeleter{});
 		}
 		*this->thePtr = other;
 		return *this;
@@ -629,26 +631,25 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult DatagramSocketClient::processIO(ProcessIOType theType) noexcept {
-		ProcessIOResult theResult{ ProcessIOResult::No_Error };
 		if (!this->areWeStillConnected() || !this->areWeStreamConnected) {
-			return theResult;
+			return ProcessIOResult::No_Error;
 		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->theSocket;
 		readWriteSet.events = POLLIN | POLLOUT;
-		if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
-			theResult = ProcessIOResult::Error;
-			return theResult;
+		ProcessIOResult theResult{ ProcessIOResult::No_Error };
+		if (auto returnValue = poll(&readWriteSet, 1, 1); returnValue == SOCKET_ERROR) {
+			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
-			return theResult;
+			return ProcessIOResult::No_Error;
 		} else {
-			if (readWriteSet.revents & POLLRDNORM) {
-				if (!this->processReadData()) {
+			if (readWriteSet.revents & POLLWRNORM) {
+				if (!this->processWriteData()) {
 					theResult = ProcessIOResult::Error;
 				}
 			}
-			if (readWriteSet.revents & POLLWRNORM) {
-				if (!this->processWriteData()) {
+			if (readWriteSet.revents & POLLRDNORM) {
+				if (!this->processReadData()) {
 					theResult = ProcessIOResult::Error;
 				}
 			}

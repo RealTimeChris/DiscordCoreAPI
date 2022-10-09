@@ -884,15 +884,7 @@ namespace DiscordCoreAPI {
 		Uint64 guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
 		Vector<Uint8> data{};///< The audio data.
 
-		AudioFrameData() noexcept = default;
-
-		AudioFrameData& operator=(AudioFrameData&&) noexcept = default;
-
-		AudioFrameData(AudioFrameData&&) noexcept = default;
-
-		AudioFrameData& operator=(const AudioFrameData&) noexcept = default;
-
-		AudioFrameData(const AudioFrameData&) noexcept = default;
+		friend bool operator==(const AudioFrameData& lhs, const AudioFrameData& rhs);
 
 		Void clearData() noexcept;
 	};

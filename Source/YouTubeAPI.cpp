@@ -273,6 +273,7 @@ namespace DiscordCoreInternal {
 			UniquePtr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			String theString = newSong.finalDownloadUrls[1].urlPath;
 			streamSocket->writeData(theString, true);
+			Vector<DiscordCoreAPI::AudioFrameData> theFrames{};
 			streamSocket->processIO(1000);
 			if (!streamSocket->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
@@ -386,23 +387,24 @@ namespace DiscordCoreInternal {
 							audioDecoder.reset(nullptr);
 							return;
 						}
-						Vector<DiscordCoreAPI::AudioFrameData> frames{};
-						Bool doWeContinue{ true };
-						while (doWeContinue) {
+						while (true) {
 							DiscordCoreAPI::AudioFrameData rawFrame{};
-							doWeContinue = audioDecoder->getFrame(rawFrame);
-							if (rawFrame.sampleCount == -5) {
-								doWeContinue = false;
+							if (!audioDecoder->getFrame(rawFrame)) {
 								break;
-							}
-							if (rawFrame.data.size() != 0) {
-								frames.emplace_back(std::move(rawFrame));
+							} else {
+								if (rawFrame.sampleCount == -5) {
+									break;
+								}
+								if (rawFrame.sampleCount > 3) {
+									theFrames.emplace_back(std::move(rawFrame));
+								}
 							}
 						}
-						for (auto& value: frames) {
-							auto encodedFrame = audioEncoder->encodeSingleAudioFrame(value);
+						for (auto iterator = theFrames.begin(); iterator != theFrames.end();) {
+							auto encodedFrame = audioEncoder->encodeSingleAudioFrame(*iterator);
 							encodedFrame.guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId;
 							DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(encodedFrame));
+							iterator = theFrames.erase(iterator);
 						}
 					}
 					if (remainingDownloadContentLength >= this->maxBufferSize) {
