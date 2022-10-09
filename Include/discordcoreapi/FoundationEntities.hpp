@@ -1745,7 +1745,7 @@ namespace DiscordCoreAPI {
 		String asset{};///< Asset value for the Sticker.
 		String name{};///< The Sticker's name.
 		String tags{};///< Tags for the Sticker to use.
-		
+
 		UserData user{};///< The User that uploaded the Guild Sticker.
 
 		StickerData() noexcept = default;
@@ -1924,7 +1924,7 @@ namespace DiscordCoreAPI {
 		GuildScheduledEventStatus status{};///< The status of the scheduled event.
 		String scheduledStartTime{};///< The time the scheduled event will start.
 		String scheduledEndTime{};///< The time the scheduled event will end, required if entity_type is External.
-		Uint32 userCount{ 0 };///< The number of users subscribed to the scheduled event.		
+		Uint32 userCount{ 0 };///< The number of users subscribed to the scheduled event.
 		Snowflake channelId{};///< The Channel id in which the scheduled event will be hosted, or null if scheduled entity type is External.
 		String description{};///< The description of the scheduled event(1 - 1000 characters.
 		Snowflake guildId{};///< The Guild id which the scheduled event belongs to.
@@ -2163,9 +2163,9 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
 	  public:
 		UMap<String, String> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		JsonObject value{};
 		JsonType type{};///< The value of the option.
-		String value{};
-		String name{};///< The name of the current choice.		
+		String name{};///< The name of the current choice.
 
 		ApplicationCommandOptionChoiceData() noexcept = default;
 

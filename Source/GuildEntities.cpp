@@ -1065,7 +1065,11 @@ namespace DiscordCoreAPI {
 		}
 		if (Guilds::doWeCacheGuilds) {
 			guild.discordCoreClient = Guilds::discordCoreClient;
-			Guilds::cache.emplace(std::move(guild));
+			if (!Guilds::cache.contains(guild)) {
+				Guilds::cache.emplace(std::move(guild));
+			} else {
+				Guilds::cache[guild] = std::move(guild);
+			}
 			if (Guilds::cache.size() % 100 == 0) {
 				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << theStopWatch.totalTimePassed() << std::endl;
 			}

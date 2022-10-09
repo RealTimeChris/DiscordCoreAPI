@@ -1260,6 +1260,9 @@ namespace DiscordCoreAPI {
 			voiceConnectInitData.selfMute = selfMute;
 			StopWatch theStopWatch{ 10000ms };
 			DiscordCoreClient::getVoiceConnection(this->id)->connect(voiceConnectInitData);
+			while (!DiscordCoreClient::getVoiceConnection(this->id)->areWeConnected()) {
+				std::this_thread::sleep_for(1ms);
+			}
 			this->voiceConnectionPtr = DiscordCoreClient::getVoiceConnection(this->id);
 			return this->voiceConnectionPtr;
 		} else {
@@ -3115,15 +3118,15 @@ namespace DiscordCoreAPI {
 		theData["name_localizations"] = this->nameLocalizations;
 		switch (this->type) {
 			case JsonType::Integer: {
-				theData["value"] = Uint64{ stoull(this->value) };
+				theData["value"] = Uint64{ this->value.theValue.numberUint };
 				break;
 			}
 			case JsonType::Float: {
-				theData["value"] = Double{ stod(this->value) };
+				theData["value"] = Double{ this->value.theValue.numberDouble };
 				break;
 			}
 			case JsonType::Boolean: {
-				if (this->value == "false") {
+				if (this->value.theValue.boolean == false) {
 					theData["value"] = Bool{ false };
 				} else {
 					theData["value"] = Bool{ true };
@@ -3131,7 +3134,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case JsonType::String: {
-				theData["value"] = this->value;
+				theData["value"] = *this->value.theValue.string;
 				break;
 			}
 		}
@@ -3571,7 +3574,7 @@ namespace DiscordCoreAPI {
 		choiceData.name = theName;
 		StringView theString{};
 		if (theValue["value"].get(theString) == simdjson::error_code::SUCCESS) {
-			choiceData.value = theString;
+			choiceData.value.theValue = static_cast<String>(theString);
 			this->choices.emplace_back(choiceData);
 			return *this;
 		}

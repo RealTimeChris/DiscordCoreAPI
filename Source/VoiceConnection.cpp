@@ -932,7 +932,7 @@ namespace DiscordCoreAPI {
 		if (this->taskThread01) {
 			this->taskThread01->request_stop();
 			if (this->taskThread01->joinable()) {
-				this->taskThread01->join();
+				this->taskThread01->detach();
 			}
 			this->taskThread01.reset(nullptr);
 		}
@@ -942,7 +942,7 @@ namespace DiscordCoreAPI {
 			}
 			this->taskThread02->request_stop();
 			if (this->taskThread02->joinable()) {
-				this->taskThread02->join();
+				this->taskThread02->detach();
 			}
 			this->taskThread02.reset(nullptr);
 		}

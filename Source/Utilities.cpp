@@ -82,19 +82,7 @@ namespace DiscordCoreAPI {
 		return theObject;
 	}
 
-	EnumConverter::operator Vector<Uint64>() noexcept {
-		Vector<Uint64> theObject{};
-		for (auto& value: this->theVector) {
-			theObject.emplace_back(value);
-		}
-		return theObject;
-	}
-
 	EnumConverter::operator Uint64() const noexcept {
-		return this->theUint;
-	}
-
-	EnumConverter::operator Uint64() noexcept {
 		return this->theUint;
 	}
 

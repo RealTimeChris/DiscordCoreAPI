@@ -272,7 +272,11 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Users::doWeCacheUsers) {
-			Users::cache.emplace(std::move(user));
+			if (!Users::cache.contains(user)) {
+				Users::cache.emplace(std::move(user));
+			} else {
+				Users::cache[user] = std::move(user);
+			}
 			if (Users::cache.size() % 1000 == 0) {
 				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
 			}

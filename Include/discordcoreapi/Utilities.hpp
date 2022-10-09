@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 	template<typename TheType>
 	concept IsString = std::same_as<TheType, String>;
 
-	struct EnumConverter {
+	struct DiscordCoreAPI_Dll EnumConverter {
 		template<IsEnum EnumType> EnumConverter& operator=(EnumType other) {
 			this->theUint = static_cast<Uint64>(other);
 			return *this;
@@ -190,11 +190,7 @@ namespace DiscordCoreAPI {
 
 		operator Vector<Uint64>() const noexcept;
 
-		operator Vector<Uint64>() noexcept;
-
 		explicit operator Uint64() const noexcept;
-
-		explicit operator Uint64() noexcept;
 
 		bool isItAVector() const noexcept;
 		bool isItAVector() noexcept;
@@ -205,7 +201,7 @@ namespace DiscordCoreAPI {
 		Uint64 theUint{};
 	};
 
-	class JsonObject {
+	class DiscordCoreAPI_Dll JsonObject {
 	  public:
 		using ObjectType = std::map<String, JsonObject, std::less<>, std::allocator<std::pair<const String, JsonObject>>>;
 		template<typename Type> using AllocatorType = std::allocator<Type>;
@@ -1052,8 +1048,8 @@ namespace DiscordCoreAPI {
 			Int32 secondsPerMonth{ secondsPerDay * daysPerMonth };
 			Int32 daysPerYear{ 365 };
 			Int32 secondsPerYear{ secondsPerDay * daysPerYear };
-			Int32 secondsToAdd =
-				(yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + (hoursToAdd * secondsPerHour) + (minutesToAdd * secondsPerMinute);
+			Int32 secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + ((hoursToAdd + 8) * secondsPerHour) +
+				(minutesToAdd * secondsPerMinute);
 			result += secondsToAdd;
 			auto resultTwo = std::localtime(&result);
 			String theReturnString{};

@@ -464,7 +464,11 @@ namespace DiscordCoreAPI {
 			return;
 		}
 		if (Channels::doWeCacheChannels) {
-			Channels::cache.emplace(std::move(channel));
+			if (!Channels::cache.contains(channel)) {
+				Channels::cache.emplace(std::move(channel));
+			} else {
+				Channels::cache[channel] = std::move(channel);
+			}
 			if (Channels::cache.size() % 1000 == 0) {
 				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
 			}
