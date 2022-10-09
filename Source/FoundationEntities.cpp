@@ -1286,9 +1286,6 @@ namespace DiscordCoreAPI {
 			updateVoiceData.guildId = this->id;
 			this->discordCoreClient->getBotUser().updateVoiceStatus(updateVoiceData);
 			DiscordCoreClient::getVoiceConnection(this->id)->disconnect();
-			while (DiscordCoreClient::getVoiceConnection(this->id)->areWeConnected()) {
-				std::this_thread::sleep_for(1ms);
-			}
 			this->voiceConnectionPtr = nullptr;
 		}
 	}
@@ -3118,18 +3115,18 @@ namespace DiscordCoreAPI {
 		theData["name_localizations"] = this->nameLocalizations;
 		switch (this->type) {
 			case JsonType::Integer: {
-				theData["value"] = stoull(this->value);
+				theData["value"] = Uint64{ stoull(this->value) };
 				break;
 			}
 			case JsonType::Float: {
-				theData["value"] = stod(this->value);
+				theData["value"] = Float{ stod(this->value) };
 				break;
 			}
 			case JsonType::Boolean: {
 				if (this->value == "false") {
-					theData["value"] = false;
+					theData["value"] = Bool{ false };
 				} else {
-					theData["value"] = true;
+					theData["value"] = Bool{ true };
 				}
 				break;
 			}
