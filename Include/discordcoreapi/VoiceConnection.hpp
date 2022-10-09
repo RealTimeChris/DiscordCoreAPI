@@ -44,6 +44,14 @@ namespace DiscordCoreAPI {
 		Uint32 ssrc{};
 	};
 
+	struct DiscordCoreAPI_Dll VoiceResumeData {
+		Snowflake serverId{};
+		String sessionId{};
+		String token{};
+
+		operator JsonObject();
+	};
+
 	struct DiscordCoreAPI_Dll SessionDescriptionData {
 		String theKey{};
 	};
@@ -114,10 +122,12 @@ namespace DiscordCoreAPI {
 		Initializing_WebSocket = 1,///< Initializing the WebSocket.
 		Collecting_Hello = 2,///< Collecting the client hello.
 		Sending_Identify = 3,///< Sending the identify payload.
-		Collecting_Ready = 4,///< Collecting the client ready.
-		Initializing_DatagramSocket = 5,///< Initializing the datagram udp socket.
-		Sending_Select_Protocol = 7,///< Sending the select-protocol payload.
-		Collecting_Session_Description = 8///< Collecting the session-description payload.
+		Sending_Resume = 4,///< Sending the resume voice-connection payload.
+		Collecting_Resumed = 6,///< Collecting the client ready.
+		Collecting_Ready = 7,///< Collecting the client ready.
+		Initializing_DatagramSocket = 8,///< Initializing the datagram udp socket.
+		Sending_Select_Protocol = 9,///< Sending the select-protocol payload.
+		Collecting_Session_Description = 10///< Collecting the session-description payload.
 	};
 
 	/// For the various active states of the VoiceConnection class. \brief For the various active states of the VoiceConnection class.
@@ -166,7 +176,6 @@ namespace DiscordCoreAPI {
 		UniquePtr<std::jthread> taskThread02{ nullptr };
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		simdjson::ondemand::parser theParser{};
-		Deque<ConnectionPackage> connections{};
 		Vector<unsigned char> secretKeySend{};
 		UMap<Uint64, VoiceUser> voiceUsers{};
 		RTPPacketEncrypter packetEncrypter{};
@@ -176,6 +185,7 @@ namespace DiscordCoreAPI {
 		AtomicBool* doWeQuit{ nullptr };
 		ConnectionPackage thePackage{};
 		String audioEncryptionMode{};
+		Bool haveWeResumed{ false };
 		std::mutex voiceUserMutex{};
 		AudioFrameData audioData{};
 		StreamInfo theStreamInfo{};

@@ -174,9 +174,8 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketCore::WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, Deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, String typeOfWebSocketNew) {
+	WebSocketCore::WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, String typeOfWebSocketNew) {
 		this->typeOfWebSocket = typeOfWebSocketNew;
-		this->theConnections = theConnectionsNew;
 		this->configManager = configManagerNew;
 	}
 
@@ -323,11 +322,9 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, Deque<DiscordCoreAPI::ConnectionPackage>* theConnectionsNew, Int32 currentShardNew,
-		AtomicBool* doWeQuitNew)
-		: WebSocketCore(&theClient->configManager, this->theConnections, "WebSocket") {
+	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, Int32 currentShardNew, AtomicBool* doWeQuitNew)
+		: WebSocketCore(&theClient->configManager, "WebSocket") {
 		this->configManager = &theClient->configManager;
-		this->theConnections = theConnectionsNew;
 		this->shard[0] = currentShardNew;
 		if (this->theParser.allocate(1024ull * 1024ull) != simdjson::error_code::SUCCESS) {
 			throw std::runtime_error{ "Failed to allocate the parser's memory." };
@@ -1504,13 +1501,11 @@ namespace DiscordCoreInternal {
 			this->inputBuffer.clear();
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
-			if (this->theConnections) {
-				DiscordCoreAPI::ConnectionPackage theData{};
-				theData.currentReconnectTries = this->currentReconnectTries;
-				theData.areWeResuming = this->areWeResuming;
-				theData.currentShard = this->shard[0];
-				this->theConnections->emplace_back(theData);
-			}
+			DiscordCoreAPI::ConnectionPackage theData{};
+			theData.currentReconnectTries = this->currentReconnectTries;
+			theData.areWeResuming = this->areWeResuming;
+			theData.currentShard = this->shard[0];
+			this->theConnections.emplace_back(theData);
 		}
 	}
 

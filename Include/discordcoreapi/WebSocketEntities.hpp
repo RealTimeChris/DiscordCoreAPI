@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketCore : public ErlPacker, public SSLClient {
 	  public:
-		WebSocketCore(DiscordCoreAPI::ConfigManager* configManager, Deque<DiscordCoreAPI::ConnectionPackage>* theConnections, String typeOfWebSocket);
+		WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, String typeOfWebSocketNew);
 
 		String stringifyJsonData(DiscordCoreAPI::JsonObject&& dataToSend, WebSocketOpCode theOpCode) noexcept;
 
@@ -78,10 +78,10 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
-		Deque<DiscordCoreAPI::ConnectionPackage>* theConnections{ nullptr };
+		Deque<DiscordCoreAPI::ConnectionPackage> theConnections{};
 		DiscordCoreAPI::ConfigManager* configManager{};
-		Atomic<WebSocketState> currentState{};
 		Bool haveWeReceivedHeartbeatAck{ true };
+		Atomic<WebSocketState> currentState{};
 		const Uint32 maxReconnectTries{ 10 };
 		AtomicBool areWeConnecting{ true };
 		Uint32 currentReconnectTries{ 0 };
@@ -107,8 +107,7 @@ namespace DiscordCoreInternal {
 		friend class YouTubeAPI;
 		friend class SSLClient;
 
-		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, Deque<DiscordCoreAPI::ConnectionPackage>* theConnections, Int32 currentShardNew,
-			AtomicBool* doWeQuitNew);
+		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* theClient, Int32 currentShardNew, AtomicBool* doWeQuitNew);
 
 		Void getVoiceConnectionData(const VoiceConnectInitData& doWeCollect) noexcept;
 

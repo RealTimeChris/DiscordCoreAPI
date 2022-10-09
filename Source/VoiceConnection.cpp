@@ -47,6 +47,14 @@ namespace DiscordCoreAPI {
 		this->port = getUint64 (jsonObjectData, "port");
 	}
 
+	VoiceResumeData::operator DiscordCoreAPI::JsonObject() {
+		JsonObject theData{};
+		theData["server_id"] = this->serverId;
+		theData["session_id"] = this->sessionId;
+		theData["token"] = this->token;
+		return theData;
+	}
+
 	Void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) noexcept {
 		if (other) {
 			opus_decoder_destroy(other);
@@ -131,7 +139,7 @@ namespace DiscordCoreAPI {
 	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, DiscordCoreInternal::WebSocketSSLShard* baseShard,
 		const DiscordCoreInternal::VoiceConnectInitData& initDataNew, DiscordCoreAPI::ConfigManager* configManagerNew, AtomicBool* doWeQuitNew, StreamType streamTypeNew,
 		StreamInfo streamInfoNew) noexcept
-		: WebSocketCore(configManagerNew, &this->connections, "Voice WebSocket"), DatagramSocketClient(StreamType::None) {
+		: WebSocketCore(configManagerNew, "Voice WebSocket"), DatagramSocketClient(StreamType::None) {
 		this->dataOpCode = DiscordCoreInternal::WebSocketOpCode::Op_Text;
 		this->discordCoreClient = BaseSocketAgentNew->discordCoreClient;
 		this->activeState.store(VoiceActiveState::Connecting);
@@ -201,6 +209,7 @@ namespace DiscordCoreAPI {
 							}
 							this->packetEncrypter = RTPPacketEncrypter{ this->audioSSRC, this->secretKeySend };
 							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+							this->areWeResuming = true;
 							return true;
 						}
 						case 5: {
@@ -219,9 +228,19 @@ namespace DiscordCoreAPI {
 							auto theHeartBeat = static_cast<Uint32>(getFloat(theMessage.d, "heartbeat_interval"));
 							this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ theHeartBeat } };
 							this->areWeHeartBeating = true;
-							this->connectionState.store(VoiceConnectionState::Sending_Identify);
+							if (this->areWeResuming) {
+								this->connectionState.store(VoiceConnectionState::Sending_Resume);
+								this->areWeResuming = false;
+							} else {
+								this->connectionState.store(VoiceConnectionState::Sending_Identify);
+							}
 							this->currentState.store(DiscordCoreInternal::WebSocketState::Authenticated);
 							this->haveWeReceivedHeartbeatAck = true;
+							return true;
+						}
+						case 9: {
+							this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
+							this->areWeResuming = true;
 							return true;
 						}
 						case 13: {
@@ -302,8 +321,8 @@ namespace DiscordCoreAPI {
 	}
 
 	Void VoiceConnection::checkForConnections() {
-		if (this->connections.size() > 0) {
-			this->connections.pop_front();
+		if (this->theConnections.size() > 0) {
+			this->theConnections.pop_front();
 			StopWatch theStopWatch{ 10000ms };
 			this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 			while (this->baseShard->currentState.load() != DiscordCoreInternal::WebSocketState::Authenticated) {
@@ -703,7 +722,7 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceConnectionState::Collecting_Hello: {
 				theStopWatch.resetTimer();
-				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify) {
+				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify && this->connectionState.load() != VoiceConnectionState::Sending_Resume) {
 					if (theStopWatch.hasTimePassed()) {
 						this->currentReconnectTries++;
 						this->onClosed();
@@ -735,7 +754,41 @@ namespace DiscordCoreAPI {
 				this->connect();
 				break;
 			}
+			case VoiceConnectionState::Sending_Resume: {
+				this->haveWeReceivedHeartbeatAck = true;
+				VoiceResumeData identifyData{};
+				identifyData.serverId = this->voiceConnectInitData.guildId;
+				identifyData.sessionId = this->voiceConnectionData.sessionId;
+				identifyData.token = this->voiceConnectionData.token;
+				String sendVector = this->stringifyJsonData(identifyData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+				if (WebSocketCore::writeData(sendVector, true) == DiscordCoreInternal::ProcessIOResult::Error) {
+					this->currentReconnectTries++;
+					this->onClosed();
+					return;
+				}
+				this->connectionState.store(VoiceConnectionState::Collecting_Resumed);
+				this->connect();
+				break;
+			}
 			case VoiceConnectionState::Collecting_Ready: {
+				theStopWatch.resetTimer();
+				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
+					if (theStopWatch.hasTimePassed()) {
+						this->currentReconnectTries++;
+						this->onClosed();
+						return;
+					}
+					if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
+						this->currentReconnectTries++;
+						this->onClosed();
+						return;
+					}
+					std::this_thread::sleep_for(1ms);
+				}
+				this->connect();
+				break;
+			}
+			case VoiceConnectionState::Collecting_Resumed: {
 				theStopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
 					if (theStopWatch.hasTimePassed()) {
@@ -944,13 +997,11 @@ namespace DiscordCoreAPI {
 			WebSocketCore::inputBuffer.clear();
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
-			if (WebSocketCore::theConnections) {
-				DiscordCoreAPI::ConnectionPackage theData{};
-				theData.currentReconnectTries = this->currentReconnectTries;
-				theData.areWeResuming = this->areWeResuming;
-				theData.currentShard = this->shard[0];
-				WebSocketCore::theConnections->emplace_back(theData);
-			}
+			DiscordCoreAPI::ConnectionPackage theData{};
+			theData.currentReconnectTries = this->currentReconnectTries;
+			theData.areWeResuming = this->areWeResuming;
+			theData.currentShard = this->shard[0];
+			this->theConnections.emplace_back(theData);
 		}
 		DatagramSocketClient::outputBuffer.clear();
 		DatagramSocketClient::inputBuffer.clear();
@@ -1014,7 +1065,7 @@ namespace DiscordCoreAPI {
 		if (this->baseSocketAgent) {
 			this->voiceConnectInitData = theData;
 			this->thePackage.currentShard = 1;
-			this->connections.emplace_back(this->thePackage);
+			this->theConnections.emplace_back(this->thePackage);
 			this->theStreamInfo = theData.streamInfo;
 			this->streamType = theData.streamType;
 			this->activeState.store(VoiceActiveState::Connecting);
