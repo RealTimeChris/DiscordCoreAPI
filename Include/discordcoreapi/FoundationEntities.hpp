@@ -293,9 +293,13 @@ namespace DiscordCoreInternal {
 		String callStack{};
 		String content{};
 
-		HttpsWorkloadData& operator=(const HttpsWorkloadData& other) noexcept;
+		HttpsWorkloadData& operator=(HttpsWorkloadData&& other) noexcept;
 
-		HttpsWorkloadData(const HttpsWorkloadData& other) noexcept;
+		HttpsWorkloadData(HttpsWorkloadData&& other) noexcept;
+
+		HttpsWorkloadData& operator=(const HttpsWorkloadData& other) noexcept = delete;
+
+		HttpsWorkloadData(const HttpsWorkloadData& other) noexcept = delete;
 
 		HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType) noexcept;
 

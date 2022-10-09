@@ -130,23 +130,23 @@ namespace DiscordCoreInternal {
 		return theData;
 	}
 
-	HttpsWorkloadData& HttpsWorkloadData::operator=(const HttpsWorkloadData& other) noexcept {
-		if (this != &other) {
+	HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadData&& other) noexcept {
+		if (this != &other) {			
+			this->headersToInsert = std::move(other.headersToInsert);
 			this->thisWorkerId.store(this->thisWorkerId.load());
-			this->headersToInsert = other.headersToInsert;
+			this->relativePath = std::move(other.relativePath);
+			this->callStack = std::move(other.callStack);
 			this->workloadClass = other.workloadClass;
+			this->baseUrl = std::move(other.baseUrl);
+			this->content = std::move(other.content);
 			this->workloadType = other.workloadType;
-			this->relativePath = other.relativePath;
 			this->payloadType = other.payloadType;
-			this->callStack = other.callStack;
-			this->baseUrl = other.baseUrl;
-			this->content = other.content;
 		}
 		return *this;
 	}
 
-	HttpsWorkloadData::HttpsWorkloadData(const HttpsWorkloadData& other) noexcept {
-		*this = other;
+	HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadData&& other) noexcept {
+		*this = std::move(other);
 	}
 
 	HttpsWorkloadData::HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType theType) noexcept {
@@ -3119,7 +3119,7 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case JsonType::Float: {
-				theData["value"] = Float{ stod(this->value) };
+				theData["value"] = Double{ stod(this->value) };
 				break;
 			}
 			case JsonType::Boolean: {
