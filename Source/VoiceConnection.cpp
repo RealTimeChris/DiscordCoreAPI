@@ -473,9 +473,6 @@ namespace DiscordCoreAPI {
 						}
 						this->checkForConnections();
 						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(this->audioData);
-						if (this->audioData.data.size() <= 3) {
-							continue;
-						}
 						if (!this->streamSocket) {
 							while (this->theFrameQueue.size() > 0) {
 								this->theFrameQueue.pop_front();
