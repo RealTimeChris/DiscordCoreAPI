@@ -1741,18 +1741,19 @@ namespace DiscordCoreAPI {
 		auto theResult04 = jsonObjectData["value"].get(theDouble);
 
 		if (theResult01 == simdjson::error_code::SUCCESS) {
-			this->valueString = theString;
-			this->valueStringReal = this->valueString.data();
+			this->value = static_cast<String>(theString);
 			this->type = JsonType::String;
 		} else if (theResult02 == simdjson::error_code::SUCCESS) {
-			this->valueInt = theInt;
+			this->value = std::to_string(theInt);
 			this->type = JsonType::Integer;
 		} else if (theResult03 == simdjson::error_code::SUCCESS) {
 			this->type = JsonType::Boolean;
-			this->valueBool = theBool;
+			StringStream theStream{};
+			theStream << std::boolalpha << theBool;
+			this->value = theStream.str();
 		} else if (theResult04 == simdjson::error_code::SUCCESS) {
 			this->type = JsonType::Float;
-			this->valueFloat = theDouble;
+			this->value = std::to_string(theDouble);
 		}
 
 		this->name = getString(jsonObjectData, "name");
@@ -3117,19 +3118,23 @@ namespace DiscordCoreAPI {
 		theData["name_localizations"] = this->nameLocalizations;
 		switch (this->type) {
 			case JsonType::Integer: {
-				theData["value"] = this->valueInt;
+				theData["value"] = stoull(this->value);
 				break;
 			}
 			case JsonType::Float: {
-				theData["value"] = this->valueFloat;
+				theData["value"] = stod(this->value);
 				break;
 			}
 			case JsonType::Boolean: {
-				theData["value"] = this->valueBool;
+				if (this->value == "false") {
+					theData["value"] = false;
+				} else {
+					theData["value"] = true;
+				}
 				break;
 			}
 			case JsonType::String: {
-				theData["value"] = this->valueStringReal;
+				theData["value"] = this->value;
 				break;
 			}
 		}
@@ -3567,20 +3572,9 @@ namespace DiscordCoreAPI {
 		ApplicationCommandOptionChoiceData choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name = theName;
-		if (theValue["value"].get(choiceData.valueBool) == simdjson::error_code::SUCCESS) {
-			this->choices.emplace_back(choiceData);
-			return *this;
-		}
-		if (theValue["value"].get(choiceData.valueFloat) == simdjson::error_code::SUCCESS) {
-			this->choices.emplace_back(choiceData);
-			return *this;
-		}
-		if (theValue["value"].get(choiceData.valueInt) == simdjson::error_code::SUCCESS) {
-			this->choices.emplace_back(choiceData);
-			return *this;
-		}
-		if (theValue["value"].get(choiceData.valueString) == simdjson::error_code::SUCCESS) {
-			choiceData.valueStringReal = choiceData.valueString.data();
+		StringView theString{};
+		if (theValue["value"].get(theString) == simdjson::error_code::SUCCESS) {
+			choiceData.value = theString;
 			this->choices.emplace_back(choiceData);
 			return *this;
 		}
@@ -3743,24 +3737,7 @@ namespace DiscordCoreAPI {
 				JsonObject theValue{};
 				theValue["name"] = value.name;
 				theValue["name_localizations"] = value.nameLocalizations;
-				switch (value.type) {
-					case DiscordCoreAPI::JsonType::Boolean: {
-						theValue["value"] = value.valueBool;
-						break;
-					}
-					case DiscordCoreAPI::JsonType::String: {
-						theValue["value"] = value.valueStringReal;
-						break;
-					}
-					case DiscordCoreAPI::JsonType::Float: {
-						theValue["value"] = value.valueFloat;
-						break;
-					}
-					case DiscordCoreAPI::JsonType::Integer: {
-						theValue["value"] = value.valueInt;
-						break;
-					}
-				}
+				theValue["value"] = value.value;
 				theData["data"]["choices"].pushBack(theValue);
 			}
 		}

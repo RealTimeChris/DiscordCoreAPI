@@ -31,62 +31,6 @@
 
 namespace DiscordCoreAPI {
 
-	ApplicationCommand::ApplicationCommand(simdjson::ondemand::value jsonObjectData) {
-		this->id = getId(jsonObjectData, "id");
-
-		this->defaultMemberPermissions = getString(jsonObjectData, "default_member_permissions");
-
-		this->dmPermission = getBool(jsonObjectData, "dm_permission");
-
-		this->version = getString(jsonObjectData, "version");
-
-		this->type = static_cast<ApplicationCommandType>(getUint8(jsonObjectData, "type"));
-
-		simdjson::ondemand::object theMap{};
-		if (jsonObjectData["name_localizations"].get(theMap) == simdjson::error_code::SUCCESS) {
-			this->nameLocalizations.clear();
-			for (auto value: theMap) {
-				this->nameLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
-			}
-		}
-
-		if (jsonObjectData["description_localizations"].get(theMap) == simdjson::error_code::SUCCESS) {
-			this->descriptionLocalizations.clear();
-			for (auto value: theMap) {
-				this->descriptionLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
-			}
-		}
-
-		this->applicationId = getId(jsonObjectData, "application_id");
-
-		this->name = getString(jsonObjectData, "name");
-
-		this->description = getString(jsonObjectData, "description");
-
-		this->version = getString(jsonObjectData, "version");
-
-		simdjson::ondemand::array theArray{};
-		if (jsonObjectData["options"].get(theArray) == simdjson::error_code::SUCCESS) {
-			this->options.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				ApplicationCommandOptionData theDataNew{ value.value() };
-				this->options.emplace_back(std::move(theDataNew));
-			}
-		}
-	}
-
-	ApplicationCommandVector::ApplicationCommandVector(simdjson::ondemand::value jsonObjectData) {
-		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
-			simdjson::ondemand::array theArray{};
-			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-					ApplicationCommand newData{ value.value() };
-					this->theApplicationCommands.emplace_back(std::move(newData));
-				}
-			}
-		}
-	}
-
 	CreateGlobalApplicationCommandData::operator JsonObject() {
 		JsonObject theData{};
 		if (this->defaultMemberPermissions != 0) {
@@ -171,6 +115,62 @@ namespace DiscordCoreAPI {
 			theData["permissions"].pushBack(newData);
 		}
 		return theData;
+	}
+
+	ApplicationCommand::ApplicationCommand(simdjson::ondemand::value jsonObjectData) {
+		this->id = getId(jsonObjectData, "id");
+
+		this->defaultMemberPermissions = getString(jsonObjectData, "default_member_permissions");
+
+		this->dmPermission = getBool(jsonObjectData, "dm_permission");
+
+		this->version = getString(jsonObjectData, "version");
+
+		this->type = static_cast<ApplicationCommandType>(getUint8(jsonObjectData, "type"));
+
+		simdjson::ondemand::object theMap{};
+		if (jsonObjectData["name_localizations"].get(theMap) == simdjson::error_code::SUCCESS) {
+			this->nameLocalizations.clear();
+			for (auto value: theMap) {
+				this->nameLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
+			}
+		}
+
+		if (jsonObjectData["description_localizations"].get(theMap) == simdjson::error_code::SUCCESS) {
+			this->descriptionLocalizations.clear();
+			for (auto value: theMap) {
+				this->descriptionLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
+			}
+		}
+
+		this->applicationId = getId(jsonObjectData, "application_id");
+
+		this->name = getString(jsonObjectData, "name");
+
+		this->description = getString(jsonObjectData, "description");
+
+		this->version = getString(jsonObjectData, "version");
+
+		simdjson::ondemand::array theArray{};
+		if (jsonObjectData["options"].get(theArray) == simdjson::error_code::SUCCESS) {
+			this->options.clear();
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				ApplicationCommandOptionData theDataNew{ value.value() };
+				this->options.emplace_back(std::move(theDataNew));
+			}
+		}
+	}
+
+	ApplicationCommandVector::ApplicationCommandVector(simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			simdjson::ondemand::array theArray{};
+			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+					ApplicationCommand newData{ value.value() };
+					this->theApplicationCommands.emplace_back(std::move(newData));
+				}
+			}
+		}
 	}
 
 	ApplicationCommandVector::operator Vector<ApplicationCommand>() {

@@ -28,6 +28,40 @@
 
 namespace DiscordCoreAPI {
 
+	CreateGuildScheduledEventData::operator JsonObject() {
+		JsonObject theData{};
+		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
+			theData["channel_id"] = ValueType::Null;
+		} else {
+			theData["channel_id"] = std::to_string(this->channelId);
+		}
+		theData["entity_metadata"]["location"] = this->entityMetadata.location;
+		theData["entity_metadata"]["entity_type"] = this->entityType;
+		theData["scheduled_start_time"] = this->scheduledStartTime;
+		theData["scheduled_end_time"] = this->scheduledEndTime;
+		theData["privacy_level"] = this->privacyLevel;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
+		return theData;
+	}
+
+	ModifyGuildScheduledEventData::operator JsonObject() {
+		JsonObject theData{};
+		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
+			theData["channel_id"] = ValueType::Null;
+		} else {
+			theData["channel_id"] = std::to_string(this->channelId);
+		}
+		theData["entity_metadata"]["location"] = this->entityMetadata.location;
+		theData["entity_metadata"]["entity_type"] = this->entityType;
+		theData["scheduled_start_time"] = this->scheduledStartTime;
+		theData["scheduled_end_time"] = this->scheduledEndTime;
+		theData["privacy_level"] = this->privacyLevel;
+		theData["description"] = this->description;
+		theData["name"] = this->name;
+		return theData;
+	}
+
 	GuildScheduledEvent::GuildScheduledEvent(simdjson::ondemand::value jsonObjectData) {
 		this->privacyLevel = static_cast<GuildScheduledEventPrivacyLevel>(getUint8(jsonObjectData, "privacy_level"));
 
@@ -77,40 +111,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	CreateGuildScheduledEventData::operator JsonObject() {
-		JsonObject theData{};
-		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			theData["channel_id"] = ValueType::Null;
-		} else {
-			theData["channel_id"] = std::to_string(this->channelId);
-		}
-		theData["entity_metadata"]["location"] = this->entityMetadata.location;
-		theData["entity_metadata"]["entity_type"] = this->entityType;
-		theData["scheduled_start_time"] = this->scheduledStartTime;
-		theData["scheduled_end_time"] = this->scheduledEndTime;
-		theData["privacy_level"] = this->privacyLevel;
-		theData["description"] = this->description;
-		theData["name"] = this->name;
-		return theData;
-	}
-
-	ModifyGuildScheduledEventData::operator JsonObject() {
-		JsonObject theData{};
-		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
-			theData["channel_id"] = ValueType::Null;
-		} else {
-			theData["channel_id"] = std::to_string(this->channelId);
-		}
-		theData["entity_metadata"]["location"] = this->entityMetadata.location;
-		theData["entity_metadata"]["entity_type"] = this->entityType;
-		theData["scheduled_start_time"] = this->scheduledStartTime;
-		theData["scheduled_end_time"] = this->scheduledEndTime;
-		theData["privacy_level"] = this->privacyLevel;
-		theData["description"] = this->description;
-		theData["name"] = this->name;
-		return theData;
-	}
-
+	
 	GuildScheduledEventVector::operator Vector<GuildScheduledEvent>() {
 		return this->theGuildScheduledEvents;
 	}

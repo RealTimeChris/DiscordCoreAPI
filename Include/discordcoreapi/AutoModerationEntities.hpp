@@ -39,30 +39,6 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
-	class DiscordCoreAPI_Dll AutoModerationRule : public AutoModerationRuleData {
-	  public:
-		AutoModerationRule() noexcept = default;
-
-		AutoModerationRule(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~AutoModerationRule() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll AutoModerationRuleVector {
-	  public:
-		AutoModerationRuleVector() noexcept = default;
-
-		operator Vector<AutoModerationRule>();
-
-		AutoModerationRuleVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~AutoModerationRuleVector() noexcept = default;
-
-	  protected:
-		Vector<AutoModerationRule> theAutoModerationRules{};
-	};
-
 	/// For listing all of the auto-moderation-rules for a particular Guild. \brief For listing all of the auto-moderation-rules for a particular Guild .
 	struct DiscordCoreAPI_Dll ListAutoModerationRulesForGuildData {
 		Snowflake guildId{};///< The id of the Guild for which you would like to list the auto-moderation rules.
@@ -83,6 +59,21 @@ namespace DiscordCoreAPI {
 		TriggerType triggerType{};///< The trigger type.
 		EventType eventType{};///< The event type.
 		Snowflake guildId{};///< The Guild within which to create the AutoModerationRule.
+		String name{};///< The rule name.
+		Bool enabled{};///< Whether the rule is enabled(False by default).
+
+		operator JsonObject();
+	};
+
+	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.
+	struct DiscordCoreAPI_Dll ModifyAutoModerationRuleData {
+		Vector<Uint64> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
+		Vector<Uint64> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
+		TriggerMetaData triggerMetadata{};///< The trigger metadata.
+		Vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
+		Uint64 autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to modify.
+		EventType eventType{};///< The event type.
+		Snowflake guildId{};///< The AutoModerationRule within which to modify the auto-moderation-rule.
 		String name{};///< The rule name.
 		Bool enabled{};///< Whether the rule is enabled(False by default).
 
@@ -110,25 +101,34 @@ namespace DiscordCoreAPI {
 		virtual ~AutoModerationActionExecutionEventData() noexcept = default;
 	};
 
-	/// For modifying an auto-moderation-rule. \brief For modifying an auto-moderation-rule.
-	struct DiscordCoreAPI_Dll ModifyAutoModerationRuleData {
-		Vector<Uint64> exemptChannels{};///< The channel ids that should not be affected by the rule(Maximum of 50).
-		Vector<Uint64> exemptRoles{};///< The role ids that should not be affected by the rule(Maximum of 20).
-		TriggerMetaData triggerMetadata{};///< The trigger metadata.
-		Vector<ActionData> actions{};///< The actions which will execute when the rule is triggered
-		Uint64 autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to modify.
-		EventType eventType{};///< The event type.
-		Snowflake guildId{};///< The AutoModerationRule within which to modify the auto-moderation-rule.
-		String name{};///< The rule name.
-		Bool enabled{};///< Whether the rule is enabled(False by default).
-
-		operator JsonObject();
-	};
-
 	/// For deleting an auto-moderation-rule. \brief For deleting an auto-moderation-rule.
 	struct DiscordCoreAPI_Dll DeleteAutoModerationRuleData {
 		Uint64 autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to delete.
 		Snowflake guildId{};///< Guild within which to delete the auto-moderation-rule.
+	};
+
+	/// Represents an auto-moderation-rule. \brief Represents an auto-moderation-rule.
+	class DiscordCoreAPI_Dll AutoModerationRule : public AutoModerationRuleData {
+	  public:
+		AutoModerationRule() noexcept = default;
+
+		AutoModerationRule(simdjson::ondemand::value jsonObjectData);
+
+		virtual ~AutoModerationRule() noexcept = default;
+	};
+
+	class DiscordCoreAPI_Dll AutoModerationRuleVector {
+	  public:
+		AutoModerationRuleVector() noexcept = default;
+
+		operator Vector<AutoModerationRule>();
+
+		AutoModerationRuleVector(simdjson::ondemand::value jsonObjectData);
+
+		virtual ~AutoModerationRuleVector() noexcept = default;
+
+	  protected:
+		Vector<AutoModerationRule> theAutoModerationRules{};
 	};
 
 	/**@}*/

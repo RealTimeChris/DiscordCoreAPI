@@ -388,10 +388,12 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a User update event. \brief Data that is received as part of a User update event.
 	struct DiscordCoreAPI_Dll OnUserUpdateData {
+		UniquePtr<UserData> user{ std::make_unique<UserData>() };///< The new User.
+
 		OnUserUpdateData(UniquePtr<UserData>);
+
 		OnUserUpdateData& operator=(const OnUserUpdateData&);
 		OnUserUpdateData(const OnUserUpdateData&);
-		UniquePtr<UserData> user{ std::make_unique<UserData>() };///< The new User.
 	};
 
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.
@@ -401,11 +403,13 @@ namespace DiscordCoreAPI {
 
 	/// Data that is received as part of a voice server update event. \brief Data that is received as part of a voice server update event.
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData {
-		OnVoiceServerUpdateData() noexcept = default;
-		OnVoiceServerUpdateData(simdjson::ondemand::value);
+		Snowflake guildId{};///< The id of the Guild for which the server update is occurring.
 		String endpoint{};///< The new endpoint.
 		String token{};///< The token of the server update event.
-		Snowflake guildId{};///< The id of the Guild for which the server update is occurring.
+
+		OnVoiceServerUpdateData() noexcept = default;
+
+		OnVoiceServerUpdateData(simdjson::ondemand::value);
 	};
 
 	/// Data that is received as part of a WebHook update event. \brief Data that is received as part of a WebHook update event.

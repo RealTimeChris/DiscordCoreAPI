@@ -27,6 +27,84 @@
 
 namespace DiscordCoreAPI {
 
+	CreateAutoModerationRuleData::operator JsonObject() {
+		JsonObject theData{};
+		for (auto& value: this->actions) {
+			JsonObject dataNew{};
+			dataNew["metadata"]["channel_id"] = std::to_string(value.metadata.channelId);
+			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
+			dataNew["type"] = value.type;
+			theData["actions"].pushBack(dataNew);
+		}
+		theData["enabled"] = this->enabled;
+		theData["event_type"] = this->eventType;
+		for (auto& value: this->exemptChannels) {
+			theData["exempt_channels"].pushBack(value);
+		}
+		for (auto& value: this->exemptRoles) {
+			theData["exempt_roles"].pushBack(value);
+		}
+		theData["name"] = this->name;
+		for (auto& value: this->triggerMetadata.keywordFilter) {
+			theData["trigger_metadata"]["keyword_filter"].pushBack(value);
+		}
+		theData["presets"] = this->triggerMetadata.presets;
+		theData["trigger_type"] = this->triggerType;
+		return theData;
+	}
+
+	ModifyAutoModerationRuleData::operator JsonObject() {
+		JsonObject theData{};
+		for (auto& value: this->actions) {
+			JsonObject dataNew{};
+			dataNew["metadata"]["channel_id"] = std::to_string(value.metadata.channelId);
+			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
+			dataNew["type"] = value.type;
+			theData["actions"].pushBack(dataNew);
+		}
+		theData["enabled"] = this->enabled;
+		theData["event_type"] = this->eventType;
+		for (auto& value: this->exemptChannels) {
+			theData["exempt_channels"].pushBack(value);
+		}
+		for (auto& value: this->exemptRoles) {
+			theData["exempt_roles"].pushBack(value);
+		}
+		theData["name"] = this->name;
+		for (auto& value: this->triggerMetadata.keywordFilter) {
+			theData["trigger_metadata"]["keyword_filter"].pushBack(value);
+		}
+		theData["presets"] = this->triggerMetadata.presets;
+		return theData;
+	}
+
+	AutoModerationActionExecutionEventData::AutoModerationActionExecutionEventData(simdjson::ondemand::value jsonObjectData) {
+		this->alertSystemMessageId = getId(jsonObjectData, "alert_system_message_id");
+
+		this->ruleTriggerType = static_cast<TriggerType>(getUint8(jsonObjectData, "rule_trigger_type"));
+
+		this->matchedKeyword = getString(jsonObjectData, "matched_keyword");
+
+		this->matchedContent = getString(jsonObjectData, "matched_content");
+
+		simdjson::ondemand::value theObject{};
+		if (jsonObjectData["action"].get(theObject) == simdjson::error_code::SUCCESS) {
+			this->action = ActionData{ theObject };
+		}
+
+		this->content = getString(jsonObjectData, "content");
+
+		this->messageId = getId(jsonObjectData, "message_id");
+
+		this->channelId = getId(jsonObjectData, "channel_id");
+
+		this->guildId = getId(jsonObjectData, "guild_id");
+
+		this->ruleId = getId(jsonObjectData, "rule_id");
+
+		this->userId = getId(jsonObjectData, "user_id");
+	}
+
 	AutoModerationRule::AutoModerationRule(simdjson::ondemand::value jsonObjectData) {
 		this->name = getString(jsonObjectData, "name");
 
@@ -79,84 +157,6 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
-	}
-
-	AutoModerationActionExecutionEventData::AutoModerationActionExecutionEventData(simdjson::ondemand::value jsonObjectData) {
-		this->alertSystemMessageId = getId(jsonObjectData, "alert_system_message_id");
-
-		this->ruleTriggerType = static_cast<TriggerType>(getUint8(jsonObjectData, "rule_trigger_type"));
-
-		this->matchedKeyword = getString(jsonObjectData, "matched_keyword");
-
-		this->matchedContent = getString(jsonObjectData, "matched_content");
-
-		simdjson::ondemand::value theObject{};
-		if (jsonObjectData["action"].get(theObject) == simdjson::error_code::SUCCESS) {
-			this->action = ActionData{ theObject };
-		}
-
-		this->content = getString(jsonObjectData, "content");
-
-		this->messageId = getId(jsonObjectData, "message_id");
-
-		this->channelId = getId(jsonObjectData, "channel_id");
-
-		this->guildId = getId(jsonObjectData, "guild_id");
-
-		this->ruleId = getId(jsonObjectData, "rule_id");
-
-		this->userId = getId(jsonObjectData, "user_id");
-	}
-
-	CreateAutoModerationRuleData::operator JsonObject() {
-		JsonObject theData{};
-		for (auto& value: this->actions) {
-			JsonObject dataNew{};
-			dataNew["metadata"]["channel_id"] = std::to_string(value.metadata.channelId);
-			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
-			dataNew["type"] = value.type;
-			theData["actions"].pushBack(dataNew);
-		}
-		theData["enabled"] = this->enabled;
-		theData["event_type"] = this->eventType;
-		for (auto& value: this->exemptChannels) {
-			theData["exempt_channels"].pushBack(value);
-		}
-		for (auto& value: this->exemptRoles) {
-			theData["exempt_roles"].pushBack(value);
-		}
-		theData["name"] = this->name;
-		for (auto& value: this->triggerMetadata.keywordFilter) {
-			theData["trigger_metadata"]["keyword_filter"].pushBack(value);
-		}
-		theData["presets"] = this->triggerMetadata.presets;
-		theData["trigger_type"] = this->triggerType;
-		return theData;
-	}
-
-	ModifyAutoModerationRuleData::operator JsonObject() {
-		JsonObject theData{};
-		for (auto& value: this->actions) {
-			JsonObject dataNew{};
-			dataNew["metadata"]["channel_id"] = std::to_string(value.metadata.channelId);
-			dataNew["metadata"]["duration_seconds"] = value.metadata.durationSeconds;
-			dataNew["type"] = value.type;
-			theData["actions"].pushBack(dataNew);
-		}
-		theData["enabled"] = this->enabled;
-		theData["event_type"] = this->eventType;
-		for (auto& value: this->exemptChannels) {
-			theData["exempt_channels"].pushBack(value);
-		}
-		for (auto& value: this->exemptRoles) {
-			theData["exempt_roles"].pushBack(value);
-		}
-		theData["name"] = this->name;
-		for (auto& value: this->triggerMetadata.keywordFilter) {
-			theData["trigger_metadata"]["keyword_filter"].pushBack(value);
-		}
-		theData["presets"] = this->triggerMetadata.presets;
-		return theData;
 	}
 
 	AutoModerationRuleVector::operator Vector<AutoModerationRule>() {
