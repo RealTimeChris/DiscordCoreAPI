@@ -107,7 +107,6 @@ target_compile_options(
 
 target_link_options(
 	"${LIB_NAME}" PUBLIC
-	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:${EnableASAN},true>:/incremental:no>>"
 	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:${EnableASAN},true>:/Debug>>"
 	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
 	"$<$<PLATFORM_ID:Linux>:$<$<STREQUAL:${EnableASAN},true>:-fsanitize=address>>"
