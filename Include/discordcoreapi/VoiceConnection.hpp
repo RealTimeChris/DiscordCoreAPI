@@ -154,24 +154,22 @@ namespace DiscordCoreAPI {
 		~VoiceConnection() noexcept;
 
 	  protected:
-		Atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
+		Atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		Atomic<VoiceActiveState> lastActiveState{ VoiceActiveState::Connecting };
-		UniquePtr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
 		Atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
+		UniquePtr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectInitData voiceConnectInitData{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
 		UniquePtr<std::jthread> taskThread01{ nullptr };
 		UniquePtr<std::jthread> taskThread02{ nullptr };
-		UniquePtr<std::jthread> taskThread03{ nullptr };
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		Deque<ConnectionPackage> connections{};
-		Deque<VoicePayload> theFrameQueue{};
-		AtomicBool areWeConnectedBool{ false };
 		UMap<Uint64, VoiceUser> voiceUsers{};
 		RTPPacketEncrypter packetEncrypter{};
+		Deque<VoicePayload> theFrameQueue{};
 		AtomicBool areWePlaying{ false };
 		Snowflake currentGuildMemberId{};
 		AtomicBool* doWeQuit{ nullptr };

@@ -815,10 +815,10 @@ namespace DiscordCoreAPI {
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				if (this->streamType != StreamType::None) {
 					this->streamSocket = std::make_unique<DatagramSocketClient>(this->streamType);
-					if (this->taskThread03) {
-						this->taskThread03.reset(nullptr);
+					if (this->taskThread02) {
+						this->taskThread02.reset(nullptr);
 					}
-					this->taskThread03 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+					this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 						this->runBridge(stopToken);
 					});
 					this->streamSocket->connect(this->theStreamInfo.address, this->theStreamInfo.port);
@@ -840,11 +840,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Bool VoiceConnection::areWeConnected() noexcept {
-		if (this == nullptr) {
-			return false;
-		} else {
-			return this->areWeConnectedBool.load();
-		}
+		return WebSocketCore::areWeStillConnected() && DatagramSocketClient::areWeStillConnected();
 	}
 
 	Void VoiceConnection::onClosed() noexcept {
@@ -895,7 +891,6 @@ namespace DiscordCoreAPI {
 						message = message.substr(0, endLineFind);
 					}
 					this->externalIp = message;
-					this->areWeConnectedBool.store(true);
 					this->voiceConnectionDataBuffer.clearContents();
 					return true;
 				}
@@ -942,21 +937,14 @@ namespace DiscordCoreAPI {
 			this->taskThread01.reset(nullptr);
 		}
 		if (this->taskThread02) {
+			if (this->streamSocket) {
+				this->streamSocket->disconnect();
+			}
 			this->taskThread02->request_stop();
 			if (this->taskThread02->joinable()) {
 				this->taskThread02->join();
 			}
 			this->taskThread02.reset(nullptr);
-		}
-		if (this->taskThread03) {
-			if (this->streamSocket) {
-				this->streamSocket->disconnect();
-			}
-			this->taskThread03->request_stop();
-			if (this->taskThread03->joinable()) {
-				this->taskThread03->join();
-			}
-			this->taskThread03.reset(nullptr);
 		}
 		DatagramSocketClient::disconnect();
 		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
@@ -966,7 +954,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)
 				->onSongCompletionEvent.remove(DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->eventToken);
 		}
-		this->areWeConnectedBool.store(false);
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		this->activeState.store(VoiceActiveState::Connecting);
 	}
@@ -989,14 +976,13 @@ namespace DiscordCoreAPI {
 				WebSocketCore::theConnections->emplace_back(theData);
 			}
 		}
-		if (this->taskThread03) {
-			this->taskThread03.reset(nullptr);
+		if (this->taskThread02) {
+			this->taskThread02.reset(nullptr);
 		}
 		DatagramSocketClient::outputBuffer.clear();
 		DatagramSocketClient::inputBuffer.clear();
 		WebSocketCore::outputBuffer.clear();
 		WebSocketCore::inputBuffer.clear();
-		this->areWeConnectedBool.store(false);
 		this->thePackage.currentShard = 0;
 		this->areWeHeartBeating = false;
 		this->currentReconnectTries++;
