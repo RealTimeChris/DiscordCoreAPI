@@ -721,6 +721,9 @@ namespace DiscordCoreAPI {
 
 	template<typename ObjectType> class ObjectCache {
 	  public:
+		using AllocatorType = std::allocator<ObjectType>;
+		using AllocatorTraits = std::allocator_traits<AllocatorType>;
+
 		ObjectCache() noexcept {};
 
 		Void emplace(ObjectType&& theData) noexcept {
