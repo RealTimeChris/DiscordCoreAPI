@@ -185,7 +185,6 @@ namespace DiscordCoreAPI {
 		AtomicBool* doWeQuit{ nullptr };
 		ConnectionPackage thePackage{};
 		String audioEncryptionMode{};
-		Bool haveWeResumed{ false };
 		std::mutex voiceUserMutex{};
 		AudioFrameData audioData{};
 		StreamInfo theStreamInfo{};
