@@ -251,19 +251,8 @@ namespace DiscordCoreAPI {
 			Globals::doWeQuit.store(true);
 			return;
 		}
+		this->registerFunctionsInternal();
 		while (!Globals::doWeQuit.load()) {
-			if (this->theConnections.size() > 0 && this->theConnectionStopWatch.hasTimePassed()) {
-				this->theConnectionStopWatch.resetTimer();
-				auto theData = this->theConnections.front();
-				this->theConnections.pop_front();
-				this->baseSocketAgentMap[theData.currentShard % this->baseSocketAgentMap.size()]->connect(theData);
-				if (this->theConnections.size() == 0) {
-					if (this->configManager.doWePrintGeneralSuccessMessages()) {
-						cout << shiftToBrightGreen() << "All of the shards are connected for the current process!" << reset() << endl << endl;
-					}
-					this->registerFunctionsInternal();
-				}
-			}
 			std::this_thread::sleep_for(1ms);
 		}
 	}
@@ -319,9 +308,8 @@ namespace DiscordCoreAPI {
 			ConnectionPackage theData{};
 			theData.currentShard = x;
 			theData.currentReconnectTries = 0;
-			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x] =
-				std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, &this->theConnections, x, &Globals::doWeQuit);
-			this->theConnections.emplace_back(theData);
+			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x] = std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, x, &Globals::doWeQuit);
+			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x]->theConnections.emplace_back(theData);
 		}
 		try {
 			this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[this->configManager.getStartingShard()].get() };

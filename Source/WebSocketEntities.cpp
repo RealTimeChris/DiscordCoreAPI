@@ -1533,8 +1533,7 @@ namespace DiscordCoreInternal {
 		try {
 			if (thePackageNew.currentShard != -1) {
 				if (!this->theShardMap.contains(thePackageNew.currentShard)) {
-					this->theShardMap[thePackageNew.currentShard] =
-						std::make_unique<WebSocketSSLShard>(this->discordCoreClient, &this->discordCoreClient->theConnections, thePackageNew.currentShard, this->doWeQuit);
+					this->theShardMap[thePackageNew.currentShard] = std::make_unique<WebSocketSSLShard>(this->discordCoreClient, thePackageNew.currentShard, this->doWeQuit);
 				}
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries = thePackageNew.currentReconnectTries;
 				this->theShardMap[thePackageNew.currentShard]->currentReconnectTries++;
@@ -1663,6 +1662,11 @@ namespace DiscordCoreInternal {
 					if (value->areWeStillConnected()) {
 						static_cast<WebSocketSSLShard*>(value.get())->checkForAndSendHeartBeat();
 						areWeConnected = true;
+					}
+					if (value->theConnections.size() > 0) {
+						auto theConnectionData = value->theConnections.front();
+						value->theConnections.pop_front();
+						this->connect(theConnectionData);
 					}
 				}
 				if (!areWeConnected) {

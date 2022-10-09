@@ -58,21 +58,14 @@ namespace DiscordCoreInternal {
 			partialSearchResultsJson = theParser.iterate(newString.data(), newString.length(), newString.capacity());
 			simdjson::ondemand::value theObjectContents{};
 			if (partialSearchResultsJson["contents"].get(theObjectContents) == simdjson::error_code::SUCCESS) {
-				simdjson::ondemand::value theObjectContents02{};
-				if (theObjectContents["twoColumnSearchResultsRenderer"].get(theObjectContents02) == simdjson::error_code::SUCCESS) {
-					simdjson::ondemand::value theObjectContents03{};
-					if (theObjectContents02["primaryContents"].get(theObjectContents03) == simdjson::error_code::SUCCESS) {
-						simdjson::ondemand::value theObjectContents04{};
-						if (theObjectContents03["sectionListRenderer"].get(theObjectContents04) == simdjson::error_code::SUCCESS) {
-							simdjson::ondemand::array theObjectContents05{};
-							if (theObjectContents04["contents"].get(theObjectContents05) == simdjson::error_code::SUCCESS) {
-								simdjson::ondemand::value theObjectContents06{};
-								if (theObjectContents05.at(0).get(theObjectContents06) == simdjson::error_code::SUCCESS) {
-									simdjson::ondemand::value theObjectContents07{};
-									if (theObjectContents06["itemSectionRenderer"].get(theObjectContents07) == simdjson::error_code::SUCCESS) {
-										simdjson::ondemand::array theObjectContents08{};
-										if (theObjectContents07["contents"].get(theObjectContents08) == simdjson::error_code::SUCCESS) {
-											for (auto iterator: theObjectContents08) {
+				if (theObjectContents["twoColumnSearchResultsRenderer"].get(theObjectContents) == simdjson::error_code::SUCCESS) {
+					if (theObjectContents["primaryContents"].get(theObjectContents) == simdjson::error_code::SUCCESS) {
+						if (theObjectContents["sectionListRenderer"].get(theObjectContents) == simdjson::error_code::SUCCESS) {
+							if (theObjectContents["contents"].get(theObjectContents) == simdjson::error_code::SUCCESS) {
+								if (theObjectContents.at(0).get(theObjectContents) == simdjson::error_code::SUCCESS) {
+									if (theObjectContents["itemSectionRenderer"].get(theObjectContents) == simdjson::error_code::SUCCESS) {
+										if (theObjectContents["contents"].get(theObjectContents) == simdjson::error_code::SUCCESS) {
+											for (auto iterator: theObjectContents) {
 												DiscordCoreAPI::Song searchResult{};
 												simdjson::ondemand::value theObject{};
 												if (iterator["videoRenderer"].get(theObject) == simdjson::error_code::SUCCESS) {
@@ -244,7 +237,7 @@ namespace DiscordCoreInternal {
 
 	Void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, Int32 currentReconnectTries) {
 		try {
-			UniquePtr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, nullptr, 0, nullptr) };
+			UniquePtr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, 0, nullptr) };
 			auto bytesRead{ static_cast<Int32>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				if (!streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true)) {

@@ -156,13 +156,12 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		UMap<Uint32, UniquePtr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentMap{};
-		UniquePtr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		StopWatch<std::chrono::milliseconds> theConnectionStopWatch{ 5300ms };
+		UniquePtr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		Deque<CreateApplicationCommandData> commandsToRegister{};
 	#ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 	#endif
-		Deque<ConnectionPackage> theConnections{};
 		CommandController commandController{ this };
 		Bool didWeStartCorrectly{ false };
 		ConfigManager configManager{};
