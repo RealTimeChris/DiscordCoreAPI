@@ -308,7 +308,7 @@ namespace DiscordCoreInternal {
 		PollFDWrapper readWriteSet{};
 		for (auto& [key, value]: theShardMap) {
 			if (value->areWeStillConnected() && !value->areWeConnecting.load()) {
-				pollfd theFdSet{ .fd = static_cast<uint32_t>(value->theSocket) };
+				pollfd theFdSet{ .fd = static_cast<SOCKET>(value->theSocket) };
 				if (value->outputBuffer.getUsedSpace() > 0) {
 					theFdSet.events = POLLIN | POLLOUT;
 				} else {
@@ -364,7 +364,7 @@ namespace DiscordCoreInternal {
 	ProcessIOResult SSLClient::writeData(StringView dataToWrite, Bool priority) noexcept {
 		if (dataToWrite.size() > 0 && this->ssl) {
 			if (priority && dataToWrite.size() < static_cast<Uint64>(16 * 1024)) {
-				pollfd readWriteSet{ .fd = static_cast<uint32_t>(this->theSocket), .events = POLLOUT };
+				pollfd readWriteSet{ .fd = static_cast<SOCKET>(this->theSocket), .events = POLLOUT };
 				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
 					return ProcessIOResult::Error;
 				} else if (returnValue == 0) {
@@ -410,7 +410,7 @@ namespace DiscordCoreInternal {
 		if (!this->areWeStillConnected()) {
 			return ProcessIOResult::Error;
 		}
-		pollfd readWriteSet{ .fd = static_cast<uint32_t>(this->theSocket) };
+		pollfd readWriteSet{ .fd = static_cast<SOCKET>(this->theSocket) };
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
