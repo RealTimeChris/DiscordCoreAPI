@@ -47,10 +47,6 @@ namespace DiscordCoreAPI {
 		this->channel = std::move(channelNew);
 	}
 
-	OnChannelUpdateData ::~OnChannelUpdateData() noexcept {
-		this->channel.release();
-	}
-
 	OnChannelUpdateData& OnChannelUpdateData::operator=(const OnChannelUpdateData& other) {
 		*this->channel = *other.channel;
 		return *this;
