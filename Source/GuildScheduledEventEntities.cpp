@@ -36,8 +36,7 @@ namespace DiscordCoreAPI {
 		this->status = static_cast<GuildScheduledEventStatus>(getUint8(jsonObjectData, "status"));
 
 		simdjson::ondemand::value theObject{};
-		auto theResult = jsonObjectData["entity_metadata"].get(theObject);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["entity_metadata"].get(theObject) == simdjson::error_code::SUCCESS) {
 			this->entityMetadata = GuildScheduledEventMetadata{ theObject };
 		}
 
@@ -57,8 +56,7 @@ namespace DiscordCoreAPI {
 
 		this->guildId = getId(jsonObjectData, "guild_id");
 
-		theResult = jsonObjectData["creator"].get(theObject);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["creator"].get(theObject) == simdjson::error_code::SUCCESS) {
 			this->creator = UserData{ theObject };
 		}
 
@@ -70,8 +68,7 @@ namespace DiscordCoreAPI {
 	GuildScheduledEventVector::GuildScheduledEventVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
-			auto theResult = jsonObjectData.get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					GuildScheduledEvent newData{ value.value() };
 					this->theGuildScheduledEvents.emplace_back(std::move(newData));

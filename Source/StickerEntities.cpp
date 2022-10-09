@@ -50,8 +50,7 @@ namespace DiscordCoreAPI {
 		this->id = getId(jsonObjectData, "id");
 
 		simdjson::ondemand::value theObject{};
-		auto theResult = jsonObjectData["user"].get(theObject);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["user"].get(theObject) == simdjson::error_code::SUCCESS) {
 			this->user = UserData{ theObject };
 		}
 	}
@@ -59,8 +58,7 @@ namespace DiscordCoreAPI {
 	StickerVector::StickerVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
-			auto theResult = jsonObjectData.get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					Sticker newData{ value.value() };
 					this->theStickers.emplace_back(std::move(newData));

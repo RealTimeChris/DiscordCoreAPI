@@ -36,8 +36,7 @@ namespace DiscordCoreAPI {
 		this->ip = getString(jsonObjectData, "ip");
 		this->ssrc = getUint32(jsonObjectData, "ssrc");
 		simdjson::ondemand::array theArray{};
-		auto theResult = jsonObjectData["modes"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["modes"].get(theArray) == simdjson::error_code::SUCCESS) {
 			this->mode.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				if (String{ value.get_string().take_value() } == "xsalsa20_poly1305") {
@@ -45,7 +44,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
-		this->port = getUint64(jsonObjectData, "port");
+		this->port = getUint64 (jsonObjectData, "port");
 	}
 
 	Void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) noexcept {

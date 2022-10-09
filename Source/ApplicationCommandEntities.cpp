@@ -43,16 +43,14 @@ namespace DiscordCoreAPI {
 		this->type = static_cast<ApplicationCommandType>(getUint8(jsonObjectData, "type"));
 
 		simdjson::ondemand::object theMap{};
-		auto theResult = jsonObjectData["name_localizations"].get(theMap);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["name_localizations"].get(theMap) == simdjson::error_code::SUCCESS) {
 			this->nameLocalizations.clear();
 			for (auto value: theMap) {
 				this->nameLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
 			}
 		}
 
-		theResult = jsonObjectData["description_localizations"].get(theMap);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["description_localizations"].get(theMap) == simdjson::error_code::SUCCESS) {
 			this->descriptionLocalizations.clear();
 			for (auto value: theMap) {
 				this->descriptionLocalizations.emplace(value.unescaped_key().take_value(), value.value().get_string().take_value());
@@ -68,8 +66,7 @@ namespace DiscordCoreAPI {
 		this->version = getString(jsonObjectData, "version");
 
 		simdjson::ondemand::array theArray{};
-		theResult = jsonObjectData["options"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["options"].get(theArray) == simdjson::error_code::SUCCESS) {
 			this->options.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ApplicationCommandOptionData theDataNew{ value.value() };
@@ -81,8 +78,7 @@ namespace DiscordCoreAPI {
 	ApplicationCommandVector::ApplicationCommandVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
-			auto theResult = jsonObjectData.get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					ApplicationCommand newData{ value.value() };
 					this->theApplicationCommands.emplace_back(std::move(newData));

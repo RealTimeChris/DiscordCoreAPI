@@ -47,8 +47,7 @@ namespace DiscordCoreInternal {
 			returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
 			auto theDocument = theParser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
 			simdjson::ondemand::array theArray{};
-			auto theResult = theDocument.get_value().value().get_object().value()["collection"].get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (theDocument.get_value().value().get_object().value()["collection"].get(theArray) == simdjson::error_code::SUCCESS) {
 				for (auto value: theArray) {
 					DiscordCoreAPI::Song newSong{ value.value() };
 					if (newSong.songTitle == "") {
@@ -84,8 +83,7 @@ namespace DiscordCoreInternal {
 			results.responseMessage.reserve(results.responseMessage.size() + simdjson::SIMDJSON_PADDING);
 			simdjson::ondemand::object theDocument = theParser.iterate(results.responseMessage).get_value().value().get_object().value();
 			StringView theUrl{};
-			auto theResult = theDocument["url"].get(theUrl);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (theDocument["url"].get(theUrl) == simdjson::error_code::SUCCESS) {
 				newSong.secondDownloadUrl = static_cast<String>(theUrl);
 			}
 			if (newSong.secondDownloadUrl.find("/playlist") != String::npos) {

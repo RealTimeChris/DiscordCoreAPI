@@ -2446,7 +2446,7 @@ namespace DiscordCoreAPI {
 
 		ApplicationCommandData(simdjson::ondemand::value jsonObjectData);
 
-		friend bool operator==(const ApplicationCommandData&, const CreateApplicationCommandData&);
+		friend bool operator==(const ApplicationCommandData&, const ApplicationCommandData&);
 
 		virtual ~ApplicationCommandData() noexcept = default;
 	};

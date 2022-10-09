@@ -43,12 +43,12 @@ namespace DiscordCoreInternal {
 		StringStream theStream{};
 		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
 #ifdef _WIN32
-		UniquePtr<char[]> string{ std::make_unique<char[]>(1024) };
+		char string[1024]{};
 	#ifdef UWP
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), ( LPWSTR )string.get(), 1024,
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), ( LPWSTR )string, 1024);
 			NULL);
 	#else
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string.get(), 1024, NULL);
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string, 1024, NULL);
 	#endif
 		theStream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << endl;
 #else
@@ -80,7 +80,6 @@ namespace DiscordCoreInternal {
 	SSL_CTXWrapper& SSL_CTXWrapper::operator=(SSL_CTX* other) {
 		this->thePtr.reset(nullptr);
 		this->thePtr.reset(other);
-		SSL_CTX_up_ref(other);
 		return *this;
 	}
 
@@ -99,7 +98,6 @@ namespace DiscordCoreInternal {
 	SSLWrapper& SSLWrapper::operator=(SSL* other) {
 		this->thePtr.reset(nullptr);
 		this->thePtr.reset(other);
-		SSL_up_ref(other);
 		return *this;
 	}
 

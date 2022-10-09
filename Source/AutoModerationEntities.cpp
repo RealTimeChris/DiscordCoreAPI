@@ -41,31 +41,27 @@ namespace DiscordCoreAPI {
 		this->creatorId = getId(jsonObjectData, "creator_id");
 
 		simdjson::ondemand::array theArray{};
-		auto theResult = jsonObjectData["actions"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["actions"].get(theArray) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				ActionData newData{ value.value() };
 				this->actions.emplace_back(std::move(newData));
 			}
 		}
 
-		theResult = jsonObjectData["exempt_roles"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["exempt_roles"].get(theArray) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				this->exemptRoles.emplace_back(Snowflake{ value.get_uint64().value() });
 			}
 		}
 
-		theResult = jsonObjectData["exempt_channels"].get(theArray);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["exempt_channels"].get(theArray) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				this->exemptChannels.emplace_back(Snowflake{ value.get_uint64().value() });
 			}
 		}
 
 		simdjson::ondemand::value theObject{};
-		theResult = jsonObjectData["trigger_metadata"].get(theObject);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["trigger_metadata"].get(theObject) == simdjson::error_code::SUCCESS) {
 			TriggerMetaData theDataNew{ theObject };
 			this->triggerMetaData = theDataNew;
 		}
@@ -76,8 +72,7 @@ namespace DiscordCoreAPI {
 	AutoModerationRuleVector::AutoModerationRuleVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array theArray{};
-			auto theResult = jsonObjectData.get(theArray);
-			if (theResult == simdjson::error_code::SUCCESS) {
+			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 					AutoModerationRule newData{ value.value() };
 					this->theAutoModerationRules.emplace_back(std::move(newData));
@@ -96,8 +91,7 @@ namespace DiscordCoreAPI {
 		this->matchedContent = getString(jsonObjectData, "matched_content");
 
 		simdjson::ondemand::value theObject{};
-		auto theResult = jsonObjectData["action"].get(theObject);
-		if (theResult == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["action"].get(theObject) == simdjson::error_code::SUCCESS) {
 			this->action = ActionData{ theObject };
 		}
 

@@ -51,19 +51,9 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating an application command.
-	struct DiscordCoreAPI_Dll CreateApplicationCommandData {
+	struct DiscordCoreAPI_Dll CreateApplicationCommandData : public ApplicationCommandData {
 		friend class DiscordCoreClient;
 
-		UMap<String, String> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		UMap<String, String> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
-		Vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
-		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		ApplicationCommandType type{};///< The type of ApplicationCommand.
-		Bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app,
-		String description{};///< A description of the command.
-		Snowflake applicationId{};///< Application id.
-		Snowflake guildId{};///< Set this to a guild id to create a command specific to that guild.
-		String name{};///< A name for the new command.
 	  protected:
 		Bool alwaysRegister{ false };
 	};
@@ -107,7 +97,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For creating a single Guild ApplicationCommand. \brief For creating a single Guild ApplicationCommand.
-	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateApplicationCommandData {
+	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateGlobalApplicationCommandData {
 		operator JsonObject();
 	};
 

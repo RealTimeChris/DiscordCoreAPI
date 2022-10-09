@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 				}
 				Bool doesItExist{ false };
 				for (auto& value: theCommands) {
-					if (value.name == theData.name && *static_cast<ApplicationCommandData*>(&value) == theData) {
+					if (value.name == theData.name && *static_cast<ApplicationCommandData*>(&value) == *static_cast<ApplicationCommandData*>(&theData)) {
 						doesItExist = true;
 					}
 				}
