@@ -301,6 +301,7 @@ namespace DiscordCoreAPI {
 		if (this->configManager.getConnectionPort() == "") {
 			this->configManager.setConnectionPort("443");
 		}
+		this->theConnectionStopWatch.resetTimer();
 		for (Uint32 x = 0; x < this->configManager.getTotalShardCount(); ++x) {
 			if (!this->baseSocketAgentMap.contains(x % theWorkerCount)) {
 				this->baseSocketAgentMap[x % theWorkerCount] = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);
@@ -310,6 +311,10 @@ namespace DiscordCoreAPI {
 			theData.currentReconnectTries = 0;
 			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x] = std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, x, &Globals::doWeQuit);
 			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x]->theConnections.emplace_back(theData);
+			while (!this->theConnectionStopWatch.hasTimePassed()) {
+				std::this_thread::sleep_for(1ms);
+			}
+			this->theConnectionStopWatch.resetTimer();
 		}
 		try {
 			this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentMap[this->configManager.getStartingShard()].get() };
