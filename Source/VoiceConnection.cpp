@@ -392,12 +392,12 @@ namespace DiscordCoreAPI {
 				case VoiceActiveState::Connecting: {
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Connecting) {
 						std::this_thread::sleep_for(1ms);
-						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
 						}
-						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							this->checkForAndSendHeartBeat();
 						}
 						this->checkForConnections();
@@ -415,12 +415,12 @@ namespace DiscordCoreAPI {
 							this->sendSpeakingMessage(false);
 						}
 						std::this_thread::sleep_for(1ms);
-						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
 						}
-						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							this->checkForAndSendHeartBeat();
 						}
 						this->checkForConnections();
@@ -436,12 +436,12 @@ namespace DiscordCoreAPI {
 							this->sendSpeakingMessage(false);
 						}
 						std::this_thread::sleep_for(1ms);
-						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
 						}
-						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							this->checkForAndSendHeartBeat();
 						}
 						this->checkForConnections();
@@ -468,19 +468,19 @@ namespace DiscordCoreAPI {
 							return;
 						}
 						std::this_thread::sleep_for(1ms);
-						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
 						}
-						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							this->checkForAndSendHeartBeat();
 						}
 						this->checkForConnections();
 					}
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
-						if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							this->checkForAndSendHeartBeat();
 						}
 						this->checkForConnections();
@@ -526,7 +526,7 @@ namespace DiscordCoreAPI {
 						}
 						auto waitTime = targetTime - std::chrono::steady_clock::now();
 						if (waitTime.count() >= 18000000) {
-							if (!stopToken.stop_requested() && WebSocketCore::areWeStillConnected()) {
+							if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 								if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
 									this->onClosed();
 								}
