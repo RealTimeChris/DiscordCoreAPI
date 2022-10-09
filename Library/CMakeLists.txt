@@ -88,20 +88,6 @@ target_compile_features(
 	"cxx_std_23"
 )
 
-if (DEFINED ENV{EnableASAN})
-	if(MSVC)
-		target_compile_options("${LIB_NAME}" PRIVATE "/fsanitize=address" "/Zi" "/Debug")
-		target_link_options("${LIB_NAME}" PRIVATE "/incremental:no" "/Debug")
-	else()
-		target_compile_options("${LIB_NAME}" PRIVATE "-fsanitize=address")
-		target_link_options("${LIB_NAME}" PRIVATE "-fsanitize=address")
-	endif()
-endif()
-
-if ("" STREQUAL "x64-uwp")
-	target_compile_definitions("${LIB_NAME}" PUBLIC "UWP")
-endif()
-
 target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
 	"$<$<STREQUAL:${VCPKG_TARGET_TRIPLET},x64-uwp>:UWP>"
@@ -111,14 +97,20 @@ target_compile_definitions(
 target_compile_options(
 	"${LIB_NAME}" PRIVATE
 	"$<$<NOT:$<PLATFORM_ID:Linux>>:/bigobj>"
+	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:${EnableASAN},true>:/fsanitize=address>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:${EnableASAN},true>:/Zi>>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
-	"$<$<PLATFORM_ID:Linux>:-O3>"
+	"$<$<PLATFORM_ID:Linux>:$<$<STREQUAL:${EnableASAN},true>:-fsanitize=address>>"
 	"$<$<PLATFORM_ID:Linux>:-fpermissive>"
+	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
 
 target_link_options(
 	"${LIB_NAME}" PUBLIC
+	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:${EnableASAN},true>:/incremental:no>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:${EnableASAN},true>:/Debug>>"
 	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
+	"$<$<PLATFORM_ID:Linux>:$<$<STREQUAL:${EnableASAN},true>:-fsanitize=address>>"
 )
 
 set(CONFIG_FILE_NAME "${PROJECT_NAME}Config.cmake")
