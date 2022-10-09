@@ -225,8 +225,7 @@ namespace DiscordCoreAPI {
 							return true;
 						}
 						case 8: {
-							auto theHeartBeat = static_cast<Uint32>(getFloat(theMessage.d, "heartbeat_interval"));
-							this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ theHeartBeat } };
+							this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ static_cast<Uint32>(getFloat(theMessage.d, "heartbeat_interval")) } };
 							this->areWeHeartBeating = true;
 							if (this->areWeResuming) {
 								this->connectionState.store(VoiceConnectionState::Sending_Resume);
@@ -462,9 +461,6 @@ namespace DiscordCoreAPI {
 					DoubleTimePointNs totalTime{ std::chrono::nanoseconds{ 0 } };
 					this->sendSpeakingMessage(false);
 					this->sendSpeakingMessage(true);
-					if (!this->areWePlaying.load()) {
-						this->areWePlaying.store(true);
-					}
 
 					this->audioData.type = AudioFrameType::Encoded;
 					this->audioData.data.clear();
@@ -487,6 +483,7 @@ namespace DiscordCoreAPI {
 					}
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
+						this->areWePlaying.store(true);
 						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							this->checkForAndSendHeartBeat();
 						}
@@ -566,6 +563,7 @@ namespace DiscordCoreAPI {
 					}
 					break;
 				}
+					this->areWePlaying.store(true);
 				case VoiceActiveState::Exiting: {
 					return;
 				}
@@ -666,9 +664,6 @@ namespace DiscordCoreAPI {
 
 	Void VoiceConnection::connect() noexcept {
 		StopWatch theStopWatch{ 10000ms };
-		if (this->thePackage.currentShard == -1) {
-			return;
-		}
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
 			this->doWeQuit->store(true);
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -854,7 +849,6 @@ namespace DiscordCoreAPI {
 					});
 					this->streamSocket->connect(this->theStreamInfo.address, this->theStreamInfo.port);
 				}
-				this->thePackage.currentShard = -1;
 				this->play();
 				return;
 			}
@@ -986,6 +980,7 @@ namespace DiscordCoreAPI {
 		}
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		this->activeState.store(VoiceActiveState::Connecting);
+		this->areWeResuming = false;
 	}
 
 	Void VoiceConnection::reconnect() noexcept {
@@ -1000,6 +995,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreAPI::ConnectionPackage theData{};
 			theData.currentReconnectTries = this->currentReconnectTries;
 			theData.areWeResuming = this->areWeResuming;
+			this->areWeResuming = false;
 			theData.currentShard = this->shard[0];
 			this->theConnections.emplace_back(theData);
 		}
@@ -1007,7 +1003,6 @@ namespace DiscordCoreAPI {
 		DatagramSocketClient::inputBuffer.clear();
 		WebSocketCore::outputBuffer.clear();
 		WebSocketCore::inputBuffer.clear();
-		this->thePackage.currentShard = 0;
 		this->areWeHeartBeating = false;
 		this->currentReconnectTries++;
 	}
@@ -1064,8 +1059,7 @@ namespace DiscordCoreAPI {
 	Void VoiceConnection::connect(DiscordCoreInternal::VoiceConnectInitData theData) noexcept {
 		if (this->baseSocketAgent) {
 			this->voiceConnectInitData = theData;
-			this->thePackage.currentShard = 1;
-			this->theConnections.emplace_back(this->thePackage);
+			this->theConnections.emplace_back(ConnectionPackage{});
 			this->theStreamInfo = theData.streamInfo;
 			this->streamType = theData.streamType;
 			this->activeState.store(VoiceActiveState::Connecting);

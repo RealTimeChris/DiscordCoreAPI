@@ -183,7 +183,6 @@ namespace DiscordCoreAPI {
 		AtomicBool areWePlaying{ false };
 		Snowflake currentGuildMemberId{};
 		AtomicBool* doWeQuit{ nullptr };
-		ConnectionPackage thePackage{};
 		String audioEncryptionMode{};
 		std::mutex voiceUserMutex{};
 		AudioFrameData audioData{};
