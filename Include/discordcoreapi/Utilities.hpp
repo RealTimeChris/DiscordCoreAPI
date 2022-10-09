@@ -719,24 +719,14 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<class ObjectType> struct CustomAllocator {
-
+	template<class ObjectType> struct CustomAllocator : public std::allocator_traits<ObjectType> {
 		using ValueType = ObjectType;
 
-		CustomAllocator() noexcept = default;
-
-		ValueType* allocate(std::size_t n) {
-			return static_cast<ValueType*>(new ValueType[n]{});
+		CustomAllocator() noexcept {
 		}
 
-		void deallocate(ValueType* p, std::size_t n) {
-			::delete[](p);
+		template<class U> CustomAllocator(const CustomAllocator<U>&) noexcept {
 		}
-
-		template<typename... Args> void construct(ValueType* thePtr, Args&&... args) {
-			*thePtr = ValueType{ std::move(args)... };
-		}
-
 	};
 
 	template<class T, class U> constexpr bool operator==(const CustomAllocator<T>&, const CustomAllocator<U>&) noexcept {
@@ -750,15 +740,16 @@ namespace DiscordCoreAPI {
 	template<typename ObjectType> class ObjectCache {
 	  public:
 		using ValueType = ObjectType;
-		using AllocatorType = CustomAllocator<ObjectType>;
+		using AllocatorType = std::allocator<ObjectType>;
+		using AllocatorTraits = CustomAllocator<AllocatorType>;
 		using SizeType = size_t;
 		using Reference = ValueType&;
 		using ConstReference = const Reference;
 		using LReference = ValueType&&;
 		using Pointer = ValueType*;
 
-		ObjectCache() noexcept {};
-
+		ObjectCache() noexcept {
+		}
 
 		Reference emplace(LReference theData) noexcept {
 			if (this->contains(theData)) {
@@ -767,13 +758,14 @@ namespace DiscordCoreAPI {
 				this->theMap[theIndex] = std::move(theData);
 				return this->theMap[theIndex];
 			} else {
-				AllocatorType alloc{};
 				SizeType theIndex = this->theCurrentSize;
-				auto theOldMap = std::move(this->theMap);
-				this->theMap = alloc.allocate(this->theCurrentSize + 1);
-				memcpy(this->theMap, theOldMap, this->theCurrentSize * sizeof(ObjectType));
-				alloc.construct(this->theMap + this->theCurrentSize, std::move(theData));
-				alloc.deallocate(theOldMap, this->theCurrentSize);
+				AllocatorTraits allocTraits{};
+				AllocatorType allocator{};
+				auto theNewMap = allocTraits.allocate(allocator, this->theCurrentSize + 1);
+				memcpy(theNewMap, this->theMap, this->theCurrentSize * sizeof(ObjectType));
+				allocTraits.deallocate(allocator, this->theMap, this->theCurrentSize);
+				this->theMap = theNewMap;
+				allocTraits.construct(allocator, this->theMap + this->theCurrentSize, std::move(theData));
 				this->theCurrentSize++;
 				return this->theMap[theIndex];
 			}
@@ -786,13 +778,14 @@ namespace DiscordCoreAPI {
 				this->theMap[theIndex] = std::move(theData);
 				return this->theMap[theIndex];
 			} else {
-				AllocatorType alloc{};
 				SizeType theIndex = this->theCurrentSize;
-				auto theOldMap = std::move(this->theMap);
-				this->theMap = alloc.allocate(this->theCurrentSize + 1);
-				memcpy(this->theMap, theOldMap, this->theCurrentSize * sizeof(ObjectType));
-				alloc.construct(this->theMap + this->theCurrentSize, std::move(theData));
-				alloc.deallocate(theOldMap, this->theCurrentSize);
+				AllocatorTraits allocTraits{};
+				AllocatorType allocator{};
+				auto theNewMap = allocTraits.allocate(allocator, this->theCurrentSize + 1);
+				memcpy(theNewMap, this->theMap, this->theCurrentSize * sizeof(ObjectType));
+				allocTraits.deallocate(allocator, this->theMap, this->theCurrentSize);
+				this->theMap = theNewMap;
+				allocTraits.construct(allocator, this->theMap + this->theCurrentSize, theData);
 				this->theCurrentSize++;
 				return this->theMap[theIndex];
 			}
@@ -848,13 +841,15 @@ namespace DiscordCoreAPI {
 		auto erase(LReference theKey) {
 			if (this->contains(theKey)) {
 				std::unique_lock theLock{ this->theMutex };
-				AllocatorType alloc{};
+				AllocatorTraits allocTraits{};
+				AllocatorType allocator{};
 				SizeType theIndex = this->getIndex(theKey);
-				auto theOldMap = this->theMap;
-				this->theMap = alloc.allocate(this->theCurrentSize - 1);
-				memcpy(this->theMap, theOldMap, (theIndex) * sizeof(ObjectType));
-				memcpy(this->theMap + theIndex, theOldMap + theIndex, (this->theCurrentSize - 1 - theIndex) * sizeof(ObjectType));
-				alloc.deallocate(theOldMap, this->theCurrentSize - 1);
+				auto theNewMap = this->theMap;
+				this->theMap = nullptr;
+				this->theMap = allocTraits.allocate(allocator, this->theCurrentSize - 1);
+				memcpy(this->theMap, theNewMap, (theIndex) * sizeof(ObjectType));
+				memcpy(this->theMap + theIndex, theNewMap + theIndex, (this->theCurrentSize - 1 - theIndex) * sizeof(ObjectType));
+				allocTraits.deallocate(allocator, theNewMap, this->theCurrentSize);
 				this->theCurrentSize--;
 				return this->theMap;
 			}
@@ -864,13 +859,15 @@ namespace DiscordCoreAPI {
 		auto erase(Reference theKey) {
 			if (this->contains(theKey)) {
 				std::unique_lock theLock{ this->theMutex };
-				AllocatorType alloc{};
+				AllocatorTraits allocTraits{};
+				AllocatorType allocator{};
 				SizeType theIndex = this->getIndex(theKey);
-				auto theOldMap = this->theMap;
-				this->theMap = alloc.allocate(this->theCurrentSize - 1);
-				memcpy(this->theMap, theOldMap, (theIndex) * sizeof(ObjectType));
-				memcpy(this->theMap + theIndex, theOldMap + theIndex, (this->theCurrentSize - 1 - theIndex) * sizeof(ObjectType));
-				alloc.deallocate(theOldMap, this->theCurrentSize - 1);
+				auto theNewMap = this->theMap;
+				this->theMap = nullptr;
+				this->theMap = allocTraits.allocate(allocator, this->theCurrentSize - 1);
+				memcpy(this->theMap, theNewMap, (theIndex) * sizeof(ObjectType));
+				memcpy(this->theMap + theIndex, theNewMap + theIndex, (this->theCurrentSize - 1 - theIndex) * sizeof(ObjectType));
+				allocTraits.deallocate(allocator, theNewMap, this->theCurrentSize);
 				this->theCurrentSize--;
 				return this->theMap;
 			}
@@ -908,6 +905,7 @@ namespace DiscordCoreAPI {
 			return SizeType{ static_cast<SizeType>(-1) };
 		}
 	};
+
 
 	class DiscordCoreAPI_Dll StringWrapper {
 	  public:
