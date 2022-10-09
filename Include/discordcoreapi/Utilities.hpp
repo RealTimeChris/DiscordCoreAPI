@@ -719,202 +719,77 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<class ObjectType> struct CustomAllocator : public std::allocator_traits<std::allocator<ObjectType>> {
-		using ValueType = ObjectType;
-
-		CustomAllocator() noexcept {
-		}
-
-		template<class U> CustomAllocator(const CustomAllocator<U>&) noexcept {
-		}
-	};
-
-	template<class T, class U> constexpr bool operator==(const CustomAllocator<T>&, const CustomAllocator<U>&) noexcept {
-		return true;
-	}
-
-	template<class T, class U> constexpr bool operator!=(const CustomAllocator<T>&, const CustomAllocator<U>&) noexcept {
-		return false;
-	}
-
 	template<typename ObjectType> class ObjectCache {
 	  public:
-		using ValueType = ObjectType;
-		using AllocatorType = CustomAllocator<ObjectType>;
-		using SizeType = size_t;
-		using Reference = ValueType&;
-		using ConstReference = const Reference;
-		using LReference = ValueType&&;
-		using Pointer = ValueType*;
+		using AllocatorType = std::allocator<ObjectType>;
+		using AllocatorTraits = std::allocator_traits<AllocatorType>;
 
-		ObjectCache() noexcept {
+		ObjectCache() noexcept {};
+
+		Void emplace(ObjectType&& theData) noexcept {
+			std::unique_lock theLock{ this->theMutex };
+			this->theMap.emplace(std::move(theData));
 		}
 
-		Reference emplace(LReference theData) noexcept {
-			if (this->contains(theData)) {
-				std::unique_lock theLock{ this->theMutex };
-				SizeType theIndex = this->getIndex(theData);
-				this->theMap[theIndex] = std::move(theData);
-				return this->theMap[theIndex];
-			} else {
-				this->increaseAllocatedSize();
-				AllocatorType allocTraits{};
-				std::allocator<ObjectType> allocator{};
-				allocTraits.construct(allocator, this->theMap + this->theCurrentlyUsedSize, std::move(theData));
-				this->theCurrentlyUsedSize++;
-				return this->theMap[this->theCurrentlyUsedSize - 1];
-			}
+		Void emplace(ObjectType& theData) noexcept {
+			std::unique_lock theLock{ this->theMutex };
+			this->theMap.emplace(theData);
 		}
 
-		Reference emplace(Reference theData) noexcept {
-			if (this->contains(theData)) {
-				std::unique_lock theLock{ this->theMutex };
-				SizeType theIndex = this->getIndex(theData);
-				this->theMap[theIndex] = std::move(theData);
-				return this->theMap[theIndex];
-			} else {
-				this->increaseAllocatedSize();
-				AllocatorType allocTraits{};
-				std::allocator<ObjectType> allocator{};
-				allocTraits.construct(allocator, this->theMap + this->theCurrentlyUsedSize, theData);
-				this->theCurrentlyUsedSize++;
-				return this->theMap[this->theCurrentlyUsedSize - 1];
-			}
-		}
-
-		ConstReference readOnly(Reference theKey) noexcept {
+		const ObjectType& readOnly(ObjectType& theKey) noexcept {
 			std::shared_lock theLock{ this->theMutex };
 			return *this->theMap.find(theKey);
 		}
 
-		Reference at(LReference theKey) {
+		ObjectType& at(ObjectType&& theKey) noexcept {
 			std::shared_lock theLock{ this->theMutex };
-			for (SizeType x = 0; x < this->theCurrentlyUsedSize; ++x) {
-				if (this->theMap[x] == theKey) {
-					return this->theMap[x];
-				}
-			}
-			throw std::runtime_error{ "Couldn't find that object in the cache!" };
+			return ( ObjectType& )*this->theMap.find(theKey);
 		}
 
-		Reference at(Reference theKey) {
+		ObjectType& at(ObjectType& theKey) noexcept {
 			std::shared_lock theLock{ this->theMutex };
-			for (SizeType x = 0; x < this->theCurrentlyUsedSize; ++x) {
-				if (this->theMap[x] == theKey) {
-					return this->theMap[x];
-				}
-			}
-			throw std::runtime_error{ "Couldn't find that object in the cache!" };
+			return ( ObjectType& )*this->theMap.find(theKey);
 		}
 
 		auto begin() {
 			std::unique_lock theLock{ this->theMutex };
-			return this->theMap;
+			return this->theMap.begin();
 		}
 
 		auto end() {
 			std::unique_lock theLock{ this->theMutex };
-			return this->theMap + this->theCurrentlyUsedSize;
+			return this->theMap.end();
 		}
 
-		const Bool contains(Reference theKey) noexcept {
-			std::unique_lock theLock{ this->theMutex };
-			if (this->theCurrentlyUsedSize > 0) {
-				for (SizeType x = 0; x < this->theCurrentlyUsedSize; ++x) {
-					if (this->theMap[x] == theKey) {
-						return true;
-					}
-				}
-			}
-			return false;
+		const Bool contains(ObjectType& theKey) noexcept {
+			return this->theMap.contains(theKey);
 		}
 
-		auto erase(LReference theKey) {
-			if (this->contains(theKey)) {
+		Void erase(ObjectType& theKey) {
+			if (this->theMap.contains(theKey)) {
 				std::unique_lock theLock{ this->theMutex };
-				AllocatorType allocTraits{};
-				std::allocator<ObjectType> allocator{};
-				SizeType theIndex = this->getIndex(theKey);
-				auto theNewMap = this->theMap;
-				this->theMap = nullptr;
-				this->theMap = allocTraits.allocate(allocator, this->theCurrentlyUsedSize - 1);
-				memcpy(this->theMap, theNewMap, (theIndex) * sizeof(ObjectType));
-				memcpy(this->theMap + theIndex, theNewMap + theIndex, (this->theCurrentlyUsedSize - 1 - theIndex) * sizeof(ObjectType));
-				allocTraits.deallocate(allocator, theNewMap, this->theCurrentlyUsedSize);
-				this->theCurrentlyUsedSize--;
-				return this->theMap;
+				this->theMap.erase(theKey);
 			}
-			throw std::runtime_error{ "Sorry, but that object does not exist within this ObjectCache!" };
-		}
-
-		auto erase(Reference theKey) {
-			if (this->contains(theKey)) {
-				std::unique_lock theLock{ this->theMutex };
-				AllocatorType allocTraits{};
-				std::allocator<ObjectType> allocator{};
-				SizeType theIndex = this->getIndex(theKey);
-				auto theNewMap = this->theMap;
-				this->theMap = nullptr;
-				this->theMap = allocTraits.allocate(allocator, this->theCurrentlyUsedSize - 1);
-				memcpy(this->theMap, theNewMap, (theIndex) * sizeof(ObjectType));
-				memcpy(this->theMap + theIndex, theNewMap + theIndex, (this->theCurrentlyUsedSize - 1 - theIndex) * sizeof(ObjectType));
-				allocTraits.deallocate(allocator, theNewMap, this->theCurrentlyUsedSize);
-				this->theCurrentlyUsedSize--;
-				return this->theMap;
-			}
-			throw std::runtime_error{ "Sorry, but that object does not exist within this ObjectCache!" };
 		}
 
 		ObjectType& operator[](ObjectType& theKey) {
 			std::shared_lock theLock{ this->theMutex };
-			auto theIndex = this->getIndex(theKey);
-			return this->theMap[theIndex];
+			return ( ObjectType& )*this->theMap.find(theKey);
 		}
 
 		ObjectType& operator[](ObjectType&& theKey) {
 			std::shared_lock theLock{ this->theMutex };
-			auto theIndex = this->getIndex(theKey);
-			return this->theMap[theIndex];
+			return ( ObjectType& )*this->theMap.find(theKey);
 		}
 
 		Uint64 size() noexcept {
 			std::unique_lock theLock{ this->theMutex };
-			return this->theCurrentlyUsedSize;
+			return this->theMap.size();
 		}
 
 	  protected:
-		SizeType theCurrentlyAllocatedSize{};
-		SizeType theCurrentlyUsedSize{};
+		std::unordered_set<ObjectType> theMap{};
 		std::shared_mutex theMutex{};
-		Pointer theMap{};
-
-		void increaseAllocatedSize() {
-			if (this->theCurrentlyUsedSize + 1 >= this->theCurrentlyAllocatedSize) {
-				SizeType newSize{};
-				if (this->theCurrentlyAllocatedSize == 0) {
-					newSize = 12;
-				} else {
-					newSize = this->theCurrentlyAllocatedSize * 2;
-				}
-				SizeType theIndex = this->theCurrentlyUsedSize;
-				AllocatorType allocTraits{};
-				std::allocator<ObjectType> allocator{};
-				auto theNewMap = allocTraits.allocate(allocator, newSize);
-				memcpy(theNewMap, this->theMap, this->theCurrentlyUsedSize * sizeof(ObjectType));
-				allocTraits.deallocate(allocator, this->theMap, this->theCurrentlyUsedSize);
-				this->theCurrentlyAllocatedSize = newSize;
-				this->theMap = theNewMap;
-			}
-		}
-
-		SizeType getIndex(Reference theData) {
-			for (SizeType x = 0; x < this->theCurrentlyUsedSize; ++x) {
-				if (this->theMap[x] == theData) {
-					return x;
-				}
-			}
-			return SizeType{ static_cast<SizeType>(-1) };
-		}
 	};
 
 	class DiscordCoreAPI_Dll StringWrapper {

@@ -102,7 +102,7 @@ if ("${VCPKG_TARGET_TRIPLET}" STREQUAL "x64-uwp")
 	target_compile_definitions("${LIB_NAME}" PUBLIC "UWP")
 endif()
 
-target_compile_definitions("${LIB_NAME}" PUBLIC "$<$<PLATFORM_ID:Windows>:SIMDJSON_USING_WINDOWS_DYNAMIC_LIBRARY=1>")
+target_compile_definitions("${LIB_NAME}" PUBLIC "SIMDJSON_USING_WINDOWS_DYNAMIC_LIBRARY=1")
 
 target_compile_options(
 	"${LIB_NAME}" PRIVATE
