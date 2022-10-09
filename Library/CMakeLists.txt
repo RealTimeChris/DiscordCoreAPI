@@ -93,23 +93,23 @@ target_compile_definitions(
 	"$<$<STREQUAL:${VCPKG_TARGET_TRIPLET},x64-uwp>:UWP>"
 	"$<$<PLATFORM_ID:Windows>:SIMDJSON_USING_WINDOWS_DYNAMIC_LIBRARY=1>"
 )
-
+message("$ENV{EnableASAN}")
 target_compile_options(
 	"${LIB_NAME}" PRIVATE
 	"$<$<NOT:$<PLATFORM_ID:Linux>>:/bigobj>"
-	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:${EnableASAN},true>:/fsanitize=address>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:${EnableASAN},true>:/Zi>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:$ENV{EnableASAN},true>:/fsanitize=address>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:$ENV{EnableASAN},true>:/Zi>>"
 	"$<$<PLATFORM_ID:Windows>:/MP>"
-	"$<$<PLATFORM_ID:Linux>:$<$<STREQUAL:${EnableASAN},true>:-fsanitize=address>>"
+	"$<$<PLATFORM_ID:Linux>:$<$<STREQUAL:$ENV{EnableASAN},true>:-fsanitize=address>>"
 	"$<$<PLATFORM_ID:Linux>:-fpermissive>"
 	"$<$<PLATFORM_ID:Linux>:-O3>"
 )
 
 target_link_options(
 	"${LIB_NAME}" PUBLIC
-	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:${EnableASAN},true>:/Debug>>"
+	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:$ENV{EnableASAN},true>:/Debug>>"
 	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
-	"$<$<PLATFORM_ID:Linux>:$<$<STREQUAL:${EnableASAN},true>:-fsanitize=address>>"
+	"$<$<PLATFORM_ID:Linux>:$<$<STREQUAL:$ENV{EnableASAN},true>:-fsanitize=address>>"
 )
 
 set(CONFIG_FILE_NAME "${PROJECT_NAME}Config.cmake")
