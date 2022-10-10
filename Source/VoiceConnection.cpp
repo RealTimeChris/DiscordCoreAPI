@@ -95,15 +95,10 @@ namespace DiscordCoreAPI {
 		this->ssrc = ssrcNew;
 	}
 
-	RTPPacketEncrypter& RTPPacketEncrypter::operator=(AudioFrameData&other) {
-		this->theData = std::move(other);
-		return *this;
-	}
-
-	RTPPacketEncrypter::operator StringView() {
+	StringView RTPPacketEncrypter::encryptPacket(AudioFrameData& audioData) noexcept {
 		if (this->theKeys.size() > 0) {
 			this->sequence++;
-			this->timeStamp += this->theData.sampleCount;
+			this->timeStamp += audioData.sampleCount;
 			const Uint8 nonceSize{ crypto_secretbox_NONCEBYTES };
 			const Uint8 headerSize{ 12 };
 			const Uint8 byteSize{ 8 };
@@ -121,19 +116,18 @@ namespace DiscordCoreAPI {
 			for (Uint8 x = headerSize; x < nonceSize; ++x) {
 				nonceForLibSodium[x] = 0;
 			}
-			Uint64 numOfBytes{ headerSize + this->theData.data.size() + crypto_secretbox_MACBYTES };
-			if (this->theData.data.size() < numOfBytes) {
-				this->theData.data.resize(numOfBytes);
+			Uint64 numOfBytes{ headerSize + audioData.data.size() + crypto_secretbox_MACBYTES };
+			if (this->theData.size() < numOfBytes) {
+				this->theData.resize(numOfBytes);
 			}
 			for (Uint8 x = 0; x < headerSize; ++x) {
-				this->theData.data[x] = header[x];
+				this->theData[x] = header[x];
 			}
-			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->theString.data()) + headerSize, this->theData.data.data(), this->theData.data.size(),
-					nonceForLibSodium.data(),
+			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->theData.data()) + headerSize, audioData.data.data(), audioData.data.size(), nonceForLibSodium.data(),
 					this->theKeys.data()) != 0) {
 				return "";
 			}
-			return StringView{ this->theString.data(), numOfBytes };
+			return StringView{ this->theData.data(), numOfBytes };
 		}
 		return {};
 	}
@@ -160,8 +154,7 @@ namespace DiscordCoreAPI {
 
 	StringView VoiceConnection::encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept {
 		if (this->secretKeySend.size() > 0) {
-			this->packetEncrypter = bufferToSend;
-			return this->packetEncrypter;
+			return this->packetEncrypter.encryptPacket(bufferToSend);
 		}
 		return {};
 	}

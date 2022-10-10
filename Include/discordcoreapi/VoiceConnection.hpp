@@ -39,9 +39,9 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll VoiceSocketReadyData {
 		VoiceSocketReadyData(simdjson::ondemand::value);
 		String mode{};
+		String ip{};
 		Uint64 port{};
 		Uint32 ssrc{};
-		String ip{};
 	};
 
 	struct DiscordCoreAPI_Dll SessionDescriptionData {
@@ -94,21 +94,18 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
 		Vector<unsigned char> theKeys{};
-		AudioFrameData theData{};
 		Uint8 version{ 0x80 };
 		Uint8 flags{ 0x78 };
-		String theString{};
 		Uint32 timeStamp{};
 		Uint16 sequence{};
+		String theData{};
 		Uint32 ssrc{};
-		
+
 		RTPPacketEncrypter() noexcept = default;
 
 		RTPPacketEncrypter(Uint32 ssrcNew, const Vector<unsigned char>& theKeysNew) noexcept;
 
-		RTPPacketEncrypter& operator=(AudioFrameData&);
-
-		operator StringView();
+		StringView encryptPacket(AudioFrameData& audioDataNew) noexcept;
 	};
 
 	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
