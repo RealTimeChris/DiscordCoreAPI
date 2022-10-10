@@ -1035,7 +1035,7 @@ namespace DiscordCoreAPI {
 		Snowflake ownerId{};///< Id of the Channel's owner.
 		Snowflake guildId{};///< Id of the Channel's Guild, if applicable.
 		Uint8 flags{};///< Flags combined as a bitmask.
-		
+
 		ChannelData() noexcept = default;
 
 		ChannelData& operator=(ChannelData&&) noexcept = default;

@@ -721,7 +721,6 @@ namespace DiscordCoreAPI {
 
 	template<typename ObjectType> class ObjectCache {
 	  public:
-
 		ObjectCache() noexcept {};
 
 		Void emplace(ObjectType&& theData) noexcept {

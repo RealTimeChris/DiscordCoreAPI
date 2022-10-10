@@ -70,11 +70,11 @@ namespace DiscordCoreInternal {
 		#define SOCKET_ERROR (-1)
 	#endif
 
-#ifdef _WIN32
+	#ifdef _WIN32
 	using SOCKET = Uint32;
-#else
+	#else
 	using SOCKET = Int32;
-#endif
+	#endif
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
 		UMap<Uint32, pollfd> thePolls{};

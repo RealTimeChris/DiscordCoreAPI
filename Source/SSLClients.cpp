@@ -50,11 +50,11 @@ namespace DiscordCoreInternal {
 	#else
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string, 1024, NULL);
 	#endif
-		theStream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << endl;
+			theStream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << endl;
 #else
 		theStream << strerror(errno) << DiscordCoreAPI::reset();
 #endif
-		return theStream.str();
+			return theStream.str();
 	}
 
 #ifdef _WIN32

@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 				}
 			}
 		}
-		this->port = getUint64 (jsonObjectData, "port");
+		this->port = getUint64(jsonObjectData, "port");
 	}
 
 	Void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) noexcept {
@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 		return {};
 	}
 
-	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, DiscordCoreInternal::WebSocketSSLShard* baseShard,
+	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, DiscordCoreInternal::WebSocketSSLShard* baseShardNew,
 		const DiscordCoreInternal::VoiceConnectInitData& initDataNew, DiscordCoreAPI::ConfigManager* configManagerNew, AtomicBool* doWeQuitNew, StreamType streamTypeNew,
 		StreamInfo streamInfoNew) noexcept
 		: WebSocketCore(configManagerNew, "Voice WebSocket"), DatagramSocketClient(StreamType::None) {
@@ -140,13 +140,12 @@ namespace DiscordCoreAPI {
 		this->discordCoreClient = BaseSocketAgentNew->discordCoreClient;
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->baseSocketAgent = BaseSocketAgentNew;
-		this->typeOfWebSocket = "Voice WebSocket";
 		this->voiceConnectInitData = initDataNew;
 		this->configManager = configManagerNew;
 		this->theStreamInfo = streamInfoNew;
 		this->streamType = streamTypeNew;
+		this->baseShard = baseShardNew;
 		this->doWeQuit = doWeQuitNew;
-		this->baseShard = baseShard;
 	}
 
 	Snowflake VoiceConnection::getChannelId() noexcept {
@@ -301,7 +300,7 @@ namespace DiscordCoreAPI {
 			theData.type = DiscordCoreInternal::SendSpeakingType::Microphone;
 			theData.delay = 0;
 			theData.ssrc = this->audioSSRC;
-			String theString = this->stringifyJsonData(theData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
+			String theString = this->stringifyJsonData(theData, this->dataOpCode);
 			if (!this->sendMessage(theString, true)) {
 				this->onClosed();
 			}
@@ -723,11 +722,11 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceConnectionState::Sending_Identify: {
 				this->haveWeReceivedHeartbeatAck = true;
-				DiscordCoreInternal::VoiceIdentifyData identifyData{};
-				identifyData.connectInitData = this->voiceConnectInitData;
-				identifyData.connectionData = this->voiceConnectionData;
-				String sendVector = this->stringifyJsonData(identifyData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				if (WebSocketCore::writeData(sendVector, true) == DiscordCoreInternal::ProcessIOResult::Error) {
+				DiscordCoreInternal::VoiceIdentifyData theData{};
+				theData.connectInitData = this->voiceConnectInitData;
+				theData.connectionData = this->voiceConnectionData;
+				String theString = this->stringifyJsonData(theData, this->dataOpCode);
+				if (WebSocketCore::writeData(theString, true) == DiscordCoreInternal::ProcessIOResult::Error) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					return;
@@ -761,12 +760,12 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Sending_Select_Protocol: {
-				DiscordCoreInternal::VoiceSocketProtocolPayloadData protocolPayloadData{};
-				protocolPayloadData.voiceEncryptionMode = this->audioEncryptionMode;
-				protocolPayloadData.externalIp = this->externalIp;
-				protocolPayloadData.voicePort = this->port;
-				String sendVector = this->stringifyJsonData(protocolPayloadData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				if (WebSocketCore::writeData(sendVector, true) == DiscordCoreInternal::ProcessIOResult::Error) {
+				DiscordCoreInternal::VoiceSocketProtocolPayloadData theData{};
+				theData.voiceEncryptionMode = this->audioEncryptionMode;
+				theData.externalIp = this->externalIp;
+				theData.voicePort = this->port;
+				String theString = this->stringifyJsonData(theData, this->dataOpCode);
+				if (WebSocketCore::writeData(theString, true) == DiscordCoreInternal::ProcessIOResult::Error) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					return;

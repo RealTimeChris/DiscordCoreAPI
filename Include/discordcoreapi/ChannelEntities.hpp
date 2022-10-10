@@ -160,7 +160,8 @@ namespace DiscordCoreAPI {
 	  public:
 		TimeStamp<std::chrono::milliseconds> lastPinTimestamp{};///< Timestamp of the last pinned Message.
 		DefaultReactionData defaultReactionEmoji{};///< The emoji to show in the add reaction button on a thread in a GUILD_FORUM channel.
-		Int32 defaultThreadRateLimitPerUser{};///< The initial rate_limit_per_user to set on newly created threads in a channel.this field is copied to the thread at creation time and does not live update.
+		Int32
+			defaultThreadRateLimitPerUser{};///< The initial rate_limit_per_user to set on newly created threads in a channel.this field is copied to the thread at creation time and does not live update.
 		Int32 defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
 		Vector<ForumTagData> availableTags{};///< The set of tags that can be used in a GUILD_FORUM channel.
 		UMap<Uint64, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
@@ -173,7 +174,8 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< Application id of the current application.
 		StringWrapper rtcRegion{};///< Real-time clock region.
 		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
-		Int32 totalMessageSent{};///< Number of messages ever sent in a thread it's similar to message_count on message creation, but will not decrement the number when a message is deleted.
+		Int32
+			totalMessageSent{};///< Number of messages ever sent in a thread it's similar to message_count on message creation, but will not decrement the number when a message is deleted.
 		Int32 messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
 		StringWrapper topic{};///< The Channel's topic.
 		Int32 userLimit{ 0 };///< User limit, in the case of voice channels.

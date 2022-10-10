@@ -131,7 +131,7 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadData&& other) noexcept {
-		if (this != &other) {			
+		if (this != &other) {
 			this->headersToInsert = std::move(other.headersToInsert);
 			this->thisWorkerId.store(this->thisWorkerId.load());
 			this->relativePath = std::move(other.relativePath);
@@ -1844,7 +1844,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool operator==(const ApplicationCommandOptionData&lhs, const ApplicationCommandOptionData&rhs) {
+	bool operator==(const ApplicationCommandOptionData& lhs, const ApplicationCommandOptionData& rhs) {
 		if (lhs.autocomplete != rhs.autocomplete) {
 			return false;
 		}
@@ -1860,10 +1860,10 @@ namespace DiscordCoreAPI {
 		if (lhs.maxValue != rhs.maxValue) {
 			return false;
 		}
-		if (lhs.minValue!= rhs.minValue) {
+		if (lhs.minValue != rhs.minValue) {
 			return false;
 		}
-		if (lhs.name!= rhs.name) {
+		if (lhs.name != rhs.name) {
 			return false;
 		}
 		if (lhs.nameLocalizations != rhs.nameLocalizations) {
@@ -1925,7 +1925,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool operator==(const ApplicationCommandData&lhs, const ApplicationCommandData&rhs) {
+	bool operator==(const ApplicationCommandData& lhs, const ApplicationCommandData& rhs) {
 		if (lhs.description != rhs.description) {
 			return false;
 		}
@@ -1938,7 +1938,7 @@ namespace DiscordCoreAPI {
 		if (lhs.options.size() != rhs.options.size()) {
 			return false;
 		}
-		for (size_t x = 0; x < lhs.options.size();++x) {
+		for (size_t x = 0; x < lhs.options.size(); ++x) {
 			if (lhs.options[x] != rhs.options[x]) {
 				return false;
 			}

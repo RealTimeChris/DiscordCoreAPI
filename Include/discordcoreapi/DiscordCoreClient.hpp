@@ -134,8 +134,7 @@ namespace DiscordCoreAPI {
 		/// \param baseFunction A unique_ptr to the command to be registered.
 		/// \param commandData A CreateApplicationCommandData structure describing the current function.
 		/// \param alwaysRegister Whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of registered commands.
-		Void registerFunction(const Vector<String>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
-			Bool alwaysRegister = false);
+		Void registerFunction(const Vector<String>& functionNames, UniquePtr<BaseFunction> baseFunction, CreateApplicationCommandData commandData, Bool alwaysRegister = false);
 
 		/// For collecting a reference to the CommandController. \brief For collecting a reference to the CommandController.
 		/// \returns CommandController& A reference to the CommandController.

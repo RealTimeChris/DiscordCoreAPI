@@ -111,7 +111,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	
+
 	GuildScheduledEventVector::operator Vector<GuildScheduledEvent>() {
 		return this->theGuildScheduledEvents;
 	}
