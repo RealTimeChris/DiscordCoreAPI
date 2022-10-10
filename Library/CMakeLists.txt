@@ -36,7 +36,7 @@ generate_product_version(
 )
 
 file(GLOB SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Source/*.cpp")
-
+set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
 if (WIN32)
 	add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
 elseif (UNIX)
