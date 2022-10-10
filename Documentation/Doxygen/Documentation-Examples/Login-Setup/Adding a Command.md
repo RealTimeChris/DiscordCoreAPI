@@ -67,7 +67,7 @@ namespace DiscordCoreAPI {
 
 #include <discordcoreapi/Index.hpp>
 
-Int32 main() {
+int main() {
 	String botToken = "YOUR_BOT_TOKEN_HERE";
 	auto thePtr = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(botToken);
 	thePtr->registerFunction(Vector<String> {"test"}, std::make_unique<DiscordCoreAPI::Test>());
