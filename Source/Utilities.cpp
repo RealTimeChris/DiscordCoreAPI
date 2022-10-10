@@ -961,7 +961,7 @@ namespace DiscordCoreAPI {
 		return this->theColor;
 	}
 
-	IconHash& IconHash::operator=(const String theString) {
+	IconHash& IconHash::operator=(const String& theString) {
 		String newHash{ theString };
 		if (newHash.empty() || newHash == "0") {
 			this->highBits = 0;
@@ -979,7 +979,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	IconHash::IconHash(const String theString) noexcept {
+	IconHash::IconHash(const String& theString) noexcept {
 		*this = theString;
 	}
 

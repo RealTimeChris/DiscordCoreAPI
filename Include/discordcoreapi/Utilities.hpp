@@ -965,9 +965,9 @@ namespace DiscordCoreAPI {
 	  public:
 		IconHash() noexcept = default;
 
-		IconHash& operator=(const String theString);
+		IconHash& operator=(const String& theString);
 
-		IconHash(const String theString) noexcept;
+		IconHash(const String& theString) noexcept;
 
 		Bool operator==(const IconHash& other);
 
