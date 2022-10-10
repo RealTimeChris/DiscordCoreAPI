@@ -621,6 +621,8 @@ namespace DiscordCoreAPI {
 
 		this->type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
 
+		this->defaultSortOrder = static_cast<SortOrderTypes>(getUint8(jsonObjectData, "default_sort_order"));
+
 		this->memberCount = getUint32(jsonObjectData, "member_count");
 
 		this->ownerId = getId(jsonObjectData, "owner_id");

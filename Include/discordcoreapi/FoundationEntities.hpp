@@ -678,6 +678,11 @@ namespace DiscordCoreAPI {
 		String data{};///< The data of the file.
 	};
 
+	enum class SortOrderTypes {
+		Latest_Activity = 0,///< Sort forum posts by activity.
+		Creation_Date = 1///< Sort forum posts by creation time(from most recent to oldest).
+	};
+
 	/// Channel types. \brief Channel types.
 	enum class ChannelType : Uint8 {
 		Guild_Text = 0,///< Guild text.
@@ -1000,8 +1005,9 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 
-		Vector<OverWriteData> permissionOverwrites{};
+		Vector<OverWriteData> permissionOverwrites{};///< Permission overwrites.
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
+		SortOrderTypes defaultSortOrder{};///< Default sorting order for a forum thread.
 		Int32 memberCount{ 0 };///< Count of members active in the Channel.
 		StringWrapper topic{};///< Channel topic.
 		Uint16 position{ 0 };///< The position of the Channel, in the Guild's Channel list.
@@ -1010,7 +1016,7 @@ namespace DiscordCoreAPI {
 		Snowflake ownerId{};///< Id of the Channel's owner.
 		Snowflake guildId{};///< Id of the Channel's Guild, if applicable.
 		Uint8 flags{};///< Flags combined as a bitmask.
-
+		
 		ChannelData() noexcept = default;
 
 		ChannelData& operator=(ChannelData&&) noexcept = default;

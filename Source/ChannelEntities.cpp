@@ -37,6 +37,8 @@ namespace DiscordCoreAPI {
 
 		this->guildId = getId(jsonObjectData, "guild_id");
 
+		this->defaultSortOrder = static_cast<SortOrderTypes>(getUint8(jsonObjectData, "default_sort_order"));
+
 		this->defaultAutoArchiveDuration = getUint32(jsonObjectData, "default_auto_archive_duration");
 
 		this->position = getUint32(jsonObjectData, "position");
