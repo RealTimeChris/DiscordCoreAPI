@@ -305,8 +305,8 @@ namespace DiscordCoreAPI {
 	}
 
 	Void VoiceConnection::checkForConnections() {
-		if (this->theConnections.size() > 0) {
-			this->theConnections.pop_front();
+		if (this->theConnections) {
+			this->theConnections.reset(nullptr);
 			VoiceActiveState currentState{ this->activeState.load() };
 			StopWatch theStopWatch{ 10000ms };
 			this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
@@ -939,10 +939,9 @@ namespace DiscordCoreAPI {
 		this->closeCode = 0;
 		this->areWeHeartBeating = false;
 		this->currentReconnectTries++;
-		DiscordCoreAPI::ConnectionPackage theData{};
-		theData.currentReconnectTries = this->currentReconnectTries;
-		theData.currentShard = this->shard[0];
-		this->theConnections.emplace_back(theData);
+		this->theConnections = std::make_unique<ConnectionPackage>();
+		this->theConnections->currentReconnectTries = this->currentReconnectTries;
+		this->theConnections->currentShard = this->shard[0];
 	}
 
 	Void VoiceConnection::mixAudio() noexcept {
@@ -997,7 +996,9 @@ namespace DiscordCoreAPI {
 	Void VoiceConnection::connect(DiscordCoreInternal::VoiceConnectInitData theData) noexcept {
 		if (this->baseSocketAgent) {
 			this->voiceConnectInitData = theData;
-			this->theConnections.emplace_back(ConnectionPackage{});
+			this->theConnections = std::make_unique<ConnectionPackage>();
+			this->theConnections->currentReconnectTries = this->currentReconnectTries;
+			this->theConnections->currentShard = this->shard[0];
 			this->theStreamInfo = theData.streamInfo;
 			this->streamType = theData.streamType;
 			this->activeState.store(VoiceActiveState::Connecting);

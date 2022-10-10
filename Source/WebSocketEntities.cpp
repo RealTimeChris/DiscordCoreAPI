@@ -1501,11 +1501,10 @@ namespace DiscordCoreInternal {
 			this->inputBuffer.clear();
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
-			DiscordCoreAPI::ConnectionPackage theData{};
-			theData.currentReconnectTries = this->currentReconnectTries;
-			theData.areWeResuming = this->areWeResuming;
-			theData.currentShard = this->shard[0];
-			this->theConnections.emplace_back(theData);
+			this->theConnections = std::make_unique<DiscordCoreAPI::ConnectionPackage>();
+			this->theConnections->currentReconnectTries = this->currentReconnectTries;
+			this->theConnections->areWeResuming = this->areWeResuming;
+			this->theConnections->currentShard = this->shard[0];
 		}
 	}
 
@@ -1663,9 +1662,9 @@ namespace DiscordCoreInternal {
 						static_cast<WebSocketSSLShard*>(value.get())->checkForAndSendHeartBeat();
 						areWeConnected = true;
 					}
-					if (value->theConnections.size() > 0) {
-						auto theConnectionData = value->theConnections.front();
-						value->theConnections.pop_front();
+					if (value->theConnections) {
+						auto theConnectionData = *value->theConnections;
+						value->theConnections.reset(nullptr);
 						this->connect(theConnectionData);
 					}
 				}

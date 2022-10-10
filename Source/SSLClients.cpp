@@ -118,10 +118,8 @@ namespace DiscordCoreInternal {
 	};
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper&& other) noexcept {
-		if (*this->thePtr != SOCKET_ERROR) {
-			this->thePtr.reset(nullptr);
-			this->thePtr = UniquePtrD<SOCKET, SOCKETDeleter>(new SOCKET{}, SOCKETDeleter{});
-		}
+		this->thePtr.reset(nullptr);
+		this->thePtr = UniquePtrD<SOCKET, SOCKETDeleter>(new SOCKET{}, SOCKETDeleter{});
 		*this->thePtr = *other.thePtr;
 		*other.thePtr = SOCKET_ERROR;
 		return *this;
@@ -132,10 +130,8 @@ namespace DiscordCoreInternal {
 	}
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) noexcept {
-		if (*this->thePtr != SOCKET_ERROR) {
-			this->thePtr.reset(nullptr);
-			this->thePtr = UniquePtrD<SOCKET, SOCKETDeleter>(new SOCKET{}, SOCKETDeleter{});
-		}
+		this->thePtr.reset(nullptr);
+		this->thePtr = UniquePtrD<SOCKET, SOCKETDeleter>(new SOCKET{}, SOCKETDeleter{});
 		*this->thePtr = other;
 		return *this;
 	}
