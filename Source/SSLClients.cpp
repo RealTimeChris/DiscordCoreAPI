@@ -366,20 +366,12 @@ namespace DiscordCoreInternal {
 	ProcessIOResult SSLClient::writeData(StringView dataToWrite, Bool priority) noexcept {
 		if (dataToWrite.size() > 0 && this->ssl) {
 			if (priority && dataToWrite.size() < static_cast<Uint64>(16 * 1024)) {
-				pollfd readWriteSet{ .fd = static_cast<SOCKET>(this->theSocket), .events = POLLOUT };
-				if (auto returnValue = poll(&readWriteSet, 1, 1000); returnValue == SOCKET_ERROR) {
+				this->outputBuffer.clear();
+				memcpy(this->outputBuffer.getCurrentHead()->getCurrentHead(), dataToWrite.data(), dataToWrite.size());
+				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
+				this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+				if (!this->processWriteData()) {
 					return ProcessIOResult::Error;
-				} else if (returnValue == 0) {
-					return ProcessIOResult::No_Error;
-				}
-
-				if (readWriteSet.revents & POLLOUT) {
-					memcpy(this->outputBuffer.getCurrentHead()->getCurrentHead(), dataToWrite.data(), dataToWrite.size());
-					this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
-					this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-					if (!this->processWriteData()) {
-						return ProcessIOResult::Error;
-					}
 				}
 			} else {
 				if (dataToWrite.size() > static_cast<Uint64>(16 * 1024)) {

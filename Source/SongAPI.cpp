@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 		};
 		frameData.type = AudioFrameType::Skip;
 		frameData.guildMemberId = static_cast<GuildMember>(guildMember).id;
-		DiscordCoreClient::getSongAPI(guildMember.guildId)->audioDataBuffer.send(frameData);
+		DiscordCoreClient::getSongAPI(guildMember.guildId)->audioDataBuffer.send(std::move(frameData));
 	}
 
 	Void SongAPI::stop(const Snowflake guildId) {

@@ -885,6 +885,16 @@ namespace DiscordCoreAPI {
 		Uint64 guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
 		Vector<Uint8> data{};///< The audio data.
 
+		AudioFrameData() noexcept = default;
+
+		AudioFrameData& operator=(AudioFrameData&&) noexcept = default;
+
+		AudioFrameData(AudioFrameData&&) noexcept = default;
+
+		AudioFrameData& operator=(const AudioFrameData&) noexcept = delete;
+
+		AudioFrameData(const AudioFrameData&) noexcept = delete;
+
 		friend bool operator==(const AudioFrameData& lhs, const AudioFrameData& rhs);
 
 		Void clearData() noexcept;
@@ -1482,11 +1492,11 @@ namespace DiscordCoreAPI {
 	}
 
 	template<typename ObjectType>
-	concept Copyable = std::copyable<ObjectType>;
+	concept CopyableOrMovable = std::copyable<ObjectType> || std::movable<ObjectType>;
 
 	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
 	/// \tparam ObjectType The type of object that will be sent over the message block.
-	template<Copyable ObjectType> class UnboundedMessageBlock {
+	template<CopyableOrMovable ObjectType> class UnboundedMessageBlock {
 	  public:
 		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) noexcept {
 			if (this != &other) {
