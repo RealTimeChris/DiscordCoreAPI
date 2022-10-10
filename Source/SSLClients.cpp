@@ -95,6 +95,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	SSLWrapper& SSLWrapper::operator=(std::nullptr_t other) {
+		this->thePtr.reset(other);
+		return *this;
+	}
+
 	SSLWrapper& SSLWrapper::operator=(SSL* other) {
 		this->thePtr.reset(nullptr);
 		this->thePtr = UniquePtrD<SSL, SSLDeleter>(other, SSLDeleter{});
@@ -104,6 +109,7 @@ namespace DiscordCoreInternal {
 	SSLWrapper::operator SSL*() {
 		return this->thePtr.get();
 	}
+
 	Void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
 		if (*other != SOCKET_ERROR) {
 #ifdef _WIN32

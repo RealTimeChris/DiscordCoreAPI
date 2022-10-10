@@ -113,6 +113,8 @@ namespace DiscordCoreInternal {
 			Void operator()(SSL* other);
 		};
 
+		SSLWrapper& operator=(std::nullptr_t other);
+
 		SSLWrapper& operator=(SSL* other);
 
 		operator SSL*();

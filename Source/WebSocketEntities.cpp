@@ -1495,6 +1495,7 @@ namespace DiscordCoreInternal {
 	Void WebSocketSSLShard::disconnect() noexcept {
 		if (this->theSocket != SOCKET_ERROR) {
 			this->theSocket = SOCKET_ERROR;
+			this->ssl = nullptr;
 			this->currentState.store(WebSocketState::Disconnected);
 			this->areWeConnecting.store(true);
 			this->outputBuffer.clear();
