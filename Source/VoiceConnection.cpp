@@ -919,6 +919,7 @@ namespace DiscordCoreAPI {
 			}
 			this->taskThread02.reset(nullptr);
 		}
+		WebSocketCore::disconnect();
 		DatagramSocketClient::disconnect();
 		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
 			this->streamSocket->disconnect();
@@ -933,22 +934,18 @@ namespace DiscordCoreAPI {
 
 	Void VoiceConnection::reconnect() noexcept {
 		DatagramSocketClient::disconnect();
-		if (WebSocketCore::theSocket != SOCKET_ERROR) {
-			WebSocketCore::theSocket = SOCKET_ERROR;
-			this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
-			WebSocketCore::outputBuffer.clear();
-			WebSocketCore::inputBuffer.clear();
-			this->closeCode = 0;
-			this->areWeHeartBeating = false;
-			DiscordCoreAPI::ConnectionPackage theData{};
-			theData.currentReconnectTries = this->currentReconnectTries;
-			theData.currentShard = this->shard[0];
-			this->theConnections.emplace_back(theData);
-		}
-		DatagramSocketClient::outputBuffer.clear();
-		DatagramSocketClient::inputBuffer.clear();
+		WebSocketCore::theSocket = SOCKET_ERROR;
+		this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
 		WebSocketCore::outputBuffer.clear();
 		WebSocketCore::inputBuffer.clear();
+		this->closeCode = 0;
+		this->areWeHeartBeating = false;
+		DiscordCoreAPI::ConnectionPackage theData{};
+		theData.currentReconnectTries = this->currentReconnectTries;
+		theData.currentShard = this->shard[0];
+		this->theConnections.emplace_back(theData);
+		DatagramSocketClient::outputBuffer.clear();
+		DatagramSocketClient::inputBuffer.clear();
 		this->areWeHeartBeating = false;
 		this->currentReconnectTries++;
 	}
