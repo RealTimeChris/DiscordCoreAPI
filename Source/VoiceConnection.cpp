@@ -938,8 +938,8 @@ namespace DiscordCoreAPI {
 
 	Void VoiceConnection::reconnect() noexcept {
 		this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
-		WebSocketCore::theSocket = SOCKET_ERROR;
 		WebSocketCore::ssl = nullptr;
+		WebSocketCore::theSocket = SOCKET_ERROR;
 		DatagramSocketClient::disconnect();
 		WebSocketCore::outputBuffer.clear();
 		WebSocketCore::inputBuffer.clear();
