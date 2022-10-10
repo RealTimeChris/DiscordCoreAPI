@@ -53,7 +53,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		simdjson::ondemand::value theArray{};
 		if (jsonObjectData["permission_overwrites"].get(theArray) == simdjson::error_code::SUCCESS) {
 			this->permissionOverwrites.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
@@ -63,10 +62,8 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData["applied_tags"].get(theArray) == simdjson::error_code::SUCCESS) {
-			this->permissionOverwrites.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				OverWriteData theDataNew{ value.value() };
-				this->appliedTags.emplace_back(std::move(theDataNew));
+				this->appliedTags.emplace_back(strtoull(value.value().get_string().take_value()));
 			}
 		}
 
@@ -117,7 +114,6 @@ namespace DiscordCoreAPI {
 			this->threadMetadata = ThreadMetadataData{ theObject };
 		}
 
-		simdjson::ondemand::value theObject{};
 		if (jsonObjectData["default_reaction_emoji"].get(theObject) == simdjson::error_code::SUCCESS) {
 			this->defaultReactionEmoji = DefaultReactionData{ theObject };
 		}

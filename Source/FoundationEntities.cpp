@@ -715,7 +715,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["allow_list"].get(theArray) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
-				this->allowList.emplace_back(static_cast<KeywordPresetType>(value.get_uint64().value()));
+				this->allowList.emplace_back(value.get_string().value());
 			}
 		}
 
