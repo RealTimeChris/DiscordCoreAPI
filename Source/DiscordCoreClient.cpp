@@ -310,7 +310,7 @@ namespace DiscordCoreAPI {
 			theData.currentShard = x;
 			theData.currentReconnectTries = 0;
 			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x] = std::make_unique<DiscordCoreInternal::WebSocketSSLShard>(this, x, &Globals::doWeQuit);
-			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x]->theConnections = std::make_unique<ConnectionPackage>();
+			this->baseSocketAgentMap[x % theWorkerCount]->theShardMap[x]->theConnections = std::make_unique<ConnectionPackage>(theData);
 			while (!this->theConnectionStopWatch.hasTimePassed()) {
 				std::this_thread::sleep_for(1ms);
 			}
