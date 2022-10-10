@@ -40,7 +40,7 @@ file(GLOB SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 if (WIN32)
 	add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
 elseif (UNIX)
-	add_library("${LIB_NAME}" STATIC "${SOURCES}")
+	add_library("${LIB_NAME}" SHARED "${SOURCES}")
 	find_package(Threads REQUIRED)
 endif()
 

@@ -682,7 +682,7 @@ namespace DiscordCoreAPI {
 					"\r\nSec-WebSocket-Version: 13\r\n\r\n";
 				this->shard[0] = 0;
 				this->shard[1] = 1;
-				if (!WebSocketCore::sendMessage(sendVector, true)) {
+				if (WebSocketCore::writeData(sendVector, true) == DiscordCoreInternal::ProcessIOResult::Error) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					return;
@@ -723,7 +723,7 @@ namespace DiscordCoreAPI {
 				identifyData.connectInitData = this->voiceConnectInitData;
 				identifyData.connectionData = this->voiceConnectionData;
 				String sendVector = this->stringifyJsonData(identifyData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				if (!WebSocketCore::sendMessage(sendVector, true)) {
+				if (WebSocketCore::writeData(sendVector, true) == DiscordCoreInternal::ProcessIOResult::Error) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					return;
@@ -762,7 +762,7 @@ namespace DiscordCoreAPI {
 				protocolPayloadData.externalIp = this->externalIp;
 				protocolPayloadData.voicePort = this->port;
 				String sendVector = this->stringifyJsonData(protocolPayloadData, DiscordCoreInternal::WebSocketOpCode::Op_Text);
-				if (!WebSocketCore::sendMessage(sendVector, true)) {
+				if (WebSocketCore::writeData(sendVector, true) == DiscordCoreInternal::ProcessIOResult::Error) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					return;
