@@ -525,7 +525,7 @@ namespace DiscordCoreAPI {
 						auto waitTime = targetTime - std::chrono::steady_clock::now();
 						if (waitTime.count() >= 18000000) {
 							if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
-								if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
+								if (WebSocketCore::processIO(100) == DiscordCoreInternal::ProcessIOResult::Error) {
 									this->onClosed();
 								}
 							}
@@ -709,7 +709,7 @@ namespace DiscordCoreAPI {
 						this->onClosed();
 						return;
 					}
-					if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
+					if (WebSocketCore::processIO(100) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->currentReconnectTries++;
 						this->onClosed();
 						return;
@@ -743,7 +743,7 @@ namespace DiscordCoreAPI {
 						this->onClosed();
 						return;
 					}
-					if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
+					if (WebSocketCore::processIO(100) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->currentReconnectTries++;
 						this->onClosed();
 						return;
@@ -782,7 +782,7 @@ namespace DiscordCoreAPI {
 						this->onClosed();
 						return;
 					}
-					if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
+					if (WebSocketCore::processIO(100) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->currentReconnectTries++;
 						this->onClosed();
 						return;
