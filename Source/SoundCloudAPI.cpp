@@ -242,10 +242,6 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				std::this_thread::sleep_for(1ms);
-				if (stopToken.stop_requested()) {
-					audioDecoder.reset(nullptr);
-					return;
-				}
 				if (audioDecoder->haveWeFailed()) {
 					audioDecoder.reset(nullptr);
 					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);

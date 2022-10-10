@@ -288,6 +288,7 @@ namespace DiscordCoreInternal {
 					DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frameData));
 					streamSocket->disconnect();
 					audioDecoder.reset(nullptr);
+					this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				}
 				bytesSubmittedPrevious = bytesReadTotal;
