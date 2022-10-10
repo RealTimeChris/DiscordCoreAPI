@@ -218,7 +218,6 @@ namespace DiscordCoreAPI {
 				this->set(std::make_unique<StringType>());
 				*this->theValue.string = *theKey.theValue.string;
 				break;
-				break;
 			}
 			case ValueType::Bool: {
 				this->theValue.boolean = theKey.theValue.boolean;

@@ -151,11 +151,9 @@ namespace DiscordCoreInternal {
 	}
 
 	Void ErlPacker::writeArray(DiscordCoreAPI::JsonObject::ArrayType&& jsonData) {
-		Bool add_comma{ false };
 		this->appendListHeader(static_cast<Uint32>(jsonData.size()));
 		for (auto element: jsonData) {
 			this->singleValueJsonToETF(std::move(element));
-			add_comma = true;
 		}
 		this->appendNilExt();
 	}

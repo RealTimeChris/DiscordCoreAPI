@@ -427,12 +427,11 @@ namespace DiscordCoreInternal {
 	AtomicInt32 theInt{};
 	Bool WebSocketSSLShard::onMessageReceived(StringView theDataNew) noexcept {
 		if (this->discordCoreClient) {
-			String theString{};
-			String& payload{ theString };
 			if (this->areWeStillConnected() && this->currentMessage.size() > 0) {
+				String theString{};
+				String& payload{ theString };
 				try {
 					Bool returnValue{ false };
-
 					simdjson::ondemand::value thePayload{};
 					WebSocketMessage theMessage{};
 					if (theDataNew.size() > 0) {
