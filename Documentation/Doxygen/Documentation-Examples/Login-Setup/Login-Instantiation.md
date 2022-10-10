@@ -17,7 +17,7 @@ Login/Instantiation {#logininstantiation}
 
 #include <Index.hpp>
 
-Int32 main()
+int main()
 {
 	String botToken {"YOUR_BOT_TOKEN_HERE"};
 	UniquePtr<DiscordCoreAPI::DiscordCoreClient> thePtr = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(
