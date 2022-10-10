@@ -170,86 +170,80 @@ namespace DiscordCoreAPI {
 	Bool VoiceConnection::onMessageReceived(StringView theData) noexcept {
 		std::unique_lock theLock00{ this->voiceUserMutex, std::defer_lock_t{} };
 		try {
-			if (theData.size() > 0) {
-				String theString{ theData };
-				theString.reserve(theString.size() + simdjson::SIMDJSON_PADDING);
-				DiscordCoreInternal::WebSocketMessage theMessage{};
-				simdjson::ondemand::value theValue{};
-				if (this->theParser.iterate(theString.data(), theString.length(), theString.capacity()).get(theValue) == simdjson::error_code::SUCCESS) {
-					theMessage = DiscordCoreInternal::WebSocketMessage{ theValue };
-				}
+			String theString{ theData };
+			theString.reserve(theString.size() + simdjson::SIMDJSON_PADDING);
+			DiscordCoreInternal::WebSocketMessage theMessage{};
+			simdjson::ondemand::value theValue{};
+			if (this->theParser.iterate(theString.data(), theString.length(), theString.capacity()).get(theValue) == simdjson::error_code::SUCCESS) {
+				theMessage = DiscordCoreInternal::WebSocketMessage{ theValue };
+			}
 
-				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-					cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theData << reset() << endl << endl;
-				}
-				if (theMessage.op != 0) {
-					switch (theMessage.op) {
-						case 2: {
-							VoiceSocketReadyData theData{ theMessage.d };
-							this->audioSSRC = theData.ssrc;
-							this->voiceIp = theData.ip;
-							this->port = theData.port;
-							this->audioEncryptionMode = theData.mode;
-							this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
-							return true;
-						}
-						case 4: {
-							auto theArray = getArray(theMessage.d, "secret_key");
-							if (theArray.didItSucceed) {
-								Vector<unsigned char> theSecretKey{};
-								for (auto iterator: theArray.theArray) {
-									theSecretKey.push_back(static_cast<Uint8>(iterator.get_uint64().take_value()));
-								}
-								this->secretKeySend = theSecretKey;
+			if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+				cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << theData << reset() << endl << endl;
+			}
+			if (theMessage.op != 0) {
+				switch (theMessage.op) {
+					case 2: {
+						VoiceSocketReadyData theData{ theMessage.d };
+						this->audioSSRC = theData.ssrc;
+						this->voiceIp = theData.ip;
+						this->port = theData.port;
+						this->audioEncryptionMode = theData.mode;
+						this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
+						return true;
+					}
+					case 4: {
+						auto theArray = getArray(theMessage.d, "secret_key");
+						if (theArray.didItSucceed) {
+							Vector<unsigned char> theSecretKey{};
+							for (auto iterator: theArray.theArray) {
+								theSecretKey.push_back(static_cast<Uint8>(iterator.get_uint64().take_value()));
 							}
-							this->packetEncrypter = RTPPacketEncrypter{ this->audioSSRC, this->secretKeySend };
-							this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-							return true;
+							this->secretKeySend = theSecretKey;
 						}
-						case 5: {
-							Uint32 ssrc = getUint32(theMessage.d, "ssrc");
-							VoiceUser theUser{};
-							theUser.theUserId = stoull(getString(theMessage.d, "user_id"));
-							theLock00.lock();
-							this->voiceUsers[ssrc] = std::move(theUser);
-							return true;
-						}
-						case 6: {
-							this->haveWeReceivedHeartbeatAck = true;
-							return true;
-						}
-						case 8: {
-							this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ static_cast<Uint32>(getFloat(theMessage.d, "heartbeat_interval")) } };
-							this->areWeHeartBeating = true;
-							this->connectionState.store(VoiceConnectionState::Sending_Identify);
-							this->currentState.store(DiscordCoreInternal::WebSocketState::Authenticated);
-							this->haveWeReceivedHeartbeatAck = true;
-							return true;
-						}
-						case 9: {
-							this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
-							return true;
-						}
-						case 13: {
-							auto theUserId = stoull(getString(theMessage.d, "user_id"));
-							for (auto& [key, value]: this->voiceUsers) {
-								if (theUserId == value.theUserId) {
-									theLock00.lock();
-									this->voiceUsers.erase(key);
-									break;
-								}
+						this->packetEncrypter = RTPPacketEncrypter{ this->audioSSRC, this->secretKeySend };
+						this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+						return true;
+					}
+					case 5: {
+						Uint32 ssrc = getUint32(theMessage.d, "ssrc");
+						VoiceUser theUser{};
+						theUser.theUserId = stoull(getString(theMessage.d, "user_id"));
+						theLock00.lock();
+						this->voiceUsers[ssrc] = std::move(theUser);
+						return true;
+					}
+					case 6: {
+						this->haveWeReceivedHeartbeatAck = true;
+						return true;
+					}
+					case 8: {
+						this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ static_cast<Uint32>(getFloat(theMessage.d, "heartbeat_interval")) } };
+						this->areWeHeartBeating = true;
+						this->connectionState.store(VoiceConnectionState::Sending_Identify);
+						this->currentState.store(DiscordCoreInternal::WebSocketState::Authenticated);
+						this->haveWeReceivedHeartbeatAck = true;
+						return true;
+					}
+					case 9: {
+						this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
+						return true;
+					}
+					case 13: {
+						auto theUserId = stoull(getString(theMessage.d, "user_id"));
+						for (auto& [key, value]: this->voiceUsers) {
+							if (theUserId == value.theUserId) {
+								theLock00.lock();
+								this->voiceUsers.erase(key);
+								break;
 							}
-							return true;
 						}
+						return true;
 					}
 				}
-			} else {
-				this->currentMessage.clear();
-				WebSocketCore::inputBuffer.clear();
-				this->messageLength = 0;
-				this->messageOffset = 0;
-				return false;
 			}
+			return true;
+			
 		} catch (...) {
 			reportException("VoiceConnection::onMessageReceived()");
 			this->onClosed();
