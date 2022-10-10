@@ -921,8 +921,19 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)
 				->onSongCompletionEvent.remove(DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->eventToken);
 		}
-		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+		this->closeCode = 0;
+		this->areWeHeartBeating = false;
+		this->currentReconnectTries = 0;
+		WebSocketCore::ssl = nullptr;
+		WebSocketCore::outputBuffer.clear();
+		WebSocketCore::inputBuffer.clear();
+		WebSocketCore::theSocket = SOCKET_ERROR;
+		DatagramSocketClient::outputBuffer.clear();
+		DatagramSocketClient::inputBuffer.clear();
 		this->activeState.store(VoiceActiveState::Connecting);
+		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+		this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
+		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.clearContents();
 	}
 
 	Void VoiceConnection::reconnect() noexcept {
