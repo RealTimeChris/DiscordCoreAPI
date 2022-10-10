@@ -159,19 +159,24 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	  public:
 		TimeStamp<std::chrono::milliseconds> lastPinTimestamp{};///< Timestamp of the last pinned Message.
-		UMap<Uint64, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
+		DefaultReactionData defaultReactionEmoji{};///< The emoji to show in the add reaction button on a thread in a GUILD_FORUM channel.
+		Int32 defaultThreadRateLimitPerUser{};///< The initial rate_limit_per_user to set on newly created threads in a channel.this field is copied to the thread at creation time and does not live update.
 		Int32 defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
+		Vector<ForumTagData> availableTags{};///< The set of tags that can be used in a GUILD_FORUM channel.
+		UMap<Uint64, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
+		Vector<Snowflake> appliedTags{};///< The IDs of the set of tags that have been applied to a thread in a GUILD_FORUM channel.
+		StringWrapper lastMessageId{};///< Id of the last Message.
 		Int32 videoQualityMode{ 0 };///< Video quality mode.
 		Int32 rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
-		StringWrapper lastMessageId{};///< Id of the last Message.
 		StringWrapper permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
-		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
-		Int32 messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
 		Snowflake applicationId{};///< Application id of the current application.
 		StringWrapper rtcRegion{};///< Real-time clock region.
-		Int32 userLimit{ 0 };///< User limit, in the case of voice channels.
+		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
+		Int32 totalMessageSent{};///< Number of messages ever sent in a thread it's similar to message_count on message creation, but will not decrement the number when a message is deleted.
+		Int32 messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
 		StringWrapper topic{};///< The Channel's topic.
+		Int32 userLimit{ 0 };///< User limit, in the case of voice channels.
 		Int32 bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
 		IconHash icon{};///< Icon for the Channel, if applicable.
 

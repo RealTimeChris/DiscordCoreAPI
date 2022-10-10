@@ -616,6 +616,18 @@ namespace DiscordCoreAPI {
 		this->type = static_cast<PermissionOverwritesType>(getUint8(jsonObjectData, "type"));
 	}
 
+	ForumTagData::ForumTagData(simdjson::ondemand::value jsonObjectData) {
+		this->emojiId = getId(jsonObjectData, "emoji_id");
+
+		this->emojiName = getString(jsonObjectData, "emoji_name");
+
+		this->id = getId(jsonObjectData, "id");
+
+		this->moderated = getBool(jsonObjectData, "moderated");
+
+		this->name = getString(jsonObjectData, "name");
+	}
+
 	ChannelData::ChannelData(simdjson::ondemand::value jsonObjectData) {
 		this->flags |= setBool(this->flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
 
@@ -695,11 +707,19 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (jsonObjectData["keyword_filter"].get(theArray) == simdjson::error_code::SUCCESS) {
+		if (jsonObjectData["presets"].get(theArray) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				this->presets.emplace_back(static_cast<KeywordPresetType>(value.get_uint64().value()));
 			}
 		}
+
+		if (jsonObjectData["allow_list"].get(theArray) == simdjson::error_code::SUCCESS) {
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				this->allowList.emplace_back(static_cast<KeywordPresetType>(value.get_uint64().value()));
+			}
+		}
+
+		this->mentionTotalLimit = getUint32(jsonObjectData, "mention_total_limit");
 	}
 
 	ActionMetaData::ActionMetaData(simdjson::ondemand::value jsonObjectData) {

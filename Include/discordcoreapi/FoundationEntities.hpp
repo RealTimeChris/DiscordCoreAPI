@@ -1000,6 +1000,25 @@ namespace DiscordCoreAPI {
 
 	enum class ChannelFlags : Uint8 { NSFW = 1 << 0 };
 
+	struct DefaultReactionData {
+		Snowflake emojiId{};///< The id of a guild's custom emoji.
+		String emojiName{};///< The unicode character of the emoji.
+	};
+
+	struct ForumTagData {
+		Snowflake emojiId{};///< The id of a guild's custom emoji.
+		String emojiName{};///< The unicode character of the emoji.
+		Bool moderated{};///< Whether this tag can only be added to or removed from threads by a member with the MANAGE_THREADS permission.
+		Snowflake id{};///< Id of the tag.
+		String name{};///< The name of the tag(0 - 20 characters).
+
+		ForumTagData() noexcept = default;
+
+		ForumTagData(simdjson::ondemand::value jsonObjectData);
+
+		virtual ~ForumTagData() noexcept = default;
+	};
+
 	/// Data structure representing a single Channel. \brief Data structure representing a single Channel.
 	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
 	  public:
@@ -1088,9 +1107,9 @@ namespace DiscordCoreAPI {
 	/// Trigger types for auto-moderation. \brief Trigger types for auto-moderation.
 	enum class TriggerType : Uint8 {
 		Keyword = 1,///< Check if content contains words from a user defined list of keywords.
-		Harmful_Link = 2,///< Check if content contains any harmful links.
 		Spam = 3,///< Check if content represents generic spam.
-		Keyword_Preset = 4///< Check if content contains words from internal pre-defined wordsets.
+		Keyword_Preset = 4,///< Check if content contains words from internal pre-defined wordsets.
+		Mention_Spam = 5///< Check if content contains more unique mentions than allowed.
 	};
 
 	/// Keyword preset types for auto-moderation. \brief Keyword preset types for auto-moderation.
@@ -1122,7 +1141,9 @@ namespace DiscordCoreAPI {
 	/// Trigger metadata for auto-moderation-rules. \brief Trigger metadata for auto-moderation-rules.
 	struct DiscordCoreAPI_Dll TriggerMetaData {
 		Vector<KeywordPresetType> presets{};///< The internally pre-defined wordsets which will be searched for in content.
-		Vector<String> keywordFilter{};///< Substrings which will be searched for in content.
+		Vector<String> keywordFilter{};///< Substrings which will be searched for in content.keyword_filter	array of strings.
+		Vector<String> allowList{};///< Substrings which will be exempt from triggering the preset trigger type.
+		Int32 mentionTotalLimit{};///< Total number of unique role and user mentions allowed per message (Maximum of 50).
 
 		TriggerMetaData() noexcept = default;
 

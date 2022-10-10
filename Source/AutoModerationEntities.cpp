@@ -48,7 +48,10 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->triggerMetadata.keywordFilter) {
 			theData["trigger_metadata"]["keyword_filter"].pushBack(value);
 		}
-		theData["presets"] = this->triggerMetadata.presets;
+		theData["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
+		theData["trigger_metadata"]["mention_total_limit"] = this->triggerMetadata.mentionTotalLimit;
+		theData["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
+		theData["trigger_metadata"]["allow_list"] = this->triggerMetadata.allowList;
 		theData["trigger_type"] = this->triggerType;
 		return theData;
 	}
@@ -74,7 +77,10 @@ namespace DiscordCoreAPI {
 		for (auto& value: this->triggerMetadata.keywordFilter) {
 			theData["trigger_metadata"]["keyword_filter"].pushBack(value);
 		}
-		theData["presets"] = this->triggerMetadata.presets;
+		theData["trigger_metadata"]["presets"] = this->triggerMetadata.presets;
+		theData["trigger_metadata"]["mention_total_limit"] = this->triggerMetadata.mentionTotalLimit;
+		theData["trigger_metadata"]["keyword_filter"] = this->triggerMetadata.keywordFilter;
+		theData["trigger_metadata"]["allow_list"] = this->triggerMetadata.allowList;
 		return theData;
 	}
 

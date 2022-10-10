@@ -31,6 +31,8 @@ namespace DiscordCoreAPI {
 	Channel::Channel(simdjson::ondemand::value jsonObjectData) {
 		this->id = getId(jsonObjectData, "id");
 
+		this->totalMessageSent = getUint32(jsonObjectData, "tital_message_sent");
+
 		this->flags = getUint8(jsonObjectData, "flags");
 
 		this->type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
@@ -43,12 +45,28 @@ namespace DiscordCoreAPI {
 
 		this->position = getUint32(jsonObjectData, "position");
 
+		simdjson::ondemand::array theArray{};
+		if (jsonObjectData["available_tags"].get(theArray) == simdjson::error_code::SUCCESS) {
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				ForumTagData newData{ value.value() };
+				this->availableTags.emplace_back(std::move(newData));
+			}
+		}
+
 		simdjson::ondemand::value theArray{};
 		if (jsonObjectData["permission_overwrites"].get(theArray) == simdjson::error_code::SUCCESS) {
 			this->permissionOverwrites.clear();
 			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
 				OverWriteData theDataNew{ value.value() };
 				this->permissionOverwrites.emplace_back(std::move(theDataNew));
+			}
+		}
+
+		if (jsonObjectData["applied_tags"].get(theArray) == simdjson::error_code::SUCCESS) {
+			this->permissionOverwrites.clear();
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+				OverWriteData theDataNew{ value.value() };
+				this->appliedTags.emplace_back(std::move(theDataNew));
 			}
 		}
 
@@ -97,6 +115,11 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::value theObject{};
 		if (jsonObjectData["thread_metadata"].get(theObject) == simdjson::error_code::SUCCESS) {
 			this->threadMetadata = ThreadMetadataData{ theObject };
+		}
+
+		simdjson::ondemand::value theObject{};
+		if (jsonObjectData["default_reaction_emoji"].get(theObject) == simdjson::error_code::SUCCESS) {
+			this->defaultReactionEmoji = DefaultReactionData{ theObject };
 		}
 
 		if (jsonObjectData["member"].get(theObject) == simdjson::error_code::SUCCESS) {
