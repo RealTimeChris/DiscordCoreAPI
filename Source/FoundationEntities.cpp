@@ -71,7 +71,7 @@ namespace DiscordCoreInternal {
 		serializer["d"]["properties"]["device"] = "DiscordCoreAPI";
 #ifdef _WIN32
 		serializer["d"]["properties"]["os"] = "Windows";
-#else
+#elif __linux__
 		serializer["d"]["properties"]["os"] = "Linux";
 #endif
 		serializer["d"]["shard"].emplaceBack(this->currentShard);
@@ -124,7 +124,8 @@ namespace DiscordCoreInternal {
 	SendSpeakingData::operator DiscordCoreAPI::Jsonifier() {
 		DiscordCoreAPI::Jsonifier data{};
 		data["op"] = 5;
-		data["d"]["speaking"] = this->type;
+		data["d"]["speaking"] = static_cast<int32_t>(this->type);
+		std::cout << "SPEAKING: " << static_cast<int32_t>(this->type) << std::endl;
 		data["d"]["delay"] = this->delay;
 		data["d"]["ssrc"] = this->ssrc;
 		return data;
@@ -174,18 +175,11 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketMessage::WebSocketMessage(simdjson::ondemand::value jsonObjectData) {
-		simdjson::ondemand::object value{};
-		if (jsonObjectData.get(value) == simdjson::error_code::SUCCESS) {
-			this->op = DiscordCoreAPI::getUint32(value, "op");
+		this->op = DiscordCoreAPI::getUint32(jsonObjectData, "op");
 
-			this->s = DiscordCoreAPI::getUint32(value, "s");
+		this->s = DiscordCoreAPI::getUint32(jsonObjectData, "s");
 
-			this->t = DiscordCoreAPI::getString(value, "t");
-
-			if (jsonObjectData["d"].get(this->d) != simdjson::error_code::SUCCESS) {
-				throw std::runtime_error{ "Failed to collect the 'd'." };
-			}
-		}
+		this->t = DiscordCoreAPI::getString(jsonObjectData, "t");
 	}
 
 	InvalidSessionData::InvalidSessionData(simdjson::ondemand::value jsonObjectData) {

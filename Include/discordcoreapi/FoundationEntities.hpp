@@ -74,6 +74,7 @@ namespace DiscordCoreInternal {
 	};
 
 	enum class SendSpeakingType : uint8_t {
+		None = 0,
 		Microphone = 1 << 0,
 		Soundshare = 1 << 1,
 		Priority = 1 << 2,

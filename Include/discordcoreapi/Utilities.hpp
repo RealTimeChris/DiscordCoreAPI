@@ -46,7 +46,7 @@
 			#define WINRT_LEAN_AND_MEAN
 		#endif
 		#include <WinSock2.h>
-	#else
+	#elif __linux__
 		#ifndef DiscordCoreAPI_Dll
 			#define DiscordCoreAPI_Dll
 		#endif
