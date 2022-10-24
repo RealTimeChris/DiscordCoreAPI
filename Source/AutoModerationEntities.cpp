@@ -124,22 +124,22 @@ namespace DiscordCoreAPI {
 
 		this->creatorId = getId(jsonObjectData, "creator_id");
 
-		simdjson::ondemand::array theArray{};
-		if (jsonObjectData["actions"].get(theArray) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+		simdjson::ondemand::array arrayValue{};
+		if (jsonObjectData["actions"].get(arrayValue) == simdjson::error_code::SUCCESS) {
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
 				ActionData newData{ value.value() };
 				this->actions.emplace_back(std::move(newData));
 			}
 		}
 
-		if (jsonObjectData["exempt_roles"].get(theArray) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+		if (jsonObjectData["exempt_roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
 				this->exemptRoles.emplace_back(Snowflake{ value.get_uint64().value() });
 			}
 		}
 
-		if (jsonObjectData["exempt_channels"].get(theArray) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+		if (jsonObjectData["exempt_channels"].get(arrayValue) == simdjson::error_code::SUCCESS) {
+			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
 				this->exemptChannels.emplace_back(Snowflake{ value.get_uint64().value() });
 			}
 		}
@@ -155,9 +155,9 @@ namespace DiscordCoreAPI {
 
 	AutoModerationRuleVector::AutoModerationRuleVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
-			simdjson::ondemand::array theArray{};
-			if (jsonObjectData.get(theArray) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: theArray) {
+			simdjson::ondemand::array arrayValue{};
+			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
+				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
 					AutoModerationRule newData{ value.value() };
 					this->theAutoModerationRules.emplace_back(std::move(newData));
 				}

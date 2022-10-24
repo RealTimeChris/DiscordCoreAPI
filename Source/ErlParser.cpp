@@ -33,12 +33,10 @@ namespace DiscordCoreInternal {
 		this->offSet = 0;
 		this->dataBuffer = dataToParse;
 		this->finalString.clear();
-		if (this->readBits<uint8_t>() != formatVersion) {
+		if (this->readBitsFromBuffer<uint8_t>() != formatVersion) {
 			throw ErlParseError{ "ErlParser::parseEtfToJson() Error: Incorrect format version specified." };
 		}
 		this->singleValueETFToJson();
-		this->finalString.reserve(this->finalString.size() + simdjson::SIMDJSON_PADDING);
-		std::cout << "FINAL STRING: " << this->finalString << std::endl;
 		return this->finalString;
 	}
 
@@ -111,8 +109,7 @@ namespace DiscordCoreInternal {
 		}
 		this->offSet += length;
 		std::string_view string{ this->stringBuffer.data(), finalSize };
-		std::cout << "THE REAL STRING: " << string << std::endl;
-		if (this->stringBuffer.empty()) {
+		if (!finalSize) {
 			this->writeCharacters("\"\"", 2);
 			return;
 		}
@@ -148,37 +145,36 @@ namespace DiscordCoreInternal {
 		if (this->offSet > this->dataBuffer.size()) {
 			throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Read past end of ETF buffer.\n\n" };
 		}
-		uint8_t type = this->readBits<uint8_t>();
-		std::cout << "THE TYPE: " << type << std::endl;
-		switch (static_cast<EtfType>(type)) {
-			case EtfType::Small_Integer_Ext: {
-				return this->parseSmallIntegerExt();
-			}
-			case EtfType::Integer_Ext: {
-				return this->parseIntegerExt();
-			}
-			case EtfType::Atom_Ext: {
-				return this->parseAtomExt();
-			}
-			case EtfType::String_Ext: {
-				return this->parseStringExt();
-			}
-			case EtfType::New_Float_Ext: {
+		uint8_t type = this->readBitsFromBuffer<uint8_t>();
+		switch (static_cast<DiscordCoreAPI::EtfType>(type)) {
+			case DiscordCoreAPI::EtfType::New_Float_Ext: {
 				return this->parseNewFloatExt();
 			}
-			case EtfType::Nil_Ext: {
+			case DiscordCoreAPI::EtfType::Small_Integer_Ext: {
+				return this->parseSmallIntegerExt();
+			}
+			case DiscordCoreAPI::EtfType::Integer_Ext: {
+				return this->parseIntegerExt();
+			}
+			case DiscordCoreAPI::EtfType::Atom_Ext: {
+				return this->parseAtomExt();
+			}
+			case DiscordCoreAPI::EtfType::Nil_Ext: {
 				return this->parseNilExt();
 			}
-			case EtfType::List_Ext: {
+			case DiscordCoreAPI::EtfType::String_Ext: {
+				return this->parseStringExt();
+			}
+			case DiscordCoreAPI::EtfType::List_Ext: {
 				return this->parseListExt();
 			}
-			case EtfType::Binary_Ext: {
+			case DiscordCoreAPI::EtfType::Binary_Ext: {
 				return this->parseBinaryExt();
 			}
-			case EtfType::Small_Big_Ext: {
+			case DiscordCoreAPI::EtfType::Small_Big_Ext: {
 				return this->parseSmallBigExt();
 			}
-			case EtfType::Map_Ext: {
+			case DiscordCoreAPI::EtfType::Map_Ext: {
 				return this->parseMapExt();
 			}
 			default: {
@@ -188,37 +184,35 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlParser::parseListExt() {
-		std::cout << "WERE HERE PARSELISTEXT" << std::endl;
-		uint32_t length = this->readBits<uint32_t>();
+		uint32_t length = this->readBitsFromBuffer<uint32_t>();
 		this->writeCharacter('[');
 		if (static_cast<uint64_t>(this->offSet) + length > this->dataBuffer.size()){
 			throw ErlParseError{ "ErlPacker::parseStringAsList() Error: List reading past end of buffer.\n\n" };
 		}
 		for (uint16_t x = 0; x < length; ++x) {
-			std::cout << "THE LENGTH: " << length << std::endl;
 			this->singleValueETFToJson();
-			std::cout << "FINAL STRING: " << this->finalString << std::endl;
+			if (x < length - 1) {
+				this->writeCharacter(',');
+			}
 		}
+		this->readBitsFromBuffer<uint8_t>();
 		this->writeCharacter(']');
 		return;
 	}
 
 	void ErlParser::parseSmallIntegerExt() {
-		std::cout << "WERE HERE PARSESMALLINTEGEREXT" << std::endl;
-		auto string = std::to_string(this->readBits<uint8_t>());
+		auto string = std::to_string(this->readBitsFromBuffer<int8_t>());
 		this->writeCharacters(string.data(), string.size());
 	}
 
 	void ErlParser::parseIntegerExt() {
-		std::cout << "WERE HERE PARSESINTEGEREXT" << std::endl;
-		auto string = std::to_string(this->readBits<uint32_t>());
+		auto string = std::to_string(this->readBitsFromBuffer<uint32_t>());
 		this->writeCharacters(string.data(), string.size());
 	}
 
 	void ErlParser::parseStringExt() {
-		std::cout << "WERE HERE PARSESTRINGEXT" << std::endl;
 		this->writeCharacter('\"');
-		uint16_t length = this->readBits<uint16_t>();
+		uint16_t length = this->readBitsFromBuffer<uint16_t>();
 		if (static_cast<uint64_t>(this->offSet) + length > this->dataBuffer.size()) {
 			throw ErlParseError{ "ErlParser::parseStringAsList() Error: std::string reading past end of buffer.\n\n" };
 		}
@@ -229,85 +223,74 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlParser::parseNewFloatExt() {
-		std::cout << "WERE HERE PARSENEWFLOAT" << std::endl;
-		uint64_t value = readBits<uint64_t>();
+		uint64_t value = readBitsFromBuffer<uint64_t>();
 		void* ptr{ &value };
 		std::string valueNew = std::to_string(*static_cast<double*>(ptr));
 		this->writeCharacters(valueNew.data(), valueNew.size());
 	}
 
-	void ErlParser::parseBigInt() {
-		auto digits = this->readBits<uint8_t>();
-		uint8_t sign = this->readBits<uint8_t>();
+	void ErlParser::parseSmallBigExt() {
+		this->writeCharacter('\"');
+		auto digits = this->readBitsFromBuffer<uint8_t>();
+		uint8_t sign = this->readBitsFromBuffer<uint8_t>();
 		if (digits > 128) {
-			throw ErlParseError{ "ErlParser::parseBigInt() Error: Integers larger than 8 bytes are not supported.\n\n" };
+			throw ErlParseError{ "ErlParser::parseSmallBigExt() Error: Integers larger than 8 bytes are not supported.\n\n" };
 		}
 		uint64_t value = 0;
 		uint64_t b = 1;
 		for (uint32_t x = 0; x < digits; ++x) {
-			uint8_t digit = this->readBits<uint8_t>();
+			uint8_t digit = this->readBitsFromBuffer<uint8_t>();
 			uint64_t digitNew = digit;
 			value += digitNew * b;
 			b <<= 8;
 		}
 		if (digits <= 4) {
 			if (sign == 0) {
-				auto theString = std::to_string(value);
-				this->writeCharacters(theString.data(), theString.size());
+				auto string = std::to_string(value);
+				this->writeCharacters(string.data(), string.size());
 				return;
 			}
 			const bool isSignBitAvailable = (value & 1ull << 31ull) == 0;
 			if (isSignBitAvailable) {
-				auto theString = std::to_string(-static_cast<int32_t>(value));
-				this->writeCharacters(theString.data(), theString.size());
+				auto string = std::to_string(-static_cast<int32_t>(value));
+				this->writeCharacters(string.data(), string.size());
 				return;
 			}
 		}
 		char outBuffer[32] = { 0 };
 		const char* formatString = sign == 0 ? "%llu" : "-%ll";
-		auto theValue = sign == 0 ? static_cast<uint64_t>(value) : static_cast<int64_t>(value);
-		const int32_t res = sprintf(outBuffer, formatString, theValue);
+		auto valueNew = sign == 0 ? static_cast<uint64_t>(value) : static_cast<int64_t>(value);
+		const int32_t res = sprintf(outBuffer, formatString, valueNew);
 		if (res < 0) {
-			throw ErlParseError{ "ErlParser::parseBigInt() Error: Parse big integer failed.\n\n" };
+			throw ErlParseError{ "ErlParser::parseSmallBigExt() Error: Parse big integer failed.\n\n" };
 		}
 		const uint8_t length = static_cast<uint8_t>(res);
 		this->writeCharacters(outBuffer, length);
-	}
-
-	void ErlParser::parseSmallBigExt() {
-		std::cout << "WERE HERE PARSESMALLBIGEXT" << std::endl;
-		this->writeCharacter('\"');
-		this->parseBigInt();
 		this->writeCharacter('\"');
 	}
 
 	void ErlParser::parseAtomExt() {
-		uint32_t length = this->readBits<uint16_t>();
-		std::cout << "WERE HERE PARSEATOMEXT: LENGTH: " << length << std::endl;
+		uint32_t length = this->readBitsFromBuffer<uint16_t>();
 		this->writeCharactersFromBuffer(length);
 	}
 
 	void ErlParser::parseBinaryExt() {
-		std::cout << "WERE HERE PARSEBINARYEXT" << std::endl;
-		uint32_t length = this->readBits<uint32_t>();
+		uint32_t length = this->readBitsFromBuffer<uint32_t>();
 		this->writeCharactersFromBuffer(length);
 	}
 
 	void ErlParser::parseNilExt() {
-		std::cout << "WERE HERE PARSENILEXT" << std::endl;
-		this->writeCharacter('}');
+		this->writeCharacters("null", 4);
 	}
 
 	void ErlParser::parseMapExt() {
-		std::cout << "WERE HERE PARSEMAPEXT" << std::endl;
-		uint32_t length = readBits<uint32_t>();
+		uint32_t length = readBitsFromBuffer<uint32_t>();
 		this->writeCharacter('{');
-		for (uint32_t i = 0; i < length; ++i) {
-			std::cout << "WERE HERE PARSEMAPEXT LENGTH" << length << std::endl;
+		for (uint32_t x = 0; x < length; ++x) {
 			this->singleValueETFToJson();
 			this->writeCharacter(':');
 			this->singleValueETFToJson();
-			if (i < length - 1) {
+			if (x < length - 1) {
 				this->writeCharacter(',');
 			}
 		}

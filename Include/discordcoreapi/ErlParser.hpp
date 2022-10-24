@@ -39,19 +39,6 @@ namespace DiscordCoreInternal {
 
 	constexpr uint8_t formatVersion{ 131 };
 
-	enum class EtfType : uint8_t {
-		New_Float_Ext = 70,
-		Small_Integer_Ext = 97,
-		Integer_Ext = 98,
-		Atom_Ext = 100,
-		Nil_Ext = 106,
-		String_Ext = 107,
-		List_Ext = 108,
-		Binary_Ext = 109,
-		Small_Big_Ext = 110,
-		Map_Ext = 116,
-	};
-
 	class DiscordCoreAPI_Dll ErlParser {
 	  public:
 		ErlParser() noexcept {};
@@ -66,9 +53,9 @@ namespace DiscordCoreInternal {
 		std::string finalString{};
 		uint64_t offSet{};
 
-		template<typename RTy> RTy readBits() {
+		template<typename RTy> RTy readBitsFromBuffer() {
 			if (this->offSet + sizeof(RTy) > this->dataBuffer.size()) {
-				throw ErlParseError{ "ErlParser::readBits() Error: readBits() past end of the buffer.\n\n" };
+				throw ErlParseError{ "ErlParser::readBitsFromBuffer() Error: readBitsFromBuffer() past end of the buffer.\n\n" };
 			}
 			const RTy newValue = *reinterpret_cast<const RTy*>(this->dataBuffer.data() + this->offSet);
 			this->offSet += sizeof(RTy);
@@ -83,15 +70,13 @@ namespace DiscordCoreInternal {
 
 		void singleValueETFToJson();
 
-		void parseBigInt();
-
-		void parseIntegerExt();
-
 		void parseSmallIntegerExt();
 
 		void parseNewFloatExt();
 
 		void parseSmallBigExt();
+
+		void parseIntegerExt();
 
 		void parseStringExt();
 

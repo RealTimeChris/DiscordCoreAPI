@@ -243,7 +243,7 @@ namespace DiscordCoreAPI {
 		std::string_view value{};
 		if (jsonData.begin().value().operator*().value().get(value) == simdjson::error_code::SUCCESS) {
 			return std::string{ value.data(), value.size() };
-		} else {
+		} else {  
 			return "";
 		}
 	}

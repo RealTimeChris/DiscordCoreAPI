@@ -437,12 +437,13 @@ namespace DiscordCoreInternal {
 	std::atomic_int32_t integer{};
 	bool WebSocketSSLShard::onMessageReceived(std::string_view dataNew) noexcept {
 		if (this->discordCoreClient) {
-			if (this->areWeStillConnected() && this->currentMessage.size() > 0) {
+			if (this->areWeStillConnected() && this->currentMessage.size() > 0 &&
+					(this->currentState.load() == WebSocketState::Authenticated || this->currentState.load() == WebSocketState::Sending_Identify) ||
+				this->currentState.load() == WebSocketState::Collecting_Hello) {
 				std::string string{};
 				std::string& payload{ string };
 				try {
 					bool returnValue{ false };
-					simdjson::ondemand::value thePayload{};
 					WebSocketMessage message{};
 					if (dataNew.size() > 0) {
 						returnValue = true;

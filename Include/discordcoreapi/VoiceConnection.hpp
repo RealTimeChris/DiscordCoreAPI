@@ -73,12 +73,12 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll VoicePayload {
-		std::string theRawData{};
+		std::vector<opus_int16> decodedData{};
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
-		OpusDecoderWrapper theDecoder{};
-		VoicePayload thePayload{};
+		std::deque<VoicePayload> payloads{};
+		OpusDecoderWrapper decoder{};
 		Snowflake userId{};
 	};
 
@@ -163,8 +163,8 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
-		std::vector<opus_int16> theDownsampledVector{};
-		std::vector<opus_int32> theUpsampledVector{};
+		std::vector<opus_int16> downSampledVector{};
+		std::vector<opus_int32> upSampledVector{};
 		std::vector<opus_int16> decodedDataBuffer{};
 		simdjson::ondemand::parser parser{};
 		std::vector<unsigned char> secretKeySend{};
@@ -174,6 +174,7 @@ namespace DiscordCoreAPI {
 		Snowflake currentGuildMemberId{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		std::vector<uint8_t> decryptedString{};
+		std::deque<std::string> frameQueue{};
 		std::string decryptedDataString{};
 		std::string audioEncryptionMode{};
 		std::mutex voiceUserMutex{};
@@ -183,7 +184,6 @@ namespace DiscordCoreAPI {
 		DecodeData decodeData{};
 		StreamType streamType{};
 		std::string rawDataBuffer{};
-		std::string frameQueue{};
 		std::string externalIp{};
 		uint32_t audioSSRC{};
 		std::string voiceIp{};

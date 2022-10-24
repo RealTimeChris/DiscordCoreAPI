@@ -1766,7 +1766,7 @@ namespace DiscordCoreAPI {
 			this->type = JsonType::String;
 		} else if (jsonObjectData["value"].get(integer) == simdjson::error_code::SUCCESS) {
 			this->value = std::to_string(integer);
-			this->type = JsonType::int64_t;
+			this->type = JsonType::Int64;
 		} else if (jsonObjectData["value"].get(theBool) == simdjson::error_code::SUCCESS) {
 			this->type = JsonType::Bool;
 			std::stringstream theStream{};
@@ -2678,7 +2678,7 @@ namespace DiscordCoreAPI {
 
 		uint64_t integereger{};
 		if (jsonObjectData["value"].get(integereger) == simdjson::error_code::SUCCESS) {
-			this->value.type = JsonType::uint64_t;
+			this->value.type = JsonType::Uint64;
 			this->value.value = std::to_string(integereger);
 			return;
 		}
@@ -3166,11 +3166,11 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		data["name_localizations"] = this->nameLocalizations;
 		switch (this->type) {
-			case JsonType::int64_t: {
+			case JsonType::Int64: {
 				data["value"] = uint64_t{ stoull(this->value) };
 				break;
 			}
-			case JsonType::uint64_t: {
+			case JsonType::Uint64: {
 				data["value"] = uint64_t{ stoull(this->value) };
 				break;
 			}
@@ -3646,24 +3646,24 @@ namespace DiscordCoreAPI {
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name = theName;
 		switch (value.getType()) {
-			case JsonType::Bool: {
-				choiceData.type = JsonType::Bool;
+			case JsonType::String: {
+				choiceData.type = JsonType::String;
 				break;
 			}
 			case JsonType::Float: {
 				choiceData.type = JsonType::Float;
 				break;
 			}
-			case JsonType::int64_t: {
-				choiceData.type = JsonType::int64_t;
+			case JsonType::Uint64: {
+				choiceData.type = JsonType::Uint64;
 				break;
 			}
-			case JsonType::uint64_t: {
-				choiceData.type = JsonType::uint64_t;
+			case JsonType::Int64: {
+				choiceData.type = JsonType::Int64;
 				break;
 			}
-			case JsonType::String: {
-				choiceData.type = JsonType::String;
+			case JsonType::Bool: {
+				choiceData.type = JsonType::Bool;
 				break;
 			}
 		}
