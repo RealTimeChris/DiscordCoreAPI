@@ -995,6 +995,10 @@ namespace DiscordCoreAPI {
 	struct DefaultReactionData {
 		Snowflake emojiId{};///< The id of a guild's custom emoji.
 		std::string emojiName{};///< The unicode character of the emoji.
+
+		DefaultReactionData() noexcept = default;
+
+		DefaultReactionData(simdjson::ondemand::value jsonObjectData);
 	};
 
 	struct ForumTagData {
@@ -1346,7 +1350,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll TeamMembersObjectData {
 		std::vector<Permissions> permissions{};///< Permissions for the team.
 		int32_t membershipState{ 0 };///< Current state.
-		std::string teamId{};///< Id of the current team.
+		Snowflake teamId{};///< Id of the current team.
 		UserData user{};///< User data of the current User.
 
 		TeamMembersObjectData() noexcept = default;
@@ -1947,9 +1951,9 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The Channel id in which the scheduled event will be hosted, or null if scheduled entity type is External.
 		std::string description{};///< The description of the scheduled event(1 - 1000 characters.
 		Snowflake guildId{};///< The Guild id which the scheduled event belongs to.
-		std::string creatorId{};///< The id of the User that created the scheduled event *.
+		Snowflake creatorId{};///< The id of the User that created the scheduled event *.
 		UserData creator{};///< The User that created the scheduled event.
-		std::string entityId{};///< The id of an entity associated with a Guild scheduled event.
+		Snowflake entityId{};///< The id of an entity associated with a Guild scheduled event.
 		std::string name{};///< The name of the scheduled event(1 - 100 characters).
 
 		GuildScheduledEventData() noexcept = default;
@@ -3408,37 +3412,37 @@ namespace DiscordCoreInternal {
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::DiscordEntity> {
 	uint64_t operator()(DiscordCoreAPI::DiscordEntity const& object) const noexcept {
-		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
+		return static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t();
 	}
 };
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::ChannelData> {
 	uint64_t operator()(DiscordCoreAPI::ChannelData const& object) const noexcept {
-		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
+		return static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t();
 	}
 };
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::GuildData> {
 	uint64_t operator()(DiscordCoreAPI::GuildData const& object) const noexcept {
-		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
+		return static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t();
 	}
 };
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::RoleData> {
 	uint64_t operator()(DiscordCoreAPI::RoleData const& object) const noexcept {
-		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
+		return static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t();
 	}
 };
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::UserData> {
 	uint64_t operator()(DiscordCoreAPI::UserData const& object) const noexcept {
-		return static_cast<DiscordCoreAPI::Snowflake>(object.id);
+		return static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t();
 	}
 };
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::GuildMemberData> {
 	uint64_t operator()(DiscordCoreAPI::GuildMemberData const& object) const noexcept {
-		return static_cast<DiscordCoreAPI::Snowflake>(object.guildId) ^ (static_cast<DiscordCoreAPI::Snowflake>(object.id) << 1);
+		return static_cast<DiscordCoreAPI::Snowflake>(object.guildId).operator size_t() ^ (static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t() << 1);
 	}
 };
 

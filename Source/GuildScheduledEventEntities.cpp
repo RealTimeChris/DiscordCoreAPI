@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
 			data["channel_id"] = JsonType::Null;
 		} else {
-			data["channel_id"] = std::to_string(this->channelId);
+			data["channel_id"] = this->channelId;
 		}
 		data["entity_metadata"]["location"] = this->entityMetadata.location;
 		data["entity_metadata"]["entity_type"] = this->entityType;
@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
 			data["channel_id"] = JsonType::Null;
 		} else {
-			data["channel_id"] = std::to_string(this->channelId);
+			data["channel_id"] = this->channelId;
 		}
 		data["entity_metadata"]["location"] = this->entityMetadata.location;
 		data["entity_metadata"]["entity_type"] = this->entityType;
@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 
 		this->channelId = getId(jsonObjectData, "channel_id");
 
-		this->creatorId = std::to_string(getId(jsonObjectData, "creator_id"));
+		this->creatorId = getId(jsonObjectData, "creator_id");
 
 		this->entityId = getString(jsonObjectData, "entity_id");
 
@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Events };
 		co_await NewThreadAwaitable<std::vector<GuildScheduledEvent>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events";
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events";
 		workload.callStack = "GuildScheduledEvents::getGuildScheduledEventAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<GuildScheduledEventVector>(workload);
 	}
@@ -133,7 +133,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events";
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events";
 		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
@@ -145,7 +145,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId);
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events/" + dataPackage.guildScheduledEventId;
 		workload.relativePath += "?with_user_count=";
 		std::stringstream stream{};
 		stream << std::boolalpha << dataPackage.withUserCount;
@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<GuildScheduledEvent>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId);
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events/" + dataPackage.guildScheduledEventId;
 		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Scheduled_Event };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId);
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events/" + dataPackage.guildScheduledEventId;
 		workload.callStack = "GuildScheduledEvents::deleteGuildScheduledEventAsync()";
 		co_return GuildScheduledEvents::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -179,30 +179,30 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Event_Users };
 		co_await NewThreadAwaitable<std::vector<GuildScheduledEventUserData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/scheduled-events/" + std::to_string(dataPackage.guildScheduledEventId) + "/users";
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/scheduled-events/" + dataPackage.guildScheduledEventId + "/users";
 		if (dataPackage.limit != 0) {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 			if (dataPackage.after != 0) {
-				workload.relativePath += "&after=" + std::to_string(dataPackage.after);
+				workload.relativePath += "&after=" + dataPackage.after;
 			}
 			if (dataPackage.before != 0) {
-				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
+				workload.relativePath += "&before=" + dataPackage.before;
 			}
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";
 			}
 		}
 		if (dataPackage.after != 0) {
-			workload.relativePath += "?after=" + std::to_string(dataPackage.after);
+			workload.relativePath += "?after=" + dataPackage.after;
 			if (dataPackage.before != 0) {
-				workload.relativePath += "&before=" + std::to_string(dataPackage.before);
+				workload.relativePath += "&before=" + dataPackage.before;
 			}
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";
 			}
 		}
 		if (dataPackage.before != 0) {
-			workload.relativePath += "?before=" + std::to_string(dataPackage.before);
+			workload.relativePath += "?before=" + dataPackage.before;
 			if (dataPackage.withMember) {
 				workload.relativePath += "&with_member=true";
 			}

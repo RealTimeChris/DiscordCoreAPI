@@ -82,7 +82,7 @@ namespace DiscordCoreAPI {
 
 	/// For when an auto-moderation-rule is executed. \brief For when an auto-moderation-rule is executed.
 	struct DiscordCoreAPI_Dll AutoModerationActionExecutionEventData {
-		uint64_t alertSystemMessageId{};///< The id of any system auto moderation messages posted as a result of this action.
+		Snowflake alertSystemMessageId{};///< The id of any system auto moderation messages posted as a result of this action.
 		TriggerType ruleTriggerType{};///< The trigger type of rule which was triggered.
 		std::string matchedKeyword{};///< The word or phrase configured in the rule that triggered the rule
 		std::string matchedContent{};///< The substring in content that triggered the rule.
@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};///< The id of any user message which content belongs to.
 		ActionData action{};///< The action which was executed.
 		Snowflake guildId{};///< The id of the guild in which action was executed.
-		uint64_t ruleId{};///< The id of the rule which action belongs to.
+		Snowflake ruleId{};///< The id of the rule which action belongs to.
 		Snowflake userId{};///< The id of the user which generated the content which triggered the rule.
 
 		AutoModerationActionExecutionEventData() noexcept = default;

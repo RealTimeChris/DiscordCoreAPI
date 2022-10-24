@@ -396,7 +396,7 @@ namespace DiscordCoreInternal {
 						}
 						for (auto iterator = frames.begin(); iterator != frames.end();) {
 							auto encodedFrame = audioEncoder->encodeSingleAudioFrame(*iterator);
-							encodedFrame.guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId;
+							encodedFrame.guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId.operator size_t();
 							DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(encodedFrame));
 							iterator = frames.erase(iterator);
 						}

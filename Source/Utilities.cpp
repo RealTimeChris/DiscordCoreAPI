@@ -112,6 +112,40 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	Snowflake& Snowflake::operator=(const std::string& other) noexcept {
+		this->id = stoull(other);
+		return *this;
+	}
+
+	Snowflake::Snowflake(const std::string&other) noexcept {
+		*this = other;
+	}
+
+	Snowflake& Snowflake::operator=(const uint64_t other) noexcept {
+		this->id = other;
+		return *this;
+	}
+
+	Snowflake::Snowflake(const uint64_t other) noexcept {
+		*this = other;
+	}
+
+	Snowflake::operator std::string() const noexcept {
+		return std::to_string(this->id);
+	}
+
+	Snowflake::operator uint64_t()const {
+		return this->id;
+	}
+
+	Snowflake::operator std::string() noexcept {
+		return std::to_string(this->id);
+	}
+
+	Snowflake::operator uint64_t() {
+		return this->id;
+	}
+
 	EnumConverter::operator std::vector<uint64_t>() const noexcept {
 		return this->vector;
 	}

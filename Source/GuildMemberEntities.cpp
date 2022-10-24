@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 		Jsonifier data{};
 		data["access_token"] = this->accessToken;
 		for (auto& value: this->roles) {
-			data["roles"].emplaceBack(std::to_string(value));
+			data["roles"].emplaceBack(value.operator std::string());
 		}
 		data["deaf"] = this->deaf;
 		data["mute"] = this->mute;
@@ -58,10 +58,10 @@ namespace DiscordCoreAPI {
 		data["nick"] = this->nick;
 		data["communication_disabled_until"] = static_cast<std::string>(this->communicationDisabledUntil);
 		for (auto& value: this->roleIds) {
-			data["roles"].emplaceBack(std::to_string(value));
+			data["roles"].emplaceBack(value.operator std::string());
 		}
 		if (this->newVoiceChannelId != 0) {
-			data["channel_id"] = std::to_string(this->newVoiceChannelId);
+			data["channel_id"] = this->newVoiceChannelId;
 			data["mute"] = this->mute;
 			data["deaf"] = this->deaf;
 		}
@@ -161,7 +161,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 		workload.callStack = "GuildMembers::getGuildMemberAsync()";
 		GuildMember data{};
 		data.guildId = dataPackage.guildId;
@@ -190,9 +190,9 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Members };
 		co_await NewThreadAwaitable<std::vector<GuildMember>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members";
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members";
 		if (dataPackage.after != 0) {
-			workload.relativePath += "?after=" + std::to_string(dataPackage.after);
+			workload.relativePath += "?after=" + dataPackage.after;
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			}
@@ -207,7 +207,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Search_Guild_Members };
 		co_await NewThreadAwaitable<std::vector<GuildMember>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/search";
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/search";
 		if (dataPackage.query != "") {
 			workload.relativePath += "?query=" + dataPackage.query;
 			if (dataPackage.limit != 0) {
@@ -224,7 +224,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.userId);
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.userId;
 		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Current_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/@me";
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/@me";
 		Jsonifier data{};
 		data["nick"] = dataPackage.nick;
 		data.refreshString(JsonifierSerializeType::Json);
@@ -252,7 +252,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Guild_Member };
 		co_await NewThreadAwaitable<GuildMember>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
@@ -276,7 +276,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Guild_Member };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/guilds/" + std::to_string(dataPackage.guildId) + "/members/" + std::to_string(dataPackage.guildMemberId);
+		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 		workload.callStack = "GuildMembers::removeGuildMemberAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

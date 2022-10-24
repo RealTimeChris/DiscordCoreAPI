@@ -116,8 +116,8 @@ namespace DiscordCoreInternal {
 		data["op"] = 0;
 		data["d"]["session_id"] = this->connectionData.sessionId;
 		data["d"]["token"] = this->connectionData.token;
-		data["d"]["server_id"] = std::to_string(this->connectInitData.guildId);
-		data["d"]["user_id"] = std::to_string(this->connectInitData.userId);
+		data["d"]["server_id"] = this->connectInitData.guildId;
+		data["d"]["user_id"] = this->connectInitData.userId;
 		return data;
 	}
 
@@ -209,7 +209,7 @@ namespace DiscordCoreInternal {
 namespace DiscordCoreAPI {
 
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
-		TimeStamp<std::chrono::milliseconds> timeStamp{ (static_cast<uint64_t>(this->id) >> 22) + 1420070400000, timeFormat };
+		TimeStamp<std::chrono::milliseconds> timeStamp{ (this->id.operator size_t() >> 22) + 1420070400000, timeFormat };
 		return timeStamp.operator std::string();
 	}
 
@@ -244,7 +244,7 @@ namespace DiscordCoreAPI {
 
 	std::string UserData::getAvatarUrl() {
 		std::string stringNew{ "https://cdn.discordapp.com/" };
-		stringNew += "avatars/" + std::to_string(this->id) + "/" + this->avatar.getIconHash();
+		stringNew += "avatars/" + this->id + "/" + this->avatar.getIconHash();
 		return stringNew;
 	}
 
@@ -596,7 +596,7 @@ namespace DiscordCoreAPI {
 	std::string GuildMemberData::getAvatarUrl() {
 		if (this->avatar.getIconHash() != "") {
 			std::string stringNew{ "https://cdn.discordapp.com/" };
-			stringNew += "guilds/" + std::to_string(this->guildId) + "/users/" + std::to_string(this->id) + "/avatars/" + this->avatar.getIconHash();
+			stringNew += "guilds/" + this->guildId + "/users/" + this->id + "/avatars/" + this->avatar.getIconHash();
 			return stringNew;
 		} else {
 			return this->getUserData().getAvatarUrl();
@@ -614,11 +614,17 @@ namespace DiscordCoreAPI {
 	OverWriteData::OverWriteData(simdjson::ondemand::value jsonObjectData) {
 		this->id = getId(jsonObjectData, "id");
 
-		this->allow = getId(jsonObjectData, "allow");
+		this->allow = getUint64(jsonObjectData, "allow");
 
-		this->deny = getId(jsonObjectData, "deny");
+		this->deny = getUint64(jsonObjectData, "deny");
 
 		this->type = static_cast<PermissionOverwritesType>(getUint8(jsonObjectData, "type"));
+	}
+
+	DefaultReactionData::DefaultReactionData(simdjson::ondemand::value jsonObjectData) {
+		this->emojiId = getId(jsonObjectData, "emoji_id");
+
+		this->emojiName = getString(jsonObjectData, "emoji_name");
 	}
 
 	ForumTagData::ForumTagData(simdjson::ondemand::value jsonObjectData) {
@@ -911,7 +917,7 @@ namespace DiscordCoreAPI {
 	TeamMembersObjectData::TeamMembersObjectData(simdjson::ondemand::value jsonObjectData) {
 		this->membershipState = getUint32(jsonObjectData, "membership_state");
 
-		this->teamId = std::to_string(getId(jsonObjectData, "team_id"));
+		this->teamId = getId(jsonObjectData, "team_id");
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["permissions"].get(arrayValue) == simdjson::error_code::SUCCESS) {
@@ -1273,7 +1279,7 @@ namespace DiscordCoreAPI {
 			} else {
 				channelId = channelId;
 			}
-			uint64_t theShardId{ (this->id >> 22) % this->discordCoreClient->configManager.getTotalShardCount() };
+			uint64_t theShardId{ (this->id.operator size_t() >> 22) % this->discordCoreClient->configManager.getTotalShardCount() };
 			auto theBaseSocketAgentIndex{ static_cast<int32_t>(floor(static_cast<float>(theShardId) /
 				static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount()) * this->discordCoreClient->baseSocketAgentsMap.size())) };
 			VoiceConnectInitData voiceConnectInitData{};
@@ -1299,7 +1305,7 @@ namespace DiscordCoreAPI {
 
 	std::string GuildData::getIconUrl() noexcept {
 		std::string stringNew{ "https://cdn.discordapp.com/" };
-		stringNew += "icons/" + std::to_string(this->id) + "/" + this->icon.getIconHash() + ".png";
+		stringNew += "icons/" + this->id + "/" + this->icon.getIconHash() + ".png";
 		return stringNew;
 	}
 
@@ -1477,9 +1483,9 @@ namespace DiscordCoreAPI {
 
 		this->channelId = getId(jsonObjectData, "channel_id");
 
-		this->creatorId = std::to_string(getId(jsonObjectData, "creator_id"));
+		this->creatorId = getId(jsonObjectData, "creator_id");
 
-		this->entityId = std::to_string(getId(jsonObjectData, "entity_id"));
+		this->entityId = getId(jsonObjectData, "entity_id");
 
 		this->guildId = getId(jsonObjectData, "guild_id");
 
@@ -3085,9 +3091,9 @@ namespace DiscordCoreAPI {
 	MessageReferenceData::operator Jsonifier() {
 		Jsonifier data{};
 		data["fail_if_not_exists"] = this->failIfNotExists;
-		data["message_id"] = std::to_string(this->messageId);
-		data["channel_id"] = std::to_string(this->channelId);
-		data["guild_id"] = std::to_string(this->guildId);
+		data["message_id"] = this->messageId;
+		data["channel_id"] = this->channelId;
+		data["guild_id"] = this->guildId;
 		return data;
 	}
 
@@ -3105,11 +3111,11 @@ namespace DiscordCoreAPI {
 		if (this->channelId == 0) {
 			data["d"]["channel_id"] = JsonType::Null;
 		} else {
-			data["d"]["channel_id"] = std::to_string(this->channelId);
+			data["d"]["channel_id"] = this->channelId;
 		}
 		data["d"]["self_deaf"] = this->selfDeaf;
 		data["d"]["self_mute"] = this->selfMute;
-		data["d"]["guild_id"] = std::to_string(this->guildId);
+		data["d"]["guild_id"] = this->guildId;
 		return data;
 	}
 
@@ -3283,7 +3289,7 @@ namespace DiscordCoreAPI {
 					component["emoji"]["animated"] = valueNew.emoji.animated;
 					component["emoji"]["name"] = std::string{ valueNew.emoji.name };
 					if (valueNew.emoji.id != 0) {
-						component["emoji"]["id"] = std::to_string(valueNew.emoji.id);
+						component["emoji"]["id"] = valueNew.emoji.id;
 					}
 					component["custom_id"] = valueNew.customId;
 					component["disabled"] = valueNew.disabled;
@@ -3299,7 +3305,7 @@ namespace DiscordCoreAPI {
 						component["emoji"]["animated"] = valueNew.emoji.animated;
 						component["emoji"]["name"] = std::string{ valueNew.emoji.name };
 						if (valueNew.emoji.id != 0) {
-							component["emoji"]["id"] = std::to_string(valueNew.emoji.id);
+							component["emoji"]["id"] = valueNew.emoji.id;
 						}
 						option["description"] = value01.description;
 						option["default"] = value01._default;
@@ -3868,10 +3874,10 @@ namespace DiscordCoreAPI {
 		}
 		if (inputEventData.interactionData->data.messageInteractionData.targetId != 0) {
 			this->optionsArgs.values.emplace("target_id",
-				JsonStringValue{ .value = std::to_string(inputEventData.interactionData->data.messageInteractionData.targetId), .type = JsonType::String });
+				JsonStringValue{ .value = inputEventData.interactionData->data.messageInteractionData.targetId, .type = JsonType::String });
 		} else if (inputEventData.interactionData->data.userInteractionData.targetId != 0) {
 			this->optionsArgs.values.emplace("target_id",
-				JsonStringValue{ .value = std::to_string(inputEventData.interactionData->data.userInteractionData.targetId), .type = JsonType::String });
+				JsonStringValue{ .value = inputEventData.interactionData->data.userInteractionData.targetId, .type = JsonType::String });
 		}
 		this->eventData = inputEventData;
 		for (auto& value: this->eventData.interactionData->data.applicationCommandData.options) {

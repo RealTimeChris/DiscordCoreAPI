@@ -127,7 +127,7 @@ namespace DiscordCoreAPI {
 			Jsonifier newData{};
 			newData["permission"] = value.permission;
 			newData["type"] = static_cast<uint8_t>(value.type);
-			newData["id"] = std::to_string(value.id);
+			newData["id"] = value.id;
 			data["permissions"].emplaceBack(newData);
 		}
 		return data;
@@ -201,7 +201,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Global_Application_Commands };
 		co_await NewThreadAwaitable<std::vector<ApplicationCommand>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands";
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands";
 		if (dataPackage.withLocalizations) {
 			workload.relativePath += "?with_localizations=true";
 		}
@@ -213,7 +213,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Global_Application_Command };
 		co_await NewThreadAwaitable<ApplicationCommand>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands";
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands";
 		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
@@ -225,7 +225,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Global_Application_Command };
 		co_await NewThreadAwaitable<ApplicationCommand>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands/" + dataPackage.commandId;
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands/" + dataPackage.commandId;
 		workload.callStack = "ApplicationCommands::getGlobalApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -238,7 +238,7 @@ namespace DiscordCoreAPI {
 		std::string appCommandId{};
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
-				appCommandId = std::to_string(value.id);
+				appCommandId = value.id;
 				isItFound = true;
 			}
 		}
@@ -246,7 +246,7 @@ namespace DiscordCoreAPI {
 			co_return ApplicationCommand();
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands/" + appCommandId;
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands/" + appCommandId;
 		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
@@ -262,7 +262,7 @@ namespace DiscordCoreAPI {
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
-				commandId = std::to_string(value.id);
+				commandId = value.id;
 				isItFound = true;
 			}
 		}
@@ -270,7 +270,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands/" + commandId;
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands/" + commandId;
 		workload.callStack = "ApplicationCommands::deleteGlobalApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -295,7 +295,7 @@ namespace DiscordCoreAPI {
 			newDataArray.emplaceBack(value);
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/commands";
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/commands";
 		workload.content = newDataArray.operator std::string();
 		workload.callStack = "ApplicationCommands::bulkOverwriteGlobalApplicationCommandsAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommandVector>(workload);
@@ -305,7 +305,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Application_Commands };
 		co_await NewThreadAwaitable<std::vector<ApplicationCommand>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands";
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands";
 		if (dataPackage.withLocalizations) {
 			workload.relativePath += "?with_localizations=true";
 		}
@@ -318,7 +318,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<ApplicationCommand>();
 		dataPackage.applicationId = dataPackage.applicationId;
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands";
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands";
 		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
@@ -331,7 +331,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<ApplicationCommand>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath =
-			"/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + std::to_string(dataPackage.commandId);
+			"/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + std::to_string(dataPackage.commandId);
 		workload.callStack = "ApplicationCommands::getGuildApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommand>(workload);
 	}
@@ -344,7 +344,7 @@ namespace DiscordCoreAPI {
 		std::string appCommandId;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
-				appCommandId = std::to_string(value.id);
+				appCommandId = value.id;
 				isItFound = true;
 			}
 		}
@@ -352,7 +352,7 @@ namespace DiscordCoreAPI {
 			co_return ApplicationCommand();
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + appCommandId;
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + appCommandId;
 		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
@@ -368,7 +368,7 @@ namespace DiscordCoreAPI {
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {
-				commandId = std::to_string(value.id);
+				commandId = value.id;
 				isItFound = true;
 			}
 		}
@@ -376,7 +376,7 @@ namespace DiscordCoreAPI {
 			co_return;
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + commandId;
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + commandId;
 		workload.callStack = "ApplicationCommands::deleteGuildApplicationCommandAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -402,7 +402,7 @@ namespace DiscordCoreAPI {
 		}
 		newDataArray.refreshString(JsonifierSerializeType::Json);
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands";
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands";
 		workload.content = newDataArray.operator std::string();
 		workload.callStack = "ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<ApplicationCommandVector>(workload);
@@ -413,7 +413,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Application_Commands_Permissions };
 		co_await NewThreadAwaitable<std::vector<GuildApplicationCommandPermissionsData>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/permissions";
+		workload.relativePath = "/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/permissions";
 		workload.callStack = "ApplicationCommands::getGuildApplicationCommandPermissionsAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<GuildApplicationCommandPermissionsDataVector>(workload);
 	}
@@ -426,7 +426,7 @@ namespace DiscordCoreAPI {
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.commandName) {
-				commandId = std::to_string(value.id);
+				commandId = value.id;
 				isItFound = true;
 			}
 		}
@@ -435,7 +435,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath =
-			"/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + commandId + "/permissions";
+			"/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + commandId + "/permissions";
 		workload.callStack = "ApplicationCommands::getApplicationCommandPermissionsAsync()";
 		co_return ApplicationCommands::httpsClient->submitWorkloadAndGetResult<GuildApplicationCommandPermissionsData>(workload);
 	}
@@ -448,7 +448,7 @@ namespace DiscordCoreAPI {
 		bool isItFound = false;
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.commandName) {
-				commandId = std::to_string(value.id);
+				commandId = value.id;
 				isItFound = true;
 			}
 		}
@@ -457,7 +457,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath =
-			"/applications/" + std::to_string(dataPackage.applicationId) + "/guilds/" + std::to_string(dataPackage.guildId) + "/commands/" + commandId + "/permissions";
+			"/applications/" + dataPackage.applicationId + "/guilds/" + dataPackage.guildId + "/commands/" + commandId + "/permissions";
 		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();

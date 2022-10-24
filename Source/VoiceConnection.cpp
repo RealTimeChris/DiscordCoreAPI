@@ -637,8 +637,8 @@ namespace DiscordCoreAPI {
 		}
 		switch (this->connectionState.load()) {
 			case VoiceConnectionState::Collecting_Init_Data: {
-				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId] = &this->voiceConnectionDataBuffer;
-				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId]->clearContents();
+				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId.operator size_t()] = &this->voiceConnectionDataBuffer;
+				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId.operator size_t()]->clearContents();
 				this->baseShard->getVoiceConnectionData(this->voiceConnectInitData);
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
 					this->currentReconnectTries++;
@@ -770,7 +770,7 @@ namespace DiscordCoreAPI {
 					}
 					std::this_thread::sleep_for(1ms);
 				}
-				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId]->clearContents();
+				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId.operator size_t()]->clearContents();
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				if (this->streamType != StreamType::None) {
 					this->streamSocket = std::make_unique<DatagramSocketClient>(this->streamType);
@@ -995,14 +995,14 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::connect(DiscordCoreAPI::VoiceConnectInitData data) noexcept {
+	void VoiceConnection::connect(DiscordCoreAPI::VoiceConnectInitData initData) noexcept {
 		if (this->baseSocketAgent) {
-			this->voiceConnectInitData = data;
+			this->voiceConnectInitData = initData;
 			this->connections = std::make_unique<ConnectionPackage>();
 			this->connections->currentReconnectTries = this->currentReconnectTries;
 			this->connections->currentShard = this->shard[0];
-			this->streamInfo = data.streamInfo;
-			this->streamType = data.streamType;
+			this->streamInfo = initData.streamInfo;
+			this->streamType = initData.streamType;
 			this->activeState.store(VoiceActiveState::Connecting);
 			if (!this->taskThread01) {
 				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {

@@ -346,7 +346,7 @@ namespace DiscordCoreAPI {
 	DeleteMessagesBulkData::operator Jsonifier() {
 		Jsonifier data{};
 		for (auto& value: this->messageIds) {
-			data["messages"].emplaceBack(std::to_string(value));
+			data["messages"].emplaceBack(value.operator std::string());
 		}
 		return data;
 	}
@@ -363,7 +363,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Messages };
 		co_await NewThreadAwaitable<std::vector<Message>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 		if (dataPackage.aroundThisId != 0) {
 			workload.relativePath += "?around=" + std::to_string(dataPackage.aroundThisId);
 			if (dataPackage.limit != 0) {
@@ -372,14 +372,14 @@ namespace DiscordCoreAPI {
 				workload.relativePath += "&limit=1";
 			}
 		} else if (dataPackage.beforeThisId != 0) {
-			workload.relativePath += "?before=" + std::to_string(dataPackage.beforeThisId);
+			workload.relativePath += "?before=" + dataPackage.beforeThisId;
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			} else {
 				workload.relativePath += "&limit=1";
 			}
 		} else if (dataPackage.afterThisId != 0) {
-			workload.relativePath += "?after=" + std::to_string(dataPackage.afterThisId);
+			workload.relativePath += "?after=" + dataPackage.afterThisId;
 			if (dataPackage.limit != 0) {
 				workload.relativePath += "&limit=" + std::to_string(dataPackage.limit);
 			} else {
@@ -400,7 +400,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Message };
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.id);
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.id;
 		workload.callStack = "Messages::getMessageAsync()";
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -409,7 +409,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Message };
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages";
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages";
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			auto serializer = dataPackage.operator Jsonifier();
@@ -428,7 +428,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Crosspost_Message };
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId) + "/crosspost";
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/crosspost";
 		workload.callStack = "Messages::crosspostMessageAsync()";
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
 	}
@@ -437,7 +437,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Message };
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			auto serializer = dataPackage.operator Jsonifier();
@@ -461,7 +461,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/" + std::to_string(dataPackage.messageId);
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 		workload.callStack = "Messages::deleteMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -473,7 +473,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Bulk_Delete_Messages };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/messages/bulk-delete";
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/bulk-delete";
 		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
@@ -488,7 +488,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Pinned_Messages };
 		co_await NewThreadAwaitable<std::vector<Message>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins";
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/pins";
 		workload.callStack = "Messages::getPinnedMessagesAsync()";
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<MessageVector>(workload);
 	}
@@ -497,7 +497,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Put_Pin_Message };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins/" + std::to_string(dataPackage.messageId);
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/pins/" + dataPackage.messageId;
 		workload.callStack = "Messages::pinMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
@@ -509,7 +509,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Pin_Message };
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + std::to_string(dataPackage.channelId) + "/pins/" + std::to_string(dataPackage.messageId);
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/pins/" + dataPackage.messageId;
 		workload.callStack = "Messages::unpinMessageAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;

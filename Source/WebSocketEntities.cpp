@@ -1034,9 +1034,8 @@ namespace DiscordCoreInternal {
 														};
 														dataPackage->interactionData = *interactionData;
 														if (DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap.contains(
-																std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
-															DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap[std::to_string(eventData->getChannelId()) +
-																std::to_string(eventData->getMessageId())]
+																eventData->getChannelId() + eventData->getMessageId())) {
+															DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelId() + eventData->getMessageId()]
 																->send(*interactionData);
 														}
 														this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
@@ -1050,9 +1049,9 @@ namespace DiscordCoreInternal {
 														};
 														dataPackage->interactionData = *interactionData;
 														if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBuffersMap.contains(
-																std::to_string(eventData->getChannelId()) + std::to_string(eventData->getMessageId()))) {
-															DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBuffersMap[std::to_string(eventData->getChannelId()) +
-																std::to_string(eventData->getMessageId())]
+																eventData->getChannelId() + eventData->getMessageId())) {
+															DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelId() +
+																eventData->getMessageId()]
 																->send(*interactionData);
 														}
 														this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
@@ -1070,9 +1069,8 @@ namespace DiscordCoreInternal {
 													std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
 												};
 												eventCreationData->inputEventData = *eventData;
-												if (DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap.contains(std::to_string(eventData->getChannelId()))) {
-													DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap[std::to_string(eventData->getChannelId())]->send(
-														eventData->getInteractionData());
+												if (DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap.contains(eventData->getChannelId())) {
+													DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap[eventData->getChannelId()]->send(eventData->getInteractionData());
 												}
 												this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 												break;
@@ -1257,8 +1255,8 @@ namespace DiscordCoreInternal {
 											this->stateUpdateCollected = true;
 										} else if (this->areWeCollectingData && !this->stateUpdateCollected) {
 											this->voiceConnectionData.sessionId = dataPackage->voiceStateData.sessionId;
-											if (this->voiceConnectionDataBuffersMap.contains(dataPackage->voiceStateData.guildId)) {
-												this->voiceConnectionDataBuffersMap[dataPackage->voiceStateData.guildId]->send(this->voiceConnectionData);
+											if (this->voiceConnectionDataBuffersMap.contains(dataPackage->voiceStateData.guildId.operator size_t())) {
+												this->voiceConnectionDataBuffersMap[dataPackage->voiceStateData.guildId.operator size_t()]->send(this->voiceConnectionData);
 											}
 											this->serverUpdateCollected = false;
 											this->stateUpdateCollected = false;
@@ -1284,8 +1282,8 @@ namespace DiscordCoreInternal {
 											this->voiceConnectionData = VoiceConnectionData{};
 											this->serverUpdateCollected = true;
 										} else if (this->areWeCollectingData && !this->serverUpdateCollected) {
-											if (this->voiceConnectionDataBuffersMap.contains(dataPackage->guildId)) {
-												this->voiceConnectionDataBuffersMap[dataPackage->guildId]->send(this->voiceConnectionData);
+											if (this->voiceConnectionDataBuffersMap.contains(dataPackage->guildId.operator size_t())) {
+												this->voiceConnectionDataBuffersMap[dataPackage->guildId.operator size_t()]->send(this->voiceConnectionData);
 											}
 											this->serverUpdateCollected = false;
 											this->stateUpdateCollected = false;

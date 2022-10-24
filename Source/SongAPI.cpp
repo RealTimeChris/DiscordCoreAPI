@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 		while (DiscordCoreClient::getSongAPI(guildMember.guildId)->audioDataBuffer.tryReceive(frameData)) {
 		};
 		frameData.type = AudioFrameType::Skip;
-		frameData.guildMemberId = static_cast<GuildMember>(guildMember).id;
+		frameData.guildMemberId = static_cast<GuildMember>(guildMember).id.operator size_t();
 		DiscordCoreClient::getSongAPI(guildMember.guildId)->audioDataBuffer.send(std::move(frameData));
 	}
 

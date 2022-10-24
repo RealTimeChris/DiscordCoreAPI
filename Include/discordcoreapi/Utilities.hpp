@@ -133,20 +133,66 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	using Snowflake = uint64_t;
+	class DiscordCoreAPI_Dll Snowflake {
+	  public:
+
+		Snowflake() noexcept = default;
+
+		Snowflake& operator=(const std::string&) noexcept;
+		Snowflake(const std::string&) noexcept;
+
+		Snowflake& operator=(const uint64_t) noexcept;
+		Snowflake(const uint64_t) noexcept;
+		
+		operator std::string() noexcept;
+
+		explicit operator uint64_t();
+
+		operator std::string() const noexcept;
+
+		explicit operator uint64_t() const;
+		
+		friend std::string operator+(const std::string&, const Snowflake&);
+
+		friend std::string operator+(const char*, const Snowflake&);
+
+		friend bool operator==(const Snowflake&, const Snowflake&);
+
+	  protected:
+		uint64_t id{};
+		
+	};
+
+	inline std::string operator+(const char* lhs, const Snowflake& rhs) {
+		std::string string{};
+		string += lhs;
+		string += std::to_string(rhs.id);
+		return string;
+	}
+
+	inline std::string operator+(const std::string& lhs, const Snowflake& rhs) {
+		std::string string{};
+		string += lhs;
+		string += std::to_string(rhs.id);
+		return string;
+	}
+
+	inline bool operator==(const Snowflake& lhs, const Snowflake& rhs) {
+		return lhs.id == rhs.id;
+	}
 
 	template<typename TimeType> class StopWatch {
 	  public:
 		StopWatch() = delete;
 
-		StopWatch<TimeType>& operator=(const StopWatch<TimeType>& other) {
-			this->maxNumberOfMs.store(other.maxNumberOfMs.load());
-			this->startTime.store(other.startTime.load());
+		StopWatch<TimeType>& operator=(const StopWatch<TimeType>& data) {
+			this->maxNumberOfMs.store(data.maxNumberOfMs.load());
+			this->startTime.store(data.startTime.load());
 			return *this;
 		}
 
-		StopWatch(const StopWatch<TimeType>& other) {
-			*this = other;
+		StopWatch(const StopWatch<TimeType>& data) {
+			*this = data;
 		}
 
 		StopWatch(TimeType maxNumberOfMsNew) {
@@ -179,8 +225,8 @@ namespace DiscordCoreAPI {
 		std::atomic_uint64_t startTime{ 0 };
 	};
 
-	template<typename RTy> RTy reverseByteOrder(const RTy net) {
-		switch (sizeof(RTy)) {
+	template<typename ReturnType> ReturnType reverseByteOrder(const ReturnType net) {
+		switch (sizeof(ReturnType)) {
 			case 1: {
 				return net;
 			}
@@ -194,14 +240,22 @@ namespace DiscordCoreAPI {
 				return ntohll(static_cast<uint64_t>(net));
 			}
 		}
-		return RTy{};
+		return ReturnType{};
 	}
 
-	template<typename RTy> void storeBits(std::string& to, RTy num) {
+	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
 		const uint8_t byteSize{ 8 };
-		RTy newValue = reverseByteOrder<RTy>(num);
-		for (uint32_t x = 0; x < sizeof(RTy); ++x) {
+		ReturnType newValue = reverseByteOrder<ReturnType>(num);
+		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
 			to.push_back(static_cast<uint8_t>(newValue >> (byteSize * x)));
+		}
+	}
+
+	template<typename ReturnType> void storeBits(char* to, ReturnType num) {
+		const uint8_t byteSize{ 8 };
+		ReturnType newValue = reverseByteOrder<ReturnType>(num);
+		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
+			to[x] = static_cast<uint8_t>(newValue >> (byteSize * x));
 		}
 	}
 
@@ -211,36 +265,37 @@ namespace DiscordCoreAPI {
 		New_Float_Ext = 70,
 		Small_Integer_Ext = 97,
 		Integer_Ext = 98,
+		Atom_Ext = 100,
 		Nil_Ext = 106,
+		String_Ext = 107,
 		List_Ext = 108,
 		Binary_Ext = 109,
 		Small_Big_Ext = 110,
-		Small_Atom_Ext = 115,
 		Map_Ext = 116,
 	};
 
-	template<typename TheType>
-	concept IsEnum = std::is_enum<TheType>::value;
+	template<typename T>
+	concept IsEnum = std::is_enum<T>::value;
 
 	struct DiscordCoreAPI_Dll EnumConverter {
-		template<IsEnum EnumType> EnumConverter& operator=(std::vector<EnumType> other) {
-			for (auto& value: other) {
+		template<IsEnum EnumType> EnumConverter& operator=(std::vector<EnumType> data) {
+			for (auto& value: data) {
 				this->vector.emplace_back(std::move(static_cast<uint64_t>(value)));
 			}
 			return *this;
 		};
 
-		template<IsEnum EnumType> EnumConverter(std::vector<EnumType> other) {
-			*this = other;
+		template<IsEnum EnumType> EnumConverter(std::vector<EnumType> data) {
+			*this = data;
 		};
 
-		template<IsEnum EnumType> EnumConverter& operator=(EnumType other) {
-			this->theUint = static_cast<uint64_t>(other);
+		template<IsEnum EnumType> EnumConverter& operator=(EnumType data) {
+			this->integer = static_cast<uint64_t>(data);
 			return *this;
 		};
 
-		template<IsEnum EnumType> EnumConverter(EnumType other) {
-			*this = other;
+		template<IsEnum EnumType> EnumConverter(EnumType data) {
+			*this = data;
 		};
 
 		operator std::vector<uint64_t>() const noexcept;
@@ -252,23 +307,23 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::vector<uint64_t> vector{};
 		bool vectorType{ false };
-		uint64_t theUint{};
+		uint64_t integer{};
 	};
 
-	enum class JsonType : int8_t { Object = 1, Array = 2, String = 3, Float = 4, uint64_t = 5, int64_t = 6, Bool = 7, Null = 8 };
+	enum class JsonType : int8_t { Object = 1, Array = 2, String = 3, Float = 4, Uint64 = 5, Int64 = 6, Bool = 7, Null = 8 };
 
 	enum class JsonifierSerializeType { Etf = 0, Json = 1 };
 
 	class Jsonifier;
 
-	template<typename TheType>
-	concept IsConvertibleToJsonifier = std::convertible_to<TheType, Jsonifier>;
+	template<typename T>
+	concept IsConvertibleToJsonifier = std::convertible_to<T, Jsonifier>;
 
 	class DiscordCoreAPI_Dll Jsonifier {
 	  public:
 		using MapAllocatorType = std::allocator<std::pair<const std::string, Jsonifier>>;
-		template<typename ObjectType> using AllocatorType = std::allocator<ObjectType>;
-		template<typename ObjectType> using AllocatorTraits = std::allocator_traits<AllocatorType<ObjectType>>;
+		template<typename OTy> using AllocatorType = std::allocator<OTy>;
+		template<typename OTy> using AllocatorTraits = std::allocator_traits<AllocatorType<OTy>>;
 		using ObjectType = std::map<std::string, Jsonifier, std::less<>, MapAllocatorType>;
 		using ArrayType = std::vector<Jsonifier, AllocatorType<Jsonifier>>;
 		using StringType = std::string;
@@ -294,85 +349,85 @@ namespace DiscordCoreAPI {
 
 		Jsonifier() noexcept = default;
 
-		template<IsConvertibleToJsonifier ObjectType> Jsonifier& operator=(std::vector<ObjectType>&& data) noexcept {
+		template<IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::vector<OTy>&& data) noexcept {
 			this->setValue(JsonType::Array);
-			for (auto& jsonValue: data) {
-				this->jsonValue.array->push_back(std::move(jsonValue));
+			for (auto& value: data) {
+				this->jsonValue.array->push_back(std::move(value));
 			}
 			return *this;
 		}
 
-		template<IsConvertibleToJsonifier ObjectType> Jsonifier(std::vector<ObjectType>&& data) noexcept {
+		template<IsConvertibleToJsonifier OTy> Jsonifier(std::vector<OTy>&& data) noexcept {
 			*this = std::move(data);
 		}
 
-		template<IsConvertibleToJsonifier ObjectType> Jsonifier& operator=(std::vector<ObjectType>& data) noexcept {
+		template<IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::vector<OTy>& data) noexcept {
 			this->setValue(JsonType::Array);
-			for (auto& jsonValue: data) {
-				this->jsonValue.array->push_back(jsonValue);
+			for (auto& value: data) {
+				this->jsonValue.array->push_back(value);
 			}
 			return *this;
 		}
 
-		template<IsConvertibleToJsonifier ObjectType> Jsonifier(std::vector<ObjectType>& data) noexcept {
+		template<IsConvertibleToJsonifier OTy> Jsonifier(std::vector<OTy>& data) noexcept {
 			*this = data;
 		}
 
-		template<IsConvertibleToJsonifier KeyType, IsConvertibleToJsonifier ObjectType> Jsonifier& operator=(std::unordered_map<KeyType, ObjectType>&& data) noexcept {
+		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::unordered_map<KTy, OTy>&& data) noexcept {
 			this->setValue(JsonType::Object);
-			for (auto& [key, jsonValue]: data) {
-				(*this->jsonValue.object)[key] = std::move(jsonValue);
+			for (auto& [key, value]: data) {
+				(*this->jsonValue.object)[key] = std::move(value);
 			}
 			return *this;
 		}
 
-		template<IsConvertibleToJsonifier KeyType, IsConvertibleToJsonifier ObjectType> Jsonifier(std::unordered_map<KeyType, ObjectType>&& data) noexcept {
+		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier(std::unordered_map<KTy, OTy>&& data) noexcept {
 			*this = std::move(data);
 		};
 
-		template<IsConvertibleToJsonifier KeyType, IsConvertibleToJsonifier ObjectType> Jsonifier& operator=(std::unordered_map<KeyType, ObjectType>& data) noexcept {
+		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::unordered_map<KTy, OTy>& data) noexcept {
 			this->setValue(JsonType::Object);
-			for (auto& [key, jsonValue]: data) {
-				(*this->jsonValue.object)[key] = jsonValue;
+			for (auto& [key, value]: data) {
+				(*this->jsonValue.object)[key] = value;
 			}
 			return *this;
 		}
 
-		template<IsConvertibleToJsonifier KeyType, IsConvertibleToJsonifier ObjectType> Jsonifier(std::unordered_map<KeyType, ObjectType>& data) noexcept {
+		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier(std::unordered_map<KTy, OTy>& data) noexcept {
 			*this = data;
 		};
 
-		template<IsConvertibleToJsonifier KeyType, IsConvertibleToJsonifier ObjectType> Jsonifier& operator=(std::map<KeyType, ObjectType>&& data) noexcept {
+		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::map<KTy, OTy>&& data) noexcept {
 			this->setValue(JsonType::Object);
-			for (auto& [key, jsonValue]: data) {
-				(*this->jsonValue.object)[key] = std::move(jsonValue);
+			for (auto& [key, value]: data) {
+				(*this->jsonValue.object)[key] = std::move(value);
 			}
 			return *this;
 		}
 
-		template<IsConvertibleToJsonifier KeyType, IsConvertibleToJsonifier ObjectType> Jsonifier(std::map<KeyType, ObjectType>&& data) noexcept {
+		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier(std::map<KTy, OTy>&& data) noexcept {
 			*this = std::move(data);
 		};
 
-		template<IsConvertibleToJsonifier KeyType, IsConvertibleToJsonifier ObjectType> Jsonifier& operator=(std::map<KeyType, ObjectType>& data) noexcept {
+		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::map<KTy, OTy>& data) noexcept {
 			this->setValue(JsonType::Object);
-			for (auto& [key, jsonValue]: data) {
-				(*this->jsonValue.object)[key] = jsonValue;
+			for (auto& [key, value]: data) {
+				(*this->jsonValue.object)[key] = value;
 			}
 			return *this;
 		}
 
-		template<IsConvertibleToJsonifier KeyType, IsConvertibleToJsonifier ObjectType> Jsonifier(std::map<KeyType, ObjectType>& data) noexcept {
+		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier(std::map<KTy, OTy>& data) noexcept {
 			*this = data;
 		};
 
-		template<IsEnum TheType> Jsonifier& operator=(TheType data) noexcept {
+		template<IsEnum T> Jsonifier& operator=(T data) noexcept {
 			this->jsonValue.numberUint = static_cast<uint64_t>(data);
-			this->type = JsonType::uint64_t;
+			this->type = JsonType::Uint64;
 			return *this;
 		}
 
-		template<IsEnum TheType> Jsonifier(TheType data) noexcept {
+		template<IsEnum T> Jsonifier(T data) noexcept {
 			*this = data;
 		}
 
@@ -388,7 +443,7 @@ namespace DiscordCoreAPI {
 
 		operator std::string() noexcept;
 
-		void refreshString(JsonifierSerializeType theOpCode);
+		void refreshString(JsonifierSerializeType OpCode);
 
 		Jsonifier& operator=(EnumConverter&& data) noexcept;
 		Jsonifier(EnumConverter&& data) noexcept;
@@ -438,26 +493,36 @@ namespace DiscordCoreAPI {
 		Jsonifier& operator=(bool data) noexcept;
 		Jsonifier(bool data) noexcept;
 
-		Jsonifier& operator=(JsonType typeNew) noexcept;
+		Jsonifier& operator=(JsonType TypeNew) noexcept;
 		Jsonifier(JsonType type) noexcept;
 
 		Jsonifier& operator=(std::nullptr_t) noexcept;
 		Jsonifier(std::nullptr_t data) noexcept;
 
+		Jsonifier& operator[](typename ObjectType::key_type key) const;
+
+		Jsonifier& operator[](uint64_t index) const;
+
 		Jsonifier& operator[](typename ObjectType::key_type key);
 
 		Jsonifier& operator[](uint64_t index);
 
-		template<typename TheType> TheType& get();
+		template<typename T> inline const T& getValue() const {
+			return T{};
+		}
+
+		template<typename T> inline T& getValue() {
+			return T{};
+		}
 
 		JsonType getType() noexcept;
 
-		void emplaceBack(Jsonifier&& other) noexcept;
-		void emplaceBack(Jsonifier& other) noexcept;
+		void emplaceBack(Jsonifier&& data) noexcept;
+		void emplaceBack(Jsonifier& data) noexcept;
 
 		~Jsonifier() noexcept;
 
-	  private:
+	  protected:
 		JsonType type{ JsonType::Null };
 		JsonValue jsonValue{};
 		std::string string{};
@@ -466,22 +531,22 @@ namespace DiscordCoreAPI {
 
 		void serializeJsonToJsonString(const Jsonifier* dataToParse);
 
-		void writeJsonObject(const ObjectType& objectNew);
+		void writeJsonObject(const ObjectType& ObjectNew);
 
-		void writeJsonArray(const ArrayType& arrayValue);
+		void writeJsonArray(const ArrayType& Array);
 
-		void writeJsonString(const StringType& stringNew);
+		void writeJsonString(const StringType& StringNew);
 
 		void writeJsonFloat(const FloatType x);
 
 		template<typename NumberType,
 			std::enable_if_t<std::is_integral<NumberType>::value || std::is_same<NumberType, uint64_t>::value || std::is_same<NumberType, int64_t>::value, int> = 0>
-		void writeJsonInt(NumberType integer) {
-			auto integerNew = std::to_string(integer);
-			this->writeString(integerNew.data(), integerNew.size());
+		void writeJsonInt(NumberType Int) {
+			auto intNew = std::to_string(Int);
+			this->writeString(intNew.data(), intNew.size());
 		}
 
-		void writeJsonBool(const BoolType valueNew);
+		void writeJsonBool(const BoolType ValueNew);
 
 		void writeJsonNull();
 
@@ -503,9 +568,9 @@ namespace DiscordCoreAPI {
 
 		void writeString(const char* data, std::size_t length);
 
-		void writeCharacter(const char theChar);
+		void writeCharacter(const char Char);
 
-		void appendBinaryExt(const std::string& bytes, uint32_t sizeNew);
+		void appendBinaryExt(const std::string& bytes, const uint32_t sizeNew);
 
 		void appendUnsignedLongLong(const uint64_t value);
 
@@ -527,12 +592,68 @@ namespace DiscordCoreAPI {
 
 		void appendNil();
 
-		void setValue(JsonType typeNew);
+		void setValue(JsonType TypeNew);
 
 		void destroy() noexcept;
 
 		friend bool operator==(const Jsonifier& lhs, const Jsonifier& rhs);
 	};
+
+	template<> inline const Jsonifier::ObjectType& Jsonifier::getValue() const {
+		return *this->jsonValue.object;
+	}
+
+	template<> inline const Jsonifier::ArrayType& Jsonifier::getValue() const {
+		return *this->jsonValue.array;
+	}
+
+	template<> inline const Jsonifier::StringType& Jsonifier::getValue() const {
+		return *this->jsonValue.string;
+	}
+
+	template<> inline const Jsonifier::FloatType& Jsonifier::getValue() const {
+		return this->jsonValue.numberDouble;
+	}
+
+	template<> inline const Jsonifier::UintType& Jsonifier::getValue() const {
+		return this->jsonValue.numberUint;
+	}
+
+	template<> inline const Jsonifier::IntType& Jsonifier::getValue() const {
+		return this->jsonValue.numberInt;
+	}
+
+	template<> inline const Jsonifier::BoolType& Jsonifier::getValue() const {
+		return this->jsonValue.boolean;
+	}
+
+	template<> inline Jsonifier::ObjectType& Jsonifier::getValue() {
+		return *this->jsonValue.object;
+	}
+
+	template<> inline Jsonifier::ArrayType& Jsonifier::getValue() {
+		return *this->jsonValue.array;
+	}
+
+	template<> inline Jsonifier::StringType& Jsonifier::getValue() {
+		return *this->jsonValue.string;
+	}
+
+	template<> inline Jsonifier::FloatType& Jsonifier::getValue() {
+		return this->jsonValue.numberDouble;
+	}
+
+	template<> inline Jsonifier::UintType& Jsonifier::getValue() {
+		return this->jsonValue.numberUint;
+	}
+
+	template<> inline Jsonifier::IntType& Jsonifier::getValue() {
+		return this->jsonValue.numberInt;
+	}
+
+	template<> inline Jsonifier::BoolType& Jsonifier::getValue() {
+		return this->jsonValue.boolean;
+	}
 
 	struct DiscordCoreAPI_Dll ActivityData;
 
@@ -550,14 +671,13 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	using Snowflake = uint64_t;
 	using namespace std::literals;
 	using std::cout;
 	using std::endl;
 
-	class HttpsWorkloadData;
 	class SoundCloudRequestBuilder;
 	class YouTubeRequestBuilder;
+	class HttpsWorkloadData;
 	class WebSocketSSLShard;
 	class BaseSocketAgent;
 	class SoundCloudAPI;
@@ -1760,7 +1880,7 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock(const UnboundedMessageBlock<ObjectType>&) = delete;
 
-		UnboundedMessageBlock() noexcept = default;
+		UnboundedMessageBlock() noexcept {};
 
 		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
 		/// \param object An object of ObjectType.
@@ -1998,4 +2118,9 @@ namespace DiscordCoreInternal {
 
 }
 
+template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::Snowflake> {
+	uint64_t operator()(DiscordCoreAPI::Snowflake const& object) const noexcept {
+		return object.operator size_t();
+	}
+};
 #endif
