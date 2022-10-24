@@ -71,7 +71,7 @@ namespace DiscordCoreInternal {
 		serializer["d"]["properties"]["device"] = "DiscordCoreAPI";
 #ifdef _WIN32
 		serializer["d"]["properties"]["os"] = "Windows";
-#else
+#elif __linux__
 		serializer["d"]["properties"]["os"] = "Linux";
 #endif
 		serializer["d"]["shard"].emplaceBack(this->currentShard);

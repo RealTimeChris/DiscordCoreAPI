@@ -50,7 +50,7 @@
 		#ifdef min
 			#undef min
 		#endif
-	#else
+	#elif __linux__
 		#include <fcntl.h>
 		#include <netdb.h>
 		#include <netinet/in.h>

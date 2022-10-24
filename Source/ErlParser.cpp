@@ -197,7 +197,6 @@ namespace DiscordCoreInternal {
 		}
 		this->readBitsFromBuffer<uint8_t>();
 		this->writeCharacter(']');
-		return;
 	}
 
 	void ErlParser::parseSmallIntegerExt() {
