@@ -1,6 +1,8 @@
 name: Build/Upload Documentation.
 on:
   push:
+    branches:
+    - main
 
 jobs:
   Build-Documentation:
