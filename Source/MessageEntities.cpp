@@ -118,41 +118,41 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["mentions"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				UserData newData{ value.value() };
 				this->mentions.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["mention_roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->mentionRoles.emplace_back(value.get_string().take_value());
 			}
 		}
 
 		if (jsonObjectData["mention_channels"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ChannelMentionData newData{ value.value() };
 				this->mentionChannels.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["attachments"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				AttachmentData newData{ value.value() };
 				this->attachments.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["embeds"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				EmbedData newData{ value.value() };
 				this->embeds.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["reactions"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ReactionData newData{ value.value() };
 				this->reactions.emplace_back(std::move(newData));
 			}
@@ -183,14 +183,14 @@ namespace DiscordCoreAPI {
 		this->flags = getUint32(jsonObjectData, "flags");
 
 		if (jsonObjectData["sticker_items"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				StickerItemData newData{ value.value() };
 				this->stickerItems.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["stickers"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				StickerData newData{ value.value() };
 				this->stickers.emplace_back(std::move(newData));
 			}
@@ -201,7 +201,7 @@ namespace DiscordCoreAPI {
 		}
 
 		if (jsonObjectData["components"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ActionRowData newData{ value.value() };
 				this->components.emplace_back(std::move(newData));
 			}
@@ -216,7 +216,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					Message newData{ value.value() };
 					this->messages.emplace_back(std::move(newData));
 				}

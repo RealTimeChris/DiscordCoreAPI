@@ -373,7 +373,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["fields"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->fields.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				EmbedFieldData newData{ value.value() };
 				this->fields.emplace_back(std::move(newData));
 			}
@@ -416,7 +416,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					ThreadMemberData newData{ value.value() };
 					this->threadMemberDatas.emplace_back(std::move(newData));
 				}
@@ -486,7 +486,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				RoleData newData{ value.value() };
 				this->roles.emplace_back(std::move(newData));
 			}
@@ -558,7 +558,7 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 				this->roles.clear();
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					this->roles.emplace_back(getId(value.value()));
 				}
 			}
@@ -657,7 +657,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["permission_overwrites"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->permissionOverwrites.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				OverWriteData dataNew{ value.value() };
 				this->permissionOverwrites.emplace_back(std::move(dataNew));
 			}
@@ -669,14 +669,14 @@ namespace DiscordCoreAPI {
 	ActiveThreadsData::ActiveThreadsData(simdjson::ondemand::value jsonObjectData) {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["threads"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ChannelData newData{ value.value() };
 				this->threads.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["members"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ThreadMemberData newData{ value.value() };
 				this->members.emplace_back(std::move(newData));
 			}
@@ -688,14 +688,14 @@ namespace DiscordCoreAPI {
 	ArchivedThreadsData::ArchivedThreadsData(simdjson::ondemand::value jsonObjectData) {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["threads"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ChannelData newData{ value.value() };
 				this->threads.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["members"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ThreadMemberData newData{ value.value() };
 				this->members.emplace_back(std::move(newData));
 			}
@@ -707,19 +707,19 @@ namespace DiscordCoreAPI {
 	TriggerMetaData::TriggerMetaData(simdjson::ondemand::value jsonObjectData) {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["keyword_filter"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->keywordFilter.emplace_back(value.get_string().value().data());
 			}
 		}
 
 		if (jsonObjectData["presets"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->presets.emplace_back(static_cast<KeywordPresetType>(value.get_uint64().value()));
 			}
 		}
 
 		if (jsonObjectData["allow_list"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->allowList.emplace_back(value.get_string().value());
 			}
 		}
@@ -757,7 +757,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["actions"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ActionData newData{ value.value() };
 				this->actions.emplace_back(std::move(newData));
 			}
@@ -765,14 +765,14 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["exempt_roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->exemptRoles.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->exemptRoles.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value() }));
 			}
 		}
 
 		if (jsonObjectData["exempt_channels"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->exemptChannels.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->exemptChannels.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value() }));
 			}
 		}
@@ -803,7 +803,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["permissions"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->permissions.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ApplicationCommandPermissionData newData{ value.value() };
 				this->permissions.emplace_back(std::move(newData));
 			}
@@ -814,7 +814,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildApplicationCommandPermissionsData newData{ value.value() };
 					this->guildApplicationCommandPermissionsDatas.emplace_back(std::move(newData));
 				}
@@ -826,7 +826,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					EmojiData newData{ value.value() };
 					this->theEmojiDatas.emplace_back(std::move(newData));
 				}
@@ -873,7 +873,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					VoiceRegionData newData{ value.value() };
 					this->theVoiceRegionDatas.emplace_back(std::move(newData));
 				}
@@ -900,7 +900,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					BanData newData{ value.value() };
 					this->theBanDatas.emplace_back(std::move(newData));
 				}
@@ -915,7 +915,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["permissions"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->permissions.emplace_back(Permissions{ value.get_string().value().data() });
 			}
 		}
@@ -933,7 +933,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["members"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				TeamMembersObjectData newData{ value.value() };
 				this->members.emplace_back(std::move(newData));
 			}
@@ -945,7 +945,7 @@ namespace DiscordCoreAPI {
 	InstallParamsData::InstallParamsData(simdjson::ondemand::value jsonObjectData) {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["scopes"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->scopes.emplace_back(Permissions{ value.get_string().value().data() });
 			}
 		}
@@ -961,7 +961,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["tags"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->tags.emplace_back(value.get_string().value().data());
 			}
 		}
@@ -975,7 +975,7 @@ namespace DiscordCoreAPI {
 		this->description = getString(jsonObjectData, "description");
 
 		if (jsonObjectData["rpc_origins"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->rpcOrigins.emplace_back(value.get_string().value().data());
 			}
 		}
@@ -1020,7 +1020,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["features"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->scopes.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->scopes.emplace_back(std::string{ value.get_string().take_value() });
 			}
 		}
@@ -1091,7 +1091,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					IntegrationData newData{ value.value() };
 					this->integeregrationDatas.emplace_back(std::move(newData));
 				}
@@ -1134,7 +1134,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["changes"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				AuditLogChangeData newData{ value.value() };
 				this->changes.emplace_back(std::move(newData));
 			}
@@ -1170,7 +1170,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["welcome_channels"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				WelcomeScreenChannelData newData{ value.value() };
 				this->welcomeChannels.emplace_back(std::move(newData));
 			}
@@ -1227,14 +1227,14 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["emojis"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				EmojiData newData{ value.value() };
 				this->emojis.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["stickers"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				StickerData newData{ value.value() };
 				this->stickers.emplace_back(std::move(newData));
 			}
@@ -1242,7 +1242,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["features"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->features.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->features.emplace_back(value.get_string().take_value());
 			}
 		}
@@ -1445,7 +1445,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildData newData{ value.value() };
 					this->guildDatas.emplace_back(std::move(newData));
 				}
@@ -1511,7 +1511,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildScheduledEventUserData newData{ value.value() };
 					this->guildScheduledEventUserDatas.emplace_back(std::move(newData));
 				}
@@ -1523,7 +1523,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildScheduledEventData newData{ value.value() };
 					this->guildScheduledEventDatas.emplace_back(std::move(newData));
 				}
@@ -1588,7 +1588,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					InviteData newData{ value.value() };
 					this->theInviteDatas.emplace_back(std::move(newData));
 				}
@@ -1629,7 +1629,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildTemplateData newData{ value.value() };
 					this->guildTemplateDatas.emplace_back(std::move(newData));
 				}
@@ -1674,7 +1674,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					WebHookData newData{ value.value() };
 					this->theWebHookDatas.emplace_back(std::move(newData));
 				}
@@ -1685,49 +1685,49 @@ namespace DiscordCoreAPI {
 	AuditLogData::AuditLogData(simdjson::ondemand::value jsonObjectData) {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["webhooks"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				WebHookData newData{ value.value() };
 				this->webhooks.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["guild_scheduled_events"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				GuildScheduledEventData newData{ value.value() };
 				this->guildScheduledEvents.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["auto_moderation_rules"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				AutoModerationRuleData newData{ value.value() };
 				this->autoModerationRules.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["users"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				UserData newData{ value.value() };
 				this->users.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["audit_log_entries"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				AuditLogEntryData newData{ value.value() };
 				this->auditLogEntries.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["integrations"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				IntegrationData newData{ value.value() };
 				this->integrations.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["threads"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ChannelData newData{ value.value() };
 				this->threads.emplace_back(std::move(newData));
 			}
@@ -1820,7 +1820,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["channel_types"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->channelTypes.emplace_back(static_cast<ChannelType>(value.get_uint64().value()));
 			}
 		}
@@ -1845,14 +1845,14 @@ namespace DiscordCoreAPI {
 
 		if (this->type == ApplicationCommandOptionType::Sub_Command_Group || this->type == ApplicationCommandOptionType::Sub_Command) {
 			if (jsonObjectData["options"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					ApplicationCommandOptionData newData{ value.value() };
 					this->options.emplace_back(std::move(newData));
 				}
 			}
 		}
 		if (jsonObjectData["choices"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ApplicationCommandOptionChoiceData newData{ value.value() };
 				this->choices.emplace_back(std::move(newData));
 			}
@@ -1939,7 +1939,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["options"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ApplicationCommandOptionData newData{ value.value() };
 				this->options.emplace_back(std::move(newData));
 			}
@@ -2032,14 +2032,14 @@ namespace DiscordCoreAPI {
 	YouTubeFormatVector::YouTubeFormatVector(simdjson::ondemand::value jsonObjectData) {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["streamingData"]["formats"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				YouTubeFormat newData{ value.value() };
 				this->theFormats.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["streamingData"]["adaptiveFormats"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				YouTubeFormat newData{ value.value() };
 				this->theFormats.emplace_back(std::move(newData));
 			}
@@ -2081,19 +2081,19 @@ namespace DiscordCoreAPI {
 	AllowedMentionsData::AllowedMentionsData(simdjson::ondemand::value jsonObjectData) {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["parse"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->parse.emplace_back(static_cast<std::string>(value.get_string().value()));
 			}
 		}
 
 		if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->roles.emplace_back(static_cast<std::string>(value.get_string().value()));
 			}
 		}
 
 		if (jsonObjectData["users"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->users.emplace_back(static_cast<std::string>(value.get_string().value()));
 			}
 		}
@@ -2120,7 +2120,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["components"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->components.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ComponentData newData{ value.value() };
 				this->components.emplace_back(std::move(newData));
 			}
@@ -2162,7 +2162,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["select_option_data"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->options.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				SelectOptionData newData{ value.value() };
 				this->options.emplace_back(std::move(newData));
 			}
@@ -2192,20 +2192,20 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["channel_ids"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->channelIds.emplace_back(value.get_string().take_value());
 			}
 		}
 
 		if (jsonObjectData["members"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ThreadMemberData newData{ value.value() };
 				this->members.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["threads"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ChannelData newData{ value.value() };
 				this->threads.emplace_back(std::move(newData));
 			}
@@ -2221,21 +2221,21 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["added_members"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ThreadMemberData newData{ value.value() };
 				this->addedMembers.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["added_members"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ThreadMemberData newData{ value.value() };
 				this->addedMembers.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["removed_member_ids"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->removedMemberIds.emplace_back(value.get_string().take_value());
 			}
 		}
@@ -2296,7 +2296,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["mentions"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->mentions.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				UserData newData{ value.value() };
 				this->mentions.emplace_back(std::move(newData));
 			}
@@ -2304,15 +2304,15 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["mention_roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->mentionRoles.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
-				auto object = value.get_string().take_value();
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
+				std::string_view object = value.get_string().take_value();
 				this->mentionRoles.emplace_back(std::move(object));
 			}
 		}
 
 		if (jsonObjectData["mention_channels"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->mentionChannels.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ChannelMentionData newChannelData{ value.value() };
 				this->mentionChannels.emplace_back(std::move(newChannelData));
 			}
@@ -2320,7 +2320,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["attachments"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->attachments.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				AttachmentData newAttachmentData{ value.value() };
 				this->attachments.emplace_back(std::move(newAttachmentData));
 			}
@@ -2328,7 +2328,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["embeds"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->embeds.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				EmbedData newEmbedData{ value.value() };
 				this->embeds.emplace_back(std::move(newEmbedData));
 			}
@@ -2336,7 +2336,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["reactions"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->reactions.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ReactionData newReactionData{ value.value() };
 				this->reactions.emplace_back(std::move(newReactionData));
 			}
@@ -2368,7 +2368,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["sticker_items"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->stickerItems.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				StickerItemData newReactionData{ value.value() };
 				this->stickerItems.emplace_back(std::move(newReactionData));
 			}
@@ -2376,7 +2376,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["stickers"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->stickers.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				StickerData newReactionData{ value.value() };
 				this->stickers.emplace_back(std::move(newReactionData));
 			}
@@ -2388,7 +2388,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["components"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->components.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ActionRowData newActionRowData{ value.value() };
 				this->components.emplace_back(std::move(newActionRowData));
 			}
@@ -2429,7 +2429,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["mentions"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->mentions.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				UserData newData{ value.value() };
 				this->mentions.emplace_back(std::move(newData));
 			}
@@ -2437,15 +2437,15 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["mention_roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->mentionRoles.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
-				auto object = value.get_string().take_value();
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
+				std::string_view object = value.get_string().take_value();
 				this->mentionRoles.emplace_back(std::move(object));
 			}
 		}
 
 		if (jsonObjectData["mention_channels"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->mentionChannels.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ChannelMentionData newChannelData{ value.value() };
 				this->mentionChannels.emplace_back(std::move(newChannelData));
 			}
@@ -2453,7 +2453,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["attachments"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->attachments.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				AttachmentData newAttachmentData{ value.value() };
 				this->attachments.emplace_back(std::move(newAttachmentData));
 			}
@@ -2461,7 +2461,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["embeds"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->embeds.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				EmbedData newEmbedData{ value.value() };
 				this->embeds.emplace_back(std::move(newEmbedData));
 			}
@@ -2469,7 +2469,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["reactions"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->reactions.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ReactionData newReactionData{ value.value() };
 				this->reactions.emplace_back(std::move(newReactionData));
 			}
@@ -2505,7 +2505,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["sticker_items"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->stickerItems.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				StickerItemData newReactionData{ value.value() };
 				this->stickerItems.emplace_back(std::move(newReactionData));
 			}
@@ -2513,7 +2513,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["stickers"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->stickers.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				StickerData newReactionData{ value.value() };
 				this->stickers.emplace_back(std::move(newReactionData));
 			}
@@ -2525,7 +2525,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["components"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->components.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ActionRowData newActionRowData{ value.value() };
 				this->components.emplace_back(std::move(newActionRowData));
 			}
@@ -2540,7 +2540,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::object arrayValue{};
 		if (jsonObjectData["attachments"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->attachments.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::field> value: arrayValue) {
 				AttachmentData newData{ value.value() };
 				this->attachments[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
@@ -2548,7 +2548,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["users"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->users.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::field> value: arrayValue) {
 				UserData newData{ value.value() };
 				this->users[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
@@ -2556,7 +2556,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["channels"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->channels.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::field> value: arrayValue) {
 				ChannelData newData{ value.value() };
 				this->channels[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
@@ -2564,7 +2564,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->roles.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::field> value: arrayValue) {
 				RoleData newData{ value.value() };
 				this->roles[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
@@ -2572,7 +2572,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["members"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->members.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::field> value: arrayValue) {
 				GuildMemberData newData{ value.value() };
 				this->members[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
@@ -2580,7 +2580,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["messages"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->messages.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::field> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::field> value: arrayValue) {
 				MessageData newData{ value.value() };
 				this->messages[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
@@ -2590,7 +2590,7 @@ namespace DiscordCoreAPI {
 	StickerPackData::StickerPackData(simdjson::ondemand::value jsonObjectData) {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["stickers"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				StickerData newData{ value.value() };
 				this->stickers.emplace_back(std::move(newData));
 			}
@@ -2613,7 +2613,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					StickerPackData newData{ value.value() };
 					this->theStickerPackDatas.emplace_back(std::move(newData));
 				}
@@ -2640,7 +2640,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["integrations"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				IntegrationData newData{ value.value() };
 				this->integrations.emplace_back(std::move(newData));
 			}
@@ -2656,7 +2656,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["options"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ApplicationCommandInteractionDataOption newData{ value.value() };
 				this->options.emplace_back(std::move(newData));
 			}
@@ -2703,7 +2703,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["options"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ApplicationCommandInteractionDataOption newData{ value.value() };
 				this->options.emplace_back(std::move(newData));
 			}
@@ -2805,7 +2805,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["emojis"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				EmojiData newData{ value.value() };
 				this->emojis.emplace_back(std::move(newData));
 			}
@@ -2817,7 +2817,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["stickers"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				StickerData newData{ value.value() };
 				this->stickers.emplace_back(std::move(newData));
 			}
@@ -2835,20 +2835,20 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["presences"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				PresenceUpdateData newData{ value.value() };
 				this->presences.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["not_found"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->notFound.emplace_back(value.get_string().take_value());
 			}
 		}
 
 		if (jsonObjectData["members"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				GuildMemberData newData{ value.value() };
 				this->members.emplace_back(std::move(newData));
 			}
@@ -3388,7 +3388,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					ConnectionData newData{ value.value() };
 					this->connectionDatas.emplace_back(std::move(newData));
 				}

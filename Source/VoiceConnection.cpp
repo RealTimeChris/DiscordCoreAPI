@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["modes"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->mode.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				if (std::string{ value.get_string().take_value() } == "xsalsa20_poly1305") {
 					this->mode = std::string{ value.get_string().take_value() };
 				}
@@ -555,7 +555,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::parseIncomingVoiceData() noexcept {
 		while (this->frameQueue.size() > 0) {
 			this->rawDataBuffer.resize(this->frameQueue.front().size());
-			auto string = this->frameQueue.front();
+			std::string string = this->frameQueue.front();
 			this->frameQueue.pop_front();
 			std::copy(string.data(), string.data() + string.size(), this->rawDataBuffer.data());
 			if (this->rawDataBuffer.size() > 0 && this->secretKeySend.size() > 0) {

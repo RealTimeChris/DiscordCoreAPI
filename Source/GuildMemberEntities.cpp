@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildMember newData{ value.value() };
 					this->guildMembers.emplace_back(std::move(newData));
 				}
@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 				this->roles.clear();
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					this->roles.emplace_back(getId(value.value()));
 				}
 			}

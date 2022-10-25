@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildScheduledEvent newData{ value.value() };
 					this->guildScheduledEvents.emplace_back(std::move(newData));
 				}

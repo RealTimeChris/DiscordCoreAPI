@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["available_tags"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ForumTagData newData{ value.value() };
 				this->availableTags.emplace_back(std::move(newData));
 			}
@@ -55,14 +55,14 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["permission_overwrites"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->permissionOverwrites.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				OverWriteData dataNew{ value.value() };
 				this->permissionOverwrites.emplace_back(std::move(dataNew));
 			}
 		}
 
 		if (jsonObjectData["applied_tags"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->appliedTags.emplace_back(strtoull(value.value().get_string().take_value()));
 			}
 		}
@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 
 		if (jsonObjectData["recipients"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->recipients.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				UserData dataNew{ value.value() };
 				this->recipients.emplace(dataNew.id, std::move(dataNew));
 			}
@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 	ChannelVector::ChannelVector(simdjson::ondemand::value jsonObjectData) {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				Channel newData{ value.value() };
 				this->channels.emplace_back(std::move(newData));
 			}

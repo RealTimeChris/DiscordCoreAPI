@@ -306,7 +306,6 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll WebSocketMessage {
 		uint64_t op{ static_cast<uint64_t>(-1) };
-		simdjson::ondemand::value d{};
 		std::string t{};
 		uint64_t s{};
 
@@ -314,8 +313,13 @@ namespace DiscordCoreInternal {
 
 		WebSocketMessage(simdjson::ondemand::value);
 
-		template<typename RTy> RTy processJsonMessage() {
-			return RTy{ this->d };
+		template<typename RTy> RTy processJsonMessage(simdjson::ondemand::value jsonData) {
+			simdjson::ondemand::value object{};
+			if (jsonData["d"].get(object) != simdjson::error_code::SUCCESS) {
+				throw std::runtime_error{ "Failed to collect the 'd'." };
+			} else {
+				return RTy{ object };
+			}
 		}
 	};
 

@@ -35,13 +35,17 @@ generate_product_version(
 	VERSION_REVISION "0"
 )
 
+if (UNIX)
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast")
+	set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -O1")
+endif()
+
 file(GLOB SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Source/*.cpp")
 
 if (WIN32)
 	add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
 elseif (UNIX)
-	set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
-	add_library("${LIB_NAME}" SHARED "${SOURCES}")
+	add_library("${LIB_NAME}" STATIC "${SOURCES}")
 	find_package(Threads REQUIRED)
 endif()
 
@@ -107,7 +111,8 @@ target_compile_options(
 	"$<$<PLATFORM_ID:Windows>:/MP>"
 	"$<$<PLATFORM_ID:Linux>:$<$<STREQUAL:$ENV{EnableASAN},true>:-fsanitize=address>>"
 	"$<$<PLATFORM_ID:Linux>:-fpermissive>"
-	"$<$<PLATFORM_ID:Linux>:-O3>"
+	"$<$<PLATFORM_ID:Linux>:-mavx2>"
+	"$<$<PLATFORM_ID:Linux>:-mavx>"
 )
 
 target_link_options(

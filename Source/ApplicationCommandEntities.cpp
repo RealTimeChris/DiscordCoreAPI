@@ -170,7 +170,7 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::array arrayValue{};
 		if (jsonObjectData["options"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->options.clear();
-			for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ApplicationCommandOptionData dataNew{ value.value() };
 				this->options.emplace_back(std::move(dataNew));
 			}
@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
-				for (simdjson::simdjson_result<simdjson::fallback::ondemand::value> value: arrayValue) {
+				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					ApplicationCommand newData{ value.value() };
 					this->theApplicationCommands.emplace_back(std::move(newData));
 				}

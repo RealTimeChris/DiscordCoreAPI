@@ -73,6 +73,7 @@ inline uint64_t ntohll(uint64_t x) {
 	#include <unordered_map>
 	#include <unordered_set>
 	#include <shared_mutex>
+	#include <immintrin.h>
 	#include <functional>
 	#include <concepts>
 	#include <iostream>
