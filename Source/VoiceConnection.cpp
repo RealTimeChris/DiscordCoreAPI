@@ -102,12 +102,12 @@ namespace DiscordCoreAPI {
 			this->sequence++;
 			this->timeStamp += audioData.sampleCount;
 			const uint8_t headerSize{ 12 };
-			std::string header{};
+			char header[headerSize]{};
 			storeBits(header, this->version);
-			storeBits(header, this->flags);
-			storeBits(header, this->sequence);
-			storeBits(header, this->timeStamp);
-			storeBits(header, this->ssrc);
+			storeBits(header + 1, this->flags);
+			storeBits(header + 2, this->sequence);
+			storeBits(header + 4, this->timeStamp);
+			storeBits(header + 8, this->ssrc);
 			std::vector<uint8_t> nonceForLibSodium{};
 			nonceForLibSodium.resize(crypto_secretbox_NONCEBYTES);
 			for (uint8_t x = 0; x < headerSize; ++x) {
@@ -180,7 +180,7 @@ namespace DiscordCoreAPI {
 			if (message.op != 0) {
 				switch (message.op) {
 					case 2: {
-						VoiceSocketReadyData data{ message.d };
+						VoiceSocketReadyData data{ value["d"] };
 						this->audioSSRC = data.ssrc;
 						this->voiceIp = data.ip;
 						this->port = data.port;
@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
 						break;
 					}
 					case 4: {
-						auto arrayValue = getArray(message.d, "secret_key");
+						auto arrayValue = getArray(value["d"], "secret_key");
 						if (arrayValue.didItSucceed) {
 							std::vector<unsigned char> secretKey{};
 							for (auto iterator: arrayValue.arrayValue) {
@@ -202,9 +202,9 @@ namespace DiscordCoreAPI {
 						break;
 					}
 					case 5: {
-						uint32_t ssrc = getUint32(message.d, "ssrc");
+						uint32_t ssrc = getUint32(value["d"], "ssrc");
 						VoiceUser user{};
-						user.userId = stoull(getString(message.d, "user_id"));
+						user.userId = stoull(getString(value["d"], "user_id"));
 						lock00.lock();
 						this->voiceUsers[ssrc] = std::move(user);
 						break;
@@ -214,7 +214,7 @@ namespace DiscordCoreAPI {
 						break;
 					}
 					case 8: {
-						this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ static_cast<uint32_t>(getFloat(message.d, "heartbeat_interval")) } };
+						this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ static_cast<uint32_t>(getFloat(value["d"], "heartbeat_interval")) } };
 						this->areWeHeartBeating = true;
 						this->connectionState.store(VoiceConnectionState::Sending_Identify);
 						this->currentState.store(DiscordCoreInternal::WebSocketState::Authenticated);
@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 						break;
 					}
 					case 13: {
-						auto userId = stoull(getString(message.d, "user_id"));
+						auto userId = stoull(getString(value["d"], "user_id"));
 						for (auto& [key, value]: this->voiceUsers) {
 							if (userId == value.userId) {
 								lock00.lock();

@@ -57,9 +57,10 @@ namespace DiscordCoreInternal {
 			if (this->offSet + sizeof(RTy) > this->dataBuffer.size()) {
 				throw ErlParseError{ "ErlParser::readBitsFromBuffer() Error: readBitsFromBuffer() past end of the buffer.\n\n" };
 			}
-			const RTy newValue = *reinterpret_cast<const RTy*>(this->dataBuffer.data() + this->offSet);
+			RTy newValue = *reinterpret_cast<const RTy*>(this->dataBuffer.data() + this->offSet);
 			this->offSet += sizeof(RTy);
-			return DiscordCoreAPI::reverseByteOrder<const RTy>(newValue);
+			DiscordCoreAPI::reverseByteOrder<RTy>(&newValue);
+			return newValue;
 		}
 
 		void writeCharactersFromBuffer(uint32_t length);

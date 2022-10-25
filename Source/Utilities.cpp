@@ -113,6 +113,14 @@ namespace DiscordCoreInternal {
 namespace DiscordCoreAPI {
 
 	Snowflake& Snowflake::operator=(const std::string& other) noexcept {
+		for (auto& value: other) {
+			if (!std::isdigit(static_cast<unsigned char>(value))) {
+				return *this;
+			}
+		}
+		if (other.size() == 0) {
+			return *this;
+		}
 		this->id = stoull(other);
 		return *this;
 	}

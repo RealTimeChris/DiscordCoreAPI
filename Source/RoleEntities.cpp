@@ -347,10 +347,10 @@ namespace DiscordCoreAPI {
 			return Roles::getRoleAsync(dataPackage).get();
 		} else {
 			data = Roles::cache.at(data);
-			return std::move(data);
+			return data;
 		}
 	}
-	StopWatch stopWatchNew{ 5s };
+	StopWatch<std::chrono::milliseconds> stopWatchNew{5ms};
 	void Roles::insertRole(RoleData role) {
 		if (role.id == 0) {
 			return;
