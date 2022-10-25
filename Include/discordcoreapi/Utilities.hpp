@@ -225,22 +225,34 @@ namespace DiscordCoreAPI {
 		std::atomic_uint64_t startTime{ 0 };
 	};
 
-	template<typename ReturnType> ReturnType reverseByteOrder(const ReturnType net) {
+	template<typename ReturnType> void reverseByteOrder(ReturnType* net) {
 		switch (sizeof(ReturnType)) {
 			case 1: {
-				return net;
+				return;
 			}
 			case 2: {
-				return ntohs(static_cast<int16_t>(net));
+				__m256i value{ _mm256_set1_epi16(*net) };
+				__m256i indexes{ _mm256_set_epi8(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1) };
+				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
+				*net = *reinterpret_cast<uint16_t*>(&result);
+				return;
 			}
 			case 4: {
-				return ntohl(static_cast<uint32_t>(net));
+				__m256i value{ _mm256_set1_epi32(*net) };
+				__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3) };
+				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
+				*net = *reinterpret_cast<uint32_t*>(&result);
+				return;
 			}
 			case 8: {
-				return ntohll(static_cast<uint64_t>(net));
+				__m256i value{ _mm256_set1_epi64x(*net) };
+				__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7) };
+				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
+				*net = *reinterpret_cast<uint64_t*>(&result);
+				return;
 			}
 		}
-		return ReturnType{};
+		return;
 	}
 
 	template<typename ReturnType> void storeBits(std::string& to, ReturnType num) {
@@ -253,9 +265,9 @@ namespace DiscordCoreAPI {
 
 	template<typename ReturnType> void storeBits(char* to, ReturnType num) {
 		const uint8_t byteSize{ 8 };
-		ReturnType newValue = reverseByteOrder<ReturnType>(num);
+		reverseByteOrder<ReturnType>(&num);
 		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
-			to[x] = static_cast<uint8_t>(newValue >> (byteSize * x));
+			to[x] = static_cast<uint8_t>(num >> (byteSize * x));
 		}
 	}
 
