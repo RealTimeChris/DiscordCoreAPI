@@ -125,7 +125,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Jsonifier data{};
 		data["op"] = 5;
 		data["d"]["speaking"] = static_cast<int32_t>(this->type);
-		std::cout << "SPEAKING: " << static_cast<int32_t>(this->type) << std::endl;
 		data["d"]["delay"] = this->delay;
 		data["d"]["ssrc"] = this->ssrc;
 		return data;

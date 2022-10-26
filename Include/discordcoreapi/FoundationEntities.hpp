@@ -2212,17 +2212,17 @@ namespace DiscordCoreAPI {
 
 	/// Data structure representing an ApplicationCommand's option. \brief Data structure representing an ApplicationCommand's option.
 	struct DiscordCoreAPI_Dll ApplicationCommandOptionData {
-		std::vector<ApplicationCommandOptionChoiceData> choices{};///< A vector of possible choices for the current ApplicationCommand option.
-		int32_t minValue{ std::numeric_limits<int32_t>::max() };///< If the option is an INTEGER or NUMBER type, the minimum value permitted.
-		int32_t maxValue{ std::numeric_limits<int32_t>::min() };///< If the option is an INTEGER or NUMBER type, the maximum value permitted.
 		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary for the description localizations field.
-		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand option.
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary for the name localizations field.
-		ApplicationCommandOptionType type{};///< The type of command option.
+		std::vector<ApplicationCommandOptionChoiceData> choices{};///< A vector of possible choices for the current ApplicationCommand option.
+		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand option.
 		std::vector<ChannelType> channelTypes{};///< Set when the ApplicationCommand option type is set to Channel.
+		ApplicationCommandOptionType type{};///< The type of command option.
 		bool autocomplete{ false };///< If autocomplete interactions are enabled for this STRING, INTEGER, or NUMBER type option.
-		bool required{ false };///< If the parameter is required or optional-- default false.
 		std::string description{};///< A description of the current ApplicationCommand option.
+		bool required{ false };///< If the parameter is required or optional-- default false.
+		int32_t minValue{ 0 };///< If the option is an INTEGER or NUMBER type, the minimum value permitted.
+		int32_t maxValue{ 0 };///< If the option is an INTEGER or NUMBER type, the maximum value permitted.
 		std::string name{};///< Name of the current ApplicationCommand option.
 
 		ApplicationCommandOptionData() noexcept = default;
@@ -2239,8 +2239,8 @@ namespace DiscordCoreAPI {
 	/// Representing "TypingStart" data. \brief Representing "TypingStart" data.
 	struct DiscordCoreAPI_Dll TypingStartData {
 		GuildMemberData member{};
-		Snowflake channelId{};
 		int32_t timeStamp{ 0 };
+		Snowflake channelId{};
 		Snowflake guildId{};
 		Snowflake userId{};
 
@@ -2252,20 +2252,20 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll YouTubeFormat {
-		int32_t averageBitrate{ 0 };
-		int64_t contentLength{ 0 };
 		std::string signatureCipher{};
 		std::string audioSampleRate{};
+		int32_t averageBitrate{ 0 };
+		int64_t contentLength{ 0 };
 		std::string audioQuality{};
 		std::string downloadUrl{};
-		int32_t bitrate{ 0 };
 		std::string signature{};
 		std::string mimeType{};
-		int32_t height{ 0 };
 		std::string quality{};
-		int32_t width{ 0 };
 		std::string codecs{};
 		std::string aitags{};
+		int32_t bitrate{ 0 };
+		int32_t height{ 0 };
+		int32_t width{ 0 };
 		int32_t itag{ 0 };
 		int32_t fps{ 0 };
 
@@ -2328,8 +2328,8 @@ namespace DiscordCoreAPI {
 
 	/// Component Interaction data. \brief Component Interaction data.
 	struct DiscordCoreAPI_Dll ComponentInteractionData {
-		ComponentType componentType{};///< The type of component.
 		std::vector<std::string> values{};///< The values of the components.
+		ComponentType componentType{};///< The type of component.
 		std::string customId{};///< The custom id of the Interaction entity.
 
 		ComponentInteractionData() noexcept = default;
@@ -2381,11 +2381,11 @@ namespace DiscordCoreAPI {
 	/// Represents a single selection from a select-menu. \brief Represents a single selection from a select-menu.
 	class DiscordCoreAPI_Dll SelectOptionData {
 	  public:
-		bool _default{ false };///< Is it the default option?
 		std::string description{};///< Description of the select-menu-option.
-		EmojiData emoji{};///< An optional emoji to put on it.
+		bool _default{ false };///< Is it the default option?
 		std::string label{};///< A visible label for the select-menu-option.
 		std::string value{};///< A value for identifying the option.
+		EmojiData emoji{};///< An optional emoji to put on it.
 
 		SelectOptionData() noexcept = default;
 
@@ -2406,21 +2406,21 @@ namespace DiscordCoreAPI {
 	/// Represents a single Message-component. \brief Represents a single Message-component.
 	struct DiscordCoreAPI_Dll ComponentData {
 		std::vector<SelectOptionData> options{};///< Aray of select options the choices in the select, max 25.
+		std::string placeholder{};///< Custom placeholder text if nothing is selected, max 100 characters.
 		bool required{ false };///< Whether this component is required to be filled.
 		bool disabled{ false };///< Whether the component is disabled, default false.
-		std::string placeholder{};///< Custom placeholder text if nothing is selected, max 100 characters.
 		int32_t minValues{ 0 };///< The minimum number of items that must be chosen; default 1, min 0, max 25.
 		int32_t maxValues{ 0 };///< The maximum number of items that can be chosen; default 1, max 25.
 		int32_t minLength{ 0 };///< The minimum input length for a text input.
 		int32_t maxLength{ 0 };///< The maximum input length for a text input.
-		ComponentType type{};///< Integer component type.
 		std::string customId{};///< A developer-defined identifier for the component, max 100 characters.
-		EmojiData emoji{};///< Emoji name, id, and animated.
+		ComponentType type{};///< Integer component type.
 		std::string label{};///< The label for this component.
 		std::string value{};///< A pre-filled value for this component.
 		std::string title{};///< Url, for url types.
-		int32_t style{};///< One of ButtonStyle, or TextInputStyle.
+		EmojiData emoji{};///< Emoji name, id, and animated.
 		std::string url{};///< Url, for url types.
+		int32_t style{};///< One of ButtonStyle, or TextInputStyle.
 
 		ComponentData() noexcept = default;
 
@@ -2455,16 +2455,16 @@ namespace DiscordCoreAPI {
 	/// Interaction ApplicationCommand callback data. \brief Interaction ApplicationCommand callback data.
 	struct DiscordCoreAPI_Dll InteractionCallbackData {
 		std::vector<ApplicationCommandOptionChoiceData> choices{};///< Autocomplete choices(max of 25 choices).
-		AllowedMentionsData allowedMentions{};///< Allowed mentions data.
 		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename and description.
 		std::vector<ActionRowData> components{};///< Message components.
+		AllowedMentionsData allowedMentions{};///< Allowed mentions data.
 		std::vector<EmbedData> embeds{};///< Message embeds.
 		std::vector<File> files{};///< Files for uploading.
 		std::string customId{};///< A developer-defined identifier for the component, max 100 characters.
-		bool tts{ false };///< Is it TTS?
 		std::string content{};///< Message content.
-		int32_t flags{ 0 };///< Flags.
 		std::string title{};///< The title of the popup modal.
+		int32_t flags{ 0 };///< Flags.
+		bool tts{ false };///< Is it TTS?
 	};
 
 	struct CreateApplicationCommandData;
@@ -2473,15 +2473,15 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {
 	  public:
 		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
-		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand.
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
+		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set all
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
 		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app, only for globally - scoped commands.
 		Snowflake applicationId{};///< The current application id.
 		std::string description{};///< A description of the current ApplicationCommand.
-		Snowflake guildId{};///< (Where applicable) a Guild id for which guild to assign this ApplicationCommand to.
 		std::string version{};///< An autoincremented version.
+		Snowflake guildId{};///< (Where applicable) a Guild id for which guild to assign this ApplicationCommand to.
 		std::string name{};///< Name of the current ApplicationCommand.
 
 		ApplicationCommandData() noexcept = default;
@@ -2523,8 +2523,8 @@ namespace DiscordCoreAPI {
 	/// Data for when threads are synced. \brief Data for when threads are synced.
 	struct DiscordCoreAPI_Dll ThreadListSyncData {
 		std::vector<ThreadMemberData> members{};///< Array of members that are a part of the Thread.
-		std::vector<ChannelData> threads{};///< All active threads in the given channels that the current User can access.
 		std::vector<std::string> channelIds{};///< The parent Channel ids whose threads are being synced. If omitted, then threads were synced for entire Guild.
+		std::vector<ChannelData> threads{};///< All active threads in the given channels that the current User can access.
 		Snowflake guildId{};///< The id of the Guild for which the threads are being synced.
 
 		ThreadListSyncData() noexcept = default;
@@ -2554,8 +2554,8 @@ namespace DiscordCoreAPI {
 	  public:
 		GuildMemberData member{};
 		InteractionType type{};
-		UserData user{};
 		std::string name{};
+		UserData user{};
 
 		MessageInteractionData() noexcept = default;
 
@@ -2613,8 +2613,8 @@ namespace DiscordCoreAPI {
 	/// Represents a forum thread message. \brief Represents a forum thread message.
 	struct DiscordCoreAPI_Dll ForumThreadMessageData {
 		std::vector<AttachmentData> attachments{};///< Array of partial attachment objects attachment objects with filename.
-		AllowedMentionsData allowedMentions{};///< Allowed mention object allowed mentions for the message.
 		std::vector<ActionRowData> components{};///< Array of message component objects the components to include with the message.
+		AllowedMentionsData allowedMentions{};///< Allowed mention object allowed mentions for the message.
 		std::vector<std::string> stickerIds{};///< Array of snowflakes IDs of up to 3 stickers in the server to send in the message.
 		std::vector<EmbedData> embeds{};///< Array of embed objects	embedded rich content (up to 6000 characters).
 		std::vector<File> files{};///< File contents the contents of the file being sent one of content, file, embed(s), sticker_ids.
@@ -2639,34 +2639,34 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll MessageDataOld : public DiscordEntity {
 	  public:
 		TimeStamp<std::chrono::milliseconds> editedTimestamp{};///< The time at which it was edited.
-		TimeStamp<std::chrono::milliseconds> timeStamp{};///< The timeStamp of when the Message was created.
 		std::vector<ChannelMentionData> mentionChannels{};///< array of Channel mention data.
-		MessageReferenceData messageReference{};///< Message reference data.
+		TimeStamp<std::chrono::milliseconds> timeStamp{};///< The timeStamp of when the Message was created.
 		std::vector<StickerItemData> stickerItems{};///< Array of Message Sticker item data.
 		std::vector<AttachmentData> attachments{};///< Array of attachment data.
-		MessageInteractionData interaction{};///< Message Interaction data.
+		MessageReferenceData messageReference{};///< Message reference data.
 		std::vector<ActionRowData> components{};///< Array of action row data.
+		std::vector<std::string> mentionRoles{};///< std::vector of "mention roles" ids.
 		std::vector<ReactionData> reactions{};//< Array of reaction data.
+		MessageInteractionData interaction{};///< Message Interaction data.
 		std::vector<StickerData> stickers{};///< Array of Message Sticker data.
+		std::vector<UserData> mentions{};///< Array of User data, for individual's that were mentioned.
+		std::vector<EmbedData> embeds{};///< Array of Message embeds.
 		MessageActivityData activity{};///< Message activity data.
 		bool mentionEveryone{ false };///< Does the Message mention everyone?
 		ApplicationData application{};///< Application data.
-		std::vector<std::string> mentionRoles{};///< std::vector of "mention roles" ids.
-		std::vector<UserData> mentions{};///< Array of User data, for individual's that were mentioned.
-		std::vector<EmbedData> embeds{};///< Array of Message embeds.
 		Snowflake applicationId{};///< Application id.
 		GuildMemberData member{};///< The author's Guild member data.
+		std::string content{};///< The Message's content.
 		Snowflake channelId{};///< The Channel it was sent in.
 		Snowflake webHookId{};///< WebHook id of the Message, if applicable.
 		bool pinned{ false };///< Is it pinned?
 		ChannelData thread{};///< The Thread that the Message was sent in, if applicable.
 		Snowflake guildId{};///< The id of the Guild the Message was sent in.
+		std::string nonce{};///< Nonce.
 		MessageType type{};///< Message type.
+		int32_t flags{ 0 };///< Flags.
 		UserData author{};///< The author's User data.
 		bool tts{ false };///< Is it a text-to-speech Message?
-		std::string content{};///< The Message's content.
-		int32_t flags{ 0 };///< Flags.
-		std::string nonce{};///< Nonce.
 
 		MessageDataOld() noexcept = default;
 
@@ -2712,8 +2712,8 @@ namespace DiscordCoreAPI {
 		std::string bannerAssetId{};///< Id of the Sticker pack's banner image.
 		std::string description{};///< Description of the Sticker pack.
 		std::string skuId{};///< Id of the pack's SKU.
-		Snowflake Id{};///< Id of the Sticker pack.
 		std::string name{};///< Name of the Sticker pack.
+		Snowflake Id{};///< Id of the Sticker pack.
 
 		StickerPackData() noexcept = default;
 
