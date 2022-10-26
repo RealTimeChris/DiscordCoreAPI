@@ -180,6 +180,44 @@ namespace DiscordCoreAPI {
 		return lhs.id == rhs.id;
 	}
 
+	template<typename ReturnType> void reverseByteOrder(ReturnType& net) {
+		switch (sizeof(ReturnType)) {
+			case 1: {
+				return;
+			}
+			case 2: {
+				__m256i value{ _mm256_set1_epi16(net) };
+				__m256i indexes{ _mm256_set_epi8(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1) };
+				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
+				net = *reinterpret_cast<uint16_t*>(&result);
+				return;
+			}
+			case 4: {
+				__m256i value{ _mm256_set1_epi32(net) };
+				__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3) };
+				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
+				net = *reinterpret_cast<uint32_t*>(&result);
+				return;
+			}
+			case 8: {
+				__m256i value{ _mm256_set1_epi64x(net) };
+				__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7) };
+				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
+				net = *reinterpret_cast<uint64_t*>(&result);
+				return;
+			}
+		}
+		return;
+	}
+
+	template<typename ReturnType> void storeBits(char* to, ReturnType num) {
+		const uint8_t byteSize{ 8 };
+		reverseByteOrder<ReturnType>(num);
+		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
+			to[x] = static_cast<uint8_t>(num >> (byteSize * x));
+		}
+	}
+
 	template<typename TimeType> class StopWatch {
 	  public:
 		StopWatch() = delete;
@@ -224,44 +262,6 @@ namespace DiscordCoreAPI {
 		std::atomic_uint64_t startTime{ 0 };
 	};
 
-	template<typename ReturnType> void reverseByteOrder(ReturnType* net) {
-		switch (sizeof(ReturnType)) {
-			case 1: {
-				return;
-			}
-			case 2: {
-				__m256i value{ _mm256_set1_epi16(*net) };
-				__m256i indexes{ _mm256_set_epi8(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1) };
-				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
-				*net = *reinterpret_cast<uint16_t*>(&result);
-				return;
-			}
-			case 4: {
-				__m256i value{ _mm256_set1_epi32(*net) };
-				__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3) };
-				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
-				*net = *reinterpret_cast<uint32_t*>(&result);
-				return;
-			}
-			case 8: {
-				__m256i value{ _mm256_set1_epi64x(*net) };
-				__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7) };
-				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
-				*net = *reinterpret_cast<uint64_t*>(&result);
-				return;
-			}
-		}
-		return;
-	}
-
-	template<typename ReturnType> void storeBits(char* to, ReturnType num) {
-		const uint8_t byteSize{ 8 };
-		reverseByteOrder<ReturnType>(&num);
-		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
-			to[x] = static_cast<uint8_t>(num >> (byteSize * x));
-		}
-	}
-	
 	constexpr uint8_t formatVersion{ 131 };
 
 	enum class EtfType : uint8_t {
@@ -274,6 +274,7 @@ namespace DiscordCoreAPI {
 		List_Ext = 108,
 		Binary_Ext = 109,
 		Small_Big_Ext = 110,
+		Small_Atom_Ext = 115,
 		Map_Ext = 116,
 	};
 
@@ -502,19 +503,15 @@ namespace DiscordCoreAPI {
 		Jsonifier& operator=(std::nullptr_t) noexcept;
 		Jsonifier(std::nullptr_t data) noexcept;
 
-		Jsonifier& operator[](typename ObjectType::key_type key) const;
-
-		Jsonifier& operator[](uint64_t index) const;
-
 		Jsonifier& operator[](typename ObjectType::key_type key);
 
 		Jsonifier& operator[](uint64_t index);
 
-		template<typename T> inline const T& getValue() const {
+		template<typename T> const T& getValue() const {
 			return T{};
 		}
 
-		template<typename T> inline T& getValue() {
+		template<typename T> T& getValue() {
 			return T{};
 		}
 
@@ -545,8 +542,8 @@ namespace DiscordCoreAPI {
 		template<typename NumberType,
 			std::enable_if_t<std::is_integral<NumberType>::value || std::is_same<NumberType, uint64_t>::value || std::is_same<NumberType, int64_t>::value, int> = 0>
 		void writeJsonInt(NumberType Int) {
-			auto intNew = std::to_string(Int);
-			this->writeString(intNew.data(), intNew.size());
+			auto IntNew = std::to_string(Int);
+			this->writeString(IntNew.data(), IntNew.size());
 		}
 
 		void writeJsonBool(const BoolType ValueNew);

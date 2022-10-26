@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 			}
 			RTy newValue = *reinterpret_cast<const RTy*>(this->dataBuffer.data() + this->offSet);
 			this->offSet += sizeof(RTy);
-			DiscordCoreAPI::reverseByteOrder<RTy>(&newValue);
+			DiscordCoreAPI::reverseByteOrder<RTy>(newValue);
 			return newValue;
 		}
 

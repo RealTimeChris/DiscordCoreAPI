@@ -563,7 +563,7 @@ namespace DiscordCoreInternal {
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
 		this->theStreamTargetAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 		auto portNewer = static_cast<unsigned short>(stoi(portNew));
-		DiscordCoreAPI::reverseByteOrder<uint16_t>(&portNewer);
+		DiscordCoreAPI::reverseByteOrder<uint16_t>(portNewer);
 		this->theStreamTargetAddress.sin_port = portNewer;
 		this->theStreamTargetAddress.sin_family = AF_INET;
 
