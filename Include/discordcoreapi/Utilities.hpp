@@ -278,8 +278,8 @@ namespace DiscordCoreAPI {
 		Map_Ext = 116,
 	};
 
-	template<typename T>
-	concept IsEnum = std::is_enum<T>::value;
+	template<typename Ty>
+	concept IsEnum = std::is_enum<Ty>::value;
 
 	struct DiscordCoreAPI_Dll EnumConverter {
 		template<IsEnum EnumType> EnumConverter& operator=(std::vector<EnumType> data) {
@@ -320,8 +320,8 @@ namespace DiscordCoreAPI {
 
 	class Jsonifier;
 
-	template<typename T>
-	concept IsConvertibleToJsonifier = std::convertible_to<T, Jsonifier>;
+	template<typename Ty>
+	concept IsConvertibleToJsonifier = std::convertible_to<Ty, Jsonifier>;
 
 	class DiscordCoreAPI_Dll Jsonifier {
 	  public:
@@ -425,13 +425,13 @@ namespace DiscordCoreAPI {
 			*this = data;
 		};
 
-		template<IsEnum T> Jsonifier& operator=(T data) noexcept {
+		template<IsEnum Ty> Jsonifier& operator=(Ty data) noexcept {
 			this->jsonValue.numberUint = static_cast<uint64_t>(data);
 			this->type = JsonType::Uint64;
 			return *this;
 		}
 
-		template<IsEnum T> Jsonifier(T data) noexcept {
+		template<IsEnum Ty> Jsonifier(Ty data) noexcept {
 			*this = data;
 		}
 
@@ -507,12 +507,12 @@ namespace DiscordCoreAPI {
 
 		Jsonifier& operator[](uint64_t index);
 
-		template<typename T> const T& getValue() const {
-			return T{};
+		template<typename Ty> const Ty& getValue() const {
+			return Ty{};
 		}
 
-		template<typename T> T& getValue() {
-			return T{};
+		template<typename Ty> Ty& getValue() {
+			return Ty{};
 		}
 
 		JsonType getType() noexcept;
@@ -686,8 +686,8 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll UpdatePresenceData;
 
-	template<typename T> inline auto utCast(T x) -> std::enable_if_t<std::is_enum_v<T>, std::underlying_type_t<T>> {
-		return static_cast<std::underlying_type_t<T>>(x);
+	template<typename Ty> inline auto utCast(Ty x) -> std::enable_if_t<std::is_enum_v<Ty>, std::underlying_type_t<Ty>> {
+		return static_cast<std::underlying_type_t<Ty>>(x);
 	}
 
 	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
