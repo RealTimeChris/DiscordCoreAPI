@@ -272,6 +272,9 @@ namespace DiscordCoreAPI {
 		} else {
 			this->serializeJsonToJsonString(this);
 		}
+		for (auto& value: this->reverseByteOrderLoads) {
+			value.runExecution();
+		}
 	}
 
 	Jsonifier& Jsonifier::operator=(EnumConverter&& data) noexcept {
@@ -468,25 +471,6 @@ namespace DiscordCoreAPI {
 
 	Jsonifier::Jsonifier(JsonType type) noexcept {
 		*this = type;
-	}
-
-	Jsonifier& Jsonifier::operator[](typename ObjectType::key_type key) const {
-		if (this->type == JsonType::Object) {
-			auto result = this->jsonValue.object->emplace(std::move(key), Jsonifier{});
-			return result.first->second;
-		}
-		throw std::runtime_error{ "Sorry, but that item-key could not be produced/accessed." };
-	}
-
-	Jsonifier& Jsonifier::operator[](uint64_t index) const {
-		if (this->type == JsonType::Array) {
-			if (index >= this->jsonValue.array->size()) {
-				this->jsonValue.array->resize(index + 1);
-			}
-
-			return this->jsonValue.array->operator[](index);
-		}
-		throw std::runtime_error{ "Sorry, but that index could not be produced/accessed." };
 	}
 
 	Jsonifier& Jsonifier::operator[](typename ObjectType::key_type key) {
@@ -810,10 +794,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void Jsonifier::appendBinaryExt(const std::string& bytes, uint32_t sizeNew) {
-		char newBuffer[5]{};
-		newBuffer[0] = static_cast<int8_t>(EtfType::Binary_Ext);
-		storeBits(newBuffer + 1, sizeNew);
-		this->writeString(newBuffer, std::size(newBuffer));
+		size_t currentLength = this->string.size();
+		this->string.append(5, ' ');
+		this->string[currentLength] = static_cast<uint8_t>(EtfType::Binary_Ext);
+		*reinterpret_cast<uint32_t*>(&this->string[currentLength + 1]) = sizeNew;
+		this->storeBits(reinterpret_cast<uint32_t*>(this->string.data() + currentLength + 1));
 		this->writeString(bytes.data(), bytes.size());
 	}
 
@@ -833,12 +818,12 @@ namespace DiscordCoreAPI {
 		this->writeString(newBuffer, 1 + 2 + encodedBytes);
 	}
 
-	void Jsonifier::appendNewFloatExt(const double FloatValue) {
-		char newBuffer[9]{};
-		newBuffer[0] = static_cast<unsigned char>(EtfType::New_Float_Ext);
-		const void* punner{ &FloatValue };
-		storeBits(newBuffer + 1, *static_cast<const uint64_t*>(punner));
-		this->writeString(newBuffer, std::size(newBuffer));
+	void Jsonifier::appendNewFloatExt(const double floatValue) {
+		size_t currentLength = this->string.size();
+		this->string.append(9, ' ');
+		this->string[currentLength] = static_cast<uint8_t>(EtfType::Integer_Ext);
+		*reinterpret_cast<uint64_t*>(&this->string[currentLength + 1]) = floatValue;
+		this->storeBits(reinterpret_cast<uint64_t*>(this->string.data() + currentLength + 1));
 	}
 
 	void Jsonifier::appendSmallIntegerExt(const uint8_t value) {
@@ -849,39 +834,44 @@ namespace DiscordCoreAPI {
 	}
 
 	void Jsonifier::appendIntegerExt(const uint32_t value) {
-		char newBuffer[5]{};
-		newBuffer[0] = static_cast<uint8_t>(EtfType::Integer_Ext);
-		storeBits(newBuffer + 1, value);
-		this->writeString(newBuffer, std::size(newBuffer));
+		size_t currentLength = this->string.size();
+		this->string.append(5, ' ');
+		this->string[currentLength] = static_cast<uint8_t>(EtfType::Integer_Ext);
+		*reinterpret_cast<uint32_t*>(&this->string[currentLength + 1]) = value;
+		this->storeBits(reinterpret_cast<uint32_t*>(this->string.data() + currentLength + 1));
 	}
 
 	void Jsonifier::appendListHeader(const uint32_t sizeNew) {
-		char newBuffer[5]{};
-		newBuffer[0] = static_cast<uint8_t>(EtfType::List_Ext);
-		storeBits(newBuffer + 1, sizeNew);
-		this->writeString(newBuffer, std::size(newBuffer));
+		size_t currentLength = this->string.size();
+		this->string.append(5, ' ');
+		this->string[currentLength] = static_cast<uint8_t>(EtfType::List_Ext);
+		*reinterpret_cast<uint32_t*>(&this->string[currentLength + 1]) = sizeNew;
+		this->storeBits(reinterpret_cast<uint32_t*>(this->string.data() + currentLength + 1));
 	}
 
 	void Jsonifier::appendMapHeader(const uint32_t sizeNew) {
-		char newBuffer[5]{};
-		newBuffer[0] = static_cast<uint8_t>(EtfType::Map_Ext);
-		storeBits(newBuffer + 1, sizeNew);
-		this->writeString(newBuffer, std::size(newBuffer));
+		size_t currentLength = this->string.size();
+		this->string.append(5, ' ');
+		this->string[currentLength] = static_cast<uint8_t>(EtfType::Map_Ext);
+		*reinterpret_cast<uint32_t*>(&this->string[currentLength + 1]) = sizeNew;
+		this->storeBits(reinterpret_cast<uint32_t*>(this->string.data() + currentLength + 1));
 	}
 
 	void Jsonifier::appendBool(bool data) {
 		if (data) {
-			char newBuffer[3]{};
-			newBuffer[0] = static_cast<uint8_t>(EtfType::Atom_Ext);
-			storeBits(newBuffer + 1, static_cast<uint16_t>(4));
-			this->writeString(newBuffer, std::size(newBuffer));
+			size_t currentLength = this->string.size();
+			this->string.append(3, ' ');
+			this->string[currentLength] = static_cast<uint8_t>(EtfType::Atom_Ext);
+			*reinterpret_cast<uint16_t*>(&this->string[currentLength + 1]) = 4;
+			this->storeBits(reinterpret_cast<uint32_t*>(this->string.data() + currentLength + 1));
 			this->writeString("true", 4);
 
 		} else {
-			char newBuffer[3]{};
-			newBuffer[0] = static_cast<uint8_t>(EtfType::Atom_Ext);
-			storeBits(newBuffer + 1, static_cast<uint16_t>(5));
-			this->writeString(newBuffer, std::size(newBuffer));
+			size_t currentLength = this->string.size();
+			this->string.append(3, ' ');
+			this->string[currentLength] = static_cast<uint8_t>(EtfType::Atom_Ext);
+			*reinterpret_cast<uint16_t*>(&this->string[currentLength + 1]) = 5;
+			this->storeBits(reinterpret_cast<uint32_t*>(this->string.data() + currentLength + 1));
 			this->writeString("false", 5);
 		}
 	}
@@ -897,10 +887,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void Jsonifier::appendNil() {
-		char newBuffer[3]{};
-		newBuffer[0] = static_cast<uint8_t>(EtfType::Atom_Ext);
-		storeBits(newBuffer + 1, static_cast<uint16_t>(3));
-		this->writeString(newBuffer, std::size(newBuffer));
+		size_t currentLength = this->string.size();
+		this->string.append(3, ' ');
+		this->string[currentLength] = static_cast<uint8_t>(EtfType::Atom_Ext);
+		*reinterpret_cast<uint16_t*>(&this->string[currentLength + 1]) = 3;
+		this->storeBits(reinterpret_cast<uint32_t*>(this->string.data() + currentLength + 1));
 		this->writeString("nil", 3);
 	}
 

@@ -347,7 +347,7 @@ namespace DiscordCoreAPI {
 			} else {
 				GuildMembers::cache[guildMember] = std::move(guildMember);
 			}
-			if (GuildMembers::cache.size() % 1000 == 0) {
+			if (GuildMembers::cache.size() % 10000 == 0) {
 				std::cout << "THE GUILDMEMBER COUNT: " << GuildMembers::cache.size() << std::endl;
 			}
 		}

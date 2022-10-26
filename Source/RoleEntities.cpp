@@ -361,7 +361,7 @@ namespace DiscordCoreAPI {
 			} else {
 				Roles::cache[role] = std::move(role);
 			}
-			if (Roles::cache.size() % 1000 == 0) {
+			if (Roles::cache.size() % 10000 == 0) {
 				std::cout << "ROLE COUNT: " << Roles::cache.size() << ", AFTER: " << stopWatchNew.totalTimePassed() << "s" << std::endl;
 			}
 		}
