@@ -60,7 +60,8 @@ namespace DiscordCoreAPI {
 			data["message"]["attachments"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
 		}
 		if (this->message.components.size() == 0) {
-			data["message"]["components"] = JsonType::Null;
+			data["message"]["components"].emplaceBack(ActionRowData{});
+			data["message"]["components"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->message.components) {
 				data["message"]["components"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
@@ -70,7 +71,8 @@ namespace DiscordCoreAPI {
 			data["message"]["sticker_ids"].emplaceBack(value);
 		}
 		if (this->message.embeds.size() == 0) {
-			data["message"]["embeds"] = JsonType::Null;
+			data["message"]["embeds"].emplaceBack(EmbedData{});
+			data["message"]["embeds"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->message.embeds) {
 				data["message"]["embeds"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());

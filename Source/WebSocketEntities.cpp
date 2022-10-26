@@ -470,8 +470,7 @@ namespace DiscordCoreInternal {
 								return false;
 							}
 						} else {
-							std::string data{ dataNew };
-							payload = data;
+							payload = dataNew;
 							payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 							if (this->parser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity())).get(value) ==
 								simdjson::error_code::SUCCESS) {
@@ -722,16 +721,16 @@ namespace DiscordCoreInternal {
 											if (DiscordCoreAPI::Guilds::doWeCacheGuilds) {
 												DiscordCoreAPI::Guilds::removeGuild(guild->id);
 											}
-											for (auto& value: guild->members) {
+											for (auto& valueNew: guild->members) {
 												DiscordCoreAPI::GuildMemberData guildMember =
-													DiscordCoreAPI::GuildMembers::getCachedGuildMember({ .guildMemberId = value, .guildId = guildId });
+													DiscordCoreAPI::GuildMembers::getCachedGuildMember({ .guildMemberId = valueNew, .guildId = guildId });
 												DiscordCoreAPI::GuildMembers::removeGuildMember(guildMember);
 											}
-											for (auto& value: guild->channels) {
-												DiscordCoreAPI::Channels::removeChannel(value);
+											for (auto& valueNew: guild->channels) {
+												DiscordCoreAPI::Channels::removeChannel(valueNew);
 											}
-											for (auto& value: guild->roles) {
-												DiscordCoreAPI::Roles::removeRole(value);
+											for (auto& valueNew: guild->roles) {
+												DiscordCoreAPI::Roles::removeRole(valueNew);
 											}
 											if (this->discordCoreClient->eventManager.onGuildDeletionEvent.functions.size() > 0) {
 												DiscordCoreAPI::OnGuildDeletionData dataPackage{ std::move(guild) };
@@ -762,8 +761,8 @@ namespace DiscordCoreInternal {
 										guild.id = dataPackage->updateData.guildId;
 										if (DiscordCoreAPI::Guilds::cache.contains(guild)) {
 											DiscordCoreAPI::Guilds::cache[guild].emoji.clear();
-											for (auto& value: dataPackage->updateData.emojis) {
-												DiscordCoreAPI::Guilds::cache[guild].emoji.emplace_back(value.id);
+											for (auto& valueNew: dataPackage->updateData.emojis) {
+												DiscordCoreAPI::Guilds::cache[guild].emoji.emplace_back(valueNew.id);
 											}
 										}
 										this->discordCoreClient->eventManager.onGuildEmojisUpdateEvent(*dataPackage);
@@ -777,8 +776,8 @@ namespace DiscordCoreInternal {
 										guild.id = dataPackage->updateData.guildId;
 										if (DiscordCoreAPI::Guilds::cache.contains(guild)) {
 											DiscordCoreAPI::Guilds::cache[guild].stickers.clear();
-											for (auto& value: dataPackage->updateData.stickers) {
-												DiscordCoreAPI::Guilds::cache[guild].stickers.emplace_back(value.id);
+											for (auto& valueNew: dataPackage->updateData.stickers) {
+												DiscordCoreAPI::Guilds::cache[guild].stickers.emplace_back(valueNew.id);
 											}
 										}
 										this->discordCoreClient->eventManager.onGuildStickersUpdateEvent(*dataPackage);
@@ -1117,14 +1116,15 @@ namespace DiscordCoreInternal {
 										break;
 									}
 									case 44: {
-										std::unique_ptr<DiscordCoreAPI::Message> message{ std::make_unique<DiscordCoreAPI::Message>() };
+										std::unique_ptr<DiscordCoreAPI::Message> messageNew{ std::make_unique<DiscordCoreAPI::Message>(
+											message.processJsonMessage<DiscordCoreAPI::Message>(value)) };
 										std::unique_ptr<DiscordCoreAPI::OnMessageCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnMessageCreationData>() };
-										dataPackage->message = *message;
+										dataPackage->message = *messageNew;
 										for (auto& [key, value]: DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::Message>::objectsBuffersMap) {
-											value->send(*message);
+											value->send(*messageNew);
 										}
 										this->discordCoreClient->eventManager.onMessageCreationEvent(*dataPackage);
-										if (message->content.find("!registerapplicationcommands") != std::string::npos) {
+										if (messageNew->content.find("!registerapplicationcommands") != std::string::npos) {
 											std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>() };
 											commandData->commandName = "registerapplicationcommands";
 											DiscordCoreAPI::CommandData commanddataNew = *commandData;
@@ -1640,9 +1640,9 @@ namespace DiscordCoreInternal {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
 				std::unique_lock lock{ this->mutex };
 				auto result = SSLClient::processIO(this->shardMap);
-				for (auto& value: result) {
+				for (auto& valueNew: result) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
-						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << static_cast<WebSocketSSLShard*>(value)->shard[0] << ","
+						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" << static_cast<WebSocketSSLShard*>(valueNew)->shard[0] << ","
 							 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}

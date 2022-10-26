@@ -829,17 +829,17 @@ namespace DiscordCoreInternal {
 			Gatewat_Unavailable = 502,///< There was not a gateway available to process your request. Wait a bit and retry.
 		};
 
-		std::unordered_map<HttpsResponseCodes, std::string> outputErrorValues{ { static_cast<HttpsResponseCodes>(200), "The request completed successfully." },
-			{ static_cast<HttpsResponseCodes>(201), "The entity was created successfully." },
-			{ static_cast<HttpsResponseCodes>(204), "The request completed successfully but returned no content." },
-			{ static_cast<HttpsResponseCodes>(304), "The entity was not modified (no action was taken)." },
-			{ static_cast<HttpsResponseCodes>(400), "The request was improperly formatted, or the server couldn't understand it." },
-			{ static_cast<HttpsResponseCodes>(401), "The Authorization header was missing or invalid." },
-			{ static_cast<HttpsResponseCodes>(403), "The Authorization token you passed did not have permission to the resource." },
-			{ static_cast<HttpsResponseCodes>(404), "The resource at the location specified doesn't exist." },
-			{ static_cast<HttpsResponseCodes>(405), "The HTTP method used is not valid for the location specified." },
-			{ static_cast<HttpsResponseCodes>(429), "You are being rate limited, see Rate Limits." },
-			{ static_cast<HttpsResponseCodes>(502), "There was not a gateway available to process your request.Wait a bit and retry." } };
+		std::unordered_map<HttpsResponseCodes, std::string> outputErrorValues{ { static_cast<HttpsResponseCodes>(200), "The request completed successfully" },
+			{ static_cast<HttpsResponseCodes>(201), "The entity was created successfully" },
+			{ static_cast<HttpsResponseCodes>(204), "The request completed successfully but returned no content" },
+			{ static_cast<HttpsResponseCodes>(304), "The entity was not modified (no action was taken)" },
+			{ static_cast<HttpsResponseCodes>(400), "The request was improperly formatted, or the server couldn't understand it" },
+			{ static_cast<HttpsResponseCodes>(401), "The Authorization header was missing or invalid" },
+			{ static_cast<HttpsResponseCodes>(403), "The Authorization token you passed did not have permission to the resource" },
+			{ static_cast<HttpsResponseCodes>(404), "The resource at the location specified doesn't exist" },
+			{ static_cast<HttpsResponseCodes>(405), "The HTTP method used is not valid for the location specified" },
+			{ static_cast<HttpsResponseCodes>(429), "You are being rate limited, see Rate Limits" },
+			{ static_cast<HttpsResponseCodes>(502), "There was not a gateway available to process your request.Wait a bit and retry" } };
 
 		HttpsResponseCodes value{};
 

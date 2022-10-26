@@ -3810,7 +3810,8 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (this->data.components.size() == 0) {
-			data["data"]["components"] = JsonType::Null;
+			data["data"]["components"].emplaceBack(ActionRowData{});
+			data["data"]["components"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->data.components) {
 				data["data"]["components"].emplaceBack(value);
@@ -3829,7 +3830,8 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (this->data.embeds.size() == 0) {
-			data["data"]["embeds"] = JsonType::Null;
+			data["data"]["embeds"].emplaceBack(EmbedData{});
+			data["data"]["embeds"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->data.embeds) {
 				data["data"]["embeds"].emplaceBack(value);

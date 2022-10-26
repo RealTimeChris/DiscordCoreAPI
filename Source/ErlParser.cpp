@@ -181,7 +181,7 @@ namespace DiscordCoreInternal {
 				return this->parseMapExt();
 			}
 			default: {
-				throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Unknown data type in ETF.\n\n" };
+				throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Unknown data type in ETF, the type: " + std::to_string(type) + "\n\n" };
 			}
 		}
 	}
@@ -211,7 +211,7 @@ namespace DiscordCoreInternal {
 		auto string = std::to_string(this->readBitsFromBuffer<uint32_t>());
 		this->writeCharacters(string.data(), string.size());
 	}
-
+	
 	void ErlParser::parseStringExt() {
 		this->writeCharacter('\"');
 		uint16_t length = this->readBitsFromBuffer<uint16_t>();
@@ -223,7 +223,7 @@ namespace DiscordCoreInternal {
 		}
 		this->writeCharacter('\"');
 	}
-
+	
 	void ErlParser::parseNewFloatExt() {
 		uint64_t value = readBitsFromBuffer<uint64_t>();
 		void* ptr{ &value };

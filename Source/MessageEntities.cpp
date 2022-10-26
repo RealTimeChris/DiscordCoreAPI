@@ -254,7 +254,8 @@ namespace DiscordCoreAPI {
 			data["message_reference"] = this->messageReference.operator DiscordCoreAPI::Jsonifier();
 		}
 		if (this->components.size() == 0) {
-			data["components"] = JsonType::Null;
+			data["components"].emplaceBack(ActionRowData{});
+			data["components"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->components) {
 				data["components"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
@@ -267,7 +268,8 @@ namespace DiscordCoreAPI {
 			data["sticker_ids"].emplaceBack(value);
 		}
 		if (this->embeds.size() == 0) {
-			data["embeds"] = JsonType::Null;
+			data["embeds"].emplaceBack(EmbedData{});
+			data["embeds"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->embeds) {
 				data["embeds"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
@@ -319,7 +321,8 @@ namespace DiscordCoreAPI {
 			data["attachments"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
 		}
 		if (this->components.size() == 0) {
-			data["components"] = JsonType::Null;
+			data["components"].emplaceBack(ActionRowData{});
+			data["components"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->components) {
 				data["components"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
@@ -329,7 +332,8 @@ namespace DiscordCoreAPI {
 			data["allowed_mentions"] = this->allowedMentions.operator DiscordCoreAPI::Jsonifier();
 		}
 		if (this->embeds.size() == 0) {
-			data["embeds"] = JsonType::Null;
+			data["embeds"].emplaceBack(EmbedData{});
+			data["embeds"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->embeds) {
 				data["embeds"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
