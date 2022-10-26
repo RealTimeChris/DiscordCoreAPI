@@ -461,8 +461,8 @@ namespace DiscordCoreAPI {
 	}
 
 	Jsonifier& Jsonifier::operator=(JsonType typeNew) noexcept {
-		this->type = typeNew;
 		this->setValue(this->type);
+		this->type = typeNew;
 		return *this;
 	}
 
