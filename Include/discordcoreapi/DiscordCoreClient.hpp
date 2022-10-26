@@ -62,32 +62,32 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll SIGTERMError : public std::runtime_error {
 	  public:
-		SIGTERMError(std::string string);
+		SIGTERMError(const std::string& string);
 	};
 
 	class DiscordCoreAPI_Dll SIGSEGVError : public std::runtime_error {
 	  public:
-		SIGSEGVError(std::string string);
+		SIGSEGVError(const std::string& string);
 	};
 
 	class DiscordCoreAPI_Dll SIGINTError : public std::runtime_error {
 	  public:
-		SIGINTError(std::string string);
+		SIGINTError(const std::string& string);
 	};
 
 	class DiscordCoreAPI_Dll SIGILLError : public std::runtime_error {
 	  public:
-		SIGILLError(std::string string);
+		SIGILLError(const std::string& string);
 	};
 
 	class DiscordCoreAPI_Dll SIGABRTError : public std::runtime_error {
 	  public:
-		SIGABRTError(std::string string);
+		SIGABRTError(const std::string& string);
 	};
 
 	class DiscordCoreAPI_Dll SIGFPEError : public std::runtime_error {
 	  public:
-		SIGFPEError(std::string string);
+		SIGFPEError(const std::string& string);
 	};
 
 	using SoundCloudAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
@@ -156,8 +156,8 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::unordered_map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
-		StopWatch<std::chrono::milliseconds> connectionStopWatch{ 5250ms };
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
+		StopWatch<std::chrono::milliseconds> connectionStopWatch{ 5250ms };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
 	#ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};

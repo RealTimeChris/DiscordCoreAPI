@@ -85,17 +85,17 @@ namespace DiscordCoreAPI {
 		Globals::doWeQuit.store(true);
 	}
 
-	SIGTERMError::SIGTERMError(std::string string) : std::runtime_error(string){};
+	SIGTERMError::SIGTERMError(const std::string& string) : std::runtime_error(string){};
 
-	SIGSEGVError::SIGSEGVError(std::string string) : std::runtime_error(string){};
+	SIGSEGVError::SIGSEGVError(const std::string& string) : std::runtime_error(string){};
 
-	SIGINTError::SIGINTError(std::string string) : std::runtime_error(string){};
+	SIGINTError::SIGINTError(const std::string& string) : std::runtime_error(string){};
 
-	SIGILLError::SIGILLError(std::string string) : std::runtime_error(string){};
+	SIGILLError::SIGILLError(const std::string& string) : std::runtime_error(string){};
 
-	SIGABRTError::SIGABRTError(std::string string) : std::runtime_error(string){};
+	SIGABRTError::SIGABRTError(const std::string& string) : std::runtime_error(string){};
 
-	SIGFPEError::SIGFPEError(std::string string) : std::runtime_error(string){};
+	SIGFPEError::SIGFPEError(const std::string& string) : std::runtime_error(string){};
 
 	void signalHandler(int32_t value) {
 		try {

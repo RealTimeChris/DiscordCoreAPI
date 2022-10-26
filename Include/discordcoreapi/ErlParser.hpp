@@ -41,11 +41,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll ErlParser {
 	  public:
-		ErlParser() noexcept {};
-
 		std::string& parseEtfToJson(std::string_view dataToParse);
-
-		~ErlParser(){};
 
 	  protected:
 		std::array<char, 1024 * 16> stringBuffer{};
@@ -72,6 +68,8 @@ namespace DiscordCoreInternal {
 		void singleValueETFToJson();
 
 		void parseSmallIntegerExt();
+
+		void parseSmallAtomExt();
 
 		void parseNewFloatExt();
 

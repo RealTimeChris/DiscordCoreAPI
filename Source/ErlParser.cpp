@@ -174,6 +174,9 @@ namespace DiscordCoreInternal {
 			case DiscordCoreAPI::EtfType::Small_Big_Ext: {
 				return this->parseSmallBigExt();
 			}
+			case DiscordCoreAPI::EtfType::Small_Atom_Ext: {
+				return this->parseSmallAtomExt();
+			}
 			case DiscordCoreAPI::EtfType::Map_Ext: {
 				return this->parseMapExt();
 			}
@@ -280,6 +283,11 @@ namespace DiscordCoreInternal {
 
 	void ErlParser::parseNilExt() {
 		this->writeCharacters("null", 4);
+	}
+
+	void ErlParser::parseSmallAtomExt() {
+		uint32_t length = this->readBitsFromBuffer<uint8_t>();
+		this->writeCharactersFromBuffer(length);
 	}
 
 	void ErlParser::parseMapExt() {
