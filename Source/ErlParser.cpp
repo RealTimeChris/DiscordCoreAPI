@@ -186,7 +186,7 @@ namespace DiscordCoreInternal {
 	void ErlParser::parseListExt() {
 		uint32_t length = this->readBitsFromBuffer<uint32_t>();
 		this->writeCharacter('[');
-		if (static_cast<uint64_t>(this->offSet) + length > this->dataBuffer.size()){
+		if (static_cast<uint64_t>(this->offSet) + length > this->dataBuffer.size()) {
 			throw ErlParseError{ "ErlPacker::parseStringAsList() Error: List reading past end of buffer.\n\n" };
 		}
 		for (uint16_t x = 0; x < length; ++x) {

@@ -209,8 +209,8 @@ namespace DiscordCoreAPI {
 	}
 
 	void parseObject(simdjson::ondemand::value jsonData, PresenceUpdateFlags& data) {
-		uint8_t 
-			
+		uint8_t
+
 			dataNew = static_cast<uint8_t>(data);
 
 		auto stringNew = getString(jsonData, "dekstop");

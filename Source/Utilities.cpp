@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Snowflake::Snowflake(const std::string&other) noexcept {
+	Snowflake::Snowflake(const std::string& other) noexcept {
 		*this = other;
 	}
 
@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		return std::to_string(this->id);
 	}
 
-	Snowflake::operator uint64_t()const {
+	Snowflake::operator uint64_t() const {
 		return this->id;
 	}
 
@@ -970,7 +970,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)(void)) {
+	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void )) {
 		outputSttream << function();
 		return outputSttream;
 	}

@@ -325,7 +325,8 @@ namespace DiscordCoreInternal {
 			return returnValue;
 		}
 
-		if (auto returnValueNew = poll(&readWriteSet.thePolls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.thePolls.size()), 1); returnValueNew == SOCKET_ERROR) {
+		if (auto returnValueNew = poll(&readWriteSet.thePolls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.thePolls.size()), 1);
+			returnValueNew == SOCKET_ERROR) {
 			for (auto& [key, value]: readWriteSet.thePolls) {
 				if (readWriteSet.thePolls[key].revents & POLLERR || readWriteSet.thePolls[key].revents & POLLHUP || readWriteSet.thePolls[key].revents & POLLNVAL) {
 					returnValue.emplace_back(shardMap[key].get());
@@ -616,7 +617,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 		}
-		
+
 #ifdef _WIN32
 		u_long value02{ 1 };
 		if (ioctlsocket(this->socket, FIONBIO, &value02)) {
@@ -638,7 +639,7 @@ namespace DiscordCoreInternal {
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->socket;
 		readWriteSet.events = POLLIN | POLLOUT;
-		
+
 		ProcessIOResult result{ ProcessIOResult::Error };
 		if (auto returnValue = poll(&readWriteSet, 1, 1); returnValue == SOCKET_ERROR) {
 			return ProcessIOResult::Error;
@@ -740,7 +741,7 @@ namespace DiscordCoreInternal {
 #else
 			uint32_t intSize{ sizeof(this->theStreamTargetAddress) };
 #endif
-			
+
 			int32_t readBytes{};
 			do {
 				readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(bytesToRead), 0,
@@ -755,7 +756,7 @@ namespace DiscordCoreInternal {
 					returnValue = true;
 				}
 			} while (readBytes > 0);
-		}		
+		}
 		return returnValue;
 	}
 

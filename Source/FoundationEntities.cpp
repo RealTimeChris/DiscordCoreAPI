@@ -3546,8 +3546,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
-		int32_t maxValues, int32_t minValues) {
+	RespondToInputEventData& RespondToInputEventData::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
+		const std::string& placeholder, int32_t maxValues, int32_t minValues) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3571,8 +3571,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
-		bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+	RespondToInputEventData& RespondToInputEventData::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
+		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
 		this->title = topTitleNew;
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {
@@ -3635,7 +3635,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(Jsonifier value, const std::string& theName, std::unordered_map<std::string, std::string> theNameLocalizations) {
+	RespondToInputEventData& RespondToInputEventData::setAutoCompleteChoice(Jsonifier value, const std::string& theName,
+		std::unordered_map<std::string, std::string> theNameLocalizations) {
 		ApplicationCommandOptionChoiceData choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name = theName;
@@ -3672,8 +3673,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName,
-		Snowflake emojiId, const std::string& url) {
+	MessageResponseBase& MessageResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3698,8 +3699,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
-		int32_t minValues) {
+	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
+		int32_t maxValues, int32_t minValues) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3723,8 +3724,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
-		int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+	MessageResponseBase& MessageResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
+		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
 		this->title = topTitleNew;
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {
@@ -3870,8 +3871,7 @@ namespace DiscordCoreAPI {
 			this->optionsArgs.values.emplace("target_id",
 				JsonStringValue{ .value = inputEventData.interactionData->data.messageInteractionData.targetId, .type = JsonType::String });
 		} else if (inputEventData.interactionData->data.userInteractionData.targetId != 0) {
-			this->optionsArgs.values.emplace("target_id",
-				JsonStringValue{ .value = inputEventData.interactionData->data.userInteractionData.targetId, .type = JsonType::String });
+			this->optionsArgs.values.emplace("target_id", JsonStringValue{ .value = inputEventData.interactionData->data.userInteractionData.targetId, .type = JsonType::String });
 		}
 		this->eventData = inputEventData;
 		for (auto& value: this->eventData.interactionData->data.applicationCommandData.options) {
@@ -3891,8 +3891,8 @@ namespace DiscordCoreAPI {
 		this->discordCoreClient = discordCoreClientNew;
 	}
 
-	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex, const std::vector<EmbedData>& messageEmbeds,
-		bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
+	MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,
+		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
 		uint32_t newCurrentPageIndex = currentPageIndex;
 		std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };

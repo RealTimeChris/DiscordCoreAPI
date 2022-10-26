@@ -102,8 +102,7 @@ namespace DiscordCoreAPI {
 			emoji = dataPackage.emojiName;
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
-		workload.relativePath =
-			"/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + urlEncode(emoji) + "/@me";
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + urlEncode(emoji) + "/@me";
 		workload.callStack = "Reactions::createReactionAsync()";
 		co_return Reactions::httpsClient->submitWorkloadAndGetResult<Reaction>(workload);
 	}
@@ -118,8 +117,7 @@ namespace DiscordCoreAPI {
 			emoji = dataPackage.emojiName;
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath =
-			"/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + urlEncode(emoji) + "/@me";
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + urlEncode(emoji) + "/@me";
 		workload.callStack = "Reactions::deleteOwnReactionAsync()";
 		co_return Reactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -135,8 +133,7 @@ namespace DiscordCoreAPI {
 			emoji = dataPackage.emojiName;
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + urlEncode(emoji) +
-			"/" + dataPackage.userId;
+		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + urlEncode(emoji) + "/" + dataPackage.userId;
 		workload.callStack = "Reactions::deleteUserReactionAsync()";
 		co_return Reactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}

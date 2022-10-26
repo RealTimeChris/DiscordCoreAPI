@@ -117,14 +117,14 @@ namespace DiscordCoreAPI {
 			uint32_t shardId = (dataPackage.guildId.operator size_t() >> 22) % this->baseSocketAgent->configManager->getTotalShardCount();
 			uint32_t basesocketAgentIndex{ shardId % this->baseSocketAgent->configManager->getTotalShardCount() };
 			auto serializer = dataPackage.operator DiscordCoreAPI::Jsonifier();
-			if (static_cast<DiscordCoreInternal::WebSocketOpCode>(this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->dataOpCode) ==
+			if (static_cast<DiscordCoreInternal::WebSocketOpCode>(
+					this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->dataOpCode) ==
 				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 				serializer.refreshString(JsonifierSerializeType::Etf);
 			} else {
 				serializer.refreshString(JsonifierSerializeType::Json);
 			}
-			string = this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->prepMessageData(
-				serializer.operator std::string(),
+			string = this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->prepMessageData(serializer.operator std::string(),
 				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get())
 					->dataOpCode);
 			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string, true);
@@ -144,8 +144,7 @@ namespace DiscordCoreAPI {
 			} else {
 				serializer.refreshString(JsonifierSerializeType::Json);
 			}
-			string = this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->prepMessageData(
-				serializer.operator std::string(),
+			string = this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->prepMessageData(serializer.operator std::string(),
 				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get())
 					->dataOpCode);
 			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string, true);

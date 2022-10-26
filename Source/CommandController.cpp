@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 			if (!functionPointer.get()) {
 				co_return;
 			}
-			
+
 			functionPointer->execute(theArgsNew);
 			co_return;
 		} catch (...) {

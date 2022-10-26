@@ -83,8 +83,7 @@ namespace DiscordCoreAPI {
 		if (data.data.size() == 0) {
 			data.data.resize(23040);
 		}
-		data.sampleCount =
-			opus_decode(*this, reinterpret_cast<const unsigned char*>(dataToDecode.data()), static_cast<opus_int32>(dataToDecode.size()), data.data.data(), 5760, 0);
+		data.sampleCount = opus_decode(*this, reinterpret_cast<const unsigned char*>(dataToDecode.data()), static_cast<opus_int32>(dataToDecode.size()), data.data.data(), 5760, 0);
 		return;
 	}
 

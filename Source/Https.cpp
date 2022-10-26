@@ -578,8 +578,8 @@ namespace DiscordCoreInternal {
 			}
 			if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
 				if (this->configManager->doWePrintHttpsSuccessMessages()) {
-					cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << static_cast<std::string>(returnData.responseCode) << DiscordCoreAPI::reset()
-						 << endl
+					cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << static_cast<std::string>(returnData.responseCode)
+						 << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
 			} else {

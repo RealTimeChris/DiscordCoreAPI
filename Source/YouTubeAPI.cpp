@@ -196,7 +196,8 @@ namespace DiscordCoreInternal {
 		HttpsResponseData responseData01 = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
 		std::string apiKey{};
 		if (responseData01.responseMessage.find("\"innertubeApiKey\":\"") != std::string::npos) {
-			std::string newString = responseData01.responseMessage.substr(responseData01.responseMessage.find("\"innertubeApiKey\":\"") + std::string{ "\"innertubeApiKey\":\"" }.size());
+			std::string newString =
+				responseData01.responseMessage.substr(responseData01.responseMessage.find("\"innertubeApiKey\":\"") + std::string{ "\"innertubeApiKey\":\"" }.size());
 			std::string apiKeyNew = newString.substr(0, newString.find_first_of('"'));
 			apiKey = apiKeyNew;
 		}

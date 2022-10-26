@@ -136,7 +136,6 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll Snowflake {
 	  public:
-
 		Snowflake() noexcept = default;
 
 		Snowflake& operator=(const std::string&) noexcept;
@@ -144,7 +143,7 @@ namespace DiscordCoreAPI {
 
 		Snowflake& operator=(const uint64_t) noexcept;
 		Snowflake(const uint64_t) noexcept;
-		
+
 		operator std::string() noexcept;
 
 		explicit operator uint64_t();
@@ -152,7 +151,7 @@ namespace DiscordCoreAPI {
 		operator std::string() const noexcept;
 
 		explicit operator uint64_t() const;
-		
+
 		friend std::string operator+(const std::string&, const Snowflake&);
 
 		friend std::string operator+(const char*, const Snowflake&);
@@ -161,7 +160,6 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		uint64_t id{};
-		
 	};
 
 	inline std::string operator+(const char* lhs, const Snowflake& rhs) {
@@ -268,7 +266,7 @@ namespace DiscordCoreAPI {
 		Single_Byte = 1,
 		Double_Byte = 2,
 		Quad_Byte = 4,
-		Quint_Byte = 8,
+		Octa_Byte = 8,
 	};
 
 	struct DiscordCoreAPI_Dll ReverseByteOrderLoad {
@@ -301,7 +299,7 @@ namespace DiscordCoreAPI {
 						this->ptrs[x] = reinterpret_cast<uint8_t*>(ptr) + x;
 					}
 					this->currentValueIndex += 8;
-					this->types.push_back(ReverseByteOrderType::Quint_Byte);
+					this->types.push_back(ReverseByteOrderType::Octa_Byte);
 					break;
 				}
 			}
@@ -381,7 +379,7 @@ namespace DiscordCoreAPI {
 					}
 					break;
 				}
-				case ReverseByteOrderType::Quint_Byte: {
+				case ReverseByteOrderType::Octa_Byte: {
 					index = this->currentReversalIndexGlobal - this->currentReversalIndexLocal - 1 + 8;
 					this->currentReversalIndexLocal++;
 					if (this->currentReversalIndexLocal == 8) {
@@ -875,17 +873,17 @@ namespace DiscordCoreInternal {
 			We_Do_Not_Reconnect = Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
 		};
 
-		std::unordered_map<uint16_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset }, { 1000, WebSocketCloseCode::Normal_Close }, { 4000, WebSocketCloseCode::Unknown_Error },
-			{ 4001, WebSocketCloseCode::Unknown_Opcode }, { 4002, WebSocketCloseCode::Decode_Error }, { 4003, WebSocketCloseCode::Not_Authenticated },
-			{ 4004, WebSocketCloseCode::Authentication_Failed }, { 4005, WebSocketCloseCode::Already_Authenticated }, { 4007, WebSocketCloseCode::Invalid_Seq },
-			{ 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed }, { 4010, WebSocketCloseCode::Invalid_Shard },
-			{ 4011, WebSocketCloseCode::Sharding_Required }, { 4012, WebSocketCloseCode::Invalid_API_Version }, { 4013, WebSocketCloseCode::Invalid_Intent },
-			{ 4014, WebSocketCloseCode::Disallowed_Intent } };
+		std::unordered_map<uint16_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset }, { 1000, WebSocketCloseCode::Normal_Close },
+			{ 4000, WebSocketCloseCode::Unknown_Error }, { 4001, WebSocketCloseCode::Unknown_Opcode }, { 4002, WebSocketCloseCode::Decode_Error },
+			{ 4003, WebSocketCloseCode::Not_Authenticated }, { 4004, WebSocketCloseCode::Authentication_Failed }, { 4005, WebSocketCloseCode::Already_Authenticated },
+			{ 4007, WebSocketCloseCode::Invalid_Seq }, { 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed },
+			{ 4010, WebSocketCloseCode::Invalid_Shard }, { 4011, WebSocketCloseCode::Sharding_Required }, { 4012, WebSocketCloseCode::Invalid_API_Version },
+			{ 4013, WebSocketCloseCode::Invalid_Intent }, { 4014, WebSocketCloseCode::Disallowed_Intent } };
 
 		std::unordered_map<WebSocketCloseCode, std::string> outputErrorValues{ {
-																WebSocketCloseCode::Unknown_Error,
-																"We're not sure what went wrong.",
-															},
+																				   WebSocketCloseCode::Unknown_Error,
+																				   "We're not sure what went wrong.",
+																			   },
 			{ WebSocketCloseCode::Unknown_Opcode, "You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!" },
 			{ WebSocketCloseCode::Decode_Error, "You sent an invalid payload to Discord. Don't do that!" },
 			{ WebSocketCloseCode::Not_Authenticated, "You sent us a payload prior to identifying." },
@@ -942,8 +940,8 @@ namespace DiscordCoreInternal {
 			{ 4012, VoiceWebSocketCloseCode::Unknown_Protocol }, { 4014, VoiceWebSocketCloseCode ::Disconnected }, { 4015, VoiceWebSocketCloseCode ::Voice_Server_Crashed },
 			{ 4016, VoiceWebSocketCloseCode ::Unknown_Encryption_Mode } };
 
-		std::unordered_map<VoiceWebSocketCloseCode, std::string> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "Unset." }, { VoiceWebSocketCloseCode::Normal_Close, "Normal close." },
-			{ VoiceWebSocketCloseCode::Unknown_Opcode, "You sent an invalid opcode." },
+		std::unordered_map<VoiceWebSocketCloseCode, std::string> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "Unset." },
+			{ VoiceWebSocketCloseCode::Normal_Close, "Normal close." }, { VoiceWebSocketCloseCode::Unknown_Opcode, "You sent an invalid opcode." },
 			{ VoiceWebSocketCloseCode::Failed_To_Decode, "You sent an invalid payload in your identifying to the Gateway." },
 			{ VoiceWebSocketCloseCode::Not_Authenticated, "You sent a payload before identifying with the Gateway." },
 			{ VoiceWebSocketCloseCode::Authentication_Failed, "The token you sent in your identify payload is incorrect." },
@@ -1082,7 +1080,7 @@ namespace DiscordCoreAPI {
 	template<typename RTy, typename... ArgTypes> class Event;
 	template<typename RTy> class CoRoutine;
 
-	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)(void));
+	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void ));
 
 	/// Input event response types. \brief Input event response types.
 	enum class InputEventResponseType : int8_t {
@@ -1589,7 +1587,8 @@ namespace DiscordCoreAPI {
 			this->getISO8601TimeStamp(theFormatNew);
 		}
 
-		static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd, TimeFormat theFormatNew) {
+		static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd,
+			TimeFormat theFormatNew) {
 			std::time_t result = std::time(nullptr);
 			int32_t secondsPerMinute{ 60 };
 			int32_t minutesPerHour{ 60 };

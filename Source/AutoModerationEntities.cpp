@@ -130,9 +130,9 @@ namespace DiscordCoreAPI {
 				ActionData newData{ value.value() };
 				this->actions.emplace_back(std::move(newData));
 			}
-		if (jsonObjectData["exempt_roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {		}
+		}
 
-
+		if (jsonObjectData["exempt_roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->exemptRoles.emplace_back(Snowflake{ value.get_uint64().value() });
 			}

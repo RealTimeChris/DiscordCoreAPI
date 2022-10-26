@@ -506,8 +506,8 @@ namespace DiscordCoreInternal {
 										DiscordCoreAPI::UserData user{ data.user };
 										this->discordCoreClient->currentUser = DiscordCoreAPI::BotUser{ user,
 											this->discordCoreClient
-												->baseSocketAgentsMap[static_cast<int32_t>(
-													floor(static_cast<int32_t>(this->shard[0]) % static_cast<int32_t>(this->discordCoreClient->configManager.getTotalShardCount())))]
+												->baseSocketAgentsMap[static_cast<int32_t>(floor(
+													static_cast<int32_t>(this->shard[0]) % static_cast<int32_t>(this->discordCoreClient->configManager.getTotalShardCount())))]
 												.get() };
 										DiscordCoreAPI::Users::insertUser(std::move(user));
 										this->currentReconnectTries = 0;
@@ -537,7 +537,9 @@ namespace DiscordCoreInternal {
 										break;
 									}
 									case 5: {
-										std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnAutoModerationRuleUpdateData>() };
+										std::unique_ptr<DiscordCoreAPI::OnAutoModerationRuleUpdateData> dataPackage{
+											std::make_unique<DiscordCoreAPI::OnAutoModerationRuleUpdateData>()
+										};
 										dataPackage->theRule = DiscordCoreAPI::AutoModerationRule{ message.processJsonMessage<DiscordCoreAPI::AutoModerationRule>(value) };
 										this->discordCoreClient->eventManager.onAutoModerationRuleUpdateEvent(*dataPackage);
 										break;
@@ -657,7 +659,8 @@ namespace DiscordCoreInternal {
 									}
 									case 15: {
 										std::unique_ptr<DiscordCoreAPI::OnThreadListSyncData> dataPackage{ std::make_unique<DiscordCoreAPI::OnThreadListSyncData>() };
-										dataPackage->threadListSyncData = DiscordCoreAPI::ThreadListSyncData{ message.processJsonMessage<DiscordCoreAPI::ThreadListSyncData>(value) };
+										dataPackage->threadListSyncData =
+											DiscordCoreAPI::ThreadListSyncData{ message.processJsonMessage<DiscordCoreAPI::ThreadListSyncData>(value) };
 										this->discordCoreClient->eventManager.onThreadListSyncEvent(*dataPackage);
 										break;
 									}
@@ -782,7 +785,9 @@ namespace DiscordCoreInternal {
 										break;
 									}
 									case 25: {
-										std::unique_ptr<DiscordCoreAPI::OnGuildIntegrationsUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnGuildIntegrationsUpdateData>() };
+										std::unique_ptr<DiscordCoreAPI::OnGuildIntegrationsUpdateData> dataPackage{
+											std::make_unique<DiscordCoreAPI::OnGuildIntegrationsUpdateData>()
+										};
 										dataPackage->guildId = DiscordCoreAPI::getId(value["d"], "guild_id");
 										this->discordCoreClient->eventManager.onGuildIntegrationsUpdateEvent(*dataPackage);
 										break;
@@ -1011,7 +1016,9 @@ namespace DiscordCoreInternal {
 											case DiscordCoreAPI::InteractionType::Application_Command: {
 												eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 												*eventData->interactionData = *interactionData;
-												std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
+												std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
+													std::make_unique<DiscordCoreAPI::OnInteractionCreationData>()
+												};
 												dataPackage->interactionData = *interactionData;
 												std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
 												DiscordCoreAPI::CommandData commanddataNew = *commandData;
@@ -1063,7 +1070,9 @@ namespace DiscordCoreInternal {
 											case DiscordCoreAPI::InteractionType::Modal_Submit: {
 												eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 												*eventData->interactionData = *interactionData;
-												std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
+												std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
+													std::make_unique<DiscordCoreAPI::OnInteractionCreationData>()
+												};
 												dataPackage->interactionData = *interactionData;
 												std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
 													std::make_unique<DiscordCoreAPI::OnInputEventCreationData>()
@@ -1078,7 +1087,9 @@ namespace DiscordCoreInternal {
 											case DiscordCoreAPI::InteractionType::Application_Command_Autocomplete: {
 												eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 												*eventData->interactionData = *interactionData;
-												std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{ std::make_unique<DiscordCoreAPI::OnInteractionCreationData>() };
+												std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
+													std::make_unique<DiscordCoreAPI::OnInteractionCreationData>()
+												};
 												dataPackage->interactionData = *interactionData;
 												std::unique_ptr<DiscordCoreAPI::OnAutoCompleteEntryData> autocompleteEntryData{
 													std::make_unique<DiscordCoreAPI::OnAutoCompleteEntryData>()
@@ -1160,7 +1171,8 @@ namespace DiscordCoreInternal {
 									}
 									case 49: {
 										std::unique_ptr<DiscordCoreAPI::OnReactionRemoveData> dataPackage{ std::make_unique<DiscordCoreAPI::OnReactionRemoveData>() };
-										dataPackage->reactionRemoveData = DiscordCoreAPI::ReactionRemoveData{ message.processJsonMessage<DiscordCoreAPI::ReactionRemoveData>(value) };
+										dataPackage->reactionRemoveData =
+											DiscordCoreAPI::ReactionRemoveData{ message.processJsonMessage<DiscordCoreAPI::ReactionRemoveData>(value) };
 										this->discordCoreClient->eventManager.onReactionRemoveEvent(*dataPackage);
 										break;
 									}
@@ -1215,8 +1227,7 @@ namespace DiscordCoreInternal {
 										if (DiscordCoreAPI::Guilds::cache.contains(guild)) {
 											for (uint64_t x = 0; x < DiscordCoreAPI::Guilds::cache[guild].stageInstances.size(); ++x) {
 												if (DiscordCoreAPI::Guilds::cache[guild].stageInstances[x] == dataPackage->stageInstance.id) {
-													DiscordCoreAPI::Guilds::cache[guild].stageInstances.erase(
-														DiscordCoreAPI::Guilds::cache[guild].stageInstances.begin() + x);
+													DiscordCoreAPI::Guilds::cache[guild].stageInstances.erase(DiscordCoreAPI::Guilds::cache[guild].stageInstances.begin() + x);
 												}
 											}
 										}
