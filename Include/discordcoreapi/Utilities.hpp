@@ -180,44 +180,6 @@ namespace DiscordCoreAPI {
 		return lhs.id == rhs.id;
 	}
 
-	template<typename ReturnType> void reverseByteOrder(ReturnType* net) {
-		switch (sizeof(ReturnType)) {
-			case 1: {
-				return;
-			}
-			case 2: {
-				__m256i value{ _mm256_set1_epi16(*net) };
-				__m256i indexes{ _mm256_set_epi8(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1) };
-				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
-				*net = *reinterpret_cast<uint16_t*>(&result);
-				return;
-			}
-			case 4: {
-				__m256i value{ _mm256_set1_epi32(*net) };
-				__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3) };
-				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
-				*net = *reinterpret_cast<uint32_t*>(&result);
-				return;
-			}
-			case 8: {
-				__m256i value{ _mm256_set1_epi64x(*net) };
-				__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7) };
-				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
-				*net = *reinterpret_cast<uint64_t*>(&result);
-				return;
-			}
-		}
-		return;
-	}
-
-	template<typename ReturnType> void storeBits(char* to, ReturnType num) {
-		const uint8_t byteSize{ 8 };
-		reverseByteOrder<ReturnType>(&num);
-		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
-			to[x] = static_cast<uint8_t>(num >> (byteSize * x));
-		}
-	}
-
 	template<typename TimeType> class StopWatch {
 	  public:
 		StopWatch() = delete;
@@ -262,152 +224,44 @@ namespace DiscordCoreAPI {
 		std::atomic_uint64_t startTime{ 0 };
 	};
 
-	enum class ReverseByteOrderType {
-		Single_Byte = 1,
-		Double_Byte = 2,
-		Quad_Byte = 4,
-		Octa_Byte = 8,
-	};
-
-	struct DiscordCoreAPI_Dll ReverseByteOrderLoad {
-		template<typename Ty> void addPointer(Ty* ptr) {
-			switch (sizeof(Ty)) {
-				case 1: {
-					this->ptrs[this->currentValueIndex] = reinterpret_cast<uint8_t*>(ptr);
-					this->currentValueIndex += 1;
-					this->types.push_back(ReverseByteOrderType::Single_Byte);
-					break;
-				}
-				case 2: {
-					for (size_t x = 0; x < 2; ++x) {
-						this->ptrs[this->currentValueIndex + x] = reinterpret_cast<uint8_t*>(ptr) + x;
-					}
-					this->currentValueIndex += 2;
-					this->types.push_back(ReverseByteOrderType::Double_Byte);
-					break;
-				}
-				case 4: {
-					for (size_t x = 0; x < 4; ++x) {
-						this->ptrs[this->currentValueIndex + x] = reinterpret_cast<uint8_t*>(ptr) + x;
-					}
-					this->currentValueIndex += 4;
-					this->types.push_back(ReverseByteOrderType::Quad_Byte);
-					break;
-				}
-				case 8: {
-					for (size_t x = 0; x < 8; ++x) {
-						this->ptrs[x] = reinterpret_cast<uint8_t*>(ptr) + x;
-					}
-					this->currentValueIndex += 8;
-					this->types.push_back(ReverseByteOrderType::Octa_Byte);
-					break;
-				}
+	template<typename ReturnType> void reverseByteOrder(ReturnType* net) {
+		switch (sizeof(ReturnType)) {
+			case 1: {
+				return;
+			}
+			case 2: {
+				__m256i value{ _mm256_set1_epi16(*net) };
+				__m256i indexes{ _mm256_set_epi8(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1) };
+				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
+				*net = *reinterpret_cast<uint16_t*>(&result);
+				return;
+			}
+			case 4: {
+				__m256i value{ _mm256_set1_epi32(*net) };
+				__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3) };
+				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
+				*net = *reinterpret_cast<uint32_t*>(&result);
+				return;
+			}
+			case 8: {
+				__m256i value{ _mm256_set1_epi64x(*net) };
+				__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7) };
+				__m256i result{ _mm256_shuffle_epi8(value, indexes) };
+				*net = *reinterpret_cast<uint64_t*>(&result);
+				return;
 			}
 		}
+		return;
+	}
 
-		bool areWeFull() {
-			if (this->getCurrentlyUsedSpace() >= 32) {
-				return true;
-			} else {
-				return false;
-			}
+	template<typename ReturnType> void storeBits(char* to, ReturnType num) {
+		const uint8_t byteSize{ 8 };
+		reverseByteOrder<ReturnType>(&num);
+		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
+			to[x] = static_cast<uint8_t>(num >> (byteSize * x));
 		}
-
-		void runExecution() {
-			this->packEmptySlots();
-			this->currentValueIndex = 0;
-			__m256i value{ _mm256_set_epi8(this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(),
-				this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(),
-				this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(),
-				this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(),
-				this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue(), this->getNextValue()) };
-			__m256i indexes{ _mm256_set_epi8(this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(),
-				this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(),
-				this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(),
-				this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(),
-				this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex(), this->getNextIndex()) };
-			__m256i result{ _mm256_shuffle_epi8(value, indexes) };
-			for (size_t x = 0; x < 32; ++x) {
-				*this->ptrs[x] = *reinterpret_cast<uint8_t*>((&result) + x);
-			}
-		}
-
-	  protected:
-		std::vector<ReverseByteOrderType> types{};
-		size_t currentReversalIndexGlobal{};
-		size_t currentReversalIndexLocal{};
-		std::array<uint8_t*, 32> ptrs{};
-		size_t currentValueIndex{};
-		size_t currentTypeIndex{};
-		uint8_t spaceFiller{};
-
-		size_t getCurrentlyUsedSpace() {
-			size_t size{};
-			for (auto& value: this->types) {
-				size += static_cast<size_t>(value);
-			}
-			return size;
-		}
-
-		size_t getNextIndex() {
-			size_t index{};
-			switch (this->types[this->currentTypeIndex]) {
-				case ReverseByteOrderType::Single_Byte: {
-					index = this->currentReversalIndexGlobal - this->currentReversalIndexLocal;
-					this->currentReversalIndexLocal = 0;
-					this->currentReversalIndexGlobal++;
-					this->currentTypeIndex++;
-					break;
-				}
-				case ReverseByteOrderType::Double_Byte: {
-					index = this->currentReversalIndexGlobal - this->currentReversalIndexLocal - 1 + 2;
-					this->currentReversalIndexLocal++;
-					if (this->currentReversalIndexLocal == 2) {
-						this->currentReversalIndexLocal = 0;
-						this->currentReversalIndexGlobal += 2;
-						this->currentTypeIndex++;
-					}
-					break;
-				}
-				case ReverseByteOrderType::Quad_Byte: {
-					index = this->currentReversalIndexGlobal - this->currentReversalIndexLocal - 1 + 4;
-					this->currentReversalIndexLocal++;
-					if (this->currentReversalIndexLocal == 4) {
-						this->currentReversalIndexLocal = 0;
-						this->currentReversalIndexGlobal += 4;
-						this->currentTypeIndex++;
-					}
-					break;
-				}
-				case ReverseByteOrderType::Octa_Byte: {
-					index = this->currentReversalIndexGlobal - this->currentReversalIndexLocal - 1 + 8;
-					this->currentReversalIndexLocal++;
-					if (this->currentReversalIndexLocal == 8) {
-						this->currentReversalIndexLocal = 0;
-						this->currentReversalIndexGlobal += 8;
-						this->currentTypeIndex++;
-					}
-					break;
-				}
-			}
-			return index;
-		}
-
-		uint8_t getNextValue() {
-			auto thePtr = *this->ptrs[this->currentValueIndex];
-			this->currentValueIndex++;
-			return thePtr;
-		}
-
-		void packEmptySlots() {
-			for (size_t x = 0; x < 32 - this->currentValueIndex; ++x) {
-				this->ptrs[this->currentValueIndex + x] = &this->spaceFiller;
-				this->types.push_back(ReverseByteOrderType::Single_Byte);
-			}
-			this->currentValueIndex = 0;
-		};
-	};
-
+	}
+	
 	constexpr uint8_t formatVersion{ 131 };
 
 	enum class EtfType : uint8_t {
@@ -420,7 +274,6 @@ namespace DiscordCoreAPI {
 		List_Ext = 108,
 		Binary_Ext = 109,
 		Small_Big_Ext = 110,
-		Small_Atom_Ext = 115,
 		Map_Ext = 116,
 	};
 
@@ -649,15 +502,19 @@ namespace DiscordCoreAPI {
 		Jsonifier& operator=(std::nullptr_t) noexcept;
 		Jsonifier(std::nullptr_t data) noexcept;
 
+		Jsonifier& operator[](typename ObjectType::key_type key) const;
+
+		Jsonifier& operator[](uint64_t index) const;
+
 		Jsonifier& operator[](typename ObjectType::key_type key);
 
 		Jsonifier& operator[](uint64_t index);
 
-		template<typename T> const T& getValue() const {
+		template<typename T> inline const T& getValue() const {
 			return T{};
 		}
 
-		template<typename T> T& getValue() {
+		template<typename T> inline T& getValue() {
 			return T{};
 		}
 
@@ -669,18 +526,9 @@ namespace DiscordCoreAPI {
 		~Jsonifier() noexcept;
 
 	  protected:
-		std::vector<ReverseByteOrderLoad> reverseByteOrderLoads{};
 		JsonType type{ JsonType::Null };
 		JsonValue jsonValue{};
 		std::string string{};
-
-		template<typename ReturnType> void storeBits(ReturnType* num) {
-			const uint8_t byteSize{ 8 };
-			if (this->reverseByteOrderLoads.size() == 0 || this->reverseByteOrderLoads.back().areWeFull()) {
-				this->reverseByteOrderLoads.push_back(ReverseByteOrderLoad{});
-			}
-			this->reverseByteOrderLoads.back().addPointer(num);
-		}
 
 		void serializeJsonToEtfString(const Jsonifier* dataToParse);
 
@@ -697,8 +545,8 @@ namespace DiscordCoreAPI {
 		template<typename NumberType,
 			std::enable_if_t<std::is_integral<NumberType>::value || std::is_same<NumberType, uint64_t>::value || std::is_same<NumberType, int64_t>::value, int> = 0>
 		void writeJsonInt(NumberType Int) {
-			auto IntNew = std::to_string(Int);
-			this->writeString(IntNew.data(), IntNew.size());
+			auto intNew = std::to_string(Int);
+			this->writeString(intNew.data(), intNew.size());
 		}
 
 		void writeJsonBool(const BoolType ValueNew);
