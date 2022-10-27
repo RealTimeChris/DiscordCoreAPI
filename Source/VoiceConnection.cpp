@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string_view VoiceConnection::encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept {
-		if (this->secretKeySend.size() > 0) {
+		if (this->encryptionKey.size() > 0) {
 			return this->packetEncrypter.encryptPacket(bufferToSend);
 		}
 		return {};
@@ -195,9 +195,9 @@ namespace DiscordCoreAPI {
 							for (auto iterator: arrayValue.arrayValue) {
 								secretKey.push_back(static_cast<uint8_t>(iterator.get_uint64().take_value()));
 							}
-							this->secretKeySend = secretKey;
+							this->encryptionKey = secretKey;
 						}
-						this->packetEncrypter = RTPPacketEncrypter{ this->audioSSRC, this->secretKeySend };
+						this->packetEncrypter = RTPPacketEncrypter{ this->audioSSRC, this->encryptionKey };
 						this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 						break;
 					}
@@ -561,7 +561,7 @@ namespace DiscordCoreAPI {
 			std::string string = this->frameQueue.front();
 			this->frameQueue.pop_front();
 			std::copy(string.data(), string.data() + string.size(), this->rawDataBuffer.data());
-			if (this->rawDataBuffer.size() > 0 && this->secretKeySend.size() > 0) {
+			if (this->rawDataBuffer.size() > 0 && this->encryptionKey.size() > 0) {
 				auto size = this->rawDataBuffer.size();
 				constexpr uint64_t headerSize{ 12 };
 				if (this->rawDataBuffer.size() < headerSize) {
@@ -587,7 +587,7 @@ namespace DiscordCoreAPI {
 					this->decryptedString.resize(encryptedDataLength);
 				}
 				if (crypto_secretbox_open_easy(this->decryptedString.data(), encryptedData, encryptedDataLength, nonce.data(),
-						this->secretKeySend.data())) {
+						this->encryptionKey.data())) {
 					return;
 				}
 				if (this->decryptedDataString.size() != encryptedDataLength) {
@@ -957,40 +957,44 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::mixAudio() noexcept {
 		if (this->voiceUsers.size() > 0) {
 			opus_int32 voiceUserCount{};
-			std::vector<opus_int32> upSampledVector{};
+			size_t decodedSize{};
+			std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
 			for (auto& [key, value]: this->voiceUsers) {
 				if (value.payloads.size() > 0) {
-					std::unique_lock lock00{ this->voiceUserMutex };
+					std::unique_lock lock{ this->voiceUserMutex };
 					VoicePayload payload{};
-					if (value.payloads.size() > 0) {
-						payload = value.payloads.front();
-						value.payloads.pop_front();
-					}
-					lock00.unlock();
+					payload = value.payloads.front();
+					value.payloads.pop_front();
+					lock.unlock();
 					if (payload.decodedData.size() > 0) {
+						if (payload.decodedData.size() > decodedSize || decodedSize == 0) {
+							decodedSize = payload.decodedData.size();
+						}
 						voiceUserCount++;
-						if (upSampledVector.size() < payload.decodedData.size()) {
-							upSampledVector.resize(payload.decodedData.size());
+						if (this->upSampledVector.size() < payload.decodedData.size()) {
+							this->upSampledVector.resize(payload.decodedData.size());
 						}
 						for (uint32_t x = 0; x < payload.decodedData.size(); ++x) {
 							if (payload.decodedData[x] <= std::numeric_limits<int16_t>::min()) {
-								upSampledVector[x] += std::numeric_limits<int16_t>::min();
+								this->upSampledVector[x] += std::numeric_limits<int16_t>::min();
 							} else if (payload.decodedData[x] >= std::numeric_limits<int16_t>::max()) {
-								upSampledVector[x] += std::numeric_limits<int16_t>::max();
+								this->upSampledVector[x] += std::numeric_limits<int16_t>::max();
 							} else {
-								upSampledVector[x] += static_cast<opus_int32>(payload.decodedData[x]);
+								this->upSampledVector[x] += static_cast<opus_int32>(payload.decodedData[x]);
 							}
 						}
 					}
 				}
 			}
-			if (upSampledVector.size() > 0) {
-				std::vector<opus_int16> downSampledVector{};
-				downSampledVector.resize(upSampledVector.size());
-				for (int32_t x = 0; x < upSampledVector.size(); ++x) {
-					downSampledVector[x] = static_cast<opus_int16>(upSampledVector[x] / voiceUserCount);
+			if (decodedSize > 0) {
+				if (this->downSampledVector.size() < this->upSampledVector.size()) {
+					this->downSampledVector.resize(this->upSampledVector.size());
 				}
-				auto encodedData = this->encoder.encodeSingleAudioFrame(downSampledVector);
+				for (int32_t x = 0; x < decodedSize; ++x) {
+					this->downSampledVector[x] = static_cast<opus_int16>(this->upSampledVector[x] / voiceUserCount);
+				}
+				auto encodedData =
+					this->encoder.encodeSingleAudioFrame(std::basic_string_view<opus_int16>{ this->downSampledVector.data(), decodedSize });
 				if (encodedData.data.size() <= 0) {
 					if (this->configManager->doWePrintGeneralErrorMessages()) {
 						cout << "Failed to encode user's voice payload." << endl;

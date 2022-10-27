@@ -56,9 +56,9 @@ namespace DiscordCoreAPI {
 	  public:
 		AudioEncoder();
 
-		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame);
+		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(std::basic_string_view<opus_int16> inputFrame);
 
-		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(std::vector<opus_int16>& inputFrame);
+		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame);
 
 	  protected:
 		const int32_t maxBufferSize{ 1276 };

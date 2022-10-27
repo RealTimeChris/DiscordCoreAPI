@@ -152,8 +152,8 @@ namespace DiscordCoreAPI {
 		~VoiceConnection() noexcept;
 
 	  protected:
-		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
+		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		std::unique_ptr<DiscordCoreInternal::DatagramSocketClient> streamSocket{};
 		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
@@ -161,33 +161,32 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
+		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		std::vector<opus_int16> downSampledVector{};
+		std::vector<unsigned char> encryptionKey{};
 		std::vector<opus_int32> upSampledVector{};
-		std::vector<opus_int16> decodedDataBuffer{};
-		simdjson::ondemand::parser parser{};
-		std::vector<unsigned char> secretKeySend{};
-		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};
-		RTPPacketEncrypter packetEncrypter{};
 		std::atomic_bool areWePlaying{ false };
-		Snowflake currentGuildMemberId{};
-		std::atomic_bool* doWeQuit{ nullptr };
 		std::vector<uint8_t> decryptedString{};
+		std::atomic_bool* doWeQuit{ nullptr };
 		std::deque<std::string> frameQueue{};
+		RTPPacketEncrypter packetEncrypter{};
+		simdjson::ondemand::parser parser{};
 		std::string decryptedDataString{};
 		std::string audioEncryptionMode{};
+		Snowflake currentGuildMemberId{};
+		std::string rawDataBuffer{};
 		std::mutex voiceUserMutex{};
 		AudioFrameData audioData{};
-		StreamInfo streamInfo{};
-		AudioEncoder encoder{};
+		std::string externalIp{};
 		DecodeData decodeData{};
 		StreamType streamType{};
-		std::string rawDataBuffer{};
-		std::string externalIp{};
-		uint32_t audioSSRC{};
+		StreamInfo streamInfo{};
+		AudioEncoder encoder{};
 		std::string voiceIp{};
 		std::string baseUrl{};
+		uint32_t audioSSRC{};
 		uint64_t port{};
 
 		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;

@@ -566,28 +566,28 @@ namespace DiscordCoreInternal {
 										break;
 									}
 									case 8: {
+										std::unique_ptr<DiscordCoreAPI::OnChannelCreationData> dataPackage{
+											std::make_unique<DiscordCoreAPI::OnChannelCreationData>(message, dValue)
+										};
 										if (this->discordCoreClient->eventManager.onChannelCreationEvent.functions.size() > 0) {
-											std::unique_ptr<DiscordCoreAPI::OnChannelCreationData> dataPackage{
-												std::make_unique<DiscordCoreAPI::OnChannelCreationData>(message, dValue)
-											};
 											this->discordCoreClient->eventManager.onChannelCreationEvent(*dataPackage);
 										}
 										break;
 									}
 									case 9: {
+										std::unique_ptr<DiscordCoreAPI::OnChannelUpdateData> dataPackage{
+											std::make_unique<DiscordCoreAPI::OnChannelUpdateData>(message, dValue)
+										};
 										if (this->discordCoreClient->eventManager.onChannelUpdateEvent.functions.size() > 0) {
-											std::unique_ptr<DiscordCoreAPI::OnChannelUpdateData> dataPackage{
-												std::make_unique<DiscordCoreAPI::OnChannelUpdateData>(message, dValue)
-											};
 											this->discordCoreClient->eventManager.onChannelUpdateEvent(*dataPackage);
 										}
 										break;
 									}
 									case 10: {
+										std::unique_ptr<DiscordCoreAPI::OnChannelDeletionData> dataPackage{
+											std::make_unique<DiscordCoreAPI::OnChannelDeletionData>(message, dValue)
+										};
 										if (this->discordCoreClient->eventManager.onChannelDeletionEvent.functions.size() > 0) {
-											std::unique_ptr<DiscordCoreAPI::OnChannelDeletionData> dataPackage{
-												std::make_unique<DiscordCoreAPI::OnChannelDeletionData>(message, dValue)
-											};
 											this->discordCoreClient->eventManager.onChannelDeletionEvent(*dataPackage);
 										}
 										break;
@@ -659,10 +659,10 @@ namespace DiscordCoreInternal {
 										if (integer.load() % 100 == 0 || stopWatch.totalTimePassed() % 10 == 0) {
 											//std::cout << "THE GUILD COUNT: " << integer.load() << ", TOTAL TIME: " << stopWatch.totalTimePassed() << std::endl;
 										}
+										std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{
+											std::make_unique<DiscordCoreAPI::OnGuildCreationData>(message, dValue, this->discordCoreClient)
+										};
 										if (this->discordCoreClient->eventManager.onGuildCreationEvent.functions.size() > 0) {
-											std::unique_ptr<DiscordCoreAPI::OnGuildCreationData> dataPackage{
-												std::make_unique<DiscordCoreAPI::OnGuildCreationData>(message, dValue, this->discordCoreClient)
-											};
 											this->discordCoreClient->eventManager.onGuildCreationEvent(*dataPackage);
 										}
 										break;
