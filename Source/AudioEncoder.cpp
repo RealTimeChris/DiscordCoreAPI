@@ -66,6 +66,10 @@ namespace DiscordCoreAPI {
 		if (result != OPUS_OK) {
 			throw std::runtime_error{ "Failed to set the Opus signal type." };
 		}
+		result = opus_encoder_ctl(this->encoder, OPUS_SET_APPLICATION(OPUS_APPLICATION_AUDIO));
+		if (result != OPUS_OK) {
+			throw std::runtime_error{ "Failed to set the Opus application type." };
+		}
 	}
 
 	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(std::basic_string_view<opus_int16> inputFrame) {
