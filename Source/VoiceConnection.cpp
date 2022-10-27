@@ -300,6 +300,21 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	void VoiceConnection::checkForAndSendHeartBeat(bool isImmedate) noexcept {
+		if (this->heartBeatStopWatch.hasTimePassed() || isImmedate) {
+			DiscordCoreAPI::Jsonifier data{};
+			data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+			data["op"] = 3;
+			data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
+			std::string string = this->prepMessageData(data.operator std::string(), this->dataOpCode);
+			if (!this->sendMessage(string, true)) {
+				return;
+			}
+			this->haveWeReceivedHeartbeatAck = false;
+			this->heartBeatStopWatch.resetTimer();
+		}
+	}
+
 	void VoiceConnection::checkForConnections() {
 		if (this->connections) {
 			this->connections.reset(nullptr);
@@ -373,7 +388,7 @@ namespace DiscordCoreAPI {
 							}
 						}
 						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
-							this->checkForAndSendHeartBeat();
+							this->checkForAndSendHeartBeat(false);
 						}
 						this->checkForConnections();
 					}
@@ -397,7 +412,7 @@ namespace DiscordCoreAPI {
 							}
 						}
 						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
-							this->checkForAndSendHeartBeat();
+							this->checkForAndSendHeartBeat(false);
 						}
 						this->checkForConnections();
 					}
@@ -419,7 +434,7 @@ namespace DiscordCoreAPI {
 							}
 						}
 						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
-							this->checkForAndSendHeartBeat();
+							this->checkForAndSendHeartBeat(false);
 						}
 						this->checkForConnections();
 					}
@@ -449,7 +464,7 @@ namespace DiscordCoreAPI {
 							}
 						}
 						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
-							this->checkForAndSendHeartBeat();
+							this->checkForAndSendHeartBeat(false);
 						}
 						this->checkForConnections();
 					}
@@ -457,7 +472,7 @@ namespace DiscordCoreAPI {
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
 						this->areWePlaying.store(true);
 						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
-							this->checkForAndSendHeartBeat();
+							this->checkForAndSendHeartBeat(false);
 						}
 						this->checkForConnections();
 						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(this->audioData);
@@ -557,10 +572,8 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::parseIncomingVoiceData() noexcept {
 		while (this->frameQueue.size() > 0) {
-			this->rawDataBuffer.resize(this->frameQueue.front().size());
-			std::string string = this->frameQueue.front();
+			this->rawDataBuffer = std::move(this->frameQueue.front());
 			this->frameQueue.pop_front();
-			std::copy(string.data(), string.data() + string.size(), this->rawDataBuffer.data());
 			if (this->rawDataBuffer.size() > 0 && this->encryptionKey.size() > 0) {
 				auto size = this->rawDataBuffer.size();
 				constexpr uint64_t headerSize{ 12 };
@@ -616,7 +629,7 @@ namespace DiscordCoreAPI {
 							}
 						} else {
 							this->decodeData.data.resize(static_cast<uint64_t>(this->decodeData.sampleCount) * 2);
-							this->voiceUsers[speakerSsrc].payloads.emplace_back(VoicePayload{ .decodedData = this->decodeData.data });
+							this->voiceUsers[speakerSsrc].payloads.emplace_back(this->decodeData.data);
 						}
 					}
 				}
@@ -962,26 +975,19 @@ namespace DiscordCoreAPI {
 			for (auto& [key, value]: this->voiceUsers) {
 				if (value.payloads.size() > 0) {
 					std::unique_lock lock{ this->voiceUserMutex };
-					VoicePayload payload{};
-					payload = value.payloads.front();
+					auto payload = std::move(value.payloads.front());
 					value.payloads.pop_front();
 					lock.unlock();
-					if (payload.decodedData.size() > 0) {
-						if (payload.decodedData.size() > decodedSize || decodedSize == 0) {
-							decodedSize = payload.decodedData.size();
+					if (payload.size() > 0) {
+						if (payload.size() > decodedSize || decodedSize == 0) {
+							decodedSize = payload.size();
 						}
 						voiceUserCount++;
-						if (this->upSampledVector.size() < payload.decodedData.size()) {
-							this->upSampledVector.resize(payload.decodedData.size());
+						if (this->upSampledVector.size() < payload.size()) {
+							this->upSampledVector.resize(payload.size());
 						}
-						for (uint32_t x = 0; x < payload.decodedData.size(); ++x) {
-							if (payload.decodedData[x] <= std::numeric_limits<int16_t>::min()) {
-								this->upSampledVector[x] += std::numeric_limits<int16_t>::min();
-							} else if (payload.decodedData[x] >= std::numeric_limits<int16_t>::max()) {
-								this->upSampledVector[x] += std::numeric_limits<int16_t>::max();
-							} else {
-								this->upSampledVector[x] += static_cast<opus_int32>(payload.decodedData[x]);
-							}
+						for (uint32_t x = 0; x < payload.size(); ++x) {
+							this->upSampledVector[x] += static_cast<opus_int32>(payload[x]);
 						}
 					}
 				}

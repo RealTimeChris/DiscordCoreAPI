@@ -1511,28 +1511,16 @@ namespace DiscordCoreInternal {
 					this->haveWeReceivedHeartbeatAck) ||
 				isImmediate) {
 				std::string string{};
-				if (this->typeOfWebSocket == WebSocketType::Voice) {
-					DiscordCoreAPI::Jsonifier data{};
-					data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-					data["op"] = 3;
-					if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
-						data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Etf);
-					} else {
-						data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
-					}
-					string = this->prepMessageData(data.operator std::string(), this->dataOpCode);
-
+				DiscordCoreAPI::Jsonifier data{};
+				data["d"] = this->lastNumberReceived;
+				data["op"] = 1;
+				if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
+					data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Etf);
 				} else {
-					DiscordCoreAPI::Jsonifier data{};
-					data["d"] = this->lastNumberReceived;
-					data["op"] = 1;
-					if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
-						data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Etf);
-					} else {
-						data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
-					}
-					string = this->prepMessageData(data.operator std::string(), this->dataOpCode);
+					data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 				}
+				string = this->prepMessageData(data.operator std::string(), this->dataOpCode);
+				
 				if (!this->sendMessage(string, true)) {
 					return;
 				}

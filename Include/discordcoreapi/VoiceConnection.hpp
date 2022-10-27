@@ -72,12 +72,8 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> ptr{ nullptr, OpusDecoderDeleter{} };
 	};
 
-	struct DiscordCoreAPI_Dll VoicePayload {
-		std::vector<opus_int16> decodedData{};
-	};
-
 	struct DiscordCoreAPI_Dll VoiceUser {
-		std::deque<VoicePayload> payloads{};
+		std::deque<std::vector<opus_int16>> payloads{};
 		OpusDecoderWrapper decoder{};
 		Snowflake userId{};
 	};
@@ -189,23 +185,25 @@ namespace DiscordCoreAPI {
 		uint32_t audioSSRC{};
 		uint64_t port{};
 
-		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
-
 		std::string_view encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
 
+		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
+
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
+
+		void checkForAndSendHeartBeat(bool isItImmediage) noexcept;
+
+		void sendVoiceData(std::string_view responseData) noexcept;
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
+		bool onMessageReceived(std::string_view data) noexcept;
+
 		/// For connecting to a voice-channel. \brief For connecting to a voice-channel.
 		/// \param initData A structure of type DiscordCoreInternal::VoiceConnectionInitData.
 		void connect(VoiceConnectInitData initData) noexcept;
-
-		void sendVoiceData(std::string_view responseData) noexcept;
-
-		bool onMessageReceived(std::string_view data) noexcept;
 
 		void runBridge(std::stop_token) noexcept;
 
