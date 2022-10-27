@@ -299,7 +299,7 @@ namespace DiscordCoreAPI {
 		this->data.files = dataPackage.files;
 	}
 
-	DeleteFollowUpMessageData::DeleteFollowUpMessageData(const RespondToInputEventData& dataPackage){
+	DeleteFollowUpMessageData::DeleteFollowUpMessageData(const RespondToInputEventData& dataPackage) {
 		this->interactionPackage.interactionToken = dataPackage.interactionToken;
 		this->interactionPackage.applicationId = dataPackage.applicationId;
 		this->interactionPackage.interactionId = dataPackage.interactionId;

@@ -143,9 +143,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData& ExecuteWebHookData::addSelectMenu(bool disabled, const std::string& customIdNew,
-		std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
-		std::vector<ChannelType> channelTypes) {
+	ExecuteWebHookData& ExecuteWebHookData::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
+		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, std::vector<ChannelType> channelTypes) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);

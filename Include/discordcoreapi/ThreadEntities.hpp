@@ -66,7 +66,9 @@ namespace DiscordCoreAPI {
 
 	/// For starting a Thread, in a forum channel. \brief For starting a Thread, in a forum channel.
 	struct DiscordCoreAPI_Dll StartThreadInForumChannelData {
-		ThreadAutoArchiveDuration autoArchiveDuration{ ThreadAutoArchiveDuration::Longest };/// Duration in minutes to automatically archive the thread.
+		ThreadAutoArchiveDuration autoArchiveDuration{
+			ThreadAutoArchiveDuration::Longest
+		};/// Duration in minutes to automatically archive the thread.
 		ForumThreadMessageData message{};///< A forum thread message params object contents of the first message in the forum thread.
 		int32_t rateLimitPerUser{};///< Integer amount of seconds a user has to wait before sending another message(0 - 21600).
 		Snowflake channelId{};///< The id of the channel.

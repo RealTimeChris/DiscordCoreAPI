@@ -234,17 +234,20 @@ namespace DiscordCoreAPI {
 
 		StopWatch(TimeType maxNumberOfMsNew) {
 			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
-			this->startTime.store(static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+			this->startTime.store(
+				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
 		}
 
 		uint64_t totalTimePassed() {
-			uint64_t currentTime = static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+			uint64_t currentTime =
+				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
 			uint64_t elapsedTime = currentTime - this->startTime.load();
 			return elapsedTime;
 		}
 
 		bool hasTimePassed() {
-			uint64_t currentTime = static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+			uint64_t currentTime =
+				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
 			uint64_t elapsedTime = currentTime - this->startTime.load();
 			if (elapsedTime >= this->maxNumberOfMs.load()) {
 				return true;
@@ -254,7 +257,8 @@ namespace DiscordCoreAPI {
 		}
 
 		void resetTimer() {
-			this->startTime.store(static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+			this->startTime.store(
+				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
 		}
 
 	  protected:
@@ -540,7 +544,9 @@ namespace DiscordCoreAPI {
 		void writeJsonFloat(const FloatType x);
 
 		template<typename NumberType,
-			std::enable_if_t<std::is_integral<NumberType>::value || std::is_same<NumberType, uint64_t>::value || std::is_same<NumberType, int64_t>::value, int> = 0>
+			std::enable_if_t<
+				std::is_integral<NumberType>::value || std::is_same<NumberType, uint64_t>::value || std::is_same<NumberType, int64_t>::value, int> =
+				0>
 		void writeJsonInt(NumberType Int) {
 			auto IntNew = std::to_string(Int);
 			this->writeString(IntNew.data(), IntNew.size());
@@ -706,23 +712,27 @@ namespace DiscordCoreInternal {
 			Authentication_Failed = 1 << 6,///< The account token sent with your identify payload is incorrect.
 			Already_Authenticated = 1 << 7,///< You sent more than one identify payload. Don't do that!
 			Invalid_Seq = 1 << 8,///<	The sequence sent when resuming the session was invalid. Reconnect and start a new session.
-			Rate_Limited = 1 << 9,///< Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
+			Rate_Limited =
+				1 << 9,///< Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
 			Session_Timed = 1 << 10,///< Your session timed out. Reconnect and start a new one.
 			Invalid_Shard = 1 << 11,///< You sent us an invalid shard when identifying.
-			Sharding_Required = 1 << 12,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
+			Sharding_Required =
+				1 << 12,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
 			Invalid_API_Version = 1 << 13,///< You sent an invalid version for the gateway.
 			Invalid_Intent = 1 << 14,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
-			Disallowed_Intent =
-				1 << 15,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
-			We_Do_Reconnect = Normal_Close | Unknown_Error | Unknown_Opcode | Decode_Error | Not_Authenticated | Already_Authenticated | Invalid_Seq | Rate_Limited | Session_Timed,
+			Disallowed_Intent = 1
+				<< 15,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
+			We_Do_Reconnect = Normal_Close | Unknown_Error | Unknown_Opcode | Decode_Error | Not_Authenticated | Already_Authenticated | Invalid_Seq |
+				Rate_Limited | Session_Timed,
 			We_Do_Not_Reconnect = Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
 		};
 
 		std::unordered_map<uint16_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset }, { 1000, WebSocketCloseCode::Normal_Close },
 			{ 4000, WebSocketCloseCode::Unknown_Error }, { 4001, WebSocketCloseCode::Unknown_Opcode }, { 4002, WebSocketCloseCode::Decode_Error },
-			{ 4003, WebSocketCloseCode::Not_Authenticated }, { 4004, WebSocketCloseCode::Authentication_Failed }, { 4005, WebSocketCloseCode::Already_Authenticated },
-			{ 4007, WebSocketCloseCode::Invalid_Seq }, { 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed },
-			{ 4010, WebSocketCloseCode::Invalid_Shard }, { 4011, WebSocketCloseCode::Sharding_Required }, { 4012, WebSocketCloseCode::Invalid_API_Version },
+			{ 4003, WebSocketCloseCode::Not_Authenticated }, { 4004, WebSocketCloseCode::Authentication_Failed },
+			{ 4005, WebSocketCloseCode::Already_Authenticated }, { 4007, WebSocketCloseCode::Invalid_Seq },
+			{ 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed }, { 4010, WebSocketCloseCode::Invalid_Shard },
+			{ 4011, WebSocketCloseCode::Sharding_Required }, { 4012, WebSocketCloseCode::Invalid_API_Version },
 			{ 4013, WebSocketCloseCode::Invalid_Intent }, { 4014, WebSocketCloseCode::Disallowed_Intent } };
 
 		std::unordered_map<WebSocketCloseCode, std::string> outputErrorValues{ {
@@ -735,14 +745,18 @@ namespace DiscordCoreInternal {
 			{ WebSocketCloseCode::Authentication_Failed, "The account token sent with your identify payload is incorrect." },
 			{ WebSocketCloseCode::Already_Authenticated, "You sent more than one identify payload. Don't do that!" },
 			{ WebSocketCloseCode::Invalid_Seq, "The sequence sent when resuming the session was invalid. Reconnect and start a new session." },
-			{ WebSocketCloseCode::Rate_Limited, "Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this." },
+			{ WebSocketCloseCode::Rate_Limited,
+				"Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this." },
 			{ WebSocketCloseCode::Session_Timed, "Your session timed out. Reconnect and start a new one." },
 			{ WebSocketCloseCode::Invalid_Shard, "You sent us an invalid shard when identifying." },
-			{ WebSocketCloseCode::Sharding_Required, "The session would have handled too many guilds - you are required to shard your connection in order to connect." },
+			{ WebSocketCloseCode::Sharding_Required,
+				"The session would have handled too many guilds - you are required to shard your connection in order to connect." },
 			{ WebSocketCloseCode::Invalid_API_Version, "You sent an invalid version for the gateway." },
-			{ WebSocketCloseCode::Invalid_Intent, "You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value." },
+			{ WebSocketCloseCode::Invalid_Intent,
+				"You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value." },
 			{ WebSocketCloseCode::Disallowed_Intent,
-				"You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for." } };
+				"You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not "
+				"approved for." } };
 
 		WebSocketCloseCode value{};
 
@@ -773,16 +787,19 @@ namespace DiscordCoreInternal {
 			Session_Timeout = 1 << 8,///< Your session has timed out.
 			Server_Not_Found = 1 << 9,///< We can't find the server you're trying to connect to.
 			Unknown_Protocol = 1 << 10,///< We didn't recognize the protocol you sent.
-			Disconnected = 1 << 11,///< Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not reconnect.
+			Disconnected = 1
+				<< 11,///< Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not reconnect.
 			Voice_Server_Crashed = 1 << 12,///< The server crashed. Our bad! Try resuming.
 			Unknown_Encryption_Mode = 1 << 13///< We didn't recognize your encryption.
 		};
 
-		std::unordered_map<uint16_t, VoiceWebSocketCloseCode> mappingValues{ { 0, VoiceWebSocketCloseCode::Unset }, { 1000, VoiceWebSocketCloseCode::Normal_Close },
-			{ 4001, VoiceWebSocketCloseCode::Unknown_Opcode }, { 4002, VoiceWebSocketCloseCode::Failed_To_Decode }, { 4003, VoiceWebSocketCloseCode::Not_Authenticated },
+		std::unordered_map<uint16_t, VoiceWebSocketCloseCode> mappingValues{ { 0, VoiceWebSocketCloseCode::Unset },
+			{ 1000, VoiceWebSocketCloseCode::Normal_Close }, { 4001, VoiceWebSocketCloseCode::Unknown_Opcode },
+			{ 4002, VoiceWebSocketCloseCode::Failed_To_Decode }, { 4003, VoiceWebSocketCloseCode::Not_Authenticated },
 			{ 4004, VoiceWebSocketCloseCode ::Authentication_Failed }, { 4005, VoiceWebSocketCloseCode::Already_Authenticated },
-			{ 4006, VoiceWebSocketCloseCode ::Session_No_Longer_Valid }, { 4009, VoiceWebSocketCloseCode::Session_Timeout }, { 4011, VoiceWebSocketCloseCode::Server_Not_Found },
-			{ 4012, VoiceWebSocketCloseCode::Unknown_Protocol }, { 4014, VoiceWebSocketCloseCode ::Disconnected }, { 4015, VoiceWebSocketCloseCode ::Voice_Server_Crashed },
+			{ 4006, VoiceWebSocketCloseCode ::Session_No_Longer_Valid }, { 4009, VoiceWebSocketCloseCode::Session_Timeout },
+			{ 4011, VoiceWebSocketCloseCode::Server_Not_Found }, { 4012, VoiceWebSocketCloseCode::Unknown_Protocol },
+			{ 4014, VoiceWebSocketCloseCode ::Disconnected }, { 4015, VoiceWebSocketCloseCode ::Voice_Server_Crashed },
 			{ 4016, VoiceWebSocketCloseCode ::Unknown_Encryption_Mode } };
 
 		std::unordered_map<VoiceWebSocketCloseCode, std::string> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "Unset." },
@@ -791,10 +808,12 @@ namespace DiscordCoreInternal {
 			{ VoiceWebSocketCloseCode::Not_Authenticated, "You sent a payload before identifying with the Gateway." },
 			{ VoiceWebSocketCloseCode::Authentication_Failed, "The token you sent in your identify payload is incorrect." },
 			{ VoiceWebSocketCloseCode::Already_Authenticated, "You sent more than one identify payload. Stahp." },
-			{ VoiceWebSocketCloseCode::Session_No_Longer_Valid, "Your session is no longer valid." }, { VoiceWebSocketCloseCode::Session_Timeout, "Your session has timed out." },
+			{ VoiceWebSocketCloseCode::Session_No_Longer_Valid, "Your session is no longer valid." },
+			{ VoiceWebSocketCloseCode::Session_Timeout, "Your session has timed out." },
 			{ VoiceWebSocketCloseCode::Server_Not_Found, "We can't find the server you're trying to connect to." },
 			{ VoiceWebSocketCloseCode::Unknown_Protocol, "We didn't recognize the protocol you sent." },
-			{ VoiceWebSocketCloseCode::Disconnected, "Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not reconnect." },
+			{ VoiceWebSocketCloseCode::Disconnected,
+				"Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not reconnect." },
 			{ VoiceWebSocketCloseCode::Voice_Server_Crashed, "The server crashed. Our bad! Try resuming." },
 			{ VoiceWebSocketCloseCode::Unknown_Encryption_Mode, "We didn't recognize your encryption." } };
 
@@ -829,7 +848,8 @@ namespace DiscordCoreInternal {
 			Gatewat_Unavailable = 502,///< There was not a gateway available to process your request. Wait a bit and retry.
 		};
 
-		std::unordered_map<HttpsResponseCodes, std::string> outputErrorValues{ { static_cast<HttpsResponseCodes>(200), "The request completed successfully" },
+		std::unordered_map<HttpsResponseCodes, std::string> outputErrorValues{ { static_cast<HttpsResponseCodes>(200),
+																				   "The request completed successfully" },
 			{ static_cast<HttpsResponseCodes>(201), "The entity was created successfully" },
 			{ static_cast<HttpsResponseCodes>(204), "The request completed successfully but returned no content" },
 			{ static_cast<HttpsResponseCodes>(304), "The entity was not modified (no action was taken)" },
@@ -961,8 +981,9 @@ namespace DiscordCoreAPI {
 		Direct_Message_Typing = 1 << 14,///< Intent for receipt of direct message typing notifications.
 		Message_Content = 1 << 15,///< Intent for receipt of message content.
 		Guild_Scheduled_Events = 1 << 16,///< Scheduled events.
-		Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates | Guild_Messages | Guild_Message_Reactions |
-			Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing | Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
+		Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates |
+			Guild_Messages | Guild_Message_Reactions | Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing |
+			Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
 		Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
 		All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
 	};
@@ -1351,7 +1372,15 @@ namespace DiscordCoreAPI {
 		uint32_t theColor{};
 	};
 
-	enum class HashType { User_Avatar = 0, Channel_Icon = 1, GuildMember_Avatar = 2, Guild_Icon = 3, Guild_Splash = 4, Guild_Banner = 5, Guild_Discovery = 6 };
+	enum class HashType {
+		User_Avatar = 0,
+		Channel_Icon = 1,
+		GuildMember_Avatar = 2,
+		Guild_Icon = 3,
+		Guild_Splash = 4,
+		Guild_Banner = 5,
+		Guild_Discovery = 6
+	};
 
 	class DiscordCoreAPI_Dll IconHash {
 	  public:
@@ -1504,9 +1533,11 @@ namespace DiscordCoreAPI {
 	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
 	/// \param currentFunctionName A string to display the current function's name.
 	/// \param theLocation For deriving the current file, line, and column - do not set this value.
-	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
+	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName,
+		std::source_location theLocation = std::source_location::current());
 
-	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
+	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName,
+		std::source_location theLocation = std::source_location::current());
 
 	DiscordCoreAPI_Dll std::string constructMultiPartData(std::string data, const std::vector<File>& files);
 
@@ -1545,10 +1576,12 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll TimeStamp {
 	  public:
 		explicit TimeStamp(TimeFormat theFormatNew = TimeFormat::LongDateTime) {
-			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			this->timeStampInTimeUnits =
+				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		}
 
-		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second, TimeFormat theFormatNew) {
+		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second,
+			TimeFormat theFormatNew) {
 			this->getTimeSinceEpoch(stoull(year), stoull(month), stoull(day), stoull(hour), stoull(minute), stoull(second));
 		}
 
@@ -1598,8 +1631,8 @@ namespace DiscordCoreAPI {
 			this->getISO8601TimeStamp(theFormatNew);
 		}
 
-		static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd, int32_t yearsToAdd,
-			TimeFormat theFormatNew) {
+		static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd,
+			int32_t yearsToAdd, TimeFormat theFormatNew) {
 			std::time_t result = std::time(nullptr);
 			int32_t secondsPerMinute{ 60 };
 			int32_t minutesPerHour{ 60 };
@@ -1610,8 +1643,8 @@ namespace DiscordCoreAPI {
 			int32_t secondsPerMonth{ secondsPerDay * daysPerMonth };
 			int32_t daysPerYear{ 365 };
 			int32_t secondsPerYear{ secondsPerDay * daysPerYear };
-			int32_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) + ((hoursToAdd + 8) * secondsPerHour) +
-				(minutesToAdd * secondsPerMinute);
+			int32_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) +
+				((hoursToAdd + 8) * secondsPerHour) + (minutesToAdd * secondsPerMinute);
 			result += secondsToAdd;
 			auto resultTwo = std::localtime(&result);
 			std::string returnString{};
@@ -1620,8 +1653,9 @@ namespace DiscordCoreAPI {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
 					resultTwo->tm_mday++;
 				}
-				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
-					std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), theFormatNew };
+				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
+					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min),
+					std::to_string(resultTwo->tm_sec), theFormatNew };
 				timeStamp.getISO8601TimeStamp(theFormatNew);
 				returnString = static_cast<std::string>(timeStamp);
 			} else {
@@ -1629,8 +1663,9 @@ namespace DiscordCoreAPI {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
 					resultTwo->tm_mday++;
 				}
-				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
-					std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), theFormatNew };
+				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
+					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min),
+					std::to_string(resultTwo->tm_sec), theFormatNew };
 				timeStamp.getISO8601TimeStamp(theFormatNew);
 				returnString = static_cast<std::string>(timeStamp);
 			}
@@ -1646,16 +1681,18 @@ namespace DiscordCoreAPI {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
 					resultTwo->tm_mday++;
 				}
-				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
-					std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), timeFormat };
+				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
+					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min),
+					std::to_string(resultTwo->tm_sec), timeFormat };
 				returnString = timeStamp.getISO8601TimeStamp(timeFormat);
 			} else {
 				if (resultTwo->tm_hour + 5 >= 24) {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
 					resultTwo->tm_mday++;
 				}
-				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
-					std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), timeFormat };
+				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
+					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min),
+					std::to_string(resultTwo->tm_sec), timeFormat };
 				returnString = timeStamp.getISO8601TimeStamp(timeFormat);
 			}
 			return returnString;
@@ -1663,7 +1700,8 @@ namespace DiscordCoreAPI {
 
 		bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) {
 			if (this->timeStampInTimeUnits == 0) {
-				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				this->timeStampInTimeUnits =
+					std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
 			uint64_t startTimeRaw = this->timeStampInTimeUnits;
 			auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -1784,8 +1822,9 @@ namespace DiscordCoreAPI {
 		void convertTimeStampToTimeUnits(TimeFormat theFormatNew, std::string originalTimeStamp) {
 			try {
 				if (originalTimeStamp != "" && originalTimeStamp != "0") {
-					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)), stoi(originalTimeStamp.substr(8, 9)),
-						stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)), stoi(originalTimeStamp.substr(17, 18)), theFormatNew };
+					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
+						stoi(originalTimeStamp.substr(8, 9)), stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)),
+						stoi(originalTimeStamp.substr(17, 18)), theFormatNew };
 					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) }.count();
 				} else {
 					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -1797,7 +1836,8 @@ namespace DiscordCoreAPI {
 
 		std::string getISO8601TimeStamp(TimeFormat timeFormat) {
 			if (this->timeStampInTimeUnits == 0) {
-				this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				this->timeStampInTimeUnits =
+					std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
 			uint64_t timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(TimeType{ this->timeStampInTimeUnits }).count()) / 1000;
 			time_t rawTime(timeValue);
@@ -1950,19 +1990,22 @@ namespace DiscordCoreAPI {
 		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Objects before returning the results.
 		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
 		/// \returns A ObjectCollectorReturnData structure.
-		CoRoutine<ObjectCollectorReturnData<Object>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<Object> filteringFunctionNew) {
+		CoRoutine<ObjectCollectorReturnData<Object>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew,
+			ObjectFilter<Object> filteringFunctionNew) {
 			co_await NewThreadAwaitable<ObjectCollectorReturnData<Object>>();
 			this->quantityOfObjectToCollect = quantityToCollect;
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
-			this->collectorId = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+			this->collectorId =
+				std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 			ObjectCollector::objectsBuffersMap[this->collectorId] = &this->messagesBuffer;
 			this->run();
 			co_return std::move(this->messageReturnData);
 		}
 
 		void run() {
-			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+			int64_t startingTime = static_cast<int64_t>(
+				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 			int64_t elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
 				Object message{};
@@ -1974,7 +2017,8 @@ namespace DiscordCoreAPI {
 					break;
 				}
 
-				elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() - startingTime;
+				elapsedTime =
+					std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() - startingTime;
 			}
 		}
 

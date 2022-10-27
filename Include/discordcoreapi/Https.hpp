@@ -170,8 +170,8 @@ namespace DiscordCoreInternal {
 			HttpsResponseData returnData = this->httpsRequest(workload);
 			if (static_cast<uint32_t>(returnData.responseCode) != 200 && static_cast<uint32_t>(returnData.responseCode) != 204 &&
 				static_cast<uint32_t>(returnData.responseCode) != 201) {
-				std::string errorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error: " + static_cast<std::string>(returnData.responseCode) +
-					"\nThe Request: " + workload.content + DiscordCoreAPI::reset() + "\n\n" };
+				std::string errorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error: " +
+					static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workload.content + DiscordCoreAPI::reset() + "\n\n" };
 				HttpsError theError{ errorMessage };
 				theError.errorCode = returnData.responseCode;
 				throw theError;
@@ -179,7 +179,8 @@ namespace DiscordCoreInternal {
 			simdjson::ondemand::parser parser{};
 			if (returnData.responseMessage.size() > 0) {
 				returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-				auto document = parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
+				auto document =
+					parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
 				if (document.type() != simdjson::ondemand::json_type::null) {
 					simdjson::ondemand::value object{};
 					if (document.get(object) == simdjson::error_code::SUCCESS) {
@@ -188,7 +189,7 @@ namespace DiscordCoreInternal {
 							return *returnValue;
 						} else {
 							RTy returnValueNew{ object };
-							return returnValueNew;	
+							return returnValueNew;
 						}
 					}
 				}

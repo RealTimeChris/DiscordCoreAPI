@@ -181,7 +181,8 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
 	  public:
-		virtual bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept = 0;
+		virtual bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages,
+			bool areWeAStandaloneSocket) noexcept = 0;
 
 		virtual bool areWeStillConnected() noexcept = 0;
 

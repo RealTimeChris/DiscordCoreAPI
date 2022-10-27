@@ -1392,13 +1392,16 @@ namespace DiscordCoreAPI {
 	/// Application flags, for the ApplicationData structure.
 	enum class ApplicationFlags : int32_t {
 		Gateway_Presence = 1 << 12,///< Intent required for bots in 100 or more servers to receive presence_update events.
-		Gateway_Presence_Limited = 1 << 13,///< Intent required for bots in under 100 servers to receive presence_update events, found in Bot Settings.
+		Gateway_Presence_Limited =
+			1 << 13,///< Intent required for bots in under 100 servers to receive presence_update events, found in Bot Settings.
 		Gateway_Guild_Members = 1 << 14,///< Intent required for bots in 100 or more servers to receive member-related events like guild_member_add.
-		Gateway_Guild_Members_Limited = 1 << 15,///< Intent required for bots in under 100 servers to receive member-related events like guild_member_add, found in Bot Settings.
+		Gateway_Guild_Members_Limited =
+			1 << 15,///< Intent required for bots in under 100 servers to receive member-related events like guild_member_add, found in Bot Settings.
 		Verificatino_Pending_Guild_Limit = 1 << 16,///< Indicates unusual growth of an app that prevents verification
 		Embedded = 1 << 17,///< Indicates if an app is embedded within the Discord client (currently unavailable publicly)
 		Gateway_Message_Content = 1 << 18,///< Intent required for bots in 100 or more servers to receive message content
-		Gateway_Message_Content_Limited = 1 << 19///< Intent required for bots in under 100 servers to receive message content, found in Bot Settings};
+		Gateway_Message_Content_Limited =
+			1 << 19///< Intent required for bots in under 100 servers to receive message content, found in Bot Settings};
 	};
 
 	/// Install params data, for application data. \brief Install params data, for application data.
@@ -1881,8 +1884,8 @@ namespace DiscordCoreAPI {
 		/// \param streamType For usage with the Vc-to-Vc audio streaming option.
 		/// \param streamInfo For usage with the Vc-to-Vc audio streaming option.
 		/// \returns VoiceConnection* A pointer to the currently held voice connection, or nullptr if it failed to connect.
-		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{ 0 }, bool selfDeaf = false, bool selfMute = false,
-			StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
+		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{ 0 }, bool selfDeaf = false,
+			bool selfMute = false, StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
 
 		std::string getBannerUrl() noexcept;
 
@@ -2189,7 +2192,8 @@ namespace DiscordCoreAPI {
 	/// Data structure representing an ApplicationCommand's option choice. \brief Data structure representing an ApplicationCommand's option choice.
 	class DiscordCoreAPI_Dll ApplicationCommandOptionChoiceData {
 	  public:
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		std::unordered_map<std::string, std::string>
+			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::string value{};///< The value of the option.
 		std::string name{};///< The name of the current choice.
 		JsonType type{};///< The type of the option.
@@ -2454,7 +2458,8 @@ namespace DiscordCoreAPI {
 		Pong = 1,///< ACK a Ping.
 		Channel_Message_With_Source = 4,///< Respond to an interaction with a message.
 		Deferred_Channel_Message_With_Source = 5,///< ACK an interaction and edit a response later, the user sees a loading state.
-		Deferred_Update_Message = 6,///< For components, ACK an interaction and edit the original message later; the user does not see a loading state.
+		Deferred_Update_Message =
+			6,///< For components, ACK an interaction and edit the original message later; the user does not see a loading state.
 		Update_Message = 7,///< For components, edit the message the component was attached to.
 		Application_Command_Autocomplete_Result = 8,///< Respond to an autocomplete interaction with suggested choices.
 		Modal = 9///< Respond to an interaction with a popup modal.
@@ -2480,8 +2485,10 @@ namespace DiscordCoreAPI {
 	/// Data structure representing an ApplicationCommand. \brief Data structure representing an ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {
 	  public:
-		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
-		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
+		std::unordered_map<std::string, std::string>
+			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
+		std::unordered_map<std::string, std::string>
+			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for name field.
 		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set all
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
@@ -2531,7 +2538,8 @@ namespace DiscordCoreAPI {
 	/// Data for when threads are synced. \brief Data for when threads are synced.
 	struct DiscordCoreAPI_Dll ThreadListSyncData {
 		std::vector<ThreadMemberData> members{};///< Array of members that are a part of the Thread.
-		std::vector<std::string> channelIds{};///< The parent Channel ids whose threads are being synced. If omitted, then threads were synced for entire Guild.
+		std::vector<std::string>
+			channelIds{};///< The parent Channel ids whose threads are being synced. If omitted, then threads were synced for entire Guild.
 		std::vector<ChannelData> threads{};///< All active threads in the given channels that the current User can access.
 		Snowflake guildId{};///< The id of the Guild for which the threads are being synced.
 
@@ -3076,8 +3084,9 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
-			bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
+		RespondToInputEventData& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
+			const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle,
+			const std::string& label = "", const std::string& placeholder = "");
 
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
@@ -3119,7 +3128,8 @@ namespace DiscordCoreAPI {
 		/// \param theName A string for the name of the choice.
 		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& setAutoCompleteChoice(Jsonifier value, const std::string& theName, std::unordered_map<std::string, std::string> theNameLocalizations);
+		RespondToInputEventData& setAutoCompleteChoice(Jsonifier value, const std::string& theName,
+			std::unordered_map<std::string, std::string> theNameLocalizations);
 
 		/// For setting the direct-Message User target of a response. \brief For setting the direct-Message User target of a response.
 		/// \param targetUserIdNew A string, containing the target User's id.
@@ -3140,7 +3150,7 @@ namespace DiscordCoreAPI {
 		Snowflake targetUserId{};
 		std::string customId{};
 		Snowflake channelId{};
-		Snowflake messageId{};	
+		Snowflake messageId{};
 		std::string content{};
 		std::string title{};
 		int32_t flags{ 0 };
@@ -3159,8 +3169,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName = "",
-			Snowflake emojiId = Snowflake{ 0 }, const std::string& url = "");
+		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+			const std::string& emojiName = "", Snowflake emojiId = Snowflake{ 0 }, const std::string& url = "");
 
 		/// Adds a select-menu to the response Message. \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -3186,8 +3196,9 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew, bool required,
-			int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
+		MessageResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
+			const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle,
+			const std::string& label = "", const std::string& placeholder = "");
 
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
@@ -3404,8 +3415,8 @@ namespace DiscordCoreAPI {
 		std::string buttonId{};
 	};
 
-	DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent, uint32_t currentPageIndex,
-		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
+	DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent,
+		uint32_t currentPageIndex, const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult = false);
 
 	/**@}*/
 
@@ -3458,7 +3469,8 @@ template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::UserData> {
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::GuildMemberData> {
 	uint64_t operator()(DiscordCoreAPI::GuildMemberData const& object) const noexcept {
-		return static_cast<DiscordCoreAPI::Snowflake>(object.guildId).operator size_t() ^ (static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t() << 1);
+		return static_cast<DiscordCoreAPI::Snowflake>(object.guildId).operator size_t() ^
+			(static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t() << 1);
 	}
 };
 

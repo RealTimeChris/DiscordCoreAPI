@@ -77,8 +77,9 @@ namespace DiscordCoreAPI {
 		/// \param label A label for the modal.
 		/// \param placeholder A placeholder for the modal.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		InteractionResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew, const std::string& customIdNew,
-			bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label = "", const std::string& placeholder = "");
+		InteractionResponseBase& addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
+			const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle,
+			const std::string& label = "", const std::string& placeholder = "");
 
 		/// Adds a file to the current collection of files for this message response. \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
@@ -411,8 +412,8 @@ namespace DiscordCoreAPI {
 		/// \param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping.
 		/// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
 		/// \returns A vector of SelectMenuResponseData.
-		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew,
-			Snowflake targetUserId = Snowflake{ 0 });
+		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
+			int32_t maxCollectedSelectMenuCountNew, Snowflake targetUserId = Snowflake{ 0 });
 
 		~SelectMenuCollector();
 
@@ -500,8 +501,8 @@ namespace DiscordCoreAPI {
 		/// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
 		/// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
 		/// \returns A vector of ButtonResponseData.
-		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
-			Snowflake targetUserId = Snowflake{ 0 });
+		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
+			int32_t maxNumberOfPressesNew, Snowflake targetUserId = Snowflake{ 0 });
 
 		~ButtonCollector();
 

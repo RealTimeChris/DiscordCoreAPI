@@ -82,7 +82,8 @@ namespace DiscordCoreAPI {
 		}
 
 		template<typename... ArgTypes>
-		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeDelay, bool blockForCompletion, ArgTypes... args) {
+		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeDelay, bool blockForCompletion,
+			ArgTypes... args) {
 			std::jthread thread = std::jthread([=](std::stop_token stopToken) {
 				StopWatch stopWatch{ std::chrono::milliseconds{ timeDelay } };
 				stopWatch.resetTimer();

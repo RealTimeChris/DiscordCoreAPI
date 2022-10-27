@@ -601,7 +601,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "?with_counts=true";
 		workload.callStack = "Guilds::getGuildAsync()";
-		Guild data{}; 
+		Guild data{};
 		data = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &data);
 		data.discordCoreClient = Guilds::discordCoreClient;
 		if (Guilds::cache.contains(data)) {

@@ -3559,8 +3559,8 @@ namespace DiscordCoreAPI {
 	}
 
 	RespondToInputEventData& RespondToInputEventData::addSelectMenu(bool disabled, const std::string& customIdNew,
-		std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, std::vector<ChannelType> channelTypes) {
+		std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
+		std::vector<ChannelType> channelTypes) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3715,8 +3715,7 @@ namespace DiscordCoreAPI {
 	}
 
 	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
-		std::vector<ChannelType> channelTypes) {
+		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, std::vector<ChannelType> channelTypes) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3875,7 +3874,7 @@ namespace DiscordCoreAPI {
 		valueNew.type = data.value.type;
 		valueNew.value = data.value.value;
 		values.insert_or_assign(data.name, valueNew);
-		for (auto& value: data.options) {			
+		for (auto& value: data.options) {
 			parseCommandDataOption(values, value);
 		}
 	}

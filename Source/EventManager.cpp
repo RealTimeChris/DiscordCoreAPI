@@ -153,18 +153,18 @@ namespace DiscordCoreAPI {
 			}
 		}
 	}
-	
+
 	OnThreadListSyncData::OnThreadListSyncData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->threadListSyncData = data.processJsonMessage<ThreadListSyncData>(dataReal);
 	}
 
 	OnThreadMemberUpdateData::OnThreadMemberUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->threadMember = data.processJsonMessage<ThreadMemberData>(dataReal);
-	}	
+	}
 
 	OnThreadMembersUpdateData::OnThreadMembersUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->threadMembersUpdateData = data.processJsonMessage<ThreadMembersUpdateData>(dataReal);
-	}											
+	}
 
 	OnGuildCreationData::OnGuildCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
 		DiscordCoreClient* client) {
@@ -175,7 +175,6 @@ namespace DiscordCoreAPI {
 				DiscordCoreAPI::Guilds::insertGuild(*this->guild);
 			}
 		}
-	
 	}
 
 	OnGuildCreationData& OnGuildCreationData::operator=(const OnGuildCreationData& other) {
