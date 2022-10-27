@@ -530,7 +530,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Guilds::initialize(DiscordCoreInternal::HttpsClient* client, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
-		Guilds::doWeCacheGuilds = configManagerNew->doWeCacheGuilds();
+		Guilds::doWeCacheGuildsBool = configManagerNew->doWeCacheGuilds();
 		Guilds::discordCoreClient = discordCoreClientNew;
 		Guilds::httpsClient = client;
 	}
@@ -1075,7 +1075,7 @@ namespace DiscordCoreAPI {
 		if (guild.id == 0) {
 			return;
 		}
-		if (Guilds::doWeCacheGuilds) {
+		if (Guilds::doWeCacheGuilds()) {
 			guild.discordCoreClient = Guilds::discordCoreClient;
 			if (!Guilds::cache.contains(guild)) {
 				Guilds::cache.emplace(std::move(guild));
@@ -1098,9 +1098,13 @@ namespace DiscordCoreAPI {
 		return Guilds::cache;
 	}
 
+	bool Guilds::doWeCacheGuilds() {
+		return Guilds::doWeCacheGuildsBool;
+	}
+
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
+	bool Guilds::doWeCacheGuildsBool{ false };
 	ObjectCache<GuildData> Guilds::cache{};
-	bool Guilds::doWeCacheGuilds{ false };
 
 }

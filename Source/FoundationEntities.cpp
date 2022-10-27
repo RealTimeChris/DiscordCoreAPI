@@ -187,6 +187,8 @@ namespace DiscordCoreInternal {
 
 	ReadyData::ReadyData(simdjson::ondemand::value jsonObjectData) {
 		this->resumeGatewayUrl = DiscordCoreAPI::getString(jsonObjectData, "resume_gateway_url");
+		this->resumeGatewayUrl = this->resumeGatewayUrl.substr(this->resumeGatewayUrl.find("wss://") + std::string{ "wss://" }.size());
+		this->resumeGatewayUrl = this->resumeGatewayUrl.substr(0, this->resumeGatewayUrl.find("/"));
 
 		this->sessionId = DiscordCoreAPI::getString(jsonObjectData, "session_id");
 

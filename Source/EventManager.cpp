@@ -137,9 +137,45 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	OnGuildCreationData::OnGuildCreationData(std::unique_ptr<GuildData> guild, DiscordCoreClient* client) {
-		this->guild = std::move(guild);
+	OnThreadUpdateData::OnThreadUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->thread = data.processJsonMessage<Thread>(dataReal);
+	}
+
+	OnThreadDeletionData::OnThreadDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->thread = data.processJsonMessage<Thread>(dataReal);
+		DiscordCoreAPI::GuildData guild{};
+		guild.id = this->thread.guildId;
+		if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
+			for (uint64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].threads.size(); ++x) {
+				if (DiscordCoreAPI::Guilds::getCache()[guild].threads[x] == this->thread.id) {
+					DiscordCoreAPI::Guilds::getCache()[guild].threads.erase(DiscordCoreAPI::Guilds::getCache()[guild].threads.begin() + x);
+				}
+			}
+		}
+	}
+	
+	OnThreadListSyncData::OnThreadListSyncData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->threadListSyncData = data.processJsonMessage<ThreadListSyncData>(dataReal);
+	}
+
+	OnThreadMemberUpdateData::OnThreadMemberUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->threadMember = data.processJsonMessage<ThreadMemberData>(dataReal);
+	}	
+
+	OnThreadMembersUpdateData::OnThreadMembersUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->threadMembersUpdateData = data.processJsonMessage<ThreadMembersUpdateData>(dataReal);
+	}											
+
+	OnGuildCreationData::OnGuildCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
+		DiscordCoreClient* client) {
+		this->guild = std::make_unique<GuildData>(data.processJsonMessage<GuildData>(dataReal));
 		this->guild->discordCoreClient = client;
+		if (DiscordCoreAPI::Guilds::doWeCacheGuilds()) {
+			if (DiscordCoreAPI::Guilds::doWeCacheGuilds()) {
+				DiscordCoreAPI::Guilds::insertGuild(*this->guild);
+			}
+		}
+	
 	}
 
 	OnGuildCreationData& OnGuildCreationData::operator=(const OnGuildCreationData& other) {

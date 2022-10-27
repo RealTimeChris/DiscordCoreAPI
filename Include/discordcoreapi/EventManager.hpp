@@ -122,33 +122,38 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a Thread update event. \brief Data that is received as part of a Thread update event.
 	struct DiscordCoreAPI_Dll OnThreadUpdateData {
 		Thread thread{};///< The new Thread's Channel.
+		OnThreadUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Thread deletion event. \brief Data that is received as part of a Thread deletion event.
 	struct DiscordCoreAPI_Dll OnThreadDeletionData {
 		Thread thread{};///< The deleted Thread's Channel.
+		OnThreadDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Thread list sync event. \brief Data that is received as part of a Thread list sync event.
 	struct DiscordCoreAPI_Dll OnThreadListSyncData {
 		ThreadListSyncData threadListSyncData{};///< The Thread list sync responseData.
+		OnThreadListSyncData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Thread member update event. \brief Data that is received as part of a Thread member update event.
 	struct DiscordCoreAPI_Dll OnThreadMemberUpdateData {
 		ThreadMemberData threadMember{};///< Thread member update responseData.
+		OnThreadMemberUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Thread members update event. \brief Data that is received as part of a Thread members update event.
 	struct DiscordCoreAPI_Dll OnThreadMembersUpdateData {
 		ThreadMembersUpdateData threadMembersUpdateData{};///< Thread member's update responseData.
+		OnThreadMembersUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Guild creation event. \brief Data that is received as part of a Guild creation event.
 	struct DiscordCoreAPI_Dll OnGuildCreationData {
 		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The new Guild.
 
-		OnGuildCreationData(std::unique_ptr<GuildData> guild, DiscordCoreClient*);
+		OnGuildCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
 
 		OnGuildCreationData& operator=(const OnGuildCreationData&);
 		OnGuildCreationData(const OnGuildCreationData&);

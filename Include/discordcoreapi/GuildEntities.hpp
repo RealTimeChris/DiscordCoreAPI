@@ -590,13 +590,15 @@ namespace DiscordCoreAPI {
 
 		static ObjectCache<GuildData>& getCache();
 
+		static void insertGuild(GuildData guild);
+
+		static bool doWeCacheGuilds();		
+
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<GuildData> cache;
 		static DiscordCoreClient* discordCoreClient;
-		static bool doWeCacheGuilds;
-
-		static void insertGuild(GuildData guild);
+		static ObjectCache<GuildData> cache;
+		static bool doWeCacheGuildsBool;
 
 		static void removeGuild(const Snowflake GuildId);
 	};

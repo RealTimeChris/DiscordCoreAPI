@@ -305,9 +305,9 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketMessage {
-		uint64_t op{ static_cast<uint64_t>(-1) };
+		int64_t op{ -1 };
 		std::string t{};
-		uint64_t s{};
+		int64_t s{};
 
 		WebSocketMessage() noexcept = default;
 

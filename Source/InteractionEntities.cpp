@@ -303,6 +303,8 @@ namespace DiscordCoreAPI {
 		this->interactionPackage.interactionToken = dataPackage.interactionToken;
 		this->interactionPackage.applicationId = dataPackage.applicationId;
 		this->interactionPackage.interactionId = dataPackage.interactionId;
+		this->messagePackage.channelId = dataPackage.channelId;
+		this->messagePackage.messageId = dataPackage.messageId;
 	}
 
 	DeleteInteractionResponseData::DeleteInteractionResponseData(const RespondToInputEventData& dataPackage) {
