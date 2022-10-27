@@ -334,7 +334,7 @@ namespace DiscordCoreAPI {
 
 		this->url = getString(jsonObjectData, "url");
 
-		this->timeStamp = getString(jsonObjectData, "timeStamp");
+		this->timeStamp = getString(jsonObjectData, "timestamp");
 
 		this->hexColorValue = getUint32(jsonObjectData, "color");
 
@@ -1978,7 +1978,7 @@ namespace DiscordCoreAPI {
 
 		this->userId = getId(jsonObjectData, "user_id");
 
-		this->timeStamp = getUint32(jsonObjectData, "timeStamp");
+		this->timeStamp = getUint32(jsonObjectData, "timestamp");
 	}
 
 	YouTubeFormat::YouTubeFormat(simdjson::ondemand::value jsonObjectData) {
@@ -2166,6 +2166,15 @@ namespace DiscordCoreAPI {
 				this->options.emplace_back(std::move(newData));
 			}
 		}
+
+		if (jsonObjectData["channel_types"].get(arrayValue) == simdjson::error_code::SUCCESS) {
+			this->channelTypes.clear();
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
+				ChannelType newData{ static_cast<ChannelType>(value.value().get_int64().take_value()) };
+				this->channelTypes.emplace_back(std::move(newData));
+			}
+		}
+
 	}
 
 	ChannelMentionData::ChannelMentionData(simdjson::ondemand::value jsonObjectData) {
@@ -2283,7 +2292,7 @@ namespace DiscordCoreAPI {
 			this->member = GuildMemberData{ object };
 		}
 
-		this->timeStamp = getString(jsonObjectData, "timeStamp");
+		this->timeStamp = getString(jsonObjectData, "timestamp");
 
 		this->editedTimestamp = getString(jsonObjectData, "edited_timestamp");
 
@@ -2416,7 +2425,7 @@ namespace DiscordCoreAPI {
 			this->member = GuildMemberData{ object };
 		}
 
-		this->timeStamp = getString(jsonObjectData, "timeStamp");
+		this->timeStamp = getString(jsonObjectData, "timestamp");
 
 		this->editedTimestamp = getString(jsonObjectData, "edited_timestamp");
 
@@ -3291,7 +3300,7 @@ namespace DiscordCoreAPI {
 					component["type"] = valueNew.type;
 					component["url"] = valueNew.url;
 					data["components"].emplaceBack(component);
-				} else if (valueNew.type == ComponentType::SelectMenu) {
+				} else if (valueNew.type == ComponentType::String_Select) {
 					Jsonifier component{};
 					for (auto& value01: valueNew.options) {
 						Jsonifier option{};
@@ -3314,7 +3323,7 @@ namespace DiscordCoreAPI {
 					component["type"] = valueNew.type;
 					data["components"].emplaceBack(component);
 
-				} else if (valueNew.type == ComponentType::TextInput) {
+				} else if (valueNew.type == ComponentType::Text_Input) {
 					Jsonifier component{};
 					component["placeholder"] = valueNew.placeholder;
 					component["min_length"] = valueNew.minLength;
@@ -3554,7 +3563,7 @@ namespace DiscordCoreAPI {
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
 				ComponentData componentData;
-				componentData.type = ComponentType::SelectMenu;
+				componentData.type = ComponentType::String_Select;
 				componentData.placeholder = placeholder;
 				componentData.maxValues = maxValues;
 				componentData.minValues = minValues;
@@ -3581,7 +3590,7 @@ namespace DiscordCoreAPI {
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
 				ComponentData component{};
-				component.type = ComponentType::TextInput;
+				component.type = ComponentType::Text_Input;
 				component.customId = customIdNew;
 				component.style = static_cast<int32_t>(inputStyle);
 				component.title = titleNew;
@@ -3707,7 +3716,7 @@ namespace DiscordCoreAPI {
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
 				ComponentData componentData;
-				componentData.type = ComponentType::SelectMenu;
+				componentData.type = ComponentType::String_Select;
 				componentData.placeholder = placeholder;
 				componentData.maxValues = maxValues;
 				componentData.minValues = minValues;
@@ -3734,7 +3743,7 @@ namespace DiscordCoreAPI {
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
 				ComponentData component{};
-				component.type = ComponentType::TextInput;
+				component.type = ComponentType::Text_Input;
 				component.customId = customIdNew;
 				component.style = static_cast<int32_t>(inputStyle);
 				component.title = titleNew;

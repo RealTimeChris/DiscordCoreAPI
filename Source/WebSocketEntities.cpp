@@ -1047,7 +1047,7 @@ namespace DiscordCoreInternal {
 														this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 														break;
 													}
-													case DiscordCoreAPI::ComponentType::SelectMenu: {
+													case DiscordCoreAPI::ComponentType::String_Select: {
 														eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 														*eventData->interactionData = *interactionData;
 														std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
@@ -1678,4 +1678,4 @@ namespace DiscordCoreInternal {
 			}
 		}
 	}
-}
+};

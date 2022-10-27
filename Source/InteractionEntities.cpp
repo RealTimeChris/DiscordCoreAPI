@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 		if (this->data.data.components.size() < 5) {
 			if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
 				ComponentData componentData;
-				componentData.type = ComponentType::SelectMenu;
+				componentData.type = ComponentType::String_Select;
 				componentData.placeholder = placeholder;
 				componentData.maxValues = maxValues;
 				componentData.minValues = minValues;
@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 		if (this->data.data.components.size() < 5) {
 			if (this->data.data.components[this->data.data.components.size() - 1].components.size() < 5) {
 				ComponentData component{};
-				component.type = ComponentType::TextInput;
+				component.type = ComponentType::Text_Input;
 				component.customId = customIdNew;
 				component.style = static_cast<int32_t>(inputStyle);
 				component.title = titleNew;

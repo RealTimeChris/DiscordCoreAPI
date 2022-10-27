@@ -1372,6 +1372,174 @@ namespace DiscordCoreAPI {
 		uint64_t lowBits{};
 	};
 
+	/**@}*/
+
+	/**
+	 * \addtogroup foundation_entities
+	 * @{
+	 */
+
+	/// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
+	enum class Permission : uint64_t {
+		Create_Instant_Invite = 1ull << 0,///< Create Instant Invite.
+		Kick_Members = 1ull << 1,///< Kick Members.
+		Ban_Members = 1ull << 2,///< Ban Members.
+		Administrator = 1ull << 3,///< Administrator.
+		Manage_Channels = 1ull << 4,///< Manage Channels.
+		Manage_Guild = 1ull << 5,///< Manage Guild.
+		Add_Reactions = 1ull << 6,///< Add Reactions.
+		View_Audit_Log = 1ull << 7,///< View Audit Log.
+		Priority_Speaker = 1ull << 8,///< Priority Speaker.
+		Stream = 1ull << 9,///< Stream.
+		View_Channel = 1ull << 10,///< View Channel.
+		Send_Messages = 1ull << 11,///< Send Messages.
+		Send_Tts_Messages = 1ull << 12,///< Send TTS Messages.
+		Manage_Messages = 1ull << 13,///< Manage Messages.
+		Embed_Links = 1ull << 14,///< Embed Links.
+		Attach_Files = 1ull << 15,///< Attach Files.
+		Read_Message_History = 1ull << 16,///< Read Message History.
+		Mention_Everyone = 1ull << 17,///< Mention Everyone.
+		Use_External_Emojis = 1ull << 18,///< Use External Emoji.
+		View_Guild_Insights = 1ull << 19,///< View Guild Insights.
+		Connect = 1ull << 20,///< Connect.
+		Speak = 1ull << 21,///< Speak.
+		Mute_Members = 1ull << 22,///< Mute Members.
+		Deafen_Members = 1ull << 23,///< Deafen Members.
+		Move_Members = 1ull << 24,///< Move Members.
+		Use_Vad = 1ull << 25,///< Use VAD.
+		Change_Nickname = 1ull << 26,///< Change Nickname.
+		Manage_Nicknames = 1ull << 27,///< Manage Nicknames.
+		Manage_Roles = 1ull << 28,///< Manage Roles.
+		Manage_Webhooks = 1ull << 29,///< Manage Webhooks.
+		Manage_Emojis_And_Stickers = 1ull << 30,///< Manage Emojis And Stickers.
+		Use_Application_Commands = 1ull << 31,///< Use Application Commands.
+		Request_To_Speak = 1ull << 32,///< Request To Speak.
+		Manage_Events = 1ull << 33,///< Manage Events.
+		Manage_Threads = 1ull << 34,///< Manage Threads.
+		Create_Public_Threads = 1ull << 35,///< Create Public Threads.
+		Create_Private_Threads = 1ull << 36,///< Create Private Threads.
+		Use_External_Stickers = 1ull << 37,///< Use External Stickers.
+		Send_Messages_In_Threads = 1ull << 38,///< Send Messages In Threads.
+		Start_Embedded_Activities = 1ull << 39,///< Start Embedded Activities.
+		Moderate_Members = 1ull << 40///< Moderate Members.
+	};
+
+	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
+	class DiscordCoreAPI_Dll Permissions {
+	  public:
+		Permissions() noexcept = default;
+
+		Permissions& operator=(Permission&& other);
+
+		Permissions(Permission&& permsNew);
+
+		Permissions& operator=(const Permission& other);
+
+		explicit Permissions(const Permission& permsNew);
+
+		Permissions& operator=(std::string&& other);
+
+		explicit Permissions(std::string&& permsNew);
+
+		Permissions& operator=(const std::string& other);
+
+		explicit Permissions(const std::string& permsNew);
+
+		Permissions& operator=(const uint64_t other);
+
+		explicit Permissions(const uint64_t permsNew);
+
+		operator uint64_t();
+
+		operator std::string();
+
+		/// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
+		/// \param guildMember The GuildMember who's Permissions to analyze.
+		/// \param channel The Channel withint which to check for Permissions.
+		/// \returns std::string A string containing the final Permission's value for a given Channel.
+		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
+
+		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
+		/// \param guildMember The GuildMember who to check the Permissions of.
+		/// \param channel The Channel within which to check for the Permission's presence.
+		/// \param permission A Permission to check the current Channel for.
+		/// \returns bool A bool suggesting the presence of the chosen Permission.
+		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
+
+		/// Returns a string containing the currently held Permissions in a given Guild. \brief Returns a string containing the currently held Permissions in a given Guild.
+		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
+		/// \returns std::string A string containing the current Permissions.
+		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
+
+		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
+		/// \param permissionsToRemove A vector containing the Permissions you wish to remove.
+		void removePermissions(const std::vector<Permission>& permissionsToRemove);
+
+		/// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
+		/// \param permissionsToAdd A vector containing the Permissions you wish to add.
+		void addPermissions(const std::vector<Permission>& permissionsToAdd);
+
+		/// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
+		/// \returns std::vector A vector full of strings of the Permissions that are in the input std::string's value.
+		std::vector<std::string> displayPermissions();
+
+		/// Returns a string containing the currently held Permissions. \brief Returns a string containing the currently held Permissions.
+		/// \returns std::string A string containing the current Permissions.
+		std::string getCurrentPermissionString();
+
+		/// Returns a string containing ALL of the possible Permissions. \brief Returns a string containing ALL of the possible Permissions.
+		/// \returns std::string A string containing all of the possible Permissions.
+		static std::string getAllPermissions();
+
+	  protected:
+		uint64_t thePermissions{};
+
+		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
+
+		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
+
+		static std::string computeBasePermissions(const GuildMember& guildMember);
+	};
+
+	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
+	/// \param currentFunctionName A string to display the current function's name.
+	/// \param theLocation For deriving the current file, line, and column - do not set this value.
+	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
+
+	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
+
+	DiscordCoreAPI_Dll std::string constructMultiPartData(std::string data, const std::vector<File>& files);
+
+	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
+
+	DiscordCoreAPI_Dll std::string base64Encode(const std::string&, bool = false);
+
+	DiscordCoreAPI_Dll std::string loadFileContents(const std::string& filePath);
+
+	DiscordCoreAPI_Dll std::string utf8MakeValid(const std::string& inputString);
+
+	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
+
+	DiscordCoreAPI_Dll void spinLock(uint64_t timeInNsToSpinLockFor);
+
+	DiscordCoreAPI_Dll std::string generateBase64EncodedKey();
+
+	DiscordCoreAPI_Dll std::string shiftToBrightGreen();
+
+	DiscordCoreAPI_Dll std::string shiftToBrightBlue();
+
+	DiscordCoreAPI_Dll std::string shiftToBrightRed();
+
+	DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
+
+	DiscordCoreAPI_Dll std::string escapeCharacters(std::string_view string);
+
+	DiscordCoreAPI_Dll std::string reset();
+
+	/// Acquires a timeStamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timeStamp with the current time and date - suitable for use in message-embeds.
+	/// \returns std::string A string containing the current date-time stamp.
+	DiscordCoreAPI_Dll std::string getTimeAndDate();
+
 	template<typename TimeType>
 	/// Class for representing a timeStamp, as well as working with time-related values. \brief Class for representing a timeStamp, as well as working with time-related values.
 	class DiscordCoreAPI_Dll TimeStamp {
@@ -1393,8 +1561,7 @@ namespace DiscordCoreAPI {
 		}
 
 		TimeStamp<TimeType>& operator=(std::string&& originalTimeStampNew) {
-			std::string string = originalTimeStampNew;
-			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, string);
+			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
 			this->getISO8601TimeStamp(TimeFormat::LongDateTime);
 			return *this;
 		}
@@ -1404,8 +1571,7 @@ namespace DiscordCoreAPI {
 		}
 
 		TimeStamp<TimeType>& operator=(std::string& originalTimeStampNew) {
-			std::string string = originalTimeStampNew;
-			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, string);
+			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
 			this->getISO8601TimeStamp(TimeFormat::LongDateTime);
 			return *this;
 		}
@@ -1625,6 +1791,7 @@ namespace DiscordCoreAPI {
 					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count();
 				}
 			} catch (...) {
+				reportException("TimeStamp::convertTimeStampToTimeUnits()");
 			}
 		}
 
@@ -1675,174 +1842,6 @@ namespace DiscordCoreAPI {
 			return timeStamp;
 		}
 	};
-
-	/**@}*/
-
-	/**
-	 * \addtogroup foundation_entities
-	 * @{
-	 */
-
-	/// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
-	enum class Permission : uint64_t {
-		Create_Instant_Invite = 1ull << 0,///< Create Instant Invite.
-		Kick_Members = 1ull << 1,///< Kick Members.
-		Ban_Members = 1ull << 2,///< Ban Members.
-		Administrator = 1ull << 3,///< Administrator.
-		Manage_Channels = 1ull << 4,///< Manage Channels.
-		Manage_Guild = 1ull << 5,///< Manage Guild.
-		Add_Reactions = 1ull << 6,///< Add Reactions.
-		View_Audit_Log = 1ull << 7,///< View Audit Log.
-		Priority_Speaker = 1ull << 8,///< Priority Speaker.
-		Stream = 1ull << 9,///< Stream.
-		View_Channel = 1ull << 10,///< View Channel.
-		Send_Messages = 1ull << 11,///< Send Messages.
-		Send_Tts_Messages = 1ull << 12,///< Send TTS Messages.
-		Manage_Messages = 1ull << 13,///< Manage Messages.
-		Embed_Links = 1ull << 14,///< Embed Links.
-		Attach_Files = 1ull << 15,///< Attach Files.
-		Read_Message_History = 1ull << 16,///< Read Message History.
-		Mention_Everyone = 1ull << 17,///< Mention Everyone.
-		Use_External_Emojis = 1ull << 18,///< Use External Emoji.
-		View_Guild_Insights = 1ull << 19,///< View Guild Insights.
-		Connect = 1ull << 20,///< Connect.
-		Speak = 1ull << 21,///< Speak.
-		Mute_Members = 1ull << 22,///< Mute Members.
-		Deafen_Members = 1ull << 23,///< Deafen Members.
-		Move_Members = 1ull << 24,///< Move Members.
-		Use_Vad = 1ull << 25,///< Use VAD.
-		Change_Nickname = 1ull << 26,///< Change Nickname.
-		Manage_Nicknames = 1ull << 27,///< Manage Nicknames.
-		Manage_Roles = 1ull << 28,///< Manage Roles.
-		Manage_Webhooks = 1ull << 29,///< Manage Webhooks.
-		Manage_Emojis_And_Stickers = 1ull << 30,///< Manage Emojis And Stickers.
-		Use_Application_Commands = 1ull << 31,///< Use Application Commands.
-		Request_To_Speak = 1ull << 32,///< Request To Speak.
-		Manage_Events = 1ull << 33,///< Manage Events.
-		Manage_Threads = 1ull << 34,///< Manage Threads.
-		Create_Public_Threads = 1ull << 35,///< Create Public Threads.
-		Create_Private_Threads = 1ull << 36,///< Create Private Threads.
-		Use_External_Stickers = 1ull << 37,///< Use External Stickers.
-		Send_Messages_In_Threads = 1ull << 38,///< Send Messages In Threads.
-		Start_Embedded_Activities = 1ull << 39,///< Start Embedded Activities.
-		Moderate_Members = 1ull << 40///< Moderate Members.
-	};
-
-	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
-	class DiscordCoreAPI_Dll Permissions {
-	  public:
-		Permissions() noexcept = default;
-
-		Permissions& operator=(Permission&& other);
-
-		Permissions(Permission&& permsNew);
-
-		Permissions& operator=(const Permission& other);
-
-		explicit Permissions(const Permission& permsNew);
-
-		Permissions& operator=(std::string&& other);
-
-		explicit Permissions(std::string&& permsNew);
-
-		Permissions& operator=(const std::string& other);
-
-		explicit Permissions(const std::string& permsNew);
-
-		Permissions& operator=(const uint64_t other);
-
-		explicit Permissions(const uint64_t permsNew);
-
-		operator uint64_t();
-
-		operator std::string();
-
-		/// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
-		/// \param guildMember The GuildMember who's Permissions to analyze.
-		/// \param channel The Channel withint which to check for Permissions.
-		/// \returns std::string A string containing the final Permission's value for a given Channel.
-		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
-
-		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
-		/// \param guildMember The GuildMember who to check the Permissions of.
-		/// \param channel The Channel within which to check for the Permission's presence.
-		/// \param permission A Permission to check the current Channel for.
-		/// \returns bool A bool suggesting the presence of the chosen Permission.
-		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
-
-		/// Returns a string containing the currently held Permissions in a given Guild. \brief Returns a string containing the currently held Permissions in a given Guild.
-		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
-		/// \returns std::string A string containing the current Permissions.
-		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
-
-		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
-		/// \param permissionsToRemove A vector containing the Permissions you wish to remove.
-		void removePermissions(const std::vector<Permission>& permissionsToRemove);
-
-		/// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
-		/// \param permissionsToAdd A vector containing the Permissions you wish to add.
-		void addPermissions(const std::vector<Permission>& permissionsToAdd);
-
-		/// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
-		/// \returns std::vector A vector full of strings of the Permissions that are in the input std::string's value.
-		std::vector<std::string> displayPermissions();
-
-		/// Returns a string containing the currently held Permissions. \brief Returns a string containing the currently held Permissions.
-		/// \returns std::string A string containing the current Permissions.
-		std::string getCurrentPermissionString();
-
-		/// Returns a string containing ALL of the possible Permissions. \brief Returns a string containing ALL of the possible Permissions.
-		/// \returns std::string A string containing all of the possible Permissions.
-		static std::string getAllPermissions();
-
-	  protected:
-		uint64_t thePermissions{};
-
-		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
-
-		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
-
-		static std::string computeBasePermissions(const GuildMember& guildMember);
-	};
-
-	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
-	/// \param currentFunctionName A string to display the current function's name.
-	/// \param theLocation For deriving the current file, line, and column - do not set this value.
-	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
-
-	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location theLocation = std::source_location::current());
-
-	DiscordCoreAPI_Dll std::string constructMultiPartData(std::string data, const std::vector<File>& files);
-
-	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
-
-	DiscordCoreAPI_Dll std::string base64Encode(const std::string&, bool = false);
-
-	DiscordCoreAPI_Dll std::string loadFileContents(const std::string& filePath);
-
-	DiscordCoreAPI_Dll std::string utf8MakeValid(const std::string& inputString);
-
-	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
-
-	DiscordCoreAPI_Dll void spinLock(uint64_t timeInNsToSpinLockFor);
-
-	DiscordCoreAPI_Dll std::string generateBase64EncodedKey();
-
-	DiscordCoreAPI_Dll std::string shiftToBrightGreen();
-
-	DiscordCoreAPI_Dll std::string shiftToBrightBlue();
-
-	DiscordCoreAPI_Dll std::string shiftToBrightRed();
-
-	DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
-
-	DiscordCoreAPI_Dll std::string escapeCharacters(std::string_view string);
-
-	DiscordCoreAPI_Dll std::string reset();
-
-	/// Acquires a timeStamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timeStamp with the current time and date - suitable for use in message-embeds.
-	/// \returns std::string A string containing the current date-time stamp.
-	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
 	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
 		if (enabled) {
