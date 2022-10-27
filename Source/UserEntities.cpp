@@ -124,8 +124,10 @@ namespace DiscordCoreAPI {
 			} else {
 				serializer.refreshString(JsonifierSerializeType::Json);
 			}
-			string = this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->prepMessageData(serializer.operator std::string(),
-				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get())
+			string = this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->prepMessageData(
+				serializer.operator std::string(),
+				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(
+					this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get())
 					->dataOpCode);
 			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string, true);
 		}
@@ -144,8 +146,10 @@ namespace DiscordCoreAPI {
 			} else {
 				serializer.refreshString(JsonifierSerializeType::Json);
 			}
-			string = this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->prepMessageData(serializer.operator std::string(),
-				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get())
+			string = this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->prepMessageData(
+				serializer.operator std::string(),
+				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(
+					this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get())
 					->dataOpCode);
 			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string, true);
 		}
@@ -229,13 +233,13 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/users/" + dataPackage.userId;
 		workload.callStack = "Users::getUserAsync()";
 		User data{};
-		data.id = dataPackage.userId;
-		if (!Users::cache.contains(data)) {
-			Users::cache.emplace(data);
-		}
-		data = Users::cache.at(data);
 		data = Users::httpsClient->submitWorkloadAndGetResult<User>(workload, &data);
-		Users::insertUser(data);
+		if (Users::cache.contains(data)) {
+			data = Users::cache.at(data);
+		} else {
+			Users::cache.emplace(data);
+			Users::insertUser(data);
+		}
 		co_return std::move(data);
 	}
 

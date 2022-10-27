@@ -285,16 +285,15 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		RoleData data{};
-		data.id = dataPackage.roleId;
-		if (!Roles::cache.contains(data)) {
+		Role data{};
+		data = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload, &data);
+		if (Roles::cache.contains(data)) {
+			data = Roles::cache.at(data);
+		} else {
 			Roles::cache.emplace(data);
+			Roles::insertRole(data);
 		}
-		Role dataNew{};
-		dataNew = Roles::cache.at(data);
-		dataNew = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload, &dataNew);
-		Roles::insertRole(dataNew);
-		co_return std::move(dataNew);
+		co_return std::move(data);
 	}
 
 	CoRoutine<void> Roles::removeGuildRoleAsync(RemoveGuildRoleData dataPackage) {

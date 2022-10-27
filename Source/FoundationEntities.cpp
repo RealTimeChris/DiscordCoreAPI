@@ -1257,8 +1257,8 @@ namespace DiscordCoreAPI {
 		this->id = getId(jsonObjectData, "id");
 	}
 
-	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute, StreamType streamTypeNew,
-		StreamInfo streamInfoNew) {
+	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute,
+		StreamType streamTypeNew, StreamInfo streamInfoNew) {
 		if (DiscordCoreClient::getVoiceConnection(this->id) && DiscordCoreClient::getVoiceConnection(this->id)->areWeConnected()) {
 			this->voiceConnectionPtr = DiscordCoreClient::getVoiceConnection(this->id);
 			return this->voiceConnectionPtr;
@@ -1273,8 +1273,9 @@ namespace DiscordCoreAPI {
 				channelId = channelId;
 			}
 			uint64_t theShardId{ (this->id.operator size_t() >> 22) % this->discordCoreClient->configManager.getTotalShardCount() };
-			auto theBaseSocketAgentIndex{ static_cast<int32_t>(floor(static_cast<float>(theShardId) /
-				static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount()) * this->discordCoreClient->baseSocketAgentsMap.size())) };
+			auto theBaseSocketAgentIndex{ static_cast<int32_t>(
+				floor(static_cast<float>(theShardId) / static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount()) *
+					this->discordCoreClient->baseSocketAgentsMap.size())) };
 			VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.currentShard = theShardId;
 			voiceConnectInitData.streamType = streamTypeNew;
@@ -1427,7 +1428,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (Channels::doWeCacheChannels) {
+		if (Channels::doWeCacheChannels()) {
 			this->channels.clear();
 			if (jsonObjectData["channels"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (auto value: arrayValue) {
@@ -2174,7 +2175,6 @@ namespace DiscordCoreAPI {
 				this->channelTypes.emplace_back(std::move(newData));
 			}
 		}
-
 	}
 
 	ChannelMentionData::ChannelMentionData(simdjson::ondemand::value jsonObjectData) {
@@ -2872,7 +2872,8 @@ namespace DiscordCoreAPI {
 	Song::Song(simdjson::ondemand::value jsonObjectData) {
 		try {
 			this->duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData"), "label");
-			std::string newString = getString(getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0), "text");
+			std::string newString = getString(
+				getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0), "text");
 			if (newString.size() > 256) {
 				newString = newString.substr(0, 256);
 			}
@@ -3205,7 +3206,8 @@ namespace DiscordCoreAPI {
 		if (this->type == DiscordCoreAPI::ApplicationCommandOptionType::Channel) {
 			data["channel_types"] = this->channelTypes;
 		}
-		if (this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command && this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group) {
+		if (this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command &&
+			this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group) {
 			data["required"] = this->required;
 		}
 		if (this->descriptionLocalizations.size() > 0) {
@@ -3528,8 +3530,8 @@ namespace DiscordCoreAPI {
 		*this = dataPackage;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	RespondToInputEventData& RespondToInputEventData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel,
+		ButtonStyle buttonStyle, const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3554,8 +3556,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues) {
+	RespondToInputEventData& RespondToInputEventData::addSelectMenu(bool disabled, const std::string& customIdNew,
+		std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues, int32_t minValues) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3579,8 +3581,9 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+	RespondToInputEventData& RespondToInputEventData::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew,
+		const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle,
+		const std::string& label, const std::string& placeholder) {
 		this->title = topTitleNew;
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {
@@ -3681,8 +3684,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	MessageResponseBase& MessageResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel,
+		ButtonStyle buttonStyle, const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3707,8 +3710,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
-		int32_t maxValues, int32_t minValues) {
+	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
+		const std::string& placeholder, int32_t maxValues, int32_t minValues) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3733,7 +3736,8 @@ namespace DiscordCoreAPI {
 	}
 
 	MessageResponseBase& MessageResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label,
+		const std::string& placeholder) {
 		this->title = topTitleNew;
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {
@@ -3825,7 +3829,8 @@ namespace DiscordCoreAPI {
 				data["data"]["components"].emplaceBack(value);
 			}
 		}
-		if (this->data.allowedMentions.parse.size() > 0 || this->data.allowedMentions.roles.size() > 0 || this->data.allowedMentions.users.size() > 0) {
+		if (this->data.allowedMentions.parse.size() > 0 || this->data.allowedMentions.roles.size() > 0 ||
+			this->data.allowedMentions.users.size() > 0) {
 			data["data"]["allowed_mentions"] = this->data.allowedMentions.operator DiscordCoreAPI::Jsonifier();
 		}
 		if (this->data.choices.size() > 0) {
@@ -3881,7 +3886,8 @@ namespace DiscordCoreAPI {
 			this->optionsArgs.values.emplace("target_id",
 				JsonStringValue{ .value = inputEventData.interactionData->data.messageInteractionData.targetId, .type = JsonType::String });
 		} else if (inputEventData.interactionData->data.userInteractionData.targetId != 0) {
-			this->optionsArgs.values.emplace("target_id", JsonStringValue{ .value = inputEventData.interactionData->data.userInteractionData.targetId, .type = JsonType::String });
+			this->optionsArgs.values.emplace("target_id",
+				JsonStringValue{ .value = inputEventData.interactionData->data.userInteractionData.targetId, .type = JsonType::String });
 		}
 		this->eventData = inputEventData;
 		for (auto& value: this->eventData.interactionData->data.applicationCommandData.options) {

@@ -83,7 +83,8 @@ namespace DiscordCoreAPI {
 		if (data.data.size() == 0) {
 			data.data.resize(23040);
 		}
-		data.sampleCount = opus_decode(*this, reinterpret_cast<const unsigned char*>(dataToDecode.data()), static_cast<opus_int32>(dataToDecode.size()), data.data.data(), 5760, 0);
+		data.sampleCount = opus_decode(*this, reinterpret_cast<const unsigned char*>(dataToDecode.data()),
+			static_cast<opus_int32>(dataToDecode.size()), data.data.data(), 5760, 0);
 		return;
 	}
 
@@ -122,8 +123,8 @@ namespace DiscordCoreAPI {
 			for (uint8_t x = 0; x < headerSize; ++x) {
 				this->data[x] = header[x];
 			}
-			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->data.data()) + headerSize, audioData.data.data(), audioData.data.size(), nonceForLibSodium.data(),
-					this->keys.data()) != 0) {
+			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->data.data()) + headerSize, audioData.data.data(), audioData.data.size(),
+					nonceForLibSodium.data(), this->keys.data()) != 0) {
 				return "";
 			}
 			return std::string_view{ this->data.data(), numOfBytes };
@@ -213,7 +214,8 @@ namespace DiscordCoreAPI {
 						break;
 					}
 					case 8: {
-						this->heartBeatStopWatch = StopWatch{ std::chrono::milliseconds{ static_cast<uint32_t>(getFloat(value["d"], "heartbeat_interval")) } };
+						this->heartBeatStopWatch =
+							StopWatch{ std::chrono::milliseconds{ static_cast<uint32_t>(getFloat(value["d"], "heartbeat_interval")) } };
 						this->areWeHeartBeating = true;
 						this->connectionState.store(VoiceConnectionState::Sending_Identify);
 						this->currentState.store(DiscordCoreInternal::WebSocketState::Authenticated);
@@ -487,8 +489,8 @@ namespace DiscordCoreAPI {
 								SongCompletionEventData completionEventData{};
 								completionEventData.guild = Guilds::getCachedGuild({ .guildId = this->voiceConnectInitData.guildId });
 								if (this->currentGuildMemberId != 0) {
-									completionEventData.guildMember =
-										GuildMembers::getCachedGuildMember({ .guildMemberId = this->currentGuildMemberId, .guildId = this->voiceConnectInitData.guildId });
+									completionEventData.guildMember = GuildMembers::getCachedGuildMember(
+										{ .guildMemberId = this->currentGuildMemberId, .guildId = this->voiceConnectInitData.guildId });
 								}
 								completionEventData.wasItAFail = false;
 								DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->onSongCompletionEvent(completionEventData);
@@ -533,7 +535,9 @@ namespace DiscordCoreAPI {
 						this->audioData.type = AudioFrameType::Unset;
 						totalTime += std::chrono::steady_clock::now() - startingValue;
 						auto intervalCountNew =
-							DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - (totalTime.time_since_epoch() / frameCounter) }.time_since_epoch().count();
+							DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - (totalTime.time_since_epoch() / frameCounter) }
+								.time_since_epoch()
+								.count();
 						intervalCount = DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew) } };
 						targetTime = std::chrono::steady_clock::now().time_since_epoch() + intervalCount;
 					}
@@ -582,7 +586,8 @@ namespace DiscordCoreAPI {
 				if (this->decryptedString.size() != encryptedDataLength) {
 					this->decryptedString.resize(encryptedDataLength);
 				}
-				if (crypto_secretbox_open_easy(this->decryptedString.data(), encryptedData, encryptedDataLength, nonce.data(), this->secretKeySend.data())) {
+				if (crypto_secretbox_open_easy(this->decryptedString.data(), encryptedData, encryptedDataLength, nonce.data(),
+						this->secretKeySend.data())) {
 					return;
 				}
 				if (this->decryptedDataString.size() != encryptedDataLength) {
@@ -600,7 +605,8 @@ namespace DiscordCoreAPI {
 				}
 				this->rawDataBuffer.clear();
 				if (this->decryptedDataString.size() > 0 && (this->decryptedDataString.size() - 16) > 0) {
-					std::string_view stringNew{ this->decryptedDataString.data(), this->decryptedDataString.data() + this->decryptedDataString.size() - 16 };
+					std::string_view stringNew{ this->decryptedDataString.data(),
+						this->decryptedDataString.data() + this->decryptedDataString.size() - 16 };
 					std::unique_lock lock00{ this->voiceUserMutex };
 					if (this->voiceUsers.contains(speakerSsrc)) {
 						this->voiceUsers[speakerSsrc].decoder.decodeData(stringNew, this->decodeData);
@@ -627,7 +633,8 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::areWeCurrentlyPlaying() noexcept {
-		return (this->areWePlaying.load() && this->activeState.load() == VoiceActiveState::Playing) || this->activeState.load() == VoiceActiveState::Paused;
+		return (this->areWePlaying.load() && this->activeState.load() == VoiceActiveState::Playing) ||
+			this->activeState.load() == VoiceActiveState::Paused;
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
@@ -641,7 +648,8 @@ namespace DiscordCoreAPI {
 		}
 		switch (this->connectionState.load()) {
 			case VoiceConnectionState::Collecting_Init_Data: {
-				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId.operator size_t()] = &this->voiceConnectionDataBuffer;
+				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId.operator size_t()] =
+					&this->voiceConnectionDataBuffer;
 				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId.operator size_t()]->clearContents();
 				this->baseShard->getVoiceConnectionData(this->voiceConnectInitData);
 
@@ -663,8 +671,9 @@ namespace DiscordCoreAPI {
 				}
 				WebSocketCore::currentState.store(DiscordCoreInternal::WebSocketState::Upgrading);
 				std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
-					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + generateBase64EncodedKey() +
-					"\r\nSec-WebSocket-Version: 13\r\n\r\n";
+					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: "
+					"Upgrade\r\nSec-WebSocket-Key: " +
+					generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 				this->shard[0] = 0;
 				this->shard[1] = 1;
 				if (!WebSocketCore::sendMessage(sendVector, true)) {

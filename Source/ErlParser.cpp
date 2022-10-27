@@ -181,7 +181,8 @@ namespace DiscordCoreInternal {
 				return this->parseMapExt();
 			}
 			default: {
-				throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Unknown data type in ETF, the type: " + std::to_string(type) + "\n\n" };
+				throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Unknown data type in ETF, the type: " + std::to_string(type) +
+					"\n\n" };
 			}
 		}
 	}
@@ -203,7 +204,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlParser::parseSmallIntegerExt() {
-		auto string = std::to_string(this->readBitsFromBuffer<int8_t>());
+		auto string = std::to_string(this->readBitsFromBuffer<uint8_t>());
 		this->writeCharacters(string.data(), string.size());
 	}
 
@@ -235,9 +236,11 @@ namespace DiscordCoreInternal {
 		this->writeCharacter('\"');
 		auto digits = this->readBitsFromBuffer<uint8_t>();
 		uint8_t sign = this->readBitsFromBuffer<uint8_t>();
-		if (digits > 128) {
+
+		if (digits > 8) {
 			throw ErlParseError{ "ErlParser::parseSmallBigExt() Error: Integers larger than 8 bytes are not supported.\n\n" };
 		}
+
 		uint64_t value = 0;
 		uint64_t b = 1;
 		for (uint32_t x = 0; x < digits; ++x) {
@@ -246,6 +249,7 @@ namespace DiscordCoreInternal {
 			value += digitNew * b;
 			b <<= 8;
 		}
+
 		if (digits <= 4) {
 			if (sign == 0) {
 				auto string = std::to_string(value);
@@ -259,15 +263,13 @@ namespace DiscordCoreInternal {
 				return;
 			}
 		}
-		char outBuffer[32] = { 0 };
-		const char* formatString = sign == 0 ? "%llu" : "-%ll";
-		auto valueNew = sign == 0 ? static_cast<uint64_t>(value) : static_cast<int64_t>(value);
-		const int32_t res = sprintf(outBuffer, formatString, valueNew);
-		if (res < 0) {
-			throw ErlParseError{ "ErlParser::parseSmallBigExt() Error: Parse big integer failed.\n\n" };
+		std::string string{};
+		if (sign == 0) {
+			string = std::to_string(value);
+		} else {
+			string = std::to_string(-(static_cast<int64_t>(value)));
 		}
-		const uint8_t length = static_cast<uint8_t>(res);
-		this->writeCharacters(outBuffer, length);
+		this->writeCharacters(string.data(), string.size());
 		this->writeCharacter('\"');
 	}
 

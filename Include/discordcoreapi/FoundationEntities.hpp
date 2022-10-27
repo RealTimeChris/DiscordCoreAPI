@@ -1028,7 +1028,7 @@ namespace DiscordCoreAPI {
 		std::vector<OverWriteData> permissionOverwrites{};///< Permission overwrites.
 		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
 		SortOrderTypes defaultSortOrder{};///< Default sorting order for a forum thread.
-		int32_t memberCount{ 0 };///< Count of members active in the Channel.
+		uint32_t memberCount{ 0 };///< Count of members active in the Channel.
 		uint16_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
 		StringWrapper topic{};///< Channel topic.
 		Snowflake parentId{};///< Id of the Channel's parent Channel/category.
@@ -1854,7 +1854,7 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> members{};///< Array of GuildMembers.
 		std::vector<Snowflake> roles{};///< Array of Guild roles.
 		std::vector<Snowflake> emoji{};///< Array of Guild channels.
-		int32_t memberCount{ 0 };///< Member count.
+		uint32_t memberCount{ 0 };///< Member count.
 		StringWrapper name{};///< The Guild's name.
 		Snowflake ownerId{};///< User id of the Guild's owner.
 		int8_t flags{ 0 };///< Guild flags.
@@ -2545,7 +2545,7 @@ namespace DiscordCoreAPI {
 	  public:
 		std::vector<ThreadMemberData> addedMembers{};///< New members added to the Thread.
 		std::vector<std::string> removedMemberIds{};///< Members who have been removed.
-		int32_t memberCount{ 0 };///< Number of Guild-members in the Thread.
+		uint32_t memberCount{ 0 };///< Number of Guild-members in the Thread.
 		Snowflake guildId{};///< Guild id of the Thread.
 
 		ThreadMembersUpdateData() noexcept = default;

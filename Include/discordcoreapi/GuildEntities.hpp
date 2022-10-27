@@ -588,6 +588,8 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> leaveGuildAsync(LeaveGuildData dataPackage);
 
+		static ObjectCache<GuildData>& getCache();
+
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<GuildData> cache;

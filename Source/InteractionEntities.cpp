@@ -31,8 +31,8 @@
 
 namespace DiscordCoreAPI {
 
-	InteractionResponseBase& InteractionResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-		const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	InteractionResponseBase& InteractionResponseBase::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel,
+		ButtonStyle buttonStyle, const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
 			this->data.data.components.emplace_back(actionRowData);
@@ -57,8 +57,8 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues) {
+	InteractionResponseBase& InteractionResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew,
+		std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues, int32_t minValues) {
 		if (this->data.data.components.size() == 0) {
 			ActionRowData actionRowData;
 			this->data.data.components.emplace_back(actionRowData);
@@ -82,8 +82,9 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	InteractionResponseBase& InteractionResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
+	InteractionResponseBase& InteractionResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew,
+		const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle,
+		const std::string& label, const std::string& placeholder) {
 		this->data.data.title = topTitleNew;
 		this->data.data.customId = topCustomIdNew;
 		if (this->data.data.components.size() == 0) {
@@ -424,7 +425,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Post_Interaction_Response };
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
-		workload.relativePath = "/interactions/" + dataPackage.interactionPackage.interactionId + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
+		workload.relativePath =
+			"/interactions/" + dataPackage.interactionPackage.interactionId + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			auto serializer = dataPackage.data.operator DiscordCoreAPI::Jsonifier();
@@ -460,7 +462,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Interaction_Response };
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
+		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
+			"/messages/@original";
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			auto serializer = dataPackage.data.operator DiscordCoreAPI::Jsonifier();
@@ -480,7 +483,8 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/@original";
+		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
+			"/messages/@original";
 		workload.callStack = "Interactions::deleteInteractionResponseAsync()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -517,8 +521,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Followup_Message };
 		co_await NewThreadAwaitable<Message>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
-		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
-			dataPackage.messagePackage.messageId;
+		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
+			"/messages/" + dataPackage.messagePackage.messageId;
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
 			auto serializer = dataPackage.data.operator DiscordCoreAPI::Jsonifier();
@@ -538,8 +542,8 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
-		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken + "/messages/" +
-			dataPackage.messagePackage.messageId;
+		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
+			"/messages/" + dataPackage.messagePackage.messageId;
 		workload.callStack = "Interactions::deleteFollowUpMessageToBeWrappe()";
 		co_return Interactions::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
@@ -552,8 +556,8 @@ namespace DiscordCoreAPI {
 		SelectMenuCollector::selectMenuInteractionBuffersMap[this->buffersMapKey] = &this->selectMenuIncomingInteractionBuffer;
 	}
 
-	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
-		int32_t maxCollectedSelectMenuCountNew, Snowflake targetUser) {
+	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew,
+		int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, Snowflake targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
 		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;
@@ -680,8 +684,8 @@ namespace DiscordCoreAPI {
 		ButtonCollector::buttonInteractionBuffersMap[this->buffersMapKey] = &this->buttonIncomingInteractionBuffer;
 	}
 
-	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew, int32_t maxNumberOfPressesNew,
-		Snowflake targetUser) {
+	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
+		int32_t maxNumberOfPressesNew, Snowflake targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
 		if (targetUser == 0 && !getButtonDataForAllNew) {
 			throw std::runtime_error{ "ButtonCollector::collectButtonData(), You've failed to "

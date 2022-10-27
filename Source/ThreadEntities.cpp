@@ -53,7 +53,8 @@ namespace DiscordCoreAPI {
 
 	StartThreadInForumChannelData::operator Jsonifier() {
 		Jsonifier data{};
-		if (this->message.allowedMentions.parse.size() > 0 || this->message.allowedMentions.roles.size() > 0 || this->message.allowedMentions.users.size() > 0) {
+		if (this->message.allowedMentions.parse.size() > 0 || this->message.allowedMentions.roles.size() > 0 ||
+			this->message.allowedMentions.users.size() > 0) {
 			data["message"]["allowed_mentions"] = this->message.allowedMentions.operator DiscordCoreAPI::Jsonifier();
 		}
 		for (auto& value: this->message.attachments) {

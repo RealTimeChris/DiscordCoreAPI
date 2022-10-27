@@ -42,8 +42,8 @@ namespace DiscordCoreAPI {
 		guildNew.id = guildId;
 		const GuildData* guild = &Guilds::cache.at(guildNew);
 		if (!Globals::soundCloudAPIMap.contains(guildId.operator size_t())) {
-			Globals::soundCloudAPIMap[guildId.operator size_t()] =
-				std::make_unique<DiscordCoreInternal::SoundCloudAPI>(&guild->discordCoreClient->configManager, guild->discordCoreClient->httpsClient.get(), guildId);
+			Globals::soundCloudAPIMap[guildId.operator size_t()] = std::make_unique<DiscordCoreInternal::SoundCloudAPI>(
+				&guild->discordCoreClient->configManager, guild->discordCoreClient->httpsClient.get(), guildId);
 		}
 		return Globals::soundCloudAPIMap[guildId.operator size_t()].get();
 	}
@@ -53,8 +53,8 @@ namespace DiscordCoreAPI {
 		guildNew.id = guildId;
 		const GuildData* guild = &Guilds::cache.at(guildNew);
 		if (!Globals::youtubeAPIMap.contains(guildId.operator size_t())) {
-			Globals::youtubeAPIMap[guildId.operator size_t()] =
-				std::make_unique<DiscordCoreInternal::YouTubeAPI>(&guild->discordCoreClient->configManager, guild->discordCoreClient->httpsClient.get(), guildId);
+			Globals::youtubeAPIMap[guildId.operator size_t()] = std::make_unique<DiscordCoreInternal::YouTubeAPI>(
+				&guild->discordCoreClient->configManager, guild->discordCoreClient->httpsClient.get(), guildId);
 		}
 		return Globals::youtubeAPIMap[guildId.operator size_t()].get();
 	}
@@ -67,8 +67,8 @@ namespace DiscordCoreAPI {
 			uint64_t theShardId{ (guildId.operator size_t() >> 22) % guild->discordCoreClient->configManager.getTotalShardCount() };
 			uint64_t baseSocketIndex{ theShardId % guild->discordCoreClient->baseSocketAgentsMap.size() };
 			auto baseSocketAgent = guild->discordCoreClient->baseSocketAgentsMap[baseSocketIndex].get();
-			Globals::voiceConnectionMap[guildId.operator size_t()] =
-				std::make_unique<VoiceConnection>(baseSocketAgent, baseSocketAgent->shardMap[theShardId].get(), &guild->discordCoreClient->configManager, &Globals::doWeQuit);
+			Globals::voiceConnectionMap[guildId.operator size_t()] = std::make_unique<VoiceConnection>(baseSocketAgent,
+				baseSocketAgent->shardMap[theShardId].get(), &guild->discordCoreClient->configManager, &Globals::doWeQuit);
 		}
 		guild->voiceConnectionPtr = Globals::voiceConnectionMap[guildId.operator size_t()].get();
 		return guild->voiceConnectionPtr;
@@ -177,8 +177,8 @@ namespace DiscordCoreAPI {
 		this->didWeStartCorrectly = true;
 	}
 
-	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction, CreateApplicationCommandData commandData,
-		bool alwaysRegister) {
+	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction,
+		CreateApplicationCommandData commandData, bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 		this->commandsToRegister.emplace_back(commandData);
@@ -187,7 +187,8 @@ namespace DiscordCoreAPI {
 	void DiscordCoreClient::registerFunctionsInternal() {
 		std::vector<ApplicationCommand> theCommands{};
 		try {
-			theCommands = ApplicationCommands::getGlobalApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get();
+			theCommands =
+				ApplicationCommands::getGlobalApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get();
 		} catch (...) {
 			reportException("DiscordCoreClient::registerFunctionsInternal()");
 			return;
@@ -205,9 +206,9 @@ namespace DiscordCoreAPI {
 			} else {
 				std::vector<ApplicationCommand> guildCommands{};
 				if (data.guildId != 0) {
-					guildCommands =
-						ApplicationCommands::getGuildApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id, .guildId = data.guildId })
-							.get();
+					guildCommands = ApplicationCommands::getGuildApplicationCommandsAsync(
+						{ .withLocalizations = false, .applicationId = this->getBotUser().id, .guildId = data.guildId })
+										.get();
 				}
 				bool doesItExist{ false };
 				for (auto& value: theCommands) {
@@ -315,7 +316,8 @@ namespace DiscordCoreAPI {
 		this->connectionStopWatch.resetTimer();
 		for (uint32_t x = 0; x < this->configManager.getTotalShardCount(); ++x) {
 			if (!this->baseSocketAgentsMap.contains(x % theWorkerCount)) {
-				this->baseSocketAgentsMap[x % theWorkerCount] = std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);
+				this->baseSocketAgentsMap[x % theWorkerCount] =
+					std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);
 			}
 			ConnectionPackage data{};
 			data.currentShard = x;
@@ -327,7 +329,8 @@ namespace DiscordCoreAPI {
 			this->connectionStopWatch.resetTimer();
 		}
 		try {
-			this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentsMap[this->configManager.getStartingShard()].get() };
+			this->currentUser =
+				BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentsMap[this->configManager.getStartingShard()].get() };
 		} catch (...) {
 			reportException("DiscordCoreClient::instantiateWebSockets()");
 		}

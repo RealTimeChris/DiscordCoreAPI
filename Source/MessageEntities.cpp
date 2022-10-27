@@ -47,19 +47,22 @@ namespace DiscordCoreAPI {
 		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Objects before returning the results.
 		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
 		/// \returns A ObjectCollectorReturnData structure.
-		CoRoutine<ObjectCollectorReturnData<Message>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew, ObjectFilter<Message> filteringFunctionNew) {
+		CoRoutine<ObjectCollectorReturnData<Message>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew,
+			ObjectFilter<Message> filteringFunctionNew) {
 			co_await NewThreadAwaitable<ObjectCollectorReturnData<Message>>();
 			this->quantityOfObjectToCollect = quantityToCollect;
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
-			this->collectorId = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+			this->collectorId =
+				std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 			ObjectCollector::objectsBuffersMap[this->collectorId] = &this->messagesBuffer;
 			this->run();
 			co_return std::move(this->messageReturnData);
 		}
 
 		void run() {
-			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+			int64_t startingTime = static_cast<int64_t>(
+				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 			int64_t elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
 				Message message{};
@@ -71,7 +74,8 @@ namespace DiscordCoreAPI {
 					break;
 				}
 
-				elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() - startingTime;
+				elapsedTime =
+					std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() - startingTime;
 			}
 		}
 

@@ -173,7 +173,8 @@ namespace DiscordCoreAPI {
 		AutoModerationRules::httpsClient = HttpsClientNew;
 	}
 
-	CoRoutine<std::vector<AutoModerationRule>> AutoModerationRules::listAutoModerationRulesForGuildAsync(ListAutoModerationRulesForGuildData dataPackage) {
+	CoRoutine<std::vector<AutoModerationRule>> AutoModerationRules::listAutoModerationRulesForGuildAsync(
+		ListAutoModerationRulesForGuildData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Auto_Moderation_Rules };
 		co_await NewThreadAwaitable<std::vector<AutoModerationRule>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;

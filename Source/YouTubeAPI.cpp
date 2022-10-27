@@ -40,8 +40,8 @@ namespace DiscordCoreInternal {
 		dataPackage.workloadClass = HttpsWorkloadClass::Get;
 		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
 		if (returnData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
-			cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData.responseCode << returnData.responseMessage.c_str()
-				 << DiscordCoreAPI::reset() << endl
+			cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData.responseCode
+				 << returnData.responseMessage.c_str() << DiscordCoreAPI::reset() << endl
 				 << endl;
 		}
 		simdjson::ondemand::value partialSearchResultsJson{};
@@ -111,17 +111,18 @@ namespace DiscordCoreInternal {
 			dataPackage02.content = request.operator std::string();
 			dataPackage02.workloadClass = HttpsWorkloadClass::Post;
 			responseData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
-			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
-				cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData.responseCode << ", "
-					 << responseData.responseMessage << DiscordCoreAPI::reset() << endl
+			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 &&
+				this->configManager->doWePrintHttpsErrorMessages()) {
+				cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData.responseCode
+					 << ", " << responseData.responseMessage << DiscordCoreAPI::reset() << endl
 					 << endl;
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
 			responseData.responseMessage.reserve(responseData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
 			simdjson::ondemand::parser parser{};
 			simdjson::ondemand::value value{};
-			if (parser.iterate(responseData.responseMessage.data(), responseData.responseMessage.length(), responseData.responseMessage.capacity()).get(value) ==
-				simdjson::error_code::SUCCESS) {
+			if (parser.iterate(responseData.responseMessage.data(), responseData.responseMessage.length(), responseData.responseMessage.capacity())
+					.get(value) == simdjson::error_code::SUCCESS) {
 				DiscordCoreAPI::YouTubeFormatVector vector{ value };
 				DiscordCoreAPI::YouTubeFormat format{};
 				bool isOpusFound{ false };
@@ -196,8 +197,8 @@ namespace DiscordCoreInternal {
 		HttpsResponseData responseData01 = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
 		std::string apiKey{};
 		if (responseData01.responseMessage.find("\"innertubeApiKey\":\"") != std::string::npos) {
-			std::string newString =
-				responseData01.responseMessage.substr(responseData01.responseMessage.find("\"innertubeApiKey\":\"") + std::string{ "\"innertubeApiKey\":\"" }.size());
+			std::string newString = responseData01.responseMessage.substr(
+				responseData01.responseMessage.find("\"innertubeApiKey\":\"") + std::string{ "\"innertubeApiKey\":\"" }.size());
 			std::string apiKeyNew = newString.substr(0, newString.find_first_of('"'));
 			apiKey = apiKeyNew;
 		}
@@ -215,7 +216,8 @@ namespace DiscordCoreInternal {
 
 	void YouTubeAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
 		currentReconnectTries++;
-		DiscordCoreAPI::GuildMemberData guildMember = DiscordCoreAPI::GuildMembers::getCachedGuildMember({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId });
+		DiscordCoreAPI::GuildMemberData guildMember =
+			DiscordCoreAPI::GuildMembers::getCachedGuildMember({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId });
 		DiscordCoreAPI::Song newerSong = newSong;
 		if (currentReconnectTries > 9) {
 			DiscordCoreAPI::AudioFrameData frameData{};
@@ -241,7 +243,8 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<WebSocketSSLShard> streamSocket{ std::make_unique<WebSocketSSLShard>(nullptr, 0, nullptr) };
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
-				if (!streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true)) {
+				if (!streamSocket->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(),
+						true)) {
 					this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				}
@@ -367,7 +370,8 @@ namespace DiscordCoreInternal {
 							while (currentString.size() > 0) {
 								std::string submissionString{};
 								if (currentString.size() >= this->maxBufferSize) {
-									submissionString.insert(submissionString.begin(), currentString.data(), currentString.data() + this->maxBufferSize);
+									submissionString.insert(submissionString.begin(), currentString.data(),
+										currentString.data() + this->maxBufferSize);
 									currentString.erase(currentString.begin(), currentString.begin() + this->maxBufferSize);
 								} else {
 									submissionString = std::move(currentString);

@@ -45,9 +45,11 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 		char string[1024]{};
 	#ifdef UWP
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), ( LPWSTR )string, 1024, NULL);
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			( LPWSTR )string, 1024, NULL);
 	#else
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string, 1024, NULL);
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			string, 1024, NULL);
 	#endif
 		theStream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << endl;
 #else
@@ -204,7 +206,8 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
+	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew,
+		bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
 		std::string addressString{};
@@ -212,9 +215,11 @@ namespace DiscordCoreInternal {
 		auto comFind = baseUrl.find(".com");
 		auto orgFind = baseUrl.find(".org");
 		if (httpsFind != std::string::npos && comFind != std::string::npos) {
-			addressString = baseUrl.substr(httpsFind + std::string("https://").size(), comFind + std::string(".com").size() - std::string("https://").size());
+			addressString =
+				baseUrl.substr(httpsFind + std::string("https://").size(), comFind + std::string(".com").size() - std::string("https://").size());
 		} else if (httpsFind != std::string::npos && orgFind != std::string::npos) {
-			addressString = baseUrl.substr(httpsFind + std::string("https://").size(), orgFind + std::string(".org").size() - std::string("https://").size());
+			addressString =
+				baseUrl.substr(httpsFind + std::string("https://").size(), orgFind + std::string(".org").size() - std::string("https://").size());
 		} else {
 			addressString = baseUrl;
 		}
@@ -325,10 +330,12 @@ namespace DiscordCoreInternal {
 			return returnValue;
 		}
 
-		if (auto returnValueNew = poll(&readWriteSet.thePolls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.thePolls.size()), 1);
+		if (auto returnValueNew =
+				poll(&readWriteSet.thePolls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.thePolls.size()), 1);
 			returnValueNew == SOCKET_ERROR) {
 			for (auto& [key, value]: readWriteSet.thePolls) {
-				if (readWriteSet.thePolls[key].revents & POLLERR || readWriteSet.thePolls[key].revents & POLLHUP || readWriteSet.thePolls[key].revents & POLLNVAL) {
+				if (readWriteSet.thePolls[key].revents & POLLERR || readWriteSet.thePolls[key].revents & POLLHUP ||
+					readWriteSet.thePolls[key].revents & POLLNVAL) {
 					returnValue.emplace_back(shardMap[key].get());
 				}
 			}
@@ -590,8 +597,9 @@ namespace DiscordCoreInternal {
 			}
 			std::string clientToServerString{};
 			clientToServerString = "test string";
-			auto writtenBytes{ sendto(static_cast<int32_t>(this->socket), clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
-				( sockaddr* )address.operator addrinfo*(), static_cast<int32_t>(sizeof(this->theStreamTargetAddress))) };
+			auto writtenBytes{ sendto(static_cast<int32_t>(this->socket), clientToServerString.data(),
+				static_cast<int32_t>(clientToServerString.size()), 0, ( sockaddr* )address.operator addrinfo*(),
+				static_cast<int32_t>(sizeof(this->theStreamTargetAddress))) };
 		} else {
 			sockaddr_in si_other{};
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, 0); this->socket == SOCKET_ERROR) {
@@ -611,8 +619,8 @@ namespace DiscordCoreInternal {
 			std::string serverToClientBuffer{};
 
 			serverToClientBuffer.resize(11);
-			auto readBytes{ recvfrom(static_cast<int32_t>(this->socket), serverToClientBuffer.data(), static_cast<int32_t>(serverToClientBuffer.size()), 0,
-				reinterpret_cast<sockaddr*>(&si_other), &intSize) };
+			auto readBytes{ recvfrom(static_cast<int32_t>(this->socket), serverToClientBuffer.data(),
+				static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&si_other), &intSize) };
 			if (readBytes >= 0) {
 				return false;
 			}
@@ -679,7 +687,8 @@ namespace DiscordCoreInternal {
 				} else {
 					amountToCollect = dataToWrite.size();
 				}
-				std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect, this->outputBuffer.getCurrentHead()->getCurrentHead());
+				std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect,
+					this->outputBuffer.getCurrentHead()->getCurrentHead());
 				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
 				this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 				remainingBytes = dataToWrite.size();
@@ -744,8 +753,8 @@ namespace DiscordCoreInternal {
 
 			int32_t readBytes{};
 			do {
-				readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(), static_cast<int32_t>(bytesToRead), 0,
-					( sockaddr* )&this->theStreamTargetAddress, &intSize);
+				readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
+					static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->theStreamTargetAddress, &intSize);
 
 				if (readBytes < 0) {
 					returnValue = false;

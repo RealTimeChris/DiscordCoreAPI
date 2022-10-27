@@ -44,10 +44,12 @@ namespace DiscordCoreAPI {
 					dataPackage02.data.type = InteractionCallbackType::Update_Message;
 				}
 				InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage02);
-				if (dataPackage.type == InputEventResponseType::Interaction_Response || dataPackage.type == InputEventResponseType::Ephemeral_Interaction_Response ||
+				if (dataPackage.type == InputEventResponseType::Interaction_Response ||
+					dataPackage.type == InputEventResponseType::Ephemeral_Interaction_Response ||
 					dataPackage.type == InputEventResponseType::Edit_Interaction_Response) {
 					newEvent.responseType = InputEventResponseType::Edit_Interaction_Response;
-				} else if (dataPackage.type == InputEventResponseType::Follow_Up_Message || dataPackage.type == InputEventResponseType::Ephemeral_Follow_Up_Message ||
+				} else if (dataPackage.type == InputEventResponseType::Follow_Up_Message ||
+					dataPackage.type == InputEventResponseType::Ephemeral_Follow_Up_Message ||
 					dataPackage.type == InputEventResponseType::Edit_Follow_Up_Message) {
 					newEvent.responseType = InputEventResponseType::Edit_Follow_Up_Message;
 				}
@@ -109,12 +111,14 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> InputEvents::deleteInputEventResponseAsync(InputEventData& dataPackage, int32_t timeDelayNew) {
 		InputEventData newPackage = dataPackage;
 		co_await NewThreadAwaitable<void>();
-		if (newPackage.responseType == InputEventResponseType::Follow_Up_Message || newPackage.responseType == InputEventResponseType::Edit_Follow_Up_Message) {
+		if (newPackage.responseType == InputEventResponseType::Follow_Up_Message ||
+			newPackage.responseType == InputEventResponseType::Edit_Follow_Up_Message) {
 			RespondToInputEventData dataPackageNew{ newPackage };
 			DeleteFollowUpMessageData dataPackageNewer{ dataPackageNew };
 			dataPackageNewer.timeDelay = timeDelayNew;
 			Interactions::deleteFollowUpMessageAsync(dataPackageNewer).get();
-		} else if (newPackage.responseType == InputEventResponseType::Interaction_Response || newPackage.responseType == InputEventResponseType::Edit_Interaction_Response ||
+		} else if (newPackage.responseType == InputEventResponseType::Interaction_Response ||
+			newPackage.responseType == InputEventResponseType::Edit_Interaction_Response ||
 			newPackage.responseType == InputEventResponseType::Deferred_Response) {
 			RespondToInputEventData dataPackageNew{ newPackage };
 			DeleteInteractionResponseData dataPackageNewer{ dataPackageNew };

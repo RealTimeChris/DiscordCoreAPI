@@ -50,59 +50,59 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of an InputEvent creation event. \brief Data that is received as part of an InputEvent creation event.
 	struct DiscordCoreAPI_Dll OnInputEventCreationData {
 		InputEventData inputEventData{};///< InputEventData representing the input-event.
+		OnInputEventCreationData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
 	/// Data that is received as part of an ApplicationCommandPermissions update event. \brief Data that is received as part of an ApplicationCommandPermissions update event.
 	struct DiscordCoreAPI_Dll OnApplicationCommandPermissionsUpdateData {
 		GuildApplicationCommandPermissionsData permissionData{};
+		OnApplicationCommandPermissionsUpdateData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
 	/// Data that is received as part of an AutoModerationRule creation event. \brief Data that is received as part of an AutoModerationRule creation event.
 	struct DiscordCoreAPI_Dll OnAutoModerationRuleCreationData {
 		AutoModerationRule theRule{};
+		OnAutoModerationRuleCreationData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
 	/// Data that is received as part of an AutoModerationRule update event. \brief Data that is received as part of an AutoModerationRule update event.
 	struct DiscordCoreAPI_Dll OnAutoModerationRuleUpdateData {
 		AutoModerationRule theRule{};
+		OnAutoModerationRuleUpdateData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
 	/// Data that is received as part of an AutoModerationRule delete event. \brief Data that is received as part of an AutoModerationRule delete event.
 	struct DiscordCoreAPI_Dll OnAutoModerationRuleDeletionData {
 		AutoModerationRule theRule{};
+		OnAutoModerationRuleDeletionData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
 	/// Data that is received as part of an AutoModerationAction execution event. \brief Data that is received as part of an AutoModerationAction execution event.
 	struct DiscordCoreAPI_Dll OnAutoModerationActionExecutionData {
 		AutoModerationActionExecutionEventData data{};
+		OnAutoModerationActionExecutionData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
 	/// Data that is received as part of a Channel creation event. \brief Data that is received as part of a Channel creation event.
 	struct DiscordCoreAPI_Dll OnChannelCreationData {
 		std::unique_ptr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The new Channel.
-
-		OnChannelCreationData(std::unique_ptr<ChannelData>);
-
-		OnChannelCreationData& operator=(const OnChannelCreationData&);
-		OnChannelCreationData(const OnChannelCreationData&);
+		OnChannelCreationData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
+		OnChannelCreationData& operator=(const OnChannelCreationData& other);
+		OnChannelCreationData(const OnChannelCreationData& other);
 	};
 
 	/// Data that is received as part of a Channel update event. \brief Data that is received as part of a Channel update event.
 	struct DiscordCoreAPI_Dll OnChannelUpdateData {
 		std::unique_ptr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The new Channel.
-
-		OnChannelUpdateData(std::unique_ptr<ChannelData>);
-
-		OnChannelUpdateData& operator=(const OnChannelUpdateData&);
-		OnChannelUpdateData(const OnChannelUpdateData&);
+		OnChannelUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
+		OnChannelUpdateData& operator=(const OnChannelUpdateData& other);
+		OnChannelUpdateData(const OnChannelUpdateData& other);
 	};
 
 	/// Data that is received as part of a Channel deletion event. \brief Data that is received as part of a Channel deletion event.
 	struct DiscordCoreAPI_Dll OnChannelDeletionData {
 		std::unique_ptr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The deleted Channel.
-
-		OnChannelDeletionData(std::unique_ptr<ChannelData>);
-
+		OnChannelDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 		OnChannelDeletionData& operator=(const OnChannelDeletionData&);
 		OnChannelDeletionData(const OnChannelDeletionData&);
 	};
@@ -110,11 +110,13 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a Channel pins update event. \brief Data that is received as part of a Channel pins update event.
 	struct DiscordCoreAPI_Dll OnChannelPinsUpdateData {
 		ChannelPinsUpdateEventData dataPackage{};///< The Channel pins update responseData.
+		OnChannelPinsUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Thread creation event. \brief Data that is received as part of a Thread creation event.
 	struct DiscordCoreAPI_Dll OnThreadCreationData {
 		Thread thread{};///< The new Thread's Channel.
+		OnThreadCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Thread update event. \brief Data that is received as part of a Thread update event.

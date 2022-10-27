@@ -292,7 +292,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Channels::initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManagerNew) {
-		Channels::doWeCacheChannels = configManagerNew->doWeCacheChannels();
+		Channels::doWeCacheChannelsBool = configManagerNew->doWeCacheChannels();
 		Channels::httpsClient = client;
 	}
 
@@ -303,13 +303,13 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/channels/" + dataPackage.channelId;
 		workload.callStack = "Channels::getChannelAsync()";
 		Channel data{};
-		data.id = dataPackage.channelId;
-		if (!Channels::cache.contains(( ChannelData& )data)) {
-			Channels::cache.emplace(( ChannelData& )data);
-		}
-		data = Channels::cache.at(data);
 		data = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &data);
-		Channels::insertChannel(data);
+		if (Channels::cache.contains(data)) {
+			data = Channels::cache.at(data);
+		} else {
+			Channels::cache.emplace(data);
+			Channels::insertChannel(data);
+		}
 		co_return std::move(data);
 	}
 
@@ -337,13 +337,13 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		Channel data{};
-		data.id = dataPackage.channelId;
-		if (!Channels::cache.contains(data)) {
-			Channels::cache.emplace(data);
-		}
-		data = Channels::cache.at(data);
 		data = Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &data);
-		Channels::insertChannel(data);
+		if (Channels::cache.contains(data)) {
+			data = Channels::cache.at(data);
+		} else {
+			Channels::cache.emplace(data);
+			Channels::insertChannel(data);
+		}
 		co_return std::move(data);
 	}
 
@@ -496,7 +496,7 @@ namespace DiscordCoreAPI {
 		if (channel.id == 0) {
 			return;
 		}
-		if (Channels::doWeCacheChannels) {
+		if (Channels::doWeCacheChannelsBool) {
 			if (!Channels::cache.contains(channel)) {
 				Channels::cache.emplace(std::move(channel));
 			} else {
@@ -514,7 +514,11 @@ namespace DiscordCoreAPI {
 		Channels::cache.erase(data);
 	};
 
+	bool Channels::doWeCacheChannels() {
+		return Channels::doWeCacheChannelsBool;
+	}
+
 	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
 	ObjectCache<ChannelData> Channels::cache{};
-	bool Channels::doWeCacheChannels{ false };
+	bool Channels::doWeCacheChannelsBool{ false };
 }

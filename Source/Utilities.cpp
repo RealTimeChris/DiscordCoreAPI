@@ -1192,7 +1192,8 @@ namespace DiscordCoreAPI {
 			newHash = newHash.substr(2);
 		}
 		if (newHash.length() != 32 && newHash.length() != 33) {
-			throw std::length_error("IconHash must be exactly 32 characters in length, passed value is: '" + std::to_string(newHash.size()) + "', in length.");
+			throw std::length_error(
+				"IconHash must be exactly 32 characters in length, passed value is: '" + std::to_string(newHash.size()) + "', in length.");
 		}
 		this->lowBits = fromString<uint64_t>(newHash.substr(0, 16), std::hex);
 		this->highBits = fromString<uint64_t>(newHash.substr(16, 16), std::hex);
@@ -1585,8 +1586,8 @@ namespace DiscordCoreAPI {
 		} catch (const std::exception& e) {
 			std::stringstream theStream{};
 			theStream << shiftToBrightRed() << "Error Report: \n"
-					  << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
-					  << std::to_string(theLocation.column()) << ")"
+					  << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " ("
+					  << std::to_string(theLocation.line()) << ":" << std::to_string(theLocation.column()) << ")"
 					  << "\nThe Error: \n"
 					  << e.what() << reset() << std::endl
 					  << std::endl;
@@ -1603,8 +1604,8 @@ namespace DiscordCoreAPI {
 			}
 		} catch (const std::exception& e) {
 			std::stringstream theStream{};
-			theStream << shiftToBrightRed() << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " (" << std::to_string(theLocation.line()) << ":"
-					  << std::to_string(theLocation.column()) << ")"
+			theStream << shiftToBrightRed() << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " ("
+					  << std::to_string(theLocation.line()) << ":" << std::to_string(theLocation.column()) << ")"
 					  << "\nThe Error: \n"
 					  << e.what() << reset();
 			auto returnString = theStream.str();
@@ -1678,10 +1679,12 @@ namespace DiscordCoreAPI {
 			returnString.push_back(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
 
 			if (static_cast<uint64_t>(pos + 1) < string.size()) {
-				returnString.push_back(base64Chars[((string[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
+				returnString.push_back(
+					base64Chars[((string[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
 
 				if (static_cast<uint64_t>(pos + 2) < string.size()) {
-					returnString.push_back(base64Chars[((string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
+					returnString.push_back(
+						base64Chars[((string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
 					returnString.push_back(base64Chars[string[static_cast<int64_t>(pos + 2)] & 0x3f]);
 				} else {
 					returnString.push_back(base64Chars[(string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2]);
@@ -1743,7 +1746,8 @@ namespace DiscordCoreAPI {
 		uint64_t startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 		uint64_t timePassed{ 0 };
 		while (timePassed < timeInNsToSpinLockFor) {
-			timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() - startTime;
+			timePassed =
+				std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() - startTime;
 		}
 	}
 

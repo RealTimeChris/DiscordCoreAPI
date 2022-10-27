@@ -320,10 +320,12 @@ namespace DiscordCoreAPI {
 
 		static void removeChannel(Snowflake channelId);
 
+		static bool doWeCacheChannels();
+
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<ChannelData> cache;
-		static bool doWeCacheChannels;
+		static bool doWeCacheChannelsBool;
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

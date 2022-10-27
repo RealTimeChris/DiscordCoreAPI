@@ -164,14 +164,13 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 		workload.callStack = "GuildMembers::getGuildMemberAsync()";
 		GuildMember data{};
-		data.guildId = dataPackage.guildId;
-		data.id = dataPackage.guildMemberId;
-		if (GuildMembers ::cache.contains(data)) {
-			data = GuildMembers::cache.at(data);
-		}
 		data = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &data);
-		data.guildId = dataPackage.guildId;
-		GuildMembers::insertGuildMember(data);
+		if (GuildMembers::cache.contains(data)) {
+			data = GuildMembers::cache.at(data);
+		} else {
+			GuildMembers::cache.emplace(data);
+			GuildMembers::insertGuildMember(data);
+		}
 		co_return std::move(data);
 	}
 
@@ -261,14 +260,13 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		GuildMember data{};
-		data.id = dataPackage.guildMemberId;
-		data.guildId = dataPackage.guildId;
-		if (GuildMembers ::cache.contains(data)) {
-			data = GuildMembers::cache.at(data);
-		}
 		data = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &data);
-		data.guildId = dataPackage.guildId;
-		GuildMembers::insertGuildMember(data);
+		if (GuildMembers::cache.contains(data)) {
+			data = GuildMembers::cache.at(data);
+		} else {
+			GuildMembers::cache.emplace(data);
+			GuildMembers::insertGuildMember(data);
+		}
 		co_return std::move(data);
 	}
 
@@ -287,7 +285,8 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<GuildMember> GuildMembers::timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage) {
 		co_await NewThreadAwaitable<GuildMember>();
-		GuildMemberData guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId });
+		GuildMemberData guildMember =
+			GuildMembers::getCachedGuildMember({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId });
 		ModifyGuildMemberData dataPackage01{};
 		dataPackage01.deaf = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Deaf);
 		dataPackage01.guildId = guildMember.guildId;

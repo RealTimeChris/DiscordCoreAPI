@@ -116,8 +116,8 @@ namespace DiscordCoreInternal {
 		int32_t currentReconnectTries{ 0 };
 		bool areWeDoneTheRequest{ false };
 		StringBuffer inputBufferReal{};
-		HttpsResponseData data{};
 		std::string currentBaseUrl{};
+		HttpsResponseData data{};
 		bool doWeConnect{ true };
 
 		HttpsConnection(bool doWePrintErrorMessages);
@@ -176,34 +176,24 @@ namespace DiscordCoreInternal {
 				theError.errorCode = returnData.responseCode;
 				throw theError;
 			}
-			if (returnValue == nullptr) {
-				RTy returnValueNew{};
-				simdjson::ondemand::parser parser{};
-				if (returnData.responseMessage.size() > 0) {
-					returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-					auto document = parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
-					if (document.type() != simdjson::ondemand::json_type::null) {
-						simdjson::ondemand::value object{};
-						if (document.get(object) == simdjson::error_code::SUCCESS) {
-							returnValueNew = RTy{ object };
-						}
-					}
-				}
-				return returnValueNew;
-			} else {
-				simdjson::ondemand::parser parser{};
-				if (returnData.responseMessage.size() > 0) {
-					returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-					auto document = parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
-					if (document.type() != simdjson::ondemand::json_type::null) {
-						simdjson::ondemand::value object{};
-						if (document.get(object) == simdjson::error_code::SUCCESS) {
+			simdjson::ondemand::parser parser{};
+			if (returnData.responseMessage.size() > 0) {
+				returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
+				auto document = parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
+				if (document.type() != simdjson::ondemand::json_type::null) {
+					simdjson::ondemand::value object{};
+					if (document.get(object) == simdjson::error_code::SUCCESS) {
+						if (returnValue != nullptr) {
 							*returnValue = RTy{ object };
+							return *returnValue;
+						} else {
+							RTy returnValueNew{ object };
+							return returnValueNew;	
 						}
 					}
 				}
-				return *returnValue;
 			}
+			return RTy{};
 		}
 
 		template<SameAsVoid RTy> RTy submitWorkloadAndGetResult(const HttpsWorkloadData& workload, RTy* returnValue = nullptr);
