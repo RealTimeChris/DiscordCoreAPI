@@ -215,8 +215,8 @@ namespace DiscordCoreAPI {
 
 	Song SongAPI::addSongToQueue(const GuildMember& guildMember, Song& song) {
 		song.addedByUserId = guildMember.id;
-		std::string string{ (( GuildMember& )guildMember).getUserData().userName };
-		song.addedByUserName = string;
+		song.addedByUserName = (( GuildMember& )guildMember).getUserData().userName;
+		std::cout << "THE ADDED USER NAME: " << song.addedByUserName << std::endl;
 		DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.songQueue.emplace_back(song);
 		return song;
 	}

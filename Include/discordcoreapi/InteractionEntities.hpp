@@ -61,8 +61,9 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		InteractionResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
-			int32_t maxValues, int32_t minValues);
+		InteractionResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
+			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
+			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
 
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.
@@ -127,8 +128,6 @@ namespace DiscordCoreAPI {
 
 		CreateEphemeralInteractionResponseData(const RespondToInputEventData& dataPackage);
 
-		CreateEphemeralInteractionResponseData(RespondToInputEventData& dataPackage);
-
 		virtual ~CreateEphemeralInteractionResponseData() noexcept = default;
 	};
 
@@ -138,8 +137,6 @@ namespace DiscordCoreAPI {
 		friend class CreateInteractionResponseData;
 		friend class Interactions;
 		friend class InputEvents;
-
-		CreateDeferredInteractionResponseData(RespondToInputEventData& dataPackage);
 
 		CreateDeferredInteractionResponseData(const RespondToInputEventData& dataPackage);
 
@@ -159,17 +156,13 @@ namespace DiscordCoreAPI {
 		friend class Interactions;
 		friend class InputEvents;
 
-		CreateInteractionResponseData(const CreateDeferredInteractionResponseData& dataPackage);
-
-		CreateInteractionResponseData(CreateDeferredInteractionResponseData& dataPackage);
-
 		CreateInteractionResponseData(const CreateEphemeralInteractionResponseData& dataPackage);
 
-		CreateInteractionResponseData(CreateEphemeralInteractionResponseData& dataPackage);
+		CreateInteractionResponseData(const CreateDeferredInteractionResponseData& dataPackage);
 
-		CreateInteractionResponseData(RespondToInputEventData& dataPackage);
+		CreateInteractionResponseData(const RespondToInputEventData& dataPackage);
 
-		CreateInteractionResponseData(InteractionData& dataPackage);
+		CreateInteractionResponseData(const InteractionData& dataPackage);
 
 		virtual ~CreateInteractionResponseData() noexcept = default;
 	};
@@ -188,8 +181,6 @@ namespace DiscordCoreAPI {
 
 		EditInteractionResponseData(const RespondToInputEventData& dataPackage);
 
-		EditInteractionResponseData(RespondToInputEventData& dataPackage);
-
 		virtual ~EditInteractionResponseData() noexcept = default;
 
 	  protected:
@@ -202,7 +193,7 @@ namespace DiscordCoreAPI {
 		friend class Interactions;
 		friend class InputEvents;
 
-		DeleteInteractionResponseData(RespondToInputEventData& dataPackage);
+		DeleteInteractionResponseData(const RespondToInputEventData& dataPackage);
 
 	  protected:
 		InteractionPackageData interactionPackage{};
@@ -217,8 +208,6 @@ namespace DiscordCoreAPI {
 		friend class InputEvents;
 
 		CreateEphemeralFollowUpMessageData(const RespondToInputEventData& dataPackage);
-
-		CreateEphemeralFollowUpMessageData(RespondToInputEventData& dataPackage);
 
 		virtual ~CreateEphemeralFollowUpMessageData() noexcept = default;
 
@@ -236,11 +225,7 @@ namespace DiscordCoreAPI {
 
 		CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage);
 
-		CreateFollowUpMessageData(CreateEphemeralFollowUpMessageData& dataPackage);
-
 		CreateFollowUpMessageData(const RespondToInputEventData& dataPackage);
-
-		CreateFollowUpMessageData(RespondToInputEventData& dataPackage);
 
 		virtual ~CreateFollowUpMessageData() noexcept = default;
 
@@ -263,8 +248,6 @@ namespace DiscordCoreAPI {
 
 		EditFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
-		EditFollowUpMessageData(RespondToInputEventData& dataPackage);
-
 		virtual ~EditFollowUpMessageData() noexcept = default;
 
 	  protected:
@@ -278,7 +261,7 @@ namespace DiscordCoreAPI {
 		friend class Interactions;
 		friend class InputEvents;
 
-		DeleteFollowUpMessageData(RespondToInputEventData& dataPackage);
+		DeleteFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
 	  protected:
 		InteractionPackageData interactionPackage{};

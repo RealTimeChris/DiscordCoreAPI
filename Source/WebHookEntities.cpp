@@ -143,8 +143,9 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	ExecuteWebHookData ExecuteWebHookData::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues) {
+	ExecuteWebHookData& ExecuteWebHookData::addSelectMenu(bool disabled, const std::string& customIdNew,
+		std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
+		std::vector<ChannelType> channelTypes) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -152,12 +153,13 @@ namespace DiscordCoreAPI {
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
 				ComponentData componentData;
-				componentData.type = ComponentType::String_Select;
+				componentData.type = static_cast<ComponentType>(type);
+				componentData.channelTypes = channelTypes;
 				componentData.placeholder = placeholder;
+				componentData.customId = customIdNew;
 				componentData.maxValues = maxValues;
 				componentData.minValues = minValues;
 				componentData.disabled = disabled;
-				componentData.customId = customIdNew;
 				componentData.options = options;
 				this->components[this->components.size() - 1].components.emplace_back(componentData);
 			} else if (this->components[this->components.size() - 1].components.size() == 5) {

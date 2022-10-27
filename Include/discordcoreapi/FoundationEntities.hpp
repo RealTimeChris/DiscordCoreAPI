@@ -2331,6 +2331,8 @@ namespace DiscordCoreAPI {
 		Channel_Select = 8,///< Select menu for channels.
 	};
 
+	enum class SelectMenuType : uint8_t { String_Select = 3, User_Select = 5, Role_Select = 6, Mentionable_Select = 7, Channel_Select = 8 };
+
 	/// Component Interaction data. \brief Component Interaction data.
 	struct DiscordCoreAPI_Dll ComponentInteractionData {
 		std::vector<std::string> values{};///< The values of the components.
@@ -3058,8 +3060,9 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder,
-			int32_t maxValues, int32_t minValues);
+		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
+			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
+			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
 
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.
@@ -3167,8 +3170,9 @@ namespace DiscordCoreAPI {
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
 		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues,
-			int32_t minValues);
+		MessageResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
+			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
+			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
 
 		/// Adds a modal to the response Message. \brief Adds a modal to the response Message.
 		/// \param topTitleNew A title for the modal.

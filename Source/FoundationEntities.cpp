@@ -3557,7 +3557,8 @@ namespace DiscordCoreAPI {
 	}
 
 	RespondToInputEventData& RespondToInputEventData::addSelectMenu(bool disabled, const std::string& customIdNew,
-		std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues, int32_t minValues) {
+		std::vector<SelectOptionData> options,
+		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, std::vector<ChannelType> channelTypes) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3565,12 +3566,13 @@ namespace DiscordCoreAPI {
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
 				ComponentData componentData;
-				componentData.type = ComponentType::String_Select;
+				componentData.type = static_cast<ComponentType>(type);
+				componentData.channelTypes = channelTypes;
 				componentData.placeholder = placeholder;
+				componentData.customId = customIdNew;
 				componentData.maxValues = maxValues;
 				componentData.minValues = minValues;
 				componentData.disabled = disabled;
-				componentData.customId = customIdNew;
 				componentData.options = options;
 				this->components[this->components.size() - 1].components.emplace_back(componentData);
 			} else if (this->components[this->components.size() - 1].components.size() == 5) {
@@ -3711,7 +3713,8 @@ namespace DiscordCoreAPI {
 	}
 
 	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues) {
+		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
+		std::vector<ChannelType> channelTypes) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3719,12 +3722,13 @@ namespace DiscordCoreAPI {
 		if (this->components.size() < 5) {
 			if (this->components[this->components.size() - 1].components.size() < 5) {
 				ComponentData componentData;
-				componentData.type = ComponentType::String_Select;
+				componentData.type = static_cast<ComponentType>(type);
+				componentData.channelTypes = channelTypes;
 				componentData.placeholder = placeholder;
+				componentData.customId = customIdNew;
 				componentData.maxValues = maxValues;
 				componentData.minValues = minValues;
 				componentData.disabled = disabled;
-				componentData.customId = customIdNew;
 				componentData.options = options;
 				this->components[this->components.size() - 1].components.emplace_back(componentData);
 			} else if (this->components[this->components.size() - 1].components.size() == 5) {
@@ -3865,15 +3869,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void parseCommandDataOption(std::unordered_map<std::string, JsonStringValue>& values, ApplicationCommandInteractionDataOption& data) {
-		JsonStringValue value{};
-		value.type = data.value.type;
-		value.value = data.value.value;
-		values.emplace(data.name, value);
-		for (auto& value: data.options) {
-			JsonStringValue valueNew{};
-			valueNew.type = value.value.type;
-			valueNew.value = value.value.value;
-			values.emplace(value.name, valueNew);
+		JsonStringValue valueNew{};
+		valueNew.type = data.value.type;
+		valueNew.value = data.value.value;
+		values.insert_or_assign(data.name, valueNew);
+		for (auto& value: data.options) {			
 			parseCommandDataOption(values, value);
 		}
 	}
@@ -3891,6 +3891,10 @@ namespace DiscordCoreAPI {
 		}
 		this->eventData = inputEventData;
 		for (auto& value: this->eventData.interactionData->data.applicationCommandData.options) {
+			JsonStringValue valueNew{};
+			valueNew.type = value.value.type;
+			valueNew.value = value.value.value;
+			this->optionsArgs.values.insert_or_assign(value.name, valueNew);
 			parseCommandDataOption(this->optionsArgs.values, value);
 		}
 		for (auto& value: inputEventData.interactionData->data.applicationCommandData.options) {
