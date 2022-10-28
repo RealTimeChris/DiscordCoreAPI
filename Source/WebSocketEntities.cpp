@@ -1475,7 +1475,7 @@ namespace DiscordCoreInternal {
 					data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 				}
 				string = this->prepMessageData(data.operator std::string(), this->dataOpCode);
-				
+
 				if (!this->sendMessage(string, true)) {
 					return;
 				}

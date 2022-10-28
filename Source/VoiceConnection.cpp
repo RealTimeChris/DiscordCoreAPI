@@ -337,6 +337,7 @@ namespace DiscordCoreAPI {
 		StopWatch sleepStopWatch{ 20ms };
 		StopWatch stopWatch{ 20ms };
 		int32_t timeToWaitInMs{ 20 };
+		float timeTakesToProcess{ 0 };
 		float timeTakesToSleep{ 0 };
 		float iterationCount{ 0 };
 		while (!token.stop_requested()) {
@@ -347,10 +348,11 @@ namespace DiscordCoreAPI {
 				this->mixAudio();
 				this->parseIncomingVoiceData();
 			}
+			timeTakesToProcess += stopWatch.totalTimePassed();
 			sleepStopWatch.resetTimer();
-			if ((timeToWaitInMs - (stopWatch.totalTimePassed() + (timeTakesToSleep / iterationCount)) > 0)) {
+			if (timeToWaitInMs - ((timeTakesToProcess / iterationCount) + (timeTakesToSleep / iterationCount)) > 0) {
 				std::this_thread::sleep_for(std::chrono::milliseconds{
-					static_cast<uint16_t>(timeToWaitInMs - (stopWatch.totalTimePassed() + (timeTakesToSleep / iterationCount))) });
+					static_cast<uint16_t>(timeToWaitInMs - ((timeTakesToProcess / iterationCount) + (timeTakesToSleep / iterationCount))) });
 			}
 			timeTakesToSleep += sleepStopWatch.totalTimePassed();
 		}
