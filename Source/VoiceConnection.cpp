@@ -1015,9 +1015,7 @@ namespace DiscordCoreAPI {
 						cout << "Failed to encode user's voice payload." << endl;
 					}
 				} else {
-					std::vector<unsigned char> finalString{};
-					finalString.insert(finalString.begin(), encodedData.data.data(), encodedData.data.data() + encodedData.data.size());
-					this->streamSocket->writeData(finalString);
+					this->streamSocket->writeData(encodedData.data);
 				}
 			}
 		}
