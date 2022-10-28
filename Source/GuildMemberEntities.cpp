@@ -180,7 +180,7 @@ namespace DiscordCoreAPI {
 		key.guildId = dataPackage.guildId;
 		if (GuildMembers::cache.contains(key)) {
 			key = GuildMembers::cache.at(key);
-			return std::move(key);
+			return key;
 		}
 		return GuildMembers::getGuildMemberAsync(dataPackage).get();
 	}
