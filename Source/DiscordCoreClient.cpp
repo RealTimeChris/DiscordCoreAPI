@@ -40,7 +40,7 @@ namespace DiscordCoreAPI {
 	DiscordCoreInternal::SoundCloudAPI* DiscordCoreClient::getSoundCloudAPI(Snowflake guildId) {
 		GuildData guildNew{};
 		guildNew.id = guildId;
-		const GuildData* guild = &Guilds::cache.at(guildNew);
+		const GuildData* guild = &Guilds::getCache().at(guildNew);
 		if (!Globals::soundCloudAPIMap.contains(guildId.operator size_t())) {
 			Globals::soundCloudAPIMap[guildId.operator size_t()] = std::make_unique<DiscordCoreInternal::SoundCloudAPI>(
 				&guild->discordCoreClient->configManager, guild->discordCoreClient->httpsClient.get(), guildId);
@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 	DiscordCoreInternal::YouTubeAPI* DiscordCoreClient::getYouTubeAPI(Snowflake guildId) {
 		GuildData guildNew{};
 		guildNew.id = guildId;
-		const GuildData* guild = &Guilds::cache.at(guildNew);
+		const GuildData* guild = &Guilds::getCache().at(guildNew);
 		if (!Globals::youtubeAPIMap.contains(guildId.operator size_t())) {
 			Globals::youtubeAPIMap[guildId.operator size_t()] = std::make_unique<DiscordCoreInternal::YouTubeAPI>(
 				&guild->discordCoreClient->configManager, guild->discordCoreClient->httpsClient.get(), guildId);
@@ -62,7 +62,7 @@ namespace DiscordCoreAPI {
 	VoiceConnection* DiscordCoreClient::getVoiceConnection(Snowflake guildId) {
 		GuildData guildNew{};
 		guildNew.id = guildId;
-		GuildData* guild = &Guilds::cache[guildNew];
+		GuildData* guild = &Guilds::getCache()[guildNew];
 		if (!Globals::voiceConnectionMap.contains(guildId.operator size_t())) {
 			uint64_t theShardId{ (guildId.operator size_t() >> 22) % guild->discordCoreClient->configManager.getTotalShardCount() };
 			uint64_t baseSocketIndex{ theShardId % guild->discordCoreClient->baseSocketAgentsMap.size() };

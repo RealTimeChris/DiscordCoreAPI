@@ -163,7 +163,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnGuildUpdateData {
 		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The new Guild.
 
-		OnGuildUpdateData(std::unique_ptr<GuildData> guild, DiscordCoreClient*);
+		OnGuildUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
 
 		OnGuildUpdateData& operator=(const OnGuildUpdateData&);
 		OnGuildUpdateData(const OnGuildUpdateData&);
@@ -173,7 +173,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnGuildDeletionData {
 		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The deleted Guild.
 
-		OnGuildDeletionData(std::unique_ptr<GuildData>);
+		OnGuildDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
 
 		OnGuildDeletionData& operator=(const OnGuildDeletionData&);
 		OnGuildDeletionData(const OnGuildDeletionData&);
@@ -183,27 +183,32 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnGuildBanAddData {
 		Snowflake guildId{};///< The Guild they were banned from.
 		User user{};///< The User id of the person who was banned.
+		OnGuildBanAddData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Guild ban remove event. \brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanRemoveData {
 		Snowflake guildId{};///< The Guild they were un-banned from.
 		User user{};///< The User id of the person who was un-banned.
+		OnGuildBanRemoveData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Guild emojis update event. \brief Data that is received as part of a Guild emojis update event.
 	struct DiscordCoreAPI_Dll OnGuildEmojisUpdateData {
 		GuildEmojisUpdateEventData updateData{};///< The Guild emoji's update responseData.
+		OnGuildEmojisUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Guild sticker update event. \brief Data that is received as part of a Guild sticker update event.
 	struct DiscordCoreAPI_Dll OnGuildStickersUpdateData {
 		GuildStickersUpdateEventData updateData{};///< The GuildStickersUpdateEventData.
+		OnGuildStickersUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Guild Integration update event. \brief Data that is received as part of a Guild Integration update event.
 	struct DiscordCoreAPI_Dll OnGuildIntegrationsUpdateData {
 		Snowflake guildId{};///< The id of the Guild for which the integrations were updated.
+		OnGuildIntegrationsUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a GuildMember add event. \brief Data that is received as part of a GuildMember add event.

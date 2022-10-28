@@ -402,13 +402,6 @@ namespace DiscordCoreAPI {
 	/// An interface class for the Guild related Discord endpoints. \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		friend class DiscordCoreInternal::WebSocketSSLShard;
-		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreClient;
-		friend class GuildMemberCache;
-		friend class GuildMembers;
-		friend class GuildData;
-		friend class Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient* client, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManager);
 
@@ -595,6 +588,8 @@ namespace DiscordCoreAPI {
 
 		static void insertGuild(GuildData guild);
 
+		static void removeGuild(const Snowflake GuildId);
+
 		static bool doWeCacheGuilds();
 
 	  protected:
@@ -602,8 +597,6 @@ namespace DiscordCoreAPI {
 		static DiscordCoreClient* discordCoreClient;
 		static ObjectCache<GuildData> cache;
 		static bool doWeCacheGuildsBool;
-
-		static void removeGuild(const Snowflake GuildId);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

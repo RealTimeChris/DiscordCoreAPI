@@ -541,7 +541,7 @@ namespace DiscordCoreAPI {
 							for (uint32_t x = 0; x < this->voiceUsers.size(); ++x) {
 								DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
 								std::string_view string = DatagramSocketClient::getInputBuffer();
-								this->frameQueue.emplace_back(static_cast<std::string>(string));
+								this->frameQueue.push_back(static_cast<std::string>(string));
 							}
 						} else {
 							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);

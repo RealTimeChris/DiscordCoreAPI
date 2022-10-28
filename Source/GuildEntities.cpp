@@ -588,7 +588,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<std::vector<GuildData>> Guilds::getAllGuildsAsync() {
 		co_await NewThreadAwaitable<std::vector<GuildData>>();
 		GuildDataVector guildVector{};
-		for (auto value: Guilds::cache) {
+		for (auto value: Guilds::getCache()) {
 			value.discordCoreClient = Guilds::discordCoreClient;
 			guildVector.guildDatas.emplace_back(std::move(value));
 		}
@@ -604,10 +604,10 @@ namespace DiscordCoreAPI {
 		Guild data{};
 		data = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &data);
 		data.discordCoreClient = Guilds::discordCoreClient;
-		if (Guilds::cache.contains(data)) {
-			data = Guilds::cache.at(data);
+		if (Guilds::getCache().contains(data)) {
+			data = Guilds::getCache().at(data);
 		} else {
-			Guilds::cache.emplace(data);
+			Guilds::getCache().emplace(data);
 			Guilds::insertGuild(data);
 		}
 		co_return std::move(data);
@@ -616,12 +616,12 @@ namespace DiscordCoreAPI {
 	GuildData Guilds::getCachedGuild(GetGuildData dataPackage) {
 		Guild data{};
 		data.id = dataPackage.guildId;
-		if (!Guilds::cache.contains(data)) {
+		if (!Guilds::getCache().contains(data)) {
 			auto guild = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
 			guild.discordCoreClient = Guilds::discordCoreClient;
 			return guild;
 		} else {
-			GuildData guild = Guilds::cache.at(data);
+			GuildData guild = Guilds::getCache().at(data);
 			guild.discordCoreClient = Guilds::discordCoreClient;
 			return guild;
 		}
@@ -651,10 +651,10 @@ namespace DiscordCoreAPI {
 		Guild data{};
 		data = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &data);
 		data.discordCoreClient = Guilds::discordCoreClient;
-		if (Guilds::cache.contains(data)) {
-			data = Guilds::cache.at(data);
+		if (Guilds::getCache().contains(data)) {
+			data = Guilds::getCache().at(data);
 		} else {
-			Guilds::cache.emplace(data);
+			Guilds::getCache().emplace(data);
 			Guilds::insertGuild(data);
 		}
 		co_return std::move(data);
@@ -1077,13 +1077,13 @@ namespace DiscordCoreAPI {
 		}
 		if (Guilds::doWeCacheGuilds()) {
 			guild.discordCoreClient = Guilds::discordCoreClient;
-			if (!Guilds::cache.contains(guild)) {
-				Guilds::cache.emplace(std::move(guild));
+			if (!Guilds::getCache().contains(guild)) {
+				Guilds::getCache().emplace(std::move(guild));
 			} else {
-				Guilds::cache[guild] = std::move(guild);
+				Guilds::getCache()[guild] = std::move(guild);
 			}
-			if (Guilds::cache.size() % 100 == 0) {
-				std::cout << "THE GUILD COUNT: " << Guilds::cache.size() << ", TOTAL TIME: " << stopWatch.totalTimePassed() << std::endl;
+			if (Guilds::getCache().size() % 100 == 0) {
+				std::cout << "THE GUILD COUNT: " << Guilds::getCache().size() << ", TOTAL TIME: " << stopWatch.totalTimePassed() << std::endl;
 			}
 		}
 	}
@@ -1091,7 +1091,7 @@ namespace DiscordCoreAPI {
 	void Guilds::removeGuild(const Snowflake guildId) {
 		GuildData data{};
 		data.id = guildId;
-		Guilds::cache.erase(data);
+		Guilds::getCache().erase(data);
 	};
 
 	ObjectCache<GuildData>& Guilds::getCache() {
