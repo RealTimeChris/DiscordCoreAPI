@@ -646,7 +646,13 @@ namespace DiscordCoreInternal {
 		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->socket;
-		readWriteSet.events = POLLIN | POLLOUT;
+		if (type == ProcessIOType::Both) {
+			readWriteSet.events = POLLIN | POLLOUT;
+		} else if (type == ProcessIOType::Read_Only) {
+			readWriteSet.events = POLLIN;
+		} else {
+			readWriteSet.events = POLLOUT;
+		}
 
 		ProcessIOResult result{ ProcessIOResult::Error };
 		if (auto returnValue = poll(&readWriteSet, 1, 1); returnValue == SOCKET_ERROR) {
@@ -752,19 +758,17 @@ namespace DiscordCoreInternal {
 #endif
 
 			int32_t readBytes{};
-			do {
-				readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
-					static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->theStreamTargetAddress, &intSize);
+			readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
+				static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->theStreamTargetAddress, &intSize);
 
-				if (readBytes < 0) {
-					returnValue = false;
-				} else {
-					this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
-					this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-					this->bytesRead += readBytes;
-					returnValue = true;
-				}
-			} while (readBytes > 0);
+			if (readBytes < 0) {
+				returnValue = false;
+			} else {
+				this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
+				this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+				this->bytesRead += readBytes;
+				returnValue = true;
+			}
 		}
 		return returnValue;
 	}
