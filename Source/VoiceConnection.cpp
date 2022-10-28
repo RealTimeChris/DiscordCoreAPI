@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 		this->ssrc = ssrcNew;
 	}
 
-	std::string_view RTPPacketEncrypter::encryptPacket(AudioFrameData& audioData) noexcept {
+	std::basic_string_view<unsigned char> RTPPacketEncrypter::encryptPacket(AudioFrameData& audioData) noexcept {
 		if (this->keys.size() > 0) {
 			this->sequence++;
 			this->timeStamp += audioData.sampleCount;
@@ -108,8 +108,7 @@ namespace DiscordCoreAPI {
 			storeBits(header + 2, this->sequence);
 			storeBits(header + 4, this->timeStamp);
 			storeBits(header + 8, this->ssrc);
-			std::vector<uint8_t> nonceForLibSodium{};
-			nonceForLibSodium.resize(crypto_secretbox_NONCEBYTES);
+			uint8_t nonceForLibSodium[crypto_secretbox_NONCEBYTES]{};
 			for (uint8_t x = 0; x < headerSize; ++x) {
 				nonceForLibSodium[x] = header[x];
 			}
@@ -124,10 +123,10 @@ namespace DiscordCoreAPI {
 				this->data[x] = header[x];
 			}
 			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->data.data()) + headerSize, audioData.data.data(), audioData.data.size(),
-					nonceForLibSodium.data(), this->keys.data()) != 0) {
-				return "";
+					nonceForLibSodium, this->keys.data()) != 0) {
+				return std::basic_string_view<unsigned char>{};
 			}
-			return std::string_view{ this->data.data(), numOfBytes };
+			return std::basic_string_view<unsigned char>{ this->data.data(), numOfBytes };
 		}
 		return {};
 	}
@@ -148,7 +147,7 @@ namespace DiscordCoreAPI {
 		return this->voiceConnectInitData.channelId;
 	}
 
-	std::string_view VoiceConnection::encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept {
+	std::basic_string_view<unsigned char> VoiceConnection::encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept {
 		if (this->encryptionKey.size() > 0) {
 			return this->packetEncrypter.encryptPacket(bufferToSend);
 		}
@@ -261,7 +260,7 @@ namespace DiscordCoreAPI {
 		this->streamSocket->connect(this->streamInfo.address, this->streamInfo.port);
 	}
 
-	void VoiceConnection::sendVoiceData(std::string_view responseData) noexcept {
+	void VoiceConnection::sendVoiceData(std::basic_string_view<unsigned char> responseData) noexcept {
 		try {
 			if (responseData.size() == 0) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
@@ -492,7 +491,7 @@ namespace DiscordCoreAPI {
 						if (this->audioData.guildMemberId != 0) {
 							this->currentGuildMemberId = this->audioData.guildMemberId;
 						}
-						std::string newFrame{};
+						std::basic_string_view<unsigned char> newFrame{};
 						bool doWeBreak{ false };
 						switch (this->audioData.type) {
 							case AudioFrameType::RawPCM: {
@@ -848,7 +847,7 @@ namespace DiscordCoreAPI {
 				if (!DatagramSocketClient::connect(this->voiceIp, std::to_string(this->port))) {
 					return false;
 				} else {
-					std::string packet{};
+					std::vector<unsigned char> packet{};
 					packet.resize(74);
 					uint16_t val1601{ 0x01 };
 					uint16_t val1602{ 70 };
@@ -1016,7 +1015,7 @@ namespace DiscordCoreAPI {
 						cout << "Failed to encode user's voice payload." << endl;
 					}
 				} else {
-					std::string finalString{};
+					std::vector<unsigned char> finalString{};
 					finalString.insert(finalString.begin(), encodedData.data.data(), encodedData.data.data() + encodedData.data.size());
 					this->streamSocket->writeData(finalString);
 				}

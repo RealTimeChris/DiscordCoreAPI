@@ -260,9 +260,9 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
 
-		ProcessIOResult processIO(ProcessIOType type) noexcept;
+		void writeData(std::basic_string_view<unsigned char> dataToWrite) noexcept;
 
-		void writeData(std::string_view dataToWrite) noexcept;
+		ProcessIOResult processIO(ProcessIOType type) noexcept;		
 
 		std::string_view getInputBuffer() noexcept;
 

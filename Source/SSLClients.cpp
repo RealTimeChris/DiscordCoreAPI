@@ -682,7 +682,7 @@ namespace DiscordCoreInternal {
 		return result;
 	}
 
-	void DatagramSocketClient::writeData(std::string_view dataToWrite) noexcept {
+	void DatagramSocketClient::writeData(std::basic_string_view<unsigned char> dataToWrite) noexcept {
 		if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
 			uint64_t remainingBytes{ dataToWrite.size() };
 			uint64_t amountCollected{};

@@ -78,28 +78,22 @@ namespace DiscordCoreAPI {
 		Snowflake userId{};
 	};
 
-	using DoubleNanoSecond = std::chrono::duration<double, std::nano>;
-
-	using DoubleMilliSecond = std::chrono::duration<double, std::milli>;
-
-	using DoubleTimePointNs = std::chrono::time_point<std::chrono::steady_clock, DoubleNanoSecond>;
-
-	using DoubleTimePointMs = std::chrono::time_point<std::chrono::steady_clock, DoubleMilliSecond>;
+	using DoubleTimePointNs = std::chrono::time_point<std::chrono::steady_clock, std::chrono::duration<double, std::nano>>;
 
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
 		std::vector<unsigned char> keys{};
+		std::vector<unsigned char> data{};
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };
 		uint32_t timeStamp{};
 		uint16_t sequence{};
-		std::string data{};
 		uint32_t ssrc{};
 
 		RTPPacketEncrypter() noexcept = default;
 
 		RTPPacketEncrypter(uint32_t ssrcNew, const std::vector<unsigned char>& keysNew) noexcept;
 
-		std::string_view encryptPacket(AudioFrameData& audiodataNew) noexcept;
+		std::basic_string_view<unsigned char> encryptPacket(AudioFrameData& audiodataNew) noexcept;
 	};
 
 	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
@@ -185,7 +179,9 @@ namespace DiscordCoreAPI {
 		uint32_t audioSSRC{};
 		uint64_t port{};
 
-		std::string_view encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
+		std::basic_string_view<unsigned char> encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
+		
+		void sendVoiceData(std::basic_string_view<unsigned char> responseData) noexcept;
 
 		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
 
@@ -193,16 +189,12 @@ namespace DiscordCoreAPI {
 
 		void checkForAndSendHeartBeat(bool isItImmediage) noexcept;
 
-		void sendVoiceData(std::string_view responseData) noexcept;
-
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
 		bool onMessageReceived(std::string_view data) noexcept;
 
-		/// For connecting to a voice-channel. \brief For connecting to a voice-channel.
-		/// \param initData A structure of type DiscordCoreInternal::VoiceConnectionInitData.
 		void connect(VoiceConnectInitData initData) noexcept;
 
 		void runBridge(std::stop_token) noexcept;
