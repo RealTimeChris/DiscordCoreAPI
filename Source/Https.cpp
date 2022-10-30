@@ -388,7 +388,7 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsConnection* HttpsConnectionManager::getConnection() {
-		std::unique_lock lock{ this->mutex };
+		std::unique_lock lock{ this->accessMutex };
 		for (auto& [key, value]: this->httpsConnections) {
 			if (!value->areWeCheckedOut.load()) {
 				value->areWeCheckedOut.store(true);

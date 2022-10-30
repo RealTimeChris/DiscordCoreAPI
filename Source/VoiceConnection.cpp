@@ -335,12 +335,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runBridge(std::stop_token token) noexcept {
-		StopWatch sleepStopWatch{ 20ms };
 		StopWatch processStopWatch{ 20ms };
+		StopWatch sleepStopWatch{ 20ms };
 		int32_t timeToWaitInMs{ 20 };
-		float timeTakesToProcess{ 0 };
-		float timeTakesToSleep{ 0 };
-		float iterationCount{ 0 };
+		int32_t timeTakesToProcess{ 0 };
+		int32_t timeTakesToSleep{ 0 };
+		int32_t iterationCount{ 0 };
 		while (!token.stop_requested()) {
 			iterationCount++;
 			this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
@@ -353,8 +353,8 @@ namespace DiscordCoreAPI {
 			timeTakesToProcess += processStopWatch.totalTimePassed();
 			sleepStopWatch.resetTimer();
 			if (timeToWaitInMs - ((timeTakesToProcess / iterationCount) + (timeTakesToSleep / iterationCount)) > 0) {
-				std::this_thread::sleep_for(std::chrono::milliseconds{
-					static_cast<uint16_t>(timeToWaitInMs - ((timeTakesToProcess / iterationCount) + (timeTakesToSleep / iterationCount))) });
+				std::this_thread::sleep_for(
+					std::chrono::milliseconds{ timeToWaitInMs - ((timeTakesToProcess / iterationCount) + (timeTakesToSleep / iterationCount)) });
 			}
 			timeTakesToSleep += sleepStopWatch.totalTimePassed();
 		}

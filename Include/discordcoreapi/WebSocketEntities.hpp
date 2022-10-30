@@ -123,12 +123,12 @@ namespace DiscordCoreInternal {
 		std::unordered_map<uint64_t, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBuffersMap{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
-		simdjson::ondemand::parser parser{};
+		std::atomic_bool* doWeQuit{ nullptr };
 		DiscordCoreAPI::Snowflake userId{ 0 };
+		simdjson::ondemand::parser parser{};
 		bool serverUpdateCollected{ false };
 		bool stateUpdateCollected{ false };
 		bool areWeCollectingData{ false };
-		std::atomic_bool* doWeQuit{ nullptr };
 		std::string resumeUrl{};
 		std::string sessionId{};
 	};
@@ -149,13 +149,13 @@ namespace DiscordCoreInternal {
 		~BaseSocketAgent() noexcept;
 
 	  protected:
-		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>> shardMap{};
-		DiscordCoreAPI::ConfigManager* configManager{};
+		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
+		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		uint32_t currentBaseSocketAgent{};
-		std::mutex mutex{};
+		std::mutex accessMutex{};
 
 		void run(std::stop_token) noexcept;
 	};

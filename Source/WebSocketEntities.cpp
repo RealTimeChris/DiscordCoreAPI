@@ -1666,7 +1666,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
 		try {
 			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
-				std::unique_lock lock{ this->mutex };
+				std::unique_lock lock{ this->accessMutex };
 				auto result = SSLClient::processIO(this->shardMap);
 				for (auto& valueNew: result) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {

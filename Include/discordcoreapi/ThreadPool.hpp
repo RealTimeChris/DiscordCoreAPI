@@ -143,13 +143,13 @@ namespace DiscordCoreInternal {
 		void submitTask(std::coroutine_handle<> coro) noexcept;
 
 	  protected:
-		std::deque<std::coroutine_handle<>> coroutineHandles{};
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
+		std::deque<std::coroutine_handle<>> coroutineHandles{};
 		std::atomic_int64_t coroHandleCount{ 0 };
 		std::atomic_int64_t currentCount{ 0 };
 		std::atomic_int64_t currentIndex{ 0 };
 		std::atomic_uint32_t threadCount{};
-		std::mutex mutex{};
+		std::mutex accessMutex{};
 
 		void threadFunction(std::stop_token stopToken, int64_t index);
 	};

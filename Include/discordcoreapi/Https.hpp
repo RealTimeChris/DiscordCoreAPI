@@ -148,8 +148,8 @@ namespace DiscordCoreInternal {
 		std::unordered_map<int64_t, std::unique_ptr<HttpsConnection>> httpsConnections{};
 		std::unordered_map<HttpsWorkloadType, std::string> rateLimitValueBuckets{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
+		std::mutex accessMutex{};
 		int64_t currentIndex{};
-		std::mutex mutex{};
 	};
 
 	template<typename ObjectType>

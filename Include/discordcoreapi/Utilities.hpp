@@ -1118,55 +1118,55 @@ namespace DiscordCoreAPI {
 		ObjectCache() noexcept {};
 
 		void emplace(ObjectType&& data) noexcept {
-			std::unique_lock lock{ this->mutex };
+			std::unique_lock lock{ this->accessMutex };
 			this->set.emplace(std::move(data));
 		}
 
 		void emplace(ObjectType& data) noexcept {
-			std::unique_lock lock{ this->mutex };
+			std::unique_lock lock{ this->accessMutex };
 			this->set.emplace(data);
 		}
 
 		const ObjectType& readOnly(ObjectType& key) noexcept {
-			std::shared_lock lock{ this->mutex };
+			std::shared_lock lock{ this->accessMutex };
 			return *this->set.find(key);
 		}
 
 		ObjectType& at(ObjectType&& key) noexcept {
-			std::shared_lock lock{ this->mutex };
+			std::shared_lock lock{ this->accessMutex };
 			return ( ObjectType& )*this->set.find(key);
 		}
 
 		ObjectType& at(ObjectType& key) noexcept {
-			std::shared_lock lock{ this->mutex };
+			std::shared_lock lock{ this->accessMutex };
 			return ( ObjectType& )*this->set.find(key);
 		}
 
 		auto begin() {
-			std::unique_lock lock{ this->mutex };
+			std::unique_lock lock{ this->accessMutex };
 			return this->set.begin();
 		}
 
 		auto end() {
-			std::unique_lock lock{ this->mutex };
+			std::unique_lock lock{ this->accessMutex };
 			return this->set.end();
 		}
 
 		const bool contains(ObjectType& key) noexcept {
-			std::shared_lock lock{ this->mutex };
+			std::shared_lock lock{ this->accessMutex };
 			return this->set.contains(key);
 		}
 
 		void erase(ObjectType& key) {
 			if (this->set.contains(key)) {
-				std::unique_lock lock{ this->mutex };
+				std::unique_lock lock{ this->accessMutex };
 				this->set.erase(key);
 			}
 		}
 
 		ObjectType& operator[](ObjectType& key) {
 			if (!this->contains(key)) {
-				std::shared_lock lock{ this->mutex };
+				std::shared_lock lock{ this->accessMutex };
 				this->set.emplace(key);
 			}
 			return ( ObjectType& )*this->set.find(key);
@@ -1174,20 +1174,20 @@ namespace DiscordCoreAPI {
 
 		ObjectType& operator[](ObjectType&& key) {
 			if (!this->contains(key)) {
-				std::shared_lock lock{ this->mutex };
+				std::shared_lock lock{ this->accessMutex };
 				this->set.emplace(std::move(key));
 			}
 			return ( ObjectType& )*this->set.find(key);
 		}
 
 		uint64_t size() noexcept {
-			std::unique_lock lock{ this->mutex };
+			std::unique_lock lock{ this->accessMutex };
 			return this->set.size();
 		}
 
 	  protected:
 		std::unordered_set<ObjectType> set{};
-		std::shared_mutex mutex{};
+		std::shared_mutex accessMutex{};
 	};
 
 	class DiscordCoreAPI_Dll StringWrapper {
