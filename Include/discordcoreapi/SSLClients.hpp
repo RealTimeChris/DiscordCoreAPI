@@ -262,7 +262,7 @@ namespace DiscordCoreInternal {
 
 		void writeData(std::basic_string_view<unsigned char> dataToWrite) noexcept;
 
-		ProcessIOResult processIO(ProcessIOType type) noexcept;		
+		ProcessIOResult processIO(ProcessIOType type) noexcept;
 
 		std::string_view getInputBuffer() noexcept;
 

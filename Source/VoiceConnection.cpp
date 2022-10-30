@@ -606,8 +606,7 @@ namespace DiscordCoreAPI {
 				uint32_t speakerSsrc{ *reinterpret_cast<uint32_t*>(this->rawDataBuffer.data() + 8) };
 				speakerSsrc = ntohl(speakerSsrc);
 
-				std::vector<uint8_t> nonce{};
-				nonce.resize(24);
+				uint8_t nonce[24]{};
 				for (uint32_t x = 0; x < headerSize; ++x) {
 					nonce[x] = this->rawDataBuffer[x];
 				}
@@ -615,39 +614,34 @@ namespace DiscordCoreAPI {
 				const ptrdiff_t offsetToData = headerSize + sizeof(uint32_t) * csrcCount;
 				uint8_t* encryptedData = reinterpret_cast<uint8_t*>(this->rawDataBuffer.data()) + offsetToData;
 				const uint64_t encryptedDataLength = size - offsetToData;
-				if (this->decryptedString.size() != encryptedDataLength) {
+				if (this->decryptedString.size() < encryptedDataLength) {
 					this->decryptedString.resize(encryptedDataLength);
 				}
-				if (crypto_secretbox_open_easy(this->decryptedString.data(), encryptedData, encryptedDataLength, nonce.data(),
-						this->encryptionKey.data())) {
+				if (crypto_secretbox_open_easy(this->decryptedString.data(), encryptedData, encryptedDataLength, nonce, this->encryptionKey.data())) {
 					return;
 				}
-				if (this->decryptedDataString.size() != encryptedDataLength - crypto_secretbox_MACBYTES) {
-					this->decryptedDataString.resize(encryptedDataLength - crypto_secretbox_MACBYTES);
-				}
-				std::copy(this->decryptedString.data(), this->decryptedString.data() + encryptedDataLength - crypto_secretbox_MACBYTES,
-					this->decryptedDataString.data());
+				std::string_view newString{ reinterpret_cast<char*>(this->decryptedString.data()), encryptedDataLength - crypto_secretbox_MACBYTES };
 
 				if ((this->rawDataBuffer[0] >> 4) & 0b0001) {
-					uint64_t extLen = 0;
-					uint16_t extLengthInWords{ *reinterpret_cast<uint16_t*>(this->decryptedDataString.data() + 2) };
-					extLengthInWords = ntohs(extLengthInWords);
-					extLen = sizeof(uint32_t) * extLengthInWords;
-					constexpr uint64_t extHeaderLen = sizeof(uint16_t) * 2;
-					this->decryptedDataString = this->decryptedDataString.substr(extHeaderLen + extLen);
+					uint16_t extenstionLengthInWords{ ntohs(*reinterpret_cast<const uint16_t*>(&newString[2])) };
+					size_t extensionLength{ sizeof(uint32_t) * extenstionLengthInWords };
+					size_t extensionHeaderLength{ sizeof(uint16_t) * 2 };
+					newString = newString.substr(extensionHeaderLength + extensionLength);
 				}
 				this->rawDataBuffer.clear();
-				if (this->decryptedDataString.size() > 0) {
+				if (newString.size() > 0) {
 					std::unique_lock lock00{ this->voiceUserMutex };
 					if (this->voiceUsers.contains(speakerSsrc)) {
-						this->voiceUsers[speakerSsrc].decoder.decodeData(this->decryptedDataString, this->decodeData);
+						this->voiceUsers[speakerSsrc].decoder.decodeData(newString, this->decodeData);
 						if (this->decodeData.sampleCount <= 0) {
 							if (this->configManager->doWePrintGeneralErrorMessages()) {
 								cout << "Failed to decode user's voice payload." << std::endl;
 							}
 						} else {
-							this->decodeData.data.resize(static_cast<uint64_t>(this->decodeData.sampleCount) * 2);
-							this->voiceUsers[speakerSsrc].payloads.emplace_back(this->decodeData.data);
+							if (this->decodeData.data.size() != this->decodeData.sampleCount * 2) {
+								this->decodeData.data.resize(static_cast<uint64_t>(this->decodeData.sampleCount) * 2);
+							}
+							this->voiceUsers[speakerSsrc].payloads.emplace_back(std::move(this->decodeData.data));
 						}
 					}
 				}
@@ -999,13 +993,7 @@ namespace DiscordCoreAPI {
 			}
 			if (decodedSize > 0) {
 				for (int32_t x = 0; x < decodedSize; ++x) {
-					if ((this->upSampledVector[x] / voiceUserCount) > std::numeric_limits<opus_int16>::max()) {
-						this->downSampledVector[x] = std::numeric_limits<opus_int16>::max();
-					} else if ((this->upSampledVector[x] / voiceUserCount) < std::numeric_limits<opus_int16>::min()) {
-						this->downSampledVector[x] = std::numeric_limits<opus_int16>::min();
-					} else {
-						this->downSampledVector[x] = static_cast<opus_int16>(this->upSampledVector[x] / voiceUserCount);
-					}
+					this->downSampledVector[x] = static_cast<opus_int16>(this->upSampledVector[x] / voiceUserCount);
 				}
 				auto encodedData =
 					this->encoder.encodeSingleAudioFrame(std::basic_string_view<opus_int16>{ this->downSampledVector.data(), decodedSize });

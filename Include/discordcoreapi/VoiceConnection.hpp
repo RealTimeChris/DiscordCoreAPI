@@ -164,7 +164,6 @@ namespace DiscordCoreAPI {
 		std::deque<std::string> frameQueue{};
 		RTPPacketEncrypter packetEncrypter{};
 		simdjson::ondemand::parser parser{};
-		std::string decryptedDataString{};
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		std::string rawDataBuffer{};
@@ -181,7 +180,7 @@ namespace DiscordCoreAPI {
 		uint64_t port{};
 
 		std::basic_string_view<unsigned char> encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept;
-		
+
 		void sendVoiceData(std::basic_string_view<unsigned char> responseData) noexcept;
 
 		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
