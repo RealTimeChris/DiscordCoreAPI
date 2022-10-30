@@ -222,10 +222,12 @@ namespace DiscordCoreAPI {
 
 		static void removeGuildMember(GuildMemberData guildMemberId);
 
+		static bool doWeCacheGuildMembers();
+
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<GuildMemberData> cache;
-		static bool doWeCacheGuildMembers;
+		static bool doWeCacheGuildMembersBool;
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI

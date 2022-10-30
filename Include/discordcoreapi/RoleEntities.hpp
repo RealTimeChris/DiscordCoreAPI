@@ -246,10 +246,12 @@ namespace DiscordCoreAPI {
 
 		static void removeRole(const Snowflake roleId);
 
+		static bool doWeCacheRoles();
+
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<RoleData> cache;
-		static bool doWeCacheRoles;
+		static bool doWeCacheRolesBool;
 	};
 	/**@}*/
 

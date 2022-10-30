@@ -152,9 +152,7 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a Guild creation event. \brief Data that is received as part of a Guild creation event.
 	struct DiscordCoreAPI_Dll OnGuildCreationData {
 		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The new Guild.
-
 		OnGuildCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
-
 		OnGuildCreationData& operator=(const OnGuildCreationData&);
 		OnGuildCreationData(const OnGuildCreationData&);
 	};
@@ -162,9 +160,7 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
 	struct DiscordCoreAPI_Dll OnGuildUpdateData {
 		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The new Guild.
-
 		OnGuildUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
-
 		OnGuildUpdateData& operator=(const OnGuildUpdateData&);
 		OnGuildUpdateData(const OnGuildUpdateData&);
 	};
@@ -172,9 +168,7 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
 	struct DiscordCoreAPI_Dll OnGuildDeletionData {
 		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The deleted Guild.
-
 		OnGuildDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
-
 		OnGuildDeletionData& operator=(const OnGuildDeletionData&);
 		OnGuildDeletionData(const OnGuildDeletionData&);
 	};
@@ -215,9 +209,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnGuildMemberAddData {
 		std::unique_ptr<GuildMemberData> guildMember{ std::make_unique<GuildMemberData>() };///< The new GuildMember.
 		DiscordCoreClient* discordCoreClient{ nullptr };
-
-		OnGuildMemberAddData(std::unique_ptr<GuildMemberData>, DiscordCoreClient*);
-
+		OnGuildMemberAddData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
 		OnGuildMemberAddData& operator=(const OnGuildMemberAddData&);
 		OnGuildMemberAddData(const OnGuildMemberAddData&);
 	};
@@ -225,9 +217,7 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a GuildMember update event. \brief Data that is received as part of a GuildMember update event.
 	struct DiscordCoreAPI_Dll OnGuildMemberUpdateData {
 		std::unique_ptr<GuildMemberData> guildMember{ std::make_unique<GuildMemberData>() };///< The new GuildMember.
-
-		OnGuildMemberUpdateData(std::unique_ptr<GuildMemberData>);
-
+		OnGuildMemberUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
 		OnGuildMemberUpdateData& operator=(const OnGuildMemberUpdateData&);
 		OnGuildMemberUpdateData(const OnGuildMemberUpdateData&);
 	};
@@ -237,9 +227,7 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<UserData> user{ std::make_unique<UserData>() };///< The User responseData of the removed GuildMember.
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		Snowflake guildId{};///< The id of the Guild from which they were removed.
-
-		OnGuildMemberRemoveData(std::unique_ptr<UserData>, DiscordCoreClient*, Snowflake);
-
+		OnGuildMemberRemoveData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
 		OnGuildMemberRemoveData& operator=(const OnGuildMemberRemoveData&);
 		OnGuildMemberRemoveData(const OnGuildMemberRemoveData&);
 	};
@@ -247,15 +235,14 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a GuildMembers chunk event. \brief Data that is received as part of a GuildMembers chunk event.
 	struct DiscordCoreAPI_Dll OnGuildMembersChunkData {
 		GuildMembersChunkEventData chunkEventData{};///< GuildMembersChunkEventData structure.
+		OnGuildMembersChunkData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Role creation event. \brief Data that is received as part of a Role creation event.
 	struct DiscordCoreAPI_Dll OnRoleCreationData {
 		std::unique_ptr<RoleData> role{ std::make_unique<RoleData>() };///< The new Role.
 		Snowflake guildId{};///< The id of the Guild within which the Role was created.
-
-		OnRoleCreationData(std::unique_ptr<RoleData> theRole, Snowflake guildId);
-
+		OnRoleCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 		OnRoleCreationData& operator=(const OnRoleCreationData&);
 		OnRoleCreationData(const OnRoleCreationData&);
 	};
@@ -264,9 +251,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnRoleUpdateData {
 		std::unique_ptr<RoleData> role{ std::make_unique<RoleData>() };///< The new Role.
 		Snowflake guildId{};///< The id of the Guild within which the Role was updated.
-
-		OnRoleUpdateData(std::unique_ptr<RoleData>, Snowflake);
-
+		OnRoleUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 		OnRoleUpdateData& operator=(const OnRoleUpdateData&);
 		OnRoleUpdateData(const OnRoleUpdateData&);
 	};
@@ -275,9 +260,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnRoleDeletionData {
 		std::unique_ptr<RoleData> role{ std::make_unique<RoleData>() };///< The deleted Role.
 		Snowflake guildId{};///< The id of the Guild from which the Role was deleted.
-
-		OnRoleDeletionData(std::unique_ptr<RoleData>, Snowflake);
-
+		OnRoleDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 		OnRoleDeletionData& operator=(const OnRoleDeletionData&);
 		OnRoleDeletionData(const OnRoleDeletionData&);
 	};
@@ -424,9 +407,7 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a User update event. \brief Data that is received as part of a User update event.
 	struct DiscordCoreAPI_Dll OnUserUpdateData {
 		std::unique_ptr<UserData> user{ std::make_unique<UserData>() };///< The new User.
-
 		OnUserUpdateData(std::unique_ptr<UserData>);
-
 		OnUserUpdateData& operator=(const OnUserUpdateData&);
 		OnUserUpdateData(const OnUserUpdateData&);
 	};
@@ -441,9 +422,6 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild for which the server update is occurring.
 		std::string endpoint{};///< The new endpoint.
 		std::string token{};///< The token of the server update event.
-
-		OnVoiceServerUpdateData() noexcept = default;
-
 		OnVoiceServerUpdateData(simdjson::ondemand::value);
 	};
 

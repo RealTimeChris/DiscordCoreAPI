@@ -373,41 +373,45 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult SSLClient::writeData(std::string_view dataToWrite, bool priority) noexcept {
-		if (dataToWrite.size() > 0 && this->ssl) {
-			if (priority && dataToWrite.size() < static_cast<uint64_t>(16 * 1024)) {
-				this->outputBuffer.clear();
-				std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
-				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
-				this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-				if (!this->processWriteData()) {
-					return ProcessIOResult::Error;
-				}
-			} else {
-				if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
-					uint64_t remainingBytes{ dataToWrite.size() };
-					uint64_t amountCollected{};
-					while (remainingBytes > 0) {
-						uint64_t amountToCollect{};
-						if (dataToWrite.size() >= static_cast<uint64_t>(1024 * 16)) {
-							amountToCollect = static_cast<uint64_t>(1024 * 16);
-						} else {
-							amountToCollect = dataToWrite.size();
-						}
-						std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect,
-							this->outputBuffer.getCurrentHead()->getCurrentHead());
-						this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
-						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-						remainingBytes = dataToWrite.size();
-						amountCollected += amountToCollect;
-					}
-				} else {
+		if (this->areWeStillConnected()){
+			if (dataToWrite.size() > 0 && this->ssl) {
+				if (priority && dataToWrite.size() < static_cast<uint64_t>(16 * 1024)) {
+					this->outputBuffer.clear();
 					std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
 					this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
 					this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+					if (!this->processWriteData()) {
+						return ProcessIOResult::Error;
+					}
+				} else {
+					if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
+						uint64_t remainingBytes{ dataToWrite.size() };
+						uint64_t amountCollected{};
+						while (remainingBytes > 0) {
+							uint64_t amountToCollect{};
+							if (dataToWrite.size() >= static_cast<uint64_t>(1024 * 16)) {
+								amountToCollect = static_cast<uint64_t>(1024 * 16);
+							} else {
+								amountToCollect = dataToWrite.size();
+							}
+							std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect,
+								this->outputBuffer.getCurrentHead()->getCurrentHead());
+							this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
+							this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+							remainingBytes = dataToWrite.size();
+							amountCollected += amountToCollect;
+						}
+					} else {
+						std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
+						this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
+						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+					}
 				}
 			}
+			return ProcessIOResult::No_Error;
+		} else {
+			return ProcessIOResult::Error;
 		}
-		return ProcessIOResult::No_Error;
 	}
 
 	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInMs) noexcept {

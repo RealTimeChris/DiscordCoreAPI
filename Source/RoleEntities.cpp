@@ -167,7 +167,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Roles::initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManagerNew) {
-		Roles::doWeCacheRoles = configManagerNew->doWeCacheRoles();
+		Roles::doWeCacheRolesBool = configManagerNew->doWeCacheRoles();
 		Roles::httpsClient = client;
 	}
 
@@ -352,7 +352,7 @@ namespace DiscordCoreAPI {
 		if (role.id == 0) {
 			return;
 		}
-		if (Roles::doWeCacheRoles) {
+		if (Roles::doWeCacheRoles()) {
 			if (!Roles::cache.contains(role)) {
 				Roles::cache.emplace(std::move(role));
 			} else {
@@ -370,7 +370,11 @@ namespace DiscordCoreAPI {
 		Roles::cache.erase(data);
 	};
 
+	bool Roles::doWeCacheRoles() {
+		return Roles::doWeCacheRolesBool;
+	}
+
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
+	bool Roles::doWeCacheRolesBool{ false };
 	ObjectCache<RoleData> Roles::cache{};
-	bool Roles::doWeCacheRoles{ false };
 }

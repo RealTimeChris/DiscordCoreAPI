@@ -1381,7 +1381,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (Roles::doWeCacheRoles) {
+		if (Roles::doWeCacheRoles()) {
 			this->roles.clear();
 
 			if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
@@ -1394,7 +1394,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (GuildMembers::doWeCacheGuildMembers) {
+		if (GuildMembers::doWeCacheGuildMembers()) {
 			this->members.clear();
 			GuildMemberData newData{};
 			if (jsonObjectData["members"].get(arrayValue) == simdjson::error_code::SUCCESS) {
@@ -1407,7 +1407,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (GuildMembers::doWeCacheGuildMembers) {
+		if (GuildMembers::doWeCacheGuildMembers()) {
 			if (jsonObjectData["voice_states"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (auto value: arrayValue) {
 					GuildMemberData dataNew{ value.value() };
@@ -1419,7 +1419,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (GuildMembers::doWeCacheGuildMembers) {
+		if (GuildMembers::doWeCacheGuildMembers()) {
 			this->presences.clear();
 			if (jsonObjectData["presences"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (auto value: arrayValue) {

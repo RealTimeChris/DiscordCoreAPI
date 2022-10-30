@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildMembers::initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManagerNew) {
-		GuildMembers::doWeCacheGuildMembers = configManagerNew->doWeCacheUsers();
+		GuildMembers::doWeCacheGuildMembersBool = configManagerNew->doWeCacheUsers();
 		GuildMembers::httpsClient = client;
 	}
 
@@ -179,8 +179,7 @@ namespace DiscordCoreAPI {
 		key.id = dataPackage.guildMemberId;
 		key.guildId = dataPackage.guildId;
 		if (GuildMembers::cache.contains(key)) {
-			key = GuildMembers::cache.at(key);
-			return key;
+			return GuildMembers::cache.at(key);
 		}
 		return GuildMembers::getGuildMemberAsync(dataPackage).get();
 	}
@@ -340,7 +339,7 @@ namespace DiscordCoreAPI {
 		if (guildMember.id == 0) {
 			return;
 		}
-		if (GuildMembers::doWeCacheGuildMembers) {
+		if (GuildMembers::doWeCacheGuildMembers()) {
 			if (!GuildMembers::cache.contains(guildMember)) {
 				GuildMembers::cache.emplace(std::move(guildMember));
 			} else {
@@ -356,7 +355,11 @@ namespace DiscordCoreAPI {
 		GuildMembers::cache.erase(guildMember);
 	};
 
-	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
+	bool GuildMembers::doWeCacheGuildMembers() {
+		return GuildMembers::doWeCacheGuildMembersBool;
+	}
+
+		DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
+	bool GuildMembers::doWeCacheGuildMembersBool{ false };
 	ObjectCache<GuildMemberData> GuildMembers::cache{};
-	bool GuildMembers::doWeCacheGuildMembers{ false };
 };
