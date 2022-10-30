@@ -599,7 +599,7 @@ namespace DiscordCoreAPI {
 	}
 
 	UserData GuildMemberData::getUserData() {
-		if (this->id != 0) {
+		if (this->id.operator size_t() != 0) {
 			return Users::getCachedUser({ .userId = this->id });
 		} else {
 			return {};

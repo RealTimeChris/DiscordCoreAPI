@@ -215,14 +215,14 @@ namespace DiscordCoreAPI {
 	}
 
 	UserData Users::getCachedUser(GetUserData dataPackage) {
-		DiscordEntity data{};
+		UserData data{};
 		data.id = dataPackage.userId;
 		if (!Users::cache.contains(*static_cast<UserData*>(&data))) {
 			return getUserAsync(dataPackage).get();
 
 		} else {
-			auto& user = Users::cache[*static_cast<UserData*>(&data)];
-			return std::move(user);
+			data = Users::cache[*static_cast<UserData*>(&data)];
+			return data;
 		}
 	}
 
