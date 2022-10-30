@@ -757,9 +757,8 @@ namespace DiscordCoreInternal {
 			uint32_t intSize{ sizeof(this->theStreamTargetAddress) };
 #endif
 
-			int32_t readBytes{};
-			readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
-				static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->theStreamTargetAddress, &intSize);
+			auto readBytes{ recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
+				static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->theStreamTargetAddress, &intSize) };
 
 			if (readBytes < 0) {
 				returnValue = false;
