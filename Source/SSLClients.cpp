@@ -655,12 +655,12 @@ namespace DiscordCoreInternal {
 		}
 
 		ProcessIOResult result{ ProcessIOResult::Error };
-		if (auto returnValue = poll(&readWriteSet, 1, 1); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = poll(&readWriteSet, 1, 0); returnValue == SOCKET_ERROR) {
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
 			return ProcessIOResult::Error;
 		} else {
-			if (readWriteSet.revents & POLLWRNORM) {
+			if (readWriteSet.revents & POLLOUT) {
 				if (this->streamType != DiscordCoreAPI::StreamType::None) {
 				}
 				if (!this->processWriteData()) {
@@ -669,7 +669,7 @@ namespace DiscordCoreInternal {
 					result = ProcessIOResult::No_Error;
 				}
 			}
-			if (readWriteSet.revents & POLLRDNORM) {
+			if (readWriteSet.revents & POLLIN) {
 				if (this->streamType != DiscordCoreAPI::StreamType::None) {
 				}
 				if (!this->processReadData()) {

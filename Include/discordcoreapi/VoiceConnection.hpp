@@ -74,6 +74,7 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll VoiceUser {
 		std::deque<std::vector<opus_int16>> payloads{};
+		bool haveWeAcceptedAudioThisRound{ false };
 		OpusDecoderWrapper decoder{};
 		Snowflake userId{};
 	};
@@ -202,6 +203,8 @@ namespace DiscordCoreAPI {
 		void runVoice(std::stop_token) noexcept;
 
 		void parseIncomingVoiceData() noexcept;
+
+		void parseOutGoingVoiceData() noexcept;
 
 		bool areWeCurrentlyPlaying() noexcept;
 
