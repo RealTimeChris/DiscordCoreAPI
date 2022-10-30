@@ -70,6 +70,10 @@ namespace DiscordCoreAPI {
 		if (result != OPUS_OK) {
 			throw std::runtime_error{ "Failed to set the Opus application type." };
 		}
+		result = opus_encoder_ctl(this->encoder, OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
+		if (result != OPUS_OK) {
+			throw std::runtime_error{ "Failed to set the Opus bitrate." };
+		}
 	}
 
 	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(std::basic_string_view<opus_int16> inputFrame) {
