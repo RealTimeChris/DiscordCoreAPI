@@ -1026,7 +1026,7 @@ namespace DiscordCoreAPI {
 		friend class GuildData;
 
 		std::vector<OverWriteData> permissionOverwrites{};///< Permission overwrites.
-		ChannelType type{ ChannelType::Dm };///< The type of the Channel.
+		ChannelType type{ ChannelType::DM };///< The type of the Channel.
 		SortOrderTypes defaultSortOrder{};///< Default sorting order for a forum thread.
 		uint32_t memberCount{ 0 };///< Count of members active in the Channel.
 		uint16_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.

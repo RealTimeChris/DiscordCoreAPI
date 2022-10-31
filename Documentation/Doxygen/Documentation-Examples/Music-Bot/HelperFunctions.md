@@ -7,7 +7,7 @@ Helper Functions {#HelperFunctions}
 
 	bool areWeInADM(InputEventData eventData, Channel channel, bool displayResponse = true) {
 		auto currentChannelType = channel.type;
-		if (currentChannelType == ChannelType::Dm) {
+		if (currentChannelType == ChannelType::DM) {
 			if (displayResponse) {
 				std::string msgString = "------\n**Sorry, but we can't do that in a direct message!**\n------";
 				std::unique_ptr<EmbedData> msgEmbed(new EmbedData());
