@@ -327,7 +327,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildMemberUpdateData::OnGuildMemberUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-		DiscordCoreClient* client){
+		DiscordCoreClient* client) {
 		this->guildMember = std::make_unique<GuildMemberData>(data.processJsonMessage<GuildMemberData>(dataReal));
 		if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers()) {
 			DiscordCoreAPI::GuildMembers::insertGuildMember(*this->guildMember);

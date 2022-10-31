@@ -373,7 +373,7 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult SSLClient::writeData(std::string_view dataToWrite, bool priority) noexcept {
-		if (this->areWeStillConnected()){
+		if (this->areWeStillConnected()) {
 			if (dataToWrite.size() > 0 && this->ssl) {
 				if (priority && dataToWrite.size() < static_cast<uint64_t>(16 * 1024)) {
 					this->outputBuffer.clear();
