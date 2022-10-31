@@ -680,19 +680,19 @@ namespace DiscordCoreAPI {
 
 	/// Channel types. \brief Channel types.
 	enum class ChannelType : uint8_t {
-		Guild_Text = 0,///< Guild text.
-		Dm = 1,///< Direct-Message.
-		Guild_Voice = 2,/// Guild voice.
-		Group_Dm = 3,///< Group direct-Message.
-		Guild_Category = 4,///< Guild category.
-		Guild_News = 5,///< Guild news.
-		Guild_Store = 6,///< Guild store.
-		Guild_News_Thread = 10,///< Guild news Thread.
-		Guild_Public_Thread = 11,///< Guild public Thread.
-		Guild_Private_Thread = 12,///< Guild private Thread.
-		Guild_Stage_Voice = 13,///< Guild stage-voice.
+		Guild_Text = 0,///< A text channel within a server.
+		DM = 1,///< A direct message between users.
+		Guild_Voice = 2,///< A voice channel within a server.
+		Group_DM = 3,///< A direct message between multiple users.
+		Guild_Category = 4,///< An organizational category that contains up to 50 channels.
+		Guild_Announcement = 5,///< A channel that users can follow and crosspost into their own server (formerly news channels).
+		Announcement_Thread = 10,///< A temporary sub-channel within a GUILD_ANNOUNCEMENT channel.
+		Public_Thread = 11,///< A temporary sub-channel within a GUILD_TEXT or GUILD_FORUM channel.
+		Private_Thread =
+			12,///< A temporary sub-channel within a GUILD_TEXT channel that is only viewable by those invited and those with the MANAGE_THREADS permission.
+		Guild_Stage_Voice = 13,///< A voice channel for hosting events with an audience.
 		Guild_Directory = 14,///< The channel in a hub containing the listed servers.
-		Guild_Forum = 15///< A channel that can only contain threads.
+		Guild_Forum = 15///< Channel that can only contain threads.
 	};
 
 	/// Meta data for a Thread type of Channel. \brief Meta data for a Thread type of Channel.
@@ -3067,6 +3067,8 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
+		/// \param type The type of select-menu that this is.
+		/// \param channelTypes Types of channels that can be accepted if this is of the type ChannelType.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
 			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
@@ -3179,7 +3181,9 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
-		/// \returns MessageResponseBase& A reference to this data structure.
+		/// \param type The type of select-menu that this is.
+		/// \param channelTypes Types of channels that can be accepted if this is of the type ChannelType.
+		/// \returns RespondToInputEventData& A reference to this data structure.
 		MessageResponseBase& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
 			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
 			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});

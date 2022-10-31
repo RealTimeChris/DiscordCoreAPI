@@ -35,12 +35,12 @@ Editing an Interaction Response {#editinganinteractionresponse}
 			DiscordCoreAPI::RespondToInputEventData dataPackage02 {args.eventData};
 			dataPackage02.type = DiscordCoreAPI::InputEventResponseType::Ephemeral_Interaction_Response;
 			dataPackage02.addContent("Test Response");
-			auto inputEventData = DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage02);
+			auto inputEventData = DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage02).get();
 
 			DiscordCoreAPI::RespondToInputEventData dataPackage03 {inputEventData};
 			dataPackage03.type = DiscordCoreAPI::InputEventResponseType::Edit_Interaction_Response;
 			dataPackage03.addContent("Test Response, Edited!");
-			DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage03);
+			DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage03).get();
 		}
 	};
 }

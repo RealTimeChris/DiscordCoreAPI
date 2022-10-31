@@ -81,6 +81,9 @@ namespace DiscordCoreAPI {
 		/// \param placeholder Custom placeholder text if nothing is selected, max 100 characters.
 		/// \param maxValues Maximum number of selections that are possible.
 		/// \param minValues Minimum required number of selections that are required.
+		/// \param type The type of select-menu that this is.
+		/// \param channelTypes Types of channels that can be accepted if this is of the type ChannelType.
+		/// \returns RespondToInputEventData& A reference to this data structure.
 		ExecuteWebHookData& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
 			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
 			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
