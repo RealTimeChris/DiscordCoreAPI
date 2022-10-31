@@ -342,6 +342,11 @@ namespace DiscordCoreAPI {
 		int32_t iterationCount{ 0 };
 		while (!token.stop_requested()) {
 			iterationCount++;
+			sleepStopWatch.resetTimer();
+			if (timeToWaitInMs - (timeTakesToSleep / iterationCount) >= 0) {
+				std::this_thread::sleep_for(std::chrono::milliseconds{ timeToWaitInMs - (timeTakesToSleep / iterationCount) });
+			}
+			timeTakesToSleep += sleepStopWatch.totalTimePassed();
 			this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
 			this->parseOutGoingVoiceData();
 			while (!stopWatch.hasTimePassed()) {
@@ -349,11 +354,6 @@ namespace DiscordCoreAPI {
 			}
 			stopWatch.resetTimer();
 			this->mixAudio();
-			sleepStopWatch.resetTimer();
-			if (timeToWaitInMs - (timeTakesToSleep / iterationCount) > 0) {
-				std::this_thread::sleep_for(std::chrono::milliseconds{ timeToWaitInMs - (timeTakesToSleep / iterationCount) });
-			}
-			timeTakesToSleep += sleepStopWatch.totalTimePassed();
 		}
 	}
 
