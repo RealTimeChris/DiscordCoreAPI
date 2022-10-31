@@ -46,9 +46,9 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// For adding a user to a group Dm. \brief For adding a user to a group Dm.
+	/// For adding a user to a group DM. \brief For adding a user to a group DM.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
-		Snowflake channelId{};///< The Channel Id of the Dm.
+		Snowflake channelId{};///< The Channel Id of the DM.
 		Snowflake userId{};///< The user's Id.
 		std::string token{};///< The user's access token.
 		std::string nick{};///< The user's nickname.
@@ -56,9 +56,9 @@ namespace DiscordCoreAPI {
 		operator Jsonifier();
 	};
 
-	/// For removing a User from a group Dm. \brief For removing a User from a group Dm.
+	/// For removing a User from a group DM. \brief For removing a User from a group DM.
 	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
-		Snowflake channelId{};///< The Channel Id of the Dm.
+		Snowflake channelId{};///< The Channel Id of the DM.
 		Snowflake userId{};///< The user's Id.
 	};
 
@@ -166,12 +166,12 @@ namespace DiscordCoreAPI {
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
-		/// Adds a chosen recipient to a group Dm. \brief Adds a chosen recipient to a group Dm.
+		/// Adds a chosen recipient to a group DM. \brief Adds a chosen recipient to a group DM.
 		/// \param dataPackage An AddRecipientToGroupDMData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> addRecipientToGroupDMAsync(AddRecipientToGroupDMData dataPackage);
 
-		/// Removes a chosen recipient from a group Dm. \brief Removes a chosen recipient from a group Dm.
+		/// Removes a chosen recipient from a group DM. \brief Removes a chosen recipient from a group DM.
 		/// \param dataPackage A RemoveRecipientFromGroupDMData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage);

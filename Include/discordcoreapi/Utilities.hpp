@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 	inline bool operator==(const Snowflake& lhs, const Snowflake& rhs) {
 		return lhs.id == rhs.id;
 	}
-	
+
 	template<typename ReturnType> void reverseByteOrder(ReturnType& net) {
 		if (std::endian::native == std::endian::big) {
 		} else {
@@ -250,10 +250,6 @@ namespace DiscordCoreAPI {
 			return elapsedTime;
 		}
 
-		uint64_t getTotalWaitTime() {
-			return this->maxNumberOfMs.load();
-		}
-
 		bool hasTimePassed() {
 			uint64_t currentTime =
 				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
@@ -275,7 +271,7 @@ namespace DiscordCoreAPI {
 		std::atomic_uint64_t startTime{ 0 };
 	};
 
-	constexpr uint8_t formatVersion{ 131 };
+	const uint8_t formatVersion{ 131 };
 
 	enum class EtfType : uint8_t {
 		New_Float_Ext = 70,
@@ -1122,33 +1118,33 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<typename OTy> class ObjectCache {
+	template<typename ObjectType> class ObjectCache {
 	  public:
 		ObjectCache() noexcept {};
 
-		void emplace(OTy&& data) noexcept {
+		void emplace(ObjectType&& data) noexcept {
 			std::unique_lock lock{ this->accessMutex };
 			this->set.emplace(std::move(data));
 		}
 
-		void emplace(OTy& data) noexcept {
+		void emplace(ObjectType& data) noexcept {
 			std::unique_lock lock{ this->accessMutex };
 			this->set.emplace(data);
 		}
 
-		const OTy& readOnly(OTy& key) noexcept {
+		const ObjectType& readOnly(ObjectType& key) noexcept {
 			std::shared_lock lock{ this->accessMutex };
 			return *this->set.find(key);
 		}
 
-		OTy& at(OTy&& key) noexcept {
+		ObjectType& at(ObjectType&& key) noexcept {
 			std::shared_lock lock{ this->accessMutex };
-			return ( OTy& )*this->set.find(key);
+			return ( ObjectType& )*this->set.find(key);
 		}
 
-		OTy& at(OTy& key) noexcept {
+		ObjectType& at(ObjectType& key) noexcept {
 			std::shared_lock lock{ this->accessMutex };
-			return ( OTy& )*this->set.find(key);
+			return ( ObjectType& )*this->set.find(key);
 		}
 
 		auto begin() {
@@ -1161,32 +1157,32 @@ namespace DiscordCoreAPI {
 			return this->set.end();
 		}
 
-		const bool contains(OTy& key) noexcept {
+		const bool contains(ObjectType& key) noexcept {
 			std::shared_lock lock{ this->accessMutex };
 			return this->set.contains(key);
 		}
 
-		void erase(OTy& key) {
+		void erase(ObjectType& key) {
 			if (this->set.contains(key)) {
 				std::unique_lock lock{ this->accessMutex };
 				this->set.erase(key);
 			}
 		}
 
-		OTy& operator[](OTy& key) {
+		ObjectType& operator[](ObjectType& key) {
 			if (!this->contains(key)) {
 				std::shared_lock lock{ this->accessMutex };
 				this->set.emplace(key);
 			}
-			return ( OTy& )*this->set.find(key);
+			return ( ObjectType& )*this->set.find(key);
 		}
 
-		OTy& operator[](OTy&& key) {
+		ObjectType& operator[](ObjectType&& key) {
 			if (!this->contains(key)) {
 				std::shared_lock lock{ this->accessMutex };
 				this->set.emplace(std::move(key));
 			}
-			return ( OTy& )*this->set.find(key);
+			return ( ObjectType& )*this->set.find(key);
 		}
 
 		uint64_t size() noexcept {
@@ -1195,7 +1191,7 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::unordered_set<OTy> set{};
+		std::unordered_set<ObjectType> set{};
 		std::shared_mutex accessMutex{};
 	};
 
@@ -1906,60 +1902,74 @@ namespace DiscordCoreAPI {
 		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
 	}
 
-	template<typename OTy>
-	concept CopyableOrMovable = std::copyable<OTy> || std::movable<OTy>;
+	template<typename ObjectType>
+	concept CopyableOrMovable = std::copyable<ObjectType> || std::movable<ObjectType>;
 
 	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
-	/// \tparam OTy The type of object that will be sent over the message block.
-	template<CopyableOrMovable OTy> class UnboundedMessageBlock {
+	/// \tparam ObjectType The type of object that will be sent over the message block.
+	template<CopyableOrMovable ObjectType> class UnboundedMessageBlock {
 	  public:
-		UnboundedMessageBlock<OTy>& operator=(UnboundedMessageBlock<OTy>&& other) noexcept {
+		UnboundedMessageBlock<ObjectType>& operator=(UnboundedMessageBlock<ObjectType>&& other) noexcept {
 			if (this != &other) {
 				this->queue = std::move(other.queue);
-				other.queue = std::queue<OTy>{};
+				other.queue = std::queue<ObjectType>{};
 			}
 			return *this;
 		}
 
-		UnboundedMessageBlock(UnboundedMessageBlock<OTy>&& other) noexcept {
+		UnboundedMessageBlock(UnboundedMessageBlock<ObjectType>&& other) noexcept {
 			*this = std::move(other);
 		}
 
-		UnboundedMessageBlock<OTy>& operator=(const UnboundedMessageBlock<OTy>&) = delete;
+		UnboundedMessageBlock<ObjectType>& operator=(const UnboundedMessageBlock<ObjectType>&) = delete;
 
-		UnboundedMessageBlock(const UnboundedMessageBlock<OTy>&) = delete;
+		UnboundedMessageBlock(const UnboundedMessageBlock<ObjectType>&) = delete;
 
 		UnboundedMessageBlock() noexcept {};
+
+		/// Sends an object of type OTy to the "recipient", ahead of other already queued items. \brief Sends an object of type OTy to the "recipient", ahead of other already queued items.
+		/// \param object An object of OTy.
+		void sendFront(OTy&& object) {
+			std::unique_lock lock{ this->accessMutex };
+			this->queue.emplace_front(std::move(object));
+		}
+
+		/// Sends an object of type OTy to the "recipient", ahead of other already queued items. \brief Sends an object of type OTy to the "recipient", ahead of other already queued items.
+		/// \param object An object of OTy.
+		void sendFront(OTy& object) {
+			std::unique_lock lock{ this->accessMutex };
+			this->queue.emplace_front(object);
+		}
 
 		/// Sends an object of type OTy to the "recipient". \brief Sends an object of type OTy to the "recipient".
 		/// \param object An object of OTy.
 		void send(OTy&& object) {
 			std::unique_lock lock{ this->accessMutex };
-			this->queue.emplace_front(std::move(object));
+			this->queue.emplace_back(std::move(object));
 		}
 
-		/// Sends an object of type OTy to the "recipient". \brief Sends an object of type OTy to the "recipient".
-		/// \param object An object of OTy.
-		void send(OTy& object) {
+		/// Sends an object of type ObjectType to the "recipient". \brief Sends an object of type ObjectType to the "recipient".
+		/// \param object An object of ObjectType.
+		void send(ObjectType& object) {
 			std::unique_lock lock{ this->accessMutex };
-			this->queue.emplace_front(object);
+			this->queue.emplace_back(std::move(object));
 		}
 
 		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
 		void clearContents() {
 			std::unique_lock lock{ this->accessMutex };
 			this->queue.clear();
-			this->queue = std::deque<OTy>{};
+			this->queue = std::deque<ObjectType>{};
 		}
 
-		/// Tries to receive an object of type OTy to be placed into a reference. \brief Tries to receive an object of type OTy to be placed into a reference.
-		/// \param object A reference of type OTy for placing the potentially received object.
+		/// Tries to receive an object of type ObjectType to be placed into a reference. \brief Tries to receive an object of type ObjectType to be placed into a reference.
+		/// \param object A reference of type ObjectType for placing the potentially received object.
 		/// \returns bool A bool, denoting whether or not we received an object.
-		bool tryReceive(OTy& object) {
+		bool tryReceive(ObjectType& object) {
 			std::unique_lock lock{ this->accessMutex };
 			if (this->queue.size() > 0) {
-				object = std::move(this->queue.back());
-				this->queue.pop_back();
+				object = std::move(this->queue.front());
+				this->queue.pop_front();
 				return true;
 			} else {
 				return false;
@@ -1967,7 +1977,7 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::deque<OTy> queue{};
+		std::deque<ObjectType> queue{};
 		std::mutex accessMutex{};
 	};
 
@@ -2046,7 +2056,7 @@ namespace DiscordCoreAPI {
 		int32_t msToCollectFor{ 0 };
 	};
 
-	template<typename OTy> bool waitForTimeToPass(UnboundedMessageBlock<OTy>& outBuffer, OTy& argOne, int32_t timeInMsNew) {
+	template<typename ObjectType> bool waitForTimeToPass(UnboundedMessageBlock<ObjectType>& outBuffer, ObjectType& argOne, int32_t timeInMsNew) {
 		StopWatch stopWatch{ std::chrono::milliseconds{ timeInMsNew } };
 		while (!outBuffer.tryReceive(argOne)) {
 			std::this_thread::sleep_for(1ms);
@@ -2096,7 +2106,7 @@ namespace DiscordCoreInternal {
 
 	enum class RingBufferAccessType { Read = 0, Write = 1 };
 
-	template<typename OTy, uint64_t Size> class RingBufferInterface {
+	template<typename ObjectType, uint64_t Size> class RingBufferInterface {
 	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType type, uint64_t size) noexcept {
 			if (type == RingBufferAccessType::Read) {
@@ -2130,11 +2140,11 @@ namespace DiscordCoreInternal {
 			return this->arrayValue.size() - this->getUsedSpace();
 		}
 
-		OTy* getCurrentTail() noexcept {
+		ObjectType* getCurrentTail() noexcept {
 			return (this->arrayValue.data() + (this->tail % (this->arrayValue.size())));
 		}
 
-		OTy* getCurrentHead() noexcept {
+		ObjectType* getCurrentHead() noexcept {
 			return (this->arrayValue.data() + (this->head % (this->arrayValue.size())));
 		}
 
@@ -2149,7 +2159,7 @@ namespace DiscordCoreInternal {
 		}
 
 	  protected:
-		std::array<OTy, Size> arrayValue{};
+		std::array<ObjectType, Size> arrayValue{};
 		bool areWeFull{ false };
 		uint64_t tail{};
 		uint64_t head{};

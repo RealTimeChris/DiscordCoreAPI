@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 			defaultThreadRateLimitPerUser{};///< The initial rate_limit_per_user to set on newly created threads in a channel.this field is copied to the thread at creation time and does not live update.
 		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
 		std::vector<ForumTagData> availableTags{};///< The set of tags that can be used in a GUILD_FORUM channel.
-		std::unordered_map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group Dm or m.
+		std::unordered_map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group DM or m.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		std::vector<Snowflake> appliedTags{};///< The IDs of the set of tags that have been applied to a thread in a GUILD_FORUM channel.
 		StringWrapper lastMessageId{};///< Id of the last Message.

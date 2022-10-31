@@ -37,7 +37,7 @@ namespace DiscordCoreInternal {
 		explicit ErlParseError(const std::string& message);
 	};
 
-	constexpr uint8_t formatVersion{ 131 };
+	const uint8_t formatVersion{ 131 };
 
 	class DiscordCoreAPI_Dll ErlParser {
 	  public:

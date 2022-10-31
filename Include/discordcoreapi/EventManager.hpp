@@ -444,12 +444,10 @@ namespace DiscordCoreAPI {
 	/// Class for handling the assignment of event-handling functions. \brief Class for handling the assignment of event-handling functions.int32_t
 	class DiscordCoreAPI_Dll EventManager {
 	  public:
-
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnGatewayPingData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
-		DiscordCoreInternal::EventDelegateToken onGatewayPing(
-			const DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGatewayPingData> handler);
+		DiscordCoreInternal::EventDelegateToken onGatewayPing(const DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGatewayPingData> handler);
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onGatewayPing(DiscordCoreInternal::EventDelegateToken& token);

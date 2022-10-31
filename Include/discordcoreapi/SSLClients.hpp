@@ -264,6 +264,8 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult processIO(ProcessIOType type) noexcept;
 
+		virtual void handleAudioBuffer() noexcept = 0;
+
 		std::string_view getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
