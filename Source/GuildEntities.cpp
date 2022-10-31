@@ -1083,7 +1083,7 @@ namespace DiscordCoreAPI {
 				Guilds::getCache()[guild] = std::move(guild);
 			}
 			if (Guilds::getCache().size() % 100 == 0) {
-				std::cout << "THE GUILD COUNT: " << Guilds::getCache().size() << ", TOTAL TIME: " << stopWatch.totalTimePassed() << std::endl;
+				//std::cout << "THE GUILD COUNT: " << Guilds::getCache().size() << ", TOTAL TIME: " << stopWatch.totalTimePassed() << std::endl;
 			}
 		}
 	}
