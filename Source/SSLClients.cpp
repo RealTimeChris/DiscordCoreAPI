@@ -748,31 +748,35 @@ namespace DiscordCoreInternal {
 
 	bool DatagramSocketClient::processReadData() noexcept {
 		bool returnValue{ true };
-		if (!this->inputBuffer.isItFull()) {
-			uint64_t bytesToRead{};
-			if (this->maxBufferSize > this->inputBuffer.getCurrentHead()->getFreeSpace()) {
-				bytesToRead = this->inputBuffer.getCurrentHead()->getFreeSpace();
-			} else {
-				bytesToRead = this->maxBufferSize;
-			}
+		int32_t readBytes{};
+		do {
+			if (!this->inputBuffer.isItFull()) {
+				uint64_t bytesToRead{};
+				if (this->maxBufferSize > this->inputBuffer.getCurrentHead()->getFreeSpace()) {
+					bytesToRead = this->inputBuffer.getCurrentHead()->getFreeSpace();
+				} else {
+					bytesToRead = this->maxBufferSize;
+				}
 #ifdef _WIN32
-			int32_t intSize{ sizeof(this->theStreamTargetAddress) };
+				int32_t intSize{ sizeof(this->theStreamTargetAddress) };
 #else
-			uint32_t intSize{ sizeof(this->theStreamTargetAddress) };
+				uint32_t intSize{ sizeof(this->theStreamTargetAddress) };
 #endif
 
-			auto readBytes{ recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
-				static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->theStreamTargetAddress, &intSize) };
-
-			if (readBytes < 0) {
-				returnValue = false;
-			} else {
-				this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
-				this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-				this->bytesRead += readBytes;
-				returnValue = true;
+				readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
+					static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->theStreamTargetAddress, &intSize);
+				if (readBytes < 0) {
+					returnValue = true;
+				} else {
+					this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
+					this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+					this->bytesRead += readBytes;
+					this->handleAudioBuffer();
+					returnValue = true;
+				}
 			}
-		}
+
+		} while (readBytes > 0);
 		return returnValue;
 	}
 

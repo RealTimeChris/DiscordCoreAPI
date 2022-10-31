@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 	inline bool operator==(const Snowflake& lhs, const Snowflake& rhs) {
 		return lhs.id == rhs.id;
 	}
-	
+
 	template<typename ReturnType> void reverseByteOrder(ReturnType& net) {
 		if (std::endian::native == std::endian::big) {
 		} else {
