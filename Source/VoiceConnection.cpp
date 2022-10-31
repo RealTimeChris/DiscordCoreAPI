@@ -335,49 +335,26 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runBridge(std::stop_token token) noexcept {
-		StopWatch processStopWatch{ 20ms };
+		StopWatch stopWatch{ 20ms };
 		StopWatch sleepStopWatch{ 20ms };
 		int32_t timeToWaitInMs{ 20 };
-		int32_t timeTakesToProcess{ 0 };
 		int32_t timeTakesToSleep{ 0 };
 		int32_t iterationCount{ 0 };
 		while (!token.stop_requested()) {
 			iterationCount++;
 			this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
 			this->parseOutGoingVoiceData();
-			while (!processStopWatch.hasTimePassed()) {
+			while (!stopWatch.hasTimePassed()) {
 				this->parseIncomingVoiceData();
 			}
-			processStopWatch.resetTimer();
+			stopWatch.resetTimer();
 			this->mixAudio();
-			timeTakesToProcess += processStopWatch.totalTimePassed();
 			sleepStopWatch.resetTimer();
-			if (timeToWaitInMs - ((timeTakesToProcess / iterationCount) + (timeTakesToSleep / iterationCount)) > 0) {
-				std::this_thread::sleep_for(
-					std::chrono::milliseconds{ timeToWaitInMs - ((timeTakesToProcess / iterationCount) + (timeTakesToSleep / iterationCount)) });
+			if (timeToWaitInMs - (timeTakesToSleep / iterationCount) > 0) {
+				std::this_thread::sleep_for(std::chrono::milliseconds{ timeToWaitInMs - (timeTakesToSleep / iterationCount) });
 			}
 			timeTakesToSleep += sleepStopWatch.totalTimePassed();
 		}
-	}
-
-	bool VoiceConnection::collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept {
-		StopWatch stopWatch{ 2500ms };
-		stopWatch.resetTimer();
-		while (!this->doWeQuit->load() && this->connectionState.load() != stateToWaitFor && !stopWatch.hasTimePassed()) {
-			if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
-				this->onClosed();
-				return false;
-			}
-			if (!WebSocketCore::areWeStillConnected()) {
-				return false;
-			}
-			if (WebSocketCore::inputBuffer.getUsedSpace() > 0) {
-				WebSocketCore::parseMessage();
-				return true;
-			}
-			std::this_thread::sleep_for(1ms);
-		}
-		return false;
 	}
 
 	void VoiceConnection::runVoice(std::stop_token stopToken) noexcept {
@@ -848,8 +825,7 @@ namespace DiscordCoreAPI {
 				if (!DatagramSocketClient::connect(this->voiceIp, std::to_string(this->port))) {
 					return false;
 				} else {
-					std::vector<unsigned char> packet{};
-					packet.resize(74);
+					unsigned char packet[74]{};
 					uint16_t val1601{ 0x01 };
 					uint16_t val1602{ 70 };
 					packet[0] = static_cast<uint8_t>(val1601 >> 8);
@@ -861,7 +837,7 @@ namespace DiscordCoreAPI {
 					packet[6] = static_cast<uint8_t>(this->audioSSRC >> 8);
 					packet[7] = static_cast<uint8_t>(this->audioSSRC);
 					DatagramSocketClient::getInputBuffer();
-					DatagramSocketClient::writeData(packet);
+					DatagramSocketClient::writeData(std::basic_string_view<unsigned char>{ packet, std::size(packet) });
 					std::string inputString{};
 					StopWatch stopWatch{ 5500ms };
 					while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {

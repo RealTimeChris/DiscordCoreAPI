@@ -183,8 +183,6 @@ namespace DiscordCoreAPI {
 
 		void sendVoiceData(std::basic_string_view<unsigned char> responseData) noexcept;
 
-		bool collectAndProcessAMessage(VoiceConnectionState stateToWaitFor) noexcept;
-
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
 		void checkForAndSendHeartBeat(bool isItImmediage) noexcept;
