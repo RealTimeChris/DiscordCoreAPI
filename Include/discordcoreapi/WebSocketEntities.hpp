@@ -64,7 +64,7 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		void checkForAndSendHeartBeat(bool = false) noexcept;
+		bool checkForAndSendHeartBeat(bool = false) noexcept;
 
 		void parseConnectionHeaders() noexcept;
 

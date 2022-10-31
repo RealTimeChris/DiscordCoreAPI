@@ -250,6 +250,10 @@ namespace DiscordCoreAPI {
 			return elapsedTime;
 		}
 
+		uint64_t getTotalWaitTime() {
+			return this->maxNumberOfMs.load();
+		}
+
 		bool hasTimePassed() {
 			uint64_t currentTime =
 				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());

@@ -1365,7 +1365,7 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	void WebSocketCore::checkForAndSendHeartBeat(bool isImmediate) noexcept {
+	bool WebSocketCore::checkForAndSendHeartBeat(bool isImmediate) noexcept {
 		try {
 			if ((this->currentState.load() == WebSocketState::Authenticated && this->heartBeatStopWatch.hasTimePassed() &&
 					this->haveWeReceivedHeartbeatAck) ||
@@ -1380,18 +1380,21 @@ namespace DiscordCoreInternal {
 					data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 				}
 				string = this->prepMessageData(data.operator std::string(), this->dataOpCode);
-
 				if (!this->sendMessage(string, true)) {
-					return;
+					return false;
 				}
+				return true;
 				this->haveWeReceivedHeartbeatAck = false;
 				this->heartBeatStopWatch.resetTimer();
+			} else {
+				return false;
 			}
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::checkForAndSendHeartBeat()");
 			}
 			this->onClosed();
+			return false;
 		}
 	}
 
@@ -1589,7 +1592,11 @@ namespace DiscordCoreInternal {
 						this->connect(connectionData);
 					}
 					if (dValue->areWeStillConnected()) {
-						dValue->checkForAndSendHeartBeat();
+						if (dValue->checkForAndSendHeartBeat()) {
+							DiscordCoreAPI::OnGatewayPingData dataNew{};
+							dataNew.timeUntilNextPing = dValue->heartBeatStopWatch.getTotalWaitTime();
+							this->discordCoreClient->eventManager.onGatewayPingEvent(dataNew);
+						}
 						areWeConnected = true;
 					}
 				}

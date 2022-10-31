@@ -47,6 +47,11 @@ namespace DiscordCoreAPI {
 	 * \addtogroup discord_events
 	 * @{
 	 */
+	/// Data that is received as part of a Gateway ping event. \brief Data that is received as part of a Gateway ping event.
+	struct DiscordCoreAPI_Dll OnGatewayPingData {
+		int32_t timeUntilNextPing{};
+	};
+
 	/// Data that is received as part of an InputEvent creation event. \brief Data that is received as part of an InputEvent creation event.
 	struct DiscordCoreAPI_Dll OnInputEventCreationData {
 		InputEventData inputEventData{};///< InputEventData representing the input-event.
@@ -439,6 +444,16 @@ namespace DiscordCoreAPI {
 	/// Class for handling the assignment of event-handling functions. \brief Class for handling the assignment of event-handling functions.int32_t
 	class DiscordCoreAPI_Dll EventManager {
 	  public:
+
+		/// For adding a function to handle this event. \brief For adding a function to handle this event.
+		/// \param handler A delegate taking an OnGatewayPingData structure as an argument.
+		/// \returns An event_token for later de-registering the event.
+		DiscordCoreInternal::EventDelegateToken onGatewayPing(
+			const DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGatewayPingData> handler);
+		/// For removing a function from handling this event. \brief For removing a function from handling this event.
+		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
+		void onGatewayPing(DiscordCoreInternal::EventDelegateToken& token);
+
 		/// For adding a function to handle this event. \brief For adding a function to handle this event.
 		/// \param handler A delegate taking an OnApplicationCommandPermissionsUpdateData structure as an argument.
 		/// \returns An event_token for later de-registering the event.
@@ -969,6 +984,8 @@ namespace DiscordCoreAPI {
 		/// For removing a function from handling this event. \brief For removing a function from handling this event.
 		/// \param token An DiscordCoreInternal::EventDelegateToken, from the original event registration.
 		void onWebhookUpdate(DiscordCoreInternal::EventDelegateToken& token);
+
+		DiscordCoreInternal::Event<CoRoutine<void>, OnGatewayPingData> onGatewayPingEvent{};
 
 		DiscordCoreInternal::Event<CoRoutine<void>, OnApplicationCommandPermissionsUpdateData> onApplicationCommandPermissionsUpdateEvent{};
 

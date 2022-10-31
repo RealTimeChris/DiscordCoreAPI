@@ -437,6 +437,15 @@ namespace DiscordCoreAPI {
 		this->token = getString(theJsonData["d"], "token");
 	};
 
+	DiscordCoreInternal::EventDelegateToken EventManager::onGatewayPing(
+		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGatewayPingData> handler) {
+		return this->onGatewayPingEvent.add(std::move(handler));
+	}
+
+	void EventManager::onGatewayPing(DiscordCoreInternal::EventDelegateToken& token) {
+		return this->onGatewayPingEvent.remove(token);
+	}
+
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnApplicationCommandPermissionsUpdateData> handler) {
 		return this->onApplicationCommandPermissionsUpdateEvent.add(std::move(handler));
