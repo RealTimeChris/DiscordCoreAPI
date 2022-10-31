@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 			}
 			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->data.data()) + headerSize, audioData.data.data(), audioData.data.size(),
 					nonceForLibSodium, this->keys.data()) != 0) {
-				return std::basic_string_view<unsigned char>{};
+				return {};
 			}
 			return std::basic_string_view<unsigned char>{ this->data.data(), numOfBytes };
 		}
@@ -147,13 +147,6 @@ namespace DiscordCoreAPI {
 
 	Snowflake VoiceConnection::getChannelId() noexcept {
 		return this->voiceConnectInitData.channelId;
-	}
-
-	std::basic_string_view<unsigned char> VoiceConnection::encryptSingleAudioFrame(AudioFrameData& bufferToSend) noexcept {
-		if (this->encryptionKey.size() > 0) {
-			return this->packetEncrypter.encryptPacket(bufferToSend);
-		}
-		return {};
 	}
 
 	UnboundedMessageBlock<AudioFrameData>& VoiceConnection::getAudioBuffer() noexcept {
@@ -476,11 +469,11 @@ namespace DiscordCoreAPI {
 						switch (this->audioData.type) {
 							case AudioFrameType::RawPCM: {
 								auto encodedFrameData = this->encoder.encodeSingleAudioFrame(this->audioData);
-								newFrame = this->encryptSingleAudioFrame(encodedFrameData);
+								newFrame = this->packetEncrypter.encryptPacket(encodedFrameData);
 								break;
 							}
 							case AudioFrameType::Encoded: {
-								newFrame = this->encryptSingleAudioFrame(this->audioData);
+								newFrame = this->packetEncrypter.encryptPacket(this->audioData);
 								break;
 							}
 							case AudioFrameType::Skip: {
@@ -618,7 +611,7 @@ namespace DiscordCoreAPI {
 							if (this->decodeData.data.size() != this->decodeData.sampleCount * 2) {
 								this->decodeData.data.resize(static_cast<uint64_t>(this->decodeData.sampleCount) * 2);
 							}
-							this->voiceUsers[speakerSsrc].payloads.emplace_back(std::move(this->decodeData.data));
+							this->voiceUsers[speakerSsrc].payloads.emplace_front(std::move(this->decodeData.data));
 						}
 					}
 				}
@@ -877,7 +870,7 @@ namespace DiscordCoreAPI {
 		newFrame.data.emplace_back(0xf8);
 		newFrame.data.emplace_back(0xff);
 		newFrame.data.emplace_back(0xfe);
-		auto frame = this->encryptSingleAudioFrame(newFrame);
+		auto frame = this->packetEncrypter.encryptPacket(newFrame);
 		this->sendVoiceData(frame);
 	}
 
@@ -952,11 +945,14 @@ namespace DiscordCoreAPI {
 			opus_int32 voiceUserCount{};
 			size_t decodedSize{};
 			std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
+			std::unique_lock lock{ this->voiceUserMutex };
 			for (auto& [key, value]: this->voiceUsers) {
-				std::unique_lock lock{ this->voiceUserMutex };
+				if (!lock.owns_lock()) {
+					lock.lock();
+				}
 				if (value.payloads.size() > 0) {
-					auto payload = std::move(value.payloads.front());
-					value.payloads.pop_front();
+					auto payload = std::move(value.payloads.back());
+					value.payloads.pop_back();
 					lock.unlock();
 					if (payload.size() > 0) {
 						decodedSize = std::max(decodedSize, payload.size());
