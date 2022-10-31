@@ -1383,9 +1383,9 @@ namespace DiscordCoreInternal {
 				if (!this->sendMessage(string, true)) {
 					return false;
 				}
-				return true;
 				this->haveWeReceivedHeartbeatAck = false;
 				this->heartBeatStopWatch.resetTimer();
+				return true;
 			} else {
 				return false;
 			}

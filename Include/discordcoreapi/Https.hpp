@@ -152,8 +152,8 @@ namespace DiscordCoreInternal {
 		int64_t currentIndex{};
 	};
 
-	template<typename ObjectType>
-	concept SameAsVoid = std::same_as<void, ObjectType>;
+	template<typename OTy>
+	concept SameAsVoid = std::same_as<void, OTy>;
 
 	class DiscordCoreAPI_Dll HttpsClient {
 	  public:

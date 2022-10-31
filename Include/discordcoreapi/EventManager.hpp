@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 	 */
 	/// Data that is received as part of a Gateway ping event. \brief Data that is received as part of a Gateway ping event.
 	struct DiscordCoreAPI_Dll OnGatewayPingData {
-		int32_t timeUntilNextPing{};
+		int32_t timeUntilNextPing{};///< The number of milliseconds until the next ping.
 	};
 
 	/// Data that is received as part of an InputEvent creation event. \brief Data that is received as part of an InputEvent creation event.
