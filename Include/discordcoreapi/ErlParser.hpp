@@ -63,7 +63,7 @@ namespace DiscordCoreInternal {
 
 		void writeCharacters(const char* data, std::size_t length);
 
-		void writeCharacter(const char theChar);
+		void writeCharacter(const char value);
 
 		void singleValueETFToJson();
 

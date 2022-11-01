@@ -95,7 +95,7 @@ namespace DiscordCoreAPI {
 		virtual ~StickerVector() noexcept = default;
 
 	  protected:
-		std::vector<Sticker> theStickers{};
+		std::vector<Sticker> stickers{};
 	};
 
 	/**@}*/

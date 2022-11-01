@@ -77,7 +77,7 @@ namespace DiscordCoreInternal {
 	#endif
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
-		std::unordered_map<uint32_t, pollfd> thePolls{};
+		std::unordered_map<uint32_t, pollfd> polls{};
 	};
 
 	#ifdef _WIN32
@@ -281,7 +281,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) - 1 };
 		DiscordCoreAPI::StreamType streamType{};
-		sockaddr_in theStreamTargetAddress{};
+		sockaddr_in streamTargetAddress{};
 		RingBuffer<16> outputBuffer{};
 		RingBuffer<16> inputBuffer{};
 		SOCKETWrapper socket{};

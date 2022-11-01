@@ -253,7 +253,7 @@ namespace DiscordCoreAPI {
 		virtual ~WebHookVector() noexcept = default;
 
 	  protected:
-		std::vector<WebHook> theWebHooks{};
+		std::vector<WebHook> webHooks{};
 	};
 
 	/**@}*/

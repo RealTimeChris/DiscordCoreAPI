@@ -61,14 +61,14 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					Sticker newData{ value.value() };
-					this->theStickers.emplace_back(std::move(newData));
+					this->stickers.emplace_back(std::move(newData));
 				}
 			}
 		}
 	}
 
 	StickerVector::operator std::vector<Sticker>() {
-		return this->theStickers;
+		return this->stickers;
 	}
 
 	void Stickers::initialize(DiscordCoreInternal::HttpsClient* client) {

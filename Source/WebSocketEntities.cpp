@@ -44,130 +44,130 @@ namespace DiscordCoreInternal {
 	const uint8_t webSocketFinishBit{ (1u << 7u) };
 	const uint8_t webSocketMaskBit{ (1u << 7u) };
 
-	EventConverter::EventConverter(std::string theNewEvent) {
-		this->theEvent = theNewEvent;
+	EventConverter::EventConverter(std::string newEvent) {
+		this->eventValue = newEvent;
 	}
 
 	EventConverter::operator int32_t() {
-		if (this->theEvent == "READY") {
+		if (this->eventValue == "READY") {
 			return 1;
-		} else if (this->theEvent == "RESUMED") {
+		} else if (this->eventValue == "RESUMED") {
 			return 2;
-		} else if (this->theEvent == "APPLICATION_COMMAND_PERMISSIONS_UPDATE") {
+		} else if (this->eventValue == "APPLICATION_COMMAND_PERMISSIONS_UPDATE") {
 			return 3;
-		} else if (this->theEvent == "AUTO_MODERATION_RULE_CREATE") {
+		} else if (this->eventValue == "AUTO_MODERATION_RULE_CREATE") {
 			return 4;
-		} else if (this->theEvent == "AUTO_MODERATION_RULE_UPDATE") {
+		} else if (this->eventValue == "AUTO_MODERATION_RULE_UPDATE") {
 			return 5;
-		} else if (this->theEvent == "AUTO_MODERATION_RULE_DELETE") {
+		} else if (this->eventValue == "AUTO_MODERATION_RULE_DELETE") {
 			return 6;
-		} else if (this->theEvent == "AUTO_MODERATION_ACTION_EXECUTION") {
+		} else if (this->eventValue == "AUTO_MODERATION_ACTION_EXECUTION") {
 			return 7;
-		} else if (this->theEvent == "CHANNEL_CREATE") {
+		} else if (this->eventValue == "CHANNEL_CREATE") {
 			return 8;
-		} else if (this->theEvent == "CHANNEL_UPDATE") {
+		} else if (this->eventValue == "CHANNEL_UPDATE") {
 			return 9;
-		} else if (this->theEvent == "CHANNEL_DELETE") {
+		} else if (this->eventValue == "CHANNEL_DELETE") {
 			return 10;
-		} else if (this->theEvent == "CHANNEL_PINS_UPDATE") {
+		} else if (this->eventValue == "CHANNEL_PINS_UPDATE") {
 			return 11;
-		} else if (this->theEvent == "THREAD_CREATE") {
+		} else if (this->eventValue == "THREAD_CREATE") {
 			return 12;
-		} else if (this->theEvent == "THREAD_UPDATE") {
+		} else if (this->eventValue == "THREAD_UPDATE") {
 			return 13;
-		} else if (this->theEvent == "THREAD_DELETE") {
+		} else if (this->eventValue == "THREAD_DELETE") {
 			return 14;
-		} else if (this->theEvent == "THREAD_LIST_SYNC") {
+		} else if (this->eventValue == "THREAD_LIST_SYNC") {
 			return 15;
-		} else if (this->theEvent == "THREAD_MEMBER_UPDATE") {
+		} else if (this->eventValue == "THREAD_MEMBER_UPDATE") {
 			return 16;
-		} else if (this->theEvent == "THREAD_MEMBERS_UPDATE") {
+		} else if (this->eventValue == "THREAD_MEMBERS_UPDATE") {
 			return 17;
-		} else if (this->theEvent == "GUILD_CREATE") {
+		} else if (this->eventValue == "GUILD_CREATE") {
 			return 18;
-		} else if (this->theEvent == "GUILD_UPDATE") {
+		} else if (this->eventValue == "GUILD_UPDATE") {
 			return 19;
-		} else if (this->theEvent == "GUILD_DELETE") {
+		} else if (this->eventValue == "GUILD_DELETE") {
 			return 20;
-		} else if (this->theEvent == "GUILD_BAN_ADD") {
+		} else if (this->eventValue == "GUILD_BAN_ADD") {
 			return 21;
-		} else if (this->theEvent == "GUILD_BAN_REMOVE") {
+		} else if (this->eventValue == "GUILD_BAN_REMOVE") {
 			return 22;
-		} else if (this->theEvent == "GUILD_EMOJIS_UPDATE") {
+		} else if (this->eventValue == "GUILD_EMOJIS_UPDATE") {
 			return 23;
-		} else if (this->theEvent == "GUILD_STICKERS_UPDATE") {
+		} else if (this->eventValue == "GUILD_STICKERS_UPDATE") {
 			return 24;
-		} else if (this->theEvent == "GUILD_INTEGRATIONS_UPDATE") {
+		} else if (this->eventValue == "GUILD_INTEGRATIONS_UPDATE") {
 			return 25;
-		} else if (this->theEvent == "GUILD_MEMBER_ADD") {
+		} else if (this->eventValue == "GUILD_MEMBER_ADD") {
 			return 26;
-		} else if (this->theEvent == "GUILD_MEMBER_REMOVE") {
+		} else if (this->eventValue == "GUILD_MEMBER_REMOVE") {
 			return 27;
-		} else if (this->theEvent == "GUILD_MEMBER_UPDATE") {
+		} else if (this->eventValue == "GUILD_MEMBER_UPDATE") {
 			return 28;
-		} else if (this->theEvent == "GUILD_MEMBERS_CHUNK") {
+		} else if (this->eventValue == "GUILD_MEMBERS_CHUNK") {
 			return 29;
-		} else if (this->theEvent == "GUILD_ROLE_CREATE") {
+		} else if (this->eventValue == "GUILD_ROLE_CREATE") {
 			return 30;
-		} else if (this->theEvent == "GUILD_ROLE_UPDATE") {
+		} else if (this->eventValue == "GUILD_ROLE_UPDATE") {
 			return 31;
-		} else if (this->theEvent == "GUILD_ROLE_DELETE") {
+		} else if (this->eventValue == "GUILD_ROLE_DELETE") {
 			return 32;
-		} else if (this->theEvent == "GUILD_SCHEDULED_EVENT_CREATE") {
+		} else if (this->eventValue == "GUILD_SCHEDULED_EVENT_CREATE") {
 			return 33;
-		} else if (this->theEvent == "GUILD_SCHEDULED_EVENT_UPDATE") {
+		} else if (this->eventValue == "GUILD_SCHEDULED_EVENT_UPDATE") {
 			return 34;
-		} else if (this->theEvent == "GUILD_SCHEDULED_EVENT_DELETE") {
+		} else if (this->eventValue == "GUILD_SCHEDULED_EVENT_DELETE") {
 			return 35;
-		} else if (this->theEvent == "GUILD_SCHEDULED_EVENT_USER_ADD") {
+		} else if (this->eventValue == "GUILD_SCHEDULED_EVENT_USER_ADD") {
 			return 36;
-		} else if (this->theEvent == "GUILD_SCHEDULED_EVENT_USER_REMOVE") {
+		} else if (this->eventValue == "GUILD_SCHEDULED_EVENT_USER_REMOVE") {
 			return 37;
-		} else if (this->theEvent == "INTEGRATION_CREATE") {
+		} else if (this->eventValue == "INTEGRATION_CREATE") {
 			return 38;
-		} else if (this->theEvent == "INTEGRATION_UPDATE") {
+		} else if (this->eventValue == "INTEGRATION_UPDATE") {
 			return 39;
-		} else if (this->theEvent == "INTEGRATION_DELETE") {
+		} else if (this->eventValue == "INTEGRATION_DELETE") {
 			return 40;
-		} else if (this->theEvent == "INTERACTION_CREATE") {
+		} else if (this->eventValue == "INTERACTION_CREATE") {
 			return 41;
-		} else if (this->theEvent == "INVITE_CREATE") {
+		} else if (this->eventValue == "INVITE_CREATE") {
 			return 42;
-		} else if (this->theEvent == "INVITE_DELETE") {
+		} else if (this->eventValue == "INVITE_DELETE") {
 			return 43;
-		} else if (this->theEvent == "MESSAGE_CREATE") {
+		} else if (this->eventValue == "MESSAGE_CREATE") {
 			return 44;
-		} else if (this->theEvent == "MESSAGE_UPDATE") {
+		} else if (this->eventValue == "MESSAGE_UPDATE") {
 			return 45;
-		} else if (this->theEvent == "MESSAGE_DELETE") {
+		} else if (this->eventValue == "MESSAGE_DELETE") {
 			return 46;
-		} else if (this->theEvent == "MESSAGE_DELETE_BULK") {
+		} else if (this->eventValue == "MESSAGE_DELETE_BULK") {
 			return 47;
-		} else if (this->theEvent == "MESSAGE_REACTION_ADD") {
+		} else if (this->eventValue == "MESSAGE_REACTION_ADD") {
 			return 48;
-		} else if (this->theEvent == "MESSAGE_REACTION_REMOVE") {
+		} else if (this->eventValue == "MESSAGE_REACTION_REMOVE") {
 			return 49;
-		} else if (this->theEvent == "MESSAGE_REACTION_REMOVE_ALL") {
+		} else if (this->eventValue == "MESSAGE_REACTION_REMOVE_ALL") {
 			return 50;
-		} else if (this->theEvent == "MESSAGE_REACTION_REMOVE_EMOJI") {
+		} else if (this->eventValue == "MESSAGE_REACTION_REMOVE_EMOJI") {
 			return 51;
-		} else if (this->theEvent == "PRESENCE_UPDATE") {
+		} else if (this->eventValue == "PRESENCE_UPDATE") {
 			return 52;
-		} else if (this->theEvent == "STAGE_INSTANCE_CREATE") {
+		} else if (this->eventValue == "STAGE_INSTANCE_CREATE") {
 			return 53;
-		} else if (this->theEvent == "STAGE_INSTANCE_UPDATE") {
+		} else if (this->eventValue == "STAGE_INSTANCE_UPDATE") {
 			return 54;
-		} else if (this->theEvent == "STAGE_INSTANCE_DELETE") {
+		} else if (this->eventValue == "STAGE_INSTANCE_DELETE") {
 			return 55;
-		} else if (this->theEvent == "TYPING_START") {
+		} else if (this->eventValue == "TYPING_START") {
 			return 56;
-		} else if (this->theEvent == "USER_UPDATE") {
+		} else if (this->eventValue == "USER_UPDATE") {
 			return 57;
-		} else if (this->theEvent == "VOICE_STATE_UPDATE") {
+		} else if (this->eventValue == "VOICE_STATE_UPDATE") {
 			return 58;
-		} else if (this->theEvent == "VOICE_SERVER_UPDATE") {
+		} else if (this->eventValue == "VOICE_SERVER_UPDATE") {
 			return 59;
-		} else if (this->theEvent == "WEBHOOKS_UPDATE") {
+		} else if (this->eventValue == "WEBHOOKS_UPDATE") {
 			return 60;
 		} else {
 			return 0;

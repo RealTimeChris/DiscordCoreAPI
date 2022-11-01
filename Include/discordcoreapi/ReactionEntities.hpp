@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 		virtual ~ReactionVector() noexcept = default;
 
 	  protected:
-		std::vector<Reaction> theReactions{};
+		std::vector<Reaction> reactions{};
 	};
 
 	/**@}*/

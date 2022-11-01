@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					Reaction newData{ value.value() };
-					this->theReactions.emplace_back(std::move(newData));
+					this->reactions.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 	}
 
 	ReactionVector::operator std::vector<Reaction>() {
-		return this->theReactions;
+		return this->reactions;
 	}
 
 	void Reactions::initialize(DiscordCoreInternal::HttpsClient* client) {

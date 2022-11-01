@@ -86,9 +86,9 @@ namespace DiscordCoreAPI {
 
 		this->name = getString(jsonObjectData, "name");
 
-		std::stringstream theStream{};
-		theStream << getString(jsonObjectData, "unicode_emoji");
-		for (auto& value: theStream.str()) {
+		std::stringstream stream{};
+		stream << getString(jsonObjectData, "unicode_emoji");
+		for (auto& value: stream.str()) {
 			this->unicodeEmoji.emplace_back(value);
 		}
 		if (this->unicodeEmoji.size() > 3) {

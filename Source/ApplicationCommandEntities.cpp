@@ -183,14 +183,14 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					ApplicationCommand newData{ value.value() };
-					this->theApplicationCommands.emplace_back(std::move(newData));
+					this->applicationCommands.emplace_back(std::move(newData));
 				}
 			}
 		}
 	}
 
 	ApplicationCommandVector::operator std::vector<ApplicationCommand>() {
-		return this->theApplicationCommands;
+		return this->applicationCommands;
 	}
 
 	void ApplicationCommands::initialize(DiscordCoreInternal::HttpsClient* client) {

@@ -195,7 +195,7 @@ namespace DiscordCoreAPI {
 		virtual ~ApplicationCommandVector() noexcept = default;
 
 	  protected:
-		std::vector<ApplicationCommand> theApplicationCommands{};
+		std::vector<ApplicationCommand> applicationCommands{};
 	};
 
 	/**@}*/

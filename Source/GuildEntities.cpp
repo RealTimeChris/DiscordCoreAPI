@@ -590,7 +590,7 @@ namespace DiscordCoreAPI {
 		GuildDataVector guildVector{};
 		for (auto value: Guilds::getCache()) {
 			value.discordCoreClient = Guilds::discordCoreClient;
-			guildVector.guildDatas.emplace_back(std::move(value));
+			guildVector.guilds.emplace_back(std::move(value));
 		}
 		co_return guildVector;
 	}

@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					WebHook newData{ value.value() };
-					this->theWebHooks.emplace_back(std::move(newData));
+					this->webHooks.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -265,7 +265,7 @@ namespace DiscordCoreAPI {
 	}
 
 	WebHookVector::operator std::vector<WebHook>() {
-		return this->theWebHooks;
+		return this->webHooks;
 	}
 
 	void WebHooks::initialize(DiscordCoreInternal::HttpsClient* client) {

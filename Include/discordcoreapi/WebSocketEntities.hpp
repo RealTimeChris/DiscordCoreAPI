@@ -40,12 +40,12 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll EventConverter {
 	  public:
-		EventConverter(std::string theEventNew);
+		EventConverter(std::string eventNew);
 
 		operator int32_t();
 
 	  protected:
-		std::string theEvent{};
+		std::string eventValue{};
 	};
 
 	enum class WebSocketType { Normal = 0, Voice = 1 };

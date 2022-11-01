@@ -137,8 +137,8 @@ namespace DiscordCoreInternal {
 		this->finalString.append(data, length);
 	}
 
-	void ErlParser::writeCharacter(const char theChar) {
-		this->finalString.push_back(theChar);
+	void ErlParser::writeCharacter(const char value) {
+		this->finalString.push_back(value);
 	}
 
 	void ErlParser::singleValueETFToJson() {

@@ -1066,7 +1066,7 @@ namespace DiscordCoreAPI {
 		const GatewayIntents getGatewayIntents();
 
 	  protected:
-		DiscordCoreClientConfig theConfig{};
+		DiscordCoreClientConfig config{};
 	};
 
 	/**
@@ -1173,7 +1173,7 @@ namespace DiscordCoreAPI {
 
 		operator std::string();
 
-		void emplace_back(char theChar);
+		void emplace_back(char value);
 
 		uint64_t size();
 
@@ -1191,15 +1191,15 @@ namespace DiscordCoreAPI {
 	}
 
 	inline std::basic_string<char> operator+(const std::basic_string<char, std::char_traits<char>, std::allocator<char>>& lhs, StringWrapper rhs) {
-		std::stringstream theStream{};
-		theStream << lhs << rhs;
-		return theStream.str();
+		std::stringstream stream{};
+		stream << lhs << rhs;
+		return stream.str();
 	}
 
 	inline std::basic_string<char> operator+(const char* lhs, StringWrapper rhs) {
-		std::stringstream theStream{};
-		theStream << lhs << rhs;
-		return theStream.str();
+		std::stringstream stream{};
+		stream << lhs << rhs;
+		return stream.str();
 	}
 
 	inline bool operator==(StringWrapper lhs, const char* rhs) {
@@ -1293,19 +1293,17 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll uint64_t strtoull(const std::string_view string);
 
-	DiscordCoreAPI_Dll uint64_t strtoull(const std::string& string);
-
 	template<typename RTy> RTy fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
 		RTy value{};
-		std::istringstream theStream(string);
-		theStream >> type, theStream >> value;
+		std::istringstream stream(string);
+		stream >> type, stream >> value;
 		return value;
 	}
 
 	template<typename RTy> std::string toHex(RTy inputValue) {
-		std::stringstream theStream{};
-		theStream << std::setfill('0') << std::setw(sizeof(RTy) * 2) << std::hex << inputValue;
-		return theStream.str();
+		std::stringstream stream{};
+		stream << std::setfill('0') << std::setw(sizeof(RTy) * 2) << std::hex << inputValue;
+		return stream.str();
 	}
 
 	class DiscordCoreAPI_Dll RGBColorValue {
@@ -1319,9 +1317,9 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ColorValue {
 	  public:
-		ColorValue(std::string theHexColorValue);
+		ColorValue(std::string hexColorValue);
 
-		ColorValue(uint32_t theColorValue);
+		ColorValue(uint32_t colorValue);
 
 		RGBColorValue getRgbColorValue();
 
@@ -1330,7 +1328,7 @@ namespace DiscordCoreAPI {
 		uint32_t getIntColorValue();
 
 	  protected:
-		uint32_t theColor{};
+		uint32_t color{};
 	};
 
 	enum class HashType {
@@ -1482,7 +1480,7 @@ namespace DiscordCoreAPI {
 		static std::string getAllPermissions();
 
 	  protected:
-		uint64_t thePermissions{};
+		uint64_t permissions{};
 
 		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
 
@@ -1493,12 +1491,12 @@ namespace DiscordCoreAPI {
 
 	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
 	/// \param currentFunctionName A string to display the current function's name.
-	/// \param theLocation For deriving the current file, line, and column - do not set this value.
+	/// \param location For deriving the current file, line, and column - do not set this value.
 	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName,
-		std::source_location theLocation = std::source_location::current());
+		std::source_location location = std::source_location::current());
 
 	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName,
-		std::source_location theLocation = std::source_location::current());
+		std::source_location location = std::source_location::current());
 
 	DiscordCoreAPI_Dll std::string constructMultiPartData(std::string data, const std::vector<File>& files);
 
@@ -1536,13 +1534,13 @@ namespace DiscordCoreAPI {
 	/// Class for representing a timeStamp, as well as working with time-related values. \brief Class for representing a timeStamp, as well as working with time-related values.
 	class DiscordCoreAPI_Dll TimeStamp {
 	  public:
-		explicit TimeStamp(TimeFormat theFormatNew = TimeFormat::LongDateTime) {
+		explicit TimeStamp(TimeFormat formatNew = TimeFormat::LongDateTime) {
 			this->timeStampInTimeUnits =
 				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		}
 
 		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second,
-			TimeFormat theFormatNew) {
+			TimeFormat formatNew) {
 			this->getTimeSinceEpoch(stoull(year), stoull(month), stoull(day), stoull(hour), stoull(minute), stoull(second));
 		}
 
@@ -1583,17 +1581,17 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, TimeFormat theFormatNew) {
+		TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, TimeFormat formatNew) {
 			this->getTimeSinceEpoch(year, month, day, hour, minute, second);
 		};
 
-		TimeStamp(uint64_t timeInTimeUnits, TimeFormat theFormatNew) {
+		TimeStamp(uint64_t timeInTimeUnits, TimeFormat formatNew) {
 			this->timeStampInTimeUnits = TimeType{ timeInTimeUnits }.count();
-			this->getISO8601TimeStamp(theFormatNew);
+			this->getISO8601TimeStamp(formatNew);
 		}
 
 		static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd,
-			int32_t yearsToAdd, TimeFormat theFormatNew) {
+			int32_t yearsToAdd, TimeFormat formatNew) {
 			std::time_t result = std::time(nullptr);
 			int32_t secondsPerMinute{ 60 };
 			int32_t minutesPerHour{ 60 };
@@ -1616,8 +1614,8 @@ namespace DiscordCoreAPI {
 				}
 				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
 					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min),
-					std::to_string(resultTwo->tm_sec), theFormatNew };
-				timeStamp.getISO8601TimeStamp(theFormatNew);
+					std::to_string(resultTwo->tm_sec), formatNew };
+				timeStamp.getISO8601TimeStamp(formatNew);
 				returnString = static_cast<std::string>(timeStamp);
 			} else {
 				if (resultTwo->tm_hour + 5 >= 24) {
@@ -1626,8 +1624,8 @@ namespace DiscordCoreAPI {
 				}
 				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
 					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min),
-					std::to_string(resultTwo->tm_sec), theFormatNew };
-				timeStamp.getISO8601TimeStamp(theFormatNew);
+					std::to_string(resultTwo->tm_sec), formatNew };
+				timeStamp.getISO8601TimeStamp(formatNew);
 				returnString = static_cast<std::string>(timeStamp);
 			}
 			return returnString;
@@ -1780,12 +1778,12 @@ namespace DiscordCoreAPI {
 			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(value).count() * 1000;
 		}
 
-		void convertTimeStampToTimeUnits(TimeFormat theFormatNew, std::string originalTimeStamp) {
+		void convertTimeStampToTimeUnits(TimeFormat formatNew, std::string originalTimeStamp) {
 			try {
 				if (originalTimeStamp != "" && originalTimeStamp != "0") {
 					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
 						stoi(originalTimeStamp.substr(8, 9)), stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)),
-						stoi(originalTimeStamp.substr(17, 18)), theFormatNew };
+						stoi(originalTimeStamp.substr(17, 18)), formatNew };
 					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) }.count();
 				} else {
 					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -1844,25 +1842,26 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType theFlag, bool enabled) {
+	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType flag, bool enabled) {
 		if (enabled) {
-			inputFlag |= static_cast<StoredAsType>(theFlag);
+			inputFlag |= static_cast<StoredAsType>(flag);
 			return inputFlag;
 		} else {
-			inputFlag &= ~static_cast<StoredAsType>(theFlag);
+			inputFlag &= ~static_cast<StoredAsType>(flag);
 			return inputFlag;
 		}
 	}
 
-	template<typename StoredAsType, typename FlagType> bool getBool(StoredAsType inputFlag, FlagType theFlag) {
-		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(theFlag);
+	template<typename StoredAsType, typename FlagType> bool getBool(StoredAsType inputFlag, FlagType flag) {
+		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(flag);
 	}
 
 	template<typename OTy>
 	concept CopyableOrMovable = std::copyable<OTy> || std::movable<OTy>;
 
 	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
-	/// \tparam OTy The type of object that will be sent over the message block.
+	/// \tparam OTy The type of object that will be sent over 
+	///  message block.
 	template<CopyableOrMovable OTy> class UnboundedMessageBlock {
 	  public:
 		UnboundedMessageBlock<OTy>& operator=(UnboundedMessageBlock<OTy>&& other) noexcept {

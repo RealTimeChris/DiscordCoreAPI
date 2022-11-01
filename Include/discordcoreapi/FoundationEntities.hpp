@@ -735,7 +735,7 @@ namespace DiscordCoreAPI {
 		virtual ~ThreadMemberDataVector() noexcept = default;
 
 	  protected:
-		std::vector<ThreadMemberData> threadMemberDatas{};
+		std::vector<ThreadMemberData> threadMembers{};
 	};
 
 	/// Thread types. \brief Thread types.
@@ -1224,7 +1224,7 @@ namespace DiscordCoreAPI {
 		virtual ~GuildApplicationCommandPermissionsDataVector() noexcept = default;
 
 	  protected:
-		std::vector<GuildApplicationCommandPermissionsData> guildApplicationCommandPermissionsDatas{};
+		std::vector<GuildApplicationCommandPermissionsData> guildApplicationCommandPermissionss{};
 	};
 
 	class DiscordCoreAPI_Dll EmojiDataVector {
@@ -1236,7 +1236,7 @@ namespace DiscordCoreAPI {
 		virtual ~EmojiDataVector() noexcept = default;
 
 	  protected:
-		std::vector<EmojiData> theEmojiDatas{};
+		std::vector<EmojiData> theEmojis{};
 	};
 
 	/// For updating/modifying a given Channel's properties. \brief For updating/modifying a given Channel's properties.
@@ -1301,7 +1301,7 @@ namespace DiscordCoreAPI {
 		virtual ~VoiceRegionDataVector() noexcept = default;
 
 	  protected:
-		std::vector<VoiceRegionData> theVoiceRegionDatas{};
+		std::vector<VoiceRegionData> voiceRegions{};
 	};
 
 	/// Message activity types. \brief Message activity types.
@@ -1348,7 +1348,7 @@ namespace DiscordCoreAPI {
 		virtual ~BanDataVector() noexcept = default;
 
 	  protected:
-		std::vector<BanData> theBanDatas{};
+		std::vector<BanData> bans{};
 	};
 
 	/// Team members object data. \brief Team members object data.
@@ -1550,7 +1550,7 @@ namespace DiscordCoreAPI {
 		virtual ~IntegrationDataVector() noexcept = default;
 
 	  protected:
-		std::vector<IntegrationData> integeregrationDatas{};
+		std::vector<IntegrationData> integeregrations{};
 	};
 
 	/// Audit log events. \brief Audit log events.
@@ -1911,7 +1911,7 @@ namespace DiscordCoreAPI {
 		virtual ~GuildDataVector() noexcept = default;
 
 	  protected:
-		std::vector<GuildData> guildDatas{};
+		std::vector<GuildData> guilds{};
 	};
 
 	/// Guild scheduled event privacy levels. \brief Guild scheduled event privacy levels.
@@ -1996,7 +1996,7 @@ namespace DiscordCoreAPI {
 		virtual ~GuildScheduledEventUserDataVector() noexcept = default;
 
 	  protected:
-		std::vector<GuildScheduledEventUserData> guildScheduledEventUserDatas{};
+		std::vector<GuildScheduledEventUserData> guildScheduledEventUsers{};
 	};
 
 	class DiscordCoreAPI_Dll GuildScheduledEventDataVector {
@@ -2010,7 +2010,7 @@ namespace DiscordCoreAPI {
 		virtual ~GuildScheduledEventDataVector() noexcept = default;
 
 	  protected:
-		std::vector<GuildScheduledEventData> guildScheduledEventDatas{};
+		std::vector<GuildScheduledEventData> guildScheduledEvents{};
 	};
 
 	/// Invite data. \brief Invite data.
@@ -2052,7 +2052,7 @@ namespace DiscordCoreAPI {
 		virtual ~InviteDataVector() noexcept = default;
 
 	  protected:
-		std::vector<InviteData> theInviteDatas{};
+		std::vector<InviteData> invites{};
 	};
 
 	/// Represents a Guild Template. \brief Represents a Guild Template.
@@ -2087,7 +2087,7 @@ namespace DiscordCoreAPI {
 		virtual ~GuildTemplateDataVector() noexcept = default;
 
 	  protected:
-		std::vector<GuildTemplateData> guildTemplateDatas{};
+		std::vector<GuildTemplateData> guildTemplates{};
 	};
 
 	/// Invite target types. \brief Invite target types.
@@ -2136,7 +2136,7 @@ namespace DiscordCoreAPI {
 		virtual ~WebHookDataVector() noexcept = default;
 
 	  protected:
-		std::vector<WebHookData> theWebHookDatas{};
+		std::vector<WebHookData> webHooks{};
 	};
 
 	/// Audit log data. \brief Audit log data.
@@ -2291,7 +2291,7 @@ namespace DiscordCoreAPI {
 		virtual ~YouTubeFormatVector() noexcept = default;
 
 	  protected:
-		std::vector<YouTubeFormat> theFormats{};
+		std::vector<YouTubeFormat> formats{};
 	};
 
 	/// Application command types. \brief Application command types.
@@ -2749,7 +2749,7 @@ namespace DiscordCoreAPI {
 		virtual ~StickerPackDataVector() noexcept = default;
 
 	  protected:
-		std::vector<StickerPackData> theStickerPackDatas{};
+		std::vector<StickerPackData> stickerPacks{};
 	};
 
 	/// Connection visibility types. \brief Connection visibility types.
@@ -2788,7 +2788,7 @@ namespace DiscordCoreAPI {
 		virtual ~ConnectionDataVector() noexcept = default;
 
 	  protected:
-		std::vector<ConnectionData> connectionDatas{};
+		std::vector<ConnectionData> connections{};
 	};
 
 	/// ApplicationCommand Interaction data option. \brief ApplicationCommand Interaction data option.

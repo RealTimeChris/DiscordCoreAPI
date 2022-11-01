@@ -100,9 +100,9 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseCode::operator std::string() {
-		std::string theResponse{};
-		theResponse += "Code: " + std::to_string(static_cast<uint32_t>(this->value)) + ", Message: " + this->outputErrorValues[this->value];
-		return theResponse;
+		std::string response{};
+		response += "Code: " + std::to_string(static_cast<uint32_t>(this->value)) + ", Message: " + this->outputErrorValues[this->value];
+		return response;
 	}
 
 	HttpsResponseCode::operator uint32_t() {
@@ -945,104 +945,104 @@ namespace DiscordCoreAPI {
 		return outputSttream;
 	}
 
-	ConfigManager::ConfigManager(const DiscordCoreClientConfig& theConfigNew) {
-		this->theConfig = theConfigNew;
+	ConfigManager::ConfigManager(const DiscordCoreClientConfig& configNew) {
+		this->config = configNew;
 	}
 
 	const bool ConfigManager::doWePrintWebSocketSuccessMessages() {
-		return this->theConfig.logOptions.logWebSocketSuccessMessages;
+		return this->config.logOptions.logWebSocketSuccessMessages;
 	}
 
 	const bool ConfigManager::doWePrintWebSocketErrorMessages() {
-		return this->theConfig.logOptions.logWebSocketErrorMessages;
+		return this->config.logOptions.logWebSocketErrorMessages;
 	}
 
 	const bool ConfigManager::doWePrintHttpsSuccessMessages() {
-		return this->theConfig.logOptions.logHttpsSuccessMessages;
+		return this->config.logOptions.logHttpsSuccessMessages;
 	}
 
 	const bool ConfigManager::doWePrintHttpsErrorMessages() {
-		return this->theConfig.logOptions.logHttpsErrorMessages;
+		return this->config.logOptions.logHttpsErrorMessages;
 	}
 
 	const bool ConfigManager::doWePrintFFMPEGSuccessMessages() {
-		return this->theConfig.logOptions.logFFMPEGSuccessMessages;
+		return this->config.logOptions.logFFMPEGSuccessMessages;
 	}
 
 	const bool ConfigManager::doWePrintFFMPEGErrorMessages() {
-		return this->theConfig.logOptions.logFFMPEGErrorMessages;
+		return this->config.logOptions.logFFMPEGErrorMessages;
 	}
 
 	const bool ConfigManager::doWePrintGeneralSuccessMessages() {
-		return this->theConfig.logOptions.logGeneralSuccessMessages;
+		return this->config.logOptions.logGeneralSuccessMessages;
 	}
 
 	const bool ConfigManager::doWePrintGeneralErrorMessages() {
-		return this->theConfig.logOptions.logGeneralErrorMessages;
+		return this->config.logOptions.logGeneralErrorMessages;
 	}
 
 	const bool ConfigManager::doWeCacheChannels() {
-		return this->theConfig.cacheOptions.cacheChannels;
+		return this->config.cacheOptions.cacheChannels;
 	}
 
 	const bool ConfigManager::doWeCacheUsers() {
-		return this->theConfig.cacheOptions.cacheUsers;
+		return this->config.cacheOptions.cacheUsers;
 	}
 
 	const bool ConfigManager::doWeCacheGuilds() {
-		return this->theConfig.cacheOptions.cacheGuilds;
+		return this->config.cacheOptions.cacheGuilds;
 	}
 
 	const bool ConfigManager::doWeCacheRoles() {
-		return this->theConfig.cacheOptions.cacheRoles;
+		return this->config.cacheOptions.cacheRoles;
 	}
 
 	const DiscordCoreInternal::UpdatePresenceData ConfigManager::getPresenceData() {
-		return this->theConfig.presenceData;
+		return this->config.presenceData;
 	}
 
 	const std::string ConfigManager::getBotToken() {
-		return this->theConfig.botToken;
+		return this->config.botToken;
 	}
 
 	const uint32_t ConfigManager::getTotalShardCount() {
-		return this->theConfig.shardOptions.totalNumberOfShards;
+		return this->config.shardOptions.totalNumberOfShards;
 	}
 
 	const uint32_t ConfigManager::getStartingShard() {
-		return this->theConfig.shardOptions.startingShard;
+		return this->config.shardOptions.startingShard;
 	}
 
 	const uint32_t ConfigManager::getShardCountForThisProcess() {
-		return this->theConfig.shardOptions.numberOfShardsForThisProcess;
+		return this->config.shardOptions.numberOfShardsForThisProcess;
 	}
 
 	const std::string ConfigManager::getConnectionAddress() {
-		return this->theConfig.connectionAddress;
+		return this->config.connectionAddress;
 	}
 
 	void ConfigManager::setConnectionAddress(const std::string& connectionAddressNew) {
-		this->theConfig.connectionAddress = connectionAddressNew;
+		this->config.connectionAddress = connectionAddressNew;
 	}
 
 	const std::string ConfigManager::getConnectionPort() {
-		return this->theConfig.connectionPort;
+		return this->config.connectionPort;
 	}
 
 	void ConfigManager::setConnectionPort(const std::string& connectionPortNew) {
-		this->theConfig.connectionPort = connectionPortNew;
+		this->config.connectionPort = connectionPortNew;
 	}
 
 	const std::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() {
-		return this->theConfig.functionsToExecute;
+		return this->config.functionsToExecute;
 	}
 
 	const TextFormat ConfigManager::getTextFormat() {
-		return this->theConfig.textFormat;
+		return this->config.textFormat;
 	}
 
 	const GatewayIntents ConfigManager::getGatewayIntents() {
-		return this->theConfig.intents;
+		return this->config.intents;
 	}
 
 	StringWrapper& StringWrapper::operator=(StringWrapper&& other) noexcept {
@@ -1062,13 +1062,13 @@ namespace DiscordCoreAPI {
 	StringWrapper& StringWrapper::operator=(const StringWrapper& other) {
 		if (this != &other) {
 			this->ptr.reset(nullptr);
-			std::stringstream theStream{};
+			std::stringstream stream{};
 			if (other.ptr) {
-				theStream << other.ptr;
+				stream << other.ptr;
 			}
-			auto theLength = theStream.str().size();
-			this->ptr = std::make_unique<char[]>(theLength + 1);
-			for (uint64_t x = 0; x < theLength; ++x) {
+			auto length = stream.str().size();
+			this->ptr = std::make_unique<char[]>(length + 1);
+			for (uint64_t x = 0; x < length; ++x) {
 				this->ptr[x] = other.ptr[x];
 			}
 		}
@@ -1080,10 +1080,10 @@ namespace DiscordCoreAPI {
 	}
 
 	StringWrapper& StringWrapper::operator=(const std::string& string) {
-		auto theLength = string.size();
+		auto length = string.size();
 		this->ptr.reset(nullptr);
-		this->ptr = std::make_unique<char[]>(theLength + 1);
-		for (int32_t x = 0; x < theLength; ++x) {
+		this->ptr = std::make_unique<char[]>(length + 1);
+		for (int32_t x = 0; x < length; ++x) {
 			this->ptr[x] = string[x];
 		}
 		return *this;
@@ -1096,11 +1096,11 @@ namespace DiscordCoreAPI {
 	StringWrapper& StringWrapper::operator=(const char* string) {
 		if (string) {
 			this->ptr.reset(nullptr);
-			std::stringstream theStream{};
-			theStream << string;
-			int64_t theLength = theStream.str().size();
-			this->ptr = std::make_unique<char[]>(theLength + 1);
-			for (int64_t x = 0; x < theLength; ++x) {
+			std::stringstream stream{};
+			stream << string;
+			int64_t length = stream.str().size();
+			this->ptr = std::make_unique<char[]>(length + 1);
+			for (int64_t x = 0; x < length; ++x) {
 				this->ptr[x] = string[x];
 			}
 		}
@@ -1112,73 +1112,73 @@ namespace DiscordCoreAPI {
 	}
 
 	StringWrapper::operator std::string() {
-		std::stringstream theStream{};
+		std::stringstream stream{};
 		if (this->ptr) {
-			theStream << this->ptr;
+			stream << this->ptr;
 		}
 		std::string string{};
-		for (uint32_t x = 0; x < theStream.str().size(); ++x) {
-			string.push_back(theStream.str()[x]);
+		for (uint32_t x = 0; x < stream.str().size(); ++x) {
+			string.push_back(stream.str()[x]);
 		}
 		return string;
 	}
 
-	void StringWrapper::emplace_back(char theChar) {
-		std::stringstream theStream{};
+	void StringWrapper::emplace_back(char value) {
+		std::stringstream stream{};
 		if (this->ptr) {
-			theStream << this->ptr;
+			stream << this->ptr;
 		}
-		auto theLength = theStream.str().size();
-		this->ptr = std::make_unique<char[]>(theLength + 2);
-		for (uint64_t x = 0; x < theLength; ++x) {
-			this->ptr[x] = theStream.str()[x];
+		auto length = stream.str().size();
+		this->ptr = std::make_unique<char[]>(length + 2);
+		for (uint64_t x = 0; x < length; ++x) {
+			this->ptr[x] = stream.str()[x];
 		}
-		this->ptr[theLength] = theChar;
+		this->ptr[length] = value;
 	}
 
 	uint64_t StringWrapper::size() {
-		std::stringstream theStream{};
+		std::stringstream stream{};
 		if (this->ptr) {
-			theStream << this->ptr;
+			stream << this->ptr;
 		}
-		auto theLength = theStream.str().size();
-		return theLength;
+		auto length = stream.str().size();
+		return length;
 	}
 
 	const char* StringWrapper::data() {
 		return this->ptr.get();
 	}
 
-	ColorValue::ColorValue(uint32_t theColorValue) {
-		this->theColor = theColorValue;
+	ColorValue::ColorValue(uint32_t colorValue) {
+		this->color = colorValue;
 	}
 
-	ColorValue::ColorValue(std::string theHexColorValue) {
-		if (theHexColorValue == "") {
-			theHexColorValue = "fefefe";
+	ColorValue::ColorValue(std::string hexColorValue) {
+		if (hexColorValue == "") {
+			hexColorValue = "fefefe";
 		}
-		this->theColor = stoull(theHexColorValue, nullptr, 16);
+		this->color = stoull(hexColorValue, nullptr, 16);
 	}
 
 	RGBColorValue ColorValue::getRgbColorValue() {
-		uint8_t red = static_cast<uint8_t>(this->theColor >> 16);
-		uint8_t green = static_cast<uint8_t>(this->theColor >> 8);
-		uint8_t blue = static_cast<uint8_t>(this->theColor);
-		RGBColorValue theColor{};
-		theColor.green = green;
-		theColor.blue = blue;
-		theColor.red = red;
-		return theColor;
+		uint8_t red = static_cast<uint8_t>(this->color >> 16);
+		uint8_t green = static_cast<uint8_t>(this->color >> 8);
+		uint8_t blue = static_cast<uint8_t>(this->color);
+		RGBColorValue color{};
+		color.green = green;
+		color.blue = blue;
+		color.red = red;
+		return color;
 	}
 
 	HexColorValue ColorValue::getHexColorValue() {
-		std::stringstream theStream{};
-		theStream << std::hex << this->theColor;
-		return theStream.str();
+		std::stringstream stream{};
+		stream << std::hex << this->color;
+		return stream.str();
 	}
 
 	uint32_t ColorValue::getIntColorValue() {
-		return this->theColor;
+		return this->color;
 	}
 
 	IconHash& IconHash::operator=(const std::string& string) {
@@ -1229,21 +1229,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	uint64_t strtoull(const std::string& string) {
-		for (auto& value: string) {
-			if (!isdigit(value)) {
-				return 0;
-			}
-		}
-		if (!string.empty() && string != "") {
-			return stoull(string);
-		} else {
-			return 0;
-		}
-	}
-
 	Permissions& Permissions::operator=(Permission&& other) {
-		this->thePermissions = static_cast<uint64_t>(other);
+		this->permissions = static_cast<uint64_t>(other);
 		return *this;
 	}
 
@@ -1252,7 +1239,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions& Permissions::operator=(const Permission& other) {
-		this->thePermissions = static_cast<uint64_t>(other);
+		this->permissions = static_cast<uint64_t>(other);
 		return *this;
 	}
 
@@ -1262,10 +1249,10 @@ namespace DiscordCoreAPI {
 
 	Permissions& Permissions::operator=(std::string&& other) {
 		if (other.size() == 0 || other == "") {
-			this->thePermissions = 0;
+			this->permissions = 0;
 		} else {
 			for (auto& value: other) {
-				this->thePermissions = stoull(other);
+				this->permissions = stoull(other);
 			}
 		}
 		other = "";
@@ -1278,9 +1265,9 @@ namespace DiscordCoreAPI {
 
 	Permissions& Permissions::operator=(const std::string& other) {
 		if (other.size() == 0 || other == "") {
-			this->thePermissions = 0;
+			this->permissions = 0;
 		} else {
-			this->thePermissions = stoull(other);
+			this->permissions = stoull(other);
 		}
 		return *this;
 	}
@@ -1291,7 +1278,7 @@ namespace DiscordCoreAPI {
 
 
 	Permissions& Permissions::operator=(uint64_t other) {
-		this->thePermissions = other;
+		this->permissions = other;
 		return *this;
 	}
 
@@ -1300,11 +1287,11 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions::operator uint64_t() {
-		return this->thePermissions;
+		return this->permissions;
 	}
 
 	Permissions::operator std::string() {
-		return std::string{ std::to_string(this->thePermissions) };
+		return std::string{ std::to_string(this->permissions) };
 	}
 
 	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
@@ -1327,7 +1314,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Permissions::removePermissions(const std::vector<Permission>& permissionsToRemove) {
-		uint64_t permissionsInteger = this->thePermissions;
+		uint64_t permissionsInteger = this->permissions;
 		for (auto value: permissionsToRemove) {
 			permissionsInteger &= ~static_cast<uint64_t>(value);
 		}
@@ -1337,7 +1324,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Permissions::addPermissions(const std::vector<Permission>& permissionsToAdd) {
-		uint64_t permissionsInteger = this->thePermissions;
+		uint64_t permissionsInteger = this->permissions;
 		for (auto value: permissionsToAdd) {
 			permissionsInteger |= static_cast<uint64_t>(value);
 		}
@@ -1348,7 +1335,7 @@ namespace DiscordCoreAPI {
 
 	std::vector<std::string> Permissions::displayPermissions() {
 		std::vector<std::string> returnVector{};
-		uint64_t permissionsInteger = this->thePermissions;
+		uint64_t permissionsInteger = this->permissions;
 		if (permissionsInteger & (1ll << 3)) {
 			for (uint64_t x = 0; x < 41; ++x) {
 				permissionsInteger |= 1ll << x;
@@ -1481,7 +1468,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::getCurrentPermissionString() {
-		std::string returnString = std::to_string(this->thePermissions);
+		std::string returnString = std::to_string(this->permissions);
 		return returnString;
 	}
 
@@ -1577,38 +1564,38 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	void reportException(const std::string& currentFunctionName, std::source_location theLocation) {
+	void reportException(const std::string& currentFunctionName, std::source_location location) {
 		try {
 			auto currentException = std::current_exception();
 			if (currentException) {
 				std::rethrow_exception(currentException);
 			}
 		} catch (const std::exception& e) {
-			std::stringstream theStream{};
-			theStream << shiftToBrightRed() << "Error Report: \n"
-					  << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " ("
-					  << std::to_string(theLocation.line()) << ":" << std::to_string(theLocation.column()) << ")"
+			std::stringstream stream{};
+			stream << shiftToBrightRed() << "Error Report: \n"
+					  << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " ("
+					  << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
 					  << "\nThe Error: \n"
 					  << e.what() << reset() << std::endl
 					  << std::endl;
-			auto returnString = theStream.str();
+			auto returnString = stream.str();
 			cout << returnString;
 		}
 	}
 
-	void rethrowException(const std::string& currentFunctionName, std::source_location theLocation) {
+	void rethrowException(const std::string& currentFunctionName, std::source_location location) {
 		try {
 			auto currentException = std::current_exception();
 			if (currentException) {
 				std::rethrow_exception(currentException);
 			}
 		} catch (const std::exception& e) {
-			std::stringstream theStream{};
-			theStream << shiftToBrightRed() << "Caught At: " << currentFunctionName << ", in File: " << theLocation.file_name() << " ("
-					  << std::to_string(theLocation.line()) << ":" << std::to_string(theLocation.column()) << ")"
+			std::stringstream stream{};
+			stream << shiftToBrightRed() << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " ("
+					  << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
 					  << "\nThe Error: \n"
 					  << e.what() << reset();
-			auto returnString = theStream.str();
+			auto returnString = stream.str();
 			cout << returnString;
 			if (std::current_exception()) {
 				std::rethrow_exception(std::current_exception());
@@ -1713,8 +1700,8 @@ namespace DiscordCoreAPI {
 		std::string returnString{};
 		for (auto& value: inputString) {
 			if (value >= 128 || value < 0) {
-				int32_t theDifference = 0 - value;
-				returnString.push_back(value + theDifference);
+				int32_t difference = 0 - value;
+				returnString.push_back(value + difference);
 			} else {
 				returnString.push_back(value);
 			}

@@ -134,7 +134,7 @@ namespace DiscordCoreAPI {
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
 		/// Gets a list of a given Guild's scheduled events. \brief Gets a list of a given Guild's scheduled events.
-		/// \param dataPackage A GetGuildScheduledEventsDatastructure.
+		/// \param dataPackage A GetGuildScheduledEventsstructure.
 		/// \returns A CoRoutine containing a vector<GuildScheduledEvent>.
 		static CoRoutine<std::vector<GuildScheduledEvent>> getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage);
 

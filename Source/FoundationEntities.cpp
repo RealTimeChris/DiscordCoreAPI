@@ -419,7 +419,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					ThreadMemberData newData{ value.value() };
-					this->threadMemberDatas.emplace_back(std::move(newData));
+					this->threadMembers.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -456,9 +456,9 @@ namespace DiscordCoreAPI {
 
 		this->name = getString(jsonObjectData, "name");
 
-		std::stringstream theStream{};
-		theStream << getString(jsonObjectData, "unicode_emoji");
-		for (auto& value: theStream.str()) {
+		std::stringstream stream{};
+		stream << getString(jsonObjectData, "unicode_emoji");
+		for (auto& value: stream.str()) {
 			this->unicodeEmoji.emplace_back(value);
 		}
 		if (this->unicodeEmoji.size() > 3) {
@@ -520,10 +520,10 @@ namespace DiscordCoreAPI {
 			this->theStatus = setBool(this->theStatus, PresenceUpdateFlags::Status_Dnd, true);
 		}
 
-		PresenceUpdateFlags theFlags{};
-		parseObject(jsonObjectData, theFlags);
+		PresenceUpdateFlags flags{};
+		parseObject(jsonObjectData, flags);
 
-		this->theStatus |= static_cast<uint8_t>(theFlags);
+		this->theStatus |= static_cast<uint8_t>(flags);
 	}
 
 	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
@@ -817,7 +817,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildApplicationCommandPermissionsData newData{ value.value() };
-					this->guildApplicationCommandPermissionsDatas.emplace_back(std::move(newData));
+					this->guildApplicationCommandPermissionss.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -829,7 +829,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					EmojiData newData{ value.value() };
-					this->theEmojiDatas.emplace_back(std::move(newData));
+					this->theEmojis.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -876,7 +876,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					VoiceRegionData newData{ value.value() };
-					this->theVoiceRegionDatas.emplace_back(std::move(newData));
+					this->voiceRegions.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -903,7 +903,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					BanData newData{ value.value() };
-					this->theBanDatas.emplace_back(std::move(newData));
+					this->bans.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -1094,7 +1094,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					IntegrationData newData{ value.value() };
-					this->integeregrationDatas.emplace_back(std::move(newData));
+					this->integeregrations.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -1449,7 +1449,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildData newData{ value.value() };
-					this->guildDatas.emplace_back(std::move(newData));
+					this->guilds.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -1515,7 +1515,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildScheduledEventUserData newData{ value.value() };
-					this->guildScheduledEventUserDatas.emplace_back(std::move(newData));
+					this->guildScheduledEventUsers.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -1527,7 +1527,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildScheduledEventData newData{ value.value() };
-					this->guildScheduledEventDatas.emplace_back(std::move(newData));
+					this->guildScheduledEvents.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -1592,7 +1592,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					InviteData newData{ value.value() };
-					this->theInviteDatas.emplace_back(std::move(newData));
+					this->invites.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -1633,7 +1633,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildTemplateData newData{ value.value() };
-					this->guildTemplateDatas.emplace_back(std::move(newData));
+					this->guildTemplates.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -1678,7 +1678,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					WebHookData newData{ value.value() };
-					this->theWebHookDatas.emplace_back(std::move(newData));
+					this->webHooks.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -1765,9 +1765,9 @@ namespace DiscordCoreAPI {
 			this->type = JsonType::Int64;
 		} else if (jsonObjectData["value"].get(theBool) == simdjson::error_code::SUCCESS) {
 			this->type = JsonType::Bool;
-			std::stringstream theStream{};
-			theStream << std::boolalpha << theBool;
-			this->value = theStream.str();
+			std::stringstream stream{};
+			stream << std::boolalpha << theBool;
+			this->value = stream.str();
 		} else if (jsonObjectData["value"].get(doubleVal) == simdjson::error_code::SUCCESS) {
 			this->type = JsonType::Float;
 			this->value = std::to_string(doubleVal);
@@ -2036,14 +2036,14 @@ namespace DiscordCoreAPI {
 		if (jsonObjectData["streamingData"]["formats"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				YouTubeFormat newData{ value.value() };
-				this->theFormats.emplace_back(std::move(newData));
+				this->formats.emplace_back(std::move(newData));
 			}
 		}
 
 		if (jsonObjectData["streamingData"]["adaptiveFormats"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				YouTubeFormat newData{ value.value() };
-				this->theFormats.emplace_back(std::move(newData));
+				this->formats.emplace_back(std::move(newData));
 			}
 		}
 	}
@@ -2625,7 +2625,7 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					StickerPackData newData{ value.value() };
-					this->theStickerPackDatas.emplace_back(std::move(newData));
+					this->stickerPacks.emplace_back(std::move(newData));
 				}
 			}
 		}
@@ -3103,11 +3103,11 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildApplicationCommandPermissionsDataVector::operator std::vector<GuildApplicationCommandPermissionsData>() {
-		return this->guildApplicationCommandPermissionsDatas;
+		return this->guildApplicationCommandPermissionss;
 	}
 
 	BanDataVector::operator std::vector<BanData>() {
-		return this->theBanDatas;
+		return this->bans;
 	}
 
 	UpdateVoiceStateData::operator Jsonifier() {
@@ -3125,27 +3125,27 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildDataVector::operator std::vector<GuildData>() {
-		return this->guildDatas;
+		return this->guilds;
 	}
 
 	GuildScheduledEventUserDataVector::operator std::vector<GuildScheduledEventUserData>() {
-		return this->guildScheduledEventUserDatas;
+		return this->guildScheduledEventUsers;
 	}
 
 	GuildScheduledEventDataVector::operator std::vector<GuildScheduledEventData>() {
-		return this->guildScheduledEventDatas;
+		return this->guildScheduledEvents;
 	}
 
 	InviteDataVector::operator std::vector<InviteData>() {
-		return this->theInviteDatas;
+		return this->invites;
 	}
 
 	GuildTemplateDataVector::operator std::vector<GuildTemplateData>() {
-		return this->guildTemplateDatas;
+		return this->guildTemplates;
 	}
 
 	WebHookDataVector::operator std::vector<WebHookData>() {
-		return this->theWebHookDatas;
+		return this->webHooks;
 	}
 
 	auto AuditLogData::getAuditLogData(const Snowflake userIdOfChanger, AuditLogEvent auditLogType) {
@@ -3241,10 +3241,11 @@ namespace DiscordCoreAPI {
 	}
 
 	ThreadMemberDataVector::operator std::vector<ThreadMemberData>() {
-		return this->threadMemberDatas;
+		return this->threadMembers;
 	}
+
 	YouTubeFormatVector::operator std::vector<YouTubeFormat>() {
-		return this->theFormats;
+		return this->formats;
 	}
 
 	bool operator==(const AudioFrameData& lhs, const AudioFrameData& rhs) {
@@ -3389,11 +3390,11 @@ namespace DiscordCoreAPI {
 	}
 
 	StickerPackDataVector::operator std::vector<StickerPackData>() {
-		return this->theStickerPackDatas;
+		return this->stickerPacks;
 	}
 
 	ConnectionDataVector::operator std::vector<ConnectionData>() {
-		return this->connectionDatas;
+		return this->connections;
 	}
 
 	ConnectionDataVector::ConnectionDataVector(simdjson::ondemand::value jsonObjectData) noexcept {
@@ -3402,18 +3403,18 @@ namespace DiscordCoreAPI {
 			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					ConnectionData newData{ value.value() };
-					this->connectionDatas.emplace_back(std::move(newData));
+					this->connections.emplace_back(std::move(newData));
 				}
 			}
 		}
 	}
 
 	VoiceRegionDataVector::operator std::vector<VoiceRegionData>() {
-		return this->theVoiceRegionDatas;
+		return this->voiceRegions;
 	}
 
 	IntegrationDataVector::operator std::vector<IntegrationData>() {
-		return this->integeregrationDatas;
+		return this->integeregrations;
 	}
 
 	InputEventData& InputEventData::operator=(InputEventData&& other) noexcept {

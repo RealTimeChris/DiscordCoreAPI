@@ -29,19 +29,19 @@
 namespace DiscordCoreInternal {
 
 	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
-		std::stringstream theStream{};
-		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
+		std::stringstream stream{};
+		stream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
 		if (ssl) {
-			theStream << SSL_get_error(ssl, errorValue) << ", " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl << endl;
+			stream << SSL_get_error(ssl, errorValue) << ", " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl << endl;
 		} else {
-			theStream << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl << endl;
+			stream << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl << endl;
 		}
-		return theStream.str();
+		return stream.str();
 	}
 
 	std::string reportError(const std::string& errorPosition) noexcept {
-		std::stringstream theStream{};
-		theStream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
+		std::stringstream stream{};
+		stream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
 #ifdef _WIN32
 		char string[1024]{};
 	#ifdef UWP
@@ -51,11 +51,11 @@ namespace DiscordCoreInternal {
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 			string, 1024, NULL);
 	#endif
-		theStream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << endl;
+		stream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << endl;
 #else
-		theStream << strerror(errno) << DiscordCoreAPI::reset();
+		stream << strerror(errno) << DiscordCoreAPI::reset();
 #endif
-		return theStream.str();
+		return stream.str();
 	}
 
 #ifdef _WIN32
@@ -316,26 +316,26 @@ namespace DiscordCoreInternal {
 		PollFDWrapper readWriteSet{};
 		for (auto& [key, value]: shardMap) {
 			if (value && value->areWeStillConnected() && !value->areWeConnecting.load()) {
-				pollfd theFdSet{ .fd = static_cast<SOCKET>(value->socket) };
+				pollfd fdSet{ .fd = static_cast<SOCKET>(value->socket) };
 				if (value->outputBuffer.getUsedSpace() > 0) {
-					theFdSet.events = POLLIN | POLLOUT;
+					fdSet.events = POLLIN | POLLOUT;
 				} else {
-					theFdSet.events = POLLIN;
+					fdSet.events = POLLIN;
 				}
-				readWriteSet.thePolls[key] = theFdSet;
+				readWriteSet.polls[key] = fdSet;
 			}
 		}
 
-		if (readWriteSet.thePolls.size() == 0) {
+		if (readWriteSet.polls.size() == 0) {
 			return returnValue;
 		}
 
 		if (auto returnValueNew =
-				poll(&readWriteSet.thePolls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.thePolls.size()), 1);
+				poll(&readWriteSet.polls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.polls.size()), 1);
 			returnValueNew == SOCKET_ERROR) {
-			for (auto& [key, value]: readWriteSet.thePolls) {
-				if (readWriteSet.thePolls[key].revents & POLLERR || readWriteSet.thePolls[key].revents & POLLHUP ||
-					readWriteSet.thePolls[key].revents & POLLNVAL) {
+			for (auto& [key, value]: readWriteSet.polls) {
+				if (readWriteSet.polls[key].revents & POLLERR || readWriteSet.polls[key].revents & POLLHUP ||
+					readWriteSet.polls[key].revents & POLLNVAL) {
 					returnValue.emplace_back(shardMap[key].get());
 				}
 			}
@@ -350,14 +350,14 @@ namespace DiscordCoreInternal {
 			return returnValue;
 		}
 
-		for (auto& [key, value]: readWriteSet.thePolls) {
-			if (readWriteSet.thePolls[key].revents & POLLOUT) {
+		for (auto& [key, value]: readWriteSet.polls) {
+			if (readWriteSet.polls[key].revents & POLLOUT) {
 				if (!shardMap[key]->processWriteData()) {
 					returnValue.emplace_back(shardMap[key].get());
 					continue;
 				}
 			}
-			if (readWriteSet.thePolls[key].revents & POLLIN) {
+			if (readWriteSet.polls[key].revents & POLLIN) {
 				if (!shardMap[key]->processReadData()) {
 					returnValue.emplace_back(shardMap[key].get());
 					continue;
@@ -414,7 +414,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	ProcessIOResult SSLClient::processIO(int32_t theWaitTimeInMs) noexcept {
+	ProcessIOResult SSLClient::processIO(int32_t waitTimeInMs) noexcept {
 		if (!this->areWeStillConnected()) {
 			return ProcessIOResult::Error;
 		}
@@ -425,7 +425,7 @@ namespace DiscordCoreInternal {
 			readWriteSet.events = POLLIN;
 		}
 		ProcessIOResult result{ ProcessIOResult::No_Error };
-		if (auto returnValue = poll(&readWriteSet, 1, theWaitTimeInMs); returnValue == SOCKET_ERROR) {
+		if (auto returnValue = poll(&readWriteSet, 1, waitTimeInMs); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("SSLClient::processIO()") << endl;
 			}
@@ -572,11 +572,11 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
-		this->theStreamTargetAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
+		this->streamTargetAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
 		auto portNewer = static_cast<unsigned short>(stoi(portNew));
 		DiscordCoreAPI::reverseByteOrder<uint16_t>(portNewer);
-		this->theStreamTargetAddress.sin_port = portNewer;
-		this->theStreamTargetAddress.sin_family = AF_INET;
+		this->streamTargetAddress.sin_port = portNewer;
+		this->streamTargetAddress.sin_family = AF_INET;
 
 		addrinfoWrapper hints{}, address{};
 		hints->ai_family = AF_INET;
@@ -603,15 +603,15 @@ namespace DiscordCoreInternal {
 			clientToServerString = "test string";
 			auto writtenBytes{ sendto(static_cast<int32_t>(this->socket), clientToServerString.data(),
 				static_cast<int32_t>(clientToServerString.size()), 0, ( sockaddr* )address.operator addrinfo*(),
-				static_cast<int32_t>(sizeof(this->theStreamTargetAddress))) };
+				static_cast<int32_t>(sizeof(this->streamTargetAddress))) };
 		} else {
 			sockaddr_in si_other{};
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, 0); this->socket == SOCKET_ERROR) {
 				return false;
 			}
 			DiscordCoreAPI::StopWatch stopWatch{ 300s };
-			this->theStreamTargetAddress.sin_addr.s_addr = INADDR_ANY;
-			if (auto result = bind(this->socket, ( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr)); result != 0) {
+			this->streamTargetAddress.sin_addr.s_addr = INADDR_ANY;
+			if (auto result = bind(this->socket, ( sockaddr* )&this->streamTargetAddress, sizeof(sockaddr)); result != 0) {
 				return false;
 			}
 
@@ -734,7 +734,7 @@ namespace DiscordCoreInternal {
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
 			auto writtenBytes{ sendto(this->socket, this->outputBuffer.getCurrentTail()->getCurrentTail(), static_cast<int32_t>(bytesToWrite), 0,
-				( sockaddr* )&this->theStreamTargetAddress, sizeof(sockaddr)) };
+				( sockaddr* )&this->streamTargetAddress, sizeof(sockaddr)) };
 			if (writtenBytes < 0) {
 				return false;
 			} else {
@@ -758,13 +758,13 @@ namespace DiscordCoreInternal {
 					bytesToRead = this->maxBufferSize;
 				}
 #ifdef _WIN32
-				int32_t intSize{ sizeof(this->theStreamTargetAddress) };
+				int32_t intSize{ sizeof(this->streamTargetAddress) };
 #else
-				uint32_t intSize{ sizeof(this->theStreamTargetAddress) };
+				uint32_t intSize{ sizeof(this->streamTargetAddress) };
 #endif
 
 				readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
-					static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->theStreamTargetAddress, &intSize);
+					static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->streamTargetAddress, &intSize);
 				if (readBytes < 0) {
 					returnValue = true;
 				} else {

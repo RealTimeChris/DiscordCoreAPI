@@ -305,8 +305,9 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		uint32_t theWorkerCount = this->configManager.getTotalShardCount();
-		//<= std::thread::hardware_concurrency() ? this->configManager.getTotalShardCount() : std::thread::hardware_concurrency();
+		uint32_t theWorkerCount = this->configManager.getTotalShardCount() <= std::thread::hardware_concurrency()
+			? this->configManager.getTotalShardCount()
+			: std::thread::hardware_concurrency();
 		if (this->configManager.getConnectionAddress() == "") {
 			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
 		}
