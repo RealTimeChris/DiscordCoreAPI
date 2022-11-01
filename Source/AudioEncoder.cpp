@@ -96,14 +96,15 @@ namespace DiscordCoreAPI {
 			newValue |= inputFrame.data[x * 2 + 1] << 8;
 			newVector.emplace_back(newValue);
 		}
-		std::vector<uint8_t> newBuffer{};
-		newBuffer.resize(this->maxBufferSize);
-		int32_t count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount, newBuffer.data(), this->maxBufferSize);
-		if (count <= 0 || count > newBuffer.size()) {
-			return DiscordCoreAPI::AudioFrameData();
+		if (this->encodedData.size() == 0) {
+			this->encodedData.resize(this->maxBufferSize);
+		}
+		int32_t count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount, this->encodedData.data(), this->maxBufferSize);
+		if (count <= 0) {
+			return {};
 		}
 		DiscordCoreAPI::AudioFrameData encodedFrame{};
-		encodedFrame.data.insert(encodedFrame.data.begin(), newBuffer.begin(), newBuffer.begin() + count);
+		encodedFrame.data.insert(encodedFrame.data.begin(), this->encodedData.begin(), this->encodedData.begin() + count);
 		encodedFrame.sampleCount = inputFrame.sampleCount;
 		encodedFrame.type = DiscordCoreAPI::AudioFrameType::Encoded;
 		encodedFrame.guildMemberId = inputFrame.guildMemberId;
