@@ -117,35 +117,32 @@ namespace DiscordCoreInternal {
 		}
 		this->coroutineHandles.emplace_back(coro);
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
+		lock.unlock();
 	}
 
-	std::atomic_int32_t integerNew{};
 	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t index) {
 		while (!stopToken.stop_requested()) {
 			if (this->coroHandleCount.load() > 0) {
-				std::unique_lock lock01{ this->accessMutex, std::defer_lock_t{} };
-				if (lock01.try_lock()) {
-					if (this->coroutineHandles.size() > 0) {
-						std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
-						this->coroHandleCount.store(this->coroHandleCount.load() - 1);
-						this->coroutineHandles.pop_front();
-						lock01.unlock();
-						this->workerThreads[index].areWeCurrentlyWorking.store(true);
-						coroHandle();
-						this->workerThreads[index].areWeCurrentlyWorking.store(false);
-					}
+				std::unique_lock lock{ this->accessMutex };
+				if (this->coroutineHandles.size() > 0) {
+					std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
+					this->coroHandleCount.store(this->coroHandleCount.load() - 1);
+					this->coroutineHandles.pop_front();
+					lock.unlock();
+					this->workerThreads[index].areWeCurrentlyWorking.store(true);
+					coroHandle();
+					this->workerThreads[index].areWeCurrentlyWorking.store(false);
 				}
 			} else if (this->currentCount.load() > this->threadCount.load()) {
-				std::unique_lock lock01{ this->accessMutex, std::defer_lock_t{} };
-				if (lock01.try_lock()) {
-					for (auto& [key, value]: this->workerThreads) {
-						if (value.areWeCurrentlyWorking.load() && value.thread.joinable()) {
-							value.thread.request_stop();
-							value.thread.detach();
-							this->workerThreads.erase(key);
-							this->currentCount.store(this->currentCount.load() - 1);
-							break;
-						}
+				std::unique_lock lock{ this->accessMutex };
+				for (auto& [key, value]: this->workerThreads) {
+					if (value.areWeCurrentlyWorking.load() && value.thread.joinable()) {
+						value.thread.request_stop();
+						value.thread.detach();
+						this->workerThreads.erase(key);
+						this->currentCount.store(this->currentCount.load() - 1);
+						lock.unlock();
+						break;
 					}
 				}
 			}

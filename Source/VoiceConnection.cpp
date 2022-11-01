@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 		} else {
 			std::string_view string = DatagramSocketClient::getInputBuffer();
 			if (string.size() > 0) {
-				this->parseIncomingVoiceData(static_cast<const std::string>(string));
+				this->parseIncomingVoiceData(string);
 			}
 		}
 	}
@@ -463,6 +463,7 @@ namespace DiscordCoreAPI {
 						this->checkForConnections();
 						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(this->audioData);
 						if (this->audioData.data.size() == 0) {
+							//this->sendSilence();
 							this->areWePlaying.store(false);
 						} else {
 							this->areWePlaying.store(true);
@@ -558,11 +559,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::parseIncomingVoiceData(const std::string& rawDataBufferNew) noexcept {
+	void VoiceConnection::parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept {
 		if (rawDataBufferNew.size() > 0 && this->encryptionKey.size() > 0) {
-			auto size = rawDataBufferNew.size();
 			constexpr uint64_t headerSize{ 12 };
-			if (rawDataBufferNew.size() < headerSize) {
+			
+			if (rawDataBufferNew.size() < 44) {
 				return;
 			}
 
@@ -576,17 +577,20 @@ namespace DiscordCoreAPI {
 			for (uint32_t x = 0; x < headerSize; ++x) {
 				nonce[x] = rawDataBufferNew[x];
 			}
+
 			const uint64_t csrcCount = rawDataBufferNew[0] & 0b0000'1111;
 			const ptrdiff_t offsetToData = headerSize + sizeof(uint32_t) * csrcCount;
 			const uint8_t* encryptedData = reinterpret_cast<const uint8_t*>(rawDataBufferNew.data()) + offsetToData;
-			const uint64_t encryptedDataLength = size - offsetToData;
-			if (this->decryptedString.size() < encryptedDataLength) {
-				this->decryptedString.resize(encryptedDataLength);
+			const uint64_t encryptedDataLength = rawDataBufferNew.size() - offsetToData;
+			if (this->decryptedDataString.size() < encryptedDataLength) {
+				this->decryptedDataString.resize(encryptedDataLength);
 			}
-			if (crypto_secretbox_open_easy(this->decryptedString.data(), encryptedData, encryptedDataLength, nonce, this->encryptionKey.data())) {
+
+			if (crypto_secretbox_open_easy(this->decryptedDataString.data(), encryptedData, encryptedDataLength, nonce, this->encryptionKey.data())) {
 				return;
 			}
-			std::string_view newString{ reinterpret_cast<char*>(this->decryptedString.data()), encryptedDataLength - crypto_secretbox_MACBYTES };
+
+			std::string_view newString{ reinterpret_cast<char*>(this->decryptedDataString.data()), encryptedDataLength - crypto_secretbox_MACBYTES };
 
 			if ((rawDataBufferNew[0] >> 4) & 0b0001) {
 				uint16_t extenstionLengthInWords{ ntohs(*reinterpret_cast<const uint16_t*>(&newString[2])) };
@@ -597,7 +601,7 @@ namespace DiscordCoreAPI {
 			if (newString.size() > 0) {
 				std::unique_lock lock00{ this->voiceUserMutex };
 				if (this->voiceUsers.contains(speakerSsrc)) {
-					auto decodedData= this->voiceUsers[speakerSsrc].decoder.decodeData(newString);
+					auto decodedData = this->voiceUsers[speakerSsrc].decoder.decodeData(newString);
 					if (decodedData.size() <= 0) {
 						if (this->configManager->doWePrintGeneralErrorMessages()) {
 							cout << "Failed to decode user's voice payload." << std::endl;
@@ -857,12 +861,17 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSilence() noexcept {
-		AudioFrameData newFrame{};
-		newFrame.data.emplace_back(0xf8);
-		newFrame.data.emplace_back(0xff);
-		newFrame.data.emplace_back(0xfe);
-		auto frame = this->packetEncrypter.encryptPacket(newFrame);
-		this->sendVoiceData(frame);
+		std::vector<std::basic_string<unsigned char>> frames{};
+		for (size_t x = 0; x < 5; ++x) {
+			AudioFrameData newFrame{};
+			newFrame.data.emplace_back(0xf8);
+			newFrame.data.emplace_back(0xff);
+			newFrame.data.emplace_back(0xfe);
+			frames.push_back(static_cast<std::basic_string<unsigned char>>(this->packetEncrypter.encryptPacket(newFrame)));
+		}
+		for (auto& value: frames) {
+			this->sendVoiceData(value);
+		}
 	}
 
 	void VoiceConnection::pauseToggle() noexcept {

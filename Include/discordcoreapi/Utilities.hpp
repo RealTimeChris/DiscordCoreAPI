@@ -275,7 +275,7 @@ namespace DiscordCoreAPI {
 		std::atomic_uint64_t startTime{ 0 };
 	};
 
-	constexpr uint8_t formatVersion{ 131 };
+	const uint8_t formatVersion{ 131 };
 
 	enum class EtfType : uint8_t {
 		New_Float_Ext = 70,
@@ -1931,18 +1931,32 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock() noexcept {};
 
+		/// Sends an object of type OTy to the "recipient", ahead of other already queued items. \brief Sends an object of type OTy to the "recipient", ahead of other already queued items.
+		/// \param object An object of OTy.
+		void sendFront(OTy&& object) {
+			std::unique_lock lock{ this->accessMutex };
+			this->queue.emplace_front(std::move(object));
+		}
+
+		/// Sends an object of type OTy to the "recipient", ahead of other already queued items. \brief Sends an object of type OTy to the "recipient", ahead of other already queued items.
+		/// \param object An object of OTy.
+		void sendFront(OTy& object) {
+			std::unique_lock lock{ this->accessMutex };
+			this->queue.emplace_front(object);
+		}
+
 		/// Sends an object of type OTy to the "recipient". \brief Sends an object of type OTy to the "recipient".
 		/// \param object An object of OTy.
 		void send(OTy&& object) {
 			std::unique_lock lock{ this->accessMutex };
-			this->queue.emplace_front(std::move(object));
+			this->queue.emplace_back(std::move(object));
 		}
 
 		/// Sends an object of type OTy to the "recipient". \brief Sends an object of type OTy to the "recipient".
 		/// \param object An object of OTy.
 		void send(OTy& object) {
 			std::unique_lock lock{ this->accessMutex };
-			this->queue.emplace_front(object);
+			this->queue.emplace_back(std::move(object));
 		}
 
 		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
@@ -1958,8 +1972,8 @@ namespace DiscordCoreAPI {
 		bool tryReceive(OTy& object) {
 			std::unique_lock lock{ this->accessMutex };
 			if (this->queue.size() > 0) {
-				object = std::move(this->queue.back());
-				this->queue.pop_back();
+				object = std::move(this->queue.front());
+				this->queue.pop_front();
 				return true;
 			} else {
 				return false;

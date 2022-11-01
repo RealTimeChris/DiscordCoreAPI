@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 	using TimeElapsedHandlerNoArgs = std::function<void(void)>;
 
-	constexpr float percentage{ 10.0f / 100.0f };
+	const float percentage{ 10.0f / 100.0f };
 
 	class DiscordCoreAPI_Dll ThreadPool {
 	  public:

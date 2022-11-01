@@ -160,10 +160,10 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		std::vector<opus_int16> downSampledVector{};
+		std::vector<uint8_t> decryptedDataString{};
 		std::vector<unsigned char> encryptionKey{};
 		std::vector<opus_int32> upSampledVector{};
 		std::atomic_bool areWePlaying{ false };
-		std::vector<uint8_t> decryptedString{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		RTPPacketEncrypter packetEncrypter{};
 		simdjson::ondemand::parser parser{};
@@ -182,7 +182,7 @@ namespace DiscordCoreAPI {
 
 		void sendVoiceData(std::basic_string_view<unsigned char> responseData) noexcept;
 
-		void parseIncomingVoiceData(const std::string& rawDataBuffer) noexcept;
+		void parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
