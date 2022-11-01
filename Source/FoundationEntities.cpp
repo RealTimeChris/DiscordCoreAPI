@@ -3034,7 +3034,7 @@ namespace DiscordCoreAPI {
 		data["provider"]["name"] = this->provider.name;
 		data["provider"]["url"] = this->provider.url;
 		data["description"] = escapeCharacters(this->description);
-		data["timeStamp"] = this->timeStamp;
+		data["timestamp"] = this->timeStamp;
 		data["title"] = escapeCharacters(this->title);
 		data["color"] = realColorVal;
 		data["type"] = this->type;
