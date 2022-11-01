@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 
 		OpusDecoderWrapper();
 
-		std::basic_string_view<opus_int16> decodeData(std::string_view dataToDecode);
+		std::basic_string_view<opus_int16> decodeData(std::basic_string_view<unsigned char> dataToDecode);
 
 		operator OpusDecoder*() noexcept;
 
@@ -180,9 +180,9 @@ namespace DiscordCoreAPI {
 		uint32_t audioSSRC{};
 		uint64_t port{};
 
-		void sendVoiceData(std::basic_string_view<unsigned char> responseData) noexcept;
+		void parseIncomingVoiceData(std::basic_string_view<unsigned char> rawDataBufferNew) noexcept;
 
-		void parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept;
+		void sendVoiceData(std::basic_string_view<unsigned char> responseData) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 

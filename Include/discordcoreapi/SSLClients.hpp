@@ -216,8 +216,8 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) - 1 };
-		RingBuffer<32> outputBuffer{};
-		RingBuffer<128> inputBuffer{};
+		RingBuffer<char, 32> outputBuffer{};
+		RingBuffer<char, 128> inputBuffer{};
 		int64_t bytesRead{ 0 };
 	};
 
@@ -262,11 +262,11 @@ namespace DiscordCoreInternal {
 
 		void writeData(std::basic_string_view<unsigned char> dataToWrite) noexcept;
 
+		std::basic_string_view<unsigned char> getInputBuffer() noexcept;
+
 		ProcessIOResult processIO(ProcessIOType type) noexcept;
 
 		virtual void handleAudioBuffer() noexcept = 0;
-
-		std::string_view getInputBuffer() noexcept;
 
 		bool areWeStillConnected() noexcept;
 
@@ -280,10 +280,10 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) - 1 };
+		RingBuffer<unsigned char, 16> outputBuffer{};
+		RingBuffer<unsigned char, 16> inputBuffer{};
 		DiscordCoreAPI::StreamType streamType{};
 		sockaddr_in streamTargetAddress{};
-		RingBuffer<16> outputBuffer{};
-		RingBuffer<16> inputBuffer{};
 		SOCKETWrapper socket{};
 		int64_t bytesRead{};
 	};
