@@ -560,7 +560,7 @@ namespace DiscordCoreAPI {
 	};
 
 	void VoiceConnection::parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept {
-		if (rawDataBufferNew.size() > 0 && this->encryptionKey.size() > 0) {
+		if (this->streamSocket && rawDataBufferNew.size() > 0 && this->encryptionKey.size() > 0) {
 			const uint64_t headerSize{ 12 };
 			
 			if (rawDataBufferNew.size() < 44) {
@@ -958,12 +958,12 @@ namespace DiscordCoreAPI {
 				}
 				auto encodedData =
 					this->encoder.encodeSingleAudioFrame(std::basic_string_view<opus_int16>{ this->downSampledVector.data(), decodedSize });
-				if (encodedData.data.size() <= 0) {
+				if (encodedData.size() <= 0) {
 					if (this->configManager->doWePrintGeneralErrorMessages()) {
 						cout << "Failed to encode user's voice payload." << endl;
 					}
 				} else {
-					this->streamSocket->writeData(encodedData.data);
+					this->streamSocket->writeData(encodedData);
 				}
 			}
 		}

@@ -76,22 +76,19 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(std::basic_string_view<opus_int16> inputFrame) {
-		std::vector<uint8_t> newBuffer{};
-		newBuffer.resize(this->maxBufferSize);
-		int32_t count =
-			opus_encode(this->encoder, inputFrame.data(), static_cast<int32_t>(inputFrame.size() / 2), newBuffer.data(), this->maxBufferSize);
-		if (count <= 0 || count > newBuffer.size()) {
-			return DiscordCoreAPI::AudioFrameData();
+	std::basic_string_view<uint8_t> AudioEncoder::encodeSingleAudioFrame(std::basic_string_view<opus_int16> inputFrame) {
+		if (this->encodedData.size() == 0) {
+			this->encodedData.resize(this->maxBufferSize);
 		}
-		DiscordCoreAPI::AudioFrameData encodedFrame{};
-		encodedFrame.data.insert(encodedFrame.data.begin(), newBuffer.begin(), newBuffer.begin() + count);
-		encodedFrame.sampleCount = inputFrame.size() / 2;
-		encodedFrame.type = DiscordCoreAPI::AudioFrameType::Encoded;
-		return encodedFrame;
+		int32_t count =
+			opus_encode(this->encoder, inputFrame.data(), static_cast<int32_t>(inputFrame.size() / 2), this->encodedData.data(), this->maxBufferSize);
+		if (count <= 0) {
+			return {};
+		}
+		return std::basic_string_view{ this->encodedData.data(), static_cast<size_t>(count) };
 	}
 
-	DiscordCoreAPI::AudioFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame) {
+	AudioFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame) {
 		std::vector<opus_int16> newVector{};
 		for (uint64_t x = 0; x < inputFrame.data.size() / 2; ++x) {
 			opus_int16 newValue{};
