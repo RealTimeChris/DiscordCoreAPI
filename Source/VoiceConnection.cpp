@@ -71,11 +71,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(std::string_view dataToDecode) {
+	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(std::basic_string_view<unsigned char> dataToDecode) {
 		if (this->data.size() == 0) {
 			this->data.resize(23040);
 		}
-		int64_t sampleCount = opus_decode(*this, reinterpret_cast<const unsigned char*>(dataToDecode.data()),
+		int64_t sampleCount = opus_decode(*this, dataToDecode.data(),
 			static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
 		if (this->data.size() != sampleCount * 2ull) {
 			this->data.resize(sampleCount * 2);
@@ -117,8 +117,8 @@ namespace DiscordCoreAPI {
 			for (uint8_t x = 0; x < headerSize; ++x) {
 				this->data[x] = header[x];
 			}
-			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->data.data()) + headerSize, audioData.data.data(), audioData.data.size(),
-					nonceForLibSodium, this->keys.data()) != 0) {
+			if (crypto_secretbox_easy(this->data.data() + headerSize, audioData.data.data(), audioData.data.size(), nonceForLibSodium,
+					this->keys.data()) != 0) {
 				return {};
 			}
 			return std::basic_string_view<unsigned char>{ this->data.data(), numOfBytes };
@@ -132,7 +132,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnectionBridge::parseOutGoingVoiceData() noexcept {
-		std::string_view buffer = this->getInputBuffer();
+		std::basic_string_view<unsigned char> buffer = this->getInputBuffer();
 		if (buffer.size() > 0) {
 			AudioFrameData frame{};
 			frame.data.insert(frame.data.begin(), buffer.begin(), buffer.end());
@@ -161,7 +161,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::handleAudioBuffer() noexcept {
 		if (this->connectionState.load() == VoiceConnectionState::Initializing_DatagramSocket) {
 		} else {
-			std::string_view string = DatagramSocketClient::getInputBuffer();
+			std::basic_string_view<unsigned char> string = DatagramSocketClient::getInputBuffer();
 			if (string.size() > 0 && this->streamSocket) {
 				this->parseIncomingVoiceData(string);
 			}
@@ -559,7 +559,7 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	void VoiceConnection::parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept {
+	void VoiceConnection::parseIncomingVoiceData(std::basic_string_view<unsigned char> rawDataBufferNew) noexcept {
 		if (this->streamSocket && rawDataBufferNew.size() > 0 && this->encryptionKey.size() > 0) {
 			const uint64_t headerSize{ 12 };
 			
@@ -580,7 +580,7 @@ namespace DiscordCoreAPI {
 
 			const uint64_t csrcCount = rawDataBufferNew[0] & 0b0000'1111;
 			const ptrdiff_t offsetToData = headerSize + sizeof(uint32_t) * csrcCount;
-			const uint8_t* encryptedData = reinterpret_cast<const uint8_t*>(rawDataBufferNew.data()) + offsetToData;
+			const uint8_t* encryptedData = rawDataBufferNew.data() + offsetToData;
 			const uint64_t encryptedDataLength = rawDataBufferNew.size() - offsetToData;
 			if (this->decryptedDataString.size() < encryptedDataLength) {
 				this->decryptedDataString.resize(encryptedDataLength);
@@ -590,7 +590,7 @@ namespace DiscordCoreAPI {
 				return;
 			}
 
-			std::string_view newString{ reinterpret_cast<char*>(this->decryptedDataString.data()), encryptedDataLength - crypto_secretbox_MACBYTES };
+			std::basic_string_view<unsigned char> newString{ this->decryptedDataString.data(), encryptedDataLength - crypto_secretbox_MACBYTES };
 
 			if ((rawDataBufferNew[0] >> 4) & 0b0001) {
 				uint16_t extenstionLengthInWords{ ntohs(*reinterpret_cast<const uint16_t*>(&newString[2])) };
@@ -818,7 +818,7 @@ namespace DiscordCoreAPI {
 					packet[7] = static_cast<uint8_t>(this->audioSSRC);
 					DatagramSocketClient::getInputBuffer();
 					DatagramSocketClient::writeData(std::basic_string_view<unsigned char>{ packet, std::size(packet) });
-					std::string inputString{};
+					std::basic_string_view<unsigned char> inputString{};
 					StopWatch stopWatch{ 5500ms };
 					while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);

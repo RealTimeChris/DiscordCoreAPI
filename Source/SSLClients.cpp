@@ -711,11 +711,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::string_view DatagramSocketClient::getInputBuffer() noexcept {
-		std::string_view string{};
+	std::basic_string_view<unsigned char> DatagramSocketClient::getInputBuffer() noexcept {
+		std::basic_string_view<unsigned char> string{};
 		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
 			auto size = this->inputBuffer.getCurrentTail()->getUsedSpace();
-			string = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), size };
+			string = std::basic_string_view<unsigned char>{ this->inputBuffer.getCurrentTail()->getCurrentTail(), size };
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
@@ -733,7 +733,7 @@ namespace DiscordCoreInternal {
 	bool DatagramSocketClient::processWriteData() noexcept {
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
-			auto writtenBytes{ sendto(this->socket, this->outputBuffer.getCurrentTail()->getCurrentTail(), static_cast<int32_t>(bytesToWrite), 0,
+			auto writtenBytes{ sendto(this->socket, reinterpret_cast<const char*>(this->outputBuffer.getCurrentTail()->getCurrentTail()), static_cast<int32_t>(bytesToWrite), 0,
 				( sockaddr* )&this->streamTargetAddress, sizeof(sockaddr)) };
 			if (writtenBytes < 0) {
 				return false;
@@ -763,7 +763,7 @@ namespace DiscordCoreInternal {
 				uint32_t intSize{ sizeof(this->streamTargetAddress) };
 #endif
 
-				readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
+				readBytes = recvfrom(static_cast<SOCKET>(this->socket), reinterpret_cast<char*>(this->inputBuffer.getCurrentHead()->getCurrentHead()),
 					static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->streamTargetAddress, &intSize);
 				if (readBytes < 0) {
 					returnValue = true;

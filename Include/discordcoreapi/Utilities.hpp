@@ -2120,9 +2120,9 @@ namespace DiscordCoreInternal {
 		uint64_t head{};
 	};
 
-	class DiscordCoreAPI_Dll RingBufferSlice : public RingBufferInterface<char, 1024 * 16> {};
+	template<typename OTy> class DiscordCoreAPI_Dll RingBufferSlice : public RingBufferInterface<OTy, 1024 * 16> {};
 
-	template<uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice, SliceCount> {
+	template<typename OTy,uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice<OTy>, SliceCount> {
 	  public:
 		void clear() noexcept {
 			for (uint64_t x = 0; x < this->arrayValue.size(); ++x) {
