@@ -109,16 +109,17 @@ namespace DiscordCoreAPI {
 		Exiting = 4///< Exiting.
 	};
 
-	class VoiceConnection;
-
 	class VoiceConnectionBridge : public DiscordCoreInternal::DatagramSocketClient {
 	  public:
-		VoiceConnectionBridge(VoiceConnection* voiceConnectionPtrNew, StreamType streamType);
+		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, StreamType streamType, Snowflake guildIdNew);
+
+		void parseOutGoingVoiceData() noexcept;
 
 		void handleAudioBuffer() noexcept;
 
 	  protected:
-		VoiceConnection* voiceConnectionPtr{ nullptr };
+		DiscordCoreClient* clientPtr{ nullptr };
+		Snowflake guildId{};
 	};
 
 	/**
@@ -137,8 +138,8 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 
 		/// The constructor.
-		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketSSLShard* baseShard,
-			DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept;
+		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketSSLShard* baseShardNew,
+			std::atomic_bool* doWeQuitNew) noexcept;
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
 		/// \returns DiscordCoreAPI::Snowflake A Snowflake containing the Channel's id.
@@ -198,8 +199,6 @@ namespace DiscordCoreAPI {
 		void runBridge(std::stop_token) noexcept;
 
 		void runVoice(std::stop_token) noexcept;
-
-		void parseOutGoingVoiceData() noexcept;
 
 		bool areWeCurrentlyPlaying() noexcept;
 

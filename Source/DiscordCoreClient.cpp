@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 			uint64_t baseSocketIndex{ theShardId % guild->discordCoreClient->baseSocketAgentsMap.size() };
 			auto baseSocketAgent = guild->discordCoreClient->baseSocketAgentsMap[baseSocketIndex].get();
 			Globals::voiceConnectionMap[guildId.operator size_t()] = std::make_unique<VoiceConnection>(guild->discordCoreClient,
-				baseSocketAgent->shardMap[theShardId].get(), &guild->discordCoreClient->configManager, &Globals::doWeQuit);
+				baseSocketAgent->shardMap[theShardId].get(), &Globals::doWeQuit);
 		}
 		guild->voiceConnectionPtr = Globals::voiceConnectionMap[guildId.operator size_t()].get();
 		return guild->voiceConnectionPtr;

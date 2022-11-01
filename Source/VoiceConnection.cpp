@@ -126,19 +126,32 @@ namespace DiscordCoreAPI {
 		return {};
 	}
 
-	VoiceConnectionBridge::VoiceConnectionBridge(VoiceConnection* voiceConnectionPtrNew, StreamType streamType) : DatagramSocketClient(streamType) {
-		this->voiceConnectionPtr = voiceConnectionPtrNew;
+	VoiceConnectionBridge::VoiceConnectionBridge(DiscordCoreClient* clientPtrNew, StreamType streamType, Snowflake guildIdNew) : DatagramSocketClient(streamType) {
+		this->clientPtr = clientPtrNew;
+		this->guildId = guildIdNew;
+	}
+
+	void VoiceConnectionBridge::parseOutGoingVoiceData() noexcept {
+		std::string_view buffer = this->getInputBuffer();
+		if (buffer.size() > 0) {
+			AudioFrameData frame{};
+			frame.data.insert(frame.data.begin(), buffer.begin(), buffer.end());
+			frame.sampleCount = 960;
+			frame.type = AudioFrameType::Encoded;
+			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
+		}
 	}
 
 	void VoiceConnectionBridge::handleAudioBuffer() noexcept {
-		this->voiceConnectionPtr->parseOutGoingVoiceData();
+		this->parseOutGoingVoiceData();
 	}
 
 	VoiceConnection::VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketSSLShard* baseShardNew,
-		DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept
-		: WebSocketCore(configManagerNew, DiscordCoreInternal::WebSocketType::Voice), DatagramSocketClient(StreamType::None) {
+		std::atomic_bool* doWeQuitNew) noexcept
+		: WebSocketCore(&clientPtrNew->configManager, DiscordCoreInternal::WebSocketType::Voice), DatagramSocketClient(StreamType::None) {
 		this->dataOpCode = DiscordCoreInternal::WebSocketOpCode::Op_Text;
-		this->configManager = configManagerNew;
+		this->configManager = &clientPtrNew->configManager;
+		this->discordCoreClient = clientPtrNew;
 		this->downSampledVector.resize(23040);
 		this->upSampledVector.resize(23040);
 		this->baseShard = baseShardNew;
@@ -425,14 +438,6 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case VoiceActiveState::Playing: {
-					DoubleTimePointNs startingValue{ std::chrono::steady_clock::now().time_since_epoch() };
-					DoubleTimePointNs intervalCount{ std::chrono::nanoseconds{ 20000000 } };
-					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
-					int64_t frameCounter{ 0 };
-					DoubleTimePointNs totalTime{ std::chrono::nanoseconds{ 0 } };
-					this->sendSpeakingMessage(false);
-					this->sendSpeakingMessage(true);
-
 					this->audioData.type = AudioFrameType::Encoded;
 					this->audioData.data.clear();
 
@@ -452,6 +457,15 @@ namespace DiscordCoreAPI {
 						}
 						this->checkForConnections();
 					}
+
+					DoubleTimePointNs startingValue{ std::chrono::steady_clock::now().time_since_epoch() };
+					DoubleTimePointNs intervalCount{ std::chrono::nanoseconds{ 20000000 } };
+					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
+					int64_t frameCounter{ 0 };
+					DoubleTimePointNs totalTime{ std::chrono::nanoseconds{ 0 } };
+
+					this->sendSpeakingMessage(false);
+					this->sendSpeakingMessage(true);
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
 						this->areWePlaying.store(true);
@@ -544,17 +558,6 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(1ms);
 		}
 	};
-
-	void VoiceConnection::parseOutGoingVoiceData() noexcept {
-		std::string_view buffer = this->streamSocket->getInputBuffer();
-		if (buffer.size() > 0) {
-			AudioFrameData frame{};
-			frame.data.insert(frame.data.begin(), buffer.begin(), buffer.end());
-			frame.sampleCount = 960;
-			frame.type = AudioFrameType::Encoded;
-			this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.send(std::move(frame));
-		}
-	}
 
 	void VoiceConnection::parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept {
 		if (rawDataBufferNew.size() > 0 && this->encryptionKey.size() > 0) {
@@ -757,7 +760,8 @@ namespace DiscordCoreAPI {
 				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId.operator size_t()]->clearContents();
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				if (this->streamType != StreamType::None) {
-					this->streamSocket = std::make_unique<VoiceConnectionBridge>(this, this->streamType);
+					this->streamSocket =
+						std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this->streamType, this->voiceConnectInitData.guildId);
 					if (this->taskThread02) {
 						this->taskThread02.reset(nullptr);
 					}
