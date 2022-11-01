@@ -11,7 +11,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 ![imageDiscordCoreAPI](./TheLogo.png "A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.")
 
 # Documentation/Examples
-[Documentation/Examples](https://discordcoreapi.com/d7/de3/a07176.html)
+[Documentation/Examples](https://discordcoreapi.com/d5/d4d/a07180.html)
 
 # Discord Server
 [This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)

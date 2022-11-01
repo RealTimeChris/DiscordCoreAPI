@@ -56,6 +56,9 @@ namespace DiscordCoreInternal {
 	  public:
 		WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, WebSocketType typeOfWebSocketNew);
 
+		bool connect(const std::string& baseUrl, const std::string& relativePath, const std::string& portNew, bool doWePrintErrorsNew,
+			bool areWeAStandaloneSocketNew) noexcept;
+
 		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
 
 		std::string prepMessageData(std::string&& dataToSend, WebSocketOpCode theOpCode) noexcept;
@@ -64,9 +67,9 @@ namespace DiscordCoreInternal {
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
-		bool checkForAndSendHeartBeat(bool = false) noexcept;
+		void parseConnectionHeaders(std::string_view stringNew) noexcept;
 
-		void parseConnectionHeaders() noexcept;
+		bool checkForAndSendHeartBeat(bool = false) noexcept;
 
 		virtual void onClosed() noexcept = 0;
 
@@ -80,14 +83,14 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
 		std::unique_ptr<DiscordCoreAPI::ConnectionPackage> connections{ nullptr };
 		DiscordCoreAPI::ConfigManager* configManager{};
-		bool haveWeReceivedHeartbeatAck{ true };
 		std::atomic<WebSocketState> currentState{};
-		const uint32_t maxReconnectTries{ 10 };
 		std::atomic_bool areWeConnecting{ true };
+		bool haveWeReceivedHeartbeatAck{ true };
+		const uint32_t maxReconnectTries{ 10 };
 		uint32_t currentReconnectTries{ 0 };
+		uint32_t lastNumberReceived{ 0 };
 		WebSocketType typeOfWebSocket{};
 		bool areWeHeartBeating{ false };
-		uint32_t lastNumberReceived{ 0 };
 		WebSocketClose closeCode{ 0 };
 		StringBuffer currentMessage{};
 		WebSocketOpCode dataOpCode{};
@@ -101,9 +104,9 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
-		friend class WebSocketCore;
 		friend class DiscordCoreAPI::BotUser;
 		friend class BaseSocketAgent;
+		friend class WebSocketCore;
 		friend class YouTubeAPI;
 		friend class SSLClient;
 
@@ -114,7 +117,7 @@ namespace DiscordCoreInternal {
 		bool onMessageReceived(std::string_view message) noexcept;
 
 		void disconnect() noexcept;
-
+		
 		void onClosed() noexcept;
 
 		virtual ~WebSocketSSLShard() noexcept = default;

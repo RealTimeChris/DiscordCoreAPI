@@ -134,12 +134,10 @@ namespace DiscordCoreAPI {
 		this->voiceConnectionPtr->parseOutGoingVoiceData();
 	}
 
-	VoiceConnection::VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, DiscordCoreInternal::WebSocketSSLShard* baseShardNew,
+	VoiceConnection::VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketSSLShard* baseShardNew,
 		DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketCore(configManagerNew, DiscordCoreInternal::WebSocketType::Voice), DatagramSocketClient(StreamType::None) {
 		this->dataOpCode = DiscordCoreInternal::WebSocketOpCode::Op_Text;
-		this->discordCoreClient = BaseSocketAgentNew->discordCoreClient;
-		this->baseSocketAgent = BaseSocketAgentNew;
 		this->configManager = configManagerNew;
 		this->downSampledVector.resize(23040);
 		this->upSampledVector.resize(23040);
@@ -151,7 +149,7 @@ namespace DiscordCoreAPI {
 		if (this->connectionState.load() == VoiceConnectionState::Initializing_DatagramSocket) {
 		} else {
 			std::string_view string = DatagramSocketClient::getInputBuffer();
-			if (string.size() > 0) {
+			if (string.size() > 0 && this->streamSocket) {
 				this->parseIncomingVoiceData(string);
 			}
 		}
@@ -463,7 +461,6 @@ namespace DiscordCoreAPI {
 						this->checkForConnections();
 						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(this->audioData);
 						if (this->audioData.data.size() == 0) {
-							//this->sendSilence();
 							this->areWePlaying.store(false);
 						} else {
 							this->areWePlaying.store(true);
@@ -646,23 +643,14 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Initializing_WebSocket: {
-				if (!WebSocketCore::connect(this->baseUrl, "443", this->configManager->doWePrintWebSocketErrorMessages(), false)) {
+				this->currentState.store(DiscordCoreInternal::WebSocketState::Upgrading);
+				if (!WebSocketCore::connect(this->baseUrl, "/?v=4", "443", this->configManager->doWePrintWebSocketErrorMessages(), false)) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					return;
 				}
-				WebSocketCore::currentState.store(DiscordCoreInternal::WebSocketState::Upgrading);
-				std::string sendVector = "GET /?v=4 HTTP/1.1\r\nHost: " + this->baseUrl +
-					"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: "
-					"Upgrade\r\nSec-WebSocket-Key: " +
-					generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 				this->shard[0] = 0;
 				this->shard[1] = 1;
-				if (!WebSocketCore::sendMessage(sendVector, true)) {
-					this->currentReconnectTries++;
-					this->onClosed();
-					return;
-				}
 				while (this->currentState.load() != DiscordCoreInternal::WebSocketState::Collecting_Hello) {
 					if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
 						this->currentReconnectTries++;
@@ -978,19 +966,17 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::connect(DiscordCoreAPI::VoiceConnectInitData initData) noexcept {
-		if (this->baseSocketAgent) {
-			this->voiceConnectInitData = initData;
-			this->connections = std::make_unique<ConnectionPackage>();
-			this->connections->currentReconnectTries = this->currentReconnectTries;
-			this->connections->currentShard = this->shard[0];
-			this->streamInfo = initData.streamInfo;
-			this->streamType = initData.streamType;
-			this->activeState.store(VoiceActiveState::Connecting);
-			if (!this->taskThread01) {
-				this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-					this->runVoice(stopToken);
-				});
-			}
+		this->voiceConnectInitData = initData;
+		this->connections = std::make_unique<ConnectionPackage>();
+		this->connections->currentReconnectTries = this->currentReconnectTries;
+		this->connections->currentShard = this->shard[0];
+		this->streamInfo = initData.streamInfo;
+		this->streamType = initData.streamType;
+		this->activeState.store(VoiceActiveState::Connecting);
+		if (!this->taskThread01) {
+			this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+				this->runVoice(stopToken);
+			});
 		}
 	}
 

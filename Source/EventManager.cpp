@@ -327,7 +327,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildMemberUpdateData::OnGuildMemberUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-		DiscordCoreClient* client) {
+		DiscordCoreClient* client){
 		this->guildMember = std::make_unique<GuildMemberData>(data.processJsonMessage<GuildMemberData>(dataReal));
 		if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers()) {
 			DiscordCoreAPI::GuildMembers::insertGuildMember(*this->guildMember);
@@ -436,15 +436,6 @@ namespace DiscordCoreAPI {
 
 		this->token = getString(theJsonData["d"], "token");
 	};
-
-	DiscordCoreInternal::EventDelegateToken EventManager::onGatewayPing(
-		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGatewayPingData> handler) {
-		return this->onGatewayPingEvent.add(std::move(handler));
-	}
-
-	void EventManager::onGatewayPing(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onGatewayPingEvent.remove(token);
-	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnApplicationCommandPermissionsUpdateData> handler) {

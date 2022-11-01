@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 
 		/// The constructor.
-		VoiceConnection(DiscordCoreInternal::BaseSocketAgent* BaseSocketAgentNew, DiscordCoreInternal::WebSocketSSLShard* baseShard,
+		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketSSLShard* baseShard,
 			DiscordCoreAPI::ConfigManager* configManagerNew, std::atomic_bool* doWeQuitNew) noexcept;
 
 		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
@@ -150,7 +150,6 @@ namespace DiscordCoreAPI {
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
-		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
 		std::unique_ptr<VoiceConnectionBridge> streamSocket{};
@@ -161,11 +160,11 @@ namespace DiscordCoreAPI {
 		VoiceConnectInitData voiceConnectInitData{};
 		std::vector<opus_int16> downSampledVector{};
 		std::vector<uint8_t> decryptedDataString{};
-		std::vector<unsigned char> encryptionKey{};
 		std::vector<opus_int32> upSampledVector{};
 		std::atomic_bool areWePlaying{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		RTPPacketEncrypter packetEncrypter{};
+		std::vector<uint8_t> encryptionKey{};
 		simdjson::ondemand::parser parser{};
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};

@@ -689,17 +689,13 @@ namespace DiscordCoreInternal {
 	using namespace std::literals;
 	using std::cout;
 	using std::endl;
-
+	
 	class SoundCloudRequestBuilder;
 	class YouTubeRequestBuilder;
-	class HttpsWorkloadData;
 	class WebSocketSSLShard;
 	class BaseSocketAgent;
 	class SoundCloudAPI;
-	class HttpsClient;
 	class YouTubeAPI;
-
-	struct DiscordCoreAPI_Dll UpdatePresenceData;
 
 	template<typename Ty> inline auto utCast(Ty x) -> std::enable_if_t<std::is_enum_v<Ty>, std::underlying_type_t<Ty>> {
 		return static_cast<std::underlying_type_t<Ty>>(x);
@@ -900,58 +896,14 @@ namespace DiscordCoreAPI {
 	using std::cout;
 	using std::endl;
 
-	struct DeleteInteractionResponseData;
-	struct DeleteFollowUpMessageData;
-	struct OnInteractionCreationData;
-	struct GetGuildMemberRolesData;
-	struct BaseFunctionArguments;
-	struct GetRolesData;
-	struct File;
-
-	class CreateEphemeralInteractionResponseData;
-	class CreateDeferredInteractionResponseData;
-	class ApplicationCommandOptionChoiceData;
-	class CreateEphemeralFollowUpMessageData;
-	class CreateInteractionResponseData;
-	class EditInteractionResponseData;
-	class CreateFollowUpMessageData;
-	class RespondToInputEventData;
-	class EditFollowUpMessageData;
-	class SelectMenuCollector;
-	class AllowedMentionsData;
 	class DiscordCoreClient;
-	class CreateMessageData;
-	class SelectOptionData;
 	class VoiceConnection;
-	class EditMessageData;
-	class ButtonCollector;
-	class InteractionData;
-	class GuildMemberData;
-	class ModalCollector;
-	class ActionRowData;
-	class Interactions;
-	class EventManager;
-	class GuildMembers;
 	class GuildMember;
 	class ChannelData;
-	class InputEvents;
-	class MessageData;
-	class Permissions;
-	class CommandData;
-	class SendDMData;
 	class Reactions;
-	class EmbedData;
-	class Messages;
-	class WebHooks;
-	class SongAPI;
 	class BotUser;
-	class Guilds;
-	class Guild;
-	class Roles;
-	class Users;
+	class File;
 
-	template<typename RTy, typename... ArgTypes> class EventDelegate;
-	template<typename RTy, typename... ArgTypes> class Event;
 	template<typename RTy> class CoRoutine;
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void ));
