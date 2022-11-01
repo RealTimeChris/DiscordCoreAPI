@@ -254,10 +254,10 @@ namespace DiscordCoreInternal {
 				return;
 			}
 			bool areWeDoneHeaders{ false };
-			uint64_t remainingDownloadContentLength{ newSong.contentLength };
-			uint64_t bytesToRead{ static_cast<uint64_t>(this->maxBufferSize) };
-			uint64_t bytesSubmittedPrevious{ 0 };
-			uint64_t bytesReadTotal{ 0 };
+			int64_t remainingDownloadContentLength{ static_cast<int64_t>(newSong.contentLength) };
+			int64_t bytesToRead{ static_cast<int64_t>(this->maxBufferSize) };
+			int64_t bytesSubmittedPrevious{ 0 };
+			int64_t bytesReadTotal{ 0 };
 			const uint8_t maxReruns{ 200 };
 			uint8_t currentReruns{ 0 };
 			uint32_t counter{ 0 };
@@ -279,7 +279,7 @@ namespace DiscordCoreInternal {
 				this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 				return;
 			}
-			while (bytesToRead > 0) {
+			while (remainingDownloadContentLength > 0) {
 				std::this_thread::sleep_for(1ms);
 				if (bytesSubmittedPrevious == bytesReadTotal) {
 					currentReruns++;
