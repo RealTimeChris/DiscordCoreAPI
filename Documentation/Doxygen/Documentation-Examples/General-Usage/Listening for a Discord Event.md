@@ -13,7 +13,7 @@ Listening for a Discord Event {#listeningforevent}
 DiscordCoreAPI::CoRoutine<void> onGuildCreation(DiscordCoreAPI::OnGuildCreationData dataPackage) {
 	co_await DiscordCoreAPI::NewThreadAwaitable<void>();
 	cout << "Guild Name: " << dataPackage.guild.data.name << endl;
-	o_return;
+	co_return;
 }
 
 int32_t main() {
