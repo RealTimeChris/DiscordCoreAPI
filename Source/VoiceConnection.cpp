@@ -561,7 +561,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept {
 		if (rawDataBufferNew.size() > 0 && this->encryptionKey.size() > 0) {
-			constexpr uint64_t headerSize{ 12 };
+			const uint64_t headerSize{ 12 };
 			
 			if (rawDataBufferNew.size() < 44) {
 				return;

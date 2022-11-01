@@ -154,8 +154,8 @@ namespace DiscordCoreInternal {
 				downloadBaseUrl = newSong.format.downloadUrl.substr(httpsFind + newString00.length(), videoPlaybackFind - newString00.length());
 			}
 			std::string requestNew = "GET " + newSong.format.downloadUrl +
-				" HTTP/1.1\n\rUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-				"(KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36\n\r";
+				" HTTP/1.1\n\rUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 "
+				"Safari/537.36\n\r";
 			requestNew += "Host: " + downloadBaseUrl + "\n\r\n\r";
 			newSong.finalDownloadUrls.resize(2);
 			DiscordCoreAPI::DownloadUrl downloadUrl01{};
