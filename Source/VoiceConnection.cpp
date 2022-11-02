@@ -308,14 +308,14 @@ namespace DiscordCoreAPI {
 			DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Write_Only);
 		} else {
 			data.type = DiscordCoreInternal::SendSpeakingType::Microphone;
-			data.delay = 0;
-			data.ssrc = this->audioSSRC;
-			auto serializer = data.operator DiscordCoreAPI::Jsonifier();
-			serializer.refreshString(JsonifierSerializeType::Json);
-			std::string string = this->prepMessageData(serializer.operator std::string(), DiscordCoreInternal::WebSocketOpCode::Op_Text);
-			if (!this->sendMessage(string, true)) {
-				this->onClosed();
-			}
+		}
+		data.delay = 0;
+		data.ssrc = this->audioSSRC;
+		auto serializer = data.operator DiscordCoreAPI::Jsonifier();
+		serializer.refreshString(JsonifierSerializeType::Json);
+		std::string string = this->prepMessageData(serializer.operator std::string(), DiscordCoreInternal::WebSocketOpCode::Op_Text);
+		if (!this->sendMessage(string, true)) {
+			this->onClosed();
 		}
 	}
 
