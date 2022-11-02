@@ -563,29 +563,29 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::parseIncomingVoiceData(std::basic_string_view<unsigned char> rawDataBufferNew) noexcept {
 		if (this->streamSocket && rawDataBufferNew.size() > 0 && this->encryptionKey.size() > 0) {
-			const uint64_t headerSize{ 12 };
 			
 			if (rawDataBufferNew.size() < 44) {
 				return;
 			}
 
-			if (uint8_t payloadType = rawDataBufferNew[1] & 0b0111'1111; 72 <= payloadType && payloadType <= 76) {
+			if (const uint8_t payloadType = rawDataBufferNew[1] & 0b0111'1111; 72 <= payloadType && payloadType <= 76) {
 				return;
 			}
-			uint32_t speakerSsrc{ *reinterpret_cast<const uint32_t*>(rawDataBufferNew.data() + 8) };
-			speakerSsrc = ntohl(speakerSsrc);
 
-			uint8_t nonce[24]{};
-			for (uint32_t x = 0; x < headerSize; ++x) {
-				nonce[x] = rawDataBufferNew[x];
-			}
+			const uint32_t speakerSsrc{ ntohl(*reinterpret_cast<const uint32_t*>(rawDataBufferNew.data() + 8)) };
 
+			const uint64_t headerSize{ 12 };
 			const uint64_t csrcCount = rawDataBufferNew[0] & 0b0000'1111;
-			const ptrdiff_t offsetToData = headerSize + sizeof(uint32_t) * csrcCount;
+			const int64_t offsetToData = headerSize + sizeof(uint32_t) * csrcCount;
 			const uint8_t* encryptedData = rawDataBufferNew.data() + offsetToData;
 			const uint64_t encryptedDataLength = rawDataBufferNew.size() - offsetToData;
 			if (this->decryptedDataString.size() < encryptedDataLength) {
 				this->decryptedDataString.resize(encryptedDataLength);
+			}
+
+			uint8_t nonce[24]{};
+			for (uint32_t x = 0; x < headerSize; ++x) {
+				nonce[x] = rawDataBufferNew[x];
 			}
 
 			if (crypto_secretbox_open_easy(this->decryptedDataString.data(), encryptedData, encryptedDataLength, nonce, this->encryptionKey.data())) {
@@ -600,6 +600,7 @@ namespace DiscordCoreAPI {
 				size_t extensionHeaderLength{ sizeof(uint16_t) * 2 };
 				newString = newString.substr(extensionHeaderLength + extensionLength);
 			}
+
 			if (newString.size() > 0) {
 				std::unique_lock lock00{ this->voiceUserMutex };
 				if (this->voiceUsers.contains(speakerSsrc)) {
@@ -911,6 +912,7 @@ namespace DiscordCoreAPI {
 		WebSocketCore::socket = SOCKET_ERROR;
 		DatagramSocketClient::outputBuffer.clear();
 		DatagramSocketClient::inputBuffer.clear();
+		this->voiceUsers.clear();
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
