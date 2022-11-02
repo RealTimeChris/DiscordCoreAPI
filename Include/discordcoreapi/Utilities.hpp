@@ -331,7 +331,7 @@ namespace DiscordCoreAPI {
 
 	enum class JsonifierSerializeType { Etf = 0, Json = 1 };
 
-	class Jsonifier;
+	class DiscordCoreAPI_Dll Jsonifier;
 
 	template<typename Ty>
 	concept IsConvertibleToJsonifier = std::convertible_to<Ty, Jsonifier>;
@@ -677,9 +677,10 @@ namespace DiscordCoreAPI {
 
 	/// For connecting two bots to stream the VC contents between the two. \brief For connecting two bots to stream the VC contents between the two.
 	struct DiscordCoreAPI_Dll StreamInfo {
-		StreamType type{};
+		bool streamBotAudio{ false };///< Do we stream the audio coming from other bots?
 		std::string address{};///< The address to connect to.
 		std::string port{};///< The port to connect to.
+		StreamType type{};
 	};
 
 };
@@ -690,12 +691,12 @@ namespace DiscordCoreInternal {
 	using std::cout;
 	using std::endl;
 	
-	class SoundCloudRequestBuilder;
-	class YouTubeRequestBuilder;
-	class WebSocketSSLShard;
-	class BaseSocketAgent;
-	class SoundCloudAPI;
-	class YouTubeAPI;
+	class DiscordCoreAPI_Dll SoundCloudRequestBuilder;
+	class DiscordCoreAPI_Dll YouTubeRequestBuilder;
+	class DiscordCoreAPI_Dll WebSocketSSLShard;
+	class DiscordCoreAPI_Dll BaseSocketAgent;
+	class DiscordCoreAPI_Dll SoundCloudAPI;
+	class DiscordCoreAPI_Dll YouTubeAPI;
 
 	template<typename Ty> inline auto utCast(Ty x) -> std::enable_if_t<std::is_enum_v<Ty>, std::underlying_type_t<Ty>> {
 		return static_cast<std::underlying_type_t<Ty>>(x);
@@ -896,13 +897,13 @@ namespace DiscordCoreAPI {
 	using std::cout;
 	using std::endl;
 
-	class DiscordCoreClient;
-	class VoiceConnection;
-	class GuildMember;
-	class ChannelData;
-	class Reactions;
-	class BotUser;
-	class File;
+	class DiscordCoreAPI_Dll DiscordCoreClient;
+	class DiscordCoreAPI_Dll VoiceConnection;
+	class DiscordCoreAPI_Dll GuildMember;
+	class DiscordCoreAPI_Dll ChannelData;
+	class DiscordCoreAPI_Dll Reactions;
+	class DiscordCoreAPI_Dll BotUser;
+	class DiscordCoreAPI_Dll File;
 
 	template<typename RTy> class CoRoutine;
 
@@ -1264,7 +1265,6 @@ namespace DiscordCoreAPI {
 	/// For connecting to a voice-channel. "Stream-Socket" refers to when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
 	/// \brief For connecting to a voice-channel. "Stream-Socket" refers to when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
-		DiscordCoreAPI::StreamType streamType{};///< The type of stream-socket, if applicable.
 		DiscordCoreAPI::StreamInfo streamInfo{};///< The info for the stream-socekt, if applicable.
 		bool selfDeaf{ false };///< Self-deafen the bot?
 		bool selfMute{ false };///< Self-mute the bot?
@@ -1532,7 +1532,7 @@ namespace DiscordCoreAPI {
 
 	template<typename TimeType>
 	/// Class for representing a timeStamp, as well as working with time-related values. \brief Class for representing a timeStamp, as well as working with time-related values.
-	class DiscordCoreAPI_Dll TimeStamp {
+	class TimeStamp {
 	  public:
 		explicit TimeStamp(TimeFormat formatNew = TimeFormat::LongDateTime) {
 			this->timeStampInTimeUnits =
@@ -2027,7 +2027,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	struct LengthData {
+	struct DiscordCoreAPI_Dll LengthData {
 		uint64_t offSet{};
 		uint64_t length{};
 	};
@@ -2120,7 +2120,7 @@ namespace DiscordCoreInternal {
 		uint64_t head{};
 	};
 
-	template<typename OTy> class DiscordCoreAPI_Dll RingBufferSlice : public RingBufferInterface<OTy, 1024 * 16> {};
+	template<typename OTy> class RingBufferSlice : public RingBufferInterface<OTy, 1024 * 16> {};
 
 	template<typename OTy,uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice<OTy>, SliceCount> {
 	  public:
