@@ -68,17 +68,17 @@ namespace DiscordCoreAPI {
 	}
 
 	User::User(simdjson::ondemand::value jsonObjectData) {
-		flags |= setBool(this->flags, UserFlags::MFAEnabled, getBool(jsonObjectData, "mfa_enabled"));
+		flags = setBool(this->flags, UserFlags::MFAEnabled, getBool(jsonObjectData, "mfa_enabled"));
 
-		this->flags |= setBool(this->flags, UserFlags::Verified, getBool(jsonObjectData, "verified"));
+		this->flags = setBool(this->flags, UserFlags::Verified, getBool(jsonObjectData, "verified"));
 
-		this->flags |= setBool(this->flags, UserFlags::System, getBool(jsonObjectData, "system"));
+		this->flags = setBool(this->flags, UserFlags::System, getBool(jsonObjectData, "system"));
 
-		this->flags |= setBool(this->flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
+		this->flags = setBool(this->flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
 
 		this->discriminator = getString(jsonObjectData, "discriminator");
 
-		this->flags |= getUint32(jsonObjectData, "public_flags");
+		this->flags = setBool(this->flags, static_cast<UserFlags>(getUint32(jsonObjectData, "public_flags")), true);
 
 		this->userName = getString(jsonObjectData, "username");
 
@@ -91,8 +91,6 @@ namespace DiscordCoreAPI {
 		this->email = getString(jsonObjectData, "email");
 
 		this->premiumType = static_cast<PremiumType>(getUint8(jsonObjectData, "premium_type"));
-
-		this->flags = getUint32(jsonObjectData, "public_flags");
 	}
 
 	UserVector::UserVector(simdjson::ondemand::value jsonObjectData) {

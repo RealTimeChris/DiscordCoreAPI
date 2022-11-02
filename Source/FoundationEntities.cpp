@@ -220,15 +220,17 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		this->flags |= setBool(this->flags, UserFlags::MFAEnabled, getBool(jsonObjectData, "mfa_enabled"));
+		this->flags = setBool(this->flags, UserFlags::MFAEnabled, getBool(jsonObjectData, "mfa_enabled"));
 
-		this->flags |= setBool(this->flags, UserFlags::Verified, getBool(jsonObjectData, "verified"));
+		this->flags = setBool(this->flags, UserFlags::Verified, getBool(jsonObjectData, "verified"));
 
-		this->flags |= setBool(this->flags, UserFlags::System, getBool(jsonObjectData, "system"));
+		this->flags = setBool(this->flags, UserFlags::System, getBool(jsonObjectData, "system"));
 
-		this->flags |= setBool(this->flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
+		this->flags = setBool(this->flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
 
-		this->flags |= getUint32(jsonObjectData, "public_flags");
+		auto flags = getUint32(jsonObjectData, "public_flags");
+
+		this->flags = setBool(this->flags, static_cast<UserFlags>(flags), true);
 
 		this->userName = getString(jsonObjectData, "username");
 
@@ -469,11 +471,11 @@ namespace DiscordCoreAPI {
 
 		this->color = getUint32(jsonObjectData, "color");
 
-		this->flags |= setBool(this->flags, RoleFlags::Hoist, getBool(jsonObjectData, "hoist"));
+		this->flags = setBool(this->flags, RoleFlags::Hoist, getBool(jsonObjectData, "hoist"));
 
-		this->flags |= setBool(this->flags, RoleFlags::Managed, getBool(jsonObjectData, "managed"));
+		this->flags = setBool(this->flags, RoleFlags::Managed, getBool(jsonObjectData, "managed"));
 
-		this->flags |= setBool(this->flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
+		this->flags = setBool(this->flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
 
 		this->position = getUint32(jsonObjectData, "position");
 
@@ -523,7 +525,7 @@ namespace DiscordCoreAPI {
 		PresenceUpdateFlags flags{};
 		parseObject(jsonObjectData, flags);
 
-		this->theStatus |= static_cast<uint8_t>(flags);
+		this->theStatus = setBool(this->theStatus, flags, true);
 	}
 
 	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
@@ -546,11 +548,11 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildMemberData& GuildMemberData::operator=(simdjson::ondemand::value jsonObjectData) {
-		this->flags |= setBool(this->flags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
+		this->flags = setBool(this->flags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
 
-		this->flags |= setBool(this->flags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
+		this->flags = setBool(this->flags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
 
-		this->flags |= setBool(this->flags, GuildMemberFlags::Deaf, getBool(jsonObjectData, "deaf"));
+		this->flags = setBool(this->flags, GuildMemberFlags::Deaf, getBool(jsonObjectData, "deaf"));
 
 		this->joinedAt = getString(jsonObjectData, "joined_at");
 
@@ -578,7 +580,9 @@ namespace DiscordCoreAPI {
 
 		this->avatar = getString(jsonObjectData, "avatar");
 
-		this->flags |= getUint8(jsonObjectData, "flags");
+		auto flags = getUint8(jsonObjectData, "flags");
+
+		this->flags = setBool(this->flags, static_cast<GuildMemberFlags>(flags), true);
 
 		this->nick = getString(jsonObjectData, "nick");
 		return *this;
@@ -635,7 +639,7 @@ namespace DiscordCoreAPI {
 	}
 
 	ChannelData::ChannelData(simdjson::ondemand::value jsonObjectData) {
-		this->flags |= setBool(this->flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
+		this->flags = setBool(this->flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
 
 		this->type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
 
@@ -647,7 +651,9 @@ namespace DiscordCoreAPI {
 
 		this->id = getId(jsonObjectData, "id");
 
-		this->flags |= getUint8(jsonObjectData, "flags");
+		auto flags = getUint8(jsonObjectData, "flags");
+
+		this->flags = setBool(this->flags, static_cast<ChannelFlags>(flags), true);
 
 		this->parentId = getId(jsonObjectData, "parent_id");
 
@@ -1199,7 +1205,7 @@ namespace DiscordCoreAPI {
 
 		this->formatType = static_cast<StickerFormatType>(getUint8(jsonObjectData, "format_type"));
 
-		this->stickerFlags |= setBool(this->stickerFlags, StickerFlags::Available, getBool(jsonObjectData, "available"));
+		this->flags = setBool(this->flags, StickerFlags::Available, getBool(jsonObjectData, "available"));
 
 		this->guildId = getId(jsonObjectData, "guild_id");
 
@@ -1321,12 +1327,12 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildData::GuildData(simdjson::ondemand::value jsonObjectData) {
-		this->flags |= setBool(this->flags, GuildFlags::WidgetEnabled, getBool(jsonObjectData, "widget_enabled"));
-		this->flags |= setBool(this->flags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
+		this->flags = setBool(this->flags, GuildFlags::WidgetEnabled, getBool(jsonObjectData, "widget_enabled"));
+		this->flags = setBool(this->flags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
 
-		this->flags |= setBool(this->flags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
+		this->flags = setBool(this->flags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
 
-		this->flags |= setBool(this->flags, GuildFlags::Large, getUint8(jsonObjectData, "large"));
+		this->flags = setBool(this->flags, GuildFlags::Large, getUint8(jsonObjectData, "large"));
 
 		this->ownerId = getId(jsonObjectData, "owner_id");
 
