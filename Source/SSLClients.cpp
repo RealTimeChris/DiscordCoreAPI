@@ -787,7 +787,7 @@ namespace DiscordCoreInternal {
 				readBytes = recvfrom(static_cast<SOCKET>(this->socket), reinterpret_cast<char*>(this->inputBuffer.getCurrentHead()->getCurrentHead()),
 					static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->streamTargetAddress, &intSize);
 				if (readBytes < 0) {
-					returnValue = true;
+					return false;
 				} else {
 					this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
 					this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
