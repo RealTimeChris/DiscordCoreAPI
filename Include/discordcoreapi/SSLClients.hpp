@@ -282,7 +282,7 @@ namespace DiscordCoreInternal {
 		const uint64_t maxBufferSize{ (1024 * 16) - 1 };
 		RingBuffer<unsigned char, 16> outputBuffer{};
 		RingBuffer<unsigned char, 16> inputBuffer{};
-		DiscordCoreAPI::StreamType streamType{};
+		DiscordCoreAPI::StreamType streamTypeReal{};
 		sockaddr_in streamTargetAddress{};
 		SOCKETWrapper socket{};
 		int64_t bytesRead{};

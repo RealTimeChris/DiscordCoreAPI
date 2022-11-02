@@ -338,8 +338,6 @@ namespace DiscordCoreAPI {
 	 * @{
 	*/
 
-	class DiscordCoreAPI_Dll NewBase {};
-
 	struct DiscordCoreAPI_Dll ConnectionPackage {
 		int32_t currentReconnectTries{ 0 };
 		bool areWeResuming{ false };
@@ -432,6 +430,10 @@ namespace DiscordCoreAPI {
 		UserData(const UserData&) noexcept = default;
 
 		UserData(simdjson::ondemand::value jsonObjectData);
+
+		template<IsEnum ETy> bool getFlagValue(ETy theEnum) {
+			return getBool(this->flags, theEnum);
+		}
 
 		std::string getAvatarUrl();
 
@@ -997,7 +999,7 @@ namespace DiscordCoreAPI {
 
 	enum class ChannelFlags : uint8_t { NSFW = 1 << 0 };
 
-	struct DefaultReactionData {
+	struct DiscordCoreAPI_Dll DefaultReactionData {
 		std::string emojiName{};///< The unicode character of the emoji.
 		Snowflake emojiId{};///< The id of a guild's custom emoji.
 
@@ -1006,7 +1008,7 @@ namespace DiscordCoreAPI {
 		DefaultReactionData(simdjson::ondemand::value jsonObjectData);
 	};
 
-	struct ForumTagData {
+	struct DiscordCoreAPI_Dll ForumTagData {
 		std::string emojiName{};///< The unicode character of the emoji.
 		Snowflake emojiId{};///< The id of a guild's custom emoji.
 		std::string name{};///< The name of the tag(0 - 20 characters).
@@ -1885,7 +1887,7 @@ namespace DiscordCoreAPI {
 		/// \param streamInfo For usage with the Vc-to-Vc audio streaming option.
 		/// \returns VoiceConnection* A pointer to the currently held voice connection, or nullptr if it failed to connect.
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{ 0 }, bool selfDeaf = false,
-			bool selfMute = false, StreamType streamType = StreamType::None, StreamInfo streamInfo = StreamInfo{});
+			bool selfMute = false, StreamInfo streamInfo = StreamInfo{});
 
 		std::string getBannerUrl() noexcept;
 
@@ -2480,7 +2482,7 @@ namespace DiscordCoreAPI {
 		bool tts{ false };///< Is it TTS?
 	};
 
-	struct CreateApplicationCommandData;
+	struct DiscordCoreAPI_Dll CreateApplicationCommandData;
 
 	/// Data structure representing an ApplicationCommand. \brief Data structure representing an ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommandData : public DiscordEntity {

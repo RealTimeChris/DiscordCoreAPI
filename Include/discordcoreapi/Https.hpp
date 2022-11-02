@@ -38,7 +38,7 @@ namespace DiscordCoreInternal {
 
 	enum class HttpsState { Collecting_Code = 0, Collecting_Headers = 1, Collecting_Size = 2, Collecting_Contents = 3 };
 
-	class HttpsError : public std::runtime_error {
+	class DiscordCoreAPI_Dll HttpsError : public std::runtime_error {
 	  public:
 		int32_t errorCode{};
 		explicit HttpsError(std::string message);

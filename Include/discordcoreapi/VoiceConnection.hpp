@@ -109,7 +109,7 @@ namespace DiscordCoreAPI {
 		Exiting = 4///< Exiting.
 	};
 
-	class VoiceConnectionBridge : public DiscordCoreInternal::DatagramSocketClient {
+	class DiscordCoreAPI_Dll VoiceConnectionBridge : public DiscordCoreInternal::DatagramSocketClient {
 	  public:
 		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, StreamType streamType, Snowflake guildIdNew);
 

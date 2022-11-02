@@ -568,7 +568,7 @@ namespace DiscordCoreInternal {
 	}
 
 	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept {
-		this->streamType = streamTypeNew;
+		this->streamTypeReal = streamTypeNew;
 	}
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
@@ -583,7 +583,7 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 
-		if (this->streamType == DiscordCoreAPI::StreamType::None) {
+		if (this->streamTypeReal == DiscordCoreAPI::StreamType::None) {
 			if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
 				return false;
 			}
@@ -591,7 +591,7 @@ namespace DiscordCoreInternal {
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); this->socket == SOCKET_ERROR) {
 				return false;
 			}
-		} else if (this->streamType == DiscordCoreAPI::StreamType::Client) {
+		} else if (this->streamTypeReal == DiscordCoreAPI::StreamType::Client) {
 			if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
 				return false;
 			}
@@ -665,7 +665,7 @@ namespace DiscordCoreInternal {
 			return ProcessIOResult::Error;
 		} else {
 			if (readWriteSet.revents & POLLOUT) {
-				if (this->streamType != DiscordCoreAPI::StreamType::None) {
+				if (this->streamTypeReal != DiscordCoreAPI::StreamType::None) {
 				}
 				if (!this->processWriteData()) {
 					result = ProcessIOResult::Error;
@@ -674,7 +674,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (readWriteSet.revents & POLLIN) {
-				if (this->streamType != DiscordCoreAPI::StreamType::None) {
+				if (this->streamTypeReal != DiscordCoreAPI::StreamType::None) {
 				}
 				if (!this->processReadData()) {
 					result = ProcessIOResult::Error;
