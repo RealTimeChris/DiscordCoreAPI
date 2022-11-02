@@ -121,11 +121,11 @@ namespace DiscordCoreAPI {
 			}
 		} catch (SIGINTError&) {
 			reportException("signalHandler()");
-			std::exit(EXIT_SUCCESS);
+			Globals::doWeQuit.store(true);
 		} catch (...) {
 			reportException("signalHandler()");
+			std::exit(EXIT_FAILURE);
 		}
-		std::exit(EXIT_FAILURE);
 	}
 
 	DiscordCoreClient::DiscordCoreClient(DiscordCoreClientConfig configData) {
@@ -350,6 +350,12 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() noexcept {
+		for (auto& value: Guilds::getCache()) {
+			Guild guild = value;
+			if (guild.areWeConnected()) {
+				guild.disconnect();
+			}
+		}
 		for (auto& [key, value]: CoRoutineBase::threadPool.workerThreads) {
 			if (value.thread.joinable()) {
 				value.thread.request_stop();
