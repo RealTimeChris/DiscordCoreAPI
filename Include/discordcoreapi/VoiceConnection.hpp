@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 
 		OpusDecoderWrapper();
 
-		std::basic_string_view<opus_int16> decodeData(std::basic_string_view<unsigned char> dataToDecode);
+		std::basic_string_view<opus_int16> decodeData(const std::basic_string_view<unsigned char> dataToDecode);
 
 		operator OpusDecoder*() noexcept;
 
@@ -85,7 +85,7 @@ namespace DiscordCoreAPI {
 
 		RTPPacketEncrypter(uint32_t ssrcNew, const std::vector<unsigned char>& keysNew) noexcept;
 
-		std::basic_string_view<unsigned char> encryptPacket(AudioFrameData& audiodataNew) noexcept;
+		std::basic_string_view<unsigned char> encryptPacket(const AudioFrameData& audioData) noexcept;
 	};
 
 	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
@@ -179,21 +179,21 @@ namespace DiscordCoreAPI {
 		uint32_t audioSSRC{};
 		uint64_t port{};
 
-		void parseIncomingVoiceData(std::basic_string_view<unsigned char> rawDataBufferNew) noexcept;
+		void parseIncomingVoiceData(const std::basic_string_view<unsigned char> rawDataBufferNew) noexcept;
 
-		void sendVoiceData(std::basic_string_view<unsigned char> responseData) noexcept;
+		void sendVoiceData(const std::basic_string_view<unsigned char> responseData) noexcept;
+
+		void connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
-		void checkForAndSendHeartBeat(bool isItImmediage) noexcept;
+		void checkForAndSendHeartBeat(const bool isItImmediage) noexcept;
 
-		void sendSpeakingMessage(const bool isSpeaking) noexcept;
+		bool onMessageReceived(const std::string_view data) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
-		bool onMessageReceived(std::string_view data) noexcept;
-
-		void connect(VoiceConnectInitData initData) noexcept;
+		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
 		void runBridge(std::stop_token) noexcept;
 
