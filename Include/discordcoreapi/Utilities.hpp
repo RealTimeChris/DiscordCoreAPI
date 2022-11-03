@@ -1867,7 +1867,7 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<OTy>& operator=(UnboundedMessageBlock<OTy>&& other) noexcept {
 			if (this != &other) {
 				this->queue = std::move(other.queue);
-				other.queue = std::queue<OTy>{};
+				other.queue = std::deque<OTy>{};
 			}
 			return *this;
 		}

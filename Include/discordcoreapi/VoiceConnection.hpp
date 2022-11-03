@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
-		std::deque<std::basic_string<opus_int16>> payloads{};
+		UnboundedMessageBlock<std::basic_string<opus_int16>> payloads{};
 		OpusDecoderWrapper decoder{};
 		Snowflake userId{};
 	};
