@@ -126,7 +126,8 @@ namespace DiscordCoreAPI {
 		return {};
 	}
 
-	VoiceConnectionBridge::VoiceConnectionBridge(DiscordCoreClient* clientPtrNew, StreamType streamType, Snowflake guildIdNew) : DatagramSocketClient(streamType) {
+	VoiceConnectionBridge::VoiceConnectionBridge(DiscordCoreClient* clientPtrNew, StreamType streamType, Snowflake guildIdNew)
+		: DatagramSocketClient(streamType) {
 		this->clientPtr = clientPtrNew;
 		this->guildId = guildIdNew;
 	}
@@ -145,7 +146,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnectionBridge::handleAudioBuffer() noexcept {
 		this->parseOutGoingVoiceData();
 	}
-	
+
 	VoiceConnection::VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketSSLShard* baseShardNew,
 		std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketCore(&clientPtrNew->configManager, DiscordCoreInternal::WebSocketType::Voice), DatagramSocketClient(StreamType::None) {
@@ -163,7 +164,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::parseIncomingVoiceData(const std::basic_string_view<unsigned char> rawDataBufferNew) noexcept {
-		if (72 <= (rawDataBufferNew[1] & 0b0111'1111) && (rawDataBufferNew[1] & 0b0111'1111) <= 76) {			
+		if (72 <= (rawDataBufferNew[1] & 0b0111'1111) && (rawDataBufferNew[1] & 0b0111'1111) <= 76) {
 			return;
 		}
 
@@ -979,7 +980,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 	}
-	
+
 	bool VoiceConnection::stop() noexcept {
 		this->sendSpeakingMessage(false);
 		this->activeState.store(VoiceActiveState::Stopped);

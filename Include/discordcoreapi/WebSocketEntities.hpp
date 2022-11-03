@@ -117,7 +117,7 @@ namespace DiscordCoreInternal {
 		bool onMessageReceived(std::string_view message) noexcept;
 
 		void disconnect() noexcept;
-		
+
 		void onClosed() noexcept;
 
 		virtual ~WebSocketSSLShard() noexcept = default;

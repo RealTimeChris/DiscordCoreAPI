@@ -959,7 +959,7 @@ namespace DiscordCoreAPI {
 		StringWrapper nick{};///< Their nick/display name.
 		Snowflake guildId{};///< The current Guild's id.
 		IconHash avatar{};///< This GuildMember's Guild Avatar.
-		
+
 		GuildMemberData() noexcept = default;
 
 		GuildMemberData& operator=(GuildMemberData&&) noexcept;

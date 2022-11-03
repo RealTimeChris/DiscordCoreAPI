@@ -330,8 +330,7 @@ namespace DiscordCoreInternal {
 			return returnValue;
 		}
 
-		if (auto returnValueNew =
-				poll(&readWriteSet.polls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.polls.size()), 1);
+		if (auto returnValueNew = poll(&readWriteSet.polls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.polls.size()), 1);
 			returnValueNew == SOCKET_ERROR) {
 			for (auto& [key, value]: readWriteSet.polls) {
 				if (readWriteSet.polls[key].revents & POLLERR || readWriteSet.polls[key].revents & POLLHUP ||
@@ -749,8 +748,8 @@ namespace DiscordCoreInternal {
 		}
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
-			auto writtenBytes{ sendto(this->socket, reinterpret_cast<const char*>(this->outputBuffer.getCurrentTail()->getCurrentTail()), static_cast<int32_t>(bytesToWrite), 0,
-				( sockaddr* )&this->streamTargetAddress, sizeof(sockaddr)) };
+			auto writtenBytes{ sendto(this->socket, reinterpret_cast<const char*>(this->outputBuffer.getCurrentTail()->getCurrentTail()),
+				static_cast<int32_t>(bytesToWrite), 0, ( sockaddr* )&this->streamTargetAddress, sizeof(sockaddr)) };
 			if (writtenBytes < 0) {
 				return false;
 			} else {
