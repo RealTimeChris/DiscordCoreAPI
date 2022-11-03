@@ -599,8 +599,7 @@ namespace DiscordCoreInternal {
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, 0); this->socket == SOCKET_ERROR) {
 				return false;
 			}
-			std::string clientToServerString{};
-			clientToServerString = "test string";
+			const std::string clientToServerString{ "test string" };
 			auto writtenBytes{ sendto(static_cast<int32_t>(this->socket), clientToServerString.data(),
 				static_cast<int32_t>(clientToServerString.size()), 0, ( sockaddr* )address.operator addrinfo*(),
 				static_cast<int32_t>(sizeof(this->streamTargetAddress))) };
@@ -787,7 +786,7 @@ namespace DiscordCoreInternal {
 				readBytes = recvfrom(static_cast<SOCKET>(this->socket), reinterpret_cast<char*>(this->inputBuffer.getCurrentHead()->getCurrentHead()),
 					static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->streamTargetAddress, &intSize);
 				if (readBytes < 0) {
-					return false;
+					return true;
 				} else {
 					this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
 					this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);

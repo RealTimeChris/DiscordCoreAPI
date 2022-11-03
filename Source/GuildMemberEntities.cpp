@@ -107,11 +107,11 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildMember::GuildMember(simdjson::ondemand::value jsonObjectData) {
-		this->flags |= setBool(this->flags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
+		this->flags = setBool(this->flags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
 
-		this->flags |= setBool(this->flags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
+		this->flags = setBool(this->flags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
 
-		this->flags |= setBool(this->flags, GuildMemberFlags::Deaf, getBool(jsonObjectData, "deaf"));
+		this->flags = setBool(this->flags, GuildMemberFlags::Deaf, getBool(jsonObjectData, "deaf"));
 
 		this->joinedAt = getString(jsonObjectData, "joined_at");
 
@@ -139,7 +139,9 @@ namespace DiscordCoreAPI {
 
 		this->avatar = getString(jsonObjectData, "avatar");
 
-		this->flags |= getUint8(jsonObjectData, "flags");
+		auto theFlags = getUint8(jsonObjectData, "flags");
+
+		this->flags = setBool(this->flags, static_cast<GuildMemberFlags>(theFlags), true);
 
 		this->nick = getString(jsonObjectData, "nick");
 
@@ -287,10 +289,10 @@ namespace DiscordCoreAPI {
 		GuildMemberData guildMember =
 			GuildMembers::getCachedGuildMember({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId });
 		ModifyGuildMemberData dataPackage01{};
-		dataPackage01.deaf = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Deaf);
+		dataPackage01.deaf = getBool<GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Deaf);
 		dataPackage01.guildId = guildMember.guildId;
 		dataPackage01.guildMemberId = guildMember.id;
-		dataPackage01.mute = getBool<int8_t, GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Mute);
+		dataPackage01.mute = getBool<GuildMemberFlags>(guildMember.flags, GuildMemberFlags::Mute);
 		dataPackage01.roleIds = guildMember.roles;
 		dataPackage01.nick = guildMember.nick;
 		dataPackage01.reason = dataPackage.reason;
