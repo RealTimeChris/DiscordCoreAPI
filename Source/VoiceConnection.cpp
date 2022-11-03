@@ -563,9 +563,7 @@ namespace DiscordCoreAPI {
 							this->sendVoiceData(newFrame);
 						}
 
-						for (size_t x = 0; x < this->voiceUsers.size(); ++x) {
-							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
-						}
+						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
 
 						this->audioData.data.clear();
 						this->audioData.sampleCount = 0;
