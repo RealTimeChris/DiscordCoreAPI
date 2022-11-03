@@ -236,7 +236,6 @@ namespace DiscordCoreAPI {
 		this->connections = std::make_unique<ConnectionPackage>();
 		this->connections->currentReconnectTries = this->currentReconnectTries;
 		this->connections->currentShard = this->shard[0];
-		this->streamInfo = initData.streamInfo;
 		this->activeState.store(VoiceActiveState::Connecting);
 		if (!this->taskThread01) {
 			this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
@@ -306,7 +305,8 @@ namespace DiscordCoreAPI {
 						VoiceUser user{};
 						user.userId = stoull(getString(value["d"], "user_id"));
 						std::unique_lock lock{ this->voiceUserMutex };
-						if (!Users::getCachedUser({ .userId = user.userId }).getFlagValue(UserFlags::Bot) || this->streamInfo.streamBotAudio) {
+						if (!Users::getCachedUser({ .userId = user.userId }).getFlagValue(UserFlags::Bot) ||
+							this->voiceConnectInitData.streamInfo.streamBotAudio) {
 							this->voiceUsers[ssrc] = std::move(user);
 						}
 						break;
@@ -612,7 +612,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnectStream() noexcept {
-		this->streamSocket->connect(this->streamInfo.address, this->streamInfo.port);
+		this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port);
 	}
 
 	void VoiceConnection::connectInternal() noexcept {
@@ -755,14 +755,14 @@ namespace DiscordCoreAPI {
 				}
 				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId.operator size_t()]->clearContents();
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-				if (this->streamInfo.type != StreamType::None) {
-					this->streamSocket =
-						std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this->streamInfo.type, this->voiceConnectInitData.guildId);
+				if (this->voiceConnectInitData.streamInfo.type != StreamType::None) {
+					this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this->voiceConnectInitData.streamInfo.type,
+						this->voiceConnectInitData.guildId);
 					if (this->taskThread02) {
 						this->taskThread02.reset(nullptr);
 					}
 					this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-						this->streamSocket->connect(this->streamInfo.address, this->streamInfo.port);
+						this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port);
 						this->runBridge(stopToken);
 					});
 				}

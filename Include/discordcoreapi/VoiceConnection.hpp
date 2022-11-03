@@ -172,7 +172,6 @@ namespace DiscordCoreAPI {
 		std::mutex voiceUserMutex{};
 		AudioFrameData audioData{};
 		std::string externalIp{};
-		StreamInfo streamInfo{};
 		AudioEncoder encoder{};
 		std::string voiceIp{};
 		std::string baseUrl{};
