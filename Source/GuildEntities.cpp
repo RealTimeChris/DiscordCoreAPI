@@ -57,11 +57,11 @@ namespace DiscordCoreAPI {
 			newData["permissions"] = static_cast<uint64_t>(value.permissions);
 			newData["tags"]["premium_subscriber"] = value.tags.premiumSubscriber;
 			newData["tags"]["integration_id"] = value.tags.integrationId;
-			newData["mentionable"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Mentionable);
+			newData["mentionable"] = DiscordCoreAPI::getBool<DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Mentionable);
 			newData["tags"]["bot_id"] = value.tags.botId;
-			newData["managed"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Managed);
+			newData["managed"] = DiscordCoreAPI::getBool<DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Managed);
 			newData["position"] = value.position;
-			newData["hoist"] = DiscordCoreAPI::getBool<int8_t, DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
+			newData["hoist"] = DiscordCoreAPI::getBool<DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
 			newData["color"] = value.color.getIntColorValue();
 			newData["name"] = std::string{ value.name };
 			data["roles"].emplaceBack(newData);
@@ -477,7 +477,7 @@ namespace DiscordCoreAPI {
 	}
 
 	ModifyGuildData::ModifyGuildData(Guild dataPackage) {
-		this->premiumProgressBarEnabled = getBool<int8_t, GuildFlags>(dataPackage.flags, GuildFlags::Premium_Progress_Bar_Enabled);
+		this->premiumProgressBarEnabled = getBool<GuildFlags>(dataPackage.flags, GuildFlags::Premium_Progress_Bar_Enabled);
 		this->defaultMessageNotifications = dataPackage.defaultMessageNotifications;
 		this->publicUpdatesChannelId = dataPackage.publicUpdatesChannelId;
 		this->explicitContentFilter = dataPackage.explicitContentFilter;

@@ -61,7 +61,8 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketClose::operator bool() {
-		return utCast(this->value) & utCast(WebSocketCloseCode::We_Do_Reconnect);
+		return static_cast<std::underlying_type_t<decltype(this->value)>>(this->value) &
+			static_cast<std::underlying_type_t<decltype(WebSocketCloseCode::We_Do_Reconnect)>>(WebSocketCloseCode::We_Do_Reconnect);
 	}
 
 	VoiceWebSocketClose& VoiceWebSocketClose::operator=(uint16_t valueNew) {

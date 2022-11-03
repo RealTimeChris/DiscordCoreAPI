@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 
 		this->formatType = static_cast<StickerFormatType>(getUint8(jsonObjectData, "format_type"));
 
-		this->stickerFlags = setBool(this->stickerFlags, StickerFlags::Available, getBool(jsonObjectData, "available"));
+		this->flags = setBool(this->flags, StickerFlags::Available, getBool(jsonObjectData, "available"));
 
 		this->guildId = getId(jsonObjectData, "guild_id");
 

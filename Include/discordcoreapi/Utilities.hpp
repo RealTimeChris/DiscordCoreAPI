@@ -1842,18 +1842,18 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	template<typename StoredAsType, typename FlagType> StoredAsType setBool(StoredAsType inputFlag, FlagType flag, bool enabled) {
+	template<IsEnum OTy> auto setBool(OTy theFlags, OTy theFlagToSet, bool enabled) {
+		typename std::underlying_type_t<OTy> theValue{ static_cast<std::underlying_type_t<OTy>>(theFlags) };
 		if (enabled) {
-			inputFlag |= static_cast<StoredAsType>(flag);
-			return inputFlag;
+			theValue |= static_cast<std::underlying_type_t<OTy>>(theFlagToSet);
 		} else {
-			inputFlag &= ~static_cast<StoredAsType>(flag);
-			return inputFlag;
+			theValue &= ~static_cast<std::underlying_type_t<OTy>>(theFlagToSet);
 		}
+		return static_cast<OTy>(theValue);
 	}
 
-	template<typename StoredAsType, typename FlagType> bool getBool(StoredAsType inputFlag, FlagType flag) {
-		return static_cast<StoredAsType>(inputFlag) & static_cast<StoredAsType>(flag);
+	template<IsEnum OTy> bool getBool(OTy theFlags, OTy theFlagToCheck) {
+		return static_cast<std::underlying_type_t<OTy>>(theFlags) & static_cast<std::underlying_type_t<OTy>>(theFlagToCheck);
 	}
 
 	template<typename OTy>

@@ -417,7 +417,7 @@ namespace DiscordCoreAPI {
 		StringWrapper discriminator{};///< The user's 4-digit discord-tag	identify.
 		StringWrapper userName{};///< The user's userName, not unique across the platform identify.
 		IconHash avatar{};///< The user's avatar hash.
-		int32_t flags{};///< The public flags on a user' s account.
+		UserFlags flags{};///< The public flags on a user' s account.
 
 		UserData() noexcept = default;
 
@@ -801,8 +801,8 @@ namespace DiscordCoreAPI {
 		ColorValue color{ 0 };///< The Role's color.
 		int16_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
 		StringWrapper name{};///< The Role's name.
+		RoleFlags flags{ 0 };///< Role flags.
 		Snowflake guildId{};///< The id of the Guild that this Role is from.
-		int8_t flags{ 0 };///< Role flags.
 
 		RoleData() noexcept = default;
 
@@ -815,6 +815,10 @@ namespace DiscordCoreAPI {
 		RoleData(const RoleData&) noexcept = default;
 
 		RoleData(simdjson::ondemand::value jsonObjectData);
+
+		template<IsEnum ETy> bool getFlagValue(ETy theEnum) {
+			return getBool(this->flags, theEnum);
+		}
 
 		virtual ~RoleData() noexcept = default;
 	};
@@ -929,8 +933,8 @@ namespace DiscordCoreAPI {
 
 	/// Presence update data. \brief Presence update data.
 	struct DiscordCoreAPI_Dll PresenceUpdateData {
+		PresenceUpdateFlags theStatus{};///< Current client status.
 		Snowflake guildId{};///< Guild id for the current presence.
-		uint8_t theStatus{};///< Current client status.
 		Snowflake userId{};///< User id for the current presence.
 
 		PresenceUpdateData() noexcept = default;
@@ -949,13 +953,13 @@ namespace DiscordCoreAPI {
 		friend class GuildData;
 		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
+		GuildMemberFlags flags{ 0 };///< GuildMember flags.
 		Snowflake voiceChannelId{};///< Currently held voice channel, if applicable.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		StringWrapper nick{};///< Their nick/display name.
 		Snowflake guildId{};///< The current Guild's id.
 		IconHash avatar{};///< This GuildMember's Guild Avatar.
-		int8_t flags{ 0 };///< GuildMember flags.
-
+		
 		GuildMemberData() noexcept = default;
 
 		GuildMemberData& operator=(GuildMemberData&&) noexcept;
@@ -967,6 +971,10 @@ namespace DiscordCoreAPI {
 		GuildMemberData(const GuildMemberData&) noexcept = default;
 
 		GuildMemberData& operator=(simdjson::ondemand::value);
+
+		template<IsEnum ETy> bool getFlagValue(ETy theEnum) {
+			return getBool(this->flags, theEnum);
+		}
 
 		GuildMemberData(simdjson::ondemand::value);
 
@@ -1035,9 +1043,9 @@ namespace DiscordCoreAPI {
 		StringWrapper topic{};///< Channel topic.
 		Snowflake parentId{};///< Id of the Channel's parent Channel/category.
 		StringWrapper name{};///< Name of the Channel.
+		ChannelFlags flags{};///< Flags combined as a bitmask.
 		Snowflake ownerId{};///< Id of the Channel's owner.
 		Snowflake guildId{};///< Id of the Channel's Guild, if applicable.
-		uint8_t flags{};///< Flags combined as a bitmask.
 
 		ChannelData() noexcept = default;
 
@@ -1050,6 +1058,10 @@ namespace DiscordCoreAPI {
 		ChannelData(const ChannelData&) noexcept = default;
 
 		ChannelData(simdjson::ondemand::value);
+
+		template<IsEnum ETy> bool getFlagValue(ETy theEnum) {
+			return getBool(this->flags, theEnum);
+		}
 
 		virtual ~ChannelData() noexcept = default;
 	};
@@ -1770,7 +1782,7 @@ namespace DiscordCoreAPI {
 	  public:
 		StickerFormatType formatType{};///< Format type.
 		std::string description{};///< Description of the Sticker.
-		int8_t stickerFlags{ 0 };///< Sticker flags.
+		StickerFlags flags{ 0 };///< Sticker flags.
 		int32_t nsfwLevel{ 0 };///< NSFW warning level.
 		int32_t sortValue{ 0 };///< Where in the stack of stickers it resides.
 		std::string packId{};///< Pack id of the Sticker.
@@ -1860,9 +1872,9 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> roles{};///< Array of Guild roles.
 		std::vector<Snowflake> emoji{};///< Array of Guild channels.
 		uint32_t memberCount{ 0 };///< Member count.
+		GuildFlags flags{ 0 };///< Guild flags.
 		StringWrapper name{};///< The Guild's name.
 		Snowflake ownerId{};///< User id of the Guild's owner.
-		int8_t flags{ 0 };///< Guild flags.
 		IconHash icon{};///< Url to the Guild's icon.
 
 		GuildData() noexcept = default;
@@ -1888,6 +1900,10 @@ namespace DiscordCoreAPI {
 		/// \returns VoiceConnection* A pointer to the currently held voice connection, or nullptr if it failed to connect.
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{ 0 }, bool selfDeaf = false,
 			bool selfMute = false, StreamInfo streamInfo = StreamInfo{});
+
+		template<IsEnum ETy> bool getFlagValue(ETy theEnum) {
+			return getBool(this->flags, theEnum);
+		}
 
 		std::string getBannerUrl() noexcept;
 

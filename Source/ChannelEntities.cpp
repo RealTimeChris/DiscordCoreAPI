@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 
 		this->totalMessageSent = getUint32(jsonObjectData, "tital_message_sent");
 
-		this->flags = getUint8(jsonObjectData, "flags");
+		*reinterpret_cast<uint8_t*>(&this->flags) |= getUint8(jsonObjectData, "flags");
 
 		this->type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
 
@@ -254,7 +254,7 @@ namespace DiscordCoreAPI {
 	}
 
 	ModifyChannelData::ModifyChannelData(Channel newData) {
-		this->channelData.nsfw = getBool<int8_t, ChannelFlags>(newData.flags, ChannelFlags::NSFW);
+		this->channelData.nsfw = getBool<ChannelFlags>(newData.flags, ChannelFlags::NSFW);
 		this->channelData.permissionOverwrites = newData.permissionOverwrites;
 		this->channelData.parentId = newData.parentId;
 		this->channelData.rateLimitPerUser = newData.rateLimitPerUser;

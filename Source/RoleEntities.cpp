@@ -97,15 +97,15 @@ namespace DiscordCoreAPI {
 
 		this->color = getUint32(jsonObjectData, "color");
 
-		this->flags |= setBool(this->flags, RoleFlags::Hoist, getBool(jsonObjectData, "hoist"));
+		this->flags = setBool(this->flags, RoleFlags::Hoist, getBool(jsonObjectData, "hoist"));
 
 		this->position = getUint32(jsonObjectData, "position");
 
 		this->permissions = getString(jsonObjectData, "permissions");
 
-		this->flags |= setBool(this->flags, RoleFlags::Managed, getBool(jsonObjectData, "managed"));
+		this->flags = setBool(this->flags, RoleFlags::Managed, getBool(jsonObjectData, "managed"));
 
-		this->flags |= setBool(this->flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
+		this->flags = setBool(this->flags, RoleFlags::Mentionable, getBool(jsonObjectData, "mentionable"));
 
 		simdjson::ondemand::value roleTagsNew{};
 		if (jsonObjectData["tags"].get(roleTagsNew) == simdjson::error_code::SUCCESS) {
