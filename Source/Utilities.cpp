@@ -1574,11 +1574,11 @@ namespace DiscordCoreAPI {
 		} catch (const std::exception& e) {
 			std::stringstream stream{};
 			stream << shiftToBrightRed() << "Error Report: \n"
-					  << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " ("
-					  << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
-					  << "\nThe Error: \n"
-					  << e.what() << reset() << std::endl
-					  << std::endl;
+				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
+				   << std::to_string(location.column()) << ")"
+				   << "\nThe Error: \n"
+				   << e.what() << reset() << std::endl
+				   << std::endl;
 			auto returnString = stream.str();
 			cout << returnString;
 		}
@@ -1593,9 +1593,9 @@ namespace DiscordCoreAPI {
 		} catch (const std::exception& e) {
 			std::stringstream stream{};
 			stream << shiftToBrightRed() << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " ("
-					  << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
-					  << "\nThe Error: \n"
-					  << e.what() << reset();
+				   << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
+				   << "\nThe Error: \n"
+				   << e.what() << reset();
 			auto returnString = stream.str();
 			cout << returnString;
 			if (std::current_exception()) {

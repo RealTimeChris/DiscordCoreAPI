@@ -341,7 +341,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketCore::connect(const std::string& baseUrl, const std::string&relativePath, const std::string& portNew, bool doWePrintErrorsNew,
+	bool WebSocketCore::connect(const std::string& baseUrl, const std::string& relativePath, const std::string& portNew, bool doWePrintErrorsNew,
 		bool areWeAStandaloneSocketNew) noexcept {
 		SSLClient::connect(baseUrl, portNew, doWePrintErrorsNew, areWeAStandaloneSocket);
 		DiscordCoreAPI::StopWatch stopWatch{ 5s };
@@ -353,7 +353,7 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
 		size_t readOrWrittenBytes{};
 		this->writeData(sendString, true);
-		
+
 		std::string_view buffer{};
 		do {
 			if (stopWatch.hasTimePassed()) {
@@ -365,7 +365,6 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(1ms);
 		} while (buffer.size() == 0);
 		return true;
-
 	}
 
 	void WebSocketSSLShard::getVoiceConnectionData(const DiscordCoreAPI::VoiceConnectInitData& doWeCollect) noexcept {
@@ -1493,28 +1492,28 @@ namespace DiscordCoreInternal {
 				}
 				if (this->configManager->doWePrintGeneralSuccessMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightBlue() << "Connecting Shard " + std::to_string(packageNew.currentShard + 1) << " of "
-							<< this->configManager->getShardCountForThisProcess()
-							<< std::string(" Shards for this process. (") + std::to_string(packageNew.currentShard + 1) + " of " +
+						 << this->configManager->getShardCountForThisProcess()
+						 << std::string(" Shards for this process. (") + std::to_string(packageNew.currentShard + 1) + " of " +
 							std::to_string(this->configManager->getTotalShardCount()) + std::string(" Shards total across all processes)")
-							<< DiscordCoreAPI::reset() << endl
-							<< endl;
+						 << DiscordCoreAPI::reset() << endl
+						 << endl;
 				}
 				isItFirstIteraion = false;
 				std::string relativePath{};
 				this->shardMap[packageNew.currentShard]->currentState.store(WebSocketState::Upgrading);
 				relativePath = "/?v=10&encoding=";
 				relativePath += this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf ? "etf" : "json";
-				didWeConnect = this->shardMap[packageNew.currentShard]->connect(connectionUrl, relativePath,
-					this->configManager->getConnectionPort(), this->configManager->doWePrintWebSocketErrorMessages(), false);
+				didWeConnect = this->shardMap[packageNew.currentShard]->connect(connectionUrl, relativePath, this->configManager->getConnectionPort(),
+					this->configManager->doWePrintWebSocketErrorMessages(), false);
 				if (didWeConnect == false) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed for WebSocket [" << packageNew.currentShard << ","
-								<< this->configManager->getTotalShardCount() << "]"
-								<< " reconnecting in 5 seconds." << DiscordCoreAPI::reset() << endl
-								<< endl;
+							 << this->configManager->getTotalShardCount() << "]"
+							 << " reconnecting in 5 seconds." << DiscordCoreAPI::reset() << endl
+							 << endl;
 					}
 				}
-				
+
 				stopWatch.resetTimer();
 				while (!this->doWeQuit->load()) {
 					if (this->shardMap[packageNew.currentShard]->currentState.load() != WebSocketState::Collecting_Hello) {

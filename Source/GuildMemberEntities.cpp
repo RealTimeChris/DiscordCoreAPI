@@ -361,7 +361,7 @@ namespace DiscordCoreAPI {
 		return GuildMembers::doWeCacheGuildMembersBool;
 	}
 
-		DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
+	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
 	bool GuildMembers::doWeCacheGuildMembersBool{ false };
 	ObjectCache<GuildMemberData> GuildMembers::cache{};
 };

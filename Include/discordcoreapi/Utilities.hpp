@@ -690,7 +690,7 @@ namespace DiscordCoreInternal {
 	using namespace std::literals;
 	using std::cout;
 	using std::endl;
-	
+
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder;
 	class DiscordCoreAPI_Dll YouTubeRequestBuilder;
 	class DiscordCoreAPI_Dll WebSocketSSLShard;
@@ -1492,11 +1492,9 @@ namespace DiscordCoreAPI {
 	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
 	/// \param currentFunctionName A string to display the current function's name.
 	/// \param location For deriving the current file, line, and column - do not set this value.
-	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName,
-		std::source_location location = std::source_location::current());
+	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
 
-	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName,
-		std::source_location location = std::source_location::current());
+	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
 
 	DiscordCoreAPI_Dll std::string constructMultiPartData(std::string data, const std::vector<File>& files);
 
@@ -1860,7 +1858,7 @@ namespace DiscordCoreAPI {
 	concept CopyableOrMovable = std::copyable<OTy> || std::movable<OTy>;
 
 	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
-	/// \tparam OTy The type of object that will be sent over 
+	/// \tparam OTy The type of object that will be sent over
 	///  message block.
 	template<CopyableOrMovable OTy> class UnboundedMessageBlock {
 	  public:
@@ -2136,7 +2134,7 @@ namespace DiscordCoreInternal {
 
 	template<typename OTy> class RingBufferSlice : public RingBufferInterface<OTy, 1024 * 16> {};
 
-	template<typename OTy,uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice<OTy>, SliceCount> {
+	template<typename OTy, uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice<OTy>, SliceCount> {
 	  public:
 		void clear() noexcept {
 			for (uint64_t x = 0; x < this->arrayValue.size(); ++x) {
