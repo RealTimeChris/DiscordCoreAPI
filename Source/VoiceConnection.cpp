@@ -205,7 +205,7 @@ namespace DiscordCoreAPI {
 						cout << "Failed to decode user's voice payload." << std::endl;
 					}
 				} else {
-					this->voiceUsers[speakerSsrc].payloads.emplace_front(std::move(static_cast<std::basic_string<opus_int16>>(decodedData)));
+					this->voiceUsers[speakerSsrc].payloads.send(std::move(static_cast<std::basic_string<opus_int16>>(decodedData)));
 				}
 			}
 		}
@@ -563,7 +563,13 @@ namespace DiscordCoreAPI {
 							this->sendVoiceData(newFrame);
 						}
 
-						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
+						if (this->streamSocket.get() && this->voiceUsers.size() > 0) {
+							for (size_t x = 0; x < this->voiceUsers.size(); ++x) {
+								DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
+							}
+						} else {
+							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
+						}
 
 						this->audioData.data.clear();
 						this->audioData.sampleCount = 0;
@@ -947,11 +953,9 @@ namespace DiscordCoreAPI {
 			size_t decodedSize{};
 			std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
 			for (auto& [key, value]: this->voiceUsers) {
-				std::unique_lock lock{ this->voiceUserMutex };
-				if (value.payloads.size() > 0) {
-					std::basic_string<opus_int16> payload = std::move(value.payloads.back());
-					value.payloads.pop_back();
-					lock.unlock();
+				std::basic_string<opus_int16> payload{};
+				value.payloads.tryReceive(payload);
+				if (payload.size() > 0) {
 					if (payload.size() > 0) {
 						decodedSize = std::max(decodedSize, payload.size());
 						voiceUserCount++;
