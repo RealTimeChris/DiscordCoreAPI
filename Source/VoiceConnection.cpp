@@ -163,55 +163,49 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::parseIncomingVoiceData(const std::basic_string_view<unsigned char> rawDataBufferNew) noexcept {
-		if (this->streamSocket && rawDataBufferNew.size() > 0 && this->encryptionKey.size() > 0) {
-			if (rawDataBufferNew.size() < 44) {
-				return;
-			}
+		if (72 <= (rawDataBufferNew[1] & 0b0111'1111) && (rawDataBufferNew[1] & 0b0111'1111) <= 76) {			
+			return;
+		}
 
-			if (const uint8_t payloadType = rawDataBufferNew[1] & 0b0111'1111; 72 <= payloadType && payloadType <= 76) {
-				return;
-			}
+		const uint32_t speakerSsrc{ ntohl(*reinterpret_cast<const uint32_t*>(rawDataBufferNew.data() + 8)) };
+		const uint64_t headerSize{ 12 };
+		const uint64_t csrcCount{ static_cast<uint64_t>(rawDataBufferNew[0]) & 0b0000'1111 };
+		const uint64_t offsetToData{ headerSize + sizeof(uint32_t) * csrcCount };
+		const uint64_t encryptedDataLength{ rawDataBufferNew.size() - offsetToData };
 
-			const uint32_t speakerSsrc{ ntohl(*reinterpret_cast<const uint32_t*>(rawDataBufferNew.data() + 8)) };
-			const uint64_t headerSize{ 12 };
-			const uint64_t csrcCount{ static_cast<uint64_t>(rawDataBufferNew[0]) & 0b0000'1111 };
-			const uint64_t offsetToData{ headerSize + sizeof(uint32_t) * csrcCount };
-			const uint64_t encryptedDataLength{ rawDataBufferNew.size() - offsetToData };
+		if (this->decryptedDataString.size() < encryptedDataLength) {
+			this->decryptedDataString.resize(encryptedDataLength);
+		}
 
-			if (this->decryptedDataString.size() < encryptedDataLength) {
-				this->decryptedDataString.resize(encryptedDataLength);
-			}
+		uint8_t nonce[24]{};
+		for (int32_t x = 0; x < headerSize; ++x) {
+			nonce[x] = rawDataBufferNew[x];
+		}
 
-			uint8_t nonce[24]{};
-			for (int32_t x = 0; x < headerSize; ++x) {
-				nonce[x] = rawDataBufferNew[x];
-			}
+		if (crypto_secretbox_open_easy(this->decryptedDataString.data(), rawDataBufferNew.data() + offsetToData, encryptedDataLength, nonce,
+				this->encryptionKey.data())) {
+			return;
+		}
 
-			if (crypto_secretbox_open_easy(this->decryptedDataString.data(), rawDataBufferNew.data() + offsetToData, encryptedDataLength, nonce,
-					this->encryptionKey.data())) {
-				return;
-			}
+		std::basic_string_view<unsigned char> newString{ this->decryptedDataString.data(), encryptedDataLength - crypto_secretbox_MACBYTES };
 
-			std::basic_string_view<unsigned char> newString{ this->decryptedDataString.data(), encryptedDataLength - crypto_secretbox_MACBYTES };
+		if ((rawDataBufferNew[0] >> 4) & 0b0001) {
+			const uint16_t extenstionLengthInWords{ ntohs(*reinterpret_cast<const uint16_t*>(&newString[2])) };
+			const size_t extensionLength{ sizeof(uint32_t) * extenstionLengthInWords };
+			const size_t extensionHeaderLength{ sizeof(uint16_t) * 2 };
+			newString = newString.substr(extensionHeaderLength + extensionLength);
+		}
 
-			if ((rawDataBufferNew[0] >> 4) & 0b0001) {
-				const uint16_t extenstionLengthInWords{ ntohs(*reinterpret_cast<const uint16_t*>(&newString[2])) };
-				const size_t extensionLength{ sizeof(uint32_t) * extenstionLengthInWords };
-				const size_t extensionHeaderLength{ sizeof(uint16_t) * 2 };
-				newString = newString.substr(extensionHeaderLength + extensionLength);
-			}
-
-			if (newString.size() > 0) {
-				std::unique_lock lock{ this->voiceUserMutex };
-				if (this->voiceUsers.contains(speakerSsrc)) {
-					auto decodedData = this->voiceUsers[speakerSsrc].decoder.decodeData(newString);
-					if (decodedData.size() <= 0) {
-						if (this->configManager->doWePrintGeneralErrorMessages()) {
-							cout << "Failed to decode user's voice payload." << std::endl;
-						}
-					} else {
-						this->voiceUsers[speakerSsrc].payloads.emplace_front(std::move(static_cast<std::basic_string<opus_int16>>(decodedData)));
+		if (newString.size() > 0) {
+			std::unique_lock lock{ this->voiceUserMutex };
+			if (this->voiceUsers.contains(speakerSsrc)) {
+				auto decodedData = this->voiceUsers[speakerSsrc].decoder.decodeData(newString);
+				if (decodedData.size() <= 0) {
+					if (this->configManager->doWePrintGeneralErrorMessages()) {
+						cout << "Failed to decode user's voice payload." << std::endl;
 					}
+				} else {
+					this->voiceUsers[speakerSsrc].payloads.emplace_front(std::move(static_cast<std::basic_string<opus_int16>>(decodedData)));
 				}
 			}
 		}
@@ -607,7 +601,7 @@ namespace DiscordCoreAPI {
 		if (this->connectionState.load() == VoiceConnectionState::Initializing_DatagramSocket) {
 		} else {
 			std::basic_string_view<unsigned char> string = DatagramSocketClient::getInputBuffer();
-			if (string.size() > 0 && this->streamSocket) {
+			if (this->streamSocket && this->encryptionKey.size() > 0 && string.size() >= 44) {
 				this->parseIncomingVoiceData(string);
 			}
 		}
