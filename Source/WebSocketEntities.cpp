@@ -428,13 +428,11 @@ namespace DiscordCoreInternal {
 				cout << DiscordCoreAPI::shiftToBrightBlue()
 					 << "Sending " + webSocketTitle + " [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" +
 						std::string("'s Message: ")
-					 << static_cast<std::string>(dataToSend) << endl
-					 << endl
-					 << DiscordCoreAPI::reset();
+					 << static_cast<std::string>(dataToSend) << DiscordCoreAPI::reset() << endl
+					 << endl;
 			}
 			ProcessIOResult didWeWrite{ false };
 			DiscordCoreAPI::StopWatch stopWatch{ 5000ms };
-			stopWatch.resetTimer();
 			do {
 				if (stopWatch.hasTimePassed()) {
 					this->onClosed();
@@ -1335,7 +1333,7 @@ namespace DiscordCoreInternal {
 								}
 								std::string string = this->prepMessageData(serializer.operator std::string(), this->dataOpCode);
 								if (!this->sendMessage(string, true)) {
-									return true;
+									return false;
 								}
 								this->currentState.store(WebSocketState::Sending_Identify);
 							} else {
@@ -1353,7 +1351,7 @@ namespace DiscordCoreInternal {
 								}
 								std::string string = this->prepMessageData(serializer.operator std::string(), this->dataOpCode);
 								if (!this->sendMessage(string, true)) {
-									return true;
+									return false;
 								}
 								this->currentState.store(WebSocketState::Sending_Identify);
 							}
@@ -1573,8 +1571,8 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
-		try {
-			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
+		while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
+			try {
 				std::unique_lock lock{ this->accessMutex };
 				auto result = SSLClient::processIO(this->shardMap);
 				for (auto& valueNew: result) {
@@ -1604,10 +1602,10 @@ namespace DiscordCoreInternal {
 				if (!areWeConnected) {
 					std::this_thread::sleep_for(1ms);
 				}
-			}
-		} catch (...) {
-			if (this->configManager->doWePrintWebSocketErrorMessages()) {
-				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
+			} catch (...) {
+				if (this->configManager->doWePrintWebSocketErrorMessages()) {
+					DiscordCoreAPI::reportException("BaseSocketAgent::run()");
+				}
 			}
 		}
 	}
