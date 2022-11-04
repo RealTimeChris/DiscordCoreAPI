@@ -36,13 +36,13 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	const uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
-	const uint8_t webSocketPayloadLengthMagicLarge{ 126u };
-	const uint8_t webSocketPayloadLengthMagicHuge{ 127u };
-	const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
-	const uint8_t webSocketMaxPayloadLengthSmall{ 125u };
-	const uint8_t webSocketFinishBit{ (1u << 7u) };
-	const uint8_t webSocketMaskBit{ (1u << 7u) };
+	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
+	constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126u };
+	constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127u };
+	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
+	constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125u };
+	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
+	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
 
 	EventConverter::EventConverter(std::string newEvent) {
 		this->eventValue = newEvent;

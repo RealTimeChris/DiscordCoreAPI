@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 		if (this->keys.size() > 0) {
 			this->sequence++;
 			this->timeStamp += audioData.sampleCount;
-			const uint8_t headerSize{ 12 };
+			constexpr uint8_t headerSize{ 12 };
 			char header[headerSize]{};
 			storeBits(header, this->version);
 			storeBits(header + 1, this->flags);
@@ -386,7 +386,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runBridge(std::stop_token token) noexcept {
 		StopWatch stopWatch{ 20ms };
 		StopWatch sleepStopWatch{ 20ms };
-		const int32_t timeToWaitInMs{ 20 };
+		constexpr int32_t timeToWaitInMs{ 20 };
 		int32_t timeTakesToSleep{ 0 };
 		int32_t iterationCount{ 0 };
 		while (!token.stop_requested()) {
@@ -794,8 +794,8 @@ namespace DiscordCoreAPI {
 					return false;
 				} else {
 					unsigned char packet[74]{};
-					const uint16_t val1601{ 0x01 };
-					const uint16_t val1602{ 70 };
+					constexpr uint16_t val1601{ 0x01 };
+					constexpr uint16_t val1602{ 70 };
 					packet[0] = static_cast<uint8_t>(val1601 >> 8);
 					packet[1] = static_cast<uint8_t>(val1601 >> 0);
 					packet[2] = static_cast<uint8_t>(val1602 >> 8);

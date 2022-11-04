@@ -257,7 +257,7 @@ namespace DiscordCoreInternal {
 			int64_t bytesToRead{ static_cast<int64_t>(this->maxBufferSize) };
 			int64_t bytesSubmittedPrevious{ 0 };
 			int64_t bytesReadTotal{ 0 };
-			const uint8_t maxReruns{ 200 };
+			constexpr uint8_t maxReruns{ 200 };
 			uint8_t currentReruns{ 0 };
 			uint32_t counter{ 0 };
 			uint32_t headerSize{ 0 };

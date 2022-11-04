@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		const char optionValue{ true };
+		constexpr char optionValue{ true };
 		if (setsockopt(this->socket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("SSLClient::connect::setsockopt(), to: " + baseUrl) << endl;

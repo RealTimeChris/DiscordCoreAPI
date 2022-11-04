@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 	using TimeElapsedHandlerNoArgs = std::function<void(void)>;
 
-	const float percentage{ 10.0f / 100.0f };
+	constexpr float percentage{ 10.0f / 100.0f };
 
 	class DiscordCoreAPI_Dll ThreadPool {
 	  public:
@@ -145,10 +145,10 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::deque<std::coroutine_handle<>> coroutineHandles{};
+		const std::atomic_uint32_t threadCount{};
 		std::atomic_int64_t coroHandleCount{ 0 };
 		std::atomic_int64_t currentCount{ 0 };
 		std::atomic_int64_t currentIndex{ 0 };
-		std::atomic_uint32_t threadCount{};
 		std::mutex accessMutex{};
 
 		void threadFunction(std::stop_token stopToken, int64_t index);
