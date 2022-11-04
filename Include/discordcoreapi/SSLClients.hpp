@@ -102,8 +102,6 @@ namespace DiscordCoreInternal {
 
 		operator SSL_CTX*();
 
-		SSL_CTXWrapper() noexcept = default;
-
 	  protected:
 		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> ptr{ nullptr, SSL_CTXDeleter{} };
 	};
@@ -118,8 +116,6 @@ namespace DiscordCoreInternal {
 		SSLWrapper& operator=(SSL* other);
 
 		operator SSL*();
-
-		SSLWrapper() noexcept = default;
 
 	  protected:
 		std::unique_ptr<SSL, SSLDeleter> ptr{ nullptr, SSLDeleter{} };
@@ -155,8 +151,6 @@ namespace DiscordCoreInternal {
 
 		operator sockaddr*();
 
-		sockaddrWrapper() noexcept = default;
-
 		~sockaddrWrapper() noexcept = default;
 
 	  protected:
@@ -169,8 +163,6 @@ namespace DiscordCoreInternal {
 		operator addrinfo**();
 
 		operator addrinfo*();
-
-		addrinfoWrapper() noexcept = default;
 
 		~addrinfoWrapper();
 

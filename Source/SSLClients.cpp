@@ -414,16 +414,12 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult SSLClient::processIO(int32_t waitTimeInMs) noexcept {
-		if (!this->areWeStillConnected()) {
-			return ProcessIOResult::Error;
-		}
 		pollfd readWriteSet{ .fd = static_cast<SOCKET>(this->socket) };
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
 			readWriteSet.events = POLLIN;
 		}
-		ProcessIOResult result{ ProcessIOResult::No_Error };
 		if (auto returnValue = poll(&readWriteSet, 1, waitTimeInMs); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("SSLClient::processIO()") << endl;
@@ -433,7 +429,7 @@ namespace DiscordCoreInternal {
 			if (!this->areWeAStandaloneSocket) {
 				this->handleBuffer();
 			}
-			result = ProcessIOResult::No_Error;
+			return ProcessIOResult::No_Error;
 		} else {
 			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLNVAL) {
 				if (this->doWePrintErrorMessages) {
@@ -455,7 +451,7 @@ namespace DiscordCoreInternal {
 		if (!this->areWeAStandaloneSocket) {
 			this->handleBuffer();
 		}
-		return result;
+		return ProcessIOResult::No_Error;
 	}
 
 	std::string_view SSLClient::getInputBuffer() noexcept {
@@ -499,14 +495,15 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					this->disconnect();
+					if (this->doWePrintErrorMessages) {
+						cout << reportSSLError("SSLClient::processWriteData()", errorValue, this->ssl) << endl;
+					}
 					return false;
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
 						cout << reportSSLError("SSLClient::processWriteData()", errorValue, this->ssl) << endl;
 					}
-					this->disconnect();
 					return false;
 				}
 			}
@@ -542,14 +539,15 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect();
+						if (this->doWePrintErrorMessages) {
+							cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
+						}
 						return false;
 					}
 					default: {
 						if (this->doWePrintErrorMessages) {
 							cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
 						}
-						this->disconnect();
 						return false;
 					}
 				}

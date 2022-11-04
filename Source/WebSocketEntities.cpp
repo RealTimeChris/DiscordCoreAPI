@@ -1571,8 +1571,8 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
-		try {
-			while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
+		while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
+			try {
 				std::unique_lock lock{ this->accessMutex };
 				auto result = SSLClient::processIO(this->shardMap);
 				for (auto& valueNew: result) {
@@ -1582,6 +1582,7 @@ namespace DiscordCoreInternal {
 							 << "]... reconnecting." << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
+					valueNew->disconnect();
 				}
 				bool areWeConnected{ false };
 				for (auto& [key, dValue]: this->shardMap) {
@@ -1602,10 +1603,10 @@ namespace DiscordCoreInternal {
 				if (!areWeConnected) {
 					std::this_thread::sleep_for(1ms);
 				}
-			}
-		} catch (...) {
-			if (this->configManager->doWePrintWebSocketErrorMessages()) {
-				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
+			} catch (...) {
+				if (this->configManager->doWePrintWebSocketErrorMessages()) {
+					DiscordCoreAPI::reportException("BaseSocketAgent::run()");
+				}
 			}
 		}
 	}
