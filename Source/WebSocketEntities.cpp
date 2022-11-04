@@ -1582,6 +1582,7 @@ namespace DiscordCoreInternal {
 							 << "]... reconnecting." << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
+					valueNew->disconnect();
 				}
 				bool areWeConnected{ false };
 				for (auto& [key, dValue]: this->shardMap) {
