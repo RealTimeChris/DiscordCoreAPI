@@ -378,9 +378,7 @@ namespace DiscordCoreAPI {
 		auto serializer = data.operator DiscordCoreAPI::Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		std::string string = this->prepMessageData(serializer.operator std::string(), DiscordCoreInternal::WebSocketOpCode::Op_Text);
-		if (!this->sendMessage(string, true)) {
-			this->onClosed();
-		}
+		this->sendMessage(string, true);
 	}
 
 	void VoiceConnection::runBridge(std::stop_token token) noexcept {
@@ -691,7 +689,6 @@ namespace DiscordCoreAPI {
 				std::string string = this->prepMessageData(serializer.operator std::string(), this->dataOpCode);
 				if (!WebSocketCore::sendMessage(string, true)) {
 					this->currentReconnectTries++;
-					this->onClosed();
 					return;
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Ready);
@@ -732,7 +729,6 @@ namespace DiscordCoreAPI {
 				std::string string = this->prepMessageData(serializer.operator std::string(), this->dataOpCode);
 				if (!WebSocketCore::sendMessage(string, true)) {
 					this->currentReconnectTries++;
-					this->onClosed();
 					return;
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Session_Description);
