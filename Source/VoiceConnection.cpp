@@ -736,9 +736,7 @@ namespace DiscordCoreAPI {
 			this->audioData.data.clear();
 			this->audioData = AudioFrameData();
 		}
-		AudioFrameData frameData{};
-		while (this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(frameData)) {
-		};
+		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.clearContents();
 	}
 
 	bool VoiceConnection::areWeConnected() noexcept {

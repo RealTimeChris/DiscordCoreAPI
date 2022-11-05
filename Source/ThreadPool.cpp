@@ -121,7 +121,6 @@ namespace DiscordCoreInternal {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock lock{ this->accessMutex };
 				if (this->coroutineHandles.size() > 0) {
-					std::cout << "WERE HERE THIS IS IT! (CORO 01)" << std::endl;
 					std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
 					this->coroHandleCount.store(this->coroHandleCount.load() - 1);
 					this->coroutineHandles.pop_front();
