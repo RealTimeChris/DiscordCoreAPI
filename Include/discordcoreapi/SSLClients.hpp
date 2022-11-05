@@ -77,7 +77,8 @@ namespace DiscordCoreInternal {
 	#endif
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
-		std::unordered_map<uint32_t, pollfd> polls{};
+		std::vector<size_t> indices{};
+		std::vector<pollfd> polls{};
 	};
 
 	#ifdef _WIN32

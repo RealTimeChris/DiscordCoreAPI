@@ -897,13 +897,14 @@ namespace DiscordCoreAPI {
 	using std::cout;
 	using std::endl;
 
-	class DiscordCoreAPI_Dll DiscordCoreClient;
-	class DiscordCoreAPI_Dll VoiceConnection;
-	class DiscordCoreAPI_Dll GuildMember;
-	class DiscordCoreAPI_Dll ChannelData;
-	class DiscordCoreAPI_Dll Reactions;
-	class DiscordCoreAPI_Dll BotUser;
-	class DiscordCoreAPI_Dll File;
+	struct File;
+
+	class DiscordCoreClient;
+	class VoiceConnection;
+	class GuildMember;
+	class ChannelData;
+	class Reactions;
+	class BotUser;
 
 	template<typename RTy> class CoRoutine;
 

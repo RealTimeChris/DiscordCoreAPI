@@ -322,7 +322,8 @@ namespace DiscordCoreInternal {
 				} else {
 					fdSet.events = POLLIN;
 				}
-				readWriteSet.polls[key] = fdSet;
+				readWriteSet.indices.push_back(key);
+				readWriteSet.polls.push_back(fdSet);
 			}
 		}
 
@@ -330,12 +331,12 @@ namespace DiscordCoreInternal {
 			return returnValue;
 		}
 
-		if (auto returnValueNew = poll(&readWriteSet.polls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.polls.size()), 1);
+		if (auto returnValueNew = poll(readWriteSet.polls.data(), static_cast<unsigned long>(readWriteSet.polls.size()), 1);
 			returnValueNew == SOCKET_ERROR) {
-			for (auto& [key, value]: readWriteSet.polls) {
-				if (readWriteSet.polls[key].revents & POLLERR || readWriteSet.polls[key].revents & POLLHUP ||
-					readWriteSet.polls[key].revents & POLLNVAL) {
-					returnValue.emplace_back(shardMap[key].get());
+			for (size_t x = 0; x < readWriteSet.polls.size();++x) {
+				if (readWriteSet.polls[x].revents & POLLERR || readWriteSet.polls[x].revents & POLLHUP ||
+					readWriteSet.polls[x].revents & POLLNVAL) {
+					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
 				}
 			}
 			return returnValue;
@@ -349,16 +350,16 @@ namespace DiscordCoreInternal {
 			return returnValue;
 		}
 
-		for (auto& [key, value]: readWriteSet.polls) {
-			if (readWriteSet.polls[key].revents & POLLOUT) {
-				if (!shardMap[key]->processWriteData()) {
-					returnValue.emplace_back(shardMap[key].get());
+		for (size_t x = 0; x < readWriteSet.polls.size();++x) {
+			if (readWriteSet.polls[x].revents & POLLOUT) {
+				if (!shardMap[readWriteSet.indices[x]]->processWriteData()) {
+					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
 					continue;
 				}
 			}
-			if (readWriteSet.polls[key].revents & POLLIN) {
-				if (!shardMap[key]->processReadData()) {
-					returnValue.emplace_back(shardMap[key].get());
+			if (readWriteSet.polls[x].revents & POLLIN) {
+				if (!shardMap[readWriteSet.indices[x]]->processReadData()) {
+					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
 					continue;
 				}
 			}

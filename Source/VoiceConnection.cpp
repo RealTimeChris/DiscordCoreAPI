@@ -113,9 +113,6 @@ namespace DiscordCoreAPI {
 			for (uint8_t x = 0; x < headerSize; ++x) {
 				nonceForLibSodium[x] = header[x];
 			}
-			for (uint8_t x = headerSize; x < crypto_secretbox_NONCEBYTES; ++x) {
-				nonceForLibSodium[x] = 0;
-			}
 			const uint64_t numOfBytes{ headerSize + audioData.data.size() + crypto_secretbox_MACBYTES };
 			if (this->data.size() < numOfBytes) {
 				this->data.resize(numOfBytes);

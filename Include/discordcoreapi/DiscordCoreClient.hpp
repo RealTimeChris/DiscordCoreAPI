@@ -105,13 +105,9 @@ namespace DiscordCoreAPI {
 	/// DiscordCoreClient - The main class for this library. \brief DiscordCoreClient - The main class for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
-		friend DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudAPI* getSoundCloudAPI(Snowflake guildId);
-		friend DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeAPI* getYouTubeAPI(Snowflake guildId);
-		friend DiscordCoreAPI_Dll VoiceConnection* getVoiceConnection(Snowflake guildId);
-		friend DiscordCoreAPI_Dll SongAPI* getSongAPI(Snowflake guildId);
-		friend class DiscordCoreInternal::WebSocketCore;
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreInternal::WebSocketCore;
 		friend class VoiceConnection;
 		friend class GuildData;
 		friend class BotUser;

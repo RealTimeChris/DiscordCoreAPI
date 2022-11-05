@@ -1608,7 +1608,7 @@ namespace DiscordCoreInternal {
 					DiscordCoreAPI::reportException("BaseSocketAgent::run()");
 				}
 			}
-		}
+		}		
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {
