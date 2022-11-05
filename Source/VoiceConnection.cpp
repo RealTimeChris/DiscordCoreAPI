@@ -143,6 +143,13 @@ namespace DiscordCoreAPI {
 			frame.sampleCount = 960;
 			frame.type = AudioFrameType::Encoded;
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
+		} else {
+			AudioFrameData newFrame{};
+			newFrame.data.emplace_back(0xf8);
+			newFrame.data.emplace_back(0xff);
+			newFrame.data.emplace_back(0xfe);
+			newFrame.type = AudioFrameType::Encoded;
+			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(newFrame));
 		}
 	}
 
@@ -349,9 +356,9 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runBridge(std::stop_token token) noexcept {
 		StopWatch stopWatch{ 20ms };
 		StopWatch sleepStopWatch{ 20ms };
-		constexpr int32_t timeToWaitInMs{ 20 };
-		int32_t timeTakesToSleep{ 0 };
-		int32_t iterationCount{ 0 };
+		constexpr int64_t timeToWaitInMs{ 20 };
+		int64_t timeTakesToSleep{ 0 };
+		int64_t iterationCount{ 0 };
 		while (!token.stop_requested()) {
 			iterationCount++;
 			sleepStopWatch.resetTimer();
@@ -527,13 +534,7 @@ namespace DiscordCoreAPI {
 							this->sendVoiceData(newFrame);
 						}
 
-						if (this->streamSocket.get() && this->voiceUsers.size() > 0) {
-							for (size_t x = 0; x < this->voiceUsers.size(); ++x) {
-								DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
-							}
-						} else {
-							DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
-						}
+						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
 
 						this->audioData.data.clear();
 						this->audioData.sampleCount = 0;
@@ -954,7 +955,7 @@ namespace DiscordCoreAPI {
 						decodedSize = std::max(decodedSize, decodedData.size());
 						voiceUserCount++;
 						for (uint32_t x = 0; x < decodedData.size(); ++x) {
-							this->upSampledVector[x] += static_cast<opus_int32>(decodedData[x]);
+							this->upSampledVector[x] += decodedData[x];
 						}
 					}
 				}
@@ -962,7 +963,7 @@ namespace DiscordCoreAPI {
 		}
 		if (decodedSize > 0) {
 			for (int32_t x = 0; x < decodedSize; ++x) {
-				this->downSampledVector[x] = static_cast<opus_int16>(this->upSampledVector[x] / voiceUserCount);
+				this->downSampledVector[x] = this->upSampledVector[x] / voiceUserCount;
 			}
 			auto encodedData =
 				this->encoder.encodeSingleAudioFrame(std::basic_string_view<opus_int16>{ this->downSampledVector.data(), decodedSize });
