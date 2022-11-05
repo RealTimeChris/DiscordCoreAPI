@@ -50,18 +50,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	OpusDecoderWrapper& OpusDecoderWrapper::operator=(OpusDecoderWrapper&& other) noexcept {
-		if (this != &other) {
-			this->ptr.reset(nullptr);
-			this->ptr.reset(other.ptr.release());
-		}
-		return *this;
-	}
-
-	OpusDecoderWrapper::OpusDecoderWrapper(OpusDecoderWrapper&& other) noexcept {
-		*this = std::move(other);
-	}
-
 	OpusDecoderWrapper::OpusDecoderWrapper() {
 		int32_t error{};
 		this->ptr.reset(nullptr);
@@ -76,15 +64,11 @@ namespace DiscordCoreAPI {
 			this->data.resize(23040);
 		}
 		const int64_t sampleCount =
-			opus_decode(*this, dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
+			opus_decode(this->ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
 		if (this->data.size() != sampleCount * 2ull) {
 			this->data.resize(sampleCount * 2);
 		}
 		return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(this->data.size()) };
-	}
-
-	OpusDecoderWrapper::operator OpusDecoder*() noexcept {
-		return this->ptr.get();
 	}
 
 	void VoiceUser::insertPayload(std::basic_string<opus_int16>&& data) {

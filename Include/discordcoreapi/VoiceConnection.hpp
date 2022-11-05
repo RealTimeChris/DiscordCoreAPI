@@ -49,15 +49,9 @@ namespace DiscordCoreAPI {
 			void operator()(OpusDecoder*) noexcept;
 		};
 
-		OpusDecoderWrapper& operator=(OpusDecoderWrapper&&) noexcept;
-
-		OpusDecoderWrapper(OpusDecoderWrapper&&) noexcept;
-
 		OpusDecoderWrapper();
 
 		std::basic_string_view<opus_int16> decodeData(const std::basic_string_view<unsigned char> dataToDecode);
-
-		operator OpusDecoder*() noexcept;
 
 	  protected:
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> ptr{ nullptr, OpusDecoderDeleter{} };
