@@ -71,14 +71,14 @@ namespace DiscordCoreAPI {
 		return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(this->data.size()) };
 	}
 
-	void VoiceUser::insertPayload(std::basic_string<opus_int16>&& data) {
+	void VoiceUser::insertPayload(std::basic_string<unsigned char>&& data) {
 		this->payloads.send(data);
 	}
 
-	std::basic_string<opus_int16> VoiceUser::extractPayload() {
-		std::basic_string<opus_int16> value{};
+	std::basic_string<unsigned char> VoiceUser::extractPayload() {
+		std::basic_string<unsigned char> value{};
 		this->payloads.tryReceive(value);
-		return std::move(value);
+		return value;
 	}
 
 	OpusDecoderWrapper& VoiceUser::getDecoder() {
@@ -172,46 +172,8 @@ namespace DiscordCoreAPI {
 		}
 
 		const uint32_t speakerSsrc{ ntohl(*reinterpret_cast<const uint32_t*>(rawDataBufferNew.data() + 8)) };
-		const uint64_t headerSize{ 12 };
-		const uint64_t csrcCount{ static_cast<uint64_t>(rawDataBufferNew[0]) & 0b0000'1111 };
-		const uint64_t offsetToData{ headerSize + sizeof(uint32_t) * csrcCount };
-		const uint64_t encryptedDataLength{ rawDataBufferNew.size() - offsetToData };
-
-		if (this->decryptedDataString.size() < encryptedDataLength) {
-			this->decryptedDataString.resize(encryptedDataLength);
-		}
-
-		uint8_t nonce[24]{};
-		for (int32_t x = 0; x < headerSize; ++x) {
-			nonce[x] = rawDataBufferNew[x];
-		}
-
-		if (crypto_secretbox_open_easy(this->decryptedDataString.data(), rawDataBufferNew.data() + offsetToData, encryptedDataLength, nonce,
-				this->encryptionKey.data())) {
-			return;
-		}
-
-		std::basic_string_view<unsigned char> newString{ this->decryptedDataString.data(), encryptedDataLength - crypto_secretbox_MACBYTES };
-
-		if ((rawDataBufferNew[0] >> 4) & 0b0001) {
-			const uint16_t extenstionLengthInWords{ ntohs(*reinterpret_cast<const uint16_t*>(&newString[2])) };
-			const size_t extensionLength{ sizeof(uint32_t) * extenstionLengthInWords };
-			const size_t extensionHeaderLength{ sizeof(uint16_t) * 2 };
-			newString = newString.substr(extensionHeaderLength + extensionLength);
-		}
-
-		if (newString.size() > 0) {
-			std::unique_lock lock{ this->voiceUserMutex };
-			if (this->voiceUsers.contains(speakerSsrc)) {
-				auto decodedData = this->voiceUsers[speakerSsrc].getDecoder().decodeData(newString);
-				if (decodedData.size() <= 0) {
-					if (this->configManager->doWePrintGeneralErrorMessages()) {
-						cout << "Failed to decode user's voice payload." << std::endl;
-					}
-				} else {
-					this->voiceUsers[speakerSsrc].insertPayload(std::move(static_cast<std::basic_string<opus_int16>>(decodedData)));
-				}
-			}
+		if (this->voiceUsers.contains(speakerSsrc)) {
+			this->voiceUsers[speakerSsrc].insertPayload(static_cast<std::basic_string<unsigned char>>(rawDataBufferNew));
 		}
 	}
 
@@ -306,11 +268,10 @@ namespace DiscordCoreAPI {
 					}
 					case 5: {
 						const uint32_t ssrc = getUint32(value["d"], "ssrc");
-						auto userId = stoull(getString(value["d"], "user_id"));
 						VoiceUser user{};
-						user.setUserId(userId);
+						user.setUserId(stoull(getString(value["d"], "user_id")));
 						std::unique_lock lock{ this->voiceUserMutex };
-						if (!Users::getCachedUser({ .userId = userId }).getFlagValue(UserFlags::Bot) ||
+						if (!Users::getCachedUser({ .userId = user.getUserId() }).getFlagValue(UserFlags::Bot) ||
 							this->voiceConnectInitData.streamInfo.streamBotAudio) {
 							this->voiceUsers[ssrc] = std::move(user);
 						}
@@ -774,8 +735,13 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::clearAudioData() noexcept {
-		this->audioData = AudioFrameData();
-		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.clearContents();
+		if (this->audioData.data.size() != 0) {
+			this->audioData.data.clear();
+			this->audioData = AudioFrameData();
+		}
+		AudioFrameData frameData{};
+		while (this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(frameData)) {
+		};
 	}
 
 	bool VoiceConnection::areWeConnected() noexcept {
@@ -842,7 +808,6 @@ namespace DiscordCoreAPI {
 			newFrame.data.emplace_back(0xf8);
 			newFrame.data.emplace_back(0xff);
 			newFrame.data.emplace_back(0xfe);
-			newFrame.sampleCount = 960;
 			frames.push_back(static_cast<std::basic_string<unsigned char>>(this->packetEncrypter.encryptPacket(newFrame)));
 		}
 		for (auto& value: frames) {
@@ -897,7 +862,7 @@ namespace DiscordCoreAPI {
 			this->taskThread02.reset(nullptr);
 		}
 		DatagramSocketClient::disconnect();
-		if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
+		if (this->streamSocket) {
 			this->streamSocket->disconnect();
 		}
 		if (DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)) {
@@ -949,12 +914,49 @@ namespace DiscordCoreAPI {
 		size_t decodedSize{};
 		std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
 		for (auto& [key, value]: this->voiceUsers) {
-			std::basic_string<opus_int16> payload{ value.extractPayload() };
+			std::basic_string<unsigned char> payload{ value.extractPayload() };
 			if (payload.size() > 0) {
-				decodedSize = std::max(decodedSize, payload.size());
-				voiceUserCount++;
-				for (uint32_t x = 0; x < payload.size(); ++x) {
-					this->upSampledVector[x] += static_cast<opus_int32>(payload[x]);
+				const uint64_t headerSize{ 12 };
+				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };
+				const uint64_t offsetToData{ headerSize + sizeof(uint32_t) * csrcCount };
+				const uint64_t encryptedDataLength{ payload.size() - offsetToData };
+
+				if (this->decryptedDataString.size() < encryptedDataLength) {
+					this->decryptedDataString.resize(encryptedDataLength);
+				}
+
+				uint8_t nonce[24]{};
+				for (int32_t x = 0; x < headerSize; ++x) {
+					nonce[x] = payload[x];
+				}
+
+				if (crypto_secretbox_open_easy(this->decryptedDataString.data(), payload.data() + offsetToData, encryptedDataLength, nonce,
+						this->encryptionKey.data())) {
+					return;
+				}
+
+				std::basic_string_view<unsigned char> newString{ this->decryptedDataString.data(), encryptedDataLength - crypto_secretbox_MACBYTES };
+
+				if ((payload[0] >> 4) & 0b0001) {
+					const uint16_t extenstionLengthInWords{ ntohs(*reinterpret_cast<const uint16_t*>(&newString[2])) };
+					const size_t extensionLength{ sizeof(uint32_t) * extenstionLengthInWords };
+					const size_t extensionHeaderLength{ sizeof(uint16_t) * 2 };
+					newString = newString.substr(extensionHeaderLength + extensionLength);
+				}
+
+				if (newString.size() > 0) {
+					auto decodedData = value.getDecoder().decodeData(newString);
+					if (decodedData.size() <= 0) {
+						if (this->configManager->doWePrintGeneralErrorMessages()) {
+							cout << "Failed to decode user's voice payload." << std::endl;
+						}
+					} else {
+						decodedSize = std::max(decodedSize, decodedData.size());
+						voiceUserCount++;
+						for (uint32_t x = 0; x < decodedData.size(); ++x) {
+							this->upSampledVector[x] += static_cast<opus_int32>(decodedData[x]);
+						}
+					}
 				}
 			}
 		}
