@@ -647,11 +647,8 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case 0x22: {
-					this->writeCharacter('\"');
-					break;
-				}
-				case 0x5C: {
 					this->writeCharacter('\\');
+					this->writeCharacter('\"');
 					break;
 				}
 				default: {

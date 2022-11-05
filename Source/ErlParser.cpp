@@ -52,13 +52,12 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				case 0x27: {
-					this->stringBuffer[finalSize++] = '\\';
 					this->stringBuffer[finalSize++] = '\'';
 					break;
 				}
 				case 0x22: {
 					this->stringBuffer[finalSize++] = '\\';
-					this->stringBuffer[finalSize++] = '"';
+					this->stringBuffer[finalSize++] = '\"';
 					break;
 				}
 				case 0x5c: {
