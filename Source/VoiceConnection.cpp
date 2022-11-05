@@ -87,6 +87,28 @@ namespace DiscordCoreAPI {
 		return this->ptr.get();
 	}
 
+	void VoiceUser::insertPayload(std::basic_string<opus_int16>&& data) {
+		this->payloads.send(data);
+	}
+
+	std::basic_string<opus_int16> VoiceUser::extractPayload() {
+		std::basic_string<opus_int16> value{};
+		this->payloads.tryReceive(value);
+		return std::move(value);
+	}
+
+	OpusDecoderWrapper& VoiceUser::getDecoder() {
+		return this->decoder;
+	}
+
+	void VoiceUser::setUserId(Snowflake userIdNew) {
+		this->userId = userIdNew;
+	}
+
+	Snowflake VoiceUser::getUserId() {
+		return this->userId;
+	}
+
 	RTPPacketEncrypter::RTPPacketEncrypter(uint32_t ssrcNew, const std::vector<unsigned char>& keysNew) noexcept {
 		this->keys = keysNew;
 		this->ssrc = ssrcNew;
@@ -200,13 +222,13 @@ namespace DiscordCoreAPI {
 		if (newString.size() > 0) {
 			std::unique_lock lock{ this->voiceUserMutex };
 			if (this->voiceUsers.contains(speakerSsrc)) {
-				auto decodedData = this->voiceUsers[speakerSsrc].decoder.decodeData(newString);
+				auto decodedData = this->voiceUsers[speakerSsrc].getDecoder().decodeData(newString);
 				if (decodedData.size() <= 0) {
 					if (this->configManager->doWePrintGeneralErrorMessages()) {
 						cout << "Failed to decode user's voice payload." << std::endl;
 					}
 				} else {
-					this->voiceUsers[speakerSsrc].payloads.send(std::move(static_cast<std::basic_string<opus_int16>>(decodedData)));
+					this->voiceUsers[speakerSsrc].insertPayload(std::move(static_cast<std::basic_string<opus_int16>>(decodedData)));
 				}
 			}
 		}
@@ -303,10 +325,11 @@ namespace DiscordCoreAPI {
 					}
 					case 5: {
 						const uint32_t ssrc = getUint32(value["d"], "ssrc");
+						auto userId = stoull(getString(value["d"], "user_id"));
 						VoiceUser user{};
-						user.userId = stoull(getString(value["d"], "user_id"));
+						user.setUserId(userId);
 						std::unique_lock lock{ this->voiceUserMutex };
-						if (!Users::getCachedUser({ .userId = user.userId }).getFlagValue(UserFlags::Bot) ||
+						if (!Users::getCachedUser({ .userId = userId }).getFlagValue(UserFlags::Bot) ||
 							this->voiceConnectInitData.streamInfo.streamBotAudio) {
 							this->voiceUsers[ssrc] = std::move(user);
 						}
@@ -332,7 +355,7 @@ namespace DiscordCoreAPI {
 					case 13: {
 						const auto userId = stoull(getString(value["d"], "user_id"));
 						for (auto& [key, value]: this->voiceUsers) {
-							if (userId == value.userId) {
+							if (userId == value.getUserId()) {
 								std::unique_lock lock{ this->voiceUserMutex };
 								this->voiceUsers.erase(key);
 								break;
@@ -945,8 +968,7 @@ namespace DiscordCoreAPI {
 		size_t decodedSize{};
 		std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
 		for (auto& [key, value]: this->voiceUsers) {
-			std::basic_string<opus_int16> payload{};
-			value.payloads.tryReceive(payload);
+			std::basic_string<opus_int16> payload{ value.extractPayload() };
 			if (payload.size() > 0) {
 				decodedSize = std::max(decodedSize, payload.size());
 				voiceUserCount++;
