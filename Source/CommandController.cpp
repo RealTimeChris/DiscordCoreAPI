@@ -44,19 +44,14 @@ namespace DiscordCoreAPI {
 	};
 
 	CoRoutine<void> CommandController::checkForAndRunCommand(const CommandData commandData) {
-		try {
-			co_await NewThreadAwaitable<void>();
-			BaseFunctionArguments theArgsNew{ commandData, this->discordCoreClient };
-			std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
-			if (!functionPointer.get()) {
-				co_return;
-			}
-
-			functionPointer->execute(theArgsNew);
+		co_await NewThreadAwaitable<void>();
+		BaseFunctionArguments theArgsNew{ commandData, this->discordCoreClient };
+		std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.commandName)) };
+		if (!functionPointer.get()) {
 			co_return;
-		} catch (...) {
-			reportException("CommandController::checkForAndRunCommand()");
 		}
+
+		functionPointer->execute(theArgsNew);
 		co_return;
 	}
 
