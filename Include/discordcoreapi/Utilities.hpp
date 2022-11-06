@@ -698,10 +698,6 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll SoundCloudAPI;
 	class DiscordCoreAPI_Dll YouTubeAPI;
 
-	template<typename Ty> inline auto utCast(Ty x) -> std::enable_if_t<std::is_enum_v<Ty>, std::underlying_type_t<Ty>> {
-		return static_cast<std::underlying_type_t<Ty>>(x);
-	}
-
 	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
 	/// Websocket close codes. \brief Websocket close codes.

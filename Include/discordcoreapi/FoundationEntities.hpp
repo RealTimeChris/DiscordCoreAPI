@@ -777,18 +777,6 @@ namespace DiscordCoreAPI {
 		Longest = 10080///< Longest.
 	};
 
-	/// Party data. \brief Party data.
-	class DiscordCoreAPI_Dll PartyData : public DiscordEntity {
-	  public:
-		std::vector<int32_t> size{ 0, 0 };///< The size of the party.
-
-		PartyData() noexcept = default;
-
-		PartyData(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~PartyData() noexcept = default;
-	};
-
 	enum class RoleFlags : uint8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
 
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
@@ -842,45 +830,6 @@ namespace DiscordCoreAPI {
 		virtual ~EmojiData() noexcept = default;
 	};
 
-	/// Assets data. \brief Party data.
-	struct DiscordCoreAPI_Dll AssetsData {
-		StringWrapper largeImage{};///< Keyname of an asset to display.
-		StringWrapper smallImage{};///< Keyname of an asset to display.
-		StringWrapper largeText{};///< Hover text for the large image.
-		StringWrapper smallText{};///< Hover text for the small image.
-
-		AssetsData() noexcept = default;
-
-		virtual ~AssetsData() noexcept = default;
-	};
-
-	/// Secrets data. \brief Secrets data.
-	struct DiscordCoreAPI_Dll SecretsData {
-		StringWrapper spectate{};///< Unique hash for the given match context.
-		StringWrapper match{};///< Unique hash for Spectate button.
-		StringWrapper join{};///< Unique hash for chat invitesand Ask to Join.
-
-		SecretsData() noexcept = default;
-
-		virtual ~SecretsData() noexcept = default;
-	};
-
-	/// Timestamp data. \brief Timestamp data.
-	struct DiscordCoreAPI_Dll TimestampData {
-		int64_t start{ 0 };///< Unix timeStamp - Send this to have an "elapsed" timer.
-		int64_t end{ 0 };///< Unix timeStamp - send this to have a "remaining" timer.
-
-		TimestampData() noexcept = default;
-
-		virtual ~TimestampData() noexcept = default;
-	};
-
-	/// Button data. \brief Button data.
-	struct DiscordCoreAPI_Dll ButtonData {
-		StringWrapper label{};///< Visible label of the button.
-		StringWrapper url{};///< Url to display on the button.
-	};
-
 	/// Activity types. \brief Activity types.
 	enum class ActivityType : uint8_t {
 		Game = 0,///< Game.
@@ -893,21 +842,9 @@ namespace DiscordCoreAPI {
 
 	/// Activity data. \brief Activity data.
 	struct DiscordCoreAPI_Dll ActivityData {
-		TimestampData timestamps{};///< Timestamp data.
-		Snowflake applicationId{};///< Application id for the current application.
-		StringWrapper details{};///< Details about the activity.
-		bool instance{ false };///< Whether this activity is an instanced context, like a match.
-		StringWrapper state{};///< The player's current party status.
-		SecretsData secrets{};///< Secrets data.
-		int32_t createdAt{ 0 };///< Timestamp of when the activity began.
-		ButtonData buttons{};///< Button Data.
 		StringWrapper name{};///< Name of the activity.
 		ActivityType type{};///< Activity data.
-		AssetsData assets{};///< Assets data.
 		StringWrapper url{};///< Url associated with the activity.
-		EmojiData emoji{};///< Emoji associated with the activity.
-		PartyData party{};///< Party data.
-		int32_t flags{ 0 };///< Flags.
 
 		ActivityData() noexcept = default;
 

@@ -67,7 +67,7 @@ namespace DiscordCoreInternal {
 		}
 		switch (this->presence.status) {
 			case UpdatePresenceStatusTypes::online: {
-				serializer["d"]["presence"]["status"] += this->presence.status;
+				serializer["d"]["presence"]["status"] = "online";
 				break;
 			}
 			case UpdatePresenceStatusTypes::dnd: {
