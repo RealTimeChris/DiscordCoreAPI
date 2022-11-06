@@ -52,13 +52,10 @@ namespace DiscordCoreAPI {
 
 	OpusDecoderWrapper::OpusDecoderWrapper() {
 		int32_t error{};
-		this->ptr.reset(nullptr);
+		this->data.resize(23040);
 		this->ptr.reset(opus_decoder_create(48000, 2, &error));
 		if (error != OPUS_OK) {
 			throw std::runtime_error{ "Failed to create the Opus Decoder" };
-		}
-		if (this->data.size() == 0) {
-			this->data.resize(23040);
 		}
 	}
 
@@ -66,6 +63,10 @@ namespace DiscordCoreAPI {
 		const int64_t sampleCount =
 			opus_decode(this->ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
 		return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
+	}
+
+	OpusDecoderWrapper& VoiceUser::getDecoder() {
+		return this->decoder;
 	}
 
 	MovingAverager::MovingAverager(size_t periodCountNew) noexcept : periodCount{ periodCountNew } {
@@ -109,7 +110,9 @@ namespace DiscordCoreAPI {
 	std::basic_string<unsigned char> VoiceUser::extractPayload() {
 		StopWatch stopWatch{ 15000us };
 		std::basic_string<unsigned char> value{};
-		if (!this->wereWeEnding.load()) {
+		if (this->wereWeEnding.load()) {
+			this->payloads.tryReceive(value);
+		} else {
 			stopWatch.resetTimer();
 			while (!this->payloads.tryReceive(value)) {
 				if (stopWatch.hasTimePassed()) {
@@ -117,14 +120,8 @@ namespace DiscordCoreAPI {
 				}
 				std::this_thread::sleep_for(20us);
 			}
-		} else {
-			this->payloads.tryReceive(value);
 		}
 		return value;
-	}
-
-	OpusDecoderWrapper& VoiceUser::getDecoder() {
-		return this->decoder;
 	}
 
 	void VoiceUser::setEndingStatus(bool data) {
