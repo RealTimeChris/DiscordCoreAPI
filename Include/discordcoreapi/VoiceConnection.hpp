@@ -58,6 +58,18 @@ namespace DiscordCoreAPI {
 		std::vector<opus_int16> data{};
 	};
 
+	struct MovingAverager {
+		MovingAverager(size_t periodCountNew) noexcept;
+
+		void addValue(int64_t value);
+		
+		int64_t collectAverage();
+
+	  protected:
+		std::deque<int64_t> values{};
+		const size_t periodCount{};
+	};
+
 	struct DiscordCoreAPI_Dll VoiceUser {
 
 		VoiceUser() noexcept = default;

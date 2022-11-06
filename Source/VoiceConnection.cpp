@@ -68,6 +68,27 @@ namespace DiscordCoreAPI {
 		return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
 	}
 
+	MovingAverager::MovingAverager(size_t periodCountNew) noexcept : periodCount{ periodCountNew } {}
+
+	void MovingAverager::addValue(int64_t value) {
+		this->values.emplace_back(value);
+		if (this->values.size() == this->periodCount) {
+			this->values.pop_front();
+		}
+	}
+
+	int64_t MovingAverager::collectAverage() {
+		int64_t returnValue{};
+		for (auto& value: this->values) {
+			returnValue += value;
+		}
+		if (this->values.size() == 0) {
+			return 0;
+		}
+		returnValue /= this->values.size();
+		return returnValue;
+	}
+
 	VoiceUser& VoiceUser::operator=(VoiceUser&& data) noexcept {
 		this->wereWeEnding.store(data.wereWeEnding.load());
 		this->payloads = std::move(data.payloads);
@@ -367,23 +388,13 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::runBridge(std::stop_token token) noexcept {
 		StopWatch processAndSleepStopWatch{ 20ms };
-		int64_t timeTakesToProcessAndSleepOld{ 0 };
-		int64_t timeTakesToProcessAndSleepNew{ 0 };
-		int64_t iterationCount{ 0 };
+		MovingAverager averager{ 12 };
 		while (!token.stop_requested()) {
-			iterationCount++;
-			if (processAndSleepStopWatch.getTotalWaitTime() - (timeTakesToProcessAndSleepNew / iterationCount) >= 0) {
-				std::this_thread::sleep_for(
-					std::chrono::milliseconds{ processAndSleepStopWatch.getTotalWaitTime() - (timeTakesToProcessAndSleepNew / iterationCount) });
+			if (processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) >= 0) {
+				std::this_thread::sleep_for(std::chrono::milliseconds{ processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) });
 			}
 			this->mixAudio();
-			timeTakesToProcessAndSleepOld = timeTakesToProcessAndSleepNew;
-			timeTakesToProcessAndSleepNew += processAndSleepStopWatch.totalTimePassed();
-			if (timeTakesToProcessAndSleepNew - timeTakesToProcessAndSleepOld < 0) {
-				timeTakesToProcessAndSleepNew = 0;
-				timeTakesToProcessAndSleepOld = 0;
-				iterationCount = 1;
-			}
+			averager.addValue(processAndSleepStopWatch.totalTimePassed());
 			this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
 			while (!processAndSleepStopWatch.hasTimePassed()) {
 			}
