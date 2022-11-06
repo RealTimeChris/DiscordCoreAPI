@@ -392,8 +392,8 @@ namespace DiscordCoreAPI {
 				std::this_thread::sleep_for(std::chrono::microseconds{ processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) });
 			}
 			this->mixAudio();
-			averager.addValue(processAndSleepStopWatch.totalTimePassed());
 			this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
+			averager.addValue(processAndSleepStopWatch.totalTimePassed());
 			while (!processAndSleepStopWatch.hasTimePassed()) {
 			}
 			processAndSleepStopWatch.resetTimer();
