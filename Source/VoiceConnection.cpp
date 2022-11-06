@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 
 	void MovingAverager::addValue(int64_t value) {
 		this->values.emplace_back(value);
-		if (this->values.size() == this->periodCount) {
+		if (this->values.size() > this->periodCount) {
 			this->values.pop_front();
 		}
 	}
