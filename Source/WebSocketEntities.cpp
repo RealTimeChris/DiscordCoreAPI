@@ -1133,19 +1133,15 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 			}
-			this->currentMessage.clear();
-			this->inputBuffer.clear();
-			this->messageLength = 0;
-			this->messageOffset = 0;
-			return false;
+			
 		} catch (...) {
 			DiscordCoreAPI::reportException("WebSocketSSLShard::onMessageReceived()");
-			this->currentMessage.clear();
-			this->inputBuffer.clear();
-			this->messageLength = 0;
-			this->messageOffset = 0;
-			return false;
 		}
+		this->currentMessage.clear();
+		this->inputBuffer.clear();
+		this->messageLength = 0;
+		this->messageOffset = 0;
+		return false;
 	}
 
 	bool WebSocketCore::checkForAndSendHeartBeat(bool isImmediate) noexcept {

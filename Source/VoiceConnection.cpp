@@ -79,12 +79,12 @@ namespace DiscordCoreAPI {
 	}
 
 	int64_t MovingAverager::collectAverage() {
+		if (this->values.size() == 0) {
+			return 0;
+		}
 		int64_t returnValue{};
 		for (auto& value: this->values) {
 			returnValue += value;
-		}
-		if (this->values.size() == 0) {
-			return 0;
 		}
 		returnValue /= this->values.size();
 		return returnValue;
@@ -751,6 +751,10 @@ namespace DiscordCoreAPI {
 					this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this->voiceConnectInitData.streamInfo.type,
 						this->voiceConnectInitData.guildId);
 					if (this->taskThread02) {
+						this->taskThread02->request_stop();
+						if (this->taskThread02->joinable()) {
+							this->taskThread02->join();
+						}
 						this->taskThread02.reset(nullptr);
 					}
 					this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {

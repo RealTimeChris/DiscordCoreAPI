@@ -271,6 +271,8 @@ namespace DiscordCoreInternal {
 
 		void disconnect() noexcept;
 
+		~DatagramSocketClient() noexcept;
+
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) - 1 };
 		RingBuffer<unsigned char, 16> outputBuffer{};
