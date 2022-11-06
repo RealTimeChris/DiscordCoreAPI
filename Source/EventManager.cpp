@@ -234,12 +234,12 @@ namespace DiscordCoreAPI {
 
 	OnGuildBanAddData::OnGuildBanAddData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
-		this->user = data.processJsonMessage<UserData>(dataReal, "d");
+		this->user = data.processJsonMessage<UserData>(dataReal["d"], "user");
 	}
 
 	OnGuildBanRemoveData::OnGuildBanRemoveData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
-		this->user = data.processJsonMessage<UserData>(dataReal, "d");
+		this->user = data.processJsonMessage<UserData>(dataReal["d"], "user");
 	}
 
 	OnGuildEmojisUpdateData::OnGuildEmojisUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
@@ -299,8 +299,6 @@ namespace DiscordCoreAPI {
 		this->discordCoreClient = client;
 		this->guildId = getId(dataReal["d"], "guild_id");
 		this->user = std::make_unique<UserData>(data.processJsonMessage<UserData>(dataReal["d"], "user"));
-		std::cout << "GUILD ID: " << this->guildId.operator std::string() << ", GUILD MEMBER ID: " << this->user->id.operator std::string()
-				  << std::endl;
 		GuildMember guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = this->user->id, .guildId = this->guildId });
 		if (DiscordCoreAPI::GuildMembers::doWeCacheGuildMembers()) {
 			DiscordCoreAPI::GuildData guild{};
@@ -351,7 +349,7 @@ namespace DiscordCoreAPI {
 
 	OnRoleCreationData::OnRoleCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->guildId = getId(dataReal["d"], "guild_id");
-		this->role = std::make_unique<RoleData>(data.processJsonMessage<RoleData>(dataReal, "d"));
+		this->role = std::make_unique<RoleData>(data.processJsonMessage<RoleData>(dataReal["d"], "role"));
 		DiscordCoreAPI::GuildData guild{};
 		guild.id = guildId;
 		if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
@@ -374,7 +372,7 @@ namespace DiscordCoreAPI {
 
 	OnRoleUpdateData::OnRoleUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->guildId = getId(dataReal["d"], "guild_id");
-		this->role = std::make_unique<RoleData>(data.processJsonMessage<RoleData>(dataReal, "d"));
+		this->role = std::make_unique<RoleData>(data.processJsonMessage<RoleData>(dataReal["d"], "role"));
 		if (DiscordCoreAPI::Roles::doWeCacheRoles()) {
 			DiscordCoreAPI::Roles::insertRole(*this->role);
 		}
@@ -391,8 +389,9 @@ namespace DiscordCoreAPI {
 	}
 
 	OnRoleDeletionData::OnRoleDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->role->id = getId(dataReal["d"], "role_id");
 		this->guildId = getId(dataReal["d"], "guild_id");
-		this->role = std::make_unique<RoleData>(data.processJsonMessage<RoleData>(dataReal, "d"));
+		this->role = std::make_unique<RoleData>(Roles::getCachedRole({ .guildId = this->guildId, .roleId = this->role->id }));
 		DiscordCoreAPI::GuildData guild{};
 		guild.id = this->guildId;
 		if (DiscordCoreAPI::Roles::doWeCacheRoles()) {
@@ -408,7 +407,6 @@ namespace DiscordCoreAPI {
 	}
 
 	OnRoleDeletionData& OnRoleDeletionData::operator=(const OnRoleDeletionData& other) {
-		this->role = std::make_unique<RoleData>();
 		this->guildId = other.guildId;
 		*this->role = *other.role;
 		return *this;
@@ -427,7 +425,8 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnVoiceServerUpdateData::OnVoiceServerUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreInternal::WebSocketSSLShard*sslShard){
+	OnVoiceServerUpdateData::OnVoiceServerUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
+		DiscordCoreInternal::WebSocketSSLShard* sslShard) {
 		this->endpoint = getString(dataReal["d"], "endpoint");
 		this->guildId = getId(dataReal["d"], "guild_id");
 		this->token = getString(dataReal["d"], "token");

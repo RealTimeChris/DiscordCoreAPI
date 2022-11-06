@@ -68,7 +68,8 @@ namespace DiscordCoreAPI {
 		return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
 	}
 
-	MovingAverager::MovingAverager(size_t periodCountNew) noexcept : periodCount{ periodCountNew } {}
+	MovingAverager::MovingAverager(size_t periodCountNew) noexcept : periodCount{ periodCountNew } {
+	}
 
 	void MovingAverager::addValue(int64_t value) {
 		this->values.emplace_back(value);
@@ -928,8 +929,15 @@ namespace DiscordCoreAPI {
 		opus_int32 voiceUserCount{};
 		size_t decodedSize{};
 		std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
+		std::unique_lock lock{ this->voiceUserMutex };
 		for (auto& [key, value]: this->voiceUsers) {
+			if (!lock.owns_lock()) {
+				lock.lock();
+			}
 			std::basic_string<unsigned char> payload{ value.extractPayload() };
+			if (lock.owns_lock()) {
+				lock.unlock();
+			}
 			if (payload.size() > 0) {
 				const uint64_t headerSize{ 12 };
 				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };

@@ -99,7 +99,7 @@ namespace DiscordCoreInternal {
 		uint64_t messageOffset{};
 		uint32_t shard[2]{};
 	};
-	
+
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketCore {
 	  public:
 		friend class DiscordCoreAPI::OnVoiceServerUpdateData;

@@ -1354,7 +1354,7 @@ namespace DiscordCoreInternal {
 			} catch (...) {
 				DiscordCoreAPI::reportException("BaseSocketAgent::run()");
 			}
-		}		
+		}
 	}
 
 	BaseSocketAgent::~BaseSocketAgent() {

@@ -2492,8 +2492,7 @@ namespace DiscordCoreAPI {
 	/// Data for when threads are synced. \brief Data for when threads are synced.
 	struct DiscordCoreAPI_Dll ThreadListSyncData {
 		std::vector<ThreadMemberData> members{};///< Array of members that are a part of the Thread.
-		std::vector<std::string>
-			channelIds{};///< The parent Channel ids whose threads are being synced. If omitted, then threads were synced for entire Guild.
+		std::vector<std::string> channelIds{};///< The parent Channel ids whose threads are being synced.
 		std::vector<ChannelData> threads{};///< All active threads in the given channels that the current User can access.
 		Snowflake guildId{};///< The id of the Guild for which the threads are being synced.
 

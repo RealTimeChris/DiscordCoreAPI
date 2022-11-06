@@ -62,7 +62,7 @@ namespace DiscordCoreAPI {
 		MovingAverager(size_t periodCountNew) noexcept;
 
 		void addValue(int64_t value);
-		
+
 		int64_t collectAverage();
 
 	  protected:
@@ -71,12 +71,11 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
-
 		VoiceUser() noexcept = default;
 
 		VoiceUser& operator=(VoiceUser&&) noexcept;
 
-		VoiceUser(VoiceUser &&) noexcept;
+		VoiceUser(VoiceUser&&) noexcept;
 
 		void insertPayload(std::basic_string<unsigned char>&&);
 

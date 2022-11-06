@@ -333,9 +333,8 @@ namespace DiscordCoreInternal {
 
 		if (auto returnValueNew = poll(readWriteSet.polls.data(), static_cast<unsigned long>(readWriteSet.polls.size()), 1);
 			returnValueNew == SOCKET_ERROR) {
-			for (size_t x = 0; x < readWriteSet.polls.size();++x) {
-				if (readWriteSet.polls[x].revents & POLLERR || readWriteSet.polls[x].revents & POLLHUP ||
-					readWriteSet.polls[x].revents & POLLNVAL) {
+			for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
+				if (readWriteSet.polls[x].revents & POLLERR || readWriteSet.polls[x].revents & POLLHUP || readWriteSet.polls[x].revents & POLLNVAL) {
 					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
 				}
 			}
@@ -350,7 +349,7 @@ namespace DiscordCoreInternal {
 			return returnValue;
 		}
 
-		for (size_t x = 0; x < readWriteSet.polls.size();++x) {
+		for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
 			if (readWriteSet.polls[x].revents & POLLOUT) {
 				if (!shardMap[readWriteSet.indices[x]]->processWriteData()) {
 					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
