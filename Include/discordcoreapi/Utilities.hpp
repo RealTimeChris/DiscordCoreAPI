@@ -878,12 +878,21 @@ namespace DiscordCoreInternal {
 		operator uint32_t();
 	};
 
+	/// Update-presence status types. \brief Update-presence status types.
+	enum class UpdatePresenceStatusTypes {
+		online = 0,///< Online.
+		dnd = 1,///< Do Not Disturb.
+		idle = 2,///<	AFK.
+		invisible = 3,///< Invisible and shown as offline.
+		offline = 4,///< Offline
+	};
+
 	/// For updating a User's presence. \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		std::vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
-		bool afk{ false };///< Are we afk.
+		UpdatePresenceStatusTypes status{};///< Current status.
 		int64_t since{ 0 };///< When was the activity started?
-		std::string status{};///< Current status.
+		bool afk{ false };///< Are we afk.
 
 		operator DiscordCoreAPI::Jsonifier();
 	};

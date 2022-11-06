@@ -65,8 +65,28 @@ namespace DiscordCoreInternal {
 		if (this->presence.since != 0) {
 			serializer["d"]["presence"]["since"] = this->presence.since;
 		}
-
-		serializer["d"]["presence"]["status"] = this->presence.status;
+		switch (this->presence.status) {
+			case UpdatePresenceStatusTypes::online: {
+				serializer["d"]["presence"]["status"] += this->presence.status;
+				break;
+			}
+			case UpdatePresenceStatusTypes::dnd: {
+				serializer["d"]["presence"]["status"] = "dnd";
+				break;
+			}
+			case UpdatePresenceStatusTypes::invisible: {
+				serializer["d"]["presence"]["status"] = "invisible";
+				break;
+			}
+			case UpdatePresenceStatusTypes::offline: {
+				serializer["d"]["presence"]["status"] = "offline";
+				break;
+			}
+			case UpdatePresenceStatusTypes::idle: {
+				serializer["d"]["presence"]["status"] = "idle";
+				break;
+			}
+		}
 		serializer["d"]["properties"]["browser"] = "DiscordCoreAPI";
 		serializer["d"]["properties"]["device"] = "DiscordCoreAPI";
 #ifdef _WIN32
@@ -103,7 +123,28 @@ namespace DiscordCoreInternal {
 			dataNew["type"] = value.type;
 			data["d"]["activities"].emplaceBack(dataNew);
 		}
-		data["status"] = this->status;
+		switch (this->status) {
+			case UpdatePresenceStatusTypes::online: {
+				data["status"] = "online";
+				break;
+			}
+			case UpdatePresenceStatusTypes::dnd: {
+				data["status"] = "dnd";
+				break;
+			}
+			case UpdatePresenceStatusTypes::invisible: {
+				data["status"] = "invisible";
+				break;
+			}
+			case UpdatePresenceStatusTypes::offline: {
+				data["status"] = "offline";
+				break;
+			}
+			case UpdatePresenceStatusTypes::idle: {
+				data["status"] = "idle";
+				break;
+			}
+		}
 		if (this->since != 0) {
 			data["since"] = this->since;
 		}
