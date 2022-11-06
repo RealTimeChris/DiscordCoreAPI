@@ -128,14 +128,14 @@ namespace DiscordCoreAPI {
 		this->wereWeEnding.store(data);
 	}
 
-	bool VoiceUser::getEndingStatus() {
-		return this->wereWeEnding.load();
-	}
-
 	void VoiceUser::setUserId(Snowflake userIdNew) {
 		this->userId = userIdNew;
 	}
 
+	bool VoiceUser::getEndingStatus() {
+		return this->wereWeEnding.load();
+	}
+	
 	Snowflake VoiceUser::getUserId() {
 		return this->userId;
 	}
