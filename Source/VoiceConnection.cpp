@@ -853,8 +853,6 @@ namespace DiscordCoreAPI {
 			}
 			this->taskThread01.reset(nullptr);
 		}
-		DatagramSocketClient::outputBuffer.clear();
-		DatagramSocketClient::inputBuffer.clear();
 		if (this->taskThread02) {
 			this->taskThread02->request_stop();
 			if (this->taskThread02->joinable()) {

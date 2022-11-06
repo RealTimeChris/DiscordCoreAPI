@@ -810,6 +810,7 @@ namespace DiscordCoreInternal {
 		}
 		this->socket = SOCKET_ERROR;
 		this->outputBuffer.clear();
+		this->inputBuffer.clear();
 	}
 
 	SSL_CTXWrapper SSLConnectionInterface::context{};
