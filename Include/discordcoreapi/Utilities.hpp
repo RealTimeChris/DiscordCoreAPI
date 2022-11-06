@@ -874,25 +874,6 @@ namespace DiscordCoreInternal {
 		operator uint32_t();
 	};
 
-	/// Update-presence status types. \brief Update-presence status types.
-	enum class UpdatePresenceStatusTypes {
-		online = 0,///< Online.
-		dnd = 1,///< Do Not Disturb.
-		idle = 2,///<	AFK.
-		invisible = 3,///< Invisible and shown as offline.
-		offline = 4,///< Offline
-	};
-
-	/// For updating a User's presence. \brief For updating a User's presence.
-	struct DiscordCoreAPI_Dll UpdatePresenceData {
-		std::vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
-		UpdatePresenceStatusTypes status{};///< Current status.
-		int64_t since{ 0 };///< When was the activity started?
-		bool afk{ false };///< Are we afk.
-
-		operator DiscordCoreAPI::Jsonifier();
-	};
-
 }// namespace DiscordCoreInternal
 
 
@@ -914,6 +895,25 @@ namespace DiscordCoreAPI {
 	class BotUser;
 
 	template<typename RTy> class CoRoutine;
+
+	/// Update-presence status types. \brief Update-presence status types.
+	enum class UpdatePresenceStatusTypes {
+		online = 0,///< Online.
+		dnd = 1,///< Do Not Disturb.
+		idle = 2,///<	AFK.
+		invisible = 3,///< Invisible and shown as offline.
+		offline = 4,///< Offline
+	};
+
+	/// For updating a User's presence. \brief For updating a User's presence.
+	struct DiscordCoreAPI_Dll UpdatePresenceData {
+		std::vector<ActivityData> activities{};///< A vector of activities.
+		UpdatePresenceStatusTypes status{};///< Current status.
+		int64_t since{ 0 };///< When was the activity started?
+		bool afk{ false };///< Are we afk.
+
+		operator Jsonifier();
+	};
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void ));
 
@@ -1003,15 +1003,15 @@ namespace DiscordCoreAPI {
 
 	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
-		GatewayIntents intents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
-		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
+		GatewayIntents intents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
+		UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
+		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
+		std::string connectionPort{};///< A potentially alternative connection port for the websocket.
 		LoggingOptions logOptions{};///< Options for the output/logging of the library.
 		CacheOptions cacheOptions{};///< Options for the cache of the library.
-		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
-		std::string connectionPort{};///< A potentially alternative connection port for the websocket.
 		std::string botToken{};///< Your bot's token.
 	};
 
@@ -1050,7 +1050,7 @@ namespace DiscordCoreAPI {
 
 		const bool doWeCacheRoles();
 
-		const DiscordCoreInternal::UpdatePresenceData getPresenceData();
+		const UpdatePresenceData getPresenceData();
 
 		const std::string getBotToken();
 

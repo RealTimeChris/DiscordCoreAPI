@@ -995,7 +995,7 @@ namespace DiscordCoreAPI {
 		return this->config.cacheOptions.cacheRoles;
 	}
 
-	const DiscordCoreInternal::UpdatePresenceData ConfigManager::getPresenceData() {
+	const UpdatePresenceData ConfigManager::getPresenceData() {
 		return this->config.presenceData;
 	}
 

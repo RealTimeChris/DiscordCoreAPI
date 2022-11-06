@@ -142,7 +142,7 @@ namespace DiscordCoreAPI {
 		void updateVoiceStatus(UpdateVoiceStateData& datdataPackageaPackage);
 
 		/// Updates the bot's current activity status, to be viewed by others in the same server as the bot. \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
-		void updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage);
+		void updatePresence(UpdatePresenceData& dataPackage);
 
 	  protected:
 		BotUser() noexcept = default;

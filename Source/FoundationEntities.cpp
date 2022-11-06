@@ -66,23 +66,23 @@ namespace DiscordCoreInternal {
 			serializer["d"]["presence"]["since"] = this->presence.since;
 		}
 		switch (this->presence.status) {
-			case UpdatePresenceStatusTypes::online: {
+			case DiscordCoreAPI::UpdatePresenceStatusTypes::online: {
 				serializer["d"]["presence"]["status"] = "online";
 				break;
 			}
-			case UpdatePresenceStatusTypes::dnd: {
+			case DiscordCoreAPI::UpdatePresenceStatusTypes::dnd: {
 				serializer["d"]["presence"]["status"] = "dnd";
 				break;
 			}
-			case UpdatePresenceStatusTypes::invisible: {
+			case DiscordCoreAPI::UpdatePresenceStatusTypes::invisible: {
 				serializer["d"]["presence"]["status"] = "invisible";
 				break;
 			}
-			case UpdatePresenceStatusTypes::offline: {
+			case DiscordCoreAPI::UpdatePresenceStatusTypes::offline: {
 				serializer["d"]["presence"]["status"] = "offline";
 				break;
 			}
-			case UpdatePresenceStatusTypes::idle: {
+			case DiscordCoreAPI::UpdatePresenceStatusTypes::idle: {
 				serializer["d"]["presence"]["status"] = "idle";
 				break;
 			}
@@ -108,47 +108,6 @@ namespace DiscordCoreInternal {
 		data["d"]["data"]["port"] = this->voicePort;
 		data["d"]["data"]["mode"] = this->voiceEncryptionMode;
 		data["d"]["data"]["address"] = this->externalIp;
-		return data;
-	}
-
-	UpdatePresenceData::operator DiscordCoreAPI::Jsonifier() {
-		DiscordCoreAPI::Jsonifier data{};
-		data["op"] = 3;
-		for (auto& value: this->activities) {
-			DiscordCoreAPI::Jsonifier dataNew{};
-			if (value.url != "") {
-				dataNew["url"] = std::string{ value.url };
-			}
-			dataNew["name"] = std::string{ value.name };
-			dataNew["type"] = value.type;
-			data["d"]["activities"].emplaceBack(dataNew);
-		}
-		switch (this->status) {
-			case UpdatePresenceStatusTypes::online: {
-				data["status"] = "online";
-				break;
-			}
-			case UpdatePresenceStatusTypes::dnd: {
-				data["status"] = "dnd";
-				break;
-			}
-			case UpdatePresenceStatusTypes::invisible: {
-				data["status"] = "invisible";
-				break;
-			}
-			case UpdatePresenceStatusTypes::offline: {
-				data["status"] = "offline";
-				break;
-			}
-			case UpdatePresenceStatusTypes::idle: {
-				data["status"] = "idle";
-				break;
-			}
-		}
-		if (this->since != 0) {
-			data["since"] = this->since;
-		}
-		data["afk"] = this->afk;
 		return data;
 	}
 
@@ -243,6 +202,47 @@ namespace DiscordCoreInternal {
 }
 
 namespace DiscordCoreAPI {
+
+	UpdatePresenceData::operator Jsonifier() {
+		DiscordCoreAPI::Jsonifier data{};
+		data["op"] = 3;
+		for (auto& value: this->activities) {
+			DiscordCoreAPI::Jsonifier dataNew{};
+			if (value.url != "") {
+				dataNew["url"] = std::string{ value.url };
+			}
+			dataNew["name"] = std::string{ value.name };
+			dataNew["type"] = value.type;
+			data["d"]["activities"].emplaceBack(dataNew);
+		}
+		switch (this->status) {
+			case UpdatePresenceStatusTypes::online: {
+				data["status"] = "online";
+				break;
+			}
+			case UpdatePresenceStatusTypes::dnd: {
+				data["status"] = "dnd";
+				break;
+			}
+			case UpdatePresenceStatusTypes::invisible: {
+				data["status"] = "invisible";
+				break;
+			}
+			case UpdatePresenceStatusTypes::offline: {
+				data["status"] = "offline";
+				break;
+			}
+			case UpdatePresenceStatusTypes::idle: {
+				data["status"] = "idle";
+				break;
+			}
+		}
+		if (this->since != 0) {
+			data["since"] = this->since;
+		}
+		data["afk"] = this->afk;
+		return data;
+	}
 
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
 		TimeStamp<std::chrono::milliseconds> timeStamp{ (this->id.operator size_t() >> 22) + 1420070400000, timeFormat };

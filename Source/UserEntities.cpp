@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void BotUser::updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage) {
+	void BotUser::updatePresence(UpdatePresenceData& dataPackage) {
 		if (this->baseSocketAgent) {
 			std::string string{};
 			uint32_t shardId = 0;

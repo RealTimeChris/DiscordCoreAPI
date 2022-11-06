@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
-		UpdatePresenceData presence{};
+		DiscordCoreAPI::UpdatePresenceData presence{};
 		int32_t largeThreshold{ 250 };
 		int32_t numberOfShards{};
 		int32_t currentShard{};
