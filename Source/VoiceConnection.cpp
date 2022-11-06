@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::basic_string<unsigned char> VoiceUser::extractPayload() {
-		StopWatch stopWatch{ 10ms };
+		StopWatch stopWatch{ 15000us };
 		std::basic_string<unsigned char> value{};
 		if (!this->wereWeEnding.load()) {
 			stopWatch.resetTimer();
@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 				if (stopWatch.hasTimePassed()) {
 					break;
 				}
-				std::this_thread::sleep_for(1ms);
+				std::this_thread::sleep_for(20us);
 			}
 		} else {
 			this->payloads.tryReceive(value);
@@ -388,11 +388,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runBridge(std::stop_token token) noexcept {
-		StopWatch processAndSleepStopWatch{ 20ms };
+		StopWatch processAndSleepStopWatch{ 20000us };
 		MovingAverager averager{ 12 };
 		while (!token.stop_requested()) {
 			if (processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) >= 0) {
-				std::this_thread::sleep_for(std::chrono::milliseconds{ processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) });
+				std::this_thread::sleep_for(std::chrono::microseconds{ processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) });
 			}
 			this->mixAudio();
 			averager.addValue(processAndSleepStopWatch.totalTimePassed());
