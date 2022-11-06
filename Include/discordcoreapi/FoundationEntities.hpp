@@ -313,10 +313,10 @@ namespace DiscordCoreInternal {
 
 		WebSocketMessage(simdjson::ondemand::value);
 
-		template<typename RTy> RTy processJsonMessage(simdjson::ondemand::value jsonData) {
+		template<typename RTy> RTy processJsonMessage(simdjson::ondemand::value jsonData, const char* dataName) {
 			simdjson::ondemand::value object{};
-			if (jsonData["d"].get(object) != simdjson::error_code::SUCCESS) {
-				throw std::runtime_error{ "Failed to collect the 'd'." };
+			if (jsonData[dataName].get(object) != simdjson::error_code::SUCCESS) {
+				throw std::runtime_error{ std::string{ "Failed to collect the " } + dataName };
 			} else {
 				return RTy{ object };
 			}
