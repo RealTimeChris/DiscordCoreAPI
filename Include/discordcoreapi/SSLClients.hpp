@@ -276,7 +276,6 @@ namespace DiscordCoreInternal {
 		RingBuffer<unsigned char, 16> outputBuffer{};
 		RingBuffer<unsigned char, 16> inputBuffer{};
 		DiscordCoreAPI::StreamType streamTypeReal{};
-		std::recursive_mutex accessMutex{};
 		sockaddr_in streamTargetAddress{};
 		SOCKETWrapper socket{};
 		int64_t bytesRead{};

@@ -641,10 +641,6 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult DatagramSocketClient::processIO(ProcessIOType type) noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return ProcessIOResult::No_Error;
-		}
 		if (!this->areWeStillConnected()) {
 			return ProcessIOResult::No_Error;
 		}
@@ -687,10 +683,6 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketClient::writeData(std::basic_string_view<unsigned char> dataToWrite) noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return;
-		}
 		if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
 			uint64_t remainingBytes{ dataToWrite.size() };
 			uint64_t amountCollected{};
@@ -716,7 +708,6 @@ namespace DiscordCoreInternal {
 	}
 
 	std::basic_string_view<unsigned char> DatagramSocketClient::getInputBuffer() noexcept {
-		std::unique_lock lock{ this->accessMutex };
 		std::basic_string_view<unsigned char> string{};
 		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
 			auto size = this->inputBuffer.getCurrentTail()->getUsedSpace();
@@ -728,10 +719,6 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::areWeStillConnected() noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return true;
-		}
 		if (static_cast<SOCKET*>(this->socket) && this->socket != SOCKET_ERROR) {
 			return true;
 		} else {
@@ -740,10 +727,6 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::processWriteData() noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return true;
-		}
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
 			auto writtenBytes{ sendto(this->socket, reinterpret_cast<const char*>(this->outputBuffer.getCurrentTail()->getCurrentTail()),
@@ -760,10 +743,6 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::processReadData() noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return true;
-		}
 		bool returnValue{ true };
 		int32_t readBytes{};
 		do {
@@ -798,15 +777,10 @@ namespace DiscordCoreInternal {
 	}
 
 	int64_t DatagramSocketClient::getBytesRead() noexcept {
-		std::unique_lock lock{ this->accessMutex };
 		return this->bytesRead;
 	}
 
 	void DatagramSocketClient::disconnect() noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return;
-		}
 		this->socket = SOCKET_ERROR;
 		this->outputBuffer.clear();
 		this->inputBuffer.clear();
