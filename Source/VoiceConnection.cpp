@@ -280,7 +280,9 @@ namespace DiscordCoreAPI {
 						std::unique_lock lock{ this->voiceUserMutex };
 						if (!Users::getCachedUser({ .userId = user.getUserId() }).getFlagValue(UserFlags::Bot) ||
 							this->voiceConnectInitData.streamInfo.streamBotAudio) {
-							this->voiceUsers[ssrc] = std::move(user);
+							if (!this->voiceUsers.contains(ssrc)) {
+								this->voiceUsers[ssrc] = std::move(user);
+							}
 						}
 						break;
 					}
@@ -887,10 +889,6 @@ namespace DiscordCoreAPI {
 		WebSocketCore::ssl = nullptr;
 		WebSocketCore::socket = SOCKET_ERROR;
 		DatagramSocketClient::disconnect();
-		WebSocketCore::outputBuffer.clear();
-		WebSocketCore::inputBuffer.clear();
-		DatagramSocketClient::outputBuffer.clear();
-		DatagramSocketClient::inputBuffer.clear();
 		this->closeCode = 0;
 		this->areWeHeartBeating = false;
 		this->currentReconnectTries++;
