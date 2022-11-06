@@ -59,18 +59,30 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
+
+		VoiceUser() noexcept = default;
+
+		VoiceUser& operator=(VoiceUser&&) noexcept;
+
+		VoiceUser(VoiceUser &&) noexcept;
+
 		void insertPayload(std::basic_string<unsigned char>&&);
 
 		std::basic_string<unsigned char> extractPayload();
 
 		OpusDecoderWrapper& getDecoder();
 
+		void setEndingStatus(bool);
+
 		void setUserId(Snowflake);
+
+		bool getEndingStatus();
 
 		Snowflake getUserId();
 
 	  protected:
 		UnboundedMessageBlock<std::basic_string<unsigned char>> payloads{};
+		std::atomic_bool wereWeEnding{ false };
 		OpusDecoderWrapper decoder{};
 		Snowflake userId{};
 	};

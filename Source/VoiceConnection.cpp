@@ -57,18 +57,27 @@ namespace DiscordCoreAPI {
 		if (error != OPUS_OK) {
 			throw std::runtime_error{ "Failed to create the Opus Decoder" };
 		}
-	}
-
-	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(const std::basic_string_view<unsigned char> dataToDecode) {
 		if (this->data.size() == 0) {
 			this->data.resize(23040);
 		}
+	}
+
+	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(const std::basic_string_view<unsigned char> dataToDecode) {
 		const int64_t sampleCount =
 			opus_decode(this->ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
-		if (this->data.size() != sampleCount * 2ull) {
-			this->data.resize(sampleCount * 2);
-		}
-		return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(this->data.size()) };
+		return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
+	}
+
+	VoiceUser& VoiceUser::operator=(VoiceUser&& data) noexcept {
+		this->wereWeEnding.store(data.wereWeEnding.load());
+		this->payloads = std::move(data.payloads);
+		this->decoder = std::move(data.decoder);
+		this->userId = data.userId;
+		return *this;
+	}
+
+	VoiceUser::VoiceUser(VoiceUser&& data) noexcept {
+		*this = std::move(data);
 	}
 
 	void VoiceUser::insertPayload(std::basic_string<unsigned char>&& data) {
@@ -76,13 +85,32 @@ namespace DiscordCoreAPI {
 	}
 
 	std::basic_string<unsigned char> VoiceUser::extractPayload() {
+		StopWatch stopWatch{ 10ms };
 		std::basic_string<unsigned char> value{};
-		this->payloads.tryReceive(value);
+		if (!this->wereWeEnding.load()) {
+			stopWatch.resetTimer();
+			while (!this->payloads.tryReceive(value)) {
+				if (stopWatch.hasTimePassed()) {
+					break;
+				}
+				std::this_thread::sleep_for(1ms);
+			}
+		} else {
+			this->payloads.tryReceive(value);
+		}
 		return value;
 	}
 
 	OpusDecoderWrapper& VoiceUser::getDecoder() {
 		return this->decoder;
+	}
+
+	void VoiceUser::setEndingStatus(bool data) {
+		this->wereWeEnding.store(data);
+	}
+
+	bool VoiceUser::getEndingStatus() {
+		return this->wereWeEnding.load();
 	}
 
 	void VoiceUser::setUserId(Snowflake userIdNew) {
@@ -174,12 +202,17 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::parseIncomingVoiceData(const std::basic_string_view<unsigned char> rawDataBufferNew) noexcept {
-		if (72 <= (rawDataBufferNew[1] & 0b0111'1111) && (rawDataBufferNew[1] & 0b0111'1111) <= 76) {
-			return;
-		}
-
 		const uint32_t speakerSsrc{ ntohl(*reinterpret_cast<const uint32_t*>(rawDataBufferNew.data() + 8)) };
 		if (this->voiceUsers.contains(speakerSsrc)) {
+			if (rawDataBufferNew.size() <= 44) {
+				this->voiceUsers[speakerSsrc].setEndingStatus(true);
+				return;
+			} else {
+				this->voiceUsers[speakerSsrc].setEndingStatus(false);
+			}
+			if (72 <= (rawDataBufferNew[1] & 0b0111'1111) && (rawDataBufferNew[1] & 0b0111'1111) <= 76) {
+				return;
+			}
 			this->voiceUsers[speakerSsrc].insertPayload(static_cast<std::basic_string<unsigned char>>(rawDataBufferNew));
 		}
 	}
@@ -554,7 +587,7 @@ namespace DiscordCoreAPI {
 		if (this->connectionState.load() == VoiceConnectionState::Initializing_DatagramSocket) {
 		} else {
 			std::basic_string_view<unsigned char> string = DatagramSocketClient::getInputBuffer();
-			if (this->streamSocket && this->encryptionKey.size() > 0 && string.size() >= 44) {
+			if (this->streamSocket && this->encryptionKey.size() > 0) {
 				this->parseIncomingVoiceData(string);
 			}
 		}
