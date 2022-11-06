@@ -228,6 +228,10 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	ConfigManager& DiscordCoreClient::getConfigManager() {
+		return this->configManager;
+	}
+
 	CommandController& DiscordCoreClient::getCommandController() {
 		return this->commandController;
 	}

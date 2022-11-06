@@ -220,10 +220,12 @@ namespace DiscordCoreAPI {
 
 		static void insertUser(UserData user);
 
+		static bool doWeCacheUsers();
+
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<UserData> cache;
-		static bool doWeCacheUsers;
+		static bool doWeCacheUsersBool;
 	};
 	/**@}*/
 

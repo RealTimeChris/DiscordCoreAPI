@@ -273,16 +273,19 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a GuildScheduledEvent creation event. \brief Data that is received as part of a GuildScheduledEvent creation event.
 	struct DiscordCoreAPI_Dll OnGuildScheduledEventCreationData {
 		GuildScheduledEventData guildScheduledEvent{};
+		OnGuildScheduledEventCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a GuildScheduledEvent update event. \brief Data that is received as part of a GuildScheduledEvent update event.
 	struct DiscordCoreAPI_Dll OnGuildScheduledEventUpdateData {
 		GuildScheduledEventData guildScheduledEvent{};
+		OnGuildScheduledEventUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a GuildScheduledEvent delete event. \brief Data that is received as part of a GuildScheduledEvent delete event.
 	struct DiscordCoreAPI_Dll OnGuildScheduledEventDeletionData {
 		GuildScheduledEventData guildScheduledEvent{};
+		OnGuildScheduledEventDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a GuildScheduledEvent User add event. \brief Data that is received as part of a GuildScheduledEvent User add event.
@@ -290,6 +293,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildScheduledEventId{};
 		Snowflake guildId{};
 		Snowflake userId{};
+		OnGuildScheduledEventUserAddData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a GuildScheduledEvent User remove event. \brief Data that is received as part of a GuildScheduledEvent User remove event.
@@ -297,18 +301,21 @@ namespace DiscordCoreAPI {
 		Snowflake guildScheduledEventId{};
 		Snowflake guildId{};
 		Snowflake userId{};
+		OnGuildScheduledEventUserRemoveData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of an Integration creation event. \brief Data that is received as part of an Integration creation event.
 	struct DiscordCoreAPI_Dll OnIntegrationCreationData {
 		IntegrationData integrationData{};///< The new IntegrationData structure.
 		Snowflake guildId{};///< The id of the Guild for which this Integration was created.
+		OnIntegrationCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of an Integration update event. \brief Data that is received as part of an Integration update event.
 	struct DiscordCoreAPI_Dll OnIntegrationUpdateData {
 		IntegrationData integrationData{};///< New IntegrationData structure.
 		Snowflake guildId{};///< The id of the Guild for which the Integration was updated.
+		OnIntegrationUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of an Integration deletion event. \brief Data that is received as part of an Integration deletion event.
@@ -316,11 +323,13 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< Application id of the current application.
 		Snowflake guildId{};///< The id of the Guild for which the Integration was deleted.
 		Snowflake id{};///< The id of the deleted Integration.
+		OnIntegrationDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of an Invite creation event. \brief Data that is received as part of an Invite creation event.
 	struct DiscordCoreAPI_Dll OnInviteCreationData {
 		InviteData invite{};///< Thew new InviteData structure.
+		OnInviteCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of an Invite deletion event. \brief Data that is received as part of an Invite deletion event.
@@ -328,21 +337,25 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The id of the Channel for which the Invite existed.
 		Snowflake guildId{};///< The id of the Guild for which the Invite existed.
 		std::string code{};///< The code of the Invite.
+		OnInviteDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of an Interaction creation event. \brief Data that is received as part of an Interaction creation event.
 	struct DiscordCoreAPI_Dll OnInteractionCreationData {
 		InteractionData interactionData{};///< The InteractionData representing the Interaction.
+		OnInteractionCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient* clientPtr);
 	};
 
 	/// Data that is received as part of a Message creation event. \brief Data that is received as part of a Message creation event.
 	struct DiscordCoreAPI_Dll OnMessageCreationData {
 		Message message{};///< The new Message.
+		OnMessageCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Message update event. \brief Data that is received as part of a Message update event.
 	struct DiscordCoreAPI_Dll OnMessageUpdateData {
 		Message messageNew{};///< The new Message.
+		OnMessageUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Message deletion event. \brief Data that is received as part of a Message deletion event.
@@ -350,6 +363,7 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};///< The id of the Message which was deleted.
 		Snowflake channelId{};///< The id of the Channel from which the Message was deleted.
 		Snowflake guildId{};///< The id of the Guild from which the Message was deleted.
+		OnMessageDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Message delete bulk event. \brief Data that is received as part of a Message delete bulk event.
@@ -357,16 +371,19 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> ids{};///< A vector containing the list of deleted Message ids.
 		Snowflake channelId{};///< The id of the Channel from which the Message was deleted.
 		Snowflake guildId{};///< The id of the Guild from which the Message was deleted.
+		OnMessageDeleteBulkData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Reaction add event. \brief Data that is received as part of a Reaction add event.
 	struct DiscordCoreAPI_Dll OnReactionAddData {
 		Reaction reaction{};///< The Reaction that was added.
+		OnReactionAddData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Reaction remove event. \brief Data that is received as part of a Reaction remove event.
 	struct DiscordCoreAPI_Dll OnReactionRemoveData {
 		ReactionRemoveData reactionRemoveData{};///< The ReactionRemoveData.
+		OnReactionRemoveData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Reaction remove all event. \brief Data that is received as part of a Reaction remove all event.
@@ -374,6 +391,7 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The id of the Channel from which the Reactions were deleted.
 		Snowflake messageId{};///< The id of the Message from which the Reactions were deleted.
 		Snowflake guildId{};///< The id of the Guild from which the Reactions were deleted.
+		OnReactionRemoveAllData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a Reaction remove emoji event. \brief Data that is received as part of a Reaction remove emoji event.
@@ -382,37 +400,43 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The id of the Channel from which the Reactions were deleted.
 		Snowflake guildId{};///< The id of the Guild from which the Reactions were deleted.
 		EmojiData emoji{};///< The id of the Emoji which was removed from the Message.
+		OnReactionRemoveEmojiData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a presence update event. \brief Data that is received as part of a presence update event.
 	struct DiscordCoreAPI_Dll OnPresenceUpdateData {
 		PresenceUpdateData presenceData{};///< PresenceUpdateData..
+		OnPresenceUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a StageInstance creation event. \brief Data that is received as part of a StageInstance creation event.
 	struct DiscordCoreAPI_Dll OnStageInstanceCreationData {
 		StageInstanceData stageInstance{};///< The new StageInstanceData.
+		OnStageInstanceCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a StageInstance update event. \brief Data that is received as part of a StageInstance update event.
 	struct DiscordCoreAPI_Dll OnStageInstanceUpdateData {
 		StageInstanceData stageInstance{};///< The new StageInstanceData.
+		OnStageInstanceUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a StageInstance deletion event. \brief Data that is received as part of a StageInstance deletion event.
 	struct DiscordCoreAPI_Dll OnStageInstanceDeletionData {
 		StageInstanceData stageInstance{};///< The deleted StageInstanceData.
+		OnStageInstanceDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a typing start event. \brief Data that is received as part of a typing start event.
 	struct DiscordCoreAPI_Dll OnTypingStartData {
 		TypingStartData typingStartData{};///< TypingStartData of the event.
+		OnTypingStartData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received as part of a User update event. \brief Data that is received as part of a User update event.
 	struct DiscordCoreAPI_Dll OnUserUpdateData {
 		std::unique_ptr<UserData> user{ std::make_unique<UserData>() };///< The new User.
-		OnUserUpdateData(std::unique_ptr<UserData>);
+		OnUserUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 		OnUserUpdateData& operator=(const OnUserUpdateData&);
 		OnUserUpdateData(const OnUserUpdateData&);
 	};
@@ -420,6 +444,8 @@ namespace DiscordCoreAPI {
 	/// Data that is received as part of a voice state update event. \brief Data that is received as part of a voice state update event.
 	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData {
 		VoiceStateData voiceStateData{};///< VoiceStateData for the new voice state.
+		OnVoiceStateUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
+			DiscordCoreInternal::WebSocketSSLShard* sslShard);
 	};
 
 	/// Data that is received as part of a voice server update event. \brief Data that is received as part of a voice server update event.
@@ -427,18 +453,21 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild for which the server update is occurring.
 		std::string endpoint{};///< The new endpoint.
 		std::string token{};///< The token of the server update event.
-		OnVoiceServerUpdateData(simdjson::ondemand::value);
+		OnVoiceServerUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
+			DiscordCoreInternal::WebSocketSSLShard* sslShard);
 	};
 
 	/// Data that is received as part of a WebHook update event. \brief Data that is received as part of a WebHook update event.
 	struct DiscordCoreAPI_Dll OnWebhookUpdateData {
 		Snowflake channelId{};///< Id of the Channel for which the WebHook Update is occurring.
 		Snowflake guildId{};///< Id of the Guild for which the WebHook Update is occurring.
+		OnWebhookUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Data that is received upon the bot receiving an autocomplete entry. \brief Data that is received upon the bot receiving an autocomplete entry.
 	struct DiscordCoreAPI_Dll OnAutoCompleteEntryData {
 		InputEventData inputEvent{};///< The input-event representing the autocomplete entry.
+		OnAutoCompleteEntryData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
 	/// Class for handling the assignment of event-handling functions. \brief Class for handling the assignment of event-handling functions.int32_t

@@ -334,6 +334,10 @@ namespace DiscordCoreAPI {
 		co_return GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
 	}
 
+	ObjectCache<GuildMemberData>& GuildMembers::getCache() {
+		return GuildMembers::cache;
+	};
+
 	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
 		if (guildMember.id == 0) {
 			return;

@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Users::initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManagerNew) {
-		Users::doWeCacheUsers = configManagerNew->doWeCacheUsers();
+		Users::doWeCacheUsersBool = configManagerNew->doWeCacheUsers();
 		Users::httpsClient = client;
 	}
 
@@ -289,11 +289,15 @@ namespace DiscordCoreAPI {
 		co_return Users::httpsClient->submitWorkloadAndGetResult<AuthorizationInfoData>(workload);
 	}
 
+	bool Users::doWeCacheUsers() {
+		return Users::doWeCacheUsersBool;
+	}
+
 	void Users::insertUser(UserData user) {
 		if (user.id == 0) {
 			return;
 		}
-		if (Users::doWeCacheUsers) {
+		if (Users::doWeCacheUsers()) {
 			if (!Users::cache.contains(user)) {
 				Users::cache.emplace(std::move(user));
 			} else {
@@ -306,6 +310,6 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
+	bool Users::doWeCacheUsersBool{ false };
 	ObjectCache<UserData> Users::cache{};
-	bool Users::doWeCacheUsers{ false };
 }

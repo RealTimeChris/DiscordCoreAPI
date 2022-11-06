@@ -137,6 +137,10 @@ namespace DiscordCoreAPI {
 		/// \returns CommandController& A reference to the CommandController.
 		CommandController& getCommandController();
 
+		/// For collecting a reference to the ConfigManager. \brief For collecting a reference to the ConfigManager.
+		/// \returns ConfigManager& A reference to the ConfigManager.
+		ConfigManager& getConfigManager();
+
 		/// For collecting a reference to the EventManager. \brief For collecting a reference to the EventManager.
 		/// \returns EventManager& A reference to the EventManager.
 		EventManager& getEventManager();

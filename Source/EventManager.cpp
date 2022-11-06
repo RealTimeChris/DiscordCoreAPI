@@ -416,10 +416,6 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnUserUpdateData::OnUserUpdateData(std::unique_ptr<UserData> userNew) {
-		this->user = std::move(userNew);
-	}
-
 	OnUserUpdateData& OnUserUpdateData::operator=(const OnUserUpdateData& other) {
 		*this->user = *other.user;
 		return *this;
@@ -429,13 +425,302 @@ namespace DiscordCoreAPI {
 		*this = other;
 	}
 
-	OnVoiceServerUpdateData::OnVoiceServerUpdateData(simdjson::ondemand::value theJsonData) {
-		this->endpoint = getString(theJsonData["d"], "endpoint");
-
-		this->guildId = getId(theJsonData["d"], "guild_id");
-
-		this->token = getString(theJsonData["d"], "token");
+	OnVoiceServerUpdateData::OnVoiceServerUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreInternal::WebSocketSSLShard*sslShard){
+		this->endpoint = getString(dataReal["d"], "endpoint");
+		this->guildId = getId(dataReal["d"], "guild_id");
+		this->token = getString(dataReal["d"], "token");
+		sslShard->voiceConnectionData.endPoint = this->endpoint;
+		sslShard->voiceConnectionData.token = this->token;
+		if (sslShard->areWeCollectingData && !sslShard->serverUpdateCollected && !sslShard->stateUpdateCollected) {
+			sslShard->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
+			sslShard->serverUpdateCollected = true;
+		} else if (sslShard->areWeCollectingData && !sslShard->serverUpdateCollected) {
+			if (sslShard->voiceConnectionDataBuffersMap.contains(this->guildId.operator size_t())) {
+				sslShard->voiceConnectionDataBuffersMap[this->guildId.operator size_t()]->send(sslShard->voiceConnectionData);
+			}
+			sslShard->serverUpdateCollected = false;
+			sslShard->stateUpdateCollected = false;
+			sslShard->areWeCollectingData = false;
+		}
 	};
+
+	OnGuildScheduledEventCreationData::OnGuildScheduledEventCreationData(DiscordCoreInternal::WebSocketMessage& data,
+		simdjson::ondemand::value dataReal) {
+		this->guildScheduledEvent = data.processJsonMessage<GuildScheduledEventData>(dataReal);
+		DiscordCoreAPI::GuildData guild{};
+		guild.id = this->guildScheduledEvent.guildId;
+		if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
+			DiscordCoreAPI::Guilds::getCache()[guild].guildScheduledEvents.emplace_back(this->guildScheduledEvent.id);
+		}
+	}
+
+	OnGuildScheduledEventUpdateData::OnGuildScheduledEventUpdateData(DiscordCoreInternal::WebSocketMessage& data,
+		simdjson::ondemand::value dataReal) {
+		this->guildScheduledEvent = data.processJsonMessage<GuildScheduledEventData>(dataReal);
+	}
+
+	OnGuildScheduledEventDeletionData::OnGuildScheduledEventDeletionData(DiscordCoreInternal::WebSocketMessage& data,
+		simdjson::ondemand::value dataReal) {
+		this->guildScheduledEvent = data.processJsonMessage<GuildScheduledEventData>(dataReal);
+		DiscordCoreAPI::GuildData guild{};
+		guild.id = this->guildScheduledEvent.guildId;
+		if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
+			for (uint64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].guildScheduledEvents.size(); ++x) {
+				if (DiscordCoreAPI::Guilds::getCache()[guild].guildScheduledEvents[x] == this->guildScheduledEvent.id) {
+					DiscordCoreAPI::Guilds::getCache()[guild].guildScheduledEvents.erase(
+						DiscordCoreAPI::Guilds::getCache()[guild].guildScheduledEvents.begin() + x);
+				}
+			}
+		}
+	}
+
+	OnGuildScheduledEventUserAddData::OnGuildScheduledEventUserAddData(DiscordCoreInternal::WebSocketMessage& data,
+		simdjson::ondemand::value dataReal) {
+		this->guildScheduledEventId = DiscordCoreAPI::getId(dataReal["d"], "guild_scheduled_event_id");
+		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
+		this->userId = DiscordCoreAPI::getId(dataReal["d"], "user_id");
+	}
+
+	OnGuildScheduledEventUserRemoveData::OnGuildScheduledEventUserRemoveData(DiscordCoreInternal::WebSocketMessage& data,
+		simdjson::ondemand::value dataReal) {
+		this->guildScheduledEventId = DiscordCoreAPI::getId(dataReal["d"], "guild_scheduled_event_id");
+		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
+		this->userId = DiscordCoreAPI::getId(dataReal["d"], "user_id");
+	}
+
+	OnIntegrationCreationData::OnIntegrationCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
+		simdjson::ondemand::value objectNew{};
+		if (dataReal["d"]["integration"].get(objectNew) == simdjson::error_code::SUCCESS) {
+			this->integrationData = DiscordCoreAPI::IntegrationData{ objectNew };
+		}
+	}
+
+	OnIntegrationUpdateData::OnIntegrationUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
+		simdjson::ondemand::value objectNew{};
+		if (dataReal["d"]["integration"].get(objectNew) == simdjson::error_code::SUCCESS) {
+			this->integrationData = DiscordCoreAPI::IntegrationData{ objectNew };
+		}
+	}
+
+	OnIntegrationDeletionData::OnIntegrationDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->applicationId = DiscordCoreAPI::getId(dataReal["d"], "application_id");
+		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
+		this->id = DiscordCoreAPI::getId(dataReal["d"], "id");
+	}
+
+	OnInteractionCreationData::OnInteractionCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
+		DiscordCoreClient* clientPtr) {
+		this->interactionData = DiscordCoreAPI::InteractionData{ data.processJsonMessage<DiscordCoreAPI::InteractionData>(dataReal) };
+		std::unique_ptr<DiscordCoreAPI::InputEventData> eventData{ std::make_unique<DiscordCoreAPI::InputEventData>(interactionData) };
+		switch (interactionData.type) {
+			case DiscordCoreAPI::InteractionType::Application_Command: {
+				eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
+				*eventData->interactionData = this->interactionData;
+				std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
+				DiscordCoreAPI::CommandData commanddataNew = *commandData;
+				clientPtr->getCommandController().checkForAndRunCommand(commanddataNew);
+				std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
+					std::make_unique<DiscordCoreAPI::OnInputEventCreationData>(data, dataReal)
+				};
+				eventCreationData->inputEventData = *eventData;
+				break;
+			}
+			case DiscordCoreAPI::InteractionType::Message_Component: {
+				switch (interactionData.data.componentData.componentType) {
+					case DiscordCoreAPI::ComponentType::Button: {
+						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
+						*eventData->interactionData = this->interactionData;
+						if (DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap.contains(
+								eventData->getChannelId() + eventData->getMessageId())) {
+							DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelId() + eventData->getMessageId()]->send(
+								interactionData);
+						}
+						break;
+					}
+					case DiscordCoreAPI::ComponentType::String_Select: {
+						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
+						*eventData->interactionData = this->interactionData;
+						if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBuffersMap.contains(
+								eventData->getChannelId() + eventData->getMessageId())) {
+							DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelId() +
+								eventData->getMessageId()]
+								->send(interactionData);
+						}
+						break;
+					}
+				}
+				break;
+			}
+			case DiscordCoreAPI::InteractionType::Modal_Submit: {
+				eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
+				*eventData->interactionData = this->interactionData;
+				std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
+					std::make_unique<DiscordCoreAPI::OnInputEventCreationData>(data, dataReal)
+				};
+				eventCreationData->inputEventData = *eventData;
+				if (DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap.contains(eventData->getChannelId())) {
+					DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap[eventData->getChannelId()]->send(eventData->getInteractionData());
+				}
+				break;
+			}
+			case DiscordCoreAPI::InteractionType::Application_Command_Autocomplete: {
+				eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
+				*eventData->interactionData = this->interactionData;
+				std::unique_ptr<DiscordCoreAPI::OnAutoCompleteEntryData> autocompleteEntryData{
+					std::make_unique<DiscordCoreAPI::OnAutoCompleteEntryData>(data, dataReal)
+				};
+				autocompleteEntryData->inputEvent = *eventData;
+				clientPtr->getEventManager().onAutoCompleteEntryEvent(*autocompleteEntryData);
+				break;
+			}
+		}
+	}
+
+	OnInviteCreationData::OnInviteCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->invite = data.processJsonMessage<DiscordCoreAPI::InviteData>(dataReal);
+	}
+
+	OnInviteDeletionData::OnInviteDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->channelId = DiscordCoreAPI::getId(dataReal["d"], "channel_id");
+		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
+		this->code = DiscordCoreAPI::getId(dataReal["d"], "code");
+	}
+
+	OnMessageCreationData::OnMessageCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->message = data.processJsonMessage<Message>(dataReal);
+		for (auto& [key, dValue]: DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::Message>::objectsBuffersMap) {
+			dValue->send(this->message);
+		}
+	}
+
+	OnMessageUpdateData::OnMessageUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->messageNew = data.processJsonMessage<Message>(dataReal);
+		for (auto& [key, dValue]: DiscordCoreAPI::ObjectCollector<DiscordCoreAPI::Message>::objectsBuffersMap) {
+			dValue->send(this->messageNew);
+		}
+	}
+
+	OnMessageDeletionData::OnMessageDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->channelId = DiscordCoreAPI::getId(dataReal["d"], "channel_id");
+		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
+		this->messageId = DiscordCoreAPI::getId(dataReal["d"], "id");
+	}
+
+	OnMessageDeleteBulkData::OnMessageDeleteBulkData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->channelId = DiscordCoreAPI::getId(dataReal["d"], "channel_id");
+		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
+		simdjson::ondemand::array arrayValue{};
+		if (dataReal["d"]["ids"].get(arrayValue) == simdjson::error_code::SUCCESS) {
+			for (auto dValue: arrayValue) {
+				this->ids.emplace_back(DiscordCoreAPI::strtoull(dValue.get_string().take_value()));
+			}
+		}
+	}
+
+	OnReactionAddData::OnReactionAddData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->reaction = data.processJsonMessage<DiscordCoreAPI::Reaction>(dataReal);
+	}
+
+	OnReactionRemoveData::OnReactionRemoveData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->reactionRemoveData = data.processJsonMessage<DiscordCoreAPI::ReactionRemoveData>(dataReal);
+	}
+
+	OnReactionRemoveAllData::OnReactionRemoveAllData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->messageId = DiscordCoreAPI::getId(dataReal["d"], "message_id");
+		this->channelId = DiscordCoreAPI::getId(dataReal["d"], "channel_id");
+		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
+	}
+
+	OnReactionRemoveEmojiData::OnReactionRemoveEmojiData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->channelId = DiscordCoreAPI::getId(dataReal["d"], "channel_id");
+		this->messageId = DiscordCoreAPI::getId(dataReal["d"], "message_id");
+		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
+		simdjson::ondemand::value objectNew{};
+		if (dataReal["d"]["emoji"].get(objectNew) == simdjson::error_code::SUCCESS) {
+			this->emoji = DiscordCoreAPI::EmojiData{ objectNew };
+		}
+	}
+
+	OnPresenceUpdateData::OnPresenceUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->presenceData = data.processJsonMessage<DiscordCoreAPI::PresenceUpdateData>(dataReal);
+	}
+
+	OnStageInstanceCreationData::OnStageInstanceCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->stageInstance = data.processJsonMessage<DiscordCoreAPI::StageInstance>(dataReal);
+		DiscordCoreAPI::GuildData guild{};
+		guild.id = this->stageInstance.guildId;
+		if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
+			DiscordCoreAPI::Guilds::getCache()[guild].stageInstances.emplace_back(this->stageInstance.id);
+		}
+	}
+
+	OnStageInstanceUpdateData::OnStageInstanceUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->stageInstance = data.processJsonMessage<DiscordCoreAPI::StageInstance>(dataReal);
+	}
+
+	OnStageInstanceDeletionData::OnStageInstanceDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->stageInstance = data.processJsonMessage<DiscordCoreAPI::StageInstance>(dataReal);
+		DiscordCoreAPI::GuildData guild{};
+		guild.id = this->stageInstance.guildId;
+		if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
+			for (uint64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].stageInstances.size(); ++x) {
+				if (DiscordCoreAPI::Guilds::getCache()[guild].stageInstances[x] == this->stageInstance.id) {
+					DiscordCoreAPI::Guilds::getCache()[guild].stageInstances.erase(
+						DiscordCoreAPI::Guilds::getCache()[guild].stageInstances.begin() + x);
+				}
+			}
+		}
+	}
+
+	OnTypingStartData::OnTypingStartData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->typingStartData = data.processJsonMessage<DiscordCoreAPI::TypingStartData>(dataReal);
+	}
+
+	OnUserUpdateData::OnUserUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->user = std::make_unique<UserData>(data.processJsonMessage<UserData>(dataReal));
+		if (DiscordCoreAPI::Users::doWeCacheUsers()) {
+			DiscordCoreAPI::Users::insertUser(*user);
+		}
+	}
+
+	OnVoiceStateUpdateData::OnVoiceStateUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
+		DiscordCoreInternal::WebSocketSSLShard* sslShard) {
+		this->voiceStateData = data.processJsonMessage<DiscordCoreAPI::VoiceStateData>(dataReal);
+		sslShard->voiceConnectionData.sessionId = this->voiceStateData.sessionId;
+		if (sslShard->areWeCollectingData && !sslShard->stateUpdateCollected && !sslShard->serverUpdateCollected &&
+			this->voiceStateData.userId == sslShard->userId) {
+			sslShard->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
+			sslShard->voiceConnectionData.sessionId = this->voiceStateData.sessionId;
+			sslShard->stateUpdateCollected = true;
+		} else if (sslShard->areWeCollectingData && !sslShard->stateUpdateCollected) {
+			sslShard->voiceConnectionData.sessionId = this->voiceStateData.sessionId;
+			if (sslShard->voiceConnectionDataBuffersMap.contains(this->voiceStateData.guildId.operator size_t())) {
+				sslShard->voiceConnectionDataBuffersMap[this->voiceStateData.guildId.operator size_t()]->send(sslShard->voiceConnectionData);
+			}
+			sslShard->serverUpdateCollected = false;
+			sslShard->stateUpdateCollected = false;
+			sslShard->areWeCollectingData = false;
+		}
+		if (sslShard->discordCoreClient->getConfigManager().doWeCacheUsers() && sslShard->discordCoreClient->getConfigManager().doWeCacheGuilds()) {
+			DiscordCoreAPI::GuildMemberData data{};
+			data.id = this->voiceStateData.userId;
+			data.guildId = this->voiceStateData.guildId;
+			if (DiscordCoreAPI::GuildMembers::getCache().contains(data)) {
+				DiscordCoreAPI::GuildMembers::getCache()[data].voiceChannelId = this->voiceStateData.channelId;
+			}
+		}
+	}
+
+	OnWebhookUpdateData::OnWebhookUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->channelId = DiscordCoreAPI::getId(dataReal["d"], "channel_id");
+		this->guildId = DiscordCoreAPI::getId(dataReal["d"], "guild_id");
+	}
+
+	OnAutoCompleteEntryData::OnAutoCompleteEntryData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
+		this->inputEvent = data.processJsonMessage<InputEventData>(dataReal);
+	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnApplicationCommandPermissionsUpdateData> handler) {

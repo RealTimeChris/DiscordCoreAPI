@@ -904,6 +904,8 @@ namespace DiscordCoreAPI {
 
 	struct File;
 
+	class OnVoiceServerUpdateData;
+	class OnVoiceStateUpdateData;
 	class DiscordCoreClient;
 	class VoiceConnection;
 	class GuildMember;
