@@ -51,7 +51,7 @@ namespace DiscordCoreAPI {
 
 		OpusDecoderWrapper();
 
-		std::basic_string_view<opus_int16> decodeData(const std::basic_string_view<unsigned char> dataToDecode);
+		std::basic_string_view<opus_int16> decodeData(const std::basic_string_view<uint8_t> dataToDecode);
 
 	  protected:
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> ptr{ nullptr, OpusDecoderDeleter{} };
@@ -77,9 +77,9 @@ namespace DiscordCoreAPI {
 
 		VoiceUser(VoiceUser&&) noexcept;
 
-		void insertPayload(std::basic_string<unsigned char>&&);
+		void insertPayload(std::basic_string<uint8_t>&&);
 
-		std::basic_string<unsigned char> extractPayload();
+		std::basic_string<uint8_t> extractPayload();
 
 		OpusDecoderWrapper& getDecoder();
 
@@ -92,7 +92,7 @@ namespace DiscordCoreAPI {
 		Snowflake getUserId();
 
 	  protected:
-		UnboundedMessageBlock<std::basic_string<unsigned char>> payloads{};
+		UnboundedMessageBlock<std::basic_string<uint8_t>> payloads{};
 		std::atomic_bool wereWeEnding{ false };
 		OpusDecoderWrapper decoder{};
 		Snowflake userId{};
@@ -103,13 +103,13 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
 		RTPPacketEncrypter() noexcept = default;
 
-		RTPPacketEncrypter(uint32_t ssrcNew, const std::vector<unsigned char>& keysNew) noexcept;
+		RTPPacketEncrypter(uint32_t ssrcNew, const std::vector<uint8_t>& keysNew) noexcept;
 
-		std::basic_string_view<unsigned char> encryptPacket(const AudioFrameData& audioData) noexcept;
+		std::basic_string_view<uint8_t> encryptPacket(const AudioFrameData& audioData) noexcept;
 
 	  protected:
-		std::vector<unsigned char> keys{};
-		std::vector<unsigned char> data{};
+		std::vector<uint8_t> keys{};
+		std::vector<uint8_t> data{};
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };
 		uint32_t timeStamp{};
@@ -207,9 +207,9 @@ namespace DiscordCoreAPI {
 		uint32_t audioSSRC{};
 		uint64_t port{};
 
-		void parseIncomingVoiceData(const std::basic_string_view<unsigned char> rawDataBufferNew) noexcept;
+		void parseIncomingVoiceData(const std::basic_string_view<uint8_t> rawDataBufferNew) noexcept;
 
-		void sendVoiceData(const std::basic_string_view<unsigned char> responseData) noexcept;
+		void sendVoiceData(const std::basic_string_view<uint8_t> responseData) noexcept;
 
 		void connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept;
 

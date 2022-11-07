@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 
 	Snowflake& Snowflake::operator=(const std::string& other) noexcept {
 		for (auto& value: other) {
-			if (!std::isdigit(static_cast<unsigned char>(value))) {
+			if (!std::isdigit(static_cast<uint8_t>(value))) {
 				return *this;
 			}
 		}
@@ -809,7 +809,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Jsonifier::appendNewFloatExt(const double FloatValue) {
-		char newBuffer[9]{ static_cast<unsigned char>(EtfType::New_Float_Ext) };
+		char newBuffer[9]{ static_cast<uint8_t>(EtfType::New_Float_Ext) };
 		const void* punner{ &FloatValue };
 		storeBits(newBuffer + 1, *static_cast<const uint64_t*>(punner));
 		this->writeString(newBuffer, std::size(newBuffer));

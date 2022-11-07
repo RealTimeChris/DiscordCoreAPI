@@ -682,7 +682,7 @@ namespace DiscordCoreInternal {
 		return result;
 	}
 
-	void DatagramSocketClient::writeData(std::basic_string_view<unsigned char> dataToWrite) noexcept {
+	void DatagramSocketClient::writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept {
 		if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
 			uint64_t remainingBytes{ dataToWrite.size() };
 			uint64_t amountCollected{};
@@ -707,11 +707,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::basic_string_view<unsigned char> DatagramSocketClient::getInputBuffer() noexcept {
-		std::basic_string_view<unsigned char> string{};
+	std::basic_string_view<uint8_t> DatagramSocketClient::getInputBuffer() noexcept {
+		std::basic_string_view<uint8_t> string{};
 		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
 			auto size = this->inputBuffer.getCurrentTail()->getUsedSpace();
-			string = std::basic_string_view<unsigned char>{ this->inputBuffer.getCurrentTail()->getCurrentTail(), size };
+			string = std::basic_string_view<uint8_t>{ this->inputBuffer.getCurrentTail()->getCurrentTail(), size };
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
