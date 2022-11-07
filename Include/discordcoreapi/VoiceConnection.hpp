@@ -231,8 +231,6 @@ namespace DiscordCoreAPI {
 
 		void handleAudioBuffer() noexcept;
 
-		void reconnectStream() noexcept;
-
 		void connectInternal() noexcept;
 
 		void clearAudioData() noexcept;

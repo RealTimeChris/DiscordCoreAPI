@@ -588,6 +588,18 @@ namespace DiscordCoreInternal {
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); this->socket == SOCKET_ERROR) {
 				return false;
 			}
+
+			#ifdef _WIN32
+			u_long value02{ 1 };
+			if (ioctlsocket(this->socket, FIONBIO, &value02)) {
+				return false;
+			}
+#else
+			if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
+				return false;
+			}
+#endif
+
 		} else if (this->streamTypeReal == DiscordCoreAPI::StreamType::Client) {
 			if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
 				return false;
@@ -596,6 +608,18 @@ namespace DiscordCoreInternal {
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, 0); this->socket == SOCKET_ERROR) {
 				return false;
 			}
+
+			#ifdef _WIN32
+			u_long value02{ 1 };
+			if (ioctlsocket(this->socket, FIONBIO, &value02)) {
+				return false;
+			}
+#else
+			if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
+				return false;
+			}
+#endif
+
 			const std::string clientToServerString{ "test string" };
 			auto writtenBytes{ sendto(static_cast<int32_t>(this->socket), clientToServerString.data(),
 				static_cast<int32_t>(clientToServerString.size()), 0, ( sockaddr* )address.operator addrinfo*(),
@@ -605,37 +629,40 @@ namespace DiscordCoreInternal {
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, 0); this->socket == SOCKET_ERROR) {
 				return false;
 			}
+
+			#ifdef _WIN32
+			u_long value02{ 1 };
+			if (ioctlsocket(this->socket, FIONBIO, &value02)) {
+				return false;
+			}
+#else
+			if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
+				return false;
+			}
+#endif
+
 			DiscordCoreAPI::StopWatch stopWatch{ 300s };
 			this->streamTargetAddress.sin_addr.s_addr = INADDR_ANY;
 			if (auto result = bind(this->socket, ( sockaddr* )&this->streamTargetAddress, sizeof(sockaddr)); result != 0) {
 				return false;
 			}
-
+			
 #ifdef _WIN32
 			int32_t intSize{ sizeof(si_other) };
 #else
 			socklen_t intSize{ sizeof(si_other) };
 #endif
 			std::string serverToClientBuffer{};
-
-			serverToClientBuffer.resize(11);
-			auto readBytes{ recvfrom(static_cast<int32_t>(this->socket), serverToClientBuffer.data(),
-				static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&si_other), &intSize) };
-			if (readBytes >= 0) {
-				return false;
+			while (!stopWatch.hasTimePassed() && serverToClientBuffer == "") {
+				serverToClientBuffer.resize(11);
+				auto readBytes{ recvfrom(static_cast<int32_t>(this->socket), serverToClientBuffer.data(),
+					static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&si_other), &intSize) };
+				if (readBytes >= 0) {
+					return false;
+				}
 			}
+			
 		}
-
-#ifdef _WIN32
-		u_long value02{ 1 };
-		if (ioctlsocket(this->socket, FIONBIO, &value02)) {
-			return false;
-		}
-#else
-		if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
-			return false;
-		}
-#endif
 
 		return true;
 	}
@@ -771,7 +798,6 @@ namespace DiscordCoreInternal {
 					returnValue = true;
 				}
 			}
-
 		} while (readBytes > 0);
 		return returnValue;
 	}
