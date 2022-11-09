@@ -565,100 +565,130 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept {
+	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew, bool doWePrintErrorsNew) noexcept {
+		this->doWePrintErrors = doWePrintErrorsNew;
 		this->streamTypeReal = streamTypeNew;
 	}
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
-		this->streamTargetAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
-		auto portNewer = static_cast<unsigned short>(stoi(portNew));
-		DiscordCoreAPI::reverseByteOrder<uint16_t>(portNewer);
-		this->streamTargetAddress.sin_port = portNewer;
-		this->streamTargetAddress.sin_family = AF_INET;
-
-		addrinfoWrapper hints{}, address{};
+		addrinfoWrapper hints{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 
-		if (this->streamTypeReal == DiscordCoreAPI::StreamType::None) {
-			if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
-				return false;
+		
+		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, this->address)) {
+			if (this->doWePrintErrors) {
+				cout << reportError("DatagramSocketClient::connect::getaddrinfo() 01, to: " + baseUrlNew) << endl;
 			}
+			return false;
+		}
+
+		if (this->streamTypeReal == DiscordCoreAPI::StreamType::None) {
 
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); this->socket == SOCKET_ERROR) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::socket() 02, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
 
-			#ifdef _WIN32
+			if (::connect(this->socket,this->address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::connect() 01, to: " + baseUrlNew) << endl;
+				}
+				return false;
+			}
+
+#ifdef _WIN32
 			u_long value02{ 1 };
 			if (ioctlsocket(this->socket, FIONBIO, &value02)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::ioctlsocket() 01, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
 #else
 			if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::ioctlsocket() 01, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
 #endif
 
 		} else if (this->streamTypeReal == DiscordCoreAPI::StreamType::Client) {
-			if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
-				return false;
-			}
 
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, 0); this->socket == SOCKET_ERROR) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::socket() 02, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
 
-			#ifdef _WIN32
+#ifdef _WIN32
 			u_long value02{ 1 };
 			if (ioctlsocket(this->socket, FIONBIO, &value02)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::ioctlsocket() 02, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
 #else
 			if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::ioctlsocket() 02, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
 #endif
 
 			const std::string clientToServerString{ "test string" };
-			auto writtenBytes{ sendto(static_cast<int32_t>(this->socket), clientToServerString.data(),
-				static_cast<int32_t>(clientToServerString.size()), 0, ( sockaddr* )address.operator addrinfo*(),
-				static_cast<int32_t>(sizeof(this->streamTargetAddress))) };
+			sendto(static_cast<SOCKET>(this->socket), clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
+				this->address->ai_addr, this->address->ai_addrlen);
 		} else {
-			sockaddr_in si_other{};
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, 0); this->socket == SOCKET_ERROR) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::socket() 03, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
 
-			#ifdef _WIN32
+#ifdef _WIN32
 			u_long value02{ 1 };
 			if (ioctlsocket(this->socket, FIONBIO, &value02)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::socket() 03, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
 #else
 			if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::socket() 03, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
 #endif
 
 			DiscordCoreAPI::StopWatch stopWatch{ 300s };
-			this->streamTargetAddress.sin_addr.s_addr = INADDR_ANY;
-			if (auto result = bind(this->socket, ( sockaddr* )&this->streamTargetAddress, sizeof(sockaddr)); result != 0) {
+			if (auto result = bind(this->socket, this->address->ai_addr, this->address->ai_addrlen); result != 0) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::bind(), to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
-			
-#ifdef _WIN32
-			int32_t intSize{ sizeof(si_other) };
-#else
-			socklen_t intSize{ sizeof(si_other) };
-#endif
+		
 			std::string serverToClientBuffer{};
 			while (!stopWatch.hasTimePassed() && serverToClientBuffer == "") {
 				serverToClientBuffer.resize(11);
-				auto readBytes{ recvfrom(static_cast<int32_t>(this->socket), serverToClientBuffer.data(),
-					static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&si_other), &intSize) };
-				if (readBytes >= 0) {
+				auto readBytes{ recvfrom(static_cast<SOCKET>(this->socket), serverToClientBuffer.data(),
+					static_cast<int32_t>(serverToClientBuffer.size()), 0, this->address->ai_addr,
+					reinterpret_cast<int32_t*>(&this->address->ai_addrlen)) };
+				if (readBytes <= 0) {
+					if (this->doWePrintErrors) {
+						cout << reportError("DatagramSocketClient::connect::recvfrom(), to: " + baseUrlNew) << endl;
+					}
 					return false;
 				}
 			}
@@ -674,11 +704,11 @@ namespace DiscordCoreInternal {
 		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->socket;
-		if (type == ProcessIOType::Both) {
+		if (type == ProcessIOType::Both && this->outputBuffer.getUsedSpace() > 0) {
 			readWriteSet.events = POLLIN | POLLOUT;
-		} else if (type == ProcessIOType::Read_Only) {
+		} else if (type == ProcessIOType::Read_Only || this->outputBuffer.getUsedSpace() == 0) {
 			readWriteSet.events = POLLIN;
-		} else {
+		} else if (type == ProcessIOType::Write_Only && this->outputBuffer.getUsedSpace() > 0) {
 			readWriteSet.events = POLLOUT;
 		}
 
@@ -761,7 +791,7 @@ namespace DiscordCoreInternal {
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
 			auto writtenBytes{ sendto(this->socket, reinterpret_cast<const char*>(this->outputBuffer.getCurrentTail()->getCurrentTail()),
-				static_cast<int32_t>(bytesToWrite), 0, ( sockaddr* )&this->streamTargetAddress, sizeof(sockaddr)) };
+				static_cast<int32_t>(bytesToWrite), 0, this->address->ai_addr, this->address->ai_addrlen) };
 			if (writtenBytes < 0) {
 				return false;
 			} else {
@@ -784,14 +814,9 @@ namespace DiscordCoreInternal {
 				} else {
 					bytesToRead = this->maxBufferSize;
 				}
-#ifdef _WIN32
-				int32_t intSize{ sizeof(this->streamTargetAddress) };
-#else
-				uint32_t intSize{ sizeof(this->streamTargetAddress) };
-#endif
 
 				readBytes = recvfrom(static_cast<SOCKET>(this->socket), reinterpret_cast<char*>(this->inputBuffer.getCurrentHead()->getCurrentHead()),
-					static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->streamTargetAddress, &intSize);
+					static_cast<int32_t>(bytesToRead), 0, this->address->ai_addr, reinterpret_cast<int32_t*>(&this->address->ai_addrlen));
 				if (readBytes < 0) {
 					return true;
 				} else {

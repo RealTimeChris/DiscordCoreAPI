@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 	bool VoiceUser::getEndingStatus() {
 		return this->wereWeEnding.load();
 	}
-	
+
 	Snowflake VoiceUser::getUserId() {
 		return this->userId;
 	}
@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceConnectionBridge::VoiceConnectionBridge(DiscordCoreClient* clientPtrNew, StreamType streamType, Snowflake guildIdNew)
-		: DatagramSocketClient(streamType) {
+		: DatagramSocketClient(streamType, clientPtrNew->getConfigManager().doWePrintWebSocketErrorMessages()) {
 		this->clientPtr = clientPtrNew;
 		this->guildId = guildIdNew;
 	}
@@ -196,9 +196,9 @@ namespace DiscordCoreAPI {
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
 		} else {
 			AudioFrameData newFrame{};
-			newFrame.data.emplace_back(0xf8);
-			newFrame.data.emplace_back(0xff);
-			newFrame.data.emplace_back(0xfe);
+			newFrame.data.push_back(0xf8);
+			newFrame.data.push_back(0xff);
+			newFrame.data.push_back(0xfe);
 			newFrame.type = AudioFrameType::Encoded;
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(newFrame));
 		}
@@ -210,7 +210,8 @@ namespace DiscordCoreAPI {
 
 	VoiceConnection::VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketSSLShard* baseShardNew,
 		std::atomic_bool* doWeQuitNew) noexcept
-		: WebSocketCore(&clientPtrNew->configManager, DiscordCoreInternal::WebSocketType::Voice), DatagramSocketClient(StreamType::None) {
+		: WebSocketCore(&clientPtrNew->configManager, DiscordCoreInternal::WebSocketType::Voice),
+		  DatagramSocketClient(StreamType::None, clientPtrNew->configManager.doWePrintWebSocketErrorMessages()) {
 		this->dataOpCode = DiscordCoreInternal::WebSocketOpCode::Op_Text;
 		this->configManager = &clientPtrNew->configManager;
 		this->discordCoreClient = clientPtrNew;
@@ -826,9 +827,9 @@ namespace DiscordCoreAPI {
 		std::vector<std::basic_string<uint8_t>> frames{};
 		for (size_t x = 0; x < 5; ++x) {
 			AudioFrameData newFrame{};
-			newFrame.data.emplace_back(0xf8);
-			newFrame.data.emplace_back(0xff);
-			newFrame.data.emplace_back(0xfe);
+			newFrame.data.push_back(0xf8);
+			newFrame.data.push_back(0xff);
+			newFrame.data.push_back(0xfe);
 			frames.push_back(static_cast<std::basic_string<uint8_t>>(this->packetEncrypter.encryptPacket(newFrame)));
 		}
 		for (auto& value: frames) {

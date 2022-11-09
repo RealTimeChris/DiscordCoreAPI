@@ -249,7 +249,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketClient(DiscordCoreAPI::StreamType streamType) noexcept;
+		DatagramSocketClient(DiscordCoreAPI::StreamType streamType, bool doWePrintErrors) noexcept;
 
 		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
 
@@ -275,10 +275,11 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) - 1 };
+		DiscordCoreAPI::StreamType streamTypeReal{};
 		RingBuffer<uint8_t, 16> outputBuffer{};
 		RingBuffer<uint8_t, 16> inputBuffer{};
-		DiscordCoreAPI::StreamType streamTypeReal{};
-		sockaddr_in streamTargetAddress{};
+		addrinfoWrapper address{};
+		bool doWePrintErrors{};
 		SOCKETWrapper socket{};
 		int64_t bytesRead{};
 	};
