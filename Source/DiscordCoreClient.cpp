@@ -146,10 +146,10 @@ namespace DiscordCoreAPI {
 		if (this->configManager.doWePrintFFMPEGSuccessMessages()) {
 			av_log_set_level(AV_LOG_INFO);
 		}
-		if (this->configManager.doWePrintFFMPEGErrorMessages()) {
+		else if (this->configManager.doWePrintFFMPEGErrorMessages()) {
 			av_log_set_level(AV_LOG_ERROR);
 		}
-		if (!this->configManager.doWePrintFFMPEGErrorMessages() && !this->configManager.doWePrintFFMPEGSuccessMessages()) {
+		else if (!this->configManager.doWePrintFFMPEGErrorMessages() && !this->configManager.doWePrintFFMPEGSuccessMessages()) {
 			av_log_set_level(AV_LOG_QUIET);
 		}
 		if (sodium_init() == -1) {
