@@ -1054,7 +1054,7 @@ namespace DiscordCoreInternal {
 								 << DiscordCoreAPI::reset() << endl
 								 << endl;
 						}
-						std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::steady_clock::now().time_since_epoch().count()) };
+						std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::high_resolution_clock::now().time_since_epoch().count()) };
 						int32_t numOfMsToWait = static_cast<int32_t>(
 							1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
 						std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });

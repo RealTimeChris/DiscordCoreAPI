@@ -576,7 +576,7 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 
-		
+
 		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, this->address)) {
 			if (this->doWePrintErrors) {
 				cout << reportError("DatagramSocketClient::connect::getaddrinfo() 01, to: " + baseUrlNew) << endl;
@@ -585,7 +585,6 @@ namespace DiscordCoreInternal {
 		}
 
 		if (this->streamTypeReal == DiscordCoreAPI::StreamType::None) {
-
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); this->socket == SOCKET_ERROR) {
 				if (this->doWePrintErrors) {
 					cout << reportError("DatagramSocketClient::connect::socket() 02, to: " + baseUrlNew) << endl;
@@ -593,7 +592,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 
-			if (::connect(this->socket,this->address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
+			if (::connect(this->socket, this->address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 				if (this->doWePrintErrors) {
 					cout << reportError("DatagramSocketClient::connect::connect() 01, to: " + baseUrlNew) << endl;
 				}
@@ -618,7 +617,6 @@ namespace DiscordCoreInternal {
 #endif
 
 		} else if (this->streamTypeReal == DiscordCoreAPI::StreamType::Client) {
-
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, 0); this->socket == SOCKET_ERROR) {
 				if (this->doWePrintErrors) {
 					cout << reportError("DatagramSocketClient::connect::socket() 02, to: " + baseUrlNew) << endl;
@@ -678,7 +676,7 @@ namespace DiscordCoreInternal {
 				}
 				return false;
 			}
-		
+
 			std::string serverToClientBuffer{};
 			while (!stopWatch.hasTimePassed() && serverToClientBuffer == "") {
 				serverToClientBuffer.resize(11);
@@ -692,7 +690,6 @@ namespace DiscordCoreInternal {
 					return false;
 				}
 			}
-			
 		}
 
 		return true;

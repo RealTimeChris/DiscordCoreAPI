@@ -275,7 +275,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::checkForAndSendHeartBeat(const bool isImmedate) noexcept {
 		if (this->heartBeatStopWatch.hasTimePassed() || isImmedate) {
 			DiscordCoreAPI::Jsonifier data{};
-			data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+			data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 			data["op"] = 3;
 			data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 			std::string string = this->prepMessageData(data.operator std::string(), this->dataOpCode);
@@ -495,12 +495,11 @@ namespace DiscordCoreAPI {
 						}
 						this->checkForConnections();
 					}
-
-					DoubleTimePointNs startingValue{ std::chrono::steady_clock::now().time_since_epoch() };
+					MovingAverager averager{ 12 };
+					DoubleTimePointNs startingValue{ std::chrono::high_resolution_clock::now().time_since_epoch() };
 					DoubleTimePointNs intervalCount{ std::chrono::nanoseconds{ 20000000 } };
 					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
-					int64_t frameCounter{ 0 };
-					DoubleTimePointNs totalTime{ std::chrono::nanoseconds{ 0 } };
+					std::chrono::duration<double, std::nano> latency{ std::chrono::nanoseconds{ 0 } };
 
 					this->sendSpeakingMessage(false);
 					this->sendSpeakingMessage(true);
@@ -517,7 +516,6 @@ namespace DiscordCoreAPI {
 						} else {
 							this->areWePlaying.store(true);
 						}
-						frameCounter++;
 						if (this->audioData.guildMemberId != 0) {
 							this->currentGuildMemberId = this->audioData.guildMemberId;
 						}
@@ -550,7 +548,7 @@ namespace DiscordCoreAPI {
 						if (doWeBreak) {
 							break;
 						}
-						auto waitTime = targetTime - std::chrono::steady_clock::now();
+						auto waitTime = targetTime - std::chrono::high_resolution_clock::now();
 						if (waitTime.count() >= 18000000) {
 							if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 								if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
@@ -558,28 +556,27 @@ namespace DiscordCoreAPI {
 								}
 							}
 						}
-						waitTime = targetTime - std::chrono::steady_clock::now();
-						nanoSleep(static_cast<uint64_t>(static_cast<double>(waitTime.count()) * 0.95f));
-						waitTime = targetTime - std::chrono::steady_clock::now();
+						waitTime = targetTime - std::chrono::high_resolution_clock::now();
+						nanoSleep(static_cast<uint64_t>(waitTime.count() * 0.95f));
+						waitTime = targetTime - std::chrono::high_resolution_clock::now();
 						if (waitTime.count() > 0 && waitTime.count() < 20000000) {
 							spinLock(waitTime.count());
 						}
-						startingValue = std::chrono::steady_clock::now();
 						if (newFrame.size() > 0) {
 							this->sendVoiceData(newFrame);
 						}
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
+						latency = std::chrono::high_resolution_clock::now() - startingValue;
+						averager.addValue(latency.count());
+						startingValue = std::chrono::high_resolution_clock::now();
 
 						this->audioData.data.clear();
 						this->audioData.sampleCount = 0;
 						this->audioData.type = AudioFrameType::Unset;
-						totalTime += std::chrono::steady_clock::now() - startingValue;
-						const auto intervalCountNew =
-							DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 } - (totalTime.time_since_epoch() / frameCounter) }
-								.time_since_epoch()
-								.count();
-						intervalCount = DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew) } };
-						targetTime = std::chrono::steady_clock::now().time_since_epoch() + intervalCount;
+						const auto intervalCountNew = DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 - averager.collectAverage() } };
+						intervalCount =
+							DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew.time_since_epoch().count()) } };
+						targetTime = std::chrono::high_resolution_clock::now().time_since_epoch() + intervalCount;
 					}
 					break;
 				}

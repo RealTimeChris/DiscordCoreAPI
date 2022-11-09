@@ -255,6 +255,7 @@ namespace DiscordCoreInternal {
 				HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
 				std::string baseUrl =
 					newSong.finalDownloadUrls[counter].urlPath.substr(0, std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
+				std::cout << "THE URL: " << newSong.finalDownloadUrls[counter].urlPath << std::endl;
 				std::string relativeUrl =
 					newSong.finalDownloadUrls[counter].urlPath.substr(std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
 				dataPackage03.baseUrl = baseUrl;
@@ -281,6 +282,28 @@ namespace DiscordCoreInternal {
 							newerVector.push_back(result.responseMessage[amountSubmitted]);
 							amountSubmitted++;
 							amountToSubmitRemaining--;
+						}
+					}
+					std::basic_string<char> string{};
+					string.push_back('O');
+					string.push_back('g');
+					string.push_back('g');
+					string.push_back('S');
+					int32_t startingIndex{};
+					std::cout << "THE CURRENT INDEX: " << startingIndex << std::endl;
+					int32_t findIndex{};
+					while (findIndex < 2) {
+						if (newerVector.find(string) != std::string::npos) {
+							findIndex++;
+							startingIndex = newerVector.find(string) + string.size();
+							newerVector = newerVector.substr(newerVector.find(string) + string.size(), newerVector.size() - newerVector.find(string));
+						}
+					}
+					std::cout << "THE CURRENT INDEX: " << startingIndex << std::endl;
+					for (size_t x = 0; x < newerVector.size(); ++x) {
+						std::cout << "INDEX: " << x << ": " << +newerVector[x] << ", ";
+						if (x % 100 == 0) {
+							std::cout << std::endl;
 						}
 					}
 					audioDecoder->submitDataForDecoding(newerVector);
