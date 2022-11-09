@@ -295,7 +295,7 @@ namespace DiscordCoreAPI {
 		if (this->parser.iterate(string.data(), string.length(), string.capacity()).get(value) == simdjson::error_code::SUCCESS) {
 			message = DiscordCoreInternal::WebSocketMessage{ value };
 		}
-
+		
 		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 			cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << data << reset() << endl << endl;
 		}
@@ -391,17 +391,19 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::runBridge(std::stop_token token) noexcept {
-		StopWatch processAndSleepStopWatch{ 20000us };
 		this->sendSilence();
-		MovingAverager averager{ 20 };
 		DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
+		MovingAverager averager{ 20 };
+		StopWatch processAndSleepStopWatch{ 20000000ns };
 		while (!token.stop_requested()) {
 			processAndSleepStopWatch.resetTimer();
 			if (processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) >= 0) {
-				std::this_thread::sleep_for(std::chrono::microseconds{ processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) });
+				std::this_thread::sleep_for(NanoSeconds{ processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) });
 			}
 			this->mixAudio();
-			this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
+			if (this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both) == DiscordCoreInternal::ProcessIOResult::Error) {
+				this->onClosed();
+			}
 			averager.addValue(processAndSleepStopWatch.totalTimePassed());
 			while (!processAndSleepStopWatch.hasTimePassed()) {
 			}
@@ -495,16 +497,20 @@ namespace DiscordCoreAPI {
 						}
 						this->checkForConnections();
 					}
-					MovingAverager averager{ 12 };
-					DoubleTimePointNs startingValue{ std::chrono::high_resolution_clock::now().time_since_epoch() };
-					DoubleTimePointNs intervalCount{ std::chrono::nanoseconds{ 20000000 } };
-					DoubleTimePointNs targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
-					std::chrono::duration<double, std::nano> latency{ std::chrono::nanoseconds{ 0 } };
+
+					TimePoint startingValue{ std::chrono::high_resolution_clock::now().time_since_epoch() };
+					TimePoint intervalCount{ std::chrono::nanoseconds{ 20000000 } };
+					TimePoint targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
+					MovingAverager totalTime{ 12 };
 
 					this->sendSpeakingMessage(false);
 					this->sendSpeakingMessage(true);
 
 					while (!stopToken.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
+						this->audioData.type = AudioFrameType::Unset;
+						this->audioData.sampleCount = 0;
+						this->audioData.data.clear();
+						
 						this->areWePlaying.store(true);
 						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							this->checkForAndSendHeartBeat(false);
@@ -562,24 +568,22 @@ namespace DiscordCoreAPI {
 						if (waitTime.count() > 0 && waitTime.count() < 20000000) {
 							spinLock(waitTime.count());
 						}
+						startingValue = std::chrono::high_resolution_clock::now();
 						if (newFrame.size() > 0) {
 							this->sendVoiceData(newFrame);
 						}
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
-						latency = std::chrono::high_resolution_clock::now() - startingValue;
-						averager.addValue(latency.count());
-						startingValue = std::chrono::high_resolution_clock::now();
-
-						this->audioData.data.clear();
-						this->audioData.sampleCount = 0;
-						this->audioData.type = AudioFrameType::Unset;
-						const auto intervalCountNew = DoubleTimePointNs{ std::chrono::nanoseconds{ 20000000 - averager.collectAverage() } };
-						intervalCount =
-							DoubleTimePointNs{ std::chrono::nanoseconds{ static_cast<uint64_t>(intervalCountNew.time_since_epoch().count()) } };
+						totalTime.addValue((std::chrono::high_resolution_clock::now() - startingValue).count());
+						const auto intervalCountNew =
+							TimePoint{ std::chrono::nanoseconds{ 20000000 } - std::chrono::nanoseconds{ totalTime.collectAverage() } }
+								.time_since_epoch()
+								.count();
+						intervalCount = TimePoint{ std::chrono::nanoseconds{ intervalCountNew } };
 						targetTime = std::chrono::high_resolution_clock::now().time_since_epoch() + intervalCount;
 					}
 					break;
 				}
+					
 					this->areWePlaying.store(true);
 				case VoiceActiveState::Exiting: {
 					return;
@@ -754,6 +758,7 @@ namespace DiscordCoreAPI {
 						this->runBridge(stopToken);
 					});
 				}
+				this->areWeConnecting.store(false);
 				this->activeState.store(VoiceActiveState::Playing);
 				this->play();
 				return;
@@ -895,6 +900,7 @@ namespace DiscordCoreAPI {
 		WebSocketCore::socket = SOCKET_ERROR;
 		this->voiceUsers.clear();
 		this->activeState.store(VoiceActiveState::Connecting);
+		this->areWeConnecting.store(true);
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
 		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.clearContents();
@@ -905,6 +911,7 @@ namespace DiscordCoreAPI {
 		WebSocketCore::ssl = nullptr;
 		WebSocketCore::socket = SOCKET_ERROR;
 		DatagramSocketClient::disconnect();
+		this->areWeConnecting.store(true);
 		this->closeCode = 0;
 		this->areWeHeartBeating = false;
 		if (this->streamSocket) {

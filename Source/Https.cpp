@@ -494,7 +494,7 @@ namespace DiscordCoreInternal {
 			}
 			result = httpsConnection.writeData(request, true);
 		} while (result == ProcessIOResult::Error);
-		if (result != ProcessIOResult::No_Error) {
+		if (result == ProcessIOResult::Error) {
 			httpsConnection.currentReconnectTries++;
 			httpsConnection.doWeConnect = true;
 			return this->httpsRequestInternal(httpsConnection, workload, rateLimitData);

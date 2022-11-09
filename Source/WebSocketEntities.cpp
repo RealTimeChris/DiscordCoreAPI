@@ -423,8 +423,8 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			didWeWrite = this->writeData(dataToSend, priority);
-		} while (didWeWrite != ProcessIOResult::No_Error);
-		if (didWeWrite != ProcessIOResult::No_Error) {
+		} while (didWeWrite == ProcessIOResult::Error);
+		if (didWeWrite == ProcessIOResult::Error) {
 			this->onClosed();
 			return false;
 		}
@@ -1256,7 +1256,7 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				auto result = this->shardMap[packageNew.currentShard]->processIO(10);
-				if (result != ProcessIOResult::No_Error) {
+				if (result == ProcessIOResult::Error) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + packageNew.currentShard << ","
 							 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
@@ -1283,7 +1283,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				auto result = this->shardMap[packageNew.currentShard]->processIO(10);
-				if (result != ProcessIOResult::No_Error) {
+				if (result == ProcessIOResult::Error) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + packageNew.currentShard << ","
 							 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl

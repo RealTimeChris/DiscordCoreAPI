@@ -98,9 +98,11 @@ namespace DiscordCoreAPI {
 		Snowflake userId{};
 	};
 
-	using DoubleTimePointNs = std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::duration<double, std::nano>>;
+	using Clock = std::chrono::high_resolution_clock;
+	using NanoSeconds = std::chrono::nanoseconds;
 
-	using DoubleTimeDurationNs =  std::chrono::duration<double, std::nano>;
+	using TimeDuration = std::chrono::duration<long long, NanoSeconds>;
+	using TimePoint = std::chrono::time_point<Clock, NanoSeconds>;
 
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
 		RTPPacketEncrypter() noexcept = default;
