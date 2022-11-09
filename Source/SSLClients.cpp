@@ -397,6 +397,7 @@ namespace DiscordCoreInternal {
 								this->outputBuffer.getCurrentHead()->getCurrentHead());
 							this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
 							this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+							dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
 							remainingBytes = dataToWrite.size();
 							amountCollected += amountToCollect;
 						}
@@ -710,27 +711,30 @@ namespace DiscordCoreInternal {
 	}
 
 	void DatagramSocketClient::writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept {
-		if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
-			uint64_t remainingBytes{ dataToWrite.size() };
-			uint64_t amountCollected{};
-			while (remainingBytes > 0) {
-				uint64_t amountToCollect{};
-				if (dataToWrite.size() >= static_cast<uint64_t>(1024 * 16)) {
-					amountToCollect = static_cast<uint64_t>(1024 * 16);
-				} else {
-					amountToCollect = dataToWrite.size();
+		if (this->areWeStillConnected()) {
+			if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
+				uint64_t remainingBytes{ dataToWrite.size() };
+				uint64_t amountCollected{};
+				while (remainingBytes > 0) {
+					uint64_t amountToCollect{};
+					if (dataToWrite.size() >= static_cast<uint64_t>(1024 * 16)) {
+						amountToCollect = static_cast<uint64_t>(1024 * 16);
+					} else {
+						amountToCollect = dataToWrite.size();
+					}
+					std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect,
+						this->outputBuffer.getCurrentHead()->getCurrentHead());
+					this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
+					this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+					dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
+					remainingBytes = dataToWrite.size();
+					amountCollected += amountToCollect;
 				}
-				std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect,
-					this->outputBuffer.getCurrentHead()->getCurrentHead());
-				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
+			} else {
+				std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
+				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
 				this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-				remainingBytes = dataToWrite.size();
-				amountCollected += amountToCollect;
 			}
-		} else {
-			std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
-			this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
-			this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 		}
 	}
 
