@@ -57,7 +57,6 @@
 	#include <discordcoreapi/WebHookEntities.hpp>
 	#include <discordcoreapi/WebSocketEntities.hpp>
 	#include <discordcoreapi/YouTubeAPI.hpp>
-	#include <discordcoreapi/Colors.hpp>
 
 namespace DiscordCoreAPI {
 
