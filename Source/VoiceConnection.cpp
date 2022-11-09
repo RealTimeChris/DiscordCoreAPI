@@ -191,8 +191,8 @@ namespace DiscordCoreAPI {
 		if (buffer.size() > 0) {
 			AudioFrameData frame{};
 			frame.data.insert(frame.data.begin(), buffer.begin(), buffer.end());
-			frame.sampleCount = 960;
-			frame.type = AudioFrameType::Encoded;
+			frame.sampleCount = buffer.size() / 2 / 2;
+			frame.type = AudioFrameType::RawPCM;
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
 		} else {
 			AudioFrameData newFrame{};
@@ -751,13 +751,6 @@ namespace DiscordCoreAPI {
 				if (this->voiceConnectInitData.streamInfo.type != StreamType::None) {
 					this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this->voiceConnectInitData.streamInfo.type,
 						this->voiceConnectInitData.guildId);
-					if (this->taskThread02) {
-						this->taskThread02->request_stop();
-						if (this->taskThread02->joinable()) {
-							this->taskThread02->join();
-						}
-						this->taskThread02.reset(nullptr);
-					}
 					this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port);
 					this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 						this->runBridge(stopToken);
@@ -990,15 +983,8 @@ namespace DiscordCoreAPI {
 			for (int32_t x = 0; x < decodedSize; ++x) {
 				this->downSampledVector[x] = this->upSampledVector[x] / voiceUserCount;
 			}
-			auto encodedData =
-				this->encoder.encodeSingleAudioFrame(std::basic_string_view<opus_int16>{ this->downSampledVector.data(), decodedSize });
-			if (encodedData.size() <= 0) {
-				if (this->configManager->doWePrintGeneralErrorMessages()) {
-					cout << "Failed to encode user's voice payload." << endl;
-				}
-			} else {
-				this->streamSocket->writeData(encodedData);
-			}
+			this->streamSocket->writeData(
+				std::basic_string_view<uint8_t>{ reinterpret_cast<uint8_t*>(this->downSampledVector.data()), decodedSize * 2 });
 		}
 	}
 

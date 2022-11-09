@@ -266,7 +266,6 @@ namespace DiscordCoreInternal {
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
 			dataPackage.configManager = this->configManager;
-			std::unique_ptr<DiscordCoreAPI::AudioEncoder> audioEncoder{ std::make_unique<DiscordCoreAPI::AudioEncoder>() };
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			std::string string = newSong.finalDownloadUrls[1].urlPath;
 			streamSocket->writeData(string, true);
@@ -400,9 +399,8 @@ namespace DiscordCoreInternal {
 							}
 						}
 						for (auto iterator = frames.begin(); iterator != frames.end();) {
-							auto encodedFrame = audioEncoder->encodeSingleAudioFrame(*iterator);
-							encodedFrame.guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId.operator size_t();
-							DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(encodedFrame));
+							iterator->guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId.operator size_t();
+							DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(*iterator));
 							iterator = frames.erase(iterator);
 						}
 					}
