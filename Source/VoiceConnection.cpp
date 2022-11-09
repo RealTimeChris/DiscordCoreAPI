@@ -110,16 +110,12 @@ namespace DiscordCoreAPI {
 	std::basic_string<uint8_t> VoiceUser::extractPayload() {
 		StopWatch stopWatch{ 15000us };
 		std::basic_string<uint8_t> value{};
-		if (this->wereWeEnding.load()) {
-			this->payloads.tryReceive(value);
-		} else {
-			stopWatch.resetTimer();
-			while (!this->payloads.tryReceive(value)) {
-				if (stopWatch.hasTimePassed()) {
-					break;
-				}
-				std::this_thread::sleep_for(1us);
+		stopWatch.resetTimer();
+		while (!this->payloads.tryReceive(value) && !this->wereWeEnding.load()) {
+			if (stopWatch.hasTimePassed()) {
+				break;
 			}
+			std::this_thread::sleep_for(1us);
 		}
 		return value;
 	}
@@ -299,71 +295,69 @@ namespace DiscordCoreAPI {
 		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 			cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << data << reset() << endl << endl;
 		}
-		if (message.op != 0) {
-			switch (message.op) {
-				case 2: {
-					const VoiceSocketReadyData data{ value["d"] };
-					this->audioSSRC = data.ssrc;
-					this->voiceIp = data.ip;
-					this->port = data.port;
-					this->audioEncryptionMode = data.mode;
-					this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
-					break;
-				}
-				case 4: {
-					auto arrayValue = getArray(value["d"], "secret_key");
-					if (arrayValue.didItSucceed) {
-						std::vector<uint8_t> secretKey{};
-						for (auto iterator: arrayValue.arrayValue) {
-							secretKey.push_back(static_cast<uint8_t>(iterator.get_uint64().take_value()));
-						}
-						this->encryptionKey = secretKey;
+		switch (message.op) {
+			case 2: {
+				const VoiceSocketReadyData data{ value["d"] };
+				this->audioSSRC = data.ssrc;
+				this->voiceIp = data.ip;
+				this->port = data.port;
+				this->audioEncryptionMode = data.mode;
+				this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
+				break;
+			}
+			case 4: {
+				auto arrayValue = getArray(value["d"], "secret_key");
+				if (arrayValue.didItSucceed) {
+					std::vector<uint8_t> secretKey{};
+					for (simdjson::ondemand::array_iterator iterator = arrayValue.arrayValue.begin(); iterator != arrayValue.arrayValue.end();++iterator) {
+						secretKey.push_back(static_cast<uint8_t>(iterator.operator*().get_uint64().take_value()));
 					}
-					this->packetEncrypter = RTPPacketEncrypter{ this->audioSSRC, this->encryptionKey };
-					this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-					break;
+					this->encryptionKey = secretKey;
 				}
-				case 5: {
-					const uint32_t ssrc = getUint32(value["d"], "ssrc");
-					VoiceUser user{};
-					user.setUserId(stoull(getString(value["d"], "user_id")));
-					std::unique_lock lock{ this->voiceUserMutex };
-					if (!Users::getCachedUser({ .userId = user.getUserId() }).getFlagValue(UserFlags::Bot) ||
-						this->voiceConnectInitData.streamInfo.streamBotAudio) {
-						if (!this->voiceUsers.contains(ssrc)) {
-							this->voiceUsers[ssrc] = std::move(user);
-						}
+				this->packetEncrypter = RTPPacketEncrypter{ this->audioSSRC, this->encryptionKey };
+				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+				break;
+			}
+			case 5: {
+				const uint32_t ssrc = getUint32(value["d"], "ssrc");
+				VoiceUser user{};
+				user.setUserId(stoull(getString(value["d"], "user_id")));
+				std::unique_lock lock{ this->voiceUserMutex };
+				if (!Users::getCachedUser({ .userId = user.getUserId() }).getFlagValue(UserFlags::Bot) ||
+					this->voiceConnectInitData.streamInfo.streamBotAudio) {
+					if (!this->voiceUsers.contains(ssrc)) {
+						this->voiceUsers[ssrc] = std::move(user);
 					}
-					break;
 				}
-				case 6: {
-					this->haveWeReceivedHeartbeatAck = true;
-					break;
-				}
-				case 8: {
-					this->heartBeatStopWatch =
-						StopWatch{ std::chrono::milliseconds{ static_cast<uint32_t>(getFloat(value["d"], "heartbeat_interval")) } };
-					this->areWeHeartBeating = true;
-					this->connectionState.store(VoiceConnectionState::Sending_Identify);
-					this->currentState.store(DiscordCoreInternal::WebSocketState::Authenticated);
-					this->haveWeReceivedHeartbeatAck = true;
-					break;
-				}
-				case 9: {
-					this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
-					break;
-				}
-				case 13: {
-					const auto userId = stoull(getString(value["d"], "user_id"));
-					std::unique_lock lock{ this->voiceUserMutex };
-					for (auto& [key, value]: this->voiceUsers) {
-						if (userId == value.getUserId()) {
-							this->voiceUsers.erase(key);
-							break;
-						}
+				break;
+			}
+			case 6: {
+				this->haveWeReceivedHeartbeatAck = true;
+				break;
+			}
+			case 8: {
+				this->heartBeatStopWatch =
+					StopWatch{ std::chrono::milliseconds{ static_cast<uint32_t>(getFloat(value["d"], "heartbeat_interval")) } };
+				this->areWeHeartBeating = true;
+				this->connectionState.store(VoiceConnectionState::Sending_Identify);
+				this->currentState.store(DiscordCoreInternal::WebSocketState::Authenticated);
+				this->haveWeReceivedHeartbeatAck = true;
+				break;
+			}
+			case 9: {
+				this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
+				break;
+			}
+			case 13: {
+				const auto userId = stoull(getString(value["d"], "user_id"));
+				std::unique_lock lock{ this->voiceUserMutex };
+				for (auto& [key, value]: this->voiceUsers) {
+					if (userId == value.getUserId()) {
+						this->voiceUsers.erase(key);
+						break;
 					}
-					break;
 				}
+				break;
 			}
 		}
 		return true;
