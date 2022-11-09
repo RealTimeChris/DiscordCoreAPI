@@ -690,17 +690,13 @@ namespace DiscordCoreInternal {
 	using namespace std::literals;
 	using std::cout;
 	using std::endl;
-	
+
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder;
 	class DiscordCoreAPI_Dll YouTubeRequestBuilder;
 	class DiscordCoreAPI_Dll WebSocketSSLShard;
 	class DiscordCoreAPI_Dll BaseSocketAgent;
 	class DiscordCoreAPI_Dll SoundCloudAPI;
 	class DiscordCoreAPI_Dll YouTubeAPI;
-
-	template<typename Ty> inline auto utCast(Ty x) -> std::enable_if_t<std::is_enum_v<Ty>, std::underlying_type_t<Ty>> {
-		return static_cast<std::underlying_type_t<Ty>>(x);
-	}
 
 	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
@@ -878,16 +874,6 @@ namespace DiscordCoreInternal {
 		operator uint32_t();
 	};
 
-	/// For updating a User's presence. \brief For updating a User's presence.
-	struct DiscordCoreAPI_Dll UpdatePresenceData {
-		std::vector<DiscordCoreAPI::ActivityData> activities{};///< A vector of activities.
-		bool afk{ false };///< Are we afk.
-		int64_t since{ 0 };///< When was the activity started?
-		std::string status{};///< Current status.
-
-		operator DiscordCoreAPI::Jsonifier();
-	};
-
 }// namespace DiscordCoreInternal
 
 
@@ -897,15 +883,37 @@ namespace DiscordCoreAPI {
 	using std::cout;
 	using std::endl;
 
-	class DiscordCoreAPI_Dll DiscordCoreClient;
-	class DiscordCoreAPI_Dll VoiceConnection;
-	class DiscordCoreAPI_Dll GuildMember;
-	class DiscordCoreAPI_Dll ChannelData;
-	class DiscordCoreAPI_Dll Reactions;
-	class DiscordCoreAPI_Dll BotUser;
-	class DiscordCoreAPI_Dll File;
+	struct File;
+
+	class OnVoiceServerUpdateData;
+	class OnVoiceStateUpdateData;
+	class DiscordCoreClient;
+	class VoiceConnection;
+	class GuildMember;
+	class ChannelData;
+	class Reactions;
+	class BotUser;
 
 	template<typename RTy> class CoRoutine;
+
+	/// Update-presence status types. \brief Update-presence status types.
+	enum class UpdatePresenceStatusTypes {
+		online = 0,///< Online.
+		dnd = 1,///< Do Not Disturb.
+		idle = 2,///<	AFK.
+		invisible = 3,///< Invisible and shown as offline.
+		offline = 4,///< Offline
+	};
+
+	/// For updating a User's presence. \brief For updating a User's presence.
+	struct DiscordCoreAPI_Dll UpdatePresenceData {
+		std::vector<ActivityData> activities{};///< A vector of activities.
+		UpdatePresenceStatusTypes status{};///< Current status.
+		int64_t since{ 0 };///< When was the activity started?
+		bool afk{ false };///< Are we afk.
+
+		operator Jsonifier();
+	};
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void ));
 
@@ -995,15 +1003,15 @@ namespace DiscordCoreAPI {
 
 	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
-		GatewayIntents intents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
-		DiscordCoreInternal::UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
+		GatewayIntents intents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
+		UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
+		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
+		std::string connectionPort{};///< A potentially alternative connection port for the websocket.
 		LoggingOptions logOptions{};///< Options for the output/logging of the library.
 		CacheOptions cacheOptions{};///< Options for the cache of the library.
-		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
-		std::string connectionPort{};///< A potentially alternative connection port for the websocket.
 		std::string botToken{};///< Your bot's token.
 	};
 
@@ -1042,7 +1050,7 @@ namespace DiscordCoreAPI {
 
 		const bool doWeCacheRoles();
 
-		const DiscordCoreInternal::UpdatePresenceData getPresenceData();
+		const UpdatePresenceData getPresenceData();
 
 		const std::string getBotToken();
 
@@ -1243,9 +1251,9 @@ namespace DiscordCoreAPI {
 	/// Represents a single frame of audio data. \brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
+		std::basic_string<uint8_t> data{};///< The audio data.
 		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
 		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
-		std::vector<uint8_t> data{};///< The audio data.
 
 		AudioFrameData() noexcept = default;
 
@@ -1492,11 +1500,9 @@ namespace DiscordCoreAPI {
 	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
 	/// \param currentFunctionName A string to display the current function's name.
 	/// \param location For deriving the current file, line, and column - do not set this value.
-	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName,
-		std::source_location location = std::source_location::current());
+	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
 
-	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName,
-		std::source_location location = std::source_location::current());
+	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
 
 	DiscordCoreAPI_Dll std::string constructMultiPartData(std::string data, const std::vector<File>& files);
 
@@ -1860,14 +1866,14 @@ namespace DiscordCoreAPI {
 	concept CopyableOrMovable = std::copyable<OTy> || std::movable<OTy>;
 
 	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
-	/// \tparam OTy The type of object that will be sent over 
+	/// \tparam OTy The type of object that will be sent over
 	///  message block.
 	template<CopyableOrMovable OTy> class UnboundedMessageBlock {
 	  public:
 		UnboundedMessageBlock<OTy>& operator=(UnboundedMessageBlock<OTy>&& other) noexcept {
 			if (this != &other) {
 				this->queue = std::move(other.queue);
-				other.queue = std::queue<OTy>{};
+				other.queue = std::deque<OTy>{};
 			}
 			return *this;
 		}
@@ -2136,7 +2142,7 @@ namespace DiscordCoreInternal {
 
 	template<typename OTy> class RingBufferSlice : public RingBufferInterface<OTy, 1024 * 16> {};
 
-	template<typename OTy,uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice<OTy>, SliceCount> {
+	template<typename OTy, uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice<OTy>, SliceCount> {
 	  public:
 		void clear() noexcept {
 			for (uint64_t x = 0; x < this->arrayValue.size(); ++x) {

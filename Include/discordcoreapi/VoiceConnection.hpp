@@ -49,23 +49,51 @@ namespace DiscordCoreAPI {
 			void operator()(OpusDecoder*) noexcept;
 		};
 
-		OpusDecoderWrapper& operator=(OpusDecoderWrapper&&) noexcept;
-
-		OpusDecoderWrapper(OpusDecoderWrapper&&) noexcept;
-
 		OpusDecoderWrapper();
 
-		std::basic_string_view<opus_int16> decodeData(const std::basic_string_view<unsigned char> dataToDecode);
-
-		operator OpusDecoder*() noexcept;
+		std::basic_string_view<opus_int16> decodeData(const std::basic_string_view<uint8_t> dataToDecode);
 
 	  protected:
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> ptr{ nullptr, OpusDecoderDeleter{} };
 		std::vector<opus_int16> data{};
 	};
 
+	struct MovingAverager {
+		MovingAverager(size_t periodCountNew) noexcept;
+
+		void addValue(int64_t value);
+
+		int64_t collectAverage();
+
+	  protected:
+		std::deque<int64_t> values{};
+		const size_t periodCount{};
+	};
+
 	struct DiscordCoreAPI_Dll VoiceUser {
-		std::deque<std::basic_string<opus_int16>> payloads{};
+		VoiceUser() noexcept = default;
+
+		VoiceUser& operator=(VoiceUser&&) noexcept;
+
+		VoiceUser(VoiceUser&&) noexcept;
+
+		void insertPayload(std::basic_string<uint8_t>&&);
+
+		std::basic_string<uint8_t> extractPayload();
+
+		OpusDecoderWrapper& getDecoder();
+
+		void setEndingStatus(bool);
+
+		void setUserId(Snowflake);
+
+		bool getEndingStatus();
+
+		Snowflake getUserId();
+
+	  protected:
+		UnboundedMessageBlock<std::basic_string<uint8_t>> payloads{};
+		std::atomic_bool wereWeEnding{ false };
 		OpusDecoderWrapper decoder{};
 		Snowflake userId{};
 	};
@@ -73,19 +101,20 @@ namespace DiscordCoreAPI {
 	using DoubleTimePointNs = std::chrono::time_point<std::chrono::steady_clock, std::chrono::duration<double, std::nano>>;
 
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
-		std::vector<unsigned char> keys{};
-		std::vector<unsigned char> data{};
+		RTPPacketEncrypter() noexcept = default;
+
+		RTPPacketEncrypter(uint32_t ssrcNew, const std::vector<uint8_t>& keysNew) noexcept;
+
+		std::basic_string_view<uint8_t> encryptPacket(const AudioFrameData& audioData) noexcept;
+
+	  protected:
+		std::vector<uint8_t> keys{};
+		std::vector<uint8_t> data{};
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };
 		uint32_t timeStamp{};
 		uint16_t sequence{};
 		uint32_t ssrc{};
-
-		RTPPacketEncrypter() noexcept = default;
-
-		RTPPacketEncrypter(uint32_t ssrcNew, const std::vector<unsigned char>& keysNew) noexcept;
-
-		std::basic_string_view<unsigned char> encryptPacket(const AudioFrameData& audioData) noexcept;
 	};
 
 	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
@@ -172,16 +201,15 @@ namespace DiscordCoreAPI {
 		std::mutex voiceUserMutex{};
 		AudioFrameData audioData{};
 		std::string externalIp{};
-		StreamInfo streamInfo{};
 		AudioEncoder encoder{};
 		std::string voiceIp{};
 		std::string baseUrl{};
 		uint32_t audioSSRC{};
 		uint64_t port{};
 
-		void parseIncomingVoiceData(const std::basic_string_view<unsigned char> rawDataBufferNew) noexcept;
+		void parseIncomingVoiceData(const std::basic_string_view<uint8_t> rawDataBufferNew) noexcept;
 
-		void sendVoiceData(const std::basic_string_view<unsigned char> responseData) noexcept;
+		void sendVoiceData(const std::basic_string_view<uint8_t> responseData) noexcept;
 
 		void connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept;
 
@@ -202,8 +230,6 @@ namespace DiscordCoreAPI {
 		bool areWeCurrentlyPlaying() noexcept;
 
 		void handleAudioBuffer() noexcept;
-
-		void reconnectStream() noexcept;
 
 		void connectInternal() noexcept;
 

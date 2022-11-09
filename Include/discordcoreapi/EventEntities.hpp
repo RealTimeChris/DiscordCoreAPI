@@ -125,7 +125,7 @@ namespace DiscordCoreInternal {
 
 		Event<RTy, ArgTypes...>& operator=(Event<RTy, ArgTypes...>&& other) noexcept {
 			if (this != &other) {
-				this->functions.swap(other.functions);
+				this->functions = std::move(other.functions);
 				other.functions = std::map<EventDelegateToken, EventDelegate<RTy, ArgTypes...>>{};
 				this->eventId = std::move(other.eventId);
 				other.eventId = std::string{};
@@ -156,8 +156,10 @@ namespace DiscordCoreInternal {
 		}
 
 		void remove(EventDelegateToken eventToken) {
-			if (this->functions.contains(eventToken)) {
-				this->functions.erase(eventToken);
+			if (eventToken.eventId == this->eventId) {
+				if (this->functions.contains(eventToken)) {
+					this->functions.erase(eventToken);
+				}
 			}
 		}
 

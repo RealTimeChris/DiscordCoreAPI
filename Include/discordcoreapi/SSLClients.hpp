@@ -77,7 +77,8 @@ namespace DiscordCoreInternal {
 	#endif
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
-		std::unordered_map<uint32_t, pollfd> polls{};
+		std::vector<size_t> indices{};
+		std::vector<pollfd> polls{};
 	};
 
 	#ifdef _WIN32
@@ -102,8 +103,6 @@ namespace DiscordCoreInternal {
 
 		operator SSL_CTX*();
 
-		SSL_CTXWrapper() noexcept = default;
-
 	  protected:
 		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> ptr{ nullptr, SSL_CTXDeleter{} };
 	};
@@ -118,8 +117,6 @@ namespace DiscordCoreInternal {
 		SSLWrapper& operator=(SSL* other);
 
 		operator SSL*();
-
-		SSLWrapper() noexcept = default;
 
 	  protected:
 		std::unique_ptr<SSL, SSLDeleter> ptr{ nullptr, SSLDeleter{} };
@@ -155,8 +152,6 @@ namespace DiscordCoreInternal {
 
 		operator sockaddr*();
 
-		sockaddrWrapper() noexcept = default;
-
 		~sockaddrWrapper() noexcept = default;
 
 	  protected:
@@ -169,8 +164,6 @@ namespace DiscordCoreInternal {
 		operator addrinfo**();
 
 		operator addrinfo*();
-
-		addrinfoWrapper() noexcept = default;
 
 		~addrinfoWrapper();
 
@@ -256,13 +249,13 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketClient(DiscordCoreAPI::StreamType streamType) noexcept;
+		DatagramSocketClient(DiscordCoreAPI::StreamType streamType, bool doWePrintErrors) noexcept;
 
 		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
 
-		void writeData(std::basic_string_view<unsigned char> dataToWrite) noexcept;
+		void writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept;
 
-		std::basic_string_view<unsigned char> getInputBuffer() noexcept;
+		std::basic_string_view<uint8_t> getInputBuffer() noexcept;
 
 		ProcessIOResult processIO(ProcessIOType type) noexcept;
 
@@ -278,13 +271,15 @@ namespace DiscordCoreInternal {
 
 		void disconnect() noexcept;
 
+		~DatagramSocketClient() noexcept;
+
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) - 1 };
-		RingBuffer<unsigned char, 16> outputBuffer{};
-		RingBuffer<unsigned char, 16> inputBuffer{};
 		DiscordCoreAPI::StreamType streamTypeReal{};
-		std::recursive_mutex accessMutex{};
-		sockaddr_in streamTargetAddress{};
+		RingBuffer<uint8_t, 16> outputBuffer{};
+		RingBuffer<uint8_t, 16> inputBuffer{};
+		addrinfoWrapper address{};
+		bool doWePrintErrors{};
 		SOCKETWrapper socket{};
 		int64_t bytesRead{};
 	};

@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
-		UpdatePresenceData presence{};
+		DiscordCoreAPI::UpdatePresenceData presence{};
 		int32_t largeThreshold{ 250 };
 		int32_t numberOfShards{};
 		int32_t currentShard{};
@@ -313,10 +313,10 @@ namespace DiscordCoreInternal {
 
 		WebSocketMessage(simdjson::ondemand::value);
 
-		template<typename RTy> RTy processJsonMessage(simdjson::ondemand::value jsonData) {
+		template<typename RTy> RTy processJsonMessage(simdjson::ondemand::value jsonData, const char* dataName) {
 			simdjson::ondemand::value object{};
-			if (jsonData["d"].get(object) != simdjson::error_code::SUCCESS) {
-				throw std::runtime_error{ "Failed to collect the 'd'." };
+			if (jsonData[dataName].get(object) != simdjson::error_code::SUCCESS) {
+				throw std::runtime_error{ std::string{ "Failed to collect the " } + dataName };
 			} else {
 				return RTy{ object };
 			}
@@ -777,18 +777,6 @@ namespace DiscordCoreAPI {
 		Longest = 10080///< Longest.
 	};
 
-	/// Party data. \brief Party data.
-	class DiscordCoreAPI_Dll PartyData : public DiscordEntity {
-	  public:
-		std::vector<int32_t> size{ 0, 0 };///< The size of the party.
-
-		PartyData() noexcept = default;
-
-		PartyData(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~PartyData() noexcept = default;
-	};
-
 	enum class RoleFlags : uint8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
 
 	/// Data structure representing a single Role. \brief Data structure representing a single Role.
@@ -842,45 +830,6 @@ namespace DiscordCoreAPI {
 		virtual ~EmojiData() noexcept = default;
 	};
 
-	/// Assets data. \brief Party data.
-	struct DiscordCoreAPI_Dll AssetsData {
-		StringWrapper largeImage{};///< Keyname of an asset to display.
-		StringWrapper smallImage{};///< Keyname of an asset to display.
-		StringWrapper largeText{};///< Hover text for the large image.
-		StringWrapper smallText{};///< Hover text for the small image.
-
-		AssetsData() noexcept = default;
-
-		virtual ~AssetsData() noexcept = default;
-	};
-
-	/// Secrets data. \brief Secrets data.
-	struct DiscordCoreAPI_Dll SecretsData {
-		StringWrapper spectate{};///< Unique hash for the given match context.
-		StringWrapper match{};///< Unique hash for Spectate button.
-		StringWrapper join{};///< Unique hash for chat invitesand Ask to Join.
-
-		SecretsData() noexcept = default;
-
-		virtual ~SecretsData() noexcept = default;
-	};
-
-	/// Timestamp data. \brief Timestamp data.
-	struct DiscordCoreAPI_Dll TimestampData {
-		int64_t start{ 0 };///< Unix timeStamp - Send this to have an "elapsed" timer.
-		int64_t end{ 0 };///< Unix timeStamp - send this to have a "remaining" timer.
-
-		TimestampData() noexcept = default;
-
-		virtual ~TimestampData() noexcept = default;
-	};
-
-	/// Button data. \brief Button data.
-	struct DiscordCoreAPI_Dll ButtonData {
-		StringWrapper label{};///< Visible label of the button.
-		StringWrapper url{};///< Url to display on the button.
-	};
-
 	/// Activity types. \brief Activity types.
 	enum class ActivityType : uint8_t {
 		Game = 0,///< Game.
@@ -893,21 +842,9 @@ namespace DiscordCoreAPI {
 
 	/// Activity data. \brief Activity data.
 	struct DiscordCoreAPI_Dll ActivityData {
-		TimestampData timestamps{};///< Timestamp data.
-		Snowflake applicationId{};///< Application id for the current application.
-		StringWrapper details{};///< Details about the activity.
-		bool instance{ false };///< Whether this activity is an instanced context, like a match.
-		StringWrapper state{};///< The player's current party status.
-		SecretsData secrets{};///< Secrets data.
-		int32_t createdAt{ 0 };///< Timestamp of when the activity began.
-		ButtonData buttons{};///< Button Data.
 		StringWrapper name{};///< Name of the activity.
 		ActivityType type{};///< Activity data.
-		AssetsData assets{};///< Assets data.
 		StringWrapper url{};///< Url associated with the activity.
-		EmojiData emoji{};///< Emoji associated with the activity.
-		PartyData party{};///< Party data.
-		int32_t flags{ 0 };///< Flags.
 
 		ActivityData() noexcept = default;
 
@@ -959,7 +896,7 @@ namespace DiscordCoreAPI {
 		StringWrapper nick{};///< Their nick/display name.
 		Snowflake guildId{};///< The current Guild's id.
 		IconHash avatar{};///< This GuildMember's Guild Avatar.
-		
+
 		GuildMemberData() noexcept = default;
 
 		GuildMemberData& operator=(GuildMemberData&&) noexcept;
@@ -1895,7 +1832,6 @@ namespace DiscordCoreAPI {
 		/// \param channelId An id of the voice channel to connect to.
 		/// \param selfDeaf Whether or not to self-deafen the bot.
 		/// \param selfMute Whether or not to self-mute the bot.
-		/// \param streamType For usage with the Vc-to-Vc audio streaming option.
 		/// \param streamInfo For usage with the Vc-to-Vc audio streaming option.
 		/// \returns VoiceConnection* A pointer to the currently held voice connection, or nullptr if it failed to connect.
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{ 0 }, bool selfDeaf = false,
@@ -2556,8 +2492,7 @@ namespace DiscordCoreAPI {
 	/// Data for when threads are synced. \brief Data for when threads are synced.
 	struct DiscordCoreAPI_Dll ThreadListSyncData {
 		std::vector<ThreadMemberData> members{};///< Array of members that are a part of the Thread.
-		std::vector<std::string>
-			channelIds{};///< The parent Channel ids whose threads are being synced. If omitted, then threads were synced for entire Guild.
+		std::vector<std::string> channelIds{};///< The parent Channel ids whose threads are being synced.
 		std::vector<ChannelData> threads{};///< All active threads in the given channels that the current User can access.
 		Snowflake guildId{};///< The id of the Guild for which the threads are being synced.
 

@@ -61,7 +61,6 @@ namespace DiscordCoreAPI {
 	/// \tparam RTy The type of parameter that is returned by the CoRoutine.
 	template<typename RTy> class CoRoutine : public CoRoutineBase {
 	  public:
-
 		class DiscordCoreAPI_Dll promise_type {
 		  public:
 			template<typename RTy02> friend class CoRoutine;
@@ -216,7 +215,6 @@ namespace DiscordCoreAPI {
 	/// \tparam void The type of parameter that is returned by the CoRoutine.
 	template<> class CoRoutine<void> : public CoRoutineBase {
 	  public:
-
 		class DiscordCoreAPI_Dll promise_type {
 		  public:
 			template<typename RTy> friend class CoRoutine;
@@ -360,7 +358,6 @@ namespace DiscordCoreAPI {
 	/// \tparam RTy The type of value returned by the containing CoRoutine.
 	template<typename RTy> class NewThreadAwaiter {
 	  public:
-
 		bool await_ready() const noexcept {
 			return false;
 		}

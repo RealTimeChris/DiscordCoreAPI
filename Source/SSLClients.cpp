@@ -242,7 +242,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		const char optionValue{ true };
+		constexpr char optionValue{ true };
 		if (setsockopt(this->socket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("SSLClient::connect::setsockopt(), to: " + baseUrl) << endl;
@@ -322,7 +322,8 @@ namespace DiscordCoreInternal {
 				} else {
 					fdSet.events = POLLIN;
 				}
-				readWriteSet.polls[key] = fdSet;
+				readWriteSet.indices.push_back(key);
+				readWriteSet.polls.push_back(fdSet);
 			}
 		}
 
@@ -330,13 +331,11 @@ namespace DiscordCoreInternal {
 			return returnValue;
 		}
 
-		if (auto returnValueNew =
-				poll(&readWriteSet.polls.begin().operator*().second, static_cast<unsigned long>(readWriteSet.polls.size()), 1);
+		if (auto returnValueNew = poll(readWriteSet.polls.data(), static_cast<unsigned long>(readWriteSet.polls.size()), 1);
 			returnValueNew == SOCKET_ERROR) {
-			for (auto& [key, value]: readWriteSet.polls) {
-				if (readWriteSet.polls[key].revents & POLLERR || readWriteSet.polls[key].revents & POLLHUP ||
-					readWriteSet.polls[key].revents & POLLNVAL) {
-					returnValue.emplace_back(shardMap[key].get());
+			for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
+				if (readWriteSet.polls[x].revents & POLLERR || readWriteSet.polls[x].revents & POLLHUP || readWriteSet.polls[x].revents & POLLNVAL) {
+					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
 				}
 			}
 			return returnValue;
@@ -350,16 +349,16 @@ namespace DiscordCoreInternal {
 			return returnValue;
 		}
 
-		for (auto& [key, value]: readWriteSet.polls) {
-			if (readWriteSet.polls[key].revents & POLLOUT) {
-				if (!shardMap[key]->processWriteData()) {
-					returnValue.emplace_back(shardMap[key].get());
+		for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
+			if (readWriteSet.polls[x].revents & POLLOUT) {
+				if (!shardMap[readWriteSet.indices[x]]->processWriteData()) {
+					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
 					continue;
 				}
 			}
-			if (readWriteSet.polls[key].revents & POLLIN) {
-				if (!shardMap[key]->processReadData()) {
-					returnValue.emplace_back(shardMap[key].get());
+			if (readWriteSet.polls[x].revents & POLLIN) {
+				if (!shardMap[readWriteSet.indices[x]]->processReadData()) {
+					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
 					continue;
 				}
 			}
@@ -398,6 +397,7 @@ namespace DiscordCoreInternal {
 								this->outputBuffer.getCurrentHead()->getCurrentHead());
 							this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
 							this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+							dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
 							remainingBytes = dataToWrite.size();
 							amountCollected += amountToCollect;
 						}
@@ -415,16 +415,12 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult SSLClient::processIO(int32_t waitTimeInMs) noexcept {
-		if (!this->areWeStillConnected()) {
-			return ProcessIOResult::Error;
-		}
 		pollfd readWriteSet{ .fd = static_cast<SOCKET>(this->socket) };
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
 			readWriteSet.events = POLLIN;
 		}
-		ProcessIOResult result{ ProcessIOResult::No_Error };
 		if (auto returnValue = poll(&readWriteSet, 1, waitTimeInMs); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportSSLError("SSLClient::processIO()") << endl;
@@ -434,7 +430,7 @@ namespace DiscordCoreInternal {
 			if (!this->areWeAStandaloneSocket) {
 				this->handleBuffer();
 			}
-			result = ProcessIOResult::No_Error;
+			return ProcessIOResult::No_Error;
 		} else {
 			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLNVAL) {
 				if (this->doWePrintErrorMessages) {
@@ -456,7 +452,7 @@ namespace DiscordCoreInternal {
 		if (!this->areWeAStandaloneSocket) {
 			this->handleBuffer();
 		}
-		return result;
+		return ProcessIOResult::No_Error;
 	}
 
 	std::string_view SSLClient::getInputBuffer() noexcept {
@@ -500,14 +496,15 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					this->disconnect();
+					if (this->doWePrintErrorMessages) {
+						cout << reportSSLError("SSLClient::processWriteData()", errorValue, this->ssl) << endl;
+					}
 					return false;
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
 						cout << reportSSLError("SSLClient::processWriteData()", errorValue, this->ssl) << endl;
 					}
-					this->disconnect();
 					return false;
 				}
 			}
@@ -543,14 +540,15 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						this->disconnect();
+						if (this->doWePrintErrorMessages) {
+							cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
+						}
 						return false;
 					}
 					default: {
 						if (this->doWePrintErrorMessages) {
 							cout << reportSSLError("SSLClient::processReadData()", errorValue, this->ssl) << endl;
 						}
-						this->disconnect();
 						return false;
 					}
 				}
@@ -567,97 +565,150 @@ namespace DiscordCoreInternal {
 		return this->bytesRead;
 	}
 
-	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew) noexcept {
+	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew, bool doWePrintErrorsNew) noexcept {
+		this->doWePrintErrors = doWePrintErrorsNew;
 		this->streamTypeReal = streamTypeNew;
 	}
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew) noexcept {
-		this->streamTargetAddress.sin_addr.s_addr = inet_addr(baseUrlNew.c_str());
-		auto portNewer = static_cast<unsigned short>(stoi(portNew));
-		DiscordCoreAPI::reverseByteOrder<uint16_t>(portNewer);
-		this->streamTargetAddress.sin_port = portNewer;
-		this->streamTargetAddress.sin_family = AF_INET;
-
-		addrinfoWrapper hints{}, address{};
+		addrinfoWrapper hints{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 
-		if (this->streamTypeReal == DiscordCoreAPI::StreamType::None) {
-			if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
-				return false;
+		
+		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, this->address)) {
+			if (this->doWePrintErrors) {
+				cout << reportError("DatagramSocketClient::connect::getaddrinfo() 01, to: " + baseUrlNew) << endl;
 			}
+			return false;
+		}
+
+		if (this->streamTypeReal == DiscordCoreAPI::StreamType::None) {
 
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); this->socket == SOCKET_ERROR) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::socket() 02, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
+
+			if (::connect(this->socket,this->address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::connect() 01, to: " + baseUrlNew) << endl;
+				}
+				return false;
+			}
+
+#ifdef _WIN32
+			u_long value02{ 1 };
+			if (ioctlsocket(this->socket, FIONBIO, &value02)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::ioctlsocket() 01, to: " + baseUrlNew) << endl;
+				}
+				return false;
+			}
+#else
+			if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::ioctlsocket() 01, to: " + baseUrlNew) << endl;
+				}
+				return false;
+			}
+#endif
+
 		} else if (this->streamTypeReal == DiscordCoreAPI::StreamType::Client) {
-			if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, address)) {
+
+			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, 0); this->socket == SOCKET_ERROR) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::socket() 02, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
 
-			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, 0); this->socket == SOCKET_ERROR) {
+#ifdef _WIN32
+			u_long value02{ 1 };
+			if (ioctlsocket(this->socket, FIONBIO, &value02)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::ioctlsocket() 02, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
+#else
+			if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::ioctlsocket() 02, to: " + baseUrlNew) << endl;
+				}
+				return false;
+			}
+#endif
+
 			const std::string clientToServerString{ "test string" };
-			auto writtenBytes{ sendto(static_cast<int32_t>(this->socket), clientToServerString.data(),
-				static_cast<int32_t>(clientToServerString.size()), 0, ( sockaddr* )address.operator addrinfo*(),
-				static_cast<int32_t>(sizeof(this->streamTargetAddress))) };
+			sendto(static_cast<SOCKET>(this->socket), clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
+				this->address->ai_addr, this->address->ai_addrlen);
 		} else {
-			sockaddr_in si_other{};
 			if (this->socket = ::socket(AF_INET, SOCK_DGRAM, 0); this->socket == SOCKET_ERROR) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::socket() 03, to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
+
+#ifdef _WIN32
+			u_long value02{ 1 };
+			if (ioctlsocket(this->socket, FIONBIO, &value02)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::socket() 03, to: " + baseUrlNew) << endl;
+				}
+				return false;
+			}
+#else
+			if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::socket() 03, to: " + baseUrlNew) << endl;
+				}
+				return false;
+			}
+#endif
+
 			DiscordCoreAPI::StopWatch stopWatch{ 300s };
-			this->streamTargetAddress.sin_addr.s_addr = INADDR_ANY;
-			if (auto result = bind(this->socket, ( sockaddr* )&this->streamTargetAddress, sizeof(sockaddr)); result != 0) {
+			if (auto result = bind(this->socket, this->address->ai_addr, this->address->ai_addrlen); result != 0) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::bind(), to: " + baseUrlNew) << endl;
+				}
 				return false;
 			}
-
-#ifdef _WIN32
-			int32_t intSize{ sizeof(si_other) };
-#else
-			socklen_t intSize{ sizeof(si_other) };
-#endif
+		
 			std::string serverToClientBuffer{};
-
-			serverToClientBuffer.resize(11);
-			auto readBytes{ recvfrom(static_cast<int32_t>(this->socket), serverToClientBuffer.data(),
-				static_cast<int32_t>(serverToClientBuffer.size()), 0, reinterpret_cast<sockaddr*>(&si_other), &intSize) };
-			if (readBytes >= 0) {
-				return false;
+			while (!stopWatch.hasTimePassed() && serverToClientBuffer == "") {
+				serverToClientBuffer.resize(11);
+				auto readBytes{ recvfrom(static_cast<SOCKET>(this->socket), serverToClientBuffer.data(),
+					static_cast<int32_t>(serverToClientBuffer.size()), 0, this->address->ai_addr,
+					reinterpret_cast<int32_t*>(&this->address->ai_addrlen)) };
+				if (readBytes <= 0) {
+					if (this->doWePrintErrors) {
+						cout << reportError("DatagramSocketClient::connect::recvfrom(), to: " + baseUrlNew) << endl;
+					}
+					return false;
+				}
 			}
+			
 		}
-
-#ifdef _WIN32
-		u_long value02{ 1 };
-		if (ioctlsocket(this->socket, FIONBIO, &value02)) {
-			return false;
-		}
-#else
-		if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
-			return false;
-		}
-#endif
 
 		return true;
 	}
 
 	ProcessIOResult DatagramSocketClient::processIO(ProcessIOType type) noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return ProcessIOResult::No_Error;
-		}
 		if (!this->areWeStillConnected()) {
 			return ProcessIOResult::No_Error;
 		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->socket;
-		if (type == ProcessIOType::Both) {
+		if (type == ProcessIOType::Both && this->outputBuffer.getUsedSpace() > 0) {
 			readWriteSet.events = POLLIN | POLLOUT;
-		} else if (type == ProcessIOType::Read_Only) {
+		} else if (type == ProcessIOType::Read_Only || this->outputBuffer.getUsedSpace() == 0) {
 			readWriteSet.events = POLLIN;
-		} else {
+		} else if (type == ProcessIOType::Write_Only && this->outputBuffer.getUsedSpace() > 0) {
 			readWriteSet.events = POLLOUT;
 		}
 
@@ -689,41 +740,39 @@ namespace DiscordCoreInternal {
 		return result;
 	}
 
-	void DatagramSocketClient::writeData(std::basic_string_view<unsigned char> dataToWrite) noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return;
-		}
-		if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
-			uint64_t remainingBytes{ dataToWrite.size() };
-			uint64_t amountCollected{};
-			while (remainingBytes > 0) {
-				uint64_t amountToCollect{};
-				if (dataToWrite.size() >= static_cast<uint64_t>(1024 * 16)) {
-					amountToCollect = static_cast<uint64_t>(1024 * 16);
-				} else {
-					amountToCollect = dataToWrite.size();
+	void DatagramSocketClient::writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept {
+		if (this->areWeStillConnected()) {
+			if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
+				uint64_t remainingBytes{ dataToWrite.size() };
+				uint64_t amountCollected{};
+				while (remainingBytes > 0) {
+					uint64_t amountToCollect{};
+					if (dataToWrite.size() >= static_cast<uint64_t>(1024 * 16)) {
+						amountToCollect = static_cast<uint64_t>(1024 * 16);
+					} else {
+						amountToCollect = dataToWrite.size();
+					}
+					std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect,
+						this->outputBuffer.getCurrentHead()->getCurrentHead());
+					this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
+					this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+					dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
+					remainingBytes = dataToWrite.size();
+					amountCollected += amountToCollect;
 				}
-				std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect,
-					this->outputBuffer.getCurrentHead()->getCurrentHead());
-				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
+			} else {
+				std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
+				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
 				this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-				remainingBytes = dataToWrite.size();
-				amountCollected += amountToCollect;
 			}
-		} else {
-			std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
-			this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
-			this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 		}
 	}
 
-	std::basic_string_view<unsigned char> DatagramSocketClient::getInputBuffer() noexcept {
-		std::unique_lock lock{ this->accessMutex };
-		std::basic_string_view<unsigned char> string{};
+	std::basic_string_view<uint8_t> DatagramSocketClient::getInputBuffer() noexcept {
+		std::basic_string_view<uint8_t> string{};
 		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
 			auto size = this->inputBuffer.getCurrentTail()->getUsedSpace();
-			string = std::basic_string_view<unsigned char>{ this->inputBuffer.getCurrentTail()->getCurrentTail(), size };
+			string = std::basic_string_view<uint8_t>{ this->inputBuffer.getCurrentTail()->getCurrentTail(), size };
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
@@ -731,10 +780,6 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::areWeStillConnected() noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return true;
-		}
 		if (static_cast<SOCKET*>(this->socket) && this->socket != SOCKET_ERROR) {
 			return true;
 		} else {
@@ -743,14 +788,10 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::processWriteData() noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return true;
-		}
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
-			auto writtenBytes{ sendto(this->socket, reinterpret_cast<const char*>(this->outputBuffer.getCurrentTail()->getCurrentTail()), static_cast<int32_t>(bytesToWrite), 0,
-				( sockaddr* )&this->streamTargetAddress, sizeof(sockaddr)) };
+			auto writtenBytes{ sendto(this->socket, reinterpret_cast<const char*>(this->outputBuffer.getCurrentTail()->getCurrentTail()),
+				static_cast<int32_t>(bytesToWrite), 0, this->address->ai_addr, this->address->ai_addrlen) };
 			if (writtenBytes < 0) {
 				return false;
 			} else {
@@ -763,10 +804,6 @@ namespace DiscordCoreInternal {
 	}
 
 	bool DatagramSocketClient::processReadData() noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return true;
-		}
 		bool returnValue{ true };
 		int32_t readBytes{};
 		do {
@@ -777,14 +814,9 @@ namespace DiscordCoreInternal {
 				} else {
 					bytesToRead = this->maxBufferSize;
 				}
-#ifdef _WIN32
-				int32_t intSize{ sizeof(this->streamTargetAddress) };
-#else
-				uint32_t intSize{ sizeof(this->streamTargetAddress) };
-#endif
 
 				readBytes = recvfrom(static_cast<SOCKET>(this->socket), reinterpret_cast<char*>(this->inputBuffer.getCurrentHead()->getCurrentHead()),
-					static_cast<int32_t>(bytesToRead), 0, ( sockaddr* )&this->streamTargetAddress, &intSize);
+					static_cast<int32_t>(bytesToRead), 0, this->address->ai_addr, reinterpret_cast<int32_t*>(&this->address->ai_addrlen));
 				if (readBytes < 0) {
 					return true;
 				} else {
@@ -795,23 +827,21 @@ namespace DiscordCoreInternal {
 					returnValue = true;
 				}
 			}
-
 		} while (readBytes > 0);
 		return returnValue;
 	}
 
 	int64_t DatagramSocketClient::getBytesRead() noexcept {
-		std::unique_lock lock{ this->accessMutex };
 		return this->bytesRead;
 	}
 
 	void DatagramSocketClient::disconnect() noexcept {
-		std::unique_lock lock{ this->accessMutex, std ::defer_lock_t{} };
-		if (!lock.try_lock()) {
-			return;
-		}
 		this->socket = SOCKET_ERROR;
 		this->outputBuffer.clear();
+		this->inputBuffer.clear();
+	}
+
+	DatagramSocketClient ::~DatagramSocketClient() noexcept {
 	}
 
 	SSL_CTXWrapper SSLConnectionInterface::context{};

@@ -79,11 +79,7 @@ namespace DiscordCoreInternal {
 		*this = std::move(other);
 	}
 
-	CoRoutineThreadPool::CoRoutineThreadPool() {
-		this->threadCount.store(std::thread::hardware_concurrency());
-		if (this->threadCount.load() < 1) {
-			this->threadCount.store(1);
-		}
+	CoRoutineThreadPool::CoRoutineThreadPool() : threadCount(std::thread::hardware_concurrency()) {
 		for (uint32_t x = 0; x < this->threadCount.load(); ++x) {
 			WorkerThread workerThread{};
 			this->currentIndex.store(this->currentIndex.load() + 1);

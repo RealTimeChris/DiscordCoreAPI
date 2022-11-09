@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 
 	Snowflake& Snowflake::operator=(const std::string& other) noexcept {
 		for (auto& value: other) {
-			if (!std::isdigit(static_cast<unsigned char>(value))) {
+			if (!std::isdigit(static_cast<uint8_t>(value))) {
 				return *this;
 			}
 		}
@@ -647,11 +647,8 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case 0x22: {
-					this->writeCharacter('\"');
-					break;
-				}
-				case 0x5C: {
 					this->writeCharacter('\\');
+					this->writeCharacter('\"');
 					break;
 				}
 				default: {
@@ -812,7 +809,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Jsonifier::appendNewFloatExt(const double FloatValue) {
-		char newBuffer[9]{ static_cast<unsigned char>(EtfType::New_Float_Ext) };
+		char newBuffer[9]{ static_cast<uint8_t>(EtfType::New_Float_Ext) };
 		const void* punner{ &FloatValue };
 		storeBits(newBuffer + 1, *static_cast<const uint64_t*>(punner));
 		this->writeString(newBuffer, std::size(newBuffer));
@@ -998,7 +995,7 @@ namespace DiscordCoreAPI {
 		return this->config.cacheOptions.cacheRoles;
 	}
 
-	const DiscordCoreInternal::UpdatePresenceData ConfigManager::getPresenceData() {
+	const UpdatePresenceData ConfigManager::getPresenceData() {
 		return this->config.presenceData;
 	}
 
@@ -1574,11 +1571,11 @@ namespace DiscordCoreAPI {
 		} catch (const std::exception& e) {
 			std::stringstream stream{};
 			stream << shiftToBrightRed() << "Error Report: \n"
-					  << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " ("
-					  << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
-					  << "\nThe Error: \n"
-					  << e.what() << reset() << std::endl
-					  << std::endl;
+				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
+				   << std::to_string(location.column()) << ")"
+				   << "\nThe Error: \n"
+				   << e.what() << reset() << std::endl
+				   << std::endl;
 			auto returnString = stream.str();
 			cout << returnString;
 		}
@@ -1593,9 +1590,9 @@ namespace DiscordCoreAPI {
 		} catch (const std::exception& e) {
 			std::stringstream stream{};
 			stream << shiftToBrightRed() << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " ("
-					  << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
-					  << "\nThe Error: \n"
-					  << e.what() << reset();
+				   << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
+				   << "\nThe Error: \n"
+				   << e.what() << reset();
 			auto returnString = stream.str();
 			cout << returnString;
 			if (std::current_exception()) {

@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void BotUser::updatePresence(DiscordCoreInternal::UpdatePresenceData& dataPackage) {
+	void BotUser::updatePresence(UpdatePresenceData& dataPackage) {
 		if (this->baseSocketAgent) {
 			std::string string{};
 			uint32_t shardId = 0;
@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Users::initialize(DiscordCoreInternal::HttpsClient* client, ConfigManager* configManagerNew) {
-		Users::doWeCacheUsers = configManagerNew->doWeCacheUsers();
+		Users::doWeCacheUsersBool = configManagerNew->doWeCacheUsers();
 		Users::httpsClient = client;
 	}
 
@@ -289,23 +289,27 @@ namespace DiscordCoreAPI {
 		co_return Users::httpsClient->submitWorkloadAndGetResult<AuthorizationInfoData>(workload);
 	}
 
+	bool Users::doWeCacheUsers() {
+		return Users::doWeCacheUsersBool;
+	}
+
 	void Users::insertUser(UserData user) {
 		if (user.id == 0) {
 			return;
 		}
-		if (Users::doWeCacheUsers) {
+		if (Users::doWeCacheUsers()) {
 			if (!Users::cache.contains(user)) {
 				Users::cache.emplace(std::move(user));
 			} else {
 				Users::cache[user] = std::move(user);
 			}
 			if (Users::cache.size() % 10000 == 0) {
-				//std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
+				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
 			}
 		}
 	}
 
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
+	bool Users::doWeCacheUsersBool{ false };
 	ObjectCache<UserData> Users::cache{};
-	bool Users::doWeCacheUsers{ false };
 }

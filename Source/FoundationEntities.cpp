@@ -65,8 +65,28 @@ namespace DiscordCoreInternal {
 		if (this->presence.since != 0) {
 			serializer["d"]["presence"]["since"] = this->presence.since;
 		}
-
-		serializer["d"]["presence"]["status"] = this->presence.status;
+		switch (this->presence.status) {
+			case DiscordCoreAPI::UpdatePresenceStatusTypes::online: {
+				serializer["d"]["presence"]["status"] = "online";
+				break;
+			}
+			case DiscordCoreAPI::UpdatePresenceStatusTypes::dnd: {
+				serializer["d"]["presence"]["status"] = "dnd";
+				break;
+			}
+			case DiscordCoreAPI::UpdatePresenceStatusTypes::invisible: {
+				serializer["d"]["presence"]["status"] = "invisible";
+				break;
+			}
+			case DiscordCoreAPI::UpdatePresenceStatusTypes::offline: {
+				serializer["d"]["presence"]["status"] = "offline";
+				break;
+			}
+			case DiscordCoreAPI::UpdatePresenceStatusTypes::idle: {
+				serializer["d"]["presence"]["status"] = "idle";
+				break;
+			}
+		}
 		serializer["d"]["properties"]["browser"] = "DiscordCoreAPI";
 		serializer["d"]["properties"]["device"] = "DiscordCoreAPI";
 #ifdef _WIN32
@@ -88,26 +108,6 @@ namespace DiscordCoreInternal {
 		data["d"]["data"]["port"] = this->voicePort;
 		data["d"]["data"]["mode"] = this->voiceEncryptionMode;
 		data["d"]["data"]["address"] = this->externalIp;
-		return data;
-	}
-
-	UpdatePresenceData::operator DiscordCoreAPI::Jsonifier() {
-		DiscordCoreAPI::Jsonifier data{};
-		data["op"] = 3;
-		for (auto& value: this->activities) {
-			DiscordCoreAPI::Jsonifier dataNew{};
-			if (value.url != "") {
-				dataNew["url"] = std::string{ value.url };
-			}
-			dataNew["name"] = std::string{ value.name };
-			dataNew["type"] = value.type;
-			data["d"]["activities"].emplaceBack(dataNew);
-		}
-		data["status"] = this->status;
-		if (this->since != 0) {
-			data["since"] = this->since;
-		}
-		data["afk"] = this->afk;
 		return data;
 	}
 
@@ -202,6 +202,47 @@ namespace DiscordCoreInternal {
 }
 
 namespace DiscordCoreAPI {
+
+	UpdatePresenceData::operator Jsonifier() {
+		DiscordCoreAPI::Jsonifier data{};
+		data["op"] = 3;
+		for (auto& value: this->activities) {
+			DiscordCoreAPI::Jsonifier dataNew{};
+			if (value.url != "") {
+				dataNew["url"] = std::string{ value.url };
+			}
+			dataNew["name"] = std::string{ value.name };
+			dataNew["type"] = value.type;
+			data["d"]["activities"].emplaceBack(dataNew);
+		}
+		switch (this->status) {
+			case UpdatePresenceStatusTypes::online: {
+				data["status"] = "online";
+				break;
+			}
+			case UpdatePresenceStatusTypes::dnd: {
+				data["status"] = "dnd";
+				break;
+			}
+			case UpdatePresenceStatusTypes::invisible: {
+				data["status"] = "invisible";
+				break;
+			}
+			case UpdatePresenceStatusTypes::offline: {
+				data["status"] = "offline";
+				break;
+			}
+			case UpdatePresenceStatusTypes::idle: {
+				data["status"] = "idle";
+				break;
+			}
+		}
+		if (this->since != 0) {
+			data["since"] = this->since;
+		}
+		data["afk"] = this->afk;
+		return data;
+	}
 
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
 		TimeStamp<std::chrono::milliseconds> timeStamp{ (this->id.operator size_t() >> 22) + 1420070400000, timeFormat };
@@ -557,16 +598,13 @@ namespace DiscordCoreAPI {
 		this->joinedAt = getString(jsonObjectData, "joined_at");
 
 		this->guildId = getId(jsonObjectData, "guild_id");
-		try {
-			simdjson::ondemand::array arrayValue{};
-			if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-				this->roles.clear();
-				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
-					this->roles.emplace_back(getId(value.value()));
-				}
+
+		simdjson::ondemand::array arrayValue{};
+		if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
+			this->roles.clear();
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
+				this->roles.emplace_back(getId(value.value()));
 			}
-		} catch (...) {
-			reportException("GuildMemberData::GuildMemberData()");
 		}
 
 		this->permissions = getString(jsonObjectData, "permissions");
@@ -1265,7 +1303,8 @@ namespace DiscordCoreAPI {
 		this->id = getId(jsonObjectData, "id");
 	}
 
-	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute, StreamInfo streamInfoNew) {
+	VoiceConnection* GuildData::connectToVoice(const Snowflake guildMemberId, const Snowflake channelId, bool selfDeaf, bool selfMute,
+		StreamInfo streamInfoNew) {
 		if (DiscordCoreClient::getVoiceConnection(this->id) && DiscordCoreClient::getVoiceConnection(this->id)->areWeConnected()) {
 			this->voiceConnectionPtr = DiscordCoreClient::getVoiceConnection(this->id);
 			return this->voiceConnectionPtr;
@@ -2876,115 +2915,110 @@ namespace DiscordCoreAPI {
 	}
 
 	Song::Song(simdjson::ondemand::value jsonObjectData) {
-		try {
-			this->duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData"), "label");
-			std::string newString = getString(
-				getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0), "text");
+		this->duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData"), "label");
+		std::string newString = getString(
+			getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0), "text");
+		if (newString.size() > 256) {
+			newString = newString.substr(0, 256);
+		}
+		this->description = utf8MakeValid(newString);
+
+		this->thumbnailUrl = getString(getObject(getArray(getObject(jsonObjectData, "thumbnail"), "thumbnails"), 0), "url");
+		std::string newTitle01 = getString(getObject(getArray(getObject(jsonObjectData, "title"), "runs"), 0), "text");
+		if (newTitle01.size() > 256) {
+			newTitle01 = newTitle01.substr(0, 256);
+		}
+		if (newTitle01.size() > 0) {
+			this->songTitle = utf8MakeValid(newTitle01);
+		}
+		std::string newTitle02 = getString(getObject(jsonObjectData, "title"), "simpleText");
+		if (newTitle02.size() > 256) {
+			newTitle02 = newTitle02.substr(0, 256);
+		}
+		if (newTitle02.size() > 0) {
+			this->songTitle = utf8MakeValid(newTitle02);
+		}
+
+		if (newTitle01 != "") {
+			this->songTitle = newTitle01;
+		} else {
+			this->songTitle = newTitle02;
+		}
+
+		this->songId = getString(jsonObjectData, "videoId");
+
+		this->trackAuthorization = getString(jsonObjectData, "track_authorization");
+
+		std::vector<MediaTranscoding> theMedia{};
+		auto arrayValueNew = getArray(getObject(jsonObjectData, "media"), "transcodings");
+		if (arrayValueNew.didItSucceed) {
+			for (auto value: arrayValueNew.arrayValue) {
+				MediaTranscoding dataNew{ value.value() };
+				theMedia.emplace_back(dataNew);
+			}
+		}
+
+		bool isItFound{ false };
+		for (auto& value: theMedia) {
+			if (value.thePreset == "opus_0_0") {
+				isItFound = true;
+				this->firstDownloadUrl = value.theUrl;
+				this->songId = value.theUrl;
+				this->doWeGetSaved = true;
+			}
+		}
+		bool isItFound2{ false };
+		if (!isItFound) {
+			for (auto& value: theMedia) {
+				if (value.thePreset == "mp3_0_0") {
+					this->firstDownloadUrl = value.theUrl;
+					this->songId = value.theUrl;
+					isItFound2 = true;
+				}
+			}
+		}
+		if (!isItFound2 && !isItFound) {
+			for (auto& value: theMedia) {
+				this->firstDownloadUrl = value.theUrl;
+				this->songId = value.theUrl;
+			}
+		}
+
+		newString = getString(jsonObjectData, "title");
+		if (newString.size() > 0) {
+			if (newString.size() > 256) {
+				newString = newString.substr(0, 256);
+			}
+			this->songTitle = utf8MakeValid(newString);
+		}
+
+		newString = getString(jsonObjectData, "description");
+		if (newString.size() > 0) {
 			if (newString.size() > 256) {
 				newString = newString.substr(0, 256);
 			}
 			this->description = utf8MakeValid(newString);
+			this->description += "...";
+		}
 
-			this->thumbnailUrl = getString(getObject(getArray(getObject(jsonObjectData, "thumbnail"), "thumbnails"), 0), "url");
-			std::string newTitle01 = getString(getObject(getArray(getObject(jsonObjectData, "title"), "runs"), 0), "text");
-			if (newTitle01.size() > 256) {
-				newTitle01 = newTitle01.substr(0, 256);
-			}
-			if (newTitle01.size() > 0) {
-				this->songTitle = utf8MakeValid(newTitle01);
-			}
-			std::string newTitle02 = getString(getObject(jsonObjectData, "title"), "simpleText");
-			if (newTitle02.size() > 256) {
-				newTitle02 = newTitle02.substr(0, 256);
-			}
-			if (newTitle02.size() > 0) {
-				this->songTitle = utf8MakeValid(newTitle02);
-			}
+		newString = getString(jsonObjectData, "artwork_url");
+		if (newString.size() > 0) {
+			this->thumbnailUrl = newString;
+		}
 
-			if (newTitle01 != "") {
-				this->songTitle = newTitle01;
-			} else {
-				this->songTitle = newTitle02;
-			}
+		newString = getString(getObject(jsonObjectData, "user"), "avatar_url");
+		if (newString.size() > 0) {
+			this->thumbnailUrl = newString;
+		}
 
-			this->songId = getString(jsonObjectData, "videoId");
+		uint32_t theDuration = getUint32(jsonObjectData, "duration");
+		if (theDuration != 0) {
+			this->duration = TimeStamp<std::chrono::milliseconds>::convertMsToDurationString(theDuration);
+		}
 
-			this->trackAuthorization = getString(jsonObjectData, "track_authorization");
-
-			std::vector<MediaTranscoding> theMedia{};
-			auto arrayValueNew = getArray(getObject(jsonObjectData, "media"), "transcodings");
-			if (arrayValueNew.didItSucceed) {
-				for (auto value: arrayValueNew.arrayValue) {
-					MediaTranscoding dataNew{ value.value() };
-					theMedia.emplace_back(dataNew);
-				}
-			}
-
-			bool isItFound{ false };
-			for (auto& value: theMedia) {
-				if (value.thePreset == "opus_0_0") {
-					isItFound = true;
-					this->firstDownloadUrl = value.theUrl;
-					this->songId = value.theUrl;
-					this->doWeGetSaved = true;
-				}
-			}
-			bool isItFound2{ false };
-			if (!isItFound) {
-				for (auto& value: theMedia) {
-					if (value.thePreset == "mp3_0_0") {
-						this->firstDownloadUrl = value.theUrl;
-						this->songId = value.theUrl;
-						isItFound2 = true;
-					}
-				}
-			}
-			if (!isItFound2 && !isItFound) {
-				for (auto& value: theMedia) {
-					this->firstDownloadUrl = value.theUrl;
-					this->songId = value.theUrl;
-				}
-			}
-
-			newString = getString(jsonObjectData, "title");
-			if (newString.size() > 0) {
-				if (newString.size() > 256) {
-					newString = newString.substr(0, 256);
-				}
-				this->songTitle = utf8MakeValid(newString);
-			}
-
-			newString = getString(jsonObjectData, "description");
-			if (newString.size() > 0) {
-				if (newString.size() > 256) {
-					newString = newString.substr(0, 256);
-				}
-				this->description = utf8MakeValid(newString);
-				this->description += "...";
-			}
-
-			newString = getString(jsonObjectData, "artwork_url");
-			if (newString.size() > 0) {
-				this->thumbnailUrl = newString;
-			}
-
-			newString = getString(getObject(jsonObjectData, "user"), "avatar_url");
-			if (newString.size() > 0) {
-				this->thumbnailUrl = newString;
-			}
-
-			uint32_t theDuration = getUint32(jsonObjectData, "duration");
-			if (theDuration != 0) {
-				this->duration = TimeStamp<std::chrono::milliseconds>::convertMsToDurationString(theDuration);
-			}
-
-			newString = getString(jsonObjectData, "permalink_url");
-			if (newString.size() > 0) {
-				this->viewUrl = newString;
-			}
-
-		} catch (...) {
-			reportException("Song::Song()");
+		newString = getString(jsonObjectData, "permalink_url");
+		if (newString.size() > 0) {
+			this->viewUrl = newString;
 		}
 	}
 

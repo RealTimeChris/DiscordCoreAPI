@@ -102,6 +102,8 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketCore {
 	  public:
+		friend class DiscordCoreAPI::OnVoiceServerUpdateData;
+		friend class DiscordCoreAPI::OnVoiceStateUpdateData;
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
@@ -117,7 +119,7 @@ namespace DiscordCoreInternal {
 		bool onMessageReceived(std::string_view message) noexcept;
 
 		void disconnect() noexcept;
-		
+
 		void onClosed() noexcept;
 
 		virtual ~WebSocketSSLShard() noexcept = default;

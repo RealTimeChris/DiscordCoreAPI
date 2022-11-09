@@ -91,4 +91,4 @@ jobs:
                 sudo cmake --build --preset Linux-Release
                 sudo cmake --install ./Build/Release
                 cd "Output Files/Release"
-                sudo ./DiscordCoreAPI-Bot-Cpp
+                sudo ./DiscordCoreAPI-Bot-Cpp || true

@@ -30,81 +30,76 @@
 namespace DiscordCoreAPI {
 
 	CoRoutine<InputEventData> InputEvents::respondToInputEventAsync(RespondToInputEventData dataPackage) {
-		try {
-			co_await NewThreadAwaitable<InputEventData>();
-			if (dataPackage.type == InputEventResponseType::Unset) {
-				throw std::runtime_error("InputEvents::respondToInputEventAsync() Error: Please set an "
-										 "input-event-response-type!\n\n");
+		co_await NewThreadAwaitable<InputEventData>();
+		if (dataPackage.type == InputEventResponseType::Unset) {
+			throw std::runtime_error("InputEvents::respondToInputEventAsync() Error: Please set an "
+									 "input-event-response-type!\n\n");
+		}
+		if (dataPackage.eventType == InteractionType::Message_Component) {
+			CreateInteractionResponseData dataPackage02{ dataPackage };
+			if (dataPackage.type == InputEventResponseType::Deferred_Response) {
+				dataPackage02.data.type = InteractionCallbackType::Deferred_Update_Message;
+			} else {
+				dataPackage02.data.type = InteractionCallbackType::Update_Message;
 			}
-			if (dataPackage.eventType == InteractionType::Message_Component) {
+			InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage02);
+			if (dataPackage.type == InputEventResponseType::Interaction_Response ||
+				dataPackage.type == InputEventResponseType::Ephemeral_Interaction_Response ||
+				dataPackage.type == InputEventResponseType::Edit_Interaction_Response) {
+				newEvent.responseType = InputEventResponseType::Edit_Interaction_Response;
+			} else if (dataPackage.type == InputEventResponseType::Follow_Up_Message ||
+				dataPackage.type == InputEventResponseType::Ephemeral_Follow_Up_Message ||
+				dataPackage.type == InputEventResponseType::Edit_Follow_Up_Message) {
+				newEvent.responseType = InputEventResponseType::Edit_Follow_Up_Message;
+			}
+			co_return std::move(newEvent);
+		} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete) {
+			CreateInteractionResponseData dataPackage02{ dataPackage };
+			dataPackage02.data.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
+			InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage02);
+			newEvent.responseType = InputEventResponseType::Application_Command_AutoComplete_Result;
+			co_return std::move(newEvent);
+		}
+		switch (dataPackage.type) {
+			case InputEventResponseType::Ephemeral_Deferred_Response: {
+				CreateDeferredInteractionResponseData dataPackage02{ dataPackage };
+				dataPackage02.data.data.flags = 64;
+				co_return InputEvents::respondToInputEvent(dataPackage02);
+			}
+			case InputEventResponseType::Deferred_Response: {
+				CreateDeferredInteractionResponseData dataPackage02{ dataPackage };
+				co_return InputEvents::respondToInputEvent(dataPackage02);
+			}
+			case InputEventResponseType::Interaction_Response: {
 				CreateInteractionResponseData dataPackage02{ dataPackage };
-				if (dataPackage.type == InputEventResponseType::Deferred_Response) {
-					dataPackage02.data.type = InteractionCallbackType::Deferred_Update_Message;
-				} else {
-					dataPackage02.data.type = InteractionCallbackType::Update_Message;
-				}
-				InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage02);
-				if (dataPackage.type == InputEventResponseType::Interaction_Response ||
-					dataPackage.type == InputEventResponseType::Ephemeral_Interaction_Response ||
-					dataPackage.type == InputEventResponseType::Edit_Interaction_Response) {
-					newEvent.responseType = InputEventResponseType::Edit_Interaction_Response;
-				} else if (dataPackage.type == InputEventResponseType::Follow_Up_Message ||
-					dataPackage.type == InputEventResponseType::Ephemeral_Follow_Up_Message ||
-					dataPackage.type == InputEventResponseType::Edit_Follow_Up_Message) {
-					newEvent.responseType = InputEventResponseType::Edit_Follow_Up_Message;
-				}
-				co_return std::move(newEvent);
-			} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete) {
-				CreateInteractionResponseData dataPackage02{ dataPackage };
-				dataPackage02.data.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
-				InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage02);
-				newEvent.responseType = InputEventResponseType::Application_Command_AutoComplete_Result;
-				co_return std::move(newEvent);
+				co_return InputEvents::respondToInputEvent(dataPackage02);
 			}
-			switch (dataPackage.type) {
-				case InputEventResponseType::Ephemeral_Deferred_Response: {
-					CreateDeferredInteractionResponseData dataPackage02{ dataPackage };
-					dataPackage02.data.data.flags = 64;
-					co_return InputEvents::respondToInputEvent(dataPackage02);
-				}
-				case InputEventResponseType::Deferred_Response: {
-					CreateDeferredInteractionResponseData dataPackage02{ dataPackage };
-					co_return InputEvents::respondToInputEvent(dataPackage02);
-				}
-				case InputEventResponseType::Interaction_Response: {
-					CreateInteractionResponseData dataPackage02{ dataPackage };
-					co_return InputEvents::respondToInputEvent(dataPackage02);
-				}
-				case InputEventResponseType::Edit_Interaction_Response: {
-					EditInteractionResponseData dataPackage02{ dataPackage };
-					co_return InputEvents::respondToInputEvent(dataPackage02);
-				}
-				case InputEventResponseType::Ephemeral_Interaction_Response: {
-					CreateEphemeralInteractionResponseData dataPackage02{ dataPackage };
-					co_return InputEvents::respondToInputEvent(dataPackage02);
-				}
-				case InputEventResponseType::Follow_Up_Message: {
-					CreateFollowUpMessageData dataPackage02{ dataPackage };
-					co_return InputEvents::respondToInputEvent(dataPackage02);
-				}
-				case InputEventResponseType::Edit_Follow_Up_Message: {
-					EditFollowUpMessageData dataPackage02{ dataPackage };
-					co_return InputEvents::respondToInputEvent(dataPackage02);
-				}
-				case InputEventResponseType::Ephemeral_Follow_Up_Message: {
-					CreateEphemeralFollowUpMessageData dataPackage02{ dataPackage };
-					co_return InputEvents::respondToInputEvent(dataPackage02);
-				}
-				case InputEventResponseType::Unset: {
-					break;
-				}
-				default: {
-					co_return InputEventData();
-				}
+			case InputEventResponseType::Edit_Interaction_Response: {
+				EditInteractionResponseData dataPackage02{ dataPackage };
+				co_return InputEvents::respondToInputEvent(dataPackage02);
 			}
-		} catch (...) {
-			rethrowException("InputEvents::respondToInputEventAsync()");
-			co_return InputEventData();
+			case InputEventResponseType::Ephemeral_Interaction_Response: {
+				CreateEphemeralInteractionResponseData dataPackage02{ dataPackage };
+				co_return InputEvents::respondToInputEvent(dataPackage02);
+			}
+			case InputEventResponseType::Follow_Up_Message: {
+				CreateFollowUpMessageData dataPackage02{ dataPackage };
+				co_return InputEvents::respondToInputEvent(dataPackage02);
+			}
+			case InputEventResponseType::Edit_Follow_Up_Message: {
+				EditFollowUpMessageData dataPackage02{ dataPackage };
+				co_return InputEvents::respondToInputEvent(dataPackage02);
+			}
+			case InputEventResponseType::Ephemeral_Follow_Up_Message: {
+				CreateEphemeralFollowUpMessageData dataPackage02{ dataPackage };
+				co_return InputEvents::respondToInputEvent(dataPackage02);
+			}
+			case InputEventResponseType::Unset: {
+				break;
+			}
+			default: {
+				co_return InputEventData();
+			}
 		}
 	}
 

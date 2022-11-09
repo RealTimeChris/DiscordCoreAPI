@@ -106,13 +106,9 @@ namespace DiscordCoreAPI {
 	/// DiscordCoreClient - The main class for this library. \brief DiscordCoreClient - The main class for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
-		friend DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudAPI* getSoundCloudAPI(Snowflake guildId);
-		friend DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeAPI* getYouTubeAPI(Snowflake guildId);
-		friend DiscordCoreAPI_Dll VoiceConnection* getVoiceConnection(Snowflake guildId);
-		friend DiscordCoreAPI_Dll SongAPI* getSongAPI(Snowflake guildId);
-		friend class DiscordCoreInternal::WebSocketCore;
 		friend class DiscordCoreInternal::WebSocketSSLShard;
 		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreInternal::WebSocketCore;
 		friend class VoiceConnection;
 		friend class GuildData;
 		friend class BotUser;
@@ -141,6 +137,10 @@ namespace DiscordCoreAPI {
 		/// For collecting a reference to the CommandController. \brief For collecting a reference to the CommandController.
 		/// \returns CommandController& A reference to the CommandController.
 		CommandController& getCommandController();
+
+		/// For collecting a reference to the ConfigManager. \brief For collecting a reference to the ConfigManager.
+		/// \returns ConfigManager& A reference to the ConfigManager.
+		ConfigManager& getConfigManager();
 
 		/// For collecting a reference to the EventManager. \brief For collecting a reference to the EventManager.
 		/// \returns EventManager& A reference to the EventManager.

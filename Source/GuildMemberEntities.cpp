@@ -117,17 +117,14 @@ namespace DiscordCoreAPI {
 
 		this->guildId = getId(jsonObjectData, "guild_id");
 
-		try {
-			simdjson::ondemand::array arrayValue{};
-			if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-				this->roles.clear();
-				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
-					this->roles.emplace_back(getId(value.value()));
-				}
+		simdjson::ondemand::array arrayValue{};
+		if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
+			this->roles.clear();
+			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
+				this->roles.emplace_back(getId(value.value()));
 			}
-		} catch (...) {
-			reportException("GuildMember::GuildMember()");
 		}
+
 		this->permissions = getString(jsonObjectData, "permissions");
 
 		simdjson::ondemand::value object{};
@@ -337,6 +334,10 @@ namespace DiscordCoreAPI {
 		co_return GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
 	}
 
+	ObjectCache<GuildMemberData>& GuildMembers::getCache() {
+		return GuildMembers::cache;
+	};
+
 	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
 		if (guildMember.id == 0) {
 			return;
@@ -361,7 +362,7 @@ namespace DiscordCoreAPI {
 		return GuildMembers::doWeCacheGuildMembersBool;
 	}
 
-		DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
+	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
 	bool GuildMembers::doWeCacheGuildMembersBool{ false };
 	ObjectCache<GuildMemberData> GuildMembers::cache{};
 };

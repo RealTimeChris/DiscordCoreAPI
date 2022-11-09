@@ -67,8 +67,8 @@ namespace DiscordCoreAPI {
 			uint64_t theShardId{ (guildId.operator size_t() >> 22) % guild->discordCoreClient->configManager.getTotalShardCount() };
 			uint64_t baseSocketIndex{ theShardId % guild->discordCoreClient->baseSocketAgentsMap.size() };
 			auto baseSocketAgent = guild->discordCoreClient->baseSocketAgentsMap[baseSocketIndex].get();
-			Globals::voiceConnectionMap[guildId.operator size_t()] = std::make_unique<VoiceConnection>(guild->discordCoreClient,
-				baseSocketAgent->shardMap[theShardId].get(), &Globals::doWeQuit);
+			Globals::voiceConnectionMap[guildId.operator size_t()] =
+				std::make_unique<VoiceConnection>(guild->discordCoreClient, baseSocketAgent->shardMap[theShardId].get(), &Globals::doWeQuit);
 		}
 		guild->voiceConnectionPtr = Globals::voiceConnectionMap[guildId.operator size_t()].get();
 		return guild->voiceConnectionPtr;
@@ -145,11 +145,9 @@ namespace DiscordCoreAPI {
 		}
 		if (this->configManager.doWePrintFFMPEGSuccessMessages()) {
 			av_log_set_level(AV_LOG_INFO);
-		}
-		if (this->configManager.doWePrintFFMPEGErrorMessages()) {
+		} else if (this->configManager.doWePrintFFMPEGErrorMessages()) {
 			av_log_set_level(AV_LOG_ERROR);
-		}
-		if (!this->configManager.doWePrintFFMPEGErrorMessages() && !this->configManager.doWePrintFFMPEGSuccessMessages()) {
+		} else if (!this->configManager.doWePrintFFMPEGErrorMessages() && !this->configManager.doWePrintFFMPEGSuccessMessages()) {
 			av_log_set_level(AV_LOG_QUIET);
 		}
 		if (sodium_init() == -1) {
@@ -185,14 +183,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::registerFunctionsInternal() {
-		std::vector<ApplicationCommand> theCommands{};
-		try {
-			theCommands =
-				ApplicationCommands::getGlobalApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get();
-		} catch (...) {
-			reportException("DiscordCoreClient::registerFunctionsInternal()");
-			return;
-		}
+		std::vector<ApplicationCommand> theCommands{
+			ApplicationCommands::getGlobalApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get()
+		};
 		while (this->commandsToRegister.size() > 0) {
 			CreateApplicationCommandData data = this->commandsToRegister.front();
 			this->commandsToRegister.pop_front();
@@ -223,24 +216,18 @@ namespace DiscordCoreAPI {
 				}
 				if (!doesItExist) {
 					if (data.guildId != 0) {
-						try {
-							ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data)).get();
-						} catch (...) {
-							reportException("DiscordCoreClient::registerFunctionsInternal()");
-							return;
-						}
+						ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data)).get();
 
 					} else {
-						try {
-							ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
-						} catch (...) {
-							reportException("DiscordCoreClient::registerFunctionsInternal()");
-							return;
-						}
+						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
 					}
 				}
 			}
 		}
+	}
+
+	ConfigManager& DiscordCoreClient::getConfigManager() {
+		return this->configManager;
 	}
 
 	CommandController& DiscordCoreClient::getCommandController() {
@@ -270,18 +257,13 @@ namespace DiscordCoreAPI {
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
-		try {
-			DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Gateway_Bot };
-			workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-			workload.relativePath = "/gateway/bot";
-			workload.callStack = "DiscordCoreClient::getGateWayBot()";
-			GatewayBotData data{};
-			data = this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
-			return data;
-		} catch (...) {
-			reportException("DiscordCoreClient::getGatewayBot()");
-			return {};
-		}
+		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Gateway_Bot };
+		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
+		workload.relativePath = "/gateway/bot";
+		workload.callStack = "DiscordCoreClient::getGateWayBot()";
+		GatewayBotData data{};
+		data = this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
+		return data;
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
@@ -329,12 +311,7 @@ namespace DiscordCoreAPI {
 			}
 			this->connectionStopWatch.resetTimer();
 		}
-		try {
-			this->currentUser =
-				BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentsMap[this->configManager.getStartingShard()].get() };
-		} catch (...) {
-			reportException("DiscordCoreClient::instantiateWebSockets()");
-		}
+		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentsMap[this->configManager.getStartingShard()].get() };
 
 		for (auto& value: this->configManager.getFunctionsToExecute()) {
 			if (value.repeated) {

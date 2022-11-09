@@ -244,8 +244,7 @@ namespace DiscordCoreInternal {
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				if (!static_cast<SSLClient*>(streamSocket.get())
-						 ->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true))
-				{
+						 ->connect(newSong.finalDownloadUrls[0].urlPath, "443", this->configManager->doWePrintWebSocketErrorMessages(), true)) {
 					this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 					return;
 				}
@@ -258,7 +257,7 @@ namespace DiscordCoreInternal {
 			int64_t bytesToRead{ static_cast<int64_t>(this->maxBufferSize) };
 			int64_t bytesSubmittedPrevious{ 0 };
 			int64_t bytesReadTotal{ 0 };
-			const uint8_t maxReruns{ 200 };
+			constexpr uint8_t maxReruns{ 200 };
 			uint8_t currentReruns{ 0 };
 			uint32_t counter{ 0 };
 			uint32_t headerSize{ 0 };
@@ -267,7 +266,6 @@ namespace DiscordCoreInternal {
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
 			dataPackage.configManager = this->configManager;
-			std::unique_ptr<DiscordCoreAPI::AudioEncoder> audioEncoder{ std::make_unique<DiscordCoreAPI::AudioEncoder>() };
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			std::string string = newSong.finalDownloadUrls[1].urlPath;
 			streamSocket->writeData(string, true);
@@ -401,9 +399,8 @@ namespace DiscordCoreInternal {
 							}
 						}
 						for (auto iterator = frames.begin(); iterator != frames.end();) {
-							auto encodedFrame = audioEncoder->encodeSingleAudioFrame(*iterator);
-							encodedFrame.guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId.operator size_t();
-							DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(encodedFrame));
+							iterator->guildMemberId = static_cast<DiscordCoreAPI::Song>(newSong).addedByUserId.operator size_t();
+							DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(*iterator));
 							iterator = frames.erase(iterator);
 						}
 					}
