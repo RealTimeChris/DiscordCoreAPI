@@ -62,7 +62,11 @@ namespace DiscordCoreAPI {
 	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(const std::basic_string_view<uint8_t> dataToDecode) {
 		const int64_t sampleCount =
 			opus_decode(this->ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
-		return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
+		if (sampleCount > 0) {
+			return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
+		} else {
+			throw std::runtime_error{ "Failed to decode a user's voice payload, Reason: " + std::to_string(sampleCount) };
+		}
 	}
 
 	MovingAverager::MovingAverager(size_t periodCountNew) noexcept : periodCount{ periodCountNew } {
