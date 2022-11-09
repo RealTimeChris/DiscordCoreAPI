@@ -295,7 +295,7 @@ namespace DiscordCoreAPI {
 		if (this->parser.iterate(string.data(), string.length(), string.capacity()).get(value) == simdjson::error_code::SUCCESS) {
 			message = DiscordCoreInternal::WebSocketMessage{ value };
 		}
-		
+
 		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 			cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << data << reset() << endl << endl;
 		}
@@ -510,7 +510,7 @@ namespace DiscordCoreAPI {
 						this->audioData.type = AudioFrameType::Unset;
 						this->audioData.sampleCount = 0;
 						this->audioData.data.clear();
-						
+
 						this->areWePlaying.store(true);
 						if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 							this->checkForAndSendHeartBeat(false);
@@ -583,7 +583,7 @@ namespace DiscordCoreAPI {
 					}
 					break;
 				}
-					
+
 					this->areWePlaying.store(true);
 				case VoiceActiveState::Exiting: {
 					return;
@@ -730,6 +730,7 @@ namespace DiscordCoreAPI {
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Session_Description);
 				this->activeState.store(VoiceActiveState::Playing);
+				this->areWeConnecting.store(false);
 				this->connectInternal();
 				break;
 			}

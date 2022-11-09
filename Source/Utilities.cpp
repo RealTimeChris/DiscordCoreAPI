@@ -462,8 +462,8 @@ namespace DiscordCoreAPI {
 	}
 
 	Jsonifier& Jsonifier::operator=(JsonType typeNew) noexcept {
-		this->setValue(this->type);
 		this->type = typeNew;
+		this->setValue(this->type);
 		return *this;
 	}
 
@@ -647,8 +647,11 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case 0x22: {
-					this->writeCharacter('\\');
 					this->writeCharacter('\"');
+					break;
+				}
+				case 0x5C: {
+					this->writeCharacter('\\');
 					break;
 				}
 				default: {
@@ -805,11 +808,11 @@ namespace DiscordCoreAPI {
 		}
 		newBuffer[1] = encodedBytes;
 		newBuffer[2] = 0;
-		this->writeString(newBuffer, 1ull + 2ull + static_cast<size_t>(encodedBytes));
+		this->writeString(newBuffer, 1 + 2 + encodedBytes);
 	}
 
 	void Jsonifier::appendNewFloatExt(const double FloatValue) {
-		char newBuffer[9]{ static_cast<uint8_t>(EtfType::New_Float_Ext) };
+		char newBuffer[9]{ static_cast<unsigned char>(EtfType::New_Float_Ext) };
 		const void* punner{ &FloatValue };
 		storeBits(newBuffer + 1, *static_cast<const uint64_t*>(punner));
 		this->writeString(newBuffer, std::size(newBuffer));
@@ -1728,11 +1731,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void spinLock(uint64_t timeInNsToSpinLockFor) {
-		uint64_t startTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+		uint64_t startTime =
+			std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 		uint64_t timePassed{ 0 };
 		while (timePassed < timeInNsToSpinLockFor) {
-			timePassed =
-				std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - startTime;
+			timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() -
+				startTime;
 		}
 	}
 

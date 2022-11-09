@@ -615,6 +615,12 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 		} else if (this->streamTypeReal == DiscordCoreAPI::StreamType::Client) {
+			if (auto result = bind(this->socket, this->address->ai_addr, this->address->ai_addrlen); result != 0) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::bind(), to: " + baseUrlNew) << endl;
+				}
+				return false;
+			}
 			const std::string clientToServerString{ "test string" };
 			sendto(static_cast<SOCKET>(this->socket), clientToServerString.data(), static_cast<int32_t>(clientToServerString.size()), 0,
 				this->address->ai_addr, this->address->ai_addrlen);
@@ -628,11 +634,15 @@ namespace DiscordCoreInternal {
 			}
 
 			std::string serverToClientBuffer{};
-			while (!stopWatch.hasTimePassed() && serverToClientBuffer == "") {
+			std::string comparisonString = serverToClientBuffer;
+			while (!stopWatch.hasTimePassed() && serverToClientBuffer == comparisonString) {
 				serverToClientBuffer.resize(11);
 				auto readBytes{ recvfrom(static_cast<SOCKET>(this->socket), serverToClientBuffer.data(),
 					static_cast<int32_t>(serverToClientBuffer.size()), 0, this->address->ai_addr,
 					reinterpret_cast<int32_t*>(&this->address->ai_addrlen)) };
+				if (readBytes > 0) {
+					return true;
+				}
 			}
 		}
 
@@ -640,9 +650,6 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult DatagramSocketClient::processIO(ProcessIOType type) noexcept {
-		if (!this->areWeStillConnected()) {
-			return ProcessIOResult::No_Error;
-		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->socket;
 		if (type == ProcessIOType::Both && this->outputBuffer.getUsedSpace() > 0) {
@@ -659,19 +666,19 @@ namespace DiscordCoreInternal {
 		} else if (returnValue == 0) {
 			return ProcessIOResult::No_Error;
 		} else {
-			if (readWriteSet.revents & POLLOUT) {
+			if (readWriteSet.revents & POLLIN) {
 				if (this->streamTypeReal != DiscordCoreAPI::StreamType::None) {
 				}
-				if (!this->processWriteData()) {
+				if (!this->processReadData()) {
 					result = ProcessIOResult::Error;
 				} else {
 					result = ProcessIOResult::No_Error;
 				}
 			}
-			if (readWriteSet.revents & POLLIN) {
+			if (readWriteSet.revents & POLLOUT) {
 				if (this->streamTypeReal != DiscordCoreAPI::StreamType::None) {
 				}
-				if (!this->processReadData()) {
+				if (!this->processWriteData()) {
 					result = ProcessIOResult::Error;
 				} else {
 					result = ProcessIOResult::No_Error;
@@ -747,7 +754,9 @@ namespace DiscordCoreInternal {
 	bool DatagramSocketClient::processReadData() noexcept {
 		bool returnValue{ true };
 		int32_t readBytes{};
+		int32_t index{};
 		do {
+			index++;
 			if (!this->inputBuffer.isItFull()) {
 				uint64_t bytesToRead{};
 				if (this->maxBufferSize > this->inputBuffer.getCurrentHead()->getFreeSpace()) {
@@ -768,7 +777,7 @@ namespace DiscordCoreInternal {
 					returnValue = true;
 				}
 			}
-		} while (readBytes > 0);
+		} while (index < 5 && readBytes > 0);
 		return returnValue;
 	}
 

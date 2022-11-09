@@ -53,8 +53,8 @@ namespace DiscordCoreAPI {
 			this->quantityOfObjectToCollect = quantityToCollect;
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
-			this->collectorId =
-				std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+			this->collectorId = std::to_string(
+				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
 			ObjectCollector::objectsBuffersMap[this->collectorId] = &this->messagesBuffer;
 			this->run();
 			co_return std::move(this->messageReturnData);
@@ -75,7 +75,8 @@ namespace DiscordCoreAPI {
 				}
 
 				elapsedTime =
-					std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - startingTime;
+					std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() -
+					startingTime;
 			}
 		}
 

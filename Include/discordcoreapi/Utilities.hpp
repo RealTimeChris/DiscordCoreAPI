@@ -201,10 +201,9 @@ namespace DiscordCoreAPI {
 		return lhs.id == rhs.id;
 	}
 
-	template<typename ReturnType> void reverseByteOrder(ReturnType& net) {
-		if (std::endian::native == std::endian::big) {
-		} else {
-			switch (sizeof(ReturnType)) {
+	template<typename RTy> void reverseByteOrder(RTy& net) {
+		if (std::endian::native == std::endian::little) {
+			switch (sizeof(RTy)) {
 				case 1: {
 					return;
 				}
@@ -212,61 +211,57 @@ namespace DiscordCoreAPI {
 					__m256i value{ _mm256_set1_epi16(net) };
 					__m256i indexes{ _mm256_set_epi8(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
 						1) };
-					__m256i result{ _mm256_shuffle_epi8(value, indexes) };
-					net = *reinterpret_cast<uint16_t*>(&result);
+					net = _mm256_extract_epi16(_mm256_shuffle_epi8(value, indexes), 0);
 					return;
 				}
 				case 4: {
 					__m256i value{ _mm256_set1_epi32(net) };
 					__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2,
 						3) };
-					__m256i result{ _mm256_shuffle_epi8(value, indexes) };
-					net = *reinterpret_cast<uint32_t*>(&result);
-					return;
+					net = _mm256_extract_epi32(_mm256_shuffle_epi8(value, indexes), 0);
 				}
 				case 8: {
 					__m256i value{ _mm256_set1_epi64x(net) };
 					__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6,
 						7) };
-					__m256i result{ _mm256_shuffle_epi8(value, indexes) };
-					net = *reinterpret_cast<uint64_t*>(&result);
+					net = _mm256_extract_epi64(_mm256_shuffle_epi8(value, indexes), 0);
 					return;
 				}
 			}
 		}
 	}
 
-	template<typename ReturnType> void storeBits(char* to, ReturnType num) {
+	template<typename RTy> void storeBits(char* to, RTy num) {
 		const uint8_t byteSize{ 8 };
-		reverseByteOrder<ReturnType>(num);
-		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
+		reverseByteOrder<RTy>(num);
+		for (uint32_t x = 0; x < sizeof(RTy); ++x) {
 			to[x] = static_cast<uint8_t>(num >> (byteSize * x));
 		}
 	}
 
-	template<typename TimeType> class StopWatch {
+	template<typename TTy> class StopWatch {
 	  public:
 		StopWatch() = delete;
 
-		StopWatch<TimeType>& operator=(const StopWatch<TimeType>& data) {
+		StopWatch<TTy>& operator=(const StopWatch<TTy>& data) {
 			this->maxNumberOfMs.store(data.maxNumberOfMs.load());
 			this->startTime.store(data.startTime.load());
 			return *this;
 		}
 
-		StopWatch(const StopWatch<TimeType>& data) {
+		StopWatch(const StopWatch<TTy>& data) {
 			*this = data;
 		}
 
-		StopWatch(TimeType maxNumberOfMsNew) {
+		StopWatch(TTy maxNumberOfMsNew) {
 			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
 			this->startTime.store(
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+				static_cast<uint64_t>(std::chrono::duration_cast<TTy>(std::chrono::system_clock::now().time_since_epoch()).count()));
 		}
 
 		uint64_t totalTimePassed() {
 			uint64_t currentTime =
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+				static_cast<uint64_t>(std::chrono::duration_cast<TTy>(std::chrono::system_clock::now().time_since_epoch()).count());
 			uint64_t elapsedTime = currentTime - this->startTime.load();
 			return elapsedTime;
 		}
@@ -277,7 +272,7 @@ namespace DiscordCoreAPI {
 
 		bool hasTimePassed() {
 			uint64_t currentTime =
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+				static_cast<uint64_t>(std::chrono::duration_cast<TTy>(std::chrono::system_clock::now().time_since_epoch()).count());
 			uint64_t elapsedTime = currentTime - this->startTime.load();
 			if (elapsedTime >= this->maxNumberOfMs.load()) {
 				return true;
@@ -288,7 +283,7 @@ namespace DiscordCoreAPI {
 
 		void resetTimer() {
 			this->startTime.store(
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+				static_cast<uint64_t>(std::chrono::duration_cast<TTy>(std::chrono::system_clock::now().time_since_epoch()).count()));
 		}
 
 	  protected:
@@ -296,7 +291,7 @@ namespace DiscordCoreAPI {
 		std::atomic_uint64_t startTime{ 0 };
 	};
 
-	const uint8_t formatVersion{ 131 };
+	constexpr uint8_t formatVersion{ 131 };
 
 	enum class EtfType : uint8_t {
 		New_Float_Ext = 70,
@@ -352,7 +347,7 @@ namespace DiscordCoreAPI {
 
 	enum class JsonifierSerializeType { Etf = 0, Json = 1 };
 
-	class DiscordCoreAPI_Dll Jsonifier;
+	class Jsonifier;
 
 	template<typename Ty>
 	concept IsConvertibleToJsonifier = std::convertible_to<Ty, Jsonifier>;
@@ -1557,7 +1552,7 @@ namespace DiscordCoreAPI {
 	/// \returns std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
-	template<typename TimeType>
+	template<typename TTy>
 	/// Class for representing a timeStamp, as well as working with time-related values. \brief Class for representing a timeStamp, as well as working with time-related values.
 	class TimeStamp {
 	  public:
@@ -1579,7 +1574,7 @@ namespace DiscordCoreAPI {
 			return this->timeStampInTimeUnits;
 		}
 
-		TimeStamp<TimeType>& operator=(std::string&& originalTimeStampNew) {
+		TimeStamp<TTy>& operator=(std::string&& originalTimeStampNew) {
 			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
 			this->getISO8601TimeStamp(TimeFormat::LongDateTime);
 			return *this;
@@ -1589,7 +1584,7 @@ namespace DiscordCoreAPI {
 			*this = std::move(originalTimeStampNew);
 		}
 
-		TimeStamp<TimeType>& operator=(std::string& originalTimeStampNew) {
+		TimeStamp<TTy>& operator=(std::string& originalTimeStampNew) {
 			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
 			this->getISO8601TimeStamp(TimeFormat::LongDateTime);
 			return *this;
@@ -1599,7 +1594,7 @@ namespace DiscordCoreAPI {
 			*this = originalTimeStampNew;
 		}
 
-		TimeStamp<TimeType>& operator=(const TimeStamp& other) {
+		TimeStamp<TTy>& operator=(const TimeStamp& other) {
 			this->timeStampInTimeUnits = other.timeStampInTimeUnits;
 			return *this;
 		}
@@ -1613,7 +1608,7 @@ namespace DiscordCoreAPI {
 		};
 
 		TimeStamp(uint64_t timeInTimeUnits, TimeFormat formatNew) {
-			this->timeStampInTimeUnits = TimeType{ timeInTimeUnits }.count();
+			this->timeStampInTimeUnits = TTy{ timeInTimeUnits }.count();
 			this->getISO8601TimeStamp(formatNew);
 		}
 
@@ -1745,62 +1740,62 @@ namespace DiscordCoreAPI {
 			const uint32_t secondsPerMinute{ 60 };
 			const uint32_t secondsPerHour{ 60 * 60 };
 			const uint32_t secondsPerDay{ 60 * 60 * 24 };
-			TimeType value{};
+			TTy value{};
 			for (int32_t x = 1970; x < year; ++x) {
-				value += TimeType{ secondsInJan };
-				value += TimeType{ secondsInFeb };
-				value += TimeType{ secondsInMar };
-				value += TimeType{ secondsInApr };
-				value += TimeType{ secondsInMay };
-				value += TimeType{ secondsInJun };
-				value += TimeType{ secondsInJul };
-				value += TimeType{ secondsInAug };
-				value += TimeType{ secondsInSep };
-				value += TimeType{ secondsInOct };
-				value += TimeType{ secondsInNov };
-				value += TimeType{ secondsInDec };
+				value += TTy{ secondsInJan };
+				value += TTy{ secondsInFeb };
+				value += TTy{ secondsInMar };
+				value += TTy{ secondsInApr };
+				value += TTy{ secondsInMay };
+				value += TTy{ secondsInJun };
+				value += TTy{ secondsInJul };
+				value += TTy{ secondsInAug };
+				value += TTy{ secondsInSep };
+				value += TTy{ secondsInOct };
+				value += TTy{ secondsInNov };
+				value += TTy{ secondsInDec };
 				if (x % 4 == 0) {
-					value += TimeType{ secondsPerDay };
+					value += TTy{ secondsPerDay };
 				}
 			}
 			if (month > 0) {
-				value += TimeType{ static_cast<uint64_t>((day - 1) * secondsPerDay) };
-				value += TimeType{ static_cast<uint64_t>(hour * secondsPerHour) };
-				value += TimeType{ static_cast<uint64_t>(minute * secondsPerMinute) };
-				value += TimeType{ second };
+				value += TTy{ static_cast<uint64_t>((day - 1) * secondsPerDay) };
+				value += TTy{ static_cast<uint64_t>(hour * secondsPerHour) };
+				value += TTy{ static_cast<uint64_t>(minute * secondsPerMinute) };
+				value += TTy{ second };
 			}
 			if (month > 1) {
-				value += TimeType{ secondsInJan };
+				value += TTy{ secondsInJan };
 			}
 			if (month > 2) {
-				value += TimeType{ secondsInFeb };
+				value += TTy{ secondsInFeb };
 			}
 			if (month > 3) {
-				value += TimeType{ secondsInMar };
+				value += TTy{ secondsInMar };
 			}
 			if (month > 4) {
-				value += TimeType{ secondsInApr };
+				value += TTy{ secondsInApr };
 			}
 			if (month > 5) {
-				value += TimeType{ secondsInMay };
+				value += TTy{ secondsInMay };
 			}
 			if (month > 6) {
-				value += TimeType{ secondsInJun };
+				value += TTy{ secondsInJun };
 			}
 			if (month > 7) {
-				value += TimeType{ secondsInJul };
+				value += TTy{ secondsInJul };
 			}
 			if (month > 8) {
-				value += TimeType{ secondsInAug };
+				value += TTy{ secondsInAug };
 			}
 			if (month > 9) {
-				value += TimeType{ secondsInSep };
+				value += TTy{ secondsInSep };
 			}
 			if (month > 10) {
-				value += TimeType{ secondsInOct };
+				value += TTy{ secondsInOct };
 			}
 			if (month > 11) {
-				value += TimeType{ secondsInNov };
+				value += TTy{ secondsInNov };
 			}
 			this->timeStampInTimeUnits = std::chrono::duration_cast<std::chrono::milliseconds>(value).count() * 1000;
 		}
@@ -1808,12 +1803,12 @@ namespace DiscordCoreAPI {
 		void convertTimeStampToTimeUnits(TimeFormat formatNew, std::string originalTimeStamp) {
 			try {
 				if (originalTimeStamp != "" && originalTimeStamp != "0") {
-					TimeStamp<TimeType> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
+					TimeStamp<TTy> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
 						stoi(originalTimeStamp.substr(8, 9)), stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)),
 						stoi(originalTimeStamp.substr(17, 18)), formatNew };
-					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) }.count();
+					this->timeStampInTimeUnits = TTy{ static_cast<uint64_t>(timeValue) }.count();
 				} else {
-					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count();
+					this->timeStampInTimeUnits = std::chrono::duration_cast<TTy>(std::chrono::system_clock::now().time_since_epoch()).count();
 				}
 			} catch (...) {
 				reportException("TimeStamp::convertTimeStampToTimeUnits()");
@@ -1825,7 +1820,7 @@ namespace DiscordCoreAPI {
 				this->timeStampInTimeUnits =
 					std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			}
-			uint64_t timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(TimeType{ this->timeStampInTimeUnits }).count()) / 1000;
+			uint64_t timeValue = (std::chrono::duration_cast<std::chrono::milliseconds>(TTy{ this->timeStampInTimeUnits }).count()) / 1000;
 			time_t rawTime(timeValue);
 			tm timeInfo = *localtime(&rawTime);
 			std::string timeStamp{};
