@@ -293,7 +293,7 @@ namespace DiscordCoreAPI {
 		dataPackage01.roleIds = guildMember.roles;
 		dataPackage01.nick = guildMember.nick;
 		dataPackage01.reason = dataPackage.reason;
-		TimeStamp<std::chrono::milliseconds> timeStamp{};
+		TimeStamp<Milliseconds> timeStamp{};
 		switch (dataPackage.numOfMinutesToTimeoutFor) {
 			case TimeoutDurations::Day: {
 				auto string = timeStamp.convertToFutureISO8601TimeStamp(0, 0, 1, 0, 0, TimeFormat::LongDateTime);

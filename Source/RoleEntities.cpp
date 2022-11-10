@@ -347,7 +347,7 @@ namespace DiscordCoreAPI {
 			return data;
 		}
 	}
-	StopWatch<std::chrono::milliseconds> stopWatchNew{ 5ms };
+	StopWatch<Milliseconds> stopWatchNew{ 5ms };
 	void Roles::insertRole(RoleData role) {
 		if (role.id == 0) {
 			return;

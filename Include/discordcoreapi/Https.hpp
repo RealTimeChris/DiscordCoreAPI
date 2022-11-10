@@ -56,7 +56,7 @@ namespace DiscordCoreInternal {
 		uint64_t contentLength{};
 
 	  protected:
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ 500ms };
+		DiscordCoreAPI::StopWatch<Milliseconds> stopWatch{ 500ms };
 		bool isItChunked{ false };
 	};
 
@@ -154,6 +154,8 @@ namespace DiscordCoreInternal {
 
 	template<typename OTy>
 	concept SameAsVoid = std::same_as<void, OTy>;
+	
+	inline thread_local simdjson::ondemand::parser parser{};
 
 	class DiscordCoreAPI_Dll HttpsClient {
 	  public:
@@ -176,7 +178,7 @@ namespace DiscordCoreInternal {
 				theError.errorCode = returnData.responseCode;
 				throw theError;
 			}
-			simdjson::ondemand::parser parser{};
+			
 			if (returnData.responseMessage.size() > 0) {
 				returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
 				auto document =
@@ -204,7 +206,7 @@ namespace DiscordCoreInternal {
 		HttpsResponseData httpsRequest(const HttpsWorkloadData& workload);
 
 	  protected:
-		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
+		const DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		HttpsConnectionManager connectionManager{ nullptr };
 
 		HttpsResponseData httpsRequestInternal(HttpsConnection& connection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData);

@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::unordered_map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
-		StopWatch<std::chrono::milliseconds> connectionStopWatch{ 5250ms };
+		StopWatch<Milliseconds> connectionStopWatch{ 5250ms };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
 	#ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};

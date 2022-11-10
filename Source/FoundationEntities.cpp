@@ -245,7 +245,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
-		TimeStamp<std::chrono::milliseconds> timeStamp{ (this->id.operator size_t() >> 22) + 1420070400000, timeFormat };
+		TimeStamp<Milliseconds> timeStamp{ (this->id.operator size_t() >> 22) + 1420070400000, timeFormat };
 		return timeStamp.operator std::string();
 	}
 
@@ -3013,7 +3013,7 @@ namespace DiscordCoreAPI {
 
 		uint32_t theDuration = getUint32(jsonObjectData, "duration");
 		if (theDuration != 0) {
-			this->duration = TimeStamp<std::chrono::milliseconds>::convertMsToDurationString(theDuration);
+			this->duration = TimeStamp<Milliseconds>::convertMsToDurationString(theDuration);
 		}
 
 		newString = getString(jsonObjectData, "permalink_url");
@@ -3967,7 +3967,7 @@ namespace DiscordCoreAPI {
 		dataPackage->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
 		dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 		originalEvent = InputEvents::respondToInputEventAsync(*dataPackage).get();
-		StopWatch stopWatch{ std::chrono::milliseconds{ waitForMaxMs } };
+		StopWatch stopWatch{ Milliseconds{ waitForMaxMs } };
 		while (!stopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
 			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };

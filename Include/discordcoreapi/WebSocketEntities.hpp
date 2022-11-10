@@ -80,7 +80,7 @@ namespace DiscordCoreInternal {
 		virtual ~WebSocketCore() noexcept = default;
 
 	  protected:
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> heartBeatStopWatch{ 20000ms };
+		DiscordCoreAPI::StopWatch<Milliseconds> heartBeatStopWatch{ 20000ms };
 		std::unique_ptr<DiscordCoreAPI::ConnectionPackage> connections{ nullptr };
 		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic<WebSocketState> currentState{};

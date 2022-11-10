@@ -56,9 +56,9 @@ namespace DiscordCoreAPI {
 
 		static void executeFunctionAfterTimePeriod(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeDelay, bool blockForCompletion) {
 			std::jthread thread = std::jthread([=](std::stop_token stopToken) {
-				StopWatch stopWatch{ std::chrono::milliseconds{ timeDelay } };
+				StopWatch stopWatch{ Milliseconds{ timeDelay } };
 				stopWatch.resetTimer();
-				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeDelay) * percentage)) });
+				std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeDelay) * percentage)) });
 				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
 					std::this_thread::sleep_for(1ms);
 				}
@@ -85,9 +85,9 @@ namespace DiscordCoreAPI {
 		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeDelay, bool blockForCompletion,
 			ArgTypes... args) {
 			std::jthread thread = std::jthread([=](std::stop_token stopToken) {
-				StopWatch stopWatch{ std::chrono::milliseconds{ timeDelay } };
+				StopWatch stopWatch{ Milliseconds{ timeDelay } };
 				stopWatch.resetTimer();
-				std::this_thread::sleep_for(std::chrono::milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeDelay) * percentage)) });
+				std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeDelay) * percentage)) });
 				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
 					std::this_thread::sleep_for(1ms);
 				}

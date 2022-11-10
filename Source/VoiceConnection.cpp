@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		this->data.resize(23040);
 		this->ptr.reset(opus_decoder_create(48000, 2, &error));
 		if (error != OPUS_OK) {
-			throw std::runtime_error{ "Failed to create the Opus Decoder" };
+			throw std::runtime_error{ "Failed to create the Opus decoder, Reason: " + std::string{ opus_strerror(error) } };
 		}
 	}
 
@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 		if (sampleCount > 0) {
 			return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
 		} else {
-			throw std::runtime_error{ "Failed to decode a user's voice payload, Reason: " + std::to_string(sampleCount) };
+			throw std::runtime_error{ "Failed to decode a user's voice payload, Reason: " + std::string{ opus_strerror(sampleCount) } };
 		}
 	}
 
@@ -271,7 +271,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::checkForAndSendHeartBeat(const bool isImmedate) noexcept {
 		if (this->heartBeatStopWatch.hasTimePassed() || isImmedate) {
 			DiscordCoreAPI::Jsonifier data{};
-			data["d"] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+			data["d"] = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
 			data["op"] = 3;
 			data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 			std::string string = this->prepMessageData(data.operator std::string(), this->dataOpCode);
@@ -337,7 +337,7 @@ namespace DiscordCoreAPI {
 			}
 			case 8: {
 				this->heartBeatStopWatch =
-					StopWatch{ std::chrono::milliseconds{ static_cast<uint32_t>(getFloat(value["d"], "heartbeat_interval")) } };
+					StopWatch{ Milliseconds{ static_cast<uint32_t>(getFloat(value["d"], "heartbeat_interval")) } };
 				this->areWeHeartBeating = true;
 				this->connectionState.store(VoiceConnectionState::Sending_Identify);
 				this->currentState.store(DiscordCoreInternal::WebSocketState::Authenticated);
@@ -392,7 +392,7 @@ namespace DiscordCoreAPI {
 		while (!token.stop_requested()) {
 			processAndSleepStopWatch.resetTimer();
 			if (processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) >= 0) {
-				std::this_thread::sleep_for(NanoSeconds{ processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) });
+				std::this_thread::sleep_for(Nanoseconds{ processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) });
 			}
 			this->mixAudio();
 			if (this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both) == DiscordCoreInternal::ProcessIOResult::Error) {
@@ -492,8 +492,8 @@ namespace DiscordCoreAPI {
 						this->checkForConnections();
 					}
 
-					TimePoint startingValue{ std::chrono::high_resolution_clock::now().time_since_epoch() };
-					TimePoint intervalCount{ std::chrono::nanoseconds{ 20000000 } };
+					TimePoint startingValue{ HRClock::now().time_since_epoch() };
+					TimePoint intervalCount{ Nanoseconds{ 20000000 } };
 					TimePoint targetTime{ startingValue.time_since_epoch() + intervalCount.time_since_epoch() };
 					MovingAverager totalTime{ 12 };
 
@@ -548,7 +548,7 @@ namespace DiscordCoreAPI {
 						if (doWeBreak) {
 							break;
 						}
-						auto waitTime = targetTime - std::chrono::high_resolution_clock::now();
+						auto waitTime = targetTime - HRClock::now();
 						if (waitTime.count() >= 18000000) {
 							if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {
 								if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
@@ -556,24 +556,24 @@ namespace DiscordCoreAPI {
 								}
 							}
 						}
-						waitTime = targetTime - std::chrono::high_resolution_clock::now();
+						waitTime = targetTime - HRClock::now();
 						nanoSleep(static_cast<uint64_t>(waitTime.count() * 0.95f));
-						waitTime = targetTime - std::chrono::high_resolution_clock::now();
+						waitTime = targetTime - HRClock::now();
 						if (waitTime.count() > 0 && waitTime.count() < 20000000) {
 							spinLock(waitTime.count());
 						}
-						startingValue = std::chrono::high_resolution_clock::now();
+						startingValue = HRClock::now();
 						if (newFrame.size() > 0) {
 							this->sendVoiceData(newFrame);
 						}
 						DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
-						totalTime.addValue((std::chrono::high_resolution_clock::now() - startingValue).count());
+						totalTime.addValue((HRClock::now() - startingValue).count());
 						const auto intervalCountNew =
-							TimePoint{ std::chrono::nanoseconds{ 20000000 } - std::chrono::nanoseconds{ totalTime.collectAverage() } }
+							TimePoint{ Nanoseconds{ 20000000 } - Nanoseconds{ totalTime.collectAverage() } }
 								.time_since_epoch()
 								.count();
-						intervalCount = TimePoint{ std::chrono::nanoseconds{ intervalCountNew } };
-						targetTime = std::chrono::high_resolution_clock::now().time_since_epoch() + intervalCount;
+						intervalCount = TimePoint{ Nanoseconds{ intervalCountNew } };
+						targetTime = HRClock::now().time_since_epoch() + intervalCount;
 					}
 					break;
 				}
@@ -964,12 +964,13 @@ namespace DiscordCoreAPI {
 				}
 
 				if (newString.size() > 0) {
-					auto decodedData = value.getDecoder().decodeData(newString);
-					if (decodedData.size() <= 0) {
-						if (this->configManager->doWePrintGeneralErrorMessages()) {
-							cout << "Failed to decode user's voice payload." << std::endl;
-						}
-					} else {
+					std::basic_string_view<opus_int16> decodedData{};
+					try {
+						decodedData = value.getDecoder().decodeData(newString);
+					} catch (...) {
+						reportException("VoiceConnection::mixAudio()");
+					}
+					if (decodedData.size() > 0) {
 						decodedSize = std::max(decodedSize, decodedData.size());
 						voiceUserCount++;
 						for (uint32_t x = 0; x < decodedData.size(); ++x) {

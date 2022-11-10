@@ -699,7 +699,7 @@ namespace DiscordCoreAPI {
 
 	/// Meta data for a Thread type of Channel. \brief Meta data for a Thread type of Channel.
 	struct DiscordCoreAPI_Dll ThreadMetadataData {
-		TimeStamp<std::chrono::milliseconds> archiveTimestamp{};///< (Where applicable) the time at which this Thread was archived.
+		TimeStamp<Milliseconds> archiveTimestamp{};///< (Where applicable) the time at which this Thread was archived.
 		int32_t autoArchiveDuration{ 0 };///< How int64_t before archiving this Thread.
 		bool invitable{ false };///< The id of the individual who archived this Thread.
 		bool archived{ false };///< Whether or not this Thread is currently archived.
@@ -715,7 +715,7 @@ namespace DiscordCoreAPI {
 	/// Data for a single member of a Thread. \brief Data for a single member of a Thread.
 	class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
 	  public:
-		TimeStamp<std::chrono::milliseconds> joinTimestamp{};///< The time at which the member joined this Thread.
+		TimeStamp<Milliseconds> joinTimestamp{};///< The time at which the member joined this Thread.
 		Snowflake userId{};///< The User's id.
 		int32_t flags{ 0 };///< Flags.
 
@@ -749,7 +749,7 @@ namespace DiscordCoreAPI {
 
 	/// Voice state data. \brief Voice state data.
 	struct DiscordCoreAPI_Dll VoiceStateData {
-		TimeStamp<std::chrono::milliseconds> requestToSpeakTimestamp{};///< The time at which the User requested to speak.
+		TimeStamp<Milliseconds> requestToSpeakTimestamp{};///< The time at which the User requested to speak.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
 		bool selfVideo{ false };///< Whether this User's camera is enabled.
 		std::string sessionId{};///< The session id for this voice state.
@@ -888,7 +888,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
 	  public:
 		friend class GuildData;
-		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When they joined the Guild.
+		TimeStamp<Milliseconds> joinedAt{};///< When they joined the Guild.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		GuildMemberFlags flags{ 0 };///< GuildMember flags.
 		Snowflake voiceChannelId{};///< Currently held voice channel, if applicable.
@@ -1468,7 +1468,7 @@ namespace DiscordCoreAPI {
 	/// Integration data. \brief Integration data.
 	class DiscordCoreAPI_Dll IntegrationData : public DiscordEntity {
 	  public:
-		TimeStamp<std::chrono::milliseconds> syncedAt{};///< Time it was last synced at.
+		TimeStamp<Milliseconds> syncedAt{};///< Time it was last synced at.
 		ApplicationData application{};///< Application data.
 		int32_t expireGracePeriod{ 0 };///< How int64_t before the integration expires.
 		bool enableEmoticons{ true };///< Emoticons enabled?
@@ -1606,7 +1606,7 @@ namespace DiscordCoreAPI {
 	/// Audit log entry data. \brief Audit log entry data.
 	class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity {
 	  public:
-		TimeStamp<std::chrono::milliseconds> createdTimeStamp{};///< Time at which this entry was created.
+		TimeStamp<Milliseconds> createdTimeStamp{};///< Time at which this entry was created.
 		std::vector<AuditLogChangeData> changes{};///< Array of audit log change data.
 		OptionalAuditEntryInfoData options{};///< Audit log entry info data.
 		AuditLogEvent actionType{};///< Audit log action type.
@@ -1797,7 +1797,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
-		TimeStamp<std::chrono::milliseconds> joinedAt{};///< When the bot joined this Guild.
+		TimeStamp<Milliseconds> joinedAt{};///< When the bot joined this Guild.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
 		std::vector<Snowflake> guildScheduledEvents{};///< Array of Guild channels.
 		std::vector<PresenceUpdateData> presences{};///< Presence states for each of the GuildMembers..
@@ -1969,8 +1969,8 @@ namespace DiscordCoreAPI {
 
 	/// Invite data. \brief Invite data.
 	struct DiscordCoreAPI_Dll InviteData {
-		TimeStamp<std::chrono::milliseconds> expiresAt{};///< When the invite expires.
-		TimeStamp<std::chrono::milliseconds> createdAt{};///< Time it was created at.
+		TimeStamp<Milliseconds> expiresAt{};///< When the invite expires.
+		TimeStamp<Milliseconds> createdAt{};///< Time it was created at.
 		GuildScheduledEventData guildScheduledEvent{};///< Scheduled Guild event.
 		int32_t approximatePresenceCount{ 0 };///< Approximate presence count.
 		ApplicationData targetApplication{};///< Application data.
@@ -2478,7 +2478,7 @@ namespace DiscordCoreAPI {
 
 	/// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
 	struct DiscordCoreAPI_Dll ChannelPinsUpdateEventData {
-		TimeStamp<std::chrono::milliseconds> lastPinTimeStamp{};///< The time of the last pinned Message.
+		TimeStamp<Milliseconds> lastPinTimeStamp{};///< The time of the last pinned Message.
 		Snowflake channelId{};///< The id of the Channel within which the Message was pinned.
 		Snowflake guildId{};///< The id of the Guild within which the Message was pinned.
 
@@ -2607,9 +2607,9 @@ namespace DiscordCoreAPI {
 	/// The core of a Message's data structure. \brief The core of a Message's data structure.
 	class DiscordCoreAPI_Dll MessageDataOld : public DiscordEntity {
 	  public:
-		TimeStamp<std::chrono::milliseconds> editedTimestamp{};///< The time at which it was edited.
+		TimeStamp<Milliseconds> editedTimestamp{};///< The time at which it was edited.
 		std::vector<ChannelMentionData> mentionChannels{};///< array of Channel mention data.
-		TimeStamp<std::chrono::milliseconds> timeStamp{};///< The timeStamp of when the Message was created.
+		TimeStamp<Milliseconds> timeStamp{};///< The timeStamp of when the Message was created.
 		std::vector<StickerItemData> stickerItems{};///< Array of Message Sticker item data.
 		std::vector<AttachmentData> attachments{};///< Array of attachment data.
 		MessageReferenceData messageReference{};///< Message reference data.
@@ -2817,7 +2817,7 @@ namespace DiscordCoreAPI {
 	/// Data from the SessionStart info. \brief Data from the SessionStart info.
 	struct DiscordCoreAPI_Dll SessionStartData {
 		uint32_t maxConcurrency{ 0 };///< The number of identify requests allowed per 5 seconds.
-		uint32_t resetAfter{ 0 };///< The number of std::chrono::milliseconds after which the limit resets.
+		uint32_t resetAfter{ 0 };///< The number of Milliseconds after which the limit resets.
 		uint32_t remaining{ 0 };///< The remaining number of session starts the current User is allowed.
 		uint32_t total{ 0 };///< The total number of session starts the current User is allowed.
 

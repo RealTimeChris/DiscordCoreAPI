@@ -118,10 +118,10 @@ namespace DiscordCoreAPI {
 	/// For deleting a Message. \brief For deleting a Message.
 	struct DiscordCoreAPI_Dll DeleteMessageData {
 	  public:
-		TimeStamp<std::chrono::milliseconds> timeStamp{ "" };///< The created-at timeStamp of the original message.
+		TimeStamp<Milliseconds> timeStamp{ "" };///< The created-at timeStamp of the original message.
 		Snowflake channelId{};///< The channel Id of the Message to delete.
 		Snowflake messageId{};///< The message Id of the Message to delete.
-		int32_t timeDelay{ 0 };///< Number of std::chrono::milliseconds to wait before deleting the Message.
+		int32_t timeDelay{ 0 };///< Number of Milliseconds to wait before deleting the Message.
 		std::string reason{};///< The reason for deleting the Message.
 	};
 

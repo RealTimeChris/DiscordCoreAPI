@@ -950,75 +950,75 @@ namespace DiscordCoreAPI {
 		this->config = configNew;
 	}
 
-	const bool ConfigManager::doWePrintWebSocketSuccessMessages() {
+	const bool ConfigManager::doWePrintWebSocketSuccessMessages() const {
 		return this->config.logOptions.logWebSocketSuccessMessages;
 	}
 
-	const bool ConfigManager::doWePrintWebSocketErrorMessages() {
+	const bool ConfigManager::doWePrintWebSocketErrorMessages() const {
 		return this->config.logOptions.logWebSocketErrorMessages;
 	}
 
-	const bool ConfigManager::doWePrintHttpsSuccessMessages() {
+	const bool ConfigManager::doWePrintHttpsSuccessMessages() const {
 		return this->config.logOptions.logHttpsSuccessMessages;
 	}
 
-	const bool ConfigManager::doWePrintHttpsErrorMessages() {
+	const bool ConfigManager::doWePrintHttpsErrorMessages() const {
 		return this->config.logOptions.logHttpsErrorMessages;
 	}
 
-	const bool ConfigManager::doWePrintFFMPEGSuccessMessages() {
+	const bool ConfigManager::doWePrintFFMPEGSuccessMessages() const {
 		return this->config.logOptions.logFFMPEGSuccessMessages;
 	}
 
-	const bool ConfigManager::doWePrintFFMPEGErrorMessages() {
+	const bool ConfigManager::doWePrintFFMPEGErrorMessages() const {
 		return this->config.logOptions.logFFMPEGErrorMessages;
 	}
 
-	const bool ConfigManager::doWePrintGeneralSuccessMessages() {
+	const bool ConfigManager::doWePrintGeneralSuccessMessages() const {
 		return this->config.logOptions.logGeneralSuccessMessages;
 	}
 
-	const bool ConfigManager::doWePrintGeneralErrorMessages() {
+	const bool ConfigManager::doWePrintGeneralErrorMessages() const {
 		return this->config.logOptions.logGeneralErrorMessages;
 	}
 
-	const bool ConfigManager::doWeCacheChannels() {
+	const bool ConfigManager::doWeCacheChannels() const {
 		return this->config.cacheOptions.cacheChannels;
 	}
 
-	const bool ConfigManager::doWeCacheUsers() {
+	const bool ConfigManager::doWeCacheUsers() const {
 		return this->config.cacheOptions.cacheUsers;
 	}
 
-	const bool ConfigManager::doWeCacheGuilds() {
+	const bool ConfigManager::doWeCacheGuilds() const {
 		return this->config.cacheOptions.cacheGuilds;
 	}
 
-	const bool ConfigManager::doWeCacheRoles() {
+	const bool ConfigManager::doWeCacheRoles() const {
 		return this->config.cacheOptions.cacheRoles;
 	}
 
-	const UpdatePresenceData ConfigManager::getPresenceData() {
+	const UpdatePresenceData ConfigManager::getPresenceData() const {
 		return this->config.presenceData;
 	}
 
-	const std::string ConfigManager::getBotToken() {
+	const std::string ConfigManager::getBotToken() const {
 		return this->config.botToken;
 	}
 
-	const uint32_t ConfigManager::getTotalShardCount() {
+	const uint32_t ConfigManager::getTotalShardCount() const {
 		return this->config.shardOptions.totalNumberOfShards;
 	}
 
-	const uint32_t ConfigManager::getStartingShard() {
+	const uint32_t ConfigManager::getStartingShard() const {
 		return this->config.shardOptions.startingShard;
 	}
 
-	const uint32_t ConfigManager::getShardCountForThisProcess() {
+	const uint32_t ConfigManager::getShardCountForThisProcess() const {
 		return this->config.shardOptions.numberOfShardsForThisProcess;
 	}
 
-	const std::string ConfigManager::getConnectionAddress() {
+	const std::string ConfigManager::getConnectionAddress() const {
 		return this->config.connectionAddress;
 	}
 
@@ -1026,7 +1026,7 @@ namespace DiscordCoreAPI {
 		this->config.connectionAddress = connectionAddressNew;
 	}
 
-	const std::string ConfigManager::getConnectionPort() {
+	const std::string ConfigManager::getConnectionPort() const {
 		return this->config.connectionPort;
 	}
 
@@ -1034,11 +1034,11 @@ namespace DiscordCoreAPI {
 		this->config.connectionPort = connectionPortNew;
 	}
 
-	const std::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() {
+	const std::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() const {
 		return this->config.functionsToExecute;
 	}
 
-	const TextFormat ConfigManager::getTextFormat() {
+	const TextFormat ConfigManager::getTextFormat() const {
 		return this->config.textFormat;
 	}
 
@@ -1732,10 +1732,10 @@ namespace DiscordCoreAPI {
 
 	void spinLock(uint64_t timeInNsToSpinLockFor) {
 		uint64_t startTime =
-			std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+			std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
 		uint64_t timePassed{ 0 };
 		while (timePassed < timeInNsToSpinLockFor) {
-			timePassed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() -
+			timePassed = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count() -
 				startTime;
 		}
 	}
@@ -1743,7 +1743,7 @@ namespace DiscordCoreAPI {
 	std::string generateBase64EncodedKey() {
 		std::string returnString{};
 		returnString.resize(16);
-		std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::high_resolution_clock::now().time_since_epoch().count()) };
+		std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
 		for (uint32_t x = 0; x < 16; ++x) {
 			returnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
 		}
@@ -1778,7 +1778,7 @@ namespace DiscordCoreAPI {
 		WaitForSingleObjectEx(timer, INFINITE, false);
 		CloseHandle(timer);
 #else
-		std::this_thread::sleep_for(std::chrono::nanoseconds{ ns });
+		std::this_thread::sleep_for(Nanoseconds{ ns });
 #endif
 		return true;
 	}

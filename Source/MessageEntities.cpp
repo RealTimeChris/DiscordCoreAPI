@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
 		/// Begin waiting for Objects. \brief Begin waiting for Objects.
 		/// \param quantityToCollect Maximum quantity of Objects to collect before returning the results.
-		/// \param msToCollectForNew Maximum number of std::chrono::milliseconds to wait for Objects before returning the results.
+		/// \param msToCollectForNew Maximum number of Milliseconds to wait for Objects before returning the results.
 		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
 		/// \returns A ObjectCollectorReturnData structure.
 		CoRoutine<ObjectCollectorReturnData<Message>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew,
@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
 			this->collectorId = std::to_string(
-				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+				std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 			ObjectCollector::objectsBuffersMap[this->collectorId] = &this->messagesBuffer;
 			this->run();
 			co_return std::move(this->messageReturnData);
@@ -62,7 +62,7 @@ namespace DiscordCoreAPI {
 
 		void run() {
 			int64_t startingTime = static_cast<int64_t>(
-				std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+				std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 			int64_t elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
 				Message message{};
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 				}
 
 				elapsedTime =
-					std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() -
+					std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count() -
 					startingTime;
 			}
 		}
@@ -468,7 +468,7 @@ namespace DiscordCoreAPI {
 			workload = DiscordCoreInternal::HttpsWorkloadType::Delete_Message;
 		}
 		co_await NewThreadAwaitable<void>();
-		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
+		std::this_thread::sleep_for(Milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 		workload.callStack = "Messages::deleteMessageAsync()";

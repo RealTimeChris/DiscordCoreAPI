@@ -373,7 +373,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Interaction_Response };
 		co_await NewThreadAwaitable<void>();
-		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
+		std::this_thread::sleep_for(Milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
 			"/messages/@original";
@@ -432,7 +432,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Followup_Message };
 		co_await NewThreadAwaitable<void>();
-		std::this_thread::sleep_for(std::chrono::milliseconds{ dataPackage.timeDelay });
+		std::this_thread::sleep_for(Milliseconds{ dataPackage.timeDelay });
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken +
 			"/messages/" + dataPackage.messagePackage.messageId;
@@ -473,7 +473,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void SelectMenuCollector::run() {
-		StopWatch stopWatch{ std::chrono::milliseconds{ this->maxTimeInMs } };
+		StopWatch stopWatch{ Milliseconds{ this->maxTimeInMs } };
 		while (!this->doWeQuit && !stopWatch.hasTimePassed()) {
 			if (this->getSelectMenuDataForAll == false) {
 				auto selectMenuInteractionData = std::make_unique<InteractionData>();
@@ -600,7 +600,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void ButtonCollector::run() {
-		StopWatch stopWatch{ std::chrono::milliseconds{ this->maxTimeInMs } };
+		StopWatch stopWatch{ Milliseconds{ this->maxTimeInMs } };
 		while (!this->doWeQuit && !stopWatch.hasTimePassed()) {
 			if (this->getButtonDataForAll == false) {
 				auto buttonInteractionData = std::make_unique<InteractionData>();
@@ -710,7 +710,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void ModalCollector::run() {
-		StopWatch stopWatch{ std::chrono::milliseconds{ this->maxTimeInMs } };
+		StopWatch stopWatch{ Milliseconds{ this->maxTimeInMs } };
 		while (!this->doWeQuit && !stopWatch.hasTimePassed()) {
 			auto buttonInteractionData = std::make_unique<InteractionData>();
 			if (waitForTimeToPass(this->modalIncomingInteractionBuffer, *buttonInteractionData.get(), this->maxTimeInMs)) {

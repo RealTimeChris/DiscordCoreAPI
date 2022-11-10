@@ -394,7 +394,7 @@ namespace DiscordCoreInternal {
 		if (!this->sendMessage(string, true)) {
 			return;
 		}
-		DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ 5500ms };
+		DiscordCoreAPI::StopWatch<Milliseconds> stopWatch{ 5500ms };
 		while (this->areWeCollectingData) {
 			if (stopWatch.hasTimePassed()) {
 				break;
@@ -1054,10 +1054,10 @@ namespace DiscordCoreInternal {
 								 << DiscordCoreAPI::reset() << endl
 								 << endl;
 						}
-						std::mt19937_64 randomEngine{ static_cast<uint64_t>(std::chrono::high_resolution_clock::now().time_since_epoch().count()) };
+						std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
 						int32_t numOfMsToWait = static_cast<int32_t>(
 							1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
-						std::this_thread::sleep_for(std::chrono::milliseconds{ numOfMsToWait });
+						std::this_thread::sleep_for(Milliseconds{ numOfMsToWait });
 						if (data.d == true) {
 							this->areWeResuming = true;
 						} else {
@@ -1071,7 +1071,7 @@ namespace DiscordCoreInternal {
 						if (data.heartbeatInterval != 0) {
 							this->areWeHeartBeating = true;
 							this->heartBeatStopWatch =
-								DiscordCoreAPI::StopWatch<std::chrono::milliseconds>{ std::chrono::milliseconds{ data.heartbeatInterval } };
+								DiscordCoreAPI::StopWatch<Milliseconds>{ Milliseconds{ data.heartbeatInterval } };
 							this->heartBeatStopWatch.resetTimer();
 							this->haveWeReceivedHeartbeatAck = true;
 						}
