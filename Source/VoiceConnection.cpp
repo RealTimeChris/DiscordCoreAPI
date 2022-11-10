@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		this->data.resize(23040);
 		this->ptr.reset(opus_decoder_create(48000, 2, &error));
 		if (error != OPUS_OK) {
-			throw std::runtime_error{ "Failed to create the Opus Decoder" };
+			throw std::runtime_error{ "Failed to create the Opus Decoder, Reason: " + std::string{ opus_strerror(error) } };
 		}
 	}
 
@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 		if (sampleCount > 0) {
 			return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
 		} else {
-			throw std::runtime_error{ "Failed to decode a user's voice payload, Reason: " + std::to_string(sampleCount) };
+			throw std::runtime_error{ "Failed to decode a user's voice payload, Reason: " + std::string{ opus_strerror(sampleCount) } };
 		}
 	}
 
