@@ -309,7 +309,8 @@ namespace DiscordCoreAPI {
 				auto arrayValue = getArray(value["d"], "secret_key");
 				if (arrayValue.didItSucceed) {
 					std::vector<uint8_t> secretKey{};
-					for (simdjson::ondemand::array_iterator iterator = arrayValue.arrayValue.begin(); iterator != arrayValue.arrayValue.end();++iterator) {
+					for (simdjson::ondemand::array_iterator iterator = arrayValue.arrayValue.begin(); iterator != arrayValue.arrayValue.end();
+						 ++iterator) {
 						secretKey.push_back(static_cast<uint8_t>(iterator.operator*().get_uint64().take_value()));
 					}
 					this->encryptionKey = secretKey;
