@@ -64,15 +64,15 @@ namespace DiscordCoreAPI {
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
 		auto result = opus_encoder_ctl(this->encoder, OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
 		if (result != OPUS_OK) {
-			throw std::runtime_error{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) } };
+			throw std::runtime_error{ "Failed to set the Opus signal type." };
 		}
 		result = opus_encoder_ctl(this->encoder, OPUS_SET_APPLICATION(OPUS_APPLICATION_AUDIO));
 		if (result != OPUS_OK) {
-			throw std::runtime_error{ "Failed to set the Opus application type, Reason: " + std::string{ opus_strerror(result) } };
+			throw std::runtime_error{ "Failed to set the Opus application type." };
 		}
 		result = opus_encoder_ctl(this->encoder, OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
 		if (result != OPUS_OK) {
-			throw std::runtime_error{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) } };
+			throw std::runtime_error{ "Failed to set the Opus bitrate." };
 		}
 	}
 
@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 		int32_t count =
 			opus_encode(this->encoder, inputFrame.data(), static_cast<int32_t>(inputFrame.size() / 2), this->encodedData.data(), this->maxBufferSize);
 		if (count <= 0) {
-			throw std::runtime_error{ "Failed to encode the Opus packet, Reason: " + std::string{ opus_strerror(count) } };
+			return {};
 		}
 		return std::basic_string_view{ this->encodedData.data(), static_cast<size_t>(count) };
 	}
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 		}
 		int32_t count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount, this->encodedData.data(), this->maxBufferSize);
 		if (count <= 0) {
-			throw std::runtime_error{ "Failed to encode the Opus packet, Reason: " + std::string{ opus_strerror(count) } };
+			return {};
 		}
 		DiscordCoreAPI::AudioFrameData encodedFrame{};
 		encodedFrame.data.insert(encodedFrame.data.begin(), this->encodedData.begin(), this->encodedData.begin() + count);
