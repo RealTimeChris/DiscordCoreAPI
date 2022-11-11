@@ -300,24 +300,24 @@ namespace DiscordCoreAPI {
 		StopWatch(TimeType maxNumberOfMsNew) {
 			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
 			this->startTime.store(
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count()));
+				static_cast<int64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count()));
 		}
 
-		uint64_t totalTimePassed() {
-			uint64_t currentTime =
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count());
-			uint64_t elapsedTime = currentTime - this->startTime.load();
+		int64_t totalTimePassed() {
+			int64_t currentTime =
+				static_cast<int64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count());
+			int64_t elapsedTime = currentTime - this->startTime.load();
 			return elapsedTime;
 		}
 
-		uint64_t getTotalWaitTime() {
+		int64_t getTotalWaitTime() {
 			return this->maxNumberOfMs.load();
 		}
 
 		bool hasTimePassed() {
-			uint64_t currentTime =
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count());
-			uint64_t elapsedTime = currentTime - this->startTime.load();
+			int64_t currentTime =
+				static_cast<int64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count());
+			int64_t elapsedTime = currentTime - this->startTime.load();
 			if (elapsedTime >= this->maxNumberOfMs.load()) {
 				return true;
 			} else {
@@ -326,13 +326,12 @@ namespace DiscordCoreAPI {
 		}
 
 		void resetTimer() {
-			this->startTime.store(
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count()));
+			this->startTime.store(static_cast<int64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count()));
 		}
 
 	  protected:
-		std::atomic_uint64_t maxNumberOfMs{ 0 };
-		std::atomic_uint64_t startTime{ 0 };
+		std::atomic_int64_t maxNumberOfMs{ 0 };
+		std::atomic_int64_t startTime{ 0 };
 	};
 
 	const uint8_t formatVersion{ 131 };
@@ -966,7 +965,7 @@ namespace DiscordCoreAPI {
 	class Reactions;
 	class BotUser;
 
-	struct DCAException : public std::exception, std::string {
+	struct DCAException : public std::runtime_error, std::string {
 		DCAException(const std::string&, std::source_location = std::source_location::current()) noexcept;
 	};
 

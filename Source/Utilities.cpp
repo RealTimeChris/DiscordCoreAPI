@@ -113,7 +113,7 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-	DCAException::DCAException(const std::string& error, std::source_location location) noexcept {
+	DCAException::DCAException(const std::string& error, std::source_location location) noexcept : std::runtime_error(error) {
 		std::stringstream stream{};
 		stream << shiftToBrightRed() << "Error Report: \n"
 			   << "Caught in File: " << location.file_name() << " (" << std::to_string(location.line()) << ":" << std::to_string(location.column())
@@ -121,7 +121,7 @@ namespace DiscordCoreAPI {
 			   << "\nThe Error: \n"
 			   << error << reset() << std::endl
 			   << std::endl;
-		*static_cast<std::exception*>(this) = std::exception{ stream.str().c_str() };
+		*static_cast<std::runtime_error*>(this) = std::runtime_error{ stream.str() };
 	}
 
 	Snowflake& Snowflake::operator=(const std::string& other) noexcept {

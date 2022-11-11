@@ -118,7 +118,6 @@ namespace DiscordCoreAPI {
 
 	std::basic_string<uint8_t> VoiceUser::extractPayload() {
 		int8_t userCount = this->voiceUserCount->load();
-		std::cout << "USER COUNT: " << userCount << std::endl;
 		std::basic_string<uint8_t> value{};
 		if (userCount > 0) {
 			int64_t maxSleepTime{ 20000000 / 2 / userCount };
@@ -605,8 +604,6 @@ namespace DiscordCoreAPI {
 					}
 					break;
 				}
-
-					this->areWePlaying.store(true);
 				case VoiceActiveState::Exiting: {
 					return;
 				}
@@ -776,13 +773,11 @@ namespace DiscordCoreAPI {
 						this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient,
 							this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
 					}
-					if (!this->taskThread02) {
-						this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-							this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port);
-							this->runBridge(stopToken);
-						});
-					}
 					
+					this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
+						this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port);
+						this->runBridge(stopToken);
+					});
 				}
 				this->areWeConnecting.store(false);
 				this->activeState.store(VoiceActiveState::Playing);
@@ -951,7 +946,6 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::onClosed() noexcept {
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
-		std::cout << "WER CLOSING CLOSING CLOSING!" << std::endl;
 		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
 			this->reconnect();
 		} else if (this->currentReconnectTries >= this->maxReconnectTries) {
