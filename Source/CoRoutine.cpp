@@ -27,7 +27,7 @@
 
 namespace DiscordCoreAPI {
 
-	CoRoutineError::CoRoutineError(const std::string& message) : std::runtime_error(message){};
+	CoRoutineError::CoRoutineError(const std::string& message) : DCAException(message){};
 
 	DiscordCoreInternal::CoRoutineThreadPool CoRoutineBase::threadPool{};
 };// namespace DiscordCoreAPI

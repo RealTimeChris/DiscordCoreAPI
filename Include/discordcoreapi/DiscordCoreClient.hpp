@@ -60,32 +60,32 @@
 
 namespace DiscordCoreAPI {
 
-	class DiscordCoreAPI_Dll SIGTERMError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGTERMError : public DCAException {
 	  public:
 		SIGTERMError(const std::string& string);
 	};
 
-	class DiscordCoreAPI_Dll SIGSEGVError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGSEGVError : public DCAException {
 	  public:
 		SIGSEGVError(const std::string& string);
 	};
 
-	class DiscordCoreAPI_Dll SIGINTError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGINTError : public DCAException {
 	  public:
 		SIGINTError(const std::string& string);
 	};
 
-	class DiscordCoreAPI_Dll SIGILLError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGILLError : public DCAException {
 	  public:
 		SIGILLError(const std::string& string);
 	};
 
-	class DiscordCoreAPI_Dll SIGABRTError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGABRTError : public DCAException {
 	  public:
 		SIGABRTError(const std::string& string);
 	};
 
-	class DiscordCoreAPI_Dll SIGFPEError : public std::runtime_error {
+	class DiscordCoreAPI_Dll SIGFPEError : public DCAException {
 	  public:
 		SIGFPEError(const std::string& string);
 	};

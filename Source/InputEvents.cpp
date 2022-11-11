@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<InputEventData> InputEvents::respondToInputEventAsync(RespondToInputEventData dataPackage) {
 		co_await NewThreadAwaitable<InputEventData>();
 		if (dataPackage.type == InputEventResponseType::Unset) {
-			throw std::runtime_error("InputEvents::respondToInputEventAsync() Error: Please set an "
+			throw DCAException("InputEvents::respondToInputEventAsync() Error: Please set an "
 									 "input-event-response-type!\n\n");
 		}
 		if (dataPackage.eventType == InteractionType::Message_Component) {

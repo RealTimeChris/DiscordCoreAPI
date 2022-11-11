@@ -580,7 +580,7 @@ namespace DiscordCoreAPI {
 		int32_t maxNumberOfPressesNew, Snowflake targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
 		if (targetUser == 0 && !getButtonDataForAllNew) {
-			throw std::runtime_error{ "ButtonCollector::collectButtonData(), You've failed to "
+			throw DCAException{ "ButtonCollector::collectButtonData(), You've failed to "
 									  "properly set the collectButtonData() parameters!\n\n" };
 		}
 		if (targetUser != 0) {

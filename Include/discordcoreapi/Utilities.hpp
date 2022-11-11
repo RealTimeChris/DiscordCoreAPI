@@ -966,6 +966,10 @@ namespace DiscordCoreAPI {
 	class Reactions;
 	class BotUser;
 
+	struct DCAException : public std::exception, std::string {
+		DCAException(const std::string&, std::source_location = std::source_location::current()) noexcept;
+	};
+
 	template<typename RTy> class CoRoutine;
 
 	/// Update-presence status types. \brief Update-presence status types.

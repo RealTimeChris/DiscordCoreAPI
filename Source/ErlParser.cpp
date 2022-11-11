@@ -27,7 +27,7 @@
 
 namespace DiscordCoreInternal {
 
-	ErlParseError::ErlParseError(const std::string& message) : std::runtime_error(message.c_str()){};
+	ErlParseError::ErlParseError(const std::string& message) : DCAException(message.c_str()){};
 
 	std::string& ErlParser::parseEtfToJson(std::string_view dataToParse) {
 		this->offSet = 0;

@@ -316,7 +316,7 @@ namespace DiscordCoreInternal {
 		template<typename RTy> RTy processJsonMessage(simdjson::ondemand::value jsonData, const char* dataName) {
 			simdjson::ondemand::value object{};
 			if (jsonData[dataName].get(object) != simdjson::error_code::SUCCESS) {
-				throw std::runtime_error{ std::string{ "Failed to collect the " } + dataName };
+				throw DiscordCoreAPI::DCAException{ std::string{ "Failed to collect the " } + dataName };
 			} else {
 				return RTy{ object };
 			}

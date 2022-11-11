@@ -113,6 +113,17 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
+	DCAException::DCAException(const std::string& error, std::source_location location) noexcept {
+		std::stringstream stream{};
+		stream << shiftToBrightRed() << "Error Report: \n"
+			   << "Caught in File: " << location.file_name() << " (" << std::to_string(location.line()) << ":" << std::to_string(location.column())
+			   << ")"
+			   << "\nThe Error: \n"
+			   << error << reset() << std::endl
+			   << std::endl;
+		*static_cast<std::exception*>(this) = std::exception{ stream.str().c_str() };
+	}
+
 	Snowflake& Snowflake::operator=(const std::string& other) noexcept {
 		for (auto& value: other) {
 			if (!std::isdigit(static_cast<uint8_t>(value))) {
@@ -481,7 +492,7 @@ namespace DiscordCoreAPI {
 			auto result = this->jsonValue.object->emplace(std::move(key), Jsonifier{});
 			return result.first->second;
 		}
-		throw std::runtime_error{ "Sorry, but that item-key could not be produced/accessed." };
+		throw DCAException{ "Sorry, but that item-key could not be produced/accessed." };
 	}
 
 	Jsonifier& Jsonifier::operator[](uint64_t index) {
@@ -497,7 +508,7 @@ namespace DiscordCoreAPI {
 
 			return this->jsonValue.array->operator[](index);
 		}
-		throw std::runtime_error{ "Sorry, but that index could not be produced/accessed." };
+		throw DCAException{ "Sorry, but that index could not be produced/accessed." };
 	}
 
 	void Jsonifier::emplaceBack(Jsonifier&& other) noexcept {
@@ -916,29 +927,6 @@ namespace DiscordCoreAPI {
 
 	Jsonifier::~Jsonifier() noexcept {
 		this->destroy();
-	}
-
-	void reportException(const std::string& stackTrace, UnboundedMessageBlock<std::exception>* sendBuffer, bool rethrow) {
-		try {
-			auto currentException = std::current_exception();
-			if (currentException) {
-				std::rethrow_exception(currentException);
-			}
-		} catch (std::exception& e) {
-			if (rethrow) {
-				std::rethrow_exception(std::current_exception());
-				return;
-			}
-			if (sendBuffer) {
-				sendBuffer->send(e);
-			} else {
-				if (stackTrace.back() == '\n') {
-					cout << shiftToBrightRed() << stackTrace + "Error: " << e.what() << reset() << std::endl << std::endl;
-				} else {
-					cout << shiftToBrightRed() << stackTrace + " Error: " << e.what() << reset() << std::endl << std::endl;
-				}
-			}
-		}
 	}
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void )) {

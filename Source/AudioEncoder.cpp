@@ -64,15 +64,15 @@ namespace DiscordCoreAPI {
 		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
 		auto result = opus_encoder_ctl(this->encoder, OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
 		if (result != OPUS_OK) {
-			throw std::runtime_error{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) } };
+			throw DCAException{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) } };
 		}
 		result = opus_encoder_ctl(this->encoder, OPUS_SET_APPLICATION(OPUS_APPLICATION_AUDIO));
 		if (result != OPUS_OK) {
-			throw std::runtime_error{ "Failed to set the Opus application type, Reason: " + std::string{ opus_strerror(result) } };
+			throw DCAException{ "Failed to set the Opus application type, Reason: " + std::string{ opus_strerror(result) } };
 		}
 		result = opus_encoder_ctl(this->encoder, OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
 		if (result != OPUS_OK) {
-			throw std::runtime_error{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) } };
+			throw DCAException{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) } };
 		}
 	}
 

@@ -321,7 +321,7 @@ namespace DiscordCoreInternal {
 		this->configManager = &client->configManager;
 		this->shard[0] = currentShardNew;
 		if (this->parser.allocate(1024ull * 1024ull) != simdjson::error_code::SUCCESS) {
-			throw std::runtime_error{ "Failed to allocate the parser's memory." };
+			throw DiscordCoreAPI::DCAException{ "Failed to allocate the parser's memory." };
 		}
 		this->discordCoreClient = client;
 		this->doWeQuit = doWeQuitNew;

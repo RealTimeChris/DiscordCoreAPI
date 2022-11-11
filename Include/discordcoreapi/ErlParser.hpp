@@ -32,7 +32,7 @@
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll ErlParseError : public std::runtime_error {
+	struct DiscordCoreAPI_Dll ErlParseError : public DiscordCoreAPI::DCAException {
 	  public:
 		explicit ErlParseError(const std::string& message);
 	};

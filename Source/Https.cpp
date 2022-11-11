@@ -30,7 +30,7 @@
 
 namespace DiscordCoreInternal {
 
-	HttpsError::HttpsError(std::string message) : std::runtime_error(message){};
+	HttpsError::HttpsError(std::string message) : DCAException(message){};
 
 	HttpsRnRBuilder::HttpsRnRBuilder(bool doWePrintErrorMessagesNew) {
 		this->doWePrintErrorMessages = doWePrintErrorMessagesNew;

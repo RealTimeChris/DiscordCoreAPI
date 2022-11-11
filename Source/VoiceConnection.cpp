@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		this->data.resize(23040);
 		this->ptr.reset(opus_decoder_create(48000, 2, &error));
 		if (error != OPUS_OK) {
-			throw std::runtime_error{ "Failed to create the Opus decoder, Reason: " + std::string{ opus_strerror(error) } };
+			throw DCAException{ "Failed to create the Opus decoder, Reason: " + std::string{ opus_strerror(error) } };
 		}
 	}
 
@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 		if (sampleCount > 0) {
 			return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
 		} else {
-			throw std::runtime_error{ "Failed to decode a user's voice payload, Reason: " + std::string{ opus_strerror(sampleCount) } };
+			throw DCAException{ "Failed to decode a user's voice payload, Reason: " + std::string{ opus_strerror(sampleCount) } };
 		}
 	}
 
@@ -73,6 +73,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void MovingAverager::addValue(int64_t value) {
+		std::unique_lock lock{ this->accessMutex };
 		this->values.emplace_back(value);
 		if (this->values.size() > this->periodCount) {
 			this->values.pop_front();
@@ -80,6 +81,7 @@ namespace DiscordCoreAPI {
 	}
 
 	int64_t MovingAverager::collectAverage() {
+		std::unique_lock lock{ this->accessMutex };
 		if (this->values.size() == 0) {
 			return 0;
 		}
@@ -91,9 +93,16 @@ namespace DiscordCoreAPI {
 		return returnValue;
 	}
 
+	VoiceUser::VoiceUser(MovingAverager* sleepableTimeNew, std::atomic_int8_t* voiceUsersNew) noexcept {
+		this->sleepableTime = sleepableTimeNew;
+		this->voiceUserCount = voiceUsersNew;
+	}
+
 	VoiceUser& VoiceUser::operator=(VoiceUser&& data) noexcept {
 		this->wereWeEnding.store(data.wereWeEnding.load());
+		this->voiceUserCount = data.voiceUserCount;
 		this->payloads = std::move(data.payloads);
+		this->sleepableTime = data.sleepableTime;
 		this->decoder = std::move(data.decoder);
 		this->userId = data.userId;
 		return *this;
@@ -108,14 +117,22 @@ namespace DiscordCoreAPI {
 	}
 
 	std::basic_string<uint8_t> VoiceUser::extractPayload() {
-		StopWatch stopWatch{ 10000us };
+		int8_t userCount = this->voiceUserCount->load();
+		std::cout << "USER COUNT: " << userCount << std::endl;
 		std::basic_string<uint8_t> value{};
-		stopWatch.resetTimer();
-		while (!this->payloads.tryReceive(value) && !this->wereWeEnding.load()) {
-			if (stopWatch.hasTimePassed()) {
-				break;
+		if (userCount > 0) {
+			int64_t maxSleepTime{ 20000000 / 2 / userCount };
+			if (this->sleepableTime->collectAverage() / userCount > 0) {
+				maxSleepTime = this->sleepableTime->collectAverage() / userCount;
 			}
-			std::this_thread::sleep_for(1us);
+			StopWatch stopWatch{ std::chrono::nanoseconds{ maxSleepTime } };
+			stopWatch.resetTimer();
+			while (!this->payloads.tryReceive(value) && !this->wereWeEnding.load()) {
+				if (stopWatch.hasTimePassed()) {
+					break;
+				}
+				std::this_thread::sleep_for(1us);
+			}
 		}
 		return value;
 	}
@@ -333,13 +350,14 @@ namespace DiscordCoreAPI {
 			}
 			case 5: {
 				const uint32_t ssrc = getUint32(value["d"], "ssrc");
-				VoiceUser user{};
+				VoiceUser user{ &this->sleepableTime, &this->voiceUserCount };
 				user.setUserId(stoull(getString(value["d"], "user_id")));
 				std::unique_lock lock{ this->voiceUserMutex };
 				if (!Users::getCachedUser({ .userId = user.getUserId() }).getFlagValue(UserFlags::Bot) ||
 					this->voiceConnectInitData.streamInfo.streamBotAudio) {
 					if (!this->voiceUsers.contains(ssrc)) {
 						this->voiceUsers[ssrc] = std::move(user);
+						this->voiceUserCount.store(this->voiceUserCount.load() + 1);
 					}
 				}
 				break;
@@ -366,6 +384,7 @@ namespace DiscordCoreAPI {
 				for (auto& [key, value]: this->voiceUsers) {
 					if (userId == value.getUserId()) {
 						this->voiceUsers.erase(key);
+						this->voiceUserCount.store(this->voiceUserCount.load() - 1);
 						break;
 					}
 				}
@@ -410,6 +429,7 @@ namespace DiscordCoreAPI {
 			if (this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both) == DiscordCoreInternal::ProcessIOResult::Error) {
 				this->onClosed();
 			}
+			this->sleepableTime.addValue(processAndSleepStopWatch.getTotalWaitTime() - processAndSleepStopWatch.totalTimePassed());
 			averager.addValue(processAndSleepStopWatch.totalTimePassed());
 			while (!processAndSleepStopWatch.hasTimePassed()) {
 			}
@@ -931,6 +951,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::onClosed() noexcept {
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
+		std::cout << "WER CLOSING CLOSING CLOSING!" << std::endl;
 		if (this->activeState.load() != VoiceActiveState::Exiting && this->currentReconnectTries < this->maxReconnectTries) {
 			this->reconnect();
 		} else if (this->currentReconnectTries >= this->maxReconnectTries) {

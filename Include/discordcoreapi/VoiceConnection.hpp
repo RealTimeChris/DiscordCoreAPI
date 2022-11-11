@@ -68,14 +68,22 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::deque<int64_t> values{};
 		const size_t periodCount{};
+		std::mutex accessMutex{};
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
+
 		VoiceUser() noexcept = default;
+
+		VoiceUser(MovingAverager* sleepableTimeNew, std::atomic_int8_t* voiceUserCount) noexcept;
 
 		VoiceUser& operator=(VoiceUser&&) noexcept;
 
 		VoiceUser(VoiceUser&&) noexcept;
+
+		VoiceUser& operator=(const VoiceUser&) noexcept = delete;
+
+		VoiceUser(const VoiceUser&) noexcept = delete;
 
 		void insertPayload(std::basic_string<uint8_t>&&);
 
@@ -94,6 +102,8 @@ namespace DiscordCoreAPI {
 	  protected:
 		UnboundedMessageBlock<std::basic_string<uint8_t>> payloads{};
 		std::atomic_bool wereWeEnding{ false };
+		std::atomic_int8_t* voiceUserCount{};
+		MovingAverager* sleepableTime{};
 		OpusDecoderWrapper decoder{};
 		Snowflake userId{};
 	};
@@ -197,6 +207,8 @@ namespace DiscordCoreAPI {
 		RTPPacketEncrypter packetEncrypter{};
 		std::vector<uint8_t> encryptionKey{};
 		simdjson::ondemand::parser parser{};
+		std::atomic_int8_t voiceUserCount{};
+		MovingAverager sleepableTime{ 12 };
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		std::mutex voiceUserMutex{};
