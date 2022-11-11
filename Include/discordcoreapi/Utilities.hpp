@@ -283,6 +283,8 @@ namespace DiscordCoreAPI {
 
 	template<typename TimeType> class StopWatch {
 	  public:
+		using SysClock = std::chrono::system_clock;
+
 		StopWatch() = delete;
 
 		StopWatch<TimeType>& operator=(const StopWatch<TimeType>& data) {
@@ -298,12 +300,12 @@ namespace DiscordCoreAPI {
 		StopWatch(TimeType maxNumberOfMsNew) {
 			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
 			this->startTime.store(
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count()));
 		}
 
 		uint64_t totalTimePassed() {
 			uint64_t currentTime =
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count());
 			uint64_t elapsedTime = currentTime - this->startTime.load();
 			return elapsedTime;
 		}
@@ -314,7 +316,7 @@ namespace DiscordCoreAPI {
 
 		bool hasTimePassed() {
 			uint64_t currentTime =
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count());
+				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count());
 			uint64_t elapsedTime = currentTime - this->startTime.load();
 			if (elapsedTime >= this->maxNumberOfMs.load()) {
 				return true;
@@ -325,7 +327,7 @@ namespace DiscordCoreAPI {
 
 		void resetTimer() {
 			this->startTime.store(
-				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count()));
+				static_cast<uint64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count()));
 		}
 
 	  protected:
@@ -749,6 +751,7 @@ namespace DiscordCoreInternal {
 	using Milliseconds = std::chrono::milliseconds;
 	using Microseconds = std::chrono::microseconds;
 	using Nanoseconds = std::chrono::nanoseconds;
+	using SysClock = std::chrono::system_clock;
 	using Seconds = std::chrono::seconds;
 	using namespace std::literals;
 	using std::cout;
@@ -946,10 +949,12 @@ namespace DiscordCoreAPI {
 	using Milliseconds = std::chrono::milliseconds;
 	using Microseconds = std::chrono::microseconds;
 	using Nanoseconds = std::chrono::nanoseconds;
+	using SysClock = std::chrono::system_clock;
 	using Seconds = std::chrono::seconds;
 	using namespace std::literals;
 	using std::cout;
 	using std::endl;
+
 	struct File;
 
 	class OnVoiceServerUpdateData;
@@ -1609,7 +1614,7 @@ namespace DiscordCoreAPI {
 	  public:
 		explicit TimeStamp(TimeFormat formatNew = TimeFormat::LongDateTime) {
 			this->timeStampInTimeUnits =
-				std::chrono::duration_cast<Milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 		}
 
 		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second,
@@ -1733,10 +1738,10 @@ namespace DiscordCoreAPI {
 		bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) {
 			if (this->timeStampInTimeUnits == 0) {
 				this->timeStampInTimeUnits =
-					std::chrono::duration_cast<Milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+					std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			}
 			uint64_t startTimeRaw = this->timeStampInTimeUnits;
-			auto currentTime = std::chrono::duration_cast<Milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			auto currentTime = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			uint64_t secondsPerMinute = 60;
 			uint64_t secondsPerHour = secondsPerMinute * 60;
 			uint64_t secondsPerDay = secondsPerHour * 24;
@@ -1859,7 +1864,7 @@ namespace DiscordCoreAPI {
 						stoi(originalTimeStamp.substr(17, 18)), formatNew };
 					this->timeStampInTimeUnits = TimeType{ static_cast<uint64_t>(timeValue) }.count();
 				} else {
-					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(std::chrono::system_clock::now().time_since_epoch()).count();
+					this->timeStampInTimeUnits = std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count();
 				}
 			} catch (...) {
 				reportException("TimeStamp::convertTimeStampToTimeUnits()");
@@ -1869,7 +1874,7 @@ namespace DiscordCoreAPI {
 		std::string getISO8601TimeStamp(TimeFormat timeFormat) {
 			if (this->timeStampInTimeUnits == 0) {
 				this->timeStampInTimeUnits =
-					std::chrono::duration_cast<Milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+					std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			}
 			uint64_t timeValue = (std::chrono::duration_cast<Milliseconds>(TimeType{ this->timeStampInTimeUnits }).count()) / 1000;
 			time_t rawTime(timeValue);

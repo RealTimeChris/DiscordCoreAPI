@@ -80,8 +80,8 @@ namespace DiscordCoreInternal {
 		virtual ~WebSocketCore() noexcept = default;
 
 	  protected:
-		DiscordCoreAPI::StopWatch<Milliseconds> heartBeatStopWatch{ 20000ms };
 		std::unique_ptr<DiscordCoreAPI::ConnectionPackage> connections{ nullptr };
+		DiscordCoreAPI::StopWatch<Milliseconds> heartBeatStopWatch{ 20000ms };
 		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic<WebSocketState> currentState{};
 		std::atomic_bool areWeConnecting{ true };
@@ -89,7 +89,6 @@ namespace DiscordCoreInternal {
 		const uint32_t maxReconnectTries{ 10 };
 		uint32_t currentReconnectTries{ 0 };
 		uint32_t lastNumberReceived{ 0 };
-		WebSocketType typeOfWebSocket{};
 		bool areWeHeartBeating{ false };
 		WebSocketClose closeCode{ 0 };
 		StringBuffer currentMessage{};
@@ -97,6 +96,7 @@ namespace DiscordCoreInternal {
 		bool areWeResuming{ false };
 		uint64_t messageLength{};
 		uint64_t messageOffset{};
+		WebSocketType wsType{};
 		uint32_t shard[2]{};
 	};
 
@@ -104,12 +104,10 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::OnVoiceServerUpdateData;
 		friend class DiscordCoreAPI::OnVoiceStateUpdateData;
-		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
 		friend class BaseSocketAgent;
 		friend class WebSocketCore;
-		friend class YouTubeAPI;
 		friend class SSLClient;
 
 		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* client, int32_t currentShardNew, std::atomic_bool* doWeQuitNew);
@@ -141,9 +139,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll BaseSocketAgent {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
-		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
-		friend class WebSocketSSLShard;
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocket) noexcept;
 

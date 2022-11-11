@@ -274,7 +274,7 @@ namespace DiscordCoreInternal {
 		~DatagramSocketClient() noexcept;
 
 	  protected:
-		const uint64_t maxBufferSize{ (1024 * 16) - 1 };
+		const uint64_t maxBufferSize{ (1024 * 16) };
 		DiscordCoreAPI::StreamType streamTypeReal{};
 		RingBuffer<uint8_t, 16> outputBuffer{};
 		RingBuffer<uint8_t, 16> inputBuffer{};

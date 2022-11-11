@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 		HttpsResponseData httpsRequest(const HttpsWorkloadData& workload);
 
 	  protected:
-		const DiscordCoreAPI::ConfigManager* configManager{ nullptr };
+		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		HttpsConnectionManager connectionManager{ nullptr };
 
 		HttpsResponseData httpsRequestInternal(HttpsConnection& connection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData);

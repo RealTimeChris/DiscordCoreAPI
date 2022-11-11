@@ -175,7 +175,7 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketCore::WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, WebSocketType typeOfWebSocketNew) {
-		this->typeOfWebSocket = typeOfWebSocketNew;
+		this->wsType = typeOfWebSocketNew;
 		this->configManager = configManagerNew;
 	}
 
@@ -289,7 +289,7 @@ namespace DiscordCoreInternal {
 					close |= this->currentMessage[3] & 0xff;
 					uint16_t closeCode{};
 					std::string closeString{};
-					if (this->typeOfWebSocket == WebSocketType::Voice) {
+					if (this->wsType == WebSocketType::Voice) {
 						VoiceWebSocketClose voiceClose{ close };
 						closeCode = voiceClose.operator uint16_t();
 						closeString = voiceClose.operator std::string();
@@ -301,7 +301,7 @@ namespace DiscordCoreInternal {
 					if (closeCode) {
 						this->areWeResuming = true;
 					}
-					std::string webSocketTitle = this->typeOfWebSocket == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
+					std::string webSocketTitle = this->wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed()
 							 << webSocketTitle + " [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" +
@@ -408,7 +408,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-			std::string webSocketTitle = this->typeOfWebSocket == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
+			std::string webSocketTitle = this->wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
 			cout << DiscordCoreAPI::shiftToBrightBlue()
 				 << "Sending " + webSocketTitle + " [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" +
 					std::string("'s Message: ")
