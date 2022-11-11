@@ -1719,12 +1719,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void spinLock(uint64_t timeInNsToSpinLockFor) {
-		uint64_t startTime =
-			std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
+		uint64_t startTime = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
 		uint64_t timePassed{ 0 };
 		while (timePassed < timeInNsToSpinLockFor) {
-			timePassed = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count() -
-				startTime;
+			timePassed = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count() - startTime;
 		}
 	}
 

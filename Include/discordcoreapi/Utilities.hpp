@@ -138,54 +138,17 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 	namespace Colors {
-		const std::string
-			White = "FFFFFF",
-			DiscordWhite = "FFFFFE",
-			LightGray = "C0C0C0",
-			Gray = "808080",
-			DarkGray = "404040",
-			Black = "000000",
-			DiscordBlack = "000001",
-			Red = "FF0000",
-			Pink = "FFAFAF",
-			Orange = "FFC800",
-			Yellow = "FFFF00",
-			Green = "00FF00",
-			Magenta = "FF00FF",
-			Cyan = "00FFFF",
-			Blue = "0000FF",
-			LightSeaGreen = "1ABC9C",
-			MediumSeaGreen = "2ECC71",
-			SummerSky = "3498DB",
-			DeepLilac = "9B59B6",
-			Ruby = "E91E63",
-			MoonYellow = "F1C40F",
-			TahitiGold = "E67E22",
-			Cinnabar = "E74C3C",
-			Submarine = "95A5A6",
-			BlueAquamarine = "607D8B",
-			DeepSea = "11806A",
-			SeaGreen = "1F8B4C",
-			Endeavour = "206694",
-			VividViolet = "71368A",
-			JazzberryJam = "AD1457",
-			DarkGoldenrod = "C27C0E",
-			Rust = "A84300",
-			Brown = "992D22",
-			GrayChateau = "979C9F",
-			Bismark = "546E7A",
-			StiBlue = "0E4BEF",
-			WrxBlue = "00247D",
-			RalliArtCrimson = "E60012",
-			Lime = "00FF00",
-			ForestGreen = "228B22",
-			CadmiumGreen = "097969",
-			Aquamarine = "7FFFD4",
-			BlueGreen = "088F8F",
-			Raspberry = "E30B5C",
-			ScarletRed = "FF2400";
+		const std::string White = "FFFFFF", DiscordWhite = "FFFFFE", LightGray = "C0C0C0", Gray = "808080", DarkGray = "404040", Black = "000000",
+						  DiscordBlack = "000001", Red = "FF0000", Pink = "FFAFAF", Orange = "FFC800", Yellow = "FFFF00", Green = "00FF00",
+						  Magenta = "FF00FF", Cyan = "00FFFF", Blue = "0000FF", LightSeaGreen = "1ABC9C", MediumSeaGreen = "2ECC71",
+						  SummerSky = "3498DB", DeepLilac = "9B59B6", Ruby = "E91E63", MoonYellow = "F1C40F", TahitiGold = "E67E22",
+						  Cinnabar = "E74C3C", Submarine = "95A5A6", BlueAquamarine = "607D8B", DeepSea = "11806A", SeaGreen = "1F8B4C",
+						  Endeavour = "206694", VividViolet = "71368A", JazzberryJam = "AD1457", DarkGoldenrod = "C27C0E", Rust = "A84300",
+						  Brown = "992D22", GrayChateau = "979C9F", Bismark = "546E7A", StiBlue = "0E4BEF", WrxBlue = "00247D",
+						  RalliArtCrimson = "E60012", Lime = "00FF00", ForestGreen = "228B22", CadmiumGreen = "097969", Aquamarine = "7FFFD4",
+						  BlueGreen = "088F8F", Raspberry = "E30B5C", ScarletRed = "FF2400";
 	};
-	
+
 
 	/**
 	 * \addtogroup foundation_entities
@@ -299,13 +262,11 @@ namespace DiscordCoreAPI {
 
 		StopWatch(TimeType maxNumberOfMsNew) {
 			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
-			this->startTime.store(
-				static_cast<int64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count()));
+			this->startTime.store(static_cast<int64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count()));
 		}
 
 		int64_t totalTimePassed() {
-			int64_t currentTime =
-				static_cast<int64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count());
+			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count());
 			int64_t elapsedTime = currentTime - this->startTime.load();
 			return elapsedTime;
 		}
@@ -315,8 +276,7 @@ namespace DiscordCoreAPI {
 		}
 
 		bool hasTimePassed() {
-			int64_t currentTime =
-				static_cast<int64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count());
+			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TimeType>(SysClock::now().time_since_epoch()).count());
 			int64_t elapsedTime = currentTime - this->startTime.load();
 			if (elapsedTime >= this->maxNumberOfMs.load()) {
 				return true;
@@ -1616,8 +1576,7 @@ namespace DiscordCoreAPI {
 	class TimeStamp {
 	  public:
 		explicit TimeStamp(TimeFormat formatNew = TimeFormat::LongDateTime) {
-			this->timeStampInTimeUnits =
-				std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 		}
 
 		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second,
@@ -1740,8 +1699,7 @@ namespace DiscordCoreAPI {
 
 		bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) {
 			if (this->timeStampInTimeUnits == 0) {
-				this->timeStampInTimeUnits =
-					std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+				this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			}
 			uint64_t startTimeRaw = this->timeStampInTimeUnits;
 			auto currentTime = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
@@ -1876,8 +1834,7 @@ namespace DiscordCoreAPI {
 
 		std::string getISO8601TimeStamp(TimeFormat timeFormat) {
 			if (this->timeStampInTimeUnits == 0) {
-				this->timeStampInTimeUnits =
-					std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+				this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			}
 			uint64_t timeValue = (std::chrono::duration_cast<Milliseconds>(TimeType{ this->timeStampInTimeUnits }).count()) / 1000;
 			time_t rawTime(timeValue);
@@ -2065,16 +2022,14 @@ namespace DiscordCoreAPI {
 			this->quantityOfObjectToCollect = quantityToCollect;
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
-			this->collectorId =
-				std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+			this->collectorId = std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 			ObjectCollector::objectsBuffersMap[this->collectorId] = &this->messagesBuffer;
 			this->run();
 			co_return std::move(this->messageReturnData);
 		}
 
 		void run() {
-			int64_t startingTime = static_cast<int64_t>(
-				std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 			int64_t elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
 				Object message{};
@@ -2086,8 +2041,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 
-				elapsedTime =
-					std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count() - startingTime;
+				elapsedTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count() - startingTime;
 			}
 		}
 

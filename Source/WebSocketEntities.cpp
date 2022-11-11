@@ -1070,8 +1070,7 @@ namespace DiscordCoreInternal {
 						HelloData data{ message.processJsonMessage<HelloData>(dValue, "d") };
 						if (data.heartbeatInterval != 0) {
 							this->areWeHeartBeating = true;
-							this->heartBeatStopWatch =
-								DiscordCoreAPI::StopWatch<Milliseconds>{ Milliseconds{ data.heartbeatInterval } };
+							this->heartBeatStopWatch = DiscordCoreAPI::StopWatch<Milliseconds>{ Milliseconds{ data.heartbeatInterval } };
 							this->heartBeatStopWatch.resetTimer();
 							this->haveWeReceivedHeartbeatAck = true;
 						}

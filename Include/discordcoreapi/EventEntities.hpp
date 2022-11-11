@@ -142,8 +142,7 @@ namespace DiscordCoreInternal {
 		Event(const Event<RTy, ArgTypes...>&) = delete;
 
 		Event() {
-			this->eventId =
-				std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
+			this->eventId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
 		}
 
 		EventDelegateToken add(EventDelegate<RTy, ArgTypes...> eventDelegate) {

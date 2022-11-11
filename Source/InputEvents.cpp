@@ -33,7 +33,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<InputEventData>();
 		if (dataPackage.type == InputEventResponseType::Unset) {
 			throw DCAException("InputEvents::respondToInputEventAsync() Error: Please set an "
-									 "input-event-response-type!\n\n");
+							   "input-event-response-type!\n\n");
 		}
 		if (dataPackage.eventType == InteractionType::Message_Component) {
 			CreateInteractionResponseData dataPackage02{ dataPackage };

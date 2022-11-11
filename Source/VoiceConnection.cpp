@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::basic_string<uint8_t> VoiceUser::extractPayload() {
-		int8_t userCount = this->voiceUserCount->load();
+		int64_t userCount = this->voiceUserCount->load();
 		std::basic_string<uint8_t> value{};
 		if (userCount > 0) {
 			int64_t maxSleepTime{ 20000000 / 2 / userCount };
@@ -208,7 +208,7 @@ namespace DiscordCoreAPI {
 			} else {
 				char chars[]{ "connected1" };
 				bufferNew = std::basic_string_view<uint8_t>{ reinterpret_cast<uint8_t*>(chars) };
-			}	
+			}
 			this->writeData(bufferNew);
 			this->processIO(DiscordCoreInternal::ProcessIOType::Write_Only);
 		}
@@ -428,7 +428,9 @@ namespace DiscordCoreAPI {
 			if (this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both) == DiscordCoreInternal::ProcessIOResult::Error) {
 				this->onClosed();
 			}
-			this->sleepableTime.addValue(processAndSleepStopWatch.getTotalWaitTime() - processAndSleepStopWatch.totalTimePassed());
+			if (processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) > 0) {
+				this->sleepableTime.addValue(processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()));
+			}
 			averager.addValue(processAndSleepStopWatch.totalTimePassed());
 			while (!processAndSleepStopWatch.hasTimePassed()) {
 			}
@@ -773,7 +775,7 @@ namespace DiscordCoreAPI {
 						this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient,
 							this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
 					}
-					
+
 					this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 						this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port);
 						this->runBridge(stopToken);
@@ -908,7 +910,7 @@ namespace DiscordCoreAPI {
 				this->taskThread02.reset(nullptr);
 			}
 		}
-		
+
 		if (this->streamSocket) {
 			this->streamSocket->disconnect();
 		}
@@ -918,7 +920,7 @@ namespace DiscordCoreAPI {
 		}
 		this->closeCode = 0;
 		this->areWeHeartBeating = false;
-		this->currentReconnectTries = 0;		
+		this->currentReconnectTries = 0;
 		this->voiceUsers.clear();
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->areWeConnecting.store(true);

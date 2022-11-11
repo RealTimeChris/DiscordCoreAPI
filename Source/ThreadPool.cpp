@@ -28,15 +28,13 @@
 namespace DiscordCoreAPI {
 
 	std::string ThreadPool::storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval) {
-		std::string threadId = std::to_string(
-			std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count());
+		std::string threadId = std::to_string(std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count());
 
 		auto thread = std::jthread([=](std::stop_token stopToken) {
 			StopWatch stopWatch{ Milliseconds{ timeInterval } };
 			while (true) {
 				stopWatch.resetTimer();
-				std::this_thread::sleep_for(
-					Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * percentage)) });
+				std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * percentage)) });
 				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
 					std::this_thread::sleep_for(1ms);
 				}

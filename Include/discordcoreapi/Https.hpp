@@ -154,7 +154,7 @@ namespace DiscordCoreInternal {
 
 	template<typename OTy>
 	concept SameAsVoid = std::same_as<void, OTy>;
-	
+
 	inline thread_local simdjson::ondemand::parser parser{};
 
 	class DiscordCoreAPI_Dll HttpsClient {
@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 				theError.errorCode = returnData.responseCode;
 				throw theError;
 			}
-			
+
 			if (returnData.responseMessage.size() > 0) {
 				returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
 				auto document =
