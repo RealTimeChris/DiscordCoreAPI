@@ -251,11 +251,13 @@ namespace DiscordCoreInternal {
 
 		DatagramSocketClient(DiscordCoreAPI::StreamType streamType, bool doWePrintErrors) noexcept;
 
-		bool connect(const std::string& baseUrlNew, const std::string& portNew) noexcept;
+		bool connect(const std::string& baseUrlNew, const std::string& portNew, bool haveWeGottenSignaled) noexcept;
 
 		void writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept;
 
 		std::basic_string_view<uint8_t> getInputBuffer() noexcept;
+
+		int64_t sendUdpData(std::basic_string<uint8_t>&) noexcept;
 
 		ProcessIOResult processIO(ProcessIOType type) noexcept;
 
@@ -281,7 +283,9 @@ namespace DiscordCoreInternal {
 		addrinfoWrapper address{};
 		bool doWePrintErrors{};
 		SOCKETWrapper socket{};
+		std::string baseUrl{};
 		int64_t bytesRead{};
+		uint16_t port{};
 	};
 }
 #endif

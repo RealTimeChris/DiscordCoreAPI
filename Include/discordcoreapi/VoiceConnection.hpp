@@ -148,15 +148,18 @@ namespace DiscordCoreAPI {
 		Exiting = 4///< Exiting.
 	};
 
+	class VoiceConnection;
+
 	class DiscordCoreAPI_Dll VoiceConnectionBridge : public DiscordCoreInternal::DatagramSocketClient {
 	  public:
-		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, StreamType streamType, Snowflake guildIdNew);
+		VoiceConnectionBridge(DiscordCoreClient* clientPtrNew, VoiceConnection* voiceConnectionPtrNew, StreamType streamType, Snowflake guildIdNew);
 
 		void parseOutGoingVoiceData() noexcept;
 
 		void handleAudioBuffer() noexcept;
 
 	  protected:
+		VoiceConnection* voiceConnectionPtr{ nullptr };
 		DiscordCoreClient* clientPtr{ nullptr };
 		Snowflake guildId{};
 	};
@@ -207,6 +210,7 @@ namespace DiscordCoreAPI {
 		std::vector<uint8_t> encryptionKey{};
 		simdjson::ondemand::parser parser{};
 		std::atomic_int8_t voiceUserCount{};
+		bool haveWeGottenSignaled{ false };
 		MovingAverager sleepableTime{ 12 };
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
