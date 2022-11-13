@@ -24,6 +24,7 @@
 /// \file Utilities.hpp
 
 #pragma once
+
 #ifndef UTILITIES
 	#define UTILITIES
 
@@ -50,21 +51,11 @@
 		#ifndef DiscordCoreAPI_Dll
 			#define DiscordCoreAPI_Dll
 		#endif
-		#include <algorithm>
+		#include <arpa/inet.h>
+		#include <sys/time.h>
+		#include <pthread.h>
 		#include <cstdint>
 		#include <cstring>
-inline uint64_t ntohll(uint64_t x) {
-	uint8_t data[8]{};
-	std::copy(&(x), &(x) + sizeof(x), data);
-	uint64_t value{};
-	for (uint32_t y = 0; y < sizeof(uint64_t); ++y) {
-		value |= static_cast<uint64_t>(data[y]) << 8 * (sizeof(uint64_t) - y - 1);
-	}
-	return value;
-}
-		#include <arpa/inet.h>
-		#include <pthread.h>
-		#include <sys/time.h>
 		#include <time.h>
 		#include <ctime>
 	#endif
