@@ -591,7 +591,6 @@ namespace DiscordCoreInternal {
 			}
 		} else if (this->streamTypeReal == DiscordCoreAPI::StreamType::Client) {
 			uint8_t chars[]{ "connecting" };
-			std::cout << "WERE HERE THIS IS IT!" << std::endl;
 			std::basic_string<uint8_t> connectionString{ reinterpret_cast<uint8_t*>(chars) };
 			int32_t result{};
 			if (!haveWeGottenSignaled) {
