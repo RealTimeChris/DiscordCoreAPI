@@ -118,28 +118,7 @@
  * \brief For all of events that could be sent by Discord's Websockets.
  */
 
-/**
- * \defgroup colors Color Constants
- * \brief Several predefined colors ready to be used in Embeds
- */
-
 namespace DiscordCoreAPI {
-	/**
-	 * \addtogroup colors
-	 * @{
-	 */
-	namespace Colors {
-		const std::string White = "FFFFFF", DiscordWhite = "FFFFFE", LightGray = "C0C0C0", Gray = "808080", DarkGray = "404040", Black = "000000",
-						  DiscordBlack = "000001", Red = "FF0000", Pink = "FFAFAF", Orange = "FFC800", Yellow = "FFFF00", Green = "00FF00",
-						  Magenta = "FF00FF", Cyan = "00FFFF", Blue = "0000FF", LightSeaGreen = "1ABC9C", MediumSeaGreen = "2ECC71",
-						  SummerSky = "3498DB", DeepLilac = "9B59B6", Ruby = "E91E63", MoonYellow = "F1C40F", TahitiGold = "E67E22",
-						  Cinnabar = "E74C3C", Submarine = "95A5A6", BlueAquamarine = "607D8B", DeepSea = "11806A", SeaGreen = "1F8B4C",
-						  Endeavour = "206694", VividViolet = "71368A", JazzberryJam = "AD1457", DarkGoldenrod = "C27C0E", Rust = "A84300",
-						  Brown = "992D22", GrayChateau = "979C9F", Bismark = "546E7A", StiBlue = "0E4BEF", WrxBlue = "00247D",
-						  RalliArtCrimson = "E60012", Lime = "00FF00", ForestGreen = "228B22", CadmiumGreen = "097969", Aquamarine = "7FFFD4",
-						  BlueGreen = "088F8F", Raspberry = "E30B5C", ScarletRed = "FF2400";
-	};
-
 
 	/**
 	 * \addtogroup foundation_entities
@@ -1104,6 +1083,55 @@ namespace DiscordCoreAPI {
 	 * \addtogroup utilities
 	 * @{
 	 */
+
+	/// Color constants for use in the EmbedData color values. \brief Color constants for use in the EmbedData color values.
+	namespace Colors {
+		const std::string White = "FFFFFF",///< White.
+			DiscordWhite = "FFFFFE",///< Discord white.
+			LightGray = "C0C0C0",///< Light gray.
+			Gray = "808080",///< Gray.
+			DarkGray = "404040",///< Dark gray.
+			Black = "000000",///< Black.
+			DiscordBlack = "000001",///< Discord black.
+			Red = "FF0000",///< Red.
+			Pink = "FFAFAF",///< Pink.
+			Orange = "FFC800",///< Orange.
+			Yellow = "FFFF00",///< Yellow.
+			Green = "00FF00",///< Green.
+			Magenta = "FF00FF",///< Magenta.
+			Cyan = "00FFFF",///< Cyan.
+			Blue = "0000FF",///< Blue.
+			LightSeaGreen = "1ABC9C",///< Light sea green.
+			MediumSeaGreen = "2ECC71",///< Medium sea green.
+			SummerSky = "3498DB",///< Summer skye.
+			DeepLilac = "9B59B6",///< Deep lilac.
+			Ruby = "E91E63",///< Ruby.
+			MoonYellow = "F1C40F",///< Moon yellow.
+			TahitiGold = "E67E22",///< Tahiti gold.
+			Cinnabar = "E74C3C",///< Cinnabar.
+			Submarine = "95A5A6",///< Submarine.
+			BlueAquamarine = "607D8B",///< Blue aquamarine.
+			DeepSea = "11806A",///< Deep sea.
+			SeaGreen = "1F8B4C",///< Sea green.
+			Endeavour = "206694",///< Endeavor.
+			VividViolet = "71368A",///< Vivid violet.
+			JazzberryJam = "AD1457",///< Jazzberry jam.
+			DarkGoldenrod = "C27C0E",///< Dark goldenrod.
+			Rust = "A84300",///< Rust.
+			Brown = "992D22",///< Brown.
+			GrayChateau = "979C9F",///< Gray chateau.
+			Bismark = "546E7A",///< Bismark.
+			StiBlue = "0E4BEF",///< Sti blue.
+			WrxBlue = "00247D",///< Wrx blue.
+			RalliArtCrimson = "E60012",///< Ralliart crimson.
+			Lime = "00FF00",///< Lime.
+			ForestGreen = "228B22",///< Forest green.
+			CadmiumGreen = "097969",///< Cadmium green.
+			Aquamarine = "7FFFD4",///< Aquamarine.
+			BlueGreen = "088F8F",///< Blue green.
+			Raspberry = "E30B5C",///< Raspberry.
+			ScarletRed = "FF2400";///< Scarlet red.
+	};
 
 	template<typename OTy> class ObjectCache {
 	  public:
