@@ -179,22 +179,33 @@ namespace DiscordCoreAPI {
 				}
 				case 2: {
 					__m256i value{ _mm256_set1_epi16(net) };
-					__m256i indexes{ _mm256_set_epi8(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
-						1) };
+					__m256i indexes{};
+					indexes = _mm256_insert_epi8(indexes, 0, 0);
+					indexes = _mm256_insert_epi8(indexes, 1, 1);
 					net = _mm256_extract_epi16(_mm256_shuffle_epi8(value, indexes), 0);
 					return;
 				}
 				case 4: {
 					__m256i value{ _mm256_set1_epi32(net) };
-					__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2,
-						3) };
+					__m256i indexes{};
+					indexes = _mm256_insert_epi8(indexes, 0, 0);
+					indexes = _mm256_insert_epi8(indexes, 1, 1);
+					indexes = _mm256_insert_epi8(indexes, 2, 2);
+					indexes = _mm256_insert_epi8(indexes, 3, 3);
 					net = _mm256_extract_epi32(_mm256_shuffle_epi8(value, indexes), 0);
 					return;
 				}
 				case 8: {
 					__m256i value{ _mm256_set1_epi64x(net) };
-					__m256i indexes{ _mm256_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6,
-						7) };
+					__m256i indexes{};
+					indexes = _mm256_insert_epi8(indexes, 0, 0);
+					indexes = _mm256_insert_epi8(indexes, 1, 1);
+					indexes = _mm256_insert_epi8(indexes, 2, 2);
+					indexes = _mm256_insert_epi8(indexes, 3, 3);
+					indexes = _mm256_insert_epi8(indexes, 4, 4);
+					indexes = _mm256_insert_epi8(indexes, 5, 5);
+					indexes = _mm256_insert_epi8(indexes, 6, 6);
+					indexes = _mm256_insert_epi8(indexes, 7, 7);
 					net = _mm256_extract_epi64(_mm256_shuffle_epi8(value, indexes), 0);
 					return;
 				}
@@ -2041,9 +2052,9 @@ namespace DiscordCoreAPI {
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
 			this->collectorId = std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
-			ObjectCollector::objectsBuffersMap[this->collectorId] = &this->messagesBuffer;
+			ObjectCollector::objectsBuffersMap[this->collectorId] = &this->objectsBuffer;
 			this->run();
-			co_return std::move(this->messageReturnData);
+			co_return std::move(this->objectReturnData);
 		}
 
 		void run() {
@@ -2051,11 +2062,11 @@ namespace DiscordCoreAPI {
 			int64_t elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
 				Object message{};
-				waitForTimeToPass<Object>(this->messagesBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
+				waitForTimeToPass<Object>(this->objectsBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
 				if (this->filteringFunction(message)) {
-					this->messageReturnData.objects.emplace_back(message);
+					this->objectReturnData.objects.emplace_back(message);
 				}
-				if (static_cast<int32_t>(this->messageReturnData.objects.size()) >= this->quantityOfObjectToCollect) {
+				if (static_cast<int32_t>(this->objectReturnData.objects.size()) >= this->quantityOfObjectToCollect) {
 					break;
 				}
 
