@@ -750,9 +750,9 @@ namespace DiscordCoreAPI {
 						this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this,
 							this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
 					}
-					this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port,
-						this->haveWeGottenSignaled);
 					if (!this->taskThread02) {
+						this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port,
+							this->haveWeGottenSignaled);
 						this->haveWeGottenSignaled = true;
 						this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 							this->runBridge(stopToken);
