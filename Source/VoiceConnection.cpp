@@ -182,13 +182,6 @@ namespace DiscordCoreAPI {
 			frame.sampleCount = buffer.size() / 2 / 2;
 			frame.type = AudioFrameType::RawPCM;
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
-		} else {
-			AudioFrameData newFrame{};
-			newFrame.data.push_back(0xf8);
-			newFrame.data.push_back(0xff);
-			newFrame.data.push_back(0xfe);
-			newFrame.type = AudioFrameType::Encoded;
-			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(newFrame));
 		}
 	}
 
@@ -568,7 +561,7 @@ namespace DiscordCoreAPI {
 							}
 						}
 						waitTime = targetTime.time_since_epoch() - HRClock::now().time_since_epoch();
-						nanoSleep(static_cast<uint64_t>(waitTime.count() * 0.95f));
+						nanoSleep(static_cast<uint64_t>(static_cast<float>(waitTime.count()) * 0.95f));
 						waitTime = targetTime.time_since_epoch() - HRClock::now().time_since_epoch();
 						if (waitTime.count() > 0 && waitTime.count() < 20000000) {
 							spinLock(waitTime.count());
