@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	AudioFrameData OpusEncoderWrapper::encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame) {
+	AudioFrameData OpusEncoderWrapper::encodeData(DiscordCoreAPI::AudioFrameData& inputFrame) {
 		std::vector<opus_int16> newVector{};
 		for (uint64_t x = 0; x < inputFrame.data.size() / 2; ++x) {
 			opus_int16 newValue{};

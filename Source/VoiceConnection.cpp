@@ -528,8 +528,12 @@ namespace DiscordCoreAPI {
 						bool doWeBreak{ false };
 						switch (this->audioData.type) {
 							case AudioFrameType::RawPCM: {
-								auto encodedFrameData = this->encoder.encodeSingleAudioFrame(this->audioData);
-								newFrame = this->packetEncrypter.encryptPacket(encodedFrameData);
+								try {
+									auto encodedFrameData = this->encoder.encodeData(this->audioData);
+									newFrame = this->packetEncrypter.encryptPacket(encodedFrameData);
+								} catch (...) {
+									reportException("VoiceConnection::runVoice()");
+								}
 								break;
 							}
 							case AudioFrameType::Encoded: {
