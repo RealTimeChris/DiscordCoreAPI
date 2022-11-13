@@ -562,14 +562,14 @@ namespace DiscordCoreInternal {
 
 		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, this->address)) {
 			if (this->doWePrintErrors) {
-				cout << reportError("DatagramSocketClient::connect::getaddrinfo() 01, to: " + baseUrlNew) << endl;
+				cout << reportError("DatagramSocketClient::connect::getaddrinfo(), to: " + baseUrlNew) << endl;
 			}
 			return false;
 		}
 
 		if (this->socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); this->socket == SOCKET_ERROR) {
 			if (this->doWePrintErrors) {
-				cout << reportError("DatagramSocketClient::connect::socket() 02, to: " + baseUrlNew) << endl;
+				cout << reportError("DatagramSocketClient::connect::socket(), to: " + baseUrlNew) << endl;
 			}
 			return false;
 		}
@@ -577,7 +577,7 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<char> optVal{ new char{ 1 } };
 		if (auto returnValue = setsockopt(this->socket, SOL_SOCKET, SO_REUSEADDR, optVal.get(), sizeof(optVal)); returnValue < 0) {
 			if (this->doWePrintErrors) {
-				cout << reportError("DatagramSocketClient::connect::setsockopt() 02, to: " + baseUrlNew) << endl;
+				cout << reportError("DatagramSocketClient::connect::setsockopt(), to: " + baseUrlNew) << endl;
 			}
 			return false;
 		}
@@ -585,15 +585,15 @@ namespace DiscordCoreInternal {
 		if (this->streamTypeReal == DiscordCoreAPI::StreamType::None) {
 			if (::connect(this->socket, this->address->ai_addr, static_cast<socklen_t>(this->address->ai_addrlen)) == SOCKET_ERROR) {
 				if (this->doWePrintErrors) {
-					cout << reportError("DatagramSocketClient::connect::connect() 01, to: " + baseUrlNew) << endl;
+					cout << reportError("DatagramSocketClient::connect::connect(), to: " + baseUrlNew) << endl;
 				}
 				return false;
 			}
 		} else if (this->streamTypeReal == DiscordCoreAPI::StreamType::Client) {
-			uint8_t chars[]{ "connecting" };
-			std::basic_string<uint8_t> connectionString{ reinterpret_cast<uint8_t*>(chars) };
-			int32_t result{};
 			if (!haveWeGottenSignaled) {
+				uint8_t chars[]{ "connecting" };
+				std::basic_string<uint8_t> connectionString{ reinterpret_cast<uint8_t*>(chars) };
+				int32_t result{};
 				result = sendto(this->socket, reinterpret_cast<char*>(connectionString.data()), connectionString.size(), 0, this->address->ai_addr,
 					this->address->ai_addrlen);
 				result = recvfrom(this->socket, reinterpret_cast<char*>(connectionString.data()), connectionString.size(), 0, this->address->ai_addr,
@@ -623,14 +623,14 @@ namespace DiscordCoreInternal {
 		u_long value02{ 1 };
 		if (ioctlsocket(this->socket, FIONBIO, &value02)) {
 			if (this->doWePrintErrors) {
-				cout << reportError("DatagramSocketClient::connect::ioctlsocket() 01, to: " + baseUrlNew) << endl;
+				cout << reportError("DatagramSocketClient::connect::ioctlsocket(), to: " + baseUrlNew) << endl;
 			}
 			return false;
 		}
 #else
 		if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
 			if (this->doWePrintErrors) {
-				cout << reportError("DatagramSocketClient::connect::ioctlsocket() 01, to: " + baseUrlNew) << endl;
+				cout << reportError("DatagramSocketClient::connect::ioctlsocket(), to: " + baseUrlNew) << endl;
 			}
 			return false;
 		}

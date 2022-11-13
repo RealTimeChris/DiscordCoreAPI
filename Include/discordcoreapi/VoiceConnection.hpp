@@ -191,6 +191,7 @@ namespace DiscordCoreAPI {
 		std::vector<opus_int16> downSampledVector{};
 		std::vector<uint8_t> decryptedDataString{};
 		std::vector<opus_int32> upSampledVector{};
+		std::atomic_bool canWeSendAudio{ true };
 		std::atomic_bool areWePlaying{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		RTPPacketEncrypter packetEncrypter{};

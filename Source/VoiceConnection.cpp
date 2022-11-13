@@ -376,24 +376,17 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runBridge(std::stop_token token) noexcept {
 		this->sendSilence();
 		DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
-		MovingAverager averager{ 20 };
-		StopWatch processAndSleepStopWatch{ 20000000ns };
+		StopWatch stopWatch{ 20000000ns };
 		while (!token.stop_requested()) {
-			processAndSleepStopWatch.resetTimer();
-			if (processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) >= 0) {
-				std::this_thread::sleep_for(Nanoseconds{ processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) });
-			}
 			this->mixAudio();
 			if (this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both) == DiscordCoreInternal::ProcessIOResult::Error) {
 				this->onClosed();
 			}
-			if (processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) > 0) {
-				this->sleepableTime.addValue(processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()));
+			while (!this->canWeSendAudio.load() && !stopWatch.hasTimePassed()) {
+				std::this_thread::sleep_for(1us);
 			}
-			averager.addValue(processAndSleepStopWatch.totalTimePassed());
-			while (!processAndSleepStopWatch.hasTimePassed()) {
-			}
-			processAndSleepStopWatch.resetTimer();
+			stopWatch.resetTimer();
+			this->canWeSendAudio.store(false);
 		}
 	}
 
@@ -491,9 +484,8 @@ namespace DiscordCoreAPI {
 					}
 
 					TimePoint startingValue{ HRClock::now().time_since_epoch() };
-					TimePoint intervalCount{ Nanoseconds{ 20000000 } };
+					const TimePoint intervalCount{ Nanoseconds{ 20000000 } };
 					TimePoint targetTime{ startingValue.time_since_epoch() + intervalCount };
-					MovingAverager totalTime{ 12 };
 
 					this->sendSpeakingMessage(false);
 					this->sendSpeakingMessage(true);
@@ -557,7 +549,6 @@ namespace DiscordCoreAPI {
 									this->onClosed();
 								}
 							}
-							
 						}
 						waitTime = targetTime.time_since_epoch() - HRClock::now().time_since_epoch();
 						nanoSleep(static_cast<uint64_t>(static_cast<double>(waitTime.count()) * 0.95l));
@@ -566,15 +557,16 @@ namespace DiscordCoreAPI {
 							spinLock(waitTime.count());
 						}
 						startingValue = TimePoint{ HRClock::now().time_since_epoch() };
+						if (HRClock::now().time_since_epoch().count() - startingValue.time_since_epoch().count() > 0) {
+						}
 						if (newFrame.size() > 0) {
 							this->sendVoiceData(newFrame);
 						}
+						this->canWeSendAudio.store(true);
 						if (DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
 							DiscordCoreInternal::ProcessIOResult::Error) {
 							this->onClosed();
 						}
-						totalTime.addValue((HRClock::now().time_since_epoch() - startingValue.time_since_epoch()).count());
-						intervalCount = TimePoint{ Nanoseconds{ 20000000 } - Nanoseconds{ totalTime.collectAverage() } };
 						targetTime = HRClock::now().time_since_epoch() + intervalCount;
 					}
 					break;
