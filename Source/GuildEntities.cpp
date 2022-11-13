@@ -1084,7 +1084,7 @@ namespace DiscordCoreAPI {
 			}
 			if (Guilds::getCache().size() % 100 == 0) {
 				std::cout << "THE GUILD COUNT: " << Guilds::getCache().size() << ", TOTAL TIME: " << stopWatch.totalTimePassed()
-						  << "THREAD ID: " << std::this_thread::get_id() << std::endl;
+						  << "\n,THREAD ID: " << std::this_thread::get_id() << std::endl;
 			}
 		}
 	}
