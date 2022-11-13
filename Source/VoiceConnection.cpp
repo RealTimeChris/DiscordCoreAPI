@@ -43,36 +43,6 @@ namespace DiscordCoreAPI {
 		this->port = getUint64(jsonObjectData, "port");
 	}
 
-	void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) noexcept {
-		if (other) {
-			opus_decoder_destroy(other);
-			other = nullptr;
-		}
-	}
-
-	OpusDecoderWrapper::OpusDecoderWrapper() {
-		int32_t error{};
-		this->data.resize(23040);
-		this->ptr.reset(opus_decoder_create(48000, 2, &error));
-		if (error != OPUS_OK) {
-			throw DCAException{ "Failed to create the Opus decoder, Reason: " + std::string{ opus_strerror(error) } };
-		}
-	}
-
-	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(const std::basic_string_view<uint8_t> dataToDecode) {
-		const int64_t sampleCount =
-			opus_decode(this->ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
-		if (sampleCount > 0) {
-			return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
-		} else {
-			throw DCAException{ "Failed to decode a user's voice payload, Reason: " + std::string{ opus_strerror(sampleCount) } };
-		}
-	}
-
-	OpusDecoderWrapper& VoiceUser::getDecoder() {
-		return this->decoder;
-	}
-
 	MovingAverager::MovingAverager(size_t periodCountNew) noexcept : periodCount{ periodCountNew } {
 	}
 
@@ -116,6 +86,10 @@ namespace DiscordCoreAPI {
 		*this = std::move(data);
 	}
 
+	DiscordCoreInternal::OpusDecoderWrapper& VoiceUser::getDecoder() {
+		return this->decoder;
+	}
+
 	void VoiceUser::insertPayload(std::basic_string<uint8_t>&& data) {
 		this->payloads.send(data);
 	}
@@ -140,12 +114,12 @@ namespace DiscordCoreAPI {
 		return value;
 	}
 
-	void VoiceUser::setEndingStatus(bool data) {
-		this->wereWeEnding.store(data);
-	}
-
 	void VoiceUser::setUserId(Snowflake userIdNew) {
 		this->userId = userIdNew;
+	}
+
+	void VoiceUser::setEndingStatus(bool data) {
+		this->wereWeEnding.store(data);
 	}
 
 	bool VoiceUser::getEndingStatus() {

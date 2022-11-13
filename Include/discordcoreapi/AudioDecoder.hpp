@@ -28,8 +28,8 @@
 #ifndef AUDIO_DECODER
 	#define AUDIO_DECODER
 
-	#include <discordcoreapi/EventEntities.hpp>
 	#include <discordcoreapi/FoundationEntities.hpp>
+	#include <opus/opus.h>
 
 extern "C" {
 	#include <libavformat/avformat.h>
@@ -37,6 +37,20 @@ extern "C" {
 }
 
 namespace DiscordCoreInternal {
+
+	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
+		struct DiscordCoreAPI_Dll OpusDecoderDeleter {
+			void operator()(OpusDecoder*) noexcept;
+		};
+
+		OpusDecoderWrapper();
+
+		std::basic_string_view<opus_int16> decodeData(const std::basic_string_view<uint8_t> dataToDecode);
+
+	  protected:
+		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> ptr{ nullptr, OpusDecoderDeleter{} };
+		std::vector<opus_int16> data{};
+	};
 
 	struct DiscordCoreAPI_Dll AVFrameWrapper {
 		struct DiscordCoreAPI_Dll AVFrameDeleter {

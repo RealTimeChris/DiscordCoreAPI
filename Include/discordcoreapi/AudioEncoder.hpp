@@ -38,15 +38,7 @@ namespace DiscordCoreAPI {
 			void operator()(OpusEncoder*) noexcept;
 		};
 
-		OpusEncoderWrapper& operator=(OpusEncoderWrapper&&) noexcept;
-
-		OpusEncoderWrapper(OpusEncoderWrapper&&) noexcept;
-
-		OpusEncoderWrapper(OpusEncoder*) noexcept;
-
 		OpusEncoderWrapper();
-
-		operator OpusEncoder*() noexcept;
 
 		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame);
 

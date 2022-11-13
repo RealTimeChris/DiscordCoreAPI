@@ -30,6 +30,7 @@
 
 	#include <discordcoreapi/FoundationEntities.hpp>
 	#include <discordcoreapi/AudioEncoder.hpp>
+	#include <discordcoreapi/AudioDecoder.hpp>
 	#include <discordcoreapi/CoRoutine.hpp>
 	#include <discordcoreapi/WebSocketEntities.hpp>
 	#include <sodium.h>
@@ -42,20 +43,6 @@ namespace DiscordCoreAPI {
 		std::string ip{};
 		uint64_t port{};
 		uint32_t ssrc{};
-	};
-
-	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
-		struct DiscordCoreAPI_Dll OpusDecoderDeleter {
-			void operator()(OpusDecoder*) noexcept;
-		};
-
-		OpusDecoderWrapper();
-
-		std::basic_string_view<opus_int16> decodeData(const std::basic_string_view<uint8_t> dataToDecode);
-
-	  protected:
-		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> ptr{ nullptr, OpusDecoderDeleter{} };
-		std::vector<opus_int16> data{};
 	};
 
 	struct MovingAverager {
@@ -84,11 +71,11 @@ namespace DiscordCoreAPI {
 
 		VoiceUser(const VoiceUser&) noexcept = delete;
 
+		DiscordCoreInternal::OpusDecoderWrapper& getDecoder();
+
 		void insertPayload(std::basic_string<uint8_t>&&);
 
 		std::basic_string<uint8_t> extractPayload();
-
-		OpusDecoderWrapper& getDecoder();
 
 		void setEndingStatus(bool);
 
@@ -100,10 +87,10 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		UnboundedMessageBlock<std::basic_string<uint8_t>> payloads{};
+		DiscordCoreInternal::OpusDecoderWrapper decoder{};
 		std::atomic_bool wereWeEnding{ false };
 		std::atomic_int8_t* voiceUserCount{};
 		MovingAverager* sleepableTime{};
-		OpusDecoderWrapper decoder{};
 		Snowflake userId{};
 	};
 

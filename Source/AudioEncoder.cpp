@@ -24,7 +24,7 @@
 /// \file AudioEncoder.cpp
 
 #include <discordcoreapi/AudioEncoder.hpp>
-#include <opus/opus_defines.h>
+#include <opus/opus.h>
 
 namespace DiscordCoreAPI {
 
@@ -33,18 +33,6 @@ namespace DiscordCoreAPI {
 			opus_encoder_destroy(other);
 			other = nullptr;
 		}
-	}
-
-	OpusEncoderWrapper& OpusEncoderWrapper::operator=(OpusEncoderWrapper&& other) noexcept {
-		if (this != &other) {
-			this->ptr.reset(nullptr);
-			this->ptr.reset(other.ptr.release());
-		}
-		return *this;
-	}
-
-	OpusEncoderWrapper::OpusEncoderWrapper(OpusEncoderWrapper&& other) noexcept {
-		*this = std::move(other);
 	}
 
 	OpusEncoderWrapper::OpusEncoderWrapper() {
@@ -62,15 +50,6 @@ namespace DiscordCoreAPI {
 		if (result != OPUS_OK) {
 			throw DCAException{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) } };
 		}
-	}
-
-	OpusEncoderWrapper::operator OpusEncoder*() noexcept {
-		return this->ptr.get();
-	}
-
-	OpusEncoderWrapper::OpusEncoderWrapper(OpusEncoder* other) noexcept {
-		this->ptr.reset(nullptr);
-		this->ptr.reset(other);
 	}
 
 	AudioFrameData OpusEncoderWrapper::encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame) {
