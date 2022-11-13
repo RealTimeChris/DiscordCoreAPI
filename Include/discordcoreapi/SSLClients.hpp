@@ -145,19 +145,6 @@ namespace DiscordCoreInternal {
 		std::unique_ptr<SOCKET, SOCKETDeleter> ptr{ new SOCKET{ static_cast<SOCKET>(SOCKET_ERROR) }, SOCKETDeleter{} };
 	};
 
-	struct DiscordCoreAPI_Dll sockaddrWrapper {
-		sockaddr* operator->();
-
-		operator sockaddr_in*();
-
-		operator sockaddr*();
-
-		~sockaddrWrapper() noexcept = default;
-
-	  protected:
-		sockaddr_in ptr{};
-	};
-
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
 		addrinfo* operator->();
 
@@ -165,11 +152,9 @@ namespace DiscordCoreInternal {
 
 		operator addrinfo*();
 
-		~addrinfoWrapper();
-
 	  protected:
-		addrinfo* ptr{ new addrinfo{} };
-		bool doWeClearAddrInfo{ false };
+		addrinfo value{};
+		addrinfo* ptr{ &this->value };
 	};
 
 	class DiscordCoreAPI_Dll SSLConnectionInterface {

@@ -155,37 +155,16 @@ namespace DiscordCoreInternal {
 		return *this->ptr;
 	}
 
-	sockaddr* sockaddrWrapper::operator->() {
-		return reinterpret_cast<sockaddr*>(&this->ptr);
-	}
-
-	sockaddrWrapper::operator sockaddr_in*() {
-		return &this->ptr;
-	}
-
-	sockaddrWrapper::operator sockaddr*() {
-		return reinterpret_cast<sockaddr*>(&this->ptr);
-	}
-
 	addrinfo* addrinfoWrapper::operator->() {
 		return this->ptr;
 	}
 
 	addrinfoWrapper::operator addrinfo**() {
-		this->doWeClearAddrInfo = true;
 		return &this->ptr;
 	}
 
 	addrinfoWrapper::operator addrinfo*() {
 		return this->ptr;
-	}
-
-	addrinfoWrapper::~addrinfoWrapper() {
-		if (this->doWeClearAddrInfo) {
-			freeaddrinfo(this->ptr);
-		} else {
-			delete this->ptr;
-		}
 	}
 
 	bool SSLConnectionInterface::initialize() noexcept {
@@ -305,6 +284,9 @@ namespace DiscordCoreInternal {
 		}
 #else
 		if (auto returnValue{ fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK) }; returnValue == SOCKET_ERROR) {
+			if (this->doWePrintErrorMessages) {
+				cout << reportError("SSLClient::connect::ioctlsocket(), to: " + baseUrl) << endl;
+			}
 			return false;
 		}
 #endif
@@ -573,22 +555,12 @@ namespace DiscordCoreInternal {
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew, bool haveWeGottenSignaled) noexcept {
 		this->baseUrl = baseUrlNew;
 		this->port = stoi(portNew);
-		addrinfoWrapper hints{}, localAddress{};
+		addrinfoWrapper hints{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
-		localAddress->ai_family = AF_INET;
-		localAddress->ai_socktype = SOCK_DGRAM;
-		localAddress->ai_protocol = IPPROTO_UDP;
 
 		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, this->address)) {
-			if (this->doWePrintErrors) {
-				cout << reportError("DatagramSocketClient::connect::getaddrinfo() 01, to: " + baseUrlNew) << endl;
-			}
-			return false;
-		}
-
-		if (getaddrinfo(nullptr, portNew.c_str(), hints, localAddress)) {
 			if (this->doWePrintErrors) {
 				cout << reportError("DatagramSocketClient::connect::getaddrinfo() 01, to: " + baseUrlNew) << endl;
 			}
@@ -611,22 +583,23 @@ namespace DiscordCoreInternal {
 		}
 
 		if (this->streamTypeReal == DiscordCoreAPI::StreamType::None) {
-			if (::connect(this->socket, this->address->ai_addr, static_cast<socklen_t>(address->ai_addrlen)) == SOCKET_ERROR) {
+			if (::connect(this->socket, this->address->ai_addr, static_cast<socklen_t>(this->address->ai_addrlen)) == SOCKET_ERROR) {
 				if (this->doWePrintErrors) {
 					cout << reportError("DatagramSocketClient::connect::connect() 01, to: " + baseUrlNew) << endl;
 				}
 				return false;
 			}
 		} else if (this->streamTypeReal == DiscordCoreAPI::StreamType::Client) {
+			uint8_t chars[]{ "connecting" };
+			std::cout << "WERE HERE THIS IS IT!" << std::endl;
+			std::basic_string<uint8_t> connectionString{ reinterpret_cast<uint8_t*>(chars) };
+			int32_t result{};
 			if (!haveWeGottenSignaled) {
-				uint8_t chars[]{ "connecting" };
-				std::basic_string<uint8_t> connectionString{ reinterpret_cast<uint8_t*>(chars) };
-				int32_t result{};
 				result = sendto(this->socket, reinterpret_cast<char*>(connectionString.data()), connectionString.size(), 0, this->address->ai_addr,
 					this->address->ai_addrlen);
-				result = recvfrom(this->socket, reinterpret_cast<char*>(connectionString.data()), connectionString.size(), 0, this->address->ai_addr,
-					reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 			}
+			result = recvfrom(this->socket, reinterpret_cast<char*>(connectionString.data()), connectionString.size(), 0, this->address->ai_addr,
+				reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 		} else {
 			if (auto result = bind(this->socket, this->address->ai_addr, this->address->ai_addrlen); result != 0) {
 				if (this->doWePrintErrors) {

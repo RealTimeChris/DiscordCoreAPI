@@ -378,8 +378,6 @@ namespace DiscordCoreAPI {
 		DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
 		MovingAverager averager{ 20 };
 		StopWatch processAndSleepStopWatch{ 20000000ns };
-		this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port,
-			this->haveWeGottenSignaled);
 		while (!token.stop_requested()) {
 			processAndSleepStopWatch.resetTimer();
 			if (processAndSleepStopWatch.getTotalWaitTime() - (averager.collectAverage()) >= 0) {
@@ -559,9 +557,10 @@ namespace DiscordCoreAPI {
 									this->onClosed();
 								}
 							}
+							
 						}
 						waitTime = targetTime.time_since_epoch() - HRClock::now().time_since_epoch();
-						nanoSleep(static_cast<uint64_t>(static_cast<float>(waitTime.count()) * 0.95f));
+						nanoSleep(static_cast<uint64_t>(static_cast<double>(waitTime.count()) * 0.95l));
 						waitTime = targetTime.time_since_epoch() - HRClock::now().time_since_epoch();
 						if (waitTime.count() > 0 && waitTime.count() < 20000000) {
 							spinLock(waitTime.count());
@@ -751,11 +750,13 @@ namespace DiscordCoreAPI {
 						this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this,
 							this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
 					}
+					this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port,
+						this->haveWeGottenSignaled);
 					if (!this->taskThread02) {
+						this->haveWeGottenSignaled = true;
 						this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 							this->runBridge(stopToken);
 						});
-						this->haveWeGottenSignaled = true;
 					}
 				}
 				this->areWeConnecting.store(false);
@@ -888,11 +889,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (this->streamSocket) {
-			std::basic_string<uint8_t> closeData{};
-			closeData.push_back(0);
-			closeData.push_back(0);
-			closeData.push_back(0);
-			this->streamSocket->sendUdpData(closeData);
 			this->streamSocket->disconnect();
 		}
 		if (DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)) {
