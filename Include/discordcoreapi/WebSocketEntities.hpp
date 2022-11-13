@@ -59,9 +59,7 @@ namespace DiscordCoreInternal {
 		bool connect(const std::string& baseUrl, const std::string& relativePath, const std::string& portNew, bool doWePrintErrorsNew,
 			bool areWeAStandaloneSocketNew) noexcept;
 
-		void createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept;
-
-		std::string prepMessageData(std::string&& dataToSend, WebSocketOpCode theOpCode) noexcept;
+		void createHeader(std::string& outBuffer, WebSocketOpCode opCode) noexcept;
 
 		virtual bool onMessageReceived(std::string_view message) noexcept = 0;
 

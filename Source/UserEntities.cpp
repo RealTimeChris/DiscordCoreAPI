@@ -122,8 +122,8 @@ namespace DiscordCoreAPI {
 			} else {
 				serializer.refreshString(JsonifierSerializeType::Json);
 			}
-			string = this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->prepMessageData(
-				serializer.operator std::string(),
+			string = serializer.operator std::string();
+			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->createHeader(string,
 				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(
 					this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get())
 					->dataOpCode);
@@ -144,8 +144,8 @@ namespace DiscordCoreAPI {
 			} else {
 				serializer.refreshString(JsonifierSerializeType::Json);
 			}
-			string = this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->prepMessageData(
-				serializer.operator std::string(),
+			string = serializer.operator std::string();
+			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->createHeader(string,
 				static_cast<DiscordCoreInternal::WebSocketSSLShard*>(
 					this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get())
 					->dataOpCode);

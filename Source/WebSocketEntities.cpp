@@ -179,36 +179,30 @@ namespace DiscordCoreInternal {
 		this->configManager = configManagerNew;
 	}
 
-	std::string WebSocketCore::prepMessageData(std::string&& dataToSend, WebSocketOpCode theOpCode) noexcept {
-		std::string header{};
-		this->createHeader(header, dataToSend.size(), theOpCode);
-		header.insert(header.end(), dataToSend.begin(), dataToSend.end());
-		return header;
-	}
-
-	void WebSocketCore::createHeader(std::string& outBuffer, uint64_t sendLength, WebSocketOpCode opCode) noexcept {
-		outBuffer.push_back(static_cast<uint8_t>(opCode) | webSocketFinishBit);
+	void WebSocketCore::createHeader(std::string& outBuffer, WebSocketOpCode opCode) noexcept {
+		size_t originalSize{ outBuffer.size() };
+		outBuffer.insert(outBuffer.begin(), static_cast<uint8_t>(opCode) | webSocketFinishBit);
 
 		int32_t indexCount{ 0 };
-		if (sendLength <= webSocketMaxPayloadLengthSmall) {
-			outBuffer.push_back(static_cast<uint8_t>(sendLength));
+		if (outBuffer.size() <= webSocketMaxPayloadLengthSmall) {
+			outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(originalSize));
 			indexCount = 0;
-		} else if (sendLength <= webSocketMaxPayloadLengthLarge) {
-			outBuffer.push_back(webSocketPayloadLengthMagicLarge);
+		} else if (outBuffer.size() <= webSocketMaxPayloadLengthLarge) {
+			outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(webSocketPayloadLengthMagicLarge));
 			indexCount = 2;
 		} else {
-			outBuffer.push_back(webSocketPayloadLengthMagicHuge);
+			outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(webSocketPayloadLengthMagicHuge));
 			indexCount = 8;
 		}
 		for (int32_t x = indexCount - 1; x >= 0; x--) {
-			outBuffer.push_back(static_cast<uint8_t>(sendLength >> x * 8));
+			outBuffer.insert(outBuffer.begin() + 1 + indexCount - x, static_cast<uint8_t>(originalSize >> x * 8));
 		}
 
 		outBuffer[1] |= webSocketMaskBit;
-		outBuffer.push_back(0);
-		outBuffer.push_back(0);
-		outBuffer.push_back(0);
-		outBuffer.push_back(0);
+		outBuffer.insert(outBuffer.begin() + 2 + indexCount, 0);
+		outBuffer.insert(outBuffer.begin() + 3 + indexCount, 0);
+		outBuffer.insert(outBuffer.begin() + 4 + indexCount, 0);
+		outBuffer.insert(outBuffer.begin() + 5 + indexCount, 0);
 	}
 
 	void WebSocketCore::parseConnectionHeaders(std::string_view stringNew) noexcept {
@@ -375,7 +369,8 @@ namespace DiscordCoreInternal {
 		} else {
 			serializer.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 		}
-		std::string string = this->prepMessageData(serializer.operator std::string(), this->dataOpCode);
+		std::string string = serializer.operator std::string();
+		this->createHeader(string, this->dataOpCode);
 		if (!this->sendMessage(string, true)) {
 			return;
 		}
@@ -389,7 +384,8 @@ namespace DiscordCoreInternal {
 		} else {
 			serializer.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 		}
-		string = this->prepMessageData(serializer.operator std::string(), this->dataOpCode);
+		string = serializer.operator std::string();
+		this->createHeader(string, this->dataOpCode);
 		this->areWeCollectingData = true;
 		if (!this->sendMessage(string, true)) {
 			return;
@@ -1085,7 +1081,8 @@ namespace DiscordCoreInternal {
 							} else {
 								serializer.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 							}
-							std::string string = this->prepMessageData(serializer.operator std::string(), this->dataOpCode);
+							std::string string = serializer.operator std::string();
+							this->createHeader(string, this->dataOpCode);
 							if (!this->sendMessage(string, true)) {
 								return false;
 							}
@@ -1103,7 +1100,8 @@ namespace DiscordCoreInternal {
 							} else {
 								serializer.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 							}
-							std::string string = this->prepMessageData(serializer.operator std::string(), this->dataOpCode);
+							std::string string = serializer.operator std::string();
+							this->createHeader(string, this->dataOpCode);
 							if (!this->sendMessage(string, true)) {
 								return false;
 							}
@@ -1145,7 +1143,8 @@ namespace DiscordCoreInternal {
 			} else {
 				data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 			}
-			string = this->prepMessageData(data.operator std::string(), this->dataOpCode);
+			string = data.operator std::string();
+			this->createHeader(string, this->dataOpCode);
 			if (!this->sendMessage(string, true)) {
 				return false;
 			}

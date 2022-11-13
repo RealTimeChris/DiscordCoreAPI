@@ -266,7 +266,8 @@ namespace DiscordCoreAPI {
 			data["d"] = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
 			data["op"] = 3;
 			data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
-			std::string string = this->prepMessageData(data.operator std::string(), this->dataOpCode);
+			std::string string = data.operator std::string();
+			this->createHeader(string, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 			if (!this->sendMessage(string, true)) {
 				return;
 			}
@@ -374,7 +375,8 @@ namespace DiscordCoreAPI {
 		data.ssrc = this->audioSSRC;
 		auto serializer = data.operator DiscordCoreAPI::Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
-		std::string string = this->prepMessageData(serializer.operator std::string(), DiscordCoreInternal::WebSocketOpCode::Op_Text);
+		std::string string = serializer.operator std::string();
+		this->createHeader(string, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 		this->sendMessage(string, true);
 	}
 
@@ -683,7 +685,8 @@ namespace DiscordCoreAPI {
 				data.connectionData = this->voiceConnectionData;
 				auto serializer = data.operator DiscordCoreAPI::Jsonifier();
 				serializer.refreshString(JsonifierSerializeType::Json);
-				std::string string = this->prepMessageData(serializer.operator std::string(), this->dataOpCode);
+				std::string string = serializer.operator std::string();
+				this->createHeader(string, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!WebSocketCore::sendMessage(string, true)) {
 					this->currentReconnectTries++;
 					return;
@@ -723,7 +726,8 @@ namespace DiscordCoreAPI {
 				data.voicePort = this->port;
 				auto serializer = data.operator DiscordCoreAPI::Jsonifier();
 				serializer.refreshString(JsonifierSerializeType::Json);
-				std::string string = this->prepMessageData(serializer.operator std::string(), this->dataOpCode);
+				std::string string = serializer.operator std::string();
+				this->createHeader(string, DiscordCoreInternal::WebSocketOpCode::Op_Text);
 				if (!WebSocketCore::sendMessage(string, true)) {
 					this->currentReconnectTries++;
 					return;
@@ -871,7 +875,6 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::disconnect() noexcept {
 		this->activeState.store(VoiceActiveState::Exiting);
-		this->haveWeGottenSignaled = false;
 		DatagramSocketClient::disconnect();
 		WebSocketCore::ssl = nullptr;
 		WebSocketCore::outputBuffer.clear();
