@@ -178,34 +178,26 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				case 2: {
-					__m256i value{ _mm256_set1_epi16(net) };
+					__m256i value{};
+					value = _mm256_insert_epi16(value, net, 0);
 					__m256i indexes{};
-					indexes = _mm256_insert_epi8(indexes, 0, 1);
-					indexes = _mm256_insert_epi8(indexes, 1, 0);
+					indexes = _mm256_insert_epi16(indexes, 0b0000000000000001, 0);
 					net = _mm256_extract_epi16(_mm256_shuffle_epi8(value, indexes), 0);
 					return;
 				}
 				case 4: {
-					__m256i value{ _mm256_set1_epi32(net) };
+					__m256i value{};
+					value = _mm256_insert_epi32(value, net, 0);
 					__m256i indexes{};
-					indexes = _mm256_insert_epi8(indexes, 0, 3);
-					indexes = _mm256_insert_epi8(indexes, 1, 2);
-					indexes = _mm256_insert_epi8(indexes, 2, 1);
-					indexes = _mm256_insert_epi8(indexes, 3, 0);
+					indexes = _mm256_insert_epi32(indexes, 0b000000010000001000000011, 0);
 					net = _mm256_extract_epi32(_mm256_shuffle_epi8(value, indexes), 0);
 					return;
 				}
 				case 8: {
-					__m256i value{ _mm256_set1_epi64x(net) };
+					__m256i value{};
+					value = _mm256_insert_epi64(value, net, 0);
 					__m256i indexes{};
-					indexes = _mm256_insert_epi8(indexes, 0, 7);
-					indexes = _mm256_insert_epi8(indexes, 1, 6);
-					indexes = _mm256_insert_epi8(indexes, 2, 5);
-					indexes = _mm256_insert_epi8(indexes, 3, 4);
-					indexes = _mm256_insert_epi8(indexes, 4, 3);
-					indexes = _mm256_insert_epi8(indexes, 5, 2);
-					indexes = _mm256_insert_epi8(indexes, 6, 1);
-					indexes = _mm256_insert_epi8(indexes, 7, 0);
+					indexes = _mm256_insert_epi64(indexes, 0b0000000100000010000000110000010000000101000001100000011100001000, 0);
 					net = _mm256_extract_epi64(_mm256_shuffle_epi8(value, indexes), 0);
 					return;
 				}
