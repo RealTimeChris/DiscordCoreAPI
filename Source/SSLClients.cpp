@@ -185,7 +185,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	bool SSLClient::connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorsNew,
+	bool SSLClient::connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorsNew,
 		bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
@@ -207,7 +207,7 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_STREAM;
 		hints->ai_protocol = IPPROTO_TCP;
 
-		if (getaddrinfo(addressString.c_str(), portNew.c_str(), hints, address)) {
+		if (getaddrinfo(addressString.c_str(), std::to_string(portNew).c_str(), hints, address)) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("SSLClient::connect::getaddrinfo(), to: " + baseUrl) << endl;
 			}
@@ -552,15 +552,15 @@ namespace DiscordCoreInternal {
 		this->streamTypeReal = streamTypeNew;
 	}
 
-	bool DatagramSocketClient::connect(const std::string& baseUrlNew, const std::string& portNew, bool haveWeGottenSignaled) noexcept {
+	bool DatagramSocketClient::connect(const std::string& baseUrlNew, uint16_t portNew, bool haveWeGottenSignaled) noexcept {
 		this->baseUrl = baseUrlNew;
-		this->port = stoi(portNew);
+		this->port = portNew;
 		addrinfoWrapper hints{};
 		hints->ai_family = AF_INET;
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 
-		if (getaddrinfo(baseUrlNew.c_str(), portNew.c_str(), hints, this->address)) {
+		if (getaddrinfo(baseUrlNew.c_str(), std::to_string(portNew).c_str(), hints, this->address)) {
 			if (this->doWePrintErrors) {
 				cout << reportError("DatagramSocketClient::connect::getaddrinfo(), to: " + baseUrlNew) << endl;
 			}

@@ -159,7 +159,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
 	  public:
-		virtual bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages,
+		virtual bool connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorMessages,
 			bool areWeAStandaloneSocket) noexcept = 0;
 
 		virtual bool areWeStillConnected() noexcept = 0;
@@ -203,7 +203,7 @@ namespace DiscordCoreInternal {
 	  public:
 		virtual void handleBuffer() noexcept = 0;
 
-		bool connect(const std::string& baseUrl, const std::string& portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
+		bool connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
 
 		static std::vector<SSLClient*> processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>>& shardMap) noexcept;
 
@@ -236,7 +236,7 @@ namespace DiscordCoreInternal {
 
 		DatagramSocketClient(DiscordCoreAPI::StreamType streamType, bool doWePrintErrors) noexcept;
 
-		bool connect(const std::string& baseUrlNew, const std::string& portNew, bool haveWeGottenSignaled) noexcept;
+		bool connect(const std::string& baseUrlNew, const uint16_t portNew, bool haveWeGottenSignaled) noexcept;
 
 		void writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept;
 

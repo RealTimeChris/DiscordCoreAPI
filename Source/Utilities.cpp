@@ -1014,11 +1014,11 @@ namespace DiscordCoreAPI {
 		this->config.connectionAddress = connectionAddressNew;
 	}
 
-	const std::string ConfigManager::getConnectionPort() const {
+	const uint16_t ConfigManager::getConnectionPort() const {
 		return this->config.connectionPort;
 	}
 
-	void ConfigManager::setConnectionPort(const std::string& connectionPortNew) {
+	void ConfigManager::setConnectionPort(const uint16_t connectionPortNew) {
 		this->config.connectionPort = connectionPortNew;
 	}
 

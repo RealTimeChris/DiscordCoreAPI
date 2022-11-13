@@ -675,8 +675,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll StreamInfo {
 		bool streamBotAudio{ false };///< Do we stream the audio coming from other bots?
 		std::string address{};///< The address to connect to.
-		std::string port{};///< The port to connect to.
 		StreamType type{};
+		uint16_t port{};///< The port to connect to.
 	};
 
 };
@@ -1021,9 +1021,9 @@ namespace DiscordCoreAPI {
 		UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
 		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
-		std::string connectionPort{};///< A potentially alternative connection port for the websocket.
 		LoggingOptions logOptions{};///< Options for the output/logging of the library.
 		CacheOptions cacheOptions{};///< Options for the cache of the library.
+		uint16_t connectionPort{};///< A potentially alternative connection port for the websocket.
 		std::string botToken{};///< Your bot's token.
 	};
 
@@ -1076,9 +1076,9 @@ namespace DiscordCoreAPI {
 
 		void setConnectionAddress(const std::string& connectionAddressNew);
 
-		const std::string getConnectionPort() const;
+		const uint16_t getConnectionPort() const;
 
-		void setConnectionPort(const std::string& connectionPortNew);
+		void setConnectionPort(const uint16_t connectionPortNew);
 
 		const std::vector<RepeatedFunctionData> getFunctionsToExecute() const;
 

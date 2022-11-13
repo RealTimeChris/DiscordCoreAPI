@@ -56,7 +56,7 @@ namespace DiscordCoreInternal {
 	  public:
 		WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, WebSocketType typeOfWebSocketNew);
 
-		bool connect(const std::string& baseUrl, const std::string& relativePath, const std::string& portNew, bool doWePrintErrorsNew,
+		bool connect(const std::string& baseUrl, const std::string& relativePath, const uint16_t portNew, bool doWePrintErrorsNew,
 			bool areWeAStandaloneSocketNew) noexcept;
 
 		void createHeader(std::string& outBuffer, WebSocketOpCode opCode) noexcept;

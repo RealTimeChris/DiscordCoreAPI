@@ -329,7 +329,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketCore::connect(const std::string& baseUrl, const std::string& relativePath, const std::string& portNew, bool doWePrintErrorsNew,
+	bool WebSocketCore::connect(const std::string& baseUrl, const std::string& relativePath, const uint16_t portNew, bool doWePrintErrorsNew,
 		bool areWeAStandaloneSocketNew) noexcept {
 		SSLClient::connect(baseUrl, portNew, doWePrintErrorsNew, areWeAStandaloneSocket);
 		DiscordCoreAPI::StopWatch stopWatch{ 5s };

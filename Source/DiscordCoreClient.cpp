@@ -293,8 +293,8 @@ namespace DiscordCoreAPI {
 		if (this->configManager.getConnectionAddress() == "") {
 			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
 		}
-		if (this->configManager.getConnectionPort() == "") {
-			this->configManager.setConnectionPort("443");
+		if (this->configManager.getConnectionPort() == 0) {
+			this->configManager.setConnectionPort(443);
 		}
 		this->connectionStopWatch.resetTimer();
 		for (uint32_t x = 0; x < this->configManager.getTotalShardCount(); ++x) {

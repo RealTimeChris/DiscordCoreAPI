@@ -625,7 +625,7 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceConnectionState::Initializing_WebSocket: {
 				this->currentState.store(DiscordCoreInternal::WebSocketState::Upgrading);
-				if (!WebSocketCore::connect(this->baseUrl, "/?v=4", "443", this->configManager->doWePrintWebSocketErrorMessages(), false)) {
+				if (!WebSocketCore::connect(this->baseUrl, "/?v=4", 443, this->configManager->doWePrintWebSocketErrorMessages(), false)) {
 					this->currentReconnectTries++;
 					this->onClosed();
 					return;
@@ -775,7 +775,7 @@ namespace DiscordCoreAPI {
 
 	bool VoiceConnection::voiceConnect() noexcept {
 		if (!DatagramSocketClient::areWeStillConnected()) {
-			if (!DatagramSocketClient::connect(this->voiceIp, std::to_string(this->port), false)) {
+			if (!DatagramSocketClient::connect(this->voiceIp, this->port, false)) {
 				return false;
 			} else {
 				uint8_t packet[74]{};
