@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 
 		VoiceUser& operator=(VoiceUser&&) noexcept;
 
-		VoiceUser(VoiceUser&&) noexcept;
+		VoiceUser(VoiceUser&&) noexcept = default;
 
 		VoiceUser& operator=(const VoiceUser&) noexcept = delete;
 
@@ -60,9 +60,9 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::OpusDecoderWrapper& getDecoder();
 
-		void insertPayload(std::basic_string<uint8_t>&&);
+		void insertPayload(std::u8string&&);
 
-		std::basic_string<uint8_t> extractPayload();
+		std::u8string extractPayload();
 
 		void setEndingStatus(bool);
 
@@ -73,7 +73,7 @@ namespace DiscordCoreAPI {
 		Snowflake getUserId();
 
 	  protected:
-		UnboundedMessageBlock<std::basic_string<uint8_t>> payloads{};
+		UnboundedMessageBlock<std::u8string> payloads{};
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
 		std::atomic_bool wereWeEnding{ false };
 		std::atomic_int8_t* voiceUserCount{};
@@ -88,16 +88,27 @@ namespace DiscordCoreAPI {
 
 		RTPPacketEncrypter(uint32_t ssrcNew, const std::vector<uint8_t>& keysNew) noexcept;
 
-		std::basic_string_view<uint8_t> encryptPacket(const AudioFrameData& audioData) noexcept;
+		std::basic_string_view<char8_t> encryptPacket(const AudioFrameData& audioData) noexcept;
 
 	  protected:
 		std::vector<uint8_t> keys{};
-		std::vector<uint8_t> data{};
+		std::vector<char8_t> data{};
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };
 		uint32_t timeStamp{};
 		uint16_t sequence{};
 		uint32_t ssrc{};
+	};
+
+	/// For the varuious WebSocket messages. \brief For the varuious WebSocket messages.
+	enum class OnMessageReceivedTypes {
+		Ready = 2,///< Complete the websocket handshake.
+		Session_Description = 4,///< Describe the session.
+		Speaking = 5,///< Indicate which users are speaking.
+		Heartbeat_ACK = 6,///< Sent to acknowledge a received client heartbeat.
+		Hello = 8,///< Time to wait between sending heartbeats in milliseconds.
+		Resumed = 9,///< Acknowledge a successful session resume.
+		Client_Disconnect = 13///< A client has disconnected from the voice channel.
 	};
 
 	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
@@ -175,7 +186,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		std::vector<opus_int16> downSampledVector{};
-		std::vector<uint8_t> decryptedDataString{};
+		std::vector<char8_t> decryptedDataString{};
 		std::vector<opus_int32> upSampledVector{};
 		std::atomic_bool canWeSendAudio{ true };
 		std::atomic_bool areWePlaying{ false };
@@ -196,9 +207,9 @@ namespace DiscordCoreAPI {
 		uint32_t audioSSRC{};
 		uint64_t port{};
 
-		void parseIncomingVoiceData(const std::basic_string_view<uint8_t> rawDataBufferNew) noexcept;
+		void parseIncomingVoiceData(const std::basic_string_view<char8_t> rawDataBufferNew) noexcept;
 
-		void sendVoiceData(const std::basic_string_view<uint8_t> responseData) noexcept;
+		void sendVoiceData(const std::basic_string_view<char8_t> responseData) noexcept;
 
 		void connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept;
 

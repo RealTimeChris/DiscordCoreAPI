@@ -186,7 +186,7 @@ namespace DiscordCoreInternal {
 
 		virtual ProcessIOResult writeData(std::string_view dataToWrite, bool priority) noexcept = 0;
 
-		virtual std::string_view getInputBuffer() noexcept = 0;
+		virtual std::basic_string_view<char8_t> getInputBuffer() noexcept = 0;
 
 		virtual int64_t getBytesRead() noexcept = 0;
 
@@ -194,8 +194,8 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) - 1 };
-		RingBuffer<char, 32> outputBuffer{};
-		RingBuffer<char, 128> inputBuffer{};
+		RingBuffer<char8_t, 32> outputBuffer{};
+		RingBuffer<char8_t, 128> inputBuffer{};
 		int64_t bytesRead{ 0 };
 	};
 
@@ -209,9 +209,9 @@ namespace DiscordCoreInternal {
 
 		ProcessIOResult writeData(std::string_view dataToWrite, bool priority) noexcept;
 
-		ProcessIOResult processIO(int32_t msToWait) noexcept;
+		std::basic_string_view<char8_t> getInputBuffer() noexcept;
 
-		std::string_view getInputBuffer() noexcept;
+		ProcessIOResult processIO(int32_t msToWait) noexcept;
 
 		bool areWeStillConnected() noexcept;
 
@@ -238,11 +238,11 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrlNew, const uint16_t portNew, bool haveWeGottenSignaled) noexcept;
 
-		void writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept;
+		void writeData(std::basic_string_view<char8_t> dataToWrite) noexcept;
 
-		std::basic_string_view<uint8_t> getInputBuffer() noexcept;
+		std::basic_string_view<char8_t> getInputBuffer() noexcept;
 
-		int64_t sendUdpData(std::basic_string<uint8_t>&) noexcept;
+		int64_t sendUdpData(std::u8string&) noexcept;
 
 		ProcessIOResult processIO(ProcessIOType type) noexcept;
 
@@ -263,8 +263,8 @@ namespace DiscordCoreInternal {
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) };
 		DiscordCoreAPI::StreamType streamTypeReal{};
-		RingBuffer<uint8_t, 16> outputBuffer{};
-		RingBuffer<uint8_t, 16> inputBuffer{};
+		RingBuffer<char8_t, 16> outputBuffer{};
+		RingBuffer<char8_t, 16> inputBuffer{};
 		addrinfoWrapper address{};
 		bool doWePrintErrors{};
 		SOCKETWrapper socket{};

@@ -221,7 +221,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		constexpr char optionValue{ true };
+		const char optionValue{ true };
 		if (setsockopt(this->socket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("SSLClient::connect::setsockopt(), to: " + baseUrl) << endl;
@@ -437,11 +437,11 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::No_Error;
 	}
 
-	std::string_view SSLClient::getInputBuffer() noexcept {
-		std::string_view string{};
+	std::basic_string_view<char8_t> SSLClient::getInputBuffer() noexcept {
+		std::basic_string_view<char8_t> string{};
 		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
 			auto size = this->inputBuffer.getCurrentTail()->getUsedSpace();
-			string = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), size };
+			string = std::basic_string_view<char8_t>{ this->inputBuffer.getCurrentTail()->getCurrentTail(), size };
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
@@ -592,7 +592,7 @@ namespace DiscordCoreInternal {
 		} else if (this->streamTypeReal == DiscordCoreAPI::StreamType::Client) {
 			if (!haveWeGottenSignaled) {
 				uint8_t chars[]{ "connecting" };
-				std::basic_string<uint8_t> connectionString{ reinterpret_cast<uint8_t*>(chars) };
+				std::u8string connectionString{ reinterpret_cast<char8_t*>(chars), std::size(chars) };
 				int32_t result{};
 				result = sendto(this->socket, reinterpret_cast<char*>(connectionString.data()), connectionString.size(), 0, this->address->ai_addr,
 					this->address->ai_addrlen);
@@ -681,7 +681,7 @@ namespace DiscordCoreInternal {
 		return result;
 	}
 
-	void DatagramSocketClient::writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept {
+	void DatagramSocketClient::writeData(std::basic_string_view<char8_t> dataToWrite) noexcept {
 		if (this->areWeStillConnected()) {
 			if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
 				uint64_t remainingBytes{ dataToWrite.size() };
@@ -709,11 +709,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::basic_string_view<uint8_t> DatagramSocketClient::getInputBuffer() noexcept {
-		std::basic_string_view<uint8_t> string{};
+	std::basic_string_view<char8_t> DatagramSocketClient::getInputBuffer() noexcept {
+		std::basic_string_view<char8_t> string{};
 		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
 			auto size = this->inputBuffer.getCurrentTail()->getUsedSpace();
-			string = std::basic_string_view<uint8_t>{ this->inputBuffer.getCurrentTail()->getCurrentTail(), size };
+			string = std::basic_string_view<char8_t>{ this->inputBuffer.getCurrentTail()->getCurrentTail(), size };
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
@@ -780,7 +780,7 @@ namespace DiscordCoreInternal {
 		return returnValue;
 	}
 
-	int64_t DatagramSocketClient::sendUdpData(std::basic_string<uint8_t>& data) noexcept {
+	int64_t DatagramSocketClient::sendUdpData(std::u8string& data) noexcept {
 		return sendto(this->socket, reinterpret_cast<char*>(data.data()), data.size(), 0, this->address->ai_addr, this->address->ai_addrlen);
 	}
 

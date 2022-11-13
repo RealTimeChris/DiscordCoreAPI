@@ -100,26 +100,27 @@ target_compile_features(
 target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
 	"$<$<STREQUAL:${VCPKG_TARGET_TRIPLET},x64-uwp>:UWP>"
-	"$<$<PLATFORM_ID:Windows>:SIMDJSON_USING_WINDOWS_DYNAMIC_LIBRARY=1>"
+	"$<$<CXX_COMPILER_ID:MSVC>:SIMDJSON_USING_WINDOWS_DYNAMIC_LIBRARY=1>"
 )
 
 target_compile_options(
-	"${LIB_NAME}" PRIVATE
+	"${LIB_NAME}" PUBLIC
 	"$<$<NOT:$<PLATFORM_ID:Linux>>:/bigobj>"
-	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:$ENV{EnableASAN},true>:/fsanitize=address>>"
-	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:$ENV{EnableASAN},true>:/Zi>>"
-	"$<$<PLATFORM_ID:Windows>:/MP>"
-	"$<$<PLATFORM_ID:Linux>:$<$<STREQUAL:$ENV{EnableASAN},true>:-fsanitize=address>>"
-	"$<$<PLATFORM_ID:Linux>:-fpermissive>"
-	"$<$<PLATFORM_ID:Linux>:-mavx2>"
-	"$<$<PLATFORM_ID:Linux>:-mavx>"
+	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:$ENV{EnableASAN},true>:/fsanitize=address>>"
+	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:$ENV{EnableASAN},true>:/Zi>>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/MP>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>"
+	"$<$<CXX_COMPILER_ID:GNU>:$<$<STREQUAL:$ENV{EnableASAN},true>:-fsanitize=address>>"
+	"$<$<CXX_COMPILER_ID:GNU>:-fpermissive>"
+	"$<$<CXX_COMPILER_ID:GNU>:-mavx2>"
+	"$<$<CXX_COMPILER_ID:GNU>:-mavx>"
 )
 
 target_link_options(
 	"${LIB_NAME}" PUBLIC
-	"$<$<PLATFORM_ID:Windows>:$<$<STREQUAL:$ENV{EnableASAN},true>:/Debug>>"
-	"$<$<PLATFORM_ID:Windows>:/DEBUG>"
-	"$<$<PLATFORM_ID:Linux>:$<$<STREQUAL:$ENV{EnableASAN},true>:-fsanitize=address>>"
+	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:$ENV{EnableASAN},true>:/Debug>>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/DEBUG>"
+	"$<$<CXX_COMPILER_ID:GNU>:$<$<STREQUAL:$ENV{EnableASAN},true>:-fsanitize=address>>"
 )
 
 set(CONFIG_FILE_NAME "${PROJECT_NAME}Config.cmake")

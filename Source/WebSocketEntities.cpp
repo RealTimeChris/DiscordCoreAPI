@@ -36,13 +36,13 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	constexpr uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
-	constexpr uint8_t webSocketPayloadLengthMagicLarge{ 126u };
-	constexpr uint8_t webSocketPayloadLengthMagicHuge{ 127u };
-	constexpr uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
-	constexpr uint8_t webSocketMaxPayloadLengthSmall{ 125u };
-	constexpr uint8_t webSocketFinishBit{ (1u << 7u) };
-	constexpr uint8_t webSocketMaskBit{ (1u << 7u) };
+	const uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
+	const uint8_t webSocketPayloadLengthMagicLarge{ 126u };
+	const uint8_t webSocketPayloadLengthMagicHuge{ 127u };
+	const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
+	const uint8_t webSocketMaxPayloadLengthSmall{ 125u };
+	const uint8_t webSocketFinishBit{ (1u << 7u) };
+	const uint8_t webSocketMaskBit{ (1u << 7u) };
 
 	EventConverter::EventConverter(std::string newEvent) {
 		this->eventValue = newEvent;
@@ -205,9 +205,9 @@ namespace DiscordCoreInternal {
 		outBuffer.insert(outBuffer.begin() + 5 + indexCount, 0);
 	}
 
-	void WebSocketCore::parseConnectionHeaders(std::string_view stringNew) noexcept {
+	void WebSocketCore::parseConnectionHeaders(std::basic_string_view<char8_t> stringNew) noexcept {
 		if (this->areWeStillConnected() && this->currentState.load() == WebSocketState::Upgrading) {
-			auto theFindValue = stringNew.find("\r\n\r\n");
+			auto theFindValue = stringNew.find(u8"\r\n\r\n");
 			if (theFindValue != std::string::npos) {
 				this->currentMessage.clear();
 				this->currentState.store(WebSocketState::Collecting_Hello);
@@ -340,7 +340,7 @@ namespace DiscordCoreInternal {
 		size_t readOrWrittenBytes{};
 		this->writeData(sendString, true);
 
-		std::string_view buffer{};
+		std::basic_string_view<char8_t> buffer{};
 		do {
 			if (stopWatch.hasTimePassed()) {
 				return false;

@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 					__m256i value{};
 					value = _mm256_insert_epi16(value, net, 0);
 					__m256i indexes{};
-					indexes = _mm256_insert_epi16(indexes, 0b0000000000000001, 0);
+					indexes = _mm256_insert_epi16(indexes, 0x01, 0);
 					net = _mm256_extract_epi16(_mm256_shuffle_epi8(value, indexes), 0);
 					return;
 				}
@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
 					__m256i value{};
 					value = _mm256_insert_epi32(value, net, 0);
 					__m256i indexes{};
-					indexes = _mm256_insert_epi32(indexes, 0b000000010000001000000011, 0);
+					indexes = _mm256_insert_epi32(indexes, 0x10203, 0);
 					net = _mm256_extract_epi32(_mm256_shuffle_epi8(value, indexes), 0);
 					return;
 				}
@@ -197,7 +197,7 @@ namespace DiscordCoreAPI {
 					__m256i value{};
 					value = _mm256_insert_epi64(value, net, 0);
 					__m256i indexes{};
-					indexes = _mm256_insert_epi64(indexes, 0b0000000100000010000000110000010000000101000001100000011100001000, 0);
+					indexes = _mm256_insert_epi64(indexes, 0x102030405060708, 0);
 					net = _mm256_extract_epi64(_mm256_shuffle_epi8(value, indexes), 0);
 					return;
 				}
@@ -1304,7 +1304,7 @@ namespace DiscordCoreAPI {
 	/// Represents a single frame of audio data. \brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
-		std::basic_string<uint8_t> data{};///< The audio data.
+		std::u8string data{};///< The audio data.
 		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
 		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
 
@@ -2110,7 +2110,7 @@ namespace DiscordCoreInternal {
 
 		char operator[](uint64_t);
 
-		void writeData(const char*, uint64_t);
+		void writeData(const char8_t* ptr, uint64_t size);
 
 		std::string::iterator begin();
 

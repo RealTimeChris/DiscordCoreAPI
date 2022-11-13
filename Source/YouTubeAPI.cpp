@@ -257,7 +257,7 @@ namespace DiscordCoreInternal {
 			int64_t bytesToRead{ static_cast<int64_t>(this->maxBufferSize) };
 			int64_t bytesSubmittedPrevious{ 0 };
 			int64_t bytesReadTotal{ 0 };
-			constexpr uint8_t maxReruns{ 200 };
+			const uint8_t maxReruns{ 200 };
 			uint8_t currentReruns{ 0 };
 			uint32_t counter{ 0 };
 			uint32_t headerSize{ 0 };
@@ -318,7 +318,7 @@ namespace DiscordCoreInternal {
 						if (!stopToken.stop_requested()) {
 							if (streamSocket->areWeStillConnected()) {
 								bytesReadTotal = streamSocket->getBytesRead() - headerSize;
-								std::string streamBufferReal = static_cast<std::string>(streamSocket->getInputBuffer());
+								std::u8string streamBufferReal = static_cast<std::u8string>(streamSocket->getInputBuffer());
 								headerSize = static_cast<int32_t>(streamBufferReal.size());
 							}
 						}
@@ -338,7 +338,7 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						std::string streamBufferReal = static_cast<std::string>(streamSocket->getInputBuffer());
+						std::u8string streamBufferReal = static_cast<std::u8string>(streamSocket->getInputBuffer());
 						if (streamBufferReal.size() > 0) {
 							currentString.insert(currentString.end(), streamBufferReal.data(), streamBufferReal.data() + streamBufferReal.size());
 							std::string submissionString{};
@@ -362,7 +362,7 @@ namespace DiscordCoreInternal {
 							this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
 							return;
 						}
-						std::string streamBufferReal = static_cast<std::string>(streamSocket->getInputBuffer());
+						std::u8string streamBufferReal = static_cast<std::u8string>(streamSocket->getInputBuffer());
 
 						if (streamBufferReal.size() > 0) {
 							currentString.insert(currentString.end(), streamBufferReal.data(), streamBufferReal.data() + streamBufferReal.size());

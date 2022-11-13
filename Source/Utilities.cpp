@@ -823,7 +823,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Jsonifier::appendNewFloatExt(const double FloatValue) {
-		char newBuffer[9]{ static_cast<unsigned char>(EtfType::New_Float_Ext) };
+		char newBuffer[9]{ static_cast<uint8_t>(EtfType::New_Float_Ext) };
 		const void* punner{ &FloatValue };
 		storeBits(newBuffer + 1, *static_cast<const uint64_t*>(punner));
 		this->writeString(newBuffer, std::size(newBuffer));
@@ -1896,7 +1896,7 @@ namespace DiscordCoreInternal {
 		return this->string01[index];
 	}
 
-	void StringBuffer::writeData(const char* ptr, uint64_t size) {
+	void StringBuffer::writeData(const char8_t* ptr, uint64_t size) {
 		if (this->sizeValue + size > this->string01.size()) {
 			this->string01.resize(this->string01.size() + size);
 		}
