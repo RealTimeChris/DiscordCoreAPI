@@ -43,32 +43,7 @@ namespace DiscordCoreAPI {
 		this->port = getUint64(jsonObjectData, "port");
 	}
 
-	MovingAverager::MovingAverager(size_t periodCountNew) noexcept : periodCount{ periodCountNew } {
-	}
-
-	void MovingAverager::addValue(int64_t value) {
-		std::unique_lock lock{ this->accessMutex };
-		this->values.emplace_back(value);
-		if (this->values.size() > this->periodCount) {
-			this->values.pop_front();
-		}
-	}
-
-	int64_t MovingAverager::collectAverage() {
-		std::unique_lock lock{ this->accessMutex };
-		if (this->values.size() == 0) {
-			return 0;
-		}
-		int64_t returnValue{};
-		for (auto& value: this->values) {
-			returnValue += value;
-		}
-		returnValue /= this->values.size();
-		return returnValue;
-	}
-
-	VoiceUser::VoiceUser(MovingAverager* sleepableTimeNew, std::atomic_int8_t* voiceUsersNew) noexcept {
-		this->sleepableTime = sleepableTimeNew;
+	VoiceUser::VoiceUser(std::atomic_int8_t* voiceUsersNew) noexcept {
 		this->voiceUserCount = voiceUsersNew;
 	}
 
@@ -76,7 +51,6 @@ namespace DiscordCoreAPI {
 		this->wereWeEnding.store(data.wereWeEnding.load());
 		this->voiceUserCount = data.voiceUserCount;
 		this->payloads = std::move(data.payloads);
-		this->sleepableTime = data.sleepableTime;
 		this->decoder = std::move(data.decoder);
 		this->userId = data.userId;
 		return *this;
@@ -99,9 +73,6 @@ namespace DiscordCoreAPI {
 		std::basic_string<uint8_t> value{};
 		if (userCount > 0) {
 			int64_t maxSleepTime{ 20000000 / 2 / userCount };
-			if (this->sleepableTime->collectAverage() / userCount > 0) {
-				maxSleepTime = this->sleepableTime->collectAverage() / userCount;
-			}
 			StopWatch stopWatch{ Nanoseconds{ maxSleepTime } };
 			stopWatch.resetTimer();
 			while (!this->payloads.tryReceive(value) && !this->wereWeEnding.load()) {
@@ -307,7 +278,7 @@ namespace DiscordCoreAPI {
 			}
 			case 5: {
 				const uint32_t ssrc = getUint32(value["d"], "ssrc");
-				VoiceUser user{ &this->sleepableTime, &this->voiceUserCount };
+				VoiceUser user{ &this->voiceUserCount };
 				user.setUserId(stoull(getString(value["d"], "user_id")));
 				std::unique_lock lock{ this->voiceUserMutex };
 				if (!Users::getCachedUser({ .userId = user.getUserId() }).getFlagValue(UserFlags::Bot) ||
