@@ -214,10 +214,10 @@ namespace DiscordCoreAPI {
 		MovingAverager sleepableTime{ 12 };
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
+		OpusEncoderWrapper encoder{};
 		std::mutex voiceUserMutex{};
 		AudioFrameData audioData{};
 		std::string externalIp{};
-		AudioEncoder encoder{};
 		std::string voiceIp{};
 		std::string baseUrl{};
 		uint32_t audioSSRC{};

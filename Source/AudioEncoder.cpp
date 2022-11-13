@@ -47,7 +47,21 @@ namespace DiscordCoreAPI {
 		*this = std::move(other);
 	}
 
-	OpusEncoderWrapper::OpusEncoderWrapper() noexcept {
+	OpusEncoderWrapper::OpusEncoderWrapper() {
+		int32_t error{};
+		this->ptr.reset(opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error));
+		auto result = opus_encoder_ctl(this->ptr.get(), OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
+		if (result != OPUS_OK) {
+			throw DCAException{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) } };
+		}
+		result = opus_encoder_ctl(this->ptr.get(), OPUS_SET_APPLICATION(OPUS_APPLICATION_AUDIO));
+		if (result != OPUS_OK) {
+			throw DCAException{ "Failed to set the Opus application type, Reason: " + std::string{ opus_strerror(result) } };
+		}
+		result = opus_encoder_ctl(this->ptr.get(), OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
+		if (result != OPUS_OK) {
+			throw DCAException{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) } };
+		}
 	}
 
 	OpusEncoderWrapper::operator OpusEncoder*() noexcept {
@@ -59,36 +73,7 @@ namespace DiscordCoreAPI {
 		this->ptr.reset(other);
 	}
 
-	AudioEncoder::AudioEncoder() {
-		int32_t error{};
-		this->encoder = opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error);
-		auto result = opus_encoder_ctl(this->encoder, OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
-		if (result != OPUS_OK) {
-			throw DCAException{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) } };
-		}
-		result = opus_encoder_ctl(this->encoder, OPUS_SET_APPLICATION(OPUS_APPLICATION_AUDIO));
-		if (result != OPUS_OK) {
-			throw DCAException{ "Failed to set the Opus application type, Reason: " + std::string{ opus_strerror(result) } };
-		}
-		result = opus_encoder_ctl(this->encoder, OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
-		if (result != OPUS_OK) {
-			throw DCAException{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) } };
-		}
-	}
-
-	std::basic_string_view<uint8_t> AudioEncoder::encodeSingleAudioFrame(std::basic_string_view<opus_int16> inputFrame) {
-		if (this->encodedData.size() == 0) {
-			this->encodedData.resize(this->maxBufferSize);
-		}
-		int32_t count =
-			opus_encode(this->encoder, inputFrame.data(), static_cast<int32_t>(inputFrame.size() / 2), this->encodedData.data(), this->maxBufferSize);
-		if (count <= 0) {
-			return {};
-		}
-		return std::basic_string_view{ this->encodedData.data(), static_cast<size_t>(count) };
-	}
-
-	AudioFrameData AudioEncoder::encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame) {
+	AudioFrameData OpusEncoderWrapper::encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame) {
 		std::vector<opus_int16> newVector{};
 		for (uint64_t x = 0; x < inputFrame.data.size() / 2; ++x) {
 			opus_int16 newValue{};
@@ -99,7 +84,7 @@ namespace DiscordCoreAPI {
 		if (this->encodedData.size() == 0) {
 			this->encodedData.resize(this->maxBufferSize);
 		}
-		int32_t count = opus_encode(this->encoder, newVector.data(), inputFrame.sampleCount, this->encodedData.data(), this->maxBufferSize);
+		int32_t count = opus_encode(this->ptr.get(), newVector.data(), inputFrame.sampleCount, this->encodedData.data(), this->maxBufferSize);
 		if (count <= 0) {
 			return {};
 		}

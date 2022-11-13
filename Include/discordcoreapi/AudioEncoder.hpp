@@ -44,27 +44,17 @@ namespace DiscordCoreAPI {
 
 		OpusEncoderWrapper(OpusEncoder*) noexcept;
 
-		OpusEncoderWrapper() noexcept;
+		OpusEncoderWrapper();
 
 		operator OpusEncoder*() noexcept;
-
-	  protected:
-		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> ptr{ nullptr, OpusEncoderDeleter{} };
-	};
-
-	class DiscordCoreAPI_Dll AudioEncoder {
-	  public:
-		AudioEncoder();
-
-		std::basic_string_view<uint8_t> encodeSingleAudioFrame(std::basic_string_view<opus_int16> inputFrame);
 
 		DiscordCoreAPI::AudioFrameData encodeSingleAudioFrame(DiscordCoreAPI::AudioFrameData& inputFrame);
 
 	  protected:
+		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> ptr{ nullptr, OpusEncoderDeleter{} };
 		const int32_t maxBufferSize{ 1276 };
 		std::vector<uint8_t> encodedData{};
 		const int32_t sampleRate{ 48000 };
-		OpusEncoderWrapper encoder{};
 		const int32_t nChannels{ 2 };
 	};
 
