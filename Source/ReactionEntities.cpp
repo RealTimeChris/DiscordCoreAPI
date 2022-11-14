@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 		this->me = getBool(jsonObjectData, "me");
 
 		simdjson::ondemand::value object{};
-		if (jsonObjectData["emoji"].get(object) == simdjson::error_code::SUCCESS) {
+		if (getObject(object, "emoji", jsonObjectData)) {
 			this->emoji = EmojiData{ object };
 		}
 
@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 	ReactionVector::ReactionVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
-			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
+			if (getArray(arrayValue, jsonObjectData)) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					Reaction newData{ value.value() };
 					this->reactions.emplace_back(std::move(newData));

@@ -46,22 +46,21 @@ namespace DiscordCoreAPI {
 		this->position = getUint32(jsonObjectData, "position");
 
 		simdjson::ondemand::array arrayValue{};
-		if (jsonObjectData["available_tags"].get(arrayValue) == simdjson::error_code::SUCCESS) {
+		if (getArray(arrayValue, "available_tags", jsonObjectData)) {
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ForumTagData newData{ value.value() };
 				this->availableTags.emplace_back(std::move(newData));
 			}
 		}
 
-		if (jsonObjectData["permission_overwrites"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			this->permissionOverwrites.clear();
+		if (getArray(arrayValue, "permission_overwrites", jsonObjectData)) {
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				OverWriteData dataNew{ value.value() };
 				this->permissionOverwrites.emplace_back(std::move(dataNew));
 			}
 		}
 
-		if (jsonObjectData["applied_tags"].get(arrayValue) == simdjson::error_code::SUCCESS) {
+		if (getArray(arrayValue, "applied_tags", jsonObjectData)) {
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->appliedTags.emplace_back(strtoull(value.value().get_string().take_value()));
 			}
@@ -83,7 +82,7 @@ namespace DiscordCoreAPI {
 
 		this->rateLimitPerUser = getUint32(jsonObjectData, "rate_limit_per_user");
 
-		if (jsonObjectData["recipients"].get(arrayValue) == simdjson::error_code::SUCCESS) {
+		if (getArray(arrayValue, "recipients", jsonObjectData)) {
 			this->recipients.clear();
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				UserData dataNew{ value.value() };
@@ -110,22 +109,22 @@ namespace DiscordCoreAPI {
 		this->memberCount = getUint32(jsonObjectData, "member_count");
 
 		simdjson::ondemand::value object{};
-		if (jsonObjectData["thread_metadata"].get(object) == simdjson::error_code::SUCCESS) {
+		if (getObject(object, "thread_metadata", jsonObjectData)) {
 			this->threadMetadata = ThreadMetadataData{ object };
 		}
 
-		if (jsonObjectData["default_reaction_emoji"].get(object) == simdjson::error_code::SUCCESS) {
+		if (getObject(object, "default_reaction_emoji", jsonObjectData)) {
 			this->defaultReactionEmoji = DefaultReactionData{ object };
 		}
 
-		if (jsonObjectData["member"].get(object) == simdjson::error_code::SUCCESS) {
+		if (getObject(object, "member", jsonObjectData)) {
 			this->member = ThreadMemberData{ object };
 		}
 	}
 
 	ChannelVector::ChannelVector(simdjson::ondemand::value jsonObjectData) {
 		simdjson::ondemand::array arrayValue{};
-		if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
+		if (getArray(arrayValue, jsonObjectData)) {
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				Channel newData{ value.value() };
 				this->channels.emplace_back(std::move(newData));

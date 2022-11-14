@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 	RoleVector::RoleVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
-			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
+			if (getArray(arrayValue, jsonObjectData)) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					Role newData{ value.value() };
 					this->roles.emplace_back(std::move(newData));

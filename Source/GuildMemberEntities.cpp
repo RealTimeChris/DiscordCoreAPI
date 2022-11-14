@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 	GuildMemberVector::GuildMemberVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
-			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
+			if (getArray(arrayValue, jsonObjectData)) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildMember newData{ value.value() };
 					this->guildMembers.emplace_back(std::move(newData));
@@ -118,7 +118,7 @@ namespace DiscordCoreAPI {
 		this->guildId = getId(jsonObjectData, "guild_id");
 
 		simdjson::ondemand::array arrayValue{};
-		if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
+		if (getArray(arrayValue, "roles", jsonObjectData)) {
 			this->roles.clear();
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				this->roles.emplace_back(getId(value.value()));
@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 		this->permissions = getString(jsonObjectData, "permissions");
 
 		simdjson::ondemand::value object{};
-		if (jsonObjectData["user"].get(object) == simdjson::error_code::SUCCESS) {
+		if (getObject(object, "user", jsonObjectData)) {
 			UserData user{ object };
 			this->id = user.id;
 			Users::insertUser(std::move(user));

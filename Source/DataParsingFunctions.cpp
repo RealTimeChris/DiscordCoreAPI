@@ -151,6 +151,30 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	bool getObject(simdjson::ondemand::value& object, const char* key, simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData[key].get(object) == simdjson::error_code::SUCCESS) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	bool getArray(simdjson::ondemand::array& array, const char* key, simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData[key].get(array) == simdjson::error_code::SUCCESS) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	bool getArray(simdjson::ondemand::array& array, simdjson::ondemand::value jsonObjectData) {
+		if (jsonObjectData.get(array) == simdjson::error_code::SUCCESS) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	std::string getString(ObjectReturnData jsonData, const char* key) {
 		std::string_view value{};
 		if (jsonData.didItSucceed && jsonData.object[key].get(value) == simdjson::error_code::SUCCESS) {

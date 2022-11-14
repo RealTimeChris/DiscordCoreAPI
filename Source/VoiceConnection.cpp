@@ -124,8 +124,8 @@ namespace DiscordCoreAPI {
 			for (uint8_t x = 0; x < headerSize; ++x) {
 				this->data[x] = header[x];
 			}
-			if (crypto_secretbox_easy(reinterpret_cast<uint8_t*>(this->data.data()) + headerSize, reinterpret_cast<const uint8_t*>(audioData.data.data()), audioData.data.size(), nonceForLibSodium,
-					this->keys.data()) != 0) {
+			if (crypto_secretbox_easy(reinterpret_cast<uint8_t*>(this->data.data()) + headerSize,
+					reinterpret_cast<const uint8_t*>(audioData.data.data()), audioData.data.size(), nonceForLibSodium, this->keys.data()) != 0) {
 				return {};
 			}
 			return std::basic_string_view<char8_t>{ this->data.data(), numOfBytes };
@@ -237,7 +237,7 @@ namespace DiscordCoreAPI {
 			this->heartBeatStopWatch.resetTimer();
 		}
 	}
-	
+
 	bool VoiceConnection::onMessageReceived(const std::string_view data) noexcept {
 		std::string string{ data };
 		string.reserve(string.size() + simdjson::SIMDJSON_PADDING);
@@ -839,19 +839,22 @@ namespace DiscordCoreAPI {
 		WebSocketCore::outputBuffer.clear();
 		WebSocketCore::inputBuffer.clear();
 		WebSocketCore::socket = SOCKET_ERROR;
+		if (this->streamTypeReal == StreamType::Server) {
+			this->haveWeGottenSignaled = false;
+		}
 		if (this->taskThread01) {
 			this->taskThread01->request_stop();
 			if (this->taskThread01->joinable()) {
 				this->taskThread01->join();
-				this->taskThread01.reset(nullptr);
 			}
+			this->taskThread01.reset(nullptr);
 		}
 		if (this->taskThread02) {
 			this->taskThread02->request_stop();
 			if (this->taskThread02->joinable()) {
 				this->taskThread02->join();
-				this->taskThread02.reset(nullptr);
 			}
+			this->taskThread02.reset(nullptr);
 		}
 		if (this->streamSocket) {
 			this->streamSocket->disconnect();
@@ -916,8 +919,8 @@ namespace DiscordCoreAPI {
 					nonce[x] = payload[x];
 				}
 
-				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),reinterpret_cast<const uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
-						this->encryptionKey.data())) {
+				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
+						reinterpret_cast<const uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce, this->encryptionKey.data())) {
 					return;
 				}
 

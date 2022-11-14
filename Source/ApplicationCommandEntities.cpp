@@ -180,7 +180,7 @@ namespace DiscordCoreAPI {
 	ApplicationCommandVector::ApplicationCommandVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
-			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
+			if (getArray(arrayValue, jsonObjectData)) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					ApplicationCommand newData{ value.value() };
 					this->applicationCommands.emplace_back(std::move(newData));

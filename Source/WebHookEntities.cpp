@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 		this->channelId = getId(jsonObjectData, "channel_id");
 
 		simdjson::ondemand::value object{};
-		if (jsonObjectData["user"].get(object) == simdjson::error_code::SUCCESS) {
+		if (getObject(object, "user", jsonObjectData)) {
 			this->user = UserData{ object };
 		}
 
@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 	WebHookVector::WebHookVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
-			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
+			if (getArray(arrayValue, jsonObjectData)) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					WebHook newData{ value.value() };
 					this->webHooks.emplace_back(std::move(newData));

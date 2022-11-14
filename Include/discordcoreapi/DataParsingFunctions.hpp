@@ -71,6 +71,12 @@ namespace DiscordCoreAPI {
 
 	std::string getString(ObjectReturnData jsonData, const char* key);
 
+	bool getObject(simdjson::ondemand::value& object, const char* key, simdjson::ondemand::value jsonObjectData);
+
+	bool getArray(simdjson::ondemand::array& array, const char* key, simdjson::ondemand::value jsonObjectData);
+
+	bool getArray(simdjson::ondemand::array& array, simdjson::ondemand::value jsonObjectData);
+
 	std::string getString(simdjson::ondemand::value jsonData);
 
 	ObjectReturnData getObject(simdjson::ondemand::value jsonObjectData, const char* objectName);

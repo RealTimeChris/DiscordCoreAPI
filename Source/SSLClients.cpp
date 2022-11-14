@@ -67,6 +67,7 @@ namespace DiscordCoreInternal {
 	WSADataWrapper::WSADataWrapper() {
 		auto returnValue = WSAStartup(MAKEWORD(2, 2), this->ptr.get());
 		if (returnValue) {
+			reportError("WSADataWrapper::WSADataWrapper()");
 		}
 	}
 #endif
@@ -185,8 +186,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	bool SSLClient::connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorsNew,
-		bool areWeAStandaloneSocketNew) noexcept {
+	bool SSLClient::connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
 		std::string addressString{};
@@ -356,7 +356,7 @@ namespace DiscordCoreInternal {
 	ProcessIOResult SSLClient::writeData(std::string_view dataToWrite, bool priority) noexcept {
 		if (this->areWeStillConnected()) {
 			if (dataToWrite.size() > 0 && this->ssl) {
-				if (priority && dataToWrite.size() < static_cast<uint64_t>(16 * 1024)) {
+				if (priority && dataToWrite.size() < static_cast<uint64_t>(this->maxBufferSize)) {
 					this->outputBuffer.clear();
 					std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
 					this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
@@ -365,13 +365,13 @@ namespace DiscordCoreInternal {
 						return ProcessIOResult::Error;
 					}
 				} else {
-					if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
+					if (dataToWrite.size() > static_cast<uint64_t>(this->maxBufferSize)) {
 						uint64_t remainingBytes{ dataToWrite.size() };
 						uint64_t amountCollected{};
 						while (remainingBytes > 0) {
 							uint64_t amountToCollect{};
-							if (dataToWrite.size() >= static_cast<uint64_t>(1024 * 16)) {
-								amountToCollect = static_cast<uint64_t>(1024 * 16);
+							if (dataToWrite.size() >= static_cast<uint64_t>(this->maxBufferSize)) {
+								amountToCollect = static_cast<uint64_t>(this->maxBufferSize);
 							} else {
 								amountToCollect = dataToWrite.size();
 							}
@@ -683,13 +683,13 @@ namespace DiscordCoreInternal {
 
 	void DatagramSocketClient::writeData(std::basic_string_view<char8_t> dataToWrite) noexcept {
 		if (this->areWeStillConnected()) {
-			if (dataToWrite.size() > static_cast<uint64_t>(16 * 1024)) {
+			if (dataToWrite.size() > static_cast<uint64_t>(this->maxBufferSize)) {
 				uint64_t remainingBytes{ dataToWrite.size() };
 				uint64_t amountCollected{};
 				while (remainingBytes > 0) {
 					uint64_t amountToCollect{};
-					if (dataToWrite.size() >= static_cast<uint64_t>(1024 * 16)) {
-						amountToCollect = static_cast<uint64_t>(1024 * 16);
+					if (dataToWrite.size() >= static_cast<uint64_t>(this->maxBufferSize)) {
+						amountToCollect = static_cast<uint64_t>(this->maxBufferSize);
 					} else {
 						amountToCollect = dataToWrite.size();
 					}

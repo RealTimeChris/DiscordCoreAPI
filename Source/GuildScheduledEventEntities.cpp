@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		this->status = static_cast<GuildScheduledEventStatus>(getUint8(jsonObjectData, "status"));
 
 		simdjson::ondemand::value object{};
-		if (jsonObjectData["entity_metadata"].get(object) == simdjson::error_code::SUCCESS) {
+		if (getObject(object, "entity_metadata", jsonObjectData)) {
 			this->entityMetadata = GuildScheduledEventMetadata{ object };
 		}
 
@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 	GuildScheduledEventVector::GuildScheduledEventVector(simdjson::ondemand::value jsonObjectData) {
 		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
 			simdjson::ondemand::array arrayValue{};
-			if (jsonObjectData.get(arrayValue) == simdjson::error_code::SUCCESS) {
+			if (getArray(arrayValue, jsonObjectData)) {
 				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 					GuildScheduledEvent newData{ value.value() };
 					this->guildScheduledEvents.emplace_back(std::move(newData));

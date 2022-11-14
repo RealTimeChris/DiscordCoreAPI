@@ -28,7 +28,7 @@
 #include <libavcodec/avcodec.h>
 
 namespace DiscordCoreInternal {
-	
+
 	void OpusDecoderWrapper::OpusDecoderDeleter::operator()(OpusDecoder* other) noexcept {
 		if (other) {
 			opus_decoder_destroy(other);
