@@ -143,12 +143,30 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnectionBridge::parseOutGoingVoiceData() noexcept {
 		const std::basic_string_view<char8_t> buffer = this->getInputBuffer();
+		if (buffer == u8"heart") {
+			this->haveWeReceivedHeartBeatAck = true;
+			this->heartBeatStopWatchReceive.resetTimer();
+			return;
+		}
 		if (buffer.size() > 0) {
 			AudioFrameData frame{};
 			frame.data.insert(frame.data.begin(), buffer.begin(), buffer.end());
 			frame.sampleCount = buffer.size() / 2 / 2;
 			frame.type = AudioFrameType::RawPCM;
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
+		}
+		if (this->heartBeatStopWatchSend.hasTimePassed()) {
+			std::u8string heartBeatSend{ u8"heart" };
+			this->heartBeatStopWatchSend.resetTimer();
+			this->writeData(heartBeatSend);
+		}
+		if (this->heartBeatStopWatchReceive.hasTimePassed()) {
+			if (!this->haveWeReceivedHeartBeatAck) {
+				this->voiceConnectionPtr->haveWeGottenSignaled = false;
+				this->voiceConnectionPtr->reconnect();
+				this->heartBeatStopWatchReceive.resetTimer();
+				return;
+			}
 		}
 	}
 
