@@ -470,9 +470,8 @@ namespace DiscordCoreAPI {
 						this->checkForConnections();
 					}
 
-					TimePoint startingValue{ HRClock::now().time_since_epoch() };
 					const TimePoint intervalCount{ Nanoseconds{ 20000000 } };
-					TimePoint targetTime{ startingValue.time_since_epoch() + intervalCount };
+					TimePoint targetTime{ HRClock::now().time_since_epoch() + intervalCount };
 
 					this->sendSpeakingMessage(false);
 					this->sendSpeakingMessage(true);
@@ -543,9 +542,6 @@ namespace DiscordCoreAPI {
 						waitTime = targetTime.time_since_epoch() - HRClock::now().time_since_epoch();
 						if (waitTime.count() > 0 && waitTime.count() < 20000000) {
 							spinLock(waitTime.count());
-						}
-						startingValue = TimePoint{ HRClock::now().time_since_epoch() };
-						if (HRClock::now().time_since_epoch().count() - startingValue.time_since_epoch().count() > 0) {
 						}
 						if (newFrame.size() > 0) {
 							this->sendVoiceData(newFrame);
