@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 		int64_t userCount = this->voiceUserCount->load();
 		std::u8string value{};
 		if (userCount > 0) {
-			int64_t maxSleepTime{ 20000000 / 2 / userCount };
+			int64_t maxSleepTime{ 20000000 / userCount };
 			StopWatch stopWatch{ Nanoseconds{ maxSleepTime } };
 			stopWatch.resetTimer();
 			while (!this->payloads.tryReceive(value) && !this->wereWeEnding.load()) {
