@@ -43,12 +43,14 @@ namespace DiscordCoreAPI {
 		this->port = getUint64(jsonObjectData, "port");
 	}
 
-	VoiceUser::VoiceUser(std::atomic_int8_t* voiceUsersNew) noexcept {
+	VoiceUser::VoiceUser(std::atomic_int8_t* voiceUsersNew, std::atomic_int64_t* leftOverVoiceTimeNew) noexcept {
+		this->leftOverVoiceTime = leftOverVoiceTimeNew;
 		this->voiceUserCount = voiceUsersNew;
 	}
 
 	VoiceUser& VoiceUser::operator=(VoiceUser&& data) noexcept {
 		this->wereWeEnding.store(data.wereWeEnding.load());
+		this->leftOverVoiceTime = data.leftOverVoiceTime;
 		this->voiceUserCount = data.voiceUserCount;
 		this->payloads = std::move(data.payloads);
 		this->decoder = std::move(data.decoder);
@@ -68,7 +70,7 @@ namespace DiscordCoreAPI {
 		int64_t userCount = this->voiceUserCount->load();
 		std::u8string value{};
 		if (userCount > 0) {
-			int64_t maxSleepTime{ 20000000 / 2 / userCount };
+			int64_t maxSleepTime{ this->leftOverVoiceTime->load() / userCount };
 			StopWatch stopWatch{ Nanoseconds{ maxSleepTime } };
 			stopWatch.resetTimer();
 			while (!this->payloads.tryReceive(value) && !this->wereWeEnding.load()) {
@@ -134,7 +136,7 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceConnectionBridge::VoiceConnectionBridge(DiscordCoreClient* clientPtrNew, VoiceConnection* voiceConnectionPtrNew, StreamType streamType,
-		Snowflake guildIdNew)
+												 Snowflake guildIdNew)
 		: DatagramSocketClient(streamType, clientPtrNew->getConfigManager().doWePrintWebSocketErrorMessages()) {
 		this->voiceConnectionPtr = voiceConnectionPtrNew;
 		this->clientPtr = clientPtrNew;
@@ -276,7 +278,7 @@ namespace DiscordCoreAPI {
 			}
 			case OnMessageReceivedTypes::Speaking: {
 				const uint32_t ssrc = getUint32(value["d"], "ssrc");
-				VoiceUser user{ &this->voiceUserCount };
+				VoiceUser user{ &this->voiceUserCount, &this->leftOverVoiceTime };
 				user.setUserId(stoull(getString(value["d"], "user_id")));
 				std::unique_lock lock{ this->voiceUserMutex };
 				if (!Users::getCachedUser({ .userId = user.getUserId() }).getFlagValue(UserFlags::Bot) ||
@@ -511,6 +513,9 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						auto waitTime = targetTime.time_since_epoch() - HRClock::now().time_since_epoch();
+						if (waitTime.count() > 0) {
+							this->leftOverVoiceTime.store(waitTime.count());
+						}
 						int32_t minimumFreeTimeForCheckingProcessIO{ 18000000 };
 						if (waitTime.count() >= minimumFreeTimeForCheckingProcessIO) {
 							if (!stopToken.stop_requested() && VoiceConnection::areWeConnected()) {

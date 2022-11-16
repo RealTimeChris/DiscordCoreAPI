@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll VoiceUser {
 		VoiceUser() noexcept = default;
 
-		VoiceUser(std::atomic_int8_t* voiceUserCount) noexcept;
+		VoiceUser(std::atomic_int8_t* voiceUserCount, std::atomic_int64_t* leftOverVoiceTime) noexcept;
 
 		VoiceUser& operator=(VoiceUser&&) noexcept;
 
@@ -73,8 +73,9 @@ namespace DiscordCoreAPI {
 		Snowflake getUserId();
 
 	  protected:
-		UnboundedMessageBlock<std::u8string> payloads{};
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
+		UnboundedMessageBlock<std::u8string> payloads{};
+		std::atomic_int64_t* leftOverVoiceTime{};
 		std::atomic_bool wereWeEnding{ false };
 		std::atomic_int8_t* voiceUserCount{};
 		Snowflake userId{};
@@ -189,6 +190,7 @@ namespace DiscordCoreAPI {
 		std::vector<char8_t> decryptedDataString{};
 		std::vector<opus_int32> upSampledVector{};
 		std::atomic_bool canWeSendAudio{ true };
+		std::atomic_int64_t leftOverVoiceTime{};
 		std::atomic_bool areWePlaying{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		RTPPacketEncrypter packetEncrypter{};
