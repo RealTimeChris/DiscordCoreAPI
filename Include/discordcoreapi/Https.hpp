@@ -172,9 +172,8 @@ namespace DiscordCoreInternal {
 			HttpsResponseData returnData = this->httpsRequest(workload);
 			if (static_cast<uint32_t>(returnData.responseCode) != 200 && static_cast<uint32_t>(returnData.responseCode) != 204 &&
 				static_cast<uint32_t>(returnData.responseCode) != 201) {
-				std::string errorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error: " +
+				HttpsError theError{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error: " +
 					static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workload.content + DiscordCoreAPI::reset() + "\n\n" };
-				HttpsError theError{ errorMessage };
 				theError.errorCode = returnData.responseCode;
 				throw theError;
 			}
