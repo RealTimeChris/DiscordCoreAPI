@@ -153,7 +153,8 @@ namespace DiscordCoreInternal {
 		operator addrinfo*();
 
 	  protected:
-		std::unique_ptr<addrinfo*> ptr{ std::make_unique<addrinfo*>(std::make_unique<addrinfo>().get()) };
+		addrinfo value{};
+		addrinfo* ptr{ &this->value };
 	};
 
 	class DiscordCoreAPI_Dll SSLConnectionInterface {

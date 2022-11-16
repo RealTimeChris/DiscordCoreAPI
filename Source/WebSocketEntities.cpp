@@ -434,8 +434,7 @@ namespace DiscordCoreInternal {
 	bool WebSocketSSLShard::onMessageReceived(std::string_view dataNew) noexcept {
 		try {
 			if (this->areWeStillConnected() && this->currentMessage.size() > 0 && dataNew.size() > 0) {
-				std::string string{};
-				std::string& payload{ string };
+				std::string payload{};
 				simdjson::ondemand::value dValue{};
 				WebSocketMessage message{};
 				if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {

@@ -29,15 +29,15 @@ namespace DiscordCoreInternal {
 
 	ErlParseError::ErlParseError(const std::string& message) : DCAException(message){};
 
-	std::string& ErlParser::parseEtfToJson(std::string_view dataToParse) {
+	std::string_view ErlParser::parseEtfToJson(std::string_view dataToParse) {
 		this->offSet = 0;
 		this->dataBuffer = dataToParse;
-		this->finalString.clear();
+		this->currentSize = 0;
 		if (this->readBitsFromBuffer<uint8_t>() != formatVersion) {
 			throw ErlParseError{ "ErlParser::parseEtfToJson() Error: Incorrect format version specified." };
 		}
 		this->singleValueETFToJson();
-		return this->finalString;
+		return std::string_view{ this->finalString.data(), this->currentSize };
 	}
 
 	void ErlParser::writeCharactersFromBuffer(uint32_t length) {
@@ -133,11 +133,21 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlParser::writeCharacters(const char* data, std::size_t length) {
-		this->finalString.append(data, length);
+		if (this->finalString.size() < this->currentSize + length) {
+			this->finalString.resize(this->finalString.size() + length);
+		}
+		for (size_t x = 0; x < length; ++x) {
+			this->finalString[this->currentSize + x] = data[x];
+		}
+		this->currentSize += length;
 	}
 
 	void ErlParser::writeCharacter(const char value) {
-		this->finalString.push_back(value);
+		if (this->finalString.size() < this->currentSize + 1) {
+			this->finalString.resize(this->finalString.size() + 1);
+		}
+		this->finalString[this->currentSize] = value;
+		this->currentSize++;
 	}
 
 	void ErlParser::singleValueETFToJson() {

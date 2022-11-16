@@ -157,15 +157,15 @@ namespace DiscordCoreInternal {
 	}
 
 	addrinfo* addrinfoWrapper::operator->() {
-		return *this->ptr.get();
+		return this->ptr;
 	}
 
 	addrinfoWrapper::operator addrinfo**() {
-		return this->ptr.get();
+		return &this->ptr;
 	}
 
 	addrinfoWrapper::operator addrinfo*() {
-		return *this->ptr.get();
+		return this->ptr;
 	}
 
 	bool SSLConnectionInterface::initialize() noexcept {

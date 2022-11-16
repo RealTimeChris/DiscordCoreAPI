@@ -41,12 +41,13 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll ErlParser {
 	  public:
-		std::string& parseEtfToJson(std::string_view dataToParse);
+		std::string_view parseEtfToJson(std::string_view dataToParse);
 
 	  protected:
 		std::array<char, 1024 * 16> stringBuffer{};
 		std::string_view dataBuffer{};
 		std::string finalString{};
+		size_t currentSize{};
 		uint64_t offSet{};
 
 		template<typename RTy> RTy readBitsFromBuffer() {
