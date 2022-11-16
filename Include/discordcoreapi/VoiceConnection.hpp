@@ -81,7 +81,6 @@ namespace DiscordCoreAPI {
 		Snowflake userId{};
 	};
 
-	using TimeDuration = std::chrono::duration<long long, Nanoseconds>;
 	using TimePoint = std::chrono::time_point<HRClock, Nanoseconds>;
 
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
