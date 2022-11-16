@@ -414,7 +414,7 @@ namespace DiscordCoreInternal {
 			}
 			return ProcessIOResult::No_Error;
 		} else {
-			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLNVAL) {
+			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLHUP || readWriteSet.revents & POLLNVAL) {
 				if (this->doWePrintErrorMessages) {
 					cout << reportSSLError("SSLClient::processIO()") << endl;
 				}
