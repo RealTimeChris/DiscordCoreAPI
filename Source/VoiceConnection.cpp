@@ -143,30 +143,12 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnectionBridge::parseOutGoingVoiceData() noexcept {
 		const std::basic_string_view<char8_t> buffer = this->getInputBuffer();
-		if (buffer == u8"heart") {
-			this->haveWeReceivedHeartBeatAck = true;
-			this->heartBeatStopWatchReceive.resetTimer();
-			return;
-		}
 		if (buffer.size() > 0) {
 			AudioFrameData frame{};
 			frame.data.insert(frame.data.begin(), buffer.begin(), buffer.end());
 			frame.sampleCount = buffer.size() / 2 / 2;
 			frame.type = AudioFrameType::RawPCM;
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
-		}
-		if (this->heartBeatStopWatchSend.hasTimePassed()) {
-			std::u8string heartBeatSend{ u8"heart" };
-			this->heartBeatStopWatchSend.resetTimer();
-			this->writeData(heartBeatSend);
-		}
-		if (this->heartBeatStopWatchReceive.hasTimePassed()) {
-			if (!this->haveWeReceivedHeartBeatAck) {
-				this->voiceConnectionPtr->haveWeGottenSignaled = false;
-				this->voiceConnectionPtr->reconnect();
-				this->heartBeatStopWatchReceive.resetTimer();
-				return;
-			}
 		}
 	}
 
@@ -201,9 +183,9 @@ namespace DiscordCoreAPI {
 			} else {
 				this->voiceUsers[speakerSsrc].setEndingStatus(false);
 			}
-			uint8_t RTCPPayloadLowerLimit{ 72 };
-			uint8_t RTCPPayloadUpperLimit{ 76 };
-			if (RTCPPayloadLowerLimit <= (rawDataBufferNew[1]) && (rawDataBufferNew[1]) <= RTCPPayloadUpperLimit) {
+			uint8_t rtcpPayloadLowerLimit{ 72 };
+			uint8_t rtcpPayloadUpperLimit{ 76 };
+			if (rtcpPayloadLowerLimit <= (rawDataBufferNew[1]) && (rawDataBufferNew[1]) <= rtcpPayloadUpperLimit) {
 				return;
 			}
 			this->voiceUsers[speakerSsrc].insertPayload(static_cast<std::u8string>(rawDataBufferNew));

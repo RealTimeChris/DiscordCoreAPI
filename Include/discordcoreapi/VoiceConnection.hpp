@@ -143,10 +143,7 @@ namespace DiscordCoreAPI {
 		void handleAudioBuffer() noexcept;
 
 	  protected:
-		StopWatch<std::chrono::seconds> heartBeatStopWatchReceive{ std::chrono::seconds{ 10 } };
-		StopWatch<std::chrono::seconds> heartBeatStopWatchSend{ std::chrono::seconds{ 5 } };
 		VoiceConnection* voiceConnectionPtr{ nullptr };
-		bool haveWeReceivedHeartBeatAck{ false };
 		DiscordCoreClient* clientPtr{ nullptr };
 		Snowflake guildId{};
 	};
