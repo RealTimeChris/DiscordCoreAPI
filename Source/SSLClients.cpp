@@ -157,15 +157,15 @@ namespace DiscordCoreInternal {
 	}
 
 	addrinfo* addrinfoWrapper::operator->() {
-		return this->ptr;
+		return *this->ptr.get();
 	}
 
 	addrinfoWrapper::operator addrinfo**() {
-		return &this->ptr;
+		return this->ptr.get();
 	}
 
 	addrinfoWrapper::operator addrinfo*() {
-		return this->ptr;
+		return *this->ptr.get();
 	}
 
 	bool SSLConnectionInterface::initialize() noexcept {
@@ -304,8 +304,8 @@ namespace DiscordCoreInternal {
 				} else {
 					fdSet.events = POLLIN;
 				}
-				readWriteSet.indices.push_back(key);
-				readWriteSet.polls.push_back(fdSet);
+				readWriteSet.indices.emplace_back(key);
+				readWriteSet.polls.emplace_back(fdSet);
 			}
 		}
 
@@ -449,7 +449,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool SSLClient::areWeStillConnected() noexcept {
-		if (static_cast<SOCKET*>(this->socket) && this->socket != SOCKET_ERROR) {
+		if (static_cast<SOCKET*>(this->socket) && *this->socket != SOCKET_ERROR) {
 			return true;
 		} else {
 			return false;
@@ -549,7 +549,7 @@ namespace DiscordCoreInternal {
 
 	DatagramSocketClient::DatagramSocketClient(DiscordCoreAPI::StreamType streamTypeNew, bool doWePrintErrorsNew) noexcept {
 		this->doWePrintErrors = doWePrintErrorsNew;
-		this->streamTypeReal = streamTypeNew;
+		this->streamType = streamTypeNew;
 	}
 
 	bool DatagramSocketClient::connect(const std::string& baseUrlNew, uint16_t portNew, bool haveWeGottenSignaled) noexcept {
@@ -582,14 +582,14 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (this->streamTypeReal == DiscordCoreAPI::StreamType::None) {
+		if (this->streamType == DiscordCoreAPI::StreamType::None) {
 			if (::connect(this->socket, this->address->ai_addr, static_cast<socklen_t>(this->address->ai_addrlen)) == SOCKET_ERROR) {
 				if (this->doWePrintErrors) {
 					cout << reportError("DatagramSocketClient::connect::connect(), to: " + baseUrlNew) << endl;
 				}
 				return false;
 			}
-		} else if (this->streamTypeReal == DiscordCoreAPI::StreamType::Client) {
+		} else if (this->streamType == DiscordCoreAPI::StreamType::Client) {
 			if (!haveWeGottenSignaled) {
 				uint8_t chars[]{ "connecting" };
 				std::u8string connectionString{ reinterpret_cast<char8_t*>(chars), std::size(chars) };
@@ -660,7 +660,7 @@ namespace DiscordCoreInternal {
 			return ProcessIOResult::No_Error;
 		} else {
 			if (readWriteSet.revents & POLLIN) {
-				if (this->streamTypeReal != DiscordCoreAPI::StreamType::None) {
+				if (this->streamType != DiscordCoreAPI::StreamType::None) {
 				}
 				if (!this->processReadData()) {
 					result = ProcessIOResult::Error;
@@ -669,7 +669,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 			if (readWriteSet.revents & POLLOUT) {
-				if (this->streamTypeReal != DiscordCoreAPI::StreamType::None) {
+				if (this->streamType != DiscordCoreAPI::StreamType::None) {
 				}
 				if (!this->processWriteData()) {
 					result = ProcessIOResult::Error;
@@ -767,7 +767,7 @@ namespace DiscordCoreInternal {
 #else
 				if (readBytes < 0 && errno != EWOULDBLOCK) {
 #endif
-					return true;
+					return false;
 				} else if (readBytes > 0) {
 					this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
 					this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);

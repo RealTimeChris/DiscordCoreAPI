@@ -153,8 +153,7 @@ namespace DiscordCoreInternal {
 		operator addrinfo*();
 
 	  protected:
-		addrinfo value{};
-		addrinfo* ptr{ &this->value };
+		std::unique_ptr<addrinfo*> ptr{ std::make_unique<addrinfo*>(std::make_unique<addrinfo>().get()) };
 	};
 
 	class DiscordCoreAPI_Dll SSLConnectionInterface {
@@ -262,7 +261,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) };
-		DiscordCoreAPI::StreamType streamTypeReal{};
+		DiscordCoreAPI::StreamType streamType{};
 		RingBuffer<char8_t, 16> outputBuffer{};
 		RingBuffer<char8_t, 16> inputBuffer{};
 		addrinfoWrapper address{};

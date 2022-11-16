@@ -1313,7 +1313,7 @@ namespace DiscordCoreInternal {
 							 << "]... reconnecting." << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
-					valueNew->disconnect();
+					static_cast<WebSocketSSLShard*>(valueNew)->onClosed();
 				}
 				bool areWeConnected{ false };
 				for (auto& [key, dValue]: this->shardMap) {

@@ -835,7 +835,7 @@ namespace DiscordCoreAPI {
 		WebSocketCore::outputBuffer.clear();
 		WebSocketCore::inputBuffer.clear();
 		WebSocketCore::socket = SOCKET_ERROR;
-		if (this->streamTypeReal == StreamType::Server) {
+		if (this->streamType == StreamType::Server) {
 			this->haveWeGottenSignaled = false;
 		}
 		if (this->taskThread01) {
