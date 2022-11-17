@@ -6,7 +6,7 @@
 ![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi?&style=plastic&label=Lines%20of%20Code)
 
 
-[<p align="center"><img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true"  width="500"></p>](http://discordcoreapi.com/)
+[<p align="center"><img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true"  width="500"></p>(http://discordcoreapi.com/)]
 
 
 Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L397),
