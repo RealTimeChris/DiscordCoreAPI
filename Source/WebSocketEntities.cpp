@@ -1326,7 +1326,7 @@ namespace DiscordCoreInternal {
 					if (dValue->areWeStillConnected()) {
 						if (dValue->checkForAndSendHeartBeat()) {
 							DiscordCoreAPI::OnGatewayPingData dataNew{};
-							dataNew.timeUntilNextPing = dValue->heartBeatStopWatch.getTotalWaitTime();
+							dataNew.timeUntilNextPing = dValue->heartBeatStopWatch.getTotalWaitTime().count();
 							this->discordCoreClient->eventManager.onGatewayPingEvent(dataNew);
 						}
 						areWeConnected = true;

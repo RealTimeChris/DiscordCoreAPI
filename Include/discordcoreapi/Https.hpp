@@ -97,14 +97,14 @@ namespace DiscordCoreInternal {
 		friend class HttpsClient;
 
 	  protected:
+		std::atomic<Milliseconds> sampledTimeInMs{ Milliseconds{ 0 } };
+		std::atomic<Milliseconds> msRemain{ Milliseconds{ 0 } };
 		std::atomic_bool areWeASpecialBucket{ false };
 		std::counting_semaphore<1> theSemaphore{ 1 };
 		std::atomic_bool didWeHitRateLimit{ false };
-		std::atomic_int64_t sampledTimeInMs{ 0 };
 		std::atomic_bool haveWeGoneYet{ false };
 		std::atomic_int64_t getsRemaining{ 0 };
 		std::atomic_bool doWeWait{ false };
-		std::atomic_int64_t msRemain{ 0 };
 		std::string tempBucket{};
 		std::string bucket{};
 	};

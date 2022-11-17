@@ -221,23 +221,23 @@ namespace DiscordCoreAPI {
 		}
 
 		StopWatch(TTy maxNumberOfMsNew) {
-			this->maxNumberOfMs.store(maxNumberOfMsNew.count());
-			this->startTime.store(static_cast<int64_t>(std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch()).count()));
+			this->maxNumberOfMs.store(maxNumberOfMsNew);
+			this->startTime.store(std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch()));
 		}
 
-		int64_t totalTimePassed() {
-			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch()).count());
-			int64_t elapsedTime = currentTime - this->startTime.load();
+		TTy totalTimePassed() {
+			TTy currentTime = std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch());
+			TTy elapsedTime = currentTime - this->startTime.load();
 			return elapsedTime;
 		}
 
-		int64_t getTotalWaitTime() {
+		TTy getTotalWaitTime() {
 			return this->maxNumberOfMs.load();
 		}
 
 		bool hasTimePassed() {
-			int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch()).count());
-			int64_t elapsedTime = currentTime - this->startTime.load();
+			TTy currentTime = std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch());
+			TTy elapsedTime = currentTime - this->startTime.load();
 			if (elapsedTime >= this->maxNumberOfMs.load()) {
 				return true;
 			} else {
@@ -246,12 +246,12 @@ namespace DiscordCoreAPI {
 		}
 
 		void resetTimer() {
-			this->startTime.store(static_cast<int64_t>(std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch()).count()));
+			this->startTime.store(std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch()));
 		}
 
 	  protected:
-		std::atomic_int64_t maxNumberOfMs{ 0 };
-		std::atomic_int64_t startTime{ 0 };
+		std::atomic<TTy> maxNumberOfMs{ TTy{ 0 } };
+		std::atomic<TTy> startTime{ TTy{ 0 } };
 	};
 
 	const uint8_t formatVersion{ 131 };

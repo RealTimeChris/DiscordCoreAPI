@@ -41,8 +41,8 @@ namespace DiscordCoreInternal {
 			rateLimitData.bucket = static_cast<HttpsConnection*>(this)->data.responseHeaders["x-ratelimit-bucket"];
 		}
 		if (static_cast<HttpsConnection*>(this)->data.responseHeaders.contains("x-ratelimit-reset-after")) {
-			rateLimitData.msRemain.store(
-				static_cast<int64_t>(ceil(stod(static_cast<HttpsConnection*>(this)->data.responseHeaders["x-ratelimit-reset-after"])) * 1000.0f));
+			rateLimitData.msRemain.store(Milliseconds{
+				static_cast<int64_t>(ceil(stod(static_cast<HttpsConnection*>(this)->data.responseHeaders["x-ratelimit-reset-after"])) * 1000.0f) });
 		}
 		if (static_cast<HttpsConnection*>(this)->data.responseHeaders.contains("x-ratelimit-remaining")) {
 			rateLimitData.getsRemaining.store(
@@ -511,39 +511,40 @@ namespace DiscordCoreInternal {
 
 	HttpsResponseData HttpsClient::executeByRateLimitData(const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
 		HttpsResponseData returnData{};
-		int64_t timeRemaining{};
-		int64_t currentTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+		Milliseconds timeRemaining{};
+		Milliseconds currentTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch());
 		if (workload.workloadType == HttpsWorkloadType::Delete_Message_Old) {
-			rateLimitData.msRemain.store(4000);
+			rateLimitData.msRemain.store(Milliseconds{ 4000 });
 		} else if (workload.workloadType == HttpsWorkloadType::Delete_Message || workload.workloadType == HttpsWorkloadType::Patch_Message) {
 			rateLimitData.areWeASpecialBucket.store(true);
 		}
 		if (rateLimitData.areWeASpecialBucket.load()) {
-			rateLimitData.msRemain.store(static_cast<int64_t>(ceil(5000.0f / 4.0f)));
-			int64_t targetTime = rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load();
+			rateLimitData.msRemain.store(Milliseconds{ static_cast<int64_t>(ceil(5000.0f / 4.0f)) });
+			Milliseconds targetTime{ rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load() };
 			timeRemaining = targetTime - currentTime;
 		} else if (rateLimitData.didWeHitRateLimit.load()) {
-			int64_t targetTime = rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load();
+			Milliseconds targetTime{ rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load() };
 			timeRemaining = targetTime - currentTime;
 			rateLimitData.didWeHitRateLimit.store(false);
 		} else if (rateLimitData.doWeWait.load()) {
-			int64_t targetTime = rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load();
+			Milliseconds targetTime{ rateLimitData.sampledTimeInMs.load() + rateLimitData.msRemain.load() };
 			timeRemaining = targetTime - currentTime;
 			rateLimitData.doWeWait.store(false);
 		}
-		if (timeRemaining > 0) {
+		if (timeRemaining.count() > 0) {
 			if (this->configManager->doWePrintHttpsSuccessMessages()) {
-				cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining << DiscordCoreAPI::reset() << endl
+				cout << DiscordCoreAPI::shiftToBrightBlue() << "We're waiting on rate-limit: " << timeRemaining.count() << DiscordCoreAPI::reset()
+					 << endl
 					 << endl;
 			}
-			int64_t targetTime = currentTime + timeRemaining;
-			while (targetTime > currentTime && targetTime > 0 && currentTime > 0 && timeRemaining > 0) {
-				currentTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+			Milliseconds targetTime{ currentTime + timeRemaining };
+			while (targetTime > currentTime && targetTime.count() > 0 && currentTime.count() > 0 && timeRemaining.count() > 0) {
+				currentTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch());
 				timeRemaining = targetTime - currentTime;
-				if (timeRemaining <= 20) {
+				if (timeRemaining.count() <= 20) {
 					continue;
 				} else {
-					std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(ceil(static_cast<float>(timeRemaining) * 80.0f / 100.0f)) });
+					std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(static_cast<double>(timeRemaining.count()) * 80.0f / 100.0f) });
 				}
 			}
 		}
@@ -551,8 +552,7 @@ namespace DiscordCoreInternal {
 		returnData = HttpsClient::httpsRequestInternal(*httpsConnection, workload, rateLimitData);
 
 		httpsConnection->areWeCheckedOut.store(false);
-		rateLimitData.sampledTimeInMs.store(
-			static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count()));
+		rateLimitData.sampledTimeInMs.store(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()));
 
 		if (rateLimitData.tempBucket != "") {
 			rateLimitData.tempBucket = "";
@@ -578,17 +578,17 @@ namespace DiscordCoreInternal {
 					parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
 				double doubleVal{};
 				if (returnData.responseMessage.size() > 0 && document["retry_after"].get(doubleVal) == simdjson::error_code::SUCCESS) {
-					rateLimitData.msRemain.store(static_cast<int64_t>(ceil(doubleVal)) * 1000);
+					rateLimitData.msRemain.store(Milliseconds{ static_cast<int64_t>(ceil(doubleVal)) * 1000 });
 				}
 
 				rateLimitData.didWeHitRateLimit.store(true);
-				rateLimitData.sampledTimeInMs.store(
-					static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count()));
+				rateLimitData.sampledTimeInMs.store(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()));
 				if (this->configManager->doWePrintHttpsErrorMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightRed() << workload.callStack + "::httpsRequest(), We've hit rate limit! Time Remaining: "
 						 << std::to_string(this->connectionManager
 											   .getRateLimitValues()[this->connectionManager.getRateLimitValueBuckets()[workload.workloadType]]
-											   ->msRemain)
+											   ->msRemain.load()
+											   .count())
 						 << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
