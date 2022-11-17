@@ -532,7 +532,7 @@ namespace DiscordCoreAPI {
 							this->sendVoiceData(newFrame);
 						}
 						this->canWeSendAudio.store(true);
-						
+
 						auto newTime = HRClock::now().time_since_epoch();
 						if (DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
 							DiscordCoreInternal::ProcessIOResult::Error) {

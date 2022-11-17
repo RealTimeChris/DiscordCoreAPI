@@ -610,7 +610,7 @@ namespace DiscordCoreInternal {
 					cout << reportError("DatagramSocketClient::connect::getaddrinfo(), to: " + baseUrlNew) << endl;
 				}
 				return false;
-			}			
+			}
 			if (auto result = bind(this->socket, this->address->ai_addr, this->address->ai_addrlen); result != 0) {
 				if (this->doWePrintErrors) {
 					cout << reportError("DatagramSocketClient::connect::bind(), to: " + baseUrlNew) << endl;
