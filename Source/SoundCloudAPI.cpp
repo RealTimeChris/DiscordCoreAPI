@@ -235,7 +235,7 @@ namespace DiscordCoreInternal {
 			dataPackage.configManager = this->configManager;
 			std::unique_ptr<AudioDecoder> audioDecoder = std::make_unique<AudioDecoder>(dataPackage);
 			bool didWeGetZero{ true };
-			std::vector<std::u8string> submittedFrames{};
+			std::vector<std::string> submittedFrames{};
 			while (counter < newSong.finalDownloadUrls.size()) {
 				if (counter == newSong.finalDownloadUrls.size() && didWeGetZero) {
 					audioDecoder.reset(nullptr);

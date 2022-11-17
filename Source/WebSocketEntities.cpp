@@ -205,9 +205,9 @@ namespace DiscordCoreInternal {
 		outBuffer.insert(outBuffer.begin() + 5 + indexCount, 0);
 	}
 
-	void WebSocketCore::parseConnectionHeaders(std::basic_string_view<char8_t> stringNew) noexcept {
+	void WebSocketCore::parseConnectionHeaders(std::string_view stringNew) noexcept {
 		if (this->areWeStillConnected() && this->currentState.load() == WebSocketState::Upgrading) {
-			auto theFindValue = stringNew.find(u8"\r\n\r\n");
+			auto theFindValue = stringNew.find("\r\n\r\n");
 			if (theFindValue != std::string::npos) {
 				this->currentMessage.clear();
 				this->currentState.store(WebSocketState::Collecting_Hello);
@@ -340,7 +340,7 @@ namespace DiscordCoreInternal {
 		size_t readOrWrittenBytes{};
 		this->writeData(sendString, true);
 
-		std::basic_string_view<char8_t> buffer{};
+		std::string_view buffer{};
 		do {
 			if (stopWatch.hasTimePassed()) {
 				return false;
