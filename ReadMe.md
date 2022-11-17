@@ -5,7 +5,7 @@
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/realtimechris/discordcoreapi?color=green&label=Commits&style=plastic)
 ![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi?&style=plastic&label=Lines%20of%20Code)
 
-<a href="http://discordcoreapi.com" target="_blank"><p align="center"><img src="[http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true)" 
+<a href="http://discordcoreapi.com" target="_blank"><p align="center"><img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true" 
 alt="DiscordCoreAPI WebSite" width="500"</p>
 
 Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L397),
