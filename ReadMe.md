@@ -9,8 +9,8 @@
  <img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true"  width="500">
 </p>
 
-Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L415),
-[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L325), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L160) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
+Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L397),
+[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L313), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L162) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
 
 # Documentation/Examples
 [Documentation/Examples](https://discordcoreapi.com/d2/d6f/a07145.html)
@@ -24,7 +24,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 # Features   
 
 ## Performant
-- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ErlParser.cpp) for websocket transfer, and a pool of [kept-alive HTTP connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L390-L402) - this library offers the snappiest responses to your interactions and user input.
+- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ErlParser.cpp) for websocket transfer, and a pool of [kept-alive HTTP connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L373-L385) - this library offers the snappiest responses to your interactions and user input.
 
 ## Audio-Bridge
 - Connect multiple voice-channels to one-another using the "stream-mode" of the `DiscordCoreAPI::VoiceConnection` class.
@@ -36,7 +36,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 - All of the Discord API endpoints are covered in this library, including voice communication.
 
 ## Concurrent Discord API Access   
-- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp) along with a [thread pool](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ThreadPool.cpp#L82), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.   
+- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp) along with a [thread pool](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ThreadPool.cpp#L80), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.   
 
 ## Advanced Rate-Limiting System
 - Guarantees that the order in which HTTP requests are executed is the same that they were submitted in - despite being launched across different threads, while never infracting on any of the Discord API's rate-limits and while running concurrently across all of the endpoints.
