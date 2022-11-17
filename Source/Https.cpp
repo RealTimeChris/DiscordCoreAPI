@@ -537,7 +537,7 @@ namespace DiscordCoreInternal {
 					 << endl;
 			}
 			int64_t targetTime = currentTime + timeRemaining;
-			while (targetTime > currentTime && targetTime > 0 && currentTime > 0) {
+			while (targetTime > currentTime && targetTime > 0 && currentTime > 0 && timeRemaining > 0) {
 				currentTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 				timeRemaining = targetTime - currentTime;
 				if (timeRemaining <= 20) {

@@ -1052,7 +1052,9 @@ namespace DiscordCoreInternal {
 						std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
 						int32_t numOfMsToWait = static_cast<int32_t>(
 							1000.0f + ((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * static_cast<float>(4000.0f)));
-						std::this_thread::sleep_for(Milliseconds{ numOfMsToWait });
+						if (numOfMsToWait <= 5000 && numOfMsToWait > 0) {
+							std::this_thread::sleep_for(Milliseconds{ numOfMsToWait });
+						}
 						if (data.d == true) {
 							this->areWeResuming = true;
 						} else {
