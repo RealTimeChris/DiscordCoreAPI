@@ -285,11 +285,9 @@ namespace DiscordCoreInternal {
 					std::string closeString{};
 					if (this->wsType == WebSocketType::Voice) {
 						VoiceWebSocketClose voiceClose{ close };
-						closeCode = voiceClose.operator uint16_t();
 						closeString = voiceClose.operator std::string();
 					} else {
 						WebSocketClose wsClose{ close };
-						closeCode = wsClose.operator uint16_t();
 						closeString = wsClose.operator std::string();
 					}
 					if (closeCode) {

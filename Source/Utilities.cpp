@@ -51,18 +51,9 @@ namespace DiscordCoreInternal {
 		return this->outputErrorValues[this->mappingValues[static_cast<uint16_t>(*this)]];
 	}
 
-	WebSocketClose::operator uint16_t() {
-		for (auto& [key, value]: this->mappingValues) {
-			if (value == value) {
-				return key;
-			}
-		}
-		return uint16_t{};
-	}
-
 	WebSocketClose::operator bool() {
 		return static_cast<std::underlying_type_t<decltype(this->value)>>(this->value) &
-			static_cast<std::underlying_type_t<decltype(WebSocketCloseCode::We_Do_Reconnect)>>(WebSocketCloseCode::We_Do_Reconnect);
+			static_cast<std::underlying_type_t<decltype(this->value)>>(WebSocketCloseCode::We_Do_Reconnect);
 	}
 
 	VoiceWebSocketClose& VoiceWebSocketClose::operator=(uint16_t valueNew) {
@@ -76,15 +67,6 @@ namespace DiscordCoreInternal {
 
 	VoiceWebSocketClose::operator std::string() {
 		return this->outputErrorValues[this->mappingValues[static_cast<uint16_t>(*this)]];
-	}
-
-	VoiceWebSocketClose::operator uint16_t() {
-		for (auto& [key, value]: this->mappingValues) {
-			if (value == value) {
-				return key;
-			}
-		}
-		return uint16_t{};
 	}
 
 	VoiceWebSocketClose::operator bool() {
@@ -101,9 +83,7 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseCode::operator std::string() {
-		std::string response{};
-		response += "Code: " + std::to_string(static_cast<uint32_t>(this->value)) + ", Message: " + this->outputErrorValues[this->value];
-		return response;
+		return std::string{ "Code: " + std::to_string(static_cast<uint32_t>(this->value)) + ", Message: " + this->outputErrorValues[this->value] };
 	}
 
 	HttpsResponseCode::operator uint32_t() {

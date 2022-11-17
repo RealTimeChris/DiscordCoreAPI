@@ -724,25 +724,25 @@ namespace DiscordCoreInternal {
 
 		std::unordered_map<WebSocketCloseCode, std::string> outputErrorValues{ {
 																				   WebSocketCloseCode::Unknown_Error,
-																				   "We're not sure what went wrong.",
+																				   "4000; We're not sure what went wrong.",
 																			   },
-			{ WebSocketCloseCode::Unknown_Opcode, "You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!" },
-			{ WebSocketCloseCode::Decode_Error, "You sent an invalid payload to Discord. Don't do that!" },
-			{ WebSocketCloseCode::Not_Authenticated, "You sent us a payload prior to identifying." },
-			{ WebSocketCloseCode::Authentication_Failed, "The account token sent with your identify payload is incorrect." },
-			{ WebSocketCloseCode::Already_Authenticated, "You sent more than one identify payload. Don't do that!" },
-			{ WebSocketCloseCode::Invalid_Seq, "The sequence sent when resuming the session was invalid. Reconnect and start a new session." },
+			{ WebSocketCloseCode::Unknown_Opcode, "4001; You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!" },
+			{ WebSocketCloseCode::Decode_Error, "4002; You sent an invalid payload to Discord. Don't do that!" },
+			{ WebSocketCloseCode::Not_Authenticated, "4003; You sent us a payload prior to identifying." },
+			{ WebSocketCloseCode::Authentication_Failed, "4004; The account token sent with your identify payload is incorrect." },
+			{ WebSocketCloseCode::Already_Authenticated, "4005; You sent more than one identify payload. Don't do that!" },
+			{ WebSocketCloseCode::Invalid_Seq, "4006; The sequence sent when resuming the session was invalid. Reconnect and start a new session." },
 			{ WebSocketCloseCode::Rate_Limited,
-				"Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this." },
-			{ WebSocketCloseCode::Session_Timed, "Your session timed out. Reconnect and start a new one." },
-			{ WebSocketCloseCode::Invalid_Shard, "You sent us an invalid shard when identifying." },
+				"4008; Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this." },
+			{ WebSocketCloseCode::Session_Timed, "4009; Your session timed out. Reconnect and start a new one." },
+			{ WebSocketCloseCode::Invalid_Shard, "4010; You sent us an invalid shard when identifying." },
 			{ WebSocketCloseCode::Sharding_Required,
-				"The session would have handled too many guilds - you are required to shard your connection in order to connect." },
-			{ WebSocketCloseCode::Invalid_API_Version, "You sent an invalid version for the gateway." },
+				"4011; The session would have handled too many guilds - you are required to shard your connection in order to connect." },
+			{ WebSocketCloseCode::Invalid_API_Version, "4012; You sent an invalid version for the gateway." },
 			{ WebSocketCloseCode::Invalid_Intent,
-				"You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value." },
+				"4013; You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value." },
 			{ WebSocketCloseCode::Disallowed_Intent,
-				"You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not "
+				"4014; You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not "
 				"approved for." } };
 
 		WebSocketCloseCode value{};
@@ -752,8 +752,6 @@ namespace DiscordCoreInternal {
 		explicit WebSocketClose(uint16_t valueNew);
 
 		operator std::string();
-
-		operator uint16_t();
 
 		operator bool();
 	};
@@ -789,20 +787,20 @@ namespace DiscordCoreInternal {
 			{ 4014, VoiceWebSocketCloseCode ::Disconnected }, { 4015, VoiceWebSocketCloseCode ::Voice_Server_Crashed },
 			{ 4016, VoiceWebSocketCloseCode ::Unknown_Encryption_Mode } };
 
-		std::unordered_map<VoiceWebSocketCloseCode, std::string> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "Unset." },
-			{ VoiceWebSocketCloseCode::Normal_Close, "Normal close." }, { VoiceWebSocketCloseCode::Unknown_Opcode, "You sent an invalid opcode." },
-			{ VoiceWebSocketCloseCode::Failed_To_Decode, "You sent an invalid payload in your identifying to the Gateway." },
-			{ VoiceWebSocketCloseCode::Not_Authenticated, "You sent a payload before identifying with the Gateway." },
-			{ VoiceWebSocketCloseCode::Authentication_Failed, "The token you sent in your identify payload is incorrect." },
-			{ VoiceWebSocketCloseCode::Already_Authenticated, "You sent more than one identify payload. Stahp." },
-			{ VoiceWebSocketCloseCode::Session_No_Longer_Valid, "Your session is no longer valid." },
-			{ VoiceWebSocketCloseCode::Session_Timeout, "Your session has timed out." },
-			{ VoiceWebSocketCloseCode::Server_Not_Found, "We can't find the server you're trying to connect to." },
-			{ VoiceWebSocketCloseCode::Unknown_Protocol, "We didn't recognize the protocol you sent." },
+		std::unordered_map<VoiceWebSocketCloseCode, std::string> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "0; Unset." },
+			{ VoiceWebSocketCloseCode::Normal_Close, "1000; Normal close." }, { VoiceWebSocketCloseCode::Unknown_Opcode, "4001; You sent an invalid opcode." },
+			{ VoiceWebSocketCloseCode::Failed_To_Decode, "4002; You sent an invalid payload in your identifying to the Gateway." },
+			{ VoiceWebSocketCloseCode::Not_Authenticated, "4003; You sent a payload before identifying with the Gateway." },
+			{ VoiceWebSocketCloseCode::Authentication_Failed, "4004; The token you sent in your identify payload is incorrect." },
+			{ VoiceWebSocketCloseCode::Already_Authenticated, "4005; You sent more than one identify payload. Stahp." },
+			{ VoiceWebSocketCloseCode::Session_No_Longer_Valid, "4006; Your session is no longer valid." },
+			{ VoiceWebSocketCloseCode::Session_Timeout, "4009; Your session has timed out." },
+			{ VoiceWebSocketCloseCode::Server_Not_Found, "4011; We can't find the server you're trying to connect to." },
+			{ VoiceWebSocketCloseCode::Unknown_Protocol, "4012; We didn't recognize the protocol you sent." },
 			{ VoiceWebSocketCloseCode::Disconnected,
-				"Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not reconnect." },
-			{ VoiceWebSocketCloseCode::Voice_Server_Crashed, "The server crashed. Our bad! Try resuming." },
-			{ VoiceWebSocketCloseCode::Unknown_Encryption_Mode, "We didn't recognize your encryption." } };
+				"4014; Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not reconnect." },
+			{ VoiceWebSocketCloseCode::Voice_Server_Crashed, "4015; The server crashed. Our bad! Try resuming." },
+			{ VoiceWebSocketCloseCode::Unknown_Encryption_Mode, "4016; We didn't recognize your encryption." } };
 
 		VoiceWebSocketCloseCode value{};
 
@@ -811,8 +809,6 @@ namespace DiscordCoreInternal {
 		VoiceWebSocketClose(uint16_t valueNew);
 
 		operator std::string();
-
-		operator uint16_t();
 
 		operator bool();
 	};
@@ -836,17 +832,17 @@ namespace DiscordCoreInternal {
 		};
 
 		std::unordered_map<HttpsResponseCodes, std::string> outputErrorValues{ { static_cast<HttpsResponseCodes>(200),
-																				   "The request completed successfully" },
-			{ static_cast<HttpsResponseCodes>(201), "The entity was created successfully" },
-			{ static_cast<HttpsResponseCodes>(204), "The request completed successfully but returned no content" },
-			{ static_cast<HttpsResponseCodes>(304), "The entity was not modified (no action was taken)" },
-			{ static_cast<HttpsResponseCodes>(400), "The request was improperly formatted, or the server couldn't understand it" },
-			{ static_cast<HttpsResponseCodes>(401), "The Authorization header was missing or invalid" },
-			{ static_cast<HttpsResponseCodes>(403), "The Authorization token you passed did not have permission to the resource" },
-			{ static_cast<HttpsResponseCodes>(404), "The resource at the location specified doesn't exist" },
-			{ static_cast<HttpsResponseCodes>(405), "The HTTP method used is not valid for the location specified" },
-			{ static_cast<HttpsResponseCodes>(429), "You are being rate limited, see Rate Limits" },
-			{ static_cast<HttpsResponseCodes>(502), "There was not a gateway available to process your request.Wait a bit and retry" } };
+																				   "200; The request completed successfully" },
+			{ static_cast<HttpsResponseCodes>(201), "201; The entity was created successfully" },
+			{ static_cast<HttpsResponseCodes>(204), "204; The request completed successfully but returned no content" },
+			{ static_cast<HttpsResponseCodes>(304), "304; The entity was not modified (no action was taken)" },
+			{ static_cast<HttpsResponseCodes>(400), "400; The request was improperly formatted, or the server couldn't understand it" },
+			{ static_cast<HttpsResponseCodes>(401), "401; The Authorization header was missing or invalid" },
+			{ static_cast<HttpsResponseCodes>(403), "403; The Authorization token you passed did not have permission to the resource" },
+			{ static_cast<HttpsResponseCodes>(404), "404; The resource at the location specified doesn't exist" },
+			{ static_cast<HttpsResponseCodes>(405), "405; The HTTP method used is not valid for the location specified" },
+			{ static_cast<HttpsResponseCodes>(429), "429; You are being rate limited, see Rate Limits" },
+			{ static_cast<HttpsResponseCodes>(502), "502; There was not a gateway available to process your request.Wait a bit and retry" } };
 
 		HttpsResponseCodes value{};
 
@@ -854,9 +850,9 @@ namespace DiscordCoreInternal {
 
 		HttpsResponseCode(uint32_t valueNew);
 
-		operator std::string();
-
 		operator uint32_t();
+
+		operator std::string();
 	};
 
 }// namespace DiscordCoreInternal
