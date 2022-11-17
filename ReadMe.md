@@ -6,7 +6,7 @@
 ![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi?&style=plastic&label=Lines%20of%20Code)
 
 
-[<p align="center"><img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true"  width="500">(http://discordcoreapi.com/)</p>]
+[<p align="center"><img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true"  width="500"></p>(http://discordcoreapi.com/)]
 
 Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L397),
 [WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L313), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L162) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
