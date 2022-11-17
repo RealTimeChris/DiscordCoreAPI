@@ -71,7 +71,6 @@ namespace DiscordCoreAPI {
 	GuildMember& GuildMember::operator=(GuildMemberData&& other) noexcept {
 		if (this != &other) {
 			this->permissions = std::move(other.permissions);
-			this->voiceChannelId = other.voiceChannelId;
 			this->joinedAt = std::move(other.joinedAt);
 			this->avatar = std::move(other.avatar);
 			this->roles = std::move(other.roles);
@@ -89,7 +88,6 @@ namespace DiscordCoreAPI {
 
 	GuildMember& GuildMember::operator=(const GuildMemberData& other) noexcept {
 		if (this != &other) {
-			this->voiceChannelId = other.voiceChannelId;
 			this->permissions = other.permissions;
 			this->joinedAt = other.joinedAt;
 			this->guildId = other.guildId;
@@ -163,13 +161,15 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/members/" + dataPackage.guildMemberId;
 		workload.callStack = "GuildMembers::getGuildMemberAsync()";
 		GuildMember data{};
+		data.guildId = dataPackage.guildId;
+		data.id = dataPackage.guildMemberId;
 		data = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &data);
 		if (GuildMembers::cache.contains(data)) {
 			data = GuildMembers::cache.at(data);
 		} else {
-			GuildMembers::cache.emplace(data);
 			GuildMembers::insertGuildMember(data);
 		}
+		data.guildId = dataPackage.guildId;
 		co_return std::move(data);
 	}
 
@@ -258,13 +258,15 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		GuildMember data{};
+		data.guildId = dataPackage.guildId;
+		data.id = dataPackage.guildMemberId;
 		data = GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &data);
 		if (GuildMembers::cache.contains(data)) {
 			data = GuildMembers::cache.at(data);
 		} else {
-			GuildMembers::cache.emplace(data);
 			GuildMembers::insertGuildMember(data);
 		}
+		data.guildId = dataPackage.guildId;
 		co_return std::move(data);
 	}
 
@@ -338,6 +340,25 @@ namespace DiscordCoreAPI {
 		return GuildMembers::cache;
 	};
 
+	ObjectCache<VoiceStateDataLight>& GuildMembers::getVsCache() {
+		return GuildMembers::vsCache;
+	};
+
+	void GuildMembers::insertVoiceState(VoiceStateData voiceState) {
+		if (voiceState.userId == 0) {
+			return;
+		}
+		if (!GuildMembers::vsCache.contains(voiceState)) {
+			GuildMembers::vsCache.emplace(std::move(voiceState));
+		} else {
+			GuildMembers::vsCache[voiceState] = std::move(voiceState);
+		}
+	}
+
+	void GuildMembers::removeVoiceState(VoiceStateData voiceState) {
+		GuildMembers::vsCache.erase(voiceState);
+	}
+
 	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
 		if (guildMember.id == 0) {
 			return;
@@ -363,6 +384,7 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
+	ObjectCache<VoiceStateDataLight> GuildMembers::vsCache{};
 	bool GuildMembers::doWeCacheGuildMembersBool{ false };
 	ObjectCache<GuildMemberData> GuildMembers::cache{};
 };

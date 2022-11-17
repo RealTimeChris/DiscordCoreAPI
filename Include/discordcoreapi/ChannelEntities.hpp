@@ -34,11 +34,7 @@
 namespace DiscordCoreAPI {
 
 	inline bool operator==(const ChannelData& lhs, const ChannelData& rhs) {
-		if (lhs.id == rhs.id) {
-			return true;
-		} else {
-			return false;
-		}
+		return lhs.id == rhs.id;
 	}
 
 	/**

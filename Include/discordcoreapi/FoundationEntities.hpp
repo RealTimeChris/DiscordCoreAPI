@@ -748,7 +748,20 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Voice state data. \brief Voice state data.
-	struct DiscordCoreAPI_Dll VoiceStateData {
+	struct DiscordCoreAPI_Dll VoiceStateDataLight {
+		Snowflake channelId{};///< The Channel id this User is connected to.
+		Snowflake guildId{};///< The Guild id this voice state is for.
+		Snowflake userId{};///< The User id this voice state is for.
+
+		VoiceStateDataLight() noexcept = default;
+
+		VoiceStateDataLight(simdjson::ondemand::value jsonObjectData);
+
+		virtual ~VoiceStateDataLight() noexcept = default;
+	};
+
+	/// Voice state data. \brief Voice state data.
+	struct DiscordCoreAPI_Dll VoiceStateData : public VoiceStateDataLight {
 		TimeStamp<Milliseconds> requestToSpeakTimestamp{};///< The time at which the User requested to speak.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
 		bool selfVideo{ false };///< Whether this User's camera is enabled.
@@ -756,11 +769,8 @@ namespace DiscordCoreAPI {
 		bool selfDeaf{ false };///< Whether this User is locally deafened.
 		bool selfMute{ false };///< Whether this User is locally muted.
 		bool suppress{ false };///< Whether this User is muted by the current User.
-		Snowflake channelId{};///< The Channel id this User is connected to.
-		Snowflake guildId{};///< The Guild id this voice state is for.
 		bool deaf{ false };///< Whether this User is deafened by the server.
 		bool mute{ false };///< Whether this User is muted by the server.
-		Snowflake userId{};///< The User id this voice state is for.
 
 		VoiceStateData() noexcept = default;
 
@@ -891,7 +901,6 @@ namespace DiscordCoreAPI {
 		TimeStamp<Milliseconds> joinedAt{};///< When they joined the Guild.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		GuildMemberFlags flags{ 0 };///< GuildMember flags.
-		Snowflake voiceChannelId{};///< Currently held voice channel, if applicable.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		StringWrapper nick{};///< Their nick/display name.
 		Snowflake guildId{};///< The current Guild's id.
@@ -914,6 +923,8 @@ namespace DiscordCoreAPI {
 		}
 
 		GuildMemberData(simdjson::ondemand::value);
+
+		VoiceStateDataLight getVoiceStateData();
 
 		std::string getAvatarUrl();
 
@@ -3393,6 +3404,12 @@ namespace DiscordCoreInternal {
 		ReadyData() noexcept = default;
 	};
 }
+
+template<> struct std::hash<DiscordCoreAPI::VoiceStateDataLight> {
+	uint64_t operator()(DiscordCoreAPI::VoiceStateDataLight const& object) const noexcept {
+		return static_cast<DiscordCoreAPI::Snowflake>(object.userId).operator size_t();
+	}
+};
 
 template<> struct std::hash<DiscordCoreAPI::DiscordEntity> {
 	uint64_t operator()(DiscordCoreAPI::DiscordEntity const& object) const noexcept {

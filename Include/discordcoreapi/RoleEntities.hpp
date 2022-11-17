@@ -35,11 +35,7 @@
 namespace DiscordCoreAPI {
 
 	inline bool operator==(const RoleData& lhs, const RoleData& rhs) {
-		if (lhs.id == rhs.id) {
-			return true;
-		} else {
-			return false;
-		}
+		return lhs.id == rhs.id;
 	}
 
 	/**

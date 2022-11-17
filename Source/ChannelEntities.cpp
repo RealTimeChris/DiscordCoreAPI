@@ -306,7 +306,6 @@ namespace DiscordCoreAPI {
 		if (Channels::cache.contains(data)) {
 			data = Channels::cache.at(data);
 		} else {
-			Channels::cache.emplace(data);
 			Channels::insertChannel(data);
 		}
 		co_return std::move(data);
@@ -340,7 +339,6 @@ namespace DiscordCoreAPI {
 		if (Channels::cache.contains(data)) {
 			data = Channels::cache.at(data);
 		} else {
-			Channels::cache.emplace(data);
 			Channels::insertChannel(data);
 		}
 		co_return std::move(data);

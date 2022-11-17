@@ -318,17 +318,11 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (GuildMembers::doWeCacheGuildMembers()) {
-			if (getArray(arrayValue, "voice_states", jsonObjectData)) {
-				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
-					VoiceStateData data{ value.value() };
-					GuildMemberData dataNew{};
-					dataNew.id = data.userId;
-					dataNew.guildId = this->id;
-					if (GuildMembers::cache.contains(dataNew)) {
-						GuildMembers::cache[dataNew].voiceChannelId = data.channelId;
-					}
-				}
+		if (getArray(arrayValue, "voice_states", jsonObjectData)) {
+			for (auto value: arrayValue) {
+				VoiceStateDataLight dataNew{ value.value() };
+				dataNew.guildId = this->id;
+				GuildMembers::vsCache[dataNew] = dataNew;
 			}
 		}
 
@@ -601,13 +595,12 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Guilds::getGuildAsync()";
 		Guild data{};
 		data = Guilds::httpsClient->submitWorkloadAndGetResult<Guild>(workload, &data);
-		data.discordCoreClient = Guilds::discordCoreClient;
 		if (Guilds::getCache().contains(data)) {
 			data = Guilds::getCache().at(data);
 		} else {
-			Guilds::getCache().emplace(data);
 			Guilds::insertGuild(data);
 		}
+		data.discordCoreClient = Guilds::discordCoreClient;
 		co_return std::move(data);
 	}
 
@@ -652,7 +645,6 @@ namespace DiscordCoreAPI {
 		if (Guilds::getCache().contains(data)) {
 			data = Guilds::getCache().at(data);
 		} else {
-			Guilds::getCache().emplace(data);
 			Guilds::insertGuild(data);
 		}
 		co_return std::move(data);

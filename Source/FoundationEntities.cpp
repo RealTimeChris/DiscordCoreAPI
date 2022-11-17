@@ -468,6 +468,14 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	VoiceStateDataLight::VoiceStateDataLight(simdjson::ondemand::value jsonObjectData) {
+		this->channelId = getId(jsonObjectData, "channel_id");
+
+		this->guildId = getId(jsonObjectData, "guild_id");
+
+		this->userId = getId(jsonObjectData, "user_id");
+	}
+
 	VoiceStateData::VoiceStateData(simdjson::ondemand::value jsonObjectData) {
 		this->requestToSpeakTimestamp = getString(jsonObjectData, "request_to_speak_timestamp");
 
@@ -572,7 +580,6 @@ namespace DiscordCoreAPI {
 	GuildMemberData& GuildMemberData::operator=(GuildMemberData&& other) noexcept {
 		if (this != &other) {
 			this->permissions = std::move(other.permissions);
-			this->voiceChannelId = other.voiceChannelId;
 			this->joinedAt = std::move(other.joinedAt);
 			this->avatar = std::move(other.avatar);
 			this->roles = std::move(other.roles);
@@ -628,6 +635,18 @@ namespace DiscordCoreAPI {
 
 	GuildMemberData::GuildMemberData(simdjson::ondemand::value jsonObjectData) {
 		*this = jsonObjectData;
+	}
+
+	VoiceStateDataLight GuildMemberData::getVoiceStateData() {
+		VoiceStateDataLight dataToGet{};
+		dataToGet.guildId = this->guildId;
+		dataToGet.userId = this->id;
+		if (GuildMembers::getVsCache().contains(dataToGet)) {
+			return GuildMembers::getVsCache()[dataToGet];
+		}
+		else {
+			return dataToGet;
+		}
 	}
 
 	std::string GuildMemberData::getAvatarUrl() {
@@ -1313,9 +1332,12 @@ namespace DiscordCoreAPI {
 		} else if (static_cast<Snowflake>(guildMemberId) != 0 || static_cast<Snowflake>(channelId) != 0) {
 			Snowflake channelId{};
 			if (static_cast<Snowflake>(guildMemberId) != 0) {
-				auto guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = guildMemberId, .guildId = this->id });
-				if (guildMember.voiceChannelId != 0) {
-					channelId = guildMember.voiceChannelId;
+				VoiceStateDataLight dataLight{};
+				dataLight.guildId = this->id;
+				dataLight.userId = guildMemberId;
+				auto voiceStateData = GuildMembers::getVsCache()[dataLight];
+				if (voiceStateData.channelId!= 0) {
+					channelId = voiceStateData.channelId;
 				}
 			} else {
 				channelId = channelId;
@@ -1451,15 +1473,11 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		if (GuildMembers::doWeCacheGuildMembers()) {
-			if (getArray(arrayValue, "voice_states", jsonObjectData)) {
-				for (auto value: arrayValue) {
-					GuildMemberData dataNew{ value.value() };
-					auto userId = getId(value.value(), "user_id");
-					dataNew.id = userId;
-					dataNew.guildId = this->id;
-					GuildMembers::cache[dataNew].voiceChannelId = getId(value.value(), "channel_id");
-				}
+		if (getArray(arrayValue, "voice_states", jsonObjectData)) {
+			for (auto value: arrayValue) {
+				VoiceStateDataLight dataNew{ value.value() };
+				dataNew.guildId = this->id;
+				GuildMembers::vsCache[dataNew] = dataNew;
 			}
 		}
 

@@ -235,7 +235,6 @@ namespace DiscordCoreAPI {
 		if (Users::cache.contains(data)) {
 			data = Users::cache.at(data);
 		} else {
-			Users::cache.emplace(data);
 			Users::insertUser(data);
 		}
 		co_return std::move(data);

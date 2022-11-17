@@ -1256,25 +1256,15 @@ namespace DiscordCoreAPI {
 	}
 
 	inline bool operator==(StringWrapper lhs, const char* rhs) {
-		if (std::string(lhs) == std::string(rhs)) {
-			return true;
-		} else {
-			return false;
-		}
+		return static_cast<std::string>(lhs) == static_cast<std::string>(rhs);
 	}
 
 	inline bool operator!=(StringWrapper lhs, const char* rhs) {
-		if (static_cast<std::string>(lhs) == rhs) {
-			return false;
-		}
-		return true;
+		return static_cast<std::string>(lhs) != rhs;
 	}
 
 	inline bool operator==(std::string& lhs, StringWrapper& rhs) {
-		if (lhs == rhs) {
-			return true;
-		}
-		return true;
+		return lhs == rhs;
 	}
 
 	/**@}*/

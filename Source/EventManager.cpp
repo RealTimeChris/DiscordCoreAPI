@@ -704,14 +704,7 @@ namespace DiscordCoreAPI {
 			sslShard->stateUpdateCollected = false;
 			sslShard->areWeCollectingData = false;
 		}
-		if (sslShard->discordCoreClient->getConfigManager().doWeCacheUsers() && sslShard->discordCoreClient->getConfigManager().doWeCacheGuilds()) {
-			DiscordCoreAPI::GuildMemberData data{};
-			data.id = this->voiceStateData.userId;
-			data.guildId = this->voiceStateData.guildId;
-			if (DiscordCoreAPI::GuildMembers::getCache().contains(data)) {
-				DiscordCoreAPI::GuildMembers::getCache()[data].voiceChannelId = this->voiceStateData.channelId;
-			}
-		}
+		DiscordCoreAPI::GuildMembers::insertVoiceState(this->voiceStateData);
 	}
 
 	OnWebhookUpdateData::OnWebhookUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {

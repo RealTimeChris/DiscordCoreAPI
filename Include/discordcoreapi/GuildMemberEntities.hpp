@@ -34,12 +34,12 @@
 
 namespace DiscordCoreAPI {
 
+	inline bool operator==(const VoiceStateDataLight& lhs, const VoiceStateDataLight& rhs) {
+		return (lhs.guildId == rhs.guildId) && (lhs.userId == rhs.userId);
+	}
+
 	inline bool operator==(const GuildMemberData& lhs, const GuildMemberData& rhs) {
-		if ((lhs.guildId == rhs.guildId) && (lhs.id == rhs.id)) {
-			return true;
-		} else {
-			return false;
-		}
+		return (lhs.guildId == rhs.guildId) && (lhs.id == rhs.id);
 	}
 
 	/**
@@ -218,7 +218,13 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing GuildMember.
 		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
+		static ObjectCache<VoiceStateDataLight>& getVsCache();
+
 		static ObjectCache<GuildMemberData>& getCache();
+
+		static void insertVoiceState(VoiceStateData voiceState);
+
+		static void removeVoiceState(VoiceStateData voiceState);
 
 		static void insertGuildMember(GuildMemberData guildMember);
 
@@ -228,6 +234,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static ObjectCache<VoiceStateDataLight> vsCache;
 		static ObjectCache<GuildMemberData> cache;
 		static bool doWeCacheGuildMembersBool;
 	};

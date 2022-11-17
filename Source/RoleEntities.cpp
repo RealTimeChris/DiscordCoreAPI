@@ -290,7 +290,6 @@ namespace DiscordCoreAPI {
 		if (Roles::cache.contains(data)) {
 			data = Roles::cache.at(data);
 		} else {
-			Roles::cache.emplace(data);
 			Roles::insertRole(data);
 		}
 		co_return std::move(data);

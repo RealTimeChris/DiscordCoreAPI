@@ -55,19 +55,11 @@ namespace DiscordCoreInternal {
 	};
 
 	inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
-		if (lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId) {
-			return true;
-		} else {
-			return false;
-		}
+		return lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId;
 	}
 
 	inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
-		if (stoll(lhs.handlerId) < stoll(rhs.handlerId)) {
-			return true;
-		} else {
-			return false;
-		}
+		return stoll(lhs.handlerId) < stoll(rhs.handlerId);
 	}
 
 	/// Event-delegate, for representing an event-function to be executed. \brief Event-delegate, for representing an event-function to be executed.
