@@ -11,7 +11,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 ![imageDiscordCoreAPI](./TheLogo.png "A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.")
 
 # Documentation/Examples
-[Documentation/Examples](https://discordcoreapi.info/dd/df9/a07236.html)
+\subpage Examples
 
 # Discord Server
 [This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)
@@ -146,7 +146,5 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 # Roadmap
 I am currently working on getting this thing to be used by people like you! So, if you have any suggestions for the library that would make it more usable - don't hesitate to let me know! I can be
 easily found on the Discord server that is linked to above! Cheers and thanks for your time.
-
-- \subpage Examples
 
 - \subpage Guides

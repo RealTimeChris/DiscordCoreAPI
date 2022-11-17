@@ -1,4 +1,4 @@
-Docs/Examples {#Examples}
+Documentation/Examples {#Examples}
 ============
 - \subpage loginsetup
 
