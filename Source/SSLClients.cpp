@@ -560,13 +560,6 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 
-		if (getaddrinfo(baseUrlNew.c_str(), std::to_string(portNew).c_str(), hints, this->address)) {
-			if (this->doWePrintErrors) {
-				cout << reportError("DatagramSocketClient::connect::getaddrinfo(), to: " + baseUrlNew) << endl;
-			}
-			return false;
-		}
-
 		if (this->socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); this->socket == SOCKET_ERROR) {
 			if (this->doWePrintErrors) {
 				cout << reportError("DatagramSocketClient::connect::socket(), to: " + baseUrlNew) << endl;
@@ -583,6 +576,12 @@ namespace DiscordCoreInternal {
 		}
 
 		if (this->streamType == DiscordCoreAPI::StreamType::None) {
+			if (getaddrinfo(baseUrlNew.c_str(), std::to_string(portNew).c_str(), hints, this->address)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::getaddrinfo(), to: " + baseUrlNew) << endl;
+				}
+				return false;
+			}
 			if (::connect(this->socket, this->address->ai_addr, static_cast<socklen_t>(this->address->ai_addrlen)) == SOCKET_ERROR) {
 				if (this->doWePrintErrors) {
 					cout << reportError("DatagramSocketClient::connect::connect(), to: " + baseUrlNew) << endl;
@@ -590,6 +589,12 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 		} else if (this->streamType == DiscordCoreAPI::StreamType::Client) {
+			if (getaddrinfo(baseUrlNew.c_str(), std::to_string(portNew).c_str(), hints, this->address)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::getaddrinfo(), to: " + baseUrlNew) << endl;
+				}
+				return false;
+			}
 			if (!haveWeGottenSignaled) {
 				char chars[]{ "connecting" };
 				std::string connectionString{ chars, std::size(chars) };
@@ -599,6 +604,13 @@ namespace DiscordCoreInternal {
 					reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 			}
 		} else {
+			hints->ai_flags = AI_PASSIVE;
+			if (getaddrinfo(nullptr, std::to_string(portNew).c_str(), hints, this->address)) {
+				if (this->doWePrintErrors) {
+					cout << reportError("DatagramSocketClient::connect::getaddrinfo(), to: " + baseUrlNew) << endl;
+				}
+				return false;
+			}			
 			if (auto result = bind(this->socket, this->address->ai_addr, this->address->ai_addrlen); result != 0) {
 				if (this->doWePrintErrors) {
 					cout << reportError("DatagramSocketClient::connect::bind(), to: " + baseUrlNew) << endl;
