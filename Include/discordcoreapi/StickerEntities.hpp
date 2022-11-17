@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a single Sticker. \brief For creating a single Sticker.
 	struct DiscordCoreAPI_Dll CreateGuildStickerData {
-		std::vector<uint8_t> file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
+		std::string file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
 		std::string description{};///< Description of the Sticker.
 		Snowflake guildId{};///< The Guild within which to create the Sticker.
 		std::string reason{};///< The reason for creating the Sticker.

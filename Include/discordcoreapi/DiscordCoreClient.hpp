@@ -157,8 +157,8 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::unordered_map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
-		StopWatch<Milliseconds> connectionStopWatch{ 5250ms };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
+		StopWatch<Milliseconds> connectionStopWatch{ 5250ms };
 	#ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 	#endif
@@ -168,7 +168,6 @@ namespace DiscordCoreAPI {
 		ConfigManager configManager{};
 		EventManager eventManager{};///< An event-manager, for hooking into Discord-API-Events sent over the Websockets.
 		BotUser currentUser{};
-
 
 		void registerFunctionsInternal();
 

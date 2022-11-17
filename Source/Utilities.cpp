@@ -1896,7 +1896,7 @@ namespace DiscordCoreInternal {
 		return this->string01[index];
 	}
 
-	void StringBuffer::writeData(const char8_t* ptr, uint64_t size) {
+	void StringBuffer::writeData(const char* ptr, uint64_t size) {
 		if (this->sizeValue + size > this->string01.size()) {
 			this->string01.resize(this->string01.size() + size);
 		}
@@ -1921,11 +1921,11 @@ namespace DiscordCoreInternal {
 		return this->sizeValue;
 	}
 
-	void StringBuffer::clear() {
-		this->sizeValue = 0;
-	}
-
 	char* StringBuffer::data() {
 		return this->string01.data();
+	}
+
+	void StringBuffer::clear() {
+		this->sizeValue = 0;
 	}
 }

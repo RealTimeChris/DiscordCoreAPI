@@ -45,9 +45,9 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> ptr{ nullptr, OpusEncoderDeleter{} };
 		const int32_t maxBufferSize{ 1276 };
-		std::vector<uint8_t> encodedData{};
 		const int32_t sampleRate{ 48000 };
 		const int32_t nChannels{ 2 };
+		std::string encodedData{};
 	};
 
 }// namespace DiscordCoreAPI

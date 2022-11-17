@@ -158,27 +158,25 @@ namespace DiscordCoreAPI {
 	/// A Channel object. \brief A Channel object.
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	  public:
-		TimeStamp<std::chrono::milliseconds> lastPinTimestamp{};///< Timestamp of the last pinned Message.
-		DefaultReactionData defaultReactionEmoji{};///< The emoji to show in the add reaction button on a thread in a GUILD_FORUM channel.
-		int32_t
-			defaultThreadRateLimitPerUser{};///< The initial rate_limit_per_user to set on newly created threads in a channel.this field is copied to the thread at creation time and does not live update.
-		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
-		std::vector<ForumTagData> availableTags{};///< The set of tags that can be used in a GUILD_FORUM channel.
 		std::unordered_map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group DM or m.
-		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
+		TimeStamp<Milliseconds> lastPinTimestamp{};///< Timestamp of the last pinned Message.
+		DefaultReactionData defaultReactionEmoji{};///< The emoji to show in the add reaction button on a thread in a GUILD_FORUM channel.
+		std::vector<ForumTagData> availableTags{};///< The set of tags that can be used in a GUILD_FORUM channel.
+		int32_t defaultThreadRateLimitPerUser{};///< The initial rate_limit_per_user to set on newly created threads in a channel.
+		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
 		std::vector<Snowflake> appliedTags{};///< The IDs of the set of tags that have been applied to a thread in a GUILD_FORUM channel.
+		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		StringWrapper lastMessageId{};///< Id of the last Message.
 		int32_t videoQualityMode{ 0 };///< Video quality mode.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
 		StringWrapper permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
+		int32_t totalMessageSent{};///< Number of messages ever sent in a thread it's similar to message_count on message creation.
 		Snowflake applicationId{};///< Application id of the current application.
 		StringWrapper rtcRegion{};///< Real-time clock region.
 		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
-		int32_t
-			totalMessageSent{};///< Number of messages ever sent in a thread it's similar to message_count on message creation, but will not decrement the number when a message is deleted.
 		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
-		StringWrapper topic{};///< The Channel's topic.
 		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
+		StringWrapper topic{};///< The Channel's topic.
 		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
 		IconHash icon{};///< Icon for the Channel, if applicable.
 

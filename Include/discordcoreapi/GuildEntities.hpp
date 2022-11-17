@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		int32_t verificationLevel{ 0 };///< Verification level.
 		std::vector<Role> roles{};///< Array of Role objects.
 		Snowflake systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
-		std::vector<uint8_t> icon{};///< base64 128x128 image for the Guild icon.
+		std::string icon{};///< base64 128x128 image for the Guild icon.
 		Snowflake afkChannelId{};///< Id for afk Channel.
 		std::string region{};///< The region that the servers are in.
 		std::string name{};///< The name of the new Guild.
@@ -215,7 +215,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a Guild from a Guild template. \brief For creating a Guild from a Guild template.
 	struct DiscordCoreAPI_Dll CreateGuildFromGuildTemplateData {
-		std::vector<uint8_t> imageData{};///< base64 128x128 image for the Guild icon.
+		std::string imageData{};///< base64 128x128 image for the Guild icon.
 		std::string templateCode{};///< Code for the desired Template to use.
 		std::string name{};///< Desired name of the Guild.
 	};
@@ -366,18 +366,17 @@ namespace DiscordCoreAPI {
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		SystemChannelFlags systemChannelFlags{ 0 };///< System Channel flags.
 		bool premiumProgressBarEnabled{ false };///< Whether or not the progress bar is enabled.
-		std::vector<uint8_t>
-			discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
+		std::string discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
 		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.
 		Snowflake publicUpdatesChannelId{};///< The id of the Channel where admins and moderators of Community guilds receive notices from Discord.
 		AfkTimeOutDurations afkTimeout{};///< Afk timeout in seconds.
-		std::vector<uint8_t> banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
-		std::vector<uint8_t> splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
+		std::string banner{};///< Base64 16 : 9 png / jpeg image for the Guild banner (when the server has the BANNER feature).
+		std::string splash{};///< Base64 16 : 9 png / jpeg image for the Guild splash (when the server has the INVITE_SPLASH feature).
 		std::string
 			preferredLocale{};///< The preferred locale of a Community Guild used in server discovery and notices from Discord; defaults to "en-US".
 		Snowflake systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
-		std::vector<uint8_t>
+		std::string
 			icon{};///< Base64 1024x1024 png / jpeg / gif image for the Guild icon (can be animated gif when the server has the ANIMATED_ICON).
 		Snowflake rulesChannelId{};///< The id of the Channel where Community guilds display rules and /or guidelines.
 		std::string description{};///< The description for the Guild, if the Guild is discoverable.
