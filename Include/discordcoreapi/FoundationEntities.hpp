@@ -3394,37 +3394,37 @@ namespace DiscordCoreInternal {
 	};
 }
 
-template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::DiscordEntity> {
+template<> struct std::hash<DiscordCoreAPI::DiscordEntity> {
 	uint64_t operator()(DiscordCoreAPI::DiscordEntity const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t();
 	}
 };
 
-template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::ChannelData> {
+template<> struct std::hash<DiscordCoreAPI::ChannelData> {
 	uint64_t operator()(DiscordCoreAPI::ChannelData const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t();
 	}
 };
 
-template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::GuildData> {
+template<> struct std::hash<DiscordCoreAPI::GuildData> {
 	uint64_t operator()(DiscordCoreAPI::GuildData const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t();
 	}
 };
 
-template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::RoleData> {
+template<> struct std::hash<DiscordCoreAPI::RoleData> {
 	uint64_t operator()(DiscordCoreAPI::RoleData const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t();
 	}
 };
 
-template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::UserData> {
+template<> struct std::hash<DiscordCoreAPI::UserData> {
 	uint64_t operator()(DiscordCoreAPI::UserData const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t();
 	}
 };
 
-template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::GuildMemberData> {
+template<> struct std::hash<DiscordCoreAPI::GuildMemberData> {
 	uint64_t operator()(DiscordCoreAPI::GuildMemberData const& object) const noexcept {
 		return static_cast<DiscordCoreAPI::Snowflake>(object.guildId).operator size_t() ^
 			(static_cast<DiscordCoreAPI::Snowflake>(object.id).operator size_t() << 1);

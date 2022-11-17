@@ -874,18 +874,18 @@ namespace DiscordCoreAPI {
 	using std::cout;
 	using std::endl;
 
-	struct File;
+	struct DiscordCoreAPI_Dll File;
 
-	class OnVoiceServerUpdateData;
-	class OnVoiceStateUpdateData;
-	class DiscordCoreClient;
-	class VoiceConnection;
-	class GuildMember;
-	class ChannelData;
-	class Reactions;
-	class BotUser;
+	class DiscordCoreAPI_Dll OnVoiceServerUpdateData;
+	class DiscordCoreAPI_Dll OnVoiceStateUpdateData;
+	class DiscordCoreAPI_Dll DiscordCoreClient;
+	class DiscordCoreAPI_Dll VoiceConnection;
+	class DiscordCoreAPI_Dll GuildMember;
+	class DiscordCoreAPI_Dll ChannelData;
+	class DiscordCoreAPI_Dll Reactions;
+	class DiscordCoreAPI_Dll BotUser;
 
-	struct DCAException : public std::runtime_error, std::string {
+	struct DiscordCoreAPI_Dll DCAException : public std::runtime_error, std::string {
 		DCAException(const std::string&, std::source_location = std::source_location::current()) noexcept;
 	};
 
@@ -1580,9 +1580,9 @@ namespace DiscordCoreAPI {
 	/// \returns std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
-	template<typename TTy>
+	
 	/// Class for representing a timeStamp, as well as working with time-related values. \brief Class for representing a timeStamp, as well as working with time-related values.
-	class TimeStamp {
+	template<typename TTy> class TimeStamp {
 	  public:
 		explicit TimeStamp(TimeFormat formatNew = TimeFormat::LongDateTime) {
 			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
@@ -1893,7 +1893,7 @@ namespace DiscordCoreAPI {
 	};
 
 	template<IsEnum OTy> auto setBool(OTy theFlags, OTy theFlagToSet, bool enabled) {
-		typename std::underlying_type_t<OTy> theValue{ static_cast<std::underlying_type_t<OTy>>(theFlags) };
+		std::underlying_type_t<OTy> theValue{ static_cast<std::underlying_type_t<OTy>>(theFlags) };
 		if (enabled) {
 			theValue |= static_cast<std::underlying_type_t<OTy>>(theFlagToSet);
 		} else {
@@ -1902,8 +1902,8 @@ namespace DiscordCoreAPI {
 		return static_cast<OTy>(theValue);
 	}
 
-	template<IsEnum OTy> bool getBool(OTy theFlags, OTy theFlagToCheck) {
-		return static_cast<std::underlying_type_t<OTy>>(theFlags) & static_cast<std::underlying_type_t<OTy>>(theFlagToCheck);
+	template<IsEnum OTy> bool getBool(OTy theFlags, OTy theFlagToCheckFor) {
+		return static_cast<std::underlying_type_t<OTy>>(theFlags) & static_cast<std::underlying_type_t<OTy>>(theFlagToCheckFor);
 	}
 
 	template<typename OTy>

@@ -43,7 +43,7 @@ namespace DiscordCoreAPI {
 		this->port = getUint64(jsonObjectData, "port");
 	}
 
-	VoiceUser::VoiceUser(std::atomic_int8_t* voiceUsersNew, std::atomic_int64_t* leftOverVoiceTimeNew) noexcept {
+	VoiceUser::VoiceUser(std::atomic_int8_t* voiceUsersNew, std::atomic<Nanoseconds>* leftOverVoiceTimeNew) noexcept {
 		this->leftOverVoiceTime = leftOverVoiceTimeNew;
 		this->voiceUserCount = voiceUsersNew;
 	}
@@ -70,8 +70,8 @@ namespace DiscordCoreAPI {
 		int64_t userCount = this->voiceUserCount->load();
 		std::string value{};
 		if (userCount > 0) {
-			int64_t maxSleepTime{ this->leftOverVoiceTime->load() / userCount };
-			StopWatch stopWatch{ Nanoseconds{ maxSleepTime } };
+			Nanoseconds maxSleepTime{ this->leftOverVoiceTime->load() / userCount };
+			StopWatch stopWatch{ maxSleepTime };
 			stopWatch.resetTimer();
 			while (!this->payloads.tryReceive(value) && !this->wereWeEnding.load()) {
 				if (stopWatch.hasTimePassed()) {
@@ -540,7 +540,7 @@ namespace DiscordCoreAPI {
 						}
 						auto newerTime = newTime - HRClock::now().time_since_epoch();
 						if ((intervalCount.time_since_epoch() - newerTime).count() > 0) {
-							this->leftOverVoiceTime.store((intervalCount.time_since_epoch() - newerTime).count());
+							this->leftOverVoiceTime.store((intervalCount.time_since_epoch() - newerTime));
 						}
 						targetTime = HRClock::now().time_since_epoch() + intervalCount;
 					}
