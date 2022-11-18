@@ -46,23 +46,24 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
+
 		VoiceUser() noexcept = default;
 
-		VoiceUser(std::atomic_int8_t* voiceUserCount, std::atomic<Nanoseconds>* leftOverVoiceTime) noexcept;
+		VoiceUser(std::atomic_int8_t* voiceUserCount, std::atomic_int64_t* sleepableTime) noexcept;
 
 		VoiceUser& operator=(VoiceUser&&) noexcept;
 
-		VoiceUser(VoiceUser&&) noexcept = default;
+		VoiceUser(VoiceUser&&) noexcept;
 
 		VoiceUser& operator=(const VoiceUser&) noexcept = delete;
 
 		VoiceUser(const VoiceUser&) noexcept = delete;
 
-		DiscordCoreInternal::OpusDecoderWrapper& getDecoder();
-
 		void insertPayload(std::string&&);
 
 		std::string extractPayload();
+
+		DiscordCoreInternal::OpusDecoderWrapper& getDecoder();
 
 		void setEndingStatus(bool);
 
@@ -75,13 +76,11 @@ namespace DiscordCoreAPI {
 	  protected:
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
 		UnboundedMessageBlock<std::string> payloads{};
-		std::atomic<Nanoseconds>* leftOverVoiceTime{};
 		std::atomic_bool wereWeEnding{ false };
 		std::atomic_int8_t* voiceUserCount{};
+		std::atomic_int64_t* sleepableTime{};
 		Snowflake userId{};
 	};
-
-	using TimePoint = std::chrono::time_point<HRClock, Nanoseconds>;
 
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
 		RTPPacketEncrypter() noexcept = default;
@@ -91,24 +90,13 @@ namespace DiscordCoreAPI {
 		std::string_view encryptPacket(const AudioFrameData& audioData) noexcept;
 
 	  protected:
-		std::string keys{};
-		std::string data{};
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };
 		uint32_t timeStamp{};
 		uint16_t sequence{};
+		std::string keys{};
+		std::string data{};
 		uint32_t ssrc{};
-	};
-
-	/// For the varuious WebSocket messages. \brief For the varuious WebSocket messages.
-	enum class OnMessageReceivedTypes {
-		Ready = 2,///< Complete the websocket handshake.
-		Session_Description = 4,///< Describe the session.
-		Speaking = 5,///< Indicate which users are speaking.
-		Heartbeat_ACK = 6,///< Sent to acknowledge a received client heartbeat.
-		Hello = 8,///< Time to wait between sending heartbeats in milliseconds.
-		Resumed = 9,///< Acknowledge a successful session resume.
-		Client_Disconnect = 13///< A client has disconnected from the voice channel.
 	};
 
 	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
@@ -132,18 +120,15 @@ namespace DiscordCoreAPI {
 		Exiting = 4///< Exiting.
 	};
 
-	class DiscordCoreAPI_Dll VoiceConnection;
-
 	class DiscordCoreAPI_Dll VoiceConnectionBridge : public DiscordCoreInternal::DatagramSocketClient {
 	  public:
-		VoiceConnectionBridge(DiscordCoreClient* clientPtrNew, VoiceConnection* voiceConnectionPtrNew, StreamType streamType, Snowflake guildIdNew);
+		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, StreamType streamType, Snowflake guildIdNew);
 
 		void parseOutGoingVoiceData() noexcept;
 
 		void handleAudioBuffer() noexcept;
 
 	  protected:
-		VoiceConnection* voiceConnectionPtr{ nullptr };
 		DiscordCoreClient* clientPtr{ nullptr };
 		Snowflake guildId{};
 	};
@@ -184,19 +169,18 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
-		std::atomic<Nanoseconds> leftOverVoiceTime{};
 		VoiceConnectInitData voiceConnectInitData{};
 		std::vector<opus_int16> downSampledVector{};
 		std::vector<opus_int32> upSampledVector{};
-		std::atomic_bool canWeSendAudio{ true };
+		std::atomic_bool canWeSendAudio{ false };
 		std::atomic_bool areWePlaying{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		RTPPacketEncrypter packetEncrypter{};
 		simdjson::ondemand::parser parser{};
 		std::atomic_int8_t voiceUserCount{};
-		bool haveWeGottenSignaled{ false };
-		std::string decryptedDataString{};
+		std::atomic_int64_t sleepableTime{};
 		std::string audioEncryptionMode{};
+		std::string decryptedDataString{};
 		Snowflake currentGuildMemberId{};
 		OpusEncoderWrapper encoder{};
 		std::mutex voiceUserMutex{};
@@ -210,9 +194,9 @@ namespace DiscordCoreAPI {
 
 		void parseIncomingVoiceData(const std::string_view rawDataBufferNew) noexcept;
 
-		void connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept;
-
 		void sendVoiceData(const std::string_view responseData) noexcept;
+
+		void connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
@@ -230,8 +214,6 @@ namespace DiscordCoreAPI {
 
 		bool areWeCurrentlyPlaying() noexcept;
 
-		void checkForConnections() noexcept;
-
 		void handleAudioBuffer() noexcept;
 
 		void connectInternal() noexcept;
@@ -245,6 +227,8 @@ namespace DiscordCoreAPI {
 		void sendSilence() noexcept;
 
 		void pauseToggle() noexcept;
+
+		void checkForConnections();
 
 		void disconnect() noexcept;
 
