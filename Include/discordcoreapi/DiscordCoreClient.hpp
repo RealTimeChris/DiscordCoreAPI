@@ -145,6 +145,10 @@ namespace DiscordCoreAPI {
 		/// \returns EventManager& A reference to the EventManager.
 		EventManager& getEventManager();
 
+		/// For collecting, the total time in milliseconds that this bot has been up for. \brief For collecting, the total time in milliseconds that this bot has been up for.
+		/// \returns Milliseconds A count, in milliseconds, since the bot has come online.
+		Milliseconds getTotalUpTime();
+
 		/// For collecting a copy of the current bot's User. \brief For collecting a copy of the current bot's User.
 		/// \returns BotUser An instance of BotUser.
 		BotUser getBotUser();
@@ -164,6 +168,7 @@ namespace DiscordCoreAPI {
 	#endif
 		CommandController commandController{ this };
 		std::atomic_bool isItSafeToConnect{ true };
+		Milliseconds startupTimeSinceEpoch{};
 		bool didWeStartCorrectly{ false };
 		ConfigManager configManager{};
 		EventManager eventManager{};///< An event-manager, for hooking into Discord-API-Events sent over the Websockets.

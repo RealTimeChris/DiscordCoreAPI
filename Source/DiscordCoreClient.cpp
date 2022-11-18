@@ -168,12 +168,46 @@ namespace DiscordCoreAPI {
 		WebHooks::initialize(this->httpsClient.get());
 		this->didWeStartCorrectly = true;
 	}
-
+	
 	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction,
 		CreateApplicationCommandData commandData, bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;
 		this->commandController.registerFunction(functionNames, std::move(baseFunction));
 		this->commandsToRegister.emplace_back(commandData);
+	}
+
+	CommandController& DiscordCoreClient::getCommandController() {
+		return this->commandController;
+	}
+
+	ConfigManager& DiscordCoreClient::getConfigManager() {
+		return this->configManager;
+	}
+
+	EventManager& DiscordCoreClient::getEventManager() {
+		return this->eventManager;
+	}
+
+	Milliseconds DiscordCoreClient::getTotalUpTime() {
+		return std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()) - this->startupTimeSinceEpoch;
+	}
+
+	BotUser DiscordCoreClient::getBotUser() {
+		return this->currentUser;
+	}
+
+	void DiscordCoreClient::runBot() {
+		if (!this->didWeStartCorrectly) {
+			return;
+		}
+		if (!this->instantiateWebSockets()) {
+			Globals::doWeQuit.store(true);
+			return;
+		}
+		this->registerFunctionsInternal();
+		while (!Globals::doWeQuit.load()) {
+			std::this_thread::sleep_for(1ms);
+		}
 	}
 
 	void DiscordCoreClient::registerFunctionsInternal() {
@@ -217,36 +251,6 @@ namespace DiscordCoreAPI {
 					}
 				}
 			}
-		}
-	}
-
-	ConfigManager& DiscordCoreClient::getConfigManager() {
-		return this->configManager;
-	}
-
-	CommandController& DiscordCoreClient::getCommandController() {
-		return this->commandController;
-	}
-
-	EventManager& DiscordCoreClient::getEventManager() {
-		return this->eventManager;
-	}
-
-	BotUser DiscordCoreClient::getBotUser() {
-		return this->currentUser;
-	}
-
-	void DiscordCoreClient::runBot() {
-		if (!this->didWeStartCorrectly) {
-			return;
-		}
-		if (!this->instantiateWebSockets()) {
-			Globals::doWeQuit.store(true);
-			return;
-		}
-		this->registerFunctionsInternal();
-		while (!Globals::doWeQuit.load()) {
-			std::this_thread::sleep_for(1ms);
 		}
 	}
 
@@ -317,6 +321,7 @@ namespace DiscordCoreAPI {
 				ThreadPool::executeFunctionAfterTimePeriod(value.function, value.intervalInMs, false, this);
 			}
 		}
+		this->startupTimeSinceEpoch = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch());
 		return true;
 	}
 
