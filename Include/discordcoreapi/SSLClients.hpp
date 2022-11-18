@@ -256,7 +256,7 @@ namespace DiscordCoreInternal {
 
 		void disconnect() noexcept;
 
-		~DatagramSocketClient() noexcept;
+		virtual ~DatagramSocketClient() noexcept = default;
 
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) };

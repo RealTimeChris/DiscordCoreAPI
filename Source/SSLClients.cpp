@@ -801,10 +801,6 @@ namespace DiscordCoreInternal {
 		this->inputBuffer.clear();
 	}
 
-	DatagramSocketClient ::~DatagramSocketClient() noexcept {
-	}
-
 	SSL_CTXWrapper SSLConnectionInterface::context{};
 	std::mutex SSLConnectionInterface::mutex{};
-
 }

@@ -2618,16 +2618,16 @@ namespace DiscordCoreAPI {
 	/// The core of a Message's data structure. \brief The core of a Message's data structure.
 	class DiscordCoreAPI_Dll MessageDataOld : public DiscordEntity {
 	  public:
-		TimeStamp<Milliseconds> editedTimestamp{};///< The time at which it was edited.
 		std::vector<ChannelMentionData> mentionChannels{};///< array of Channel mention data.
-		TimeStamp<Milliseconds> timeStamp{};///< The timeStamp of when the Message was created.
 		std::vector<StickerItemData> stickerItems{};///< Array of Message Sticker item data.
 		std::vector<AttachmentData> attachments{};///< Array of attachment data.
+		TimeStamp<Milliseconds> editedTimestamp{};///< The time at which it was edited.
 		MessageReferenceData messageReference{};///< Message reference data.
 		std::vector<ActionRowData> components{};///< Array of action row data.
 		std::vector<std::string> mentionRoles{};///< std::vector of "mention roles" ids.
 		std::vector<ReactionData> reactions{};//< Array of reaction data.
 		MessageInteractionData interaction{};///< Message Interaction data.
+		TimeStamp<Milliseconds> timeStamp{};///< The timeStamp of when the Message was created.
 		std::vector<StickerData> stickers{};///< Array of Message Sticker data.
 		std::vector<UserData> mentions{};///< Array of User data, for individual's that were mentioned.
 		std::vector<EmbedData> embeds{};///< Array of Message embeds.
