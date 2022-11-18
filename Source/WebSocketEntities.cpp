@@ -179,6 +179,42 @@ namespace DiscordCoreInternal {
 		this->configManager = configManagerNew;
 	}
 
+	bool WebSocketCore::connect(const std::string& baseUrl, const std::string& relativePath, const uint16_t portNew, bool doWePrintErrorsNew,
+		bool areWeAStandaloneSocketNew) noexcept {
+		SSLClient::connect(baseUrl, portNew, doWePrintErrorsNew, areWeAStandaloneSocket);
+		DiscordCoreAPI::StopWatch stopWatch{ 5s };
+		std::string sendString{ "GET " + relativePath + " HTTP/1.1\r\nHost: " + baseUrl +
+			"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: "
+			"Upgrade\r\nSec-WebSocket-Key: " +
+			DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n" };
+		size_t readOrWrittenBytes{};
+		this->writeData(sendString, true);
+
+		std::string_view buffer{};
+		do {
+			if (stopWatch.hasTimePassed()) {
+				return false;
+			}
+			this->processIO(10);
+			buffer = this->getInputBuffer();
+			this->parseConnectionHeaders(buffer);
+			std::this_thread::sleep_for(1ms);
+		} while (buffer.size() == 0);
+		return true;
+	}
+
+	void WebSocketCore::parseConnectionHeaders(std::string_view stringNew) noexcept {
+		if (this->areWeStillConnected() && this->currentState.load() == WebSocketState::Upgrading) {
+			auto theFindValue = stringNew.find("\r\n\r\n");
+			if (theFindValue != std::string::npos) {
+				this->currentMessage.clear();
+				this->currentState.store(WebSocketState::Collecting_Hello);
+				return;
+			}
+		}
+		return;
+	}
+
 	void WebSocketCore::createHeader(std::string& outBuffer, WebSocketOpCode opCode) noexcept {
 		size_t originalSize{ outBuffer.size() };
 		outBuffer.insert(outBuffer.begin(), static_cast<uint8_t>(opCode) | webSocketFinishBit);
@@ -203,18 +239,66 @@ namespace DiscordCoreInternal {
 		outBuffer.insert(outBuffer.begin() + 3 + indexCount, 0);
 		outBuffer.insert(outBuffer.begin() + 4 + indexCount, 0);
 		outBuffer.insert(outBuffer.begin() + 5 + indexCount, 0);
+	}	
+	
+	bool WebSocketCore::sendMessage(std::string& dataToSend, bool priority) noexcept {
+		if (dataToSend.size() == 0) {
+			return false;
+		}
+		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
+			std::string webSocketTitle = this->wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
+			cout << DiscordCoreAPI::shiftToBrightBlue()
+				 << "Sending " + webSocketTitle + " [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" +
+					std::string("'s Message: ")
+				 << static_cast<std::string>(dataToSend) << DiscordCoreAPI::reset() << endl
+				 << endl;
+		}
+		ProcessIOResult didWeWrite{ false };
+		DiscordCoreAPI::StopWatch stopWatch{ 5000ms };
+		do {
+			if (stopWatch.hasTimePassed()) {
+				this->onClosed();
+				return false;
+			}
+			didWeWrite = this->writeData(dataToSend, priority);
+		} while (didWeWrite == ProcessIOResult::Error);
+		if (didWeWrite == ProcessIOResult::Error) {
+			this->onClosed();
+			return false;
+		}
+		return true;
 	}
 
-	void WebSocketCore::parseConnectionHeaders(std::string_view stringNew) noexcept {
-		if (this->areWeStillConnected() && this->currentState.load() == WebSocketState::Upgrading) {
-			auto theFindValue = stringNew.find("\r\n\r\n");
-			if (theFindValue != std::string::npos) {
-				this->currentMessage.clear();
-				this->currentState.store(WebSocketState::Collecting_Hello);
-				return;
+	bool WebSocketCore::checkForAndSendHeartBeat(bool isImmediate) noexcept {
+		if ((this->currentState.load() == WebSocketState::Authenticated && this->heartBeatStopWatch.hasTimePassed() &&
+				this->haveWeReceivedHeartbeatAck) ||
+			isImmediate) {
+			std::string string{};
+			DiscordCoreAPI::Jsonifier data{};
+			data["d"] = this->lastNumberReceived;
+			data["op"] = 1;
+			if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
+				data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Etf);
+			} else {
+				data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 			}
+			string = data.operator std::string();
+			this->createHeader(string, this->dataOpCode);
+			if (!this->sendMessage(string, true)) {
+				return false;
+			}
+			this->haveWeReceivedHeartbeatAck = false;
+			this->heartBeatStopWatch.resetTimer();
+			return true;
+		} else {
+			return false;
 		}
-		return;
+	}
+
+	void WebSocketCore::handleBuffer() noexcept {
+		if (this->currentState != WebSocketState::Upgrading) {
+			this->parseMessage();
+		}
 	}
 
 	void WebSocketCore::parseMessage() noexcept {
@@ -261,7 +345,7 @@ namespace DiscordCoreInternal {
 						this->messageLength = 0;
 						for (uint64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
 							uint8_t lengthNew = static_cast<uint8_t>(this->currentMessage[x]);
-							this->messageLength |= static_cast<uint64_t>((lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift));
+							this->messageLength |= static_cast<uint64_t>(lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift);
 						}
 						this->messageOffset += 8;
 					}
@@ -327,30 +411,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketCore::connect(const std::string& baseUrl, const std::string& relativePath, const uint16_t portNew, bool doWePrintErrorsNew,
-		bool areWeAStandaloneSocketNew) noexcept {
-		SSLClient::connect(baseUrl, portNew, doWePrintErrorsNew, areWeAStandaloneSocket);
-		DiscordCoreAPI::StopWatch stopWatch{ 5s };
-		std::string sendString{ "GET " + relativePath + " HTTP/1.1\r\nHost: " + baseUrl +
-			"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: "
-			"Upgrade\r\nSec-WebSocket-Key: " +
-			DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n" };
-		size_t readOrWrittenBytes{};
-		this->writeData(sendString, true);
-
-		std::string_view buffer{};
-		do {
-			if (stopWatch.hasTimePassed()) {
-				return false;
-			}
-			this->processIO(10);
-			buffer = this->getInputBuffer();
-			this->parseConnectionHeaders(buffer);
-			std::this_thread::sleep_for(1ms);
-		} while (buffer.size() == 0);
-		return true;
-	}
-
 	void WebSocketSSLShard::getVoiceConnectionData(const DiscordCoreAPI::VoiceConnectInitData& doWeCollect) noexcept {
 		while (this->currentState.load() != WebSocketState::Authenticated) {
 			std::this_thread::sleep_for(1ms);
@@ -397,38 +457,6 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketCore::sendMessage(std::string& dataToSend, bool priority) noexcept {
-		if (dataToSend.size() == 0) {
-			return false;
-		}
-		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
-			std::string webSocketTitle = this->wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
-			cout << DiscordCoreAPI::shiftToBrightBlue()
-				 << "Sending " + webSocketTitle + " [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" +
-					std::string("'s Message: ")
-				 << static_cast<std::string>(dataToSend) << DiscordCoreAPI::reset() << endl
-				 << endl;
-		}
-		ProcessIOResult didWeWrite{ false };
-		DiscordCoreAPI::StopWatch stopWatch{ 5000ms };
-		do {
-			if (stopWatch.hasTimePassed()) {
-				this->onClosed();
-				return false;
-			}
-			didWeWrite = this->writeData(dataToSend, priority);
-		} while (didWeWrite == ProcessIOResult::Error);
-		if (didWeWrite == ProcessIOResult::Error) {
-			this->onClosed();
-			return false;
-		}
-		return true;
-	}
-
-	DiscordCoreAPI::StopWatch stopWatch{ 5s };
-	DiscordCoreAPI::StopWatch stopWatchReal{ 50us };
-	std::atomic_int32_t integer{};
-
 	bool WebSocketSSLShard::onMessageReceived(std::string_view dataNew) noexcept {
 		try {
 			if (this->areWeStillConnected() && this->currentMessage.size() > 0 && dataNew.size() > 0) {
@@ -437,7 +465,6 @@ namespace DiscordCoreInternal {
 				WebSocketMessage message{};
 				if (this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf) {
 					try {
-						stopWatchReal.resetTimer();
 						payload = ErlParser::parseEtfToJson(dataNew);
 						payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
 						if (auto result =
@@ -1127,38 +1154,6 @@ namespace DiscordCoreInternal {
 		this->messageLength = 0;
 		this->messageOffset = 0;
 		return false;
-	}
-
-	bool WebSocketCore::checkForAndSendHeartBeat(bool isImmediate) noexcept {
-		if ((this->currentState.load() == WebSocketState::Authenticated && this->heartBeatStopWatch.hasTimePassed() &&
-				this->haveWeReceivedHeartbeatAck) ||
-			isImmediate) {
-			std::string string{};
-			DiscordCoreAPI::Jsonifier data{};
-			data["d"] = this->lastNumberReceived;
-			data["op"] = 1;
-			if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
-				data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Etf);
-			} else {
-				data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
-			}
-			string = data.operator std::string();
-			this->createHeader(string, this->dataOpCode);
-			if (!this->sendMessage(string, true)) {
-				return false;
-			}
-			this->haveWeReceivedHeartbeatAck = false;
-			this->heartBeatStopWatch.resetTimer();
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	void WebSocketCore::handleBuffer() noexcept {
-		if (this->currentState != WebSocketState::Upgrading) {
-			this->parseMessage();
-		}
 	}
 
 	void WebSocketSSLShard::disconnect() noexcept {

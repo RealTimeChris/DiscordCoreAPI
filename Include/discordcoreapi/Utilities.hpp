@@ -1281,9 +1281,9 @@ namespace DiscordCoreAPI {
 	/// Represents a single frame of audio data. \brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
-		std::string data{};///< The audio data.
 		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
 		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
+		std::string data{};///< The audio data.
 
 		AudioFrameData() noexcept = default;
 
@@ -1306,8 +1306,8 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI::StreamInfo streamInfo{};///< The info for the stream-socekt, if applicable.
 		bool selfDeaf{ false };///< Self-deafen the bot?
 		bool selfMute{ false };///< Self-mute the bot?
-		Snowflake channelId{};///< The channel id to connect to.
 		int32_t currentShard{};///< The current websocket shard, if applicable.
+		Snowflake channelId{};///< The channel id to connect to.
 		Snowflake guildId{};///< The guild id to connect to.
 		Snowflake userId{};///< This bot's user id.
 	};

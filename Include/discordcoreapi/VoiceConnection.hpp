@@ -174,6 +174,7 @@ namespace DiscordCoreAPI {
 		std::vector<opus_int32> upSampledVector{};
 		std::atomic_bool canWeSendAudio{ false };
 		std::atomic_bool areWePlaying{ false };
+		Nanoseconds processingTimeForBridge{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		RTPPacketEncrypter packetEncrypter{};
 		simdjson::ondemand::parser parser{};

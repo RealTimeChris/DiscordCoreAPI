@@ -39,7 +39,7 @@
 namespace DiscordCoreInternal {
 
 	WebSocketClose& WebSocketClose::operator=(uint16_t valueNew) {
-		this->value = this->mappingValues[valueNew];
+		this->value = static_cast<WebSocketCloseCode>(valueNew);
 		return *this;
 	};
 
@@ -57,7 +57,7 @@ namespace DiscordCoreInternal {
 	}
 
 	VoiceWebSocketClose& VoiceWebSocketClose::operator=(uint16_t valueNew) {
-		this->value = this->mappingValues[valueNew];
+		this->value = static_cast<VoiceWebSocketCloseCode>(valueNew);
 		return *this;
 	};
 
