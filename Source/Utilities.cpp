@@ -1263,12 +1263,12 @@ namespace DiscordCoreAPI {
 		return std::string{ std::to_string(this->permissions) };
 	}
 
-	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel) {
+	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, const ChannelData& channel) {
 		std::string permsString = Permissions::computePermissions(guildMember, channel);
 		return permsString;
 	}
 
-	bool Permissions::checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission) {
+	bool Permissions::checkForPermission(const GuildMember& guildMember, const ChannelData& channel, Permission permission) {
 		std::string permissionsString = Permissions::computePermissions(guildMember, channel);
 		if ((stoull(permissionsString) & static_cast<uint64_t>(permission)) == static_cast<uint64_t>(permission)) {
 			return true;
@@ -1451,7 +1451,7 @@ namespace DiscordCoreAPI {
 		return stream.str();
 	}
 
-	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel) {
+	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, const ChannelData& channel) {
 		if ((stoull(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) == static_cast<uint64_t>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
@@ -1490,7 +1490,7 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	std::string Permissions::computePermissions(const GuildMember& guildMember, ChannelData& channel) {
+	std::string Permissions::computePermissions(const GuildMember& guildMember, const ChannelData& channel) {
 		std::string permissions = Permissions::computeBasePermissions(guildMember);
 		permissions = Permissions::computeOverwrites(permissions, guildMember, channel);
 		return permissions;

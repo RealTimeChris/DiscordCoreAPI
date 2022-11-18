@@ -742,7 +742,8 @@ namespace DiscordCoreInternal {
 			{ WebSocketCloseCode::Invalid_Intent,
 				"4013; You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value." },
 			{ WebSocketCloseCode::Disallowed_Intent,
-				"4014; You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not "
+				"4014; You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are "
+				"not "
 				"approved for." } };
 
 		WebSocketCloseCode value{};
@@ -788,7 +789,8 @@ namespace DiscordCoreInternal {
 			{ 4016, VoiceWebSocketCloseCode ::Unknown_Encryption_Mode } };
 
 		std::unordered_map<VoiceWebSocketCloseCode, std::string> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "0; Unset." },
-			{ VoiceWebSocketCloseCode::Normal_Close, "1000; Normal close." }, { VoiceWebSocketCloseCode::Unknown_Opcode, "4001; You sent an invalid opcode." },
+			{ VoiceWebSocketCloseCode::Normal_Close, "1000; Normal close." },
+			{ VoiceWebSocketCloseCode::Unknown_Opcode, "4001; You sent an invalid opcode." },
 			{ VoiceWebSocketCloseCode::Failed_To_Decode, "4002; You sent an invalid payload in your identifying to the Gateway." },
 			{ VoiceWebSocketCloseCode::Not_Authenticated, "4003; You sent a payload before identifying with the Gateway." },
 			{ VoiceWebSocketCloseCode::Authentication_Failed, "4004; The token you sent in your identify payload is incorrect." },
@@ -1483,14 +1485,14 @@ namespace DiscordCoreAPI {
 		/// \param guildMember The GuildMember who's Permissions to analyze.
 		/// \param channel The Channel withint which to check for Permissions.
 		/// \returns std::string A string containing the final Permission's value for a given Channel.
-		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, ChannelData& channel);
+		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, const ChannelData& channel);
 
 		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
 		/// \param guildMember The GuildMember who to check the Permissions of.
 		/// \param channel The Channel within which to check for the Permission's presence.
 		/// \param permission A Permission to check the current Channel for.
 		/// \returns bool A bool suggesting the presence of the chosen Permission.
-		bool checkForPermission(const GuildMember& guildMember, ChannelData& channel, Permission permission);
+		bool checkForPermission(const GuildMember& guildMember, const ChannelData& channel, Permission permission);
 
 		/// Returns a string containing the currently held Permissions in a given Guild. \brief Returns a string containing the currently held Permissions in a given Guild.
 		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
@@ -1520,9 +1522,9 @@ namespace DiscordCoreAPI {
 	  protected:
 		uint64_t permissions{};
 
-		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, ChannelData& channel);
+		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, const ChannelData& channel);
 
-		static std::string computePermissions(const GuildMember& guildMember, ChannelData& channel);
+		static std::string computePermissions(const GuildMember& guildMember, const ChannelData& channel);
 
 		static std::string computeBasePermissions(const GuildMember& guildMember);
 	};
@@ -1546,6 +1548,8 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
 
+	DiscordCoreAPI_Dll std::string escapeCharacters(std::string_view string);
+
 	DiscordCoreAPI_Dll void spinLock(uint64_t timeInNsToSpinLockFor);
 
 	DiscordCoreAPI_Dll std::string generateBase64EncodedKey();
@@ -1558,17 +1562,15 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
 
-	DiscordCoreAPI_Dll std::string escapeCharacters(std::string_view string);
-
 	DiscordCoreAPI_Dll std::string reset();
 
 	/// Acquires a timeStamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timeStamp with the current time and date - suitable for use in message-embeds.
 	/// \returns std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
-	
+
 	/// Class for representing a timeStamp, as well as working with time-related values. \brief Class for representing a timeStamp, as well as working with time-related values.
-	template<typename TTy> class TimeStamp {
+	class TimeStamp {
 	  public:
 		explicit TimeStamp(TimeFormat formatNew = TimeFormat::LongDateTime) {
 			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
@@ -1590,7 +1592,7 @@ namespace DiscordCoreAPI {
 			return this->timeStampInTimeUnits;
 		}
 
-		TimeStamp<TTy>& operator=(std::string&& originalTimeStampNew) {
+		TimeStamp& operator=(std::string&& originalTimeStampNew) {
 			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
 			return *this;
 		}
@@ -1602,7 +1604,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		TimeStamp<TTy>& operator=(std::string& originalTimeStampNew) {
+		TimeStamp& operator=(std::string& originalTimeStampNew) {
 			this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
 			return *this;
 		}
@@ -1611,7 +1613,7 @@ namespace DiscordCoreAPI {
 			*this = originalTimeStampNew;
 		}
 
-		TimeStamp<TTy>& operator=(const TimeStamp& other) {
+		TimeStamp& operator=(const TimeStamp& other) {
 			this->timeStampInTimeUnits = other.timeStampInTimeUnits;
 			return *this;
 		}
@@ -1625,7 +1627,7 @@ namespace DiscordCoreAPI {
 		};
 
 		TimeStamp(uint64_t timeInTimeUnits, TimeFormat formatNew) {
-			this->timeStampInTimeUnits = TTy{ timeInTimeUnits }.count();
+			this->timeStampInTimeUnits = timeInTimeUnits;
 		}
 
 		static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd,
@@ -1755,62 +1757,62 @@ namespace DiscordCoreAPI {
 			const uint32_t secondsPerMinute{ 60 };
 			const uint32_t secondsPerHour{ 60 * 60 };
 			const uint32_t secondsPerDay{ 60 * 60 * 24 };
-			TTy value{};
+			Seconds value{};
 			for (int32_t x = 1970; x < year; ++x) {
-				value += TTy{ secondsInJan };
-				value += TTy{ secondsInFeb };
-				value += TTy{ secondsInMar };
-				value += TTy{ secondsInApr };
-				value += TTy{ secondsInMay };
-				value += TTy{ secondsInJun };
-				value += TTy{ secondsInJul };
-				value += TTy{ secondsInAug };
-				value += TTy{ secondsInSep };
-				value += TTy{ secondsInOct };
-				value += TTy{ secondsInNov };
-				value += TTy{ secondsInDec };
+				value += Seconds{ secondsInJan };
+				value += Seconds{ secondsInFeb };
+				value += Seconds{ secondsInMar };
+				value += Seconds{ secondsInApr };
+				value += Seconds{ secondsInMay };
+				value += Seconds{ secondsInJun };
+				value += Seconds{ secondsInJul };
+				value += Seconds{ secondsInAug };
+				value += Seconds{ secondsInSep };
+				value += Seconds{ secondsInOct };
+				value += Seconds{ secondsInNov };
+				value += Seconds{ secondsInDec };
 				if (x % 4 == 0) {
-					value += TTy{ secondsPerDay };
+					value += Seconds{ secondsPerDay };
 				}
 			}
 			if (month > 0) {
-				value += TTy{ static_cast<uint64_t>((day - 1) * secondsPerDay) };
-				value += TTy{ static_cast<uint64_t>(hour * secondsPerHour) };
-				value += TTy{ static_cast<uint64_t>(minute * secondsPerMinute) };
-				value += TTy{ second };
+				value += Seconds{ static_cast<uint64_t>((day - 1) * secondsPerDay) };
+				value += Seconds{ static_cast<uint64_t>(hour * secondsPerHour) };
+				value += Seconds{ static_cast<uint64_t>(minute * secondsPerMinute) };
+				value += Seconds{ second };
 			}
 			if (month > 1) {
-				value += TTy{ secondsInJan };
+				value += Seconds{ secondsInJan };
 			}
 			if (month > 2) {
-				value += TTy{ secondsInFeb };
+				value += Seconds{ secondsInFeb };
 			}
 			if (month > 3) {
-				value += TTy{ secondsInMar };
+				value += Seconds{ secondsInMar };
 			}
 			if (month > 4) {
-				value += TTy{ secondsInApr };
+				value += Seconds{ secondsInApr };
 			}
 			if (month > 5) {
-				value += TTy{ secondsInMay };
+				value += Seconds{ secondsInMay };
 			}
 			if (month > 6) {
-				value += TTy{ secondsInJun };
+				value += Seconds{ secondsInJun };
 			}
 			if (month > 7) {
-				value += TTy{ secondsInJul };
+				value += Seconds{ secondsInJul };
 			}
 			if (month > 8) {
-				value += TTy{ secondsInAug };
+				value += Seconds{ secondsInAug };
 			}
 			if (month > 9) {
-				value += TTy{ secondsInSep };
+				value += Seconds{ secondsInSep };
 			}
 			if (month > 10) {
-				value += TTy{ secondsInOct };
+				value += Seconds{ secondsInOct };
 			}
 			if (month > 11) {
-				value += TTy{ secondsInNov };
+				value += Seconds{ secondsInNov };
 			}
 			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(value).count() * 1000;
 		}
@@ -1818,12 +1820,12 @@ namespace DiscordCoreAPI {
 		void convertTimeStampToTimeUnits(TimeFormat formatNew, std::string originalTimeStamp) {
 			try {
 				if (originalTimeStamp != "" && originalTimeStamp != "0") {
-					TimeStamp<TTy> timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
+					TimeStamp timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
 						stoi(originalTimeStamp.substr(8, 9)), stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)),
 						stoi(originalTimeStamp.substr(17, 18)), formatNew };
-					this->timeStampInTimeUnits = TTy{ static_cast<uint64_t>(timeValue) }.count();
+					this->timeStampInTimeUnits = static_cast<uint64_t>(timeValue);
 				} else {
-					this->timeStampInTimeUnits = std::chrono::duration_cast<TTy>(SysClock::now().time_since_epoch()).count();
+					this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 				}
 			} catch (...) {
 				reportException("TimeStamp::convertTimeStampToTimeUnits()");
@@ -1834,7 +1836,7 @@ namespace DiscordCoreAPI {
 			if (this->timeStampInTimeUnits == 0) {
 				this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			}
-			uint64_t timeValue = (std::chrono::duration_cast<Milliseconds>(TTy{ this->timeStampInTimeUnits }).count()) / 1000;
+			uint64_t timeValue = (std::chrono::duration_cast<Milliseconds>(Milliseconds{ this->timeStampInTimeUnits }).count()) / 1000;
 			time_t rawTime(timeValue);
 			tm timeInfo = *localtime(&rawTime);
 			std::string timeStamp{};

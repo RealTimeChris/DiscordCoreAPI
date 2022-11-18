@@ -239,8 +239,8 @@ namespace DiscordCoreInternal {
 		outBuffer.insert(outBuffer.begin() + 3 + indexCount, 0);
 		outBuffer.insert(outBuffer.begin() + 4 + indexCount, 0);
 		outBuffer.insert(outBuffer.begin() + 5 + indexCount, 0);
-	}	
-	
+	}
+
 	bool WebSocketCore::sendMessage(std::string& dataToSend, bool priority) noexcept {
 		if (dataToSend.size() == 0) {
 			return false;

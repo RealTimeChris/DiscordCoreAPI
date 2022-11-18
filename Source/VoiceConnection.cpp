@@ -128,7 +128,8 @@ namespace DiscordCoreAPI {
 			for (uint8_t x = 0; x < headerSize; ++x) {
 				this->data[x] = header[x];
 			}
-			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->data.data()) + headerSize, reinterpret_cast<const unsigned char*>(audioData.data.data()), audioData.data.size(), nonceForLibSodium,
+			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->data.data()) + headerSize,
+					reinterpret_cast<const unsigned char*>(audioData.data.data()), audioData.data.size(), nonceForLibSodium,
 					reinterpret_cast<unsigned char*>(this->keys.data())) != 0) {
 				return {};
 			}
@@ -541,7 +542,6 @@ namespace DiscordCoreAPI {
 						}
 
 						targetTime = HRClock::now().time_since_epoch() + intervalCount;
-						
 					}
 					break;
 				}
@@ -716,7 +716,7 @@ namespace DiscordCoreAPI {
 						this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient,
 							this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
 					}
-					
+
 					this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
 						this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port, false);
 						this->runBridge(stopToken);
@@ -852,7 +852,7 @@ namespace DiscordCoreAPI {
 				this->taskThread02.reset(nullptr);
 			}
 		}
-		
+
 		if (this->streamSocket) {
 			this->streamSocket->disconnect();
 		}
@@ -862,7 +862,7 @@ namespace DiscordCoreAPI {
 		}
 		this->closeCode = 0;
 		this->areWeHeartBeating = false;
-		this->currentReconnectTries = 0;		
+		this->currentReconnectTries = 0;
 		this->voiceUsers.clear();
 		this->activeState.store(VoiceActiveState::Connecting);
 		this->areWeConnecting.store(true);
@@ -906,7 +906,7 @@ namespace DiscordCoreAPI {
 		this->processingTimeForBridge += HRClock::now().time_since_epoch() - newTime;
 		for (auto& [key, value]: this->voiceUsers) {
 			std::string payload{ value.extractPayload() };
-			auto newTime02 = HRClock::now().time_since_epoch();	
+			auto newTime02 = HRClock::now().time_since_epoch();
 			if (payload.size() > 0) {
 				const uint64_t headerSize{ 12 };
 				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };

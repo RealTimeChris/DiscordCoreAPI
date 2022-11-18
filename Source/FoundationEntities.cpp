@@ -245,7 +245,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string DiscordEntity::getCreatedAtTimestamp(TimeFormat timeFormat) {
-		TimeStamp<Milliseconds> timeStamp{ (this->id.operator size_t() >> 22) + 1420070400000, timeFormat };
+		TimeStamp timeStamp{ (this->id.operator size_t() >> 22) + 1420070400000, timeFormat };
 		return timeStamp.operator std::string();
 	}
 
@@ -643,8 +643,7 @@ namespace DiscordCoreAPI {
 		dataToGet.userId = this->id;
 		if (GuildMembers::getVsCache().contains(dataToGet)) {
 			return GuildMembers::getVsCache()[dataToGet];
-		}
-		else {
+		} else {
 			return dataToGet;
 		}
 	}
@@ -1336,7 +1335,7 @@ namespace DiscordCoreAPI {
 				dataLight.guildId = this->id;
 				dataLight.userId = guildMemberId;
 				auto voiceStateData = GuildMembers::getVsCache()[dataLight];
-				if (voiceStateData.channelId!= 0) {
+				if (voiceStateData.channelId != 0) {
 					channelId = voiceStateData.channelId;
 				}
 			} else {
@@ -3023,7 +3022,7 @@ namespace DiscordCoreAPI {
 
 		uint32_t theDuration = getUint32(jsonObjectData, "duration");
 		if (theDuration != 0) {
-			this->duration = TimeStamp<Milliseconds>::convertMsToDurationString(theDuration);
+			this->duration = TimeStamp::convertMsToDurationString(theDuration);
 		}
 
 		newString = getString(jsonObjectData, "permalink_url");

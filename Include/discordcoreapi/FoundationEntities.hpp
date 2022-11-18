@@ -699,8 +699,8 @@ namespace DiscordCoreAPI {
 
 	/// Meta data for a Thread type of Channel. \brief Meta data for a Thread type of Channel.
 	struct DiscordCoreAPI_Dll ThreadMetadataData {
-		TimeStamp<Milliseconds> archiveTimestamp{};///< (Where applicable) the time at which this Thread was archived.
 		int32_t autoArchiveDuration{ 0 };///< How int64_t before archiving this Thread.
+		TimeStamp archiveTimestamp{};///< (Where applicable) the time at which this Thread was archived.
 		bool invitable{ false };///< The id of the individual who archived this Thread.
 		bool archived{ false };///< Whether or not this Thread is currently archived.
 		bool locked{ false };///< Whether or not this Thread is currently locked.
@@ -715,7 +715,7 @@ namespace DiscordCoreAPI {
 	/// Data for a single member of a Thread. \brief Data for a single member of a Thread.
 	class DiscordCoreAPI_Dll ThreadMemberData : public DiscordEntity {
 	  public:
-		TimeStamp<Milliseconds> joinTimestamp{};///< The time at which the member joined this Thread.
+		TimeStamp joinTimestamp{};///< The time at which the member joined this Thread.
 		Snowflake userId{};///< The User's id.
 		int32_t flags{ 0 };///< Flags.
 
@@ -762,7 +762,7 @@ namespace DiscordCoreAPI {
 
 	/// Voice state data. \brief Voice state data.
 	struct DiscordCoreAPI_Dll VoiceStateData : public VoiceStateDataLight {
-		TimeStamp<Milliseconds> requestToSpeakTimestamp{};///< The time at which the User requested to speak.
+		TimeStamp requestToSpeakTimestamp{};///< The time at which the User requested to speak.
 		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
 		bool selfVideo{ false };///< Whether this User's camera is enabled.
 		std::string sessionId{};///< The session id for this voice state.
@@ -898,7 +898,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
 	  public:
 		friend class GuildData;
-		TimeStamp<Milliseconds> joinedAt{};///< When they joined the Guild.
+		TimeStamp joinedAt{};///< When they joined the Guild.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
 		GuildMemberFlags flags{ 0 };///< GuildMember flags.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
@@ -1479,7 +1479,7 @@ namespace DiscordCoreAPI {
 	/// Integration data. \brief Integration data.
 	class DiscordCoreAPI_Dll IntegrationData : public DiscordEntity {
 	  public:
-		TimeStamp<Milliseconds> syncedAt{};///< Time it was last synced at.
+		TimeStamp syncedAt{};///< Time it was last synced at.
 		ApplicationData application{};///< Application data.
 		int32_t expireGracePeriod{ 0 };///< How int64_t before the integration expires.
 		bool enableEmoticons{ true };///< Emoticons enabled?
@@ -1617,7 +1617,7 @@ namespace DiscordCoreAPI {
 	/// Audit log entry data. \brief Audit log entry data.
 	class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity {
 	  public:
-		TimeStamp<Milliseconds> createdTimeStamp{};///< Time at which this entry was created.
+		TimeStamp createdTimeStamp{};///< Time at which this entry was created.
 		std::vector<AuditLogChangeData> changes{};///< Array of audit log change data.
 		OptionalAuditEntryInfoData options{};///< Audit log entry info data.
 		AuditLogEvent actionType{};///< Audit log action type.
@@ -1808,7 +1808,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
 		DiscordCoreClient* discordCoreClient{ nullptr };///< A pointer to the DiscordCoreClient.
-		TimeStamp<Milliseconds> joinedAt{};///< When the bot joined this Guild.
+		TimeStamp joinedAt{};///< When the bot joined this Guild.
 		VoiceConnection* voiceConnectionPtr{ nullptr };///< A pointer to the VoiceConnection, if present.
 		std::vector<Snowflake> guildScheduledEvents{};///< Array of Guild channels.
 		std::vector<PresenceUpdateData> presences{};///< Presence states for each of the GuildMembers..
@@ -1980,8 +1980,8 @@ namespace DiscordCoreAPI {
 
 	/// Invite data. \brief Invite data.
 	struct DiscordCoreAPI_Dll InviteData {
-		TimeStamp<Milliseconds> expiresAt{};///< When the invite expires.
-		TimeStamp<Milliseconds> createdAt{};///< Time it was created at.
+		TimeStamp expiresAt{};///< When the invite expires.
+		TimeStamp createdAt{};///< Time it was created at.
 		GuildScheduledEventData guildScheduledEvent{};///< Scheduled Guild event.
 		int32_t approximatePresenceCount{ 0 };///< Approximate presence count.
 		ApplicationData targetApplication{};///< Application data.
@@ -2489,7 +2489,7 @@ namespace DiscordCoreAPI {
 
 	/// Data for when some Channel pins are updated. \brief Data for when some Channel pins are updated.
 	struct DiscordCoreAPI_Dll ChannelPinsUpdateEventData {
-		TimeStamp<Milliseconds> lastPinTimeStamp{};///< The time of the last pinned Message.
+		TimeStamp lastPinTimeStamp{};///< The time of the last pinned Message.
 		Snowflake channelId{};///< The id of the Channel within which the Message was pinned.
 		Snowflake guildId{};///< The id of the Guild within which the Message was pinned.
 
@@ -2621,13 +2621,13 @@ namespace DiscordCoreAPI {
 		std::vector<ChannelMentionData> mentionChannels{};///< array of Channel mention data.
 		std::vector<StickerItemData> stickerItems{};///< Array of Message Sticker item data.
 		std::vector<AttachmentData> attachments{};///< Array of attachment data.
-		TimeStamp<Milliseconds> editedTimestamp{};///< The time at which it was edited.
+		TimeStamp editedTimestamp{};///< The time at which it was edited.
 		MessageReferenceData messageReference{};///< Message reference data.
 		std::vector<ActionRowData> components{};///< Array of action row data.
 		std::vector<std::string> mentionRoles{};///< std::vector of "mention roles" ids.
 		std::vector<ReactionData> reactions{};//< Array of reaction data.
 		MessageInteractionData interaction{};///< Message Interaction data.
-		TimeStamp<Milliseconds> timeStamp{};///< The timeStamp of when the Message was created.
+		TimeStamp timeStamp{};///< The timeStamp of when the Message was created.
 		std::vector<StickerData> stickers{};///< Array of Message Sticker data.
 		std::vector<UserData> mentions{};///< Array of User data, for individual's that were mentioned.
 		std::vector<EmbedData> embeds{};///< Array of Message embeds.

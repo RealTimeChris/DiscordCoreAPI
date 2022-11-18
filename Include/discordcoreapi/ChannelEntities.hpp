@@ -155,7 +155,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Channel : public ChannelData {
 	  public:
 		std::unordered_map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group DM or m.
-		TimeStamp<Milliseconds> lastPinTimestamp{};///< Timestamp of the last pinned Message.
 		DefaultReactionData defaultReactionEmoji{};///< The emoji to show in the add reaction button on a thread in a GUILD_FORUM channel.
 		std::vector<ForumTagData> availableTags{};///< The set of tags that can be used in a GUILD_FORUM channel.
 		int32_t defaultThreadRateLimitPerUser{};///< The initial rate_limit_per_user to set on newly created threads in a channel.
@@ -165,6 +164,7 @@ namespace DiscordCoreAPI {
 		StringWrapper lastMessageId{};///< Id of the last Message.
 		int32_t videoQualityMode{ 0 };///< Video quality mode.
 		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
+		TimeStamp lastPinTimestamp{};///< Timestamp of the last pinned Message.
 		StringWrapper permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
 		int32_t totalMessageSent{};///< Number of messages ever sent in a thread it's similar to message_count on message creation.
 		Snowflake applicationId{};///< Application id of the current application.

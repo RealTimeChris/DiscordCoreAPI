@@ -168,7 +168,7 @@ namespace DiscordCoreAPI {
 		WebHooks::initialize(this->httpsClient.get());
 		this->didWeStartCorrectly = true;
 	}
-	
+
 	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction,
 		CreateApplicationCommandData commandData, bool alwaysRegister) {
 		commandData.alwaysRegister = alwaysRegister;

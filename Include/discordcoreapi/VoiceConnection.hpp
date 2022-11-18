@@ -46,7 +46,6 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
-
 		VoiceUser() noexcept = default;
 
 		VoiceUser(std::atomic_int8_t* voiceUserCount, std::atomic_int64_t* sleepableTime) noexcept;
