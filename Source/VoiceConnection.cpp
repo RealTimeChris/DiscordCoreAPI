@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		int64_t userCount = this->voiceUserCount->load();
 		std::string value{};
 		if (userCount > 0) {
-			StopWatch stopWatch{ Nanoseconds{ this->sleepableTime->load() / userCount } };
+			StopWatch stopWatch{ Nanoseconds{ this->sleepableTime->load() / 2 / userCount } };
 			while (!this->payloads.tryReceive(value) && !this->getEndingStatus()) {
 				if (stopWatch.hasTimePassed()) {
 					break;
