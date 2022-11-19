@@ -57,21 +57,21 @@ namespace DiscordCoreAPI {
 		template<typename... ArgTypes>
 		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeDelay, bool blockForCompletion,
 			ArgTypes... args) {
-			std::jthread thread = std::jthread([=](std::stop_token stopToken) {
+			std::jthread thread = std::jthread([=](std::stop_token token) {
 				StopWatch stopWatch{ Milliseconds{ timeDelay } };
 				stopWatch.resetTimer();
 				if (static_cast<int64_t>(std::ceil(static_cast<float>(timeDelay) * percentage)) <= timeDelay &&
 					static_cast<int64_t>(std::ceil(static_cast<float>(timeDelay) * percentage)) > 0) {
 					std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeDelay) * percentage)) });
 				}
-				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
+				while (!stopWatch.hasTimePassed() && !token.stop_requested()) {
 					std::this_thread::sleep_for(1ms);
 				}
-				if (stopToken.stop_requested()) {
+				if (token.stop_requested()) {
 					return;
 				}
 				timeElapsedHandler(args...);
-				if (stopToken.stop_requested()) {
+				if (token.stop_requested()) {
 					return;
 				}
 			});
@@ -127,7 +127,7 @@ namespace DiscordCoreInternal {
 		std::atomic_int64_t currentIndex{ 0 };
 		std::mutex accessMutex{};
 
-		void threadFunction(std::stop_token stopToken, int64_t index);
+		void threadFunction(std::stop_token token, int64_t index);
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI

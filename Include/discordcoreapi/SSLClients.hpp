@@ -236,7 +236,8 @@ namespace DiscordCoreInternal {
 
 		DatagramSocketClient(DiscordCoreAPI::StreamType streamType, bool doWePrintErrors) noexcept;
 
-		bool connect(const std::string& baseUrlNew, const uint16_t portNew, bool haveWeGottenSignaled) noexcept;
+		bool connect(const std::string& baseUrlNew, uint16_t portNew, bool haveWeGottenSignaled,
+			std::stop_token token = std::stop_token{}) noexcept;
 
 		ProcessIOResult processIO(ProcessIOType type) noexcept;
 

@@ -218,7 +218,7 @@ namespace DiscordCoreInternal {
 
 		static int32_t ReadBufferData(void* opaque, uint8_t* buf, int32_t);
 
-		void run(std::stop_token stopToken);
+		void run(std::stop_token token);
 
 		void cancelMe();
 	};

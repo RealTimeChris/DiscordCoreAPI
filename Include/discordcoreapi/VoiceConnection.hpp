@@ -172,6 +172,7 @@ namespace DiscordCoreAPI {
 		std::vector<opus_int16> downSampledVector{};
 		std::vector<opus_int32> upSampledVector{};
 		std::atomic_bool canWeSendAudio{ false };
+		std::atomic_bool doWeReconnect{ false };
 		std::atomic_bool areWePlaying{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		RTPPacketEncrypter packetEncrypter{};
@@ -206,7 +207,7 @@ namespace DiscordCoreAPI {
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
-
+		
 		void runBridge(std::stop_token) noexcept;
 
 		void runVoice(std::stop_token) noexcept;
@@ -215,7 +216,11 @@ namespace DiscordCoreAPI {
 
 		void checkForConnections() noexcept;
 
+		void cancelBridgeThread() noexcept;
+
 		void handleAudioBuffer() noexcept;
+
+		void cancelMainThread() noexcept;
 
 		void connectInternal() noexcept;
 

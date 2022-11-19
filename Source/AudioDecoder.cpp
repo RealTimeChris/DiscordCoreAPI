@@ -232,8 +232,8 @@ namespace DiscordCoreInternal {
 	}
 
 	void AudioDecoder::startMe() {
-		this->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token stopToken) {
-			this->run(stopToken);
+		this->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token token) {
+			this->run(token);
 		});
 	};
 
@@ -268,7 +268,7 @@ namespace DiscordCoreInternal {
 		return static_cast<int32_t>(stream->bytesRead);
 	}
 
-	void AudioDecoder::run(std::stop_token stopToken) {
+	void AudioDecoder::run(std::stop_token token) {
 		if (!this->haveWeBooted) {
 			auto buffer = static_cast<uint8_t*>(av_malloc(this->bufferMaxSize));
 			if (buffer == nullptr) {
@@ -442,7 +442,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			while (!stopToken.stop_requested() && !this->areWeQuitting.load() && av_read_frame(this->formatContext, this->packet) == 0) {
+			while (!token.stop_requested() && !this->areWeQuitting.load() && av_read_frame(this->formatContext, this->packet) == 0) {
 				if (this->packet->stream_index == this->audioStreamIndex) {
 					int32_t returnValue = avcodec_send_packet(this->audioDecodeContext, this->packet);
 					if (returnValue < 0) {
@@ -507,7 +507,7 @@ namespace DiscordCoreInternal {
 				this->frame = av_frame_alloc();
 				this->newFrame = av_frame_alloc();
 				this->packet = av_packet_alloc();
-				if (stopToken.stop_requested() || this->areWeQuitting.load()) {
+				if (token.stop_requested() || this->areWeQuitting.load()) {
 					break;
 				}
 			}

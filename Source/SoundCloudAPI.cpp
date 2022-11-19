@@ -202,7 +202,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
+	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token token, int32_t currentReconnectTries) {
 		currentReconnectTries++;
 		DiscordCoreAPI::GuildMemberData guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMember({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId });
@@ -222,11 +222,11 @@ namespace DiscordCoreInternal {
 			DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->onSongCompletionEvent(eventData);
 		} else {
 			newerSong = this->collectFinalSong(newerSong);
-			SoundCloudAPI::downloadAndStreamAudio(newerSong, stopToken, currentReconnectTries);
+			SoundCloudAPI::downloadAndStreamAudio(newerSong, token, currentReconnectTries);
 		}
 	}
 
-	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentReconnectTries) {
+	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token token, int32_t currentReconnectTries) {
 		try {
 			int32_t counter{ 0 };
 			BuildAudioDecoderData dataPackage{};
@@ -239,16 +239,16 @@ namespace DiscordCoreInternal {
 			while (counter < newSong.finalDownloadUrls.size()) {
 				if (counter == newSong.finalDownloadUrls.size() && didWeGetZero) {
 					audioDecoder.reset(nullptr);
-					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
+					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
 					return;
 				}
 				std::this_thread::sleep_for(1ms);
 				if (audioDecoder->haveWeFailed()) {
 					audioDecoder.reset(nullptr);
-					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
+					SoundCloudAPI::weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
 					return;
 				}
-				if (stopToken.stop_requested()) {
+				if (token.stop_requested()) {
 					audioDecoder.reset(nullptr);
 					return;
 				}
@@ -302,7 +302,7 @@ namespace DiscordCoreInternal {
 						frames.emplace_back(std::move(rawFrame));
 					}
 				}
-				if (stopToken.stop_requested()) {
+				if (token.stop_requested()) {
 					audioDecoder.reset(nullptr);
 					return;
 				} else {
@@ -311,7 +311,7 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(value));
 					}
 				}
-				if (stopToken.stop_requested()) {
+				if (token.stop_requested()) {
 					audioDecoder.reset(nullptr);
 					return;
 				}
@@ -332,7 +332,7 @@ namespace DiscordCoreInternal {
 			}
 			currentReconnectTries++;
 			DiscordCoreAPI::DiscordCoreClient::getVoiceConnection(this->guildId)->clearAudioData();
-			this->weFailedToDownloadOrDecode(newSong, stopToken, currentReconnectTries);
+			this->weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
 		}
 	};
 

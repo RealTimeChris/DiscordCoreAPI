@@ -1189,8 +1189,8 @@ namespace DiscordCoreInternal {
 		this->currentBaseSocketAgent = currentBaseSocketAgentNew;
 		this->discordCoreClient = discordCoreClientNew;
 		this->doWeQuit = doWeQuitNew;
-		this->taskThread = std::make_unique<std::jthread>([this](std::stop_token stopToken) {
-			this->run(stopToken);
+		this->taskThread = std::make_unique<std::jthread>([this](std::stop_token token) {
+			this->run(token);
 		});
 	}
 
@@ -1295,8 +1295,8 @@ namespace DiscordCoreInternal {
 		return this->taskThread.get();
 	}
 
-	void BaseSocketAgent::run(std::stop_token stopToken) noexcept {
-		while (!stopToken.stop_requested() && !this->doWeQuit->load()) {
+	void BaseSocketAgent::run(std::stop_token token) noexcept {
+		while (!token.stop_requested() && !this->doWeQuit->load()) {
 			try {
 				std::unique_lock lock{ this->accessMutex };
 				auto result = SSLClient::processIO(this->shardMap);

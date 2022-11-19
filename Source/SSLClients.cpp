@@ -552,7 +552,7 @@ namespace DiscordCoreInternal {
 		this->streamType = streamTypeNew;
 	}
 
-	bool DatagramSocketClient::connect(const std::string& baseUrlNew, uint16_t portNew, bool haveWeGottenSignaled) noexcept {
+	bool DatagramSocketClient::connect(const std::string& baseUrlNew, uint16_t portNew, bool haveWeGottenSignaled, std::stop_token token) noexcept {
 		this->baseUrl = baseUrlNew;
 		this->port = portNew;
 		addrinfoWrapper hints{};
@@ -574,6 +574,23 @@ namespace DiscordCoreInternal {
 			}
 			return false;
 		}
+
+#ifdef _WIN32
+		u_long value02{ 1 };
+		if (ioctlsocket(this->socket, FIONBIO, &value02)) {
+			if (this->doWePrintErrors) {
+				cout << reportError("DatagramSocketClient::connect::ioctlsocket(), to: " + baseUrlNew) << endl;
+			}
+			return false;
+		}
+#else
+		if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
+			if (this->doWePrintErrors) {
+				cout << reportError("DatagramSocketClient::connect::ioctlsocket(), to: " + baseUrlNew) << endl;
+			}
+			return false;
+		}
+#endif
 
 		if (this->streamType == DiscordCoreAPI::StreamType::None) {
 			if (getaddrinfo(baseUrlNew.c_str(), std::to_string(portNew).c_str(), hints, this->address)) {
@@ -599,9 +616,23 @@ namespace DiscordCoreInternal {
 				char chars[]{ "connecting" };
 				std::string connectionString{ chars, std::size(chars) };
 				int32_t result{};
-				result = sendto(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr, this->address->ai_addrlen);
-				result = recvfrom(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr,
-					reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
+#ifdef _WIN32
+				while ((result == 0 || WSAGetLastError() == WSAEWOULDBLOCK) && !token.stop_requested()) {
+#else
+				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
+#endif
+					result =
+						sendto(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr, this->address->ai_addrlen);
+				}
+				result = 0;
+#ifdef _WIN32
+				while ((result == 0 || WSAGetLastError() == WSAEWOULDBLOCK) && !token.stop_requested()) {
+#else
+				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
+#endif
+					result = recvfrom(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr,
+						reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
+				}
 			}
 		} else {
 			hints->ai_flags = AI_PASSIVE;
@@ -621,31 +652,26 @@ namespace DiscordCoreInternal {
 				std::string connectionString{};
 				int32_t result{};
 				connectionString.resize(10);
-				result = recvfrom(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr,
-					reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
+#ifdef _WIN32
+				while ((result == 0 || WSAGetLastError() == WSAEWOULDBLOCK) && !token.stop_requested()) {
+#else
+				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
+#endif
+					result = recvfrom(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr,
+						reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
+				}
 				connectionString = "connected1";
 				result = 0;
-				result = sendto(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr, this->address->ai_addrlen);
-			}
-		}
-
-
 #ifdef _WIN32
-		u_long value02{ 1 };
-		if (ioctlsocket(this->socket, FIONBIO, &value02)) {
-			if (this->doWePrintErrors) {
-				cout << reportError("DatagramSocketClient::connect::ioctlsocket(), to: " + baseUrlNew) << endl;
-			}
-			return false;
-		}
+				while ((result == 0 || WSAGetLastError() == WSAEWOULDBLOCK) && !token.stop_requested()) {
 #else
-		if (fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK)) {
-			if (this->doWePrintErrors) {
-				cout << reportError("DatagramSocketClient::connect::ioctlsocket(), to: " + baseUrlNew) << endl;
-			}
-			return false;
-		}
+				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
 #endif
+					result =
+						sendto(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr, this->address->ai_addrlen);
+				}
+			}
+		}
 
 		return true;
 	}
@@ -674,6 +700,9 @@ namespace DiscordCoreInternal {
 				if (this->streamType != DiscordCoreAPI::StreamType::None) {
 				}
 				if (!this->processReadData()) {
+					if (this->doWePrintErrors) {
+						cout << reportError("DatagramSocketClient::processIO::processReadData()" ) << endl;
+					}
 					result = ProcessIOResult::Error;
 				} else {
 					result = ProcessIOResult::No_Error;
@@ -683,6 +712,9 @@ namespace DiscordCoreInternal {
 				if (this->streamType != DiscordCoreAPI::StreamType::None) {
 				}
 				if (!this->processWriteData()) {
+					if (this->doWePrintErrors) {
+						cout << reportError("DatagramSocketClient::processIO::processWriteData()") << endl;
+					}
 					result = ProcessIOResult::Error;
 				} else {
 					result = ProcessIOResult::No_Error;

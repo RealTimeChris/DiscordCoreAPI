@@ -30,19 +30,19 @@ namespace DiscordCoreAPI {
 	std::string ThreadPool::storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval) {
 		std::string threadId = std::to_string(std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count());
 
-		auto thread = std::jthread([=](std::stop_token stopToken) {
+		auto thread = std::jthread([=](std::stop_token token) {
 			StopWatch stopWatch{ Milliseconds{ timeInterval } };
 			while (true) {
 				stopWatch.resetTimer();
 				std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeInterval) * percentage)) });
-				while (!stopWatch.hasTimePassed() && !stopToken.stop_requested()) {
+				while (!stopWatch.hasTimePassed() && !token.stop_requested()) {
 					std::this_thread::sleep_for(1ms);
 				}
-				if (stopToken.stop_requested()) {
+				if (token.stop_requested()) {
 					return;
 				}
 				timeElapsedHandler();
-				if (stopToken.stop_requested()) {
+				if (token.stop_requested()) {
 					return;
 				}
 				std::this_thread::sleep_for(1ms);
@@ -83,8 +83,8 @@ namespace DiscordCoreInternal {
 			this->currentIndex.store(this->currentIndex.load() + 1);
 			this->currentCount.store(this->currentCount.load() + 1);
 			int64_t indexNew = this->currentIndex.load();
-			workerThread.thread = std::jthread([=, this](std::stop_token stopToken) {
-				this->threadFunction(stopToken, indexNew);
+			workerThread.thread = std::jthread([=, this](std::stop_token token) {
+				this->threadFunction(token, indexNew);
 			});
 			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
 		}
@@ -104,8 +104,8 @@ namespace DiscordCoreInternal {
 			this->currentIndex.store(this->currentIndex.load() + 1);
 			this->currentCount.store(this->currentCount.load() + 1);
 			int64_t indexNew = this->currentIndex.load();
-			workerThread.thread = std::jthread([=, this](std::stop_token stopToken) {
-				this->threadFunction(stopToken, indexNew);
+			workerThread.thread = std::jthread([=, this](std::stop_token token) {
+				this->threadFunction(token, indexNew);
 			});
 			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
 		}
@@ -114,8 +114,8 @@ namespace DiscordCoreInternal {
 		lock.unlock();
 	}
 
-	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t index) {
-		while (!stopToken.stop_requested()) {
+	void CoRoutineThreadPool::threadFunction(std::stop_token token, int64_t index) {
+		while (!token.stop_requested()) {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock lock{ this->accessMutex };
 				if (this->coroutineHandles.size() > 0) {
