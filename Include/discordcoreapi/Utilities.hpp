@@ -1698,7 +1698,7 @@ namespace DiscordCoreAPI {
 		}
 
 		bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) {
-			if (this->timeStampInTimeUnits == 0) {
+			if (this->timeStampInTimeUnits <= 0) {
 				this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			}
 			uint64_t startTimeRaw = this->timeStampInTimeUnits;
@@ -1814,7 +1814,7 @@ namespace DiscordCoreAPI {
 			if (month > 11) {
 				value += Seconds{ secondsInNov };
 			}
-			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(value).count() * 1000;
+			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(value).count();
 		}
 
 		void convertTimeStampToTimeUnits(TimeFormat formatNew, std::string originalTimeStamp) {
@@ -1833,10 +1833,10 @@ namespace DiscordCoreAPI {
 		}
 
 		std::string getISO8601TimeStamp(TimeFormat timeFormat) {
-			if (this->timeStampInTimeUnits == 0) {
+			if (this->timeStampInTimeUnits <= 0) {
 				this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			}
-			uint64_t timeValue = (std::chrono::duration_cast<Milliseconds>(Milliseconds{ this->timeStampInTimeUnits }).count()) / 1000;
+			uint64_t timeValue = this->timeStampInTimeUnits / 1000;
 			time_t rawTime(timeValue);
 			tm timeInfo = *localtime(&rawTime);
 			std::string timeStamp{};
