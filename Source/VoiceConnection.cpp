@@ -361,7 +361,10 @@ namespace DiscordCoreAPI {
 				}
 				std::this_thread::sleep_for(1ns);
 			}
+			auto now = HRClock::now();
 			this->mixAudio();
+			auto newNow = now - HRClock::now();
+			this->sleepableTime.store(20000000 - newNow.count());
 			this->canWeSendAudio.store(false);
 		}
 	}
