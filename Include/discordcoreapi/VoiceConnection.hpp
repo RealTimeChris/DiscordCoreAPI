@@ -173,7 +173,6 @@ namespace DiscordCoreAPI {
 		std::vector<opus_int32> upSampledVector{};
 		std::atomic_bool canWeSendAudio{ false };
 		std::atomic_bool areWePlaying{ false };
-		Nanoseconds processingTimeForBridge{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		RTPPacketEncrypter packetEncrypter{};
 		simdjson::ondemand::parser parser{};
@@ -194,9 +193,9 @@ namespace DiscordCoreAPI {
 
 		void parseIncomingVoiceData(const std::string_view rawDataBufferNew) noexcept;
 
-		void sendVoiceData(const std::string_view responseData) noexcept;
-
 		void connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept;
+
+		void sendVoiceData(const std::string_view responseData) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
@@ -214,6 +213,8 @@ namespace DiscordCoreAPI {
 
 		bool areWeCurrentlyPlaying() noexcept;
 
+		void checkForConnections() noexcept;
+
 		void handleAudioBuffer() noexcept;
 
 		void connectInternal() noexcept;
@@ -227,8 +228,6 @@ namespace DiscordCoreAPI {
 		void sendSilence() noexcept;
 
 		void pauseToggle() noexcept;
-
-		void checkForConnections();
 
 		void disconnect() noexcept;
 
