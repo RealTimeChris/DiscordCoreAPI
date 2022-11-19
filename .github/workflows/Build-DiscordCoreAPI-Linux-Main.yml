@@ -74,7 +74,7 @@ jobs:
                 sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake ./Vcpkg/ports/discordcoreapi/portfile.cmake
                 sudo cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json
                 sudo git add .
-                sudo git commit -m "Updating Vcpkg data. [skip ci]"
+                sudo git commit -m "Updating the Vcpkg portfile. [skip ci]"
                 sudo git push origin main 
                 
          - name: Download, install, and run a template-bot.
