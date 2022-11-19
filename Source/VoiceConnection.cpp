@@ -904,9 +904,7 @@ namespace DiscordCoreAPI {
 		auto newNow = now - HRClock::now();
 		processTimeForMixAudio = 20000000 - newNow.count();
 		for (auto& [key, value]: this->voiceUsers) {
-			std::string payload{ value.extractPayload() };
-			auto now02 = HRClock::now();
-			
+			std::string payload{ value.extractPayload() };			
 			if (payload.size() > 0) {
 				const uint64_t headerSize{ 12 };
 				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };
@@ -925,9 +923,6 @@ namespace DiscordCoreAPI {
 				if (crypto_secretbox_open_easy(reinterpret_cast<unsigned char*>(this->decryptedDataString.data()),
 						reinterpret_cast<unsigned char*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
 						reinterpret_cast<unsigned char*>(this->encryptionKey.data()))) {
-					auto newNow02 = now02 - HRClock::now();
-					processTimeForMixAudio += 20000000 - newNow02.count();
-					this->sleepableTime.store(processTimeForMixAudio);
 					return;
 				}
 
@@ -956,18 +951,14 @@ namespace DiscordCoreAPI {
 					}
 				}
 			}
-			auto newNow02 = now02 - HRClock::now();
-			processTimeForMixAudio += 20000000 - newNow02.count();
 		}
-		auto now03 = HRClock::now();
 		if (decodedSize > 0) {
 			for (int32_t x = 0; x < decodedSize; ++x) {
 				this->downSampledVector[x] = this->upSampledVector[x] / voiceUserCount;
 			}
 			this->streamSocket->writeData(std::string_view{ reinterpret_cast<const char*>(this->downSampledVector.data()), decodedSize * 2 });
 		}
-		auto newNow03 = now03 - HRClock::now();
-		processTimeForMixAudio += 20000000 - newNow03.count();
+		processTimeForMixAudio += 20000000 - newNow.count();
 		this->sleepableTime.store(processTimeForMixAudio);
 	}
 
