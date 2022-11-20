@@ -621,8 +621,8 @@ namespace DiscordCoreInternal {
 #else
 				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
 #endif
-					result =
-						sendto(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr, this->address->ai_addrlen);
+					result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
+						static_cast<int32_t>(this->address->ai_addrlen));
 				}
 				result = 0;
 #ifdef _WIN32
@@ -630,7 +630,7 @@ namespace DiscordCoreInternal {
 #else
 				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
 #endif
-					result = recvfrom(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr,
+					result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 						reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 				}
 			}
@@ -642,7 +642,7 @@ namespace DiscordCoreInternal {
 				}
 				return false;
 			}
-			if (auto result = bind(this->socket, this->address->ai_addr, this->address->ai_addrlen); result != 0) {
+			if (auto result = bind(this->socket, this->address->ai_addr, static_cast<int32_t>(this->address->ai_addrlen)); result != 0) {
 				if (this->doWePrintErrors) {
 					cout << reportError("DatagramSocketClient::connect::bind(), to: " + baseUrlNew) << endl;
 				}
@@ -657,7 +657,7 @@ namespace DiscordCoreInternal {
 #else
 				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
 #endif
-					result = recvfrom(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr,
+					result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 						reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 				}
 				connectionString = "connected1";
@@ -667,8 +667,8 @@ namespace DiscordCoreInternal {
 #else
 				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
 #endif
-					result =
-						sendto(this->socket, connectionString.data(), connectionString.size(), 0, this->address->ai_addr, this->address->ai_addrlen);
+					result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
+						static_cast<int32_t>(this->address->ai_addrlen));
 				}
 			}
 		}
@@ -775,7 +775,7 @@ namespace DiscordCoreInternal {
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
 			auto writtenBytes{ sendto(this->socket, this->outputBuffer.getCurrentTail()->getCurrentTail(), static_cast<int32_t>(bytesToWrite), 0,
-				this->address->ai_addr, this->address->ai_addrlen) };
+				this->address->ai_addr, static_cast<int32_t>(this->address->ai_addrlen)) };
 #ifdef _WIN32
 			if (writtenBytes < 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
 #else
