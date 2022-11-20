@@ -34,7 +34,7 @@ set(OPENSSL_ROOT_DIR "C:/Vcpkg/installed/x64-windows/") # Set this one to the fo
 cmake_minimum_required(VERSION 3.20)
 set(PROJECT_NAME "DiscordCoreAPI")
 set(LIB_NAME "${PROJECT_NAME}")
-set(PRODUCT_VERSION "1.0.0")
+set(PRODUCT_VERSION "1.2.0")
 set(DESCRIPTION "A Discord bot library, written in C++, using custom asynchronous coroutines.")
 
 project(

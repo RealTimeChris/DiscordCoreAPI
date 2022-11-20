@@ -30,7 +30,7 @@ generate_product_version(
 	ORIGINAL_FILENAME "discordcoreapi.dll"
 	COMPANY_NAME "RealTimeChris Inc."
 	VERSION_MAJOR "1"
-	VERSION_MINOR "0"
+	VERSION_MINOR "2"
 	VERSION_PATCH "0"
 	VERSION_REVISION "0"
 )
