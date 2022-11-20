@@ -128,9 +128,9 @@ namespace DiscordCoreAPI {
 			for (uint8_t x = 0; x < headerSize; ++x) {
 				this->data[x] = header[x];
 			}
-			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->data.data()) + headerSize,
-					reinterpret_cast<const unsigned char*>(audioData.data.data()), audioData.data.size(), nonceForLibSodium,
-					reinterpret_cast<unsigned char*>(this->keys.data())) != 0) {
+			if (crypto_secretbox_easy(reinterpret_cast<uint8_t*>(this->data.data()) + headerSize,
+					reinterpret_cast<const uint8_t*>(audioData.data.data()), audioData.data.size(), nonceForLibSodium,
+					reinterpret_cast<uint8_t*>(this->keys.data())) != 0) {
 				return {};
 			}
 			return std::string_view{ this->data.data(), numOfBytes };
@@ -196,8 +196,7 @@ namespace DiscordCoreAPI {
 			} else {
 				this->voiceUsers[speakerSsrc].setEndingStatus(false);
 			}
-			this->voiceUsers[speakerSsrc].insertPayload(
-				std::string{ reinterpret_cast<const char*>(rawDataBufferNew.data()), rawDataBufferNew.size() });
+			this->voiceUsers[speakerSsrc].insertPayload(std::string{ rawDataBufferNew.data(), rawDataBufferNew.size() });
 		}
 	}
 
@@ -843,7 +842,7 @@ namespace DiscordCoreAPI {
 			newFrame.data.push_back(0xff);
 			newFrame.data.push_back(0xfe);
 			auto packetNew = this->packetEncrypter.encryptPacket(newFrame);
-			frames.push_back(std::string{ reinterpret_cast<const char*>(packetNew.data()), packetNew.size() });
+			frames.push_back(std::string{ packetNew.data(), packetNew.size() });
 		}
 		for (auto& value: frames) {
 			this->sendVoiceData(value);
@@ -943,9 +942,9 @@ namespace DiscordCoreAPI {
 					nonce[x] = payload[x];
 				}
 
-				if (crypto_secretbox_open_easy(reinterpret_cast<unsigned char*>(this->decryptedDataString.data()),
-						reinterpret_cast<unsigned char*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
-						reinterpret_cast<unsigned char*>(this->encryptionKey.data()))) {
+				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
+						reinterpret_cast<uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
+						reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
 					newNow = HRClock::now() - now;
 					processTimeForMixAudio += 20000000 - newNow.count();
 					return;

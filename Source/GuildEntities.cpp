@@ -362,7 +362,8 @@ namespace DiscordCoreAPI {
 
 		this->discoverySplash = getString(jsonObjectData, "discovery_splash");
 
-		this->flags = setBool(this->flags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
+		uint8_t newFlags{};
+		newFlags = setBool(newFlags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
 
 		this->ownerId = getId(jsonObjectData, "owner_id");
 
@@ -403,9 +404,9 @@ namespace DiscordCoreAPI {
 
 		this->afkTimeOut = static_cast<AfkTimeOutDurations>(getUint8(jsonObjectData, "afk_timeout"));
 
-		this->flags = setBool(this->flags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
+		newFlags = setBool(newFlags, GuildFlags::Owner, getBool(jsonObjectData, "owner"));
 
-		this->flags = setBool(this->flags, GuildFlags::WidgetEnabled, getBool(jsonObjectData, "widget_enabled"));
+		newFlags = setBool(newFlags, GuildFlags::WidgetEnabled, getBool(jsonObjectData, "widget_enabled"));
 
 		this->verificationLevel = static_cast<VerificationLevel>(getUint8(jsonObjectData, "verification_level"));
 
@@ -418,9 +419,11 @@ namespace DiscordCoreAPI {
 
 		this->systemChannelFlags = static_cast<SystemChannelFlags>(getUint8(jsonObjectData, "system_channel_flags"));
 
-		this->flags = setBool(this->flags, GuildFlags::Large, getBool(jsonObjectData, "large"));
+		newFlags = setBool(newFlags, GuildFlags::Large, getBool(jsonObjectData, "large"));
 
-		this->flags = setBool(this->flags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
+		newFlags = setBool(newFlags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
+
+		this->flags = static_cast<GuildFlags>(newFlags);
 
 		this->memberCount = getUint32(jsonObjectData, "member_count");
 

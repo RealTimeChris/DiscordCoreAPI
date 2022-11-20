@@ -1880,14 +1880,17 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	template<IsEnum OTy> auto setBool(OTy theFlags, OTy theFlagToSet, bool enabled) {
+	template<typename ITy>
+	concept IsInteger = std::is_integral<ITy>::value;
+
+	template<IsInteger StoredAs, IsEnum OTy> auto setBool(StoredAs theFlags, OTy theFlagToSet, bool enabled) {
 		std::underlying_type_t<OTy> theValue{ static_cast<std::underlying_type_t<OTy>>(theFlags) };
 		if (enabled) {
 			theValue |= static_cast<std::underlying_type_t<OTy>>(theFlagToSet);
 		} else {
 			theValue &= ~static_cast<std::underlying_type_t<OTy>>(theFlagToSet);
 		}
-		return static_cast<OTy>(theValue);
+		return static_cast<std::underlying_type_t<OTy>>(theValue);
 	}
 
 	template<IsEnum OTy> bool getBool(OTy theFlags, OTy theFlagToCheckFor) {

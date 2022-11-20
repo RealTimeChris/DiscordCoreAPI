@@ -30,10 +30,10 @@ namespace DiscordCoreAPI {
 
 	Channel::Channel(simdjson::ondemand::value jsonObjectData) {
 		this->id = getId(jsonObjectData, "id");
-
 		this->totalMessageSent = getUint32(jsonObjectData, "tital_message_sent");
 
-		*reinterpret_cast<uint8_t*>(&this->flags) |= getUint8(jsonObjectData, "flags");
+		uint8_t newFlags{}; 
+		newFlags = getUint8(jsonObjectData, "flags");
 
 		this->type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
 
@@ -72,7 +72,7 @@ namespace DiscordCoreAPI {
 
 		this->permissions = getString(jsonObjectData, "permissions");
 
-		this->flags = setBool(this->flags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
+		newFlags = setBool(newFlags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
 
 		this->lastMessageId = getString(jsonObjectData, "last_message_id");
 
@@ -120,6 +120,8 @@ namespace DiscordCoreAPI {
 		if (getObject(object, "member", jsonObjectData)) {
 			this->member = ThreadMemberData{ object };
 		}
+
+		this->flags = static_cast<ChannelFlags>(newFlags);
 	}
 
 	ChannelVector::ChannelVector(simdjson::ondemand::value jsonObjectData) {
