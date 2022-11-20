@@ -514,7 +514,7 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						auto waitTime = targetTime - HRClock::now();
-						int32_t minimumFreeTimeForCheckingProcessIO{ 18000000 };
+						int64_t minimumFreeTimeForCheckingProcessIO{ static_cast<int64_t>(static_cast<double>(intervalCount.count()) * 0.950f) };
 						if (waitTime.count() >= minimumFreeTimeForCheckingProcessIO) {
 							if (!token.stop_requested() && VoiceConnection::areWeConnected()) {
 								if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
@@ -523,9 +523,11 @@ namespace DiscordCoreAPI {
 							}
 						}
 						waitTime = targetTime - HRClock::now();
-						nanoSleep(static_cast<uint64_t>(static_cast<double>(waitTime.count()) * 0.95l));
+						if (static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95l) > 0) {
+							nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95l));
+						}
 						waitTime = targetTime - HRClock::now();
-						while (waitTime.count() > 0 && waitTime.count() < 20000000) {
+						while (waitTime.count() > 0 && waitTime.count() < intervalCount.count()) {
 							if (DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
 								DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
@@ -536,10 +538,6 @@ namespace DiscordCoreAPI {
 							this->sendVoiceData(newFrame);
 						}
 						this->canWeSendAudio.store(true);
-						if (DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
-							DiscordCoreInternal::ProcessIOResult::Error) {
-							this->onClosed();
-						}
 
 						targetTime = HRClock::now() + intervalCount;
 					}
