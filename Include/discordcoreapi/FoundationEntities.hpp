@@ -381,7 +381,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// User flags. \brief User flags.
-	enum class UserFlags : int32_t {
+	enum class UserFlags : uint32_t {
 		Staff = 1 << 0,///< Discord Employee.
 		Partner = 1 << 1,///< Partnered Server Owner.
 		Hypesquad = 1 << 2,///< HypeSquad Events Member.

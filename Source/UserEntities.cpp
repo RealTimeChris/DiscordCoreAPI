@@ -68,17 +68,20 @@ namespace DiscordCoreAPI {
 	}
 
 	User::User(simdjson::ondemand::value jsonObjectData) {
-		flags = setBool(this->flags, UserFlags::MFAEnabled, getBool(jsonObjectData, "mfa_enabled"));
+		uint32_t newFlags{}; 
+		newFlags = setBool(newFlags, UserFlags::MFAEnabled, getBool(jsonObjectData, "mfa_enabled"));
 
-		this->flags = setBool(this->flags, UserFlags::Verified, getBool(jsonObjectData, "verified"));
+		newFlags = setBool(newFlags, UserFlags::Verified, getBool(jsonObjectData, "verified"));
 
-		this->flags = setBool(this->flags, UserFlags::System, getBool(jsonObjectData, "system"));
+		newFlags = setBool(newFlags, UserFlags::System, getBool(jsonObjectData, "system"));
 
-		this->flags = setBool(this->flags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
+		newFlags = setBool(newFlags, UserFlags::Bot, getBool(jsonObjectData, "bot"));
 
 		this->discriminator = getString(jsonObjectData, "discriminator");
 
-		this->flags = setBool(this->flags, static_cast<UserFlags>(getUint32(jsonObjectData, "public_flags")), true);
+		newFlags = setBool(newFlags, static_cast<UserFlags>(getUint32(jsonObjectData, "public_flags")), true);
+
+		this->flags = static_cast<UserFlags>(newFlags);
 
 		this->userName = getString(jsonObjectData, "username");
 

@@ -233,38 +233,38 @@ namespace DiscordCoreAPI {
 	}
 
 	void parseObject(simdjson::ondemand::value jsonData, PresenceUpdateFlags& data) {
-		PresenceUpdateFlags
-
-			dataNew = static_cast<PresenceUpdateFlags>(data);
+		uint8_t dataNew = static_cast<uint8_t>(data);
 
 		auto stringNew = getString(jsonData, "dekstop");
 
 		if (stringNew == "online") {
-			data = static_cast<PresenceUpdateFlags>(setBool(dataNew, PresenceUpdateFlags::Desktop_Online, true));
+			dataNew += setBool(dataNew, PresenceUpdateFlags::Desktop_Online, true);
 		} else if (stringNew == "idle") {
-			data = static_cast<PresenceUpdateFlags>(setBool(dataNew, PresenceUpdateFlags::Desktop_Idle, true));
+			dataNew += setBool(dataNew, PresenceUpdateFlags::Desktop_Idle, true);
 		} else if (stringNew == "dnd") {
-			data = static_cast<PresenceUpdateFlags>(setBool(dataNew, PresenceUpdateFlags::Desktop_Dnd, true));
+			dataNew += setBool(dataNew, PresenceUpdateFlags::Desktop_Dnd, true);
 		}
 
 		stringNew = getString(jsonData, "mobile");
 
 		if (stringNew == "online") {
-			data = static_cast<PresenceUpdateFlags>(setBool(dataNew, PresenceUpdateFlags::Mobile_Online, true));
+			dataNew += setBool(dataNew, PresenceUpdateFlags::Mobile_Online, true);
 		} else if (stringNew == "idle") {
-			data = static_cast<PresenceUpdateFlags>(setBool(dataNew, PresenceUpdateFlags::Mobile_Idle, true));
+			dataNew += setBool(dataNew, PresenceUpdateFlags::Mobile_Idle, true);
 		} else if (stringNew == "dnd") {
-			data = static_cast<PresenceUpdateFlags>(setBool(dataNew, PresenceUpdateFlags::Mobile_Dnd, true));
+			dataNew += setBool(dataNew, PresenceUpdateFlags::Mobile_Dnd, true);
 		}
 
 		stringNew = getString(jsonData, "web");
 
 		if (stringNew == "online") {
-			data = static_cast<PresenceUpdateFlags>(setBool(dataNew, PresenceUpdateFlags::Web_Online, true));
+			dataNew += setBool(dataNew, PresenceUpdateFlags::Web_Online, true);
 		} else if (stringNew == "idle") {
-			data = static_cast<PresenceUpdateFlags>(setBool(dataNew, PresenceUpdateFlags::Web_Idle, true));
+			dataNew += setBool(dataNew, PresenceUpdateFlags::Web_Idle, true);
 		} else if (stringNew == "dnd") {
-			data = static_cast<PresenceUpdateFlags>(setBool(dataNew, PresenceUpdateFlags::Web_Dnd, true));
+			dataNew += setBool(dataNew, PresenceUpdateFlags::Web_Dnd, true);
 		}
+
+		data = static_cast<PresenceUpdateFlags>(dataNew);
 	}
 };

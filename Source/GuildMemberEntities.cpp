@@ -105,11 +105,12 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildMember::GuildMember(simdjson::ondemand::value jsonObjectData) {
-		this->flags = setBool(this->flags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
+		uint8_t newFlags{}; 
+		newFlags = setBool(newFlags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
 
-		this->flags = setBool(this->flags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
+		newFlags = setBool(newFlags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
 
-		this->flags = setBool(this->flags, GuildMemberFlags::Deaf, getBool(jsonObjectData, "deaf"));
+		newFlags = setBool(newFlags, GuildMemberFlags::Deaf, getBool(jsonObjectData, "deaf"));
 
 		this->joinedAt = getString(jsonObjectData, "joined_at");
 
@@ -134,9 +135,9 @@ namespace DiscordCoreAPI {
 
 		this->avatar = getString(jsonObjectData, "avatar");
 
-		auto theFlags = getUint8(jsonObjectData, "flags");
+		newFlags += getUint8(jsonObjectData, "flags");
 
-		this->flags = setBool(this->flags, static_cast<GuildMemberFlags>(theFlags), true);
+		this->flags = static_cast<GuildMemberFlags>(newFlags);
 
 		this->nick = getString(jsonObjectData, "nick");
 
