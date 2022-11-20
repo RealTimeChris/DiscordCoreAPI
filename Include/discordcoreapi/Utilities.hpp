@@ -872,10 +872,10 @@ namespace DiscordCoreAPI {
 	using std::cout;
 	using std::endl;
 
+	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData;
+	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData;
 	struct DiscordCoreAPI_Dll File;
-
-	class DiscordCoreAPI_Dll OnVoiceServerUpdateData;
-	class DiscordCoreAPI_Dll OnVoiceStateUpdateData;
+	
 	class DiscordCoreAPI_Dll DiscordCoreClient;
 	class DiscordCoreAPI_Dll VoiceConnection;
 	class DiscordCoreAPI_Dll GuildMember;

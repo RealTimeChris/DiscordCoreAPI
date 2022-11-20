@@ -100,8 +100,8 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketCore {
 	  public:
-		friend class DiscordCoreAPI::OnVoiceServerUpdateData;
-		friend class DiscordCoreAPI::OnVoiceStateUpdateData;
+		friend struct DiscordCoreAPI::OnVoiceServerUpdateData;
+		friend struct DiscordCoreAPI::OnVoiceStateUpdateData;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
 		friend class BaseSocketAgent;

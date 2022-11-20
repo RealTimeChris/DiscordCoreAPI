@@ -154,9 +154,9 @@ namespace DiscordCoreAPI {
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
 		} else {
 			AudioFrameData newFrame{};
-			newFrame.data.push_back(0xf8);
-			newFrame.data.push_back(0xff);
-			newFrame.data.push_back(0xfe);
+			newFrame.data.push_back(static_cast<char>(0xf8));
+			newFrame.data.push_back(static_cast<char>(0xff));
+			newFrame.data.push_back(static_cast<char>(0xfe));
 			newFrame.type = AudioFrameType::Encoded;
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(newFrame));
 		}
@@ -838,9 +838,9 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> frames{};
 		for (size_t x = 0; x < 5; ++x) {
 			AudioFrameData newFrame{};
-			newFrame.data.push_back(0xf8);
-			newFrame.data.push_back(0xff);
-			newFrame.data.push_back(0xfe);
+			newFrame.data.push_back(static_cast<char>(0xf8));
+			newFrame.data.push_back(static_cast<char>(0xff));
+			newFrame.data.push_back(static_cast<char>(0xfe));
 			auto packetNew = this->packetEncrypter.encryptPacket(newFrame);
 			frames.push_back(std::string{ packetNew.data(), packetNew.size() });
 		}
