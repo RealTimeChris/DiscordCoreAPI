@@ -43,17 +43,17 @@ namespace DiscordCoreAPI {
 		this->port = getUint64(jsonObjectData, "port");
 	}
 
-	VoiceUser::VoiceUser(std::atomic_int8_t* voiceUsersNew, std::atomic_int64_t* sleepableTimeNew) noexcept {
+	VoiceUser::VoiceUser(std::unordered_map<uint64_t, VoiceUser>* voiceUsersNew, std::atomic_int64_t* sleepableTimeNew) noexcept {
 		this->sleepableTime = sleepableTimeNew;
-		this->voiceUserCount = voiceUsersNew;
+		this->voiceUsers = voiceUsersNew;
 	}
 
 	VoiceUser& VoiceUser::operator=(VoiceUser&& data) noexcept {
 		this->wereWeEnding.store(data.wereWeEnding.load());
-		this->voiceUserCount = data.voiceUserCount;
 		this->payloads = std::move(data.payloads);
 		this->sleepableTime = data.sleepableTime;
 		this->decoder = std::move(data.decoder);
+		this->voiceUsers = data.voiceUsers;
 		this->userId = data.userId;
 		return *this;
 	}
@@ -62,42 +62,43 @@ namespace DiscordCoreAPI {
 		*this = std::move(data);
 	}
 
-	void VoiceUser::insertPayload(std::string&& data) {
+	void VoiceUser::insertPayload(std::string&& data) noexcept {
 		this->payloads.send(data);
 	}
 
-	std::string VoiceUser::extractPayload() {
-		int64_t userCount = this->voiceUserCount->load();
+	std::string VoiceUser::extractPayload() noexcept {
+		int64_t userCount = this->getVoiceUserCount();
 		std::string value{};
 		if (userCount > 0) {
-			StopWatch stopWatch{ Nanoseconds{ this->sleepableTime->load() / 2 / userCount } };
-			while (!this->payloads.tryReceive(value) && !this->getEndingStatus()) {
-				if (stopWatch.hasTimePassed()) {
-					break;
-				}
-				std::this_thread::sleep_for(1us);
+			StopWatch stopWatch{ Nanoseconds{ this->sleepableTime->load() / userCount } };
+			while (!this->payloads.tryReceive(value) && !this->getEndingStatus() && !stopWatch.hasTimePassed()) {
+				std::this_thread::sleep_for(1ns);
 			}
 		}
 		return value;
 	}
 
-	DiscordCoreInternal::OpusDecoderWrapper& VoiceUser::getDecoder() {
+	DiscordCoreInternal::OpusDecoderWrapper& VoiceUser::getDecoder() noexcept {
 		return this->decoder;
 	}
 
-	void VoiceUser::setEndingStatus(bool data) {
+	void VoiceUser::setEndingStatus(bool data) noexcept {
 		this->wereWeEnding.store(data);
 	}
 
-	void VoiceUser::setUserId(Snowflake userIdNew) {
+	size_t VoiceUser::getVoiceUserCount() noexcept {
+		return this->voiceUsers->size();
+	}
+
+	void VoiceUser::setUserId(Snowflake userIdNew) noexcept {
 		this->userId = userIdNew;
 	}
 
-	bool VoiceUser::getEndingStatus() {
+	bool VoiceUser::getEndingStatus() noexcept {
 		return this->wereWeEnding.load();
 	}
 
-	Snowflake VoiceUser::getUserId() {
+	Snowflake VoiceUser::getUserId() noexcept {
 		return this->userId;
 	}
 
@@ -284,7 +285,7 @@ namespace DiscordCoreAPI {
 			}
 			case 5: {
 				const uint32_t ssrc = getUint32(value["d"], "ssrc");
-				VoiceUser user{ &this->voiceUserCount, &this->sleepableTime };
+				VoiceUser user{ &this->voiceUsers, &this->sleepableTime };
 				user.setUserId(stoull(getString(value["d"], "user_id")));
 				std::unique_lock lock{ this->voiceUserMutex };
 				if (!Users::getCachedUser({ .userId = user.getUserId() }).getFlagValue(UserFlags::Bot) ||
@@ -367,7 +368,13 @@ namespace DiscordCoreAPI {
 			auto now = HRClock::now();
 			this->mixAudio();
 			auto newNow = now - HRClock::now();
-			this->sleepableTime.store(20000000 - newNow.count());
+			if (newNow.count() > 0 && newNow.count() <= 15000000) {
+				this->sleepableTime.store(20000000 - newNow.count());
+			} else if (newNow.count() > 15000000) {
+				this->sleepableTime.store(15000000);
+			} else {
+				this->sleepableTime.store(0);
+			}
 			this->canWeSendAudio.store(false);
 		}
 	}
@@ -459,8 +466,7 @@ namespace DiscordCoreAPI {
 						this->checkForConnections();
 					}
 
-					Nanoseconds intervalCount{ 20000000 };
-					auto targetTime{ HRClock::now() + intervalCount };
+					auto targetTime{ HRClock::now() + this->intervalCount };
 
 					this->sendSpeakingMessage(false);
 					this->sendSpeakingMessage(true);
@@ -479,6 +485,8 @@ namespace DiscordCoreAPI {
 						if (this->audioData.data.size() == 0) {
 							this->areWePlaying.store(false);
 						} else {
+							this->intervalCount = Nanoseconds{ static_cast<uint64_t>(static_cast<float>(this->audioData.sampleCount) /
+								static_cast<float>(this->sampleRatePerSecond) * static_cast<float>(this->nsPerSecond)) };
 							this->areWePlaying.store(true);
 						}
 						if (this->audioData.guildMemberId != 0) {
@@ -514,7 +522,7 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						auto waitTime = targetTime - HRClock::now();
-						int64_t minimumFreeTimeForCheckingProcessIO{ static_cast<int64_t>(static_cast<double>(intervalCount.count()) * 0.950f) };
+						int64_t minimumFreeTimeForCheckingProcessIO{ static_cast<int64_t>(static_cast<double>(this->intervalCount.count()) * 0.90f) };
 						if (waitTime.count() >= minimumFreeTimeForCheckingProcessIO) {
 							if (!token.stop_requested() && VoiceConnection::areWeConnected()) {
 								if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
@@ -527,7 +535,7 @@ namespace DiscordCoreAPI {
 							nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95l));
 						}
 						waitTime = targetTime - HRClock::now();
-						while (waitTime.count() > 0 && waitTime.count() < intervalCount.count()) {
+						while (waitTime.count() > 0 && waitTime.count() < this->intervalCount.count()) {
 							if (DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
 								DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
@@ -537,9 +545,13 @@ namespace DiscordCoreAPI {
 						if (newFrame.size() > 0) {
 							this->sendVoiceData(newFrame);
 						}
+						if (DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
+							DiscordCoreInternal::ProcessIOResult::Error) {
+							this->onClosed();
+						}
 						this->canWeSendAudio.store(true);
 
-						targetTime = HRClock::now() + intervalCount;
+						targetTime = HRClock::now() + this->intervalCount;
 					}
 					break;
 				}
@@ -914,17 +926,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::mixAudio() noexcept {
-		auto now = HRClock::now();
 		opus_int32 voiceUserCount{};
 		size_t decodedSize{};
-		int64_t processTimeForMixAudio{};
 		std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
 		std::unique_lock lock{ this->voiceUserMutex };
-		auto newNow = HRClock::now() - now;
-		processTimeForMixAudio += 20000000 - newNow.count();
 		for (auto& [key, value]: this->voiceUsers) {
 			std::string payload{ value.extractPayload() };
-			now = HRClock::now();
 			if (payload.size() > 0) {
 				const uint64_t headerSize{ 12 };
 				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };
@@ -943,8 +950,6 @@ namespace DiscordCoreAPI {
 				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
 						reinterpret_cast<uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
 						reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
-					newNow = HRClock::now() - now;
-					processTimeForMixAudio += 20000000 - newNow.count();
 					return;
 				}
 
@@ -973,8 +978,6 @@ namespace DiscordCoreAPI {
 					}
 				}
 			}
-			newNow = HRClock::now() - now;
-			processTimeForMixAudio += 20000000 - newNow.count();
 		}
 		if (decodedSize > 0) {
 			for (int32_t x = 0; x < decodedSize; ++x) {
@@ -982,9 +985,6 @@ namespace DiscordCoreAPI {
 			}
 			this->streamSocket->writeData(std::string_view{ reinterpret_cast<const char*>(this->downSampledVector.data()), decodedSize * 2 });
 		}
-		newNow = HRClock::now() - now;
-		processTimeForMixAudio += 20000000 - newNow.count();
-		this->sleepableTime.store(processTimeForMixAudio);
 	}
 
 	bool VoiceConnection::stop() noexcept {

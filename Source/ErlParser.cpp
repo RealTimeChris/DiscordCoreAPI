@@ -40,12 +40,24 @@ namespace DiscordCoreInternal {
 		return std::string_view{ this->finalString.data(), this->currentSize };
 	}
 
+	size_t countBackSlashes(const char* string, size_t length) {
+		size_t returnValue{};
+		for (size_t x = 0; x < length; ++x) {
+			if (string[x] == 0x5c) {
+				returnValue++;
+			} else {
+				break;
+			}
+		}
+		return returnValue;
+	}
+
 	void ErlParser::writeCharactersFromBuffer(uint32_t length) {
 		if (this->offSet + static_cast<uint64_t>(length) > this->dataBuffer.size()) {
 			throw ErlParseError{ "ErlParser::readString() Error: readString() past end of buffer.\n\n" };
 		}
 		uint64_t finalSize{};
-		char* stringNew = ( char* )this->dataBuffer.data() + this->offSet;
+		const char* stringNew = static_cast<const char*>(this->dataBuffer.data()) + this->offSet;
 		for (uint32_t x = 0; x < length; ++x) {
 			switch (stringNew[x]) {
 				case 0x00: {
