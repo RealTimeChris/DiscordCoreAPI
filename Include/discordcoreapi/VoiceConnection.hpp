@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll VoiceUser {
 		VoiceUser() noexcept = default;
 
-		VoiceUser(std::atomic_int8_t* voiceUserCount, std::atomic_int64_t* sleepableTime) noexcept;
+		VoiceUser(std::unordered_map<uint64_t, VoiceUser>* voiceUsers, std::atomic_int64_t* sleepableTime) noexcept;
 
 		VoiceUser& operator=(VoiceUser&&) noexcept;
 
@@ -58,26 +58,28 @@ namespace DiscordCoreAPI {
 
 		VoiceUser(const VoiceUser&) noexcept = delete;
 
-		void insertPayload(std::string&&);
+		DiscordCoreInternal::OpusDecoderWrapper& getDecoder() noexcept;
 
-		std::string extractPayload();
+		void insertPayload(std::string&&) noexcept;
 
-		DiscordCoreInternal::OpusDecoderWrapper& getDecoder();
+		std::string extractPayload() noexcept;
 
-		void setEndingStatus(bool);
+		void setEndingStatus(bool) noexcept;
 
-		void setUserId(Snowflake);
+		size_t getVoiceUserCount() noexcept;
 
-		bool getEndingStatus();
+		void setUserId(Snowflake) noexcept;
 
-		Snowflake getUserId();
+		bool getEndingStatus() noexcept;
+
+		Snowflake getUserId() noexcept;
 
 	  protected:
+		std::unordered_map<uint64_t, VoiceUser>* voiceUsers{ nullptr };
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
+		std::atomic_int64_t* sleepableTime{ nullptr };
 		UnboundedMessageBlock<std::string> payloads{};
 		std::atomic_bool wereWeEnding{ false };
-		std::atomic_int8_t* voiceUserCount{};
-		std::atomic_int64_t* sleepableTime{};
 		Snowflake userId{};
 	};
 
@@ -162,7 +164,9 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
+		StopWatch<Nanoseconds> sleepTimeCollector{ Nanoseconds{ 0 } };
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
+		Nanoseconds intervalCount{ 960 / 48000 * 1000000000 };
 		std::unique_ptr<VoiceConnectionBridge> streamSocket{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
@@ -175,10 +179,12 @@ namespace DiscordCoreAPI {
 		std::atomic_bool doWeReconnect{ false };
 		std::atomic_bool areWePlaying{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
+		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};
 		simdjson::ondemand::parser parser{};
 		std::atomic_int8_t voiceUserCount{};
 		std::atomic_int64_t sleepableTime{};
+		int64_t nsPerSecond{ 1000000000 };
 		std::string audioEncryptionMode{};
 		std::string decryptedDataString{};
 		Snowflake currentGuildMemberId{};
@@ -190,7 +196,7 @@ namespace DiscordCoreAPI {
 		std::string voiceIp{};
 		std::string baseUrl{};
 		uint32_t audioSSRC{};
-		uint64_t port{};
+		uint16_t port{};
 
 		void parseIncomingVoiceData(const std::string_view rawDataBufferNew) noexcept;
 

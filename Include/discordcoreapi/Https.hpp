@@ -49,9 +49,9 @@ namespace DiscordCoreInternal {
 		friend class HttpsConnection;
 		friend class HttpsClient;
 
-		HttpsState currentState{ HttpsState::Collecting_Code };
-		HttpsResponseCode responseCode{ static_cast<uint32_t>(-1) };
 		std::unordered_map<std::string, std::string> responseHeaders{};
+		HttpsResponseCode responseCode{ static_cast<uint32_t>(-1) };
+		HttpsState currentState{ HttpsState::Collecting_Code };
 		std::string responseMessage{};
 		uint64_t contentLength{};
 
@@ -185,7 +185,7 @@ namespace DiscordCoreInternal {
 				if (document.type() != simdjson::ondemand::json_type::null) {
 					simdjson::ondemand::value object{};
 					if (document.get(object) == simdjson::error_code::SUCCESS) {
-						if (returnValue != nullptr) {
+						if (returnValue) {
 							*returnValue = RTy{ object };
 							return *returnValue;
 						} else {
