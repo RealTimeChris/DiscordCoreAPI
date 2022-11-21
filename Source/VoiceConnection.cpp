@@ -365,16 +365,8 @@ namespace DiscordCoreAPI {
 				}
 				std::this_thread::sleep_for(1ns);
 			}
-			auto now = HRClock::now();
 			this->mixAudio();
-			auto newNow = now - HRClock::now();
-			if (newNow.count() > 0 && newNow.count() <= 15000000) {
-				this->sleepableTime.store(20000000 - newNow.count());
-			} else if (newNow.count() > 15000000) {
-				this->sleepableTime.store(15000000);
-			} else {
-				this->sleepableTime.store(0);
-			}
+			this->sleepableTime.store(15000000);
 			this->canWeSendAudio.store(false);
 		}
 	}
@@ -535,12 +527,8 @@ namespace DiscordCoreAPI {
 							nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95l));
 						}
 						waitTime = targetTime - HRClock::now();
-						while (waitTime.count() > 0 && waitTime.count() < this->intervalCount.count()) {
-							if (DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
-								DiscordCoreInternal::ProcessIOResult::Error) {
-								this->onClosed();
-							}
-							waitTime = targetTime - HRClock::now();
+						if (waitTime.count() > 0 && waitTime.count() < this->intervalCount.count()) {
+							spinLock(waitTime.count());
 						}
 						if (newFrame.size() > 0) {
 							this->sendVoiceData(newFrame);
