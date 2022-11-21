@@ -926,16 +926,12 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::mixAudio() noexcept {
-		auto now = HRClock::now();
 		opus_int32 voiceUserCount{};
 		size_t decodedSize{};
 		std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
 		std::unique_lock lock{ this->voiceUserMutex };
-		auto newNow = HRClock::now() - now;
-		auto processTimeForMixAudio = newNow;
 		for (auto& [key, value]: this->voiceUsers) {
 			std::string payload{ value.extractPayload() };
-			now = HRClock::now();
 			if (payload.size() > 0) {
 				const uint64_t headerSize{ 12 };
 				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };
@@ -954,8 +950,6 @@ namespace DiscordCoreAPI {
 				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
 						reinterpret_cast<uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
 						reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
-					newNow = HRClock::now() - now;
-					processTimeForMixAudio += newNow;
 					return;
 				}
 
@@ -984,8 +978,6 @@ namespace DiscordCoreAPI {
 					}
 				}
 			}
-			newNow = HRClock::now() - now;
-			processTimeForMixAudio += newNow;
 		}
 		if (decodedSize > 0) {
 			for (int32_t x = 0; x < decodedSize; ++x) {
@@ -993,9 +985,6 @@ namespace DiscordCoreAPI {
 			}
 			this->streamSocket->writeData(std::string_view{ reinterpret_cast<const char*>(this->downSampledVector.data()), decodedSize * 2 });
 		}
-		newNow = HRClock::now() - now;
-		processTimeForMixAudio += newNow;
-		this->sleepableTime.store(20000000 - processTimeForMixAudio.count());
 	}
 
 	bool VoiceConnection::stop() noexcept {
