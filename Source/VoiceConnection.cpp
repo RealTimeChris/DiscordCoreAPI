@@ -87,13 +87,7 @@ namespace DiscordCoreAPI {
 	}
 
 	size_t VoiceUser::getVoiceUserCount() noexcept {
-		size_t count{};
-		for (auto& [key, value]: *this->voiceUsers){
-			if (!value.wereWeEnding.load()) {
-				count++;
-			}
-		}
-		return count;
+		return this->voiceUsers->size();
 	}
 
 	void VoiceUser::setUserId(Snowflake userIdNew) noexcept {
@@ -374,7 +368,13 @@ namespace DiscordCoreAPI {
 			auto now = HRClock::now();
 			this->mixAudio();
 			auto newNow = now - HRClock::now();
-			this->sleepableTime.store(20000000 - newNow.count());
+			if (newNow.count() > 0 && newNow.count() <= 15000000) {
+				this->sleepableTime.store(20000000 - newNow.count());
+			} else if (newNow.count() > 15000000) {
+				this->sleepableTime.store(15000000);
+			} else {
+				this->sleepableTime.store(0);
+			}
 			this->canWeSendAudio.store(false);
 		}
 	}
