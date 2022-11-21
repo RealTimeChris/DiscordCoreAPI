@@ -354,8 +354,9 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::runBridge(std::stop_token token) noexcept {
 		this->sendSilence();
 		DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both);
-		while (!token.stop_requested()) {
-			while (!this->canWeSendAudio.load() && !token.stop_requested()) {
+		while (!token.stop_requested() && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
+			while (!this->canWeSendAudio.load() && !token.stop_requested() && !this->doWeQuit->load() &&
+				this->activeState.load() != VoiceActiveState::Exiting) {
 				if (this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both) == DiscordCoreInternal::ProcessIOResult::Error) {
 					this->doWeReconnect.store(true);
 					return;
