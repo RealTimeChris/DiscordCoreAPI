@@ -658,7 +658,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll StreamInfo {
 		bool streamBotAudio{ false };///< Do we stream the audio coming from other bots?
 		std::string address{};///< The address to connect to.
-		StreamType type{};
+		StreamType type{};///< The type of streamer that this is. Set one to client and one to server.
 		uint16_t port{};///< The port to connect to.
 	};
 
@@ -1302,8 +1302,8 @@ namespace DiscordCoreAPI {
 		void clearData() noexcept;
 	};
 
-	/// For connecting to a voice-channel. "Stream-Socket" refers to when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
-	/// \brief For connecting to a voice-channel. "Stream-Socket" refers to when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
+	/// For connecting to a voice-channel. "streamInfo" is used when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
+	/// \brief For connecting to a voice-channel. "streamInfo" is used when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
 		DiscordCoreAPI::StreamInfo streamInfo{};///< The info for the stream-socekt, if applicable.
 		bool selfDeaf{ false };///< Self-deafen the bot?

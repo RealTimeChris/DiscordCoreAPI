@@ -157,6 +157,11 @@ namespace DiscordCoreAPI {
 		/// \returns DiscordCoreAPI::Snowflake A Snowflake containing the Channel's id.
 		Snowflake getChannelId() noexcept;
 
+		
+		/// Connects to a currently held voice channel. \brief Connects to a currently held voice channel.
+		/// \param initData A DiscordCoerAPI::VoiceConnectInitDat structure.
+		void connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept;
+
 		~VoiceConnection() noexcept;
 
 	  protected:
@@ -199,8 +204,6 @@ namespace DiscordCoreAPI {
 		uint16_t port{};
 
 		void parseIncomingVoiceData(const std::string_view rawDataBufferNew) noexcept;
-
-		void connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept;
 
 		void sendVoiceData(const std::string_view responseData) noexcept;
 
