@@ -515,21 +515,22 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						auto waitTime = targetTime - HRClock::now();
+						auto waitTimeCount = waitTime.count(); 
 						int64_t minimumFreeTimeForCheckingProcessIO{ static_cast<int64_t>(static_cast<double>(this->intervalCount.count()) * 0.90f) };
-						if (waitTime.count() >= minimumFreeTimeForCheckingProcessIO) {
-							if (!token.stop_requested() && VoiceConnection::areWeConnected()) {
-								if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
-									this->onClosed();
-								}
+						if (waitTimeCount >= minimumFreeTimeForCheckingProcessIO && !token.stop_requested() && VoiceConnection::areWeConnected()) {
+							if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
+								this->onClosed();
 							}
 						}
 						waitTime = targetTime - HRClock::now();
-						if (static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95l) > 0) {
-							nanoSleep(static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95l));
+						waitTimeCount = static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95l);
+						if (waitTimeCount > 0) {
+							nanoSleep(waitTimeCount);
 						}
 						waitTime = targetTime - HRClock::now();
-						if (waitTime.count() > 0 && waitTime.count() < this->intervalCount.count()) {
-							spinLock(waitTime.count());
+						waitTimeCount = waitTime.count();
+						if (waitTimeCount > 0 && waitTimeCount < this->intervalCount.count()) {
+							spinLock(waitTimeCount);
 						}
 						if (newFrame.size() > 0) {
 							this->sendVoiceData(newFrame);
