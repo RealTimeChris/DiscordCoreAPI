@@ -119,14 +119,14 @@ namespace DiscordCoreAPI {
 			storeBits(header + 4, this->timeStamp);
 			storeBits(header + 8, this->ssrc);
 			uint8_t nonceForLibSodium[crypto_secretbox_NONCEBYTES]{};
-			for (uint8_t x = 0; x < headerSize; ++x) {
+			for (int8_t x = 0; x < headerSize; ++x) {
 				nonceForLibSodium[x] = header[x];
 			}
 			const uint64_t numOfBytes{ headerSize + audioData.data.size() + crypto_secretbox_MACBYTES };
 			if (this->data.size() < numOfBytes) {
 				this->data.resize(numOfBytes);
 			}
-			for (uint8_t x = 0; x < headerSize; ++x) {
+			for (int8_t x = 0; x < headerSize; ++x) {
 				this->data[x] = header[x];
 			}
 			if (crypto_secretbox_easy(reinterpret_cast<uint8_t*>(this->data.data()) + headerSize,
@@ -962,7 +962,7 @@ namespace DiscordCoreAPI {
 					if (decodedData.size() > 0) {
 						decodedSize = std::max(decodedSize, decodedData.size());
 						voiceUserCount++;
-						for (uint32_t x = 0; x < decodedData.size(); ++x) {
+						for (int32_t x = 0; x < decodedData.size(); ++x) {
 							this->upSampledVector[x] += decodedData[x];
 						}
 					}

@@ -270,14 +270,14 @@ namespace DiscordCoreInternal {
 					std::this_thread::sleep_for(1ms);
 					std::string newerVector{};
 					if (amountToSubmitRemaining >= this->maxBufferSize) {
-						for (uint64_t x = 0; x < this->maxBufferSize; ++x) {
+						for (int64_t x = 0; x < this->maxBufferSize; ++x) {
 							newerVector.push_back(result.responseMessage[amountSubmitted]);
 							amountSubmitted++;
 							amountToSubmitRemaining--;
 						}
 					} else {
 						uint64_t amountToSubmitRemainingFinal{ amountToSubmitRemaining };
-						for (uint64_t x = 0; x < amountToSubmitRemainingFinal; ++x) {
+						for (int64_t x = 0; x < amountToSubmitRemainingFinal; ++x) {
 							newerVector.push_back(result.responseMessage[amountSubmitted]);
 							amountSubmitted++;
 							amountToSubmitRemaining--;

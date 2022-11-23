@@ -616,7 +616,7 @@ namespace DiscordCoreAPI {
 	void Jsonifier::writeJsonString(const StringType& stringNew) {
 		this->writeCharacter('\"');
 		for (auto& value: stringNew) {
-			switch (static_cast<std::uint8_t>(value)) {
+			switch (static_cast<uint8_t>(value)) {
 				case 0x08: {
 					this->writeCharacter('b');
 					break;
@@ -723,7 +723,7 @@ namespace DiscordCoreAPI {
 		this->appendNil();
 	}
 
-	void Jsonifier::writeString(const char* data, std::size_t length) {
+	void Jsonifier::writeString(const char* data, size_t length) {
 		this->string.append(data, length);
 	}
 
@@ -1037,7 +1037,7 @@ namespace DiscordCoreAPI {
 			}
 			auto length = stream.str().size();
 			this->ptr = std::make_unique<char[]>(length + 1);
-			for (uint64_t x = 0; x < length; ++x) {
+			for (int64_t x = 0; x < length; ++x) {
 				this->ptr[x] = other.ptr[x];
 			}
 		}
@@ -1086,7 +1086,7 @@ namespace DiscordCoreAPI {
 			stream << this->ptr;
 		}
 		std::string string{};
-		for (uint32_t x = 0; x < stream.str().size(); ++x) {
+		for (int32_t x = 0; x < stream.str().size(); ++x) {
 			string.push_back(stream.str()[x]);
 		}
 		return string;
@@ -1099,7 +1099,7 @@ namespace DiscordCoreAPI {
 		}
 		auto length = stream.str().size();
 		this->ptr = std::make_unique<char[]>(length + 2);
-		for (uint64_t x = 0; x < length; ++x) {
+		for (int64_t x = 0; x < length; ++x) {
 			this->ptr[x] = stream.str()[x];
 		}
 		this->ptr[length] = value;
@@ -1306,7 +1306,7 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> returnVector{};
 		uint64_t permissionsInteger = this->permissions;
 		if (permissionsInteger & (1ll << 3)) {
-			for (uint64_t x = 0; x < 41; ++x) {
+			for (int64_t x = 0; x < 41; ++x) {
 				permissionsInteger |= 1ll << x;
 			}
 		}
@@ -1443,7 +1443,7 @@ namespace DiscordCoreAPI {
 
 	std::string Permissions::getAllPermissions() {
 		uint64_t allPerms{ 0 };
-		for (uint64_t x = 0; x < 41; ++x) {
+		for (int64_t x = 0; x < 41; ++x) {
 			allPerms |= 1ll << x;
 		}
 		std::stringstream stream{};
@@ -1585,7 +1585,7 @@ namespace DiscordCoreAPI {
 			content += partStart + "name=\"file\"; filename=\"" + files[0].fileName + "\"" + "\r\n\r\n";
 			content += files[0].data;
 		} else {
-			for (uint8_t x = 0; x < files.size(); ++x) {
+			for (int8_t x = 0; x < files.size(); ++x) {
 				content += partStart + "name=\"files[" + std::to_string(x) + "]\"; filename=\"" + files[x].fileName + "\"\r\n\r\n";
 				content += files[x].data;
 				content += "\r\n";
@@ -1710,7 +1710,7 @@ namespace DiscordCoreAPI {
 		std::string returnString{};
 		returnString.resize(16);
 		std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
-		for (uint32_t x = 0; x < 16; ++x) {
+		for (int32_t x = 0; x < 16; ++x) {
 			returnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
 		}
 		returnString = base64Encode(returnString, false);
@@ -1783,7 +1783,7 @@ namespace DiscordCoreAPI {
 			stringNew.resize(string.size() * 2);
 		}
 		uint64_t index{};
-		for (uint32_t x = 0; x < string.size(); ++x) {
+		for (int32_t x = 0; x < string.size(); ++x) {
 			switch (static_cast<char>(string[x])) {
 				case 0x00: {
 					break;

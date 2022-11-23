@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 
 				if (newArgs.subCommandName == "add") {
 					uint64_t channelID = channel.id;
-					for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
+					for (int32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
 						if (channelID == discordGuild.data.musicChannelIds[x]) {
 							std::string msgString = "------\n**That channel is already on the list of enabled channels!**\n------";
 							EmbedData messageEmbed;
@@ -80,7 +80,7 @@ namespace DiscordCoreAPI {
 
 					std::string msgString;
 					bool isItPresent = false;
-					for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
+					for (int32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
 						if (channelID == discordGuild.data.musicChannelIds[x]) {
 							isItPresent = true;
 							discordGuild.data.musicChannelIds.erase(discordGuild.data.musicChannelIds.begin() + x);
@@ -123,7 +123,7 @@ namespace DiscordCoreAPI {
 					if (discordGuild.data.musicChannelIds.size() > 0) {
 						msgString = "__You've removed the following channels from your list of enabled music channels:__\n------\n";
 
-						for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
+						for (int32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
 							uint64_t currentID = discordGuild.data.musicChannelIds[x];
 
 							msgString += "__**Channel #" + std::to_string(x) + "**__<#" + std::to_string(currentID) + "> \n";
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 				if (newArgs.subCommandName == "view") {
 					std::string msgString = "__You have the following channels enabled for music commands, on this server:__\n------\n";
 
-					for (uint32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
+					for (int32_t x = 0; x < discordGuild.data.musicChannelIds.size(); x += 1) {
 						uint64_t currentID = discordGuild.data.musicChannelIds[x];
 
 						msgString += "__**Channel #" + std::to_string(x) + ":**__ <#" + std::to_string(currentID) + "> \n";

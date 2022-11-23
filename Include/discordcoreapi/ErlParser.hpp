@@ -62,7 +62,7 @@ namespace DiscordCoreInternal {
 
 		void writeCharactersFromBuffer(uint32_t length);
 
-		void writeCharacters(const char* data, std::size_t length);
+		void writeCharacters(const char* data, size_t length);
 
 		void writeCharacter(const char value);
 
