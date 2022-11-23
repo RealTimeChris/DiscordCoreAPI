@@ -178,7 +178,7 @@ namespace DiscordCoreInternal {
 		SSLWrapper ssl{};
 	};
 
-	enum class ProcessIOResult : int8_t { No_Error = 0, Error = 1 };
+	enum class ProcessIOResult : uint8_t { No_Error = 0, Error = 1 };
 
 	class DiscordCoreAPI_Dll SSLDataInterface {
 	  public:

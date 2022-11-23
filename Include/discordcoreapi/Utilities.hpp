@@ -306,7 +306,7 @@ namespace DiscordCoreAPI {
 		uint64_t integer{};
 	};
 
-	enum class JsonType : int8_t { Object = 1, Array = 2, String = 3, Float = 4, Uint64 = 5, Int64 = 6, Bool = 7, Null = 8 };
+	enum class JsonType : uint8_t { Object = 1, Array = 2, String = 3, Float = 4, Uint64 = 5, Int64 = 6, Bool = 7, Null = 8 };
 
 	enum class JsonifierSerializeType { Etf = 0, Json = 1 };
 
@@ -683,7 +683,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll SoundCloudAPI;
 	class DiscordCoreAPI_Dll YouTubeAPI;
 
-	enum class WebSocketOpCode : int8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
+	enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
 
 	/// Websocket close codes. \brief Websocket close codes.
 	class DiscordCoreAPI_Dll WebSocketClose {
@@ -911,7 +911,7 @@ namespace DiscordCoreAPI {
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void ));
 
 	/// Input event response types. \brief Input event response types.
-	enum class InputEventResponseType : int8_t {
+	enum class InputEventResponseType : uint8_t {
 		Unset = 0,///< Unset.
 		Deferred_Response = 1,
 		Ephemeral_Deferred_Response = 2,///< Deferred ephemeral response.
@@ -926,7 +926,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Gateway intents. \brief Gateway intents.
-	enum class GatewayIntents : int32_t {
+	enum class GatewayIntents : uint32_t {
 		Guilds = 1 << 0,///< Intent for receipt of Guild information.
 		Guild_Members = 1 << 1,///< Intent for receipt of Guild members.
 		Guild_Bans = 1 << 2,///< Intent for receipt of Guild bans.
@@ -960,7 +960,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Represents which text format to use for websocket transfer. \brief Represents which text format to use for websocket transfer.
-	enum class TextFormat : int8_t {
+	enum class TextFormat : uint8_t {
 		Etf = 0x00,///< Etf format.
 		Json = 0x01///< Json format.
 	};
@@ -1273,7 +1273,7 @@ namespace DiscordCoreAPI {
 	 */
 
 	/// Audio frame types. \brief Audio frame types.
-	enum class AudioFrameType : int8_t {
+	enum class AudioFrameType : uint8_t {
 		Unset = 0,///< Unset.
 		Encoded = 1,///< Encoded.
 		RawPCM = 2,///< Raw PCM.

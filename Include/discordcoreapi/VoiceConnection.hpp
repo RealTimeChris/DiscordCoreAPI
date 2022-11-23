@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
-	enum class VoiceConnectionState : int8_t {
+	enum class VoiceConnectionState : uint8_t {
 		Collecting_Init_Data = 0,///< Collecting initialization data.
 		Initializing_WebSocket = 1,///< Initializing the WebSocket.
 		Collecting_Hello = 2,///< Collecting the client hello.

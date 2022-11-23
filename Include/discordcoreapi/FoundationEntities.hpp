@@ -345,7 +345,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Timeout durations for the timeout command. \brief Timeout durations for the timeout command.
-	enum class TimeoutDurations : int16_t {
+	enum class TimeoutDurations : uint16_t {
 		None = 0,///< None - remove timeout.
 		Minute = 1,///< 1 Minute timeout.
 		Five_Minutes = 5,///< 5 Minute timeout.
@@ -780,7 +780,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Automatic Thread archiving durations. \brief Automatic Thread archiving durations.
-	enum class ThreadAutoArchiveDuration : int16_t {
+	enum class ThreadAutoArchiveDuration : uint16_t {
 		Shortest = 60,///< Shortest.
 		Short = 1440,///< Short.
 		Long = 4320,///< Long.
@@ -1352,7 +1352,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Application flags, for the ApplicationData structure.
-	enum class ApplicationFlags : int32_t {
+	enum class ApplicationFlags : uint32_t {
 		Gateway_Presence = 1 << 12,///< Intent required for bots in 100 or more servers to receive presence_update events.
 		Gateway_Presence_Limited =
 			1 << 13,///< Intent required for bots in under 100 servers to receive presence_update events, found in Bot Settings.
@@ -1771,7 +1771,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// Afk timeout durations. \brief Afk timeout durations.
-	enum class AfkTimeOutDurations : int16_t {
+	enum class AfkTimeOutDurations : uint16_t {
 		Shortest = 60,///< Shortest.
 		Short = 300,///< Short.
 		Medium = 900,///< Medium.
