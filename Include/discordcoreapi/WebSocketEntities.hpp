@@ -48,6 +48,20 @@ namespace DiscordCoreInternal {
 		std::string eventValue{};
 	};
 
+	enum class WebSocketOpCodes {
+		Dispatch = 0,///< An event was dispatched.
+		Heartbeat = 1,///< Fired periodically by the client to keep the connection alive.
+		Identify = 2,///< Starts a new session during the initial handshake.
+		Presence_Update = 3,///< Update the client's presence.
+		Voice_State_Update = 4,///< Used to join/leave or move between voice channels.
+		Resume = 6,///< Resume a previous session that was disconnected.
+		Reconnect = 7,///< You should attempt to reconnect and resume immediately.
+		Request_Guild_Members = 8,///< Request information about offline guild members in a large guild.
+		Invalid_Session = 9,/// The session has been invalidated. You should reconnect and identify/resume accordingly.
+		Hello = 10,///< Sent immediately after connecting, contains the heartbeat_interval to use.
+		Heartbeat_ACK = 11,///<Sent in response to receiving a heartbeat to acknowledge that it has been received.
+	};
+
 	enum class WebSocketType { Normal = 0, Voice = 1 };
 
 	enum class WebSocketState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };

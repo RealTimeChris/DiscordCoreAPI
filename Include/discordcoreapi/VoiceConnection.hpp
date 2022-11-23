@@ -100,6 +100,21 @@ namespace DiscordCoreAPI {
 		uint32_t ssrc{};
 	};
 
+	/// The various opcodes that could be sent/received by the voice-websocket. \brief The various opcodes that could be sent/received by the voice-websocket.
+	enum class VoiceSocketOpCodes {
+		Identify = 0,///< Begin a voice websocket connection.
+		Select_Protocol = 1,///< Select the voice protocol.
+		Ready_Server = 2,///< Complete the websocket handshake.
+		Heartbeat = 3,///< Keep the websocket connection alive.
+		Session_Description = 4,///< Describe the session.
+		Speaking = 5,///< Indicate which users are speaking.
+		Heartbeat_ACK = 6,///< Sent to acknowledge a received client heartbeat.
+		Resume = 7,///< Resume a connection.
+		Hello = 8,///< Time to wait between sending heartbeats in milliseconds.
+		Resumed = 9,///< Acknowledge a successful session resume.
+		Client_Disconnect = 13,///< A client has disconnected from the voice channel.
+	};
+
 	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
 	enum class VoiceConnectionState : uint8_t {
 		Collecting_Init_Data = 0,///< Collecting initialization data.

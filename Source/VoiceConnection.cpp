@@ -259,8 +259,8 @@ namespace DiscordCoreAPI {
 		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 			cout << shiftToBrightGreen() << "Message received from Voice WebSocket: " << data << reset() << endl << endl;
 		}
-		switch (message.op) {
-			case 2: {
+		switch (static_cast<VoiceSocketOpCodes>(message.op)) {
+			case VoiceSocketOpCodes::Ready_Server: {
 				const VoiceSocketReadyData data{ value["d"] };
 				this->audioSSRC = data.ssrc;
 				this->voiceIp = data.ip;
@@ -269,7 +269,7 @@ namespace DiscordCoreAPI {
 				this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
 				break;
 			}
-			case 4: {
+			case VoiceSocketOpCodes::Session_Description: {
 				auto arrayValue = getArray(value["d"], "secret_key");
 				if (arrayValue.didItSucceed) {
 					std::string secretKey{};
@@ -283,7 +283,7 @@ namespace DiscordCoreAPI {
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				break;
 			}
-			case 5: {
+			case VoiceSocketOpCodes::Speaking: {
 				const uint32_t ssrc = getUint32(value["d"], "ssrc");
 				VoiceUser user{ &this->voiceUsers, &this->sleepableTime };
 				user.setUserId(stoull(getString(value["d"], "user_id")));
@@ -297,11 +297,11 @@ namespace DiscordCoreAPI {
 				}
 				break;
 			}
-			case 6: {
+			case VoiceSocketOpCodes::Heartbeat_ACK: {
 				this->haveWeReceivedHeartbeatAck = true;
 				break;
 			}
-			case 8: {
+			case VoiceSocketOpCodes::Hello: {
 				this->heartBeatStopWatch = StopWatch{ Milliseconds{ static_cast<uint32_t>(getFloat(value["d"], "heartbeat_interval")) } };
 				this->areWeHeartBeating = true;
 				this->connectionState.store(VoiceConnectionState::Sending_Identify);
@@ -309,11 +309,11 @@ namespace DiscordCoreAPI {
 				this->haveWeReceivedHeartbeatAck = true;
 				break;
 			}
-			case 9: {
+			case VoiceSocketOpCodes::Resumed: {
 				this->connectionState.store(VoiceConnectionState::Initializing_DatagramSocket);
 				break;
 			}
-			case 13: {
+			case VoiceSocketOpCodes::Client_Disconnect: {
 				const auto userId = stoull(getString(value["d"], "user_id"));
 				std::unique_lock lock{ this->voiceUserMutex };
 				for (auto& [key, value]: this->voiceUsers) {

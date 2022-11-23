@@ -503,8 +503,8 @@ namespace DiscordCoreInternal {
 						 << payload << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
-				switch (message.op) {
-					case 0: {
+				switch (static_cast<WebSocketOpCodes>(message.op)) {
+					case WebSocketOpCodes::Dispatch: {
 						if (message.t != "") {
 							switch (EventConverter{ message.t }) {
 								case 1: {
@@ -1051,11 +1051,11 @@ namespace DiscordCoreInternal {
 						}
 						break;
 					}
-					case 1: {
+					case WebSocketOpCodes::Heartbeat: {
 						this->checkForAndSendHeartBeat(true);
 						break;
 					}
-					case 7: {
+					case WebSocketOpCodes::Reconnect: {
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
 							cout << DiscordCoreAPI::shiftToBrightBlue()
 								 << "Shard [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" +
@@ -1067,7 +1067,7 @@ namespace DiscordCoreInternal {
 						this->onClosed();
 						return true;
 					}
-					case 9: {
+					case WebSocketOpCodes::Invalid_Session: {
 						InvalidSessionData data{ message.processJsonMessage<InvalidSessionData>(dValue, "d") };
 						if (this->configManager->doWePrintWebSocketErrorMessages()) {
 							cout << DiscordCoreAPI::shiftToBrightBlue()
@@ -1090,7 +1090,7 @@ namespace DiscordCoreInternal {
 						this->onClosed();
 						return true;
 					}
-					case 10: {
+					case WebSocketOpCodes::Hello: {
 						HelloData data{ message.processJsonMessage<HelloData>(dValue, "d") };
 						if (data.heartbeatInterval != 0) {
 							this->areWeHeartBeating = true;
@@ -1137,7 +1137,7 @@ namespace DiscordCoreInternal {
 						}
 						break;
 					}
-					case 11: {
+					case WebSocketOpCodes::Heartbeat_ACK: {
 						this->haveWeReceivedHeartbeatAck = true;
 						break;
 					}
