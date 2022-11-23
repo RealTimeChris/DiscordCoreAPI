@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceUser::insertPayload(std::string&& data) noexcept {
-		this->payloads.send(data);
+		this->payloads.send(std::move(data));
 	}
 
 	std::string VoiceUser::extractPayload() noexcept {
