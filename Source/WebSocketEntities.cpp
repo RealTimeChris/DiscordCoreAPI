@@ -365,17 +365,19 @@ namespace DiscordCoreInternal {
 					uint16_t close = this->currentMessage[2] & 0xff;
 					close <<= 8;
 					close |= this->currentMessage[3] & 0xff;
-					uint16_t closeCode{};
 					std::string closeString{};
 					if (this->wsType == WebSocketType::Voice) {
 						VoiceWebSocketClose voiceClose{ close };
 						closeString = voiceClose.operator std::string();
+						if (voiceClose.operator bool()) {
+							this->areWeResuming = true;
+						}
 					} else {
 						WebSocketClose wsClose{ close };
 						closeString = wsClose.operator std::string();
-					}
-					if (closeCode) {
-						this->areWeResuming = true;
+						if (wsClose.operator bool()) {
+							this->areWeResuming = true;
+						}
 					}
 					std::string webSocketTitle = this->wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
