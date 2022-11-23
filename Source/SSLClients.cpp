@@ -771,9 +771,9 @@ namespace DiscordCoreInternal {
 			auto writtenBytes{ sendto(this->socket, this->outputBuffer.getCurrentTail()->getCurrentTail(), static_cast<int32_t>(bytesToWrite), 0,
 				this->address->ai_addr, static_cast<int32_t>(this->address->ai_addrlen)) };
 #ifdef _WIN32
-			if (writtenBytes < 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
+			if (writtenBytes <= 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
 #else
-			if (writtenBytes < 0 && errno != EWOULDBLOCK) {
+			if (writtenBytes <= 0 && errno != EWOULDBLOCK) {
 #endif
 				return false;
 			} else if (writtenBytes > 0) {
@@ -800,9 +800,9 @@ namespace DiscordCoreInternal {
 				readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
 					static_cast<int32_t>(bytesToRead), 0, this->address->ai_addr, reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 #ifdef _WIN32
-				if (readBytes < 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
+				if (readBytes <= 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
 #else
-				if (readBytes < 0 && errno != EWOULDBLOCK) {
+				if (readBytes <= 0 && errno != EWOULDBLOCK) {
 #endif
 					return false;
 				} else if (readBytes > 0) {
