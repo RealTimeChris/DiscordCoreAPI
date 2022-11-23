@@ -78,7 +78,7 @@ namespace DiscordCoreInternal {
 	}
 
 	CoRoutineThreadPool::CoRoutineThreadPool() : threadCount(std::thread::hardware_concurrency()) {
-		for (uint32_t x = 0; x < this->threadCount.load(); ++x) {
+		for (int32_t x = 0; x < this->threadCount.load(); ++x) {
 			WorkerThread workerThread{};
 			this->currentIndex.store(this->currentIndex.load() + 1);
 			this->currentCount.store(this->currentCount.load() + 1);

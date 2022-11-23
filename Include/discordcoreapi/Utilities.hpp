@@ -199,7 +199,7 @@ namespace DiscordCoreAPI {
 	template<typename ReturnType> void storeBits(char* to, ReturnType num) {
 		const uint8_t byteSize{ 8 };
 		reverseByteOrder<ReturnType>(num);
-		for (uint32_t x = 0; x < sizeof(ReturnType); ++x) {
+		for (int32_t x = 0; x < sizeof(ReturnType); ++x) {
 			to[x] = static_cast<uint8_t>(num >> (byteSize * x));
 		}
 	}
@@ -560,7 +560,7 @@ namespace DiscordCoreAPI {
 
 		void writeEtfNull();
 
-		void writeString(const char* data, std::size_t length);
+		void writeString(const char* data, size_t length);
 
 		void writeCharacter(const char Char);
 
@@ -2177,7 +2177,7 @@ namespace DiscordCoreInternal {
 	template<typename OTy, uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice<OTy>, SliceCount> {
 	  public:
 		void clear() noexcept {
-			for (uint64_t x = 0; x < this->arrayValue.size(); ++x) {
+			for (int64_t x = 0; x < this->arrayValue.size(); ++x) {
 				this->arrayValue[x].clear();
 			}
 			this->areWeFull = false;

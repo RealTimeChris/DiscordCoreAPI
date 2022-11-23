@@ -23,7 +23,7 @@ namespace DiscordCoreAPI {
 			std::string descriptionString{};
 			currentQueue = SongAPI::getPlaylist(guildMember.guildId);
 			descriptionString = "------\n__**Added the following songs to the queue:\n";
-			for (uint32_t x = 0; x < arrayOfIndices.size(); x += 1) {
+			for (int32_t x = 0; x < arrayOfIndices.size(); x += 1) {
 				descriptionString += "[" + searchResults[arrayOfIndices[x]].songTitle + "](" + searchResults[arrayOfIndices[x]].viewUrl + ")\n" +
 					"Position: " + std::to_string(songSize + x + 1) + "\n";
 			}
@@ -203,7 +203,7 @@ namespace DiscordCoreAPI {
 				}
 
 				std::vector<EmbedData> embedsFromSearch;
-				uint32_t x = 0;
+				int32_t x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
 					std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };

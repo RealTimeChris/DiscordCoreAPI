@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 				}
 
 				std::vector<EmbedData> embedsFromSearch;
-				uint32_t x = 0;
+				int32_t x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
 					std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
