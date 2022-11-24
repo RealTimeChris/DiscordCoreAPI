@@ -79,7 +79,8 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 ```cpp
 DiscordCoreAPI::EmbedData newEmbed{};
 newEmbed.setAuthor(args.eventData.getUserName(), args.eventData.getAvatarURL());
-newEmbed.setDescription("------\\n__**Sorry, but there's already something playing!**__\\n------");
+newEmbed.setDescription("------\\n__**Sorry, but there's already something play
+ing!**__\\n------");
 newEmbed.setTimeStamp(getTimeAndDate());
 newEmbed.setTitle("__**Playing Issue:**__");
 newEmbed.setColor(discordGuild.data.borderColor);
@@ -97,7 +98,7 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 - [Install vcpkg](https://vcpkg.io/en/getting-started.html), if need be.
 - Make sure to run `vcpkg integrate install`.
 - Enter within a terminal `vcpkg install discordcoreapi:x64-windows_OR_linux`.
-- Set up a console project in your IDE and make sure to set the C++ standard to C++20 or later - and include `discordcoreapi/Index.hpp`.
+- Set up a console project in your IDE and make sure to set the C++ standard to C++23 or later - and include `discordcoreapi/Index.hpp`.
 - Build and run!
 
 # Dependencies
