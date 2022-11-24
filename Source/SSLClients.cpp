@@ -313,7 +313,7 @@ namespace DiscordCoreInternal {
 			return returnValue;
 		}
 
-		if (auto returnValueNew = poll(readWriteSet.polls.data(), static_cast<ULONG>(readWriteSet.polls.size()), 1);
+		if (auto returnValueNew = poll(readWriteSet.polls.data(), static_cast<u_long>(readWriteSet.polls.size()), 1);
 			returnValueNew == SOCKET_ERROR) {
 			for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
 				if (readWriteSet.polls[x].revents & POLLERR || readWriteSet.polls[x].revents & POLLHUP || readWriteSet.polls[x].revents & POLLNVAL) {
