@@ -270,14 +270,14 @@ namespace DiscordCoreAPI {
 	concept IsEnum = std::is_enum<Ty>::value;
 
 	struct DiscordCoreAPI_Dll EnumConverter {
-		template<IsEnum EnumType> EnumConverter& operator=(std::vector<EnumType> data) {
+		template<IsEnum EnumType> EnumConverter& operator=(const std::vector<EnumType>& data) {
 			for (auto& value: data) {
 				this->vector.emplace_back(std::move(static_cast<uint64_t>(value)));
 			}
 			return *this;
 		};
 
-		template<IsEnum EnumType> EnumConverter(std::vector<EnumType> data) {
+		template<IsEnum EnumType> EnumConverter(const std::vector<EnumType>& data) {
 			*this = data;
 		};
 
@@ -1539,7 +1539,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
 
-	DiscordCoreAPI_Dll std::string constructMultiPartData(std::string data, const std::vector<File>& files);
+	DiscordCoreAPI_Dll std::string constructMultiPartData(const std::string& data, const std::vector<File>& files);
 
 	DiscordCoreAPI_Dll std::string convertToLowerCase(const std::string& stringToConvert);
 

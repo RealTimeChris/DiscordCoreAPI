@@ -1572,7 +1572,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::string constructMultiPartData(std::string data, const std::vector<File>& files) {
+	std::string constructMultiPartData(const std::string& data, const std::vector<File>& files) {
 		const std::string boundary("boundary25");
 		const std::string partStart("--" + boundary + "\r\nContent-Type: application/octet-stream\r\nContent-Disposition: form-data; ");
 
