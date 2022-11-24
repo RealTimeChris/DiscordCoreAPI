@@ -25,7 +25,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 - Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ErlParser.cpp) for websocket transfer, and a pool of [kept-alive HTTP connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L373-L385) - this library offers the snappiest responses to your interactions and user input.
 
 ## Audio-Bridge
-- Connect multiple voice-channels to one-another using the "stream-mode" of the `DiscordCoreAPI::VoiceConnection` class.
+- Connect multiple voice-channels to one-another using the `DiscordCoreAPI::StreamInfo` member of the `DiscordCoreAPI::VoiceConnectInitData` structure, with the `DiscordCoreAPI::VoiceConnection` class.
 
 ## CPU Efficient   
 - It only uses about 0.1% of an Intel i7 9750h to stream audio in high quality (Opus 48Khz 16-bit Stereo) to a single server.   
