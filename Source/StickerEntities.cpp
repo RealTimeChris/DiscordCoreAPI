@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 
 		this->formatType = static_cast<StickerFormatType>(getUint8(jsonObjectData, "format_type"));
 
-		uint8_t newFlags{}; 
+		uint8_t newFlags{};
 		newFlags = setBool(newFlags, StickerFlags::Available, getBool(jsonObjectData, "available"));
 
 		this->flags = static_cast<StickerFlags>(newFlags);

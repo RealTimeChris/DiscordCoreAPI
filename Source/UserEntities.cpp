@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 	}
 
 	User::User(simdjson::ondemand::value jsonObjectData) {
-		uint32_t newFlags{}; 
+		uint32_t newFlags{};
 		newFlags = setBool(newFlags, UserFlags::MFAEnabled, getBool(jsonObjectData, "mfa_enabled"));
 
 		newFlags = setBool(newFlags, UserFlags::Verified, getBool(jsonObjectData, "verified"));

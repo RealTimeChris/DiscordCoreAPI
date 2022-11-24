@@ -683,7 +683,14 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll SoundCloudAPI;
 	class DiscordCoreAPI_Dll YouTubeAPI;
 
-	enum class WebSocketOpCode : uint8_t { Op_Continuation = 0x00, Op_Text = 0x01, Op_Binary = 0x02, Op_Close = 0x08, Op_Ping = 0x09, Op_Pong = 0x0a };
+	enum class WebSocketOpCode : uint8_t {
+		Op_Continuation = 0x00,
+		Op_Text = 0x01,
+		Op_Binary = 0x02,
+		Op_Close = 0x08,
+		Op_Ping = 0x09,
+		Op_Pong = 0x0a
+	};
 
 	/// Websocket close codes. \brief Websocket close codes.
 	class DiscordCoreAPI_Dll WebSocketClose {
@@ -875,7 +882,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData;
 	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData;
 	struct DiscordCoreAPI_Dll File;
-	
+
 	class DiscordCoreAPI_Dll DiscordCoreClient;
 	class DiscordCoreAPI_Dll VoiceConnection;
 	class DiscordCoreAPI_Dll GuildMember;

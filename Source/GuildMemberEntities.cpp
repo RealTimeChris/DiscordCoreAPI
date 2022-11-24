@@ -105,7 +105,7 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildMember::GuildMember(simdjson::ondemand::value jsonObjectData) {
-		uint8_t newFlags{}; 
+		uint8_t newFlags{};
 		newFlags = setBool(newFlags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
 
 		newFlags = setBool(newFlags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));

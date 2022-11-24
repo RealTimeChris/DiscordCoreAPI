@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 		this->id = getId(jsonObjectData, "id");
 		this->totalMessageSent = getUint32(jsonObjectData, "tital_message_sent");
 
-		uint8_t newFlags{}; 
+		uint8_t newFlags{};
 		newFlags = getUint8(jsonObjectData, "flags");
 
 		this->type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));

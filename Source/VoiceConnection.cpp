@@ -515,7 +515,7 @@ namespace DiscordCoreAPI {
 							break;
 						}
 						auto waitTime = targetTime - HRClock::now();
-						auto waitTimeCount = waitTime.count(); 
+						auto waitTimeCount = waitTime.count();
 						int64_t minimumFreeTimeForCheckingProcessIO{ static_cast<int64_t>(static_cast<double>(this->intervalCount.count()) * 0.90f) };
 						if (waitTimeCount >= minimumFreeTimeForCheckingProcessIO && !token.stop_requested() && VoiceConnection::areWeConnected()) {
 							if (WebSocketCore::processIO(1) == DiscordCoreInternal::ProcessIOResult::Error) {
@@ -583,10 +583,10 @@ namespace DiscordCoreAPI {
 					if (this->taskThread02->joinable()) {
 						this->taskThread02->join();
 					}
-					
+
 					this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token token) {
-						this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port,
-							false, token);
+						this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port, false,
+							token);
 						this->runBridge(token);
 					});
 				}

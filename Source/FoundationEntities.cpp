@@ -261,7 +261,7 @@ namespace DiscordCoreAPI {
 			return;
 		}
 
-		int32_t newFlags{}; 
+		int32_t newFlags{};
 		newFlags = setBool(newFlags, UserFlags::MFAEnabled, getBool(jsonObjectData, "mfa_enabled"));
 
 		newFlags = setBool(newFlags, UserFlags::Verified, getBool(jsonObjectData, "verified"));
@@ -579,7 +579,7 @@ namespace DiscordCoreAPI {
 			uint8_t newFlags = setBool(uint8_t{}, PresenceUpdateFlags::Status_Dnd, true);
 			this->theStatus = static_cast<PresenceUpdateFlags>(newFlags);
 		}
-		
+
 		parseObject(jsonObjectData, this->theStatus);
 	}
 
@@ -602,7 +602,7 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildMemberData& GuildMemberData::operator=(simdjson::ondemand::value jsonObjectData) {
-		uint8_t newFlags{}; 
+		uint8_t newFlags{};
 		newFlags = setBool(newFlags, GuildMemberFlags::Pending, getBool(jsonObjectData, "pending"));
 
 		newFlags = setBool(newFlags, GuildMemberFlags::Mute, getBool(jsonObjectData, "mute"));
@@ -704,7 +704,7 @@ namespace DiscordCoreAPI {
 	}
 
 	ChannelData::ChannelData(simdjson::ondemand::value jsonObjectData) {
-		uint8_t newFlags{}; 
+		uint8_t newFlags{};
 		newFlags = setBool(newFlags, ChannelFlags::NSFW, getBool(jsonObjectData, "nsfw"));
 
 		this->type = static_cast<ChannelType>(getUint8(jsonObjectData, "type"));
@@ -1273,7 +1273,7 @@ namespace DiscordCoreAPI {
 
 		this->formatType = static_cast<StickerFormatType>(getUint8(jsonObjectData, "format_type"));
 
-		uint8_t newFlags{}; 
+		uint8_t newFlags{};
 		newFlags = setBool(newFlags, StickerFlags::Available, getBool(jsonObjectData, "available"));
 
 		this->flags = static_cast<StickerFlags>(newFlags);
@@ -1402,7 +1402,7 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildData::GuildData(simdjson::ondemand::value jsonObjectData) {
-		uint8_t newFlags{}; 
+		uint8_t newFlags{};
 		newFlags = setBool(newFlags, GuildFlags::WidgetEnabled, getBool(jsonObjectData, "widget_enabled"));
 
 		newFlags = setBool(newFlags, GuildFlags::Unavailable, getBool(jsonObjectData, "unavailable"));
@@ -3997,8 +3997,18 @@ namespace DiscordCoreAPI {
 		while (!stopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
 			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
-
-			std::vector<ButtonResponseData> buttonIntData{ button->collectButtonData(false, waitForMaxMs, 1, Snowflake{ stoull(userID) }).get() };
+			auto createResponseData = std::make_unique<CreateInteractionResponseData>();
+			auto embedData = std::make_unique<EmbedData>();
+			embedData->setColor("FEFEFE");
+			embedData->setTitle("__**Permissions Issue:**__");
+			embedData->setTimeStamp(getTimeAndDate());
+			embedData->setDescription("Sorry, but that button can only be pressed by <@" + userID + ">!");
+			createResponseData->addMessageEmbed(*embedData);
+			createResponseData->setResponseType(InteractionCallbackType::Channel_Message_With_Source);
+			createResponseData->setFlags(64);
+			std::vector<ButtonResponseData> buttonIntData{
+				button->collectButtonData(false, waitForMaxMs, 1, *createResponseData, Snowflake{ stoull(userID) }).get()
+			};
 
 			if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
 				std::unique_ptr<RespondToInputEventData> dataPackage02{ std::make_unique<RespondToInputEventData>(originalEvent) };

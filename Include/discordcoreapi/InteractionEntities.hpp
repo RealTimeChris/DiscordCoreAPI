@@ -110,6 +110,8 @@ namespace DiscordCoreAPI {
 		/// \param enabledTTs A bool.
 		InteractionResponseBase& setTTSStatus(bool enabledTTs);
 
+		InteractionResponseBase& setFlags(int64_t flag);
+
 		InteractionResponseData getInteractionResponseData();
 
 		virtual ~InteractionResponseBase() noexcept = default;
@@ -164,6 +166,8 @@ namespace DiscordCoreAPI {
 		CreateInteractionResponseData(const RespondToInputEventData& dataPackage);
 
 		CreateInteractionResponseData(const InteractionData& dataPackage);
+
+		CreateInteractionResponseData() noexcept = default;
 
 		virtual ~CreateInteractionResponseData() noexcept = default;
 	};
@@ -410,10 +414,11 @@ namespace DiscordCoreAPI {
 		/// \param getSelectMenuDataForAllNew Whether or not to collect select-menu input from a single target User or all potential users.
 		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
 		/// \param maxCollectedSelectMenuCountNew The maximum number of inputs to collect before stopping.
+		/// \param errorMessageDataNew The message-data for when an individual other than the selected individual attemps to use this interaction.
 		/// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
 		/// \returns A vector of SelectMenuResponseData.
 		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
-			int32_t maxCollectedSelectMenuCountNew, Snowflake targetUserId = Snowflake{ 0 });
+			int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{ 0 });
 
 		~SelectMenuCollector();
 
@@ -421,6 +426,7 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> selectMenuIncomingInteractionBuffer{};
 		std::vector<SelectMenuResponseData> responseVector{};
+		CreateInteractionResponseData errorMessageData{};
 		int32_t currentCollectedSelectMenuCount{ 0 };
 		int32_t maxCollectedSelectMenuCount{ 0 };
 		bool getSelectMenuDataForAll{ false };
@@ -499,16 +505,18 @@ namespace DiscordCoreAPI {
 		/// \param getButtonDataForAllNew Whether or not to collect input from a single target User or all potential users.
 		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
 		/// \param maxNumberOfPressesNew The maximum number of inputs to collect before stopping.
+		/// \param errorMessageDataNew The message-data for when an individual other than the selected individual attemps to use this interaction.
 		/// \param targetUserId The id of the single User to collect inputs from, if getButtonDataForAllNew is set to false.
 		/// \returns A vector of ButtonResponseData.
 		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
-			int32_t maxNumberOfPressesNew, Snowflake targetUserId = Snowflake{ 0 });
+			int32_t maxNumberOfPressesNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{ 0 });
 
 		~ButtonCollector();
 
 	  protected:
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 		UnboundedMessageBlock<InteractionData> buttonIncomingInteractionBuffer{};
+		CreateInteractionResponseData errorMessageData{};
 		std::vector<ButtonResponseData> responseVector{};
 		int32_t currentCollectedButtonCount{ 0 };
 		int32_t maxCollectedButtonCount{ 0 };
@@ -547,22 +555,6 @@ namespace DiscordCoreAPI {
 			*this = other;
 		}
 
-		ModalResponseData& operator=(ModalResponseData& other) {
-			if (this != &other) {
-				*this->interactionData = *other.interactionData;
-				this->customIdSmall = other.customIdSmall;
-				this->channelId = other.channelId;
-				this->customId = other.customId;
-				this->userId = other.userId;
-				this->value = other.value;
-			}
-			return *this;
-		}
-
-		ModalResponseData(ModalResponseData& other) {
-			*this = other;
-		}
-
 		ModalResponseData() noexcept = default;
 
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };///< Interaction data.
@@ -593,6 +585,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		UnboundedMessageBlock<InteractionData> modalIncomingInteractionBuffer{};
+		CreateInteractionResponseData errorMessageData{};
 		int32_t currentCollectedButtonCount{ 0 };
 		ModalResponseData responseData{};
 		uint32_t maxTimeInMs{ 0 };

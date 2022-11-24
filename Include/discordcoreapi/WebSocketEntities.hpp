@@ -48,6 +48,7 @@ namespace DiscordCoreInternal {
 		std::string eventValue{};
 	};
 
+	/// For the opcodes that could be sent/received via Discord's websockets. \brief For the opcodes that could be sent/received via Discord's websockets.
 	enum class WebSocketOpCodes {
 		Dispatch = 0,///< An event was dispatched.
 		Heartbeat = 1,///< Fired periodically by the client to keep the connection alive.

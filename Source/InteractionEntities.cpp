@@ -149,6 +149,11 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
+	InteractionResponseBase& InteractionResponseBase::setFlags(int64_t flagsNew) {
+		this->data.data.flags = flagsNew;
+		return *this;
+	}
+
 	InteractionResponseData InteractionResponseBase::getInteractionResponseData() {
 		return this->data;
 	}
@@ -449,7 +454,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew,
-		int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, Snowflake targetUser) {
+		int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
 		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;
@@ -461,6 +466,7 @@ namespace DiscordCoreAPI {
 		}
 		this->maxCollectedSelectMenuCount = maxCollectedSelectMenuCountNew;
 		this->getSelectMenuDataForAll = getSelectMenuDataForAllNew;
+		this->errorMessageData = errorMessageDataNew;
 		this->maxTimeInMs = maxWaitTimeInMsNew;
 		this->run();
 		co_return std::move(this->responseVector);
@@ -490,16 +496,13 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				if (selectMenuInteractionData->user.id != this->userId) {
-					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
-					auto embedData = std::make_unique<EmbedData>();
-					embedData->setColor("FEFEFE");
-					embedData->setTitle("__**PermissionTypes Issue:**__");
-					embedData->setTimeStamp(getTimeAndDate());
-					embedData->setDescription("Sorry, but that menu can only be selected by <@" + this->userId + ">!");
-					createResponseData->data.data.embeds.emplace_back(*embedData);
-					createResponseData->data.data.flags = 64;
-					createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
-					Interactions::createInteractionResponseAsync(*createResponseData).get();
+					this->errorMessageData.interactionPackage.applicationId = selectMenuInteractionData->applicationId;
+					this->errorMessageData.interactionPackage.interactionId = selectMenuInteractionData->id;
+					this->errorMessageData.interactionPackage.interactionToken = selectMenuInteractionData->token;
+					this->errorMessageData.messagePackage.messageId = selectMenuInteractionData->message.id;
+					this->errorMessageData.messagePackage.channelId = selectMenuInteractionData->message.channelId;
+					this->errorMessageData.data.type = InteractionCallbackType::Channel_Message_With_Source;
+					Interactions::createInteractionResponseAsync(this->errorMessageData).get();
 				} else {
 					*this->interactionData = *selectMenuInteractionData;
 					this->selectMenuId = selectMenuInteractionData->data.componentData.customId;
@@ -577,7 +580,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<std::vector<ButtonResponseData>> ButtonCollector::collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
-		int32_t maxNumberOfPressesNew, Snowflake targetUser) {
+		int32_t maxNumberOfPressesNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUser) {
 		co_await NewThreadAwaitable<std::vector<ButtonResponseData>>();
 		if (targetUser == 0 && !getButtonDataForAllNew) {
 			throw DCAException{ "ButtonCollector::collectButtonData(), You've failed to "
@@ -588,6 +591,7 @@ namespace DiscordCoreAPI {
 		}
 		this->maxCollectedButtonCount = maxNumberOfPressesNew;
 		this->getButtonDataForAll = getButtonDataForAllNew;
+		this->errorMessageData = errorMessageDataNew;
 		this->maxTimeInMs = maxWaitTimeInMsNew;
 		this->run();
 		co_return std::move(this->responseVector);
@@ -616,16 +620,13 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				if (buttonInteractionData->user.id != this->userId) {
-					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
-					auto embedData = std::make_unique<EmbedData>();
-					embedData->setColor("FEFEFE");
-					embedData->setTitle("__**PermissionTypes Issue:**__");
-					embedData->setTimeStamp(getTimeAndDate());
-					embedData->setDescription("Sorry, but that button can only be pressed by <@" + this->userId + ">!");
-					createResponseData->data.data.embeds.emplace_back(*embedData);
-					createResponseData->data.data.flags = 64;
-					createResponseData->data.type = InteractionCallbackType::Channel_Message_With_Source;
-					Interactions::createInteractionResponseAsync(*createResponseData).get();
+					this->errorMessageData.interactionPackage.applicationId = buttonInteractionData->applicationId;
+					this->errorMessageData.interactionPackage.interactionId = buttonInteractionData->id;
+					this->errorMessageData.interactionPackage.interactionToken = buttonInteractionData->token;
+					this->errorMessageData.messagePackage.messageId = buttonInteractionData->message.id;
+					this->errorMessageData.messagePackage.channelId = buttonInteractionData->message.channelId;
+					this->errorMessageData.data.type = InteractionCallbackType::Channel_Message_With_Source;
+					Interactions::createInteractionResponseAsync(this->errorMessageData).get();
 				} else {
 					*this->interactionData = *buttonInteractionData;
 					this->buttonId = buttonInteractionData->data.componentData.customId;
