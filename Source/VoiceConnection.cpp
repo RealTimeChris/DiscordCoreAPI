@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		int64_t userCount = this->getVoiceUserCount();
 		std::string value{};
 		if (userCount > 0) {
-			StopWatch stopWatch{ Nanoseconds{ this->sleepableTime->load() / userCount } };
+			StopWatch stopWatch{ Nanoseconds{ static_cast<int64_t>(static_cast<float>(this->sleepableTime->load() / userCount) * 0.60f) } };
 			while (!this->payloads.tryReceive(value) && !this->getEndingStatus() && !stopWatch.hasTimePassed()) {
 				std::this_thread::sleep_for(1ns);
 			}
@@ -367,7 +367,7 @@ namespace DiscordCoreAPI {
 				std::this_thread::sleep_for(1ns);
 			}
 			this->mixAudio();
-			this->sleepableTime.store(static_cast<int64_t>(static_cast<float>(this->intervalCount.count()) * 0.80));
+			this->sleepableTime.store(this->intervalCount.count());
 			this->canWeSendAudio.store(false);
 		}
 	}
