@@ -33,7 +33,8 @@
 
 namespace DiscordCoreAPI {
 
-	inline bool operator==(const UserData& lhs, const UserData& rhs) {
+	
+ operator==(const UserData& lhs, const UserData& rhs) {
 		return lhs.id == rhs.id;
 	}
 

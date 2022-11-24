@@ -437,6 +437,8 @@ namespace DiscordCoreAPI {
 
 		std::string getAvatarUrl();
 
+		bool operator==(const UserData& rhs);
+
 		virtual ~UserData() noexcept = default;
 	};
 
@@ -757,6 +759,8 @@ namespace DiscordCoreAPI {
 
 		VoiceStateDataLight(simdjson::ondemand::value jsonObjectData);
 
+		bool operator==(const VoiceStateDataLight& rhs);
+
 		virtual ~VoiceStateDataLight() noexcept = default;
 	};
 
@@ -817,6 +821,8 @@ namespace DiscordCoreAPI {
 		template<IsEnum ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(this->flags, theEnum);
 		}
+
+		bool operator==(const RoleData& rhs);
 
 		virtual ~RoleData() noexcept = default;
 	};
@@ -930,6 +936,8 @@ namespace DiscordCoreAPI {
 
 		UserData getUserData();
 
+		bool operator==(const GuildMemberData& rhs);
+
 		virtual ~GuildMemberData() noexcept = default;
 	};
 
@@ -1010,6 +1018,8 @@ namespace DiscordCoreAPI {
 		template<IsEnum ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(this->flags, theEnum);
 		}
+
+		bool operator==(const ChannelData& rhs);
 
 		virtual ~ChannelData() noexcept = default;
 	};
@@ -1859,6 +1869,8 @@ namespace DiscordCoreAPI {
 		bool areWeConnected();
 
 		void disconnect();
+
+		bool operator==(const GuildData& rhs);
 
 		virtual ~GuildData() noexcept = default;
 	};

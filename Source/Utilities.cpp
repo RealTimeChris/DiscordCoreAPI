@@ -146,6 +146,10 @@ namespace DiscordCoreAPI {
 		return this->id;
 	}
 
+	bool Snowflake::operator==(const Snowflake& rhs) const {
+		return this->id == rhs.id;
+	}
+
 	EnumConverter::operator std::vector<uint64_t>() const noexcept {
 		return this->vector;
 	}
@@ -1078,6 +1082,14 @@ namespace DiscordCoreAPI {
 
 	StringWrapper::StringWrapper(const char* string) {
 		*this = string;
+	}
+
+	bool StringWrapper::operator==(const char* rhs) {
+		return static_cast<std::string>(*this) == static_cast<std::string>(rhs);
+	}
+
+	bool StringWrapper::operator!=(const char* rhs) {
+		return static_cast<std::string>(*this) != rhs;
 	}
 
 	StringWrapper::operator std::string() {
