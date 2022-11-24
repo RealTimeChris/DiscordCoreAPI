@@ -44,9 +44,9 @@ namespace DiscordCoreInternal {
 		if (this->offSet + static_cast<uint64_t>(length) > this->dataBuffer.size()) {
 			throw ErlParseError{ "ErlParser::readString() Error: readString() past end of buffer.\n\n" };
 		}
-		int64_t finalSize{};
+		uint64_t finalSize{};
 		const char* stringNew = static_cast<const char*>(this->dataBuffer.data()) + this->offSet;
-		for (int32_t x = 0; x < length; ++x) {
+		for (uint32_t x = 0; x < length; ++x) {
 			switch (stringNew[x]) {
 				case 0x00: {
 					break;
@@ -202,7 +202,7 @@ namespace DiscordCoreInternal {
 		if (static_cast<uint64_t>(this->offSet) + length > this->dataBuffer.size()) {
 			throw ErlParseError{ "ErlPacker::parseStringAsList() Error: List reading past end of buffer.\n\n" };
 		}
-		for (int16_t x = 0; x < length; ++x) {
+		for (uint16_t x = 0; x < length; ++x) {
 			this->singleValueETFToJson();
 			if (x < length - 1) {
 				this->writeCharacter(',');
@@ -304,7 +304,7 @@ namespace DiscordCoreInternal {
 	void ErlParser::parseMapExt() {
 		uint32_t length = readBitsFromBuffer<uint32_t>();
 		this->writeCharacter('{');
-		for (int32_t x = 0; x < length; ++x) {
+		for (uint32_t x = 0; x < length; ++x) {
 			this->singleValueETFToJson();
 			this->writeCharacter(':');
 			this->singleValueETFToJson();

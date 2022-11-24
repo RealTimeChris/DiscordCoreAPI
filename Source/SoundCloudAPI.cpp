@@ -277,7 +277,7 @@ namespace DiscordCoreInternal {
 						}
 					} else {
 						uint64_t amountToSubmitRemainingFinal{ amountToSubmitRemaining };
-						for (int64_t x = 0; x < amountToSubmitRemainingFinal; ++x) {
+						for (uint64_t x = 0; x < amountToSubmitRemainingFinal; ++x) {
 							newerVector.push_back(result.responseMessage[amountSubmitted]);
 							amountSubmitted++;
 							amountToSubmitRemaining--;

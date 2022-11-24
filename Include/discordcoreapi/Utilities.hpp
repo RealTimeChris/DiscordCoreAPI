@@ -2180,7 +2180,7 @@ namespace DiscordCoreInternal {
 	template<typename OTy, uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice<OTy>, SliceCount> {
 	  public:
 		void clear() noexcept {
-			for (int64_t x = 0; x < this->arrayValue.size(); ++x) {
+			for (uint64_t x = 0; x < this->arrayValue.size(); ++x) {
 				this->arrayValue[x].clear();
 			}
 			this->areWeFull = false;

@@ -1037,7 +1037,7 @@ namespace DiscordCoreAPI {
 			}
 			auto length = stream.str().size();
 			this->ptr = std::make_unique<char[]>(length + 1);
-			for (int64_t x = 0; x < length; ++x) {
+			for (uint64_t x = 0; x < length; ++x) {
 				this->ptr[x] = other.ptr[x];
 			}
 		}
@@ -1052,7 +1052,7 @@ namespace DiscordCoreAPI {
 		auto length = string.size();
 		this->ptr.reset(nullptr);
 		this->ptr = std::make_unique<char[]>(length + 1);
-		for (int32_t x = 0; x < length; ++x) {
+		for (uint32_t x = 0; x < length; ++x) {
 			this->ptr[x] = string[x];
 		}
 		return *this;
@@ -1099,7 +1099,7 @@ namespace DiscordCoreAPI {
 		}
 		auto length = stream.str().size();
 		this->ptr = std::make_unique<char[]>(length + 2);
-		for (int64_t x = 0; x < length; ++x) {
+		for (uint64_t x = 0; x < length; ++x) {
 			this->ptr[x] = stream.str()[x];
 		}
 		this->ptr[length] = value;

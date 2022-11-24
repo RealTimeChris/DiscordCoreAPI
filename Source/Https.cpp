@@ -196,7 +196,7 @@ namespace DiscordCoreInternal {
 		std::string valueString{};
 		uint64_t hexIndex{ 0 };
 		bool isThereHexValues{ false };
-		for (int64_t x = 0; x < other.size(); ++x) {
+		for (uint64_t x = 0; x < other.size(); ++x) {
 			if (isxdigit(other[x]) != 0 && static_cast<int32_t>(other[x]) != EOF) {
 				isThereHexValues = true;
 				valueString.push_back(other[x]);
@@ -222,7 +222,7 @@ namespace DiscordCoreInternal {
 			uint64_t firstNumberIndex{ 0 };
 			uint64_t lastNumberIndex{ 0 };
 			bool haveWeStarted{ false };
-			for (int64_t x = static_cast<std::string_view>(other).find("HTTP/1.") + std::string("HTTP/1.").size() + 1;
+			for (uint64_t x = static_cast<std::string_view>(other).find("HTTP/1.") + std::string("HTTP/1.").size() + 1;
 				 x < static_cast<std::string_view>(other).size(); ++x) {
 				if (!haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) != 0)) {
 					firstNumberIndex = x;
@@ -247,7 +247,7 @@ namespace DiscordCoreInternal {
 
 	void HttpsRnRBuilder::clearCRLF(StringBuffer& other) {
 		uint64_t count{ 0 };
-		for (int64_t x = 0; x < other.size(); ++x) {
+		for (uint64_t x = 0; x < other.size(); ++x) {
 			if (isspace(static_cast<uint8_t>(other[x])) != 0) {
 				count++;
 			} else {

@@ -295,7 +295,7 @@ namespace DiscordCoreAPI {
 			this->configManager.setConnectionPort(443);
 		}
 		this->connectionStopWatch.resetTimer();
-		for (int32_t x = 0; x < this->configManager.getTotalShardCount(); ++x) {
+		for (uint32_t x = 0; x < this->configManager.getTotalShardCount(); ++x) {
 			if (!this->baseSocketAgentsMap.contains(x % theWorkerCount)) {
 				this->baseSocketAgentsMap[x % theWorkerCount] =
 					std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);

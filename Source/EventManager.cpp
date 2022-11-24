@@ -103,7 +103,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreAPI::GuildData guild{};
 			guild.id = this->channel->guildId;
 			if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
-				for (int64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].channels.size(); ++x) {
+				for (uint64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].channels.size(); ++x) {
 					if (DiscordCoreAPI::Guilds::getCache()[guild].channels[x] == this->channel->id) {
 						DiscordCoreAPI::Guilds::getCache()[guild].channels.erase(DiscordCoreAPI::Guilds::getCache()[guild].channels.begin() + x);
 					}
@@ -146,7 +146,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI::GuildData guild{};
 		guild.id = this->thread.guildId;
 		if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
-			for (int64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].threads.size(); ++x) {
+			for (uint64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].threads.size(); ++x) {
 				if (DiscordCoreAPI::Guilds::getCache()[guild].threads[x] == this->thread.id) {
 					DiscordCoreAPI::Guilds::getCache()[guild].threads.erase(DiscordCoreAPI::Guilds::getCache()[guild].threads.begin() + x);
 				}
@@ -305,7 +305,7 @@ namespace DiscordCoreAPI {
 			guild.id = this->guildId;
 			DiscordCoreAPI::GuildMembers::removeGuildMember(guildMember);
 			if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
-				for (int64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].members.size(); ++x) {
+				for (uint64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].members.size(); ++x) {
 					if (DiscordCoreAPI::Guilds::getCache()[guild].members[x] == this->user->id) {
 						DiscordCoreAPI::Guilds::getCache()[guild].memberCount--;
 						DiscordCoreAPI::Guilds::getCache()[guild].members.erase(DiscordCoreAPI::Guilds::getCache()[guild].members.begin() + x);
@@ -397,7 +397,7 @@ namespace DiscordCoreAPI {
 		if (DiscordCoreAPI::Roles::doWeCacheRoles()) {
 			DiscordCoreAPI::Roles::removeRole(this->role->id);
 			if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
-				for (int64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].roles.size(); ++x) {
+				for (uint64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].roles.size(); ++x) {
 					if (DiscordCoreAPI::Guilds::getCache()[guild].roles[x] == this->role->id) {
 						DiscordCoreAPI::Guilds::getCache()[guild].roles.erase(DiscordCoreAPI::Guilds::getCache()[guild].roles.begin() + x);
 					}
@@ -466,7 +466,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI::GuildData guild{};
 		guild.id = this->guildScheduledEvent.guildId;
 		if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
-			for (int64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].guildScheduledEvents.size(); ++x) {
+			for (uint64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].guildScheduledEvents.size(); ++x) {
 				if (DiscordCoreAPI::Guilds::getCache()[guild].guildScheduledEvents[x] == this->guildScheduledEvent.id) {
 					DiscordCoreAPI::Guilds::getCache()[guild].guildScheduledEvents.erase(
 						DiscordCoreAPI::Guilds::getCache()[guild].guildScheduledEvents.begin() + x);
@@ -666,7 +666,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreAPI::GuildData guild{};
 		guild.id = this->stageInstance.guildId;
 		if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
-			for (int64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].stageInstances.size(); ++x) {
+			for (uint64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].stageInstances.size(); ++x) {
 				if (DiscordCoreAPI::Guilds::getCache()[guild].stageInstances[x] == this->stageInstance.id) {
 					DiscordCoreAPI::Guilds::getCache()[guild].stageInstances.erase(
 						DiscordCoreAPI::Guilds::getCache()[guild].stageInstances.begin() + x);
