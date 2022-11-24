@@ -190,8 +190,8 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) - 1 };
-		RingBuffer<char, 32> outputBuffer{};
-		RingBuffer<char, 128> inputBuffer{};
+		RingBuffer<char, 16> outputBuffer{};
+		RingBuffer<char, 64> inputBuffer{};
 		int64_t bytesRead{ 0 };
 	};
 

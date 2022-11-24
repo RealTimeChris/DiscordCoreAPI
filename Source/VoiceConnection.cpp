@@ -367,7 +367,7 @@ namespace DiscordCoreAPI {
 				std::this_thread::sleep_for(1ns);
 			}
 			this->mixAudio();
-			this->sleepableTime.store(15000000);
+			this->sleepableTime.store(static_cast<int64_t>(static_cast<float>(this->intervalCount.count()) * 0.80));
 			this->canWeSendAudio.store(false);
 		}
 	}
