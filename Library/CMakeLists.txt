@@ -178,21 +178,3 @@ if (WIN32)
 		OPTIONAL
 	)
 endif()
-
-if (BUILDING_THE_FETCH_PACKAGE)
-	set(package_files "${SOURCES}" "${HEADERS}" "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt" "${CMAKE_CURRENT_SOURCE_DIR}/CMake/GenerateProductVersion.cmake" "${CMAKE_CURRENT_SOURCE_DIR}/CMake/FetchContent.cmake" "${PACKAGE_FILES}")
-	add_custom_command(
-		OUTPUT 
-		"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-src.zip"
-	    COMMAND "${CMAKE_COMMAND}" -E tar c "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-src.zip" --format=zip -- ${package_files}
-	    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-	    DEPENDS ${package_files}
-	)
-	add_custom_target(
-		"${PROJECT_NAME}_package" 
-		ALL DEPENDS 
-		"${PROJECT_NAME}" 
-		"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-src.zip"
-		${package_files}
-	)
- endif()
