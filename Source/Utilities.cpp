@@ -1099,6 +1099,7 @@ namespace DiscordCoreAPI {
 		}
 		auto length = stream.str().size();
 		this->ptr = std::make_unique<char[]>(length + 2);
+
 		for (uint64_t x = 0; x < length; ++x) {
 			this->ptr[x] = stream.str()[x];
 		}
