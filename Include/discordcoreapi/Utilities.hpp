@@ -211,7 +211,7 @@ namespace DiscordCoreAPI {
 		StopWatch() = delete;
 
 		StopWatch<TTy>& operator=(const StopWatch<TTy>& data) {
-			this->maxNumberOfMs.store(data.maxNumberOfMs.load());
+			this->maxNumberOfTimeUnits.store(data.maxNumberOfTimeUnits.load());
 			this->startTime.store(data.startTime.load());
 			return *this;
 		}
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 		}
 
 		StopWatch(TTy maxNumberOfMsNew) {
-			this->maxNumberOfMs.store(maxNumberOfMsNew);
+			this->maxNumberOfTimeUnits.store(maxNumberOfMsNew);
 			this->startTime.store(std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch()));
 		}
 
@@ -232,17 +232,13 @@ namespace DiscordCoreAPI {
 		}
 
 		TTy getTotalWaitTime() {
-			return this->maxNumberOfMs.load();
+			return this->maxNumberOfTimeUnits.load();
 		}
 
 		bool hasTimePassed() {
 			TTy currentTime = std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch());
 			TTy elapsedTime = currentTime - this->startTime.load();
-			if (elapsedTime >= this->maxNumberOfMs.load()) {
-				return true;
-			} else {
-				return false;
-			}
+			return elapsedTime >= this->maxNumberOfTimeUnits.load();
 		}
 
 		void resetTimer() {
@@ -250,7 +246,7 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::atomic<TTy> maxNumberOfMs{ TTy{ 0 } };
+		std::atomic<TTy> maxNumberOfTimeUnits{ TTy{ 0 } };
 		std::atomic<TTy> startTime{ TTy{ 0 } };
 	};
 
