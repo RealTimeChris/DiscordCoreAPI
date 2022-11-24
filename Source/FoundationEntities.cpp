@@ -289,10 +289,6 @@ namespace DiscordCoreAPI {
 		return stringNew;
 	}
 
-	bool UserData::operator==(const UserData&rhs){
-		return this->id == rhs.id;
-	}
-
 	AttachmentData ::AttachmentData(simdjson::ondemand::value jsonObjectData) {
 		this->id = getId(jsonObjectData, "id");
 
@@ -509,10 +505,6 @@ namespace DiscordCoreAPI {
 		this->mute = getBool(jsonObjectData, "mute");
 	}
 
-	bool VoiceStateDataLight::operator == (const VoiceStateDataLight& rhs) {
-		return (this->guildId == rhs.guildId) && (this->userId == rhs.userId);
-	}
-
 	RoleData::RoleData(simdjson::ondemand::value jsonObjectData) {
 		this->id = getId(jsonObjectData, "id");
 
@@ -545,10 +537,6 @@ namespace DiscordCoreAPI {
 		this->permissions = getString(jsonObjectData, "permissions");
 	}
 
-	bool RoleData::operator==(const RoleData& other) {
-		return this->id == other.id;
-	}
-	
 	EmojiData::EmojiData(simdjson::ondemand::value jsonObjectData) {
 		this->id = getId(jsonObjectData, "id");
 
@@ -687,10 +675,6 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool GuildMemberData::operator==(const GuildMemberData& rhs) {
-		return (this->guildId == rhs.guildId) && (this->id == rhs.id);
-	}
-
 	OverWriteData::OverWriteData(simdjson::ondemand::value jsonObjectData) {
 		this->id = getId(jsonObjectData, "id");
 
@@ -753,10 +737,6 @@ namespace DiscordCoreAPI {
 		}
 
 		this->name = getString(jsonObjectData, "name");
-	}
-
-	bool ChannelData::operator==(const ChannelData& rhs) {
-		return this->id == rhs.id;
 	}
 
 	ActiveThreadsData::ActiveThreadsData(simdjson::ondemand::value jsonObjectData) {
@@ -1419,10 +1399,6 @@ namespace DiscordCoreAPI {
 			DiscordCoreClient::getVoiceConnection(this->id)->disconnect();
 			this->voiceConnectionPtr = nullptr;
 		}
-	}
-	
-	bool GuildData::operator==(const GuildData& rhs) {
-		return this->id == rhs.id;
 	}
 
 	GuildData::GuildData(simdjson::ondemand::value jsonObjectData) {

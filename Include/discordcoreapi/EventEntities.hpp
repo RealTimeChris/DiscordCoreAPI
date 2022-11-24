@@ -43,13 +43,9 @@ namespace DiscordCoreInternal {
 
 		template<typename RTy, typename... ArgTypes> friend class Event;
 
-		bool operator==(const EventDelegateToken& rhs) {
-			return this->eventId == rhs.eventId && this->handlerId == rhs.handlerId;
-		}
+		friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-		bool operator<(const EventDelegateToken& rhs) {
-			return stoull(this->eventId) < stoull(rhs.eventId) && stoull(this->handlerId) < stoull(rhs.handlerId);
-		}
+		friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
 		EventDelegateToken() noexcept = default;
 
@@ -57,6 +53,14 @@ namespace DiscordCoreInternal {
 		std::string handlerId{};
 		std::string eventId{};
 	};
+
+	inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+		return lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId;
+	}
+
+	inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+		return stoll(lhs.handlerId) < stoll(rhs.handlerId);
+	}
 
 	/// Event-delegate, for representing an event-function to be executed. \brief Event-delegate, for representing an event-function to be executed.
 	template<typename RTy, typename... ArgTypes> class EventDelegate {

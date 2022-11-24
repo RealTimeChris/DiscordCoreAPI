@@ -147,7 +147,7 @@ namespace DiscordCoreAPI {
 
 		friend std::string operator+(const char*, const Snowflake&);
 
-		bool operator==(const Snowflake&) const;
+		friend bool operator==(const Snowflake&, const Snowflake&);
 
 	  protected:
 		uint64_t id{};
@@ -165,6 +165,10 @@ namespace DiscordCoreAPI {
 		string += lhs;
 		string += std::to_string(rhs.id);
 		return string;
+	}
+
+	inline bool operator==(const Snowflake& lhs, const Snowflake& rhs) {
+		return lhs.id == rhs.id;
 	}
 
 	template<typename RTy> void reverseByteOrder(RTy& net) {
@@ -1221,10 +1225,6 @@ namespace DiscordCoreAPI {
 
 		StringWrapper(const char* string);
 
-		bool operator==(const char* rhs);
-
-		bool operator!=(const char* rhs);
-
 		operator std::string();
 
 		void emplace_back(char value);
@@ -1254,6 +1254,14 @@ namespace DiscordCoreAPI {
 		std::stringstream stream{};
 		stream << lhs << rhs;
 		return stream.str();
+	}
+
+	inline bool operator==(StringWrapper lhs, const char* rhs) {
+		return static_cast<std::string>(lhs) == static_cast<std::string>(rhs);
+	}
+
+	inline bool operator!=(StringWrapper lhs, const char* rhs) {
+		return static_cast<std::string>(lhs) != rhs;
 	}
 
 	inline bool operator==(std::string& lhs, StringWrapper& rhs) {

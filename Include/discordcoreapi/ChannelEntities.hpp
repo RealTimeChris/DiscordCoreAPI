@@ -33,6 +33,10 @@
 
 namespace DiscordCoreAPI {
 
+	inline bool operator==(const ChannelData& lhs, const ChannelData& rhs) {
+		return lhs.id == rhs.id;
+	}
+
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
