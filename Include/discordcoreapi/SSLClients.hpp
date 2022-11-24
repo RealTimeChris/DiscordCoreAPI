@@ -51,17 +51,13 @@
 			#undef min
 		#endif
 	#elif __linux__
-		#include <fcntl.h>
-		#include <netdb.h>
-		#include <netinet/in.h>
 		#include <netinet/tcp.h>
-		#include <stdint.h>
-		#include <sys/epoll.h>
-		#include <poll.h>
-		#include <arpa/inet.h>
+		#include <netinet/in.h>
 		#include <sys/socket.h>
 		#include <sys/types.h>
-		#include <unistd.h>
+		#include <netdb.h>
+		#include <fcntl.h>
+		#include <poll.h>
 	#endif
 
 namespace DiscordCoreInternal {
