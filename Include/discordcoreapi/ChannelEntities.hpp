@@ -305,8 +305,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<Channel> createDMChannelAsync(CreateDMChannelData dataPackage);
 
-		/// Collect a list of voice regions that are usable for the RTC-Region option of a given Channel.
-		/// \brief Collect a list of voice regions that are usable for the RTC-Region option of a given Channel.
+		/// Collect a list of voice regions that are usable for the RTC-Region option of a given Channel. \brief Collect a list of voice regions that are usable for the RTC-Region option of a given Channel.
 		/// \returns A CoRoutine containing a VoiceRegionDataVector.
 		static CoRoutine<std::vector<VoiceRegionData>> getVoiceRegionsAsync();
 

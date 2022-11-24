@@ -197,8 +197,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteAllReactionsAsync(DeleteAllReactionsData dataPackage);
 
-		/// Deletes all of the Reactions by a specific emoji from a given Message.
-		/// \brief Deletes all of the Reactions by a specific emoji from a given Message.
+		/// Deletes all of the Reactions by a specific emoji from a given Message. \brief Deletes all of the Reactions by a specific emoji from a given Message.
 		/// \param dataPackage A DeleteReactionsByEmojiData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteReactionsByEmojiAsync(DeleteReactionsByEmojiData dataPackage);

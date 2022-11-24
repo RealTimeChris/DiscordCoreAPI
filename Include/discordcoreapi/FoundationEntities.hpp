@@ -1828,7 +1828,6 @@ namespace DiscordCoreAPI {
 		GuildData() noexcept = default;
 
 		GuildData& operator=(GuildData&&) noexcept = default;
-		;
 
 		GuildData(GuildData&&) noexcept = default;
 
@@ -2985,7 +2984,7 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 	};
 
-	/// \brief Data for responding to an input-event.
+	/// Data for responding to an input-event. \brief Data for responding to an input-event.
 	class DiscordCoreAPI_Dll RespondToInputEventData {
 	  public:
 		friend struct DeleteInteractionResponseData;

@@ -45,9 +45,9 @@ namespace DiscordCoreAPI {
 	/// For adding a user to a group DM. \brief For adding a user to a group DM.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
 		Snowflake channelId{};///< The Channel Id of the DM.
-		Snowflake userId{};///< The user's Id.
 		std::string token{};///< The user's access token.
 		std::string nick{};///< The user's nickname.
+		Snowflake userId{};///< The user's Id.
 
 		operator Jsonifier();
 	};
@@ -61,15 +61,15 @@ namespace DiscordCoreAPI {
 	/// For updating the bot's current voice state. \brief For updating the bot's current voice state.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
 		std::string requestToSpeakTimestamp{};///< ISO8601 timeStamp.
-		Snowflake channelId{};///< The id of the Channel the user is currently in.
 		bool suppress{ false };///< Toggles the user's suppress state.
+		Snowflake channelId{};///< The id of the Channel the user is currently in.
 		Snowflake guildId{};///< The Guild within which to update the bot's voice state.
 	};
 
 	/// For modifying a User's voice state. \brief For modifying a User's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
-		Snowflake channelId{};///< The id of the Channel the user is currently in.
 		bool suppress{ false };///< Toggles the user's suppress state.
+		Snowflake channelId{};///< The id of the Channel the user is currently in.
 		Snowflake guildId{};///< The Guild within which you would like to modify their voice state.
 		Snowflake userId{};///< The user for which you would like to modify the voice state of.
 	};
@@ -81,8 +81,8 @@ namespace DiscordCoreAPI {
 
 	/// For modifying the Bot's User responseData. \brief For modifying the Bot's User responseData.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserData {
-		std::string avatar{};///< If passed, modifies the user's avatar.
 		std::string userName{};///< User's userName, if changed may cause the user's discriminator to be randomized.
+		std::string avatar{};///< If passed, modifies the user's avatar.
 	};
 
 	/// A single User. \brief A single User.
@@ -205,8 +205,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a vector<ConnectionData>.
 		static CoRoutine<std::vector<ConnectionData>> getUserConnectionsAsync();
 
-		/// Collects the Application responseData associated with the current Bot.
-		/// \brief Collects the Application responseData associated with the current Bot.
+		/// Collects the Application responseData associated with the current Bot. \brief Collects the Application responseData associated with the current Bot.
 		/// \returns A CoRoutine containing an ApplicationData.
 		static CoRoutine<ApplicationData> getCurrentUserApplicationInfoAsync();
 

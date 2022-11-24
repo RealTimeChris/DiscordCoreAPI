@@ -184,10 +184,10 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
+		std::unique_ptr<VoiceConnectionBridge> streamSocket{ nullptr };
 		StopWatch<Nanoseconds> sleepTimeCollector{ Nanoseconds{ 0 } };
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
 		Nanoseconds intervalCount{ 960 / 48000 * 1000000000 };
-		std::unique_ptr<VoiceConnectionBridge> streamSocket{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};

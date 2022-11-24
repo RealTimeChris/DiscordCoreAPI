@@ -2189,6 +2189,49 @@ namespace DiscordCoreInternal {
 		}
 	};
 
+	class RingBufferString : public RingBuffer<char,4> {
+	  public:
+
+		RingBufferString() noexcept = default;
+
+		RingBufferString& operator=(RingBufferString&& other) {
+			this->areWeFull = other.areWeFull;
+			this->arrayValue = std::move(other.arrayValue);
+			this->head = other.head;
+			this->tail = other.tail;
+			return *this;
+		}
+
+		RingBufferString(RingBufferString&& other) { 
+			*this = std::move(other);
+		}
+
+		void writeData(const char* data, size_t length) {
+			if (!this->isItFull()) {
+				std::unique_lock lock{ this->accessMutex };
+				std::copy(data, data + length, this->getCurrentHead()->getCurrentHead());
+				this->getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, length);
+				this->modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+			}
+		}
+
+		size_t getCurrentSize() {
+			std::unique_lock lock{ this->accessMutex };
+			return this->getCurrentTail()->getUsedSpace();
+		}
+
+		void readData(char* dst) {
+			std::unique_lock lock{ this->accessMutex };
+			size_t currentSize = this->getCurrentTail()->getUsedSpace();
+			std::copy(this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getCurrentTail() + currentSize, dst);
+			this->getCurrentTail()->clear();
+			this->modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+		}
+
+	  protected:
+		std::mutex accessMutex{};
+	};
+
 }
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::Snowflake> {

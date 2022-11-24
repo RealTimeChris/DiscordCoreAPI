@@ -62,6 +62,10 @@ namespace DiscordCoreAPI {
 		*this = std::move(data);
 	}
 
+	DiscordCoreInternal::OpusDecoderWrapper& VoiceUser::getDecoder() noexcept {
+		return this->decoder;
+	}
+
 	void VoiceUser::insertPayload(std::string&& data) noexcept {
 		this->payloads.send(std::move(data));
 	}
@@ -77,11 +81,7 @@ namespace DiscordCoreAPI {
 		}
 		return value;
 	}
-
-	DiscordCoreInternal::OpusDecoderWrapper& VoiceUser::getDecoder() noexcept {
-		return this->decoder;
-	}
-
+		
 	void VoiceUser::setEndingStatus(bool data) noexcept {
 		this->wereWeEnding.store(data);
 	}

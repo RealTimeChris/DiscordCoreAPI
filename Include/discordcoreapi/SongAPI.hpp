@@ -75,8 +75,7 @@ namespace DiscordCoreAPI {
 		/// \returns A bool representing whether there are any playable Songs.
 		static bool isThereAnySongs(const Snowflake guildId);
 
-		/// Send the next playable song off of the current Guild's Playlist to be played.
-		/// \brief Send the next playable song off of the current Guild's Playlist to be played.
+		/// Send the next playable song off of the current Guild's Playlist to be played. \brief Send the next playable song off of the current Guild's Playlist to be played.
 		/// \param guildMember The GuildMember who is requesting the Song to be sent.
 		/// \returns A bool suggesting the success status of the send.
 		static bool sendNextSong(const GuildMember& guildMember);
