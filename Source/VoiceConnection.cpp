@@ -67,27 +67,19 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceUser::insertPayload(std::string&& data) noexcept {
-		this->payloads.writeData(data.data(), data.size());
+		this->payloads.send(std::move(data));
 	}
 
-	std::string_view VoiceUser::extractPayload() noexcept {
+	std::string VoiceUser::extractPayload() noexcept {
 		int64_t userCount = this->getVoiceUserCount();
-		size_t currentSize{};
+		std::string value{};
 		if (userCount > 0) {
 			StopWatch stopWatch{ Nanoseconds{ static_cast<int64_t>(static_cast<float>(this->sleepableTime->load() / userCount) * 0.60f) } };
-			while (this->payloads.getUsedSpace() == 0 && !this->getEndingStatus() && !stopWatch.hasTimePassed()) {
+			while (!this->payloads.tryReceive(value) && !this->getEndingStatus() && !stopWatch.hasTimePassed()) {
 				std::this_thread::sleep_for(1ns);
 			}
-
-			if (this->payloads.getCurrentSize() > 0) {
-				if (this->returnString.size() < this->payloads.getCurrentSize()) {
-					this->returnString.resize(this->payloads.getCurrentSize());
-				}
-				currentSize = this->payloads.getCurrentSize();
-				this->payloads.readData(this->returnString.data());
-			}
 		}
-		return { this->returnString.data(), currentSize };
+		return value;
 	}
 
 	void VoiceUser::setEndingStatus(bool data) noexcept {
@@ -805,9 +797,14 @@ namespace DiscordCoreAPI {
 				char packet[74]{};
 				const uint16_t val1601{ 0x01 };
 				const uint16_t val1602{ 70 };
-				storeBits(packet, val1601);
-				storeBits(packet, val1602);
-				storeBits(packet, this->audioSSRC);
+				packet[0] = static_cast<uint8_t>(val1601 >> 8);
+				packet[1] = static_cast<uint8_t>(val1601 >> 0);
+				packet[2] = static_cast<uint8_t>(val1602 >> 8);
+				packet[3] = static_cast<uint8_t>(val1602 >> 0);
+				packet[4] = static_cast<uint8_t>(this->audioSSRC >> 24);
+				packet[5] = static_cast<uint8_t>(this->audioSSRC >> 16);
+				packet[6] = static_cast<uint8_t>(this->audioSSRC >> 8);
+				packet[7] = static_cast<uint8_t>(this->audioSSRC);
 				DatagramSocketClient::getInputBuffer();
 				DatagramSocketClient::writeData(std::string_view{ packet, std::size(packet) });
 				std::string_view inputString{};
@@ -924,7 +921,7 @@ namespace DiscordCoreAPI {
 		std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
 		std::unique_lock lock{ this->voiceUserMutex };
 		for (auto& [key, value]: this->voiceUsers) {
-			std::string_view payload{ value.extractPayload() };
+			std::string payload{ value.extractPayload() };
 			if (payload.size() > 0) {
 				const uint64_t headerSize{ 12 };
 				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };
@@ -941,7 +938,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
-						reinterpret_cast<const uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
+						reinterpret_cast<uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
 						reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
 					return;
 				}
