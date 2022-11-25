@@ -62,7 +62,7 @@ namespace DiscordCoreAPI {
 
 		void insertPayload(std::string&&) noexcept;
 
-		std::string extractPayload() noexcept;
+		std::string_view extractPayload() noexcept;
 
 		void setEndingStatus(bool) noexcept;
 
@@ -77,9 +77,10 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::unordered_map<uint64_t, VoiceUser>* voiceUsers{ nullptr };
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
+		DiscordCoreInternal::RingBufferString payloads{};
 		std::atomic_int64_t* sleepableTime{ nullptr };
-		UnboundedMessageBlock<std::string> payloads{};
 		std::atomic_bool wereWeEnding{ false };
+		std::string returnString{};
 		Snowflake userId{};
 	};
 

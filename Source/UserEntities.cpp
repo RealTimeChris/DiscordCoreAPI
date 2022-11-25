@@ -306,7 +306,7 @@ namespace DiscordCoreAPI {
 				Users::cache[user] = std::move(user);
 			}
 			if (Users::cache.size() % 10000 == 0) {
-				//std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
+				std::cout << "USERS COUNT: " << Users::cache.size() << std::endl;
 			}
 		}
 	}
