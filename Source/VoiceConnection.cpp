@@ -75,10 +75,10 @@ namespace DiscordCoreAPI {
 		size_t currentSize{};
 		if (userCount > 0) {
 			StopWatch stopWatch{ Nanoseconds{ static_cast<int64_t>(static_cast<float>(this->sleepableTime->load() / userCount) * 0.60f) } };
-			while (this->payloads.getUsedSpace()==0&& !this->getEndingStatus() && !stopWatch.hasTimePassed()) {
+			while (this->payloads.getUsedSpace() == 0 && !this->getEndingStatus() && !stopWatch.hasTimePassed()) {
 				std::this_thread::sleep_for(1ns);
 			}
-			
+
 			if (this->payloads.getCurrentSize() > 0) {
 				if (this->returnString.size() < this->payloads.getCurrentSize()) {
 					this->returnString.resize(this->payloads.getCurrentSize());
@@ -86,11 +86,10 @@ namespace DiscordCoreAPI {
 				currentSize = this->payloads.getCurrentSize();
 				this->payloads.readData(this->returnString.data());
 			}
-			
 		}
 		return { this->returnString.data(), currentSize };
 	}
-		
+
 	void VoiceUser::setEndingStatus(bool data) noexcept {
 		this->wereWeEnding.store(data);
 	}

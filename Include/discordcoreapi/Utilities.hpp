@@ -2189,9 +2189,8 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	class RingBufferString : public RingBuffer<char,4> {
+	class RingBufferString : public RingBuffer<char, 4> {
 	  public:
-
 		RingBufferString() noexcept = default;
 
 		RingBufferString& operator=(RingBufferString&& other) {
@@ -2202,7 +2201,7 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		RingBufferString(RingBufferString&& other) { 
+		RingBufferString(RingBufferString&& other) {
 			*this = std::move(other);
 		}
 
