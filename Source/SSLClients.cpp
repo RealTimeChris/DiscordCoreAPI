@@ -610,13 +610,13 @@ namespace DiscordCoreInternal {
 			if (!haveWeGottenSignaled) {
 				std::string connectionString{ "connecting" };
 				int32_t result{};
-				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
+				while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
 					result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 						static_cast<int32_t>(this->address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);
 				}
 				result = 0;
-				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
+				while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
 					result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 						reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);
@@ -640,14 +640,14 @@ namespace DiscordCoreInternal {
 				std::string connectionString{};
 				int32_t result{};
 				connectionString.resize(10);
-				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
+				while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
 					result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 						reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);
 				}
 				connectionString = "connected1";
 				result = 0;
-				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
+				while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
 					result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 						static_cast<int32_t>(this->address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);

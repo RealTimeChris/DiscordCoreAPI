@@ -46,9 +46,12 @@
 		#define pollfd WSAPOLLFD
 		#ifdef errno 
 			#undef errno
+			#define errno WSAGetLastError()
 		#endif
-		#define errno WSAGetLastError()
-		#define EWOUDLBLOCK WSAEWOULDBLOCK
+		#ifdef EWOULDBLOCK
+			#undef EWOULDBLOCK
+			#define EWOULDBLOCK WSAEWOULDBLOCK
+		#endif
 		#define close closesocket
 		#define SHUT_RDWR SD_BOTH
 		#ifdef max
