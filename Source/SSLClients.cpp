@@ -680,6 +680,9 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult DatagramSocketClient::processIO(ProcessIOType type) noexcept {
+		if (this->socket == SOCKET_ERROR) {
+			return ProcessIOResult::No_Error;
+		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->socket;
 		if (type == ProcessIOType::Both && this->outputBuffer.getUsedSpace() > 0) {
