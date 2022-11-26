@@ -44,6 +44,13 @@
 		#include <WS2tcpip.h>
 		#define poll(fd_set, fd_count, timeout) WSAPoll(fd_set, fd_count, timeout)
 		#define pollfd WSAPOLLFD
+		#ifdef errno 
+			#undef errno
+		#endif
+		#define errno WSAGetLastError()
+		#define EWOUDLBLOCK WSAEWOULDBLOCK
+		#define close closesocket
+		#define SHUT_RDWR SD_BOTH
 		#ifdef max
 			#undef max
 		#endif

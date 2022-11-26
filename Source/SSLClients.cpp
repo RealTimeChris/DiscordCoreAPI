@@ -114,13 +114,8 @@ namespace DiscordCoreInternal {
 
 	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
 		if (*other != SOCKET_ERROR) {
-#ifdef _WIN32
-			shutdown(*other, SD_BOTH);
-			closesocket(*other);
-#else
 			shutdown(*other, SHUT_RDWR);
 			close(*other);
-#endif
 			*other = SOCKET_ERROR;
 		};
 	};
@@ -615,21 +610,13 @@ namespace DiscordCoreInternal {
 			if (!haveWeGottenSignaled) {
 				std::string connectionString{ "connecting" };
 				int32_t result{};
-#ifdef _WIN32
-				while ((result == 0 || WSAGetLastError() == WSAEWOULDBLOCK) && !token.stop_requested()) {
-#else
 				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
-#endif
 					result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 						static_cast<int32_t>(this->address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);
 				}
 				result = 0;
-#ifdef _WIN32
-				while ((result == 0 || WSAGetLastError() == WSAEWOULDBLOCK) && !token.stop_requested()) {
-#else
 				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
-#endif
 					result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 						reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);
@@ -653,22 +640,14 @@ namespace DiscordCoreInternal {
 				std::string connectionString{};
 				int32_t result{};
 				connectionString.resize(10);
-#ifdef _WIN32
-				while ((result == 0 || WSAGetLastError() == WSAEWOULDBLOCK) && !token.stop_requested()) {
-#else
 				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
-#endif
 					result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 						reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);
 				}
 				connectionString = "connected1";
 				result = 0;
-#ifdef _WIN32
-				while ((result == 0 || WSAGetLastError() == WSAEWOULDBLOCK) && !token.stop_requested()) {
-#else
 				while ((result == 0 || errno != EWOULDBLOCK) && !token.stop_requested()) {
-#endif
 					result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 						static_cast<int32_t>(this->address->ai_addrlen));
 					std::this_thread::sleep_for(1ns);
@@ -777,11 +756,7 @@ namespace DiscordCoreInternal {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
 			auto writtenBytes{ sendto(this->socket, this->outputBuffer.getCurrentTail()->getCurrentTail(), static_cast<int32_t>(bytesToWrite), 0,
 				this->address->ai_addr, static_cast<int32_t>(this->address->ai_addrlen)) };
-#ifdef _WIN32
-			if (writtenBytes <= 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
-#else
 			if (writtenBytes <= 0 && errno != EWOULDBLOCK) {
-#endif
 				return false;
 			} else if (writtenBytes > 0) {
 				this->outputBuffer.getCurrentTail()->clear();
@@ -806,11 +781,7 @@ namespace DiscordCoreInternal {
 
 				readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
 					static_cast<int32_t>(bytesToRead), 0, this->address->ai_addr, reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
-#ifdef _WIN32
-				if (readBytes <= 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
-#else
 				if (readBytes <= 0 && errno != EWOULDBLOCK) {
-#endif
 					return false;
 				} else if (readBytes > 0) {
 					this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
