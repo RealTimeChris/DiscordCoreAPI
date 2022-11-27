@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll VoiceUser {
 		VoiceUser() noexcept = default;
 
-		VoiceUser(std::unordered_map<uint64_t, VoiceUser>* voiceUsers, std::atomic_int64_t* sleepableTime) noexcept;
+		VoiceUser(std::unordered_map<uint64_t, VoiceUser>* voiceUsers) noexcept;
 
 		VoiceUser& operator=(VoiceUser&&) noexcept;
 
@@ -74,9 +74,8 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::unordered_map<uint64_t, VoiceUser>* voiceUsers{ nullptr };
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
-		std::atomic_int64_t* sleepableTime{ nullptr };
-		UnboundedMessageBlock<std::string> payloads{};
 		std::atomic_bool wereWeEnding{ false };
+		std::deque<std::string> payloads{};
 		Snowflake userId{};
 	};
 
@@ -183,7 +182,6 @@ namespace DiscordCoreAPI {
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		std::unique_ptr<VoiceConnectionBridge> streamSocket{ nullptr };
-		StopWatch<Nanoseconds> sleepTimeCollector{ Nanoseconds{ 0 } };
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};
@@ -198,7 +196,6 @@ namespace DiscordCoreAPI {
 		RTPPacketEncrypter packetEncrypter{};
 		simdjson::ondemand::parser parser{};
 		std::atomic_int8_t voiceUserCount{};
-		std::atomic_int64_t sleepableTime{};
 		int64_t nsPerSecond{ 1000000000 };
 		std::string audioEncryptionMode{};
 		std::string decryptedDataString{};
