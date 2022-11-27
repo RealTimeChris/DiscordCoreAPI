@@ -1650,7 +1650,7 @@ namespace DiscordCoreAPI {
 			if (resultTwo->tm_isdst) {
 				if (resultTwo->tm_hour + 4 >= 24) {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
-					resultTwo->tm_mday++;
+					++resultTwo->tm_mday;
 				}
 				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
 					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min),
@@ -1660,7 +1660,7 @@ namespace DiscordCoreAPI {
 			} else {
 				if (resultTwo->tm_hour + 5 >= 24) {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
-					resultTwo->tm_mday++;
+					++resultTwo->tm_mday;
 				}
 				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
 					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min),
@@ -1678,7 +1678,7 @@ namespace DiscordCoreAPI {
 			if (resultTwo->tm_isdst) {
 				if (resultTwo->tm_hour + 4 >= 24) {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
-					resultTwo->tm_mday++;
+					++resultTwo->tm_mday;
 				}
 				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
 					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min),
@@ -1687,7 +1687,7 @@ namespace DiscordCoreAPI {
 			} else {
 				if (resultTwo->tm_hour + 5 >= 24) {
 					resultTwo->tm_hour = resultTwo->tm_hour - 24;
-					resultTwo->tm_mday++;
+					++resultTwo->tm_mday;
 				}
 				TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
 					std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min),

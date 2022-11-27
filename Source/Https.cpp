@@ -249,7 +249,7 @@ namespace DiscordCoreInternal {
 		uint64_t count{ 0 };
 		for (uint64_t x = 0; x < other.size(); ++x) {
 			if (isspace(static_cast<uint8_t>(other[x])) != 0) {
-				count++;
+				++count;
 			} else {
 				break;
 			}
@@ -379,13 +379,13 @@ namespace DiscordCoreInternal {
 				return value.get();
 			}
 		}
-		this->currentIndex++;
+		++this->currentIndex;
 		this->httpsConnections[this->currentIndex] = std::make_unique<HttpsConnection>(this->configManager->doWePrintHttpsErrorMessages());
 		return this->httpsConnections[this->currentIndex].get();
 	}
 
 	void HttpsConnectionManager::initialize() {
-		for (int64_t enumOne = static_cast<int64_t>(HttpsWorkloadType::Unset); enumOne != static_cast<int64_t>(HttpsWorkloadType::LAST); enumOne++) {
+		for (int64_t enumOne = static_cast<int64_t>(HttpsWorkloadType::Unset); enumOne != static_cast<int64_t>(HttpsWorkloadType::LAST); ++enumOne) {
 			std::unique_ptr<RateLimitData> rateLimitData{ std::make_unique<RateLimitData>() };
 			rateLimitData->tempBucket = std::to_string(std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count());
 			this->getRateLimitValueBuckets()[static_cast<HttpsWorkloadType>(enumOne)] = rateLimitData->tempBucket;
@@ -478,7 +478,7 @@ namespace DiscordCoreInternal {
 		if (workload.baseUrl != httpsConnection.currentBaseUrl || !httpsConnection.areWeStillConnected() || httpsConnection.doWeConnect) {
 			httpsConnection.currentBaseUrl = workload.baseUrl;
 			if (!httpsConnection.connect(workload.baseUrl, 443, this->configManager->doWePrintHttpsErrorMessages(), false)) {
-				httpsConnection.currentReconnectTries++;
+				++httpsConnection.currentReconnectTries;
 				httpsConnection.doWeConnect = true;
 				return this->httpsRequestInternal(httpsConnection, workload, rateLimitData);
 			}
@@ -494,13 +494,13 @@ namespace DiscordCoreInternal {
 			result = httpsConnection.writeData(request, true);
 		} while (result == ProcessIOResult::Error);
 		if (result == ProcessIOResult::Error) {
-			httpsConnection.currentReconnectTries++;
+			++httpsConnection.currentReconnectTries;
 			httpsConnection.doWeConnect = true;
 			return this->httpsRequestInternal(httpsConnection, workload, rateLimitData);
 		};
 		auto resultNew = this->getResponse(httpsConnection, rateLimitData);
 		if (resultNew.responseCode == -1) {
-			httpsConnection.currentReconnectTries++;
+			++httpsConnection.currentReconnectTries;
 			httpsConnection.doWeConnect = true;
 			return this->httpsRequestInternal(httpsConnection, workload, rateLimitData);
 		} else {

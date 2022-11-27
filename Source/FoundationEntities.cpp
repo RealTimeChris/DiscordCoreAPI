@@ -4041,9 +4041,9 @@ namespace DiscordCoreAPI {
 				if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex == (messageEmbeds.size() - 1))) {
 					newCurrentPageIndex = 0;
 				} else if (buttonIntData.at(0).buttonId == "forwards" && (newCurrentPageIndex < messageEmbeds.size())) {
-					newCurrentPageIndex++;
+					++newCurrentPageIndex;
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex > 0)) {
-					newCurrentPageIndex--;
+					--newCurrentPageIndex;
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
 					newCurrentPageIndex = static_cast<uint32_t>(messageEmbeds.size()) - 1;
 				}

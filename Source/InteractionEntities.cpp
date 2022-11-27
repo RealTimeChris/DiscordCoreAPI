@@ -514,7 +514,7 @@ namespace DiscordCoreAPI {
 					response->values = this->interactionData->data.componentData.values;
 					*response->interactionData = *selectMenuInteractionData;
 					this->responseVector.emplace_back(*response);
-					this->currentCollectedSelectMenuCount++;
+					++this->currentCollectedSelectMenuCount;
 					stopWatch.resetTimer();
 					if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
 						auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
@@ -552,7 +552,7 @@ namespace DiscordCoreAPI {
 				*response->interactionData = *selectMenuInteractionData;
 				response->values = this->interactionData->data.componentData.values;
 				this->responseVector.emplace_back(*response);
-				this->currentCollectedSelectMenuCount++;
+				++this->currentCollectedSelectMenuCount;
 				stopWatch.resetTimer();
 				if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
 					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
@@ -637,7 +637,7 @@ namespace DiscordCoreAPI {
 					response->userId = buttonInteractionData->user.id;
 					*response->interactionData = *buttonInteractionData;
 					this->responseVector.emplace_back(*response);
-					this->currentCollectedButtonCount++;
+					++this->currentCollectedButtonCount;
 					stopWatch.resetTimer();
 					if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
 						auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
@@ -673,7 +673,7 @@ namespace DiscordCoreAPI {
 				response->userId = buttonInteractionData->user.id;
 				*response->interactionData = *buttonInteractionData;
 				this->responseVector.emplace_back(*response);
-				this->currentCollectedButtonCount++;
+				++this->currentCollectedButtonCount;
 				stopWatch.resetTimer();
 				if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
 					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);

@@ -279,7 +279,7 @@ namespace DiscordCoreAPI {
 			DiscordCoreAPI::GuildData guild{};
 			guild.id = guildMember->guildId;
 			if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
-				DiscordCoreAPI::Guilds::getCache()[guild].memberCount++;
+				++DiscordCoreAPI::Guilds::getCache()[guild].memberCount;
 			}
 		}
 	}
@@ -307,7 +307,7 @@ namespace DiscordCoreAPI {
 			if (DiscordCoreAPI::Guilds::getCache().contains(guild)) {
 				for (uint64_t x = 0; x < DiscordCoreAPI::Guilds::getCache()[guild].members.size(); ++x) {
 					if (DiscordCoreAPI::Guilds::getCache()[guild].members[x] == this->user->id) {
-						DiscordCoreAPI::Guilds::getCache()[guild].memberCount--;
+						--DiscordCoreAPI::Guilds::getCache()[guild].memberCount;
 						DiscordCoreAPI::Guilds::getCache()[guild].members.erase(DiscordCoreAPI::Guilds::getCache()[guild].members.begin() + x);
 					}
 				}

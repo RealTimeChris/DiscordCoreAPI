@@ -203,7 +203,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void SoundCloudAPI::weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token token, int32_t currentReconnectTries) {
-		currentReconnectTries++;
+		++currentReconnectTries;
 		DiscordCoreAPI::GuildMemberData guildMember =
 			DiscordCoreAPI::GuildMembers::getCachedGuildMember({ .guildMemberId = newSong.addedByUserId, .guildId = this->guildId });
 		DiscordCoreAPI::Song newerSong = newSong;
@@ -272,15 +272,15 @@ namespace DiscordCoreInternal {
 					if (amountToSubmitRemaining >= this->maxBufferSize) {
 						for (int64_t x = 0; x < this->maxBufferSize; ++x) {
 							newerVector.push_back(result.responseMessage[amountSubmitted]);
-							amountSubmitted++;
-							amountToSubmitRemaining--;
+							++amountSubmitted;
+							--amountToSubmitRemaining;
 						}
 					} else {
 						uint64_t amountToSubmitRemainingFinal{ amountToSubmitRemaining };
 						for (uint64_t x = 0; x < amountToSubmitRemainingFinal; ++x) {
 							newerVector.push_back(result.responseMessage[amountSubmitted]);
-							amountSubmitted++;
-							amountToSubmitRemaining--;
+							++amountSubmitted;
+							--amountToSubmitRemaining;
 						}
 					}
 					audioDecoder->submitDataForDecoding(newerVector);
@@ -315,7 +315,7 @@ namespace DiscordCoreInternal {
 					audioDecoder.reset(nullptr);
 					return;
 				}
-				counter++;
+				++counter;
 				std::this_thread::sleep_for(1ms);
 			}
 			DiscordCoreAPI::AudioFrameData frameData01{};
@@ -330,7 +330,7 @@ namespace DiscordCoreInternal {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {
 				DiscordCoreAPI::reportException("SoundCloudAPI::downloadAndStreamAudio()");
 			}
-			currentReconnectTries++;
+			++currentReconnectTries;
 			DiscordCoreAPI::DiscordCoreClient::getVoiceConnection(this->guildId)->clearAudioData();
 			this->weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
 		}

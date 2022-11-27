@@ -1207,7 +1207,7 @@ namespace DiscordCoreInternal {
 					std::make_unique<WebSocketSSLShard>(this->discordCoreClient, packageNew.currentShard, this->doWeQuit);
 			}
 			this->shardMap[packageNew.currentShard]->currentReconnectTries = packageNew.currentReconnectTries;
-			this->shardMap[packageNew.currentShard]->currentReconnectTries++;
+			++this->shardMap[packageNew.currentShard]->currentReconnectTries;
 			std::string connectionUrl =
 				packageNew.areWeResuming ? this->shardMap[packageNew.currentShard]->resumeUrl : this->configManager->getConnectionAddress();
 			bool isItFirstIteraion{ true };

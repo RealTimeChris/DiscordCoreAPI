@@ -147,7 +147,7 @@ namespace DiscordCoreInternal {
 			this->finalString.resize(this->finalString.size() + 1);
 		}
 		this->finalString[this->currentSize] = value;
-		this->currentSize++;
+		++this->currentSize;
 	}
 
 	void ErlParser::singleValueETFToJson() {

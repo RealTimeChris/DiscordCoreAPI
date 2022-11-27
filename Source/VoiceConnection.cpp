@@ -109,7 +109,7 @@ namespace DiscordCoreAPI {
 
 	std::string_view RTPPacketEncrypter::encryptPacket(const AudioFrameData& audioData) noexcept {
 		if (this->keys.size() > 0) {
-			this->sequence++;
+			++this->sequence;
 			this->timeStamp += audioData.sampleCount;
 			const uint8_t headerSize{ 12 };
 			char header[headerSize]{};
@@ -625,7 +625,7 @@ namespace DiscordCoreAPI {
 				this->baseShard->getVoiceConnectionData(this->voiceConnectInitData);
 
 				if (waitForTimeToPass(this->voiceConnectionDataBuffer, this->voiceConnectionData, 10000)) {
-					this->currentReconnectTries++;
+					++this->currentReconnectTries;
 					this->onClosed();
 					return;
 				}
@@ -637,7 +637,7 @@ namespace DiscordCoreAPI {
 			case VoiceConnectionState::Initializing_WebSocket: {
 				this->currentState.store(DiscordCoreInternal::WebSocketState::Upgrading);
 				if (!WebSocketCore::connect(this->baseUrl, "/?v=4", 443, this->configManager->doWePrintWebSocketErrorMessages(), false)) {
-					this->currentReconnectTries++;
+					++this->currentReconnectTries;
 					this->onClosed();
 					return;
 				}
@@ -645,7 +645,7 @@ namespace DiscordCoreAPI {
 				this->shard[1] = 1;
 				while (this->currentState.load() != DiscordCoreInternal::WebSocketState::Collecting_Hello) {
 					if (WebSocketCore::processIO(10) == DiscordCoreInternal::ProcessIOResult::Error) {
-						this->currentReconnectTries++;
+						++this->currentReconnectTries;
 						this->onClosed();
 						return;
 					}
@@ -658,12 +658,12 @@ namespace DiscordCoreAPI {
 				stopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Sending_Identify) {
 					if (stopWatch.hasTimePassed()) {
-						this->currentReconnectTries++;
+						++this->currentReconnectTries;
 						this->onClosed();
 						return;
 					}
 					if (WebSocketCore::processIO(100) == DiscordCoreInternal::ProcessIOResult::Error) {
-						this->currentReconnectTries++;
+						++this->currentReconnectTries;
 						this->onClosed();
 						return;
 					}
@@ -683,7 +683,7 @@ namespace DiscordCoreAPI {
 				std::string string{ serializer.operator std::string() };
 				this->createHeader(string, this->dataOpCode);
 				if (!WebSocketCore::sendMessage(string, true)) {
-					this->currentReconnectTries++;
+					++this->currentReconnectTries;
 					return;
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Ready);
@@ -694,12 +694,12 @@ namespace DiscordCoreAPI {
 				stopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Initializing_DatagramSocket) {
 					if (stopWatch.hasTimePassed()) {
-						this->currentReconnectTries++;
+						++this->currentReconnectTries;
 						this->onClosed();
 						return;
 					}
 					if (WebSocketCore::processIO(100) == DiscordCoreInternal::ProcessIOResult::Error) {
-						this->currentReconnectTries++;
+						++this->currentReconnectTries;
 						this->onClosed();
 						return;
 					}
@@ -724,7 +724,7 @@ namespace DiscordCoreAPI {
 				std::string string{ serializer.operator std::string() };
 				this->createHeader(string, this->dataOpCode);
 				if (!WebSocketCore::sendMessage(string, true)) {
-					this->currentReconnectTries++;
+					++this->currentReconnectTries;;
 					return;
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Session_Description);
@@ -735,12 +735,12 @@ namespace DiscordCoreAPI {
 				stopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
 					if (stopWatch.hasTimePassed()) {
-						this->currentReconnectTries++;
+						++this->currentReconnectTries;;
 						this->onClosed();
 						return;
 					}
 					if (WebSocketCore::processIO(100) == DiscordCoreInternal::ProcessIOResult::Error) {
-						this->currentReconnectTries++;
+						++this->currentReconnectTries;;
 						this->onClosed();
 						return;
 					}
@@ -893,7 +893,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnect() noexcept {
-		this->currentReconnectTries++;
+		++this->currentReconnectTries;;
 		this->connections = std::make_unique<ConnectionPackage>();
 		this->connections->currentReconnectTries = this->currentReconnectTries;
 		this->connections->currentShard = this->shard[0];
@@ -954,7 +954,7 @@ namespace DiscordCoreAPI {
 					}
 					if (decodedData.size() > 0) {
 						decodedSize = std::max(decodedSize, decodedData.size());
-						voiceUserCount++;
+						++voiceUserCount;
 						for (int32_t x = 0; x < decodedData.size(); ++x) {
 							this->upSampledVector[x] += decodedData[x];
 						}

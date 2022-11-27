@@ -587,7 +587,7 @@ namespace DiscordCoreAPI {
 			if (index != objectNew.size() - 1) {
 				this->writeCharacter(',');
 			}
-			index++;
+			++index;
 		}
 
 		this->writeCharacter('}');
@@ -607,7 +607,7 @@ namespace DiscordCoreAPI {
 			if (index != arrayNew.size() - 1) {
 				this->writeCharacter(',');
 			}
-			index++;
+			++index;
 		}
 
 		this->writeCharacter(']');
@@ -795,7 +795,7 @@ namespace DiscordCoreAPI {
 		while (value > 0) {
 			newBuffer[3 + encodedBytes] = value & 0xFF;
 			value >>= 8;
-			encodedBytes++;
+			++encodedBytes;
 		}
 		newBuffer[1] = encodedBytes;
 		newBuffer[2] = 0;
@@ -1845,7 +1845,7 @@ namespace DiscordCoreAPI {
 				}
 				default: {
 					stringNew[index] = string[x];
-					index++;
+					++index;
 					break;
 				}
 			}

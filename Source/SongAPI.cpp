@@ -169,11 +169,11 @@ namespace DiscordCoreAPI {
 			if ((vector01Used < vector01.size() - 1) && (x % 2 == 0) && vector01.size() > 0) {
 				vector01[vector01Used].type = SongType::SoundCloud;
 				newVector.emplace_back(vector01[vector01Used]);
-				vector01Used++;
+				++vector01Used;
 			} else if (vector02Used < vector02.size() - 1 && vector02.size() > 0) {
 				vector02[vector02Used].type = SongType::YouTube;
 				newVector.emplace_back(vector02[vector02Used]);
-				vector02Used++;
+				++vector02Used;
 			}
 		}
 		return newVector;
