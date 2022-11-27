@@ -99,7 +99,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// DiscordCoreClient - The main class for this library. \brief DiscordCoreClient - The main class for this library.
+	/// \brief DiscordCoreClient - The main class for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
 		friend class DiscordCoreInternal::WebSocketSSLShard;
@@ -118,11 +118,11 @@ namespace DiscordCoreAPI {
 
 		static SongAPI* getSongAPI(Snowflake guildId);
 
-		/// DiscordCoreClient constructor. \brief DiscordCoreClient constructor.
+		/// \brief DiscordCoreClient constructor.
 		/// \param configData A DiscordCoreClientConfig structure to select various library options.
 		DiscordCoreClient(DiscordCoreClientConfig configData);
 
-		/// For registering a function with the CommandController. \brief For registering a function with the CommandController.
+		/// \brief For registering a function with the CommandController.
 		/// \param functionNames A vector containing the possible names for activating this command/function.
 		/// \param baseFunction A unique_ptr to the command to be registered.
 		/// \param commandData A CreateApplicationCommandData structure describing the current function.
@@ -130,27 +130,27 @@ namespace DiscordCoreAPI {
 		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction,
 			CreateApplicationCommandData commandData, bool alwaysRegister = false);
 
-		/// For collecting a reference to the CommandController. \brief For collecting a reference to the CommandController.
+		/// \brief For collecting a reference to the CommandController.
 		/// \returns CommandController& A reference to the CommandController.
 		CommandController& getCommandController();
 
-		/// For collecting a reference to the ConfigManager. \brief For collecting a reference to the ConfigManager.
+		/// \brief For collecting a reference to the ConfigManager.
 		/// \returns ConfigManager& A reference to the ConfigManager.
 		ConfigManager& getConfigManager();
 
-		/// For collecting a reference to the EventManager. \brief For collecting a reference to the EventManager.
+		/// \brief For collecting a reference to the EventManager.
 		/// \returns EventManager& A reference to the EventManager.
 		EventManager& getEventManager();
 
-		/// For collecting, the total time in milliseconds that this bot has been up for. \brief For collecting, the total time in milliseconds that this bot has been up for.
+		/// \brief For collecting, the total time in milliseconds that this bot has been up for.
 		/// \returns Milliseconds A count, in milliseconds, since the bot has come online.
 		Milliseconds getTotalUpTime();
 
-		/// For collecting a copy of the current bot's User. \brief For collecting a copy of the current bot's User.
+		/// \brief For collecting a copy of the current bot's User.
 		/// \returns BotUser An instance of BotUser.
 		BotUser getBotUser();
 
-		/// Executes the library, and waits for completion. \brief Executes the library, and waits for completion.
+		/// \brief Executes the library, and waits for completion.
 		void runBot();
 
 		~DiscordCoreClient() noexcept;

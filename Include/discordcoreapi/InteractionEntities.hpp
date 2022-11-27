@@ -217,7 +217,7 @@ namespace DiscordCoreAPI {
 		InteractionPackageData interactionPackage{};
 	};
 
-	/// For creating a follow up Message. \brief For creating a follow up Message.
+	/// \brief For creating a follow up Message.
 	class DiscordCoreAPI_Dll CreateFollowUpMessageData : public ExecuteWebHookData {
 	  public:
 		friend class SelectMenuCollector;
@@ -235,14 +235,14 @@ namespace DiscordCoreAPI {
 		InteractionPackageData interactionPackage{};
 	};
 
-	/// For getting a follow-up Message. \brief For getting a follow-up Message.
+	/// \brief For getting a follow-up Message.
 	struct DiscordCoreAPI_Dll GetFollowUpMessageData {
 		std::string interactionToken{};///< Interaction token.
 		Snowflake applicationId{};///< application id.
 		Snowflake messageId{};///< Message id.
 	};
 
-	/// For editing a follow up Message. \brief For editing a follow up Message.
+	/// \brief For editing a follow up Message.
 	class DiscordCoreAPI_Dll EditFollowUpMessageData {
 	  public:
 		friend class Interactions;
@@ -258,7 +258,7 @@ namespace DiscordCoreAPI {
 		EditWebHookData data{};
 	};
 
-	/// For deleting a follow up Message. \brief For deleting a follow up Message.
+	/// \brief For deleting a follow up Message.
 	struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
 		friend class Interactions;
 		friend class InputEvents;
@@ -271,7 +271,7 @@ namespace DiscordCoreAPI {
 		uint32_t timeDelay{ 0 };
 	};
 
-	/// A single Interaction.
+	/// \brief A single Interaction.
 	struct DiscordCoreAPI_Dll Interaction : public InteractionData {
 	  public:
 		Interaction() noexcept = default;
@@ -286,7 +286,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// An interface class for the Interaction related Discord endpoints. \brief An interface class for the Interaction related Discord endpoints.
+	/// \brief An interface class for the Interaction related Discord endpoints.
 	class DiscordCoreAPI_Dll Interactions {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
@@ -346,7 +346,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// Select menu response data. \brief Select menu response data.
+	/// \brief Select menu response data.
 	struct DiscordCoreAPI_Dll SelectMenuResponseData {
 		operator InteractionData() {
 			return *this->interactionData;

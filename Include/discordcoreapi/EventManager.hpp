@@ -44,48 +44,48 @@ namespace DiscordCoreAPI {
 	 * \addtogroup discord_events
 	 * @{
 	 */
-	/// Data that is received as part of a Gateway ping event. \brief Data that is received as part of a Gateway ping event.
+	/// \brief Data that is received as part of a Gateway ping event.
 	struct DiscordCoreAPI_Dll OnGatewayPingData {
 		int32_t timeUntilNextPing{};///< The number of milliseconds until the next ping.
 	};
 
-	/// Data that is received as part of an InputEvent creation event. \brief Data that is received as part of an InputEvent creation event.
+	/// \brief Data that is received as part of an InputEvent creation event.
 	struct DiscordCoreAPI_Dll OnInputEventCreationData {
 		InputEventData inputEventData{};///< InputEventData representing the input-event.
 		OnInputEventCreationData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
-	/// Data that is received as part of an ApplicationCommandPermissions update event. \brief Data that is received as part of an ApplicationCommandPermissions update event.
+	/// \brief Data that is received as part of an ApplicationCommandPermissions update event.
 	struct DiscordCoreAPI_Dll OnApplicationCommandPermissionsUpdateData {
 		GuildApplicationCommandPermissionsData permissionData{};
 		OnApplicationCommandPermissionsUpdateData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
-	/// Data that is received as part of an AutoModerationRule creation event. \brief Data that is received as part of an AutoModerationRule creation event.
+	/// \brief Data that is received as part of an AutoModerationRule creation event.
 	struct DiscordCoreAPI_Dll OnAutoModerationRuleCreationData {
 		AutoModerationRule theRule{};
 		OnAutoModerationRuleCreationData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
-	/// Data that is received as part of an AutoModerationRule update event. \brief Data that is received as part of an AutoModerationRule update event.
+	/// \brief Data that is received as part of an AutoModerationRule update event.
 	struct DiscordCoreAPI_Dll OnAutoModerationRuleUpdateData {
 		AutoModerationRule theRule{};
 		OnAutoModerationRuleUpdateData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
-	/// Data that is received as part of an AutoModerationRule delete event. \brief Data that is received as part of an AutoModerationRule delete event.
+	/// \brief Data that is received as part of an AutoModerationRule delete event.
 	struct DiscordCoreAPI_Dll OnAutoModerationRuleDeletionData {
 		AutoModerationRule theRule{};
 		OnAutoModerationRuleDeletionData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
-	/// Data that is received as part of an AutoModerationAction execution event. \brief Data that is received as part of an AutoModerationAction execution event.
+	/// \brief Data that is received as part of an AutoModerationAction execution event.
 	struct DiscordCoreAPI_Dll OnAutoModerationActionExecutionData {
 		AutoModerationActionExecutionEventData data{};
 		OnAutoModerationActionExecutionData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
 	};
 
-	/// Data that is received as part of a Channel creation event. \brief Data that is received as part of a Channel creation event.
+	/// \brief Data that is received as part of a Channel creation event.
 	struct DiscordCoreAPI_Dll OnChannelCreationData {
 		std::unique_ptr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The new Channel.
 		OnChannelCreationData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data);
@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 		OnChannelCreationData(const OnChannelCreationData& other);
 	};
 
-	/// Data that is received as part of a Channel update event. \brief Data that is received as part of a Channel update event.
+	/// \brief Data that is received as part of a Channel update event.
 	struct DiscordCoreAPI_Dll OnChannelUpdateData {
 		std::unique_ptr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The new Channel.
 		OnChannelUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 		OnChannelUpdateData(const OnChannelUpdateData& other);
 	};
 
-	/// Data that is received as part of a Channel deletion event. \brief Data that is received as part of a Channel deletion event.
+	/// \brief Data that is received as part of a Channel deletion event.
 	struct DiscordCoreAPI_Dll OnChannelDeletionData {
 		std::unique_ptr<ChannelData> channel{ std::make_unique<ChannelData>() };///< The deleted Channel.
 		OnChannelDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
@@ -109,49 +109,49 @@ namespace DiscordCoreAPI {
 		OnChannelDeletionData(const OnChannelDeletionData&);
 	};
 
-	/// Data that is received as part of a Channel pins update event. \brief Data that is received as part of a Channel pins update event.
+	/// \brief Data that is received as part of a Channel pins update event.
 	struct DiscordCoreAPI_Dll OnChannelPinsUpdateData {
 		ChannelPinsUpdateEventData dataPackage{};///< The Channel pins update responseData.
 		OnChannelPinsUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Thread creation event. \brief Data that is received as part of a Thread creation event.
+	/// \brief Data that is received as part of a Thread creation event.
 	struct DiscordCoreAPI_Dll OnThreadCreationData {
 		Thread thread{};///< The new Thread's Channel.
 		OnThreadCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Thread update event. \brief Data that is received as part of a Thread update event.
+	/// \brief Data that is received as part of a Thread update event.
 	struct DiscordCoreAPI_Dll OnThreadUpdateData {
 		Thread thread{};///< The new Thread's Channel.
 		OnThreadUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Thread deletion event. \brief Data that is received as part of a Thread deletion event.
+	/// \brief Data that is received as part of a Thread deletion event.
 	struct DiscordCoreAPI_Dll OnThreadDeletionData {
 		Thread thread{};///< The deleted Thread's Channel.
 		OnThreadDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Thread list sync event. \brief Data that is received as part of a Thread list sync event.
+	/// \brief Data that is received as part of a Thread list sync event.
 	struct DiscordCoreAPI_Dll OnThreadListSyncData {
 		ThreadListSyncData threadListSyncData{};///< The Thread list sync responseData.
 		OnThreadListSyncData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Thread member update event. \brief Data that is received as part of a Thread member update event.
+	/// \brief Data that is received as part of a Thread member update event.
 	struct DiscordCoreAPI_Dll OnThreadMemberUpdateData {
 		ThreadMemberData threadMember{};///< Thread member update responseData.
 		OnThreadMemberUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Thread members update event. \brief Data that is received as part of a Thread members update event.
+	/// \brief Data that is received as part of a Thread members update event.
 	struct DiscordCoreAPI_Dll OnThreadMembersUpdateData {
 		ThreadMembersUpdateData threadMembersUpdateData{};///< Thread member's update responseData.
 		OnThreadMembersUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Guild creation event. \brief Data that is received as part of a Guild creation event.
+	/// \brief Data that is received as part of a Guild creation event.
 	struct DiscordCoreAPI_Dll OnGuildCreationData {
 		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The new Guild.
 		OnGuildCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
@@ -159,7 +159,7 @@ namespace DiscordCoreAPI {
 		OnGuildCreationData(const OnGuildCreationData&);
 	};
 
-	/// Data that is received as part of a Guild update event. \brief Data that is received as part of a Guild update event.
+	/// \brief Data that is received as part of a Guild update event.
 	struct DiscordCoreAPI_Dll OnGuildUpdateData {
 		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The new Guild.
 		OnGuildUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
@@ -167,7 +167,7 @@ namespace DiscordCoreAPI {
 		OnGuildUpdateData(const OnGuildUpdateData&);
 	};
 
-	/// Data that is received as part of a Guild deletion event. \brief Data that is received as part of a Guild deletion event.
+	/// \brief Data that is received as part of a Guild deletion event.
 	struct DiscordCoreAPI_Dll OnGuildDeletionData {
 		std::unique_ptr<GuildData> guild{ std::make_unique<GuildData>() };///< The deleted Guild.
 		OnGuildDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
@@ -175,39 +175,39 @@ namespace DiscordCoreAPI {
 		OnGuildDeletionData(const OnGuildDeletionData&);
 	};
 
-	/// Data that is received as part of a Guild ban add event. \brief Data that is received as part of a Guild ban add event.
+	/// \brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanAddData {
 		Snowflake guildId{};///< The Guild they were banned from.
 		User user{};///< The User id of the person who was banned.
 		OnGuildBanAddData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Guild ban remove event. \brief Data that is received as part of a Guild ban add event.
+	/// \brief Data that is received as part of a Guild ban add event.
 	struct DiscordCoreAPI_Dll OnGuildBanRemoveData {
 		Snowflake guildId{};///< The Guild they were un-banned from.
 		User user{};///< The User id of the person who was un-banned.
 		OnGuildBanRemoveData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Guild emojis update event. \brief Data that is received as part of a Guild emojis update event.
+	/// \brief Data that is received as part of a Guild emojis update event.
 	struct DiscordCoreAPI_Dll OnGuildEmojisUpdateData {
 		GuildEmojisUpdateEventData updateData{};///< The Guild emoji's update responseData.
 		OnGuildEmojisUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Guild sticker update event. \brief Data that is received as part of a Guild sticker update event.
+	/// \brief Data that is received as part of a Guild sticker update event.
 	struct DiscordCoreAPI_Dll OnGuildStickersUpdateData {
 		GuildStickersUpdateEventData updateData{};///< The GuildStickersUpdateEventData.
 		OnGuildStickersUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Guild Integration update event. \brief Data that is received as part of a Guild Integration update event.
+	/// \brief Data that is received as part of a Guild Integration update event.
 	struct DiscordCoreAPI_Dll OnGuildIntegrationsUpdateData {
 		Snowflake guildId{};///< The id of the Guild for which the integrations were updated.
 		OnGuildIntegrationsUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a GuildMember add event. \brief Data that is received as part of a GuildMember add event.
+	/// \brief Data that is received as part of a GuildMember add event.
 	struct DiscordCoreAPI_Dll OnGuildMemberAddData {
 		std::unique_ptr<GuildMemberData> guildMember{ std::make_unique<GuildMemberData>() };///< The new GuildMember.
 		DiscordCoreClient* discordCoreClient{ nullptr };
@@ -216,7 +216,7 @@ namespace DiscordCoreAPI {
 		OnGuildMemberAddData(const OnGuildMemberAddData&);
 	};
 
-	/// Data that is received as part of a GuildMember update event. \brief Data that is received as part of a GuildMember update event.
+	/// \brief Data that is received as part of a GuildMember update event.
 	struct DiscordCoreAPI_Dll OnGuildMemberUpdateData {
 		std::unique_ptr<GuildMemberData> guildMember{ std::make_unique<GuildMemberData>() };///< The new GuildMember.
 		OnGuildMemberUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal, DiscordCoreClient*);
@@ -224,7 +224,7 @@ namespace DiscordCoreAPI {
 		OnGuildMemberUpdateData(const OnGuildMemberUpdateData&);
 	};
 
-	/// Data that is received as part of a GuildMember remove event. \brief Data that is received as part of a GuildMember remove event.
+	/// \brief Data that is received as part of a GuildMember remove event.
 	struct DiscordCoreAPI_Dll OnGuildMemberRemoveData {
 		std::unique_ptr<UserData> user{ std::make_unique<UserData>() };///< The User responseData of the removed GuildMember.
 		DiscordCoreClient* discordCoreClient{ nullptr };
@@ -234,13 +234,13 @@ namespace DiscordCoreAPI {
 		OnGuildMemberRemoveData(const OnGuildMemberRemoveData&);
 	};
 
-	/// Data that is received as part of a GuildMembers chunk event. \brief Data that is received as part of a GuildMembers chunk event.
+	/// \brief Data that is received as part of a GuildMembers chunk event.
 	struct DiscordCoreAPI_Dll OnGuildMembersChunkData {
 		GuildMembersChunkEventData chunkEventData{};///< GuildMembersChunkEventData structure.
 		OnGuildMembersChunkData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal);
 	};
 
-	/// Data that is received as part of a Role creation event. \brief Data that is received as part of a Role creation event.
+	/// \brief Data that is received as part of a Role creation event.
 	struct DiscordCoreAPI_Dll OnRoleCreationData {
 		std::unique_ptr<RoleData> role{ std::make_unique<RoleData>() };///< The new Role.
 		Snowflake guildId{};///< The id of the Guild within which the Role was created.
@@ -249,7 +249,7 @@ namespace DiscordCoreAPI {
 		OnRoleCreationData(const OnRoleCreationData&);
 	};
 
-	/// Data that is received as part of a Role update event. \brief Data that is received as part of a Role update event.
+	/// \brief Data that is received as part of a Role update event.
 	struct DiscordCoreAPI_Dll OnRoleUpdateData {
 		std::unique_ptr<RoleData> role{ std::make_unique<RoleData>() };///< The new Role.
 		Snowflake guildId{};///< The id of the Guild within which the Role was updated.

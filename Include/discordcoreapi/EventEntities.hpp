@@ -34,7 +34,7 @@ namespace DiscordCoreInternal {
 	 * @{
 	 */
 
-	/// Event-delegate token, representing an event. \brief Event-delegate token, representing an event.
+	/// \brief Event-delegate token, representing an event.
 	struct DiscordCoreAPI_Dll EventDelegateToken {
 		template<typename RTy, typename... ArgTypes> friend class EventDelegate;
 
@@ -59,7 +59,7 @@ namespace DiscordCoreInternal {
 		return stoll(lhs.handlerId) < stoll(rhs.handlerId);
 	}
 
-	/// Event-delegate, for representing an event-function to be executed. \brief Event-delegate, for representing an event-function to be executed.
+	/// \brief Event-delegate, for representing an event-function to be executed.
 	template<typename RTy, typename... ArgTypes> class EventDelegate {
 	  public:
 		template<typename RTy02, typename... ArgTypes02> friend class Event;
@@ -85,7 +85,7 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		/// Constructor, taking a std::function<RTy(ArgTypes..)> as an argument. \brief Constructor, taking a std::function<RTy(ArgTypes..)> as an argument.
+		/// \brief Constructor, taking a std::function<RTy(ArgTypes..)> as an argument.
 		EventDelegate(std::function<RTy(ArgTypes...)> functionNew) {
 			*this = functionNew;
 		}
@@ -95,7 +95,7 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		/// Constructor, taking a pointer to a function of type RTy(*)(ArgTypes...) as an argument. \brief Constructor, taking a pointer to a function of type RTy(*)(ArgTypes...) as an argument.
+		/// \brief Constructor, taking a pointer to a function of type RTy(*)(ArgTypes...) as an argument.
 		EventDelegate(RTy (*functionNew)(ArgTypes...)) {
 			*this = functionNew;
 		}

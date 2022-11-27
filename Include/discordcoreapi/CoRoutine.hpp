@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// The current status of the associated CoRoutine. \brief The current status of the associated CoRoutine.
+	/// \brief The current status of the associated CoRoutine.
 	enum class CoRoutineStatus {
 		Idle = 0,///< Idle.
 		Running = 1,///< Running.
@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		Cancelled = 3///< Cancelled.
 	};
 
-	/// An error type for CoRoutines. \brief An error type for CoRoutines.
+	/// \brief An error type for CoRoutines.
 	struct DiscordCoreAPI_Dll CoRoutineError : public DCAException {
 		CoRoutineError(const std::string& message);
 	};
@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 		virtual ~CoRoutineBase() noexcept = default;
 	};
 
-	/// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
+	/// \brief A CoRoutine - representing a potentially asynchronous operation/function.
 	/// \tparam RTy The type of parameter that is returned by the CoRoutine.
 	template<typename RTy> class CoRoutine : public CoRoutineBase {
 	  public:
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		/// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
+		/// \brief Collects the status of the CoRoutine.
 		/// \returns DiscordCoreAPI::CoRoutineStatus The status of the CoRoutine.
 		CoRoutineStatus getStatus() {
 			if (!this->coroutineHandle) {
@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 			return this->currentStatus.load();
 		}
 
-		/// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
+		/// \brief Gets the resulting value of the CoRoutine.
 		/// \returns RTy The return value of the CoRoutine.
 		RTy get() {
 			if (this && this->coroutineHandle) {
@@ -178,7 +178,7 @@ namespace DiscordCoreAPI {
 			return RTy{};
 		}
 
-		/// Cancels the currently executing CoRoutine and returns the current result. \brief Cancels the currently executing CoRoutine and returns the current result.
+		/// \brief Cancels the currently executing CoRoutine and returns the current result.
 		/// \returns RTy The return value of the CoRoutine.
 		RTy cancel() {
 			if (this && this->coroutineHandle) {
@@ -208,7 +208,7 @@ namespace DiscordCoreAPI {
 		RTy result{};
 	};
 
-	/// A CoRoutine - representing a potentially asynchronous operation/function. \brief A CoRoutine - representing a potentially asynchronous operation/function.
+	/// \brief A CoRoutine - representing a potentially asynchronous operation/function.
 	/// \tparam void The type of parameter that is returned by the CoRoutine.
 	template<> class CoRoutine<void> : public CoRoutineBase {
 	  public:
@@ -295,7 +295,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		/// Collects the status of the CoRoutine. \brief Collects the status of the CoRoutine.
+		/// \brief Collects the status of the CoRoutine.
 		/// \returns CoRoutineStatus The status of the CoRoutine.
 		CoRoutineStatus getStatus() {
 			if (!this->coroutineHandle) {
@@ -308,7 +308,7 @@ namespace DiscordCoreAPI {
 			return this->currentStatus.load();
 		}
 
-		/// Gets the resulting value of the CoRoutine. \brief Gets the resulting value of the CoRoutine.
+		/// \brief Gets the resulting value of the CoRoutine.
 		void get() {
 			if (this && this->coroutineHandle) {
 				while (!this->areWeDone.load()) {
@@ -326,7 +326,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		/// Cancels the currently executing CoRoutine and returns the current result. \brief Cancels the currently executing CoRoutine and returns the current result.
+		/// \brief Cancels the currently executing CoRoutine and returns the current result.
 		void cancel() {
 			if (this && this->coroutineHandle) {
 				if (!this->coroutineHandle.done()) {
@@ -351,7 +351,7 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWeDone{};
 	};
 
-	/// An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution. \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
+	/// \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
 	/// \tparam RTy The type of value returned by the containing CoRoutine.
 	template<typename RTy> class NewThreadAwaiter {
 	  public:
