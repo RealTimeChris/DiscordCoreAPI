@@ -61,20 +61,15 @@ namespace DiscordCoreAPI {
 
 		std::string extractPayload() noexcept;
 
-		void setEndingStatus(bool) noexcept;
-
 		size_t getVoiceUserCount() noexcept;
 
 		void setUserId(Snowflake) noexcept;
-
-		bool getEndingStatus() noexcept;
 
 		Snowflake getUserId() noexcept;
 
 	  protected:
 		std::unordered_map<uint64_t, VoiceUser>* voiceUsers{ nullptr };
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
-		std::atomic_bool wereWeEnding{ false };
 		std::deque<std::string> payloads{};
 		Snowflake userId{};
 	};
@@ -201,7 +196,6 @@ namespace DiscordCoreAPI {
 		std::string decryptedDataString{};
 		Snowflake currentGuildMemberId{};
 		OpusEncoderWrapper encoder{};
-		std::mutex voiceUserMutex{};
 		std::string encryptionKey{};
 		AudioFrameData audioData{};
 		std::string externalIp{};

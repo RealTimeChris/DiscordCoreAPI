@@ -48,7 +48,6 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceUser& VoiceUser::operator=(VoiceUser&& data) noexcept {
-		this->wereWeEnding.store(data.wereWeEnding.load());
 		this->payloads = std::move(data.payloads);
 		this->decoder = std::move(data.decoder);
 		this->voiceUsers = data.voiceUsers;
@@ -78,20 +77,12 @@ namespace DiscordCoreAPI {
 		return value;
 	}
 
-	void VoiceUser::setEndingStatus(bool data) noexcept {
-		this->wereWeEnding.store(data);
-	}
-
 	size_t VoiceUser::getVoiceUserCount() noexcept {
 		return this->voiceUsers->size();
 	}
 
 	void VoiceUser::setUserId(Snowflake userIdNew) noexcept {
 		this->userId = userIdNew;
-	}
-
-	bool VoiceUser::getEndingStatus() noexcept {
-		return this->wereWeEnding.load();
 	}
 
 	Snowflake VoiceUser::getUserId() noexcept {
@@ -181,17 +172,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::parseIncomingVoiceData(const std::string_view rawDataBufferNew) noexcept {
-		std::unique_lock lock{ this->voiceUserMutex };
 		const uint32_t speakerSsrc{ ntohl(*reinterpret_cast<const uint32_t*>(rawDataBufferNew.data() + 8)) };
 		if (this->voiceUsers.contains(speakerSsrc)) {
 			if (72 <= (rawDataBufferNew[1] & 0b0111'1111) && (rawDataBufferNew[1] & 0b0111'1111) <= 76) {
 				return;
-			}
-			if (rawDataBufferNew.size() <= 39) {
-				this->voiceUsers[speakerSsrc].setEndingStatus(true);
-				return;
-			} else {
-				this->voiceUsers[speakerSsrc].setEndingStatus(false);
 			}
 			this->voiceUsers[speakerSsrc].insertPayload(std::string{ rawDataBufferNew.data(), rawDataBufferNew.size() });
 		}
@@ -283,7 +267,6 @@ namespace DiscordCoreAPI {
 				const uint32_t ssrc = getUint32(value["d"], "ssrc");
 				VoiceUser user{ &this->voiceUsers };
 				user.setUserId(stoull(getString(value["d"], "user_id")));
-				std::unique_lock lock{ this->voiceUserMutex };
 				if (!Users::getCachedUser({ .userId = user.getUserId() }).getFlagValue(UserFlags::Bot) ||
 					this->voiceConnectInitData.streamInfo.streamBotAudio) {
 					if (!this->voiceUsers.contains(ssrc)) {
@@ -311,7 +294,6 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceSocketOpCodes::Client_Disconnect: {
 				const auto userId = stoull(getString(value["d"], "user_id"));
-				std::unique_lock lock{ this->voiceUserMutex };
 				for (auto& [key, value]: this->voiceUsers) {
 					if (userId == value.getUserId()) {
 						this->voiceUsers.erase(key);
@@ -734,11 +716,6 @@ namespace DiscordCoreAPI {
 						this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient,
 							this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
 					}
-
-					//this->taskThread02 = std::make_unique<std::jthread>([=, this](std::stop_token token) {
-						
-						//this->runBridge(token);
-					//});
 					this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port, false,
 						std::stop_token{});
 				}
@@ -886,7 +863,6 @@ namespace DiscordCoreAPI {
 		opus_int32 voiceUserCount{};
 		size_t decodedSize{};
 		std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
-		std::unique_lock lock{ this->voiceUserMutex };
 		for (auto& [key, value]: this->voiceUsers) {
 			std::string payload{ value.extractPayload() };
 			if (payload.size() > 0) {
