@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 	  public:
 		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, StreamType streamType, Snowflake guildIdNew);
 
-		void parseOutGoingVoiceData() noexcept;
+		void parseOutgoingVoiceData() noexcept;
 
 		void handleAudioBuffer() noexcept;
 
@@ -179,12 +179,12 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
+		Nanoseconds intervalCount{ static_cast<int64_t>(960.0f / 48000.0f * 1000000000.0f) };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		std::unique_ptr<VoiceConnectionBridge> streamSocket{ nullptr };
 		StopWatch<Nanoseconds> sleepTimeCollector{ Nanoseconds{ 0 } };
 		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
-		Nanoseconds intervalCount{ 960 / 48000 * 1000000000 };
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unique_ptr<std::jthread> taskThread02{ nullptr };
 		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};

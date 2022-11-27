@@ -74,7 +74,8 @@ namespace DiscordCoreAPI {
 		int64_t userCount = this->getVoiceUserCount();
 		std::string value{};
 		if (userCount > 0) {
-			StopWatch stopWatch{ Nanoseconds{ static_cast<int64_t>(static_cast<float>(this->sleepableTime->load() / userCount) * 0.60f) } };
+			StopWatch stopWatch{ Nanoseconds{
+				static_cast<int64_t>(static_cast<float>(this->sleepableTime->load()) / static_cast<float>(userCount) * 0.60f) } };
 			while (!this->payloads.tryReceive(value) && !this->getEndingStatus() && !stopWatch.hasTimePassed()) {
 				std::this_thread::sleep_for(1ns);
 			}
@@ -145,7 +146,7 @@ namespace DiscordCoreAPI {
 		this->guildId = guildIdNew;
 	}
 
-	void VoiceConnectionBridge::parseOutGoingVoiceData() noexcept {
+	void VoiceConnectionBridge::parseOutgoingVoiceData() noexcept {
 		const std::string_view buffer = this->getInputBuffer();
 		if (buffer.size() > 0) {
 			AudioFrameData frame{};
@@ -153,11 +154,18 @@ namespace DiscordCoreAPI {
 			frame.sampleCount = buffer.size() / 2 / 2;
 			frame.type = AudioFrameType::RawPCM;
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
+		} else {
+			AudioFrameData frame{};
+			frame.data.push_back(static_cast<char>(0xf8));
+			frame.data.push_back(static_cast<char>(0xff));
+			frame.data.push_back(static_cast<char>(0xfe));
+			frame.type = AudioFrameType::Encoded;
+			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
 		}
 	}
 
 	void VoiceConnectionBridge::handleAudioBuffer() noexcept {
-		this->parseOutGoingVoiceData();
+		this->parseOutgoingVoiceData();
 	}
 
 	VoiceConnection::VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketSSLShard* baseShardNew,
@@ -478,16 +486,16 @@ namespace DiscordCoreAPI {
 						if (this->audioData.guildMemberId != 0) {
 							this->currentGuildMemberId = this->audioData.guildMemberId;
 						}
-						std::string_view newFrame{};
+						std::string_view frame{};
 						bool doWeBreak{ false };
 						switch (this->audioData.type) {
 							case AudioFrameType::RawPCM: {
 								auto encodedFrameData = this->encoder.encodeData(this->audioData);
-								newFrame = this->packetEncrypter.encryptPacket(encodedFrameData);
+								frame = this->packetEncrypter.encryptPacket(encodedFrameData);
 								break;
 							}
 							case AudioFrameType::Encoded: {
-								newFrame = this->packetEncrypter.encryptPacket(this->audioData);
+								frame = this->packetEncrypter.encryptPacket(this->audioData);
 								break;
 							}
 							case AudioFrameType::Skip: {
@@ -525,8 +533,8 @@ namespace DiscordCoreAPI {
 						if (waitTimeCount > 0 && waitTimeCount < this->intervalCount.count()) {
 							spinLock(waitTimeCount);
 						}
-						if (newFrame.size() > 0) {
-							this->sendVoiceData(newFrame);
+						if (frame.size() > 0) {
+							this->sendVoiceData(frame);
 						}
 						if (DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
 							DiscordCoreInternal::ProcessIOResult::Error) {
@@ -830,11 +838,11 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::sendSilence() noexcept {
 		std::vector<std::string> frames{};
 		for (size_t x = 0; x < 5; ++x) {
-			AudioFrameData newFrame{};
-			newFrame.data.push_back(static_cast<char>(0xf8));
-			newFrame.data.push_back(static_cast<char>(0xff));
-			newFrame.data.push_back(static_cast<char>(0xfe));
-			auto packetNew = this->packetEncrypter.encryptPacket(newFrame);
+			AudioFrameData frame{};
+			frame.data.push_back(static_cast<char>(0xf8));
+			frame.data.push_back(static_cast<char>(0xff));
+			frame.data.push_back(static_cast<char>(0xfe));
+			auto packetNew = this->packetEncrypter.encryptPacket(frame);
 			frames.push_back(std::string{ packetNew.data(), packetNew.size() });
 		}
 		for (auto& value: frames) {
