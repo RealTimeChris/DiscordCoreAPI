@@ -222,36 +222,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }// namespace DiscordCoreAPI
-ifyCurrentUserData dataPackage);
-
-		/// \brief Collects the User's Connections.
-		/// \returns A CoRoutine containing a vector<ConnectionData>.
-		static CoRoutine<std::vector<ConnectionData>> getUserConnectionsAsync();
-
-		/// \brief Collects the Application responseData associated with the current Bot.
-		/// \returns A CoRoutine containing an ApplicationData.
-		static CoRoutine<ApplicationData> getCurrentUserApplicationInfoAsync();
-
-		/// \brief Collects the Authorization info associated with the current Bot.
-		/// \returns A CoRoutine containing an AuthorizationInfoData.
-		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
-
-		static void insertUser(UserData user);
-
-		static bool doWeCacheUsers();
-
-	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<UserData> cache;
-		static bool doWeCacheUsersBool;
-	};
-	/**@}*/
-
-}// namespace DiscordCoreAPI
-DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<UserData> cache;
-		static bool doWeCacheUsersBool;
-	};
-	/**@}*/
-
-}// namespace DiscordCoreAPI

@@ -235,30 +235,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI
-ldMember from a chosen Guild.
-		/// \param dataPackage A TimeoutGuildMemberData structure.
-		/// \returns A CoRoutine containing GuildMember.
-		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
-
-		static ObjectCache<VoiceStateDataLight>& getVsCache();
-
-		static ObjectCache<GuildMemberData>& getCache();
-
-		static void insertVoiceState(VoiceStateData voiceState);
-
-		static void removeVoiceState(VoiceStateData voiceState);
-
-		static void insertGuildMember(GuildMemberData guildMember);
-
-		static void removeGuildMember(GuildMemberData guildMemberId);
-
-		static bool doWeCacheGuildMembers();
-
-	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<VoiceStateDataLight> vsCache;
-		static ObjectCache<GuildMemberData> cache;
-		static bool doWeCacheGuildMembersBool;
-	};
-	/**@}*/
-};// namespace DiscordCoreAPI

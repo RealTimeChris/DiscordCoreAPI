@@ -70,9 +70,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
-CreateMessageData& dataPackage);
-
-		static InputEventData respondToInputEvent(EditMessageData& dataPackage);
-	};
-	/**@}*/
-}// namespace DiscordCoreAPI

@@ -235,33 +235,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI
-.
-		static CoRoutine<ArchivedThreadsData> getPublicArchivedThreadsAsync(GetPublicArchivedThreadsData dataPackage);
-
-		/// \brief Collects a list of private archived Threads from a given Channel.
-		/// \param dataPackage A GetPrivateArchivedThreadsData structure.
-		/// \returns A CoRoutine containing a ArchivedThreadsData.
-		static CoRoutine<ArchivedThreadsData> getPrivateArchivedThreadsAsync(GetPrivateArchivedThreadsData dataPackage);
-
-		/// \brief Collects a list of joined private archived Threads from a given Channel.
-		/// \param dataPackage A GetPrivateArchivedThreadsData structure.
-		/// \returns A CoRoutine containing a ArchivedThreadsData.
-		static CoRoutine<ArchivedThreadsData> getJoinedPrivateArchivedThreadsAsync(GetJoinedPrivateArchivedThreadsData dataPackage);
-
-		/// \brief Lists all of the active Threads of a chosen Guild.
-		/// \param dataPackage A ListActiveThreadsData structure.
-		/// \returns A CoRoutine containing a vector<Channel>.
-		static CoRoutine<ActiveThreadsData> getActiveGuildThreadsAsync(GetActiveGuildThreadsData dataPackage);
-
-	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-	};
-	/**@}*/
-};// namespace DiscordCoreAPI
-> getActiveGuildThreadsAsync(GetActiveGuildThreadsData dataPackage);
-
-	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-	};
-	/**@}*/
-};// namespace DiscordCoreAPI

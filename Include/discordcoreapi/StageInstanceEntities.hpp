@@ -102,14 +102,3 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 }// namespace DiscordCoreAPI
-s a StageInstance.
-		/// \param dataPackage A DeleteStageInstanceData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteStageInstanceAsync(DeleteStageInstanceData dataPackage);
-
-	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-	};
-
-	/**@}*/
-}// namespace DiscordCoreAPI

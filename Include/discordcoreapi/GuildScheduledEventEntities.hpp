@@ -165,21 +165,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
-re.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteGuildScheduledEventAsync(DeleteGuildScheduledEventData dataPackage);
-
-		/// \brief Collects a list of Users for a given GuildScheduledEvent.
-		/// \param dataPackage A GetGuildScheduledEventUsersData structure.
-		/// \returns A CoRoutine containing a vector<GuildScheduledEventUser>.
-		static CoRoutine<std::vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage);
-
-	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-	};
-	/**@}*/
-}// namespace DiscordCoreAPI
-ttpsClient;
-	};
-	/**@}*/
-}// namespace DiscordCoreAPI

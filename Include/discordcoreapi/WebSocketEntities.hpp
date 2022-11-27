@@ -172,7 +172,3 @@ namespace DiscordCoreInternal {
 	};
 
 }// namespace DiscordCoreInternal
-std::stop_token) noexcept;
-	};
-
-}// namespace DiscordCoreInternal

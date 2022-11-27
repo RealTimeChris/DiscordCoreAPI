@@ -248,28 +248,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }// namespace DiscordCoreAPI
-ructure.
-		/// \returns A CoRoutine containing a MessageVector.
-		static CoRoutine<std::vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
-
-		/// \brief Pins a Message to a given Channel.
-		/// \param dataPackage A PinMessageData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> pinMessageAsync(PinMessageData dataPackage);
-
-		/// \brief Unpins a Message from a given Channel.
-		/// \param dataPackage An UnpinMessageData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> unpinMessageAsync(UnpinMessageData dataPackage);
-
-	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-	};
-	/**@}*/
-
-}// namespace DiscordCoreAPI
-HttpsClient* httpsClient;
-	};
-	/**@}*/
-
-}// namespace DiscordCoreAPI

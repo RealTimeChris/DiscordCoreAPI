@@ -335,39 +335,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }// namespace DiscordCoreAPI
-m dataPackage A DeleteWebHookWithTokenData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteWebHookWithTokenAsync(DeleteWebHookWithTokenData dataPackage);
-
-		/// \brief Executes a single WebHook.
-		/// \param dataPackage An ExecuteWebHookData structure.
-		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<Message> executeWebHookAsync(ExecuteWebHookData dataPackage);
-
-		/// \brief Collects a WebHook Message.
-		/// \param dataPackage An GetWebHookMessageData structure.
-		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<Message> getWebHookMessageAsync(GetWebHookMessageData dataPackage);
-
-		/// \brief Edits a WebHook Message.
-		/// \param dataPackage An EditWebHookMessageData structure.
-		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<Message> editWebHookMessageAsync(EditWebHookData dataPackage);
-
-		/// \brief Deletes a WebHook Message.
-		/// \param dataPackage An DeleteWebHookMessageData structure.
-		/// \returns A CoRoutine containing a Message.
-		static CoRoutine<void> deleteWebHookMessageAsync(DeleteWebHookMessageData dataPackage);
-
-	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-	};
-	/**@}*/
-
-}// namespace DiscordCoreAPI
-:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-	};
-	/**@}*/
-
-}// namespace DiscordCoreAPI

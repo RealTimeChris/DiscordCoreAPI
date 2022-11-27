@@ -140,18 +140,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI
-ontaining a Sticker.
-		static CoRoutine<Sticker> modifyGuildStickerAsync(ModifyGuildStickerData dataPackage);
-
-		/// \brief Deletes a Sticker within a chosen Guild.
-		/// \param dataPackage A DeleteGuildStickerData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteGuildStickerAsync(DeleteGuildStickerData dataPackage);
-
-	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-	};
-	/**@}*/
-};// namespace DiscordCoreAPI
-	/**@}*/
-};// namespace DiscordCoreAPI

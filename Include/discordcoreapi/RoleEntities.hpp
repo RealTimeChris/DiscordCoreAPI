@@ -249,35 +249,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }// namespace DiscordCoreAPI
-ildMemberRolesData dataPackage);
-
-		/// \brief Collects a Role from the Discord servers.
-		/// \param dataPackage A GetRoleData structure.
-		/// \returns A CoRoutine containing a Role.
-		static CoRoutine<Role> getRoleAsync(GetRoleData dataPackage);
-
-		/// \brief Collects a given Role from the library's cache.
-		/// \param dataPackage A GetRoleData structure.
-		/// \returns A CoRoutine containing a Role.
-		static RoleData getCachedRole(GetRoleData dataPackage);
-
-		static void insertRole(RoleData role);
-
-		static void removeRole(const Snowflake roleId);
-
-		static bool doWeCacheRoles();
-
-	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<RoleData> cache;
-		static bool doWeCacheRolesBool;
-	};
-	/**@}*/
-
-}// namespace DiscordCoreAPI
-cache;
-		static bool doWeCacheRolesBool;
-	};
-	/**@}*/
-
-}// namespace DiscordCoreAPI

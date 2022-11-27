@@ -229,28 +229,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 }// namespace DiscordCoreAPI
- Guild.
-		/// \param dataPackage A CreateGuildEmojiData structure.
-		/// \returns A CoRoutine containing an EmojiData.
-		static CoRoutine<EmojiData> createGuildEmojiAsync(CreateGuildEmojiData dataPackage);
-
-		/// \brief Modifies a single Guild Emoji within a chosen Guild.
-		/// \param dataPackage A ModifyGuildEmojiData structure.
-		/// \returns A CoRoutine containing an EmojiData.
-		static CoRoutine<EmojiData> modifyGuildEmojiAsync(ModifyGuildEmojiData dataPackage);
-
-		/// \brief Deletes a single Guild Emoji within a chosen Guild.
-		/// \param dataPackage A DeleteGuildEmojiData structure.
-		/// \returns A CoRoutine containing void.
-		static CoRoutine<void> deleteGuildEmojiAsync(DeleteGuildEmojiData dataPackage);
-
-	  protected:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-	};
-	/**@}*/
-}// namespace DiscordCoreAPI
-:
-		static DiscordCoreInternal::HttpsClient* httpsClient;
-	};
-	/**@}*/
-}// namespace DiscordCoreAPI

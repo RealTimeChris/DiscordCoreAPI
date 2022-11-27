@@ -263,28 +263,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 };// namespace DiscordCoreAPI
-;
-
-		bool areWeConnected() noexcept;
-
-		bool voiceConnect() noexcept;
-
-		void sendSilence() noexcept;
-
-		void pauseToggle() noexcept;
-
-		void disconnect() noexcept;
-
-		void reconnect() noexcept;
-
-		void onClosed() noexcept;
-
-		void mixAudio() noexcept;
-
-		bool stop() noexcept;
-
-		bool play() noexcept;
-	};
-	/**@}*/
-
-};// namespace DiscordCoreAPI

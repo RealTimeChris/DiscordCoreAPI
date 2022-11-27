@@ -161,36 +161,3 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 };// namespace DiscordCoreAPI
-static void modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition, const Snowflake guildId);
-
-		/// \brief Collects the currently playing Song.
-		/// \param guildId The id for which Guild to collect the current Song of.
-		/// \returns The current Song for the given Guild.
-		static Song getCurrentSong(const Snowflake guildId);
-
-		/// \brief Sets the currently playing Song.
-		/// \param song The Song to set as the currently playing Song.
-		/// \param guildId The id for which Guild to set the current Song of.
-		static void setCurrentSong(const Song& song, const Snowflake guildId);
-
-		~SongAPI() noexcept = default;
-
-	  protected:
-		static std::mutex accessMutex;
-
-		std::unique_ptr<std::jthread> taskThread{ nullptr };
-		bool areWeInstantiated{ false };
-		Snowflake guildId{};
-
-		void sendNextSongFinal(const GuildMember& guildMember);
-
-		void cancelCurrentSong();
-
-		bool sendNextSong();
-	};
-	/**@}*/
-};// namespace DiscordCoreAPI
-		bool sendNextSong();
-	};
-	/**@}*/
-};// namespace DiscordCoreAPI
