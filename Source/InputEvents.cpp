@@ -107,13 +107,16 @@ namespace DiscordCoreAPI {
 		InputEventData newPackage = dataPackage;
 		co_await NewThreadAwaitable<void>();
 		if (newPackage.responseType == InputEventResponseType::Follow_Up_Message ||
-			newPackage.responseType == InputEventResponseType::Edit_Follow_Up_Message) {
+			newPackage.responseType == InputEventResponseType::Edit_Follow_Up_Message ||
+			newPackage.responseType == InputEventResponseType::Ephemeral_Follow_Up_Message) {
 			RespondToInputEventData dataPackageNew{ newPackage };
 			DeleteFollowUpMessageData dataPackageNewer{ dataPackageNew };
 			dataPackageNewer.timeDelay = timeDelayNew;
 			Interactions::deleteFollowUpMessageAsync(dataPackageNewer).get();
 		} else if (newPackage.responseType == InputEventResponseType::Interaction_Response ||
 			newPackage.responseType == InputEventResponseType::Edit_Interaction_Response ||
+			newPackage.responseType == InputEventResponseType::Ephemeral_Interaction_Response ||
+			newPackage.responseType == InputEventResponseType::Ephemeral_Deferred_Response ||
 			newPackage.responseType == InputEventResponseType::Deferred_Response) {
 			RespondToInputEventData dataPackageNew{ newPackage };
 			DeleteInteractionResponseData dataPackageNewer{ dataPackageNew };
