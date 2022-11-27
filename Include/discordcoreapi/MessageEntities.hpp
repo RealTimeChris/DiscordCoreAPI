@@ -35,7 +35,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// For getting a collection of Messages. \brief For getting a collection of Messages.
+	/// \brief For getting a collection of Messages.
 	struct DiscordCoreAPI_Dll GetMessagesData {
 		uint64_t aroundThisId{};///< Around this id.
 		Snowflake beforeThisId{};///< Before this id.
@@ -44,13 +44,13 @@ namespace DiscordCoreAPI {
 		int32_t limit{ 0 };///< Limit of Messages to collect.
 	};
 
-	/// For getting a Message. \brief For getting a Message.
+	/// \brief For getting a Message.
 	struct DiscordCoreAPI_Dll GetMessageData {
 		Snowflake channelId{};///< The Channel from which to collect the Message.
 		Snowflake id{};///< The id of the Message to collect.
 	};
 
-	/// For creating a Message. \brief For creating a Message.
+	/// \brief For creating a Message.
 	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
 	  public:
 		friend class InputEvents;
@@ -74,7 +74,7 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> stickerIds{};
 	};
 
-	/// For sending a direct-message. \brief For sending a direct-message.
+	/// \brief For sending a direct-message.
 	class DiscordCoreAPI_Dll SendDMData : public CreateMessageData {
 	  public:
 		friend class InputEvents;
@@ -85,13 +85,13 @@ namespace DiscordCoreAPI {
 		Snowflake targetUserId{};
 	};
 
-	/// For crossposting a Message. \brief For crossposting a Message.
+	/// \brief For crossposting a Message.
 	struct DiscordCoreAPI_Dll CrosspostMessageData {
 		Snowflake messageId{};///< Id of the message to be crossposted.
 		Snowflake channelId{};///< Channel within which to crosspost the Message from.
 	};
 
-	/// For editing a Message. \brief For editing a Message.
+	/// \brief For editing a Message.
 	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
 	  public:
 		friend class InputEvents;
@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 		EditMessageData() noexcept = default;
 	};
 
-	/// For deleting a Message. \brief For deleting a Message.
+	/// \brief For deleting a Message.
 	struct DiscordCoreAPI_Dll DeleteMessageData {
 	  public:
 		TimeStamp timeStamp{ "" };///< The created-at timeStamp of the original message.
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< The reason for deleting the Message.
 	};
 
-	/// For deleting a bulk of Messages. \brief For deleting a bulk of Messages.
+	/// \brief For deleting a bulk of Messages.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
 		std::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
 		Snowflake channelId{};///< Channel within which to delete the Messages.
@@ -131,26 +131,26 @@ namespace DiscordCoreAPI {
 		operator Jsonifier();
 	};
 
-	/// For getting a collection of pinned Messages. \brief For getting a collection of pinned Messages.
+	/// \brief For getting a collection of pinned Messages.
 	struct DiscordCoreAPI_Dll GetPinnedMessagesData {
 		Snowflake channelId{};///< The Channel from which to collect pinned Messages.
 	};
 
-	/// For pinning a single Message. \brief For pinning a single Message.
+	/// \brief For pinning a single Message.
 	struct DiscordCoreAPI_Dll PinMessageData {
 		Snowflake channelId{};///< The Channel within which to pin the Message.
 		Snowflake messageId{};///< The Message which you would like to pin.
 		std::string reason{};///< Reason for pinning this Message.
 	};
 
-	/// For unpinning a single Message. \brief For unpinning a single Message.
+	/// \brief For unpinning a single Message.
 	struct DiscordCoreAPI_Dll UnpinMessageData {
 		Snowflake channelId{};///< The Channel within which to unpin the Message.
 		Snowflake messageId{};///< The Message which you would like to unpin.
 		std::string reason{};///< Reason for pinning this Message.
 	};
 
-	/// A single Message. \brief A single Message.
+	/// \brief A single Message.
 	class DiscordCoreAPI_Dll Message : public MessageData {
 	  public:
 		Message() noexcept = default;
@@ -187,63 +187,88 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class for the Message related Discord endpoints. \brief An interface class for the Message related Discord endpoints;
+	/// \brief An interface class for the Message related Discord endpoints;
 	class DiscordCoreAPI_Dll Messages {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
-		/// Collects a collection of Message from the Discord servers. \brief Collects a collection of Message from the Discord servers
+		/// \brief Collects a collection of Message from the Discord servers
 		/// \param dataPackage A GetMessagesData structure.
 		/// \returns A CoRoutine containing a MessageVector.
 		static CoRoutine<std::vector<Message>> getMessagesAsync(GetMessagesData dataPackage);
 
-		/// Collects a Message from the Discord servers. \brief Collects a Message from the Discord servers.
+		/// \brief Collects a Message from the Discord servers.
 		/// \param dataPackage A GetMessageData structure.
 		/// \returns A CoRoutine containing a Message.
 		static CoRoutine<Message> getMessageAsync(GetMessageData dataPackage);
 
-		/// Creates a new Message. \brief Creates a new Message.
+		/// \brief Creates a new Message.
 		/// \param dataPackage A CreateMessageData structure.
 		/// \returns A CoRoutine containing a Message.
 		static CoRoutine<Message> createMessageAsync(CreateMessageData dataPackage);
 
-		/// Crossposts a message from a News Channel to the following Channels. \brief Crossposts a message from a News Channel to the following Channels.
+		/// \brief Crossposts a message from a News Channel to the following Channels.
 		/// \param dataPackage A CrosspostMessageData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<Message> crosspostMessageAsync(CrosspostMessageData dataPackage);
 
-		/// Edit a Message. \brief Edit a Message.
+		/// \brief Edit a Message.
 		/// \param dataPackage An EditMessageData structure.
 		/// \returns A CoRoutine containing a Message.
 		static CoRoutine<Message> editMessageAsync(EditMessageData dataPackage);
 
-		/// Deletes a Message. \brief Deletes a Message.
+		/// \brief Deletes a Message.
 		/// \param dataPackage A DeleteMessageData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteMessageAsync(DeleteMessageData dataPackage);
 
-		/// Deletes a collection of Messages. \brief Deletes a collection of Messages.
+		/// \brief Deletes a collection of Messages.
 		/// \param dataPackage A DeleteMessagesBulkData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage);
 
-		/// Collects a collection of pinned Messages from the Discord servers. \brief Collects a collection of pinned Messages from the Discord servers.
+		/// \brief Collects a collection of pinned Messages from the Discord servers.
 		/// \param dataPackage A GetPinnedMessagesData structure.
 		/// \returns A CoRoutine containing a MessageVector.
 		static CoRoutine<std::vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
 
-		/// Pins a Message to a given Channel. \brief Pins a Message to a given Channel.
+		/// \brief Pins a Message to a given Channel.
 		/// \param dataPackage A PinMessageData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> pinMessageAsync(PinMessageData dataPackage);
 
-		/// Unpins a Message from a given Channel. \brief Unpins a Message from a given Channel.
+		/// \brief Unpins a Message from a given Channel.
 		/// \param dataPackage An UnpinMessageData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> unpinMessageAsync(UnpinMessageData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
+	};
+	/**@}*/
+
+}// namespace DiscordCoreAPI
+ructure.
+		/// \returns A CoRoutine containing a MessageVector.
+		static CoRoutine<std::vector<Message>> getPinnedMessagesAsync(GetPinnedMessagesData dataPackage);
+
+		/// \brief Pins a Message to a given Channel.
+		/// \param dataPackage A PinMessageData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> pinMessageAsync(PinMessageData dataPackage);
+
+		/// \brief Unpins a Message from a given Channel.
+		/// \param dataPackage An UnpinMessageData structure.
+		/// \returns A CoRoutine containing void.
+		static CoRoutine<void> unpinMessageAsync(UnpinMessageData dataPackage);
+
+	  protected:
+		static DiscordCoreInternal::HttpsClient* httpsClient;
+	};
+	/**@}*/
+
+}// namespace DiscordCoreAPI
+HttpsClient* httpsClient;
 	};
 	/**@}*/
 

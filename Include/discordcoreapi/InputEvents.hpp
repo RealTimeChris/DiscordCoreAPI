@@ -35,15 +35,15 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// For handling User input - Messages or Interactions. \brief For handling User input - Messages or Interactions.
+	/// \brief For handling User input - Messages or Interactions.
 	class DiscordCoreAPI_Dll InputEvents {
 	  public:
-		/// Responds to one of a number of types of "InputEvents". \brief Responds to one of a number of types of "InputEvents".
+		/// \brief Responds to one of a number of types of "InputEvents".
 		/// \param dataPackage A RespondToInputEventData structure.
 		/// \returns An std::unique_ptr containing an InputEventData structure.
 		static CoRoutine<InputEventData> respondToInputEventAsync(RespondToInputEventData dataPackage);
 
-		/// Deletes a previously sent "input-event-response". \brief Deletes a previously sent "input-event-response".
+		/// \brief Deletes a previously sent "input-event-response".
 		/// \param dataPackage A std::unique_ptr containing an InputEventData structure.
 		/// \param timeDelayNew An int32_t representing the desired delay until the message is deleted, in Milliseconds.
 		/// \returns A CoRoutine containing void.
@@ -65,6 +65,12 @@ namespace DiscordCoreAPI {
 		static InputEventData respondToInputEvent(EditFollowUpMessageData& dataPackage);
 
 		static InputEventData respondToInputEvent(CreateMessageData& dataPackage);
+
+		static InputEventData respondToInputEvent(EditMessageData& dataPackage);
+	};
+	/**@}*/
+}// namespace DiscordCoreAPI
+CreateMessageData& dataPackage);
 
 		static InputEventData respondToInputEvent(EditMessageData& dataPackage);
 	};

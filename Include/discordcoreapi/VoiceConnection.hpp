@@ -96,7 +96,7 @@ namespace DiscordCoreAPI {
 		uint32_t ssrc{};
 	};
 
-	/// The various opcodes that could be sent/received by the voice-websocket. \brief The various opcodes that could be sent/received by the voice-websocket.
+	/// \brief The various opcodes that could be sent/received by the voice-websocket.
 	enum class VoiceSocketOpCodes {
 		Identify = 0,///< Begin a voice websocket connection.
 		Select_Protocol = 1,///< Select the voice protocol.
@@ -111,7 +111,7 @@ namespace DiscordCoreAPI {
 		Client_Disconnect = 13,///< A client has disconnected from the voice channel.
 	};
 
-	/// For the various connection states of the VoiceConnection class. \brief For the various connection states of the VoiceConnection class.
+	/// \brief For the various connection states of the VoiceConnection class.
 	enum class VoiceConnectionState : uint8_t {
 		Collecting_Init_Data = 0,///< Collecting initialization data.
 		Initializing_WebSocket = 1,///< Initializing the WebSocket.
@@ -123,7 +123,7 @@ namespace DiscordCoreAPI {
 		Collecting_Session_Description = 7///< Collecting the session-description payload.
 	};
 
-	/// For the various active states of the VoiceConnection class. \brief For the various active states of the VoiceConnection class.
+	/// \brief For the various active states of the VoiceConnection class.
 	enum class VoiceActiveState : int8_t {
 		Connecting = -1,///< Connecting - it hasn't started or it's reconnecting.
 		Playing = 1,///< Playing.
@@ -149,7 +149,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup voice_connection
 	 * @{
 	 */
-	/// VoiceConnection class - represents the connection to a given voice Channel. \brief VoiceConnection class - represents the connection to a given voice Channel.
+	/// \brief VoiceConnection class - represents the connection to a given voice Channel.
 	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketCore, public DiscordCoreInternal::DatagramSocketClient {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
@@ -164,12 +164,12 @@ namespace DiscordCoreAPI {
 		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketSSLShard* baseShardNew,
 			std::atomic_bool* doWeQuitNew) noexcept;
 
-		/// Collects the currently connected-to voice Channel's id. \brief Collects the currently connected-to voice Channel's id.
+		/// \brief Collects the currently connected-to voice Channel's id.
 		/// \returns DiscordCoreAPI::Snowflake A Snowflake containing the Channel's id.
 		Snowflake getChannelId() noexcept;
 
 
-		/// Connects to a currently held voice channel. \brief Connects to a currently held voice channel.
+		/// \brief Connects to a currently held voice channel.
 		/// \param initData A DiscordCoerAPI::VoiceConnectInitDat structure.
 		void connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept;
 
@@ -239,6 +239,31 @@ namespace DiscordCoreAPI {
 		void connectInternal() noexcept;
 
 		void clearAudioData() noexcept;
+
+		bool areWeConnected() noexcept;
+
+		bool voiceConnect() noexcept;
+
+		void sendSilence() noexcept;
+
+		void pauseToggle() noexcept;
+
+		void disconnect() noexcept;
+
+		void reconnect() noexcept;
+
+		void onClosed() noexcept;
+
+		void mixAudio() noexcept;
+
+		bool stop() noexcept;
+
+		bool play() noexcept;
+	};
+	/**@}*/
+
+};// namespace DiscordCoreAPI
+;
 
 		bool areWeConnected() noexcept;
 

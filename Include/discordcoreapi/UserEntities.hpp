@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// For adding a user to a group DM. \brief For adding a user to a group DM.
+	/// \brief For adding a user to a group DM.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
 		Snowflake channelId{};///< The Channel Id of the DM.
 		std::string token{};///< The user's access token.
@@ -49,13 +49,13 @@ namespace DiscordCoreAPI {
 		operator Jsonifier();
 	};
 
-	/// For removing a User from a group DM. \brief For removing a User from a group DM.
+	/// \brief For removing a User from a group DM.
 	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
 		Snowflake channelId{};///< The Channel Id of the DM.
 		Snowflake userId{};///< The user's Id.
 	};
 
-	/// For updating the bot's current voice state. \brief For updating the bot's current voice state.
+	/// \brief For updating the bot's current voice state.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
 		std::string requestToSpeakTimestamp{};///< ISO8601 timeStamp.
 		bool suppress{ false };///< Toggles the user's suppress state.
@@ -63,7 +63,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild within which to update the bot's voice state.
 	};
 
-	/// For modifying a User's voice state. \brief For modifying a User's voice state.
+	/// \brief For modifying a User's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
 		bool suppress{ false };///< Toggles the user's suppress state.
 		Snowflake channelId{};///< The id of the Channel the user is currently in.
@@ -71,18 +71,18 @@ namespace DiscordCoreAPI {
 		Snowflake userId{};///< The user for which you would like to modify the voice state of.
 	};
 
-	/// For getting User responseData from the library's cache or the Discord server. \brief For getting User responseData from the library's cache or the Discord server.
+	/// \brief For getting User responseData from the library's cache or the Discord server.
 	struct DiscordCoreAPI_Dll GetUserData {
 		Snowflake userId{};///< The id of the desired User.
 	};
 
-	/// For modifying the Bot's User responseData. \brief For modifying the Bot's User responseData.
+	/// \brief For modifying the Bot's User responseData.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserData {
 		std::string userName{};///< User's userName, if changed may cause the user's discriminator to be randomized.
 		std::string avatar{};///< If passed, modifies the user's avatar.
 	};
 
-	/// A single User. \brief A single User.
+	/// \brief A single User.
 	class DiscordCoreAPI_Dll User : public UserData {
 	  public:
 		PremiumType premiumType{};///< The type of Nitro subscription on a user ' s account.
@@ -120,7 +120,7 @@ namespace DiscordCoreAPI {
 		std::vector<User> users{};
 	};
 
-	/// A type of User, to represent the Bot and some of its associated endpoints. \brief A type of User, to represent the Bot and some of its associated endpoints.
+	/// \brief A type of User, to represent the Bot and some of its associated endpoints.
 	class DiscordCoreAPI_Dll BotUser : public User {
 	  public:
 		friend class DiscordCoreClient;
@@ -131,10 +131,10 @@ namespace DiscordCoreAPI {
 
 		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
-		/// Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes. \brief Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes.
+		/// \brief Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes.
 		void updateVoiceStatus(UpdateVoiceStateData& datdataPackageaPackage);
 
-		/// Updates the bot's current activity status, to be viewed by others in the same server as the bot. \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
+		/// \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
 		void updatePresence(UpdatePresenceData& dataPackage);
 
 	  protected:
@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// An interface class for the User related Discord endpoints. \brief An interface class for the User related Discord endpoints.
+	/// \brief An interface class for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	  public:
 		friend class DiscordCoreInternal::WebSocketSSLShard;
@@ -159,54 +159,54 @@ namespace DiscordCoreAPI {
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
-		/// Adds a chosen recipient to a group DM. \brief Adds a chosen recipient to a group DM.
+		/// \brief Adds a chosen recipient to a group DM.
 		/// \param dataPackage An AddRecipientToGroupDMData  structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> addRecipientToGroupDMAsync(AddRecipientToGroupDMData dataPackage);
 
-		/// Removes a chosen recipient from a group DM. \brief Removes a chosen recipient from a group DM.
+		/// \brief Removes a chosen recipient from a group DM.
 		/// \param dataPackage A RemoveRecipientFromGroupDMData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> removeRecipientFromGroupDMAsync(RemoveRecipientFromGroupDMData dataPackage);
 
-		/// Sets the bot's current voice state. \brief Sets the bot's current voice state.
+		/// \brief Sets the bot's current voice state.
 		/// \param dataPackage A ModifyCurrentUserVoiceStateData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> modifyCurrentUserVoiceStateAsync(ModifyCurrentUserVoiceStateData dataPackage);
 
-		/// Sets another user's current voice state. \brief Sets another user's current voice state.
+		/// \brief Sets another user's current voice state.
 		/// \param dataPackage A ModifyUserVoiceStateData structure.
 		/// \returns A CoRoutine containing void.
 		static CoRoutine<void> modifyUserVoiceStateAsync(ModifyUserVoiceStateData dataPackage);
 
-		/// Collects the Bot's current User responseData. \brief Collects the Bot's current User responseData.
+		/// \brief Collects the Bot's current User responseData.
 		/// \returns A CoRoutine containing a User.
 		static CoRoutine<User> getCurrentUserAsync();
 
-		/// Collects a given User from the library's cache. \brief Collects a given User from the library's cache.
+		/// \brief Collects a given User from the library's cache.
 		/// \param dataPackage A GetUserData structure.
 		/// \returns A CoRoutine containing a User.
 		static UserData getCachedUser(GetUserData dataPackage);
 
-		/// Collects a given User from the Discord servers. \brief Collects a given User from the Discord servers.
+		/// \brief Collects a given User from the Discord servers.
 		/// \param dataPackage A GetUserData structure.
 		/// \returns A CoRoutine containing a User.
 		static CoRoutine<User> getUserAsync(GetUserData dataPackage);
 
-		/// Modifies the Bot's User responseData. \brief Modifies the Bot's User responseData.
+		/// \brief Modifies the Bot's User responseData.
 		/// \param dataPackage A ModifyCurrentUserData structure.
 		/// \returns A CoRoutine containing a User.
 		static CoRoutine<User> modifyCurrentUserAsync(ModifyCurrentUserData dataPackage);
 
-		/// Collects the User's Connections. \brief Collects the User's Connections.
+		/// \brief Collects the User's Connections.
 		/// \returns A CoRoutine containing a vector<ConnectionData>.
 		static CoRoutine<std::vector<ConnectionData>> getUserConnectionsAsync();
 
-		/// Collects the Application responseData associated with the current Bot. \brief Collects the Application responseData associated with the current Bot.
+		/// \brief Collects the Application responseData associated with the current Bot.
 		/// \returns A CoRoutine containing an ApplicationData.
 		static CoRoutine<ApplicationData> getCurrentUserApplicationInfoAsync();
 
-		/// Collects the Authorization info associated with the current Bot. \brief Collects the Authorization info associated with the current Bot.
+		/// \brief Collects the Authorization info associated with the current Bot.
 		/// \returns A CoRoutine containing an AuthorizationInfoData.
 		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
@@ -216,6 +216,39 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static ObjectCache<UserData> cache;
+		static bool doWeCacheUsersBool;
+	};
+	/**@}*/
+
+}// namespace DiscordCoreAPI
+ifyCurrentUserData dataPackage);
+
+		/// \brief Collects the User's Connections.
+		/// \returns A CoRoutine containing a vector<ConnectionData>.
+		static CoRoutine<std::vector<ConnectionData>> getUserConnectionsAsync();
+
+		/// \brief Collects the Application responseData associated with the current Bot.
+		/// \returns A CoRoutine containing an ApplicationData.
+		static CoRoutine<ApplicationData> getCurrentUserApplicationInfoAsync();
+
+		/// \brief Collects the Authorization info associated with the current Bot.
+		/// \returns A CoRoutine containing an AuthorizationInfoData.
+		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
+
+		static void insertUser(UserData user);
+
+		static bool doWeCacheUsers();
+
+	  protected:
+		static DiscordCoreInternal::HttpsClient* httpsClient;
+		static ObjectCache<UserData> cache;
+		static bool doWeCacheUsersBool;
+	};
+	/**@}*/
+
+}// namespace DiscordCoreAPI
+DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<UserData> cache;
 		static bool doWeCacheUsersBool;
 	};

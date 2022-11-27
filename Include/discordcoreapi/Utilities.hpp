@@ -644,10 +644,10 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll ActivityData;
 
-	/// For selecting the type of streamer that the given bot is, one must be one server and one of client per connection. \brief For selecting the type of streamer that the given bot is, one must be one server and one of client per connection.
+	/// \brief For selecting the type of streamer that the given bot is, one must be one server and one of client per connection.
 	enum class StreamType { None = 0, Client = 1, Server = 2 };
 
-	/// For connecting two bots to stream the VC contents between the two. \brief For connecting two bots to stream the VC contents between the two.
+	/// \brief For connecting two bots to stream the VC contents between the two.
 	struct DiscordCoreAPI_Dll StreamInfo {
 		bool streamBotAudio{ false };///< Do we stream the audio coming from other bots?
 		std::string address{};///< The address to connect to.
@@ -685,10 +685,10 @@ namespace DiscordCoreInternal {
 		Op_Pong = 0x0a
 	};
 
-	/// Websocket close codes. \brief Websocket close codes.
+	/// \brief Websocket close codes.
 	class DiscordCoreAPI_Dll WebSocketClose {
 	  public:
-		/// Websocket close codes. \brief Websocket close codes.
+		/// \brief Websocket close codes.
 		enum class WebSocketCloseCode : uint16_t {
 			Unset = 1 << 0,///< Unset.
 			Normal_Close = 1 << 1,///< Normal close.
@@ -757,10 +757,10 @@ namespace DiscordCoreInternal {
 		operator bool();
 	};
 
-	/// Voice Websocket close codes. \brief Voice Websocket close codes.
+	/// \brief Voice Websocket close codes.
 	class DiscordCoreAPI_Dll VoiceWebSocketClose {
 	  public:
-		/// Voice Websocket close codes. \brief Voice Websocket close codes.
+		/// \brief Voice Websocket close codes.
 		enum class VoiceWebSocketCloseCode : uint16_t {
 			Unset = 1 << 0,///< Unset.
 			Normal_Close = 1 << 1,///< Normal close.
@@ -815,10 +815,10 @@ namespace DiscordCoreInternal {
 		operator bool();
 	};
 
-	/// Voice Websocket close codes. \brief Voice Websocket close codes.
+	/// \brief Voice Websocket close codes.
 	class DiscordCoreAPI_Dll HttpsResponseCode {
 	  public:
-		/// Voice Websocket close codes. \brief Voice Websocket close codes.
+		/// \brief Voice Websocket close codes.
 		enum class HttpsResponseCodes : uint32_t {
 			Ok = 200,///< The request completed successfully.
 			Created = 201,///< The entity was created successfully.
@@ -889,7 +889,7 @@ namespace DiscordCoreAPI {
 
 	template<typename RTy> class CoRoutine;
 
-	/// Update-presence status types. \brief Update-presence status types.
+	/// \brief Update-presence status types.
 	enum class UpdatePresenceStatusTypes {
 		online = 0,///< Online.
 		dnd = 1,///< Do Not Disturb.
@@ -898,7 +898,7 @@ namespace DiscordCoreAPI {
 		offline = 4,///< Offline
 	};
 
-	/// For updating a User's presence. \brief For updating a User's presence.
+	/// \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		std::vector<ActivityData> activities{};///< A vector of activities.
 		UpdatePresenceStatusTypes status{};///< Current status.
@@ -910,7 +910,7 @@ namespace DiscordCoreAPI {
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void ));
 
-	/// Input event response types. \brief Input event response types.
+	/// \brief Input event response types.
 	enum class InputEventResponseType : uint8_t {
 		Unset = 0,///< Unset.
 		Deferred_Response = 1,
@@ -925,7 +925,7 @@ namespace DiscordCoreAPI {
 		Modal_Interaction_Response = 10,///< Respond to an interaction with a popup modal.
 	};
 
-	/// Gateway intents. \brief Gateway intents.
+	/// \brief Gateway intents.
 	enum class GatewayIntents : uint32_t {
 		Guilds = 1 << 0,///< Intent for receipt of Guild information.
 		Guild_Members = 1 << 1,///< Intent for receipt of Guild members.
@@ -951,7 +951,7 @@ namespace DiscordCoreAPI {
 		All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
 	};
 
-	/// Function data for repeated functions to be loaded. \brief Function data for repeated functions to be loaded.
+	/// \brief Function data for repeated functions to be loaded.
 	struct DiscordCoreAPI_Dll RepeatedFunctionData {
 		std::function<void(DiscordCoreClient*)> function{ nullptr };///< The std::function pointer to be loaded.
 		uint32_t intervalInMs{ 0 };///< The time interval at which to call the std::function.
@@ -959,13 +959,13 @@ namespace DiscordCoreAPI {
 		int64_t dummyArg{ 0 };
 	};
 
-	/// Represents which text format to use for websocket transfer. \brief Represents which text format to use for websocket transfer.
+	/// \brief Represents which text format to use for websocket transfer.
 	enum class TextFormat : uint8_t {
 		Etf = 0x00,///< Etf format.
 		Json = 0x01///< Json format.
 	};
 
-	/// Sharding options for the library. \brief Sharding options for the library.
+	/// \brief Sharding options for the library.
 	struct DiscordCoreAPI_Dll ShardingOptions {
 		uint32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
 		uint32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
@@ -974,7 +974,7 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
-	/// Logging options for the library. \brief Loggin options for the library.
+	/// \brief Loggin options for the library.
 	struct DiscordCoreAPI_Dll LoggingOptions {
 		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages to cout?
 		bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages to cout?
@@ -986,7 +986,7 @@ namespace DiscordCoreAPI {
 		bool logHttpsErrorMessages{ false };///< Do we log Http response error messages to cout?
 	};
 
-	/// For selecting the caching style of the library. \brief For selecting the caching style of the library.
+	/// \brief For selecting the caching style of the library.
 	struct DiscordCoreAPI_Dll CacheOptions {
 		bool cacheChannels{ true };///< Do we cache Channels?
 		bool cacheGuilds{ true };///< Do we cache Guilds?
@@ -994,7 +994,7 @@ namespace DiscordCoreAPI {
 		bool cacheUsers{ true };///< Do we cache Users/GuildMembers?
 	};
 
-	/// Configuration data for the library's main class, DiscordCoreClient. \brief Configuration data for the library's main class, DiscordCoreClient.
+	/// \brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
 		GatewayIntents intents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
@@ -1076,7 +1076,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// Color constants for use in the EmbedData color values. \brief Color constants for use in the EmbedData color values.
+	/// \brief Color constants for use in the EmbedData color values.
 	namespace Colors {
 		const std::string White = "FFFFFF",///< White.
 			DiscordWhite = "FFFFFE",///< Discord white.
@@ -1272,7 +1272,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// Audio frame types. \brief Audio frame types.
+	/// \brief Audio frame types.
 	enum class AudioFrameType : uint8_t {
 		Unset = 0,///< Unset.
 		Encoded = 1,///< Encoded.
@@ -1280,7 +1280,7 @@ namespace DiscordCoreAPI {
 		Skip = 3///< Skip.
 	};
 
-	/// Represents a single frame of audio data. \brief Represents a single frame of audio data.
+	/// \brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
 		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
@@ -1321,7 +1321,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// Time formatting methods. \brief Time formatting methods.
+	/// \brief Time formatting methods.
 	enum class TimeFormat : char {
 		LongDate = 'D',///< "20 April 2021" - Long Date
 		LongDateTime = 'F',///< "Tuesday, 20 April 2021 16:20" - Long Date/Time
@@ -1407,7 +1407,7 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// Permission values, for a given Channel, by Role or GuildMember. \brief Permission values, for a given Channel, by Role or GuildMember.
+	/// \brief Permission values, for a given Channel, by Role or GuildMember.
 	enum class Permission : uint64_t {
 		Create_Instant_Invite = 1ull << 0,///< Create Instant Invite.
 		Kick_Members = 1ull << 1,///< Kick Members.
@@ -1452,7 +1452,7 @@ namespace DiscordCoreAPI {
 		Moderate_Members = 1ull << 40///< Moderate Members.
 	};
 
-	/// Permissions class, for representing and manipulating Permission values. \brief Permissions class, for representing and manipulating Permission values.
+	/// \brief Permissions class, for representing and manipulating Permission values.
 	class DiscordCoreAPI_Dll Permissions {
 	  public:
 		Permissions() noexcept = default;
@@ -1481,41 +1481,41 @@ namespace DiscordCoreAPI {
 
 		operator std::string();
 
-		/// Returns a string containing all of a given User's Permissions for a given Channel. \brief Returns a string containing all of a given User's Permissions for a given Channel.
+		/// \brief Returns a string containing all of a given User's Permissions for a given Channel.
 		/// \param guildMember The GuildMember who's Permissions to analyze.
 		/// \param channel The Channel withint which to check for Permissions.
 		/// \returns std::string A string containing the final Permission's value for a given Channel.
 		static std::string getCurrentChannelPermissions(const GuildMember& guildMember, const ChannelData& channel);
 
-		/// Checks for a given Permission in a chosen Channel, for a specific User. \brief Checks for a given Permission in a chosen Channel, for a specific User.
+		/// \brief Checks for a given Permission in a chosen Channel, for a specific User.
 		/// \param guildMember The GuildMember who to check the Permissions of.
 		/// \param channel The Channel within which to check for the Permission's presence.
 		/// \param permission A Permission to check the current Channel for.
 		/// \returns bool A bool suggesting the presence of the chosen Permission.
 		bool checkForPermission(const GuildMember& guildMember, const ChannelData& channel, Permission permission);
 
-		/// Returns a string containing the currently held Permissions in a given Guild. \brief Returns a string containing the currently held Permissions in a given Guild.
+		/// \brief Returns a string containing the currently held Permissions in a given Guild.
 		/// \param guildMember The GuildMember who's Permissions are to be evaluated.
 		/// \returns std::string A string containing the current Permissions.
 		static std::string getCurrentGuildPermissions(const GuildMember& guildMember);
 
-		/// Removes one or more Permissions from the current Permissions value. \brief Removes one or more Permissions from the current Permissions value.
+		/// \brief Removes one or more Permissions from the current Permissions value.
 		/// \param permissionsToRemove A vector containing the Permissions you wish to remove.
 		void removePermissions(const std::vector<Permission>& permissionsToRemove);
 
-		/// Adds one or more Permissions to the current Permissions value. \brief Adds one or more Permissions to the current Permissions value.
+		/// \brief Adds one or more Permissions to the current Permissions value.
 		/// \param permissionsToAdd A vector containing the Permissions you wish to add.
 		void addPermissions(const std::vector<Permission>& permissionsToAdd);
 
-		/// Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format. \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
+		/// \brief Displays the currently present Permissions in a string, and returns a vector with each of them stored in string format.
 		/// \returns std::vector A vector full of strings of the Permissions that are in the input std::string's value.
 		std::vector<std::string> displayPermissions();
 
-		/// Returns a string containing the currently held Permissions. \brief Returns a string containing the currently held Permissions.
+		/// \brief Returns a string containing the currently held Permissions.
 		/// \returns std::string A string containing the current Permissions.
 		std::string getCurrentPermissionString();
 
-		/// Returns a string containing ALL of the possible Permissions. \brief Returns a string containing ALL of the possible Permissions.
+		/// \brief Returns a string containing ALL of the possible Permissions.
 		/// \returns std::string A string containing all of the possible Permissions.
 		static std::string getAllPermissions();
 
@@ -1529,7 +1529,7 @@ namespace DiscordCoreAPI {
 		static std::string computeBasePermissions(const GuildMember& guildMember);
 	};
 
-	/// Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block. \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
+	/// \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
 	/// \param currentFunctionName A string to display the current function's name.
 	/// \param location For deriving the current file, line, and column - do not set this value.
 	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
@@ -1564,12 +1564,12 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll std::string reset();
 
-	/// Acquires a timeStamp with the current time and date - suitable for use in message-embeds. \brief Acquires a timeStamp with the current time and date - suitable for use in message-embeds.
+	/// \brief Acquires a timeStamp with the current time and date - suitable for use in message-embeds.
 	/// \returns std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
 
-	/// Class for representing a timeStamp, as well as working with time-related values. \brief Class for representing a timeStamp, as well as working with time-related values.
+	/// \brief Class for representing a timeStamp, as well as working with time-related values.
 	class TimeStamp {
 	  public:
 		explicit TimeStamp(TimeFormat formatNew = TimeFormat::LongDateTime) {
@@ -1900,7 +1900,7 @@ namespace DiscordCoreAPI {
 	template<typename OTy>
 	concept CopyableOrMovable = std::copyable<OTy> || std::movable<OTy>;
 
-	/// A thread-safe messaging block for data-structures. \brief A thread-safe messaging block for data-structures.
+	/// \brief A thread-safe messaging block for data-structures.
 	/// \tparam OTy The type of object that will be sent over
 	///  message block.
 	template<CopyableOrMovable OTy> class UnboundedMessageBlock {
@@ -1923,56 +1923,56 @@ namespace DiscordCoreAPI {
 
 		UnboundedMessageBlock() noexcept {};
 
-		/// Sends an object of type OTy to the "recipient", ahead of other already queued items. \brief Sends an object of type OTy to the "recipient", ahead of other already queued items.
+		/// \brief Sends an object of type OTy to the "recipient", ahead of other already queued items.
 		/// \param object An object of OTy.
 		void sendFront(OTy&& object) {
 			std::unique_lock lock{ this->accessMutex };
 			this->queue.emplace_front(std::move(object));
 		}
 
-		/// Sends an object of type OTy to the "recipient", ahead of other already queued items. \brief Sends an object of type OTy to the "recipient", ahead of other already queued items.
+		/// \brief Sends an object of type OTy to the "recipient", ahead of other already queued items.
 		/// \param object An object of OTy.
 		void sendFront(OTy& object) {
 			std::unique_lock lock{ this->accessMutex };
 			this->queue.emplace_front(object);
 		}
 
-		/// Sends an object of type OTy to the "recipient". \brief Sends an object of type OTy to the "recipient".
+		/// \brief Sends an object of type OTy to the "recipient".
 		/// \param object An object of OTy.
 		void send(OTy&& object) {
 			std::unique_lock lock{ this->accessMutex };
 			this->queue.emplace_back(std::move(object));
 		}
 
-		/// Sends an object of type OTy to the "recipient". \brief Sends an object of type OTy to the "recipient".
+		/// \brief Sends an object of type OTy to the "recipient".
 		/// \param object An object of OTy.
 		void send(OTy& object) {
 			std::unique_lock lock{ this->accessMutex };
 			this->queue.emplace_back(std::move(object));
 		}
 
-		/// Sends an object of type OTy to the "recipient". \brief Sends an object of type OTy to the "recipient".
+		/// \brief Sends an object of type OTy to the "recipient".
 		/// \param object An object of OTy.
 		void send(const OTy&& object) {
 			std::unique_lock lock{ this->accessMutex };
 			this->queue.emplace_back(object);
 		}
 
-		/// Sends an object of type OTy to the "recipient". \brief Sends an object of type OTy to the "recipient".
+		/// \brief Sends an object of type OTy to the "recipient".
 		/// \param object An object of OTy.
 		void send(const OTy& object) {
 			std::unique_lock lock{ this->accessMutex };
 			this->queue.emplace_back(std::move(object));
 		}
 
-		/// Clears the contents of the messaging block. \brief Clears the contents of the messaging block.
+		/// \brief Clears the contents of the messaging block.
 		void clearContents() {
 			std::unique_lock lock{ this->accessMutex };
 			this->queue.clear();
 			this->queue = std::deque<OTy>{};
 		}
 
-		/// Tries to receive an object of type OTy to be placed into a reference. \brief Tries to receive an object of type OTy to be placed into a reference.
+		/// \brief Tries to receive an object of type OTy to be placed into a reference.
 		/// \param object A reference of type OTy for placing the potentially received object.
 		/// \returns bool A bool, denoting whether or not we received an object.
 		bool tryReceive(OTy& object) {
@@ -1993,28 +1993,28 @@ namespace DiscordCoreAPI {
 
 	template<typename RTy> class NewThreadAwaiter;
 
-	/// An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution. \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
+	/// \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
 	/// \tparam RTy The type of value returned by the containing CoRoutine.
 	template<typename RTy> auto NewThreadAwaitable() {
 		return NewThreadAwaiter<RTy>{};
 	}
 
-	/// Typedef for the message filter. \brief Typedef for the message filter.
+	/// \brief Typedef for the message filter.
 	template<typename Object> using ObjectFilter = std::function<bool(Object)>;
 
-	/// ObjectCollectorReturnData responseData. \brief ObjectCollectorReturnData responseData.
+	/// \brief ObjectCollectorReturnData responseData.
 	template<typename Object> struct DiscordCoreAPI_Dll ObjectCollectorReturnData {
 		std::vector<Object> objects{};///< A vector of collected Objects.
 	};
 
-	/// ObjectCollector, for collecting Objects from a Channel. \brief Object collector, for collecting Objects from a Channel.
+	/// \brief Object collector, for collecting Objects from a Channel.
 	template<typename Object> class DiscordCoreAPI_Dll ObjectCollector {
 	  public:
 		static std::unordered_map<std::string, UnboundedMessageBlock<Object>*> objectsBuffersMap;
 
 		ObjectCollector() noexcept = default;
 
-		/// Begin waiting for Objects. \brief Begin waiting for Objects.
+		/// \brief Begin waiting for Objects.
 		/// \param quantityToCollect Maximum quantity of Objects to collect before returning the results.
 		/// \param msToCollectForNew Maximum number of Milliseconds to wait for Objects before returning the results.
 		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
@@ -2140,6 +2140,102 @@ namespace DiscordCoreInternal {
 			} else {
 				uint64_t freeSpace = (this->tail % this->arrayValue.size()) - (this->head % this->arrayValue.size());
 				return this->arrayValue.size() - freeSpace;
+			}
+		}
+
+		uint64_t getFreeSpace() noexcept {
+			return this->arrayValue.size() - this->getUsedSpace();
+		}
+
+		OTy* getCurrentTail() noexcept {
+			return (this->arrayValue.data() + (this->tail % (this->arrayValue.size())));
+		}
+
+		OTy* getCurrentHead() noexcept {
+			return (this->arrayValue.data() + (this->head % (this->arrayValue.size())));
+		}
+
+		bool isItFull() noexcept {
+			return this->areWeFull;
+		}
+
+		virtual void clear() noexcept {
+			this->areWeFull = false;
+			this->tail = 0;
+			this->head = 0;
+		}
+
+	  protected:
+		std::array<OTy, Size> arrayValue{};
+		bool areWeFull{ false };
+		uint64_t tail{};
+		uint64_t head{};
+	};
+
+	template<typename OTy> class RingBufferSlice : public RingBufferInterface<OTy, 1024 * 16> {};
+
+	template<typename OTy, uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice<OTy>, SliceCount> {
+	  public:
+		void clear() noexcept {
+			for (uint64_t x = 0; x < this->arrayValue.size(); ++x) {
+				this->arrayValue[x].clear();
+			}
+			this->areWeFull = false;
+			this->tail = 0;
+			this->head = 0;
+		}
+	};
+
+	class RingBufferString : public RingBuffer<char, 4> {
+	  public:
+		RingBufferString() noexcept = default;
+
+		RingBufferString& operator=(RingBufferString&& other) {
+			this->areWeFull = other.areWeFull;
+			this->arrayValue = std::move(other.arrayValue);
+			this->head = other.head;
+			this->tail = other.tail;
+			return *this;
+		}
+
+		RingBufferString(RingBufferString&& other) {
+			*this = std::move(other);
+		}
+
+		void writeData(const char* data, size_t length) {
+			if (!this->isItFull()) {
+				std::unique_lock lock{ this->accessMutex };
+				std::copy(data, data + length, this->getCurrentHead()->getCurrentHead());
+				this->getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, length);
+				this->modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+			}
+		}
+
+		size_t getCurrentSize() {
+			std::unique_lock lock{ this->accessMutex };
+			return this->getCurrentTail()->getUsedSpace();
+		}
+
+		void readData(char* dst) {
+			std::unique_lock lock{ this->accessMutex };
+			size_t currentSize = this->getCurrentTail()->getUsedSpace();
+			std::copy(this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getCurrentTail() + currentSize, dst);
+			this->getCurrentTail()->clear();
+			this->modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+		}
+
+	  protected:
+		std::mutex accessMutex{};
+	};
+
+}
+
+template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::Snowflake> {
+	uint64_t operator()(DiscordCoreAPI::Snowflake const& object) const noexcept {
+		return object.operator size_t();
+	}
+};
+			return this->arrayValue.size() - freeSpace;
 			}
 		}
 
