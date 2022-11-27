@@ -25,12 +25,9 @@
 
 #pragma once
 
-#ifndef SOUNDCLOUD_API
-	#define SOUNDCLOUD_API
-
-	#include <discordcoreapi/AudioDecoder.hpp>
-	#include <discordcoreapi/CoRoutine.hpp>
-	#include <discordcoreapi/Https.hpp>
+#include <discordcoreapi/AudioDecoder.hpp>
+#include <discordcoreapi/CoRoutine.hpp>
+#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreInternal {
 
@@ -75,4 +72,3 @@ namespace DiscordCoreInternal {
 	};
 
 };// namespace DiscordCoreAPI
-#endif

@@ -25,12 +25,9 @@
 
 #pragma once
 
-#ifndef INTERACTION_ENTITIES
-	#define INTERACTION_ENTITIES
-
-	#include <discordcoreapi/FoundationEntities.hpp>
-	#include <discordcoreapi/MessageEntities.hpp>
-	#include <discordcoreapi/WebHookEntities.hpp>
+#include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/MessageEntities.hpp>
+#include <discordcoreapi/WebHookEntities.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -597,4 +594,3 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 };// namespace DiscordCoreAPI
-#endif

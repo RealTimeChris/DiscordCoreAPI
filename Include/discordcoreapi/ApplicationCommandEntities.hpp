@@ -25,11 +25,8 @@
 
 #pragma once
 
-#ifndef APPLICATION_COMMAND_ENTITIES
-	#define APPLICATION_COMMAND_ENTITIES
-
-	#include <discordcoreapi/FoundationEntities.hpp>
-	#include <discordcoreapi/Https.hpp>
+#include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -294,4 +291,4 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }// namespace DiscordCoreAPI
-#endif
+

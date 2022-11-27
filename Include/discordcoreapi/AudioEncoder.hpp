@@ -25,11 +25,8 @@
 
 #pragma once
 
-#ifndef AUDIO_ENCODER
-	#define AUDIO_ENCODER
-
-	#include <discordcoreapi/FoundationEntities.hpp>
-	#include <opus/opus.h>
+#include <discordcoreapi/FoundationEntities.hpp>
+#include <opus/opus.h>
 
 namespace DiscordCoreAPI {
 
@@ -51,4 +48,3 @@ namespace DiscordCoreAPI {
 	};
 
 }// namespace DiscordCoreAPI
-#endif

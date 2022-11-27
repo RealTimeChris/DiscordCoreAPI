@@ -25,12 +25,9 @@
 
 #pragma once
 
-#ifndef ROLE_ENTITIES
-	#define ROLE_ENTITIES
-
-	#include <discordcoreapi/FoundationEntities.hpp>
-	#include <discordcoreapi/GuildMemberEntities.hpp>
-	#include <discordcoreapi/Https.hpp>
+#include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/GuildMemberEntities.hpp>
+#include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -252,4 +249,3 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 }// namespace DiscordCoreAPI
-#endif

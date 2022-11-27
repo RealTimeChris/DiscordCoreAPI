@@ -25,10 +25,7 @@
 
 #pragma once
 
-#ifndef ERL_PACKER
-	#define ERL_PACKER
-
-	#include <discordcoreapi/FoundationEntities.hpp>
+#include <discordcoreapi/FoundationEntities.hpp>
 
 namespace DiscordCoreInternal {
 
@@ -92,4 +89,3 @@ namespace DiscordCoreInternal {
 	};
 
 }// namespace DiscordCoreInternal
-#endif

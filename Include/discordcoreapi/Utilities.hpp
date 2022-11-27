@@ -25,68 +25,65 @@
 
 #pragma once
 
-#ifndef UTILITIES
-	#define UTILITIES
+#pragma warning(push)
+#pragma warning(disable : 4275)
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4251)
+#pragma warning(disable : 4996)
 
-	#pragma warning(push)
-	#pragma warning(disable : 4275)
-	#pragma warning(disable : 4244)
-	#pragma warning(disable : 4251)
-	#pragma warning(disable : 4996)
-
-	#ifdef _WIN32
-		#ifdef DiscordCoreAPI_EXPORTS
-			#define DiscordCoreAPI_Dll __declspec(dllexport)
-		#else
-			#define DiscordCoreAPI_Dll __declspec(dllimport)
-		#endif
-		#ifndef WIN32_LEAN_AND_MEAN
-			#define WIN32_LEAN_AND_MEAN
-		#endif
-		#ifndef WINRT_LEAN_AND_MEAN
-			#define WINRT_LEAN_AND_MEAN
-		#endif
-		#include <WinSock2.h>
-	#elif __linux__
-		#ifndef DiscordCoreAPI_Dll
-			#define DiscordCoreAPI_Dll
-		#endif
-		#include <arpa/inet.h>
-		#include <sys/time.h>
-		#include <pthread.h>
-		#include <cstdint>
-		#include <cstring>
-		#include <time.h>
-		#include <ctime>
+#ifdef _WIN32
+	#ifdef DiscordCoreAPI_EXPORTS
+		#define DiscordCoreAPI_Dll __declspec(dllexport)
+	#else
+		#define DiscordCoreAPI_Dll __declspec(dllimport)
 	#endif
-
-	#include <source_location>
-	#include <unordered_map>
-	#include <unordered_set>
-	#include <shared_mutex>
-	#include <immintrin.h>
-	#include <functional>
-	#include <concepts>
-	#include <iostream>
-	#include <sstream>
-	#include <iomanip>
-	#include <vector>
-	#include <atomic>
-	#include <random>
-	#include <string>
-	#include <thread>
-	#include <mutex>
-	#include <queue>
-	#include <array>
-	#include <map>
-
-	#ifdef max
-		#undef max
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
 	#endif
-
-	#ifdef min
-		#undef min
+	#ifndef WINRT_LEAN_AND_MEAN
+		#define WINRT_LEAN_AND_MEAN
 	#endif
+	#include <WinSock2.h>
+#elif __linux__
+	#ifndef DiscordCoreAPI_Dll
+		#define DiscordCoreAPI_Dll
+	#endif
+	#include <arpa/inet.h>
+	#include <sys/time.h>
+	#include <pthread.h>
+	#include <cstdint>
+	#include <cstring>
+	#include <time.h>
+	#include <ctime>
+#endif
+
+#include <source_location>
+#include <unordered_map>
+#include <unordered_set>
+#include <shared_mutex>
+#include <immintrin.h>
+#include <functional>
+#include <concepts>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <vector>
+#include <atomic>
+#include <random>
+#include <string>
+#include <thread>
+#include <mutex>
+#include <queue>
+#include <array>
+#include <map>
+
+#ifdef max
+	#undef max
+#endif
+
+#ifdef min
+	#undef min
+#endif
 
 /**
  * \defgroup main_endpoints Main Endpoints
@@ -2238,4 +2235,3 @@ template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::Snowflake> {
 		return object.operator size_t();
 	}
 };
-#endif

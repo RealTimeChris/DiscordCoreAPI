@@ -25,15 +25,12 @@
 
 #pragma once
 
-#ifndef AUDIO_DECODER
-	#define AUDIO_DECODER
-
-	#include <discordcoreapi/FoundationEntities.hpp>
-	#include <opus/opus.h>
+#include <discordcoreapi/FoundationEntities.hpp>
+#include <opus/opus.h>
 
 extern "C" {
-	#include <libavformat/avformat.h>
-	#include <libswresample/swresample.h>
+#include <libavformat/avformat.h>
+#include <libswresample/swresample.h>
 }
 
 namespace DiscordCoreInternal {
@@ -224,4 +221,3 @@ namespace DiscordCoreInternal {
 	};
 
 }// namespace DiscordCoreAPI
-#endif
