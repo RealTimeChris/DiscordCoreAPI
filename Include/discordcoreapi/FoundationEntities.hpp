@@ -647,7 +647,7 @@ namespace DiscordCoreAPI {
 		virtual ~EmbedData() noexcept = default;
 	};
 
-	/// Message reference data.\brief Message reference data.
+	/// \brief Message reference data.
 	struct DiscordCoreAPI_Dll MessageReferenceData {
 		bool failIfNotExists{ false };///< Fail if the Message doesn't exist?
 		Snowflake messageId{};///< Id of the Message to reference.
