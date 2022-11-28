@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 			if (72 <= (rawDataBufferNew[1] & 0b0111'1111) && (rawDataBufferNew[1] & 0b0111'1111) <= 76) {
 				return;
 			}
-			this->voiceUsers[speakerSsrc].insertPayload(std::string_view{ rawDataBufferNew.data(), rawDataBufferNew.size() });
+			this->voiceUsers[speakerSsrc].insertPayload(rawDataBufferNew);
 		}
 	}
 
@@ -766,15 +766,12 @@ namespace DiscordCoreAPI {
 						return false;
 					}
 				}
-				std::string message{};
-				if (inputString.size() > 64) {
-					message.insert(message.begin(), inputString.begin() + 8, inputString.begin() + 64);
-				}
-				const auto endLineFind = message.find('\u0000', 5);
+				inputString = inputString.substr(8, 64);
+				const auto endLineFind = inputString.find('\u0000', 5);
 				if (endLineFind != std::string::npos) {
-					message = message.substr(0, endLineFind);
+					inputString = inputString.substr(0, endLineFind);
 				}
-				this->externalIp = message;
+				this->externalIp = inputString;
 				this->voiceConnectionDataBuffer.clearContents();
 				return true;
 			}
