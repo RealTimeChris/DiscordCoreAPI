@@ -57,18 +57,18 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::OpusDecoderWrapper& getDecoder() noexcept;
 
-		void insertPayload(std::string&&) noexcept;
+		void insertPayload(std::string_view) noexcept;
 
-		std::string extractPayload() noexcept;
+		std::string_view extractPayload() noexcept;
 
 		void setUserId(Snowflake) noexcept;
 
 		Snowflake getUserId() noexcept;
 
 	  protected:
+		DiscordCoreInternal::RingBuffer<char, 4> payloads{};
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
 		std::atomic_int8_t* voiceUserCount{ nullptr };
-		std::deque<std::string> payloads{};
 		Snowflake userId{};
 	};
 

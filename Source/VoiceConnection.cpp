@@ -63,17 +63,22 @@ namespace DiscordCoreAPI {
 		return this->decoder;
 	}
 
-	void VoiceUser::insertPayload(std::string&& data) noexcept {
-		this->payloads.emplace_back(std::move(data));
+	void VoiceUser::insertPayload(std::string_view data) noexcept {
+		if (this->payloads.getFreeSpace() > 0 && this->payloads.getCurrentHead()->getFreeSpace() >= data.size()) {
+			std::copy(data.data(), data.data() + data.size(), this->payloads.getCurrentHead()->getCurrentHead());
+			this->payloads.getCurrentHead()->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, data.size());
+			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, 1);
+		}
 	}
 
-	std::string VoiceUser::extractPayload() noexcept {
-		std::string value{};
-		if (this->voiceUserCount->load() > 0 && this->payloads.size() > 0) {
-			value = std::move(this->payloads.front());
-			this->payloads.pop_front();
+	std::string_view VoiceUser::extractPayload() noexcept {
+		std::string_view string{};
+		if (this->payloads.getUsedSpace() > 0 && this->payloads.getCurrentTail()->getUsedSpace() > 0) {
+			string = std::string_view{ this->payloads.getCurrentTail()->getCurrentTail(), this->payloads.getCurrentTail()->getUsedSpace() };
+			this->payloads.getCurrentTail()->clear();
+			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
 		}
-		return value;
+		return string;
 	}
 
 	void VoiceUser::setUserId(Snowflake userIdNew) noexcept {
@@ -854,7 +859,7 @@ namespace DiscordCoreAPI {
 		size_t decodedSize{};
 		std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
 		for (auto& [key, value]: this->voiceUsers) {
-			std::string payload{ value.extractPayload() };
+			std::string_view payload{ value.extractPayload() };
 			if (payload.size() > 0) {
 				const uint64_t headerSize{ 12 };
 				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };
@@ -871,7 +876,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
-						reinterpret_cast<uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
+						reinterpret_cast<const uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
 						reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
 					return;
 				}
