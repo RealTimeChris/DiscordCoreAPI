@@ -184,7 +184,6 @@ namespace DiscordCoreAPI {
 		VoiceConnectInitData voiceConnectInitData{};
 		std::vector<opus_int16> downSampledVector{};
 		std::vector<opus_int32> upSampledVector{};
-		std::atomic_bool doWeReconnect{ false };
 		std::atomic_bool areWePlaying{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		int64_t sampleRatePerSecond{ 48000 };

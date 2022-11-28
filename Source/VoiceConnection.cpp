@@ -484,7 +484,7 @@ namespace DiscordCoreAPI {
 							this->mixAudio();
 							if (this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both) ==
 								DiscordCoreInternal::ProcessIOResult::Error) {
-								this->doWeReconnect.store(true);
+								this->onClosed();
 								return;
 							}
 						}
@@ -527,8 +527,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::checkForConnections() noexcept {
-		if (this->connections || this->doWeReconnect.load()) {
-			this->doWeReconnect.store(false);
+		if (this->connections) {
 			this->connections.reset(nullptr);
 			this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
 			WebSocketCore::ssl = nullptr;
@@ -542,10 +541,6 @@ namespace DiscordCoreAPI {
 			this->areWeConnecting.store(true);
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
-			if (this->streamSocket) {
-				this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port, false,
-					std::stop_token{});
-			}
 			StopWatch stopWatch{ 10000ms };
 			this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 			while (this->baseShard->currentState.load() != DiscordCoreInternal::WebSocketState::Authenticated) {
@@ -844,10 +839,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::reconnect() noexcept {
-		++this->currentReconnectTries;;
+		++this->currentReconnectTries;
 		this->connections = std::make_unique<ConnectionPackage>();
 		this->connections->currentReconnectTries = this->currentReconnectTries;
 		this->connections->currentShard = this->shard[0];
+		std::cout << "WERE HERE THIS IS IT!" << std::endl;
 	}
 
 	void VoiceConnection::onClosed() noexcept {
