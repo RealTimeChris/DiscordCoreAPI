@@ -181,7 +181,7 @@ namespace DiscordCoreAPI {
 			if (72 <= (rawDataBufferNew[1] & 0b0111'1111) && (rawDataBufferNew[1] & 0b0111'1111) <= 76) {
 				return;
 			}
-			this->voiceUsers[speakerSsrc].insertPayload(std::string_view{ rawDataBufferNew.data(), rawDataBufferNew.size() });
+			this->voiceUsers[speakerSsrc].insertPayload(rawDataBufferNew);
 		}
 	}
 
