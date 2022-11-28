@@ -431,7 +431,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool SSLClient::areWeStillConnected() noexcept {
-		if (static_cast<SOCKET*>(this->socket) && *this->socket != SOCKET_ERROR) {
+		if (static_cast<SOCKET*>(this->socket) && *this->socket != SOCKET_ERROR && this->ssl) {
 			return true;
 		} else {
 			return false;
@@ -442,7 +442,7 @@ namespace DiscordCoreInternal {
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			uint64_t bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
 
-			uint64_t writtenBytes{ 0 };
+			uint64_t writtenBytes{};
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.getCurrentTail()->getCurrentTail(), bytesToWrite, &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
@@ -479,7 +479,7 @@ namespace DiscordCoreInternal {
 	bool SSLClient::processReadData() noexcept {
 		if (!this->inputBuffer.isItFull()) {
 			do {
-				uint64_t readBytes{ 0 };
+				uint64_t readBytes{};
 				uint64_t bytesToRead{};
 				if (this->maxBufferSize > this->inputBuffer.getCurrentHead()->getFreeSpace()) {
 					bytesToRead = this->inputBuffer.getCurrentHead()->getFreeSpace();
@@ -519,7 +519,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 				}
-			} while (SSL_pending(this->ssl));
+			} while (this->areWeStillConnected() && SSL_pending(this->ssl));
 		}
 		if (!this->areWeAStandaloneSocket) {
 			this->handleBuffer();
