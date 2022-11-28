@@ -438,8 +438,8 @@ namespace DiscordCoreAPI {
 						if (this->audioData.data.size() == 0) {
 							this->areWePlaying.store(false);
 						} else {
-							this->intervalCount = Nanoseconds{ static_cast<uint64_t>(static_cast<float>(this->audioData.sampleCount) /
-								static_cast<float>(this->sampleRatePerSecond) * static_cast<float>(this->nsPerSecond)) };
+							this->intervalCount = Nanoseconds{ static_cast<uint64_t>(static_cast<double>(this->audioData.sampleCount) /
+								static_cast<double>(this->sampleRatePerSecond) * static_cast<double>(this->nsPerSecond)) };
 							this->areWePlaying.store(true);
 						}
 						if (this->audioData.guildMemberId != 0) {

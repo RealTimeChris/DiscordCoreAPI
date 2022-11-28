@@ -308,7 +308,6 @@ namespace DiscordCoreInternal {
 		if (readWriteSet.polls.size() == 0) {
 			return returnValue;
 		}
-
 		if (auto returnValueNew = poll(readWriteSet.polls.data(), static_cast<u_long>(readWriteSet.polls.size()), 1);
 			returnValueNew == SOCKET_ERROR) {
 			for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
@@ -320,14 +319,8 @@ namespace DiscordCoreInternal {
 			}
 
 		} else if (returnValueNew == 0) {
-			for (auto& [key, value]: shardMap) {
-				if (value->areWeStillConnected() && !value->areWeConnecting.load() && !value->areWeAStandaloneSocket) {
-					value->handleBuffer();
-				}
-			}
 			return returnValue;
 		}
-
 		for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
 			if (readWriteSet.polls[x].revents & POLLOUT) {
 				if (!shardMap[readWriteSet.indices[x]]->processWriteData()) {
@@ -340,11 +333,6 @@ namespace DiscordCoreInternal {
 					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
 					continue;
 				}
-			}
-		}
-		for (auto& [key, value]: shardMap) {
-			if (value->areWeStillConnected() && !value->areWeConnecting.load() && !value->areWeAStandaloneSocket) {
-				value->handleBuffer();
 			}
 		}
 		return returnValue;
@@ -406,9 +394,6 @@ namespace DiscordCoreInternal {
 			}
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
-			if (!this->areWeAStandaloneSocket) {
-				this->handleBuffer();
-			}
 			return ProcessIOResult::No_Error;
 		} else {
 			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLHUP || readWriteSet.revents & POLLNVAL) {
@@ -420,6 +405,10 @@ namespace DiscordCoreInternal {
 			if (readWriteSet.revents & POLLIN) {
 				if (!this->processReadData()) {
 					return ProcessIOResult::Error;
+				} else {
+					if (!this->areWeAStandaloneSocket) {
+						this->handleBuffer();
+					}
 				}
 			}
 			if (readWriteSet.revents & POLLOUT) {
@@ -428,15 +417,12 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-		if (!this->areWeAStandaloneSocket) {
-			this->handleBuffer();
-		}
 		return ProcessIOResult::No_Error;
 	}
 
 	std::string_view SSLClient::getInputBuffer() noexcept {
 		std::string_view string{};
-		if (this->inputBuffer.getUsedSpace() > 0 && this->inputBuffer.getCurrentTail()->getUsedSpace() > 0) {
+		if (this->inputBuffer.getUsedSpace() > 0) {
 			string = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), this->inputBuffer.getCurrentTail()->getUsedSpace() };
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
@@ -514,6 +500,9 @@ namespace DiscordCoreInternal {
 							this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
 							this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 							this->bytesRead += readBytes;
+							if (!this->areWeAStandaloneSocket) {
+								this->handleBuffer();
+							}
 						}
 						break;
 					}
@@ -532,7 +521,6 @@ namespace DiscordCoreInternal {
 				}
 			} while (SSL_pending(this->ssl));
 		}
-
 		if (!this->areWeAStandaloneSocket) {
 			this->handleBuffer();
 		}
