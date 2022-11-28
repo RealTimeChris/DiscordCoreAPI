@@ -1285,17 +1285,22 @@ namespace DiscordCoreAPI {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
 		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
 		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
+		size_t currentSize{};///< The current size of the allocated memory.
 		std::string data{};///< The audio data.
 
 		AudioFrameData() noexcept = default;
 
-		AudioFrameData& operator=(AudioFrameData&&) noexcept = default;
+		AudioFrameData& operator=(AudioFrameData&&) noexcept;
 
-		AudioFrameData(AudioFrameData&&) noexcept = default;
+		AudioFrameData(AudioFrameData&&) noexcept;
 
 		AudioFrameData& operator=(const AudioFrameData&) noexcept = delete;
 
 		AudioFrameData(const AudioFrameData&) noexcept = delete;
+
+		AudioFrameData& operator+=(std::string_view) noexcept;
+
+		AudioFrameData& operator+=(char);
 
 		friend bool operator==(const AudioFrameData& lhs, const AudioFrameData& rhs);
 

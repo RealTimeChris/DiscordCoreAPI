@@ -3312,8 +3312,26 @@ namespace DiscordCoreAPI {
 		return this->formats;
 	}
 
+	AudioFrameData& AudioFrameData::operator+=(std::string_view other) noexcept {
+		if (this->data.size()< other.size()){
+			this->data.resize(other.size());
+		}
+		this->currentSize = other.size();
+		std::copy(other.data(), other.data() + other.size(), this->data.data());
+		return *this;
+	}
+
+	AudioFrameData& AudioFrameData::operator+=(char character) {
+		this->currentSize++;
+		this->data.push_back(character);
+		return *this;
+	}
+
 	bool operator==(const AudioFrameData& lhs, const AudioFrameData& rhs) {
 		if (lhs.data != rhs.data) {
+			return false;
+		}
+		if (lhs.currentSize != rhs.currentSize) {
 			return false;
 		}
 		if (lhs.guildMemberId != rhs.guildMemberId) {
@@ -3328,10 +3346,27 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
+	AudioFrameData& AudioFrameData::operator=(AudioFrameData&& other) noexcept {
+		if (this->data.size() < other.data.size()) {
+			this->data.resize(other.data.size());
+		}
+		this->currentSize = other.data.size();
+		std::copy(other.data.data(), other.data.data() + other.data.size(), this->data.data());
+		this->guildMemberId = std::move(other.guildMemberId);
+		this->sampleCount = other.sampleCount;
+		this->type = other.type;
+		return *this;
+	}
+
+	AudioFrameData::AudioFrameData(AudioFrameData&& other) noexcept {
+		*this = std::move(other);
+	}
+
 	void AudioFrameData::clearData() noexcept {
 		this->type = AudioFrameType::Unset;
 		this->guildMemberId = 0;
 		this->sampleCount = -1;
+		this->currentSize = 0;
 		this->data.clear();
 	}
 
