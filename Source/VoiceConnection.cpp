@@ -842,7 +842,6 @@ namespace DiscordCoreAPI {
 		this->connections = std::make_unique<ConnectionPackage>();
 		this->connections->currentReconnectTries = this->currentReconnectTries;
 		this->connections->currentShard = this->shard[0];
-		std::cout << "WERE HERE THIS IS IT!" << std::endl;
 	}
 
 	void VoiceConnection::onClosed() noexcept {
