@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceUser& VoiceUser::operator=(VoiceUser&& data) noexcept {
-		this->voiceUserCount->store(data.voiceUserCount->load());
+		this->voiceUserCount = data.voiceUserCount;
 		this->payloads = std::move(data.payloads);
 		this->decoder = std::move(data.decoder);
 		this->userId = data.userId;
@@ -496,11 +496,11 @@ namespace DiscordCoreAPI {
 						if (frame.size() > 0) {
 							this->sendVoiceData(frame);
 						}
+						targetTime = HRClock::now() + this->intervalCount;
 						if (DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
 							DiscordCoreInternal::ProcessIOResult::Error) {
 							this->onClosed();
 						}
-						targetTime = HRClock::now() + this->intervalCount;
 					}
 					break;
 				}
