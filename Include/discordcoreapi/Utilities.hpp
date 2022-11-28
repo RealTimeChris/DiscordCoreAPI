@@ -2195,7 +2195,7 @@ namespace DiscordCoreInternal {
 	  public:
 		RingBufferString() noexcept = default;
 
-		RingBufferString& operator=(RingBufferString&& other) {
+		RingBufferString& operator=(RingBufferString&& other) noexcept {
 			this->areWeFull = other.areWeFull;
 			this->arrayValue = std::move(other.arrayValue);
 			this->head = other.head;
@@ -2203,7 +2203,7 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		RingBufferString(RingBufferString&& other) {
+		RingBufferString(RingBufferString&& other) noexcept {
 			*this = std::move(other);
 		}
 

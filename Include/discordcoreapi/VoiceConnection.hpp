@@ -171,7 +171,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
-		Nanoseconds intervalCount{ static_cast<int64_t>(960.0f / 48000.0f * 1000000000.0f) };
+		Nanoseconds intervalCount{ static_cast<int64_t>(960.0l / 48000.0l * 1000000000.0l) };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		std::unique_ptr<VoiceConnectionBridge> streamSocket{ nullptr };
