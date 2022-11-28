@@ -117,6 +117,7 @@ namespace DiscordCoreInternal {
 			shutdown(*other, SHUT_RDWR);
 			close(*other);
 			*other = SOCKET_ERROR;
+			delete other;
 		};
 	};
 
