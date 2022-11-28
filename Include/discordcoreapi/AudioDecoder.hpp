@@ -114,7 +114,8 @@ namespace DiscordCoreInternal {
 		AVFormatContextWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> ptr{ new AVFormatContextWrapper01{}, AVFormatContextDeleter{} };
+		std::unique_ptr<AVFormatContextWrapper01, AVFormatContextDeleter> ptr{ std::make_unique<AVFormatContextWrapper01>().release(),
+			AVFormatContextDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll SwrContextWrapper {

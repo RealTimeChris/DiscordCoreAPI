@@ -799,7 +799,7 @@ namespace DiscordCoreAPI {
 		}
 		newBuffer[1] = encodedBytes;
 		newBuffer[2] = 0;
-		this->writeString(newBuffer, static_cast<size_t>(1 + 2 + encodedBytes));
+		this->writeString(newBuffer, 1 + 2 + static_cast<size_t>(encodedBytes));
 	}
 
 	void Jsonifier::appendNewFloatExt(const double FloatValue) {

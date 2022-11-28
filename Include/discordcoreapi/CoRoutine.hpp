@@ -44,7 +44,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief An error type for CoRoutines.
 	struct DiscordCoreAPI_Dll CoRoutineError : public DCAException {
-		CoRoutineError(const std::string& message);
+		explicit CoRoutineError(const std::string& message);
 	};
 
 	class DiscordCoreAPI_Dll CoRoutineBase {

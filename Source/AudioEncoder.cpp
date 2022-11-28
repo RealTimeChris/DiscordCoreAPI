@@ -66,6 +66,7 @@ namespace DiscordCoreAPI {
 		encodedFrame.sampleCount = inputFrame.sampleCount;
 		encodedFrame.type = DiscordCoreAPI::AudioFrameType::Encoded;
 		encodedFrame.guildMemberId = inputFrame.guildMemberId;
+		encodedFrame.currentSize = count;
 		return encodedFrame;
 	}
 }

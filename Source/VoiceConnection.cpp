@@ -63,17 +63,26 @@ namespace DiscordCoreAPI {
 		return this->decoder;
 	}
 
-	void VoiceUser::insertPayload(std::string&& data) noexcept {
-		this->payloads.emplace_back(std::move(data));
+	void VoiceUser::insertPayload(std::string_view data) noexcept {
+		if (this->payloads.getFreeSpace() == 0) {
+			this->payloads.getCurrentTail()->clear();
+			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
+		}
+		if (data.size() <= this->payloads.getCurrentHead()->getFreeSpace()) {
+			std::copy(data.data(), data.data() + data.size(), this->payloads.getCurrentHead()->getCurrentHead());
+			this->payloads.getCurrentHead()->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, data.size());
+			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, 1);
+		}
 	}
 
-	std::string VoiceUser::extractPayload() noexcept {
-		std::string value{};
-		if (this->voiceUserCount->load() > 0 && this->payloads.size() > 0) {
-			value = std::move(this->payloads.front());
-			this->payloads.pop_front();
+	std::string_view VoiceUser::extractPayload() noexcept {
+		std::string_view string{};
+		if (this->payloads.getUsedSpace() > 0 && this->payloads.getCurrentTail()->getUsedSpace() > 0) {
+			string = std::string_view{ this->payloads.getCurrentTail()->getCurrentTail(), this->payloads.getCurrentTail()->getUsedSpace() };
+			this->payloads.getCurrentTail()->clear();
+			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
 		}
-		return value;
+		return string;
 	}
 
 	void VoiceUser::setUserId(Snowflake userIdNew) noexcept {
@@ -112,7 +121,7 @@ namespace DiscordCoreAPI {
 				this->data[x] = header[x];
 			}
 			if (crypto_secretbox_easy(reinterpret_cast<uint8_t*>(this->data.data()) + headerSize,
-					reinterpret_cast<const uint8_t*>(audioData.data.data()), audioData.data.size(), nonceForLibSodium,
+					reinterpret_cast<const uint8_t*>(audioData.data.data()), audioData.currentSize, nonceForLibSodium,
 					reinterpret_cast<uint8_t*>(this->keys.data())) != 0) {
 				return {};
 			}
@@ -131,15 +140,15 @@ namespace DiscordCoreAPI {
 		const std::string_view buffer = this->getInputBuffer();
 		if (buffer.size() > 0) {
 			AudioFrameData frame{};
-			frame.data.insert(frame.data.begin(), buffer.begin(), buffer.end());
+			frame += buffer;
 			frame.sampleCount = buffer.size() / 2 / 2;
 			frame.type = AudioFrameType::RawPCM;
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
 		} else {
 			AudioFrameData frame{};
-			frame.data.push_back(static_cast<char>(0xf8));
-			frame.data.push_back(static_cast<char>(0xff));
-			frame.data.push_back(static_cast<char>(0xfe));
+			frame += static_cast<char>(0xf8);
+			frame += static_cast<char>(0xff);
+			frame += static_cast<char>(0xfe);
 			frame.type = AudioFrameType::Encoded;
 			this->clientPtr->getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frame));
 		}
@@ -496,11 +505,11 @@ namespace DiscordCoreAPI {
 						if (frame.size() > 0) {
 							this->sendVoiceData(frame);
 						}
+						targetTime = HRClock::now() + this->intervalCount;
 						if (DatagramSocketClient::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
 							DiscordCoreInternal::ProcessIOResult::Error) {
 							this->onClosed();
 						}
-						targetTime = HRClock::now() + this->intervalCount;
 					}
 					break;
 				}
@@ -721,9 +730,7 @@ namespace DiscordCoreAPI {
 			this->audioData.data.clear();
 			this->audioData = AudioFrameData();
 		}
-		AudioFrameData frameData{};
-		while (this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(frameData)) {
-		};
+		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.clearContents();
 	}
 
 	bool VoiceConnection::areWeConnected() noexcept {
@@ -779,9 +786,9 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> frames{};
 		for (size_t x = 0; x < 5; ++x) {
 			AudioFrameData frame{};
-			frame.data.push_back(static_cast<char>(0xf8));
-			frame.data.push_back(static_cast<char>(0xff));
-			frame.data.push_back(static_cast<char>(0xfe));
+			frame += static_cast<char>(0xf8);
+			frame += static_cast<char>(0xff);
+			frame += static_cast<char>(0xfe);
 			auto packetNew = this->packetEncrypter.encryptPacket(frame);
 			frames.push_back(std::string{ packetNew.data(), packetNew.size() });
 		}
@@ -854,7 +861,7 @@ namespace DiscordCoreAPI {
 		size_t decodedSize{};
 		std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
 		for (auto& [key, value]: this->voiceUsers) {
-			std::string payload{ value.extractPayload() };
+			std::string_view payload{ value.extractPayload() };
 			if (payload.size() > 0) {
 				const uint64_t headerSize{ 12 };
 				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };
@@ -871,7 +878,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
-						reinterpret_cast<uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
+						reinterpret_cast<const uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
 						reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
 					return;
 				}

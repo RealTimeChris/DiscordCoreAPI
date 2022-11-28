@@ -262,10 +262,6 @@ namespace DiscordCoreInternal {
 			}
 			didWeWrite = this->writeData(dataToSend, priority);
 		} while (didWeWrite == ProcessIOResult::Error);
-		if (didWeWrite == ProcessIOResult::Error) {
-			this->onClosed();
-			return false;
-		}
 		return true;
 	}
 

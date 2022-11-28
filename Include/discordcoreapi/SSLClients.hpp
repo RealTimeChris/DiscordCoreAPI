@@ -39,8 +39,6 @@
 	#pragma comment(lib, "Ws2_32.lib")
 	#include <WinSock2.h>
 	#include <WS2tcpip.h>
-	#define poll(fd_set, fd_count, timeout) WSAPoll(fd_set, fd_count, timeout)
-	#define pollfd WSAPOLLFD
 	#ifdef errno
 		#undef errno
 		#define errno WSAGetLastError()
@@ -49,6 +47,8 @@
 		#undef EWOULDBLOCK
 		#define EWOULDBLOCK WSAEWOULDBLOCK
 	#endif
+	#define poll(fd_set, fd_count, timeout) WSAPoll(fd_set, fd_count, timeout)
+	#define pollfd WSAPOLLFD
 	#define close closesocket
 	#define SHUT_RDWR SD_BOTH
 	#ifdef max
@@ -93,7 +93,7 @@ namespace DiscordCoreInternal {
 		WSADataWrapper();
 
 	  protected:
-		std::unique_ptr<WSADATA, WSADataDeleter> ptr{ new WSADATA{}, WSADataDeleter{} };
+		std::unique_ptr<WSADATA, WSADataDeleter> ptr{ std::make_unique<WSADATA>().release(), WSADataDeleter{} };
 	};
 #endif
 
@@ -145,7 +145,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> ptr{ new SOCKET{ static_cast<SOCKET>(SOCKET_ERROR) }, SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> ptr{ std::make_unique<SOCKET>(SOCKET_ERROR).release(), SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {

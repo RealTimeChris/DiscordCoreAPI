@@ -117,12 +117,13 @@ namespace DiscordCoreInternal {
 			shutdown(*other, SHUT_RDWR);
 			close(*other);
 			*other = SOCKET_ERROR;
+			delete other;
 		};
 	};
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper&& other) noexcept {
 		this->ptr.reset(nullptr);
-		this->ptr = std::unique_ptr<SOCKET, SOCKETDeleter>(new SOCKET{}, SOCKETDeleter{});
+		this->ptr = std::unique_ptr<SOCKET, SOCKETDeleter>(std::make_unique<SOCKET>().release(), SOCKETDeleter{});
 		*this->ptr = *other.ptr;
 		*other.ptr = SOCKET_ERROR;
 		return *this;
@@ -134,7 +135,7 @@ namespace DiscordCoreInternal {
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) noexcept {
 		this->ptr.reset(nullptr);
-		this->ptr = std::unique_ptr<SOCKET, SOCKETDeleter>(new SOCKET{}, SOCKETDeleter{});
+		this->ptr = std::unique_ptr<SOCKET, SOCKETDeleter>(std::make_unique<SOCKET>().release(), SOCKETDeleter{});
 		*this->ptr = other;
 		return *this;
 	}
@@ -562,7 +563,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		std::unique_ptr<char> optVal{ new char{ 1 } };
+		std::unique_ptr<char> optVal{ std::make_unique<char>(1) };
 		if (auto returnValue = setsockopt(this->socket, SOL_SOCKET, SO_REUSEADDR, optVal.get(), sizeof(optVal)); returnValue < 0) {
 			if (this->doWePrintErrors) {
 				cout << reportError("DatagramSocketClient::connect::setsockopt(), to: " + baseUrlNew) << endl;
