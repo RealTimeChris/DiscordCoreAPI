@@ -45,7 +45,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll VoiceUser {
 		VoiceUser() noexcept = default;
 
-		VoiceUser(std::unordered_map<uint64_t, VoiceUser>* voiceUsers) noexcept;
+		VoiceUser(std::atomic_int8_t* voiceUserCount) noexcept;
 
 		VoiceUser& operator=(VoiceUser&&) noexcept;
 
@@ -61,15 +61,13 @@ namespace DiscordCoreAPI {
 
 		std::string extractPayload() noexcept;
 
-		size_t getVoiceUserCount() noexcept;
-
 		void setUserId(Snowflake) noexcept;
 
 		Snowflake getUserId() noexcept;
 
 	  protected:
-		std::unordered_map<uint64_t, VoiceUser>* voiceUsers{ nullptr };
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
+		std::atomic_int8_t* voiceUserCount{ nullptr };
 		std::deque<std::string> payloads{};
 		Snowflake userId{};
 	};

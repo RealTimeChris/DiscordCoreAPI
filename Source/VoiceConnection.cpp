@@ -43,14 +43,14 @@ namespace DiscordCoreAPI {
 		this->port = getUint64(jsonObjectData, "port");
 	}
 
-	VoiceUser::VoiceUser(std::unordered_map<uint64_t, VoiceUser>* voiceUsersNew) noexcept {
-		this->voiceUsers = voiceUsersNew;
+	VoiceUser::VoiceUser(std::atomic_int8_t* voiceUserCountNew) noexcept {
+		this->voiceUserCount = voiceUserCountNew;
 	}
 
 	VoiceUser& VoiceUser::operator=(VoiceUser&& data) noexcept {
+		this->voiceUserCount->store(data.voiceUserCount->load());
 		this->payloads = std::move(data.payloads);
 		this->decoder = std::move(data.decoder);
-		this->voiceUsers = data.voiceUsers;
 		this->userId = data.userId;
 		return *this;
 	}
@@ -68,17 +68,12 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string VoiceUser::extractPayload() noexcept {
-		int64_t userCount = this->getVoiceUserCount();
 		std::string value{};
-		if (this->payloads.size() > 0) {
-			value = this->payloads.front();
+		if (this->voiceUserCount->load() > 0 && this->payloads.size() > 0) {
+			value = std::move(this->payloads.front());
 			this->payloads.pop_front();
 		}
 		return value;
-	}
-
-	size_t VoiceUser::getVoiceUserCount() noexcept {
-		return this->voiceUsers->size();
 	}
 
 	void VoiceUser::setUserId(Snowflake userIdNew) noexcept {
@@ -265,7 +260,7 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceSocketOpCodes::Speaking: {
 				const uint32_t ssrc = getUint32(value["d"], "ssrc");
-				VoiceUser user{ &this->voiceUsers };
+				VoiceUser user{ &this->voiceUserCount };
 				user.setUserId(stoull(getString(value["d"], "user_id")));
 				if (!Users::getCachedUser({ .userId = user.getUserId() }).getFlagValue(UserFlags::Bot) ||
 					this->voiceConnectInitData.streamInfo.streamBotAudio) {
@@ -417,7 +412,6 @@ namespace DiscordCoreAPI {
 					}
 
 					auto targetTime{ HRClock::now() + this->intervalCount };
-
 					this->sendSpeakingMessage(false);
 					this->sendSpeakingMessage(true);
 
