@@ -224,6 +224,7 @@ namespace DiscordCoreAPI {
 			std::string string{ data.operator std::string() };
 			this->createHeader(string, this->dataOpCode);
 			if (!this->sendMessage(string, true)) {
+				this->onClosed();
 				return;
 			}
 			this->haveWeReceivedHeartbeatAck = false;
@@ -269,12 +270,12 @@ namespace DiscordCoreAPI {
 			}
 			case VoiceSocketOpCodes::Speaking: {
 				const uint32_t ssrc = getUint32(value["d"], "ssrc");
-				VoiceUser user{ &this->voiceUserCount };
-				user.setUserId(stoull(getString(value["d"], "user_id")));
-				if (!Users::getCachedUser({ .userId = user.getUserId() }).getFlagValue(UserFlags::Bot) ||
+				std::unique_ptr<VoiceUser> user{ std::make_unique<VoiceUser>(&this->voiceUserCount) };
+				user->setUserId(stoull(getString(value["d"], "user_id")));
+				if (!Users::getCachedUser({ .userId = user->getUserId() }).getFlagValue(UserFlags::Bot) ||
 					this->voiceConnectInitData.streamInfo.streamBotAudio) {
 					if (!this->voiceUsers.contains(ssrc)) {
-						this->voiceUsers[ssrc] = std::move(user);
+						this->voiceUsers[ssrc] = std::move(*user);
 						this->voiceUserCount.store(this->voiceUserCount.load() + 1);
 					}
 				}
