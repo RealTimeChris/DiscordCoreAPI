@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 	}
 
 	VoiceUser& VoiceUser::operator=(VoiceUser&& data) noexcept {
-		this->voiceUserCount->store(data.voiceUserCount->load());
+		this->voiceUserCount = data.voiceUserCount;
 		this->payloads = std::move(data.payloads);
 		this->decoder = std::move(data.decoder);
 		this->userId = data.userId;
