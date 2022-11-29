@@ -524,8 +524,3 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::HttpsClient* Messages::httpsClient{ nullptr };
 }
-ubmitWorkloadAndGetResult<void>(workload);
-	}
-
-	DiscordCoreInternal::HttpsClient* Messages::httpsClient{ nullptr };
-}
