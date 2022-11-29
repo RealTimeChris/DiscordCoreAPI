@@ -2005,17 +2005,17 @@ namespace DiscordCoreAPI {
 	}
 
 	/// \brief Typedef for the message filter.
-	template<typename Object> using ObjectFilter = std::function<bool(Object)>;
+	template<typename OTy> using ObjectFilter = std::function<bool(OTy)>;
 
 	/// \brief ObjectCollectorReturnData responseData.
-	template<typename Object> struct DiscordCoreAPI_Dll ObjectCollectorReturnData {
-		std::vector<Object> objects{};///< A vector of collected Objects.
+	template<typename OTy> struct DiscordCoreAPI_Dll ObjectCollectorReturnData {
+		std::vector<OTy> objects{};///< A vector of collected Objects.
 	};
 
-	/// \brief Object collector, for collecting Objects from a Channel.
-	template<typename Object> class DiscordCoreAPI_Dll ObjectCollector {
+	/// \brief OTy collector, for collecting Objects from a Channel.
+	template<typename OTy> class DiscordCoreAPI_Dll ObjectCollector {
 	  public:
-		static std::unordered_map<std::string, UnboundedMessageBlock<Object>*> objectsBuffersMap;
+		static std::unordered_map<std::string, UnboundedMessageBlock<OTy>*> objectsBuffersMap;
 
 		ObjectCollector() noexcept = default;
 
@@ -2024,9 +2024,9 @@ namespace DiscordCoreAPI {
 		/// \param msToCollectForNew Maximum number of Milliseconds to wait for Objects before returning the results.
 		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
 		/// \returns A ObjectCollectorReturnData structure.
-		CoRoutine<ObjectCollectorReturnData<Object>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew,
-			ObjectFilter<Object> filteringFunctionNew) {
-			co_await NewThreadAwaitable<ObjectCollectorReturnData<Object>>();
+		CoRoutine<ObjectCollectorReturnData<OTy>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew,
+			ObjectFilter<OTy> filteringFunctionNew) {
+			co_await NewThreadAwaitable<ObjectCollectorReturnData<OTy>>();
 			this->quantityOfObjectToCollect = quantityToCollect;
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
@@ -2040,8 +2040,8 @@ namespace DiscordCoreAPI {
 			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
 			int64_t elapsedTime{ 0 };
 			while (elapsedTime < this->msToCollectFor) {
-				Object message{};
-				waitForTimeToPass<Object>(this->objectsBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
+				OTy message{};
+				waitForTimeToPass<OTy>(this->objectsBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
 				if (this->filteringFunction(message)) {
 					this->objectReturnData.objects.emplace_back(message);
 				}
@@ -2060,9 +2060,9 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		ObjectCollectorReturnData<Object> objectReturnData{};
-		ObjectFilter<Object> filteringFunction{ nullptr };
-		UnboundedMessageBlock<Object> objectsBuffer{};
+		ObjectCollectorReturnData<OTy> objectReturnData{};
+		ObjectFilter<OTy> filteringFunction{ nullptr };
+		UnboundedMessageBlock<OTy> objectsBuffer{};
 		int32_t quantityOfObjectToCollect{ 0 };
 		int32_t msToCollectFor{ 0 };
 		std::string collectorId{};

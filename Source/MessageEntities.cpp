@@ -30,19 +30,19 @@
 
 namespace DiscordCoreAPI {
 
-	/// ObjectCollectorReturnData responseData. \brief ObjectCollectorReturnData responseData.
+	/// \brief ObjectCollectorReturnData responseData.
 	template<> struct DiscordCoreAPI_Dll ObjectCollectorReturnData<Message> {
 		std::vector<Message> messages{};///< A vector of collected Objects.
 	};
 
-	/// ObjectCollector, for collecting Objects from a Channel. \brief Object collector, for collecting Objects from a Channel.
+	/// \brief Object collector, for collecting Objects from a Channel.
 	template<> class DiscordCoreAPI_Dll ObjectCollector<Message> {
 	  public:
 		inline static std::unordered_map<std::string, UnboundedMessageBlock<Message>*> objectsBuffersMap{};
 
 		ObjectCollector() noexcept = default;
 
-		/// Begin waiting for Objects. \brief Begin waiting for Objects.
+		/// \brief Begin waiting for Objects.
 		/// \param quantityToCollect Maximum quantity of Objects to collect before returning the results.
 		/// \param msToCollectForNew Maximum number of Milliseconds to wait for Objects before returning the results.
 		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
@@ -520,6 +520,11 @@ namespace DiscordCoreAPI {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
+	}
+
+	DiscordCoreInternal::HttpsClient* Messages::httpsClient{ nullptr };
+}
+ubmitWorkloadAndGetResult<void>(workload);
 	}
 
 	DiscordCoreInternal::HttpsClient* Messages::httpsClient{ nullptr };

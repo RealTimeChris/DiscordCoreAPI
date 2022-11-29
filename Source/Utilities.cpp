@@ -1859,7 +1859,7 @@ namespace DiscordCoreAPI {
 		return stringNew;
 	}
 
-	template<typename Object> std::unordered_map<std::string, UnboundedMessageBlock<Object>*> ObjectCollector<Object>::objectsBuffersMap{};
+	template<typename OTy> std::unordered_map<std::string, UnboundedMessageBlock<OTy>*> ObjectCollector<OTy>::objectsBuffersMap{};
 };
 
 namespace DiscordCoreInternal {
