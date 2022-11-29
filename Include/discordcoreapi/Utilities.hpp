@@ -1573,7 +1573,6 @@ namespace DiscordCoreAPI {
 	/// \returns std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
-
 	/// \brief Class for representing a timeStamp, as well as working with time-related values.
 	class TimeStamp {
 	  public:
@@ -2112,7 +2111,7 @@ namespace DiscordCoreInternal {
 		void clear();
 
 	  protected:
-		std::string string01{};
+		std::string string{};
 		uint64_t sizeValue{};
 	};
 

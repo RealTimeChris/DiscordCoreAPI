@@ -483,14 +483,6 @@ namespace DiscordCoreAPI {
 								this->onClosed();
 							}
 						}
-						
-						if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
-							this->mixAudio();
-							if (this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both) ==
-								DiscordCoreInternal::ProcessIOResult::Error) {
-								this->onClosed();
-							}
-						}
 
 						waitTime = targetTime - HRClock::now();
 						waitTimeCount = static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.90l);
@@ -510,6 +502,14 @@ namespace DiscordCoreAPI {
 							this->onClosed();
 						}
 						targetTime = HRClock::now() + this->intervalCount;
+
+						if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
+							this->mixAudio();
+							if (this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both) ==
+								DiscordCoreInternal::ProcessIOResult::Error) {
+								this->onClosed();
+							}
+						}
 					}
 					break;
 				}

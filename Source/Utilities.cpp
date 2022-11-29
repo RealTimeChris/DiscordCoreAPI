@@ -1865,36 +1865,36 @@ namespace DiscordCoreAPI {
 namespace DiscordCoreInternal {
 
 	StringBuffer::StringBuffer() noexcept {
-		this->string01.resize(1024 * 16);
+		this->string.resize(1024 * 16);
 	}
 
 	std::string_view StringBuffer::operator[](LengthData size) {
-		std::string_view string{ this->string01.data() + size.offSet, size.length };
+		std::string_view string{ this->string.data() + size.offSet, size.length };
 		return string;
 	}
 
 	char StringBuffer::operator[](uint64_t index) {
-		return this->string01[index];
+		return this->string[index];
 	}
 
 	void StringBuffer::writeData(const char* ptr, uint64_t size) {
-		if (this->sizeValue + size > this->string01.size()) {
-			this->string01.resize(this->string01.size() + size);
+		if (this->sizeValue + size > this->string.size()) {
+			this->string.resize(this->string.size() + size);
 		}
-		std::copy(ptr, ptr + size, this->string01.data() + this->sizeValue);
+		std::copy(ptr, ptr + size, this->string.data() + this->sizeValue);
 		this->sizeValue += size;
 	}
 
 	std::string::iterator StringBuffer::begin() {
-		return this->string01.begin();
+		return this->string.begin();
 	}
 
 	std::string::iterator StringBuffer::end() {
-		return this->string01.end();
+		return this->string.end();
 	}
 
 	void StringBuffer::erase(uint64_t amount) {
-		std::copy(this->string01.data() + amount, this->string01.data() + this->sizeValue, this->string01.data());
+		std::copy(this->string.data() + amount, this->string.data() + this->sizeValue, this->string.data());
 		this->sizeValue = this->sizeValue - amount;
 	}
 
@@ -1903,7 +1903,7 @@ namespace DiscordCoreInternal {
 	}
 
 	char* StringBuffer::data() {
-		return this->string01.data();
+		return this->string.data();
 	}
 
 	void StringBuffer::clear() {
