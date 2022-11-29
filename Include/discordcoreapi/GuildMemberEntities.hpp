@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 	/// \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		friend class DiscordCoreInternal::WebSocketSSLShard;
+		friend class DiscordCoreInternal::WebSocketClient;
 		friend class DiscordCoreClient;
 		friend class GuildMemberData;
 		friend class GuildData;

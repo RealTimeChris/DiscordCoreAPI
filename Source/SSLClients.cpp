@@ -289,7 +289,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	std::vector<SSLClient*> SSLClient::processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>>& shardMap) noexcept {
+	std::vector<SSLClient*> SSLClient::processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketClient>>& shardMap) noexcept {
 		std::vector<SSLClient*> returnValue{};
 		PollFDWrapper readWriteSet{};
 		for (auto& [key, value]: shardMap) {

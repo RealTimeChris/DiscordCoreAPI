@@ -2900,7 +2900,7 @@ namespace DiscordCoreAPI {
 		friend struct OnInteractionCreationData;
 		friend struct BaseFunctionArguments;
 
-		friend class DiscordCoreInternal::WebSocketSSLShard;
+		friend class DiscordCoreInternal::WebSocketClient;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class RespondToInputEventData;
 		friend class DiscordCoreClient;

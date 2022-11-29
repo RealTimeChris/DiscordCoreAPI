@@ -110,7 +110,7 @@ namespace DiscordCoreInternal {
 		uint32_t shard[2]{};
 	};
 
-	class DiscordCoreAPI_Dll WebSocketSSLShard : public WebSocketCore {
+	class DiscordCoreAPI_Dll WebSocketClient : public WebSocketCore {
 	  public:
 		friend struct DiscordCoreAPI::OnVoiceServerUpdateData;
 		friend struct DiscordCoreAPI::OnVoiceStateUpdateData;
@@ -120,7 +120,7 @@ namespace DiscordCoreInternal {
 		friend class WebSocketCore;
 		friend class SSLClient;
 
-		WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* client, int32_t currentShardNew, std::atomic_bool* doWeQuitNew);
+		WebSocketClient(DiscordCoreAPI::DiscordCoreClient* client, int32_t currentShardNew, std::atomic_bool* doWeQuitNew);
 
 		void getVoiceConnectionData(const DiscordCoreAPI::VoiceConnectInitData& doWeCollect) noexcept;
 
@@ -130,7 +130,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed() noexcept;
 
-		virtual ~WebSocketSSLShard() noexcept = default;
+		virtual ~WebSocketClient() noexcept = default;
 
 	  protected:
 		std::unordered_map<uint64_t, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBuffersMap{};
@@ -160,7 +160,7 @@ namespace DiscordCoreInternal {
 		~BaseSocketAgent() noexcept;
 
 	  protected:
-		std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>> shardMap{};
+		std::unordered_map<uint32_t, std::unique_ptr<WebSocketClient>> shardMap{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 		DiscordCoreAPI::ConfigManager* configManager{};

@@ -208,7 +208,7 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
 
-		static std::vector<SSLClient*> processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketSSLShard>>& shardMap) noexcept;
+		static std::vector<SSLClient*> processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketClient>>& shardMap) noexcept;
 
 		ProcessIOResult writeData(std::string_view dataToWrite, bool priority) noexcept;
 

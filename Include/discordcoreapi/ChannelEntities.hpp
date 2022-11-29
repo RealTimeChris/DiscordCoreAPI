@@ -224,7 +224,7 @@ namespace DiscordCoreAPI {
 	/// \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	  public:
-		friend class DiscordCoreInternal::WebSocketSSLShard;
+		friend class DiscordCoreInternal::WebSocketClient;
 		friend class DiscordCoreClient;
 		friend class ChannelData;
 		friend class GuildData;

@@ -390,7 +390,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	WebSocketSSLShard::WebSocketSSLShard(DiscordCoreAPI::DiscordCoreClient* client, int32_t currentShardNew, std::atomic_bool* doWeQuitNew)
+	WebSocketClient::WebSocketClient(DiscordCoreAPI::DiscordCoreClient* client, int32_t currentShardNew, std::atomic_bool* doWeQuitNew)
 		: WebSocketCore(&client->configManager, WebSocketType::Normal) {
 		this->configManager = &client->configManager;
 		this->shard[0] = currentShardNew;
@@ -409,7 +409,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::getVoiceConnectionData(const DiscordCoreAPI::VoiceConnectInitData& doWeCollect) noexcept {
+	void WebSocketClient::getVoiceConnectionData(const DiscordCoreAPI::VoiceConnectInitData& doWeCollect) noexcept {
 		while (this->currentState.load() != WebSocketState::Authenticated) {
 			std::this_thread::sleep_for(1ms);
 		}
@@ -455,7 +455,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	bool WebSocketSSLShard::onMessageReceived(std::string_view dataNew) noexcept {
+	bool WebSocketClient::onMessageReceived(std::string_view dataNew) noexcept {
 		try {
 			if (this->areWeStillConnected() && this->currentMessage.size() > 0 && dataNew.size() > 0) {
 				std::string payload{};
@@ -1145,7 +1145,7 @@ namespace DiscordCoreInternal {
 			}
 
 		} catch (...) {
-			DiscordCoreAPI::reportException("WebSocketSSLShard::onMessageReceived()");
+			DiscordCoreAPI::reportException("WebSocketClient::onMessageReceived()");
 		}
 		this->currentMessage.clear();
 		this->inputBuffer.clear();
@@ -1154,7 +1154,7 @@ namespace DiscordCoreInternal {
 		return false;
 	}
 
-	void WebSocketSSLShard::disconnect() noexcept {
+	void WebSocketClient::disconnect() noexcept {
 		if (this->socket != SOCKET_ERROR) {
 			this->socket = SOCKET_ERROR;
 			this->ssl = nullptr;
@@ -1171,7 +1171,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void WebSocketSSLShard::onClosed() noexcept {
+	void WebSocketClient::onClosed() noexcept {
 		if (this->maxReconnectTries > this->currentReconnectTries) {
 			this->disconnect();
 		} else {
@@ -1200,7 +1200,7 @@ namespace DiscordCoreInternal {
 		if (packageNew.currentShard != -1) {
 			if (!this->shardMap.contains(packageNew.currentShard)) {
 				this->shardMap[packageNew.currentShard] =
-					std::make_unique<WebSocketSSLShard>(this->discordCoreClient, packageNew.currentShard, this->doWeQuit);
+					std::make_unique<WebSocketClient>(this->discordCoreClient, packageNew.currentShard, this->doWeQuit);
 			}
 			this->shardMap[packageNew.currentShard]->currentReconnectTries = packageNew.currentReconnectTries;
 			++this->shardMap[packageNew.currentShard]->currentReconnectTries;
@@ -1288,11 +1288,11 @@ namespace DiscordCoreInternal {
 				for (auto& valueNew: result) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket ["
-							 << static_cast<WebSocketSSLShard*>(valueNew)->shard[0] << "," << this->configManager->getTotalShardCount()
+							 << static_cast<WebSocketClient*>(valueNew)->shard[0] << "," << this->configManager->getTotalShardCount()
 							 << "]... reconnecting." << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
-					static_cast<WebSocketSSLShard*>(valueNew)->onClosed();
+					static_cast<WebSocketClient*>(valueNew)->onClosed();
 				}
 				bool areWeConnected{ false };
 				for (auto& [key, dValue]: this->shardMap) {

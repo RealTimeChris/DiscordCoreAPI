@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 
 		/// The constructor.
-		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketSSLShard* baseShardNew,
+		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketClient* baseShardNew,
 			std::atomic_bool* doWeQuitNew) noexcept;
 
 		/// \brief Collects the currently connected-to voice Channel's id.
@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		std::unique_ptr<VoiceConnectionBridge> streamSocket{ nullptr };
-		DiscordCoreInternal::WebSocketSSLShard* baseShard{ nullptr };
+		DiscordCoreInternal::WebSocketClient* baseShard{ nullptr };
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};
 		DiscordCoreClient* discordCoreClient{ nullptr };

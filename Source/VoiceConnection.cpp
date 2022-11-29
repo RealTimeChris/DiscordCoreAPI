@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 		this->parseOutgoingVoiceData();
 	}
 
-	VoiceConnection::VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketSSLShard* baseShardNew,
+	VoiceConnection::VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketClient* baseShardNew,
 		std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketCore(&clientPtrNew->configManager, DiscordCoreInternal::WebSocketType::Voice),
 		  DatagramSocketClient(StreamType::None, clientPtrNew->configManager.doWePrintWebSocketErrorMessages()) {

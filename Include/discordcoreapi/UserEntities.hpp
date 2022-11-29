@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 	/// \brief An interface class for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	  public:
-		friend class DiscordCoreInternal::WebSocketSSLShard;
+		friend class DiscordCoreInternal::WebSocketClient;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreClient;
 		friend class UserData;

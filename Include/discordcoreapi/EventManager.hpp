@@ -442,7 +442,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData {
 		VoiceStateData voiceStateData{};///< VoiceStateData for the new voice state.
 		OnVoiceStateUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-			DiscordCoreInternal::WebSocketSSLShard* sslShard);
+			DiscordCoreInternal::WebSocketClient* sslShard);
 	};
 
 	/// \brief Data that is received as part of a voice server update event.
@@ -451,7 +451,7 @@ namespace DiscordCoreAPI {
 		std::string endpoint{};///< The new endpoint.
 		std::string token{};///< The token of the server update event.
 		OnVoiceServerUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-			DiscordCoreInternal::WebSocketSSLShard* sslShard);
+			DiscordCoreInternal::WebSocketClient* sslShard);
 	};
 
 	/// \brief Data that is received as part of a WebHook update event.

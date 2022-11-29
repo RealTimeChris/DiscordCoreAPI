@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 	/// \brief DiscordCoreClient - The main class for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
-		friend class DiscordCoreInternal::WebSocketSSLShard;
+		friend class DiscordCoreInternal::WebSocketClient;
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreInternal::WebSocketCore;
 		friend class VoiceConnection;

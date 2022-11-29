@@ -426,7 +426,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnVoiceServerUpdateData::OnVoiceServerUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-		DiscordCoreInternal::WebSocketSSLShard* sslShard) {
+		DiscordCoreInternal::WebSocketClient* sslShard) {
 		this->endpoint = getString(dataReal["d"], "endpoint");
 		this->guildId = getId(dataReal["d"], "guild_id");
 		this->token = getString(dataReal["d"], "token");
@@ -687,7 +687,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnVoiceStateUpdateData::OnVoiceStateUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-		DiscordCoreInternal::WebSocketSSLShard* sslShard) {
+		DiscordCoreInternal::WebSocketClient* sslShard) {
 		this->voiceStateData = data.processJsonMessage<DiscordCoreAPI::VoiceStateData>(dataReal, "d");
 		sslShard->voiceConnectionData.sessionId = this->voiceStateData.sessionId;
 		if (sslShard->areWeCollectingData && !sslShard->stateUpdateCollected && !sslShard->serverUpdateCollected &&

@@ -671,7 +671,7 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll SoundCloudRequestBuilder;
 	class DiscordCoreAPI_Dll YouTubeRequestBuilder;
-	class DiscordCoreAPI_Dll WebSocketSSLShard;
+	class DiscordCoreAPI_Dll WebSocketClient;
 	class DiscordCoreAPI_Dll BaseSocketAgent;
 	class DiscordCoreAPI_Dll SoundCloudAPI;
 	class DiscordCoreAPI_Dll YouTubeAPI;
