@@ -201,15 +201,15 @@ namespace DiscordCoreAPI {
 		uint32_t audioSSRC{};
 		uint16_t port{};
 
-		void parseIncomingVoiceData(const std::string_view rawDataBufferNew) noexcept;
+		void parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept;
 
-		void sendVoiceData(const std::string_view responseData) noexcept;
+		void sendVoiceData(std::string_view responseData) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
 		void checkForAndSendHeartBeat(const bool isItImmediage) noexcept;
 
-		bool onMessageReceived(const std::string_view data) noexcept;
+		bool onMessageReceived(std::string_view data) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 

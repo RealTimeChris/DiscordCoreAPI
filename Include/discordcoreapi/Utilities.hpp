@@ -1336,7 +1336,7 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	DiscordCoreAPI_Dll uint64_t strtoull(const std::string_view string);
+	DiscordCoreAPI_Dll uint64_t strtoull(std::string_view string);
 
 	template<typename RTy> RTy fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
 		RTy value{};

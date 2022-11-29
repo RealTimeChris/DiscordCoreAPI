@@ -137,7 +137,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnectionBridge::parseOutgoingVoiceData() noexcept {
-		const std::string_view buffer = this->getInputBuffer();
+		std::string_view buffer = this->getInputBuffer();
 		if (buffer.size() > 0) {
 			AudioFrameData frame{};
 			frame += buffer;
@@ -175,7 +175,7 @@ namespace DiscordCoreAPI {
 		return this->voiceConnectInitData.channelId;
 	}
 
-	void VoiceConnection::parseIncomingVoiceData(const std::string_view rawDataBufferNew) noexcept {
+	void VoiceConnection::parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept {
 		const uint32_t speakerSsrc{ ntohl(*reinterpret_cast<const uint32_t*>(rawDataBufferNew.data() + 8)) };
 		if (this->voiceUsers.contains(speakerSsrc)) {
 			if (72 <= (rawDataBufferNew[1] & 0b0111'1111) && (rawDataBufferNew[1] & 0b0111'1111) <= 76) {
@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::sendVoiceData(const std::string_view responseData) noexcept {
+	void VoiceConnection::sendVoiceData(std::string_view responseData) noexcept {
 		if (responseData.size() == 0) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {
 				cout << shiftToBrightRed() << "Please specify voice data to send" << reset() << endl << endl;
@@ -232,7 +232,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	bool VoiceConnection::onMessageReceived(const std::string_view data) noexcept {
+	bool VoiceConnection::onMessageReceived(std::string_view data) noexcept {
 		std::string string{ data };
 		string.reserve(string.size() + simdjson::SIMDJSON_PADDING);
 		DiscordCoreInternal::WebSocketMessage message{};
@@ -909,7 +909,7 @@ namespace DiscordCoreAPI {
 			for (int32_t x = 0; x < decodedSize; ++x) {
 				this->downSampledVector[x] = this->upSampledVector[x] / voiceUserCount;
 			}
-			this->streamSocket->writeData(std::string_view{ reinterpret_cast<const char*>(this->downSampledVector.data()), decodedSize * 2 });
+			this->streamSocket->writeData(std::string_view{ reinterpret_cast<char*>(this->downSampledVector.data()), decodedSize * 2 });
 		}
 	}
 

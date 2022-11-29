@@ -1186,7 +1186,7 @@ namespace DiscordCoreAPI {
 		return this->lowBits == other.lowBits && this->highBits == other.highBits;
 	}
 
-	uint64_t strtoull(const std::string_view string) {
+	uint64_t strtoull(std::string_view string) {
 		for (auto& value: string) {
 			if (!isdigit(value)) {
 				return 0;
