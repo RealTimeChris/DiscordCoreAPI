@@ -181,7 +181,7 @@ namespace DiscordCoreInternal {
 
 	bool WebSocketCore::connect(const std::string& baseUrl, const std::string& relativePath, const uint16_t portNew, bool doWePrintErrorsNew,
 		bool areWeAStandaloneSocketNew) noexcept {
-		SSLClient::connect(baseUrl, portNew, doWePrintErrorsNew, areWeAStandaloneSocket);
+		TCPSSLClient::connect(baseUrl, portNew, doWePrintErrorsNew, areWeAStandaloneSocket);
 		DiscordCoreAPI::StopWatch stopWatch{ 5s };
 		std::string sendString{ "GET " + relativePath + " HTTP/1.1\r\nHost: " + baseUrl +
 			"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: "
@@ -1284,7 +1284,7 @@ namespace DiscordCoreInternal {
 		while (!token.stop_requested() && !this->doWeQuit->load()) {
 			try {
 				std::unique_lock lock{ this->accessMutex };
-				auto result = SSLClient::processIO(this->shardMap);
+				auto result = TCPSSLClient::processIO(this->shardMap);
 				for (auto& valueNew: result) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket ["

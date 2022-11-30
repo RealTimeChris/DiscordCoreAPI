@@ -64,7 +64,7 @@ namespace DiscordCoreInternal {
 
 	enum class WebSocketState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
-	class DiscordCoreAPI_Dll WebSocketCore : public ErlParser, public SSLClient {
+	class DiscordCoreAPI_Dll WebSocketCore : public ErlParser, public TCPSSLClient {
 	  public:
 		WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, WebSocketType typeOfWebSocketNew);
 
@@ -118,7 +118,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::BotUser;
 		friend class BaseSocketAgent;
 		friend class WebSocketCore;
-		friend class SSLClient;
+		friend class TCPSSLClient;
 
 		WebSocketClient(DiscordCoreAPI::DiscordCoreClient* client, int32_t currentShardNew, std::atomic_bool* doWeQuitNew);
 

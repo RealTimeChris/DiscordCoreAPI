@@ -243,7 +243,7 @@ namespace DiscordCoreInternal {
 			std::unique_ptr<WebSocketClient> streamSocket{ std::make_unique<WebSocketClient>(nullptr, 0, nullptr) };
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
-				if (!static_cast<SSLClient*>(streamSocket.get())
+				if (!static_cast<TCPSSLClient*>(streamSocket.get())
 						 ->connect(newSong.finalDownloadUrls[0].urlPath, 443, this->configManager->doWePrintWebSocketErrorMessages(), true)) {
 					this->weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
 					return;

@@ -202,13 +202,13 @@ namespace DiscordCoreInternal {
 		int64_t bytesRead{ 0 };
 	};
 
-	class DiscordCoreAPI_Dll SSLClient : public SSLDataInterface, public SSLConnectionInterface {
+	class DiscordCoreAPI_Dll TCPSSLClient : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
 		virtual void handleBuffer() noexcept = 0;
 
 		bool connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
 
-		static std::vector<SSLClient*> processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketClient>>& shardMap) noexcept;
+		static std::vector<TCPSSLClient*> processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketClient>>& shardMap) noexcept;
 
 		ProcessIOResult writeData(std::string_view dataToWrite, bool priority) noexcept;
 
@@ -224,7 +224,7 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		virtual ~SSLClient() noexcept = default;
+		virtual ~TCPSSLClient() noexcept = default;
 
 	  protected:
 		bool doWePrintErrorMessages{ false };
@@ -233,11 +233,11 @@ namespace DiscordCoreInternal {
 
 	enum class ProcessIOType { Both = 0, Read_Only = 1, Write_Only = 2 };
 
-	class DiscordCoreAPI_Dll DatagramSocketClient {
+	class DiscordCoreAPI_Dll UDPConnection {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		DatagramSocketClient(DiscordCoreAPI::StreamType streamType, bool doWePrintErrors) noexcept;
+		UDPConnection(DiscordCoreAPI::StreamType streamType, bool doWePrintErrors) noexcept;
 
 		bool connect(const std::string& baseUrlNew, uint16_t portNew, bool haveWeGottenSignaled, std::stop_token token = std::stop_token{}) noexcept;
 
@@ -259,7 +259,7 @@ namespace DiscordCoreInternal {
 
 		void disconnect() noexcept;
 
-		virtual ~DatagramSocketClient() noexcept = default;
+		virtual ~UDPConnection() noexcept = default;
 
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) };
