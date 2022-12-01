@@ -520,8 +520,8 @@ namespace DiscordCoreAPI {
 				eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 				*eventData->interactionData = this->interactionData;
 				std::unique_ptr<DiscordCoreAPI::CommandData> commandData{ std::make_unique<DiscordCoreAPI::CommandData>(*eventData) };
-				DiscordCoreAPI::CommandData commanddataNew = *commandData;
-				clientPtr->getCommandController().checkForAndRunCommand(commanddataNew);
+				commandData->discordCoreClient = eventData->getGuildData().discordCoreClient;
+				clientPtr->getCommandController().checkForAndRunCommand(*commandData);
 				std::unique_ptr<DiscordCoreAPI::OnInputEventCreationData> eventCreationData{
 					std::make_unique<DiscordCoreAPI::OnInputEventCreationData>(data, dataReal)
 				};
@@ -534,8 +534,8 @@ namespace DiscordCoreAPI {
 						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 						*eventData->interactionData = this->interactionData;
 						if (DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap.contains(
-								eventData->getChannelId() + eventData->getMessageId())) {
-							DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelId() + eventData->getMessageId()]->send(
+								eventData->getChannelData().id + eventData->getMessageData().id)) {
+							DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]->send(
 								interactionData);
 						}
 						break;
@@ -544,9 +544,9 @@ namespace DiscordCoreAPI {
 						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 						*eventData->interactionData = this->interactionData;
 						if (DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBuffersMap.contains(
-								eventData->getChannelId() + eventData->getMessageId())) {
-							DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelId() +
-								eventData->getMessageId()]
+								eventData->getChannelData().id + eventData->getMessageData().id)) {
+							DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelData().id +
+								eventData->getMessageData().id]
 								->send(interactionData);
 						}
 						break;
@@ -561,8 +561,8 @@ namespace DiscordCoreAPI {
 					std::make_unique<DiscordCoreAPI::OnInputEventCreationData>(data, dataReal)
 				};
 				eventCreationData->inputEventData = *eventData;
-				if (DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap.contains(eventData->getChannelId())) {
-					DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap[eventData->getChannelId()]->send(eventData->getInteractionData());
+				if (DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap.contains(eventData->getChannelData().id)) {
+					DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap[eventData->getChannelData().id]->send(eventData->getInteractionData());
 				}
 				break;
 			}

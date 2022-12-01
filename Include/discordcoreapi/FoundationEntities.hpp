@@ -2923,57 +2923,29 @@ namespace DiscordCoreAPI {
 
 		InputEventData() noexcept = default;
 
-		/// \brief Returns the userName of the last User to trigger this input-event.
-		/// \returns std::string A string containing the User name.
-		std::string getUserName() const;
-
-		/// \brief Gets the avatar Url of the last User to trigger this input-event.
-		/// \returns std::string A string containing the avatar Url.
-		std::string getAvatarUrl() const;
-
-		/// \brief Returns the Message embeds that are on the Message, if applicable.
-		/// \returns std::vector A vector containing the EmbedData.
-		std::vector<EmbedData> getEmbeds() const;
-
-		/// \brief Returns the Message components that are on the Message, if applicable.
-		/// \returns std::vector A vector containing ActionRowData.
-		std::vector<ActionRowData> getComponents() const;
-
-		/// \brief Returns the User id of the last requester of this input-event.
-		/// \returns Snowflake A Snowflake containing the author's id.
-		Snowflake getAuthorId() const;
-
-		/// \brief Returns the Interaction id, if appplicable, of this input-event.
-		/// \returns Snowflake A Snowflake containing the Interaction id.
-		Snowflake getInteractionId() const;
-
-		/// \brief Returns the application id.
-		/// \returns Snowflake A Snowflake containing the application id.
-		Snowflake getApplicationId() const;
-
-		/// \brief Returns the Channel id of this input-event.
-		/// \returns Snowflake A Snowflake containing the Channel id.
-		Snowflake getChannelId() const;
-
-		/// \brief Returns the Interaction token, if applicable, of this input-event.
-		/// \returns std::string A string containing the Interaction token.
-		std::string getInteractionToken() const;
-
-		/// \brief Returns the Guild id, of this input-event.
-		/// \returns Snowflake A Snowflake containing the Guild id.
-		Snowflake getGuildId() const;
-
-		/// \brief Returns the Message id, if applicable, of this input-event.
-		/// \returns Snowflake A Snowflake containing the Message id.
-		Snowflake getMessageId() const;
-
-		/// \brief Returns the InteractionData, if applicable, of this input-event.
-		/// \returns InteractionData An InteractionData structure.
+		/// \brief Returns the Interaction data, if appplicable, of this input-event.
+		/// \returns InteractionData A Snowflake containing the Interaction data.
 		InteractionData getInteractionData() const;
+
+		/// \brief Returns the GuildMember of this input-event.
+		/// \returns GuildMemberData A GuildMember containing the GuildMember data.
+		GuildMemberData getGuildMemberData() const;
+
+		/// \brief Returns the Channel of this input-event.
+		/// \returns ChannelData A Channel containing the Channel data.
+		ChannelData getChannelData() const;
 
 		/// \brief Returns the Message data, if applicable, of this input-event.
 		/// \returns MessageData A MessageData structure.
 		MessageData getMessageData() const;
+
+		/// \brief Returns the Guild of this input-event.
+		/// \returns GuildData A Guild containing the Guild data.
+		GuildData getGuildData() const;
+
+		/// \brief Returns the User of this input-event.
+		/// \returns UserData A User containing the User data.
+		UserData getUserData() const;
 
 		virtual ~InputEventData() noexcept = default;
 
@@ -3324,11 +3296,7 @@ namespace DiscordCoreAPI {
 	/// \brief Command data, for functions executed by the CommandController.
 	class DiscordCoreAPI_Dll CommandData {
 	  public:
-		std::string subCommandGroupName{};
-		std::string subCommandName{};
-		JsonifierValue optionsArgs{};
-		InputEventData eventData{};
-		std::string commandName{};
+		friend class OnInteractionCreationData;
 
 		CommandData() noexcept = default;
 
@@ -3336,15 +3304,71 @@ namespace DiscordCoreAPI {
 
 		CommandData(CommandData&&) noexcept = default;
 
-		CommandData& operator=(const CommandData&) noexcept = default;
+		CommandData& operator=(const CommandData&) noexcept;
 
-		CommandData(const CommandData&) noexcept = default;
+		CommandData(const CommandData&) noexcept;
 
 		CommandData(InputEventData inputEventData);
 
 		CommandData(simdjson::ondemand::value jsonObjectData);
 
+		/// \brief Returns the Interaction data, if appplicable, of this input-event.
+		/// \returns InteractionData A Snowflake containing the Interaction data.
+		InteractionData getInteractionData() noexcept;
+
+		/// \brief Returns a pointer to the currently active DiscordCoreClient class.
+		/// \returns DiscordCoreClient* A pointer to the currently active DiscordCoreClient.
+		DiscordCoreClient* getDiscordCoreClient() noexcept;
+
+		/// \brief Returns the GuildMember of this input-event.
+		/// \returns GuildMemberData A GuildMember containing the GuildMember data.
+		GuildMemberData getGuildMemberData() noexcept;
+
+		/// \brief Returns the Channel of this input-event.
+		/// \returns ChannelData A Channel containing the Channel data.
+		ChannelData getChannelData() noexcept;
+
+		/// \brief Returns the Message data, if applicable, of this input-event.
+		/// \returns MessageData A MessageData structure.
+		MessageData getMessageData() noexcept;
+
+		/// \brief Returns the Guild of this input-event.
+		/// \returns GuildData A Guild containing the Guild data.
+		GuildData getGuildData() noexcept;
+
+		/// \brief Returns the User of this input-event.
+		/// \returns UserData A User containing the User data.
+		UserData getUserData() noexcept;
+
+		/// \brief Returns the name of this entered command.
+		/// \returns std::string A string containing the name of this command.
+		std::string getCommandName() noexcept;
+
+		/// \brief Returns the subcommand-name of this entered command.
+		/// \returns std::string A string containing the name of this sub-command.
+		std::string getSubCommandName() noexcept;
+
+		/// \brief Returns the subcommand-name of this entered command group.
+		/// \returns std::string A string containing the name of this sub-command's group.
+		std::string getSubCommandGroupName() noexcept;
+
+		/// \brief Returns the collection of command inputs/options for this command.
+		/// \returns JsonifierValue A JsonifierValue containing the arguments entered with this command.
+		JsonifierValue getCommandArguments() noexcept;
+
+		/// \brief Returns the InputEventData for this command.
+		/// \returns InputEventData An InputEventData containing the data associated  with this command.
+		InputEventData getInputEventData() noexcept;
+
 		virtual ~CommandData() noexcept = default;
+
+	  protected:
+		DiscordCoreClient* discordCoreClient{ nullptr };
+		std::string subCommandGroupName{};
+		std::string subCommandName{};
+		JsonifierValue optionsArgs{};
+		InputEventData eventData{};
+		std::string commandName{};
 	};
 
 	/// \brief Base arguments for the command classes.

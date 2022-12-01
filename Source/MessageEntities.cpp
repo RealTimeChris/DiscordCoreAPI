@@ -243,7 +243,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CreateMessageData::CreateMessageData(InputEventData dataPackage) {
-		this->channelId = dataPackage.getChannelId();
+		this->channelId = dataPackage.getChannelData().id;
 	}
 
 	CreateMessageData::operator Jsonifier() {
@@ -299,8 +299,8 @@ namespace DiscordCoreAPI {
 	}
 
 	EditMessageData::EditMessageData(InputEventData dataPackage) {
-		this->channelId = dataPackage.getChannelId();
-		this->messageId = dataPackage.getMessageId();
+		this->channelId = dataPackage.getChannelData().id;
+		this->messageId = dataPackage.getMessageData().id;
 	}
 
 	EditMessageData::EditMessageData(RespondToInputEventData dataPackage) {

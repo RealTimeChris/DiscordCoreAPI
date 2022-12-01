@@ -451,11 +451,15 @@ namespace DiscordCoreAPI {
 						switch (this->audioData.type) {
 							case AudioFrameType::RawPCM: {
 								auto encodedFrameData = this->encoder.encodeData(this->audioData);
-								frame = this->packetEncrypter.encryptPacket(encodedFrameData);
+								if (encodedFrameData.data.size() != 0) {
+									frame = this->packetEncrypter.encryptPacket(encodedFrameData);
+								}
 								break;
 							}
 							case AudioFrameType::Encoded: {
-								frame = this->packetEncrypter.encryptPacket(this->audioData);
+								if (this->audioData.data.size() != 0) {
+									frame = this->packetEncrypter.encryptPacket(this->audioData);
+								}
 								break;
 							}
 							case AudioFrameType::Skip: {
@@ -496,11 +500,15 @@ namespace DiscordCoreAPI {
 						}
 						if (frame.size() > 0) {
 							this->sendVoiceData(frame);
+							if (UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Both) == DiscordCoreInternal::ProcessIOResult::Error) {
+								this->onClosed();
+							}
+						} else {
+							if (UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Read_Only) == DiscordCoreInternal::ProcessIOResult::Error) {
+								this->onClosed();
+							}
 						}
-						if (UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
-							DiscordCoreInternal::ProcessIOResult::Error) {
-							this->onClosed();
-						}
+						
 						targetTime = HRClock::now() + this->intervalCount;
 
 						if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
@@ -517,7 +525,7 @@ namespace DiscordCoreAPI {
 					return;
 				}
 			}
-			if (token.stop_requested()) {
+			if (token.stop_requested() || this->activeState == VoiceActiveState::Exiting) {
 				return;
 			}
 			std::this_thread::sleep_for(1ms);
@@ -534,9 +542,15 @@ namespace DiscordCoreAPI {
 			this->connections.reset(nullptr);
 			this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
 			WebSocketCore::ssl = nullptr;
-			if (this->voiceConnectInitData.streamInfo.type != StreamType::None) {
+			if (this->voiceConnectInitData.streamInfo.type != StreamType::None ) {
 				WebSocketCore::outputBuffer.clear();
 				WebSocketCore::inputBuffer.clear();
+				UDPConnection::inputBuffer.clear();
+				UDPConnection::outputBuffer.clear();
+				if (this->streamSocket) {
+					this->streamSocket->inputBuffer.clear();
+					this->streamSocket->outputBuffer.clear();
+				}
 				this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.clearContents();
 			}
 			WebSocketCore::socket = SOCKET_ERROR;
@@ -855,7 +869,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::mixAudio() noexcept {
 		opus_int32 voiceUserCount{};
 		size_t decodedSize{};
-		std::memset(this->upSampledVector.data(), 0b00000000, this->upSampledVector.size() * sizeof(int32_t));
+		std::fill(this->upSampledVector.data(), this->upSampledVector.data() + this->upSampledVector.size(), 0);
 		for (auto& [key, value]: this->voiceUsers) {
 			std::string_view payload{ value.extractPayload() };
 			if (payload.size() > 0) {
@@ -876,7 +890,7 @@ namespace DiscordCoreAPI {
 				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
 						reinterpret_cast<const uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, nonce,
 						reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
-					return;
+					continue;
 				}
 
 				std::string_view newString{ this->decryptedDataString.data(), encryptedDataLength - crypto_secretbox_MACBYTES };

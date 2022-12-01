@@ -3549,52 +3549,32 @@ namespace DiscordCoreAPI {
 		*this = interactionData;
 	}
 
-	std::string InputEventData::getUserName() const {
-		return this->interactionData->user.userName;
+	UserData InputEventData::getUserData() const {
+		UserData returnData{};
+		returnData.id = this->interactionData->user.id;
+		returnData = Users::getCachedUser({ .userId = returnData.id });
+		return this->interactionData->user;
 	}
 
-	std::string InputEventData::getAvatarUrl() const {
-		if (this->interactionData->member.getUserData().getAvatarUrl() != "") {
-			return this->interactionData->member.getUserData().getAvatarUrl();
-		} else {
-			return this->interactionData->user.getAvatarUrl();
-		}
+	ChannelData InputEventData::getChannelData() const {
+		ChannelData returnData{};
+		returnData.id = this->interactionData->channelId;
+		returnData = Channels::getCachedChannel({ returnData.id });
+		return returnData;
 	}
 
-	std::vector<EmbedData> InputEventData::getEmbeds() const {
-		return this->interactionData->message.embeds;
+	GuildMemberData InputEventData::getGuildMemberData() const {
+		GuildMemberData returnData{ this->interactionData->member };
+		returnData =
+			GuildMembers::getCachedGuildMember({ .guildMemberId = returnData.id, .guildId = this->interactionData->guildId });
+		return returnData;
 	}
 
-	std::vector<ActionRowData> InputEventData::getComponents() const {
-		return this->interactionData->message.components;
-	}
-
-	Snowflake InputEventData::getAuthorId() const {
-		return this->interactionData->user.id;
-	}
-
-	Snowflake InputEventData::getInteractionId() const {
-		return this->interactionData->id;
-	}
-
-	Snowflake InputEventData::getApplicationId() const {
-		return this->interactionData->applicationId;
-	}
-
-	Snowflake InputEventData::getChannelId() const {
-		return this->interactionData->channelId;
-	}
-
-	std::string InputEventData::getInteractionToken() const {
-		return this->interactionData->token;
-	}
-
-	Snowflake InputEventData::getGuildId() const {
-		return this->interactionData->guildId;
-	}
-
-	Snowflake InputEventData::getMessageId() const {
-		return this->interactionData->message.id;
+	GuildData InputEventData::getGuildData() const {
+		GuildData returnData{};
+		returnData.id = this->interactionData->guildId;
+		returnData = Guilds::getCachedGuild({ .guildId = this->interactionData->guildId });
+		return returnData;
 	}
 
 	InteractionData InputEventData::getInteractionData() const {
@@ -3620,11 +3600,11 @@ namespace DiscordCoreAPI {
 	}
 
 	RespondToInputEventData& RespondToInputEventData::operator=(const InputEventData& dataPackage) {
-		this->interactionToken = dataPackage.getInteractionToken();
-		this->applicationId = dataPackage.getApplicationId();
-		this->interactionId = dataPackage.getInteractionId();
-		this->channelId = dataPackage.getChannelId();
-		this->messageId = dataPackage.getMessageId();
+		this->applicationId = dataPackage.getInteractionData().applicationId;
+		this->interactionToken = dataPackage.getInteractionData().token;
+		this->interactionId = dataPackage.getInteractionData().id;
+		this->channelId = dataPackage.getChannelData().id;
+		this->messageId = dataPackage.getMessageData().id;
 		return *this;
 	}
 
@@ -3979,6 +3959,19 @@ namespace DiscordCoreAPI {
 		}
 	}
 
+	CommandData& CommandData::operator=(const CommandData& other) noexcept {
+		this->subCommandGroupName = other.subCommandGroupName;
+		this->subCommandName = other.subCommandName;
+		this->commandName = other.commandName;
+		this->optionsArgs = other.optionsArgs;
+		this->eventData = other.eventData;
+		return *this;
+	}
+
+	CommandData::CommandData(const CommandData& other) noexcept{
+		*this = other;
+	}
+
 	CommandData::CommandData(InputEventData inputEventData) {
 		if (inputEventData.interactionData->data.applicationCommandData.name != "") {
 			this->commandName = inputEventData.interactionData->data.applicationCommandData.name;
@@ -4006,6 +3999,50 @@ namespace DiscordCoreAPI {
 				this->subCommandGroupName = value.name;
 			}
 		}
+	}
+
+	InteractionData CommandData::getInteractionData() noexcept {
+		return *this->eventData.interactionData;
+	}
+
+	GuildMemberData CommandData::getGuildMemberData() noexcept {
+		return this->eventData.getGuildMemberData();
+	}
+
+	ChannelData CommandData::getChannelData() noexcept {
+		return this->eventData.getChannelData();
+	}
+
+	MessageData CommandData::getMessageData() noexcept {
+		return this->eventData.getMessageData();
+	}
+
+	GuildData CommandData::getGuildData() noexcept {
+		return this->eventData.getGuildData();
+	}
+
+	UserData CommandData::getUserData() noexcept {
+		return this->eventData.getUserData();
+	}
+
+	std::string CommandData::getCommandName() noexcept {
+		return this->commandName;
+	}
+
+	std::string CommandData::getSubCommandName() noexcept {
+		return this->subCommandName;
+	}
+
+	std::string CommandData::getSubCommandGroupName() noexcept {
+		return this->subCommandGroupName;
+	}
+
+	JsonifierValue CommandData::getCommandArguments() noexcept {
+		return this->optionsArgs;
+	}
+
+	InputEventData CommandData::getInputEventData() noexcept {
+		return this->eventData;
 	}
 
 	BaseFunctionArguments::BaseFunctionArguments(CommandData commanddataNew, DiscordCoreClient* discordCoreClientNew) : CommandData(commanddataNew) {
@@ -4044,18 +4081,18 @@ namespace DiscordCoreAPI {
 			std::vector<ButtonResponseData> buttonIntData{
 				button->collectButtonData(false, waitForMaxMs, 1, *createResponseData, Snowflake{ stoull(userID) }).get()
 			};
-
+			std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
 			if (buttonIntData.size() == 0 || buttonIntData.at(0).buttonId == "empty" || buttonIntData.at(0).buttonId == "exit") {
 				std::unique_ptr<RespondToInputEventData> dataPackage02{ std::make_unique<RespondToInputEventData>(originalEvent) };
 				if (buttonIntData.at(0).buttonId == "empty") {
 					*dataPackage02 = originalEvent;
 				} else {
-					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
+					interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
 					*dataPackage02 = RespondToInputEventData{ *interactionData };
 				}
 
 				dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-				for (auto& value: originalEvent.getComponents()) {
+				for (auto& value: interactionData->message.components) {
 					for (auto& value02: value.components) {
 						value02.disabled = true;
 					}
@@ -4082,10 +4119,10 @@ namespace DiscordCoreAPI {
 				} else if (buttonIntData.at(0).buttonId == "backwards" && (newCurrentPageIndex == 0)) {
 					newCurrentPageIndex = static_cast<uint32_t>(messageEmbeds.size()) - 1;
 				}
-				std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
+				interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
 				*dataPackage = RespondToInputEventData{ *interactionData };
 				dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
-				for (auto& value: originalEvent.getComponents()) {
+				for (auto& value: interactionData->message.components) {
 					dataPackage->addComponentRow(value);
 				}
 				dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
@@ -4099,7 +4136,7 @@ namespace DiscordCoreAPI {
 					*dataPackage = RespondToInputEventData{ *interactionData };
 					dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-					for (auto& value: originalEvent.getComponents()) {
+					for (auto& value: originalEvent.getMessageData().components) {
 						for (auto& value02: value.components) {
 							value02.disabled = true;
 						}

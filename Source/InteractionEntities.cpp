@@ -446,8 +446,8 @@ namespace DiscordCoreAPI {
 	}
 
 	SelectMenuCollector::SelectMenuCollector(InputEventData& dataPackage) {
-		this->channelId = dataPackage.getChannelId();
-		this->messageId = dataPackage.getMessageId();
+		this->channelId = dataPackage.getChannelData().id;
+		this->messageId = dataPackage.getMessageData().id;
 		*this->interactionData = dataPackage.getInteractionData();
 		this->buffersMapKey = this->channelId + this->messageId;
 		SelectMenuCollector::selectMenuInteractionBuffersMap[this->buffersMapKey] = &this->selectMenuIncomingInteractionBuffer;
@@ -572,8 +572,8 @@ namespace DiscordCoreAPI {
 	}
 
 	ButtonCollector::ButtonCollector(InputEventData& dataPackage) {
-		this->channelId = dataPackage.getChannelId();
-		this->messageId = dataPackage.getMessageId();
+		this->channelId = dataPackage.getChannelData().id;
+		this->messageId = dataPackage.getMessageData().id;
 		*this->interactionData = dataPackage.getInteractionData();
 		this->buffersMapKey = this->channelId + this->messageId;
 		ButtonCollector::buttonInteractionBuffersMap[this->buffersMapKey] = &this->buttonIncomingInteractionBuffer;
@@ -693,7 +693,7 @@ namespace DiscordCoreAPI {
 	}
 
 	ModalCollector::ModalCollector(InputEventData& dataPackage) {
-		this->channelId = dataPackage.getChannelId();
+		this->channelId = dataPackage.getChannelData().id;
 		ModalCollector::modalInteractionBuffersMap[this->channelId] = &this->modalIncomingInteractionBuffer;
 	}
 

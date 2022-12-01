@@ -53,6 +53,9 @@ namespace DiscordCoreAPI {
 	}
 
 	AudioFrameData OpusEncoderWrapper::encodeData(DiscordCoreAPI::AudioFrameData& inputFrame) {
+		if (inputFrame.data.size() == 0) {
+			return {};
+		}
 		if (this->encodedData.size() == 0) {
 			this->encodedData.resize(this->maxBufferSize);
 		}
