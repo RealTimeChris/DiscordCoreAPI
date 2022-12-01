@@ -116,8 +116,8 @@ namespace DiscordCoreInternal {
 
 	void CoRoutineThreadPool::threadFunction(std::stop_token token, int64_t index) {
 		while (!token.stop_requested()) {
+			std::unique_lock lock{ this->accessMutex };
 			if (this->coroHandleCount.load() > 0) {
-				std::unique_lock lock{ this->accessMutex };
 				if (this->coroutineHandles.size() > 0) {
 					std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
 					this->coroHandleCount.store(this->coroHandleCount.load() - 1);
@@ -128,7 +128,6 @@ namespace DiscordCoreInternal {
 					this->workerThreads[index].areWeCurrentlyWorking.store(false);
 				}
 			} else if (this->currentCount.load() > this->threadCount.load()) {
-				std::unique_lock lock{ this->accessMutex };
 				for (auto& [key, value]: this->workerThreads) {
 					if (value.areWeCurrentlyWorking.load() && value.thread.joinable()) {
 						value.thread.request_stop();
