@@ -659,6 +659,7 @@ namespace DiscordCoreAPI {
 				this->createHeader(string, this->dataOpCode);
 				if (!WebSocketCore::sendMessage(string, true)) {
 					++this->currentReconnectTries;
+					this->onClosed();
 					return;
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Ready);
@@ -684,7 +685,11 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case VoiceConnectionState::Initializing_DatagramSocket: {
-				this->voiceConnect();
+				if (!this->voiceConnect()) {
+					++this->currentReconnectTries;
+					this->onClosed();
+					return;
+				}
 				this->connectionState.store(VoiceConnectionState::Sending_Select_Protocol);
 				this->connectInternal(token);
 				break;
@@ -700,7 +705,7 @@ namespace DiscordCoreAPI {
 				this->createHeader(string, this->dataOpCode);
 				if (!WebSocketCore::sendMessage(string, true)) {
 					++this->currentReconnectTries;
-					;
+					this->onClosed();
 					return;
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Session_Description);
@@ -731,8 +736,12 @@ namespace DiscordCoreAPI {
 						this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient,
 							this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
 					}
-					this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port, false,
-						token);
+					if (!this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port, false,
+						token)) {
+						++this->currentReconnectTries;
+						this->onClosed();
+						return;
+					}
 				}
 				this->areWeConnecting.store(false);
 				this->activeState.store(VoiceActiveState::Playing);
@@ -755,44 +764,40 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::voiceConnect() noexcept {
-		if (!UDPConnection::areWeStillConnected()) {
-			if (!UDPConnection::connect(this->voiceIp, this->port, false)) {
-				return false;
-			} else {
-				char packet[74]{};
-				const uint16_t val1601{ 0x01 };
-				const uint16_t val1602{ 70 };
-				packet[0] = static_cast<uint8_t>(val1601 >> 8);
-				packet[1] = static_cast<uint8_t>(val1601 >> 0);
-				packet[2] = static_cast<uint8_t>(val1602 >> 8);
-				packet[3] = static_cast<uint8_t>(val1602 >> 0);
-				packet[4] = static_cast<uint8_t>(this->audioSSRC >> 24);
-				packet[5] = static_cast<uint8_t>(this->audioSSRC >> 16);
-				packet[6] = static_cast<uint8_t>(this->audioSSRC >> 8);
-				packet[7] = static_cast<uint8_t>(this->audioSSRC);
-				UDPConnection::getInputBuffer();
-				UDPConnection::writeData(std::string_view{ packet, std::size(packet) });
-				std::string_view inputString{};
-				StopWatch stopWatch{ 5500ms };
-				while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
-					UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Both);
-					inputString = UDPConnection::getInputBuffer();
-					std::this_thread::sleep_for(1ms);
-					if (stopWatch.hasTimePassed()) {
-						return false;
-					}
+		if (!UDPConnection::areWeStillConnected() && UDPConnection::connect(this->voiceIp, this->port, false)) {
+			char packet[74]{};
+			const uint16_t val1601{ 0x01 };
+			const uint16_t val1602{ 70 };
+			packet[0] = static_cast<uint8_t>(val1601 >> 8);
+			packet[1] = static_cast<uint8_t>(val1601 >> 0);
+			packet[2] = static_cast<uint8_t>(val1602 >> 8);
+			packet[3] = static_cast<uint8_t>(val1602 >> 0);
+			packet[4] = static_cast<uint8_t>(this->audioSSRC >> 24);
+			packet[5] = static_cast<uint8_t>(this->audioSSRC >> 16);
+			packet[6] = static_cast<uint8_t>(this->audioSSRC >> 8);
+			packet[7] = static_cast<uint8_t>(this->audioSSRC);
+			UDPConnection::getInputBuffer();
+			UDPConnection::writeData(std::string_view{ packet, std::size(packet) });
+			std::string_view inputString{};
+			StopWatch stopWatch{ 5500ms };
+			while (inputString.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
+				UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Both);
+				inputString = UDPConnection::getInputBuffer();
+				std::this_thread::sleep_for(1ms);
+				if (stopWatch.hasTimePassed()) {
+					return false;
 				}
-				inputString = inputString.substr(8, 64);
-				const auto endLineFind = inputString.find('\u0000', 5);
-				if (endLineFind != std::string::npos) {
-					inputString = inputString.substr(0, endLineFind);
-				}
-				this->externalIp = inputString;
-				this->voiceConnectionDataBuffer.clearContents();
-				return true;
 			}
-		} else {
+			inputString = inputString.substr(8, 64);
+			const auto endLineFind = inputString.find('\u0000', 5);
+			if (endLineFind != std::string::npos) {
+				inputString = inputString.substr(0, endLineFind);
+			}
+			this->externalIp = inputString;
+			this->voiceConnectionDataBuffer.clearContents();
 			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -812,12 +817,10 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::pauseToggle() noexcept {
-		if (this) {
-			if (this->activeState.load() == VoiceActiveState::Paused) {
-				this->activeState.store(VoiceActiveState::Playing);
-			} else {
-				this->activeState.store(VoiceActiveState::Paused);
-			}
+		if (this->activeState.load() == VoiceActiveState::Paused) {
+			this->activeState.store(VoiceActiveState::Playing);
+		} else {
+			this->activeState.store(VoiceActiveState::Paused);
 		}
 	}
 
