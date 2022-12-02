@@ -3296,7 +3296,7 @@ namespace DiscordCoreAPI {
 	/// \brief Command data, for functions executed by the CommandController.
 	class DiscordCoreAPI_Dll CommandData {
 	  public:
-		friend class OnInteractionCreationData;
+		friend struct OnInteractionCreationData;
 
 		CommandData() noexcept = default;
 
