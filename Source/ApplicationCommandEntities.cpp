@@ -24,6 +24,7 @@
 /// \file ApplicationCommandEntities.cpp
 
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
+#include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Https.hpp>

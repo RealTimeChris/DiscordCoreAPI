@@ -156,11 +156,6 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient() noexcept;
 
 	  protected:
-		static VoiceConnectionsMap voiceConnectionMap;
-		static SoundCloudAPIMap soundCloudAPIMap;
-		static YouTubeAPIMap youtubeAPIMap;
-		static SongAPIMap songAPIMap;
-
 		std::unordered_map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
