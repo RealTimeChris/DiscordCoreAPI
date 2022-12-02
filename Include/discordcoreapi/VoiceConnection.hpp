@@ -184,6 +184,7 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWePlaying{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		int64_t sampleRatePerSecond{ 48000 };
+		std::atomic_bool areWeDone{ false };
 		RTPPacketEncrypter packetEncrypter{};
 		simdjson::ondemand::parser parser{};
 		std::atomic_int8_t voiceUserCount{};
@@ -213,19 +214,19 @@ namespace DiscordCoreAPI {
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
+		void checkForConnections(std::stop_token token) noexcept;
+
+		void connectInternal(std::stop_token token) noexcept;
+
 		void runVoice(std::stop_token) noexcept;
 
 		bool areWeCurrentlyPlaying() noexcept;
-
-		void checkForConnections() noexcept;
 
 		void cancelBridgeThread() noexcept;
 
 		void handleAudioBuffer() noexcept;
 
 		void cancelMainThread() noexcept;
-
-		void connectInternal() noexcept;
 
 		void clearAudioData() noexcept;
 
