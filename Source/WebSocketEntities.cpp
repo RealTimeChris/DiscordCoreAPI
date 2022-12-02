@@ -28,12 +28,6 @@
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <random>
 
-namespace DiscordCoreAPI {
-	namespace Globals {
-		extern VoiceConnectionsMap voiceConnectionMap;
-	}
-}
-
 namespace DiscordCoreInternal {
 
 	const uint16_t webSocketMaxPayloadLengthLarge{ 65535u };
