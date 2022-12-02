@@ -402,6 +402,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBuffersMap;
+		static DiscordCoreInternal::TriggerEvent<void, InteractionData> selectMenuInteractionEventsMap;
 
 		/// \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted select-menu.
@@ -416,6 +417,12 @@ namespace DiscordCoreAPI {
 		/// \returns A vector of SelectMenuResponseData.
 		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
 			int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{ 0 });
+
+		/// \brief Used to collect the select-menu inputs from one or more users.
+		/// \param triggerFunctionNew A std::function<bool(InteractionData)> to decide whether or not to trigger the event's main function.
+		/// \param functionNew Takes a DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> as a function to be executed upon returning true from the "trigger-function".
+		void collectSelectMenuData(std::function<bool(InteractionData)> triggerFunctionNew,
+			DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
 
 		~SelectMenuCollector();
 
@@ -493,6 +500,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBuffersMap;
+		static DiscordCoreInternal::TriggerEvent<void, InteractionData> buttonInteractionEventsMap;
 
 		/// \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
@@ -507,6 +515,12 @@ namespace DiscordCoreAPI {
 		/// \returns A vector of ButtonResponseData.
 		CoRoutine<std::vector<ButtonResponseData>> collectButtonData(bool getButtonDataForAllNew, int32_t maxWaitTimeInMsNew,
 			int32_t maxNumberOfPressesNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{ 0 });
+
+		/// \brief Used to collect the button inputs from one or more users.
+		/// \param triggerFunctionNew A std::function<bool(InteractionData)> to decide whether or not to trigger the event's main function.
+		/// \param functionNew Takes a DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> as a function to be executed upon returning true from the "trigger-function".
+		void collectButtonData(std::function<bool(InteractionData)> triggerFunctionNew,
+			DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
 
 		~ButtonCollector();
 
@@ -568,6 +582,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBuffersMap;
+		static DiscordCoreInternal::TriggerEvent<void, InteractionData> modalInteractionEventsMap;
 
 		/// \brief Constructor.
 		/// \param dataPackage An InputEventData structure, from the response that came from the submitted button.
@@ -577,6 +592,12 @@ namespace DiscordCoreAPI {
 		/// \param maxWaitTimeInMsNew The maximum amount of time to wait for new inputs, in milliseconds.
 		/// \returns A vector of ButtonResponseData.
 		CoRoutine<ModalResponseData> collectModalData(int32_t maxWaitTimeInMsNew);
+
+		/// \brief Used to collect the modal from one or more users.
+		/// \param triggerFunctionNew A std::function<bool(InteractionData)> to decide whether or not to trigger the event's main function.
+		/// \param functionNew Takes a DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> as a function to be executed upon returning true from the "trigger-function".
+		void collectModalData(std::function<bool(InteractionData)> triggerFunctionNew,
+			DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew);
 
 		~ModalCollector();
 

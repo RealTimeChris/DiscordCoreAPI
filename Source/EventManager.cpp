@@ -538,8 +538,13 @@ namespace DiscordCoreAPI {
 							DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]->send(
 								interactionData);
 						}
+						DiscordCoreAPI::ButtonCollector::buttonInteractionEventsMap.operator()(*eventData->interactionData);
 						break;
 					}
+					case DiscordCoreAPI::ComponentType::Channel_Select:
+					case DiscordCoreAPI::ComponentType::Mentionable_Select:
+					case DiscordCoreAPI::ComponentType::Role_Select:
+					case DiscordCoreAPI::ComponentType::User_Select:
 					case DiscordCoreAPI::ComponentType::String_Select: {
 						eventData->responseType = DiscordCoreAPI::InputEventResponseType::Unset;
 						*eventData->interactionData = this->interactionData;
@@ -549,6 +554,7 @@ namespace DiscordCoreAPI {
 								eventData->getMessageData().id]
 								->send(interactionData);
 						}
+						DiscordCoreAPI::SelectMenuCollector::selectMenuInteractionEventsMap.operator()(*eventData->interactionData);
 						break;
 					}
 				}
@@ -563,6 +569,7 @@ namespace DiscordCoreAPI {
 				eventCreationData->inputEventData = *eventData;
 				if (DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap.contains(eventData->getChannelData().id)) {
 					DiscordCoreAPI::ModalCollector::modalInteractionBuffersMap[eventData->getChannelData().id]->send(eventData->getInteractionData());
+					DiscordCoreAPI::ModalCollector::modalInteractionEventsMap.operator()(*eventData->interactionData);
 				}
 				break;
 			}

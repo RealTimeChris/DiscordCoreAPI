@@ -40,6 +40,10 @@ namespace DiscordCoreInternal {
 
 		template<typename RTy, typename... ArgTypes> friend class Event;
 
+		template<typename RTy, typename... ArgTypes> friend class TriggerEventDelegate;
+
+		template<typename RTy, typename... ArgTypes> friend class TriggerEvent;
+
 		friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
 		friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
@@ -106,8 +110,6 @@ namespace DiscordCoreInternal {
 		std::function<RTy(ArgTypes...)> function{};
 	};
 
-	/**@}*/
-
 	template<typename RTy, typename... ArgTypes> class Event {
 	  public:
 		std::map<EventDelegateToken, EventDelegate<RTy, ArgTypes...>> functions{};
@@ -154,8 +156,124 @@ namespace DiscordCoreInternal {
 			std::vector<RTy> vector{};
 			for (auto& [key, value]: this->functions) {
 				vector.emplace_back(value.function(args...));
+				this->functions.erase(key);
 			}
 			return vector;
+		}
+
+	  protected:
+		std::string eventId{};
+	};
+
+	/// \brief An event that gets fired depending on the result of a "trigger-function" return value.
+	template<typename RTy, typename... ArgTypes> class TriggerEventDelegate {
+	  public:
+		template<typename RTy02, typename... ArgTypes02> friend class TriggerEvent;
+
+		TriggerEventDelegate<RTy, ArgTypes...>& operator=(TriggerEventDelegate<RTy, ArgTypes...>&& other) noexcept {
+			if (this != &other) {
+				this->function.swap(other.function);
+				other.function = std::function<RTy(ArgTypes...)>{};
+				this->testFunction.swap(other.testFunction);
+				other.testFunction = std::function<bool(ArgTypes...)>{};
+			}
+			return *this;
+		}
+
+		TriggerEventDelegate(TriggerEventDelegate<RTy, ArgTypes...>&& other) noexcept {
+			*this = std::move(other);
+		}
+
+		TriggerEventDelegate<RTy, ArgTypes...>& operator=(const TriggerEventDelegate<RTy, ArgTypes...>& other) = delete;
+
+		TriggerEventDelegate(const TriggerEventDelegate<RTy, ArgTypes...>& other) = delete;
+
+		TriggerEventDelegate<RTy, ArgTypes...>& operator=(std::function<RTy(ArgTypes...)> functionNew) {
+			this->function = functionNew;
+			return *this;
+		}
+
+		/// \brief Constructor, taking a std::function<RTy(ArgTypes..)> as an argument.
+		TriggerEventDelegate(std::function<RTy(ArgTypes...)> functionNew) {
+			*this = functionNew;
+		}
+
+		TriggerEventDelegate<RTy, ArgTypes...>& operator=(RTy (*functionNew)(ArgTypes...)) {
+			this->function = functionNew;
+			return *this;
+		}
+
+		void setTestFunction(std::function<bool(ArgTypes...)> testFunctionNew) {
+			this->testFunction = testFunctionNew;
+		}
+
+		void setTestFunction(bool (*testFunctionNew)(ArgTypes...)) {
+			this->testFunction = testFunctionNew;
+		}
+
+		/// \brief Constructor, taking a pointer to a function of type RTy(*)(ArgTypes...) as an argument.
+		TriggerEventDelegate(RTy (*functionNew)(ArgTypes...)) {
+			*this = functionNew;
+		}
+
+		TriggerEventDelegate() noexcept = default;
+
+	  protected:
+		std::function<bool(ArgTypes...)> testFunction{};
+		std::function<RTy(ArgTypes...)> function{};
+	};
+
+	/**@}*/
+
+	template<typename RTy, typename... ArgTypes> class TriggerEvent {
+	  public:
+		std::map<EventDelegateToken, TriggerEventDelegate<RTy, ArgTypes...>> functions{};
+
+		TriggerEvent<RTy, ArgTypes...>& operator=(Event<RTy, ArgTypes...>&& other) noexcept {
+			if (this != &other) {
+				this->functions = std::move(other.functions);
+				other.functions = std::map<EventDelegateToken, TriggerEventDelegate<RTy, ArgTypes...>>{};
+				this->eventId = std::move(other.eventId);
+				other.eventId = std::string{};
+			}
+			return *this;
+		}
+
+		TriggerEvent(Event<RTy, ArgTypes...>&& other) noexcept {
+			*this = std::move(other);
+		}
+
+		TriggerEvent<RTy, ArgTypes...>& operator=(const Event<RTy, ArgTypes...>&) = delete;
+
+		TriggerEvent(const TriggerEvent<RTy, ArgTypes...>&) = delete;
+
+		TriggerEvent() {
+			this->eventId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
+		}
+
+		EventDelegateToken add(TriggerEventDelegate<RTy, ArgTypes...> eventDelegate) {
+			EventDelegateToken eventToken{};
+			eventToken.handlerId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
+			eventToken.eventId = this->eventId;
+			this->functions[eventToken] = std::move(eventDelegate);
+			return eventToken;
+		}
+
+		void remove(EventDelegateToken eventToken) {
+			if (eventToken.eventId == this->eventId) {
+				if (this->functions.contains(eventToken)) {
+					this->functions.erase(eventToken);
+				}
+			}
+		}
+
+		void operator()(ArgTypes&... args) {
+			for (auto& [key, value]: this->functions) {
+				if (value.testFunction(args...)) {
+					value.function(args...);
+				}
+			}
+			return;
 		}
 
 	  protected:

@@ -450,12 +450,13 @@ namespace DiscordCoreAPI {
 		this->messageId = dataPackage.getMessageData().id;
 		*this->interactionData = dataPackage.getInteractionData();
 		this->buffersMapKey = this->channelId + this->messageId;
-		SelectMenuCollector::selectMenuInteractionBuffersMap[this->buffersMapKey] = &this->selectMenuIncomingInteractionBuffer;
+		
 	}
 
 	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew,
 		int32_t maxWaitTimeInMsNew, int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUser) {
 		co_await NewThreadAwaitable<std::vector<SelectMenuResponseData>>();
+		SelectMenuCollector::selectMenuInteractionBuffersMap[this->buffersMapKey] = &this->selectMenuIncomingInteractionBuffer;
 		if (targetUser == 0 && !getSelectMenuDataForAllNew) {
 			this->getSelectMenuDataForAll = true;
 		} else {
@@ -470,6 +471,12 @@ namespace DiscordCoreAPI {
 		this->maxTimeInMs = maxWaitTimeInMsNew;
 		this->run();
 		co_return std::move(this->responseVector);
+	}
+
+	void SelectMenuCollector::collectSelectMenuData(std::function<bool(InteractionData)> triggerFunctionNew,
+		DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew) {
+		functionNew.setTestFunction(triggerFunctionNew);
+		SelectMenuCollector::selectMenuInteractionEventsMap.add(std::move(functionNew));
 	}
 
 	SelectMenuCollector::~SelectMenuCollector() {
@@ -597,6 +604,12 @@ namespace DiscordCoreAPI {
 		co_return std::move(this->responseVector);
 	}
 
+	void ButtonCollector::collectButtonData(std::function<bool(InteractionData)> triggerFunctionNew,
+		DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew) {
+		functionNew.setTestFunction(triggerFunctionNew);
+		ButtonCollector::buttonInteractionEventsMap.add(std::move(functionNew));
+	}
+
 	ButtonCollector::~ButtonCollector() {
 		if (ButtonCollector::buttonInteractionBuffersMap.contains(this->buffersMapKey)) {
 			ButtonCollector::buttonInteractionBuffersMap.erase(this->buffersMapKey);
@@ -704,6 +717,12 @@ namespace DiscordCoreAPI {
 		co_return std::move(this->responseData);
 	}
 
+	void ModalCollector::collectModalData(std::function<bool(InteractionData)> triggerFunctionNew,
+		DiscordCoreInternal::TriggerEventDelegate<void, InteractionData> functionNew) {
+		functionNew.setTestFunction(triggerFunctionNew);
+		ModalCollector::modalInteractionEventsMap.add(std::move(functionNew));
+	}
+
 	ModalCollector::~ModalCollector() {
 		if (ModalCollector::modalInteractionBuffersMap.contains(this->channelId)) {
 			ModalCollector::modalInteractionBuffersMap.erase(this->channelId);
@@ -740,5 +759,8 @@ namespace DiscordCoreAPI {
 	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> SelectMenuCollector::selectMenuInteractionBuffersMap{};
 	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> ButtonCollector::buttonInteractionBuffersMap{};
 	std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> ModalCollector::modalInteractionBuffersMap{};
+	DiscordCoreInternal::TriggerEvent<void, InteractionData> SelectMenuCollector::selectMenuInteractionEventsMap{};
+	DiscordCoreInternal::TriggerEvent<void, InteractionData> ButtonCollector::buttonInteractionEventsMap{};
+	DiscordCoreInternal::TriggerEvent<void, InteractionData> ModalCollector::modalInteractionEventsMap{};
 	DiscordCoreInternal::HttpsClient* Interactions::httpsClient{ nullptr };
 };

@@ -3392,10 +3392,12 @@ namespace DiscordCoreAPI {
 			for (auto& valueNew: this->components) {
 				if (valueNew.type == ComponentType::Button) {
 					Jsonifier component{};
-					component["emoji"]["animated"] = valueNew.emoji.animated;
-					component["emoji"]["name"] = std::string{ valueNew.emoji.name };
-					if (valueNew.emoji.id != 0) {
-						component["emoji"]["id"] = valueNew.emoji.id;
+					if (valueNew.emoji.name != "") {
+						component["emoji"]["animated"] = valueNew.emoji.animated;
+						component["emoji"]["name"] = std::string{ valueNew.emoji.name };
+						if (valueNew.emoji.id != 0) {
+							component["emoji"]["id"] = valueNew.emoji.id;
+						}
 					}
 					component["custom_id"] = valueNew.customId;
 					component["disabled"] = valueNew.disabled;
@@ -3404,14 +3406,18 @@ namespace DiscordCoreAPI {
 					component["type"] = valueNew.type;
 					component["url"] = valueNew.url;
 					data["components"].emplaceBack(component);
-				} else if (valueNew.type == ComponentType::String_Select) {
+				} else if (valueNew.type == ComponentType::String_Select || valueNew.type == ComponentType::User_Select ||
+					valueNew.type == ComponentType::Role_Select || valueNew.type == ComponentType::Mentionable_Select ||
+					valueNew.type == ComponentType::Channel_Select) {
 					Jsonifier component{};
 					for (auto& value01: valueNew.options) {
 						Jsonifier option{};
-						component["emoji"]["animated"] = valueNew.emoji.animated;
-						component["emoji"]["name"] = std::string{ valueNew.emoji.name };
-						if (valueNew.emoji.id != 0) {
-							component["emoji"]["id"] = valueNew.emoji.id;
+						if (valueNew.emoji.name != "") {
+							component["emoji"]["animated"] = valueNew.emoji.animated;
+							component["emoji"]["name"] = std::string{ valueNew.emoji.name };
+							if (valueNew.emoji.id != 0) {
+								component["emoji"]["id"] = valueNew.emoji.id;
+							}
 						}
 						option["description"] = value01.description;
 						option["default"] = value01._default;
