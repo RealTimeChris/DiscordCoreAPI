@@ -26,7 +26,7 @@
 #include <discordcoreapi/AudioEncoder.hpp>
 #include <opus/opus.h>
 
-namespace DiscordCoreAPI {
+namespace DiscordCoreInternal {
 
 	void OpusEncoderWrapper::OpusEncoderDeleter::operator()(OpusEncoder* other) noexcept {
 		if (other) {
@@ -40,19 +40,19 @@ namespace DiscordCoreAPI {
 		this->ptr.reset(opus_encoder_create(this->sampleRate, this->nChannels, OPUS_APPLICATION_AUDIO, &error));
 		auto result = opus_encoder_ctl(this->ptr.get(), OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
 		if (result != OPUS_OK) {
-			throw DCAException{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) } };
+			throw DiscordCoreAPI::DCAException{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) } };
 		}
 		result = opus_encoder_ctl(this->ptr.get(), OPUS_SET_APPLICATION(OPUS_APPLICATION_AUDIO));
 		if (result != OPUS_OK) {
-			throw DCAException{ "Failed to set the Opus application type, Reason: " + std::string{ opus_strerror(result) } };
+			throw DiscordCoreAPI::DCAException{ "Failed to set the Opus application type, Reason: " + std::string{ opus_strerror(result) } };
 		}
 		result = opus_encoder_ctl(this->ptr.get(), OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
 		if (result != OPUS_OK) {
-			throw DCAException{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) } };
+			throw DiscordCoreAPI::DCAException{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) } };
 		}
 	}
 
-	AudioFrameData OpusEncoderWrapper::encodeData(AudioFrameData& inputFrame) {
+	DiscordCoreAPI::AudioFrameData OpusEncoderWrapper::encodeData(DiscordCoreAPI::AudioFrameData& inputFrame) {
 		if (inputFrame.data.size() == 0) {
 			return {};
 		}
@@ -64,10 +64,10 @@ namespace DiscordCoreAPI {
 		if (count <= 0) {
 			return {};
 		}
-		AudioFrameData encodedFrame{};
+		DiscordCoreAPI::AudioFrameData encodedFrame{};
 		encodedFrame.data.insert(encodedFrame.data.begin(), this->encodedData.begin(), this->encodedData.begin() + count);
 		encodedFrame.sampleCount = inputFrame.sampleCount;
-		encodedFrame.type = AudioFrameType::Encoded;
+		encodedFrame.type = DiscordCoreAPI::AudioFrameType::Encoded;
 		encodedFrame.guildMemberId = inputFrame.guildMemberId;
 		encodedFrame.currentSize = count;
 		return encodedFrame;

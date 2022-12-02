@@ -28,7 +28,7 @@
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <opus/opus.h>
 
-namespace DiscordCoreAPI {
+namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
 		struct DiscordCoreAPI_Dll OpusEncoderDeleter {

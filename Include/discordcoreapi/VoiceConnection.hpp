@@ -176,6 +176,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::WebSocketClient* baseShard{ nullptr };
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};
+		DiscordCoreInternal::OpusEncoderWrapper encoder{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		std::vector<opus_int16> downSampledVector{};
@@ -190,7 +191,6 @@ namespace DiscordCoreAPI {
 		std::string audioEncryptionMode{};
 		std::string decryptedDataString{};
 		Snowflake currentGuildMemberId{};
-		OpusEncoderWrapper encoder{};
 		std::string encryptionKey{};
 		AudioFrameData audioData{};
 		std::string externalIp{};
