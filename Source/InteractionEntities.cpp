@@ -450,7 +450,6 @@ namespace DiscordCoreAPI {
 		this->messageId = dataPackage.getMessageData().id;
 		*this->interactionData = dataPackage.getInteractionData();
 		this->buffersMapKey = this->channelId + this->messageId;
-		
 	}
 
 	CoRoutine<std::vector<SelectMenuResponseData>> SelectMenuCollector::collectSelectMenuData(bool getSelectMenuDataForAllNew,

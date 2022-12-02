@@ -535,8 +535,9 @@ namespace DiscordCoreAPI {
 						*eventData->interactionData = this->interactionData;
 						if (DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap.contains(
 								eventData->getChannelData().id + eventData->getMessageData().id)) {
-							DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]->send(
-								interactionData);
+							DiscordCoreAPI::ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id +
+								eventData->getMessageData().id]
+								->send(interactionData);
 						}
 						DiscordCoreAPI::ButtonCollector::buttonInteractionEventsMap.operator()(*eventData->interactionData);
 						break;

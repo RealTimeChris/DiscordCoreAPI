@@ -154,13 +154,11 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 
 		/// The constructor.
-		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketClient* baseShardNew,
-			std::atomic_bool* doWeQuitNew) noexcept;
+		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketClient* baseShardNew, std::atomic_bool* doWeQuitNew) noexcept;
 
 		/// \brief Collects the currently connected-to voice Channel's id.
 		/// \returns DiscordCoreAPI::Snowflake A Snowflake containing the Channel's id.
 		Snowflake getChannelId() noexcept;
-
 
 		/// \brief Connects to a currently held voice channel.
 		/// \param initData A DiscordCoerAPI::VoiceConnectInitDat structure.

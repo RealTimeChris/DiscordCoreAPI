@@ -3313,7 +3313,7 @@ namespace DiscordCoreAPI {
 	}
 
 	AudioFrameData& AudioFrameData::operator+=(std::string_view other) noexcept {
-		if (this->data.size()< other.size()){
+		if (this->data.size() < other.size()) {
 			this->data.resize(other.size());
 		}
 		this->currentSize = other.size();
@@ -3571,8 +3571,7 @@ namespace DiscordCoreAPI {
 
 	GuildMemberData InputEventData::getGuildMemberData() const {
 		GuildMemberData returnData{ this->interactionData->member };
-		returnData =
-			GuildMembers::getCachedGuildMember({ .guildMemberId = returnData.id, .guildId = this->interactionData->guildId });
+		returnData = GuildMembers::getCachedGuildMember({ .guildMemberId = returnData.id, .guildId = this->interactionData->guildId });
 		return returnData;
 	}
 
@@ -3974,7 +3973,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	CommandData::CommandData(const CommandData& other) noexcept{
+	CommandData::CommandData(const CommandData& other) noexcept {
 		*this = other;
 	}
 

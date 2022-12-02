@@ -504,11 +504,12 @@ namespace DiscordCoreAPI {
 								this->onClosed();
 							}
 						} else {
-							if (UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Read_Only) == DiscordCoreInternal::ProcessIOResult::Error) {
+							if (UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Read_Only) ==
+								DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
 						}
-						
+
 						targetTime = HRClock::now() + this->intervalCount;
 
 						if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
@@ -542,7 +543,7 @@ namespace DiscordCoreAPI {
 			this->connections.reset(nullptr);
 			this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
 			WebSocketCore::ssl = nullptr;
-			if (this->voiceConnectInitData.streamInfo.type != StreamType::None ) {
+			if (this->voiceConnectInitData.streamInfo.type != StreamType::None) {
 				WebSocketCore::outputBuffer.clear();
 				WebSocketCore::inputBuffer.clear();
 				UDPConnection::inputBuffer.clear();
@@ -579,7 +580,6 @@ namespace DiscordCoreAPI {
 			if (this->streamSocket && this->encryptionKey.size() > 0) {
 				this->parseIncomingVoiceData(string);
 			}
-			
 		}
 	}
 
@@ -699,7 +699,8 @@ namespace DiscordCoreAPI {
 				std::string string{ serializer.operator std::string() };
 				this->createHeader(string, this->dataOpCode);
 				if (!WebSocketCore::sendMessage(string, true)) {
-					++this->currentReconnectTries;;
+					++this->currentReconnectTries;
+					;
 					return;
 				}
 				this->connectionState.store(VoiceConnectionState::Collecting_Session_Description);
@@ -710,12 +711,14 @@ namespace DiscordCoreAPI {
 				stopWatch.resetTimer();
 				while (this->connectionState.load() != VoiceConnectionState::Collecting_Init_Data) {
 					if (stopWatch.hasTimePassed()) {
-						++this->currentReconnectTries;;
+						++this->currentReconnectTries;
+						;
 						this->onClosed();
 						return;
 					}
 					if (WebSocketCore::processIO(100) == DiscordCoreInternal::ProcessIOResult::Error) {
-						++this->currentReconnectTries;;
+						++this->currentReconnectTries;
+						;
 						this->onClosed();
 						return;
 					}
