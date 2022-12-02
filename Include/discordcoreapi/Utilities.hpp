@@ -2141,7 +2141,7 @@ namespace DiscordCoreInternal {
 			if ((this->head % this->arrayValue.size()) >= (this->tail % this->arrayValue.size())) {
 				return (this->head % this->arrayValue.size()) - (this->tail % this->arrayValue.size());
 			} else {
-				return (this->tail % this->arrayValue.size()) - (this->head % this->arrayValue.size());
+				return this->arrayValue.size() + (this->head % this->arrayValue.size()) - (this->tail % this->arrayValue.size());
 			}
 		}
 
