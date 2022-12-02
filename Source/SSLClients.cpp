@@ -351,6 +351,10 @@ namespace DiscordCoreInternal {
 			if (dataToWrite.size() > 0 && this->ssl) {
 				if (priority && dataToWrite.size() < this->maxBufferSize) {
 					this->outputBuffer.clear();
+					if (this->outputBuffer.getFreeSpace() == 0) {
+						this->outputBuffer.getCurrentTail()->clear();
+						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+					}
 					std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
 					this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
 					this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
@@ -368,6 +372,10 @@ namespace DiscordCoreInternal {
 							} else {
 								amountToCollect = dataToWrite.size();
 							}
+							if (this->outputBuffer.getFreeSpace() == 0) {
+								this->outputBuffer.getCurrentTail()->clear();
+								this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+							}
 							std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect,
 								this->outputBuffer.getCurrentHead()->getCurrentHead());
 							this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
@@ -377,6 +385,10 @@ namespace DiscordCoreInternal {
 							amountCollected += amountToCollect;
 						}
 					} else {
+						if (this->outputBuffer.getFreeSpace() == 0) {
+							this->outputBuffer.getCurrentTail()->clear();
+							this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+						}
 						std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
 						this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
 						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
@@ -488,12 +500,7 @@ namespace DiscordCoreInternal {
 		if (!this->inputBuffer.isItFull()) {
 			do {
 				uint64_t readBytes{};
-				uint64_t bytesToRead{};
-				if (this->maxBufferSize > this->inputBuffer.getCurrentHead()->getFreeSpace()) {
-					bytesToRead = this->inputBuffer.getCurrentHead()->getFreeSpace();
-				} else {
-					bytesToRead = this->maxBufferSize;
-				}
+				uint64_t bytesToRead{ this->maxBufferSize };
 				auto returnValue{ SSL_read_ex(this->ssl, this->inputBuffer.getCurrentHead()->getCurrentHead(), bytesToRead, &readBytes) };
 				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 				switch (errorValue) {
@@ -527,7 +534,7 @@ namespace DiscordCoreInternal {
 						return false;
 					}
 				}
-			} while (this->areWeStillConnected() && SSL_pending(this->ssl));
+			} while (this->areWeStillConnected() && SSL_pending(this->ssl) && !this->inputBuffer.isItFull());
 		}
 		if (!this->areWeAStandaloneSocket) {
 			this->handleBuffer();
@@ -714,6 +721,10 @@ namespace DiscordCoreInternal {
 					} else {
 						amountToCollect = dataToWrite.size();
 					}
+					if (this->outputBuffer.getFreeSpace() == 0) {
+						this->outputBuffer.getCurrentTail()->clear();
+						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+					}
 					std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect,
 						this->outputBuffer.getCurrentHead()->getCurrentHead());
 					this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
@@ -723,6 +734,10 @@ namespace DiscordCoreInternal {
 					amountCollected += amountToCollect;
 				}
 			} else {
+				if (this->outputBuffer.getFreeSpace() == 0) {
+					this->outputBuffer.getCurrentTail()->clear();
+					this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+				}
 				std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
 				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
 				this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
@@ -765,17 +780,10 @@ namespace DiscordCoreInternal {
 	}
 
 	bool UDPConnection::processReadData() noexcept {
-		bool returnValue{ true };
 		int32_t readBytes{};
 		do {
 			if (!this->inputBuffer.isItFull()) {
-				uint64_t bytesToRead{};
-				if (this->maxBufferSize > this->inputBuffer.getCurrentHead()->getFreeSpace()) {
-					bytesToRead = this->inputBuffer.getCurrentHead()->getFreeSpace();
-				} else {
-					bytesToRead = this->maxBufferSize;
-				}
-
+				uint64_t bytesToRead{ this->maxBufferSize };
 				readBytes = recvfrom(static_cast<SOCKET>(this->socket), this->inputBuffer.getCurrentHead()->getCurrentHead(),
 					static_cast<int32_t>(bytesToRead), 0, this->address->ai_addr, reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 				if (readBytes <= 0 && errno != EWOULDBLOCK) {
@@ -785,11 +793,10 @@ namespace DiscordCoreInternal {
 					this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 					this->bytesRead += readBytes;
 					this->handleAudioBuffer();
-					returnValue = true;
 				}
 			}
 		} while (readBytes > 0);
-		return returnValue;
+		return true;
 	}
 
 	int64_t UDPConnection::getBytesRead() noexcept {
