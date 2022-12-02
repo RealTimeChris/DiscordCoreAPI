@@ -2139,11 +2139,9 @@ namespace DiscordCoreInternal {
 				return this->arrayValue.size();
 			}
 			if ((this->head % this->arrayValue.size()) >= (this->tail % this->arrayValue.size())) {
-				uint64_t freeSpace = this->arrayValue.size() - ((this->head % this->arrayValue.size()) - (this->tail % this->arrayValue.size()));
-				return this->arrayValue.size() - freeSpace;
+				return (this->head % this->arrayValue.size()) - (this->tail % this->arrayValue.size());
 			} else {
-				uint64_t freeSpace = (this->tail % this->arrayValue.size()) - (this->head % this->arrayValue.size());
-				return this->arrayValue.size() - freeSpace;
+				return (this->tail % this->arrayValue.size()) - (this->head % this->arrayValue.size());
 			}
 		}
 
@@ -2180,7 +2178,7 @@ namespace DiscordCoreInternal {
 
 	template<typename OTy, uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferSlice<OTy>, SliceCount> {
 	  public:
-		void clear() noexcept {
+		void clear() noexcept override {
 			for (uint64_t x = 0; x < this->arrayValue.size(); ++x) {
 				this->arrayValue[x].clear();
 			}
