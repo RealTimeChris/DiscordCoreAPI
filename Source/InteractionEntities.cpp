@@ -326,11 +326,11 @@ namespace DiscordCoreAPI {
 			"/interactions/" + dataPackage.interactionPackage.interactionId + "/" + dataPackage.interactionPackage.interactionToken + "/callback";
 		if (dataPackage.data.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			auto serializer = dataPackage.data.operator DiscordCoreAPI::Jsonifier();
+			auto serializer = dataPackage.data.operator Jsonifier();
 			serializer.refreshString(JsonifierSerializeType::Json);
 			workload.content = constructMultiPartData(serializer.operator std::string(), dataPackage.data.data.files);
 		} else {
-			auto serializer = dataPackage.data.operator DiscordCoreAPI::Jsonifier();
+			auto serializer = dataPackage.data.operator Jsonifier();
 			serializer.refreshString(JsonifierSerializeType::Json);
 			workload.content = serializer.operator std::string();
 		}
@@ -363,11 +363,11 @@ namespace DiscordCoreAPI {
 			"/messages/@original";
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			auto serializer = dataPackage.data.operator DiscordCoreAPI::Jsonifier();
+			auto serializer = dataPackage.data.operator Jsonifier();
 			serializer.refreshString(JsonifierSerializeType::Json);
 			workload.content = constructMultiPartData(serializer.operator std::string(), dataPackage.data.files);
 		} else {
-			auto serializer = dataPackage.data.operator DiscordCoreAPI::Jsonifier();
+			auto serializer = dataPackage.data.operator Jsonifier();
 			serializer.refreshString(JsonifierSerializeType::Json);
 			workload.content = serializer.operator std::string();
 		}
@@ -393,11 +393,11 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/webhooks/" + dataPackage.interactionPackage.applicationId + "/" + dataPackage.interactionPackage.interactionToken;
 		if (dataPackage.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			auto serializer = dataPackage.operator DiscordCoreAPI::Jsonifier();
+			auto serializer = dataPackage.operator Jsonifier();
 			serializer.refreshString(JsonifierSerializeType::Json);
 			workload.content = constructMultiPartData(serializer.operator std::string(), dataPackage.files);
 		} else {
-			auto serializer = dataPackage.operator DiscordCoreAPI::Jsonifier();
+			auto serializer = dataPackage.operator Jsonifier();
 			serializer.refreshString(JsonifierSerializeType::Json);
 			workload.content = serializer.operator std::string();
 		}
@@ -422,11 +422,11 @@ namespace DiscordCoreAPI {
 			"/messages/" + dataPackage.messagePackage.messageId;
 		if (dataPackage.data.files.size() > 0) {
 			workload.payloadType = DiscordCoreInternal::PayloadType::Multipart_Form;
-			auto serializer = dataPackage.data.operator DiscordCoreAPI::Jsonifier();
+			auto serializer = dataPackage.data.operator Jsonifier();
 			serializer.refreshString(JsonifierSerializeType::Json);
 			workload.content = constructMultiPartData(serializer.operator std::string(), dataPackage.data.files);
 		} else {
-			auto serializer = dataPackage.data.operator DiscordCoreAPI::Jsonifier();
+			auto serializer = dataPackage.data.operator Jsonifier();
 			serializer.refreshString(JsonifierSerializeType::Json);
 			workload.content = serializer.operator std::string();
 		}

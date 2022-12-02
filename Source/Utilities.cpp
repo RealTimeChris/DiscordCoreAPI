@@ -1627,7 +1627,7 @@ namespace DiscordCoreAPI {
 
 		std::string returnString{};
 		returnString.reserve(encodedLength);
-		DiscordCoreAPI::StopWatch stopWatch{ 1500ms };
+		StopWatch stopWatch{ 1500ms };
 		uint64_t pos = 0;
 		while (pos < string.size()) {
 			if (stopWatch.hasTimePassed()) {

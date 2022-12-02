@@ -288,7 +288,7 @@ namespace DiscordCoreInternal {
 
 		HttpsWorkloadData(const HttpsWorkloadData& other) noexcept = delete;
 
-		HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType type) noexcept;
+		HttpsWorkloadData(HttpsWorkloadType type) noexcept;
 
 	  protected:
 		static int64_t incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept;

@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 		data["type"] = this->type;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				data["options"].emplaceBack(this->options[x].operator DiscordCoreAPI::Jsonifier());
+				data["options"].emplaceBack(this->options[x].operator Jsonifier());
 			}
 		}
 		return data;
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				data["options"].emplaceBack(this->options[x].operator DiscordCoreAPI::Jsonifier());
+				data["options"].emplaceBack(this->options[x].operator Jsonifier());
 			}
 		}
 		return data;
@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 		data["type"] = this->type;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				data["options"].emplaceBack(this->options[x].operator DiscordCoreAPI::Jsonifier());
+				data["options"].emplaceBack(this->options[x].operator Jsonifier());
 			}
 		}
 		return data;
@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		if (this->options.size() > 0) {
 			for (int32_t x = 0; x < this->options.size(); ++x) {
-				data["options"].emplaceBack(this->options[x].operator DiscordCoreAPI::Jsonifier());
+				data["options"].emplaceBack(this->options[x].operator Jsonifier());
 			}
 		}
 		return data;

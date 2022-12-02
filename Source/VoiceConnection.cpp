@@ -198,7 +198,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept {
+	void VoiceConnection::connect(const VoiceConnectInitData& initData) noexcept {
 		this->voiceConnectInitData = initData;
 		this->connections = std::make_unique<ConnectionPackage>();
 		this->connections->currentReconnectTries = this->currentReconnectTries;
@@ -217,10 +217,10 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::checkForAndSendHeartBeat(const bool isImmedate) noexcept {
 		if (this->heartBeatStopWatch.hasTimePassed() || isImmedate) {
-			DiscordCoreAPI::Jsonifier data{};
+			Jsonifier data{};
 			data["d"] = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
 			data["op"] = 3;
-			data.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
+			data.refreshString(JsonifierSerializeType::Json);
 			std::string string{ data.operator std::string() };
 			this->createHeader(string, this->dataOpCode);
 			if (!this->sendMessage(string, true)) {
@@ -327,7 +327,7 @@ namespace DiscordCoreAPI {
 		}
 		data.delay = 0;
 		data.ssrc = this->audioSSRC;
-		auto serializer = data.operator DiscordCoreAPI::Jsonifier();
+		auto serializer = data.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		std::string string{ serializer.operator std::string() };
 		this->createHeader(string, this->dataOpCode);
@@ -653,7 +653,7 @@ namespace DiscordCoreAPI {
 				DiscordCoreInternal::VoiceIdentifyData data{};
 				data.connectInitData = this->voiceConnectInitData;
 				data.connectionData = this->voiceConnectionData;
-				auto serializer = data.operator DiscordCoreAPI::Jsonifier();
+				auto serializer = data.operator Jsonifier();
 				serializer.refreshString(JsonifierSerializeType::Json);
 				std::string string{ serializer.operator std::string() };
 				this->createHeader(string, this->dataOpCode);
@@ -694,7 +694,7 @@ namespace DiscordCoreAPI {
 				data.voiceEncryptionMode = this->audioEncryptionMode;
 				data.externalIp = this->externalIp;
 				data.voicePort = this->port;
-				auto serializer = data.operator DiscordCoreAPI::Jsonifier();
+				auto serializer = data.operator Jsonifier();
 				serializer.refreshString(JsonifierSerializeType::Json);
 				std::string string{ serializer.operator std::string() };
 				this->createHeader(string, this->dataOpCode);

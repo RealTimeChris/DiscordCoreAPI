@@ -149,7 +149,7 @@ namespace DiscordCoreInternal {
 		*this = std::move(other);
 	}
 
-	HttpsWorkloadData::HttpsWorkloadData(DiscordCoreInternal::HttpsWorkloadType type) noexcept {
+	HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadType type) noexcept {
 		if (!HttpsWorkloadData::workloadIdsExternal.contains(type)) {
 			std::unique_ptr<std::atomic_int64_t> integer{ std::make_unique<std::atomic_int64_t>() };
 			std::unique_ptr<std::atomic_int64_t> integer02{ std::make_unique<std::atomic_int64_t>() };
@@ -204,10 +204,10 @@ namespace DiscordCoreInternal {
 namespace DiscordCoreAPI {
 
 	UpdatePresenceData::operator Jsonifier() {
-		DiscordCoreAPI::Jsonifier data{};
+		Jsonifier data{};
 		data["op"] = 3;
 		for (auto& value: this->activities) {
-			DiscordCoreAPI::Jsonifier dataNew{};
+			Jsonifier dataNew{};
 			if (value.url != "") {
 				dataNew["url"] = std::string{ value.url };
 			}
@@ -842,14 +842,14 @@ namespace DiscordCoreAPI {
 		if (getArray(arrayValue, "exempt_roles", jsonObjectData)) {
 			this->exemptRoles.clear();
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
-				this->exemptRoles.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value() }));
+				this->exemptRoles.emplace_back(strtoull(std::string{ value.get_string().take_value() }));
 			}
 		}
 
 		if (getArray(arrayValue, "exempt_channels", jsonObjectData)) {
 			this->exemptChannels.clear();
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
-				this->exemptChannels.emplace_back(DiscordCoreAPI::strtoull(std::string{ value.get_string().take_value() }));
+				this->exemptChannels.emplace_back(strtoull(std::string{ value.get_string().take_value() }));
 			}
 		}
 
@@ -2628,21 +2628,21 @@ namespace DiscordCoreAPI {
 			this->attachments.clear();
 			for (simdjson::simdjson_result<simdjson::ondemand::field> value: arrayValue) {
 				AttachmentData newData{ value.value() };
-				this->attachments[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
+				this->attachments[strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
 		}
 		if (jsonObjectData["users"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->users.clear();
 			for (simdjson::simdjson_result<simdjson::ondemand::field> value: arrayValue) {
 				UserData newData{ value.value() };
-				this->users[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
+				this->users[strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
 		}
 		if (jsonObjectData["channels"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 			this->channels.clear();
 			for (simdjson::simdjson_result<simdjson::ondemand::field> value: arrayValue) {
 				ChannelData newData{ value.value() };
-				this->channels[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
+				this->channels[strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
 		}
 		if (jsonObjectData["roles"].get(arrayValue) == simdjson::error_code::SUCCESS) {
@@ -2656,7 +2656,7 @@ namespace DiscordCoreAPI {
 			this->members.clear();
 			for (simdjson::simdjson_result<simdjson::ondemand::field> value: arrayValue) {
 				GuildMemberData newData{ value.value() };
-				this->members[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
+				this->members[strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
 		}
 
@@ -2664,7 +2664,7 @@ namespace DiscordCoreAPI {
 			this->messages.clear();
 			for (simdjson::simdjson_result<simdjson::ondemand::field> value: arrayValue) {
 				MessageData newData{ value.value() };
-				this->messages[DiscordCoreAPI::strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
+				this->messages[strtoull(std::string{ value.key().take_value().raw() })] = std::move(newData);
 			}
 		}
 	}
@@ -3073,7 +3073,7 @@ namespace DiscordCoreAPI {
 	EmbedData::operator Jsonifier() {
 		Jsonifier data{};
 		for (auto& value2: this->fields) {
-			data["fields"].emplaceBack(value2.operator DiscordCoreAPI::Jsonifier());
+			data["fields"].emplaceBack(value2.operator Jsonifier());
 		}
 		std::string realColorVal = std::to_string(this->hexColorValue.getIntColorValue());
 		data["footer"]["proxy_icon_url"] = this->footer.proxyIconUrl;
@@ -3269,11 +3269,11 @@ namespace DiscordCoreAPI {
 
 	ApplicationCommandOptionData::operator Jsonifier() {
 		Jsonifier data{};
-		if (this->type == DiscordCoreAPI::ApplicationCommandOptionType::Channel) {
+		if (this->type == ApplicationCommandOptionType::Channel) {
 			data["channel_types"] = this->channelTypes;
 		}
-		if (this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command &&
-			this->type != DiscordCoreAPI::ApplicationCommandOptionType::Sub_Command_Group) {
+		if (this->type != ApplicationCommandOptionType::Sub_Command &&
+			this->type != ApplicationCommandOptionType::Sub_Command_Group) {
 			data["required"] = this->required;
 		}
 		if (this->descriptionLocalizations.size() > 0) {
@@ -3293,13 +3293,13 @@ namespace DiscordCoreAPI {
 		data["name"] = this->name;
 		data["type"] = this->type;
 		for (auto& value: this->choices) {
-			data["choices"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
+			data["choices"].emplaceBack(value.operator Jsonifier());
 		}
 		if (this->choices.size() == 0) {
 			data["autocomplete"] = this->autocomplete;
 		}
 		for (auto& value: this->options) {
-			data["options"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
+			data["options"].emplaceBack(value.operator Jsonifier());
 		}
 		return data;
 	}
@@ -3921,7 +3921,7 @@ namespace DiscordCoreAPI {
 		}
 		if (this->data.allowedMentions.parse.size() > 0 || this->data.allowedMentions.roles.size() > 0 ||
 			this->data.allowedMentions.users.size() > 0) {
-			data["data"]["allowed_mentions"] = this->data.allowedMentions.operator DiscordCoreAPI::Jsonifier();
+			data["data"]["allowed_mentions"] = this->data.allowedMentions.operator Jsonifier();
 		}
 		if (this->data.choices.size() > 0) {
 			for (auto& value: this->data.choices) {

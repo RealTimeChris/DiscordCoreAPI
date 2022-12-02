@@ -284,7 +284,7 @@ namespace DiscordCoreAPI {
 			}
 			this->taskThread.reset(nullptr);
 		}
-		DiscordCoreAPI::AudioFrameData dataFrame{};
+		AudioFrameData dataFrame{};
 		while (DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.tryReceive(dataFrame)) {
 		};
 	}

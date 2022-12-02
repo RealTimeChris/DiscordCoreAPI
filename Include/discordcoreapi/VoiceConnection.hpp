@@ -157,12 +157,12 @@ namespace DiscordCoreAPI {
 		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketClient* baseShardNew, std::atomic_bool* doWeQuitNew) noexcept;
 
 		/// \brief Collects the currently connected-to voice Channel's id.
-		/// \returns DiscordCoreAPI::Snowflake A Snowflake containing the Channel's id.
+		/// \returns Snowflake A Snowflake containing the Channel's id.
 		Snowflake getChannelId() noexcept;
 
 		/// \brief Connects to a currently held voice channel.
 		/// \param initData A DiscordCoerAPI::VoiceConnectInitDat structure.
-		void connect(const DiscordCoreAPI::VoiceConnectInitData& initData) noexcept;
+		void connect(const VoiceConnectInitData& initData) noexcept;
 
 		~VoiceConnection() noexcept;
 

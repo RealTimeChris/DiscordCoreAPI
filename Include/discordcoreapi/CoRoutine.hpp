@@ -144,7 +144,7 @@ namespace DiscordCoreAPI {
 		}
 
 		/// \brief Collects the status of the CoRoutine.
-		/// \returns DiscordCoreAPI::CoRoutineStatus The status of the CoRoutine.
+		/// \returns CoRoutineStatus The status of the CoRoutine.
 		CoRoutineStatus getStatus() {
 			if (!this->coroutineHandle) {
 				this->currentStatus.store(CoRoutineStatus::Cancelled);

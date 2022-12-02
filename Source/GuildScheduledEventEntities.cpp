@@ -30,7 +30,7 @@ namespace DiscordCoreAPI {
 
 	CreateGuildScheduledEventData::operator Jsonifier() {
 		Jsonifier data{};
-		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
+		if (this->entityType == GuildScheduledEventEntityType::External) {
 			data["channel_id"] = JsonType::Null;
 		} else {
 			data["channel_id"] = this->channelId;
@@ -47,7 +47,7 @@ namespace DiscordCoreAPI {
 
 	ModifyGuildScheduledEventData::operator Jsonifier() {
 		Jsonifier data{};
-		if (this->entityType == DiscordCoreAPI::GuildScheduledEventEntityType::External) {
+		if (this->entityType == GuildScheduledEventEntityType::External) {
 			data["channel_id"] = JsonType::Null;
 		} else {
 			data["channel_id"] = this->channelId;

@@ -55,17 +55,17 @@ namespace DiscordCoreAPI {
 		Jsonifier data{};
 		if (this->message.allowedMentions.parse.size() > 0 || this->message.allowedMentions.roles.size() > 0 ||
 			this->message.allowedMentions.users.size() > 0) {
-			data["message"]["allowed_mentions"] = this->message.allowedMentions.operator DiscordCoreAPI::Jsonifier();
+			data["message"]["allowed_mentions"] = this->message.allowedMentions.operator Jsonifier();
 		}
 		for (auto& value: this->message.attachments) {
-			data["message"]["attachments"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
+			data["message"]["attachments"].emplaceBack(value.operator Jsonifier());
 		}
 		if (this->message.components.size() == 0) {
 			data["message"]["components"].emplaceBack(ActionRowData{});
 			data["message"]["components"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->message.components) {
-				data["message"]["components"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
+				data["message"]["components"].emplaceBack(value.operator Jsonifier());
 			}
 		}
 		for (auto& value: this->message.stickerIds) {
@@ -76,7 +76,7 @@ namespace DiscordCoreAPI {
 			data["message"]["embeds"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->message.embeds) {
-				data["message"]["embeds"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
+				data["message"]["embeds"].emplaceBack(value.operator Jsonifier());
 			}
 		}
 		if (this->message.content != "") {
@@ -98,7 +98,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/threads";
-		auto serializer = dataPackage.operator DiscordCoreAPI::Jsonifier();
+		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
 		workload.callStack = "Threads::startThreadWithMessageAsync()";
@@ -113,7 +113,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/threads";
-		auto serializer = dataPackage.operator DiscordCoreAPI::Jsonifier();
+		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
 		workload.callStack = "Threads::startThreadWithoutMessageAsync()";
@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Thread>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/threads";
-		auto serializer = dataPackage.operator DiscordCoreAPI::Jsonifier();
+		auto serializer = dataPackage.operator Jsonifier();
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
 		workload.callStack = "Threads::startThreadInForumChannelAsync()";

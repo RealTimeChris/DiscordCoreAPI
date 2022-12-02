@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 
 	CreateGuildChannelData::operator Jsonifier() {
 		Jsonifier data{};
-		if (this->type == DiscordCoreAPI::ChannelType::Guild_Voice || this->type == DiscordCoreAPI::ChannelType::Guild_Stage_Voice) {
+		if (this->type == ChannelType::Guild_Voice || this->type == ChannelType::Guild_Stage_Voice) {
 			data["user_limit"] = this->userLimit;
 			data["bitrate"] = this->bitrate;
 		}

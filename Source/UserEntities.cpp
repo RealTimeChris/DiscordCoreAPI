@@ -117,7 +117,7 @@ namespace DiscordCoreAPI {
 			std::string string{};
 			uint32_t shardId = (dataPackage.guildId.operator size_t() >> 22) % this->baseSocketAgent->configManager->getTotalShardCount();
 			uint32_t basesocketAgentIndex{ shardId % this->baseSocketAgent->configManager->getTotalShardCount() };
-			auto serializer = dataPackage.operator DiscordCoreAPI::Jsonifier();
+			auto serializer = dataPackage.operator Jsonifier();
 			if (static_cast<DiscordCoreInternal::WebSocketOpCode>(
 					this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->dataOpCode) ==
 				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
@@ -139,7 +139,7 @@ namespace DiscordCoreAPI {
 			std::string string{};
 			uint32_t shardId = 0;
 			uint32_t basesocketAgentIndex{ 0 };
-			auto serializer = dataPackage.operator DiscordCoreAPI::Jsonifier();
+			auto serializer = dataPackage.operator Jsonifier();
 			if (static_cast<DiscordCoreInternal::WebSocketOpCode>(
 					this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->dataOpCode) ==
 				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {

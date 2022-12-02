@@ -1310,7 +1310,7 @@ namespace DiscordCoreAPI {
 	/// For connecting to a voice-channel. "streamInfo" is used when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
 	/// \brief For connecting to a voice-channel. "streamInfo" is used when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
-		DiscordCoreAPI::StreamInfo streamInfo{};///< The info for the stream-socekt, if applicable.
+		StreamInfo streamInfo{};///< The info for the stream-socekt, if applicable.
 		bool selfDeaf{ false };///< Self-deafen the bot?
 		bool selfMute{ false };///< Self-mute the bot?
 		int32_t currentShard{};///< The current websocket shard, if applicable.

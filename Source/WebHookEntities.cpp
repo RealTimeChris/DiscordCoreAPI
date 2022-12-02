@@ -82,17 +82,17 @@ namespace DiscordCoreAPI {
 	ExecuteWebHookData::operator Jsonifier() {
 		Jsonifier data{};
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
-			data["allowed_mentions"] = this->allowedMentions.operator DiscordCoreAPI::Jsonifier();
+			data["allowed_mentions"] = this->allowedMentions.operator Jsonifier();
 		}
 		for (auto& value: this->attachments) {
-			data["attachments"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
+			data["attachments"].emplaceBack(value.operator Jsonifier());
 		}
 		if (this->components.size() == 0) {
 			data["components"].emplaceBack(ActionRowData{});
 			data["components"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->components) {
-				data["components"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
+				data["components"].emplaceBack(value.operator Jsonifier());
 			}
 		}
 		if (this->embeds.size() == 0) {
@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 			data["embeds"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->embeds) {
-				data["embeds"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
+				data["embeds"].emplaceBack(value.operator Jsonifier());
 			}
 		}
 		if (this->avatarUrl != "") {
@@ -237,17 +237,17 @@ namespace DiscordCoreAPI {
 	EditWebHookData::operator Jsonifier() {
 		Jsonifier data{};
 		if (this->allowedMentions.parse.size() > 0 || this->allowedMentions.roles.size() > 0 || this->allowedMentions.users.size() > 0) {
-			data["allowed_mentions"] = this->allowedMentions.operator DiscordCoreAPI::Jsonifier();
+			data["allowed_mentions"] = this->allowedMentions.operator Jsonifier();
 		}
 		for (auto& value: this->attachments) {
-			data["attachments"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
+			data["attachments"].emplaceBack(value.operator Jsonifier());
 		}
 		if (this->components.size() == 0) {
 			data["components"].emplaceBack(ActionRowData{});
 			data["components"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->components) {
-				data["components"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
+				data["components"].emplaceBack(value.operator Jsonifier());
 			}
 		}
 		if (this->embeds.size() == 0) {
@@ -255,7 +255,7 @@ namespace DiscordCoreAPI {
 			data["embeds"].getValue<Jsonifier::ArrayType>().clear();
 		} else {
 			for (auto& value: this->embeds) {
-				data["embeds"].emplaceBack(value.operator DiscordCoreAPI::Jsonifier());
+				data["embeds"].emplaceBack(value.operator Jsonifier());
 			}
 		}
 		if (this->content != "") {

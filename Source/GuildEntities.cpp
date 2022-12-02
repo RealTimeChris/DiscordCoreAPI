@@ -57,11 +57,11 @@ namespace DiscordCoreAPI {
 			newData["permissions"] = static_cast<uint64_t>(value.permissions);
 			newData["tags"]["premium_subscriber"] = value.tags.premiumSubscriber;
 			newData["tags"]["integration_id"] = value.tags.integrationId;
-			newData["mentionable"] = DiscordCoreAPI::getBool<DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Mentionable);
+			newData["mentionable"] = getBool<RoleFlags>(value.flags, RoleFlags::Mentionable);
 			newData["tags"]["bot_id"] = value.tags.botId;
-			newData["managed"] = DiscordCoreAPI::getBool<DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Managed);
+			newData["managed"] = getBool<RoleFlags>(value.flags, RoleFlags::Managed);
 			newData["position"] = value.position;
-			newData["hoist"] = DiscordCoreAPI::getBool<DiscordCoreAPI::RoleFlags>(value.flags, DiscordCoreAPI::RoleFlags::Hoist);
+			newData["hoist"] = getBool<RoleFlags>(value.flags, RoleFlags::Hoist);
 			newData["color"] = value.color.getIntColorValue();
 			newData["name"] = std::string{ value.name };
 			data["roles"].emplaceBack(newData);

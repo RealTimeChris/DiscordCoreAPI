@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	AudioFrameData OpusEncoderWrapper::encodeData(DiscordCoreAPI::AudioFrameData& inputFrame) {
+	AudioFrameData OpusEncoderWrapper::encodeData(AudioFrameData& inputFrame) {
 		if (inputFrame.data.size() == 0) {
 			return {};
 		}
@@ -64,10 +64,10 @@ namespace DiscordCoreAPI {
 		if (count <= 0) {
 			return {};
 		}
-		DiscordCoreAPI::AudioFrameData encodedFrame{};
+		AudioFrameData encodedFrame{};
 		encodedFrame.data.insert(encodedFrame.data.begin(), this->encodedData.begin(), this->encodedData.begin() + count);
 		encodedFrame.sampleCount = inputFrame.sampleCount;
-		encodedFrame.type = DiscordCoreAPI::AudioFrameType::Encoded;
+		encodedFrame.type = AudioFrameType::Encoded;
 		encodedFrame.guildMemberId = inputFrame.guildMemberId;
 		encodedFrame.currentSize = count;
 		return encodedFrame;
