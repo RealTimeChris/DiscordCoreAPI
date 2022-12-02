@@ -407,7 +407,6 @@ namespace DiscordCoreAPI {
 					stopWatch.resetTimer();
 					while (!token.stop_requested() && !UDPConnection::areWeStillConnected()) {
 						if (stopWatch.hasTimePassed() || this->activeState.load() == VoiceActiveState::Exiting) {
-							this->areWeDone.store(true);
 							return;
 						}
 						std::this_thread::sleep_for(1ms);
@@ -524,17 +523,14 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case VoiceActiveState::Exiting: {
-					this->areWeDone.store(true);
 					return;
 				}
 			}
 			if (token.stop_requested() || this->activeState == VoiceActiveState::Exiting) {
-				this->areWeDone.store(true);
 				return;
 			}
 			std::this_thread::sleep_for(1ms);
 		}
-		this->areWeDone.store(true);
 	};
 
 	bool VoiceConnection::areWeCurrentlyPlaying() noexcept {
@@ -837,9 +833,6 @@ namespace DiscordCoreAPI {
 			if (this->taskThread01->joinable()) {
 				this->taskThread01->join();
 				this->taskThread01.reset(nullptr);
-			}
-			while (!this->areWeDone.load()) {
-				std::this_thread::sleep_for(1ns);
 			}
 		}
 		if (this->streamSocket) {

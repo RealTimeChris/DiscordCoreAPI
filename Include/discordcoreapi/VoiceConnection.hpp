@@ -184,7 +184,6 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWePlaying{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		int64_t sampleRatePerSecond{ 48000 };
-		std::atomic_bool areWeDone{ false };
 		RTPPacketEncrypter packetEncrypter{};
 		simdjson::ondemand::parser parser{};
 		std::atomic_int8_t voiceUserCount{};
