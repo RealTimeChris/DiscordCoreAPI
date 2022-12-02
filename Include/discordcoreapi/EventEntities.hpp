@@ -156,7 +156,6 @@ namespace DiscordCoreInternal {
 			std::vector<RTy> vector{};
 			for (auto& [key, value]: this->functions) {
 				vector.emplace_back(value.function(args...));
-				this->functions.erase(key);
 			}
 			return vector;
 		}
