@@ -118,17 +118,19 @@ namespace DiscordCoreInternal {
 		while (!token.stop_requested()) {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock lock{ this->accessMutex };
-				std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
-				this->coroHandleCount.store(this->coroHandleCount.load() - 1);
-				this->coroutineHandles.pop_front();
-				lock.unlock();
-				this->workerThreads[index].areWeCurrentlyWorking.store(true);
-				coroHandle();
-				this->workerThreads[index].areWeCurrentlyWorking.store(false);
+				if (this->coroutineHandles.size() > 0) {
+					std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
+					this->coroHandleCount.store(this->coroHandleCount.load() - 1);
+					this->coroutineHandles.pop_front();
+					lock.unlock();
+					this->workerThreads[index].areWeCurrentlyWorking.store(true);
+					coroHandle();
+					this->workerThreads[index].areWeCurrentlyWorking.store(false);
+				}
 			} else if (this->currentCount.load() > this->threadCount.load()) {
 				std::unique_lock lock{ this->accessMutex };
 				for (auto& [key, value]: this->workerThreads) {
-					if (value.areWeCurrentlyWorking.load() && value.thread.joinable()) {						
+					if (value.areWeCurrentlyWorking.load() && value.thread.joinable()) {
 						value.thread.request_stop();
 						value.thread.detach();
 						this->workerThreads.erase(key);
