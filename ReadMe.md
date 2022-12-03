@@ -12,7 +12,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 [WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L393), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L161) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
 
 # Documentation/Examples
-[Documentation/Examples](https://discordcoreapi.com/d9/dc8/a07162.html)
+[Documentation/Examples](https://discordcoreapi.com/d6/ded/a07182.html)
 
 # Discord Server
 [This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)
