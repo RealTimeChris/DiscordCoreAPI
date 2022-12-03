@@ -70,6 +70,9 @@ namespace DiscordCoreInternal {
 		encodedFrame.type = DiscordCoreAPI::AudioFrameType::Encoded;
 		encodedFrame.guildMemberId = inputFrame.guildMemberId;
 		encodedFrame.currentSize = count;
+		inputFrame.currentSize = 0;
+		inputFrame.sampleCount = -1;
+		inputFrame.type = DiscordCoreAPI::AudioFrameType::Unset;
 		return encodedFrame;
 	}
 }

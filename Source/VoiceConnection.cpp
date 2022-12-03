@@ -172,6 +172,8 @@ namespace DiscordCoreAPI {
 		  UDPConnection(StreamType::None, clientPtrNew->configManager.doWePrintWebSocketErrorMessages()) {
 		this->dataOpCode = DiscordCoreInternal::WebSocketOpCode::Op_Text;
 		this->configManager = &clientPtrNew->configManager;
+		this->msPerPacket = 20;
+		this->samplesPerPacket = sampleRatePerSecond / 1000 * msPerPacket;
 		this->discordCoreClient = clientPtrNew;
 		this->downSampledVector.resize(23040);
 		this->upSampledVector.resize(23040);
@@ -432,8 +434,8 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case VoiceActiveState::Playing: {
-					this->audioData.type = AudioFrameType::Encoded;
-					this->audioData.data.clear();
+					this->xferAudioData.type = AudioFrameType::Encoded;
+					this->xferAudioData.data.clear();
 
 					stopWatch.resetTimer();
 					while (!token.stop_requested() && !UDPConnection::areWeStillConnected()) {
@@ -457,38 +459,41 @@ namespace DiscordCoreAPI {
 					this->sendSpeakingMessage(true);
 
 					while (!token.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
-						this->audioData.type = AudioFrameType::Unset;
-						this->audioData.sampleCount = 0;
-						this->audioData.data.clear();
+						this->xferAudioData.type = AudioFrameType::Unset;
+						this->xferAudioData.sampleCount = 0;
+						this->xferAudioData.data.clear();
 
 						this->areWePlaying.store(true);
 						if (!token.stop_requested() && VoiceConnection::areWeConnected()) {
 							this->checkForAndSendHeartBeat(false);
 						}
 						this->checkForConnections(token);
-						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(this->audioData);
-						if (this->audioData.data.size() == 0) {
+						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(this->xferAudioData);
+						if (this->xferAudioData.data.size() == 0) {
 							this->areWePlaying.store(false);
 						} else {
-							this->intervalCount = Nanoseconds{ static_cast<uint64_t>(static_cast<double>(this->audioData.sampleCount) /
+							this->intervalCount = Nanoseconds{ static_cast<uint64_t>(static_cast<double>(this->xferAudioData.sampleCount) /
 								static_cast<double>(this->sampleRatePerSecond) * static_cast<double>(this->nsPerSecond)) };
 							this->areWePlaying.store(true);
+							this->audioData += this->xferAudioData.data;
 						}
-						if (this->audioData.guildMemberId != 0) {
-							this->currentGuildMemberId = this->audioData.guildMemberId;
+						if (this->xferAudioData.guildMemberId != 0) {
+							this->currentGuildMemberId = this->xferAudioData.guildMemberId;
 						}
 						std::basic_string_view<uint8_t> frame{};
 						bool doWeBreak{ false };
-						switch (this->audioData.type) {
+						switch (this->xferAudioData.type) {
 							case AudioFrameType::RawPCM: {
-								auto encodedFrameData = this->encoder.encodeData(this->audioData);
-								if (encodedFrameData.data.size() != 0) {
-									frame = this->packetEncrypter.encryptPacket(encodedFrameData);
+								if (this->audioData.sampleCount >= this->samplesPerPacket) {
+									auto encodedFrameData = this->encoder.encodeData(this->audioData);
+									if (encodedFrameData.data.size() != 0) {
+										frame = this->packetEncrypter.encryptPacket(encodedFrameData);
+									}
 								}
 								break;
 							}
 							case AudioFrameType::Encoded: {
-								if (this->audioData.data.size() != 0) {
+								if (this->audioData.data.size() != 0 && this->audioData.sampleCount >= this->samplesPerPacket) {
 									frame = this->packetEncrypter.encryptPacket(this->audioData);
 								}
 								break;
@@ -783,9 +788,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::clearAudioData() noexcept {
-		if (this->audioData.data.size() != 0) {
-			this->audioData.data.clear();
-			this->audioData = AudioFrameData();
+		if (this->xferAudioData.data.size() != 0) {
+			this->xferAudioData.data.clear();
+			this->xferAudioData = AudioFrameData();
 		}
 		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.clearContents();
 	}

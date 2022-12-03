@@ -203,8 +203,11 @@ namespace DiscordCoreAPI {
 		int64_t nsPerSecond{ 1000000000 };
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
+		AudioFrameData xferAudioData{};
+		int64_t samplesPerPacket{};
 		AudioFrameData audioData{};
 		uint8_t voiceUserCount{};
+		int64_t msPerPacket{};
 		std::string voiceIp{};
 		std::string baseUrl{};
 		uint32_t audioSSRC{};

@@ -3317,10 +3317,10 @@ namespace DiscordCoreAPI {
 	}
 
 	AudioFrameData& AudioFrameData::operator+=(std::basic_string_view<uint8_t> other) noexcept {
-		if (this->data.size() < other.size()) {
-			this->data.resize(other.size());
+		if (this->data.size() < this->currentSize + other.size()) {
+			this->data.resize(other.size() + this->currentSize);
 		}
-		this->currentSize = other.size();
+		this->currentSize += other.size();
 		std::copy(other.data(), other.data() + other.size(), this->data.data());
 		this->sampleCount = this->currentSize / 2 / 2;
 		this->type = AudioFrameType::RawPCM;
