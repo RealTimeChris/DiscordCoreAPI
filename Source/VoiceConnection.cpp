@@ -190,7 +190,8 @@ namespace DiscordCoreAPI {
 		while (--numSamples >= 0) {
 			float startSampleNew = static_cast<float>(*input++);
 			startSampleNew *= this->currentGain;
-			opus_int32 newSample = static_cast<opus_int32>(startSampleNew);
+			opus_int32 int16Max = static_cast<opus_int32>(std::numeric_limits<opus_int16>::max());
+			opus_int32 newSample = std::min(int16Max, static_cast<opus_int32>(startSampleNew));
 			*output++ = static_cast<opus_int16>(newSample);
 			this->currentGain += increment;
 		}
