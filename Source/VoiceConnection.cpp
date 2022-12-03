@@ -183,7 +183,7 @@ namespace DiscordCoreAPI {
 		return this->voiceConnectInitData.channelId;
 	}
 
-	void VoiceConnection::applyGainRamp(int32_t numSamples) noexcept {
+	void VoiceConnection::applyGainRamp(int64_t numSamples) noexcept {
 		const auto increment = (this->currentGain - this->previousGain) / static_cast<float>(numSamples);
 		opus_int32* input = this->upSampledVector.data();
 		opus_int16* output = this->downSampledVector.data();
@@ -902,7 +902,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::mixAudio() noexcept {
 		opus_int32 voiceUserCountReal{};
-		size_t decodedSize{};
+		int64_t decodedSize{};
 		std::fill(this->upSampledVector.data(), this->upSampledVector.data() + this->upSampledVector.size(), 0);
 		for (auto& [key, value]: this->voiceUsers) {
 			UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Read_Only);
@@ -944,7 +944,7 @@ namespace DiscordCoreAPI {
 						reportException("VoiceConnection::mixAudio()");
 					}
 					if (decodedData.size() > 0) {
-						decodedSize = std::max(decodedSize, decodedData.size());						
+						decodedSize = std::max(decodedSize, static_cast<int64_t>(decodedData.size()));
 						++voiceUserCountReal;
 						for (int32_t x = 0; x < decodedData.size(); ++x) {
 							this->upSampledVector[x] += static_cast<opus_int32>(decodedData[x]);
@@ -959,7 +959,7 @@ namespace DiscordCoreAPI {
 			this->currentGain = currentPreviousGain;
 			this->applyGainRamp(decodedSize);
 			this->streamSocket->writeData(
-				std::basic_string_view<uint8_t>{ reinterpret_cast<uint8_t*>(this->downSampledVector.data()), decodedSize * 2 });
+				std::basic_string_view<uint8_t>{ reinterpret_cast<uint8_t*>(this->downSampledVector.data()), static_cast<size_t>(decodedSize * 2) });
 			this->previousGain = currentPreviousGain;
 		}
 	}
