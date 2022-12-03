@@ -199,6 +199,9 @@ namespace DiscordCoreAPI {
 		float currentGain{};
 		uint16_t port{};
 
+		void applyGainRamp(opus_int32* startSample, opus_int16* outputSample, int32_t numSamples, int32_t count, float currentGain,
+			float endGain) noexcept;
+
 		void parseIncomingVoiceData(std::basic_string_view<uint8_t> rawDataBufferNew) noexcept;
 
 		void sendVoiceData(std::basic_string_view<uint8_t> responseData) noexcept;
@@ -206,8 +209,6 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
 		void checkForAndSendHeartBeat(const bool isItImmediage) noexcept;
-
-		void applyGainRamp(int32_t numSamples, int32_t count) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 

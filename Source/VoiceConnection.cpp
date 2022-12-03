@@ -160,6 +160,21 @@ namespace DiscordCoreAPI {
 		return this->voiceConnectInitData.channelId;
 	}
 
+	void VoiceConnection::applyGainRamp(opus_int32* startSample, opus_int16* outputSample, int32_t numSamples, int32_t count, float currentGain,
+		float endGain) noexcept {
+		const auto increment = (endGain - currentGain) / static_cast<float>(numSamples);
+		opus_int32* d = startSample;
+		while (--numSamples >= 0) {
+			float startSampleNew = static_cast<float>(*d);
+			startSampleNew *= currentGain;
+			opus_int32 newSample = static_cast<opus_int32>(startSampleNew);
+			*outputSample = static_cast<opus_int16>(newSample);
+			currentGain += increment;
+			outputSample++;
+			d++;
+		}
+	}
+
 	void VoiceConnection::parseIncomingVoiceData(std::basic_string_view<uint8_t> rawDataBufferNew) noexcept {
 		if (rawDataBufferNew.size() <= 39) {
 			return;
@@ -217,18 +232,6 @@ namespace DiscordCoreAPI {
 			}
 			this->haveWeReceivedHeartbeatAck = false;
 			this->heartBeatStopWatch.resetTimer();
-		}
-	}
-
-	void VoiceConnection::applyGainRamp(int32_t numSamples, int32_t count) noexcept {
-		const auto increment = (this->previousGain - this->currentGain) / static_cast<float>(numSamples);
-		opus_int32* input = this->upSampledVector.data();
-		opus_int16* output = this->downSampledVector.data();
-		while (--numSamples >= 0) {
-			float startSampleNew = static_cast<float>(*input++);
-			startSampleNew *= this->currentGain;
-			*output++ = static_cast<opus_int16>(static_cast<opus_int32>(startSampleNew));
-			this->currentGain += increment;
 		}
 	}
 
@@ -931,7 +934,8 @@ namespace DiscordCoreAPI {
 		}
 		if (decodedSize > 0) {
 			this->currentGain = 1.0f / static_cast<float>(voiceUserCount);
-			applyGainRamp(decodedSize, voiceUserCount);
+			this->applyGainRamp(this->upSampledVector.data(), this->downSampledVector.data(), decodedSize, voiceUserCount, this->previousGain,
+				this->currentGain);
 			this->streamSocket->writeData(
 				std::basic_string_view<uint8_t>{ reinterpret_cast<uint8_t*>(this->downSampledVector.data()), decodedSize * 2 });
 			this->previousGain = this->currentGain;
