@@ -194,10 +194,10 @@ namespace DiscordCoreAPI {
 			opus_int32 newSample{}; 
 			if (int32Value < 0) {
 				newSample = static_cast<opus_int32>(std::numeric_limits<opus_int16>::min());
-				newSample = std::max(newSample, static_cast<opus_int32>(startSampleNew));
+				newSample = std::max(newSample, int32Value);
 			} else {
 				newSample = static_cast<opus_int32>(std::numeric_limits<opus_int16>::max());
-				newSample = std::min(newSample, static_cast<opus_int32>(startSampleNew));
+				newSample = std::min(newSample, int32Value);
 			}
 			*output++ = static_cast<opus_int16>(newSample);
 			this->currentGain += increment;
