@@ -88,29 +88,12 @@ namespace DiscordCoreAPI {
 	};
 
 	struct MovingAverager {
-		MovingAverager(size_t collectionCountNew) {
-			this->collectionCount = collectionCountNew;
-		}
+		MovingAverager(size_t collectionCountNew) noexcept;
 
-		void insertValue(int64_t value) {
-			this->values.emplace_front(value);
-			if (this->values.size() >= this->collectionCount) {
-				this->values.pop_back();
-			}
-		}
-
-		float getCurrentValue() {
-			float returnValue{};
-			if (this->values.size() > 0) {
-				for (auto& value: this->values) {
-					returnValue += static_cast<float>(value);
-				}
-				return returnValue / static_cast<float>(this->values.size());
-			} else {
-				return 0.0f;
-			}
-		}
-
+		void insertValue(int64_t value) noexcept;
+		
+		float getCurrentValue() noexcept;
+		
 	  protected:
 		std::deque<int64_t> values{};
 		size_t collectionCount{};

@@ -124,6 +124,29 @@ namespace DiscordCoreAPI {
 		return {};
 	}
 
+	MovingAverager::MovingAverager(size_t collectionCountNew) noexcept {
+		this->collectionCount = collectionCountNew;
+	}
+
+	void MovingAverager::insertValue(int64_t value) noexcept {
+		this->values.emplace_front(value);
+		if (this->values.size() >= this->collectionCount) {
+			this->values.pop_back();
+		}
+	}
+
+	float MovingAverager::getCurrentValue() noexcept {
+		float returnValue{};
+		if (this->values.size() > 0) {
+			for (auto& value: this->values) {
+				returnValue += static_cast<float>(value);
+			}
+			return returnValue / static_cast<float>(this->values.size());
+		} else {
+			return 0.0f;
+		}
+	}
+
 	VoiceConnectionBridge::VoiceConnectionBridge(DiscordCoreClient* clientPtrNew, StreamType streamType, Snowflake guildIdNew)
 		: UDPConnection(streamType, clientPtrNew->getConfigManager().doWePrintWebSocketErrorMessages()) {
 		this->clientPtr = clientPtrNew;
