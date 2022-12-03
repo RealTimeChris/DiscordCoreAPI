@@ -1286,7 +1286,7 @@ namespace DiscordCoreAPI {
 		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
 		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
 		size_t currentSize{};///< The current size of the allocated memory.
-		std::string data{};///< The audio data.
+		std::basic_string<uint8_t> data{};///< The audio data.
 
 		AudioFrameData() noexcept = default;
 
@@ -1298,9 +1298,9 @@ namespace DiscordCoreAPI {
 
 		AudioFrameData(const AudioFrameData&) noexcept = delete;
 
-		AudioFrameData& operator+=(std::string_view) noexcept;
+		AudioFrameData& operator+=(std::basic_string_view<uint8_t>) noexcept;
 
-		AudioFrameData& operator+=(char);
+		AudioFrameData& operator+=(uint8_t);
 
 		friend bool operator==(const AudioFrameData& lhs, const AudioFrameData& rhs);
 

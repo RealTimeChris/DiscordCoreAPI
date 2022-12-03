@@ -107,7 +107,11 @@ namespace DiscordCoreInternal {
 		data["d"]["protocol"] = "udp";
 		data["d"]["data"]["port"] = this->voicePort;
 		data["d"]["data"]["mode"] = this->voiceEncryptionMode;
-		data["d"]["data"]["address"] = this->externalIp;
+		std::string externalIpReal{};
+		for (auto& value : this->externalIp) {
+			externalIpReal.push_back(value);
+		}
+		data["d"]["data"]["address"] = externalIpReal;
 		return data;
 	}
 
@@ -3312,7 +3316,7 @@ namespace DiscordCoreAPI {
 		return this->formats;
 	}
 
-	AudioFrameData& AudioFrameData::operator+=(std::string_view other) noexcept {
+	AudioFrameData& AudioFrameData::operator+=(std::basic_string_view<uint8_t> other) noexcept {
 		if (this->data.size() < other.size()) {
 			this->data.resize(other.size());
 		}
@@ -3323,7 +3327,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	AudioFrameData& AudioFrameData::operator+=(char character) {
+	AudioFrameData& AudioFrameData::operator+=(uint8_t character) {
 		this->currentSize++;
 		this->data.push_back(character);
 		return *this;

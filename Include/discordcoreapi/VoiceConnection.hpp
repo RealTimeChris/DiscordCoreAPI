@@ -58,14 +58,14 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::OpusDecoderWrapper& getDecoder() noexcept;
 
-		void insertPayload(std::string_view) noexcept;
+		void insertPayload(std::basic_string_view<uint8_t>) noexcept;
 
-		std::string_view extractPayload() noexcept;
+		std::basic_string_view<uint8_t> extractPayload() noexcept;
 
 		Snowflake getUserId() noexcept;
 
 	  protected:
-		DiscordCoreInternal::RingBuffer<char, 4> payloads{};
+		DiscordCoreInternal::RingBuffer<uint8_t, 4> payloads{};
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
 		Snowflake userId{};
 	};
@@ -73,17 +73,17 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
 		RTPPacketEncrypter() noexcept = default;
 
-		RTPPacketEncrypter(uint32_t ssrcNew, const std::string& keysNew) noexcept;
+		RTPPacketEncrypter(uint32_t ssrcNew, const std::basic_string<uint8_t>& keysNew) noexcept;
 
-		std::string_view encryptPacket(const AudioFrameData& audioData) noexcept;
+		std::basic_string_view<uint8_t> encryptPacket(const AudioFrameData& audioData) noexcept;
 
 	  protected:
+		std::basic_string<uint8_t> data{};
+		std::basic_string<uint8_t> keys{};
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };
 		uint32_t timeStamp{};
 		uint16_t sequence{};
-		std::string keys{};
-		std::string data{};
 		uint32_t ssrc{};
 	};
 
@@ -175,10 +175,13 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::WebSocketClient* baseShard{ nullptr };
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		DiscordCoreInternal::OpusEncoderWrapper encoder{};
+		std::basic_string<uint8_t> decryptedDataString{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		std::vector<opus_int16> downSampledVector{};
+		std::basic_string<uint8_t> encryptionKey{};
 		std::vector<opus_int32> upSampledVector{};
+		std::basic_string<uint8_t> externalIp{};
 		std::atomic_bool areWePlaying{ false };
 		std::atomic_bool* doWeQuit{ nullptr };
 		int64_t sampleRatePerSecond{ 48000 };
@@ -186,24 +189,23 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::parser parser{};
 		int64_t nsPerSecond{ 1000000000 };
 		std::string audioEncryptionMode{};
-		std::string decryptedDataString{};
 		Snowflake currentGuildMemberId{};
-		std::string encryptionKey{};
 		AudioFrameData audioData{};
-		std::string externalIp{};
 		int8_t voiceUserCount{};
 		std::string voiceIp{};
 		std::string baseUrl{};
 		uint32_t audioSSRC{};
+		float previousGain{};
+		float currentGain{};
 		uint16_t port{};
 
-		void parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept;
+		void parseIncomingVoiceData(std::basic_string_view<uint8_t> rawDataBufferNew) noexcept;
+
+		void sendVoiceData(std::basic_string_view<uint8_t> responseData) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
 		void checkForAndSendHeartBeat(const bool isItImmediage) noexcept;
-
-		void sendVoiceData(std::string_view responseData) noexcept;
 
 		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
