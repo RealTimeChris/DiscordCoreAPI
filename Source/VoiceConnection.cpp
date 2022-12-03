@@ -160,18 +160,16 @@ namespace DiscordCoreAPI {
 		return this->voiceConnectInitData.channelId;
 	}
 
-	void VoiceConnection::applyGainRamp(opus_int32* startSample, opus_int16* outputSample, int32_t numSamples, int32_t count, float currentGain,
-		float endGain) noexcept {
-		const auto increment = (endGain - currentGain) / static_cast<float>(numSamples);
-		opus_int32* d = startSample;
+	void VoiceConnection::applyGainRamp(int32_t numSamples) noexcept {
+		const auto increment = (this->currentGain - this->previousGain) / static_cast<float>(numSamples);
+		opus_int32* input = this->upSampledVector.data();
+		opus_int16* output = this->downSampledVector.data();
 		while (--numSamples >= 0) {
-			float startSampleNew = static_cast<float>(*d);
-			startSampleNew *= currentGain;
+			float startSampleNew = static_cast<float>(*input++);
+			startSampleNew *= this->currentGain;
 			opus_int32 newSample = static_cast<opus_int32>(startSampleNew);
-			*outputSample = static_cast<opus_int16>(newSample);
-			currentGain += increment;
-			outputSample++;
-			d++;
+			*output++ = static_cast<opus_int16>(newSample);
+			this->currentGain += increment;
 		}
 	}
 
@@ -880,7 +878,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::mixAudio() noexcept {
-		opus_int32 voiceUserCount{};
+		opus_int32 voiceUserCountReal{};
 		size_t decodedSize{};
 		std::fill(this->upSampledVector.data(), this->upSampledVector.data() + this->upSampledVector.size(), 0);
 		for (auto& [key, value]: this->voiceUsers) {
@@ -924,7 +922,7 @@ namespace DiscordCoreAPI {
 					}
 					if (decodedData.size() > 0) {
 						decodedSize = std::max(decodedSize, decodedData.size());						
-						++voiceUserCount;
+						++voiceUserCountReal;
 						for (int32_t x = 0; x < decodedData.size(); ++x) {
 							this->upSampledVector[x] += static_cast<opus_int32>(decodedData[x]);
 						}
@@ -933,12 +931,13 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (decodedSize > 0) {
-			this->currentGain = 1.0f / static_cast<float>(voiceUserCount);
-			this->applyGainRamp(this->upSampledVector.data(), this->downSampledVector.data(), decodedSize, voiceUserCount, this->previousGain,
-				this->currentGain);
+			this->voiceUserCountAverage.insertValue(voiceUserCountReal);
+			auto currentPreviousGain = 1.0f / this->voiceUserCountAverage.getCurrentValue();
+			this->currentGain = currentPreviousGain;
+			this->applyGainRamp(decodedSize);
 			this->streamSocket->writeData(
 				std::basic_string_view<uint8_t>{ reinterpret_cast<uint8_t*>(this->downSampledVector.data()), decodedSize * 2 });
-			this->previousGain = this->currentGain;
+			this->previousGain = currentPreviousGain;
 		}
 	}
 

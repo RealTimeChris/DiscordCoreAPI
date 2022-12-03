@@ -87,6 +87,35 @@ namespace DiscordCoreAPI {
 		uint32_t ssrc{};
 	};
 
+	struct MovingAverager {
+		MovingAverager(size_t collectionCountNew) {
+			this->collectionCount = collectionCountNew;
+		}
+
+		void insertValue(int64_t value) {
+			this->values.emplace_front(value);
+			if (this->values.size() >= this->collectionCount) {
+				this->values.pop_back();
+			}
+		}
+
+		float getCurrentValue() {
+			float returnValue{};
+			if (this->values.size() > 0) {
+				for (auto& value: this->values) {
+					returnValue += static_cast<float>(value);
+				}
+				return returnValue / static_cast<float>(this->values.size());
+			} else {
+				return 0.0f;
+			}
+		}
+
+	  protected:
+		std::deque<int64_t> values{};
+		size_t collectionCount{};
+	};
+
 	/// \brief The various opcodes that could be sent/received by the voice-websocket.
 	enum class VoiceSocketOpCodes {
 		Identify = 0,///< Begin a voice websocket connection.
@@ -179,6 +208,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		std::vector<opus_int16> downSampledVector{};
+		MovingAverager voiceUserCountAverage{ 12 };
 		std::basic_string<uint8_t> encryptionKey{};
 		std::vector<opus_int32> upSampledVector{};
 		std::basic_string<uint8_t> externalIp{};
@@ -191,16 +221,13 @@ namespace DiscordCoreAPI {
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
 		AudioFrameData audioData{};
-		int8_t voiceUserCount{};
+		uint8_t voiceUserCount{};
 		std::string voiceIp{};
 		std::string baseUrl{};
 		uint32_t audioSSRC{};
 		float previousGain{};
 		float currentGain{};
 		uint16_t port{};
-
-		void applyGainRamp(opus_int32* startSample, opus_int16* outputSample, int32_t numSamples, int32_t count, float currentGain,
-			float endGain) noexcept;
 
 		void parseIncomingVoiceData(std::basic_string_view<uint8_t> rawDataBufferNew) noexcept;
 
@@ -219,6 +246,8 @@ namespace DiscordCoreAPI {
 		bool onMessageReceived(std::string_view data) noexcept;
 
 		void connectInternal(std::stop_token token) noexcept;
+
+		void applyGainRamp(int32_t numSamples) noexcept;
 
 		void runVoice(std::stop_token) noexcept;
 
