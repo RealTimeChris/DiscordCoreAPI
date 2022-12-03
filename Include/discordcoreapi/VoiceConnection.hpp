@@ -43,9 +43,10 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
+
 		VoiceUser() noexcept = default;
 
-		VoiceUser(std::atomic_int8_t* voiceUserCount) noexcept;
+		VoiceUser(Snowflake userId) noexcept;
 
 		VoiceUser& operator=(VoiceUser&&) noexcept;
 
@@ -61,14 +62,11 @@ namespace DiscordCoreAPI {
 
 		std::string_view extractPayload() noexcept;
 
-		void setUserId(Snowflake) noexcept;
-
 		Snowflake getUserId() noexcept;
 
 	  protected:
 		DiscordCoreInternal::RingBuffer<char, 4> payloads{};
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
-		std::atomic_int8_t* voiceUserCount{ nullptr };
 		Snowflake userId{};
 	};
 
@@ -171,11 +169,11 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		Nanoseconds intervalCount{ static_cast<int64_t>(960.0l / 48000.0l * 1000000000.0l) };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
+		std::unordered_map<uint64_t, std::unique_ptr<VoiceUser>> voiceUsers{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		std::unique_ptr<VoiceConnectionBridge> streamSocket{ nullptr };
 		DiscordCoreInternal::WebSocketClient* baseShard{ nullptr };
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
-		std::unordered_map<uint64_t, VoiceUser> voiceUsers{};
 		DiscordCoreInternal::OpusEncoderWrapper encoder{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
@@ -186,7 +184,6 @@ namespace DiscordCoreAPI {
 		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};
 		simdjson::ondemand::parser parser{};
-		std::atomic_int8_t voiceUserCount{};
 		int64_t nsPerSecond{ 1000000000 };
 		std::string audioEncryptionMode{};
 		std::string decryptedDataString{};
@@ -194,6 +191,7 @@ namespace DiscordCoreAPI {
 		std::string encryptionKey{};
 		AudioFrameData audioData{};
 		std::string externalIp{};
+		int8_t voiceUserCount{};
 		std::string voiceIp{};
 		std::string baseUrl{};
 		uint32_t audioSSRC{};

@@ -3318,6 +3318,8 @@ namespace DiscordCoreAPI {
 		}
 		this->currentSize = other.size();
 		std::copy(other.data(), other.data() + other.size(), this->data.data());
+		this->sampleCount = this->currentSize / 2 / 2;
+		this->type = AudioFrameType::RawPCM;
 		return *this;
 	}
 
