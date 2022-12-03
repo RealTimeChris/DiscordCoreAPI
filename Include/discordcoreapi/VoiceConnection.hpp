@@ -230,7 +230,7 @@ namespace DiscordCoreAPI {
 
 		void connectInternal(std::stop_token token) noexcept;
 
-		void applyGainRamp(int32_t numSamples) noexcept;
+		void applyGainRamp(size_t numSamples) noexcept;
 
 		void runVoice(std::stop_token) noexcept;
 
