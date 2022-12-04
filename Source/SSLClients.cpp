@@ -787,6 +787,10 @@ namespace DiscordCoreInternal {
 	bool UDPConnection::processReadData() noexcept {
 		int32_t readBytes{};
 		do {
+			if (this->inputBuffer.isItFull()) {
+				this->inputBuffer.getCurrentTail()->clear();
+				this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+			}
 			if (!this->inputBuffer.isItFull()) {
 				uint64_t bytesToRead{ this->maxBufferSize };
 				char inputArray[16384]{};
