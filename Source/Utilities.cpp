@@ -1859,7 +1859,312 @@ namespace DiscordCoreAPI {
 		return stringNew;
 	}
 
-	template<typename OTy> std::unordered_map<std::string, UnboundedMessageBlock<OTy>*> ObjectCollector<OTy>::objectsBuffersMap{};
+	TimeStamp::TimeStamp(TimeFormat formatNew) {
+		this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+	}
+
+	TimeStamp::TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second,
+		TimeFormat formatNew) {
+		this->getTimeSinceEpoch(stoull(year), stoull(month), stoull(day), stoull(hour), stoull(minute), stoull(second));
+	}
+
+	TimeStamp::operator std::string() {
+		return getISO8601TimeStamp(TimeFormat::LongDateTime);
+	}
+
+	TimeStamp::operator uint64_t() {
+		if (this->timeStampInTimeUnits == 0) {
+			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+		}
+		return this->timeStampInTimeUnits;
+	}
+
+	TimeStamp& TimeStamp::operator=(std::string&& originalTimeStampNew) {
+		this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
+		return *this;
+	}
+
+	TimeStamp::TimeStamp(std::string&& originalTimeStampNew) {
+		*this = std::move(originalTimeStampNew);
+		if (this->timeStampInTimeUnits == 0) {
+			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+		}
+	}
+
+	TimeStamp& TimeStamp::operator=(std::string& originalTimeStampNew) {
+		this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
+		return *this;
+	}
+
+	TimeStamp::TimeStamp(std::string& originalTimeStampNew) {
+		*this = originalTimeStampNew;
+	}
+
+	TimeStamp& TimeStamp::operator=(const TimeStamp& other) {
+		this->timeStampInTimeUnits = other.timeStampInTimeUnits;
+		return *this;
+	}
+
+	TimeStamp::TimeStamp(const TimeStamp& other) {
+		*this = other;
+	}
+
+	TimeStamp::TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, TimeFormat formatNew) {
+		this->getTimeSinceEpoch(year, month, day, hour, minute, second);
+	};
+
+	TimeStamp::TimeStamp(uint64_t timeInTimeUnits, TimeFormat formatNew) {
+		this->timeStampInTimeUnits = timeInTimeUnits;
+	}
+
+	std::string TimeStamp::convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd,
+		int32_t yearsToAdd, TimeFormat formatNew) {
+		std::time_t result = std::time(nullptr);
+		int32_t secondsPerMinute{ 60 };
+		int32_t minutesPerHour{ 60 };
+		int32_t secondsPerHour{ minutesPerHour * secondsPerMinute };
+		int32_t hoursPerDay{ 24 };
+		int32_t secondsPerDay{ secondsPerHour * hoursPerDay };
+		int32_t daysPerMonth{ 30 };
+		int32_t secondsPerMonth{ secondsPerDay * daysPerMonth };
+		int32_t daysPerYear{ 365 };
+		int32_t secondsPerYear{ secondsPerDay * daysPerYear };
+		int32_t secondsToAdd = (yearsToAdd * secondsPerYear) + (monthsToAdd * secondsPerMonth) + (daysToAdd * secondsPerDay) +
+			((hoursToAdd + 8) * secondsPerHour) + (minutesToAdd * secondsPerMinute);
+		result += secondsToAdd;
+		auto resultTwo = std::localtime(&result);
+		std::string returnString{};
+		if (resultTwo->tm_isdst) {
+			if (resultTwo->tm_hour + 4 >= 24) {
+				resultTwo->tm_hour = resultTwo->tm_hour - 24;
+				++resultTwo->tm_mday;
+			}
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+				std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), formatNew };
+			timeStamp.getISO8601TimeStamp(formatNew);
+			returnString = static_cast<std::string>(timeStamp);
+		} else {
+			if (resultTwo->tm_hour + 5 >= 24) {
+				resultTwo->tm_hour = resultTwo->tm_hour - 24;
+				++resultTwo->tm_mday;
+			}
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+				std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), formatNew };
+			timeStamp.getISO8601TimeStamp(formatNew);
+			returnString = static_cast<std::string>(timeStamp);
+		}
+		return returnString;
+	}
+
+	std::string TimeStamp::convertToCurrentISO8601TimeStamp(TimeFormat timeFormat) {
+		std::time_t result = std::time(nullptr);
+		auto resultTwo = std::localtime(&result);
+		std::string returnString{};
+		if (resultTwo->tm_isdst) {
+			if (resultTwo->tm_hour + 4 >= 24) {
+				resultTwo->tm_hour = resultTwo->tm_hour - 24;
+				++resultTwo->tm_mday;
+			}
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+				std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), timeFormat };
+			returnString = timeStamp.getISO8601TimeStamp(timeFormat);
+		} else {
+			if (resultTwo->tm_hour + 5 >= 24) {
+				resultTwo->tm_hour = resultTwo->tm_hour - 24;
+				++resultTwo->tm_mday;
+			}
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+				std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), timeFormat };
+			returnString = timeStamp.getISO8601TimeStamp(timeFormat);
+		}
+		return returnString;
+	}
+
+	bool TimeStamp::hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) {
+		if (this->timeStampInTimeUnits <= 0) {
+			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+		}
+		int64_t startTimeRaw = this->timeStampInTimeUnits;
+		auto currentTime = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+		int64_t secondsPerMinute = 60;
+		int64_t secondsPerHour = secondsPerMinute * 60;
+		int64_t secondsPerDay = secondsPerHour * 24;
+		auto targetElapsedTime = ((static_cast<int64_t>(days) * secondsPerDay) + (static_cast<int64_t>(hours) * secondsPerHour) +
+									 (static_cast<int64_t>(minutes) * secondsPerMinute)) *
+			1000;
+		auto actualElapsedTime = currentTime - startTimeRaw;
+		if (actualElapsedTime <= 0) {
+			return false;
+		}
+		if (actualElapsedTime >= targetElapsedTime) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	std::string TimeStamp::convertMsToDurationString(uint64_t durationInMs) {
+		std::string newString{};
+		uint64_t msPerSecond{ 1000 };
+		uint64_t secondsPerMinute{ 60 };
+		uint64_t minutesPerHour{ 60 };
+		uint64_t msPerMinute{ msPerSecond * secondsPerMinute };
+		uint64_t msPerHour{ msPerMinute * minutesPerHour };
+		uint64_t hoursLeft = static_cast<uint64_t>(trunc(durationInMs / msPerHour));
+		uint64_t minutesLeft = static_cast<uint64_t>(trunc((durationInMs % msPerHour) / msPerMinute));
+		uint64_t secondsLeft = static_cast<uint64_t>(trunc(((durationInMs % msPerHour) % msPerMinute) / msPerSecond));
+		if (hoursLeft >= 1) {
+			newString += std::to_string(hoursLeft) + " Hours, ";
+			newString += std::to_string(minutesLeft) + " Minutes, ";
+			newString += std::to_string(secondsLeft) + " Seconds.";
+		} else if (minutesLeft >= 1) {
+			newString += std::to_string(minutesLeft) + " Minutes, ";
+			newString += std::to_string(secondsLeft) + " Seconds.";
+		} else {
+			newString += std::to_string(secondsLeft) + " Seconds.";
+		}
+		return newString;
+	}
+
+	void TimeStamp::getTimeSinceEpoch(int64_t year, int64_t month, int64_t day, int64_t hour, int64_t minute, int64_t second) {
+		const uint32_t secondsInJan{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInFeb{ 28 * 24 * 60 * 60 };
+		const uint32_t secondsInMar{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInApr{ 30 * 24 * 60 * 60 };
+		const uint32_t secondsInMay{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInJun{ 30 * 24 * 60 * 60 };
+		const uint32_t secondsInJul{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInAug{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInSep{ 30 * 24 * 60 * 60 };
+		const uint32_t secondsInOct{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsInNov{ 30 * 24 * 60 * 60 };
+		const uint32_t secondsInDec{ 31 * 24 * 60 * 60 };
+		const uint32_t secondsPerMinute{ 60 };
+		const uint32_t secondsPerHour{ 60 * 60 };
+		const uint32_t secondsPerDay{ 60 * 60 * 24 };
+		Seconds value{};
+		for (int32_t x = 1970; x < year; ++x) {
+			value += Seconds{ secondsInJan };
+			value += Seconds{ secondsInFeb };
+			value += Seconds{ secondsInMar };
+			value += Seconds{ secondsInApr };
+			value += Seconds{ secondsInMay };
+			value += Seconds{ secondsInJun };
+			value += Seconds{ secondsInJul };
+			value += Seconds{ secondsInAug };
+			value += Seconds{ secondsInSep };
+			value += Seconds{ secondsInOct };
+			value += Seconds{ secondsInNov };
+			value += Seconds{ secondsInDec };
+			if (x % 4 == 0) {
+				value += Seconds{ secondsPerDay };
+			}
+		}
+		if (month > 0) {
+			value += Seconds{ static_cast<uint64_t>((day - 1) * secondsPerDay) };
+			value += Seconds{ static_cast<uint64_t>(hour * secondsPerHour) };
+			value += Seconds{ static_cast<uint64_t>(minute * secondsPerMinute) };
+			value += Seconds{ second };
+		}
+		if (month > 1) {
+			value += Seconds{ secondsInJan };
+		}
+		if (month > 2) {
+			value += Seconds{ secondsInFeb };
+		}
+		if (month > 3) {
+			value += Seconds{ secondsInMar };
+		}
+		if (month > 4) {
+			value += Seconds{ secondsInApr };
+		}
+		if (month > 5) {
+			value += Seconds{ secondsInMay };
+		}
+		if (month > 6) {
+			value += Seconds{ secondsInJun };
+		}
+		if (month > 7) {
+			value += Seconds{ secondsInJul };
+		}
+		if (month > 8) {
+			value += Seconds{ secondsInAug };
+		}
+		if (month > 9) {
+			value += Seconds{ secondsInSep };
+		}
+		if (month > 10) {
+			value += Seconds{ secondsInOct };
+		}
+		if (month > 11) {
+			value += Seconds{ secondsInNov };
+		}
+		this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(value).count();
+	}
+
+	void TimeStamp::convertTimeStampToTimeUnits(TimeFormat formatNew, std::string originalTimeStamp) {
+		try {
+			if (originalTimeStamp != "" && originalTimeStamp != "0") {
+				TimeStamp timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
+					stoi(originalTimeStamp.substr(8, 9)), stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)),
+					stoi(originalTimeStamp.substr(17, 18)), formatNew };
+				this->timeStampInTimeUnits = static_cast<uint64_t>(timeValue);
+			} else {
+				this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+			}
+		} catch (...) {
+			reportException("TimeStamp::convertTimeStampToTimeUnits()");
+		}
+	}
+
+	std::string TimeStamp::getISO8601TimeStamp(TimeFormat timeFormat) {
+		if (this->timeStampInTimeUnits <= 0) {
+			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+		}
+		uint64_t timeValue = this->timeStampInTimeUnits / 1000;
+		time_t rawTime(timeValue);
+		tm timeInfo = *localtime(&rawTime);
+		std::string timeStamp{};
+		timeStamp.resize(48);
+		switch (timeFormat) {
+			case TimeFormat::LongDate: {
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G", &timeInfo);
+				timeStamp.resize(sizeResponse);
+				break;
+			}
+			case TimeFormat::LongDateTime: {
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%T", &timeInfo);
+				timeStamp.resize(sizeResponse);
+				break;
+			}
+			case TimeFormat::LongTime: {
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &timeInfo);
+				timeStamp.resize(sizeResponse);
+				break;
+			}
+			case TimeFormat::ShortDate: {
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d/%m/%g", &timeInfo);
+				timeStamp.resize(sizeResponse);
+				break;
+			}
+			case TimeFormat::ShortDateTime: {
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%d %B %G %R", &timeInfo);
+				timeStamp.resize(sizeResponse);
+				break;
+			}
+			case TimeFormat::ShortTime: {
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%R", &timeInfo);
+				timeStamp.resize(sizeResponse);
+				break;
+			}
+			default: {
+				break;
+			}
+		}
+		return timeStamp;
+	}
+
+	std::unordered_map<std::string, UnboundedMessageBlock<MessageData>*> MessageCollector::objectsBuffersMap{};
 };
 
 namespace DiscordCoreInternal {

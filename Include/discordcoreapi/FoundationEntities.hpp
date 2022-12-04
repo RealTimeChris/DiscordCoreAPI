@@ -280,6 +280,8 @@ namespace DiscordCoreInternal {
 		std::string callStack{};
 		std::string content{};
 
+		HttpsWorkloadData() noexcept = default;
+
 		HttpsWorkloadData& operator=(HttpsWorkloadData&& other) noexcept;
 
 		HttpsWorkloadData(HttpsWorkloadData&& other) noexcept;
@@ -287,6 +289,8 @@ namespace DiscordCoreInternal {
 		HttpsWorkloadData& operator=(const HttpsWorkloadData& other) noexcept = delete;
 
 		HttpsWorkloadData(const HttpsWorkloadData& other) noexcept = delete;
+
+		HttpsWorkloadData& operator=(HttpsWorkloadType type) noexcept;
 
 		HttpsWorkloadData(HttpsWorkloadType type) noexcept;
 

@@ -35,6 +35,39 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	/// \brief MessageCollectorReturnData responseData.
+	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
+		std::vector<MessageData> messages{};///< A vector of collected Objects.
+	};
+
+	/// \brief Message collector, for collecting Messages from a Channel.
+	class DiscordCoreAPI_Dll MessageCollector {
+	  public:
+		static std::unordered_map<std::string, UnboundedMessageBlock<MessageData>*> objectsBuffersMap;
+
+		MessageCollector() noexcept = default;
+
+		/// \brief Begin waiting for Messages.
+		/// \param quantityToCollect Maximum quantity of Messages to collect before returning the results.
+		/// \param msToCollectForNew Maximum number of Milliseconds to wait for Messages before returning the results.
+		/// \param filteringFunctionNew A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
+		/// \returns A ObjectCollectorReturnData structure.
+		CoRoutine<MessageCollectorReturnData> collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew,
+			ObjectFilter<MessageData> filteringFunctionNew);
+		
+		void run();
+
+		~MessageCollector();
+
+	  protected:
+		ObjectFilter<MessageData> filteringFunction{ nullptr };
+		UnboundedMessageBlock<MessageData> objectsBuffer{};
+		MessageCollectorReturnData objectReturnData{};
+		int32_t quantityOfMessageToCollect{};
+		std::string collectorId{};
+		int32_t msToCollectFor{};
+	};
+
 	/// \brief For getting a collection of Messages.
 	struct DiscordCoreAPI_Dll GetMessagesData {
 		uint64_t aroundThisId{};///< Around this id.

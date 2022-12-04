@@ -30,68 +30,39 @@
 
 namespace DiscordCoreAPI {
 
-	/// \brief ObjectCollectorReturnData responseData.
-	template<> struct DiscordCoreAPI_Dll ObjectCollectorReturnData<Message> {
-		std::vector<Message> messages{};///< A vector of collected Objects.
-	};
+	CoRoutine<MessageCollectorReturnData> MessageCollector::collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew,
+		ObjectFilter<MessageData> filteringFunctionNew) {
+		co_await NewThreadAwaitable<MessageCollectorReturnData>();
+		this->quantityOfMessageToCollect = quantityToCollect;
+		this->filteringFunction = filteringFunctionNew;
+		this->msToCollectFor = msToCollectForNew;
+		this->collectorId = std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+		MessageCollector::objectsBuffersMap[this->collectorId] = &this->objectsBuffer;
+		this->run();
+		co_return std::move(this->objectReturnData);
+	}
 
-	/// \brief Object collector, for collecting Objects from a Channel.
-	template<> class DiscordCoreAPI_Dll ObjectCollector<Message> {
-	  public:
-		inline static std::unordered_map<std::string, UnboundedMessageBlock<Message>*> objectsBuffersMap{};
-
-		ObjectCollector() noexcept = default;
-
-		/// \brief Begin waiting for Objects.
-		/// \param quantityToCollect Maximum quantity of Objects to collect before returning the results.
-		/// \param msToCollectForNew Maximum number of Milliseconds to wait for Objects before returning the results.
-		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
-		/// \returns A ObjectCollectorReturnData structure.
-		CoRoutine<ObjectCollectorReturnData<Message>> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew,
-			ObjectFilter<Message> filteringFunctionNew) {
-			co_await NewThreadAwaitable<ObjectCollectorReturnData<Message>>();
-			this->quantityOfObjectToCollect = quantityToCollect;
-			this->filteringFunction = filteringFunctionNew;
-			this->msToCollectFor = msToCollectForNew;
-			this->collectorId = std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
-			std::cout << "MESSAEGES BUFFER SIZE: " << ObjectCollector::objectsBuffersMap.size() << std::endl;
-			ObjectCollector::objectsBuffersMap[this->collectorId] = &this->messagesBuffer;
-			this->run();
-			co_return std::move(this->messageReturnData);
-		}
-
-		void run() {
-			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
-			int64_t elapsedTime{};
-			while (elapsedTime < this->msToCollectFor) {
-				std::cout << "WERE HERE THIS IS IT!" << std::endl;
-				Message message{};
-				waitForTimeToPass<Message>(this->messagesBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
-				if (this->filteringFunction(message)) {
-					this->messageReturnData.messages.emplace_back(message);
-				}
-				if (static_cast<int32_t>(this->messageReturnData.messages.size()) >= this->quantityOfObjectToCollect) {
-					break;
-				}
-
-				elapsedTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count() - startingTime;
+	void MessageCollector::run() {
+		int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+		int64_t elapsedTime{};
+		while (elapsedTime < this->msToCollectFor) {
+			Message message{};
+			waitForTimeToPass<MessageData>(this->objectsBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
+			if (this->filteringFunction(message)) {
+				this->objectReturnData.messages.emplace_back(message);
 			}
-			std::cout << "WERE LEAVIBNG LEAVING!" << std::endl;
-		}
-
-		~ObjectCollector() {
-			if (ObjectCollector::objectsBuffersMap.contains(this->collectorId)) {
-				ObjectCollector::objectsBuffersMap.erase(this->collectorId);
+			if (static_cast<int32_t>(this->objectReturnData.messages.size()) >= this->quantityOfMessageToCollect) {
+				break;
 			}
-		}
 
-	  protected:
-		ObjectCollectorReturnData<Message> messageReturnData{};
-		ObjectFilter<Message> filteringFunction{ nullptr };
-		UnboundedMessageBlock<Message> messagesBuffer{};
-		int32_t quantityOfObjectToCollect{};
-		int32_t msToCollectFor{};
-		std::string collectorId{};
+			elapsedTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count() - startingTime;
+		}
+	}
+
+	MessageCollector::~MessageCollector() {
+		if (MessageCollector::objectsBuffersMap.contains(this->collectorId)) {
+			MessageCollector::objectsBuffersMap.erase(this->collectorId);
+		}
 	};
 
 	Message::Message(simdjson::ondemand::value jsonObjectData) {
@@ -461,10 +432,12 @@ namespace DiscordCoreAPI {
 	}
 
 	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Delete_Message_Old };
+		DiscordCoreInternal::HttpsWorkloadData workload{};
 		bool hasTimeElapsedNew = dataPackage.timeStamp.hasTimeElapsed(14, 0, 0);
 		if (!hasTimeElapsedNew) {
 			workload = DiscordCoreInternal::HttpsWorkloadType::Delete_Message;
+		} else {
+			workload = DiscordCoreInternal::HttpsWorkloadType::Delete_Message_Old;
 		}
 		co_await NewThreadAwaitable<void>();
 		if (dataPackage.timeDelay > 0) {
@@ -476,7 +449,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Messages::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return;
 	}
 
 	CoRoutine<void> Messages::deleteMessagesBulkAsync(DeleteMessagesBulkData dataPackage) {

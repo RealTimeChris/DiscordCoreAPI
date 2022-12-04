@@ -153,7 +153,7 @@ namespace DiscordCoreInternal {
 		*this = std::move(other);
 	}
 
-	HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadType type) noexcept {
+	HttpsWorkloadData& HttpsWorkloadData::operator = (HttpsWorkloadType type) noexcept {
 		if (!HttpsWorkloadData::workloadIdsExternal.contains(type)) {
 			std::unique_ptr<std::atomic_int64_t> integer{ std::make_unique<std::atomic_int64_t>() };
 			std::unique_ptr<std::atomic_int64_t> integer02{ std::make_unique<std::atomic_int64_t>() };
@@ -162,6 +162,11 @@ namespace DiscordCoreInternal {
 		}
 		this->thisWorkerId.store(HttpsWorkloadData::incrementAndGetWorkloadId(type));
 		this->workloadType = type;
+		return *this;
+	}
+
+	HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadType type) noexcept {
+		*this = type;
 	}
 
 	int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept {

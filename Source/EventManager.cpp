@@ -599,15 +599,14 @@ namespace DiscordCoreAPI {
 
 	OnMessageCreationData::OnMessageCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->message = data.processJsonMessage<Message>(dataReal, "d");
-		for (auto& [key, dValue]: ObjectCollector<Message>::objectsBuffersMap) {
-			std::cout << "SENDING TO: " << key << std::endl;
+		for (auto& [key, dValue]: MessageCollector::objectsBuffersMap) {
 			dValue->send(this->message);
 		}
 	}
 
 	OnMessageUpdateData::OnMessageUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->messageNew = data.processJsonMessage<Message>(dataReal, "d");
-		for (auto& [key, dValue]: ObjectCollector<Message>::objectsBuffersMap) {
+		for (auto& [key, dValue]: MessageCollector::objectsBuffersMap) {
 			dValue->send(this->messageNew);
 		}
 	}
