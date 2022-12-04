@@ -476,6 +476,9 @@ namespace DiscordCoreAPI {
 								static_cast<double>(this->sampleRatePerSecond) * static_cast<double>(this->nsPerSecond)) };
 							this->areWePlaying.store(true);
 							this->audioData += this->xferAudioData.data;
+							if (this->audioData.sampleCount % 480 != 0) {
+								this->audioData = AudioFrameData{};
+							}
 						}
 						if (this->xferAudioData.guildMemberId != 0) {
 							this->currentGuildMemberId = this->xferAudioData.guildMemberId;
