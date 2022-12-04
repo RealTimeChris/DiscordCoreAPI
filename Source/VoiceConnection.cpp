@@ -490,11 +490,14 @@ namespace DiscordCoreAPI {
 								DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->onSongCompletionEvent(completionEventData);
 								this->areWePlaying.store(false);
 								doWeBreak = true;
+								this->xferAudioData.type = AudioFrameType::Unset;
+								this->xferAudioData.clearData();
+								this->audioData.clearData();
 								break;
 							}
 						}
 						if (doWeBreak) {
-							break;
+							continue;
 						}
 						auto waitTime = targetTime - HRClock::now();
 						auto waitTimeCount = waitTime.count();

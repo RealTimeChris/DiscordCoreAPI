@@ -3374,7 +3374,6 @@ namespace DiscordCoreAPI {
 	}
 
 	void AudioFrameData::clearData() noexcept {
-		this->type = AudioFrameType::Unset;
 		this->guildMemberId = 0;
 		this->sampleCount = -1;
 		this->currentSize = 0;
