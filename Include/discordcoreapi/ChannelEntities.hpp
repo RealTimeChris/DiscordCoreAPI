@@ -72,12 +72,12 @@ namespace DiscordCoreAPI {
 		Snowflake targetApplicationId{};///< The id of the embedded application to open for this invite, required if target_type is 2.
 		InviteTargetTypes targetType{};///<	The type of target for this voice Channel invite.
 		Snowflake targetUserId{};///< Id of the user whose stream to display for this invite, required if target_type is 1.
-		bool temporary{ false };///< Whether this invite only grants temporary membership.
+		bool temporary{};///< Whether this invite only grants temporary membership.
 		Snowflake channelId{};///< The id of the Channel to create the invite for.
 		std::string reason{};///< Reason for creating the invite.
-		bool unique{ false };///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
-		int32_t maxUses{ 0 };///< Max number of uses or 0 for unlimited.between 0 and 100.
-		int32_t maxAge{ 0 };///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
+		bool unique{};///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
+		int32_t maxUses{};///< Max number of uses or 0 for unlimited.between 0 and 100.
+		int32_t maxAge{};///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
 
 		operator Jsonifier();
 	};
@@ -110,17 +110,17 @@ namespace DiscordCoreAPI {
 	/// \brief For creating a new Channel within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildChannelData {
 		std::vector<OverWriteData> permissionOverwrites{};///< Array of overwrite objects	the Channel's permission overwrites.
-		int32_t defaultAutoArchiveDuration{ 0 };///< Defualt duration of time before archiving a thread.
-		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a user has to wait before sending another message(0 - 21600).
-		int32_t userLimit{ 0 };///< The user limit of the voice Channel(voice only).
-		int32_t position{ 0 };///< Sorting position of the Channel.
-		int32_t bitrate{ 0 };///< The bitrate(in bits) of the voice Channel(voice only).
+		int32_t defaultAutoArchiveDuration{};///< Defualt duration of time before archiving a thread.
+		int32_t rateLimitPerUser{};///< Amount of seconds a user has to wait before sending another message(0 - 21600).
+		int32_t userLimit{};///< The user limit of the voice Channel(voice only).
+		int32_t position{};///< Sorting position of the Channel.
+		int32_t bitrate{};///< The bitrate(in bits) of the voice Channel(voice only).
 		std::string reason{};///< Reason for creating the Channel.
 		Snowflake parentId{};///< Id of the parent category for a Channel.
 		std::string topic{};///< Channel topic(0 - 1024 characters).
 		std::string name{};///< The name of the Channel.
 		ChannelType type{};///< The type of Channel.
-		bool nsfw{ false };///<  Whether the Channel is nsfw.
+		bool nsfw{};///<  Whether the Channel is nsfw.
 		Snowflake guildId{};///< The Guild within which to create the Channel.
 
 		operator Jsonifier();
@@ -128,8 +128,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For modifying the Channel position responseData of a single Channel.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionData {
-		bool lockPermissions{ false };///< Syncs the permission overwrites with the new parent, if moving to a new category.
-		int32_t position{ 0 };///< Sorting position of the Channel.
+		bool lockPermissions{};///< Syncs the permission overwrites with the new parent, if moving to a new category.
+		int32_t position{};///< Sorting position of the Channel.
 		Snowflake parentId{};///< The new parent ID for the Channel that is moved.
 		Snowflake id{};///< Channel id.
 	};
@@ -155,22 +155,22 @@ namespace DiscordCoreAPI {
 		DefaultReactionData defaultReactionEmoji{};///< The emoji to show in the add reaction button on a thread in a GUILD_FORUM channel.
 		std::vector<ForumTagData> availableTags{};///< The set of tags that can be used in a GUILD_FORUM channel.
 		int32_t defaultThreadRateLimitPerUser{};///< The initial rate_limit_per_user to set on newly created threads in a channel.
-		int32_t defaultAutoArchiveDuration{ 0 };///< Default time it takes to archive a thread.
+		int32_t defaultAutoArchiveDuration{};///< Default time it takes to archive a thread.
 		std::vector<Snowflake> appliedTags{};///< The IDs of the set of tags that have been applied to a thread in a GUILD_FORUM channel.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
 		StringWrapper lastMessageId{};///< Id of the last Message.
-		int32_t videoQualityMode{ 0 };///< Video quality mode.
-		int32_t rateLimitPerUser{ 0 };///< Amount of seconds a User has to wait before sending another Message.
+		int32_t videoQualityMode{};///< Video quality mode.
+		int32_t rateLimitPerUser{};///< Amount of seconds a User has to wait before sending another Message.
 		TimeStamp lastPinTimestamp{};///< Timestamp of the last pinned Message.
 		StringWrapper permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
 		int32_t totalMessageSent{};///< Number of messages ever sent in a thread it's similar to message_count on message creation.
 		Snowflake applicationId{};///< Application id of the current application.
 		StringWrapper rtcRegion{};///< Real-time clock region.
 		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
-		int32_t messageCount{ 0 };///< An approximate count of Messages in a Thread stops counting at 50.
-		int32_t userLimit{ 0 };///< User limit, in the case of voice channels.
+		int32_t messageCount{};///< An approximate count of Messages in a Thread stops counting at 50.
+		int32_t userLimit{};///< User limit, in the case of voice channels.
 		StringWrapper topic{};///< The Channel's topic.
-		int32_t bitrate{ 0 };///< Bitrate of the Channel, if it is a voice Channel.
+		int32_t bitrate{};///< Bitrate of the Channel, if it is a voice Channel.
 		IconHash icon{};///< Icon for the Channel, if applicable.
 
 		Channel() noexcept = default;

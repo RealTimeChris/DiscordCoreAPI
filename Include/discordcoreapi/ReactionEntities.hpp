@@ -65,7 +65,7 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};///< The Message from which to acquire the reactors.
 		Snowflake afterId{};///< Get users after this user ID.
 		std::string emoji{};///< The emoji name for which to acquire the reactors.
-		int32_t limit{ 0 };///< The maximum number of reactors to collect.
+		int32_t limit{};///< The maximum number of reactors to collect.
 	};
 
 	/// \brief For deleting all of the Reactions on a particular Message.

@@ -273,7 +273,7 @@ namespace DiscordCoreInternal {
 
 		mutable std::unordered_map<std::string, std::string> headersToInsert{};
 		PayloadType payloadType{ PayloadType::Application_Json };
-		mutable std::atomic_int64_t thisWorkerId{ 0 };
+		mutable std::atomic_int64_t thisWorkerId{};
 		HttpsWorkloadClass workloadClass{};
 		mutable std::string baseUrl{};
 		std::string relativePath{};
@@ -336,9 +336,9 @@ namespace DiscordCoreAPI {
 	*/
 
 	struct DiscordCoreAPI_Dll ConnectionPackage {
-		int32_t currentReconnectTries{ 0 };
-		bool areWeResuming{ false };
-		uint32_t currentShard{ 0 };
+		int32_t currentReconnectTries{};
+		bool areWeResuming{};
+		uint32_t currentShard{};
 	};
 
 	/// \brief Timeout durations for the timeout command.
@@ -442,12 +442,12 @@ namespace DiscordCoreAPI {
 	  public:
 		std::string contentType{};///< Type of content for the attachment.
 		std::string description{};///< A description of the attachment.
-		bool ephemeral{ false };///< Whether it was an ephemeral response.
+		bool ephemeral{};///< Whether it was an ephemeral response.
 		std::string filename{};///< The file name of the attachment.
 		std::string proxyUrl{};///< The proxy url for the attachment.
-		int32_t height{ 0 };///< The height of the attachment.
-		int32_t width{ 0 };///< The width of the attachment.
-		int32_t size{ 0 };///< The size of the attachment.
+		int32_t height{};///< The height of the attachment.
+		int32_t width{};///< The width of the attachment.
+		int32_t size{};///< The size of the attachment.
 		std::string url{};///< The url for the attachment.
 
 		operator Jsonifier();
@@ -482,8 +482,8 @@ namespace DiscordCoreAPI {
 	/// \brief Embed image data.
 	struct DiscordCoreAPI_Dll EmbedImageData {
 		std::string proxyUrl{};///< Proxy url.
-		int32_t height{ 0 };///< Image height.
-		int32_t width{ 0 };///< Image width.
+		int32_t height{};///< Image height.
+		int32_t width{};///< Image width.
 		std::string url{};///< Image url.
 
 		EmbedImageData() noexcept = default;
@@ -496,8 +496,8 @@ namespace DiscordCoreAPI {
 	/// \brief Embed thumbnail data.
 	struct DiscordCoreAPI_Dll EmbedThumbnailData {
 		std::string proxyUrl{};///< Proxy url.
-		int32_t height{ 0 };///< Image height.
-		int32_t width{ 0 };///< Image width.
+		int32_t height{};///< Image height.
+		int32_t width{};///< Image width.
 		std::string url{};///< Image url.
 
 		EmbedThumbnailData() noexcept = default;
@@ -510,8 +510,8 @@ namespace DiscordCoreAPI {
 	/// \brief Embed video data.
 	struct DiscordCoreAPI_Dll EmbedVideoData {
 		std::string proxyUrl{};///< Proxy url.
-		int32_t height{ 0 };///< Image height.
-		int32_t width{ 0 };///< Image width.
+		int32_t height{};///< Image height.
+		int32_t width{};///< Image width.
 		std::string url{};///< Image url.
 
 		EmbedVideoData() noexcept = default;
@@ -549,7 +549,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief Embed field data.
 	struct DiscordCoreAPI_Dll EmbedFieldData {
-		bool Inline{ false };///< Is the field inline with the rest of them?
+		bool Inline{};///< Is the field inline with the rest of them?
 		std::string value{};///< The text on the field.
 		std::string name{};///< The title of the field.
 
@@ -649,7 +649,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief Message reference data.
 	struct DiscordCoreAPI_Dll MessageReferenceData {
-		bool failIfNotExists{ false };///< Fail if the Message doesn't exist?
+		bool failIfNotExists{};///< Fail if the Message doesn't exist?
 		Snowflake messageId{};///< Id of the Message to reference.
 		Snowflake channelId{};///< Id of the Channel that the referenced Message was sent in.
 		Snowflake guildId{};///< Id of the Guild that the referenced Message was sent in.
@@ -696,11 +696,11 @@ namespace DiscordCoreAPI {
 
 	/// \brief Meta data for a Thread type of Channel.
 	struct DiscordCoreAPI_Dll ThreadMetadataData {
-		int32_t autoArchiveDuration{ 0 };///< How int64_t before archiving this Thread.
+		int32_t autoArchiveDuration{};///< How int64_t before archiving this Thread.
 		TimeStamp archiveTimestamp{};///< (Where applicable) the time at which this Thread was archived.
-		bool invitable{ false };///< The id of the individual who archived this Thread.
-		bool archived{ false };///< Whether or not this Thread is currently archived.
-		bool locked{ false };///< Whether or not this Thread is currently locked.
+		bool invitable{};///< The id of the individual who archived this Thread.
+		bool archived{};///< Whether or not this Thread is currently archived.
+		bool locked{};///< Whether or not this Thread is currently locked.
 
 		ThreadMetadataData() noexcept = default;
 
@@ -714,7 +714,7 @@ namespace DiscordCoreAPI {
 	  public:
 		TimeStamp joinTimestamp{};///< The time at which the member joined this Thread.
 		Snowflake userId{};///< The User's id.
-		int32_t flags{ 0 };///< Flags.
+		int32_t flags{};///< Flags.
 
 		ThreadMemberData() noexcept = default;
 
@@ -760,14 +760,14 @@ namespace DiscordCoreAPI {
 	/// \brief Voice state data.
 	struct DiscordCoreAPI_Dll VoiceStateData : public VoiceStateDataLight {
 		TimeStamp requestToSpeakTimestamp{};///< The time at which the User requested to speak.
-		bool selfStream{ false };///< Whether this User is streaming using "Go Live".
-		bool selfVideo{ false };///< Whether this User's camera is enabled.
+		bool selfStream{};///< Whether this User is streaming using "Go Live".
+		bool selfVideo{};///< Whether this User's camera is enabled.
 		std::string sessionId{};///< The session id for this voice state.
-		bool selfDeaf{ false };///< Whether this User is locally deafened.
-		bool selfMute{ false };///< Whether this User is locally muted.
-		bool suppress{ false };///< Whether this User is muted by the current User.
-		bool deaf{ false };///< Whether this User is deafened by the server.
-		bool mute{ false };///< Whether this User is muted by the server.
+		bool selfDeaf{};///< Whether this User is locally deafened.
+		bool selfMute{};///< Whether this User is locally muted.
+		bool suppress{};///< Whether this User is muted by the current User.
+		bool deaf{};///< Whether this User is deafened by the server.
+		bool mute{};///< Whether this User is muted by the server.
 
 		VoiceStateData() noexcept = default;
 
@@ -794,10 +794,11 @@ namespace DiscordCoreAPI {
 		StringWrapper unicodeEmoji{};///< Emoji representing the Role.
 		Permissions permissions{};///< The Role's base Guild Permissions.
 		ColorValue color{ 0 };///< The Role's color.
-		int16_t position{ 0 };///< Its position amongst the rest of the Guild's roles.
 		StringWrapper name{};///< The Role's name.
-		RoleFlags flags{ 0 };///< Role flags.
 		Snowflake guildId{};///< The id of the Guild that this Role is from.
+		int16_t position{};///< Its position amongst the rest of the Guild's roles.
+		RoleFlags flags{};///< Role flags.
+		
 
 		RoleData() noexcept = default;
 
@@ -823,10 +824,10 @@ namespace DiscordCoreAPI {
 	  public:
 		std::wstring unicodeName{ L"" };///< What is its unicode name?
 		std::vector<RoleData> roles{};///< Roles that are allowed to use this emoji.
-		bool requireColons{ false };///< Require colons to render it?
+		bool requireColons{};///< Require colons to render it?
 		bool available{ true };///< Is it available to be used?
-		bool animated{ false };///< Is it animated?
-		bool managed{ false };///< Is it managed?
+		bool animated{};///< Is it animated?
+		bool managed{};///< Is it managed?
 		StringWrapper name{};///< What is its name?
 		UserData user{};///< User that created this emoji.
 
@@ -895,10 +896,10 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildMemberData : public DiscordEntity {
 	  public:
 		friend class GuildData;
-		TimeStamp joinedAt{};///< When they joined the Guild.
 		std::vector<Snowflake> roles{};///< The Guild roles that they have.
-		GuildMemberFlags flags{ 0 };///< GuildMember flags.
+		GuildMemberFlags flags{};///< GuildMember flags.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
+		TimeStamp joinedAt{};///< When they joined the Guild.
 		StringWrapper nick{};///< Their nick/display name.
 		Snowflake guildId{};///< The current Guild's id.
 		IconHash avatar{};///< This GuildMember's Guild Avatar.
@@ -983,8 +984,8 @@ namespace DiscordCoreAPI {
 		std::vector<OverWriteData> permissionOverwrites{};///< Permission overwrites.
 		ChannelType type{ ChannelType::DM };///< The type of the Channel.
 		SortOrderTypes defaultSortOrder{};///< Default sorting order for a forum thread.
-		uint32_t memberCount{ 0 };///< Count of members active in the Channel.
-		uint16_t position{ 0 };///< The position of the Channel, in the Guild's Channel list.
+		uint32_t memberCount{};///< Count of members active in the Channel.
+		uint16_t position{};///< The position of the Channel, in the Guild's Channel list.
 		StringWrapper topic{};///< Channel topic.
 		Snowflake parentId{};///< Id of the Channel's parent Channel/category.
 		StringWrapper name{};///< Name of the Channel.
@@ -1015,7 +1016,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ActiveThreadsData {
 		std::vector<ThreadMemberData> members{};
 		std::vector<ChannelData> threads{};
-		bool hasMore{ false };
+		bool hasMore{};
 
 		ActiveThreadsData() noexcept = default;
 
@@ -1028,7 +1029,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ArchivedThreadsData {
 		std::vector<ThreadMemberData> members{};
 		std::vector<ChannelData> threads{};
-		bool hasMore{ false };
+		bool hasMore{};
 
 		ArchivedThreadsData() noexcept = default;
 
@@ -1149,7 +1150,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll ApplicationCommandPermissionData : public DiscordEntity {
 	  public:
 		ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role };///< The type of PermissionTypes.
-		bool permission{ false };///< Whether the PermissionTypes is active or not.
+		bool permission{};///< Whether the PermissionTypes is active or not.
 
 		ApplicationCommandPermissionData() noexcept = default;
 
@@ -1203,15 +1204,15 @@ namespace DiscordCoreAPI {
 		std::vector<OverWriteData> permissionOverwrites{};
 		int32_t defaultAutoArchiveDuration{ 10080 };
 		int32_t videoQualityMode{ 1 };
-		int32_t rateLimitPerUser{ 0 };
+		int32_t rateLimitPerUser{};
 		int32_t bitrate{ 48000 };
-		int32_t userLimit{ 0 };
+		int32_t userLimit{};
 		std::string parentId{};
 		std::string rtcRgion{};
-		int32_t position{ 0 };
+		int32_t position{};
 		std::string topic{};
 		ChannelType type{};
-		bool nsfw{ false };
+		bool nsfw{};
 		std::string name{};
 	};
 
@@ -1224,8 +1225,8 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild where it was placed.
 		Snowflake userId{};///< The id of the User who placed the reaction.
 		EmojiData emoji{};///< The emoji that was placed as a reaction.
-		int32_t count{ 0 };///< The number of times this particular emoji was placed as a reaction to the given Message.
-		bool me{ false };///< Whether or not I (The bot) placed it.
+		int32_t count{};///< The number of times this particular emoji was placed as a reaction to the given Message.
+		bool me{};///< Whether or not I (The bot) placed it.
 
 		ReactionData() noexcept = default;
 
@@ -1236,9 +1237,9 @@ namespace DiscordCoreAPI {
 
 	/// \brief Structure representing Voice Region Data.
 	struct DiscordCoreAPI_Dll VoiceRegionData {
-		bool deprecated{ false };///< Whether this is a deprecated voice region(avoid switching to these).
-		bool optimal{ false };///< True for a single server that is closest to the current User's client.
-		bool custom{ false };///< Whether this is a custom voice region(used for events / etc).
+		bool deprecated{};///< Whether this is a deprecated voice region(avoid switching to these).
+		bool optimal{};///< True for a single server that is closest to the current User's client.
+		bool custom{};///< Whether this is a custom voice region(used for events / etc).
 		std::string name{};///< Name of the region.
 		Snowflake id{};///< Unique ID for the region.
 
@@ -1285,7 +1286,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief Ban data.
 	struct DiscordCoreAPI_Dll BanData {
-		bool failedDueToPerms{ false };///< Failed due to perms?
+		bool failedDueToPerms{};///< Failed due to perms?
 		std::string reason{};///< Reason for the ban.
 		UserData user{};///< User that was banned.
 
@@ -1313,7 +1314,7 @@ namespace DiscordCoreAPI {
 	/// \brief Team members object data.
 	struct DiscordCoreAPI_Dll TeamMembersObjectData {
 		std::vector<Permissions> permissions{};///< Permissions for the team.
-		int32_t membershipState{ 0 };///< Current state.
+		int32_t membershipState{};///< Current state.
 		Snowflake teamId{};///< Id of the current team.
 		UserData user{};///< User data of the current User.
 
@@ -1326,8 +1327,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For updating the current voice state.
 	struct DiscordCoreAPI_Dll UpdateVoiceStateData {
-		bool selfMute{ false };///< Whether or not we self-mute ourselves.
-		bool selfDeaf{ false };///< Whether or not we self-deafen ourselves.
+		bool selfMute{};///< Whether or not we self-mute ourselves.
+		bool selfDeaf{};///< Whether or not we self-deafen ourselves.
 		Snowflake channelId{};///< Id of the desired voice Channel. Leave blank to disconnect.
 		Snowflake guildId{};///< The id of the Guild fo which we would like to establish a voice connection.
 
@@ -1379,17 +1380,17 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll ApplicationData : public DiscordEntity {
 	  public:
 		std::vector<std::string> rpcOrigins{};///< Array of RPC origin strings.
-		bool botRequireCodeGrant{ false };///< Does the bot require a code grant?
+		bool botRequireCodeGrant{};///< Does the bot require a code grant?
 		std::vector<std::string> tags{};///< Up to 5 tags describing the content and functionality of the application install_params.
 		std::string termsOfServiceUrl{};///< Terms of service Url.
 		std::string privacyPolicyUrl{};///< Privacy policy Url.
 		std::string customInstallUrl{};
-		ApplicationFlags flags{ 0 };///< Application flags.
+		ApplicationFlags flags{};///< Application flags.
 		std::string primarySkuId{};///< Primary SKU Id.
 		InstallParamsData params{};///< Settings for the application's default in-app authorization link, if enabled.
 		std::string description{};///< Description of the application.
 		std::string coverImage{};///< The cover image.
-		bool botPublic{ false };///< Is the bot public?
+		bool botPublic{};///< Is the bot public?
 		std::string verifyKey{};///< The verification key.
 		TeamObjectData team{};///< Team object data.
 		std::string summary{};///< Summary of the application.
@@ -1435,7 +1436,7 @@ namespace DiscordCoreAPI {
 	/// \brief Guild Widget Data.
 	struct DiscordCoreAPI_Dll GuildWidgetData {
 		Snowflake channelId{};///< The widget Channel id.
-		bool enabled{ false };///< Whether the widget is enabled.
+		bool enabled{};///< Whether the widget is enabled.
 
 		GuildWidgetData() noexcept = default;
 
@@ -1449,7 +1450,7 @@ namespace DiscordCoreAPI {
 		std::vector<ChannelData> channels{};///< Voice and stage channels which are accessible by everyone.
 		std::vector<UserData> members{};///< Special widget user objects that includes users presence (Limit 100).
 		std::string instantInvite{};///< Instant invite for the guilds specified widget invite channel.
-		int32_t presence_count{ 0 };///< Number of online members in this guild.
+		int32_t presence_count{};///< Number of online members in this guild.
 		std::string name{};///< Guild name (2-100 characters).
 	};
 
@@ -1476,16 +1477,16 @@ namespace DiscordCoreAPI {
 	/// \brief Integration data.
 	class DiscordCoreAPI_Dll IntegrationData : public DiscordEntity {
 	  public:
-		TimeStamp syncedAt{};///< Time it was last synced at.
+		int32_t expireGracePeriod{};///< How int64_t before the integration expires.
 		ApplicationData application{};///< Application data.
-		int32_t expireGracePeriod{ 0 };///< How int64_t before the integration expires.
 		bool enableEmoticons{ true };///< Emoticons enabled?
-		int32_t subscriberCount{ 0 };///< Number of current subscribers.
-		int32_t expireBehavior{ 0 };///< What to do upon expiry.
-		bool enabled{ false };///< Enabled?
-		bool syncing{ false };///< Is it syncing?
+		int32_t subscriberCount{};///< Number of current subscribers.
+		int32_t expireBehavior{};///< What to do upon expiry.
+		bool enabled{};///< Enabled?
+		bool syncing{};///< Is it syncing?
 		AccountData account{};///< Account data.
-		bool revoked{ false };///< Has it been revoked?
+		bool revoked{};///< Has it been revoked?
+		TimeStamp syncedAt{};///< Time it was last synced at.
 		Snowflake roleId{};///< Role Id.
 		std::string name{};///< Name of the integration.
 		std::string type{};///< Type of integration.
@@ -1602,7 +1603,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief Guild prune count data.
 	struct DiscordCoreAPI_Dll GuildPruneCountData {
-		int32_t count{ 0 };
+		int32_t count{};
 
 		GuildPruneCountData() noexcept = default;
 
@@ -1614,9 +1615,9 @@ namespace DiscordCoreAPI {
 	/// \brief Audit log entry data.
 	class DiscordCoreAPI_Dll AuditLogEntryData : public DiscordEntity {
 	  public:
-		TimeStamp createdTimeStamp{};///< Time at which this entry was created.
 		std::vector<AuditLogChangeData> changes{};///< Array of audit log change data.
 		OptionalAuditEntryInfoData options{};///< Audit log entry info data.
+		TimeStamp createdTimeStamp{};///< Time at which this entry was created.
 		AuditLogEvent actionType{};///< Audit log action type.
 		std::string reason{};///< The reason that was entered for the given change.
 		Snowflake targetId{};///< Id of the target User.
@@ -1701,8 +1702,8 @@ namespace DiscordCoreAPI {
 	/// \brief Stage instance data.
 	class DiscordCoreAPI_Dll StageInstanceData : public DiscordEntity {
 	  public:
-		StageInstancePrivacyLevel privacyLevel{ 0 };///< Privacy level of the Channel.
-		bool discoverableDisabled{ false };///< Is it discoverable?
+		StageInstancePrivacyLevel privacyLevel{};///< Privacy level of the Channel.
+		bool discoverableDisabled{};///< Is it discoverable?
 		Snowflake channelId{};///< The Channel's id.
 		Snowflake guildId{};///< The Guild id for which the Channel exists in.
 		std::string topic{};///< The topic of the StageInstance.
@@ -1727,9 +1728,9 @@ namespace DiscordCoreAPI {
 	  public:
 		StickerFormatType formatType{};///< Format type.
 		std::string description{};///< Description of the Sticker.
-		StickerFlags flags{ 0 };///< Sticker flags.
-		int32_t nsfwLevel{ 0 };///< NSFW warning level.
-		int32_t sortValue{ 0 };///< Where in the stack of stickers it resides.
+		StickerFlags flags{};///< Sticker flags.
+		int32_t nsfwLevel{};///< NSFW warning level.
+		int32_t sortValue{};///< Where in the stack of stickers it resides.
 		std::string packId{};///< Pack id of the Sticker.
 		Snowflake guildId{};///< The Guild id for which the Sticker exists in.
 		std::string asset{};///< Asset value for the Sticker
@@ -1748,8 +1749,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief Data representing a single Guild preview.
 	struct DiscordCoreAPI_Dll GuildPreviewData {
-		int32_t approximatePresenceCount{ 0 };
-		int32_t approximateMemberCount{ 0 };
+		int32_t approximatePresenceCount{};
+		int32_t approximateMemberCount{};
 		std::vector<StickerData> stickers{};
 		std::vector<std::string> features{};
 		std::vector<EmojiData> emojis{};
@@ -1816,8 +1817,8 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> members{};///< Array of GuildMembers.
 		std::vector<Snowflake> roles{};///< Array of Guild roles.
 		std::vector<Snowflake> emoji{};///< Array of Guild channels.
-		uint32_t memberCount{ 0 };///< Member count.
-		GuildFlags flags{ 0 };///< Guild flags.
+		uint32_t memberCount{};///< Member count.
+		GuildFlags flags{};///< Guild flags.
 		StringWrapper name{};///< The Guild's name.
 		Snowflake ownerId{};///< User id of the Guild's owner.
 		IconHash icon{};///< Url to the Guild's icon.
@@ -1841,7 +1842,7 @@ namespace DiscordCoreAPI {
 		/// \param selfMute Whether or not to self-mute the bot.
 		/// \param streamInfo For usage with the Vc-to-Vc audio streaming option.
 		/// \returns VoiceConnection* A pointer to the currently held voice connection, or nullptr if it failed to connect.
-		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{ 0 }, bool selfDeaf = false,
+		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{}, bool selfDeaf = false,
 			bool selfMute = false, StreamInfo streamInfo = StreamInfo{});
 
 		template<IsEnum ETy> bool getFlagValue(ETy theEnum) {
@@ -1918,7 +1919,7 @@ namespace DiscordCoreAPI {
 		std::string scheduledStartTime{};///< The time the scheduled event will start.
 		std::string scheduledEndTime{};///< The time the scheduled event will end, required if entity_type is External.
 		std::string description{};///< The description of the scheduled event(1 - 1000 characters.
-		uint32_t userCount{ 0 };///< The number of users subscribed to the scheduled event.
+		uint32_t userCount{};///< The number of users subscribed to the scheduled event.
 		Snowflake creatorId{};///< The id of the User that created the scheduled event *.
 		Snowflake channelId{};///< The Channel id in which the scheduled event will be hosted, or null if scheduled entity type is External.
 		Snowflake entityId{};///< The id of an entity associated with a Guild scheduled event.
@@ -1979,21 +1980,21 @@ namespace DiscordCoreAPI {
 		TimeStamp expiresAt{};///< When the invite expires.
 		TimeStamp createdAt{};///< Time it was created at.
 		GuildScheduledEventData guildScheduledEvent{};///< Scheduled Guild event.
-		int32_t approximatePresenceCount{ 0 };///< Approximate presence count.
+		int32_t approximatePresenceCount{};///< Approximate presence count.
 		ApplicationData targetApplication{};///< Application data.
-		int32_t approximateMemberCount{ 0 };///< Approximate member count.
+		int32_t approximateMemberCount{};///< Approximate member count.
 		StageInstanceData stageInstance{};///< Stage instance data.
-		bool temporary{ false };///< Is it temporary?
-		int32_t targetType{ 0 };///< Target type.
+		bool temporary{};///< Is it temporary?
+		int32_t targetType{};///< Target type.
 		UserData targetUser{};///< Target User of the invite.
 		ChannelData channel{};///< Channel data of the Channel that the invite is for.
-		int32_t maxUses{ 0 };///< Max number of uses.
-		int32_t maxAge{ 0 };///< Maximum age of the invite.
+		int32_t maxUses{};///< Max number of uses.
+		int32_t maxAge{};///< Maximum age of the invite.
 		Snowflake guildId{};///< The Guild this invite is for.
 		UserData inviter{};///< The User who created the invite.
 		std::string code{};///< Unique invite code.
 		GuildData guild{};///< Guild data of the Channel that the invite is for.
-		int32_t uses{ 0 };///< The current number of uses.
+		int32_t uses{};///< The current number of uses.
 
 		InviteData() noexcept = default;
 
@@ -2021,11 +2022,11 @@ namespace DiscordCoreAPI {
 		GuildData serializedSourceGuild{};///< The Guild snapshot this template contains.
 		std::string sourceGuildId{};///< The ID of the Guild this template is based on.
 		std::string description{};///< The description for the template.
-		uint32_t usageCount{ 0 };///< Number of times this template has been used.
+		uint32_t usageCount{};///< Number of times this template has been used.
 		std::string creatorId{};///< The ID of the User who created the template.
 		std::string createdAt{};///< When this template was created.
 		std::string updatedAt{};///< When this template was last synced to the source Guild.
-		bool isDirty{ false };///< Whether the template has unsynced changes.
+		bool isDirty{};///< Whether the template has unsynced changes.
 		UserData creator{};///< The User who created the template.
 		std::string code{};///< The template code(unique ID).
 		std::string name{};///< Template name.
@@ -2070,7 +2071,7 @@ namespace DiscordCoreAPI {
 		ChannelData sourceChannel{};///< Channel for which th WebHook was issued.
 		Snowflake applicationId{};///< Application id.
 		GuildData sourceGuild{};///< Source Guild id.
-		WebHookType type{ 0 };///< Type of WebHook.
+		WebHookType type{};///< Type of WebHook.
 		Snowflake channelId{};///< Channel id for which the WebHook was issued.
 		std::string avatar{};///< Avatar of the WebHook.
 		Snowflake guildId{};///< Guild id for which the WebHook was issued.
@@ -2184,11 +2185,11 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand option.
 		std::vector<ChannelType> channelTypes{};///< Set when the ApplicationCommand option type is set to Channel.
 		ApplicationCommandOptionType type{};///< The type of command option.
-		bool autocomplete{ false };///< If autocomplete interactions are enabled for this STRING, INTEGER, or NUMBER type option.
+		bool autocomplete{};///< If autocomplete interactions are enabled for this STRING, INTEGER, or NUMBER type option.
 		std::string description{};///< A description of the current ApplicationCommand option.
-		bool required{ false };///< If the parameter is required or optional-- default false.
-		int32_t minValue{ 0 };///< If the option is an INTEGER or NUMBER type, the minimum value permitted.
-		int32_t maxValue{ 0 };///< If the option is an INTEGER or NUMBER type, the maximum value permitted.
+		bool required{};///< If the parameter is required or optional-- default false.
+		int32_t minValue{};///< If the option is an INTEGER or NUMBER type, the minimum value permitted.
+		int32_t maxValue{};///< If the option is an INTEGER or NUMBER type, the maximum value permitted.
 		std::string name{};///< Name of the current ApplicationCommand option.
 
 		ApplicationCommandOptionData() noexcept = default;
@@ -2205,7 +2206,7 @@ namespace DiscordCoreAPI {
 	/// \brief Representing "TypingStart" data.
 	struct DiscordCoreAPI_Dll TypingStartData {
 		GuildMemberData member{};
-		int32_t timeStamp{ 0 };
+		int32_t timeStamp{};
 		Snowflake channelId{};
 		Snowflake guildId{};
 		Snowflake userId{};
@@ -2220,8 +2221,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll YouTubeFormat {
 		std::string signatureCipher{};
 		std::string audioSampleRate{};
-		int32_t averageBitrate{ 0 };
-		int64_t contentLength{ 0 };
+		int32_t averageBitrate{};
+		int64_t contentLength{};
 		std::string audioQuality{};
 		std::string downloadUrl{};
 		std::string signature{};
@@ -2229,11 +2230,11 @@ namespace DiscordCoreAPI {
 		std::string quality{};
 		std::string codecs{};
 		std::string aitags{};
-		int32_t bitrate{ 0 };
-		int32_t height{ 0 };
-		int32_t width{ 0 };
-		int32_t itag{ 0 };
-		int32_t fps{ 0 };
+		int32_t bitrate{};
+		int32_t height{};
+		int32_t width{};
+		int32_t itag{};
+		int32_t fps{};
 
 		YouTubeFormat() noexcept = default;
 
@@ -2327,7 +2328,7 @@ namespace DiscordCoreAPI {
 	/// \brief Allowable mentions for a Message.
 	class DiscordCoreAPI_Dll AllowedMentionsData {
 	  public:
-		bool repliedUser{ false };///< For replies, whether to mention the author of the Message being replied to (default false).
+		bool repliedUser{};///< For replies, whether to mention the author of the Message being replied to (default false).
 		std::vector<std::string> parse{};///< A vector of allowed mention types to parse from the content.
 		std::vector<std::string> roles{};///< Array of role_ids to mention (Max size of 100)
 		std::vector<std::string> users{};///< Array of user_ids to mention (Max size of 100)
@@ -2354,7 +2355,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SelectOptionData {
 	  public:
 		std::string description{};///< Description of the select-menu-option.
-		bool _default{ false };///< Is it the default option?
+		bool _default{};///< Is it the default option?
 		std::string label{};///< A visible label for the select-menu-option.
 		std::string value{};///< A value for identifying the option.
 		EmojiData emoji{};///< An optional emoji to put on it.
@@ -2380,12 +2381,12 @@ namespace DiscordCoreAPI {
 		std::vector<SelectOptionData> options{};///< Aray of select options the choices in the select, max 25.
 		std::vector<ChannelType> channelTypes{};///< Array of channel types	List of channel types to include in the channel select component (type 8).
 		std::string placeholder{};///< Custom placeholder text if nothing is selected, max 100 characters.
-		bool required{ false };///< Whether this component is required to be filled.
-		bool disabled{ false };///< Whether the component is disabled, default false.
-		int32_t minValues{ 0 };///< The minimum number of items that must be chosen; default 1, min 0, max 25.
-		int32_t maxValues{ 0 };///< The maximum number of items that can be chosen; default 1, max 25.
-		int32_t minLength{ 0 };///< The minimum input length for a text input.
-		int32_t maxLength{ 0 };///< The maximum input length for a text input.
+		bool required{};///< Whether this component is required to be filled.
+		bool disabled{};///< Whether the component is disabled, default false.
+		int32_t minValues{};///< The minimum number of items that must be chosen; default 1, min 0, max 25.
+		int32_t maxValues{};///< The maximum number of items that can be chosen; default 1, max 25.
+		int32_t minLength{};///< The minimum input length for a text input.
+		int32_t maxLength{};///< The maximum input length for a text input.
 		std::string customId{};///< A developer-defined identifier for the component, max 100 characters.
 		ComponentType type{};///< Integer component type.
 		std::string label{};///< The label for this component.
@@ -2437,8 +2438,8 @@ namespace DiscordCoreAPI {
 		std::string customId{};///< A developer-defined identifier for the component, max 100 characters.
 		std::string content{};///< Message content.
 		std::string title{};///< The title of the popup modal.
-		int32_t flags{ 0 };///< Flags.
-		bool tts{ false };///< Is it TTS?
+		int32_t flags{};///< Flags.
+		bool tts{};///< Is it TTS?
 	};
 
 	struct DiscordCoreAPI_Dll CreateApplicationCommandData;
@@ -2453,7 +2454,7 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set all
 		ApplicationCommandType type{};///< The type of ApplicationCommand.
-		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app, only for globally - scoped commands.
+		bool dmPermission{};///< Indicates whether the command is available in DMs with the app, only for globally - scoped commands.
 		Snowflake applicationId{};///< The current application id.
 		std::string description{};///< A description of the current ApplicationCommand.
 		std::string version{};///< An autoincremented version.
@@ -2515,7 +2516,7 @@ namespace DiscordCoreAPI {
 	  public:
 		std::vector<ThreadMemberData> addedMembers{};///< New members added to the Thread.
 		std::vector<std::string> removedMemberIds{};///< Members who have been removed.
-		uint32_t memberCount{ 0 };///< Number of Guild-members in the Thread.
+		uint32_t memberCount{};///< Number of Guild-members in the Thread.
 		Snowflake guildId{};///< Guild id of the Thread.
 
 		ThreadMembersUpdateData() noexcept = default;
@@ -2595,7 +2596,7 @@ namespace DiscordCoreAPI {
 		std::vector<EmbedData> embeds{};///< Array of embed objects	embedded rich content (up to 6000 characters).
 		std::vector<File> files{};///< File contents the contents of the file being sent one of content, file, embed(s), sticker_ids.
 		std::string content{};///< The message contents (up to 2000 characters).
-		int32_t flags{ 0 };///< Flags to be set for the message.
+		int32_t flags{};///< Flags to be set for the message.
 	};
 
 	/// \brief Message Sticker item data.
@@ -2617,32 +2618,32 @@ namespace DiscordCoreAPI {
 		std::vector<ChannelMentionData> mentionChannels{};///< array of Channel mention data.
 		std::vector<StickerItemData> stickerItems{};///< Array of Message Sticker item data.
 		std::vector<AttachmentData> attachments{};///< Array of attachment data.
-		TimeStamp editedTimestamp{};///< The time at which it was edited.
 		MessageReferenceData messageReference{};///< Message reference data.
 		std::vector<ActionRowData> components{};///< Array of action row data.
 		std::vector<std::string> mentionRoles{};///< std::vector of "mention roles" ids.
 		std::vector<ReactionData> reactions{};//< Array of reaction data.
 		MessageInteractionData interaction{};///< Message Interaction data.
-		TimeStamp timeStamp{};///< The timeStamp of when the Message was created.
 		std::vector<StickerData> stickers{};///< Array of Message Sticker data.
 		std::vector<UserData> mentions{};///< Array of User data, for individual's that were mentioned.
 		std::vector<EmbedData> embeds{};///< Array of Message embeds.
 		MessageActivityData activity{};///< Message activity data.
-		bool mentionEveryone{ false };///< Does the Message mention everyone?
+		bool mentionEveryone{};///< Does the Message mention everyone?
 		ApplicationData application{};///< Application data.
+		TimeStamp editedTimestamp{};///< The time at which it was edited.
 		Snowflake applicationId{};///< Application id.
 		GuildMemberData member{};///< The author's Guild member data.
+		TimeStamp timeStamp{};///< The timeStamp of when the Message was created.
 		std::string content{};///< The Message's content.
 		Snowflake channelId{};///< The Channel it was sent in.
 		Snowflake webHookId{};///< WebHook id of the Message, if applicable.
-		bool pinned{ false };///< Is it pinned?
+		bool pinned{};///< Is it pinned?
 		ChannelData thread{};///< The Thread that the Message was sent in, if applicable.
 		Snowflake guildId{};///< The id of the Guild the Message was sent in.
 		std::string nonce{};///< Nonce.
 		MessageType type{};///< Message type.
-		int32_t flags{ 0 };///< Flags.
+		int32_t flags{};///< Flags.
 		UserData author{};///< The author's User data.
-		bool tts{ false };///< Is it a text-to-speech Message?
+		bool tts{};///< Is it a text-to-speech Message?
 
 		MessageDataOld() noexcept = default;
 
@@ -2722,10 +2723,10 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ConnectionData {
 		std::vector<IntegrationData> integrations{};///< An array of partial server integrations.
 		ConnectionVisibilityTypes visibility{};///< Visibility of this connection.
-		bool showActivity{ false };///< Whether activities related to this connection will be shown in presence updates.
-		bool friendSync{ false };///< Whether friend sync is enabled for this connection.
-		bool verified{ false };///< Whether the connection is verified.
-		bool revoked{ false };///< Whether the connection is revoked.
+		bool showActivity{};///< Whether activities related to this connection will be shown in presence updates.
+		bool friendSync{};///< Whether friend sync is enabled for this connection.
+		bool verified{};///< Whether the connection is verified.
+		bool revoked{};///< Whether the connection is revoked.
 		std::string name{};///< The userName of the connection account.
 		std::string type{};///< The service of the connection(twitch, youtube).
 		Snowflake id{};///< Id of the connection account.
@@ -2756,7 +2757,7 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandInteractionDataOption> options{};///< ApplicationCommand Interaction data options.
 		ApplicationCommandOptionType type{};///< The type of ApplicationCommand options.
 		JsonStringValue value{};///< The value if it's an int32_t.
-		bool focused{ false };///< 	True if this option is the currently focused option for autocomplete.
+		bool focused{};///< 	True if this option is the currently focused option for autocomplete.
 		std::string name{};///< The name of the current option.
 
 		ApplicationCommandInteractionDataOption() noexcept = default;
@@ -2808,7 +2809,7 @@ namespace DiscordCoreAPI {
 		InteractionType type{};///< The type of Interaction.
 		MessageData message{};///< The Message that the Interaction came through on, if applicable.
 		Snowflake channelId{};///< The Channel the Interaction was sent in.
-		int32_t version{ 0 };///< The Interaction version.
+		int32_t version{};///< The Interaction version.
 		std::string locale{};///< The selected language of the invoking user.
 		Snowflake guildId{};///< The Guild id of the Guild it was sent in.
 		std::string token{};///< The Interaction token.
@@ -2823,10 +2824,10 @@ namespace DiscordCoreAPI {
 
 	/// \brief Data from the SessionStart info.
 	struct DiscordCoreAPI_Dll SessionStartData {
-		uint32_t maxConcurrency{ 0 };///< The number of identify requests allowed per 5 seconds.
-		uint32_t resetAfter{ 0 };///< The number of Milliseconds after which the limit resets.
-		uint32_t remaining{ 0 };///< The remaining number of session starts the current User is allowed.
-		uint32_t total{ 0 };///< The total number of session starts the current User is allowed.
+		uint32_t maxConcurrency{};///< The number of identify requests allowed per 5 seconds.
+		uint32_t resetAfter{};///< The number of Milliseconds after which the limit resets.
+		uint32_t remaining{};///< The remaining number of session starts the current User is allowed.
+		uint32_t total{};///< The total number of session starts the current User is allowed.
 
 		SessionStartData() noexcept = default;
 
@@ -2838,7 +2839,7 @@ namespace DiscordCoreAPI {
 	/// \brief Data from the GetGatewayBot endpoint.
 	struct DiscordCoreAPI_Dll GatewayBotData {
 		SessionStartData sessionStartLimit{};///< Information on the current session start limit.
-		uint32_t shards{ 0 };///< The recommended number of shards to use when connecting.
+		uint32_t shards{};///< The recommended number of shards to use when connecting.
 		std::string url{};///< The WSS Url that can be used for connecting to the gateway.
 
 		GatewayBotData() noexcept = default;
@@ -2882,8 +2883,8 @@ namespace DiscordCoreAPI {
 		std::vector<PresenceUpdateData> presences{};
 		std::vector<GuildMemberData> members{};
 		std::vector<std::string> notFound{};
-		int32_t chunkIndex{ 0 };
-		int32_t chunkCount{ 0 };
+		int32_t chunkIndex{};
+		int32_t chunkCount{};
 		Snowflake guildId{};
 		std::string nonce{};
 
@@ -2990,7 +2991,7 @@ namespace DiscordCoreAPI {
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
 		RespondToInputEventData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-			const std::string& emojiName = "", Snowflake emojiId = Snowflake{ 0 }, const std::string& url = "");
+			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
 
 		/// \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -3087,8 +3088,8 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};
 		std::string content{};
 		std::string title{};
-		int32_t flags{ 0 };
-		bool tts{ false };
+		int32_t flags{};
+		bool tts{};
 	};
 
 	/// \brief Message response base, for responding to messages.
@@ -3104,7 +3105,7 @@ namespace DiscordCoreAPI {
 		/// \param url A url, if applicable.
 		/// \returns MessageResponseBase& A reference to this data structure.
 		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-			const std::string& emojiName = "", Snowflake emojiId = Snowflake{ 0 }, const std::string& url = "");
+			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
 
 		/// \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -3174,8 +3175,8 @@ namespace DiscordCoreAPI {
 		std::string customId{};
 		std::string content{};
 		std::string title{};
-		int32_t flags{ 0 };
-		bool tts{ false };
+		int32_t flags{};
+		bool tts{};
 	};
 
 	/// \brief Interaction response data.
@@ -3212,7 +3213,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief Represents a download Url.
 	struct DiscordCoreAPI_Dll DownloadUrl {
-		int32_t contentSize{ 0 };
+		int32_t contentSize{};
 		std::string urlPath{};
 	};
 
@@ -3244,7 +3245,7 @@ namespace DiscordCoreAPI {
 		std::string firstDownloadUrl{};
 		std::string html5PlayerFile{};
 		std::string addedByUserName{};///< The User name of the individual who added this Song to the playlist.
-		uint64_t contentLength{ 0 };
+		uint64_t contentLength{};
 		std::string thumbnailUrl{};///< The Url of the thumbnail image of this Song.
 		std::string html5Player{};
 		Snowflake addedByUserId{};///< The User id of the individual who added this Song to the playlist.
@@ -3262,22 +3263,22 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::string trackAuthorization{};
-		bool doWeGetSaved{ false };
+		bool doWeGetSaved{};
 		YouTubeFormat format{};
 	};
 
 	/// \brief Song completion event data.
 	struct DiscordCoreAPI_Dll SongCompletionEventData {
 		GuildMemberData guildMember{};///< The sending GuildMember.
-		bool wasItAFail{ false };///< Is this a replay? (Did a track recently fail to play?)
+		bool wasItAFail{};///< Is this a replay? (Did a track recently fail to play?)
 		Song previousSong{};///< The previously played Song.
 		GuildData guild{};///< The sending Guild.
 	};
 
 	/// \brief Playlist of songs and other variables.
 	struct DiscordCoreAPI_Dll Playlist {
-		bool isLoopSongEnabled{ false };///< Is looping of Songs currently enabled?
-		bool isLoopAllEnabled{ false };///< Is looping of the entire Playlist currently enabled?
+		bool isLoopSongEnabled{};///< Is looping of Songs currently enabled?
+		bool isLoopAllEnabled{};///< Is looping of the entire Playlist currently enabled?
 		std::vector<Song> songQueue{};///< The list of Songs that are stored to be played.
 		Song currentSong{};///< The current Song that is playing.
 	};

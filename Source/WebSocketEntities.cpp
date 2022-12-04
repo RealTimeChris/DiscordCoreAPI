@@ -219,7 +219,7 @@ namespace DiscordCoreInternal {
 		size_t originalSize{ outBuffer.size() };
 		outBuffer.insert(outBuffer.begin(), static_cast<uint8_t>(opCode) | webSocketFinishBit);
 
-		int32_t indexCount{ 0 };
+		int32_t indexCount{};
 		if (outBuffer.size() <= webSocketMaxPayloadLengthSmall) {
 			outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(originalSize));
 			indexCount = 0;
@@ -253,7 +253,7 @@ namespace DiscordCoreInternal {
 				 << static_cast<std::string>(dataToSend) << DiscordCoreAPI::reset() << endl
 				 << endl;
 		}
-		ProcessIOResult didWeWrite{ false };
+		ProcessIOResult didWeWrite{};
 		DiscordCoreAPI::StopWatch stopWatch{ 5000ms };
 		do {
 			if (stopWatch.hasTimePassed()) {
@@ -1294,7 +1294,7 @@ namespace DiscordCoreInternal {
 					}
 					static_cast<WebSocketClient*>(valueNew)->onClosed();
 				}
-				bool areWeConnected{ false };
+				bool areWeConnected{};
 				for (auto& [key, dValue]: this->shardMap) {
 					if (dValue->connections) {
 						DiscordCoreAPI::ConnectionPackage connectionData = *dValue->connections;

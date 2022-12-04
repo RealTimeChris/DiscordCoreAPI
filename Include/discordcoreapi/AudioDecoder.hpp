@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 		AVFormatContextWrapper01() noexcept = default;
 
 		AVFormatContext* theContext{ nullptr };
-		bool didItInitialize{ false };
+		bool didItInitialize{};
 	};
 
 	struct DiscordCoreAPI_Dll AVFormatContextWrapper {
@@ -176,8 +176,8 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll BuildAudioDecoderData {
 	  public:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
-		int64_t totalFileSize{ 0 };
-		int64_t bufferMaxSize{ 0 };
+		int64_t totalFileSize{};
+		int64_t bufferMaxSize{};
 	};
 
 	class DiscordCoreAPI_Dll AudioDecoder {
@@ -195,20 +195,20 @@ namespace DiscordCoreInternal {
 		~AudioDecoder();
 
 	  protected:
-		int64_t audioStreamIndex{ 0 }, bufferMaxSize{ 0 }, bytesRead{ 0 }, totalFileSize{ 0 };
+		int64_t audioStreamIndex{}, bufferMaxSize{}, bytesRead{}, totalFileSize{};
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreAPI::AudioFrameData> outDataBuffer{};
 		DiscordCoreAPI::UnboundedMessageBlock<std::string> inputDataBuffer{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::atomic_int32_t refreshTimeForBuffer{ 10000 };
-		std::atomic_bool haveWeFailedBool{ false };
+		std::atomic_bool haveWeFailedBool{};
 		AVCodecContextWrapper audioDecodeContext{};
-		std::atomic_bool areWeQuitting{ false };
+		std::atomic_bool areWeQuitting{};
 		AVFormatContextWrapper formatContext{};
 		AVFrameWrapper frame{}, newFrame{};
 		AVIOContextWrapper ioContext{};
 		SwrContextWrapper swrContext{};
 		std::string currentBuffer{};
-		bool haveWeBooted{ false };
+		bool haveWeBooted{};
 		AVPacketWrapper packet{};
 		AVStream* audioStream{};
 		AVCodec* codec{};

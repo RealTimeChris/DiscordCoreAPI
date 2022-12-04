@@ -103,7 +103,7 @@ namespace DiscordCoreInternal {
 
 		~WorkerThread() noexcept = default;
 
-		std::atomic_bool areWeCurrentlyWorking{ false };
+		std::atomic_bool areWeCurrentlyWorking{};
 		std::jthread thread{};
 	};
 
@@ -119,9 +119,9 @@ namespace DiscordCoreInternal {
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::deque<std::coroutine_handle<>> coroutineHandles{};
 		const std::atomic_uint32_t threadCount{};
-		std::atomic_int64_t coroHandleCount{ 0 };
-		std::atomic_int64_t currentCount{ 0 };
-		std::atomic_int64_t currentIndex{ 0 };
+		std::atomic_int64_t coroHandleCount{};
+		std::atomic_int64_t currentCount{};
+		std::atomic_int64_t currentIndex{};
 		std::mutex accessMutex{};
 
 		void threadFunction(std::stop_token token, int64_t index);

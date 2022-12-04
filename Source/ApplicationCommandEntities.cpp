@@ -234,7 +234,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Patch_Global_Application_Command };
 		co_await NewThreadAwaitable<ApplicationCommand>();
 		std::vector<ApplicationCommand> appCommands = getGlobalApplicationCommandsAsync({ .applicationId = dataPackage.applicationId }).get();
-		bool isItFound{ false };
+		bool isItFound{};
 		std::string appCommandId{};
 		for (auto& value: appCommands) {
 			if (value.name == dataPackage.name) {

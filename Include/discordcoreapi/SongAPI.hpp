@@ -150,7 +150,7 @@ namespace DiscordCoreAPI {
 		static std::mutex accessMutex;
 
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
-		bool areWeInstantiated{ false };
+		bool areWeInstantiated{};
 		Snowflake guildId{};
 
 		void sendNextSongFinal(const GuildMember& guildMember);

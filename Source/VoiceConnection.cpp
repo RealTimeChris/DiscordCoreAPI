@@ -462,7 +462,7 @@ namespace DiscordCoreAPI {
 							this->currentGuildMemberId = this->xferAudioData.guildMemberId;
 						}
 						std::basic_string_view<uint8_t> frame{};
-						bool doWeBreak{ false };
+						bool doWeBreak{};
 						switch (this->xferAudioData.type) {
 							case AudioFrameType::RawPCM: {
 								if (this->audioData.sampleCount >= this->samplesPerPacket) {

@@ -1443,7 +1443,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::getAllPermissions() {
-		uint64_t allPerms{ 0 };
+		uint64_t allPerms{};
 		for (int64_t x = 0; x < 41; ++x) {
 			allPerms |= 1ll << x;
 		}
@@ -1469,8 +1469,8 @@ namespace DiscordCoreAPI {
 		for (auto& value: guildMember.roles) {
 			guildMemberRoles.emplace_back(Roles::getCachedRole({ .guildId = guildMember.guildId, .roleId = value }));
 		}
-		uint64_t allow{ 0 };
-		uint64_t deny{ 0 };
+		uint64_t allow{};
+		uint64_t deny{};
 		for (auto& value: guildMemberRoles) {
 			for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
 				if (value.id == channel.permissionOverwrites[x].id) {
@@ -1701,7 +1701,7 @@ namespace DiscordCoreAPI {
 
 	void spinLock(uint64_t timeInNsToSpinLockFor) {
 		uint64_t startTime = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
-		uint64_t timePassed{ 0 };
+		uint64_t timePassed{};
 		while (timePassed < timeInNsToSpinLockFor) {
 			timePassed = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count() - startTime;
 		}

@@ -195,7 +195,7 @@ namespace DiscordCoreAPI {
 		std::basic_string<uint8_t> encryptionKey{};
 		std::vector<opus_int32> upSampledVector{};
 		std::basic_string<uint8_t> externalIp{};
-		std::atomic_bool areWePlaying{ false };
+		std::atomic_bool areWePlaying{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};

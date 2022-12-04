@@ -378,6 +378,6 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::HttpsClient* Roles::httpsClient{ nullptr };
-	bool Roles::doWeCacheRolesBool{ false };
+	bool Roles::doWeCacheRolesBool{};
 	ObjectCache<RoleData> Roles::cache{};
 }

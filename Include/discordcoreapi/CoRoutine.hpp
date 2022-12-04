@@ -97,7 +97,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{ nullptr };
-			std::atomic_bool areWeStoppedBool{ false };
+			std::atomic_bool areWeStoppedBool{};
 			std::atomic_bool* areWeDone{ nullptr };
 			RTy result{};
 		};
@@ -250,7 +250,7 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{ nullptr };
-			std::atomic_bool areWeStoppedBool{ false };
+			std::atomic_bool areWeStoppedBool{};
 			std::atomic_bool* areWeDone{ nullptr };
 		};
 

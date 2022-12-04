@@ -519,5 +519,5 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::HttpsClient* Channels::httpsClient{ nullptr };
 	ObjectCache<ChannelData> Channels::cache{};
-	bool Channels::doWeCacheChannelsBool{ false };
+	bool Channels::doWeCacheChannelsBool{};
 }

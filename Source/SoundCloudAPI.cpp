@@ -228,7 +228,7 @@ namespace DiscordCoreInternal {
 
 	void SoundCloudAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token token, int32_t currentReconnectTries) {
 		try {
-			int32_t counter{ 0 };
+			int32_t counter{};
 			BuildAudioDecoderData dataPackage{};
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);
 			dataPackage.bufferMaxSize = this->maxBufferSize;
@@ -265,7 +265,7 @@ namespace DiscordCoreInternal {
 					didWeGetZero = false;
 				}
 				uint64_t amountToSubmitRemaining{ result.contentLength };
-				uint64_t amountSubmitted{ 0 };
+				uint64_t amountSubmitted{};
 				while (amountToSubmitRemaining > 0) {
 					std::this_thread::sleep_for(1ms);
 					std::string newerVector{};
@@ -289,7 +289,7 @@ namespace DiscordCoreInternal {
 					audioDecoder->startMe();
 				}
 				std::vector<DiscordCoreAPI::AudioFrameData> frames{};
-				bool doWeBreak{ false };
+				bool doWeBreak{};
 				while (!doWeBreak) {
 					DiscordCoreAPI::AudioFrameData rawFrame{};
 					doWeBreak = !audioDecoder->getFrame(rawFrame);

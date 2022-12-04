@@ -67,11 +67,11 @@ namespace DiscordCoreAPI {
 		std::string icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		Permissions permissions{};///< The base permissions to give the Role.
-		bool mentionable{ false };///< Is it mentionable by others in the Guild.
-		int32_t position{ 0 };///< The position amongst the other roles.
+		bool mentionable{};///< Is it mentionable by others in the Guild.
+		int32_t position{};///< The position amongst the other roles.
 		Snowflake guildId{};///< Which Guild to make the Role in.
 		std::string reason{};///< Reason for creating the Role.
-		bool hoist{ false };///< Is this Role hoisted above the rest of them?
+		bool hoist{};///< Is this Role hoisted above the rest of them?
 		std::string name{};///< The name of the Role.
 
 		operator Jsonifier();
@@ -79,7 +79,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief For updating the positions of the roles.
 	struct DiscordCoreAPI_Dll RolePositionData {
-		int32_t rolePosition{ 0 };///< The new Role position.
+		int32_t rolePosition{};///< The new Role position.
 		Snowflake roleId{};///< The Role to update.
 	};
 
@@ -88,7 +88,7 @@ namespace DiscordCoreAPI {
 		friend class Roles;
 
 		Snowflake guildId{};///< The Guild within which to move the Role.
-		int32_t newPosition{ 0 };///< The new position of the Role.
+		int32_t newPosition{};///< The new position of the Role.
 		Snowflake roleId{};///< The id of the Role to move.
 		std::string reason{};///< Reason for modifying the Role positions.
 
@@ -104,12 +104,12 @@ namespace DiscordCoreAPI {
 		std::string hexColorValue{};///< A hex-color value between 0x00 and 0xFFFFFF.
 		std::string icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
-		bool mentionable{ false };///< Is it mentionable?
+		bool mentionable{};///< Is it mentionable?
 		Snowflake guildId{};///< The id of the Guild within which to update the Role.
 		Snowflake roleId{};///< The id of the Role to update.
 		std::string reason{};///<< Reason for modifying the Role.
 		std::string name{};///< What the name of the Role is going to be.
-		bool hoist{ false };///< Is this Role hoisted above the others?
+		bool hoist{};///< Is this Role hoisted above the others?
 
 		operator Jsonifier();
 	};

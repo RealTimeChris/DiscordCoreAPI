@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 				InputEventData newEvent = newArgs.eventData;
 
 				int64_t currentTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count();
-				int64_t previousSkippedTime{ 0 };
+				int64_t previousSkippedTime{};
 				if (Skip::timeOfLastSkip.contains(newArgs.eventData.getGuildId())) {
 					previousSkippedTime = Skip::timeOfLastSkip.at(newArgs.eventData.getGuildId());
 				}

@@ -54,14 +54,14 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ListGuildMembersData {
 		Snowflake guildId{};///< Guild from which to list the GuildMembers.
 		Snowflake after{};///< The highest user id in the previous page.
-		int32_t limit{ 0 };///< Max number of members to return (1 - 1000).
+		int32_t limit{};///< Max number of members to return (1 - 1000).
 	};
 
 	/// \brief For searching for one or more GuildMembers within a chosen Guild.
 	struct DiscordCoreAPI_Dll SearchGuildMembersData {
 		Snowflake guildId{};///< Guild within which to search for the GuildMembers.
 		std::string query{};///< Query std::string to match userName(s) and nickname(s) against.
-		int32_t limit{ 0 };///< Max number of members to return (1 - 1000).
+		int32_t limit{};///< Max number of members to return (1 - 1000).
 	};
 
 	/// \brief For adding a new GuildMember to a chosen Guild.
@@ -94,8 +94,8 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild for which you would like to modify a member.
 		std::string reason{};///< Reason for modifying this GuildMember.
 		std::string nick{};///< Their new display/nick name.
-		bool mute{ false };///< Whether or not to mute them in voice.
-		bool deaf{ false };///< Whether or not to deafen them, in voice.
+		bool mute{};///< Whether or not to mute them in voice.
+		bool deaf{};///< Whether or not to deafen them, in voice.
 
 		operator Jsonifier();
 	};

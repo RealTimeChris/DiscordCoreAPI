@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 		this->interactionPackage.interactionToken = dataPackage.interactionToken;
 		this->interactionPackage.applicationId = dataPackage.applicationId;
 		this->interactionPackage.interactionId = dataPackage.interactionId;
-		this->data.data.files = dataPackage.files;
+		this->data = dataPackage;
 	}
 
 	CreateInteractionResponseData::CreateInteractionResponseData(const CreateDeferredInteractionResponseData& dataPackage) {

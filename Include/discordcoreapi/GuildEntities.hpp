@@ -50,7 +50,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The guiild id for the Guild which you wish to query the log of.
 		Snowflake before{};///< Entries that preceded a specific audit log entry ID.
 		Snowflake userId{};///< The User for whom to look for the actions of.
-		int32_t limit{ 0 };///< The maximum number of actions to acquire from the log.
+		int32_t limit{};///< The maximum number of actions to acquire from the log.
 	};
 
 	/// \brief For creating a Guild.
@@ -59,8 +59,8 @@ namespace DiscordCoreAPI {
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
 		std::vector<ChannelData> channels{};///< Array of partial Channel objects.
-		int32_t systemChannelFlags{ 0 };///< System Channel flags.
-		int32_t verificationLevel{ 0 };///< Verification level.
+		int32_t systemChannelFlags{};///< System Channel flags.
+		int32_t verificationLevel{};///< Verification level.
 		std::vector<Role> roles{};///< Array of Role objects.
 		Snowflake systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
 		std::string icon{};///< base64 128x128 image for the Guild icon.
@@ -102,7 +102,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief For banning a current GuildMember.
 	struct DiscordCoreAPI_Dll CreateGuildBanData {
-		int32_t deleteMessageDays{ 0 };///< The number of days of their Messages to delete.
+		int32_t deleteMessageDays{};///< The number of days of their Messages to delete.
 		Snowflake guildMemberId{};///< The id of the member to be banned.
 		Snowflake guildId{};///< The id of the Guild from which to ban the member.
 		std::string reason{};///< The reason for the ban.
@@ -121,16 +121,16 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GetGuildPruneCountData {
 		std::vector<Snowflake> includeRoles{};///< Roles to be included in the prune.
 		Snowflake guildId{};///< The Guild to be pruned.
-		int32_t days{ 0 };///< The number of days beyond which to prune the user's for inactivity.
+		int32_t days{};///< The number of days beyond which to prune the user's for inactivity.
 	};
 
 	/// \brief For pruning a number of GuildMembers from the Guild.
 	struct DiscordCoreAPI_Dll BeginGuildPruneData {
 		std::vector<Snowflake> includeRoles{};/// Roles to be included in the prune.
-		bool computePruneCount{ false };/// Whether 'pruned' is returned, discouraged for large guilds.
+		bool computePruneCount{};/// Whether 'pruned' is returned, discouraged for large guilds.
 		std::string reason{};///< Reason for pruning the GuildMembers.
 		Snowflake guildId{};///< Guild within which to perform the prune.
-		int32_t days{ 0 };/// Number of days after which to prune a given GuildMember.
+		int32_t days{};/// Number of days after which to prune a given GuildMember.
 
 		operator Jsonifier();
 	};
@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildWelcomeScreenData {
 		std::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome channels for the welcome screen.
 		std::string description{};///< The description of the welcome screen.
-		bool enabled{ false };///< Is it enabled?
+		bool enabled{};///< Is it enabled?
 		std::string reason{};///< The reason for modifying the welcome screen.
 		Snowflake guildId{};///< The Guild for which to modify the welcome screen of.
 
@@ -248,8 +248,8 @@ namespace DiscordCoreAPI {
 	/// \brief For geting a single invite's responseData from a Guild.
 	struct DiscordCoreAPI_Dll GetInviteData {
 		Snowflake guildScheduledEventId{};///< The Guild scheduled event to include with the invite.
-		bool withExpiration{ false };///< Collect expiration time/date?
-		bool withCount{ false };///< Collect usage etc counts?
+		bool withExpiration{};///< Collect expiration time/date?
+		bool withCount{};///< Collect usage etc counts?
 		Snowflake inviteId{};///< The id of the invite you wish to acquire.
 	};
 
@@ -262,7 +262,7 @@ namespace DiscordCoreAPI {
 	/// \brief For collecting a list of Guild's that the Bot is in.
 	struct DiscordCoreAPI_Dll GetCurrentUserGuildsData {
 		Snowflake before{};///< Get guilds before this Guild ID.
-		uint32_t limit{ 0 };///< Max number of guilds to return (1 - 200).
+		uint32_t limit{};///< Max number of guilds to return (1 - 200).
 		Snowflake after{};///< Get guilds after this Guild ID.
 	};
 
@@ -283,15 +283,15 @@ namespace DiscordCoreAPI {
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filtering level, by default.
 		std::vector<StageInstance> stageInstances{};///< Stage instaces of the Guild.
 		SystemChannelFlags systemChannelFlags{};///< System Channel flags.
-		int32_t premiumSubscriptionCount{ 0 };///< Premium subscription count.
-		int32_t approximatePresenceCount{ 0 };///< Approximate quantity of presences.
+		int32_t premiumSubscriptionCount{};///< Premium subscription count.
+		int32_t approximatePresenceCount{};///< Approximate quantity of presences.
 		VerificationLevel verificationLevel{};///< Verification level required.
 		std::vector<StringWrapper> features{};///< List of Guild features.
-		int32_t approximateMemberCount{ 0 };///< Approximate member count.
+		int32_t approximateMemberCount{};///< Approximate member count.
 		std::vector<GuildMember> members{};///< Stickers of the Guild.
 		Snowflake publicUpdatesChannelId{};///< Id of the public updates Channel.
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
-		int32_t maxVideoChannelUsers{ 0 };///< Maximum quantity of users per video Channel.
+		int32_t maxVideoChannelUsers{};///< Maximum quantity of users per video Channel.
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
 		StringWrapper preferredLocale{};///< Preferred locale, for voice chat servers.
 		std::vector<Sticker> stickers{};///< Stickers of the Guild.
@@ -308,9 +308,9 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< The current application id.
 		Permissions permissions{};///< Current Permissions for the bot in the Guild.
 		PremiumTier premiumTier{};///< What is the premium tier?
-		int32_t maxPresences{ 0 };///< Max number of presences allowed.
+		int32_t maxPresences{};///< Max number of presences allowed.
 		Snowflake afkChannelId{};///< Channel if of the "afk" Channel.
-		int32_t maxMembers{ 0 };///< Max quantity of members.
+		int32_t maxMembers{};///< Max quantity of members.
 		StringWrapper region{};///< Region of the world where the Guild's servers are.
 		MFALevel mfaLevel{};///< MFA level.
 		IconHash banner{};///< Url to the Guild's banner.
@@ -357,8 +357,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildData {
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default message notification level.
 		ExplicitContentFilterLevel explicitContentFilter{};///< Explicit content filter level.
-		SystemChannelFlags systemChannelFlags{ 0 };///< System Channel flags.
-		bool premiumProgressBarEnabled{ false };///< Whether or not the progress bar is enabled.
+		SystemChannelFlags systemChannelFlags{};///< System Channel flags.
+		bool premiumProgressBarEnabled{};///< Whether or not the progress bar is enabled.
 		std::string discoverySplash{};/// Base64 16 : 9 png / jpeg image for the Guild discovery splash(when the server has the DISCOVERABLE feature).
 		VerificationLevel verificationLevel{};///< Verification level.
 		std::vector<std::string> features{};///< Array of Guild feature strings enabled Guild features.

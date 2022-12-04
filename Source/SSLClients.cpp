@@ -310,7 +310,7 @@ namespace DiscordCoreInternal {
 		}
 		if (auto returnValueNew = poll(readWriteSet.polls.data(), static_cast<u_long>(readWriteSet.polls.size()), 1);
 			returnValueNew == SOCKET_ERROR) {
-			bool didWeFindTheSocket{ false };
+			bool didWeFindTheSocket{};
 			for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
 				if (readWriteSet.polls[x].revents & POLLERR || readWriteSet.polls[x].revents & POLLHUP || readWriteSet.polls[x].revents & POLLNVAL) {
 					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());

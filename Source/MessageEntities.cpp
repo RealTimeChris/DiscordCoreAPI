@@ -54,6 +54,7 @@ namespace DiscordCoreAPI {
 			this->filteringFunction = filteringFunctionNew;
 			this->msToCollectFor = msToCollectForNew;
 			this->collectorId = std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+			std::cout << "MESSAEGES BUFFER SIZE: " << ObjectCollector::objectsBuffersMap.size() << std::endl;
 			ObjectCollector::objectsBuffersMap[this->collectorId] = &this->messagesBuffer;
 			this->run();
 			co_return std::move(this->messageReturnData);
@@ -61,8 +62,9 @@ namespace DiscordCoreAPI {
 
 		void run() {
 			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
-			int64_t elapsedTime{ 0 };
+			int64_t elapsedTime{};
 			while (elapsedTime < this->msToCollectFor) {
+				std::cout << "WERE HERE THIS IS IT!" << std::endl;
 				Message message{};
 				waitForTimeToPass<Message>(this->messagesBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
 				if (this->filteringFunction(message)) {
@@ -74,6 +76,7 @@ namespace DiscordCoreAPI {
 
 				elapsedTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count() - startingTime;
 			}
+			std::cout << "WERE LEAVIBNG LEAVING!" << std::endl;
 		}
 
 		~ObjectCollector() {
@@ -86,8 +89,8 @@ namespace DiscordCoreAPI {
 		ObjectCollectorReturnData<Message> messageReturnData{};
 		ObjectFilter<Message> filteringFunction{ nullptr };
 		UnboundedMessageBlock<Message> messagesBuffer{};
-		int32_t quantityOfObjectToCollect{ 0 };
-		int32_t msToCollectFor{ 0 };
+		int32_t quantityOfObjectToCollect{};
+		int32_t msToCollectFor{};
 		std::string collectorId{};
 	};
 

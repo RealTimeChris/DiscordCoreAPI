@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 		Snowflake beforeThisId{};///< Before this id.
 		Snowflake afterThisId{};///< After this id.
 		Snowflake channelId{};///< Channel from which to collect the Messages.
-		int32_t limit{ 0 };///< Limit of Messages to collect.
+		int32_t limit{};///< Limit of Messages to collect.
 	};
 
 	/// \brief For getting a Message.
@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 		std::vector<AttachmentData> attachments{};
 		Snowflake channelId{};
 		Snowflake messageId{};
-		int32_t flags{ 0 };
+		int32_t flags{};
 
 		EditMessageData() noexcept = default;
 	};
@@ -115,10 +115,10 @@ namespace DiscordCoreAPI {
 	/// \brief For deleting a Message.
 	struct DiscordCoreAPI_Dll DeleteMessageData {
 	  public:
-		TimeStamp timeStamp{ "" };///< The created-at timeStamp of the original message.
+		TimeStamp timeStamp{};///< The created-at timeStamp of the original message.
 		Snowflake channelId{};///< The channel Id of the Message to delete.
 		Snowflake messageId{};///< The message Id of the Message to delete.
-		int32_t timeDelay{ 0 };///< Number of Milliseconds to wait before deleting the Message.
+		int32_t timeDelay{};///< Number of Milliseconds to wait before deleting the Message.
 		std::string reason{};///< The reason for deleting the Message.
 	};
 

@@ -138,7 +138,7 @@ namespace DiscordCoreAPI {
 		if (this->baseSocketAgent) {
 			std::string string{};
 			uint32_t shardId = 0;
-			uint32_t basesocketAgentIndex{ 0 };
+			uint32_t basesocketAgentIndex{};
 			auto serializer = dataPackage.operator Jsonifier();
 			if (static_cast<DiscordCoreInternal::WebSocketOpCode>(
 					this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->dataOpCode) ==
@@ -312,6 +312,6 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{ nullptr };
-	bool Users::doWeCacheUsersBool{ false };
+	bool Users::doWeCacheUsersBool{};
 	ObjectCache<UserData> Users::cache{};
 }

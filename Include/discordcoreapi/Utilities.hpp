@@ -243,8 +243,8 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::atomic<TTy> maxNumberOfTimeUnits{ TTy{ 0 } };
-		std::atomic<TTy> startTime{ TTy{ 0 } };
+		std::atomic<TTy> maxNumberOfTimeUnits{ TTy{} };
+		std::atomic<TTy> startTime{ TTy{} };
 	};
 
 	const uint8_t formatVersion{ 131 };
@@ -295,7 +295,7 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::vector<uint64_t> vector{};
-		bool vectorType{ false };
+		bool vectorType{};
 		uint64_t integer{};
 	};
 
@@ -649,7 +649,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief For connecting two bots to stream the VC contents between the two.
 	struct DiscordCoreAPI_Dll StreamInfo {
-		bool streamBotAudio{ false };///< Do we stream the audio coming from other bots?
+		bool streamBotAudio{};///< Do we stream the audio coming from other bots?
 		std::string address{};///< The address to connect to.
 		StreamType type{};///< The type of streamer that this is. Set one to client and one to server.
 		uint16_t port{};///< The port to connect to.
@@ -902,8 +902,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		std::vector<ActivityData> activities{};///< A vector of activities.
 		UpdatePresenceStatusTypes status{};///< Current status.
-		int64_t since{ 0 };///< When was the activity started?
-		bool afk{ false };///< Are we afk.
+		int64_t since{};///< When was the activity started?
+		bool afk{};///< Are we afk.
 
 		operator Jsonifier();
 	};
@@ -954,9 +954,9 @@ namespace DiscordCoreAPI {
 	/// \brief Function data for repeated functions to be loaded.
 	struct DiscordCoreAPI_Dll RepeatedFunctionData {
 		std::function<void(DiscordCoreClient*)> function{ nullptr };///< The std::function pointer to be loaded.
-		uint32_t intervalInMs{ 0 };///< The time interval at which to call the std::function.
-		bool repeated{ false };///< Whether or not the std::function is repeating.
-		int64_t dummyArg{ 0 };
+		uint32_t intervalInMs{};///< The time interval at which to call the std::function.
+		bool repeated{};///< Whether or not the std::function is repeating.
+		int64_t dummyArg{};
 	};
 
 	/// \brief Represents which text format to use for websocket transfer.
@@ -969,21 +969,21 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ShardingOptions {
 		uint32_t numberOfShardsForThisProcess{ 1 };///< The number of shards to launch on the current process.
 		uint32_t totalNumberOfShards{ 1 };///< The total number of shards that will be launched across all processes.
-		uint32_t startingShard{ 0 };///< The first shard to start on this process.
+		uint32_t startingShard{};///< The first shard to start on this process.
 	};
 
 	/**@}*/
 
 	/// \brief Loggin options for the library.
 	struct DiscordCoreAPI_Dll LoggingOptions {
-		bool logWebSocketSuccessMessages{ false };///< Do we log the websocket success messages to cout?
-		bool logWebSocketErrorMessages{ false };///< Do we log the websocket error messages to cout?
-		bool logGeneralSuccessMessages{ false };///< Do we log general success messages to cout?
-		bool logFFMPEGSuccessMessages{ false };///< Do we log FFMPEG success messages to cout?
-		bool logGeneralErrorMessages{ false };///< Do we log general error messages to cout?
-		bool logHttpsSuccessMessages{ false };///< Do we log Http response success messages to cout?
-		bool logFFMPEGErrorMessages{ false };///< Do we log FFMPEG error messages to cout?
-		bool logHttpsErrorMessages{ false };///< Do we log Http response error messages to cout?
+		bool logWebSocketSuccessMessages{};///< Do we log the websocket success messages to cout?
+		bool logWebSocketErrorMessages{};///< Do we log the websocket error messages to cout?
+		bool logGeneralSuccessMessages{};///< Do we log general success messages to cout?
+		bool logFFMPEGSuccessMessages{};///< Do we log FFMPEG success messages to cout?
+		bool logGeneralErrorMessages{};///< Do we log general error messages to cout?
+		bool logHttpsSuccessMessages{};///< Do we log Http response success messages to cout?
+		bool logFFMPEGErrorMessages{};///< Do we log FFMPEG error messages to cout?
+		bool logHttpsErrorMessages{};///< Do we log Http response error messages to cout?
 	};
 
 	/// \brief For selecting the caching style of the library.
@@ -1284,7 +1284,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
 		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
-		uint64_t guildMemberId{ 0 };///< GuildMemberId for the sending GuildMember.
+		uint64_t guildMemberId{};///< GuildMemberId for the sending GuildMember.
 		size_t currentSize{};///< The current size of the allocated memory.
 		std::basic_string<uint8_t> data{};///< The audio data.
 
@@ -1311,8 +1311,8 @@ namespace DiscordCoreAPI {
 	/// \brief For connecting to a voice-channel. "streamInfo" is used when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
 		StreamInfo streamInfo{};///< The info for the stream-socekt, if applicable.
-		bool selfDeaf{ false };///< Self-deafen the bot?
-		bool selfMute{ false };///< Self-mute the bot?
+		bool selfDeaf{};///< Self-deafen the bot?
+		bool selfMute{};///< Self-mute the bot?
 		int32_t currentShard{};///< The current websocket shard, if applicable.
 		Snowflake channelId{};///< The channel id to connect to.
 		Snowflake guildId{};///< The guild id to connect to.
@@ -2041,7 +2041,7 @@ namespace DiscordCoreAPI {
 
 		void run() {
 			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
-			int64_t elapsedTime{ 0 };
+			int64_t elapsedTime{};
 			while (elapsedTime < this->msToCollectFor) {
 				OTy message{};
 				waitForTimeToPass<OTy>(this->objectsBuffer, message, static_cast<int32_t>(this->msToCollectFor - elapsedTime));
@@ -2066,8 +2066,8 @@ namespace DiscordCoreAPI {
 		ObjectCollectorReturnData<OTy> objectReturnData{};
 		ObjectFilter<OTy> filteringFunction{ nullptr };
 		UnboundedMessageBlock<OTy> objectsBuffer{};
-		int32_t quantityOfObjectToCollect{ 0 };
-		int32_t msToCollectFor{ 0 };
+		int32_t quantityOfObjectToCollect{};
+		int32_t msToCollectFor{};
 		std::string collectorId{};
 	};
 
@@ -2173,7 +2173,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::array<OTy, Size> arrayValue{};
-		bool areWeFull{ false };
+		bool areWeFull{};
 		uint64_t tail{};
 		uint64_t head{};
 	};

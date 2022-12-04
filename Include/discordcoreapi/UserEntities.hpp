@@ -58,14 +58,14 @@ namespace DiscordCoreAPI {
 	/// \brief For updating the bot's current voice state.
 	struct DiscordCoreAPI_Dll ModifyCurrentUserVoiceStateData {
 		std::string requestToSpeakTimestamp{};///< ISO8601 timeStamp.
-		bool suppress{ false };///< Toggles the user's suppress state.
+		bool suppress{};///< Toggles the user's suppress state.
 		Snowflake channelId{};///< The id of the Channel the user is currently in.
 		Snowflake guildId{};///< The Guild within which to update the bot's voice state.
 	};
 
 	/// \brief For modifying a User's voice state.
 	struct DiscordCoreAPI_Dll ModifyUserVoiceStateData {
-		bool suppress{ false };///< Toggles the user's suppress state.
+		bool suppress{};///< Toggles the user's suppress state.
 		Snowflake channelId{};///< The id of the Channel the user is currently in.
 		Snowflake guildId{};///< The Guild within which you would like to modify their voice state.
 		Snowflake userId{};///< The user for which you would like to modify the voice state of.
@@ -86,7 +86,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll User : public UserData {
 	  public:
 		PremiumType premiumType{};///< The type of Nitro subscription on a user ' s account.
-		int32_t accentColor{ 0 };///< The user 's banner color encoded as an integer representation of hexadecimal color code.
+		int32_t accentColor{};///< The user 's banner color encoded as an integer representation of hexadecimal color code.
 		std::string locale{};///< The user' s chosen language option.
 		std::string email{};///< The user's email.
 		IconHash banner{};///< The user's banner hash.

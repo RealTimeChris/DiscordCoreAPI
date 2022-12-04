@@ -1098,6 +1098,6 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{ nullptr };
 	DiscordCoreClient* Guilds::discordCoreClient{ nullptr };
-	bool Guilds::doWeCacheGuildsBool{ false };
+	bool Guilds::doWeCacheGuildsBool{};
 	ObjectCache<GuildData> Guilds::cache{};
 }

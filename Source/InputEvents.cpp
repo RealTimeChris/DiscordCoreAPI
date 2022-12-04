@@ -136,6 +136,7 @@ namespace DiscordCoreAPI {
 		dataPackageNewer.interactionData->channelId = result.channelId;
 		dataPackageNewer.interactionData->message.id = result.referencedMessage->id;
 		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
+		dataPackageNewer.interactionData->user = result.author;
 		return dataPackageNewer;
 	}
 

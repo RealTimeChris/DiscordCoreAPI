@@ -48,7 +48,7 @@ namespace DiscordCoreAPI {
 				InputEventData newEvent = newArgs.eventData;
 
 				int64_t currentTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count();
-				int64_t previousPlayedTime{ 0 };
+				int64_t previousPlayedTime{};
 				if (Play::timeOfLastPlay.contains(newArgs.eventData.getGuildId())) {
 					previousPlayedTime = Play::timeOfLastPlay.at(newArgs.eventData.getGuildId());
 				}

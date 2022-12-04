@@ -119,7 +119,7 @@ namespace DiscordCoreInternal {
 				if (stopWatch.hasTimePassed()) {
 					break;
 				}
-				int64_t currentOffset{ 0 };
+				int64_t currentOffset{};
 				std::string lineString = newString.substr(0, newString.find("\r\n") + 2);
 				currentOffset = lineString.size();
 				std::string key = lineString.substr(0, lineString.find(":"));
@@ -194,8 +194,8 @@ namespace DiscordCoreInternal {
 			return 0;
 		}
 		std::string valueString{};
-		uint64_t hexIndex{ 0 };
-		bool isThereHexValues{ false };
+		uint64_t hexIndex{};
+		bool isThereHexValues{};
 		for (uint64_t x = 0; x < other.size(); ++x) {
 			if (isxdigit(other[x]) != 0 && static_cast<int32_t>(other[x]) != EOF) {
 				isThereHexValues = true;
@@ -219,9 +219,9 @@ namespace DiscordCoreInternal {
 
 	uint64_t HttpsRnRBuilder::parseCode(StringBuffer& other) {
 		if (static_cast<std::string_view>(other).find("HTTP/1.") != std::string::npos) {
-			uint64_t firstNumberIndex{ 0 };
-			uint64_t lastNumberIndex{ 0 };
-			bool haveWeStarted{ false };
+			uint64_t firstNumberIndex{};
+			uint64_t lastNumberIndex{};
+			bool haveWeStarted{};
 			for (uint64_t x = static_cast<std::string_view>(other).find("HTTP/1.") + std::string("HTTP/1.").size() + 1;
 				 x < static_cast<std::string_view>(other).size(); ++x) {
 				if (!haveWeStarted && (isalnum(static_cast<uint8_t>(other[x])) != 0)) {
@@ -246,7 +246,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpsRnRBuilder::clearCRLF(StringBuffer& other) {
-		uint64_t count{ 0 };
+		uint64_t count{};
 		for (uint64_t x = 0; x < other.size(); ++x) {
 			if (isspace(static_cast<uint8_t>(other[x])) != 0) {
 				++count;

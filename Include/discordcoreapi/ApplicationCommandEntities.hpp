@@ -37,7 +37,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief For getting all of the Global Application Commands.
 	struct DiscordCoreAPI_Dll GetGlobalApplicationCommandsData {
-		bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
+		bool withLocalizations{};///< Do we collect the name-and-description localizations?
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 	};
 
@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 		friend class DiscordCoreClient;
 
 	  protected:
-		bool alwaysRegister{ false };
+		bool alwaysRegister{};
 	};
 
 	/// \brief For creating a single global ApplicationCommand.
@@ -68,7 +68,7 @@ namespace DiscordCoreAPI {
 			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
+		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
 		std::string description{};///< A description of the command.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		std::string name{};///< A name for the new command.
@@ -90,7 +90,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief For acquiring all of the Guild ApplicationCommands of a single Guild.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandsData {
-		bool withLocalizations{ false };///< Do we collect the name-and-description localizations?
+		bool withLocalizations{};///< Do we collect the name-and-description localizations?
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Snowflake guildId{};///< The id of the Guild for which you would like to acquire the ApplicationCommands from.
 	};
@@ -115,7 +115,7 @@ namespace DiscordCoreAPI {
 			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		bool dmPermission{ false };///< Indicates whether the command is available in DMs with the app.
+		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
 		std::string description{};///< A description of the command.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Snowflake guildId{};///< The id of the Guild which you would like to add the new command to.

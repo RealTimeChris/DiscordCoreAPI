@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<Milliseconds> stopWatch{ 500ms };
-		bool isItChunked{ false };
+		bool isItChunked{};
 	};
 
 	class DiscordCoreAPI_Dll HttpsRnRBuilder {
@@ -76,10 +76,10 @@ namespace DiscordCoreInternal {
 		virtual ~HttpsRnRBuilder() noexcept = default;
 
 	  protected:
-		bool doWePrintErrorMessages{ false };
-		bool doWeHaveContentSize{ false };
-		bool doWeHaveHeaders{ false };
-		bool isItChunked{ false };
+		bool doWePrintErrorMessages{};
+		bool doWeHaveContentSize{};
+		bool doWeHaveHeaders{};
+		bool isItChunked{};
 
 		uint64_t parseSize(StringBuffer& other);
 
@@ -94,24 +94,24 @@ namespace DiscordCoreInternal {
 		friend class HttpsClient;
 
 	  protected:
-		std::atomic<Milliseconds> sampledTimeInMs{ Milliseconds{ 0 } };
-		std::atomic<Milliseconds> msRemain{ Milliseconds{ 0 } };
-		std::atomic_bool areWeASpecialBucket{ false };
+		std::atomic<Milliseconds> sampledTimeInMs{ Milliseconds{} };
+		std::atomic<Milliseconds> msRemain{ Milliseconds{} };
+		std::atomic_bool areWeASpecialBucket{};
 		std::counting_semaphore<1> theSemaphore{ 1 };
-		std::atomic_bool didWeHitRateLimit{ false };
-		std::atomic_bool haveWeGoneYet{ false };
-		std::atomic_int64_t getsRemaining{ 0 };
-		std::atomic_bool doWeWait{ false };
+		std::atomic_bool didWeHitRateLimit{};
+		std::atomic_bool haveWeGoneYet{};
+		std::atomic_int64_t getsRemaining{};
+		std::atomic_bool doWeWait{};
 		std::string tempBucket{};
 		std::string bucket{};
 	};
 
 	class DiscordCoreAPI_Dll HttpsConnection : public TCPSSLClient, public HttpsRnRBuilder {
 	  public:
-		std::atomic_bool areWeCheckedOut{ false };
+		std::atomic_bool areWeCheckedOut{};
 		const int32_t maxReconnectTries{ 10 };
-		int32_t currentReconnectTries{ 0 };
-		bool areWeDoneTheRequest{ false };
+		int32_t currentReconnectTries{};
+		bool areWeDoneTheRequest{};
 		StringBuffer inputBufferReal{};
 		std::string currentBaseUrl{};
 		HttpsResponseData data{};

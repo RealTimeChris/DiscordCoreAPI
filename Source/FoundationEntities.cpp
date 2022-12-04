@@ -2988,7 +2988,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		bool isItFound{ false };
+		bool isItFound{};
 		for (auto& value: theMedia) {
 			if (value.thePreset == "opus_0_0") {
 				isItFound = true;
@@ -2997,7 +2997,7 @@ namespace DiscordCoreAPI {
 				this->doWeGetSaved = true;
 			}
 		}
-		bool isItFound2{ false };
+		bool isItFound2{};
 		if (!isItFound) {
 			for (auto& value: theMedia) {
 				if (value.thePreset == "mp3_0_0") {
@@ -3253,7 +3253,7 @@ namespace DiscordCoreAPI {
 			}
 			case JsonType::Bool: {
 				if (this->value == "false") {
-					data["value"] = bool{ false };
+					data["value"] = bool{};
 				} else {
 					data["value"] = bool{ true };
 				}
@@ -4064,31 +4064,30 @@ namespace DiscordCoreAPI {
 		const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult) {
 		MoveThroughMessagePagesData returnData{};
 		uint32_t newCurrentPageIndex = currentPageIndex;
-		std::unique_ptr<RespondToInputEventData> dataPackage{ std::make_unique<RespondToInputEventData>(originalEvent) };
+		StopWatch stopWatch{ Milliseconds{ waitForMaxMs } };
+		auto createResponseData = std::make_unique<CreateInteractionResponseData>(originalEvent);
+		auto interactionResponse = std::make_unique<RespondToInputEventData>(originalEvent);
+		auto embedData = std::make_unique<EmbedData>();
+		embedData->setColor("FEFEFE");
+		embedData->setTitle("__**Permissions Issue:**__");
+		embedData->setTimeStamp(getTimeAndDate());
+		embedData->setDescription("Sorry, but that button can only be pressed by <@" + userID + ">!");
+		createResponseData->addMessageEmbed(*embedData);
+		createResponseData->setResponseType(InteractionCallbackType::Channel_Message_With_Source);
 		if (messageEmbeds.size() > 0) {
-			dataPackage->addMessageEmbed(messageEmbeds[currentPageIndex]);
+			interactionResponse->addMessageEmbed(messageEmbeds[currentPageIndex]);
 		}
 		if (returnResult) {
-			dataPackage->addButton(false, "select", "Select", ButtonStyle::Success, "✅");
+			interactionResponse->addButton(false, "select", "Select", ButtonStyle::Success, "✅");
 		}
-		dataPackage->addButton(false, "backwards", "Prev Page", ButtonStyle::Primary, "◀️");
-		dataPackage->addButton(false, "forwards", "Next Page", ButtonStyle::Primary, "▶️");
-		dataPackage->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
-		dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
-		originalEvent = InputEvents::respondToInputEventAsync(*dataPackage).get();
-		StopWatch stopWatch{ Milliseconds{ waitForMaxMs } };
+		interactionResponse->addButton(false, "backwards", "Prev Page", ButtonStyle::Primary, "◀️");
+		interactionResponse->addButton(false, "forwards", "Next Page", ButtonStyle::Primary, "▶️");
+		interactionResponse->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
+		interactionResponse->setResponseType(InputEventResponseType::Edit_Interaction_Response);
+		auto newEvent = InputEvents::respondToInputEventAsync(*interactionResponse).get();
 		while (!stopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
-			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
-			auto createResponseData = std::make_unique<CreateInteractionResponseData>();
-			auto embedData = std::make_unique<EmbedData>();
-			embedData->setColor("FEFEFE");
-			embedData->setTitle("__**Permissions Issue:**__");
-			embedData->setTimeStamp(getTimeAndDate());
-			embedData->setDescription("Sorry, but that button can only be pressed by <@" + userID + ">!");
-			createResponseData->addMessageEmbed(*embedData);
-			createResponseData->setResponseType(InteractionCallbackType::Channel_Message_With_Source);
-			createResponseData->setFlags(64);
+			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(newEvent) };
 			std::vector<ButtonResponseData> buttonIntData{
 				button->collectButtonData(false, waitForMaxMs, 1, *createResponseData, Snowflake{ stoull(userID) }).get()
 			};
@@ -4131,29 +4130,29 @@ namespace DiscordCoreAPI {
 					newCurrentPageIndex = static_cast<uint32_t>(messageEmbeds.size()) - 1;
 				}
 				interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
-				*dataPackage = RespondToInputEventData{ *interactionData };
-				dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
+				auto dataPackage = RespondToInputEventData{ *interactionData };
+				dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 				for (auto& value: interactionData->message.components) {
-					dataPackage->addComponentRow(value);
+					dataPackage.addComponentRow(value);
 				}
-				dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-				InputEvents::respondToInputEventAsync(*dataPackage).get();
+				dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
+				InputEvents::respondToInputEventAsync(dataPackage).get();
 			} else if (buttonIntData.at(0).buttonId == "select") {
 				if (deleteAfter == true) {
 					InputEventData dataPackage03{ originalEvent };
 					InputEvents::deleteInputEventResponseAsync(dataPackage03);
 				} else {
 					std::unique_ptr<InteractionData> interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
-					*dataPackage = RespondToInputEventData{ *interactionData };
-					dataPackage->setResponseType(InputEventResponseType::Edit_Interaction_Response);
-					dataPackage->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
+					auto dataPackage = RespondToInputEventData{ *interactionData };
+					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
+					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 					for (auto& value: originalEvent.getMessageData().components) {
 						for (auto& value02: value.components) {
 							value02.disabled = true;
 						}
-						dataPackage->addComponentRow(value);
+						dataPackage.addComponentRow(value);
 					}
-					InputEvents::respondToInputEventAsync(*dataPackage).get();
+					InputEvents::respondToInputEventAsync(dataPackage).get();
 				}
 				returnData.currentPageIndex = newCurrentPageIndex;
 				returnData.inputEventData = originalEvent;

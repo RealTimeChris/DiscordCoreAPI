@@ -36,7 +36,7 @@ namespace DiscordCoreAPI {
 	 */
 	/// \brief For collecting a list of a Guild's scheduled events.
 	struct DiscordCoreAPI_Dll GetGuildScheduledEventsData {
-		bool withUserCount{ false };///< Do we collect the user counts?
+		bool withUserCount{};///< Do we collect the user counts?
 		Snowflake guildId{};///< Guild from which we would like to collect the events.
 	};
 
@@ -58,7 +58,7 @@ namespace DiscordCoreAPI {
 	/// \brief For collecting a single Guild scheduled event.
 	struct DiscordCoreAPI_Dll GetGuildScheduledEventData {
 		Snowflake guildScheduledEventId{};///< The id of the desired scheduled event.
-		bool withUserCount{ false };///< Do we collect the user counts?
+		bool withUserCount{};///< Do we collect the user counts?
 		Snowflake guildId{};///< Guild from which we would like to collect the events.
 	};
 
@@ -88,11 +88,11 @@ namespace DiscordCoreAPI {
 	/// \brief For collecting a list of Guild Scheduled Event Users.
 	struct DiscordCoreAPI_Dll GetGuildScheduledEventUsersData {
 		Snowflake guildScheduledEventId{};///< The id of the event to modify.
-		bool withMember{ false };///< Include Guild member responseData if it exists.
+		bool withMember{};///< Include Guild member responseData if it exists.
 		Snowflake guildId{};///< The Guild within which to modify the event.
 		Snowflake before{};///< Consider only users before given user id.
 		Snowflake after{};///< Consider only users after given user id.
-		uint32_t limit{ 0 };///< How many users to receive from the event.
+		uint32_t limit{};///< How many users to receive from the event.
 	};
 
 	/// \brief A single GuildScheduledEvent responseData structure.

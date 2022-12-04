@@ -32,12 +32,12 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll ObjectReturnData {
 		simdjson::ondemand::value object{};
-		bool didItSucceed{ false };
+		bool didItSucceed{};
 	};
 
 	struct DiscordCoreAPI_Dll ArrayReturnData {
 		simdjson::ondemand::array arrayValue{};
-		bool didItSucceed{ false };
+		bool didItSucceed{};
 	};
 
 	Snowflake getId(simdjson::ondemand::value jsonObjectData, const char* key);

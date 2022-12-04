@@ -34,7 +34,7 @@ namespace DiscordCoreAPI {
 		VoiceConnectionsMap voiceConnectionMap{};
 		SoundCloudAPIMap soundCloudAPIMap{};
 		YouTubeAPIMap youtubeAPIMap{};
-		std::atomic_bool doWeQuit{ false };
+		std::atomic_bool doWeQuit{};
 	}
 
 	DiscordCoreInternal::SoundCloudAPI* DiscordCoreClient::getSoundCloudAPI(Snowflake guildId) {
@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 						{ .withLocalizations = false, .applicationId = this->getBotUser().id, .guildId = data.guildId })
 										.get();
 				}
-				bool doesItExist{ false };
+				bool doesItExist{};
 				for (auto& value: theCommands) {
 					if (*static_cast<ApplicationCommandData*>(&value) == *static_cast<ApplicationCommandData*>(&data)) {
 						doesItExist = true;

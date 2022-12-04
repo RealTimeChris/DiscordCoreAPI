@@ -600,6 +600,7 @@ namespace DiscordCoreAPI {
 	OnMessageCreationData::OnMessageCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->message = data.processJsonMessage<Message>(dataReal, "d");
 		for (auto& [key, dValue]: ObjectCollector<Message>::objectsBuffersMap) {
+			std::cout << "SENDING TO: " << key << std::endl;
 			dValue->send(this->message);
 		}
 	}

@@ -199,7 +199,7 @@ namespace DiscordCoreInternal {
 		const uint64_t maxBufferSize{ (1024 * 16) - 1 };
 		RingBuffer<char, 16> outputBuffer{};
 		RingBuffer<char, 64> inputBuffer{};
-		int64_t bytesRead{ 0 };
+		int64_t bytesRead{};
 	};
 
 	class DiscordCoreAPI_Dll TCPSSLClient : public SSLDataInterface, public SSLConnectionInterface {
@@ -227,8 +227,8 @@ namespace DiscordCoreInternal {
 		virtual ~TCPSSLClient() noexcept = default;
 
 	  protected:
-		bool doWePrintErrorMessages{ false };
-		bool areWeAStandaloneSocket{ false };
+		bool doWePrintErrorMessages{};
+		bool areWeAStandaloneSocket{};
 	};
 
 	enum class ProcessIOType { Both = 0, Read_Only = 1, Write_Only = 2 };

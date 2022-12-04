@@ -163,8 +163,8 @@ namespace DiscordCoreAPI {
 		auto vector02 = DiscordCoreClient::getYouTubeAPI(guildId)->searchForSong(searchQuery);
 		int32_t totalLength = static_cast<int32_t>(vector01.size() + vector02.size());
 		std::vector<Song> newVector{};
-		int32_t vector01Used{ 0 };
-		int32_t vector02Used{ 0 };
+		int32_t vector01Used{};
+		int32_t vector02Used{};
 		for (int32_t x = 0; x < totalLength; ++x) {
 			if ((vector01Used < vector01.size() - 1) && (x % 2 == 0) && vector01.size() > 0) {
 				vector01[vector01Used].type = SongType::SoundCloud;

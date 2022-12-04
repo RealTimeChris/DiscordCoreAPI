@@ -125,7 +125,7 @@ namespace DiscordCoreInternal {
 					.get(value) == simdjson::error_code::SUCCESS) {
 				DiscordCoreAPI::YouTubeFormatVector vector{ value };
 				DiscordCoreAPI::YouTubeFormat format{};
-				bool isOpusFound{ false };
+				bool isOpusFound{};
 				for (auto& value: static_cast<std::vector<DiscordCoreAPI::YouTubeFormat>>(vector)) {
 					if (value.mimeType.find("opus") != std::string::npos) {
 						if (value.audioQuality == "AUDIO_QUALITY_LOW") {
@@ -252,15 +252,15 @@ namespace DiscordCoreInternal {
 				this->weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
 				return;
 			}
-			bool areWeDoneHeaders{ false };
+			bool areWeDoneHeaders{};
 			int64_t remainingDownloadContentLength{ static_cast<int64_t>(newSong.contentLength) };
 			int64_t bytesToRead{ static_cast<int64_t>(this->maxBufferSize) };
-			int64_t bytesSubmittedPrevious{ 0 };
-			int64_t bytesReadTotal{ 0 };
+			int64_t bytesSubmittedPrevious{};
+			int64_t bytesReadTotal{};
 			const uint8_t maxReruns{ 200 };
-			uint8_t currentReruns{ 0 };
-			uint32_t counter{ 0 };
-			uint32_t headerSize{ 0 };
+			uint8_t currentReruns{};
+			uint32_t counter{};
+			uint32_t headerSize{};
 			BuildAudioDecoderData dataPackage{};
 			std::string currentString{};
 			dataPackage.totalFileSize = static_cast<uint64_t>(newSong.contentLength);

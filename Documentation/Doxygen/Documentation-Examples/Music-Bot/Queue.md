@@ -12,7 +12,7 @@ namespace DiscordCoreAPI {
 		int32_t currentPageIndex) {
 		std::vector<std::vector<EmbedFieldData>> msgEmbedFields{};
 		msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
-		int32_t msgEmbedFieldsPage{ 0 };
+		int32_t msgEmbedFieldsPage{};
 		for (int32_t y = 0; y < playlist.size(); y += 1) {
 			if (y % 25 == 0 && y > 0) {
 				msgEmbedFieldsPage += 1;
@@ -111,7 +111,7 @@ namespace DiscordCoreAPI {
 
 				std::vector<std::vector<EmbedFieldData>> msgEmbedFields;
 				msgEmbedFields.emplace_back(std::vector<EmbedFieldData>());
-				int32_t msgEmbedFieldsPage{ 0 };
+				int32_t msgEmbedFieldsPage{};
 				for (int32_t y = 0; y < SongAPI::getPlaylist(guild->id).songQueue.size(); y += 1) {
 					if (y % 25 == 0 && y > 0) {
 						if (y > 0) {
@@ -151,7 +151,7 @@ namespace DiscordCoreAPI {
 				dataPackage0.addButton(false, "exit", "Exit", ButtonStyle::Success, "❌");
 				newEvent = InputEvents::respondToInputEventAsync(dataPackage0).get();
 				for (int32_t y = 0; y < 1; y) {
-					bool doWeQuit{ false };
+					bool doWeQuit{};
 					std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(newEvent) };
 					auto buttonCollectedData = button->collectButtonData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					newEvent = *buttonCollectedData[0].interactionData;

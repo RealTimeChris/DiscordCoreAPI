@@ -33,8 +33,8 @@ namespace DiscordCoreAPI {
 				while (1) {
 					RespondToInputEventData responseData{ newEvent01 };
 					std::vector<std::vector<SelectOptionData>> selectOptions;
-					int32_t counter{ 0 };
-					int32_t currentHelpPage{ 0 };
+					int32_t counter{};
+					int32_t currentHelpPage{};
 					for (auto& [key, value]: newArgs.discordCoreClient->getCommandController().getFunctions()) {
 						if (counter % 24 == 0) {
 							selectOptions.emplace_back(std::vector<SelectOptionData>());
@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 						newData.value = convertToLowerCase(newString);
 						value->helpEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 						newData.emoji.name = "✅";
-						bool doWeContinue{ false };
+						bool doWeContinue{};
 						for (auto& value02: selectOptions) {
 							for (auto& value03: value02) {
 								if (value03.value == newData.value) {
@@ -75,7 +75,7 @@ namespace DiscordCoreAPI {
 						selectOptionsNew.emplace_back(value);
 					}
 
-					int32_t counter02{ 0 };
+					int32_t counter02{};
 					std::string messageNew = "------\nSelect which page of help items you would like to view, by clicking a button below!\n------";
 					EmbedData msgEmbed{};
 					msgEmbed.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
@@ -114,7 +114,7 @@ namespace DiscordCoreAPI {
 					}
 					std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(newEvent01) };
 					auto buttonData = button->collectButtonData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
-					int32_t counter03{ 0 };
+					int32_t counter03{};
 					std::vector<RespondToInputEventData> editInteractionResponseData00;
 					for (auto& value: selectOptionsNew) {
 						EmbedData msgEmbed00;

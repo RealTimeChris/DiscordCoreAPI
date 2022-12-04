@@ -52,7 +52,7 @@ namespace DiscordCoreAPI {
 		friend class WebHooks;
 
 		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
-		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
+		bool wait{};///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData() noexcept = default;
 
@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
-			const std::string& emojiName = "", Snowflake emojiId = Snowflake{ 0 }, const std::string& url = "");
+			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
 
 		/// \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -139,8 +139,8 @@ namespace DiscordCoreAPI {
 		std::string customId{};///< Custom id for the modal.
 		std::string content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
 		std::string title{};///< Title for the modal.
-		int32_t flags{ 0 };///< Flags combined as a bitfield.
-		bool tts{ false };///< True if this is a TTS message.
+		int32_t flags{};///< Flags combined as a bitfield.
+		bool tts{};///< True if this is a TTS message.
 	};
 
 	/// \brief For editing a WebHook Message.
@@ -153,7 +153,7 @@ namespace DiscordCoreAPI {
 
 		Snowflake messageId{};///< The Message Id to collect.
 		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
-		bool wait{ false };///< Waits for server confirmation of message send before response, and returns the created message body.
+		bool wait{};///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData& setTTSStatus(bool) = delete;
 
