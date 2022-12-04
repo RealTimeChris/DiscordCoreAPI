@@ -62,6 +62,7 @@ namespace DiscordCoreInternal {
 		int32_t count = opus_encode(this->ptr.get(), reinterpret_cast<opus_int16*>(inputFrame.data.data()), inputFrame.sampleCount,
 			this->encodedData.data(), this->maxBufferSize);
 		if (count <= 0) {
+			inputFrame.clearData();
 			return {};
 		}
 		DiscordCoreAPI::AudioFrameData encodedFrame{};

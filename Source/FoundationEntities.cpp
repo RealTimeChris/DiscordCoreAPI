@@ -3320,8 +3320,8 @@ namespace DiscordCoreAPI {
 		if (this->data.size() < this->currentSize + other.size()) {
 			this->data.resize(other.size() + this->currentSize);
 		}
+		std::copy(other.data(), other.data() + other.size(), this->data.data() + this->currentSize);
 		this->currentSize += other.size();
-		std::copy(other.data(), other.data() + other.size(), this->data.data());
 		this->sampleCount = this->currentSize / 2 / 2;
 		this->type = AudioFrameType::RawPCM;
 		return *this;

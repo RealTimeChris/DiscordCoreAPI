@@ -1990,6 +1990,10 @@ namespace DiscordCoreAPI {
 			}
 		}
 
+		size_t size() {
+			return this->queue.size();
+		}
+
 	  protected:
 		std::deque<OTy> queue{};
 		std::mutex accessMutex{};

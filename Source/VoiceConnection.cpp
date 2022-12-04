@@ -185,14 +185,11 @@ namespace DiscordCoreAPI {
 		return this->voiceConnectInitData.channelId;
 	}
 
-	void VoiceConnection::applyGainRamp(int64_t numSamples) noexcept {
-		const auto increment = (this->currentGain - this->previousGain) / static_cast<float>(numSamples);
-		opus_int32* input = this->upSampledVector.data();
-		opus_int16* output = this->downSampledVector.data();
-		while (--numSamples >= 0) {
-			float startSampleNew = static_cast<float>(*input++);
-			startSampleNew *= this->currentGain;
-			auto int32Value = static_cast<opus_int32>(startSampleNew);
+	void VoiceConnection::applyGainRamp(int64_t sampleCount) noexcept {
+		const float increment = (this->currentGain - this->previousGain) / static_cast<float>(sampleCount);
+		for (int64_t x = 0; x < sampleCount; ++x) {
+			const float startSampleNew = static_cast<float>(this->upSampledVector[x]) * this->currentGain;
+			const opus_int32 int32Value = static_cast<opus_int32>(startSampleNew);
 			opus_int32 newSample{}; 
 			if (int32Value < 0) {
 				newSample = static_cast<opus_int32>(std::numeric_limits<opus_int16>::min());
@@ -201,7 +198,7 @@ namespace DiscordCoreAPI {
 				newSample = static_cast<opus_int32>(std::numeric_limits<opus_int16>::max());
 				newSample = std::min(newSample, int32Value);
 			}
-			*output++ = static_cast<opus_int16>(newSample);
+			this->downSampledVector[x] = static_cast<opus_int16>(newSample);
 			this->currentGain += increment;
 		}
 	}
@@ -216,19 +213,6 @@ namespace DiscordCoreAPI {
 				return;
 			}
 			this->voiceUsers[speakerSsrc]->insertPayload(rawDataBufferNew);
-		}
-	}
-
-	void VoiceConnection::sendVoiceData(std::basic_string_view<uint8_t> responseData) noexcept {
-		if (responseData.size() == 0) {
-			if (this->configManager->doWePrintWebSocketErrorMessages()) {
-				cout << shiftToBrightRed() << "Please specify voice data to send" << reset() << endl << endl;
-			}
-			return;
-		} else {
-			if (UDPConnection::areWeStillConnected()) {
-				UDPConnection::writeData(responseData);
-			}
 		}
 	}
 
@@ -345,10 +329,6 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
-	void VoiceConnection::sendSingleFrame(AudioFrameData& frameData) noexcept {
-		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.send(std::move(frameData));
-	}
-
 	void VoiceConnection::sendSpeakingMessage(const bool isSpeaking) noexcept {
 		DiscordCoreInternal::SendSpeakingData data{};
 		if (!isSpeaking) {
@@ -459,9 +439,7 @@ namespace DiscordCoreAPI {
 					this->sendSpeakingMessage(true);
 
 					while (!token.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
-						this->xferAudioData.type = AudioFrameType::Unset;
-						this->xferAudioData.sampleCount = 0;
-						this->xferAudioData.data.clear();
+						this->xferAudioData.clearData();
 
 						this->areWePlaying.store(true);
 						if (!token.stop_requested() && VoiceConnection::areWeConnected()) {
@@ -469,6 +447,9 @@ namespace DiscordCoreAPI {
 						}
 						this->checkForConnections(token);
 						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(this->xferAudioData);
+						if (this->xferAudioData.sampleCount % 480 != 0) {
+							this->xferAudioData.clearData();
+						}
 						if (this->xferAudioData.data.size() == 0) {
 							this->areWePlaying.store(false);
 						} else {
@@ -476,9 +457,6 @@ namespace DiscordCoreAPI {
 								static_cast<double>(this->sampleRatePerSecond) * static_cast<double>(this->nsPerSecond)) };
 							this->areWePlaying.store(true);
 							this->audioData += this->xferAudioData.data;
-							if (this->audioData.sampleCount % 480 != 0) {
-								this->audioData = AudioFrameData{};
-							}
 						}
 						if (this->xferAudioData.guildMemberId != 0) {
 							this->currentGuildMemberId = this->xferAudioData.guildMemberId;
@@ -538,7 +516,7 @@ namespace DiscordCoreAPI {
 							spinLock(waitTimeCount);
 						}
 						if (frame.size() > 0) {
-							this->sendVoiceData(frame);
+							UDPConnection::writeData(frame);
 							if (UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Both) == DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
@@ -792,8 +770,7 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::clearAudioData() noexcept {
 		if (this->xferAudioData.data.size() != 0) {
-			this->xferAudioData.data.clear();
-			this->xferAudioData = AudioFrameData();
+			this->xferAudioData.clearData();
 		}
 		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.clearContents();
 	}
@@ -856,7 +833,7 @@ namespace DiscordCoreAPI {
 			frames.push_back(std::basic_string<uint8_t>{ packetNew.data(), packetNew.size() });
 		}
 		for (auto& value: frames) {
-			this->sendVoiceData(value);
+			UDPConnection::writeData(value);
 		}
 	}
 

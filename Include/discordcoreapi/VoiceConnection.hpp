@@ -217,13 +217,9 @@ namespace DiscordCoreAPI {
 
 		void parseIncomingVoiceData(std::basic_string_view<uint8_t> rawDataBufferNew) noexcept;
 
-		void sendVoiceData(std::basic_string_view<uint8_t> responseData) noexcept;
-
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
 		void checkForAndSendHeartBeat(const bool isItImmediage) noexcept;
-
-		void sendSingleFrame(AudioFrameData& frameData) noexcept;
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
@@ -233,7 +229,7 @@ namespace DiscordCoreAPI {
 
 		void connectInternal(std::stop_token token) noexcept;
 
-		void applyGainRamp(int64_t numSamples) noexcept;
+		void applyGainRamp(int64_t sampleCount) noexcept;
 
 		void runVoice(std::stop_token) noexcept;
 
