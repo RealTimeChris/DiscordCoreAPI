@@ -239,9 +239,10 @@ namespace DiscordCoreAPI {
 			data["d"] = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
 			data["op"] = 3;
 			data.refreshString(JsonifierSerializeType::Json);
-			if (this->streamSocket) {
+			if (this->streamSocket && !this->areWePlaying.load()) {
 				this->streamSocket->writeData(std::basic_string_view<uint8_t>{ reinterpret_cast<const uint8_t*>(std::string{ "Heartbeat" }.data()) });
 				this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
+				this->sendSilence();
 			}
 			std::string string{ data.operator std::string() };
 			this->createHeader(string, this->dataOpCode);
@@ -443,7 +444,6 @@ namespace DiscordCoreAPI {
 					while (!token.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
 						this->xferAudioData.clearData();
 
-						this->areWePlaying.store(true);
 						if (!token.stop_requested() && VoiceConnection::areWeConnected()) {
 							this->checkForAndSendHeartBeat(false);
 						}
@@ -839,6 +839,7 @@ namespace DiscordCoreAPI {
 		}
 		for (auto& value: frames) {
 			UDPConnection::writeData(value);
+			UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Both);
 		}
 	}
 
