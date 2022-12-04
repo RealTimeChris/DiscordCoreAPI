@@ -166,9 +166,9 @@ namespace DiscordCoreAPI {
 		CommandController commandController{ this };
 		std::atomic_bool isItSafeToConnect{ true };
 		Milliseconds startupTimeSinceEpoch{};
-		bool didWeStartCorrectly{};
 		ConfigManager configManager{};
 		EventManager eventManager{};///< An event-manager, for hooking into Discord-API-Events sent over the Websockets.
+		bool didWeStartCorrectly{};
 		BotUser currentUser{};
 
 		void registerFunctionsInternal();

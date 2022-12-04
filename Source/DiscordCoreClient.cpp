@@ -228,7 +228,7 @@ namespace DiscordCoreAPI {
 				std::vector<ApplicationCommand> guildCommands{};
 				if (data.guildId != 0) {
 					guildCommands = ApplicationCommands::getGuildApplicationCommandsAsync(
-						{ .withLocalizations = false, .applicationId = this->getBotUser().id, .guildId = data.guildId })
+						{ .applicationId = this->getBotUser().id, .withLocalizations = false, .guildId = data.guildId })
 										.get();
 				}
 				bool doesItExist{};

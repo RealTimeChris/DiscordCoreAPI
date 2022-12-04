@@ -467,7 +467,9 @@ namespace DiscordCoreAPI {
 			workload = DiscordCoreInternal::HttpsWorkloadType::Delete_Message;
 		}
 		co_await NewThreadAwaitable<void>();
-		std::this_thread::sleep_for(Milliseconds{ dataPackage.timeDelay });
+		if (dataPackage.timeDelay > 0) {
+			std::this_thread::sleep_for(Milliseconds{ dataPackage.timeDelay });
+		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId;
 		workload.callStack = "Messages::deleteMessageAsync()";

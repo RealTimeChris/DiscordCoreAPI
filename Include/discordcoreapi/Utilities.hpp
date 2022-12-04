@@ -1952,13 +1952,6 @@ namespace DiscordCoreAPI {
 		/// \param object An object of OTy.
 		void send(OTy& object) {
 			std::unique_lock lock{ this->accessMutex };
-			this->queue.emplace_back(std::move(object));
-		}
-
-		/// \brief Sends an object of type OTy to the "recipient".
-		/// \param object An object of OTy.
-		void send(const OTy&& object) {
-			std::unique_lock lock{ this->accessMutex };
 			this->queue.emplace_back(object);
 		}
 
@@ -1966,14 +1959,13 @@ namespace DiscordCoreAPI {
 		/// \param object An object of OTy.
 		void send(const OTy& object) {
 			std::unique_lock lock{ this->accessMutex };
-			this->queue.emplace_back(std::move(object));
+			this->queue.emplace_back(object);
 		}
 
 		/// \brief Clears the contents of the messaging block.
 		void clearContents() {
 			std::unique_lock lock{ this->accessMutex };
 			this->queue.clear();
-			this->queue = std::deque<OTy>{};
 		}
 
 		/// \brief Tries to receive an object of type OTy to be placed into a reference.

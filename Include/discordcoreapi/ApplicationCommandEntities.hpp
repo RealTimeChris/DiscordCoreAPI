@@ -62,15 +62,13 @@ namespace DiscordCoreAPI {
 
 	/// \brief For editing a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGlobalApplicationCommandData {
-		std::unordered_map<std::string, std::string>
-			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<std::string, std::string>
-			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
+		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
 		std::string description{};///< A description of the command.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
 		std::string name{};///< A name for the new command.
 
 		operator Jsonifier();
@@ -90,8 +88,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For acquiring all of the Guild ApplicationCommands of a single Guild.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandsData {
-		bool withLocalizations{};///< Do we collect the name-and-description localizations?
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		bool withLocalizations{};///< Do we collect the name-and-description localizations?
 		Snowflake guildId{};///< The id of the Guild for which you would like to acquire the ApplicationCommands from.
 	};
 
@@ -109,15 +107,13 @@ namespace DiscordCoreAPI {
 
 	/// \brief For editing a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGuildApplicationCommandData {
-		std::unordered_map<std::string, std::string>
-			descriptionLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the description field.
-		std::unordered_map<std::string, std::string>
-			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name field.
+		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary with keys in available locales.
+		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary with keys in available locales.
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
-		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
 		std::string description{};///< A description of the command.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
 		Snowflake guildId{};///< The id of the Guild which you would like to add the new command to.
 		std::string name{};///< A name for the new command.
 

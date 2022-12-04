@@ -195,22 +195,22 @@ namespace DiscordCoreInternal {
 		~AudioDecoder();
 
 	  protected:
-		int64_t audioStreamIndex{}, bufferMaxSize{}, bytesRead{}, totalFileSize{};
 		DiscordCoreAPI::UnboundedMessageBlock<DiscordCoreAPI::AudioFrameData> outDataBuffer{};
+		int64_t audioStreamIndex{}, bufferMaxSize{}, bytesRead{}, totalFileSize{};
 		DiscordCoreAPI::UnboundedMessageBlock<std::string> inputDataBuffer{};
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		std::atomic_int32_t refreshTimeForBuffer{ 10000 };
-		std::atomic_bool haveWeFailedBool{};
 		AVCodecContextWrapper audioDecodeContext{};
-		std::atomic_bool areWeQuitting{};
 		AVFormatContextWrapper formatContext{};
+		std::atomic_bool haveWeFailedBool{};
 		AVFrameWrapper frame{}, newFrame{};
+		std::atomic_bool areWeQuitting{};
 		AVIOContextWrapper ioContext{};
 		SwrContextWrapper swrContext{};
 		std::string currentBuffer{};
-		bool haveWeBooted{};
 		AVPacketWrapper packet{};
 		AVStream* audioStream{};
+		bool haveWeBooted{};
 		AVCodec* codec{};
 		std::unique_ptr<std::jthread> taskThread{ nullptr };
 
