@@ -1198,8 +1198,8 @@ namespace DiscordCoreAPI {
 		}
 
 	  protected:
-		std::unordered_set<OTy> set{};
 		std::shared_mutex accessMutex{};
+		std::unordered_set<OTy> set{};
 	};
 
 	class DiscordCoreAPI_Dll StringWrapper {
@@ -1283,10 +1283,10 @@ namespace DiscordCoreAPI {
 	/// \brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
+		std::basic_string<uint8_t> data{};///< The audio data.
 		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
 		uint64_t guildMemberId{};///< GuildMemberId for the sending GuildMember.
 		size_t currentSize{};///< The current size of the allocated memory.
-		std::basic_string<uint8_t> data{};///< The audio data.
 
 		AudioFrameData() noexcept = default;
 
@@ -1311,12 +1311,12 @@ namespace DiscordCoreAPI {
 	/// \brief For connecting to a voice-channel. "streamInfo" is used when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
 		StreamInfo streamInfo{};///< The info for the stream-socekt, if applicable.
-		bool selfDeaf{};///< Self-deafen the bot?
-		bool selfMute{};///< Self-mute the bot?
 		int32_t currentShard{};///< The current websocket shard, if applicable.
 		Snowflake channelId{};///< The channel id to connect to.
 		Snowflake guildId{};///< The guild id to connect to.
 		Snowflake userId{};///< This bot's user id.
+		bool selfDeaf{};///< Self-deafen the bot?
+		bool selfMute{};///< Self-mute the bot?
 	};
 
 	/**@}*/

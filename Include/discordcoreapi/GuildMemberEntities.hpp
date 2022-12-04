@@ -79,8 +79,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For modifying the current GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyCurrentGuildMemberData {
-		Snowflake guildId{};///< The Guild within which to modify the current user's values.
 		std::string reason{};///< A reason for modifying the current user's values.
+		Snowflake guildId{};///< The Guild within which to modify the current user's values.
 		std::string nick{};///< A new nickname for the current user.
 	};
 
@@ -103,16 +103,16 @@ namespace DiscordCoreAPI {
 	/// \brief For removing a GuildMember from a chosen Guild.
 	struct DiscordCoreAPI_Dll RemoveGuildMemberData {
 		Snowflake guildMemberId{};///< Id of the chosen GuildMember to kick.
-		Snowflake guildId{};///< Guild from which to kick the chosen GuildMember.
 		std::string reason{};///< Reason for kicking the GuildMember.
+		Snowflake guildId{};///< Guild from which to kick the chosen GuildMember.
 	};
 
 	/// \brief For timing out a GuildMember.
 	struct DiscordCoreAPI_Dll TimeoutGuildMemberData {
 		TimeoutDurations numOfMinutesToTimeoutFor{};///< The number of minutes to time-out the GuildMember for.
 		Snowflake guildMemberId{};///< The id of the GuildMember to be timed-out.
-		Snowflake guildId{};///< The id of the Guild from which you would like to acquire a member.
 		std::string reason{};///< Reason for timing them out.
+		Snowflake guildId{};///< The id of the Guild from which you would like to acquire a member.
 	};
 
 	/// \brief A single GuildMember.

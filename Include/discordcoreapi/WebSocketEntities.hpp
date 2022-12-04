@@ -99,14 +99,14 @@ namespace DiscordCoreInternal {
 		const uint32_t maxReconnectTries{ 10 };
 		uint32_t currentReconnectTries{};
 		uint32_t lastNumberReceived{};
-		bool areWeHeartBeating{};
 		WebSocketClose closeCode{ 0 };
 		StringBuffer currentMessage{};
 		WebSocketOpCode dataOpCode{};
-		bool areWeResuming{};
+		bool areWeHeartBeating{};
 		uint64_t messageLength{};
 		uint64_t messageOffset{};
 		WebSocketType wsType{};
+		bool areWeResuming{};
 		uint32_t shard[2]{};
 	};
 
@@ -137,8 +137,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectionData voiceConnectionData{};
 		std::atomic_bool* doWeQuit{ nullptr };
-		DiscordCoreAPI::Snowflake userId{};
 		simdjson::ondemand::parser parser{};
+		DiscordCoreAPI::Snowflake userId{};
 		bool serverUpdateCollected{};
 		bool stateUpdateCollected{};
 		bool areWeCollectingData{};

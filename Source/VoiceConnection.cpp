@@ -293,7 +293,6 @@ namespace DiscordCoreAPI {
 					this->voiceConnectInitData.streamInfo.streamBotAudio) {
 					if (!this->voiceUsers.contains(ssrc)) {
 						this->voiceUsers.emplace(std::make_pair(ssrc, std::move(user)));
-						this->voiceUserCount++;
 					}
 				}
 				break;
@@ -319,7 +318,6 @@ namespace DiscordCoreAPI {
 				for (auto& [key, value]: this->voiceUsers) {
 					if (userId == value->getUserId()) {
 						this->voiceUsers.erase(key);
-						this->voiceUserCount--;
 						break;
 					}
 				}

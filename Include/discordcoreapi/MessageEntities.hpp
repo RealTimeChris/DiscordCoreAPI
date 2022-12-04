@@ -70,8 +70,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For getting a collection of Messages.
 	struct DiscordCoreAPI_Dll GetMessagesData {
-		uint64_t aroundThisId{};///< Around this id.
 		Snowflake beforeThisId{};///< Before this id.
+		uint64_t aroundThisId{};///< Around this id.
 		Snowflake afterThisId{};///< After this id.
 		Snowflake channelId{};///< Channel from which to collect the Messages.
 		int32_t limit{};///< Limit of Messages to collect.
@@ -151,8 +151,8 @@ namespace DiscordCoreAPI {
 		TimeStamp timeStamp{};///< The created-at timeStamp of the original message.
 		Snowflake channelId{};///< The channel Id of the Message to delete.
 		Snowflake messageId{};///< The message Id of the Message to delete.
-		int32_t timeDelay{};///< Number of Milliseconds to wait before deleting the Message.
 		std::string reason{};///< The reason for deleting the Message.
+		int32_t timeDelay{};///< Number of Milliseconds to wait before deleting the Message.
 	};
 
 	/// \brief For deleting a bulk of Messages.

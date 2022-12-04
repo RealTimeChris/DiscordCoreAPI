@@ -36,25 +36,25 @@ namespace DiscordCoreAPI {
 	 */
 	/// \brief For creating a single Reaction.
 	struct DiscordCoreAPI_Dll CreateReactionData {
+		std::string emojiName{};///< The emoji name of the Reaction to add.
 		Snowflake channelId{};///< The Channel for which to add the Reaction.
 		Snowflake messageId{};///< The Message on which to add the Reaction.
-		std::string emojiName{};///< The emoji name of the Reaction to add.
 		Snowflake emojiId{};///< The emoji id of the Reaction to add.
 	};
 
 	/// \brief For deleting one's own Reaction.
 	struct DiscordCoreAPI_Dll DeleteOwnReactionData {
+		std::string emojiName{};///< The emoji name for which to remove the emoji.
 		Snowflake channelId{};///< The Channel from which to remove the Reaction.
 		Snowflake messageId{};///< The Message from which to remove the Reaction.
-		std::string emojiName{};///< The emoji name for which to remove the emoji.
 		Snowflake emojiId{};///< The emoji id for which to remove the emoji.
 	};
 
 	/// \brief For deleting a reaction, by User.
 	struct DiscordCoreAPI_Dll DeleteUserReactionData {
+		std::string emojiName{};///< The name of which emoji to remove.
 		Snowflake channelId{};///< The Channel from which to remove the Reaction.
 		Snowflake messageId{};///< The Message from which to remove the Reaction.
-		std::string emojiName{};///< The name of which emoji to remove.
 		Snowflake emojiId{};///< The id of which emoji to remove.
 		Snowflake userId{};///< The User id for whom to remove their emoji.
 	};
@@ -76,9 +76,9 @@ namespace DiscordCoreAPI {
 
 	/// \brief For deleting all of the Reactions of a particular Emoji.
 	struct DiscordCoreAPI_Dll DeleteReactionsByEmojiData {
+		std::string emojiName{};///< The name of which emoji to remove.
 		Snowflake channelId{};///< The Channel from which you would like to remove the emoji.
 		Snowflake messageId{};///< The Message from which you would like to remove the emoji.
-		std::string emojiName{};///< The name of which emoji to remove.
 		Snowflake emojiId{};///< The id of which emoji to remove.
 	};
 
@@ -105,8 +105,8 @@ namespace DiscordCoreAPI {
 
 		std::vector<Snowflake> roles{};///< Roles that can use this Emoji.
 		std::string imageFilePath{};///< The image responseData.
-		Snowflake guildId{};///< The Guild within which to create the Emoji.
 		std::string reason{};///< Reason for creating the new Emoji.
+		Snowflake guildId{};///< The Guild within which to create the Emoji.
 		std::string name{};///< Name of the emoji.
 		ImageType type{};///< The type of image being uploaded.
 
@@ -119,9 +119,9 @@ namespace DiscordCoreAPI {
 	/// For modifying a Guild Emoji.
 	struct DiscordCoreAPI_Dll ModifyGuildEmojiData {
 		std::vector<Snowflake> roles{};///< Roles that can use this Emoji.
+		std::string reason{};///< Reason for modifying the Emoji.
 		Snowflake guildId{};///< The Guild within which to modify the Emoji.
 		Snowflake emojiId{};///< The id of the Emoji to modify.
-		std::string reason{};///< Reason for modifying the Emoji.
 		std::string name{};///< Name of the Emoji.
 
 		operator Jsonifier();
@@ -129,9 +129,9 @@ namespace DiscordCoreAPI {
 
 	/// For deleting a Guild Emoji.
 	struct DiscordCoreAPI_Dll DeleteGuildEmojiData {
+		std::string reason{};///< Reason for deleting the Emoji.
 		Snowflake guildId{};///< The Guild within which to delete the Emoji.
 		Snowflake emojiId{};///< The id of the Emoji to delete.
-		std::string reason{};///< Reason for deleting the Emoji.
 	};
 
 	/// \brief A single Reaction.

@@ -191,11 +191,10 @@ namespace DiscordCoreAPI {
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		VoiceConnectInitData voiceConnectInitData{};
 		std::vector<opus_int16> downSampledVector{};
-		MovingAverager voiceUserCountAverage{ 12 };
+		MovingAverager voiceUserCountAverage{ 25 };
 		std::basic_string<uint8_t> encryptionKey{};
 		std::vector<opus_int32> upSampledVector{};
 		std::basic_string<uint8_t> externalIp{};
-		std::atomic_bool areWePlaying{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};
@@ -203,10 +202,10 @@ namespace DiscordCoreAPI {
 		int64_t nsPerSecond{ 1000000000 };
 		std::string audioEncryptionMode{};
 		Snowflake currentGuildMemberId{};
+		std::atomic_bool areWePlaying{};
 		AudioFrameData xferAudioData{};
 		int64_t samplesPerPacket{};
 		AudioFrameData audioData{};
-		uint8_t voiceUserCount{};
 		int64_t msPerPacket{};
 		std::string voiceIp{};
 		std::string baseUrl{};

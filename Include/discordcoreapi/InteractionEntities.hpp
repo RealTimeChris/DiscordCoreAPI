@@ -429,15 +429,15 @@ namespace DiscordCoreAPI {
 		CreateInteractionResponseData errorMessageData{};
 		int32_t currentCollectedSelectMenuCount{};
 		int32_t maxCollectedSelectMenuCount{};
-		bool getSelectMenuDataForAll{};
 		std::vector<std::string> values{};
+		bool getSelectMenuDataForAll{};
 		std::string buffersMapKey{};
 		std::string selectMenuId{};
 		uint32_t maxTimeInMs{};
-		bool doWeQuit{};
 		Snowflake channelId{};
 		Snowflake messageId{};
 		Snowflake userId{};
+		bool doWeQuit{};
 
 		void run();
 	};
@@ -527,15 +527,15 @@ namespace DiscordCoreAPI {
 		std::vector<ButtonResponseData> responseVector{};
 		int32_t currentCollectedButtonCount{};
 		int32_t maxCollectedButtonCount{};
-		bool getButtonDataForAll{};
 		std::vector<std::string> values{};
 		std::string buffersMapKey{};
+		bool getButtonDataForAll{};
 		uint32_t maxTimeInMs{};
-		bool doWeQuit{};
 		std::string buttonId{};
 		Snowflake channelId{};
 		Snowflake messageId{};
 		Snowflake userId{};
+		bool doWeQuit{};
 
 		void run();
 	};
@@ -603,8 +603,8 @@ namespace DiscordCoreAPI {
 		int32_t currentCollectedButtonCount{};
 		ModalResponseData responseData{};
 		uint32_t maxTimeInMs{};
-		bool doWeQuit{};
 		Snowflake channelId{};
+		bool doWeQuit{};
 
 		void run();
 	};

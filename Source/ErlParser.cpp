@@ -40,6 +40,16 @@ namespace DiscordCoreInternal {
 		return std::string_view{ this->finalString.data(), this->currentSize };
 	}
 
+	void ErlParser::writeCharacters(const char* data, size_t length) {
+		if (this->finalString.size() < this->currentSize + length) {
+			this->finalString.resize(this->finalString.size() + length);
+		}
+		for (size_t x = 0; x < length; ++x) {
+			this->finalString[this->currentSize + x] = data[x];
+		}
+		this->currentSize += length;
+	}
+
 	void ErlParser::writeCharactersFromBuffer(uint32_t length) {
 		if (this->offSet + static_cast<uint64_t>(length) > this->dataBuffer.size()) {
 			throw ErlParseError{ "ErlParser::readString() Error: readString() past end of buffer.\n\n" };
@@ -130,16 +140,6 @@ namespace DiscordCoreInternal {
 		this->writeCharacter('\"');
 		this->writeCharacters(string.data(), finalSize);
 		this->writeCharacter('\"');
-	}
-
-	void ErlParser::writeCharacters(const char* data, size_t length) {
-		if (this->finalString.size() < this->currentSize + length) {
-			this->finalString.resize(this->finalString.size() + length);
-		}
-		for (size_t x = 0; x < length; ++x) {
-			this->finalString[this->currentSize + x] = data[x];
-		}
-		this->currentSize += length;
 	}
 
 	void ErlParser::writeCharacter(const char value) {

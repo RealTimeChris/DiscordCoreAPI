@@ -37,8 +37,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For getting all of the Global Application Commands.
 	struct DiscordCoreAPI_Dll GetGlobalApplicationCommandsData {
-		bool withLocalizations{};///< Do we collect the name-and-description localizations?
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		bool withLocalizations{};///< Do we collect the name-and-description localizations?
 	};
 
 	/// \brief For collecting a single global ApplicationCommand.

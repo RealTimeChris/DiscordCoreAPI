@@ -96,11 +96,11 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::atomic<Milliseconds> sampledTimeInMs{ Milliseconds{} };
 		std::atomic<Milliseconds> msRemain{ Milliseconds{} };
-		std::atomic_bool areWeASpecialBucket{};
 		std::counting_semaphore<1> theSemaphore{ 1 };
+		std::atomic_bool areWeASpecialBucket{};
 		std::atomic_bool didWeHitRateLimit{};
-		std::atomic_bool haveWeGoneYet{};
 		std::atomic_int64_t getsRemaining{};
+		std::atomic_bool haveWeGoneYet{};
 		std::atomic_bool doWeWait{};
 		std::string tempBucket{};
 		std::string bucket{};
@@ -108,12 +108,12 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll HttpsConnection : public TCPSSLClient, public HttpsRnRBuilder {
 	  public:
-		std::atomic_bool areWeCheckedOut{};
 		const int32_t maxReconnectTries{ 10 };
+		std::atomic_bool areWeCheckedOut{};
 		int32_t currentReconnectTries{};
-		bool areWeDoneTheRequest{};
 		StringBuffer inputBufferReal{};
 		std::string currentBaseUrl{};
+		bool areWeDoneTheRequest{};
 		HttpsResponseData data{};
 		bool doWeConnect{ true };
 

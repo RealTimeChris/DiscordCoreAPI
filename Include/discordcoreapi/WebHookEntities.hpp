@@ -37,8 +37,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For creating a new WebHook.
 	struct DiscordCoreAPI_Dll CreateWebHookData {
-		std::string avatar{};///< Image for the default webhook avatar.
 		Snowflake channelId{};///< The Channel within which to create the WebHook.
+		std::string avatar{};///< Image for the default webhook avatar.
 		std::string name{};///< Name of the webhook(1 - 80 characters).
 	};
 
@@ -134,9 +134,9 @@ namespace DiscordCoreAPI {
 		std::string webhookToken{};///< The WebHook token you would like to execute.
 		std::vector<File> files{};///< File contents the contents of the file being sent.
 		std::string avatarUrl{};///< Override the default avatar of the webhook.
-		Snowflake webHookId{};///< The WebHook you would like to execute.
 		std::string userName{};///< Override the default userName of the webhook.
 		std::string customId{};///< Custom id for the modal.
+		Snowflake webHookId{};///< The WebHook you would like to execute.
 		std::string content{};///< The message contents (up to 2000 characters)	one of content, file, embeds.
 		std::string title{};///< Title for the modal.
 		int32_t flags{};///< Flags combined as a bitfield.
@@ -187,18 +187,18 @@ namespace DiscordCoreAPI {
 
 	/// \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookData {
-		std::string avatar{};///< Image responseData for the default webhook avatar.
 		Snowflake channelId{};///< The new Channel id this webhook should be moved to.
 		Snowflake webHookId{};///< The WebHook to be modified.
+		std::string avatar{};///< Image responseData for the default webhook avatar.
 		std::string name{};///< The default name of the webhook.
 	};
 
 	/// \brief For modifying a WebHook.
 	struct DiscordCoreAPI_Dll ModifyWebHookWithTokenData {
 		std::string webhookToken{};///< Token of the desired WebHook.
-		std::string avatar{};///< Image responseData for the default webhook avatar.
 		Snowflake channelId{};///< The new Channel id this webhook should be moved to.
 		Snowflake webHookId{};///< The WebHook to be modified.
+		std::string avatar{};///< Image responseData for the default webhook avatar.
 		std::string name{};///< The default name of the webhook.
 	};
 

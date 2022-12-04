@@ -88,9 +88,9 @@ namespace DiscordCoreAPI {
 	/// \brief For collecting a list of Guild Scheduled Event Users.
 	struct DiscordCoreAPI_Dll GetGuildScheduledEventUsersData {
 		Snowflake guildScheduledEventId{};///< The id of the event to modify.
-		bool withMember{};///< Include Guild member responseData if it exists.
 		Snowflake guildId{};///< The Guild within which to modify the event.
 		Snowflake before{};///< Consider only users before given user id.
+		bool withMember{};///< Include Guild member responseData if it exists.
 		Snowflake after{};///< Consider only users after given user id.
 		uint32_t limit{};///< How many users to receive from the event.
 	};

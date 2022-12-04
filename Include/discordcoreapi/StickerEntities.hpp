@@ -46,10 +46,10 @@ namespace DiscordCoreAPI {
 
 	/// \brief For creating a single Sticker.
 	struct DiscordCoreAPI_Dll CreateGuildStickerData {
-		std::string file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
 		std::string description{};///< Description of the Sticker.
-		Snowflake guildId{};///< The Guild within which to create the Sticker.
 		std::string reason{};///< The reason for creating the Sticker.
+		Snowflake guildId{};///< The Guild within which to create the Sticker.
+		std::string file{};///< The sticker file to upload, must be a Png, Apng, or Lottie JSON file, max 500 KB.
 		std::string name{};///< Name of the Sticker.
 		std::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
@@ -58,8 +58,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildStickerData {
 		std::string description{};///< Description of the Sticker.
 		Snowflake stickerId{};///< The Sticker you wish to modify.
-		Snowflake guildId{};///< The Guild within which to modify the Sticker.
 		std::string reason{};///< The reason for modifying the Sticker.
+		Snowflake guildId{};///< The Guild within which to modify the Sticker.
 		std::string name{};///< Name of the Sticker.
 		std::string tags{};///< Autocomplete / suggestion tags for the sticker(max 200 characters).
 	};
@@ -67,8 +67,8 @@ namespace DiscordCoreAPI {
 	/// \brief For deleting a single Sticker.
 	struct DiscordCoreAPI_Dll DeleteGuildStickerData {
 		Snowflake stickerId{};///< The Sticker you wish to delete.
-		Snowflake guildId{};///< The Guild within which to delete the Sticker.
 		std::string reason{};///< The reason for deleting the Sticker.
+		Snowflake guildId{};///< The Guild within which to delete the Sticker.
 	};
 
 	/// \brief A single Sticker.

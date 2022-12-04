@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 
 	void DiscordCoreClient::registerFunctionsInternal() {
 		std::vector<ApplicationCommand> theCommands{
-			ApplicationCommands::getGlobalApplicationCommandsAsync({ .withLocalizations = false, .applicationId = this->getBotUser().id }).get()
+			ApplicationCommands::getGlobalApplicationCommandsAsync({ .applicationId = this->getBotUser().id, .withLocalizations = false }).get()
 		};
 		while (this->commandsToRegister.size() > 0) {
 			CreateApplicationCommandData data = this->commandsToRegister.front();

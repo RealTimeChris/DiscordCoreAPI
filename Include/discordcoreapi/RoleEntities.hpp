@@ -43,17 +43,17 @@ namespace DiscordCoreAPI {
 	/// \brief For addin a Role to a GuildMember.
 	struct DiscordCoreAPI_Dll AddGuildMemberRoleData {
 		Snowflake guildId{};///< The id of the Guild within which to assign the Role.
+		std::string reason{};///< Reason for adding the GuildMember's Role.
 		Snowflake userId{};///< The id of the User to whom to assign the Role.
 		Snowflake roleId{};///< The id of the Role to be assigned.
-		std::string reason{};///< Reason for adding the GuildMember's Role.
 	};
 
 	/// \brief For removing a Role from a GuildMember.
 	struct DiscordCoreAPI_Dll RemoveGuildMemberRoleData {
+		std::string reason{};///< Reason for removing the GuildMember's Role.
 		Snowflake guildId{};///< The id of the Guild within which to remove the Role.
 		Snowflake userId{};///< The id of the User from whom to remove the Role.
 		Snowflake roleId{};///< The id of the Role to be removed.
-		std::string reason{};///< Reason for removing the GuildMember's Role.
 	};
 
 	/// \brief For getting a chosen Guild's Roles.
@@ -64,15 +64,15 @@ namespace DiscordCoreAPI {
 	/// \brief For creating a new Role within a chosen Guild.
 	struct DiscordCoreAPI_Dll CreateGuildRoleData {
 		std::string hexColorValue{};///< Hex color-value between 0 and ffffff.
-		std::string icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
 		Permissions permissions{};///< The base permissions to give the Role.
+		std::string reason{};///< Reason for creating the Role.
+		Snowflake guildId{};///< Which Guild to make the Role in.
+		std::string icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		bool mentionable{};///< Is it mentionable by others in the Guild.
 		int32_t position{};///< The position amongst the other roles.
-		Snowflake guildId{};///< Which Guild to make the Role in.
-		std::string reason{};///< Reason for creating the Role.
-		bool hoist{};///< Is this Role hoisted above the rest of them?
 		std::string name{};///< The name of the Role.
+		bool hoist{};///< Is this Role hoisted above the rest of them?
 
 		operator Jsonifier();
 	};
@@ -87,11 +87,11 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
 		friend class Roles;
 
-		Snowflake guildId{};///< The Guild within which to move the Role.
 		int32_t newPosition{};///< The new position of the Role.
-		Snowflake roleId{};///< The id of the Role to move.
 		std::string reason{};///< Reason for modifying the Role positions.
-
+		Snowflake guildId{};///< The Guild within which to move the Role.
+		Snowflake roleId{};///< The id of the Role to move.
+		
 		operator Jsonifier();
 
 	  protected:
@@ -102,12 +102,12 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ModifyGuildRoleData {
 		Permissions permissions{ "0" };///< Base Guild permissions for the Role.
 		std::string hexColorValue{};///< A hex-color value between 0x00 and 0xFFFFFF.
-		std::string icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
 		std::string unicodeEmoji{};///< The role's unicode emoji as a standard emoji.
-		bool mentionable{};///< Is it mentionable?
-		Snowflake guildId{};///< The id of the Guild within which to update the Role.
-		Snowflake roleId{};///< The id of the Role to update.
 		std::string reason{};///<< Reason for modifying the Role.
+		Snowflake guildId{};///< The id of the Guild within which to update the Role.
+		std::string icon{};///< Image data	the role's icon image (if the guild has the ROLE_ICONS feature)	null.
+		bool mentionable{};///< Is it mentionable?
+		Snowflake roleId{};///< The id of the Role to update.
 		std::string name{};///< What the name of the Role is going to be.
 		bool hoist{};///< Is this Role hoisted above the others?
 
@@ -116,9 +116,9 @@ namespace DiscordCoreAPI {
 
 	/// \brief For removing a Role from a chosen Guild.
 	struct DiscordCoreAPI_Dll RemoveGuildRoleData {
+		std::string reason{};///< Reason for removing this Role.
 		Snowflake guildId{};///< The id of the Guild from which to remove the Role.
 		Snowflake roleId{};///< The id of the Role to remove.
-		std::string reason{};///< Reason for removing this Role.
 	};
 
 	/// \brief For getting a chosen GuildMember's Roles.
