@@ -441,13 +441,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string_view TCPSSLClient::getInputBuffer() noexcept {
-		std::string_view string{};
-		if (this->inputBuffer.getUsedSpace() > 0) {
-			string = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), this->inputBuffer.getCurrentTail()->getUsedSpace() };
-			this->inputBuffer.getCurrentTail()->clear();
-			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-		}
-		return string;
+		return this->inputBuffer.readData();
 	}
 
 	bool TCPSSLClient::areWeStillConnected() noexcept {
@@ -461,7 +455,6 @@ namespace DiscordCoreInternal {
 	bool TCPSSLClient::processWriteData() noexcept {
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			uint64_t bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
-
 			uint64_t writtenBytes{};
 			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.getCurrentTail()->getCurrentTail(), bytesToWrite, &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
@@ -746,14 +739,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::basic_string_view<uint8_t> UDPConnection::getInputBuffer() noexcept {
-		std::basic_string_view<uint8_t> string{};
-		if (this->inputBuffer.getUsedSpace() > 0) {
-			string = std::basic_string_view<uint8_t>{ this->inputBuffer.getCurrentTail()->getCurrentTail(),
-				this->inputBuffer.getCurrentTail()->getUsedSpace() };
-			this->inputBuffer.getCurrentTail()->clear();
-			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-		}		
-		return string;
+		return this->inputBuffer.readData();
 	}
 
 	bool UDPConnection::areWeStillConnected() noexcept {
