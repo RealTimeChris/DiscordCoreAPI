@@ -52,28 +52,22 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	DiscordCoreAPI::AudioFrameData OpusEncoderWrapper::encodeData(DiscordCoreAPI::AudioFrameData& inputFrame) {
-		if (inputFrame.data.size() == 0) {
+	EncoderReturnData OpusEncoderWrapper::encodeData(std::basic_string_view<uint8_t> inputFrame) {
+		if (inputFrame.size() == 0) {
 			return {};
 		}
 		if (this->encodedData.size() == 0) {
 			this->encodedData.resize(this->maxBufferSize);
 		}
-		int32_t count = opus_encode(this->ptr.get(), reinterpret_cast<opus_int16*>(inputFrame.data.data()), inputFrame.sampleCount,
+		size_t sampleCount = inputFrame.size() / 2 / 2;
+		int32_t count = opus_encode(this->ptr.get(), reinterpret_cast<const opus_int16*>(inputFrame.data()), inputFrame.size() / 2 / 2,
 			this->encodedData.data(), this->maxBufferSize);
 		if (count <= 0) {
-			inputFrame.clearData();
 			return {};
 		}
-		DiscordCoreAPI::AudioFrameData encodedFrame{};
-		encodedFrame.data.insert(encodedFrame.data.begin(), this->encodedData.begin(), this->encodedData.begin() + count);
-		encodedFrame.sampleCount = inputFrame.sampleCount;
-		encodedFrame.type = DiscordCoreAPI::AudioFrameType::Encoded;
-		encodedFrame.guildMemberId = inputFrame.guildMemberId;
-		encodedFrame.currentSize = count;
-		inputFrame.currentSize = 0;
-		inputFrame.sampleCount = -1;
-		inputFrame.type = DiscordCoreAPI::AudioFrameType::Unset;
-		return encodedFrame;
+		EncoderReturnData returnData{};
+		returnData.sampleCount = sampleCount;
+		returnData.data = std::basic_string_view<uint8_t>{ this->encodedData.data(), this->encodedData.size() };
+		return returnData;
 	}
 }

@@ -287,7 +287,6 @@ namespace DiscordCoreInternal {
 				if (currentReruns >= maxReruns) {
 					DiscordCoreAPI::AudioFrameData frameData{};
 					frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
-					frameData.sampleCount = 0;
 					DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frameData));
 					streamSocket->disconnect();
 					audioDecoder.reset(nullptr);
@@ -390,10 +389,10 @@ namespace DiscordCoreInternal {
 							if (!audioDecoder->getFrame(rawFrame)) {
 								break;
 							} else {
-								if (rawFrame.sampleCount == -5) {
+								if (rawFrame.currentSize == -5) {
 									break;
 								}
-								if (rawFrame.sampleCount > 3) {
+								if (rawFrame.currentSize > 3) {
 									frames.emplace_back(std::move(rawFrame));
 								}
 							}
@@ -418,7 +417,6 @@ namespace DiscordCoreInternal {
 			audioDecoder.reset(nullptr);
 			DiscordCoreAPI::AudioFrameData frameData{};
 			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
-			frameData.sampleCount = 0;
 			DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frameData));
 		} catch (...) {
 			if (this->configManager->doWePrintWebSocketErrorMessages()) {

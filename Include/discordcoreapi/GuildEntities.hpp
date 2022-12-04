@@ -35,7 +35,7 @@
 
 namespace DiscordCoreAPI {
 
-	inline bool operator==(const GuildData& lhs, const GuildData& rhs) {
+	DiscordCoreAPI_Dll inline bool operator==(const GuildData& lhs, const GuildData& rhs) {
 		return lhs.id == rhs.id;
 	}
 

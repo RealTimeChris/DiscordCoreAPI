@@ -42,6 +42,43 @@ namespace DiscordCoreAPI {
 		uint32_t ssrc{};
 	};
 
+	struct AudioRingBuffer : public DiscordCoreInternal::RingBuffer<uint8_t, 4> {
+
+		AudioRingBuffer& operator+=(AudioFrameData& data) {
+			if (this->isItFull()) {
+				this->getCurrentTail()->clear();
+				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
+			}
+			size_t writeSize{};
+			if (data.currentSize >= 16384) {
+				writeSize = 16384;
+				std::copy(data.data.data(), data.data.data() + writeSize, this->getCurrentHead()->getCurrentHead());
+				this->getCurrentHead()->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, writeSize);
+				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, 1);
+				std::copy(data.data.data() + writeSize, data.data.data() + data.currentSize - writeSize, data.data.data());
+				data.currentSize -= 16384;
+			} else {
+				writeSize = data.currentSize;
+				std::copy(data.data.data(), data.data.data() + writeSize, this->getCurrentHead()->getCurrentHead());
+				this->getCurrentHead()->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, writeSize);
+				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, 1);
+				data.currentSize = 0;
+			}
+			return *this;
+		}
+
+		std::basic_string_view<uint8_t> readData(size_t minimumRead) {
+			std::basic_string_view<uint8_t> returnValue{};
+			if (this->getCurrentTail()->getUsedSpace() >= minimumRead) {
+				returnValue = std::basic_string_view<uint8_t>{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
+				this->getCurrentTail()->clear();
+				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
+			}
+			return returnValue;
+		}
+
+	};
+
 	struct DiscordCoreAPI_Dll VoiceUser {
 
 		VoiceUser() noexcept = default;
@@ -75,7 +112,7 @@ namespace DiscordCoreAPI {
 
 		RTPPacketEncrypter(uint32_t ssrcNew, const std::basic_string<uint8_t>& keysNew) noexcept;
 
-		std::basic_string_view<uint8_t> encryptPacket(const AudioFrameData& audioData) noexcept;
+		std::basic_string_view<uint8_t> encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData) noexcept;
 
 	  protected:
 		std::basic_string<uint8_t> data{};
@@ -204,8 +241,8 @@ namespace DiscordCoreAPI {
 		Snowflake currentGuildMemberId{};
 		std::atomic_bool areWePlaying{};
 		AudioFrameData xferAudioData{};
-		int64_t samplesPerPacket{};
-		AudioFrameData audioData{};
+		AudioRingBuffer audioData{};
+		int64_t samplesPerPacket{};		
 		int64_t msPerPacket{};
 		std::string voiceIp{};
 		std::string baseUrl{};

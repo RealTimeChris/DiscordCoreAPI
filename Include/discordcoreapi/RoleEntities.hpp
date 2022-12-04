@@ -31,7 +31,7 @@
 
 namespace DiscordCoreAPI {
 
-	inline bool operator==(const RoleData& lhs, const RoleData& rhs) {
+	DiscordCoreAPI_Dll inline bool operator==(const RoleData& lhs, const RoleData& rhs) {
 		return lhs.id == rhs.id;
 	}
 

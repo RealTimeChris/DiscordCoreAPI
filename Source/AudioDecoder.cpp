@@ -46,8 +46,8 @@ namespace DiscordCoreInternal {
 	}
 
 	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(std::basic_string_view<uint8_t> dataToDecode) {
-		const int64_t sampleCount =
-			opus_decode(this->ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
+		const int64_t sampleCount = opus_decode(this->ptr.get(), reinterpret_cast<uint8_t const*>(dataToDecode.data()),
+			static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
 		if (sampleCount > 0) {
 			return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
 		} else {
@@ -215,7 +215,7 @@ namespace DiscordCoreInternal {
 	bool AudioDecoder::getFrame(DiscordCoreAPI::AudioFrameData& dataPackage) {
 		if (!this->areWeQuitting.load()) {
 			if (this->outDataBuffer.tryReceive(dataPackage)) {
-				if (dataPackage.sampleCount != -1) {
+				if (dataPackage.currentSize != -1) {
 					return true;
 				}
 			}
@@ -243,12 +243,12 @@ namespace DiscordCoreInternal {
 		stream->currentBuffer = std::string();
 		DiscordCoreAPI::AudioFrameData frameData{};
 		if (stream->areWeQuitting.load()) {
-			frameData.sampleCount = -5;
+			frameData.currentSize = -5;
 			stream->outDataBuffer.send(std::move(frameData));
 			return AVERROR_EOF;
 		}
 		if (DiscordCoreAPI::waitForTimeToPass(stream->inputDataBuffer, stream->currentBuffer, stream->refreshTimeForBuffer.load())) {
-			frameData.sampleCount = -5;
+			frameData.currentSize = -5;
 			stream->outDataBuffer.send(std::move(frameData));
 			stream->areWeQuitting.store(true);
 			return AVERROR_EOF;
@@ -260,7 +260,7 @@ namespace DiscordCoreInternal {
 			buf[x] = stream->currentBuffer[x];
 		}
 		if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize) {
-			frameData.sampleCount = -5;
+			frameData.currentSize = stream->bytesRead;
 			stream->outDataBuffer.send(std::move(frameData));
 			stream->areWeQuitting.store(true);
 			return static_cast<int32_t>(stream->bytesRead);
@@ -483,7 +483,7 @@ namespace DiscordCoreInternal {
 						for (int32_t x = 0; x < unpadded_linesize; ++x) {
 							rawFrame.data[x] = this->newFrame->extended_data[0][x];
 						}
-						rawFrame.sampleCount = newFrame->nb_samples;
+						rawFrame.currentSize = newFrame->nb_samples * 4;
 						this->outDataBuffer.send(std::move(rawFrame));
 						int64_t sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
 						if (sampleCount > 0) {
@@ -497,7 +497,7 @@ namespace DiscordCoreInternal {
 							for (int32_t x = 0; x < *this->newFrame->linesize; ++x) {
 								rawFrame02.data[x] = this->newFrame->extended_data[0][x];
 							}
-							rawFrame02.sampleCount = newFrame->nb_samples;
+							rawFrame.currentSize = newFrame->nb_samples * 4;
 							this->outDataBuffer.send(std::move(rawFrame02));
 						}
 					}

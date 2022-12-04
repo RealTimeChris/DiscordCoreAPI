@@ -31,11 +31,11 @@
 
 namespace DiscordCoreAPI {
 
-	inline bool operator==(const VoiceStateDataLight& lhs, const VoiceStateDataLight& rhs) {
+	DiscordCoreAPI_Dll inline bool operator==(const VoiceStateDataLight& lhs, const VoiceStateDataLight& rhs) {
 		return (lhs.guildId == rhs.guildId) && (lhs.userId == rhs.userId);
 	}
 
-	inline bool operator==(const GuildMemberData& lhs, const GuildMemberData& rhs) {
+	DiscordCoreAPI_Dll inline bool operator==(const GuildMemberData& lhs, const GuildMemberData& rhs) {
 		return (lhs.guildId == rhs.guildId) && (lhs.id == rhs.id);
 	}
 

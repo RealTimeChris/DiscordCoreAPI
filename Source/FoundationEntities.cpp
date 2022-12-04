@@ -3327,7 +3327,6 @@ namespace DiscordCoreAPI {
 		}
 		std::copy(other.data(), other.data() + other.size(), this->data.data() + this->currentSize);
 		this->currentSize += other.size();
-		this->sampleCount = this->currentSize / 2 / 2;
 		this->type = AudioFrameType::RawPCM;
 		return *this;
 	}
@@ -3348,9 +3347,6 @@ namespace DiscordCoreAPI {
 		if (lhs.guildMemberId != rhs.guildMemberId) {
 			return false;
 		}
-		if (lhs.sampleCount != rhs.sampleCount) {
-			return false;
-		}
 		if (lhs.type != rhs.type) {
 			return false;
 		}
@@ -3358,13 +3354,12 @@ namespace DiscordCoreAPI {
 	}
 
 	AudioFrameData& AudioFrameData::operator=(AudioFrameData&& other) noexcept {
-		if (this->data.size() < other.data.size()) {
-			this->data.resize(other.data.size());
+		if (this->data.size() < other.data.size() + this->currentSize) {
+			this->data.resize(other.data.size() + this->currentSize);
 		}
-		this->currentSize = other.data.size();
-		std::copy(other.data.data(), other.data.data() + other.data.size(), this->data.data());
+		std::copy(other.data.data(), other.data.data() + other.data.size(), this->data.data() + this->currentSize);
+		this->currentSize += other.data.size();
 		this->guildMemberId = std::move(other.guildMemberId);
-		this->sampleCount = other.sampleCount;
 		this->type = other.type;
 		return *this;
 	}
@@ -3374,10 +3369,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void AudioFrameData::clearData() noexcept {
+		this->type = AudioFrameType::Unset;
 		this->guildMemberId = 0;
-		this->sampleCount = -1;
 		this->currentSize = 0;
-		this->data.clear();
 	}
 
 	AllowedMentionsData::operator Jsonifier() {

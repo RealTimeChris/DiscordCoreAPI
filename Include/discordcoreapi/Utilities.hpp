@@ -140,31 +140,31 @@ namespace DiscordCoreAPI {
 
 		explicit operator uint64_t() const;
 
-		friend std::string operator+(const std::string&, const Snowflake&);
+		DiscordCoreAPI_Dll friend inline std::string operator+(const std::string&, const Snowflake&);
 
-		friend std::string operator+(const char*, const Snowflake&);
+		DiscordCoreAPI_Dll friend inline std::string operator+(const char*, const Snowflake&);
 
-		friend bool operator==(const Snowflake&, const Snowflake&);
+		DiscordCoreAPI_Dll friend inline bool operator==(const Snowflake&, const Snowflake&);
 
 	  protected:
 		uint64_t id{};
 	};
 
-	inline std::string operator+(const char* lhs, const Snowflake& rhs) {
+	DiscordCoreAPI_Dll inline std::string operator+(const char* lhs, const Snowflake& rhs) {
 		std::string string{};
 		string += lhs;
 		string += std::to_string(rhs.id);
 		return string;
 	}
 
-	inline std::string operator+(const std::string& lhs, const Snowflake& rhs) {
+	DiscordCoreAPI_Dll inline std::string operator+(const std::string& lhs, const Snowflake& rhs) {
 		std::string string{};
 		string += lhs;
 		string += std::to_string(rhs.id);
 		return string;
 	}
 
-	inline bool operator==(const Snowflake& lhs, const Snowflake& rhs) {
+	DiscordCoreAPI_Dll inline bool operator==(const Snowflake& lhs, const Snowflake& rhs) {
 		return lhs.id == rhs.id;
 	}
 
@@ -1234,35 +1234,44 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<char[]> ptr{};
 	};
 
-	inline std::basic_ostream<char>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
+	DiscordCoreAPI_Dll inline std::basic_ostream<char>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
 		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(rhs))) {
 			lhs.put(value);
 		}
 		return lhs;
 	}
 
-	inline std::basic_string<char> operator+(const std::basic_string<char, std::char_traits<char>, std::allocator<char>>& lhs, StringWrapper rhs) {
+	DiscordCoreAPI_Dll inline std::basic_string<char> operator+(const std::basic_string<char, std::char_traits<char>, std::allocator<char>>& lhs,
+		StringWrapper rhs) {
 		std::stringstream stream{};
 		stream << lhs << rhs;
 		return stream.str();
 	}
 
-	inline std::basic_string<char> operator+(const char* lhs, StringWrapper rhs) {
+	DiscordCoreAPI_Dll inline std::basic_string<char> operator+(const char* lhs, StringWrapper rhs) {
 		std::stringstream stream{};
 		stream << lhs << rhs;
 		return stream.str();
 	}
 
-	inline bool operator==(StringWrapper lhs, const char* rhs) {
+	DiscordCoreAPI_Dll inline bool operator==(StringWrapper lhs, const char* rhs) {
 		return static_cast<std::string>(lhs) == static_cast<std::string>(rhs);
 	}
 
-	inline bool operator!=(StringWrapper lhs, const char* rhs) {
+	DiscordCoreAPI_Dll inline bool operator!=(StringWrapper lhs, const char* rhs) {
 		return static_cast<std::string>(lhs) != rhs;
 	}
 
-	inline bool operator==(std::string& lhs, StringWrapper& rhs) {
-		return lhs == rhs;
+	DiscordCoreAPI_Dll inline bool operator==(std::string& lhs, StringWrapper& rhs) {
+		if (lhs.size() != rhs.size()) {
+			return false;
+		}
+		for (size_t x = 0; x < lhs.size(); ++x) {
+			if (lhs[x] != rhs.data()[x]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**@}*/
@@ -1275,18 +1284,16 @@ namespace DiscordCoreAPI {
 	/// \brief Audio frame types.
 	enum class AudioFrameType : uint8_t {
 		Unset = 0,///< Unset.
-		Encoded = 1,///< Encoded.
-		RawPCM = 2,///< Raw PCM.
-		Skip = 3///< Skip.
+		RawPCM = 1,///< Raw PCM.
+		Skip = 2///< Skip.
 	};
 
 	/// \brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
 		std::basic_string<uint8_t> data{};///< The audio data.
-		int64_t sampleCount{ -1ll };///< The number of samples per this frame.
 		uint64_t guildMemberId{};///< GuildMemberId for the sending GuildMember.
-		size_t currentSize{};///< The current size of the allocated memory.
+		int64_t currentSize{};///< The current size of the allocated memory.
 
 		AudioFrameData() noexcept = default;
 

@@ -30,6 +30,11 @@
 
 namespace DiscordCoreInternal {
 
+	struct EncoderReturnData {
+		std::basic_string_view<uint8_t> data{};
+		size_t sampleCount{};
+	};
+
 	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
 		struct DiscordCoreAPI_Dll OpusEncoderDeleter {
 			void operator()(OpusEncoder*) noexcept;
@@ -37,7 +42,7 @@ namespace DiscordCoreInternal {
 
 		OpusEncoderWrapper();
 
-		DiscordCoreAPI::AudioFrameData encodeData(DiscordCoreAPI::AudioFrameData& inputFrame);
+		EncoderReturnData encodeData(std::basic_string_view<uint8_t> inputFrame);
 
 	  protected:
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> ptr{ nullptr, OpusEncoderDeleter{} };
