@@ -71,21 +71,21 @@ namespace DiscordCoreInternal {
 		bool connect(const std::string& baseUrl, const std::string& relativePath, const uint16_t portNew, bool doWePrintErrorsNew,
 			bool areWeAStandaloneSocketNew) noexcept;
 
-		void parseConnectionHeaders(std::string_view stringNew) noexcept;
-
 		void createHeader(std::string& outBuffer, WebSocketOpCode opCode) noexcept;
 
 		virtual bool onMessageReceived(std::string_view message) noexcept = 0;
 
 		bool sendMessage(std::string& dataToSend, bool priority) noexcept;
 
+		void parseConnectionHeaders(std::string_view stringNew) noexcept;
+
 		bool checkForAndSendHeartBeat(bool = false) noexcept;
 
 		virtual void onClosed() noexcept = 0;
 
-		void handleBuffer() noexcept;
-
 		void parseMessage() noexcept;
+
+		void handleBuffer() noexcept;
 
 		virtual ~WebSocketCore() noexcept = default;
 
