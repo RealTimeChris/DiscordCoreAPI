@@ -239,6 +239,9 @@ namespace DiscordCoreAPI {
 			data["d"] = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
 			data["op"] = 3;
 			data.refreshString(JsonifierSerializeType::Json);
+			if (this->streamSocket) {
+				this->streamSocket->writeData(std::basic_string_view<uint8_t>{ reinterpret_cast<const uint8_t*>(std::string{ "Heartbeat" }.data()) });
+			}
 			std::string string{ data.operator std::string() };
 			this->createHeader(string, this->dataOpCode);
 			if (!this->sendMessage(string, true)) {
