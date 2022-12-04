@@ -809,7 +809,6 @@ namespace DiscordCoreInternal {
 				}
 			}
 		} while (readBytes > 0);
-		this->handleAudioBuffer();
 		return true;
 	}
 
