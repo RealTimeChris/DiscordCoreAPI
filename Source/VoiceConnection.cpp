@@ -93,7 +93,7 @@ namespace DiscordCoreAPI {
 		this->ssrc = ssrcNew;
 	}
 
-	std::basic_string_view<uint8_t> RTPPacketEncrypter::encryptPacket(const AudioFrameData& audioData) noexcept {
+	std::basic_string_view<uint8_t> RTPPacketEncrypter::encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData) noexcept{
 		if (this->keys.size() > 0) {
 			++this->sequence;
 			this->timeStamp += audioData.sampleCount;
@@ -108,14 +108,14 @@ namespace DiscordCoreAPI {
 			for (int8_t x = 0; x < headerSize; ++x) {
 				nonceForLibSodium[x] = header[x];
 			}
-			const uint64_t numOfBytes{ headerSize + audioData.currentSize + crypto_secretbox_MACBYTES };
+			const uint64_t numOfBytes{ headerSize + audioData.data.size() + crypto_secretbox_MACBYTES };
 			if (this->data.size() < numOfBytes) {
 				this->data.resize(numOfBytes);
 			}
 			for (int8_t x = 0; x < headerSize; ++x) {
 				this->data[x] = header[x];
 			}
-			if (crypto_secretbox_easy(this->data.data() + headerSize, audioData.data.data(), audioData.currentSize, nonceForLibSodium,
+			if (crypto_secretbox_easy(this->data.data() + headerSize, audioData.data.data(), audioData.data.size(), nonceForLibSodium,
 					this->keys.data()) != 0) {
 				return {};
 			}
@@ -239,11 +239,6 @@ namespace DiscordCoreAPI {
 			data["d"] = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
 			data["op"] = 3;
 			data.refreshString(JsonifierSerializeType::Json);
-			if (this->streamSocket && !this->areWePlaying.load()) {
-				this->streamSocket->writeData(std::basic_string_view<uint8_t>{ reinterpret_cast<const uint8_t*>(std::string{ "Heartbeat" }.data()) });
-				this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
-				this->sendSilence();
-			}
 			std::string string{ data.operator std::string() };
 			this->createHeader(string, this->dataOpCode);
 			if (!this->sendMessage(string, true)) {
@@ -417,7 +412,7 @@ namespace DiscordCoreAPI {
 					break;
 				}
 				case VoiceActiveState::Playing: {
-					this->xferAudioData.type = AudioFrameType::Encoded;
+					this->xferAudioData.type = AudioFrameType::Unset;
 					this->xferAudioData.data.clear();
 
 					stopWatch.resetTimer();
@@ -442,42 +437,34 @@ namespace DiscordCoreAPI {
 					this->sendSpeakingMessage(true);
 
 					while (!token.stop_requested() && this->activeState.load() == VoiceActiveState::Playing) {
-						this->xferAudioData.clearData();
-
+						int64_t bytesPerSample{ 4 };
 						if (!token.stop_requested() && VoiceConnection::areWeConnected()) {
 							this->checkForAndSendHeartBeat(false);
 						}
 						this->checkForConnections(token);
 						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(this->xferAudioData);
-						if (this->xferAudioData.sampleCount % 480 != 0) {
-							this->xferAudioData.clearData();
-						}
-						if (this->xferAudioData.data.size() == 0) {
+						AudioFrameType frameType{ this->xferAudioData.type };
+						if (this->xferAudioData.currentSize % 480 != 0 || this->xferAudioData.currentSize == 0) {
 							this->areWePlaying.store(false);
+							this->xferAudioData.clearData();
 						} else {
-							this->intervalCount = Nanoseconds{ static_cast<uint64_t>(static_cast<double>(this->xferAudioData.sampleCount) /
+							this->intervalCount =
+								Nanoseconds{ static_cast<uint64_t>(static_cast<double>(this->xferAudioData.currentSize / bytesPerSample) /
 								static_cast<double>(this->sampleRatePerSecond) * static_cast<double>(this->nsPerSecond)) };
 							this->areWePlaying.store(true);
-							this->audioData += this->xferAudioData.data;
-						}
-						if (this->xferAudioData.guildMemberId != 0) {
+							this->audioData += this->xferAudioData;
 							this->currentGuildMemberId = this->xferAudioData.guildMemberId;
 						}
 						std::basic_string_view<uint8_t> frame{};
 						bool doWeBreak{};
-						switch (this->xferAudioData.type) {
+						switch (frameType) {
 							case AudioFrameType::RawPCM: {
-								if (this->audioData.sampleCount >= this->samplesPerPacket) {
-									auto encodedFrameData = this->encoder.encodeData(this->audioData);
+								if (this->audioData.getCurrentTail()->getUsedSpace() >= this->samplesPerPacket * bytesPerSample) {
+									auto encodedFrameData =
+										this->encoder.encodeData(this->audioData.readData(this->samplesPerPacket * bytesPerSample));
 									if (encodedFrameData.data.size() != 0) {
 										frame = this->packetEncrypter.encryptPacket(encodedFrameData);
 									}
-								}
-								break;
-							}
-							case AudioFrameType::Encoded: {
-								if (this->audioData.data.size() != 0 && this->audioData.sampleCount >= this->samplesPerPacket) {
-									frame = this->packetEncrypter.encryptPacket(this->audioData);
 								}
 								break;
 							}
@@ -494,7 +481,11 @@ namespace DiscordCoreAPI {
 								doWeBreak = true;
 								this->xferAudioData.type = AudioFrameType::Unset;
 								this->xferAudioData.clearData();
-								this->audioData.clearData();
+								this->audioData.clear();
+								break;
+							}
+							case AudioFrameType::Unset: {
+								this->sendSilence();
 								break;
 							}
 						}
@@ -521,6 +512,7 @@ namespace DiscordCoreAPI {
 							spinLock(waitTimeCount);
 						}
 						if (frame.size() > 0) {
+							this->xferAudioData.clearData();
 							UDPConnection::writeData(frame);
 							if (UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Both) == DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
@@ -827,12 +819,13 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::sendSilence() noexcept {
 		std::vector<std::basic_string<uint8_t>> frames{};
+		uint8_t arrayNew[3]{};
+		arrayNew[0] = 0xf8;
+		arrayNew[1] = 0xff;
+		arrayNew[2] = 0xfe;
 		for (size_t x = 0; x < 5; ++x) {
-			AudioFrameData frame{};
-			frame += static_cast<char>(0xf8);
-			frame += static_cast<char>(0xff);
-			frame += static_cast<char>(0xfe);
-			frame.type = AudioFrameType::Encoded;
+			DiscordCoreInternal::EncoderReturnData frame{};
+			frame.data = arrayNew;
 			frame.sampleCount = 3;
 			auto packetNew = this->packetEncrypter.encryptPacket(frame);
 			frames.push_back(std::basic_string<uint8_t>{ packetNew.data(), packetNew.size() });

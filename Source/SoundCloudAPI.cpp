@@ -299,7 +299,7 @@ namespace DiscordCoreInternal {
 				while (!doWeBreak) {
 					DiscordCoreAPI::AudioFrameData rawFrame{};
 					doWeBreak = !audioDecoder->getFrame(rawFrame);
-					if (rawFrame.sampleCount == -5) {
+					if (rawFrame.currentSize == -5) {
 						doWeBreak = true;
 						break;
 					}
@@ -330,7 +330,7 @@ namespace DiscordCoreInternal {
 			audioDecoder.reset(nullptr);
 			DiscordCoreAPI::AudioFrameData frameData{};
 			frameData.type = DiscordCoreAPI::AudioFrameType::Skip;
-			frameData.sampleCount = 0;
+			frameData.currentSize = 0;
 			DiscordCoreAPI::DiscordCoreClient::getSongAPI(this->guildId)->audioDataBuffer.send(std::move(frameData));
 		} catch (...) {
 			if (this->configManager->doWePrintHttpsErrorMessages()) {

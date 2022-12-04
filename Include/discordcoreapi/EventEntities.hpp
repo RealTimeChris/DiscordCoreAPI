@@ -44,9 +44,9 @@ namespace DiscordCoreInternal {
 
 		template<typename RTy, typename... ArgTypes> friend class TriggerEvent;
 
-		friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
+		DiscordCoreAPI_Dll friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
-		friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
+		DiscordCoreAPI_Dll friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
 
 		EventDelegateToken() noexcept = default;
 
@@ -55,11 +55,11 @@ namespace DiscordCoreInternal {
 		std::string eventId{};
 	};
 
-	inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+	DiscordCoreAPI_Dll inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
 		return lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId;
 	}
 
-	inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+	DiscordCoreAPI_Dll inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
 		return stoll(lhs.handlerId) < stoll(rhs.handlerId);
 	}
 
