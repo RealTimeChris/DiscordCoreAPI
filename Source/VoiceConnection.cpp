@@ -239,11 +239,6 @@ namespace DiscordCoreAPI {
 			data["d"] = std::chrono::duration_cast<Nanoseconds>(HRClock::now().time_since_epoch()).count();
 			data["op"] = 3;
 			data.refreshString(JsonifierSerializeType::Json);
-			if (this->streamSocket && !this->areWePlaying.load()) {
-				this->streamSocket->writeData(std::basic_string_view<uint8_t>{ reinterpret_cast<const uint8_t*>(std::string{ "Heartbeat" }.data()) });
-				this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
-				this->sendSilence();
-			}
 			std::string string{ data.operator std::string() };
 			this->createHeader(string, this->dataOpCode);
 			if (!this->sendMessage(string, true)) {
@@ -453,21 +448,29 @@ namespace DiscordCoreAPI {
 							this->xferAudioData.clearData();
 						}
 						if (this->xferAudioData.data.size() == 0) {
+							this->audioData.data.resize(3);
+							this->audioData.data[0] = static_cast<char>(0xf8);
+							this->audioData.data[1] = static_cast<char>(0xff);
+							this->audioData.data[2] = static_cast<char>(0xfe);
+							this->audioData.type = AudioFrameType::Encoded;
+							this->audioData.sampleCount = 3;
+							this->audioData.currentSize = 3;
 							this->areWePlaying.store(false);
 						} else {
 							this->intervalCount = Nanoseconds{ static_cast<uint64_t>(static_cast<double>(this->xferAudioData.sampleCount) /
 								static_cast<double>(this->sampleRatePerSecond) * static_cast<double>(this->nsPerSecond)) };
 							this->areWePlaying.store(true);
 							this->audioData += this->xferAudioData.data;
+							this->audioData.type = this->xferAudioData.type;
 						}
 						if (this->xferAudioData.guildMemberId != 0) {
 							this->currentGuildMemberId = this->xferAudioData.guildMemberId;
 						}
 						std::basic_string_view<uint8_t> frame{};
 						bool doWeBreak{};
-						switch (this->xferAudioData.type) {
+						switch (this->audioData.type) {
 							case AudioFrameType::RawPCM: {
-								if (this->audioData.sampleCount >= this->samplesPerPacket) {
+								if (this->audioData.sampleCount >= this->samplesPerPacket || this->audioData.sampleCount == 3) {
 									auto encodedFrameData = this->encoder.encodeData(this->audioData);
 									if (encodedFrameData.data.size() != 0) {
 										frame = this->packetEncrypter.encryptPacket(encodedFrameData);
@@ -476,7 +479,8 @@ namespace DiscordCoreAPI {
 								break;
 							}
 							case AudioFrameType::Encoded: {
-								if (this->audioData.data.size() != 0 && this->audioData.sampleCount >= this->samplesPerPacket) {
+								if ((this->audioData.data.size() != 0 && this->audioData.sampleCount >= this->samplesPerPacket) ||
+									this->audioData.sampleCount == 3) {
 									frame = this->packetEncrypter.encryptPacket(this->audioData);
 								}
 								break;
