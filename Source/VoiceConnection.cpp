@@ -63,11 +63,25 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceUser::insertPayload(std::basic_string_view<uint8_t> data) noexcept {
-		this->payloads.writeData(data.data(), data.size());
+		if (this->payloads.getFreeSpace() == 0) {
+			this->payloads.getCurrentTail()->clear();
+			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
+		}
+		if (data.size() <= this->payloads.getCurrentHead()->getFreeSpace()) {
+			std::copy(data.data(), data.data() + data.size(), this->payloads.getCurrentHead()->getCurrentHead());
+			this->payloads.getCurrentHead()->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, data.size());
+			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, 1);
+		}
 	}
 
 	std::basic_string_view<uint8_t> VoiceUser::extractPayload() noexcept {
-		return this->payloads.readData();
+		std::basic_string_view<uint8_t> string{};
+		if (this->payloads.getUsedSpace() > 0 && this->payloads.getCurrentTail()->getUsedSpace() > 0) {
+			string = std::basic_string_view<uint8_t>{ this->payloads.getCurrentTail()->getCurrentTail(), this->payloads.getCurrentTail()->getUsedSpace() };
+			this->payloads.getCurrentTail()->clear();
+			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
+		}
+		return string;
 	}
 
 	Snowflake VoiceUser::getUserId() noexcept {

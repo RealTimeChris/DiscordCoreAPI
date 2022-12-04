@@ -1855,28 +1855,7 @@ namespace DiscordCoreInternal {
 			this->tail = 0;
 			this->head = 0;
 		}
-
-		void writeData(const OTy* data, size_t length) {
-			if (this->getFreeSpace() == 0) {
-				this->getCurrentTail()->clear();
-				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
-			}
-			std::copy(data, data + length, this->getCurrentHead()->getCurrentHead());
-			this->getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, length);
-			this->modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-		}
-
-		std::basic_string_view<OTy> readData() {
-			std::basic_string_view<OTy> string{};
-			if (this->getUsedSpace() > 0 && this->getCurrentTail()->getUsedSpace() > 0) {
-				string = std::basic_string_view<OTy>{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
-				this->getCurrentTail()->clear();
-				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
-			}
-			return string;
-		}
 	};
-
 }
 
 template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::Snowflake> {
