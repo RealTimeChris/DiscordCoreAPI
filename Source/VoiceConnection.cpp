@@ -241,6 +241,7 @@ namespace DiscordCoreAPI {
 			data.refreshString(JsonifierSerializeType::Json);
 			if (this->streamSocket) {
 				this->streamSocket->writeData(std::basic_string_view<uint8_t>{ reinterpret_cast<const uint8_t*>(std::string{ "Heartbeat" }.data()) });
+				this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both);
 			}
 			std::string string{ data.operator std::string() };
 			this->createHeader(string, this->dataOpCode);
