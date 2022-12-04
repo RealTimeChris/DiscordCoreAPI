@@ -125,8 +125,14 @@ namespace DiscordCoreInternal {
 				dataPackage02.headersToInsert = theHeaders;
 				dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 				auto headersNew = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
-				auto valueBitRate = stoll(headersNew.responseHeaders.find("x-amz-meta-bitrate")->second);
-				auto valueLength = stoll(headersNew.responseHeaders.find("x-amz-meta-duration")->second);
+				int64_t valueBitRate{};
+				int64_t valueLength{};
+				if (headersNew.responseHeaders.find("x-amz-meta-bitrate") != headersNew.responseHeaders.end()) {
+					valueBitRate = stoll(headersNew.responseHeaders.find("x-amz-meta-bitrate")->second);
+				}
+				if (headersNew.responseHeaders.find("x-amz-meta-duration") != headersNew.responseHeaders.end()) {
+					valueLength = stoll(headersNew.responseHeaders.find("x-amz-meta-duration")->second);
+				}
 				DiscordCoreAPI::DownloadUrl downloadUrl{};
 				downloadUrl.contentSize = static_cast<int32_t>(((valueBitRate * valueLength) / 8) - 193);
 				downloadUrl.urlPath = newSong.secondDownloadUrl;
