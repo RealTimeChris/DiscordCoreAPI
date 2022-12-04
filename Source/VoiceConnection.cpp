@@ -116,7 +116,7 @@ namespace DiscordCoreAPI {
 				this->data[x] = header[x];
 			}
 			if (crypto_secretbox_easy(this->data.data() + headerSize, audioData.data.data(), audioData.currentSize, nonceForLibSodium,
-					reinterpret_cast<uint8_t*>(this->keys.data())) != 0) {
+					this->keys.data()) != 0) {
 				return {};
 			}
 			return std::basic_string_view<uint8_t>{ this->data.data(), numOfBytes };

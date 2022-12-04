@@ -203,18 +203,6 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	void WebSocketCore::parseConnectionHeaders(std::string_view stringNew) noexcept {
-		if (this->areWeStillConnected() && this->currentState.load() == WebSocketState::Upgrading) {
-			auto theFindValue = stringNew.find("\r\n\r\n");
-			if (theFindValue != std::string::npos) {
-				this->currentMessage.clear();
-				this->currentState.store(WebSocketState::Collecting_Hello);
-				return;
-			}
-		}
-		return;
-	}
-
 	void WebSocketCore::createHeader(std::string& outBuffer, WebSocketOpCode opCode) noexcept {
 		size_t originalSize{ outBuffer.size() };
 		outBuffer.insert(outBuffer.begin(), static_cast<uint8_t>(opCode) | webSocketFinishBit);
@@ -265,6 +253,18 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
+	void WebSocketCore::parseConnectionHeaders(std::string_view stringNew) noexcept {
+		if (this->areWeStillConnected() && this->currentState.load() == WebSocketState::Upgrading) {
+			auto theFindValue = stringNew.find("\r\n\r\n");
+			if (theFindValue != std::string::npos) {
+				this->currentMessage.clear();
+				this->currentState.store(WebSocketState::Collecting_Hello);
+				return;
+			}
+		}
+		return;
+	}
+
 	bool WebSocketCore::checkForAndSendHeartBeat(bool isImmediate) noexcept {
 		if ((this->currentState.load() == WebSocketState::Authenticated && this->heartBeatStopWatch.hasTimePassed() &&
 				this->haveWeReceivedHeartbeatAck) ||
@@ -288,12 +288,6 @@ namespace DiscordCoreInternal {
 			return true;
 		} else {
 			return false;
-		}
-	}
-
-	void WebSocketCore::handleBuffer() noexcept {
-		if (this->currentState != WebSocketState::Upgrading) {
-			this->parseMessage();
 		}
 	}
 
@@ -390,6 +384,12 @@ namespace DiscordCoreInternal {
 		}
 	}
 
+	void WebSocketCore::handleBuffer() noexcept {
+		if (this->currentState != WebSocketState::Upgrading) {
+			this->parseMessage();
+		}
+	}
+	
 	WebSocketClient::WebSocketClient(DiscordCoreAPI::DiscordCoreClient* client, int32_t currentShardNew, std::atomic_bool* doWeQuitNew)
 		: WebSocketCore(&client->configManager, WebSocketType::Normal) {
 		this->configManager = &client->configManager;

@@ -241,11 +241,11 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrlNew, uint16_t portNew, bool haveWeGottenSignaled, std::stop_token token = std::stop_token{}) noexcept;
 
-		ProcessIOResult processIO(ProcessIOType type) noexcept;
-
 		void writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept;
 
 		std::basic_string_view<uint8_t> getInputBuffer() noexcept;
+
+		ProcessIOResult processIO(ProcessIOType type) noexcept;
 
 		virtual void handleAudioBuffer() noexcept = 0;
 
