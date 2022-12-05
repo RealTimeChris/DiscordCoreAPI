@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	EncoderReturnData OpusEncoderWrapper::encodeData(std::basic_string_view<uint8_t> inputFrame) {
+	EncoderReturnData OpusEncoderWrapper::encodeData(std::string_view inputFrame) {
 		if (inputFrame.size() == 0) {
 			return {};
 		}

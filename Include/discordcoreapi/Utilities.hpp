@@ -1291,7 +1291,7 @@ namespace DiscordCoreAPI {
 	/// \brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
-		std::basic_string<uint8_t> data{};///< The audio data.
+		std::string data{};///< The audio data.
 		uint64_t guildMemberId{};///< GuildMemberId for the sending GuildMember.
 		int64_t currentSize{};///< The current size of the allocated memory.
 
@@ -1305,7 +1305,7 @@ namespace DiscordCoreAPI {
 
 		AudioFrameData(const AudioFrameData&) noexcept = delete;
 
-		AudioFrameData& operator+=(std::basic_string_view<uint8_t>) noexcept;
+		AudioFrameData& operator+=(std::string_view) noexcept;
 
 		AudioFrameData& operator+=(uint8_t);
 

@@ -62,7 +62,7 @@ namespace DiscordCoreAPI {
 		return this->decoder;
 	}
 
-	void VoiceUser::insertPayload(std::basic_string_view<uint8_t> data) noexcept {
+	void VoiceUser::insertPayload(std::string_view data) noexcept {
 		if (this->payloads.getFreeSpace() == 0) {
 			this->payloads.getCurrentTail()->clear();
 			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
@@ -77,7 +77,8 @@ namespace DiscordCoreAPI {
 	std::basic_string_view<uint8_t> VoiceUser::extractPayload() noexcept {
 		std::basic_string_view<uint8_t> string{};
 		if (this->payloads.getUsedSpace() > 0 && this->payloads.getCurrentTail()->getUsedSpace() > 0) {
-			string = std::basic_string_view<uint8_t>{ this->payloads.getCurrentTail()->getCurrentTail(), this->payloads.getCurrentTail()->getUsedSpace() };
+			string =
+				std::basic_string_view<uint8_t>{ this->payloads.getCurrentTail()->getCurrentTail(), this->payloads.getCurrentTail()->getUsedSpace() };
 			this->payloads.getCurrentTail()->clear();
 			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
 		}
@@ -154,7 +155,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnectionBridge::parseOutgoingVoiceData() noexcept {
-		std::basic_string_view<uint8_t> buffer = this->getInputBuffer();
+		std::string_view buffer = this->getInputBuffer();
 		if (buffer.size() > 0) {
 			AudioFrameData frame{};
 			frame += buffer;
@@ -203,7 +204,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::parseIncomingVoiceData(std::basic_string_view<uint8_t> rawDataBufferNew) noexcept {
+	void VoiceConnection::parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept {
 		if (rawDataBufferNew.size() <= 39) {
 			return;
 		}
@@ -590,7 +591,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::handleAudioBuffer() noexcept {
 		if (this->connectionState.load() == VoiceConnectionState::Initializing_DatagramSocket) {
 		} else {
-			std::basic_string_view<uint8_t> string = UDPConnection::getInputBuffer();
+			std::string_view string = UDPConnection::getInputBuffer();
 			if (this->streamSocket && this->encryptionKey.size() > 0) {
 				this->parseIncomingVoiceData(string);
 			}
@@ -791,8 +792,8 @@ namespace DiscordCoreAPI {
 			packet[7] = static_cast<uint8_t>(this->audioSSRC);
 			UDPConnection::getInputBuffer();
 			UDPConnection::writeData(std::basic_string_view<uint8_t>{ packet, std::size(packet) });
-			std::basic_string_view<uint8_t> inputStringFirst{};
-			std::basic_string<char> inputString{};
+			std::string_view inputStringFirst{};
+			std::string inputString{};
 			
 			StopWatch stopWatch{ 5500ms };
 			while (inputStringFirst.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
@@ -809,7 +810,7 @@ namespace DiscordCoreAPI {
 			if (endLineFind != std::string::npos) {
 				inputString = inputString.substr(0, endLineFind);
 			}
-			this->externalIp = std::basic_string<uint8_t>{ inputStringFirst.data() + 8, inputString.size() };
+			this->externalIp = std::string{ inputStringFirst.data() + 8, inputString.size() };
 			this->voiceConnectionDataBuffer.clearContents();
 			return true;
 		} else {
@@ -919,7 +920,7 @@ namespace DiscordCoreAPI {
 					continue;
 				}
 
-				std::basic_string_view<uint8_t> newString{ this->decryptedDataString.data(), encryptedDataLength - crypto_secretbox_MACBYTES };
+				std::basic_string_view newString{ this->decryptedDataString.data(), encryptedDataLength - crypto_secretbox_MACBYTES };
 
 				if ((payload[0] >> 4) & 0b0001) {
 					const uint16_t extenstionLengthInWords{ ntohs(*reinterpret_cast<const uint16_t*>(&newString[2])) };

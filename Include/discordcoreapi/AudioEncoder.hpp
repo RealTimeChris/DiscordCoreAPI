@@ -42,7 +42,7 @@ namespace DiscordCoreInternal {
 
 		OpusEncoderWrapper();
 
-		EncoderReturnData encodeData(std::basic_string_view<uint8_t> inputFrame);
+		EncoderReturnData encodeData(std::string_view inputFrame);
 
 	  protected:
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> ptr{ nullptr, OpusEncoderDeleter{} };

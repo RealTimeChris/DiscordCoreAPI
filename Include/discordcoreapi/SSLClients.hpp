@@ -243,7 +243,7 @@ namespace DiscordCoreInternal {
 
 		void writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept;
 
-		std::basic_string_view<uint8_t> getInputBuffer() noexcept;
+		std::string_view getInputBuffer() noexcept;
 
 		ProcessIOResult processIO(ProcessIOType type) noexcept;
 
@@ -265,7 +265,7 @@ namespace DiscordCoreInternal {
 		const uint64_t maxBufferSize{ (1024 * 16) };
 		DiscordCoreAPI::StreamType streamType{};
 		RingBuffer<uint8_t, 16> outputBuffer{};
-		RingBuffer<uint8_t, 16> inputBuffer{};
+		RingBuffer<char, 16> inputBuffer{};
 		addrinfoWrapper address{};
 		bool doWePrintErrors{};
 		SOCKETWrapper socket{};

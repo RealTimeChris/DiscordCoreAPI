@@ -56,7 +56,7 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadData {
-		std::basic_string<uint8_t> externalIp{};
+		std::string externalIp{};
 		std::string voiceEncryptionMode{};
 		uint16_t voicePort{};
 

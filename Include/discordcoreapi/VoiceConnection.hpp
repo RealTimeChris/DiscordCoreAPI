@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		uint32_t ssrc{};
 	};
 
-	struct AudioRingBuffer : public DiscordCoreInternal::RingBuffer<uint8_t, 4> {
+	struct AudioRingBuffer : public DiscordCoreInternal::RingBuffer<char, 4> {
 
 		AudioRingBuffer& operator+=(AudioFrameData& data) {
 			if (this->isItFull()) {
@@ -67,10 +67,10 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		std::basic_string_view<uint8_t> readData(size_t minimumRead) {
-			std::basic_string_view<uint8_t> returnValue{};
+		std::string_view readData(size_t minimumRead) {
+			std::string_view returnValue{};
 			if (this->getCurrentTail()->getUsedSpace() >= minimumRead) {
-				returnValue = std::basic_string_view<uint8_t>{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
+				returnValue = std::string_view{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
 				this->getCurrentTail()->clear();
 				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
 			}
@@ -95,9 +95,9 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::OpusDecoderWrapper& getDecoder() noexcept;
 
-		void insertPayload(std::basic_string_view<uint8_t>) noexcept;
-
 		std::basic_string_view<uint8_t> extractPayload() noexcept;
+
+		void insertPayload(std::string_view) noexcept;
 
 		Snowflake getUserId() noexcept;
 
@@ -231,7 +231,7 @@ namespace DiscordCoreAPI {
 		MovingAverager voiceUserCountAverage{ 25 };
 		std::basic_string<uint8_t> encryptionKey{};
 		std::vector<opus_int32> upSampledVector{};
-		std::basic_string<uint8_t> externalIp{};
+		std::string externalIp{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};
@@ -251,7 +251,7 @@ namespace DiscordCoreAPI {
 		float currentGain{};
 		uint16_t port{};
 
-		void parseIncomingVoiceData(std::basic_string_view<uint8_t> rawDataBufferNew) noexcept;
+		void parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 

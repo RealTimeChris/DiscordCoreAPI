@@ -3321,7 +3321,7 @@ namespace DiscordCoreAPI {
 		return this->formats;
 	}
 
-	AudioFrameData& AudioFrameData::operator+=(std::basic_string_view<uint8_t> other) noexcept {
+	AudioFrameData& AudioFrameData::operator+=(std::string_view other) noexcept {
 		if (this->data.size() < this->currentSize + other.size()) {
 			this->data.resize(other.size() + this->currentSize);
 		}
