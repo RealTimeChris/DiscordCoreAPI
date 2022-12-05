@@ -345,7 +345,6 @@ namespace DiscordCoreInternal {
 	void HttpsConnection::resetValues() {
 		this->bytesRead = 0;
 		this->currentBaseUrl = "";
-		this->currentReconnectTries = 0;
 		this->isItChunked = false;
 		this->inputBufferReal.clear();
 		this->outputBuffer.clear();
@@ -375,6 +374,7 @@ namespace DiscordCoreInternal {
 		for (auto& [key, value]: this->httpsConnections) {
 			if (!value->areWeCheckedOut.load()) {
 				value->areWeCheckedOut.store(true);
+				value->currentReconnectTries = 0;
 				value->resetValues();
 				return value.get();
 			}

@@ -45,9 +45,9 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(std::basic_string_view<uint8_t> dataToDecode) {
-		const int64_t sampleCount =
-			opus_decode(this->ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
+	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(std::basic_string_view<std::byte> dataToDecode) {
+		const int64_t sampleCount = opus_decode(this->ptr.get(), reinterpret_cast<const unsigned char*>(dataToDecode.data()),
+			static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
 		if (sampleCount > 0) {
 			return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
 		} else {
@@ -481,7 +481,7 @@ namespace DiscordCoreInternal {
 						rawFrame.type = DiscordCoreAPI ::AudioFrameType::RawPCM;
 						rawFrame.data.resize(unpadded_linesize);
 						for (int32_t x = 0; x < unpadded_linesize; ++x) {
-							rawFrame.data[x] = this->newFrame->extended_data[0][x];
+							rawFrame.data[x] = static_cast<std::byte>(this->newFrame->extended_data[0][x]);
 						}
 						rawFrame.currentSize = newFrame->nb_samples * 4;
 						this->outDataBuffer.send(std::move(rawFrame));
@@ -495,7 +495,7 @@ namespace DiscordCoreInternal {
 							rawFrame02.type = DiscordCoreAPI ::AudioFrameType::RawPCM;
 							rawFrame02.data.resize(*this->newFrame->linesize);
 							for (int32_t x = 0; x < *this->newFrame->linesize; ++x) {
-								rawFrame02.data[x] = this->newFrame->extended_data[0][x];
+								rawFrame02.data[x] = static_cast<std::byte>(this->newFrame->extended_data[0][x]);
 							}
 							rawFrame.currentSize = newFrame->nb_samples * 4;
 							this->outDataBuffer.send(std::move(rawFrame02));

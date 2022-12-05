@@ -31,7 +31,7 @@
 namespace DiscordCoreInternal {
 
 	struct EncoderReturnData {
-		std::basic_string_view<uint8_t> data{};
+		std::basic_string_view<std::byte> data{};
 		size_t sampleCount{};
 	};
 
@@ -42,11 +42,11 @@ namespace DiscordCoreInternal {
 
 		OpusEncoderWrapper();
 
-		EncoderReturnData encodeData(std::string_view inputFrame);
+		EncoderReturnData encodeData(std::basic_string_view<std::byte> inputFrame);
 
 	  protected:
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> ptr{ nullptr, OpusEncoderDeleter{} };
-		std::basic_string<uint8_t> encodedData{};
+		std::basic_string<std::byte> encodedData{};
 		const int32_t maxBufferSize{ 1276 };
 		const int32_t sampleRate{ 48000 };
 		const int32_t nChannels{ 2 };

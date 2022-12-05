@@ -42,7 +42,7 @@ namespace DiscordCoreAPI {
 		uint32_t ssrc{};
 	};
 
-	struct AudioRingBuffer : public DiscordCoreInternal::RingBuffer<char, 4> {
+	struct AudioRingBuffer : public DiscordCoreInternal::RingBuffer<std::byte, 4> {
 		AudioRingBuffer& operator+=(AudioFrameData& data) {
 			if (this->isItFull()) {
 				this->getCurrentTail()->clear();
@@ -66,10 +66,10 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		std::string_view readData(size_t minimumRead) {
-			std::string_view returnValue{};
+		std::basic_string_view<std::byte> readData(size_t minimumRead) {
+			std::basic_string_view<std::byte> returnValue{};
 			if (this->getCurrentTail()->getUsedSpace() >= minimumRead) {
-				returnValue = std::string_view{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
+				returnValue = std::basic_string_view<std::byte>{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
 				this->getCurrentTail()->clear();
 				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
 			}
@@ -92,14 +92,14 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::OpusDecoderWrapper& getDecoder() noexcept;
 
-		std::basic_string_view<uint8_t> extractPayload() noexcept;
+		std::basic_string_view<std::byte> extractPayload() noexcept;
 
-		void insertPayload(std::string_view) noexcept;
+		void insertPayload(std::basic_string_view<std::byte>) noexcept;
 
 		Snowflake getUserId() noexcept;
 
 	  protected:
-		DiscordCoreInternal::RingBuffer<uint8_t, 4> payloads{};
+		DiscordCoreInternal::RingBuffer<std::byte, 4> payloads{};
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
 		Snowflake userId{};
 	};
@@ -107,13 +107,13 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
 		RTPPacketEncrypter() noexcept = default;
 
-		RTPPacketEncrypter(uint32_t ssrcNew, const std::basic_string<uint8_t>& keysNew) noexcept;
+		RTPPacketEncrypter(uint32_t ssrcNew, const std::basic_string<std::byte>& keysNew) noexcept;
 
-		std::basic_string_view<uint8_t> encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData) noexcept;
+		std::basic_string_view<std::byte> encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData) noexcept;
 
 	  protected:
-		std::basic_string<uint8_t> data{};
-		std::basic_string<uint8_t> keys{};
+		std::basic_string<std::byte> data{};
+		std::basic_string<std::byte> keys{};
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };
 		uint32_t timeStamp{};
@@ -220,15 +220,14 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<VoiceConnectionBridge> streamSocket{ nullptr };
 		DiscordCoreInternal::WebSocketClient* baseShard{ nullptr };
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
+		std::basic_string<std::byte> decryptedDataString{};
 		DiscordCoreInternal::OpusEncoderWrapper encoder{};
-		std::basic_string<uint8_t> decryptedDataString{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
+		std::basic_string<std::byte> encryptionKey{};
 		VoiceConnectInitData voiceConnectInitData{};
 		std::vector<opus_int16> downSampledVector{};
 		MovingAverager voiceUserCountAverage{ 25 };
-		std::basic_string<uint8_t> encryptionKey{};
 		std::vector<opus_int32> upSampledVector{};
-		std::string externalIp{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};
@@ -240,6 +239,7 @@ namespace DiscordCoreAPI {
 		AudioFrameData xferAudioData{};
 		AudioRingBuffer audioData{};
 		int64_t samplesPerPacket{};
+		std::string externalIp{};
 		int64_t msPerPacket{};
 		std::string voiceIp{};
 		std::string baseUrl{};
@@ -248,7 +248,7 @@ namespace DiscordCoreAPI {
 		float currentGain{};
 		uint16_t port{};
 
-		void parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept;
+		void parseIncomingVoiceData(std::basic_string_view<std::byte> rawDataBufferNew) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 

@@ -62,7 +62,7 @@ namespace DiscordCoreAPI {
 		return this->decoder;
 	}
 
-	void VoiceUser::insertPayload(std::string_view data) noexcept {
+	void VoiceUser::insertPayload(std::basic_string_view<std::byte> data) noexcept {
 		if (this->payloads.getFreeSpace() == 0) {
 			this->payloads.getCurrentTail()->clear();
 			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
@@ -74,11 +74,11 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	std::basic_string_view<uint8_t> VoiceUser::extractPayload() noexcept {
-		std::basic_string_view<uint8_t> string{};
+	std::basic_string_view<std::byte> VoiceUser::extractPayload() noexcept {
+		std::basic_string_view<std::byte> string{};
 		if (this->payloads.getUsedSpace() > 0 && this->payloads.getCurrentTail()->getUsedSpace() > 0) {
-			string =
-				std::basic_string_view<uint8_t>{ this->payloads.getCurrentTail()->getCurrentTail(), this->payloads.getCurrentTail()->getUsedSpace() };
+			string = std::basic_string_view<std::byte>{ this->payloads.getCurrentTail()->getCurrentTail(),
+				this->payloads.getCurrentTail()->getUsedSpace() };
 			this->payloads.getCurrentTail()->clear();
 			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
 		}
@@ -89,12 +89,12 @@ namespace DiscordCoreAPI {
 		return this->userId;
 	}
 
-	RTPPacketEncrypter::RTPPacketEncrypter(uint32_t ssrcNew, const std::basic_string<uint8_t>& keysNew) noexcept {
+	RTPPacketEncrypter::RTPPacketEncrypter(uint32_t ssrcNew, const std::basic_string<std::byte>& keysNew) noexcept {
 		this->keys = keysNew;
 		this->ssrc = ssrcNew;
 	}
 
-	std::basic_string_view<uint8_t> RTPPacketEncrypter::encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData) noexcept {
+	std::basic_string_view<std::byte> RTPPacketEncrypter::encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData) noexcept {
 		if (this->keys.size() > 0) {
 			++this->sequence;
 			this->timeStamp += static_cast<uint32_t>(audioData.sampleCount);
@@ -114,13 +114,14 @@ namespace DiscordCoreAPI {
 				this->data.resize(numOfBytes);
 			}
 			for (int8_t x = 0; x < headerSize; ++x) {
-				this->data[x] = header[x];
+				this->data[x] = static_cast<std::byte>(header[x]);
 			}
-			if (crypto_secretbox_easy(this->data.data() + headerSize, audioData.data.data(), audioData.data.size(), nonceForLibSodium,
-					this->keys.data()) != 0) {
+			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->data.data()) + headerSize,
+					reinterpret_cast<const unsigned char*>(audioData.data.data()), audioData.data.size(), nonceForLibSodium,
+					reinterpret_cast<unsigned char*>(this->keys.data())) != 0) {
 				return {};
 			}
-			return std::basic_string_view<uint8_t>{ this->data.data(), numOfBytes };
+			return std::basic_string_view<std::byte>{ this->data.data(), numOfBytes };
 		}
 		return {};
 	}
@@ -155,7 +156,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnectionBridge::parseOutgoingVoiceData() noexcept {
-		std::string_view buffer = this->getInputBuffer();
+		std::basic_string_view<std::byte> buffer = this->getInputBuffer();
 		if (buffer.size() > 0) {
 			AudioFrameData frame{};
 			frame += buffer;
@@ -204,13 +205,13 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::parseIncomingVoiceData(std::string_view rawDataBufferNew) noexcept {
+	void VoiceConnection::parseIncomingVoiceData(std::basic_string_view<std::byte> rawDataBufferNew) noexcept {
 		if (rawDataBufferNew.size() <= 39) {
 			return;
 		}
 		const uint32_t speakerSsrc{ ntohl(*reinterpret_cast<const uint32_t*>(rawDataBufferNew.data() + 8)) };
 		if (this->voiceUsers.contains(speakerSsrc)) {
-			if (72 <= (rawDataBufferNew[1] & 0b0111'1111) && (rawDataBufferNew[1] & 0b0111'1111) <= 76) {
+			if (72 <= (static_cast<int8_t>(rawDataBufferNew[1]) & 0b0111'1111) && ((static_cast<int8_t>(rawDataBufferNew[1]) & 0b0111'1111) <= 76)) {
 				return;
 			}
 			this->voiceUsers[speakerSsrc]->insertPayload(rawDataBufferNew);
@@ -276,10 +277,10 @@ namespace DiscordCoreAPI {
 			case VoiceSocketOpCodes::Session_Description: {
 				auto arrayValue = getArray(value["d"], "secret_key");
 				if (arrayValue.didItSucceed) {
-					std::basic_string<uint8_t> secretKey{};
+					std::basic_string<std::byte> secretKey{};
 					for (simdjson::ondemand::array_iterator iterator = arrayValue.arrayValue.begin(); iterator != arrayValue.arrayValue.end();
 						 ++iterator) {
-						secretKey.push_back(static_cast<uint8_t>(iterator.operator*().get_uint64().take_value()));
+						secretKey.push_back(static_cast<std::byte>(iterator.operator*().get_uint64().take_value()));
 					}
 					this->encryptionKey = secretKey;
 				}
@@ -456,7 +457,7 @@ namespace DiscordCoreAPI {
 							this->audioData += this->xferAudioData;
 							this->currentGuildMemberId = this->xferAudioData.guildMemberId;
 						}
-						std::basic_string_view<uint8_t> frame{};
+						std::basic_string_view<std::byte> frame{};
 						bool doWeBreak{};
 						switch (frameType) {
 							case AudioFrameType::RawPCM: {
@@ -592,7 +593,7 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::handleAudioBuffer() noexcept {
 		if (this->connectionState.load() == VoiceConnectionState::Initializing_DatagramSocket) {
 		} else {
-			std::string_view string = UDPConnection::getInputBuffer();
+			std::basic_string_view<std::byte> string = UDPConnection::getInputBuffer();
 			if (this->streamSocket && this->encryptionKey.size() > 0) {
 				this->parseIncomingVoiceData(string);
 			}
@@ -780,21 +781,21 @@ namespace DiscordCoreAPI {
 
 	bool VoiceConnection::voiceConnect() noexcept {
 		if (!UDPConnection::areWeStillConnected() && UDPConnection::connect(this->voiceIp, this->port, false)) {
-			uint8_t packet[74]{};
+			std::byte packet[74]{};
 			const uint16_t val1601{ 0x01 };
 			const uint16_t val1602{ 70 };
-			packet[0] = static_cast<uint8_t>(val1601 >> 8);
-			packet[1] = static_cast<uint8_t>(val1601 >> 0);
-			packet[2] = static_cast<uint8_t>(val1602 >> 8);
-			packet[3] = static_cast<uint8_t>(val1602 >> 0);
-			packet[4] = static_cast<uint8_t>(this->audioSSRC >> 24);
-			packet[5] = static_cast<uint8_t>(this->audioSSRC >> 16);
-			packet[6] = static_cast<uint8_t>(this->audioSSRC >> 8);
-			packet[7] = static_cast<uint8_t>(this->audioSSRC);
+			packet[0] = static_cast<std::byte>(val1601 >> 8);
+			packet[1] = static_cast<std::byte>(val1601 >> 0);
+			packet[2] = static_cast<std::byte>(val1602 >> 8);
+			packet[3] = static_cast<std::byte>(val1602 >> 0);
+			packet[4] = static_cast<std::byte>(this->audioSSRC >> 24);
+			packet[5] = static_cast<std::byte>(this->audioSSRC >> 16);
+			packet[6] = static_cast<std::byte>(this->audioSSRC >> 8);
+			packet[7] = static_cast<std::byte>(this->audioSSRC);
 			UDPConnection::getInputBuffer();
-			UDPConnection::writeData(std::basic_string_view<uint8_t>{ packet, std::size(packet) });
-			std::string_view inputStringFirst{};
-			std::string inputString{};
+			UDPConnection::writeData(std::basic_string_view<std::byte>{ packet, std::size(packet) });
+			std::basic_string_view<std::byte> inputStringFirst{};
+			std::basic_string<std::byte> inputString{};
 
 			StopWatch stopWatch{ 5500ms };
 			while (inputStringFirst.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
@@ -807,11 +808,11 @@ namespace DiscordCoreAPI {
 			}
 			inputString.insert(inputString.begin(), inputStringFirst.begin(), inputStringFirst.end());
 			inputString = inputString.substr(8);
-			const auto endLineFind = inputString.find(static_cast<uint8_t>('\u0000'), 6);
+			const auto endLineFind = inputString.find(static_cast<std::byte>('\u0000'), 6);
 			if (endLineFind != std::string::npos) {
 				inputString = inputString.substr(0, endLineFind);
 			}
-			this->externalIp = std::string{ inputStringFirst.data() + 8, inputString.size() };
+			this->externalIp = std::string{ reinterpret_cast<const char*>(inputStringFirst.data()) + 8, inputString.size() };
 			this->voiceConnectionDataBuffer.clearContents();
 			return true;
 		} else {
@@ -820,17 +821,17 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::sendSilence() noexcept {
-		std::vector<std::basic_string<uint8_t>> frames{};
-		uint8_t arrayNew[3]{};
-		arrayNew[0] = 0xf8;
-		arrayNew[1] = 0xff;
-		arrayNew[2] = 0xfe;
+		std::vector<std::basic_string<std::byte>> frames{};
+		std::byte arrayNew[3]{};
+		arrayNew[0] = std::byte{ 0xf8 };
+		arrayNew[1] = std::byte{ 0xff };
+		arrayNew[2] = std::byte{ 0xfe };
 		for (size_t x = 0; x < 5; ++x) {
 			DiscordCoreInternal::EncoderReturnData frame{};
 			frame.data = arrayNew;
 			frame.sampleCount = 3;
 			auto packetNew = this->packetEncrypter.encryptPacket(frame);
-			frames.push_back(std::basic_string<uint8_t>{ packetNew.data(), packetNew.size() });
+			frames.push_back(std::basic_string<std::byte>{ packetNew.data(), packetNew.size() });
 		}
 		for (auto& value: frames) {
 			UDPConnection::writeData(value);
@@ -900,7 +901,7 @@ namespace DiscordCoreAPI {
 		std::fill(this->upSampledVector.data(), this->upSampledVector.data() + this->upSampledVector.size(), 0);
 		for (auto& [key, value]: this->voiceUsers) {
 			UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Read_Only);
-			std::basic_string_view<uint8_t> payload{ value->extractPayload() };
+			std::basic_string_view<std::byte> payload{ value->extractPayload() };
 			if (payload.size() == 0) {
 				continue;
 			} else {
@@ -913,19 +914,20 @@ namespace DiscordCoreAPI {
 					this->decryptedDataString.resize(encryptedDataLength);
 				}
 
-				uint8_t nonce[24]{};
+				std::byte nonce[24]{};
 				for (int32_t x = 0; x < headerSize; ++x) {
 					nonce[x] = payload[x];
 				}
 
-				if (crypto_secretbox_open_easy(this->decryptedDataString.data(), payload.data() + offsetToData, encryptedDataLength, nonce,
-						this->encryptionKey.data())) {
+				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
+						reinterpret_cast<const uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, reinterpret_cast<uint8_t*>(nonce),
+						reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
 					continue;
 				}
 
 				std::basic_string_view newString{ this->decryptedDataString.data(), encryptedDataLength - crypto_secretbox_MACBYTES };
 
-				if ((payload[0] >> 4) & 0b0001) {
+				if (static_cast<int8_t>(payload[0] >> 4) & 0b0001) {
 					const uint16_t extenstionLengthInWords{ ntohs(*reinterpret_cast<const uint16_t*>(&newString[2])) };
 					const size_t extensionLength{ sizeof(uint32_t) * extenstionLengthInWords };
 					const size_t extensionHeaderLength{ sizeof(uint16_t) * 2 };
@@ -954,8 +956,8 @@ namespace DiscordCoreAPI {
 			auto currentPreviousGain = 1.0f / this->voiceUserCountAverage.getCurrentValue();
 			this->currentGain = currentPreviousGain;
 			this->applyGainRamp(decodedSize);
-			this->streamSocket->writeData(
-				std::basic_string_view<uint8_t>{ reinterpret_cast<uint8_t*>(this->downSampledVector.data()), static_cast<size_t>(decodedSize * 2) });
+			this->streamSocket->writeData(std::basic_string_view<std::byte>{ reinterpret_cast<std::byte*>(this->downSampledVector.data()),
+				static_cast<size_t>(decodedSize * 2) });
 			this->previousGain = currentPreviousGain;
 		}
 	}
