@@ -44,9 +44,7 @@ namespace DiscordCoreInternal {
 		if (this->finalString.size() < this->currentSize + length) {
 			this->finalString.resize(this->finalString.size() + length);
 		}
-		for (size_t x = 0; x < length; ++x) {
-			this->finalString[this->currentSize + x] = data[x];
-		}
+		std::copy(data, data + length, this->finalString.data() + this->currentSize);
 		this->currentSize += length;
 	}
 
@@ -62,83 +60,82 @@ namespace DiscordCoreInternal {
 					break;
 				}
 				case 0x27: {
-					this->stringBuffer[finalSize++] = '\'';
+					this->tempString[finalSize++] = '\'';
 					break;
 				}
 				case 0x22: {
-					this->stringBuffer[finalSize++] = '\\';
-					this->stringBuffer[finalSize++] = '\"';
+					this->tempString[finalSize++] = '\\';
+					this->tempString[finalSize++] = '\"';
 					break;
 				}
 				case 0x5c: {
-					this->stringBuffer[finalSize++] = '\\';
-					this->stringBuffer[finalSize++] = '\\';
+					this->tempString[finalSize++] = '\\';
+					this->tempString[finalSize++] = '\\';
 					break;
 				}
 				case 0x07: {
-					this->stringBuffer[finalSize++] = '\\';
-					this->stringBuffer[finalSize++] = 'a';
+					this->tempString[finalSize++] = '\\';
+					this->tempString[finalSize++] = 'a';
 					break;
 				}
 				case 0x08: {
-					this->stringBuffer[finalSize++] = '\\';
-					this->stringBuffer[finalSize++] = 'b';
+					this->tempString[finalSize++] = '\\';
+					this->tempString[finalSize++] = 'b';
 					break;
 				}
 				case 0x0C: {
-					this->stringBuffer[finalSize++] = '\\';
-					this->stringBuffer[finalSize++] = 'f';
+					this->tempString[finalSize++] = '\\';
+					this->tempString[finalSize++] = 'f';
 					break;
 				}
 				case 0x0A: {
-					this->stringBuffer[finalSize++] = '\\';
-					this->stringBuffer[finalSize++] = 'n';
+					this->tempString[finalSize++] = '\\';
+					this->tempString[finalSize++] = 'n';
 					break;
 				}
 				case 0x0D: {
-					this->stringBuffer[finalSize++] = '\\';
-					this->stringBuffer[finalSize++] = 'r';
+					this->tempString[finalSize++] = '\\';
+					this->tempString[finalSize++] = 'r';
 					break;
 				}
 				case 0x0B: {
-					this->stringBuffer[finalSize++] = '\\';
-					this->stringBuffer[finalSize++] = 'v';
+					this->tempString[finalSize++] = '\\';
+					this->tempString[finalSize++] = 'v';
 					break;
 				}
 				case 0x09: {
-					this->stringBuffer[finalSize++] = '\\';
-					this->stringBuffer[finalSize++] = 't';
+					this->tempString[finalSize++] = '\\';
+					this->tempString[finalSize++] = 't';
 					break;
 				}
 				default: {
-					this->stringBuffer[finalSize++] = stringNew[x];
+					this->tempString[finalSize++] = stringNew[x];
 					break;
 				}
 			}
 		}
 		this->offSet += length;
-		std::string_view string{ this->stringBuffer.data(), static_cast<size_t>(finalSize) };
 		if (!finalSize) {
 			this->writeCharacters("\"\"", 2);
 			return;
 		}
 		if (finalSize >= 3 && finalSize <= 5) {
-			if (finalSize == 3 && strncmp(string.data(), "nil", 3) == 0) {
+			if (finalSize == 3 && strncmp(this->tempString.data(), "nil", 3) == 0) {
 				this->writeCharacters("null", 4);
 				return;
-			} else if (finalSize == 4 && strncmp(string.data(), "null", 4) == 0) {
+			} else if (finalSize == 4 && strncmp(this->tempString.data(), "null", 4) == 0) {
 				this->writeCharacters("null", 4);
 				return;
-			} else if (finalSize == 4 && strncmp(string.data(), "true", 4) == 0) {
+			} else if (finalSize == 4 && strncmp(this->tempString.data(), "true", 4) == 0) {
 				this->writeCharacters("true", 4);
 				return;
-			} else if (finalSize == 5 && strncmp(string.data(), "false", 5) == 0) {
+			} else if (finalSize == 5 && strncmp(this->tempString.data(), "false", 5) == 0) {
 				this->writeCharacters("false", 5);
 				return;
 			}
 		}
 		this->writeCharacter('\"');
-		this->writeCharacters(string.data(), finalSize);
+		this->writeCharacters(this->tempString.data(), finalSize);
 		this->writeCharacter('\"');
 	}
 

@@ -41,7 +41,7 @@ namespace DiscordCoreInternal {
 		std::string_view parseEtfToJson(std::string_view dataToParse);
 
 	  protected:
-		std::array<char, 1024 * 16> stringBuffer{};
+		std::array<char, 1024 * 16> tempString{};
 		std::string_view dataBuffer{};
 		std::string finalString{};
 		size_t currentSize{};
