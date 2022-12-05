@@ -94,10 +94,10 @@ namespace DiscordCoreAPI {
 		this->ssrc = ssrcNew;
 	}
 
-	std::basic_string_view<uint8_t> RTPPacketEncrypter::encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData) noexcept{
+	std::basic_string_view<uint8_t> RTPPacketEncrypter::encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData) noexcept {
 		if (this->keys.size() > 0) {
 			++this->sequence;
-			this->timeStamp += audioData.sampleCount;
+			this->timeStamp += static_cast<uint32_t>(audioData.sampleCount);
 			const uint8_t headerSize{ 12 };
 			char header[headerSize]{};
 			storeBits(header, this->version);
@@ -191,7 +191,7 @@ namespace DiscordCoreAPI {
 		for (int64_t x = 0; x < sampleCount; ++x) {
 			const float startSampleNew = static_cast<float>(this->upSampledVector[x]) * this->currentGain;
 			const opus_int32 int32Value = static_cast<opus_int32>(startSampleNew);
-			opus_int32 newSample{}; 
+			opus_int32 newSample{};
 			if (int32Value < 0) {
 				newSample = static_cast<opus_int32>(std::numeric_limits<opus_int16>::min());
 				newSample = std::max(newSample, int32Value);
@@ -451,7 +451,7 @@ namespace DiscordCoreAPI {
 						} else {
 							this->intervalCount =
 								Nanoseconds{ static_cast<uint64_t>(static_cast<double>(this->xferAudioData.currentSize / bytesPerSample) /
-								static_cast<double>(this->sampleRatePerSecond) * static_cast<double>(this->nsPerSecond)) };
+									static_cast<double>(this->sampleRatePerSecond) * static_cast<double>(this->nsPerSecond)) };
 							this->areWePlaying.store(true);
 							this->audioData += this->xferAudioData;
 							this->currentGuildMemberId = this->xferAudioData.guildMemberId;
@@ -460,7 +460,8 @@ namespace DiscordCoreAPI {
 						bool doWeBreak{};
 						switch (frameType) {
 							case AudioFrameType::RawPCM: {
-								if (this->audioData.getCurrentTail()->getUsedSpace() >= this->samplesPerPacket * bytesPerSample) {
+								if (this->audioData.getCurrentTail()->getUsedSpace() >=
+									static_cast<uint64_t>(this->samplesPerPacket * bytesPerSample)) {
 									auto encodedFrameData =
 										this->encoder.encodeData(this->audioData.readData(this->samplesPerPacket * bytesPerSample));
 									if (encodedFrameData.data.size() != 0) {
@@ -752,7 +753,7 @@ namespace DiscordCoreAPI {
 							this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
 					}
 					if (!this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port, false,
-						token)) {
+							token)) {
 						++this->currentReconnectTries;
 						this->onClosed();
 						return;
@@ -794,7 +795,7 @@ namespace DiscordCoreAPI {
 			UDPConnection::writeData(std::basic_string_view<uint8_t>{ packet, std::size(packet) });
 			std::string_view inputStringFirst{};
 			std::string inputString{};
-			
+
 			StopWatch stopWatch{ 5500ms };
 			while (inputStringFirst.size() < 74 && !this->doWeQuit->load() && this->activeState.load() != VoiceActiveState::Exiting) {
 				UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Both);

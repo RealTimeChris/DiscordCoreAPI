@@ -91,7 +91,7 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< Reason for modifying the Role positions.
 		Snowflake guildId{};///< The Guild within which to move the Role.
 		Snowflake roleId{};///< The id of the Role to move.
-		
+
 		operator Jsonifier();
 
 	  protected:

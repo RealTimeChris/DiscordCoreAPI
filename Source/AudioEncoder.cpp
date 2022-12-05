@@ -60,8 +60,8 @@ namespace DiscordCoreInternal {
 			this->encodedData.resize(this->maxBufferSize);
 		}
 		size_t sampleCount = inputFrame.size() / 2 / 2;
-		int32_t count = opus_encode(this->ptr.get(), reinterpret_cast<const opus_int16*>(inputFrame.data()), inputFrame.size() / 2 / 2,
-			this->encodedData.data(), this->maxBufferSize);
+		int32_t count = opus_encode(this->ptr.get(), reinterpret_cast<const opus_int16*>(inputFrame.data()),
+			static_cast<int32_t>(inputFrame.size() / 2 / 2), this->encodedData.data(), this->maxBufferSize);
 		if (count <= 0) {
 			return {};
 		}

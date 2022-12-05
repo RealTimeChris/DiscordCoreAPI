@@ -108,7 +108,7 @@ namespace DiscordCoreInternal {
 		data["d"]["data"]["port"] = this->voicePort;
 		data["d"]["data"]["mode"] = this->voiceEncryptionMode;
 		std::string externalIpReal{};
-		for (auto& value : this->externalIp) {
+		for (auto& value: this->externalIp) {
 			externalIpReal.push_back(value);
 		}
 		data["d"]["data"]["address"] = externalIpReal;
@@ -153,7 +153,7 @@ namespace DiscordCoreInternal {
 		*this = std::move(other);
 	}
 
-	HttpsWorkloadData& HttpsWorkloadData::operator = (HttpsWorkloadType type) noexcept {
+	HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadType type) noexcept {
 		if (!HttpsWorkloadData::workloadIdsExternal.contains(type)) {
 			std::unique_ptr<std::atomic_int64_t> integer{ std::make_unique<std::atomic_int64_t>() };
 			std::unique_ptr<std::atomic_int64_t> integer02{ std::make_unique<std::atomic_int64_t>() };
@@ -3281,8 +3281,7 @@ namespace DiscordCoreAPI {
 		if (this->type == ApplicationCommandOptionType::Channel) {
 			data["channel_types"] = this->channelTypes;
 		}
-		if (this->type != ApplicationCommandOptionType::Sub_Command &&
-			this->type != ApplicationCommandOptionType::Sub_Command_Group) {
+		if (this->type != ApplicationCommandOptionType::Sub_Command && this->type != ApplicationCommandOptionType::Sub_Command_Group) {
 			data["required"] = this->required;
 		}
 		if (this->descriptionLocalizations.size() > 0) {

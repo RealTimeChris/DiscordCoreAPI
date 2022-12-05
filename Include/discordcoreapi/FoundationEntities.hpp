@@ -453,7 +453,7 @@ namespace DiscordCoreAPI {
 		int32_t height{};///< The height of the attachment.
 		int32_t width{};///< The width of the attachment.
 		int32_t size{};///< The size of the attachment.
-		
+
 
 		operator Jsonifier();
 
@@ -803,7 +803,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild that this Role is from.
 		int16_t position{};///< Its position amongst the rest of the Guild's roles.
 		RoleFlags flags{};///< Role flags.
-		
+
 
 		RoleData() noexcept = default;
 
@@ -2215,7 +2215,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};
 		int32_t timeStamp{};
 		Snowflake userId{};
-		
+
 
 		TypingStartData() noexcept = default;
 

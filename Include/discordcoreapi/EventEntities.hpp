@@ -272,7 +272,6 @@ namespace DiscordCoreInternal {
 					iterator.operator*().second.function(args...);
 					this->functions.erase(iterator);
 				}
-				
 			}
 			return;
 		}

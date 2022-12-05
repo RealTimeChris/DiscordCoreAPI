@@ -211,8 +211,7 @@ namespace DiscordCoreAPI {
 			Guilds::removeGuild(this->guild->id);
 		}
 		for (auto& valueNew: this->guild->members) {
-			GuildMemberData guildMember =
-				GuildMembers::getCachedGuildMember({ .guildMemberId = valueNew, .guildId = this->guild->id });
+			GuildMemberData guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = valueNew, .guildId = this->guild->id });
 			GuildMembers::removeGuildMember(guildMember);
 		}
 		for (auto& valueNew: this->guild->channels) {
@@ -468,8 +467,7 @@ namespace DiscordCoreAPI {
 		if (Guilds::getCache().contains(guild)) {
 			for (uint64_t x = 0; x < Guilds::getCache()[guild].guildScheduledEvents.size(); ++x) {
 				if (Guilds::getCache()[guild].guildScheduledEvents[x] == this->guildScheduledEvent.id) {
-					Guilds::getCache()[guild].guildScheduledEvents.erase(
-						Guilds::getCache()[guild].guildScheduledEvents.begin() + x);
+					Guilds::getCache()[guild].guildScheduledEvents.erase(Guilds::getCache()[guild].guildScheduledEvents.begin() + x);
 				}
 			}
 		}
@@ -522,9 +520,7 @@ namespace DiscordCoreAPI {
 				std::unique_ptr<CommandData> commandData{ std::make_unique<CommandData>(*eventData) };
 				commandData->discordCoreClient = eventData->getGuildData().discordCoreClient;
 				clientPtr->getCommandController().checkForAndRunCommand(*commandData);
-				std::unique_ptr<OnInputEventCreationData> eventCreationData{
-					std::make_unique<OnInputEventCreationData>(data, dataReal)
-				};
+				std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>(data, dataReal) };
 				eventCreationData->inputEventData = *eventData;
 				break;
 			}
@@ -533,11 +529,9 @@ namespace DiscordCoreAPI {
 					case ComponentType::Button: {
 						eventData->responseType = InputEventResponseType::Unset;
 						*eventData->interactionData = this->interactionData;
-						if (ButtonCollector::buttonInteractionBuffersMap.contains(
-								eventData->getChannelData().id + eventData->getMessageData().id)) {
-							ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id +
-								eventData->getMessageData().id]
-								->send(interactionData);
+						if (ButtonCollector::buttonInteractionBuffersMap.contains(eventData->getChannelData().id + eventData->getMessageData().id)) {
+							ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]->send(
+								interactionData);
 						}
 						ButtonCollector::buttonInteractionEventsMap.operator()(*eventData->interactionData);
 						break;
@@ -551,8 +545,7 @@ namespace DiscordCoreAPI {
 						*eventData->interactionData = this->interactionData;
 						if (SelectMenuCollector::selectMenuInteractionBuffersMap.contains(
 								eventData->getChannelData().id + eventData->getMessageData().id)) {
-							SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelData().id +
-								eventData->getMessageData().id]
+							SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]
 								->send(interactionData);
 						}
 						SelectMenuCollector::selectMenuInteractionEventsMap.operator()(*eventData->interactionData);
@@ -564,9 +557,7 @@ namespace DiscordCoreAPI {
 			case InteractionType::Modal_Submit: {
 				eventData->responseType = InputEventResponseType::Unset;
 				*eventData->interactionData = this->interactionData;
-				std::unique_ptr<OnInputEventCreationData> eventCreationData{
-					std::make_unique<OnInputEventCreationData>(data, dataReal)
-				};
+				std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>(data, dataReal) };
 				eventCreationData->inputEventData = *eventData;
 				if (ModalCollector::modalInteractionBuffersMap.contains(eventData->getChannelData().id)) {
 					ModalCollector::modalInteractionBuffersMap[eventData->getChannelData().id]->send(eventData->getInteractionData());
@@ -577,9 +568,7 @@ namespace DiscordCoreAPI {
 			case InteractionType::Application_Command_Autocomplete: {
 				eventData->responseType = InputEventResponseType::Unset;
 				*eventData->interactionData = this->interactionData;
-				std::unique_ptr<OnAutoCompleteEntryData> autocompleteEntryData{
-					std::make_unique<OnAutoCompleteEntryData>(data, dataReal)
-				};
+				std::unique_ptr<OnAutoCompleteEntryData> autocompleteEntryData{ std::make_unique<OnAutoCompleteEntryData>(data, dataReal) };
 				autocompleteEntryData->inputEvent = *eventData;
 				clientPtr->getEventManager().onAutoCompleteEntryEvent(*autocompleteEntryData);
 				break;
@@ -676,8 +665,7 @@ namespace DiscordCoreAPI {
 		if (Guilds::getCache().contains(guild)) {
 			for (uint64_t x = 0; x < Guilds::getCache()[guild].stageInstances.size(); ++x) {
 				if (Guilds::getCache()[guild].stageInstances[x] == this->stageInstance.id) {
-					Guilds::getCache()[guild].stageInstances.erase(
-						Guilds::getCache()[guild].stageInstances.begin() + x);
+					Guilds::getCache()[guild].stageInstances.erase(Guilds::getCache()[guild].stageInstances.begin() + x);
 				}
 			}
 		}

@@ -54,7 +54,7 @@ namespace DiscordCoreAPI {
 		/// \returns A ObjectCollectorReturnData structure.
 		CoRoutine<MessageCollectorReturnData> collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew,
 			ObjectFilter<MessageData> filteringFunctionNew);
-		
+
 		void run();
 
 		~MessageCollector();

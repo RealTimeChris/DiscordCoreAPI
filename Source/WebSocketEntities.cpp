@@ -389,7 +389,7 @@ namespace DiscordCoreInternal {
 			this->parseMessage();
 		}
 	}
-	
+
 	WebSocketClient::WebSocketClient(DiscordCoreAPI::DiscordCoreClient* client, int32_t currentShardNew, std::atomic_bool* doWeQuitNew)
 		: WebSocketCore(&client->configManager, WebSocketType::Normal) {
 		this->configManager = &client->configManager;

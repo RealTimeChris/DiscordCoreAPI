@@ -43,7 +43,6 @@ namespace DiscordCoreAPI {
 	};
 
 	struct AudioRingBuffer : public DiscordCoreInternal::RingBuffer<char, 4> {
-
 		AudioRingBuffer& operator+=(AudioFrameData& data) {
 			if (this->isItFull()) {
 				this->getCurrentTail()->clear();
@@ -76,11 +75,9 @@ namespace DiscordCoreAPI {
 			}
 			return returnValue;
 		}
-
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
-
 		VoiceUser() noexcept = default;
 
 		VoiceUser(Snowflake userId) noexcept;
@@ -128,9 +125,9 @@ namespace DiscordCoreAPI {
 		MovingAverager(size_t collectionCountNew) noexcept;
 
 		void insertValue(int64_t value) noexcept;
-		
+
 		float getCurrentValue() noexcept;
-		
+
 	  protected:
 		std::deque<int64_t> values{};
 		size_t collectionCount{};
@@ -242,7 +239,7 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWePlaying{};
 		AudioFrameData xferAudioData{};
 		AudioRingBuffer audioData{};
-		int64_t samplesPerPacket{};		
+		int64_t samplesPerPacket{};
 		int64_t msPerPacket{};
 		std::string voiceIp{};
 		std::string baseUrl{};

@@ -1587,41 +1587,41 @@ namespace DiscordCoreAPI {
 
 		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second,
 			TimeFormat formatNew);
-		
+
 		operator std::string();
 
 		operator uint64_t();
-		
+
 		TimeStamp& operator=(std::string&& originalTimeStampNew);
-		
+
 		explicit TimeStamp(std::string&& originalTimeStampNew);
-		
+
 		TimeStamp& operator=(std::string& originalTimeStampNew);
-		
+
 		explicit TimeStamp(std::string& originalTimeStampNew);
-		
+
 		TimeStamp& operator=(const TimeStamp& other);
-		
+
 		TimeStamp(const TimeStamp& other);
-		
+
 		TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, TimeFormat formatNew);
-		
+
 		TimeStamp(uint64_t timeInTimeUnits, TimeFormat formatNew);
 
 		static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd,
 			int32_t yearsToAdd, TimeFormat formatNew);
-		
+
 		static std::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat);
-		
+
 		bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes);
-		
+
 		static std::string convertMsToDurationString(uint64_t durationInMs);
-		
+
 	  protected:
 		uint64_t timeStampInTimeUnits{};
 
 		void getTimeSinceEpoch(int64_t year, int64_t month, int64_t day, int64_t hour, int64_t minute, int64_t second);
-		
+
 		void convertTimeStampToTimeUnits(TimeFormat formatNew, std::string originalTimeStamp);
 
 		std::string getISO8601TimeStamp(TimeFormat timeFormat);

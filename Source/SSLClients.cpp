@@ -748,11 +748,10 @@ namespace DiscordCoreInternal {
 	std::string_view UDPConnection::getInputBuffer() noexcept {
 		std::string_view string{};
 		if (this->inputBuffer.getUsedSpace() > 0) {
-			string = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(),
-				this->inputBuffer.getCurrentTail()->getUsedSpace() };
+			string = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), this->inputBuffer.getCurrentTail()->getUsedSpace() };
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-		}		
+		}
 		return string;
 	}
 
