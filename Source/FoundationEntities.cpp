@@ -3361,6 +3361,8 @@ namespace DiscordCoreAPI {
 		this->currentSize += other.data.size();
 		this->guildMemberId = std::move(other.guildMemberId);
 		this->type = other.type;
+		other.currentSize = 0;
+		other.type = AudioFrameType::Unset;
 		return *this;
 	}
 
@@ -3372,6 +3374,7 @@ namespace DiscordCoreAPI {
 		this->type = AudioFrameType::Unset;
 		this->guildMemberId = 0;
 		this->currentSize = 0;
+		this->data.clear();
 	}
 
 	AllowedMentionsData::operator Jsonifier() {

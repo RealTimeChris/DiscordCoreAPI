@@ -215,7 +215,7 @@ namespace DiscordCoreInternal {
 	bool AudioDecoder::getFrame(DiscordCoreAPI::AudioFrameData& dataPackage) {
 		if (!this->areWeQuitting.load()) {
 			if (this->outDataBuffer.tryReceive(dataPackage)) {
-				if (dataPackage.currentSize != -1) {
+				if (dataPackage.currentSize != -5) {
 					return true;
 				}
 			}
