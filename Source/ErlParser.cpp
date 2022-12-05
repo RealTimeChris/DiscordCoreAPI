@@ -52,99 +52,101 @@ namespace DiscordCoreInternal {
 		if (this->offSet + static_cast<uint64_t>(length) > this->dataBuffer.size()) {
 			throw ErlParseError{ "ErlParser::readString() Error: readString() past end of buffer.\n\n" };
 		}
-		uint64_t finalSize{};
-		const char* stringNew = static_cast<const char*>(this->dataBuffer.data()) + this->offSet;
-		for (uint32_t x = 0; x < length; ++x) {
-			switch (stringNew[x]) {
-				case 0x00: {
-					break;
-				}
-				case 0x27: {
-					this->tempString[finalSize++] = '\'';
-					break;
-				}
-				case 0x22: {
-					this->tempString[finalSize++] = '\\';
-					this->tempString[finalSize++] = '\"';
-					break;
-				}
-				case 0x5c: {
-					this->tempString[finalSize++] = '\\';
-					this->tempString[finalSize++] = '\\';
-					break;
-				}
-				case 0x07: {
-					this->tempString[finalSize++] = '\\';
-					this->tempString[finalSize++] = 'a';
-					break;
-				}
-				case 0x08: {
-					this->tempString[finalSize++] = '\\';
-					this->tempString[finalSize++] = 'b';
-					break;
-				}
-				case 0x0C: {
-					this->tempString[finalSize++] = '\\';
-					this->tempString[finalSize++] = 'f';
-					break;
-				}
-				case 0x0A: {
-					this->tempString[finalSize++] = '\\';
-					this->tempString[finalSize++] = 'n';
-					break;
-				}
-				case 0x0D: {
-					this->tempString[finalSize++] = '\\';
-					this->tempString[finalSize++] = 'r';
-					break;
-				}
-				case 0x0B: {
-					this->tempString[finalSize++] = '\\';
-					this->tempString[finalSize++] = 'v';
-					break;
-				}
-				case 0x09: {
-					this->tempString[finalSize++] = '\\';
-					this->tempString[finalSize++] = 't';
-					break;
-				}
-				default: {
-					this->tempString[finalSize++] = stringNew[x];
-					break;
-				}
-			}
+		if (this->finalString.size() < this->currentSize + length) {
+			this->finalString.resize(this->finalString.size() + (length * 4));
 		}
+		const char* stringNew = static_cast<const char*>(this->dataBuffer.data()) + this->offSet;
 		this->offSet += length;
-		if (!finalSize) {
+		if (!length) {
 			this->writeCharacters("\"\"", 2);
 			return;
 		}
-		if (finalSize >= 3 && finalSize <= 5) {
-			if (finalSize == 3 && strncmp(this->tempString.data(), "nil", 3) == 0) {
+		if (length >= 3 && length <= 5) {
+			if (length == 3 && strncmp(stringNew, "nil", 3) == 0) {
 				this->writeCharacters("null", 4);
 				return;
-			} else if (finalSize == 4 && strncmp(this->tempString.data(), "null", 4) == 0) {
+			} else if (length == 4 && strncmp(stringNew, "null", 4) == 0) {
 				this->writeCharacters("null", 4);
 				return;
-			} else if (finalSize == 4 && strncmp(this->tempString.data(), "true", 4) == 0) {
+			} else if (length == 4 && strncmp(stringNew, "true", 4) == 0) {
 				this->writeCharacters("true", 4);
 				return;
-			} else if (finalSize == 5 && strncmp(this->tempString.data(), "false", 5) == 0) {
+			} else if (length == 5 && strncmp(stringNew, "false", 5) == 0) {
 				this->writeCharacters("false", 5);
 				return;
 			}
 		}
 		this->writeCharacter('\"');
-		this->writeCharacters(this->tempString.data(), finalSize);
+		for (size_t x = 0; x < length; ++x) {
+			switch (stringNew[x]) {
+				case 0x00: {
+					this->finalString[this->currentSize++] = '\0';
+					break;
+				}
+				case 0x27: {
+					this->finalString[this->currentSize++] = '\\';
+					this->finalString[this->currentSize++] = '\'';
+					break;
+				}
+				case 0x22: {
+					this->finalString[this->currentSize++] = '\\';
+					this->finalString[this->currentSize++] = '\"';
+					break;
+				}
+				case 0x5c: {
+					this->finalString[this->currentSize++] = '\\';
+					this->finalString[this->currentSize++] = '\\';
+					break;
+				}
+				case 0x07: {
+					this->finalString[this->currentSize++] = '\\';
+					this->finalString[this->currentSize++] = 'a';
+					break;
+				}
+				case 0x08: {
+					this->finalString[this->currentSize++] = '\\';
+					this->finalString[this->currentSize++] = 'b';
+					break;
+				}
+				case 0x0C: {
+					this->finalString[this->currentSize++] = '\\';
+					this->finalString[this->currentSize++] = 'f';
+					break;
+				}
+				case 0x0A: {
+					this->finalString[this->currentSize++] = '\\';
+					this->finalString[this->currentSize++] = 'n';
+					break;
+				}
+				case 0x0D: {
+					this->finalString[this->currentSize++] = '\\';
+					this->finalString[this->currentSize++] = 'r';
+					break;
+				}
+				case 0x0B: {
+					this->finalString[this->currentSize++] = '\\';
+					this->finalString[this->currentSize++] = 'v';
+					break;
+				}
+				case 0x09: {
+					this->finalString[this->currentSize++] = '\\';
+					this->finalString[this->currentSize++] = 't';
+					break;
+				}
+				default: {
+					this->finalString[this->currentSize++] = stringNew[x];
+					break;
+				}
+			}
+		}
 		this->writeCharacter('\"');
 	}
 
 	void ErlParser::writeCharacter(const char value) {
 		if (this->finalString.size() < this->currentSize + 1) {
-			this->finalString.resize(this->finalString.size() + 1);
+			this->finalString.resize((this->finalString.size() + 1) * 2);
 		}
-		this->finalString[this->currentSize] = value;
-		++this->currentSize;
+		this->finalString[this->currentSize++] = value;
 	}
 
 	void ErlParser::singleValueETFToJson() {
