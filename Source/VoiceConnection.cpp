@@ -900,7 +900,9 @@ namespace DiscordCoreAPI {
 		for (auto& [key, value]: this->voiceUsers) {
 			UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Read_Only);
 			std::basic_string_view<uint8_t> payload{ value->extractPayload() };
-			if (payload.size() > 0) {
+			if (payload.size() == 0) {
+				continue;
+			} else {
 				const uint64_t headerSize{ 12 };
 				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };
 				const uint64_t offsetToData{ headerSize + sizeof(uint32_t) * csrcCount };

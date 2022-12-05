@@ -267,10 +267,12 @@ namespace DiscordCoreInternal {
 		}
 
 		void operator()(ArgTypes&... args) {
-			for (auto& [key, value]: this->functions) {
-				if (value.testFunction(args...)) {
-					value.function(args...);
+			for (auto iterator = this->functions.begin(); iterator != this->functions.end(); ++iterator) {
+				if (iterator.operator*().second.testFunction(args...)) {
+					iterator.operator*().second.function(args...);
+					this->functions.erase(iterator);
 				}
+				
 			}
 			return;
 		}

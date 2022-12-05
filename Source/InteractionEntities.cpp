@@ -485,6 +485,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void SelectMenuCollector::run() {
+		int64_t currentCollectedSelectMenuCount{};
 		StopWatch stopWatch{ Milliseconds{ this->maxTimeInMs } };
 		while (!this->doWeQuit && !stopWatch.hasTimePassed()) {
 			if (this->getSelectMenuDataForAll == false) {
@@ -520,14 +521,14 @@ namespace DiscordCoreAPI {
 					response->values = this->interactionData->data.componentData.values;
 					*response->interactionData = *selectMenuInteractionData;
 					this->responseVector.emplace_back(*response);
-					++this->currentCollectedSelectMenuCount;
+					++currentCollectedSelectMenuCount;
 					stopWatch.resetTimer();
-					if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
+					if (this->maxCollectedSelectMenuCount > 1 && currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
 						auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
 						createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
 						Interactions::createInteractionResponseAsync(*createResponseData).get();
 					}
-					if (this->currentCollectedSelectMenuCount >= this->maxCollectedSelectMenuCount) {
+					if (currentCollectedSelectMenuCount >= this->maxCollectedSelectMenuCount) {
 						for (auto& value: this->responseVector) {
 							*value.interactionData = *selectMenuInteractionData;
 						}
@@ -558,14 +559,14 @@ namespace DiscordCoreAPI {
 				*response->interactionData = *selectMenuInteractionData;
 				response->values = this->interactionData->data.componentData.values;
 				this->responseVector.emplace_back(*response);
-				++this->currentCollectedSelectMenuCount;
+				++currentCollectedSelectMenuCount;
 				stopWatch.resetTimer();
-				if (this->maxCollectedSelectMenuCount > 1 && this->currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
+				if (this->maxCollectedSelectMenuCount > 1 && currentCollectedSelectMenuCount < this->maxCollectedSelectMenuCount - 1) {
 					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*selectMenuInteractionData);
 					createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
 					Interactions::createInteractionResponseAsync(*createResponseData).get();
 				}
-				if (this->currentCollectedSelectMenuCount >= this->maxCollectedSelectMenuCount) {
+				if (currentCollectedSelectMenuCount >= this->maxCollectedSelectMenuCount) {
 					this->doWeQuit = true;
 					for (auto& value: this->responseVector) {
 						*value.interactionData = *selectMenuInteractionData;
@@ -616,6 +617,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void ButtonCollector::run() {
+		int64_t currentCollectedButtonCount{};
 		StopWatch stopWatch{ Milliseconds{ this->maxTimeInMs } };
 		while (!this->doWeQuit && !stopWatch.hasTimePassed()) {
 			if (this->getButtonDataForAll == false) {
@@ -649,14 +651,14 @@ namespace DiscordCoreAPI {
 					response->userId = buttonInteractionData->user.id;
 					*response->interactionData = *buttonInteractionData;
 					this->responseVector.emplace_back(*response);
-					++this->currentCollectedButtonCount;
+					++currentCollectedButtonCount;
 					stopWatch.resetTimer();
-					if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
+					if (this->maxCollectedButtonCount > 1 && currentCollectedButtonCount < this->maxCollectedButtonCount) {
 						auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
 						createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
 						Interactions::createInteractionResponseAsync(*createResponseData).get();
 					}
-					if (this->currentCollectedButtonCount >= this->maxCollectedButtonCount) {
+					if (currentCollectedButtonCount >= this->maxCollectedButtonCount) {
 						for (auto& value: this->responseVector) {
 							*value.interactionData = *buttonInteractionData;
 						}
@@ -685,14 +687,14 @@ namespace DiscordCoreAPI {
 				response->userId = buttonInteractionData->user.id;
 				*response->interactionData = *buttonInteractionData;
 				this->responseVector.emplace_back(*response);
-				++this->currentCollectedButtonCount;
+				++currentCollectedButtonCount;
 				stopWatch.resetTimer();
-				if (this->maxCollectedButtonCount > 1 && this->currentCollectedButtonCount < this->maxCollectedButtonCount) {
+				if (this->maxCollectedButtonCount > 1 && currentCollectedButtonCount < this->maxCollectedButtonCount) {
 					auto createResponseData = std::make_unique<CreateInteractionResponseData>(*buttonInteractionData);
 					createResponseData->data.type = InteractionCallbackType::Deferred_Update_Message;
 					Interactions::createInteractionResponseAsync(*createResponseData).get();
 				}
-				if (this->currentCollectedButtonCount >= this->maxCollectedButtonCount) {
+				if (currentCollectedButtonCount >= this->maxCollectedButtonCount) {
 					for (auto& value: this->responseVector) {
 						*value.interactionData = *buttonInteractionData;
 					}
