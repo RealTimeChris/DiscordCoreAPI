@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	EncoderReturnData OpusEncoderWrapper::encodeData(std::string_view inputFrame) {
+	EncoderReturnData OpusEncoderWrapper::encodeData(std::basic_string_view<std::byte> inputFrame) {
 		if (inputFrame.size() == 0) {
 			return {};
 		}
@@ -61,13 +61,13 @@ namespace DiscordCoreInternal {
 		}
 		size_t sampleCount = inputFrame.size() / 2 / 2;
 		int32_t count = opus_encode(this->ptr.get(), reinterpret_cast<const opus_int16*>(inputFrame.data()),
-			static_cast<int32_t>(inputFrame.size() / 2 / 2), this->encodedData.data(), this->maxBufferSize);
+			static_cast<int32_t>(inputFrame.size() / 2 / 2), reinterpret_cast<unsigned char*>(this->encodedData.data()), this->maxBufferSize);
 		if (count <= 0) {
 			return {};
 		}
 		EncoderReturnData returnData{};
 		returnData.sampleCount = sampleCount;
-		returnData.data = std::basic_string_view<uint8_t>{ this->encodedData.data(), this->encodedData.size() };
+		returnData.data = std::basic_string_view<std::byte>{ this->encodedData.data(), this->encodedData.size() };
 		return returnData;
 	}
 }

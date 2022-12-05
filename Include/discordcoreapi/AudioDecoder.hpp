@@ -42,7 +42,7 @@ namespace DiscordCoreInternal {
 
 		OpusDecoderWrapper();
 
-		std::basic_string_view<opus_int16> decodeData(std::basic_string_view<uint8_t> dataToDecode);
+		std::basic_string_view<opus_int16> decodeData(std::basic_string_view<std::byte> dataToDecode);
 
 	  protected:
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> ptr{ nullptr, OpusDecoderDeleter{} };

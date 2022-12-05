@@ -3320,7 +3320,7 @@ namespace DiscordCoreAPI {
 		return this->formats;
 	}
 
-	AudioFrameData& AudioFrameData::operator+=(std::string_view other) noexcept {
+	AudioFrameData& AudioFrameData::operator+=(std::basic_string_view<std::byte> other) noexcept {
 		if (this->data.size() < this->currentSize + other.size()) {
 			this->data.resize(other.size() + this->currentSize);
 		}
@@ -3330,7 +3330,7 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	AudioFrameData& AudioFrameData::operator+=(uint8_t character) {
+	AudioFrameData& AudioFrameData::operator+=(std::byte character) {
 		this->currentSize++;
 		this->data.push_back(character);
 		return *this;
@@ -4084,10 +4084,10 @@ namespace DiscordCoreAPI {
 		interactionResponse->addButton(false, "forwards", "Next Page", ButtonStyle::Primary, "▶️");
 		interactionResponse->addButton(false, "exit", "Exit", ButtonStyle::Danger, "❌");
 		interactionResponse->setResponseType(InputEventResponseType::Edit_Interaction_Response);
-		auto newEvent = InputEvents::respondToInputEventAsync(*interactionResponse).get();
+		originalEvent = InputEvents::respondToInputEventAsync(*interactionResponse).get();
 		while (!stopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
-			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(newEvent) };
+			std::unique_ptr<ButtonCollector> button{ std::make_unique<ButtonCollector>(originalEvent) };
 			std::vector<ButtonResponseData> buttonIntData{
 				button->collectButtonData(false, waitForMaxMs, 1, *createResponseData, Snowflake{ stoull(userID) }).get()
 			};
@@ -4102,11 +4102,11 @@ namespace DiscordCoreAPI {
 				}
 
 				dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-				for (auto& value: interactionData->message.components) {
-					for (auto& value02: value.components) {
-						value02.disabled = true;
+				for (size_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
+					for (size_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
+						originalEvent.getMessageData().components[x].components[y].disabled = false;
 					}
-					dataPackage02->addComponentRow(value);
+					dataPackage02->addComponentRow(originalEvent.getMessageData().components[x]);
 				}
 				if (deleteAfter == true) {
 					InputEventData dataPackage03{ originalEvent };
@@ -4132,8 +4132,11 @@ namespace DiscordCoreAPI {
 				interactionData = std::make_unique<InteractionData>(buttonIntData.at(0));
 				auto dataPackage = RespondToInputEventData{ *interactionData };
 				dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
-				for (auto& value: interactionData->message.components) {
-					dataPackage.addComponentRow(value);
+				for (size_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
+					for (size_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
+						originalEvent.getMessageData().components[x].components[y].disabled = false;
+					}
+					dataPackage.addComponentRow(originalEvent.getMessageData().components[x]);
 				}
 				dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 				InputEvents::respondToInputEventAsync(dataPackage).get();
@@ -4146,13 +4149,13 @@ namespace DiscordCoreAPI {
 					auto dataPackage = RespondToInputEventData{ *interactionData };
 					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
-					for (auto& value: originalEvent.getMessageData().components) {
-						for (auto& value02: value.components) {
-							value02.disabled = true;
+					for (size_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
+						for (size_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
+							originalEvent.getMessageData().components[x].components[y].disabled = false;
 						}
-						dataPackage.addComponentRow(value);
+						dataPackage.addComponentRow(originalEvent.getMessageData().components[x]);
 					}
-					InputEvents::respondToInputEventAsync(dataPackage).get();
+					originalEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
 				}
 				returnData.currentPageIndex = newCurrentPageIndex;
 				returnData.inputEventData = originalEvent;

@@ -709,7 +709,7 @@ namespace DiscordCoreInternal {
 		return result;
 	}
 
-	void UDPConnection::writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept {
+	void UDPConnection::writeData(std::basic_string_view<std::byte> dataToWrite) noexcept {
 		if (this->areWeStillConnected()) {
 			if (dataToWrite.size() > this->maxBufferSize) {
 				uint64_t remainingBytes{ dataToWrite.size() };
@@ -745,10 +745,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::string_view UDPConnection::getInputBuffer() noexcept {
-		std::string_view string{};
+	std::basic_string_view<std::byte> UDPConnection::getInputBuffer() noexcept {
+		std::basic_string_view<std::byte> string{};
 		if (this->inputBuffer.getUsedSpace() > 0) {
-			string = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), this->inputBuffer.getCurrentTail()->getUsedSpace() };
+			string = std::basic_string_view<std::byte>{ this->inputBuffer.getCurrentTail()->getCurrentTail(),
+				this->inputBuffer.getCurrentTail()->getUsedSpace() };
 			this->inputBuffer.getCurrentTail()->clear();
 			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 		}
@@ -765,13 +766,9 @@ namespace DiscordCoreInternal {
 
 	bool UDPConnection::processWriteData() noexcept {
 		if (this->outputBuffer.getUsedSpace() > 0) {
-			char outputArray[16384]{};
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
-			for (size_t x = 0; x < bytesToWrite; ++x) {
-				outputArray[x] = static_cast<char>(this->outputBuffer.getCurrentTail()->getCurrentTail()[x]);
-			}
-			auto writtenBytes{ sendto(this->socket, outputArray, static_cast<int32_t>(bytesToWrite), 0, this->address->ai_addr,
-				static_cast<int32_t>(this->address->ai_addrlen)) };
+			auto writtenBytes{ sendto(this->socket, reinterpret_cast<char*>(this->outputBuffer.getCurrentTail()->getCurrentTail()),
+				static_cast<int32_t>(bytesToWrite), 0, this->address->ai_addr, static_cast<int32_t>(this->address->ai_addrlen)) };
 			if (writtenBytes <= 0 && errno != EWOULDBLOCK) {
 				return false;
 			} else if (writtenBytes > 0) {
@@ -792,15 +789,11 @@ namespace DiscordCoreInternal {
 			}
 			if (!this->inputBuffer.isItFull()) {
 				uint64_t bytesToRead{ this->maxBufferSize };
-				char inputArray[16384]{};
-				readBytes = recvfrom(static_cast<SOCKET>(this->socket), inputArray, static_cast<int32_t>(bytesToRead), 0, this->address->ai_addr,
-					reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
+				readBytes = recvfrom(static_cast<SOCKET>(this->socket), reinterpret_cast<char*>(this->inputBuffer.getCurrentHead()->getCurrentHead()),
+					static_cast<int32_t>(bytesToRead), 0, this->address->ai_addr, reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 				if (readBytes <= 0 && errno != EWOULDBLOCK) {
 					return false;
 				} else if (readBytes > 0) {
-					for (size_t x = 0; x < readBytes; ++x) {
-						this->inputBuffer.getCurrentHead()->getCurrentHead()[x] = static_cast<uint8_t>(inputArray[x]);
-					}
 					this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
 					this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
 					this->bytesRead += readBytes;
