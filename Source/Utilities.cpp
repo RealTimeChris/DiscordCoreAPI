@@ -615,42 +615,7 @@ namespace DiscordCoreAPI {
 
 	void Jsonifier::writeJsonString(const StringType& stringNew) {
 		this->writeCharacter('\"');
-		for (auto& value: stringNew) {
-			switch (static_cast<uint8_t>(value)) {
-				case 0x08: {
-					this->writeCharacter('b');
-					break;
-				}
-				case 0x09: {
-					this->writeCharacter('t');
-					break;
-				}
-				case 0x0A: {
-					this->writeCharacter('n');
-					break;
-				}
-				case 0x0C: {
-					this->writeCharacter('f');
-					break;
-				}
-				case 0x0D: {
-					this->writeCharacter('r');
-					break;
-				}
-				case 0x22: {
-					this->writeCharacter('\"');
-					break;
-				}
-				case 0x5C: {
-					this->writeCharacter('\\');
-					break;
-				}
-				default: {
-					this->writeCharacter(value);
-					break;
-				}
-			}
-		}
+		this->writeString(stringNew.data(), stringNew.size());
 		this->writeCharacter('\"');
 	}
 
