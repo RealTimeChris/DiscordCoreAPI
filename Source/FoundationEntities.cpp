@@ -4104,10 +4104,13 @@ namespace DiscordCoreAPI {
 
 				dataPackage02->addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 				for (size_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
+					ActionRowData actionRow{};
 					for (size_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
-						originalEvent.getMessageData().components[x].components[y].disabled = false;
+						auto component = originalEvent.getMessageData().components[x].components[y];
+						component.disabled = true;
+						actionRow.components.push_back(component);
 					}
-					dataPackage02->addComponentRow(originalEvent.getMessageData().components[x]);
+					dataPackage02->addComponentRow(actionRow);
 				}
 				if (deleteAfter == true) {
 					InputEventData dataPackage03{ originalEvent };
@@ -4134,10 +4137,13 @@ namespace DiscordCoreAPI {
 				auto dataPackage = RespondToInputEventData{ *interactionData };
 				dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 				for (size_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
+					ActionRowData actionRow{};
 					for (size_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
-						originalEvent.getMessageData().components[x].components[y].disabled = false;
+						auto component = originalEvent.getMessageData().components[x].components[y];
+						component.disabled = false;
+						actionRow.components.push_back(component);
 					}
-					dataPackage.addComponentRow(originalEvent.getMessageData().components[x]);
+					dataPackage.addComponentRow(actionRow);
 				}
 				dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 				InputEvents::respondToInputEventAsync(dataPackage).get();
@@ -4151,10 +4157,13 @@ namespace DiscordCoreAPI {
 					dataPackage.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 					dataPackage.addMessageEmbed(messageEmbeds[newCurrentPageIndex]);
 					for (size_t x = 0; x < originalEvent.getMessageData().components.size(); ++x) {
+						ActionRowData actionRow{};
 						for (size_t y = 0; y < originalEvent.getMessageData().components[x].components.size(); ++y) {
-							originalEvent.getMessageData().components[x].components[y].disabled = false;
+							auto component = originalEvent.getMessageData().components[x].components[y];
+							component.disabled = true;
+							actionRow.components.push_back(component);
 						}
-						dataPackage.addComponentRow(originalEvent.getMessageData().components[x]);
+						dataPackage.addComponentRow(actionRow);
 					}
 					originalEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
 				}
