@@ -257,33 +257,14 @@ namespace DiscordCoreInternal {
 			bits <<= 8;
 		}
 
-		if (digits <= 4) {
-			if (sign == 0) {
-				auto string = std::to_string(value);
-				this->writeCharacters(string.data(), string.size());
-				this->writeCharacter('"');
-				return;
-			}
-
-			const bool isSignBitAvailable = (value & (1ull << 31ull)) == 0;
-			if (isSignBitAvailable) {
-				auto string = std::to_string(-static_cast<int64_t>(value));
-				this->writeCharacters(string.data(), string.size());
-				this->writeCharacter('"');
-				return;
-			}
-		}
-
 		if (sign == 0) {
 			auto string = std::to_string(value);
 			this->writeCharacters(string.data(), string.size());
 			this->writeCharacter('"');
-			return;
 		} else {
-			auto string = std::to_string(-(( int64_t )value));
+			auto string = std::to_string(-(static_cast<int64_t>(value)));
 			this->writeCharacters(string.data(), string.size());
 			this->writeCharacter('"');
-			return;
 		}
 	}
 

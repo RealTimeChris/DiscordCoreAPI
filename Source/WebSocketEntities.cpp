@@ -231,7 +231,6 @@ namespace DiscordCoreInternal {
 		if (dataToSend.size() == 0) {
 			return false;
 		}
-		//std::cout << ErlParser::parseEtfToJson(dataToSend.substr(8)) << std::endl;
 		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 			std::string webSocketTitle = this->wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
 			cout << DiscordCoreAPI::shiftToBrightBlue()
@@ -1191,7 +1190,6 @@ namespace DiscordCoreInternal {
 	}
 
 	WebSocketClient::~WebSocketClient() {
-		std::cout << "WERE HERE THIS IS IT!" << std::endl;
 		this->disconnect();
 	}
 
