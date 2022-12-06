@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 				static_cast<DiscordCoreInternal::WebSocketClient*>(
 					this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get())
 					->dataOpCode);
-			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string, true);
+			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string, false);
 		}
 	}
 
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 				static_cast<DiscordCoreInternal::WebSocketClient*>(
 					this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get())
 					->dataOpCode);
-			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string, true);
+			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string, false);
 		}
 	}
 

@@ -148,7 +148,7 @@ namespace DiscordCoreAPI {
 
 		/// \brief For collecting a copy of the current bot's User.
 		/// \returns BotUser An instance of BotUser.
-		BotUser getBotUser();
+		static BotUser getBotUser();
 
 		/// \brief Executes the library, and waits for completion.
 		void runBot();
@@ -156,6 +156,8 @@ namespace DiscordCoreAPI {
 		~DiscordCoreClient() noexcept;
 
 	  protected:
+		static BotUser currentUser;
+
 		std::unordered_map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
@@ -169,7 +171,6 @@ namespace DiscordCoreAPI {
 		ConfigManager configManager{};
 		EventManager eventManager{};///< An event-manager, for hooking into Discord-API-Events sent over the Websockets.
 		bool didWeStartCorrectly{};
-		BotUser currentUser{};
 
 		void registerFunctionsInternal();
 

@@ -849,6 +849,9 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnection::disconnect() noexcept {
 		this->activeState.store(VoiceActiveState::Exiting);
+		std::string payload = "\x03\xE8";
+		this->createHeader(payload, DiscordCoreInternal::WebSocketOpCode::Op_Close);
+		WebSocketCore::writeData(payload, true);
 		UDPConnection::disconnect();
 		WebSocketCore::ssl = nullptr;
 		WebSocketCore::outputBuffer.clear();

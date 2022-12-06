@@ -231,6 +231,7 @@ namespace DiscordCoreInternal {
 		if (dataToSend.size() == 0) {
 			return false;
 		}
+		//std::cout << ErlParser::parseEtfToJson(dataToSend.substr(8)) << std::endl;
 		if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 			std::string webSocketTitle = this->wsType == WebSocketType::Voice ? "Voice WebSocket" : "WebSocket";
 			cout << DiscordCoreAPI::shiftToBrightBlue()
@@ -420,15 +421,20 @@ namespace DiscordCoreInternal {
 		data.selfMute = doWeCollect.selfMute;
 		this->userId = doWeCollect.userId;
 		auto serializer = data.operator DiscordCoreAPI::Jsonifier();
-		if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
-			serializer.refreshString(DiscordCoreAPI::JsonifierSerializeType::Etf);
-		} else {
-			serializer.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
-		}
-		std::string string = serializer.operator std::string();
-		this->createHeader(string, this->dataOpCode);
-		if (!this->sendMessage(string, true)) {
-			return;
+		auto botUser = DiscordCoreAPI::DiscordCoreClient::getBotUser();
+		DiscordCoreAPI::GuildMember guildMember =
+			DiscordCoreAPI::GuildMembers::getCachedGuildMember({ .guildMemberId = botUser.id, .guildId = doWeCollect.guildId });
+		if (guildMember.getVoiceStateData().channelId.operator size_t() != 0) {
+			if (this->dataOpCode == WebSocketOpCode::Op_Binary) {
+				serializer.refreshString(DiscordCoreAPI::JsonifierSerializeType::Etf);
+			} else {
+				serializer.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
+			}
+			std::string string = serializer.operator std::string();
+			this->createHeader(string, this->dataOpCode);
+			if (!this->sendMessage(string, false)) {
+				return;
+			}
 		}
 		if (DiscordCoreAPI::Snowflake{ doWeCollect.channelId } == 0) {
 			return;
@@ -440,10 +446,10 @@ namespace DiscordCoreInternal {
 		} else {
 			serializer.refreshString(DiscordCoreAPI::JsonifierSerializeType::Json);
 		}
-		string = serializer.operator std::string();
+		std::string string = serializer.operator std::string();
 		this->createHeader(string, this->dataOpCode);
 		this->areWeCollectingData = true;
-		if (!this->sendMessage(string, true)) {
+		if (!this->sendMessage(string, false)) {
 			return;
 		}
 		DiscordCoreAPI::StopWatch<Milliseconds> stopWatch{ 5500ms };
@@ -1156,6 +1162,9 @@ namespace DiscordCoreInternal {
 
 	void WebSocketClient::disconnect() noexcept {
 		if (this->socket != SOCKET_ERROR) {
+			std::string payload = "\x03\xE8";
+			this->createHeader(payload, WebSocketOpCode::Op_Close);
+			this->writeData(payload, true);
 			this->socket = SOCKET_ERROR;
 			this->ssl = nullptr;
 			this->currentState.store(WebSocketState::Disconnected);
@@ -1179,6 +1188,11 @@ namespace DiscordCoreInternal {
 				this->doWeQuit->store(true);
 			}
 		}
+	}
+
+	WebSocketClient::~WebSocketClient() {
+		std::cout << "WERE HERE THIS IS IT!" << std::endl;
+		this->disconnect();
 	}
 
 	BaseSocketAgent::BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew,
@@ -1255,7 +1269,7 @@ namespace DiscordCoreInternal {
 			stopWatch.resetTimer();
 			while (!this->doWeQuit->load()) {
 				auto result = this->shardMap[packageNew.currentShard]->processIO(10);
-				if (this->shardMap[packageNew.currentShard]->currentState.load() == WebSocketState::Sending_Identify) {
+				if (this->shardMap[packageNew.currentShard]->currentState.load() != WebSocketState::Sending_Identify) {
 					break;
 				}
 				if (result == ProcessIOResult::Error || stopWatch.hasTimePassed()) {

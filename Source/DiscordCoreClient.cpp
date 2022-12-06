@@ -193,7 +193,7 @@ namespace DiscordCoreAPI {
 	}
 
 	BotUser DiscordCoreClient::getBotUser() {
-		return this->currentUser;
+		return DiscordCoreClient::currentUser;
 	}
 
 	void DiscordCoreClient::runBot() {
@@ -309,7 +309,8 @@ namespace DiscordCoreAPI {
 			}
 			this->connectionStopWatch.resetTimer();
 		}
-		this->currentUser = BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentsMap[this->configManager.getStartingShard()].get() };
+		DiscordCoreClient::currentUser =
+			BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentsMap[this->configManager.getStartingShard()].get() };
 
 		for (auto& value: this->configManager.getFunctionsToExecute()) {
 			if (value.repeated) {
@@ -339,4 +340,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 	}
+
+	BotUser DiscordCoreClient::currentUser{};
 }

@@ -1376,11 +1376,12 @@ namespace DiscordCoreAPI {
 			voiceConnectInitData.selfDeaf = selfDeaf;
 			voiceConnectInitData.selfMute = selfMute;
 			StopWatch stopWatch{ 10000ms };
-			DiscordCoreClient::getVoiceConnection(this->id)->connect(voiceConnectInitData);
-			while (!DiscordCoreClient::getVoiceConnection(this->id)->areWeConnected()) {
+			auto voiceConnection = DiscordCoreClient::getVoiceConnection(this->id);
+			voiceConnection->connect(voiceConnectInitData);
+			while (voiceConnection->areWeConnected()) {
 				std::this_thread::sleep_for(1ms);
 			}
-			this->voiceConnectionPtr = DiscordCoreClient::getVoiceConnection(this->id);
+			this->voiceConnectionPtr = voiceConnection;
 			return this->voiceConnectionPtr;
 		} else {
 			return nullptr;

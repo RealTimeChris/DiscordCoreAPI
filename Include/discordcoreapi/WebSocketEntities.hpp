@@ -130,7 +130,7 @@ namespace DiscordCoreInternal {
 
 		void onClosed() noexcept;
 
-		virtual ~WebSocketClient() noexcept = default;
+		virtual ~WebSocketClient() noexcept;
 
 	  protected:
 		std::unordered_map<uint64_t, DiscordCoreAPI::UnboundedMessageBlock<VoiceConnectionData>*> voiceConnectionDataBuffersMap{};
