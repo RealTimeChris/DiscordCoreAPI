@@ -197,7 +197,7 @@ namespace DiscordCoreInternal {
 			}
 			this->processIO(10);
 			std::this_thread::sleep_for(1ms);
-		} while (this->currentState == WebSocketState::Connecting);
+		} while (this->currentState == WebSocketState::Upgrading);
 		return true;
 	}
 
