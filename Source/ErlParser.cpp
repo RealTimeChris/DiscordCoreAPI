@@ -80,61 +80,60 @@ namespace DiscordCoreInternal {
 		for (size_t x = 0; x < length; ++x) {
 			switch (stringNew[x]) {
 				case 0x00: {
-					this->finalString[this->currentSize++] = '\0';
 					break;
 				}
 				case 0x27: {
-					this->finalString[this->currentSize++] = '\\';
-					this->finalString[this->currentSize++] = '\'';
+					this->writeCharacter('\\');
+					this->writeCharacter('\'');
 					break;
 				}
 				case 0x22: {
-					this->finalString[this->currentSize++] = '\\';
-					this->finalString[this->currentSize++] = '\"';
+					this->writeCharacter('\\');
+					this->writeCharacter('\"');
 					break;
 				}
 				case 0x5c: {
-					this->finalString[this->currentSize++] = '\\';
-					this->finalString[this->currentSize++] = '\\';
+					this->writeCharacter('\\');
+					this->writeCharacter('\\');
 					break;
 				}
 				case 0x07: {
-					this->finalString[this->currentSize++] = '\\';
-					this->finalString[this->currentSize++] = 'a';
+					this->writeCharacter('\\');
+					this->writeCharacter('a');
 					break;
 				}
 				case 0x08: {
-					this->finalString[this->currentSize++] = '\\';
-					this->finalString[this->currentSize++] = 'b';
+					this->writeCharacter('\\');
+					this->writeCharacter('b');
 					break;
 				}
 				case 0x0C: {
-					this->finalString[this->currentSize++] = '\\';
-					this->finalString[this->currentSize++] = 'f';
+					this->writeCharacter('\\');
+					this->writeCharacter('f');
 					break;
 				}
 				case 0x0A: {
-					this->finalString[this->currentSize++] = '\\';
-					this->finalString[this->currentSize++] = 'n';
+					this->writeCharacter('\\');
+					this->writeCharacter('n');
 					break;
 				}
 				case 0x0D: {
-					this->finalString[this->currentSize++] = '\\';
-					this->finalString[this->currentSize++] = 'r';
+					this->writeCharacter('\\');
+					this->writeCharacter('r');
 					break;
 				}
 				case 0x0B: {
-					this->finalString[this->currentSize++] = '\\';
-					this->finalString[this->currentSize++] = 'v';
+					this->writeCharacter('\\');
+					this->writeCharacter('v');
 					break;
 				}
 				case 0x09: {
-					this->finalString[this->currentSize++] = '\\';
-					this->finalString[this->currentSize++] = 't';
+					this->writeCharacter('\\');
+					this->writeCharacter('t');
 					break;
 				}
 				default: {
-					this->finalString[this->currentSize++] = stringNew[x];
+					this->writeCharacter(stringNew[x]);
 					break;
 				}
 			}
