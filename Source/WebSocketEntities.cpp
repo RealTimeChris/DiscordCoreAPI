@@ -196,10 +196,8 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			this->processIO(10);
-			buffer = this->getInputBuffer();
-			this->parseConnectionHeaders(buffer);
 			std::this_thread::sleep_for(1ms);
-		} while (buffer.size() == 0);
+		} while (this->currentState == WebSocketState::Connecting);
 		return true;
 	}
 
@@ -385,7 +383,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void WebSocketCore::handleBuffer() noexcept {
-		if (this->currentState != WebSocketState::Upgrading) {
+		if (this->currentState == WebSocketState::Upgrading) {
+			this->parseConnectionHeaders(this->getInputBuffer());
+		} else {
 			this->parseMessage();
 		}
 	}
@@ -1220,8 +1220,8 @@ namespace DiscordCoreInternal {
 					 << DiscordCoreAPI::reset() << endl
 					 << endl;
 			}
-			std::string relativePath{};
 			this->shardMap[packageNew.currentShard]->currentState.store(WebSocketState::Upgrading);
+			std::string relativePath{};
 			relativePath = "/?v=10&encoding=";
 			relativePath += this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf ? "etf" : "json";
 			didWeConnect = this->shardMap[packageNew.currentShard]->connect(connectionUrl, relativePath, this->configManager->getConnectionPort(),
@@ -1234,17 +1234,16 @@ namespace DiscordCoreInternal {
 						 << endl;
 				}
 			}
-
 			stopWatch.resetTimer();
 			while (!this->doWeQuit->load()) {
+				auto result = this->shardMap[packageNew.currentShard]->processIO(10);
 				if (this->shardMap[packageNew.currentShard]->currentState.load() != WebSocketState::Collecting_Hello) {
 					break;
 				}
-				auto result = this->shardMap[packageNew.currentShard]->processIO(10);
-				if (result == ProcessIOResult::Error || stopWatch.hasTimePassed()) {
+				if (result == ProcessIOResult::Error) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + packageNew.currentShard << ","
-							 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
+							 << this->configManager->getTotalShardCount() << "]... reconnecting.0101" << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
 					this->shardMap[packageNew.currentShard]->onClosed();
@@ -1255,14 +1254,14 @@ namespace DiscordCoreInternal {
 			}
 			stopWatch.resetTimer();
 			while (!this->doWeQuit->load()) {
-				if (this->shardMap[packageNew.currentShard]->currentState.load() == WebSocketState::Authenticated) {
+				auto result = this->shardMap[packageNew.currentShard]->processIO(10);
+				if (this->shardMap[packageNew.currentShard]->currentState.load() == WebSocketState::Sending_Identify) {
 					break;
 				}
-				auto result = this->shardMap[packageNew.currentShard]->processIO(10);
 				if (result == ProcessIOResult::Error || stopWatch.hasTimePassed()) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + packageNew.currentShard << ","
-							 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
+							 << this->configManager->getTotalShardCount() << "]... reconnecting. 0202" << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
 					this->shardMap[packageNew.currentShard]->onClosed();
@@ -1289,7 +1288,7 @@ namespace DiscordCoreInternal {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket ["
 							 << static_cast<WebSocketClient*>(valueNew)->shard[0] << "," << this->configManager->getTotalShardCount()
-							 << "]... reconnecting." << DiscordCoreAPI::reset() << endl
+							 << "]... reconnecting. 0303" << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
 					static_cast<WebSocketClient*>(valueNew)->onClosed();
