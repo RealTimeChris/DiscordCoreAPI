@@ -76,7 +76,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 		}
-		this->writeCharacter('\"');
+		this->writeCharacter('"');
 		for (size_t x = 0; x < length; ++x) {
 			switch (stringNew[x]) {
 				case 0x00: {
@@ -89,7 +89,7 @@ namespace DiscordCoreInternal {
 				}
 				case 0x22: {
 					this->writeCharacter('\\');
-					this->writeCharacter('\"');
+					this->writeCharacter('"');
 					break;
 				}
 				case 0x5c: {
@@ -138,7 +138,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-		this->writeCharacter('\"');
+		this->writeCharacter('"');
 	}
 
 	void ErlParser::writeCharacter(const char value) {
@@ -221,7 +221,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlParser::parseStringExt() {
-		this->writeCharacter('\"');
+		this->writeCharacter('"');
 		uint16_t length = this->readBitsFromBuffer<uint16_t>();
 		if (static_cast<uint64_t>(this->offSet) + length > this->dataBuffer.size()) {
 			throw ErlParseError{ "ErlParser::parseStringAsList() Error: std::string reading past end of buffer.\n\n" };
@@ -229,7 +229,7 @@ namespace DiscordCoreInternal {
 		for (size_t x = 0; x < length; ++x) {
 			this->parseSmallIntegerExt();
 		}
-		this->writeCharacter('\"');
+		this->writeCharacter('"');
 	}
 
 	void ErlParser::parseNewFloatExt() {
@@ -240,44 +240,51 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlParser::parseSmallBigExt() {
-		this->writeCharacter('\"');
-		auto digits = this->readBitsFromBuffer<uint8_t>();
-		uint8_t sign = this->readBitsFromBuffer<uint8_t>();
+		this->writeCharacter('"');
+		auto digits = readBitsFromBuffer<uint8_t>();
+		uint8_t sign = readBitsFromBuffer<uint8_t>();
 
+		
 		if (digits > 8) {
-			throw ErlParseError{ "ErlParser::parseSmallBigExt() Error: Integers larger than 8 bytes are not supported.\n\n" };
+			throw ErlParseError{ "ErlParser::parseSmallBigExt() Error: Big integer larger than 8 bytes not supported.\n\n" };
 		}
 
 		uint64_t value = 0;
-		uint64_t b = 1;
-		for (int32_t x = 0; x < digits; ++x) {
-			uint8_t digit = this->readBitsFromBuffer<uint8_t>();
-			uint64_t digitNew = digit;
-			value += digitNew * b;
-			b <<= 8;
+		uint64_t bits = 1;
+		for (uint32_t i = 0; i < digits; ++i) {
+			uint64_t digit = readBitsFromBuffer<uint8_t>();
+			value += digit * bits;
+			bits <<= 8;
 		}
 
 		if (digits <= 4) {
 			if (sign == 0) {
 				auto string = std::to_string(value);
 				this->writeCharacters(string.data(), string.size());
+				this->writeCharacter('"');
 				return;
 			}
-			const bool isSignBitAvailable = (value & 1ull << 31ull) == 0;
+
+			const bool isSignBitAvailable = (value & (1ull << 31ull)) == 0;
 			if (isSignBitAvailable) {
-				auto string = std::to_string(-static_cast<int32_t>(value));
+				auto string = std::to_string(-static_cast<int64_t>(value));
 				this->writeCharacters(string.data(), string.size());
+				this->writeCharacter('"');
 				return;
 			}
 		}
-		std::string string{};
+
 		if (sign == 0) {
-			string = std::to_string(value);
+			auto string = std::to_string(value);
+			this->writeCharacters(string.data(), string.size());
+			this->writeCharacter('"');
+			return;
 		} else {
-			string = std::to_string(-(static_cast<int64_t>(value)));
+			auto string = std::to_string(-(( int64_t )value));
+			this->writeCharacters(string.data(), string.size());
+			this->writeCharacter('"');
+			return;
 		}
-		this->writeCharacters(string.data(), string.size());
-		this->writeCharacter('\"');
 	}
 
 	void ErlParser::parseAtomExt() {

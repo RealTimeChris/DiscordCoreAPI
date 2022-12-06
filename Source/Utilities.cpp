@@ -614,9 +614,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void Jsonifier::writeJsonString(const StringType& stringNew) {
-		this->writeCharacter('\"');
+		this->writeCharacter('"');
 		this->writeString(stringNew.data(), stringNew.size());
-		this->writeCharacter('\"');
+		this->writeCharacter('"');
 	}
 
 	void Jsonifier::writeJsonFloat(const FloatType x) {
