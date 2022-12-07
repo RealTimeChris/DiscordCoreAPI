@@ -203,10 +203,7 @@ namespace DiscordCoreAPI {
 			__m256d newSample = _mm256_blendv_pd(_mm256_max_pd(currentSampleRaw, comparisonSampleMin),
 				_mm256_min_pd(currentSampleRaw, comparisonSampleMax), compareGreaterThanZero);
 			double newSamples[4]{};
-			newSamples[0] = *(reinterpret_cast<double*>(&newSample));
-			newSamples[1] = *(reinterpret_cast<double*>(&newSample) + 1);
-			newSamples[2] = *(reinterpret_cast<double*>(&newSample) + 2);
-			newSamples[3] = *(reinterpret_cast<double*>(&newSample) + 3);
+			_mm256_store_pd(newSamples, newSample);
 			this->downSampledVector[x * 4] = static_cast<opus_int16>(newSamples[0]);
 			this->downSampledVector[(x * 4) + 1] = static_cast<opus_int16>(newSamples[1]);
 			this->downSampledVector[(x * 4) + 2] = static_cast<opus_int16>(newSamples[2]);
