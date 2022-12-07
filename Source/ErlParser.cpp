@@ -30,9 +30,9 @@ namespace DiscordCoreInternal {
 	ErlParseError::ErlParseError(const std::string& message) : DCAException(message){};
 
 	std::string_view ErlParser::parseEtfToJson(std::string_view dataToParse) {
-		this->offSet = 0;
 		this->dataBuffer = dataToParse;
 		this->currentSize = 0;
+		this->offSet = 0;
 		if (this->readBitsFromBuffer<uint8_t>() != formatVersion) {
 			throw ErlParseError{ "ErlParser::parseEtfToJson() Error: Incorrect format version specified." };
 		}
@@ -49,18 +49,18 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlParser::writeCharactersFromBuffer(uint32_t length) {
+		if (!length) {
+			this->writeCharacters("\"\"", 2);
+			return;
+		}
 		if (this->offSet + static_cast<uint64_t>(length) > this->dataBuffer.size()) {
 			throw ErlParseError{ "ErlParser::readString() Error: readString() past end of buffer.\n\n" };
 		}
 		if (this->finalString.size() < this->currentSize + length) {
 			this->finalString.resize(this->finalString.size() + static_cast<uint64_t>(length * 4ull));
 		}
-		const char* stringNew = static_cast<const char*>(this->dataBuffer.data()) + this->offSet;
+		const char* stringNew = this->dataBuffer.data() + this->offSet;
 		this->offSet += length;
-		if (!length) {
-			this->writeCharacters("\"\"", 2);
-			return;
-		}
 		if (length >= 3 && length <= 5) {
 			if (length == 3 && strncmp(stringNew, "nil", 3) == 0) {
 				this->writeCharacters("null", 4);
@@ -244,7 +244,7 @@ namespace DiscordCoreInternal {
 		auto digits = readBitsFromBuffer<uint8_t>();
 		uint8_t sign = readBitsFromBuffer<uint8_t>();
 
-		
+
 		if (digits > 8) {
 			throw ErlParseError{ "ErlParser::parseSmallBigExt() Error: Big integer larger than 8 bytes not supported.\n\n" };
 		}

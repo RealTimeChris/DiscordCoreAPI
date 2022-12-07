@@ -201,15 +201,25 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
+	bool compareToEnum(uint8_t data) {
+		for (int32_t newValue = static_cast<int32_t>(DiscordCoreAPI::EtfType::New_Float_Ext);
+			 newValue != static_cast<int32_t>(DiscordCoreAPI::EtfType::Map_Ext); ++newValue) {
+			if (data == static_cast<int32_t>(newValue)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void WebSocketCore::createHeader(std::string& outBuffer, WebSocketOpCode opCode) noexcept {
 		size_t originalSize{ outBuffer.size() };
 		outBuffer.insert(outBuffer.begin(), static_cast<uint8_t>(opCode) | webSocketFinishBit);
 
 		int32_t indexCount{};
-		if (outBuffer.size() <= webSocketMaxPayloadLengthSmall) {
+		if (originalSize <= webSocketMaxPayloadLengthSmall) {
 			outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(originalSize));
 			indexCount = 0;
-		} else if (outBuffer.size() <= webSocketMaxPayloadLengthLarge) {
+		} else if (originalSize <= webSocketMaxPayloadLengthLarge) {
 			outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(webSocketPayloadLengthMagicLarge));
 			indexCount = 2;
 		} else {
