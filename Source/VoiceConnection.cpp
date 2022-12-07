@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 				_mm256_set_pd(static_cast<double>(this->upSampledVector[(x * 4) + 3]), static_cast<double>(this->upSampledVector[(x * 4) + 2]),
 					static_cast<double>(this->upSampledVector[(x * 4) + 1]), static_cast<double>(this->upSampledVector[x * 4]));
 			currentSampleRaw = _mm256_mul_pd(currentSampleRaw,
-				_mm256_set_pd(this->currentGain + increment * 4, this->currentGain + increment * 3, this->currentGain + increment * 2,
+				_mm256_set_pd(this->currentGain + increment * 4.0l, this->currentGain + increment * 3.0l, this->currentGain + increment * 2.0l,
 					this->currentGain + increment));
 			__m256d comparisonSampleMin = _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::min()));
 			__m256d comparisonSampleMax = _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::max()));
@@ -203,15 +203,12 @@ namespace DiscordCoreAPI {
 			__m256d newSample = _mm256_blendv_pd(_mm256_max_pd(currentSampleRaw, comparisonSampleMin),
 				_mm256_min_pd(currentSampleRaw, comparisonSampleMax), compareGreaterThanZero);
 			double newSamples[4]{};
-			newSamples[0] = *(reinterpret_cast<double*>(&newSample));
-			newSamples[1] = *(reinterpret_cast<double*>(&newSample) + 1);
-			newSamples[2] = *(reinterpret_cast<double*>(&newSample) + 2);
-			newSamples[3] = *(reinterpret_cast<double*>(&newSample) + 3);
+			_mm256_store_pd(newSamples, newSample);
 			this->downSampledVector[x * 4] = static_cast<opus_int16>(newSamples[0]);
 			this->downSampledVector[(x * 4) + 1] = static_cast<opus_int16>(newSamples[1]);
 			this->downSampledVector[(x * 4) + 2] = static_cast<opus_int16>(newSamples[2]);
 			this->downSampledVector[(x * 4) + 3] = static_cast<opus_int16>(newSamples[3]);
-			this->currentGain += increment * 4;
+			this->currentGain += increment * 4.0l;
 		}
 	}
 
