@@ -1677,7 +1677,7 @@ namespace DiscordCoreAPI {
 		returnString.resize(16);
 		std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
 		for (int32_t x = 0; x < 16; ++x) {
-			returnString[x] = static_cast<uint8_t>((static_cast<float>(randomEngine()) / static_cast<float>(randomEngine.max())) * 255.0f);
+			returnString[x] = static_cast<uint8_t>((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * 255.0f);
 		}
 		returnString = base64Encode(returnString, false);
 		return returnString;

@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 				vector<uint8_t> fileData { };
 				fileData.resize(128 * 128);
 				for (int32_t x = 0; x < 128 * 128; ++x) {
-					fileData[x] = static_cast<uint8_t>(static_cast<float>(x)/static_cast<float>(128 * 128)) * 255;
+					fileData[x] = static_cast<uint8_t>(static_cast<double>(x)/static_cast<double>(128 * 128)) * 255;
 				}
 				dataPackage.file = fileData;
 

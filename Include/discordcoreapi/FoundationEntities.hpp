@@ -3063,7 +3063,7 @@ namespace DiscordCoreAPI {
 		RespondToInputEventData& setTTSStatus(bool enabledTTs);
 
 		/// \brief For setting the choices of an autocomplete response.
-		/// \param value An simdjson::ondemand::object value that is either a float, int32_t or a string.
+		/// \param value An simdjson::ondemand::object value that is either a double, int32_t or a string.
 		/// \param theName A string for the name of the choice.
 		/// \param theNameLocalizations A std::unordered_map<std::string, std::string> for the name localizations.
 		/// \returns RespondToInputEventData& A reference to this data structure.

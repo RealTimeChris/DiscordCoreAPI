@@ -137,13 +137,13 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	float MovingAverager::getCurrentValue() noexcept {
-		float returnValue{};
+	double MovingAverager::getCurrentValue() noexcept {
+		double returnValue{};
 		if (this->values.size() > 0) {
 			for (auto& value: this->values) {
-				returnValue += static_cast<float>(value);
+				returnValue += static_cast<double>(value);
 			}
-			return returnValue / static_cast<float>(this->values.size());
+			return returnValue / static_cast<double>(this->values.size());
 		} else {
 			return 0.0f;
 		}

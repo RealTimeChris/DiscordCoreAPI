@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 
 		void insertValue(int64_t value) noexcept;
 
-		float getCurrentValue() noexcept;
+		double getCurrentValue() noexcept;
 
 	  protected:
 		std::deque<int64_t> values{};

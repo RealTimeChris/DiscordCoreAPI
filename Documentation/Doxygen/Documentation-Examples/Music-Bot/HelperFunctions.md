@@ -130,22 +130,22 @@ Helper Functions {#HelperFunctions}
 		return false;
 	}
 
-	float applyAsymptoticTransform(float inputModValue, float horizontalStretch, float ceiling) {
-		float finalModValue = 0;
-		float newInputModValue = inputModValue;
+	double applyAsymptoticTransform(double inputModValue, double horizontalStretch, double ceiling) {
+		double finalModValue = 0;
+		double newInputModValue = inputModValue;
 		if (newInputModValue == 0) {
 			newInputModValue++;
 		}
 		if (newInputModValue <= 0) {
-			float newInputValue = newInputModValue * -1;
+			double newInputValue = newInputModValue * -1;
 
 			finalModValue =
-				-1 * (float)trunc((ceiling * pow(newInputValue, 3))/((pow(newInputValue, 3) + (int64_t)horizontalStretch * (int64_t)newInputValue)));
+				-1 * (double)trunc((ceiling * pow(newInputValue, 3))/((pow(newInputValue, 3) + (int64_t)horizontalStretch * (int64_t)newInputValue)));
 			return finalModValue;
 		}
 
 		finalModValue =
-			(float)trunc((ceiling * pow(newInputModValue, 3))/((pow(newInputModValue, 3) + (int64_t)horizontalStretch * (int64_t)newInputModValue)));
+			(double)trunc((ceiling * pow(newInputModValue, 3))/((pow(newInputModValue, 3) + (int64_t)horizontalStretch * (int64_t)newInputModValue)));
 
 		return finalModValue;
 	}

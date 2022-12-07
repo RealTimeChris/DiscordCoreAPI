@@ -66,7 +66,7 @@ namespace DiscordCoreAPI {
 
 	uint8_t getUint8(simdjson::ondemand::value jsonData, const char* key);
 
-	float getFloat(simdjson::ondemand::value jsonData, const char* key);
+	double getFloat(simdjson::ondemand::value jsonData, const char* key);
 
 	bool getBool(simdjson::ondemand::value jsonData, const char* key);
 

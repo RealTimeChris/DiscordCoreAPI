@@ -124,7 +124,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	float getFloat(simdjson::ondemand::value jsonData, const char* key) {
+	double getFloat(simdjson::ondemand::value jsonData, const char* key) {
 		double value{};
 		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
 			return double{ value };

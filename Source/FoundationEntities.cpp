@@ -1365,7 +1365,7 @@ namespace DiscordCoreAPI {
 			}
 			uint64_t theShardId{ (this->id.operator size_t() >> 22) % this->discordCoreClient->configManager.getTotalShardCount() };
 			auto theBaseSocketAgentIndex{ static_cast<int32_t>(
-				floor(static_cast<float>(theShardId) / static_cast<float>(this->discordCoreClient->configManager.getTotalShardCount()) *
+				floor(static_cast<double>(theShardId) / static_cast<double>(this->discordCoreClient->configManager.getTotalShardCount()) *
 					this->discordCoreClient->baseSocketAgentsMap.size())) };
 			VoiceConnectInitData voiceConnectInitData{};
 			voiceConnectInitData.currentShard = theShardId;

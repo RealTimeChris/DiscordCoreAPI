@@ -39,7 +39,7 @@ namespace DiscordCoreAPI {
 
 	using TimeElapsedHandlerNoArgs = std::function<void(void)>;
 
-	const float percentage{ 10.0f / 100.0f };
+	const double percentage{ 10.0f / 100.0f };
 
 	class DiscordCoreAPI_Dll ThreadPool {
 	  public:
@@ -57,9 +57,9 @@ namespace DiscordCoreAPI {
 			std::jthread thread = std::jthread([=](std::stop_token token) {
 				StopWatch stopWatch{ Milliseconds{ timeDelay } };
 				stopWatch.resetTimer();
-				if (static_cast<int64_t>(std::ceil(static_cast<float>(timeDelay) * percentage)) <= timeDelay &&
-					static_cast<int64_t>(std::ceil(static_cast<float>(timeDelay) * percentage)) > 0) {
-					std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<float>(timeDelay) * percentage)) });
+				if (static_cast<int64_t>(std::ceil(static_cast<double>(timeDelay) * percentage)) <= timeDelay &&
+					static_cast<int64_t>(std::ceil(static_cast<double>(timeDelay) * percentage)) > 0) {
+					std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<double>(timeDelay) * percentage)) });
 				}
 				while (!stopWatch.hasTimePassed() && !token.stop_requested()) {
 					std::this_thread::sleep_for(1ms);
