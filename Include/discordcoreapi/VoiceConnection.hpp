@@ -243,9 +243,9 @@ namespace DiscordCoreAPI {
 		int64_t msPerPacket{};
 		std::string voiceIp{};
 		std::string baseUrl{};
+		double previousGain{};
 		uint32_t audioSSRC{};
-		float previousGain{};
-		float currentGain{};
+		double currentGain{};
 		uint16_t port{};
 
 		void parseIncomingVoiceData(std::basic_string_view<std::byte> rawDataBufferNew) noexcept;

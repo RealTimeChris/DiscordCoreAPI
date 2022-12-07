@@ -188,9 +188,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnection::applyGainRamp(int64_t sampleCount) noexcept {
-		const float increment = (this->currentGain - this->previousGain) / static_cast<float>(sampleCount);
+		const double increment = (this->currentGain - this->previousGain) / static_cast<double>(sampleCount);
 		for (int64_t x = 0; x < sampleCount; ++x) {
-			const float currentSampleRaw = static_cast<float>(this->upSampledVector[x]) * this->currentGain;
+			const double currentSampleRaw = static_cast<double>(this->upSampledVector[x]) * this->currentGain;
 			const opus_int32 currentSample = static_cast<opus_int32>(currentSampleRaw);
 			opus_int32 newSample{};
 			if (currentSample < 0) {
