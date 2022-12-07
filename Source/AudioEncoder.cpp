@@ -42,10 +42,6 @@ namespace DiscordCoreInternal {
 		if (result != OPUS_OK) {
 			throw DiscordCoreAPI::DCAException{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) } };
 		}
-		result = opus_encoder_ctl(this->ptr.get(), OPUS_SET_APPLICATION(OPUS_APPLICATION_AUDIO));
-		if (result != OPUS_OK) {
-			throw DiscordCoreAPI::DCAException{ "Failed to set the Opus application type, Reason: " + std::string{ opus_strerror(result) } };
-		}
 		result = opus_encoder_ctl(this->ptr.get(), OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
 		if (result != OPUS_OK) {
 			throw DiscordCoreAPI::DCAException{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) } };
