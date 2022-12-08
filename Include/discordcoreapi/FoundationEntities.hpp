@@ -56,8 +56,8 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadData {
-		std::string externalIp{};
 		std::string voiceEncryptionMode{};
+		std::string externalIp{};
 		uint16_t voicePort{};
 
 		operator DiscordCoreAPI::Jsonifier();
@@ -341,8 +341,8 @@ namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll ConnectionPackage {
 		int32_t currentReconnectTries{};
-		bool areWeResuming{};
 		uint32_t currentShard{};
+		bool areWeResuming{};
 	};
 
 	/// \brief Timeout durations for the timeout command.
