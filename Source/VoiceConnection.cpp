@@ -194,7 +194,7 @@ namespace DiscordCoreAPI {
 				_mm256_set_pd(static_cast<double>(this->upSampledVector[(x * 4) + 3]), static_cast<double>(this->upSampledVector[(x * 4) + 2]),
 					static_cast<double>(this->upSampledVector[(x * 4) + 1]), static_cast<double>(this->upSampledVector[x * 4]));
 			currentSampleRaw = _mm256_mul_pd(currentSampleRaw,
-				_mm256_set_pd(this->currentGain + increment * 4.0l, this->currentGain + increment * 3.0l, this->currentGain + increment * 2.0l,
+				_mm256_set_pd(this->currentGain + (increment * 4.0l), this->currentGain + (increment * 3.0l), this->currentGain + (increment * 2.0l),
 					this->currentGain + increment));
 			__m256d comparisonSampleMin = _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::min()));
 			__m256d comparisonSampleMax = _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::max()));
