@@ -396,7 +396,7 @@ namespace DiscordCoreAPI {
 		Verified_Bot = 1 << 16,///< Verified Bot.
 		Verified_Developer = 1 << 17,///< Early Verified Bot Developer.
 		Certified_Moderator = 1 << 18,///< Discord Certified Moderator.
-		Bot_Http_Interactions = 1 << 19,///< Bot uses only HTTP interactions and is shown in the online member list.
+		Bot_Https_Interactions = 1 << 19,///< Bot uses only HTTPS interactions and is shown in the online member list.
 		Bot = 1 << 20,///< Is it a bot?
 		MFAEnabled = 1 << 21,///< Is MFA enabled?
 		System = 1 << 22,///< Is it a system integration?

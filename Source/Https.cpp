@@ -18,7 +18,7 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
 	USA
 */
-/// Https.cpp - Source file for the Http class.
+/// Https.cpp - Source file for the Https class.
 /// May 12, 2021
 /// https://discordcoreapi.com
 /// \file Https.cpp

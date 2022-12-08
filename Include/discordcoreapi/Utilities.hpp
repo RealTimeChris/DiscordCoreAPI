@@ -828,7 +828,7 @@ namespace DiscordCoreInternal {
 			Unauthorized = 401,///< The Authorization header was missing or invalid.
 			Forbidden = 403,///< The Authorization token you passed did not have permission to the resource.
 			Not_Found = 404,///< The resource at the location specified doesn't exist.
-			Method_Not_Allowed = 405,///< The HTTP method used is not valid for the location specified.
+			Method_Not_Allowed = 405,///< The HTTPS method used is not valid for the location specified.
 			Too_Many_Requests = 429,///< You are being rate limited, see Rate Limits.
 			Gatewat_Unavailable = 502,///< There was not a gateway available to process your request. Wait a bit and retry.
 		};
@@ -842,7 +842,7 @@ namespace DiscordCoreInternal {
 			{ static_cast<HttpsResponseCodes>(401), "401; The Authorization header was missing or invalid" },
 			{ static_cast<HttpsResponseCodes>(403), "403; The Authorization token you passed did not have permission to the resource" },
 			{ static_cast<HttpsResponseCodes>(404), "404; The resource at the location specified doesn't exist" },
-			{ static_cast<HttpsResponseCodes>(405), "405; The HTTP method used is not valid for the location specified" },
+			{ static_cast<HttpsResponseCodes>(405), "405; The HTTPS method used is not valid for the location specified" },
 			{ static_cast<HttpsResponseCodes>(429), "429; You are being rate limited, see Rate Limits" },
 			{ static_cast<HttpsResponseCodes>(502), "502; There was not a gateway available to process your request.Wait a bit and retry" } };
 
@@ -981,9 +981,9 @@ namespace DiscordCoreAPI {
 		bool logGeneralSuccessMessages{};///< Do we log general success messages to cout?
 		bool logFFMPEGSuccessMessages{};///< Do we log FFMPEG success messages to cout?
 		bool logGeneralErrorMessages{};///< Do we log general error messages to cout?
-		bool logHttpsSuccessMessages{};///< Do we log Http response success messages to cout?
+		bool logHttpsSuccessMessages{};///< Do we log Https response success messages to cout?
 		bool logFFMPEGErrorMessages{};///< Do we log FFMPEG error messages to cout?
-		bool logHttpsErrorMessages{};///< Do we log Http response error messages to cout?
+		bool logHttpsErrorMessages{};///< Do we log Https response error messages to cout?
 	};
 
 	/// \brief For selecting the caching style of the library.
