@@ -260,11 +260,12 @@ namespace DiscordCoreInternal {
 	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
 
 	void HttpsConnection::handleBuffer() noexcept {
-		this->data.stopWatch.resetTimer();
+		DiscordCoreAPI::StopWatch stopWatch{ 500ms };
+		stopWatch.resetTimer();
 		while (true) {
 			switch (this->data.currentState) {
 				case HttpsState::Collecting_Code: {
-					if (this->data.stopWatch.hasTimePassed()) {
+					if (stopWatch.hasTimePassed()) {
 						this->areWeDoneTheRequest = true;
 						return;
 					}
@@ -275,7 +276,7 @@ namespace DiscordCoreInternal {
 					this->parseCode(this->inputBufferReal);
 					if (this->data.responseCode == 400) {
 					}
-					this->data.stopWatch.resetTimer();
+					stopWatch.resetTimer();
 					if (this->data.responseCode == 204) {
 						this->areWeDoneTheRequest = true;
 						return;
@@ -283,7 +284,7 @@ namespace DiscordCoreInternal {
 					return;
 				}
 				case HttpsState::Collecting_Headers: {
-					if (this->data.stopWatch.hasTimePassed()) {
+					if (stopWatch.hasTimePassed()) {
 						this->areWeDoneTheRequest = true;
 						return;
 					}
@@ -293,12 +294,12 @@ namespace DiscordCoreInternal {
 							this->inputBufferReal.writeData(stringView.data(), stringView.size());
 						}
 						this->parseHeaders(this->inputBufferReal);
-						this->data.stopWatch.resetTimer();
+						stopWatch.resetTimer();
 					}
 					return;
 				}
 				case HttpsState::Collecting_Size: {
-					if (this->data.stopWatch.hasTimePassed()) {
+					if (stopWatch.hasTimePassed()) {
 						this->areWeDoneTheRequest = true;
 						return;
 					}
@@ -310,7 +311,7 @@ namespace DiscordCoreInternal {
 						this->clearCRLF(this->inputBufferReal);
 						this->parseSize(this->inputBufferReal);
 						this->clearCRLF(this->inputBufferReal);
-						this->data.stopWatch.resetTimer();
+						stopWatch.resetTimer();
 					}
 					return;
 				}
@@ -320,12 +321,12 @@ namespace DiscordCoreInternal {
 						this->inputBufferReal.writeData(stringView.data(), stringView.size());
 					}
 					auto result = this->parseChunk(this->inputBufferReal);
-					if ((this->data.responseMessage.size() >= this->data.contentLength && !result) || this->data.stopWatch.hasTimePassed() ||
+					if ((this->data.responseMessage.size() >= this->data.contentLength && !result) || stopWatch.hasTimePassed() ||
 						!result || (this->data.responseCode == -5 && this->data.contentLength == -5)) {
 						this->areWeDoneTheRequest = true;
 						return;
 					} else {
-						this->data.stopWatch.resetTimer();
+						stopWatch.resetTimer();
 					}
 					return;
 				}

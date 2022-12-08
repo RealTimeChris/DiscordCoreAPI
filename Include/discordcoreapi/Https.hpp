@@ -53,7 +53,6 @@ namespace DiscordCoreInternal {
 		uint64_t contentLength{};
 
 	  protected:
-		DiscordCoreAPI::StopWatch<Milliseconds> stopWatch{ 500ms };
 		bool isItChunked{};
 	};
 

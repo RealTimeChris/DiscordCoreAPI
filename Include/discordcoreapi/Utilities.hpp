@@ -199,14 +199,14 @@ namespace DiscordCoreAPI {
 
 		StopWatch() = delete;
 
-		StopWatch<TTy>& operator=(const StopWatch<TTy>& data) {
+		StopWatch<TTy>& operator=(StopWatch<TTy>&& data) {
 			this->maxNumberOfTimeUnits.store(data.maxNumberOfTimeUnits.load());
 			this->startTime.store(data.startTime.load());
 			return *this;
 		}
 
-		StopWatch(const StopWatch<TTy>& data) {
-			*this = data;
+		StopWatch(StopWatch<TTy>&& data) {
+			*this = std::move(data);
 		}
 
 		StopWatch(TTy maxNumberOfMsNew) {
