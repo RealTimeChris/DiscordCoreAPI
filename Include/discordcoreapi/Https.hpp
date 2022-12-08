@@ -176,17 +176,19 @@ namespace DiscordCoreInternal {
 
 			if (returnData.responseMessage.size() > 0) {
 				returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-				auto document =
-					parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
-				if (document.type() != simdjson::ondemand::json_type::null) {
-					simdjson::ondemand::value object{};
-					if (document.get(object) == simdjson::error_code::SUCCESS) {
-						if (returnValue) {
-							*returnValue = RTy{ object };
-							return *returnValue;
-						} else {
-							RTy returnValueNew{ object };
-							return returnValueNew;
+				simdjson::ondemand::document document{};
+				if (parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity())
+						.get(document) == simdjson::error_code::SUCCESS) {
+					if (document.type() != simdjson::ondemand::json_type::null) {
+						simdjson::ondemand::value object{};
+						if (document.get(object) == simdjson::error_code::SUCCESS) {
+							if (returnValue) {
+								*returnValue = RTy{ object };
+								return *returnValue;
+							} else {
+								RTy returnValueNew{ object };
+								return returnValueNew;
+							}
 						}
 					}
 				}
