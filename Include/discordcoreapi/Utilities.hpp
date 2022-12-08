@@ -132,40 +132,32 @@ namespace DiscordCoreAPI {
 		Snowflake& operator=(const uint64_t) noexcept;
 		Snowflake(const uint64_t) noexcept;
 
-		operator std::string() noexcept;
-
-		explicit operator uint64_t();
-
 		operator std::string() const noexcept;
 
-		explicit operator uint64_t() const;
+		explicit operator uint64_t() const noexcept;
 
-		DiscordCoreAPI_Dll friend inline std::string operator+(const std::string&, const Snowflake&);
+		DiscordCoreAPI_Dll friend inline std::string operator+(const std::string&, const Snowflake&) noexcept;
 
-		DiscordCoreAPI_Dll friend inline std::string operator+(const char*, const Snowflake&);
+		DiscordCoreAPI_Dll friend inline std::string operator+(const char*, const Snowflake&) noexcept;
 
-		DiscordCoreAPI_Dll friend inline bool operator==(const Snowflake&, const Snowflake&);
+		bool operator==(const Snowflake& rhs) const noexcept;
 
 	  protected:
 		uint64_t id{};
 	};
 
-	DiscordCoreAPI_Dll inline std::string operator+(const char* lhs, const Snowflake& rhs) {
+	DiscordCoreAPI_Dll inline std::string operator+(const char* lhs, const Snowflake& rhs) noexcept {
 		std::string string{};
 		string += lhs;
 		string += std::to_string(rhs.id);
 		return string;
 	}
 
-	DiscordCoreAPI_Dll inline std::string operator+(const std::string& lhs, const Snowflake& rhs) {
+	DiscordCoreAPI_Dll inline std::string operator+(const std::string& lhs, const Snowflake& rhs) noexcept {
 		std::string string{};
 		string += lhs;
 		string += std::to_string(rhs.id);
 		return string;
-	}
-
-	DiscordCoreAPI_Dll inline bool operator==(const Snowflake& lhs, const Snowflake& rhs) {
-		return lhs.id == rhs.id;
 	}
 
 	template<typename RTy> void reverseByteOrder(RTy& net) {

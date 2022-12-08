@@ -134,16 +134,12 @@ namespace DiscordCoreAPI {
 		return std::to_string(this->id);
 	}
 
-	Snowflake::operator uint64_t() const {
+	Snowflake::operator uint64_t() const noexcept {
 		return this->id;
 	}
 
-	Snowflake::operator std::string() noexcept {
-		return std::to_string(this->id);
-	}
-
-	Snowflake::operator uint64_t() {
-		return this->id;
+	bool Snowflake::operator==(const Snowflake& rhs) const noexcept {
+		return this->id == rhs.id;
 	}
 
 	EnumConverter::operator std::vector<uint64_t>() const noexcept {
