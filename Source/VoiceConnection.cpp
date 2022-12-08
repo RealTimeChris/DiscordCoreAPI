@@ -196,12 +196,12 @@ namespace DiscordCoreAPI {
 			currentSampleRaw = _mm256_mul_pd(currentSampleRaw,
 				_mm256_set_pd(this->currentGain + (increment * 4.0l), this->currentGain + (increment * 3.0l), this->currentGain + (increment * 2.0l),
 					this->currentGain + increment));
-			__m256d comparisonSampleMin = _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::min()));
-			__m256d comparisonSampleMax = _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::max()));
-			__m256d comparisonSampleZero = _mm256_set1_pd(0.0l);
-			__m256d compareGreaterThanZero = _mm256_cmp_pd(currentSampleRaw, comparisonSampleZero, _CMP_GE_OQ);
-			__m256d newSample = _mm256_blendv_pd(_mm256_max_pd(currentSampleRaw, comparisonSampleMin),
-				_mm256_min_pd(currentSampleRaw, comparisonSampleMax), compareGreaterThanZero);
+			__m256d sampleComparisonMin = _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::min()));
+			__m256d sampleComparisonMax = _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::max()));
+			__m256d sampleComparisonZero = _mm256_set1_pd(0.0l);
+			__m256d sampleComparisonGreaterThanZero= _mm256_cmp_pd(currentSampleRaw, sampleComparisonZero, _CMP_GE_OQ);
+			__m256d newSample = _mm256_blendv_pd(_mm256_max_pd(currentSampleRaw, sampleComparisonMin),
+				_mm256_min_pd(currentSampleRaw, sampleComparisonMax), sampleComparisonGreaterThanZero);
 			double newSamples[4]{};
 			_mm256_store_pd(newSamples, newSample);
 			for (size_t y = 0; y < 4; ++y) {
