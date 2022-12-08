@@ -193,18 +193,13 @@ namespace DiscordCoreAPI {
 			__m256d currentSample =
 				_mm256_set_pd(static_cast<double>(this->upSampledVector[(x * 4) + 3]), static_cast<double>(this->upSampledVector[(x * 4) + 2]),
 					static_cast<double>(this->upSampledVector[(x * 4) + 1]), static_cast<double>(this->upSampledVector[x * 4]));
-			__m256d currentMulAmount = _mm256_set_pd(4.0l, 3.0l, 2.0l, 1.0l);
-			__m256d currentAddAmount = _mm256_set_pd(increment, increment, increment, increment);
-			currentAddAmount = _mm256_mul_pd(currentAddAmount, currentMulAmount);
-			currentMulAmount = _mm256_set1_pd(this->currentGain);
-			currentMulAmount = _mm256_add_pd(currentMulAmount, currentAddAmount);
-			currentSample = _mm256_mul_pd(currentSample, currentMulAmount);
-			__m256d sampleComparisonMin = _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::min()));
-			__m256d sampleComparisonMax = _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::max()));
-			__m256d sampleComparisonZero = _mm256_set1_pd(0.0l);
-			sampleComparisonZero = _mm256_cmp_pd(currentSample, sampleComparisonZero, _CMP_GE_OQ);
-			currentSample = _mm256_blendv_pd(_mm256_max_pd(currentSample, sampleComparisonMin), _mm256_min_pd(currentSample, sampleComparisonMax),
-				sampleComparisonZero);
+			currentSample = _mm256_mul_pd(currentSample,
+				_mm256_add_pd(_mm256_set1_pd(this->currentGain),
+					_mm256_mul_pd(_mm256_set_pd(increment, increment, increment, increment), _mm256_set_pd(4.0l, 3.0l, 2.0l, 1.0l))));
+			currentSample =
+				_mm256_blendv_pd(_mm256_max_pd(currentSample, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::min()))),
+					_mm256_min_pd(currentSample, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::max()))),
+					_mm256_cmp_pd(currentSample, _mm256_set1_pd(0.0l), _CMP_GE_OQ));
 			double currentSamplesNew[4]{};
 			_mm256_store_pd(currentSamplesNew, currentSample);
 			for (size_t y = 0; y < 4; ++y) {
