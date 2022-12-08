@@ -54,8 +54,12 @@ namespace DiscordCoreAPI {
 
 	int64_t getInt64(simdjson::ondemand::value jsonData, const char* key) {
 		int64_t value{};
-		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
-			return int64_t{ value };
+		if (jsonData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
+				return int64_t{ value };
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
@@ -63,8 +67,12 @@ namespace DiscordCoreAPI {
 
 	int32_t getInt32(simdjson::ondemand::value jsonData, const char* key) {
 		int64_t value{};
-		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
-			return static_cast<int32_t>(value);
+		if (jsonData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
+				return static_cast<int32_t>(value);
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
@@ -72,8 +80,12 @@ namespace DiscordCoreAPI {
 
 	int16_t getInt16(simdjson::ondemand::value jsonData, const char* key) {
 		int64_t value{};
-		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
-			return static_cast<int16_t>(value);
+		if (jsonData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
+				return static_cast<int16_t>(value);
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
@@ -81,8 +93,12 @@ namespace DiscordCoreAPI {
 
 	int8_t getInt8(simdjson::ondemand::value jsonData, const char* key) {
 		int64_t value{};
-		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
-			return static_cast<int8_t>(value);
+		if (jsonData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
+				return static_cast<int8_t>(value);
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
@@ -90,8 +106,12 @@ namespace DiscordCoreAPI {
 
 	uint64_t getUint64(simdjson::ondemand::value jsonData, const char* key) {
 		uint64_t value{};
-		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
-			return uint64_t{ value };
+		if (jsonData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
+				return uint64_t{ value };
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
@@ -99,8 +119,12 @@ namespace DiscordCoreAPI {
 
 	uint32_t getUint32(simdjson::ondemand::value jsonData, const char* key) {
 		uint64_t value{};
-		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
-			return static_cast<uint32_t>(value);
+		if (jsonData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
+				return static_cast<uint32_t>(value);
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
@@ -108,8 +132,12 @@ namespace DiscordCoreAPI {
 
 	uint16_t getUint16(simdjson::ondemand::value jsonData, const char* key) {
 		uint64_t value{};
-		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
-			return static_cast<uint16_t>(value);
+		if (jsonData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
+				return static_cast<uint16_t>(value);
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
@@ -117,8 +145,12 @@ namespace DiscordCoreAPI {
 
 	uint8_t getUint8(simdjson::ondemand::value jsonData, const char* key) {
 		uint64_t value{};
-		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
-			return static_cast<uint8_t>(value);
+		if (jsonData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
+				return static_cast<uint8_t>(value);
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
@@ -126,8 +158,12 @@ namespace DiscordCoreAPI {
 
 	double getFloat(simdjson::ondemand::value jsonData, const char* key) {
 		double value{};
-		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
-			return double{ value };
+		if (jsonData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
+				return double{ value };
+			} else {
+				return 0.0f;
+			}
 		} else {
 			return 0.0f;
 		}
@@ -135,8 +171,12 @@ namespace DiscordCoreAPI {
 
 	bool getBool(simdjson::ondemand::value jsonData, const char* key) {
 		bool value{};
-		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
-			return bool{ value };
+		if (jsonData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
+				return bool{ value };
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
@@ -144,32 +184,48 @@ namespace DiscordCoreAPI {
 
 	std::string getString(simdjson::ondemand::value jsonData, const char* key) {
 		std::string_view value{};
-		if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
-			return std::string{ value.data(), value.size() };
+		if (jsonData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonData[key].get(value) == simdjson::error_code::SUCCESS) {
+				return std::string{ value.data(), value.size() };
+			} else {
+				return "";
+			}
 		} else {
 			return "";
 		}
 	}
 
 	bool getObject(simdjson::ondemand::value& object, const char* key, simdjson::ondemand::value jsonObjectData) {
-		if (jsonObjectData[key].get(object) == simdjson::error_code::SUCCESS) {
-			return true;
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonObjectData[key].get(object) == simdjson::error_code::SUCCESS) {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
 	}
 
 	bool getArray(simdjson::ondemand::array& array, const char* key, simdjson::ondemand::value jsonObjectData) {
-		if (jsonObjectData[key].get(array) == simdjson::error_code::SUCCESS) {
-			return true;
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonObjectData[key].get(array) == simdjson::error_code::SUCCESS) {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
 	}
 
 	bool getArray(simdjson::ondemand::array& array, simdjson::ondemand::value jsonObjectData) {
-		if (jsonObjectData.get(array) == simdjson::error_code::SUCCESS) {
-			return true;
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonObjectData.get(array) == simdjson::error_code::SUCCESS) {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
@@ -183,19 +239,25 @@ namespace DiscordCoreAPI {
 		return static_cast<std::string>(value);
 	}
 
-	std::string getString(simdjson::ondemand::value jsonData) {
+	std::string getString(simdjson::ondemand::value jsonObjectData) {
 		std::string_view value{};
-		if (jsonData.get(value) == simdjson::error_code::SUCCESS) {
-			return std::string{ value.data(), value.size() };
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonObjectData.get(value) == simdjson::error_code::SUCCESS) {
+				return std::string{ value.data(), value.size() };
+			} else {
+				return "";
+			}
 		} else {
 			return "";
 		}
 	}
 
-	ObjectReturnData getObject(simdjson::ondemand::value jsonData, const char* objectName) {
+	ObjectReturnData getObject(simdjson::ondemand::value jsonObjectData, const char* objectName) {
 		ObjectReturnData value{};
-		if (jsonData[objectName].get(value.object) == simdjson::error_code::SUCCESS) {
-			value.didItSucceed = true;
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonObjectData[objectName].get(value.object) == simdjson::error_code::SUCCESS) {
+				value.didItSucceed = true;
+			}
 		}
 		return value;
 	}
@@ -216,10 +278,12 @@ namespace DiscordCoreAPI {
 		return value;
 	}
 
-	ArrayReturnData getArray(simdjson::ondemand::value jsonData, const char* arrayName) {
+	ArrayReturnData getArray(simdjson::ondemand::value jsonObjectData, const char* arrayName) {
 		ArrayReturnData value{};
-		if (jsonData[arrayName].get(value.arrayValue) == simdjson::error_code::SUCCESS) {
-			value.didItSucceed = true;
+		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
+			if (jsonObjectData[arrayName].get(value.arrayValue) == simdjson::error_code::SUCCESS) {
+				value.didItSucceed = true;
+			}
 		}
 		return value;
 	}
@@ -232,10 +296,10 @@ namespace DiscordCoreAPI {
 		return value;
 	}
 
-	void parseObject(simdjson::ondemand::value jsonData, PresenceUpdateFlags& data) {
+	void parseObject(simdjson::ondemand::value jsonObjectData, PresenceUpdateFlags& data) {
 		uint8_t dataNew = static_cast<uint8_t>(data);
 
-		auto stringNew = getString(jsonData, "dekstop");
+		auto stringNew = getString(jsonObjectData, "dekstop");
 
 		if (stringNew == "online") {
 			dataNew += setBool(dataNew, PresenceUpdateFlags::Desktop_Online, true);
@@ -245,7 +309,7 @@ namespace DiscordCoreAPI {
 			dataNew += setBool(dataNew, PresenceUpdateFlags::Desktop_Dnd, true);
 		}
 
-		stringNew = getString(jsonData, "mobile");
+		stringNew = getString(jsonObjectData, "mobile");
 
 		if (stringNew == "online") {
 			dataNew += setBool(dataNew, PresenceUpdateFlags::Mobile_Online, true);
@@ -255,7 +319,7 @@ namespace DiscordCoreAPI {
 			dataNew += setBool(dataNew, PresenceUpdateFlags::Mobile_Dnd, true);
 		}
 
-		stringNew = getString(jsonData, "web");
+		stringNew = getString(jsonObjectData, "web");
 
 		if (stringNew == "online") {
 			dataNew += setBool(dataNew, PresenceUpdateFlags::Web_Online, true);
