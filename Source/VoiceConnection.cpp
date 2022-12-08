@@ -190,18 +190,15 @@ namespace DiscordCoreAPI {
 	void VoiceConnection::applyGainRamp(int64_t sampleCount) noexcept {
 		const double increment = (this->currentGain - this->previousGain) / static_cast<double>(sampleCount);
 		for (int64_t x = 0; x < sampleCount / 4; ++x) {
-			__m256d currentSample =
+			__m256d currentSampleNew = _mm256_mul_pd(
 				_mm256_set_pd(static_cast<double>(this->upSampledVector[(x * 4) + 3]), static_cast<double>(this->upSampledVector[(x * 4) + 2]),
-					static_cast<double>(this->upSampledVector[(x * 4) + 1]), static_cast<double>(this->upSampledVector[x * 4]));
-			currentSample = _mm256_mul_pd(currentSample,
-				_mm256_add_pd(_mm256_set1_pd(this->currentGain),
-					_mm256_mul_pd(_mm256_set_pd(increment, increment, increment, increment), _mm256_set_pd(4.0l, 3.0l, 2.0l, 1.0l))));
-			currentSample =
-				_mm256_blendv_pd(_mm256_max_pd(currentSample, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::min()))),
-					_mm256_min_pd(currentSample, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::max()))),
-					_mm256_cmp_pd(currentSample, _mm256_set1_pd(0.0l), _CMP_GE_OQ));
+					static_cast<double>(this->upSampledVector[(x * 4) + 1]), static_cast<double>(this->upSampledVector[x * 4])),
+				_mm256_add_pd(_mm256_set1_pd(this->currentGain), _mm256_mul_pd(_mm256_set1_pd(increment), _mm256_set_pd(4.0l, 3.0l, 2.0l, 1.0l))));
 			double currentSamplesNew[4]{};
-			_mm256_store_pd(currentSamplesNew, currentSample);
+			_mm256_store_pd(currentSamplesNew,
+				_mm256_blendv_pd(_mm256_max_pd(currentSampleNew, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::min()))),
+					_mm256_min_pd(currentSampleNew, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::max()))),
+					_mm256_cmp_pd(currentSampleNew, _mm256_set1_pd(0.0l), _CMP_GE_OQ)));
 			for (size_t y = 0; y < 4; ++y) {
 				this->downSampledVector[(x * 4) + y] = static_cast<opus_int16>(currentSamplesNew[y]);
 			}
