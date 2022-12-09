@@ -93,6 +93,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void CoRoutineThreadPool::submitTask(std::coroutine_handle<> coro) noexcept {
+		std::unique_lock lock{ this->accessMutex };
 		bool areWeAllBusy{ true };
 		for (auto& [key, value]: this->workerThreads) {
 			if (!value.areWeCurrentlyWorking.load()) {
@@ -108,15 +109,12 @@ namespace DiscordCoreInternal {
 			workerThread.thread = std::jthread([=, this](std::stop_token token) {
 				this->threadFunction(token, indexNew);
 			});
-			std::unique_lock lock{ this->workerThreadMutex };
 			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
-			lock.unlock();
 			this->inSemaphore.release();
 		}
-		std::unique_lock lock{ this->coroHandleMutex };
 		this->coroutineHandles.emplace_back(coro);
-		lock.unlock();
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
+		lock.unlock();
 	}
 
 	void CoRoutineThreadPool::threadFunction(std::stop_token token, int64_t index) {
@@ -128,7 +126,7 @@ namespace DiscordCoreInternal {
 				this->workerThreads[index].areWeCurrentlyWorking.store(true);
 				std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
 				this->coroHandleCount.store(this->coroHandleCount.load() - 1);
-				std::unique_lock lock{ this->coroHandleMutex };
+				std::unique_lock lock{ this->accessMutex };
 				this->coroutineHandles.pop_front();
 				lock.unlock();
 				this->inSemaphore.release();
@@ -140,7 +138,7 @@ namespace DiscordCoreInternal {
 					if (value.areWeCurrentlyWorking.load() && value.thread.joinable()) {
 						value.thread.request_stop();
 						value.thread.detach();
-						std::unique_lock lock{ this->workerThreadMutex };
+						std::unique_lock lock{ this->accessMutex };
 						this->workerThreads.erase(key);
 						lock.unlock();
 						this->currentCount.store(this->currentCount.load() - 1);
