@@ -123,7 +123,8 @@ namespace DiscordCoreInternal {
 		std::atomic_int64_t coroHandleCount{};
 		std::atomic_int64_t currentCount{};
 		std::atomic_int64_t currentIndex{};
-		std::mutex accessMutex{};
+		std::mutex workerThreadMutex{};
+		std::mutex coroHandleMutex{};
 
 		void threadFunction(std::stop_token token, int64_t index);
 	};
