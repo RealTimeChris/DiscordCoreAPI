@@ -948,8 +948,10 @@ namespace DiscordCoreAPI {
 					if (decodedData.size() > 0) {
 						decodedSize = std::max(decodedSize, static_cast<int64_t>(decodedData.size()));
 						++voiceUserCountReal;
-						for (int32_t x = 0; x < decodedData.size(); ++x) {
-							this->upSampledVector[x] += static_cast<opus_int32>(decodedData[x]);
+						for (size_t x = 0; x < decodedData.size() / 8; ++x) {
+							_mm256_storeu_epi32(&this->upSampledVector[x * 8],
+								_mm256_add_epi32(_mm256_loadu_epi32(&this->upSampledVector[x * 8]),
+									_mm256_cvtepi16_epi32(_mm_loadu_epi16(&decodedData[x * 8]))));
 						}
 					}
 				}

@@ -217,7 +217,7 @@ namespace DiscordCoreInternal {
 			indexCount = 8;
 		}
 		for (int32_t x = indexCount - 1; x >= 0; x--) {
-			outBuffer.insert(outBuffer.begin() + 1 + indexCount - x, static_cast<uint8_t>(originalSize >> x * 8));
+			outBuffer.insert(outBuffer.begin() + 1 + indexCount - x, static_cast<uint8_t>(originalSize >> (x * 8)));
 		}
 
 		outBuffer[1] |= webSocketMaskBit;

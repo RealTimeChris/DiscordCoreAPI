@@ -119,6 +119,7 @@ namespace DiscordCoreInternal {
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::deque<std::coroutine_handle<>> coroutineHandles{};
 		const std::atomic_uint32_t threadCount{};
+		std::binary_semaphore inSemaphore{ 0 };
 		std::atomic_int64_t coroHandleCount{};
 		std::atomic_int64_t currentCount{};
 		std::atomic_int64_t currentIndex{};

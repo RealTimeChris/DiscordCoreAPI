@@ -87,6 +87,7 @@ namespace DiscordCoreInternal {
 				this->threadFunction(token, indexNew);
 			});
 			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
+			this->inSemaphore.release();
 		}
 	}
 
@@ -108,6 +109,7 @@ namespace DiscordCoreInternal {
 				this->threadFunction(token, indexNew);
 			});
 			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
+			this->inSemaphore.release();
 		}
 		this->coroutineHandles.emplace_back(coro);
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
@@ -116,29 +118,32 @@ namespace DiscordCoreInternal {
 
 	void CoRoutineThreadPool::threadFunction(std::stop_token token, int64_t index) {
 		while (!token.stop_requested()) {
-			if (this->coroHandleCount.load() > 0) {
-				std::unique_lock lock{ this->accessMutex };
-				if (this->coroutineHandles.size() > 0) {
-					std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
-					this->coroHandleCount.store(this->coroHandleCount.load() - 1);
-					this->coroutineHandles.pop_front();
-					lock.unlock();
-					this->workerThreads[index].areWeCurrentlyWorking.store(true);
-					coroHandle();
-					this->workerThreads[index].areWeCurrentlyWorking.store(false);
-				}
+			while (!this->inSemaphore.try_acquire()) {
+				std::this_thread::sleep_for(1ms);
+			}
+			if (this->coroutineHandles.size() > 0) {
+				this->workerThreads[index].areWeCurrentlyWorking.store(true);
+				std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
+				this->coroHandleCount.store(this->coroHandleCount.load() - 1);
+				this->coroutineHandles.pop_front();
+				this->inSemaphore.release();
+				coroHandle();
+				this->workerThreads[index].areWeCurrentlyWorking.store(false);
 			} else if (this->currentCount.load() > this->threadCount.load()) {
-				std::unique_lock lock{ this->accessMutex };
+				this->workerThreads[index].areWeCurrentlyWorking.store(true);
 				for (auto& [key, value]: this->workerThreads) {
 					if (value.areWeCurrentlyWorking.load() && value.thread.joinable()) {
 						value.thread.request_stop();
 						value.thread.detach();
+						this->inSemaphore.release();
 						this->workerThreads.erase(key);
 						this->currentCount.store(this->currentCount.load() - 1);
-						lock.unlock();
 						break;
 					}
 				}
+				this->workerThreads[index].areWeCurrentlyWorking.store(false);
+			} else {
+				this->inSemaphore.release();
 			}
 			std::this_thread::sleep_for(1ms);
 		}
