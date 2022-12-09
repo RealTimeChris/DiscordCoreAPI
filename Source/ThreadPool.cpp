@@ -89,6 +89,7 @@ namespace DiscordCoreInternal {
 			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
 			this->inSemaphore.release();
 		}
+		
 	}
 
 	void CoRoutineThreadPool::submitTask(std::coroutine_handle<> coro) noexcept {
@@ -125,7 +126,9 @@ namespace DiscordCoreInternal {
 				this->workerThreads[index].areWeCurrentlyWorking.store(true);
 				std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
 				this->coroHandleCount.store(this->coroHandleCount.load() - 1);
+				std::unique_lock lock{ this->accessMutex };
 				this->coroutineHandles.pop_front();
+				lock.unlock();
 				this->inSemaphore.release();
 				coroHandle();
 				this->workerThreads[index].areWeCurrentlyWorking.store(false);
@@ -135,14 +138,14 @@ namespace DiscordCoreInternal {
 					if (value.areWeCurrentlyWorking.load() && value.thread.joinable()) {
 						value.thread.request_stop();
 						value.thread.detach();
-						this->inSemaphore.release();
+						std::unique_lock lock{ this->accessMutex };
 						this->workerThreads.erase(key);
+						lock.unlock();
 						this->currentCount.store(this->currentCount.load() - 1);
 						break;
-					} else {
-						this->inSemaphore.release();
 					}
 				}
+				this->inSemaphore.release();
 				this->workerThreads[index].areWeCurrentlyWorking.store(false);
 			} else {
 				this->inSemaphore.release();
