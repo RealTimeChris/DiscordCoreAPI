@@ -47,16 +47,9 @@ namespace DiscordCoreAPI {
 		explicit CoRoutineError(const std::string& message);
 	};
 
-	class DiscordCoreAPI_Dll CoRoutineBase {
-	  public:
-		static DiscordCoreInternal::CoRoutineThreadPool threadPool;
-
-		virtual ~CoRoutineBase() noexcept = default;
-	};
-
 	/// \brief A CoRoutine - representing a potentially asynchronous operation/function.
 	/// \tparam RTy The type of parameter that is returned by the CoRoutine.
-	template<typename RTy> class CoRoutine : public CoRoutineBase {
+	template<typename RTy> class CoRoutine {
 	  public:
 		class DiscordCoreAPI_Dll promise_type {
 		  public:
@@ -210,7 +203,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief A CoRoutine - representing a potentially asynchronous operation/function.
 	/// \tparam void The type of parameter that is returned by the CoRoutine.
-	template<> class CoRoutine<void> : public CoRoutineBase {
+	template<> class CoRoutine<void> {
 	  public:
 		class DiscordCoreAPI_Dll promise_type {
 		  public:
@@ -351,16 +344,21 @@ namespace DiscordCoreAPI {
 		std::atomic_bool areWeDone{};
 	};
 
+	class DiscordCoreAPI_Dll NewThreadAwaiterBase {
+	  public:
+		static DiscordCoreInternal::CoRoutineThreadPool threadPool;
+	};
+
 	/// \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
 	/// \tparam RTy The type of value returned by the containing CoRoutine.
-	template<typename RTy> class NewThreadAwaiter {
+	template<typename RTy> class NewThreadAwaiter : public NewThreadAwaiterBase {
 	  public:
 		bool await_ready() const noexcept {
 			return false;
 		}
 
 		void await_suspend(std::coroutine_handle<typename CoRoutine<RTy>::promise_type> coroHandleNew) noexcept {
-			CoRoutine<RTy>::threadPool.submitTask(coroHandleNew);
+			NewThreadAwaiterBase::threadPool.submitTask(coroHandleNew);
 			this->coroHandle = coroHandleNew;
 		}
 

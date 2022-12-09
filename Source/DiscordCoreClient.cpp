@@ -332,7 +332,7 @@ namespace DiscordCoreAPI {
 				guild.disconnect();
 			}
 		}
-		for (auto& [key, value]: CoRoutineBase::threadPool.workerThreads) {
+		for (auto& [key, value]: NewThreadAwaiterBase::threadPool.workerThreads) {
 			if (value.thread.joinable()) {
 				value.thread.request_stop();
 				value.thread.join();

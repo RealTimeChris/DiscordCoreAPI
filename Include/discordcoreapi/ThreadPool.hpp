@@ -118,12 +118,12 @@ namespace DiscordCoreInternal {
 	  protected:
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::deque<std::coroutine_handle<>> coroutineHandles{};
-		const std::atomic_uint32_t threadCount{};
-		std::binary_semaphore inSemaphore{ 0 };
+		const std::atomic_int64_t threadCount{};
 		std::atomic_int64_t coroHandleCount{};
 		std::atomic_int64_t currentCount{};
 		std::atomic_int64_t currentIndex{};
-		std::mutex accessMutex{};
+		std::mutex coroHandleAccessMutex{};
+		std::mutex workerAccessMutex{};
 
 		void threadFunction(std::stop_token token, int64_t index);
 	};
