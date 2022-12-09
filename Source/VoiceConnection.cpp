@@ -949,15 +949,9 @@ namespace DiscordCoreAPI {
 						decodedSize = std::max(decodedSize, static_cast<int64_t>(decodedData.size()));
 						++voiceUserCountReal;
 						for (size_t x = 0; x < decodedData.size() / 8; ++x) {
-							__m256i currentValues = _mm256_set_epi32(this->upSampledVector[(x * 8) + 0], this->upSampledVector[(x * 8) + 1],
-								this->upSampledVector[(x * 8) + 2], this->upSampledVector[(x * 8) + 3], this->upSampledVector[(x * 8) + 4],
-								this->upSampledVector[(x * 8) + 5], this->upSampledVector[(x * 8) + 6], this->upSampledVector[(x * 8) + 7]);
-
-							__m256i newValues = _mm256_cvtepi16_epi32(
-								_mm_set_epi16(decodedData[(x * 8) + 0], decodedData[(x * 8) + 1], decodedData[(x * 8) + 2], decodedData[(x * 8) + 3],
-									decodedData[(x * 8) + 4], decodedData[(x * 8) + 5], decodedData[(x * 8) + 6], decodedData[(x * 8) + 7]));
-							__m256i newerValues = _mm256_add_epi32(currentValues, newValues);
-							_mm256_storeu_epi32(&this->upSampledVector[x * 8], newerValues);
+							_mm256_storeu_epi32(&this->upSampledVector[x * 8],
+								_mm256_add_epi32(_mm256_loadu_epi32(&this->upSampledVector[x * 8]),
+									_mm256_cvtepi16_epi32(_mm_loadu_epi16(&decodedData[x * 8]))));
 						}
 					}
 				}
