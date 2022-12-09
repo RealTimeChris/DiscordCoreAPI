@@ -260,8 +260,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/gateway/bot";
 		workload.callStack = "DiscordCoreClient::getGateWayBot()";
 		GatewayBotData data{};
-		data = this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload);
-		return data;
+		return this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload, &data);
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {

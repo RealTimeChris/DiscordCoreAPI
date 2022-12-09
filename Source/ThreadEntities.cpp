@@ -105,7 +105,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<Thread>(workload);
+		Thread returnValue{};
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<Thread>(workload, &returnValue);
 	}
 
 	CoRoutine<Thread> Threads::startThreadWithoutMessageAsync(StartThreadWithoutMessageData dataPackage) {
@@ -120,7 +121,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<Thread>(workload);
+		Thread returnValue{};
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<Thread>(workload, &returnValue);
 	}
 
 	CoRoutine<Thread> Threads::startThreadInForumChannelAsync(StartThreadInForumChannelData dataPackage) {
@@ -135,7 +137,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<Thread>(workload);
+		Thread returnValue{};
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<Thread>(workload, &returnValue);
 	}
 
 	CoRoutine<void> Threads::joinThreadAsync(JoinThreadData dataPackage) {
@@ -180,7 +183,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/thread-members/" + dataPackage.userId;
 		workload.callStack = "Threads::getThreadMemberAsync()";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<ThreadMemberData>(workload);
+		ThreadMemberData returnValue{};
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<ThreadMemberData>(workload, &returnValue);
 	}
 
 	CoRoutine<std::vector<ThreadMemberData>> Threads::getThreadMembersAsync(GetThreadMembersData dataPackage) {
@@ -189,7 +193,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/thread-members";
 		workload.callStack = "Threads::getThreadMembersAsync()";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<ThreadMemberDataVector>(workload);
+		ThreadMemberDataVector returnValue{};
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<ThreadMemberDataVector>(workload, &returnValue);
 	}
 
 	CoRoutine<ActiveThreadsData> Threads::getActiveThreadsAsync(GetActiveThreadsData dataPackage) {
@@ -198,7 +203,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/threads/active";
 		workload.callStack = "Threads::getActiveThreadsAsync()";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<ActiveThreadsData>(workload);
+		ActiveThreadsData returnValue{};
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<ActiveThreadsData>(workload, &returnValue);
 	}
 
 	CoRoutine<ArchivedThreadsData> Threads::getPublicArchivedThreadsAsync(GetPublicArchivedThreadsData dataPackage) {
@@ -215,7 +221,8 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Threads::getPublicArchivedThreadsAsync()";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<ArchivedThreadsData>(workload);
+		ArchivedThreadsData returnValue{};
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<ArchivedThreadsData>(workload, &returnValue);
 	}
 
 	CoRoutine<ArchivedThreadsData> Threads::getPrivateArchivedThreadsAsync(GetPrivateArchivedThreadsData dataPackage) {
@@ -232,7 +239,8 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Threads::getPrivateArchivedThreadsAsync()";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<ArchivedThreadsData>(workload);
+		ArchivedThreadsData returnValue{};
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<ArchivedThreadsData>(workload, &returnValue);
 	}
 
 	CoRoutine<ArchivedThreadsData> Threads::getJoinedPrivateArchivedThreadsAsync(GetJoinedPrivateArchivedThreadsData dataPackage) {
@@ -249,7 +257,8 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Threads::getJoinedPrivateArchivedThreadsAsync()";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<ArchivedThreadsData>(workload);
+		ArchivedThreadsData returnValue{};
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<ArchivedThreadsData>(workload, &returnValue);
 	}
 
 	CoRoutine<ActiveThreadsData> Threads::getActiveGuildThreadsAsync(GetActiveGuildThreadsData dataPackage) {
@@ -258,7 +267,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/threads/active";
 		workload.callStack = "Threads::listActiveThreadsAsync()";
-		co_return Threads::httpsClient->submitWorkloadAndGetResult<ActiveThreadsData>(workload);
+		ActiveThreadsData returnValue{};
+		co_return Threads::httpsClient->submitWorkloadAndGetResult<ActiveThreadsData>(workload, &returnValue);
 	}
 	DiscordCoreInternal::HttpsClient* Threads::httpsClient{ nullptr };
 }

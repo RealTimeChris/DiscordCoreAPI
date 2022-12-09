@@ -56,8 +56,8 @@ namespace DiscordCoreInternal {
 	HttpsResponseData HttpsRnRBuilder::finalizeReturnValues(RateLimitData& rateLimitData) {
 		if (static_cast<HttpsConnection*>(this)->data.responseMessage.size() >= static_cast<HttpsConnection*>(this)->data.contentLength &&
 			static_cast<HttpsConnection*>(this)->data.contentLength > 0) {
-			std::string string =
-				static_cast<HttpsConnection*>(this)->data.responseMessage.substr(0, static_cast<HttpsConnection*>(this)->data.contentLength);
+			std::string string = static_cast<HttpsConnection*>(this)->data.responseMessage.substr(0,
+				static_cast<HttpsConnection*>(this)->data.responseMessage.find_last_of('}'));
 			static_cast<HttpsConnection*>(this)->data.responseMessage = std::move(string);
 		} else {
 			static_cast<HttpsConnection*>(this)->data.responseMessage = static_cast<std::string>(
@@ -257,7 +257,10 @@ namespace DiscordCoreInternal {
 		other.erase(count);
 	}
 
-	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages){};
+	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages) {
+		this->parser.allocate(1024 * 1024);
+		this->parser.threaded = false;
+	};
 
 	void HttpsConnection::handleBuffer() noexcept {
 		DiscordCoreAPI::StopWatch stopWatch{ 500ms };
@@ -407,14 +410,17 @@ namespace DiscordCoreInternal {
 		} else if (workload.payloadType == PayloadType::Multipart_Form) {
 			workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 		}
-		auto returnData = this->httpsRequest(workload);
+		auto httpsConnection = this->connectionManager.getConnection();
+		auto returnData = this->httpsRequest(*httpsConnection, workload);
 		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
 			std::string errorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error: " +
 				static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workload.content + DiscordCoreAPI::reset() + "\n\n" };
 			HttpsError theError{ errorMessage };
 			theError.errorCode = returnData.responseCode;
+			httpsConnection->areWeCheckedOut.store(false);
 			throw theError;
 		}
+		httpsConnection->areWeCheckedOut.store(false);
 		return;
 	}
 
@@ -422,18 +428,19 @@ namespace DiscordCoreInternal {
 		RateLimitData rateLimitData{};
 		auto connection = this->connectionManager.getConnection();
 		auto returnData = this->httpsRequestInternal(*connection, workloadNew, rateLimitData);
-		connection->areWeCheckedOut.store(false);
 		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
 			std::string errorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error: " +
 				static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workloadNew.content + DiscordCoreAPI::reset() + "\n\n" };
 			HttpsError theError{ errorMessage };
 			theError.errorCode = returnData.responseCode;
+			connection->areWeCheckedOut.store(false);
 			throw theError;
 		}
+		connection->areWeCheckedOut.store(false);
 		return returnData;
 	}
 
-	HttpsResponseData HttpsClient::httpsRequest(const HttpsWorkloadData& workload) {
+	HttpsResponseData HttpsClient::httpsRequest(HttpsConnection& httpsConnection, const HttpsWorkloadData& workload) {
 		if (workload.baseUrl == "") {
 			workload.baseUrl = "https://discord.com/api/v10";
 		}
@@ -461,7 +468,7 @@ namespace DiscordCoreInternal {
 			std::this_thread::sleep_for(1ms);
 		}
 
-		HttpsResponseData resultData = this->executeByRateLimitData(workload, rateLimitData);
+		HttpsResponseData resultData = this->executeByRateLimitData(httpsConnection, workload, rateLimitData);
 		auto value = HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->load();
 		HttpsWorkloadData::workloadIdsInternal[workload.workloadType]->store(value + 1);
 		rateLimitData.theSemaphore.release();
@@ -510,7 +517,8 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	HttpsResponseData HttpsClient::executeByRateLimitData(const HttpsWorkloadData& workload, RateLimitData& rateLimitData) {
+	HttpsResponseData HttpsClient::executeByRateLimitData(HttpsConnection& httpsConnection, const HttpsWorkloadData& workload,
+		RateLimitData& rateLimitData) {
 		HttpsResponseData returnData{};
 		Milliseconds timeRemaining{};
 		Milliseconds currentTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch());
@@ -549,10 +557,9 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-		auto httpsConnection = this->connectionManager.getConnection();
-		returnData = HttpsClient::httpsRequestInternal(*httpsConnection, workload, rateLimitData);
-
-		httpsConnection->areWeCheckedOut.store(false);
+		
+		returnData = HttpsClient::httpsRequestInternal(httpsConnection, workload, rateLimitData);
+		
 		rateLimitData.sampledTimeInMs.store(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()));
 
 		if (rateLimitData.tempBucket != "") {
@@ -575,6 +582,7 @@ namespace DiscordCoreInternal {
 		} else {
 			if (returnData.responseCode == 429) {
 				returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
+				simdjson::ondemand::parser parser{};
 				auto document =
 					parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
 				double doubleVal{};
@@ -593,7 +601,7 @@ namespace DiscordCoreInternal {
 						 << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
-				returnData = this->executeByRateLimitData(workload, rateLimitData);
+				returnData = this->executeByRateLimitData(httpsConnection, workload, rateLimitData);
 			}
 		}
 		return returnData;

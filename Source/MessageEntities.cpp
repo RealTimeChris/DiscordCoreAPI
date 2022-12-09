@@ -66,13 +66,15 @@ namespace DiscordCoreAPI {
 	};
 
 	Message::Message(simdjson::ondemand::value jsonObjectData) {
+		this->referencedMessage = std::make_unique<MessageDataOld>();
+
 		this->content = getString(jsonObjectData, "content");
-
-		this->id = getId(jsonObjectData, "id");
-
+		
 		this->channelId = getId(jsonObjectData, "channel_id");
 
 		this->guildId = getId(jsonObjectData, "guild_id");
+
+		this->id = getId(jsonObjectData, "id");
 
 		simdjson::ondemand::value object{};
 		if (getObject(object, "author", jsonObjectData)) {
@@ -372,7 +374,8 @@ namespace DiscordCoreAPI {
 			}
 		}
 		workload.callStack = "Messages::getMessagesAsync()";
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<MessageVector>(workload);
+		MessageVector returnValue{};
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<MessageVector>(workload, &returnValue);
 	}
 
 	CoRoutine<Message> Messages::getMessageAsync(GetMessageData dataPackage) {
@@ -381,7 +384,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.id;
 		workload.callStack = "Messages::getMessageAsync()";
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
+		Message returnValue{};
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload, &returnValue);
 	}
 
 	CoRoutine<Message> Messages::createMessageAsync(CreateMessageData dataPackage) {
@@ -400,7 +404,8 @@ namespace DiscordCoreAPI {
 			workload.content = serializer.operator std::string();
 		}
 		workload.callStack = "Messages::createMessageAsync()";
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
+		Message returnValue{};
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload, &returnValue);
 	}
 
 	CoRoutine<Message> Messages::crosspostMessageAsync(CrosspostMessageData dataPackage) {
@@ -409,7 +414,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/crosspost";
 		workload.callStack = "Messages::crosspostMessageAsync()";
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
+		Message returnValue{};
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload, &returnValue);
 	}
 
 	CoRoutine<Message> Messages::editMessageAsync(EditMessageData dataPackage) {
@@ -428,7 +434,8 @@ namespace DiscordCoreAPI {
 			workload.content = serializer.operator std::string();
 		}
 		workload.callStack = "Messages::editMessageAsync()";
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload);
+		Message returnValue{};
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<Message>(workload, &returnValue);
 	}
 
 	CoRoutine<void> Messages::deleteMessageAsync(DeleteMessageData dataPackage) {
@@ -474,7 +481,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/pins";
 		workload.callStack = "Messages::getPinnedMessagesAsync()";
-		co_return Messages::httpsClient->submitWorkloadAndGetResult<MessageVector>(workload);
+		MessageVector returnValue{};
+		co_return Messages::httpsClient->submitWorkloadAndGetResult<MessageVector>(workload, &returnValue);
 	}
 
 	CoRoutine<void> Messages::pinMessageAsync(PinMessageData dataPackage) {

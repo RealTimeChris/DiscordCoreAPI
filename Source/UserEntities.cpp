@@ -206,7 +206,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/@me";
 		workload.callStack = "Users::getCurrentUserAsync()";
-		auto userData = Users::httpsClient->submitWorkloadAndGetResult<UserData>(workload);
+		User returnData{};
+		auto userData = Users::httpsClient->submitWorkloadAndGetResult<UserData>(workload, &returnData);
 		Users::insertUser(userData);
 		co_return userData;
 	}
@@ -257,7 +258,8 @@ namespace DiscordCoreAPI {
 			responseData.refreshString(JsonifierSerializeType::Json);
 			workload.content = responseData.operator std::string();
 		}
-		co_return Users::httpsClient->submitWorkloadAndGetResult<User>(workload);
+		User returnData{};
+		co_return Users::httpsClient->submitWorkloadAndGetResult<User>(workload, &returnData);
 	}
 
 	CoRoutine<std::vector<ConnectionData>> Users::getUserConnectionsAsync() {
@@ -266,7 +268,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/users/@me/connections";
 		workload.callStack = "Users::getUserConnectionsAsync()";
-		co_return Users::httpsClient->submitWorkloadAndGetResult<ConnectionDataVector>(workload);
+		ConnectionDataVector returnData{};
+		co_return Users::httpsClient->submitWorkloadAndGetResult<ConnectionDataVector>(workload, &returnData);
 	}
 
 	CoRoutine<ApplicationData> Users::getCurrentUserApplicationInfoAsync() {
@@ -275,7 +278,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/oauth2/applications/@me";
 		workload.callStack = "Users::getApplicationDataAsync()";
-		co_return Users::httpsClient->submitWorkloadAndGetResult<ApplicationData>(workload);
+		ApplicationData returnData{};
+		co_return Users::httpsClient->submitWorkloadAndGetResult<ApplicationData>(workload, &returnData);
 	}
 
 	CoRoutine<AuthorizationInfoData> Users::getCurrentUserAuthorizationInfoAsync() {
@@ -284,7 +288,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/oauth2/@me";
 		workload.callStack = "Users::getCurrentUserAuthorizationInfoAsync()";
-		co_return Users::httpsClient->submitWorkloadAndGetResult<AuthorizationInfoData>(workload);
+		AuthorizationInfoData returnData{};
+		co_return Users::httpsClient->submitWorkloadAndGetResult<AuthorizationInfoData>(workload, &returnData);
 	}
 
 	bool Users::doWeCacheUsers() {

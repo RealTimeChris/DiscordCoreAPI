@@ -379,7 +379,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/invites";
 		workload.callStack = "Channels::getChannelInvitesAsync()";
-		co_return Channels::httpsClient->submitWorkloadAndGetResult<InviteDataVector>(workload);
+		InviteDataVector returnValue{};
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<InviteDataVector>(workload, &returnValue);
 	}
 
 	CoRoutine<InviteData> Channels::createChannelInviteAsync(CreateChannelInviteData dataPackage) {
@@ -394,7 +395,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Channels::httpsClient->submitWorkloadAndGetResult<InviteData>(workload);
+		InviteData returnValue{};
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<InviteData>(workload, &returnValue);
 	}
 
 	CoRoutine<void> Channels::deleteChannelPermissionOverwritesAsync(DeleteChannelPermissionOverwritesData dataPackage) {
@@ -418,7 +420,8 @@ namespace DiscordCoreAPI {
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
 		workload.callStack = "Channels::followNewsChannelAsync()";
-		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
+		Channel returnValue{};
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &returnValue);
 	}
 
 	CoRoutine<void> Channels::triggerTypingIndicatorAsync(TriggerTypingIndicatorData dataPackage) {
@@ -436,7 +439,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/channels";
 		workload.callStack = "Channels::getGuildChannelsAsync()";
-		co_return Channels::httpsClient->submitWorkloadAndGetResult<ChannelVector>(workload);
+		ChannelVector returnValue{};
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<ChannelVector>(workload, &returnValue);
 	}
 
 	CoRoutine<Channel> Channels::createGuildChannelAsync(CreateGuildChannelData dataPackage) {
@@ -451,7 +455,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
+		Channel returnValue{};
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &returnValue);
 	}
 
 	CoRoutine<void> Channels::modifyGuildChannelPositionsAsync(ModifyGuildChannelPositionsData dataPackage) {
@@ -479,7 +484,8 @@ namespace DiscordCoreAPI {
 		value["recipient_id"] = dataPackage.userId;
 		value.refreshString(JsonifierSerializeType::Json);
 		workload.content = value.operator std::string();
-		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload);
+		Channel returnValue{};
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<Channel>(workload, &returnValue);
 	}
 
 	CoRoutine<std::vector<VoiceRegionData>> Channels::getVoiceRegionsAsync() {
@@ -488,7 +494,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/voice/regions";
 		workload.callStack = "Channels::getVoiceRegionsAsync()";
-		co_return Channels::httpsClient->submitWorkloadAndGetResult<VoiceRegionDataVector>(workload);
+		VoiceRegionDataVector returnValue{};
+		co_return Channels::httpsClient->submitWorkloadAndGetResult<VoiceRegionDataVector>(workload, &returnValue);
 	}
 
 	void Channels::insertChannel(ChannelData channel) {

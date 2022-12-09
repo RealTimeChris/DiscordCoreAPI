@@ -105,7 +105,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath =
 			"/channels/" + dataPackage.channelId + "/messages/" + dataPackage.messageId + "/reactions/" + urlEncode(emoji) + "/@me";
 		workload.callStack = "Reactions::createReactionAsync()";
-		co_return Reactions::httpsClient->submitWorkloadAndGetResult<Reaction>(workload);
+		Reaction returnValue{};
+		co_return Reactions::httpsClient->submitWorkloadAndGetResult<Reaction>(workload, &returnValue);
 	}
 
 	CoRoutine<void> Reactions::deleteOwnReactionAsync(DeleteOwnReactionData dataPackage) {
@@ -155,7 +156,8 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "Reactions::getReactionsAsync()";
-		co_return Reactions::httpsClient->submitWorkloadAndGetResult<UserVector>(workload);
+		UserVector returnValue{};
+		co_return Reactions::httpsClient->submitWorkloadAndGetResult<UserVector>(workload, &returnValue);
 	}
 
 
@@ -189,7 +191,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis";
 		workload.callStack = "Reactions::getEmojiListAsync()";
-		co_return Reactions::httpsClient->submitWorkloadAndGetResult<EmojiDataVector>(workload);
+		EmojiDataVector returnValue{};
+		co_return Reactions::httpsClient->submitWorkloadAndGetResult<EmojiDataVector>(workload, &returnValue);
 	}
 
 	CoRoutine<EmojiData> Reactions::getGuildEmojiAsync(GetGuildEmojiData dataPackage) {
@@ -198,7 +201,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/emojis/" + dataPackage.emojiId;
 		workload.callStack = "Reactions::getGuildEmojiAsync()";
-		co_return Reactions::httpsClient->submitWorkloadAndGetResult<EmojiData>(workload);
+		EmojiData returnValue{};
+		co_return Reactions::httpsClient->submitWorkloadAndGetResult<EmojiData>(workload, &returnValue);
 	}
 
 	CoRoutine<EmojiData> Reactions::createGuildEmojiAsync(CreateGuildEmojiData dataPackage) {
@@ -237,7 +241,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Reactions::httpsClient->submitWorkloadAndGetResult<EmojiData>(workload);
+		EmojiData returnValue{};
+		co_return Reactions::httpsClient->submitWorkloadAndGetResult<EmojiData>(workload, &returnValue);
 	}
 
 	CoRoutine<EmojiData> Reactions::modifyGuildEmojiAsync(ModifyGuildEmojiData dataPackage) {
@@ -252,7 +257,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Reactions::httpsClient->submitWorkloadAndGetResult<EmojiData>(workload);
+		EmojiData returnValue{};
+		co_return Reactions::httpsClient->submitWorkloadAndGetResult<EmojiData>(workload, &returnValue);
 	}
 
 	CoRoutine<void> Reactions::deleteGuildEmojiAsync(DeleteGuildEmojiData dataPackage) {

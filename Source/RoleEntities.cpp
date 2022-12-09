@@ -208,7 +208,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/roles";
 		workload.callStack = "Roles::getGuildRolesAsync()";
-		co_return Roles::httpsClient->submitWorkloadAndGetResult<RoleVector>(workload);
+		RoleVector returnValue{};
+		co_return Roles::httpsClient->submitWorkloadAndGetResult<RoleVector>(workload, &returnValue);
 	}
 
 	CoRoutine<Role> Roles::createGuildRoleAsync(CreateGuildRoleData dataPackage) {
@@ -223,7 +224,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		auto roleNew = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload);
+		Role returnValue{};
+		auto roleNew = Roles::httpsClient->submitWorkloadAndGetResult<Role>(workload, &returnValue);
 		ModifyGuildRolePositionsData newDataPackage{};
 		newDataPackage.guildId = dataPackage.guildId;
 		newDataPackage.newPosition = dataPackage.position;
@@ -274,7 +276,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Roles::httpsClient->submitWorkloadAndGetResult<RoleVector>(workload);
+		RoleVector returnValue{};
+		co_return Roles::httpsClient->submitWorkloadAndGetResult<RoleVector>(workload, &returnValue);
 	}
 
 	CoRoutine<Role> Roles::modifyGuildRoleAsync(ModifyGuildRoleData dataPackage) {

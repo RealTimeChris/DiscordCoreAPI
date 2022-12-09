@@ -352,7 +352,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/@original";
 		workload.callStack = "Interactions::getInteractionResponseAsync()";
-		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
+		Message returnValue{};
+		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload, &returnValue);
 	}
 
 	CoRoutine<Message> Interactions::editInteractionResponseAsync(EditInteractionResponseData dataPackage) {
@@ -371,8 +372,9 @@ namespace DiscordCoreAPI {
 			serializer.refreshString(JsonifierSerializeType::Json);
 			workload.content = serializer.operator std::string();
 		}
+		Message messageNew{};
 		workload.callStack = "Interactions::editInteractionResponseAsync()";
-		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
+		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload, &messageNew);
 	}
 
 	CoRoutine<void> Interactions::deleteInteractionResponseAsync(DeleteInteractionResponseData dataPackage) {
@@ -402,7 +404,8 @@ namespace DiscordCoreAPI {
 			workload.content = serializer.operator std::string();
 		}
 		workload.callStack = "Interactions::createFollowUpMessageAsync()";
-		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
+		Message returnValue{};
+		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload, &returnValue);
 	}
 
 	CoRoutine<Message> Interactions::getFollowUpMessageAsync(GetFollowUpMessageData dataPackage) {
@@ -411,7 +414,8 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/webhooks/" + dataPackage.applicationId + "/" + dataPackage.interactionToken + "/messages/" + dataPackage.messageId;
 		workload.callStack = "Interactions::getFollowUpMessageAsync()";
-		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
+		Message returnValue{};
+		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload, &returnValue);
 	}
 
 	CoRoutine<Message> Interactions::editFollowUpMessageAsync(EditFollowUpMessageData dataPackage) {
@@ -431,7 +435,8 @@ namespace DiscordCoreAPI {
 			workload.content = serializer.operator std::string();
 		}
 		workload.callStack = "Interactions::editFollowUpMessageAsync()";
-		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload);
+		Message returnValue{};
+		co_return Interactions::httpsClient->submitWorkloadAndGetResult<Message>(workload, &returnValue);
 	}
 
 	CoRoutine<void> Interactions::deleteFollowUpMessageAsync(DeleteFollowUpMessageData dataPackage) {

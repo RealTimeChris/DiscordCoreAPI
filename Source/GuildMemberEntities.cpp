@@ -198,7 +198,8 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::listGuildMembersAsync()";
-		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMemberVector>(workload);
+		GuildMemberVector returnValue{};
+		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMemberVector>(workload, &returnValue);
 	}
 
 	CoRoutine<std::vector<GuildMember>> GuildMembers::searchGuildMembersAsync(SearchGuildMembersData dataPackage) {
@@ -215,7 +216,8 @@ namespace DiscordCoreAPI {
 			workload.relativePath += "?limit=" + std::to_string(dataPackage.limit);
 		}
 		workload.callStack = "GuildMembers::searchGuildMembersAsync()";
-		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMemberVector>(workload);
+		GuildMemberVector returnValue{};
+		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMemberVector>(workload, &returnValue);
 	}
 
 	CoRoutine<GuildMember> GuildMembers::addGuildMemberAsync(AddGuildMemberData dataPackage) {
@@ -227,7 +229,8 @@ namespace DiscordCoreAPI {
 		serializer.refreshString(JsonifierSerializeType::Json);
 		workload.content = serializer.operator std::string();
 		workload.callStack = "GuildMembers::addGuildMemberAsync()";
-		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
+		GuildMember returnValue{};
+		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &returnValue);
 	}
 
 	CoRoutine<GuildMember> GuildMembers::modifyCurrentGuildMemberAsync(ModifyCurrentGuildMemberData dataPackage) {
@@ -243,7 +246,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload);
+		GuildMember returnValue{};
+		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, &returnValue);
 	}
 
 	CoRoutine<GuildMember> GuildMembers::modifyGuildMemberAsync(ModifyGuildMemberData dataPackage) {

@@ -108,6 +108,7 @@ namespace DiscordCoreInternal {
 	class DiscordCoreAPI_Dll HttpsConnection : public TCPSSLClient, public HttpsRnRBuilder {
 	  public:
 		const int32_t maxReconnectTries{ 10 };
+		simdjson::ondemand::parser parser{};
 		std::atomic_bool areWeCheckedOut{};
 		int32_t currentReconnectTries{};
 		StringBuffer inputBufferReal{};
@@ -151,13 +152,11 @@ namespace DiscordCoreInternal {
 	template<typename OTy>
 	concept SameAsVoid = std::same_as<void, OTy>;
 
-	inline thread_local simdjson::ondemand::parser parser{};
-
 	class DiscordCoreAPI_Dll HttpsClient {
 	  public:
 		HttpsClient(DiscordCoreAPI::ConfigManager* configManager);
 
-		template<typename RTy> RTy submitWorkloadAndGetResult(const HttpsWorkloadData& workload, RTy* returnValue = nullptr) {
+		template<typename RTy> RTy submitWorkloadAndGetResult(const HttpsWorkloadData& workload, RTy* returnValue) {
 			workload.headersToInsert["Authorization"] = "Bot " + this->configManager->getBotToken();
 			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
 			if (workload.payloadType == PayloadType::Application_Json) {
@@ -165,42 +164,51 @@ namespace DiscordCoreInternal {
 			} else if (workload.payloadType == PayloadType::Multipart_Form) {
 				workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 			}
-			HttpsResponseData returnData = this->httpsRequest(workload);
+			auto httpsConnection = this->connectionManager.getConnection();
+			HttpsResponseData returnData = this->httpsRequest(*httpsConnection, workload);
+			
 			if (static_cast<uint32_t>(returnData.responseCode) != 200 && static_cast<uint32_t>(returnData.responseCode) != 204 &&
 				static_cast<uint32_t>(returnData.responseCode) != 201) {
 				HttpsError theError{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error: " +
 					static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workload.content + DiscordCoreAPI::reset() + "\n\n" };
 				theError.errorCode = returnData.responseCode;
+				httpsConnection->areWeCheckedOut.store(false);
 				throw theError;
 			}
 
-			if (returnData.responseMessage.size() > 0) {
+			if (returnData.responseMessage.size() > 0 && returnData.responseMessage.size() >= returnData.contentLength) {
 				returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
 				simdjson::ondemand::document document{};
-				if (parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity())
+				if (httpsConnection->parser
+						.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity())
 						.get(document) == simdjson::error_code::SUCCESS) {
 					if (document.type() != simdjson::ondemand::json_type::null) {
 						simdjson::ondemand::value object{};
 						if (document.get(object) == simdjson::error_code::SUCCESS) {
 							if (returnValue) {
-								*returnValue = RTy{ object };
+								auto returnValueNew = RTy{ object };
+								*returnValue = returnValueNew;
+								httpsConnection->areWeCheckedOut.store(false);
 								return *returnValue;
 							} else {
 								RTy returnValueNew{ object };
+								httpsConnection->areWeCheckedOut.store(false);
 								return returnValueNew;
 							}
 						}
 					}
 				}
 			}
-			return RTy{};
+			RTy returnValueNew{};
+			httpsConnection->areWeCheckedOut.store(false);
+			return returnValueNew;
 		}
 
 		template<SameAsVoid RTy> RTy submitWorkloadAndGetResult(const HttpsWorkloadData& workload, RTy* returnValue = nullptr);
 
 		HttpsResponseData submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew);
 
-		HttpsResponseData httpsRequest(const HttpsWorkloadData& workload);
+		HttpsResponseData httpsRequest(HttpsConnection& httpsConnection, const HttpsWorkloadData& workload);
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
@@ -208,7 +216,7 @@ namespace DiscordCoreInternal {
 
 		HttpsResponseData httpsRequestInternal(HttpsConnection& connection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
 
-		HttpsResponseData executeByRateLimitData(const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
+		HttpsResponseData executeByRateLimitData(HttpsConnection& httpsConnection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
 
 		HttpsResponseData getResponse(HttpsConnection& connection, RateLimitData& rateLimitData);
 	};
