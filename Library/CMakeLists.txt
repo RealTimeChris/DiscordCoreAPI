@@ -113,7 +113,6 @@ target_compile_options(
 	"$<$<CXX_COMPILER_ID:GNU>:$<$<STREQUAL:$ENV{EnableASAN},true>:-fsanitize=address>>"
 	"$<$<CXX_COMPILER_ID:GNU>:-fpermissive>"
 	"$<$<CXX_COMPILER_ID:GNU>:-mavx2>"
-	"$<$<CXX_COMPILER_ID:GNU>:-march=native>"
 )
 
 target_link_options(

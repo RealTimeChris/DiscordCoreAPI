@@ -119,7 +119,7 @@ namespace DiscordCoreInternal {
 		while (!stopToken.stop_requested()) {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock lock{ this->coroHandleAccessMutex, std::defer_lock_t{} };
-				if (this->coroutineHandles.size() > 0 && lock.try_lock()) {
+				if (lock.try_lock() && this->coroutineHandles.size() > 0) {
 					std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
 					this->coroHandleCount.store(this->coroHandleCount.load() - 1);
 					this->coroutineHandles.pop_front();
