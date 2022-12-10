@@ -171,8 +171,8 @@ namespace DiscordCoreAPI {
 	void VoiceConnectionBridge::applyGainRamp(int64_t sampleCount) noexcept {
 		this->increment = (this->currentGain - this->previousGain) / static_cast<double>(sampleCount);
 		for (int64_t x = 0; x < sampleCount / 8; ++x) {
-			__m128i currentSamplesNew01{ collectFourElements(&this->upSampledVector[x * 8]) };
-			__m128i currentSamplesNew02{ collectFourElements(&this->upSampledVector[(x * 8) + 4]) };
+			__m128i currentSamplesNew01{ this->collectFourElements(&this->upSampledVector[x * 8]) };
+			__m128i currentSamplesNew02{ this->collectFourElements(&this->upSampledVector[(x * 8) + 4]) };
 			__m128i currentSamplesNew = _mm_packs_epi32(currentSamplesNew01, currentSamplesNew02);
 			_mm_storeu_epi16(&this->downSampledVector[x * 8], currentSamplesNew);
 		}
@@ -453,7 +453,7 @@ namespace DiscordCoreAPI {
 		}
 		return true;
 	}
-	
+
 	void VoiceConnection::connectInternal(std::stop_token token) noexcept {
 		StopWatch stopWatch{ 10000ms };
 		if (this->currentReconnectTries >= this->maxReconnectTries) {
@@ -622,7 +622,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	
+
 
 	void VoiceConnection::runVoice(std::stop_token token) noexcept {
 		StopWatch stopWatch{ 20000ms };
