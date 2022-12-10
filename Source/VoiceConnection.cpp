@@ -158,7 +158,8 @@ namespace DiscordCoreAPI {
 		this->clientPtr = clientPtrNew;
 		this->guildId = guildIdNew;
 	}
-	__m128i VoiceConnectionBridge::collectNextFourElements(opus_int32* data) noexcept {
+
+	__m128i VoiceConnectionBridge::collectFourElements(opus_int32* data) noexcept {
 		__m256d currentSampleNew = _mm256_mul_pd(_mm256_cvtepi32_pd(_mm_set_epi32(data[0], data[1], data[2], data[3])),
 			_mm256_add_pd(_mm256_set1_pd(this->currentGain), _mm256_mul_pd(_mm256_set1_pd(this->increment), _mm256_set_pd(1.0l, 2.0l, 3.0l, 4.0l))));
 		return _mm256_cvtpd_epi32(
@@ -170,8 +171,8 @@ namespace DiscordCoreAPI {
 	void VoiceConnectionBridge::applyGainRamp(int64_t sampleCount) noexcept {
 		this->increment = (this->currentGain - this->previousGain) / static_cast<double>(sampleCount);
 		for (int64_t x = 0; x < sampleCount / 8; ++x) {
-			__m128i currentSamplesNew01{ collectNextFourElements(&this->upSampledVector[x * 8]) };
-			__m128i currentSamplesNew02{ collectNextFourElements(&this->upSampledVector[(x * 8) + 4]) };
+			__m128i currentSamplesNew01{ collectFourElements(&this->upSampledVector[x * 8]) };
+			__m128i currentSamplesNew02{ collectFourElements(&this->upSampledVector[(x * 8) + 4]) };
 			__m128i currentSamplesNew = _mm_packs_epi32(currentSamplesNew01, currentSamplesNew02);
 			_mm_storeu_epi16(&this->downSampledVector[x * 8], currentSamplesNew);
 		}
