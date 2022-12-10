@@ -171,15 +171,32 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll VoiceConnectionBridge : public DiscordCoreInternal::UDPConnection {
 	  public:
-		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, StreamType streamType, Snowflake guildIdNew);
+		friend class VoiceConnection;
+
+		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, std::basic_string<std::byte>& encryptionKeyNew, StreamType streamType,
+			Snowflake guildIdNew);
+
+		__m128i collectNextFourElements(opus_int32* data) noexcept;
+
+		void applyGainRamp(int64_t sampleCount) noexcept;
 
 		void parseOutgoingVoiceData() noexcept;
 
 		void handleAudioBuffer() noexcept;
 
+		void mixAudio() noexcept;
+
 	  protected:
+		std::basic_string<std::byte> decryptedDataString{};
+		std::basic_string<std::byte> encryptionKey{};
+		std::vector<opus_int16> downSampledVector{};
+		MovingAverager voiceUserCountAverage{ 25 };
+		std::vector<opus_int32> upSampledVector{};
 		DiscordCoreClient* clientPtr{ nullptr };
+		double previousGain{};
+		double currentGain{};
 		Snowflake guildId{};
+		double increment{};
 	};
 
 	/**
@@ -220,14 +237,10 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<VoiceConnectionBridge> streamSocket{ nullptr };
 		DiscordCoreInternal::WebSocketClient* baseShard{ nullptr };
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
-		std::basic_string<std::byte> decryptedDataString{};
 		DiscordCoreInternal::OpusEncoderWrapper encoder{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
 		std::basic_string<std::byte> encryptionKey{};
 		VoiceConnectInitData voiceConnectInitData{};
-		std::vector<opus_int16> downSampledVector{};
-		MovingAverager voiceUserCountAverage{ 25 };
-		std::vector<opus_int32> upSampledVector{};
 		std::atomic_bool* doWeQuit{ nullptr };
 		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};
@@ -243,10 +256,7 @@ namespace DiscordCoreAPI {
 		int64_t msPerPacket{};
 		std::string voiceIp{};
 		std::string baseUrl{};
-		double previousGain{};
 		uint32_t audioSSRC{};
-		double currentGain{};
-		double increment{};
 		uint16_t port{};
 
 		void parseIncomingVoiceData(std::basic_string_view<std::byte> rawDataBufferNew) noexcept;
@@ -255,8 +265,6 @@ namespace DiscordCoreAPI {
 
 		void checkForAndSendHeartBeat(const bool isItImmediage) noexcept;
 
-		__m128i collectNextFourElements(opus_int32* data) noexcept;
-
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
 		void checkForConnections(std::stop_token token) noexcept;
@@ -264,8 +272,6 @@ namespace DiscordCoreAPI {
 		bool onMessageReceived(std::string_view data) noexcept;
 
 		void connectInternal(std::stop_token token) noexcept;
-
-		void applyGainRamp(int64_t sampleCount) noexcept;
 
 		void runVoice(std::stop_token) noexcept;
 
@@ -288,8 +294,6 @@ namespace DiscordCoreAPI {
 		void reconnect() noexcept;
 
 		void onClosed() noexcept;
-
-		void mixAudio() noexcept;
 
 		bool stop() noexcept;
 

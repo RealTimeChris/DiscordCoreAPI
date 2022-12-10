@@ -149,10 +149,32 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	VoiceConnectionBridge::VoiceConnectionBridge(DiscordCoreClient* clientPtrNew, StreamType streamType, Snowflake guildIdNew)
+	VoiceConnectionBridge::VoiceConnectionBridge(DiscordCoreClient* clientPtrNew, std::basic_string<std::byte>& encryptionKeyNew,
+		StreamType streamType, Snowflake guildIdNew)
 		: UDPConnection(streamType, clientPtrNew->getConfigManager().doWePrintWebSocketErrorMessages()) {
+		this->encryptionKey = encryptionKeyNew;
+		this->downSampledVector.resize(23040);
+		this->upSampledVector.resize(23040);
 		this->clientPtr = clientPtrNew;
 		this->guildId = guildIdNew;
+	}
+	__m128i VoiceConnectionBridge::collectNextFourElements(opus_int32* data) noexcept {
+		__m256d currentSampleNew = _mm256_mul_pd(_mm256_cvtepi32_pd(_mm_set_epi32(data[0], data[1], data[2], data[3])),
+			_mm256_add_pd(_mm256_set1_pd(this->currentGain), _mm256_mul_pd(_mm256_set1_pd(this->increment), _mm256_set_pd(1.0l, 2.0l, 3.0l, 4.0l))));
+		return _mm256_cvtpd_epi32(
+			_mm256_blendv_pd(_mm256_max_pd(currentSampleNew, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::min()))),
+				_mm256_min_pd(currentSampleNew, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::max()))),
+				_mm256_cmp_pd(currentSampleNew, _mm256_set1_pd(0.0l), _CMP_GE_OQ)));
+	}
+
+	void VoiceConnectionBridge::applyGainRamp(int64_t sampleCount) noexcept {
+		this->increment = (this->currentGain - this->previousGain) / static_cast<double>(sampleCount);
+		for (int64_t x = 0; x < sampleCount / 8; ++x) {
+			__m128i currentSamplesNew01{ collectNextFourElements(&this->upSampledVector[x * 8]) };
+			__m128i currentSamplesNew02{ collectNextFourElements(&this->upSampledVector[(x * 8) + 4]) };
+			__m128i currentSamplesNew = _mm_packs_epi32(currentSamplesNew01, currentSamplesNew02);
+			_mm_storeu_epi16(&this->downSampledVector[x * 8], currentSamplesNew);
+		}
 	}
 
 	void VoiceConnectionBridge::parseOutgoingVoiceData() noexcept {
@@ -168,6 +190,75 @@ namespace DiscordCoreAPI {
 		this->parseOutgoingVoiceData();
 	}
 
+	void VoiceConnectionBridge::mixAudio() noexcept {
+		opus_int32 voiceUserCountReal{};
+		int64_t decodedSize{};
+		std::fill(this->upSampledVector.data(), this->upSampledVector.data() + this->upSampledVector.size(), 0);
+		for (auto& [key, value]: this->clientPtr->getVoiceConnection(this->guildId)->voiceUsers) {
+			UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Read_Only);
+			std::basic_string_view<std::byte> payload{ value->extractPayload() };
+			if (payload.size() == 0) {
+				continue;
+			} else {
+				const uint64_t headerSize{ 12 };
+				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };
+				const uint64_t offsetToData{ headerSize + sizeof(uint32_t) * csrcCount };
+				const uint64_t encryptedDataLength{ payload.size() - offsetToData };
+
+				if (this->decryptedDataString.size() < encryptedDataLength) {
+					this->decryptedDataString.resize(encryptedDataLength);
+				}
+
+				std::byte nonce[24]{};
+				for (int32_t x = 0; x < headerSize; ++x) {
+					nonce[x] = payload[x];
+				}
+
+				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
+						reinterpret_cast<const uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, reinterpret_cast<uint8_t*>(nonce),
+						reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
+					continue;
+				}
+
+				std::basic_string_view newString{ this->decryptedDataString.data(), encryptedDataLength - crypto_secretbox_MACBYTES };
+
+				if (static_cast<int8_t>(payload[0] >> 4) & 0b0001) {
+					const uint16_t extenstionLengthInWords{ ntohs(*reinterpret_cast<const uint16_t*>(&newString[2])) };
+					const size_t extensionLength{ sizeof(uint32_t) * extenstionLengthInWords };
+					const size_t extensionHeaderLength{ sizeof(uint16_t) * 2 };
+					newString = newString.substr(extensionHeaderLength + extensionLength);
+				}
+
+				if (newString.size() > 0) {
+					std::basic_string_view<opus_int16> decodedData{};
+					try {
+						decodedData = value->getDecoder().decodeData(newString);
+					} catch (...) {
+						reportException("VoiceConnection::mixAudio()");
+					}
+					if (decodedData.size() > 0) {
+						decodedSize = std::max(decodedSize, static_cast<int64_t>(decodedData.size()));
+						++voiceUserCountReal;
+						for (size_t x = 0; x < decodedData.size() / 8; ++x) {
+							_mm256_storeu_epi32(&this->upSampledVector[x * 8],
+								_mm256_add_epi32(_mm256_loadu_epi32(&this->upSampledVector[x * 8]),
+									_mm256_cvtepi16_epi32(_mm_loadu_epi16(&decodedData[x * 8]))));
+						}
+					}
+				}
+			}
+		}
+		if (decodedSize > 0) {
+			this->voiceUserCountAverage.insertValue(voiceUserCountReal);
+			auto currentPreviousGain = 1.0f / this->voiceUserCountAverage.getCurrentValue();
+			this->currentGain = currentPreviousGain;
+			this->applyGainRamp(decodedSize);
+			this->writeData(std::basic_string_view<std::byte>{ reinterpret_cast<std::byte*>(this->downSampledVector.data()),
+				static_cast<size_t>(decodedSize * 2) });
+			this->previousGain = currentPreviousGain;
+		}
+	}
+
 	VoiceConnection::VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketClient* baseShardNew,
 		std::atomic_bool* doWeQuitNew) noexcept
 		: WebSocketCore(&clientPtrNew->configManager, DiscordCoreInternal::WebSocketType::Voice),
@@ -177,8 +268,6 @@ namespace DiscordCoreAPI {
 		this->msPerPacket = 20;
 		this->samplesPerPacket = sampleRatePerSecond / 1000 * msPerPacket;
 		this->discordCoreClient = clientPtrNew;
-		this->downSampledVector.resize(23040);
-		this->upSampledVector.resize(23040);
 		this->baseShard = baseShardNew;
 		this->doWeQuit = doWeQuitNew;
 	}
@@ -232,15 +321,6 @@ namespace DiscordCoreAPI {
 			this->haveWeReceivedHeartbeatAck = false;
 			this->heartBeatStopWatch.resetTimer();
 		}
-	}
-
-	__m128i VoiceConnection::collectNextFourElements(opus_int32* data) noexcept {
-		__m256d currentSampleNew = _mm256_mul_pd(_mm256_cvtepi32_pd(_mm_set_epi32(data[0], data[1], data[2], data[3])),
-			_mm256_add_pd(_mm256_set1_pd(this->currentGain), _mm256_mul_pd(_mm256_set1_pd(this->increment), _mm256_set_pd(1.0l, 2.0l, 3.0l, 4.0l))));
-		return _mm256_cvtpd_epi32(
-			_mm256_blendv_pd(_mm256_max_pd(currentSampleNew, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::min()))),
-				_mm256_min_pd(currentSampleNew, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::max()))),
-				_mm256_cmp_pd(currentSampleNew, _mm256_set1_pd(0.0l), _CMP_GE_OQ)));
 	}
 
 	void VoiceConnection::sendSpeakingMessage(const bool isSpeaking) noexcept {
@@ -523,7 +603,7 @@ namespace DiscordCoreAPI {
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				if (this->voiceConnectInitData.streamInfo.type != StreamType::None) {
 					if (!this->streamSocket) {
-						this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient,
+						this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this->encryptionKey,
 							this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
 					}
 					if (!this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port, false,
@@ -541,15 +621,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void VoiceConnection::applyGainRamp(int64_t sampleCount) noexcept {
-		this->increment = (this->currentGain - this->previousGain) / static_cast<double>(sampleCount);
-		for (int64_t x = 0; x < sampleCount / 8; ++x) {
-			__m128i currentSamplesNew01{ collectNextFourElements(&this->upSampledVector[x * 8]) };
-			__m128i currentSamplesNew02{ collectNextFourElements(&this->upSampledVector[(x * 8) + 4]) };
-			__m128i currentSamplesNew = _mm_packs_epi32(currentSamplesNew01, currentSamplesNew02);
-			_mm_storeu_epi16(&this->downSampledVector[x * 8], currentSamplesNew);
-		}
-	}
+	
 
 	void VoiceConnection::runVoice(std::stop_token token) noexcept {
 		StopWatch stopWatch{ 20000ms };
@@ -734,7 +806,7 @@ namespace DiscordCoreAPI {
 						targetTime = HRClock::now() + this->intervalCount;
 
 						if (this->streamSocket && this->streamSocket->areWeStillConnected()) {
-							this->mixAudio();
+							this->streamSocket->mixAudio();
 							if (this->streamSocket->processIO(DiscordCoreInternal::ProcessIOType::Both) ==
 								DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
@@ -896,75 +968,6 @@ namespace DiscordCoreAPI {
 			this->reconnect();
 		} else if (this->currentReconnectTries >= this->maxReconnectTries) {
 			VoiceConnection::disconnect();
-		}
-	}
-
-	void VoiceConnection::mixAudio() noexcept {
-		opus_int32 voiceUserCountReal{};
-		int64_t decodedSize{};
-		std::fill(this->upSampledVector.data(), this->upSampledVector.data() + this->upSampledVector.size(), 0);
-		for (auto& [key, value]: this->voiceUsers) {
-			UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Read_Only);
-			std::basic_string_view<std::byte> payload{ value->extractPayload() };
-			if (payload.size() == 0) {
-				continue;
-			} else {
-				const uint64_t headerSize{ 12 };
-				const uint64_t csrcCount{ static_cast<uint64_t>(payload[0]) & 0b0000'1111 };
-				const uint64_t offsetToData{ headerSize + sizeof(uint32_t) * csrcCount };
-				const uint64_t encryptedDataLength{ payload.size() - offsetToData };
-
-				if (this->decryptedDataString.size() < encryptedDataLength) {
-					this->decryptedDataString.resize(encryptedDataLength);
-				}
-
-				std::byte nonce[24]{};
-				for (int32_t x = 0; x < headerSize; ++x) {
-					nonce[x] = payload[x];
-				}
-
-				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
-						reinterpret_cast<const uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, reinterpret_cast<uint8_t*>(nonce),
-						reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
-					continue;
-				}
-
-				std::basic_string_view newString{ this->decryptedDataString.data(), encryptedDataLength - crypto_secretbox_MACBYTES };
-
-				if (static_cast<int8_t>(payload[0] >> 4) & 0b0001) {
-					const uint16_t extenstionLengthInWords{ ntohs(*reinterpret_cast<const uint16_t*>(&newString[2])) };
-					const size_t extensionLength{ sizeof(uint32_t) * extenstionLengthInWords };
-					const size_t extensionHeaderLength{ sizeof(uint16_t) * 2 };
-					newString = newString.substr(extensionHeaderLength + extensionLength);
-				}
-
-				if (newString.size() > 0) {
-					std::basic_string_view<opus_int16> decodedData{};
-					try {
-						decodedData = value->getDecoder().decodeData(newString);
-					} catch (...) {
-						reportException("VoiceConnection::mixAudio()");
-					}
-					if (decodedData.size() > 0) {
-						decodedSize = std::max(decodedSize, static_cast<int64_t>(decodedData.size()));
-						++voiceUserCountReal;
-						for (size_t x = 0; x < decodedData.size() / 8; ++x) {
-							_mm256_storeu_epi32(&this->upSampledVector[x * 8],
-								_mm256_add_epi32(_mm256_loadu_epi32(&this->upSampledVector[x * 8]),
-									_mm256_cvtepi16_epi32(_mm_loadu_epi16(&decodedData[x * 8]))));
-						}
-					}
-				}
-			}
-		}
-		if (decodedSize > 0) {
-			this->voiceUserCountAverage.insertValue(voiceUserCountReal);
-			auto currentPreviousGain = 1.0f / this->voiceUserCountAverage.getCurrentValue();
-			this->currentGain = currentPreviousGain;
-			this->applyGainRamp(decodedSize);
-			this->streamSocket->writeData(std::basic_string_view<std::byte>{ reinterpret_cast<std::byte*>(this->downSampledVector.data()),
-				static_cast<size_t>(decodedSize * 2) });
-			this->previousGain = currentPreviousGain;
 		}
 	}
 
