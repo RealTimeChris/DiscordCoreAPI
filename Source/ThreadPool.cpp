@@ -91,6 +91,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void CoRoutineThreadPool::submitTask(std::coroutine_handle<> coro) noexcept {
+		std::shared_lock lock01{ this->workerAccessMutex };
 		bool areWeAllBusy{ true };
 		for (const auto& [key, value]: this->workerThreads) {
 			if (!value.areWeCurrentlyWorking.load()) {
@@ -106,12 +107,13 @@ namespace DiscordCoreInternal {
 			workerThread.thread = std::jthread([=, this](std::stop_token stopToken) {
 				this->threadFunction(stopToken, indexNew);
 			});
+			lock01.unlock();
 			std::unique_lock lock{ this->workerAccessMutex };
 			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
-			lock.unlock();
 		}
 		std::unique_lock lock{ this->coroHandleAccessMutex };
 		this->coroutineHandles.emplace_back(coro);
+		lock.unlock();
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
 

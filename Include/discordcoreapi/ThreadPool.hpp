@@ -120,10 +120,10 @@ namespace DiscordCoreInternal {
 		std::deque<std::coroutine_handle<>> coroutineHandles{};
 		const std::atomic_int64_t threadCount{};
 		std::atomic_int64_t coroHandleCount{};
+		std::shared_mutex workerAccessMutex{};
 		std::atomic_int64_t currentCount{};
 		std::atomic_int64_t currentIndex{};
 		std::mutex coroHandleAccessMutex{};
-		std::mutex workerAccessMutex{};
 
 		void threadFunction(std::stop_token token, int64_t index);
 	};
