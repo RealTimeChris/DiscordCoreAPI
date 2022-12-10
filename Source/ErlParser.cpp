@@ -42,7 +42,7 @@ namespace DiscordCoreInternal {
 
 	void ErlParser::writeCharacters(const char* data, size_t length) {
 		if (this->finalString.size() < this->currentSize + length) {
-			this->finalString.resize(this->finalString.size() + length);
+			this->finalString.resize((this->finalString.size() + length) * 2);
 		}
 		std::copy(data, data + length, this->finalString.data() + this->currentSize);
 		this->currentSize += length;
@@ -57,7 +57,7 @@ namespace DiscordCoreInternal {
 			throw ErlParseError{ "ErlParser::readString() Error: readString() past end of buffer.\n\n" };
 		}
 		if (this->finalString.size() < this->currentSize + length) {
-			this->finalString.resize(this->finalString.size() + static_cast<uint64_t>(length * 4ull));
+			this->finalString.resize((this->finalString.size() + length) * 2);
 		}
 		const char* stringNew = this->dataBuffer.data() + this->offSet;
 		this->offSet += length;
