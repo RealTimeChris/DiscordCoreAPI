@@ -119,9 +119,9 @@ namespace DiscordCoreInternal {
 
 	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t index) {
 		while (!stopToken.stop_requested()) {
-			if (this->coroHandleCount.load() > 0 && !stopToken.stop_requested()) {
+			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock lock{ this->coroHandleAccessMutex, std::defer_lock_t{} };
-				if (lock.try_lock() && this->coroutineHandles.size() > 0 && !stopToken.stop_requested()) {
+				if (lock.try_lock() && this->coroutineHandles.size() > 0) {
 					std::coroutine_handle<> coroHandle = this->coroutineHandles.front();
 					this->coroHandleCount.store(this->coroHandleCount.load() - 1);
 					this->coroutineHandles.pop_front();
@@ -131,14 +131,13 @@ namespace DiscordCoreInternal {
 					this->workerThreads[index].areWeCurrentlyWorking.store(false);
 				}
 			}
-			if (this->currentCount.load() > this->threadCount.load() && !stopToken.stop_requested()) {
+			if (this->currentCount.load() > this->threadCount.load()) {
 				int64_t extraWorkers{ this->currentCount.load() - this->threadCount.load() };
-				while (extraWorkers > 0 && !stopToken.stop_requested()) {
+				while (extraWorkers > 0) {
 					--extraWorkers;
 					std::unique_lock lock{ this->workerAccessMutex };
 					const auto oldThread = this->workerThreads.begin();
-					if (oldThread->second.thread.joinable() && oldThread->second.areWeCurrentlyWorking.load() && !stopToken.stop_requested()) {
-						oldThread->second.thread.request_stop();
+					if (oldThread->second.thread.joinable() && oldThread->second.areWeCurrentlyWorking.load()) {
 						oldThread->second.thread.detach();
 						this->currentCount.store(this->currentCount.load() - 1);
 						this->workerThreads.erase(oldThread->first);
