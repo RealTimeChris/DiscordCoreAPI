@@ -54,7 +54,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 		if (this->offSet + static_cast<uint64_t>(length) > this->dataBuffer.size()) {
-			throw ErlParseError{ "ErlParser::readString() Error: readString() past end of buffer.\n\n" };
+			throw ErlParseError{ "ErlParser::writeCharactersFromBuffer() Error: readString() past end of buffer." };
 		}
 		if (this->finalString.size() < this->currentSize + length) {
 			this->finalString.resize((this->finalString.size() + length) * 2);
@@ -150,7 +150,7 @@ namespace DiscordCoreInternal {
 
 	void ErlParser::singleValueETFToJson() {
 		if (this->offSet > this->dataBuffer.size()) {
-			throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Read past end of ETF buffer.\n\n" };
+			throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Read past end of ETF buffer." };
 		}
 		uint8_t type = this->readBitsFromBuffer<uint8_t>();
 		switch (static_cast<DiscordCoreAPI::EtfType>(type)) {
@@ -189,7 +189,7 @@ namespace DiscordCoreInternal {
 			}
 			default: {
 				throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Unknown data type in ETF, the type: " + std::to_string(type) +
-					"\n\n" };
+					"" };
 			}
 		}
 	}
@@ -198,7 +198,7 @@ namespace DiscordCoreInternal {
 		uint32_t length = this->readBitsFromBuffer<uint32_t>();
 		this->writeCharacter('[');
 		if (static_cast<uint64_t>(this->offSet) + length > this->dataBuffer.size()) {
-			throw ErlParseError{ "ErlPacker::parseStringAsList() Error: List reading past end of buffer.\n\n" };
+			throw ErlParseError{ "ErlPacker::parseListExt() Error: List reading past end of buffer." };
 		}
 		for (uint16_t x = 0; x < length; ++x) {
 			this->singleValueETFToJson();
@@ -224,9 +224,9 @@ namespace DiscordCoreInternal {
 		this->writeCharacter('"');
 		uint16_t length = this->readBitsFromBuffer<uint16_t>();
 		if (static_cast<uint64_t>(this->offSet) + length > this->dataBuffer.size()) {
-			throw ErlParseError{ "ErlParser::parseStringAsList() Error: std::string reading past end of buffer.\n\n" };
+			throw ErlParseError{ "ErlParser::parseStringExt() Error: std::string reading past end of buffer." };
 		}
-		for (size_t x = 0; x < length; ++x) {
+		for (uint16_t x = 0; x < length; ++x) {
 			this->parseSmallIntegerExt();
 		}
 		this->writeCharacter('"');
@@ -246,12 +246,12 @@ namespace DiscordCoreInternal {
 
 
 		if (digits > 8) {
-			throw ErlParseError{ "ErlParser::parseSmallBigExt() Error: Big integer larger than 8 bytes not supported.\n\n" };
+			throw ErlParseError{ "ErlParser::parseSmallBigExt() Error: Big integers larger than 8 bytes not supported." };
 		}
 
 		uint64_t value = 0;
 		uint64_t bits = 1;
-		for (uint32_t i = 0; i < digits; ++i) {
+		for (uint8_t i = 0; i < digits; ++i) {
 			uint64_t digit = readBitsFromBuffer<uint8_t>();
 			value += digit * bits;
 			bits <<= 8;
@@ -269,13 +269,11 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlParser::parseAtomExt() {
-		uint32_t length = this->readBitsFromBuffer<uint16_t>();
-		this->writeCharactersFromBuffer(length);
+		this->writeCharactersFromBuffer(this->readBitsFromBuffer<uint16_t>());
 	}
 
 	void ErlParser::parseBinaryExt() {
-		uint32_t length = this->readBitsFromBuffer<uint32_t>();
-		this->writeCharactersFromBuffer(length);
+		this->writeCharactersFromBuffer(this->readBitsFromBuffer<uint32_t>());
 	}
 
 	void ErlParser::parseNilExt() {
@@ -283,8 +281,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlParser::parseSmallAtomExt() {
-		uint32_t length = this->readBitsFromBuffer<uint8_t>();
-		this->writeCharactersFromBuffer(length);
+		this->writeCharactersFromBuffer(this->readBitsFromBuffer<uint8_t>());
 	}
 
 	void ErlParser::parseMapExt() {

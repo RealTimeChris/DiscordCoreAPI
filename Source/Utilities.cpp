@@ -1509,8 +1509,7 @@ namespace DiscordCoreAPI {
 				   << "\nThe Error: \n"
 				   << e.what() << reset() << std::endl
 				   << std::endl;
-			auto returnString = stream.str();
-			cout << returnString;
+			cout << stream.str();
 		}
 	}
 
@@ -1522,12 +1521,13 @@ namespace DiscordCoreAPI {
 			}
 		} catch (const std::exception& e) {
 			std::stringstream stream{};
-			stream << shiftToBrightRed() << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " ("
-				   << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
+			stream << shiftToBrightRed() << "Error Report: \n"
+				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
+				   << std::to_string(location.column()) << ")"
 				   << "\nThe Error: \n"
-				   << e.what() << reset();
-			auto returnString = stream.str();
-			cout << returnString;
+				   << e.what() << reset() << std::endl
+				   << std::endl;
+			cout << stream.str();
 			if (std::current_exception()) {
 				std::rethrow_exception(std::current_exception());
 			}

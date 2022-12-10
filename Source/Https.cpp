@@ -416,7 +416,7 @@ namespace DiscordCoreInternal {
 		auto returnData = this->httpsRequest(*httpsConnection, workload);
 		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
 			std::string errorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error: " +
-				static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workload.content + DiscordCoreAPI::reset() + "\n\n" };
+				static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workload.content + DiscordCoreAPI::reset() + "" };
 			HttpsError theError{ errorMessage };
 			theError.errorCode = returnData.responseCode;
 			httpsConnection->areWeCheckedOut.store(false);
@@ -432,7 +432,7 @@ namespace DiscordCoreInternal {
 		auto returnData = this->httpsRequestInternal(*connection, workloadNew, rateLimitData);
 		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
 			std::string errorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error: " +
-				static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workloadNew.content + DiscordCoreAPI::reset() + "\n\n" };
+				static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workloadNew.content + DiscordCoreAPI::reset() + "" };
 			HttpsError theError{ errorMessage };
 			theError.errorCode = returnData.responseCode;
 			connection->areWeCheckedOut.store(false);

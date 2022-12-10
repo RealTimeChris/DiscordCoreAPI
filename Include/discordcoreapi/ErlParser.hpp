@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 
 		template<typename RTy> RTy readBitsFromBuffer() {
 			if (this->offSet + sizeof(RTy) > this->dataBuffer.size()) {
-				throw ErlParseError{ "ErlParser::readBitsFromBuffer() Error: readBitsFromBuffer() past end of the buffer.\n\n" };
+				throw ErlParseError{ "ErlParser::readBitsFromBuffer() Error: readBitsFromBuffer() past end of the buffer." };
 			}
 			RTy newValue = *reinterpret_cast<const RTy*>(this->dataBuffer.data() + this->offSet);
 			this->offSet += sizeof(RTy);

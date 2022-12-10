@@ -170,7 +170,7 @@ namespace DiscordCoreInternal {
 			if (static_cast<uint32_t>(returnData.responseCode) != 200 && static_cast<uint32_t>(returnData.responseCode) != 204 &&
 				static_cast<uint32_t>(returnData.responseCode) != 201) {
 				HttpsError theError{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error: " +
-					static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workload.content + DiscordCoreAPI::reset() + "\n\n" };
+					static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workload.content + DiscordCoreAPI::reset() + "" };
 				theError.errorCode = returnData.responseCode;
 				httpsConnection->areWeCheckedOut.store(false);
 				throw theError;
