@@ -258,7 +258,9 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsConnection::HttpsConnection(bool doWePrintErrorMessages) : HttpsRnRBuilder(doWePrintErrorMessages) {
-		this->parser.allocate(1024 * 1024);
+		if (this->parser.allocate(1024ull * 1024ull) != simdjson::error_code::SUCCESS) {
+			throw DiscordCoreAPI::DCAException{ "Failed to allocate the parser's memory." };
+		}
 		this->parser.threaded = false;
 	};
 
