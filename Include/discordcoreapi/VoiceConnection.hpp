@@ -246,6 +246,7 @@ namespace DiscordCoreAPI {
 		double previousGain{};
 		uint32_t audioSSRC{};
 		double currentGain{};
+		double increment{};
 		uint16_t port{};
 
 		void parseIncomingVoiceData(std::basic_string_view<std::byte> rawDataBufferNew) noexcept;
@@ -253,6 +254,8 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
 		void checkForAndSendHeartBeat(const bool isItImmediage) noexcept;
+
+		__m128i collectNextFourElements(opus_int32* data) noexcept;
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
