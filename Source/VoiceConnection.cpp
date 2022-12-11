@@ -195,7 +195,6 @@ namespace DiscordCoreAPI {
 		int64_t decodedSize{};
 		std::fill(this->upSampledVector.data(), this->upSampledVector.data() + this->upSampledVector.size(), 0);
 		for (auto& [key, value]: this->clientPtr->getVoiceConnection(this->guildId)->voiceUsers) {
-			UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Read_Only);
 			std::basic_string_view<std::byte> payload{ value->extractPayload() };
 			if (payload.size() == 0) {
 				continue;
