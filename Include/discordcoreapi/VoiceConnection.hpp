@@ -126,7 +126,7 @@ namespace DiscordCoreAPI {
 
 		void insertValue(int64_t value) noexcept;
 
-		double getCurrentValue() noexcept;
+		float getCurrentValue() noexcept;
 
 	  protected:
 		std::deque<int64_t> values{};
@@ -176,7 +176,7 @@ namespace DiscordCoreAPI {
 		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, std::basic_string<std::byte>& encryptionKeyNew, StreamType streamType,
 			Snowflake guildIdNew);
 
-		__m128i collectFourElements(opus_int32* data) noexcept;
+		__m256i collectEightElements(opus_int32* data) noexcept;
 
 		void applyGainRamp(int64_t sampleCount) noexcept;
 
@@ -193,10 +193,10 @@ namespace DiscordCoreAPI {
 		MovingAverager voiceUserCountAverage{ 25 };
 		std::vector<opus_int32> upSampledVector{};
 		DiscordCoreClient* clientPtr{ nullptr };
-		double previousGain{};
-		double currentGain{};
+		float previousGain{};
+		float currentGain{};
 		Snowflake guildId{};
-		double increment{};
+		float increment{};
 	};
 
 	/**

@@ -137,13 +137,13 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	double MovingAverager::getCurrentValue() noexcept {
-		double returnValue{};
+	float MovingAverager::getCurrentValue() noexcept {
+		float returnValue{};
 		if (this->values.size() > 0) {
 			for (auto& value: this->values) {
-				returnValue += static_cast<double>(value);
+				returnValue += static_cast<float>(value);
 			}
-			return returnValue / static_cast<double>(this->values.size());
+			return returnValue / static_cast<float>(this->values.size());
 		} else {
 			return 0.0f;
 		}
@@ -159,19 +159,10 @@ namespace DiscordCoreAPI {
 		this->guildId = guildIdNew;
 	}
 
-	__m128i VoiceConnectionBridge::collectFourElements(opus_int32* data) noexcept {
-		__m256d currentSampleNew = _mm256_mul_pd(_mm256_cvtepi32_pd(_mm_loadu_epi32(data)),
-			_mm256_add_pd(_mm256_set1_pd(this->currentGain), _mm256_mul_pd(_mm256_set1_pd(this->increment), _mm256_set_pd(1.0l, 2.0l, 3.0l, 4.0l))));
-		return _mm256_cvtpd_epi32(
-			_mm256_blendv_pd(_mm256_max_pd(currentSampleNew, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::min()))),
-				_mm256_min_pd(currentSampleNew, _mm256_set1_pd(static_cast<double>(std::numeric_limits<opus_int16>::max()))),
-				_mm256_cmp_pd(currentSampleNew, _mm256_set1_pd(0.0l), _CMP_GE_OQ)));
-	}
-
-	__m256i collectEightElements(opus_int32* data, float currentGain, float increment) noexcept {
+	__m256i VoiceConnectionBridge::collectEightElements(opus_int32* data) noexcept {
 		__m256 currentSampleNew = _mm256_mul_ps(_mm256_cvtepi32_ps(_mm256_loadu_epi32(data)),
-			_mm256_add_ps(_mm256_set1_ps(currentGain),
-				_mm256_mul_ps(_mm256_set1_ps(increment), _mm256_set_ps(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f))));
+			_mm256_add_ps(_mm256_set1_ps(this->currentGain),
+				_mm256_mul_ps(_mm256_set1_ps(this->increment), _mm256_set_ps(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f))));
 		return _mm256_cvtps_epi32(
 			_mm256_blendv_ps(_mm256_max_ps(currentSampleNew, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::min()))),
 				_mm256_min_ps(currentSampleNew, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::max()))),
@@ -179,10 +170,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceConnectionBridge::applyGainRamp(int64_t sampleCount) noexcept {
-		this->increment = (static_cast<float>(this->currentGain) - static_cast<float>(this->previousGain)) / static_cast<float>(sampleCount);
+		this->increment = (this->currentGain - this->previousGain) / static_cast<float>(sampleCount);
 		for (int64_t x = 0; x < sampleCount / 8; ++x) {
-			__m256i currentSampleNew = collectEightElements(this->upSampledVector.data() + x * 8, static_cast<float>(this->currentGain),
-				static_cast<float>(this->increment));
+			__m256i currentSampleNew = collectEightElements(this->upSampledVector.data() + x * 8);
 			__m128i currentSamplesNew01{ _mm256_extractf128_si256(currentSampleNew, 0) };
 			__m128i currentSamplesNew02{ _mm256_extractf128_si256(currentSampleNew, 1) };
 			__m128i currentSamplesNew = _mm_packs_epi32(currentSamplesNew01, currentSamplesNew02);
