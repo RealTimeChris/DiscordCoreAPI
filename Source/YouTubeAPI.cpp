@@ -99,7 +99,7 @@ namespace DiscordCoreInternal {
 			request["racyCheckOk"] = true;
 			request["context"]["client"]["clientName"] = "ANDROID";
 			request["context"]["client"]["clientScreen"] = "EMBED";
-			request["context"]["client"]["clientVersion"] = "16.46.37";
+			request["context"]["client"]["clientVersion"] = "17.46.37";
 			request["context"]["client"]["hl"] = "en";
 			request["context"]["client"]["gl"] = "US";
 			request["context"]["client"]["utcOffsetMinutes"] = 0;
