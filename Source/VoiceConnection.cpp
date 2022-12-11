@@ -297,11 +297,16 @@ namespace DiscordCoreAPI {
 		this->connections = std::make_unique<ConnectionPackage>();
 		this->connections->currentReconnectTries = this->currentReconnectTries;
 		this->connections->currentShard = this->shard[0];
+		this->areWeConnecting.store(true);
 		this->activeState.store(VoiceActiveState::Connecting);
 		if (!this->taskThread01) {
 			this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token token) {
 				this->runVoice(token);
 			});
+		}
+		StopWatch stopWatch{ 15000us };
+		while (this->areWeConnecting.load() && !stopWatch.hasTimePassed()) {
+			std::this_thread::sleep_for(1us);
 		}
 	}
 
