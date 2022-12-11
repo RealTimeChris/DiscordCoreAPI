@@ -49,7 +49,8 @@ namespace DiscordCoreInternal {
 		std::unordered_map<std::string, std::string> responseHeaders{};
 		HttpsResponseCode responseCode{ static_cast<uint32_t>(-1) };
 		HttpsState currentState{ HttpsState::Collecting_Code };
-		std::string responseMessage{};
+		std::string_view responseMessage{};
+		std::string responseData{};
 		uint64_t contentLength{};
 
 	  protected:
@@ -175,13 +176,16 @@ namespace DiscordCoreInternal {
 				httpsConnection->areWeCheckedOut.store(false);
 				throw theError;
 			}
-
-			if (returnData.responseMessage.size() > 0 && returnData.responseMessage.size() >= returnData.contentLength) {
-				returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
+			if (returnData.responseData.size() > 0 && returnData.responseData.size() >= returnData.contentLength) {
+				simdjson::padded_string stringView{};
+				if (returnData.responseMessage.size() > 0) {
+					stringView = simdjson::padded_string{ returnData.responseMessage };
+				} else {
+					stringView = simdjson::padded_string{ std::string_view{ returnData.responseData.data(), returnData.responseData.size() } };
+					
+				}
 				simdjson::ondemand::document document{};
-				if (httpsConnection->parser
-						.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity())
-						.get(document) == simdjson::error_code::SUCCESS) {
+				if (httpsConnection->parser.iterate(stringView).get(document) == simdjson::error_code::SUCCESS) {
 					if (document.type() != simdjson::ondemand::json_type::null) {
 						simdjson::ondemand::value object{};
 						if (document.get(object) == simdjson::error_code::SUCCESS) {
@@ -190,7 +194,7 @@ namespace DiscordCoreInternal {
 								*returnValue = returnValueNew;
 								httpsConnection->areWeCheckedOut.store(false);
 								return *returnValue;
-							} else {
+							} else { 
 								RTy returnValueNew{ object };
 								httpsConnection->areWeCheckedOut.store(false);
 								return returnValueNew;

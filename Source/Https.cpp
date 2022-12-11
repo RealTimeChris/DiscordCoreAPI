@@ -54,13 +54,20 @@ namespace DiscordCoreInternal {
 	};
 
 	HttpsResponseData HttpsRnRBuilder::finalizeReturnValues(RateLimitData& rateLimitData) {
-		if (static_cast<HttpsConnection*>(this)->data.responseMessage.size() >= static_cast<HttpsConnection*>(this)->data.contentLength &&
+		if (static_cast<HttpsConnection*>(this)->data.responseData.size() >= static_cast<HttpsConnection*>(this)->data.contentLength &&
 			static_cast<HttpsConnection*>(this)->data.contentLength > 0) {
-			std::string string = static_cast<HttpsConnection*>(this)->data.responseMessage.substr(0,
-				static_cast<HttpsConnection*>(this)->data.responseMessage.find_last_of('}'));
-			static_cast<HttpsConnection*>(this)->data.responseMessage = std::move(string);
+			std::string string =
+				static_cast<HttpsConnection*>(this)->data.responseData.substr(0, static_cast<HttpsConnection*>(this)->data.contentLength);
+			static_cast<HttpsConnection*>(this)->data.responseData = std::move(string);
+			if (static_cast<HttpsConnection*>(this)->data.responseMessage.find_last_of('}') != std::string::npos) {
+				static_cast<HttpsConnection*>(this)->data.responseData.reserve(
+					static_cast<HttpsConnection*>(this)->data.responseData.size() + simdjson::SIMDJSON_PADDING);
+				static_cast<HttpsConnection*>(this)->data.responseMessage =
+					std::string_view{ static_cast<HttpsConnection*>(this)->data.responseData.data(),
+						static_cast<HttpsConnection*>(this)->data.responseMessage.find_last_of('}') };
+			}
 		} else {
-			static_cast<HttpsConnection*>(this)->data.responseMessage = static_cast<std::string>(
+			static_cast<HttpsConnection*>(this)->data.responseData = static_cast<std::string>(
 				static_cast<HttpsConnection*>(this)
 					->inputBufferReal[LengthData{ .offSet = 0, .length = static_cast<HttpsConnection*>(this)->data.contentLength }]);
 		}
@@ -156,13 +163,12 @@ namespace DiscordCoreInternal {
 					this->parseSize(other);
 					this->clearCRLF(other);
 					if (static_cast<std::string_view>(other).find("\r\n") != static_cast<std::string_view>(other).find("\r\n0\r\n\r\n")) {
-						static_cast<HttpsConnection*>(this)->data.responseMessage.insert(
-							static_cast<HttpsConnection*>(this)->data.responseMessage.end(), other.begin(),
-							other.begin() + static_cast<std::string_view>(other).find("\r\n"));
+						static_cast<HttpsConnection*>(this)->data.responseData.insert(static_cast<HttpsConnection*>(this)->data.responseData.end(),
+							other.begin(), other.begin() + static_cast<std::string_view>(other).find("\r\n"));
 						other.erase(static_cast<std::string_view>(other).find("\r\n") + 2);
 					}
 				}
-				static_cast<HttpsConnection*>(this)->data.responseMessage.insert(static_cast<HttpsConnection*>(this)->data.responseMessage.end(),
+				static_cast<HttpsConnection*>(this)->data.responseData.insert(static_cast<HttpsConnection*>(this)->data.responseData.end(),
 					other.begin(), other.begin() + static_cast<std::string_view>(other).find("\r\n0\r\n\r\n"));
 				return false;
 			} else {
@@ -176,7 +182,7 @@ namespace DiscordCoreInternal {
 				return false;
 			}
 			if (other.size() >= static_cast<uint64_t>(static_cast<HttpsConnection*>(this)->data.contentLength)) {
-				static_cast<HttpsConnection*>(this)->data.responseMessage.insert(static_cast<HttpsConnection*>(this)->data.responseMessage.end(),
+				static_cast<HttpsConnection*>(this)->data.responseData.insert(static_cast<HttpsConnection*>(this)->data.responseData.end(),
 					other.begin(), other.begin() + static_cast<HttpsConnection*>(this)->data.contentLength);
 				return false;
 			} else {
@@ -326,7 +332,7 @@ namespace DiscordCoreInternal {
 						this->inputBufferReal.writeData(stringView.data(), stringView.size());
 					}
 					auto result = this->parseChunk(this->inputBufferReal);
-					if ((this->data.responseMessage.size() >= this->data.contentLength && !result) || stopWatch.hasTimePassed() ||
+					if ((this->data.responseData.size() >= this->data.contentLength && !result) || stopWatch.hasTimePassed() ||
 						!result || (this->data.responseCode == -5 && this->data.contentLength == -5)) {
 						this->areWeDoneTheRequest = true;
 						return;
@@ -415,7 +421,7 @@ namespace DiscordCoreInternal {
 		auto httpsConnection = this->connectionManager.getConnection();
 		auto returnData = this->httpsRequest(*httpsConnection, workload);
 		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
-			std::string errorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error: " +
+			std::string errorMessage{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + "Https Error: " +
 				static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workload.content + DiscordCoreAPI::reset() + "" };
 			HttpsError theError{ errorMessage };
 			theError.errorCode = returnData.responseCode;
@@ -431,8 +437,12 @@ namespace DiscordCoreInternal {
 		auto connection = this->connectionManager.getConnection();
 		auto returnData = this->httpsRequestInternal(*connection, workloadNew, rateLimitData);
 		if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
-			std::string errorMessage{ DiscordCoreAPI::shiftToBrightRed() + workloadNew.callStack + " Https Error: " +
-				static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workloadNew.content + DiscordCoreAPI::reset() + "" };
+			std::string errorMessage{ DiscordCoreAPI::shiftToBrightRed() };
+			if (workloadNew.callStack != "") {
+				errorMessage += workloadNew.callStack + " ";
+			}
+			errorMessage += "Https Error: " + static_cast<std::string>(returnData.responseCode) + "\nThe Request: " + workloadNew.content +
+				DiscordCoreAPI::reset();
 			HttpsError theError{ errorMessage };
 			theError.errorCode = returnData.responseCode;
 			connection->areWeCheckedOut.store(false);
@@ -578,17 +588,16 @@ namespace DiscordCoreInternal {
 		if (returnData.responseCode == 204 || returnData.responseCode == 201 || returnData.responseCode == 200) {
 			if (this->configManager->doWePrintHttpsSuccessMessages()) {
 				cout << DiscordCoreAPI::shiftToBrightGreen() << workload.callStack + " Success: " << static_cast<std::string>(returnData.responseCode)
-					 << ": " << returnData.responseMessage << DiscordCoreAPI::reset() << endl
+					 << ": " << returnData.responseData << DiscordCoreAPI::reset() << endl
 					 << endl;
 			}
 		} else {
 			if (returnData.responseCode == 429) {
-				returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
+				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
 				simdjson::ondemand::parser parser{};
-				auto document =
-					parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
+				auto document = parser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
 				double doubleVal{};
-				if (returnData.responseMessage.size() > 0 && document["retry_after"].get(doubleVal) == simdjson::error_code::SUCCESS) {
+				if (returnData.responseData.size() > 0 && document["retry_after"].get(doubleVal) == simdjson::error_code::SUCCESS) {
 					rateLimitData.msRemain.store(Milliseconds{ static_cast<int64_t>(ceil(doubleVal)) * 1000 });
 				}
 

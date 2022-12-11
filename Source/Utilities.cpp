@@ -95,10 +95,8 @@ namespace DiscordCoreAPI {
 
 	DCAException::DCAException(const std::string& error, std::source_location location) noexcept : std::runtime_error(error) {
 		std::stringstream stream{};
-		stream << shiftToBrightRed() << "Error Report: \n"
-			   << "Thrown From: " << location.file_name() << " (" << std::to_string(location.line()) << ":" << std::to_string(location.column())
-			   << ")"
-			   << "\nThe Error: \n"
+		stream << shiftToBrightRed() << "Thrown From: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
+			   << std::to_string(location.column()) << ")\n"
 			   << error << reset() << std::endl
 			   << std::endl;
 		*static_cast<std::runtime_error*>(this) = std::runtime_error{ stream.str() };

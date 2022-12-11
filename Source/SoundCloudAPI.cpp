@@ -44,9 +44,8 @@ namespace DiscordCoreInternal {
 			HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
 			std::vector<DiscordCoreAPI::Song> results{};
 			simdjson::ondemand::parser parser{};
-			returnData.responseMessage.reserve(returnData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-			auto document =
-				parser.iterate(returnData.responseMessage.data(), returnData.responseMessage.length(), returnData.responseMessage.capacity());
+			returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_PADDING);
+			auto document = parser.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity());
 			simdjson::ondemand::array arrayValue{};
 			if (document.get_value().value().get_object().value()["collection"].get(arrayValue) == simdjson::error_code::SUCCESS) {
 				for (auto value: arrayValue) {
@@ -82,8 +81,9 @@ namespace DiscordCoreInternal {
 			dataPackage01.workloadClass = HttpsWorkloadClass::Get;
 			HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
 			simdjson::ondemand::parser parser{};
-			results.responseMessage.reserve(results.responseMessage.size() + simdjson::SIMDJSON_PADDING);
-			simdjson::ondemand::object document = parser.iterate(results.responseMessage).get_value().value().get_object().value();
+			results.responseData.reserve(results.responseData.size() + simdjson::SIMDJSON_PADDING);
+			simdjson::padded_string stringView{ results.responseData.data(), results.responseData.size() };
+			simdjson::ondemand::object document = parser.iterate(stringView).get_value().value().get_object().value();
 			std::string_view theUrl{};
 			if (document["url"].get(theUrl) == simdjson::error_code::SUCCESS) {
 				newSong.secondDownloadUrl = static_cast<std::string>(theUrl);
@@ -93,7 +93,7 @@ namespace DiscordCoreInternal {
 				dataPackage.baseUrl = newSong.secondDownloadUrl;
 				dataPackage.workloadClass = HttpsWorkloadClass::Get;
 				HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
-				std::string newString{ results.responseMessage };
+				std::string newString{ results.responseData };
 				newSong.finalDownloadUrls.clear();
 				while (newString.find("#EXTINF:") != std::string::npos) {
 					std::string newString01 = "#EXTINF:";
@@ -164,7 +164,7 @@ namespace DiscordCoreInternal {
 		std::vector<std::string> assetPaths{};
 		std::string newString01 = "crossorigin src=";
 		std::string newerString{};
-		newerString = returnData.responseMessage;
+		newerString = returnData.responseData;
 		std::string clientIdNew{};
 		if (newerString.find(newString01) != std::string::npos) {
 			std::string newString = newerString.substr(newerString.find(newString01) + newString01.size());
@@ -180,7 +180,7 @@ namespace DiscordCoreInternal {
 			dataPackage03.workloadClass = HttpsWorkloadClass::Get;
 			HttpsResponseData returnData02 = this->httpsClient->submitWorkloadAndGetResult(dataPackage03);
 			std::string newerString02{};
-			newerString02.insert(newerString02.begin(), returnData02.responseMessage.begin(), returnData02.responseMessage.end());
+			newerString02.insert(newerString02.begin(), returnData02.responseData.begin(), returnData02.responseData.end());
 
 			std::string newString03 =
 				newerString02.substr(newerString02.find("JSON.stringify({client_id:\"") + std::string{ "JSON.stringify({client_id:\"" }.size());
@@ -267,7 +267,7 @@ namespace DiscordCoreInternal {
 				dataPackage03.relativePath = relativeUrl;
 				dataPackage03.workloadClass = HttpsWorkloadClass::Get;
 				auto result = this->httpsClient->submitWorkloadAndGetResult(dataPackage03);
-				if (result.responseMessage.size() != 0) {
+				if (result.responseData.size() != 0) {
 					didWeGetZero = false;
 				}
 				uint64_t amountToSubmitRemaining{ result.contentLength };
@@ -277,14 +277,14 @@ namespace DiscordCoreInternal {
 					std::string newerVector{};
 					if (amountToSubmitRemaining >= this->maxBufferSize) {
 						for (int64_t x = 0; x < this->maxBufferSize; ++x) {
-							newerVector.push_back(result.responseMessage[amountSubmitted]);
+							newerVector.push_back(result.responseData[amountSubmitted]);
 							++amountSubmitted;
 							--amountToSubmitRemaining;
 						}
 					} else {
 						uint64_t amountToSubmitRemainingFinal{ amountToSubmitRemaining };
 						for (uint64_t x = 0; x < amountToSubmitRemainingFinal; ++x) {
-							newerVector.push_back(result.responseMessage[amountSubmitted]);
+							newerVector.push_back(result.responseData[amountSubmitted]);
 							++amountSubmitted;
 							--amountToSubmitRemaining;
 						}

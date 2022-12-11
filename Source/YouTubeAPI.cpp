@@ -41,16 +41,16 @@ namespace DiscordCoreInternal {
 		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
 		if (returnData.responseCode != 200 && this->configManager->doWePrintHttpsErrorMessages()) {
 			cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::collectSearchResults() Error: " << returnData.responseCode
-				 << returnData.responseMessage.c_str() << DiscordCoreAPI::reset() << endl
+				 << returnData.responseData.c_str() << DiscordCoreAPI::reset() << endl
 				 << endl;
 		}
 		simdjson::ondemand::value partialSearchResultsJson{};
 
 		std::vector<DiscordCoreAPI::Song> searchResults{};
-		auto varInitFind = returnData.responseMessage.find("var ytInitialData = ");
+		auto varInitFind = returnData.responseData.find("var ytInitialData = ");
 		if (varInitFind != std::string::npos) {
 			std::string newString00 = "var ytInitialData = ";
-			std::string newString = returnData.responseMessage.substr(varInitFind + newString00.length());
+			std::string newString = returnData.responseData.substr(varInitFind + newString00.length());
 			std::string stringSequence = ";</script><script nonce=";
 			newString = newString.substr(0, newString.find(stringSequence));
 			newString.reserve(newString.size() + simdjson::SIMDJSON_PADDING);
@@ -114,14 +114,14 @@ namespace DiscordCoreInternal {
 			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 &&
 				this->configManager->doWePrintHttpsErrorMessages()) {
 				cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData.responseCode
-					 << ", " << responseData.responseMessage << DiscordCoreAPI::reset() << endl
+					 << ", " << responseData.responseData << DiscordCoreAPI::reset() << endl
 					 << endl;
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
-			responseData.responseMessage.reserve(responseData.responseMessage.size() + simdjson::SIMDJSON_PADDING);
+			responseData.responseData.reserve(responseData.responseData.size() + simdjson::SIMDJSON_PADDING);
 			simdjson::ondemand::parser parser{};
 			simdjson::ondemand::value value{};
-			if (parser.iterate(responseData.responseMessage.data(), responseData.responseMessage.length(), responseData.responseMessage.capacity())
+			if (parser.iterate(responseData.responseData.data(), responseData.responseData.length(), responseData.responseData.capacity())
 					.get(value) == simdjson::error_code::SUCCESS) {
 				DiscordCoreAPI::YouTubeFormatVector vector{ value };
 				DiscordCoreAPI::YouTubeFormat format{};
@@ -196,9 +196,9 @@ namespace DiscordCoreInternal {
 		dataPackage01.workloadClass = HttpsWorkloadClass::Get;
 		HttpsResponseData responseData01 = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
 		std::string apiKey{};
-		if (responseData01.responseMessage.find("\"innertubeApiKey\":\"") != std::string::npos) {
-			std::string newString = responseData01.responseMessage.substr(
-				responseData01.responseMessage.find("\"innertubeApiKey\":\"") + std::string{ "\"innertubeApiKey\":\"" }.size());
+		if (responseData01.responseData.find("\"innertubeApiKey\":\"") != std::string::npos) {
+			std::string newString = responseData01.responseData.substr(
+				responseData01.responseData.find("\"innertubeApiKey\":\"") + std::string{ "\"innertubeApiKey\":\"" }.size());
 			std::string apiKeyNew = newString.substr(0, newString.find_first_of('"'));
 			apiKey = apiKeyNew;
 		}
