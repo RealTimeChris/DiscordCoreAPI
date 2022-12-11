@@ -168,11 +168,23 @@ namespace DiscordCoreAPI {
 				_mm256_cmp_pd(currentSampleNew, _mm256_set1_pd(0.0l), _CMP_GE_OQ)));
 	}
 
+	__m256i collectEightElements(opus_int32* data, float currentGain, float increment) noexcept {
+		__m256 currentSampleNew = _mm256_mul_ps(_mm256_cvtepi32_ps(_mm256_loadu_epi32(data)),
+			_mm256_add_ps(_mm256_set1_ps(currentGain),
+				_mm256_mul_ps(_mm256_set1_ps(increment), _mm256_set_ps(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f))));
+		return _mm256_cvtps_epi32(
+			_mm256_blendv_ps(_mm256_max_ps(currentSampleNew, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::min()))),
+				_mm256_min_ps(currentSampleNew, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::max()))),
+				_mm256_cmp_ps(currentSampleNew, _mm256_set1_ps(0.0f), _CMP_GE_OQ)));
+	}
+
 	void VoiceConnectionBridge::applyGainRamp(int64_t sampleCount) noexcept {
-		this->increment = (this->currentGain - this->previousGain) / static_cast<double>(sampleCount);
+		this->increment = (static_cast<float>(this->currentGain) - static_cast<float>(this->previousGain)) / static_cast<float>(sampleCount);
 		for (int64_t x = 0; x < sampleCount / 8; ++x) {
-			__m128i currentSamplesNew01{ this->collectFourElements(&this->upSampledVector[x * 8]) };
-			__m128i currentSamplesNew02{ this->collectFourElements(&this->upSampledVector[(x * 8) + 4]) };
+			__m256i currentSampleNew = collectEightElements(this->upSampledVector.data() + x * 8, static_cast<float>(this->currentGain),
+				static_cast<float>(this->increment));
+			__m128i currentSamplesNew01{ _mm256_extractf128_si256(currentSampleNew, 0) };
+			__m128i currentSamplesNew02{ _mm256_extractf128_si256(currentSampleNew, 1) };
 			__m128i currentSamplesNew = _mm_packs_epi32(currentSamplesNew01, currentSamplesNew02);
 			_mm_storeu_epi16(&this->downSampledVector[x * 8], currentSamplesNew);
 		}
@@ -940,6 +952,7 @@ namespace DiscordCoreAPI {
 		}
 		if (this->streamSocket) {
 			this->streamSocket->disconnect();
+			this->streamSocket.reset(nullptr);
 		}
 		if (DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)) {
 			DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)
