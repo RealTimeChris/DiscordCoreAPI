@@ -186,15 +186,15 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::basic_string<std::byte> decryptedDataString{};
+		std::basic_string<opus_int16> downSampledVector{};
+		std::basic_string<opus_int32> upSampledVector{};
 		std::basic_string<std::byte> encryptionKey{};
-		std::vector<opus_int16> downSampledVector{};
 		MovingAverager voiceUserCountAverage{ 25 };
-		std::vector<opus_int32> upSampledVector{};
 		DiscordCoreClient* clientPtr{ nullptr };
-		float previousGain{};
-		float currentGain{};
 		Snowflake guildId{};
+		float startGain{};
 		float increment{};
+		float endGain{};
 	};
 
 	/**

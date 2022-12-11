@@ -59,7 +59,7 @@ namespace DiscordCoreInternal {
 			std::string string =
 				static_cast<HttpsConnection*>(this)->data.responseData.substr(0, static_cast<HttpsConnection*>(this)->data.contentLength);
 			static_cast<HttpsConnection*>(this)->data.responseData = std::move(string);
-			if (static_cast<HttpsConnection*>(this)->data.responseMessage.find_last_of('}') != std::string::npos) {
+			if (static_cast<HttpsConnection*>(this)->data.responseData.find_last_of('}') != std::string::npos) {
 				static_cast<HttpsConnection*>(this)->data.responseData.reserve(
 					static_cast<HttpsConnection*>(this)->data.responseData.size() + simdjson::SIMDJSON_PADDING);
 				static_cast<HttpsConnection*>(this)->data.responseMessage =
