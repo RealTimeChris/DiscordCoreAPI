@@ -84,8 +84,6 @@ namespace DiscordCoreAPI {
 
 		VoiceUser& operator=(VoiceUser&&) noexcept;
 
-		VoiceUser(VoiceUser&&) noexcept;
-
 		VoiceUser& operator=(const VoiceUser&) noexcept = delete;
 
 		VoiceUser(const VoiceUser&) noexcept = delete;

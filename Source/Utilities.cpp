@@ -191,10 +191,6 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(Jsonifier&& data) noexcept {
-		*this = std::move(data);
-	}
-
 	Jsonifier& Jsonifier::operator=(const Jsonifier& data) noexcept {
 		switch (data.type) {
 			case JsonType::Object: {
@@ -983,10 +979,6 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	StringWrapper::StringWrapper(StringWrapper&& other) noexcept {
-		*this = std::move(other);
-	}
-
 	StringWrapper& StringWrapper::operator=(const StringWrapper& other) {
 		if (this != &other) {
 			this->ptr.reset(nullptr);
@@ -1161,10 +1153,6 @@ namespace DiscordCoreAPI {
 	Permissions& Permissions::operator=(Permission&& other) {
 		this->permissions = static_cast<uint64_t>(other);
 		return *this;
-	}
-
-	Permissions::Permissions(Permission&& permsNew) {
-		*this = std::move(permsNew);
 	}
 
 	Permissions& Permissions::operator=(const Permission& other) {

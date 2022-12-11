@@ -149,10 +149,6 @@ namespace DiscordCoreInternal {
 		return *this;
 	}
 
-	HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadData&& other) noexcept {
-		*this = std::move(other);
-	}
-
 	HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadType type) noexcept {
 		if (!HttpsWorkloadData::workloadIdsExternal.contains(type)) {
 			std::unique_ptr<std::atomic_int64_t> integer{ std::make_unique<std::atomic_int64_t>() };
@@ -604,10 +600,6 @@ namespace DiscordCoreAPI {
 			this->id = other.id;
 		}
 		return *this;
-	}
-
-	GuildMemberData::GuildMemberData(GuildMemberData&& other) noexcept {
-		*this = std::move(other);
 	}
 
 	GuildMemberData& GuildMemberData::operator=(simdjson::ondemand::value jsonObjectData) {

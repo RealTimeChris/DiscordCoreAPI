@@ -284,8 +284,6 @@ namespace DiscordCoreInternal {
 
 		HttpsWorkloadData& operator=(HttpsWorkloadData&& other) noexcept;
 
-		HttpsWorkloadData(HttpsWorkloadData&& other) noexcept;
-
 		HttpsWorkloadData& operator=(const HttpsWorkloadData& other) noexcept = delete;
 
 		HttpsWorkloadData(const HttpsWorkloadData& other) noexcept = delete;
@@ -912,8 +910,6 @@ namespace DiscordCoreAPI {
 		GuildMemberData() noexcept = default;
 
 		GuildMemberData& operator=(GuildMemberData&&) noexcept;
-
-		GuildMemberData(GuildMemberData&&) noexcept;
 
 		GuildMemberData& operator=(const GuildMemberData&) noexcept = default;
 

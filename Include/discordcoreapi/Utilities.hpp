@@ -199,14 +199,10 @@ namespace DiscordCoreAPI {
 
 		StopWatch() = delete;
 
-		StopWatch<TTy>& operator=(StopWatch<TTy>&& data) {
+		StopWatch<TTy>& operator=(StopWatch<TTy>&& data) noexcept {
 			this->maxNumberOfTimeUnits.store(data.maxNumberOfTimeUnits.load());
 			this->startTime.store(data.startTime.load());
 			return *this;
-		}
-
-		StopWatch(StopWatch<TTy>&& data) {
-			*this = std::move(data);
 		}
 
 		StopWatch(TTy maxNumberOfMsNew) {
@@ -413,8 +409,6 @@ namespace DiscordCoreAPI {
 		}
 
 		Jsonifier& operator=(Jsonifier&& data) noexcept;
-
-		Jsonifier(Jsonifier&& data) noexcept;
 
 		Jsonifier& operator=(const Jsonifier& data) noexcept;
 
@@ -1200,8 +1194,6 @@ namespace DiscordCoreAPI {
 
 		StringWrapper& operator=(StringWrapper&& other) noexcept;
 
-		StringWrapper(StringWrapper&& other) noexcept;
-
 		StringWrapper& operator=(const StringWrapper& other);
 
 		StringWrapper(const StringWrapper& other);
@@ -1463,8 +1455,6 @@ namespace DiscordCoreAPI {
 
 		Permissions& operator=(Permission&& other);
 
-		Permissions(Permission&& permsNew);
-
 		Permissions& operator=(const Permission& other);
 
 		explicit Permissions(const Permission& permsNew);
@@ -1650,10 +1640,6 @@ namespace DiscordCoreAPI {
 				other.queue = std::deque<OTy>{};
 			}
 			return *this;
-		}
-
-		UnboundedMessageBlock(UnboundedMessageBlock<OTy>&& other) noexcept {
-			*this = std::move(other);
 		}
 
 		UnboundedMessageBlock<OTy>& operator=(const UnboundedMessageBlock<OTy>&) = delete;

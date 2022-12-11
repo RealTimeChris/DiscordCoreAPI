@@ -97,8 +97,6 @@ namespace DiscordCoreInternal {
 	struct DiscordCoreAPI_Dll WorkerThread {
 		WorkerThread& operator=(WorkerThread&& other) noexcept;
 
-		WorkerThread(WorkerThread&&) noexcept;
-
 		WorkerThread() noexcept = default;
 
 		~WorkerThread() noexcept = default;

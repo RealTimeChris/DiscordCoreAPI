@@ -109,7 +109,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine(CoRoutine<RTy>&& other) noexcept {
 			*this = std::move(other);
-		};
+		}
 
 		CoRoutine<RTy>& operator=(const CoRoutine<RTy>& other) = delete;
 
@@ -261,7 +261,7 @@ namespace DiscordCoreAPI {
 
 		CoRoutine(CoRoutine<void>&& other) noexcept {
 			*this = std::move(other);
-		};
+		}
 
 		CoRoutine<void>& operator=(const CoRoutine<void>& other) = delete;
 

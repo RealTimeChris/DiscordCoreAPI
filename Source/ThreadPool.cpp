@@ -73,10 +73,6 @@ namespace DiscordCoreInternal {
 		return *this;
 	}
 
-	WorkerThread::WorkerThread(WorkerThread&& other) noexcept {
-		*this = std::move(other);
-	}
-
 	CoRoutineThreadPool::CoRoutineThreadPool() : threadCount(std::thread::hardware_concurrency()) {
 		for (uint32_t x = 0; x < this->threadCount.load(); ++x) {
 			WorkerThread workerThread{};
