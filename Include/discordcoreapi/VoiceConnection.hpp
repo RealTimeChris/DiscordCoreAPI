@@ -192,7 +192,7 @@ namespace DiscordCoreAPI {
 		MovingAverager voiceUserCountAverage{ 25 };
 		DiscordCoreClient* clientPtr{ nullptr };
 		Snowflake guildId{};
-		float startGain{};
+		float currentGain{};
 		float increment{};
 		float endGain{};
 	};

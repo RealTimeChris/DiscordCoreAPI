@@ -54,19 +54,22 @@ namespace DiscordCoreInternal {
 	};
 
 	HttpsResponseData HttpsRnRBuilder::finalizeReturnValues(RateLimitData& rateLimitData) {
-		std::string string =
-			std::string{ static_cast<HttpsConnection*>(this)->inputBufferReal.data(), static_cast<HttpsConnection*>(this)->inputBufferReal.size() };
 		if (static_cast<HttpsConnection*>(this)->data.responseData.size() >= static_cast<HttpsConnection*>(this)->data.contentLength &&
 			static_cast<HttpsConnection*>(this)->data.contentLength > 0) {
 			std::string string =
 				static_cast<HttpsConnection*>(this)->data.responseData.substr(0, static_cast<HttpsConnection*>(this)->data.contentLength);
 			static_cast<HttpsConnection*>(this)->data.responseData = std::move(string);
-		} else if (string.size() > 0 && string.find_first_of('{') != std::string::npos &&
-			string.find_last_of('}') != std::string::npos) {
-			static_cast<HttpsConnection*>(this)->data.responseData =
-				string.substr(string.find_first_of('{'), string.size() - (string.find_first_of('{')));
-		} else if (string.size() > 0) {
-			static_cast<HttpsConnection*>(this)->data.responseData = std::move(string);
+		}
+		else if (static_cast<HttpsConnection*>(this)->inputBufferReal.size() > 0) {
+			std::string string = std::string{ static_cast<HttpsConnection*>(this)->inputBufferReal.data(),
+				static_cast<HttpsConnection*>(this)->inputBufferReal.size() };
+			if (string.size() > 0 && string.find_first_of('{') != std::string::npos && string.find_last_of('}') != std::string::npos) {
+				static_cast<HttpsConnection*>(this)->data.responseData =
+					string.substr(string.find_first_of('{'), string.size() - (string.find_first_of('{')));
+			}
+			else if (string.size() > 0) {
+				static_cast<HttpsConnection*>(this)->data.responseData = std::move(string);
+			}
 		}
 		this->updateRateLimitData(rateLimitData, static_cast<HttpsConnection*>(this)->data.responseHeaders);
 		return static_cast<HttpsConnection*>(this)->data;
@@ -167,6 +170,7 @@ namespace DiscordCoreInternal {
 				}
 				static_cast<HttpsConnection*>(this)->data.responseData.insert(static_cast<HttpsConnection*>(this)->data.responseData.end(),
 					other.begin(), other.begin() + static_cast<std::string_view>(other).find("\r\n0\r\n\r\n"));
+				other.erase(static_cast<std::string_view>(other).find("\r\n0\r\n\r\n"));
 				return false;
 			} else {
 				return true;
@@ -181,6 +185,7 @@ namespace DiscordCoreInternal {
 			if (other.size() >= static_cast<uint64_t>(static_cast<HttpsConnection*>(this)->data.contentLength)) {
 				static_cast<HttpsConnection*>(this)->data.responseData.insert(static_cast<HttpsConnection*>(this)->data.responseData.end(),
 					other.begin(), other.begin() + static_cast<HttpsConnection*>(this)->data.contentLength);
+				other.erase(static_cast<HttpsConnection*>(this)->data.contentLength);
 				return false;
 			} else {
 				return true;
