@@ -32,14 +32,11 @@ namespace DiscordCoreInternal {
 
 	std::vector<DiscordCoreAPI::Song> SoundCloudRequestBuilder::collectSearchResults(const std::string& songQuery) {
 		try {
-			std::unordered_map<std::string, std::string> theHeaders{ std::pair{ "User-Agent",
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" } };
 			HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };
 			dataPackage.baseUrl = this->baseUrl02;
 			dataPackage.relativePath = "/search?q=" + DiscordCoreAPI::urlEncode(songQuery.c_str()) +
 				"&facet=model&client_id=" + SoundCloudRequestBuilder::clientId +
 				"&limit=20&offSet=0&linked_partitioning=1&app_version=" + this->appVersion + "&app_locale=en";
-			dataPackage.headersToInsert = theHeaders;
 			dataPackage.workloadClass = HttpsWorkloadClass::Get;
 			HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage);
 			std::vector<DiscordCoreAPI::Song> results{};
@@ -82,11 +79,16 @@ namespace DiscordCoreInternal {
 			HttpsResponseData results = this->httpsClient->submitWorkloadAndGetResult(dataPackage01);
 			simdjson::ondemand::parser parser{};
 			results.responseData.reserve(results.responseData.size() + simdjson::SIMDJSON_PADDING);
-			simdjson::padded_string stringView{ results.responseData.data(), results.responseData.size() };
-			simdjson::ondemand::object document = parser.iterate(stringView).get_value().value().get_object().value();
-			std::string_view theUrl{};
-			if (document["url"].get(theUrl) == simdjson::error_code::SUCCESS) {
-				newSong.secondDownloadUrl = static_cast<std::string>(theUrl);
+			simdjson::ondemand::document document{};
+			if (parser.iterate(results.responseData.data(), results.responseData.size(), results.responseData.capacity()).get(document) ==
+				simdjson::error_code::SUCCESS) {
+				simdjson::ondemand::value object{};
+				if (document.get(object) == simdjson::error_code::SUCCESS) {
+					std::string_view theUrl{};
+					if (object["url"].get(theUrl) == simdjson::error_code::SUCCESS) {
+						newSong.secondDownloadUrl = static_cast<std::string>(theUrl);
+					}
+				}
 			}
 			if (newSong.secondDownloadUrl.find("/playlist") != std::string::npos) {
 				HttpsWorkloadData dataPackage{ HttpsWorkloadType::SoundCloudGetSearchResults };
@@ -118,11 +120,8 @@ namespace DiscordCoreInternal {
 					newSong.contentLength += value.contentSize;
 				}
 			} else {
-				std::unordered_map<std::string, std::string> theHeaders{ std::pair{ "User-Agent",
-					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" } };
 				HttpsWorkloadData dataPackage02{ HttpsWorkloadType::SoundCloudGetSearchResults };
 				dataPackage02.baseUrl = newSong.secondDownloadUrl;
-				dataPackage02.headersToInsert = theHeaders;
 				dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 				auto headersNew = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 				int64_t valueBitRate{};
@@ -153,12 +152,9 @@ namespace DiscordCoreInternal {
 	}
 
 	std::string SoundCloudRequestBuilder::collectClientId() {
-		std::unordered_map<std::string, std::string> theHeaders{ std::pair{ "User-Agent",
-			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" } };
 		HttpsWorkloadData dataPackage02{ HttpsWorkloadType::SoundCloudGetSearchResults };
 		dataPackage02.baseUrl = this->baseUrl;
 		dataPackage02.relativePath = "/search?q=testValue";
-		dataPackage02.headersToInsert = theHeaders;
 		dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 		HttpsResponseData returnData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 		std::vector<std::string> assetPaths{};

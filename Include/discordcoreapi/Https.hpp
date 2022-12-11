@@ -49,7 +49,6 @@ namespace DiscordCoreInternal {
 		std::unordered_map<std::string, std::string> responseHeaders{};
 		HttpsResponseCode responseCode{ static_cast<uint32_t>(-1) };
 		HttpsState currentState{ HttpsState::Collecting_Code };
-		std::string_view responseMessage{};
 		std::string responseData{};
 		uint64_t contentLength{};
 
@@ -166,7 +165,7 @@ namespace DiscordCoreInternal {
 				workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
 			}
 			auto httpsConnection = this->connectionManager.getConnection();
-			HttpsResponseData returnData = this->httpsRequest(*httpsConnection, workload);
+			HttpsResponseData returnData = this->httpsRequest(httpsConnection, workload);
 			
 			if (static_cast<uint32_t>(returnData.responseCode) != 200 && static_cast<uint32_t>(returnData.responseCode) != 204 &&
 				static_cast<uint32_t>(returnData.responseCode) != 201) {
@@ -177,15 +176,11 @@ namespace DiscordCoreInternal {
 				throw theError;
 			}
 			if (returnData.responseData.size() > 0 && returnData.responseData.size() >= returnData.contentLength) {
-				simdjson::padded_string stringView{};
-				if (returnData.responseMessage.size() > 0) {
-					stringView = simdjson::padded_string{ returnData.responseMessage };
-				} else {
-					stringView = simdjson::padded_string{ std::string_view{ returnData.responseData.data(), returnData.responseData.size() } };
-					
-				}
+				returnData.responseData.reserve(returnData.responseData.size() + simdjson::SIMDJSON_MAXSIZE_BYTES);
 				simdjson::ondemand::document document{};
-				if (httpsConnection->parser.iterate(stringView).get(document) == simdjson::error_code::SUCCESS) {
+				if (httpsConnection->parser
+						.iterate(returnData.responseData.data(), returnData.responseData.length(), returnData.responseData.capacity())
+						.get(document) == simdjson::error_code::SUCCESS) {
 					if (document.type() != simdjson::ondemand::json_type::null) {
 						simdjson::ondemand::value object{};
 						if (document.get(object) == simdjson::error_code::SUCCESS) {
@@ -212,17 +207,17 @@ namespace DiscordCoreInternal {
 
 		HttpsResponseData submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew);
 
-		HttpsResponseData httpsRequest(HttpsConnection& httpsConnection, const HttpsWorkloadData& workload);
+		HttpsResponseData httpsRequest(HttpsConnection* httpsConnection, const HttpsWorkloadData& workload);
 
 	  protected:
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		HttpsConnectionManager connectionManager{ nullptr };
 
-		HttpsResponseData httpsRequestInternal(HttpsConnection& connection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
+		HttpsResponseData httpsRequestInternal(HttpsConnection* connection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
 
-		HttpsResponseData executeByRateLimitData(HttpsConnection& httpsConnection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
+		HttpsResponseData executeByRateLimitData(HttpsConnection* httpsConnection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
 
-		HttpsResponseData getResponse(HttpsConnection& connection, RateLimitData& rateLimitData);
+		HttpsResponseData getResponse(HttpsConnection* connection, RateLimitData& rateLimitData);
 	};
 
 }// namespace DiscordCoreInternal

@@ -610,13 +610,21 @@ namespace DiscordCoreAPI {
 					if (!this->streamSocket) {
 						this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this->encryptionKey,
 							this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
+						if (!this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port,
+								false, token)) {
+							++this->currentReconnectTries;
+							this->onClosed();
+							return;
+						}
+					} else {
+						if (!this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port,
+								true, token)) {
+							++this->currentReconnectTries;
+							this->onClosed();
+							return;
+						}
 					}
-					if (!this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port, false,
-							token)) {
-						++this->currentReconnectTries;
-						this->onClosed();
-						return;
-					}
+					
 				}
 				this->areWeConnecting.store(false);
 				this->activeState.store(VoiceActiveState::Playing);
