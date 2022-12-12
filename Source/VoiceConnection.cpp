@@ -625,7 +625,6 @@ namespace DiscordCoreAPI {
 							return;
 						}
 					}
-					
 				}
 				this->areWeConnecting.store(false);
 				this->activeState.store(VoiceActiveState::Playing);

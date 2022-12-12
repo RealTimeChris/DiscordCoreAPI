@@ -166,7 +166,7 @@ namespace DiscordCoreInternal {
 			}
 			auto httpsConnection = this->connectionManager.getConnection();
 			HttpsResponseData returnData = this->httpsRequest(httpsConnection, workload);
-			
+
 			if (static_cast<uint32_t>(returnData.responseCode) != 200 && static_cast<uint32_t>(returnData.responseCode) != 204 &&
 				static_cast<uint32_t>(returnData.responseCode) != 201) {
 				HttpsError theError{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack + " Https Error: " +
@@ -189,7 +189,7 @@ namespace DiscordCoreInternal {
 								*returnValue = returnValueNew;
 								httpsConnection->areWeCheckedOut.store(false);
 								return *returnValue;
-							} else { 
+							} else {
 								RTy returnValueNew{ object };
 								httpsConnection->areWeCheckedOut.store(false);
 								return returnValueNew;

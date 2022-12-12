@@ -69,7 +69,7 @@ namespace DiscordCoreAPI {
 		this->referencedMessage = std::make_unique<MessageDataOld>();
 
 		this->content = getString(jsonObjectData, "content");
-		
+
 		this->channelId = getId(jsonObjectData, "channel_id");
 
 		this->guildId = getId(jsonObjectData, "guild_id");

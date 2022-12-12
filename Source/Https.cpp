@@ -59,15 +59,13 @@ namespace DiscordCoreInternal {
 			std::string string =
 				static_cast<HttpsConnection*>(this)->data.responseData.substr(0, static_cast<HttpsConnection*>(this)->data.contentLength);
 			static_cast<HttpsConnection*>(this)->data.responseData = std::move(string);
-		}
-		else if (static_cast<HttpsConnection*>(this)->inputBufferReal.size() > 0) {
+		} else if (static_cast<HttpsConnection*>(this)->inputBufferReal.size() > 0) {
 			std::string string = std::string{ static_cast<HttpsConnection*>(this)->inputBufferReal.data(),
 				static_cast<HttpsConnection*>(this)->inputBufferReal.size() };
 			if (string.size() > 0 && string.find_first_of('{') != std::string::npos && string.find_last_of('}') != std::string::npos) {
 				static_cast<HttpsConnection*>(this)->data.responseData =
 					string.substr(string.find_first_of('{'), string.size() - (string.find_first_of('{')));
-			}
-			else if (string.size() > 0) {
+			} else if (string.size() > 0) {
 				static_cast<HttpsConnection*>(this)->data.responseData = std::move(string);
 			}
 		}
@@ -334,8 +332,8 @@ namespace DiscordCoreInternal {
 						this->inputBufferReal.writeData(stringView.data(), stringView.size());
 					}
 					auto result = this->parseChunk(this->inputBufferReal);
-					if ((this->data.responseData.size() >= this->data.contentLength && !result) || stopWatch.hasTimePassed() ||
-						!result || (this->data.responseCode == -5 && this->data.contentLength == -5)) {
+					if ((this->data.responseData.size() >= this->data.contentLength && !result) || stopWatch.hasTimePassed() || !result ||
+						(this->data.responseCode == -5 && this->data.contentLength == -5)) {
 						this->areWeDoneTheRequest = true;
 						return;
 					} else {
@@ -571,9 +569,9 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-		
+
 		returnData = HttpsClient::httpsRequestInternal(httpsConnection, workload, rateLimitData);
-		
+
 		rateLimitData.sampledTimeInMs.store(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()));
 
 		if (rateLimitData.tempBucket != "") {
