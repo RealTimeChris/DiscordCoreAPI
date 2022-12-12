@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 	__m256i VoiceConnectionBridge::collectEightElements(opus_int32* data) noexcept {
 		__m256 currentSamplesNew256{ _mm256_mul_ps(_mm256_cvtepi32_ps(_mm256_loadu_epi32(data)),
 			_mm256_add_ps(_mm256_set1_ps(this->currentGain),
-				_mm256_mul_ps(_mm256_set1_ps(this->increment), _mm256_set_ps(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f)))) };
+				_mm256_mul_ps(_mm256_set1_ps(this->increment), _mm256_set_ps(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f)))) };
 		return _mm256_cvtps_epi32(
 			_mm256_blendv_ps(_mm256_max_ps(currentSamplesNew256, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::min()))),
 				_mm256_min_ps(currentSamplesNew256, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::max()))),
