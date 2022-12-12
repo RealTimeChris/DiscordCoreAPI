@@ -168,11 +168,10 @@ namespace DiscordCoreAPI {
 	void VoiceConnectionBridge::applyGainRamp(int64_t sampleCount) noexcept {
 		this->increment = (this->endGain - this->currentGain) / static_cast<float>(sampleCount);
 		for (int64_t x = 0; x < sampleCount / 8; ++x) {
-			__m256i currentSampleNew{ collectEightElements(this->upSampledVector.data() + (x * 8)) };
-			__m128i currentSamplesNew01{ _mm256_extractf128_si256(currentSampleNew, 0) };
-			__m128i currentSamplesNew02{ _mm256_extractf128_si256(currentSampleNew, 1) };
-			__m128i currentSamplesNew{ _mm_packs_epi32(currentSamplesNew01, currentSamplesNew02) };
-			_mm_storeu_epi16(this->downSampledVector.data() + (x * 8), currentSamplesNew);
+			__m256i currentSamplesNew256{ collectEightElements(this->upSampledVector.data() + (x * 8)) };
+			__m128i currentSamplesNew128{ _mm_packs_epi32(_mm256_extractf128_si256(currentSamplesNew256, 0),
+				_mm256_extractf128_si256(currentSamplesNew256, 1)) };
+			_mm_storeu_epi16(this->downSampledVector.data() + (x * 8), currentSamplesNew128);
 			this->currentGain += (this->increment * 8);
 		}
 	}
