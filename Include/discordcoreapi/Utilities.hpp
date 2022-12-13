@@ -1840,6 +1840,27 @@ namespace DiscordCoreInternal {
 			this->tail = 0;
 			this->head = 0;
 		}
+
+		void writeData(std::basic_string_view<OTy> data) {
+			if (this->isItFull()) {
+				this->getCurrentTail()->clear();
+				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
+			}
+			size_t writeSize{ data.size() };
+			std::copy(data.data(), data.data() + writeSize, this->getCurrentHead()->getCurrentHead());
+			this->getCurrentHead()->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, writeSize);
+			this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, 1);
+		}
+
+		std::basic_string_view<OTy> readData() {
+			std::basic_string_view<std::byte> returnValue{};
+			if (this->getCurrentTail()->getUsedSpace() >= 0) {
+				returnValue = std::basic_string_view<OTy>{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
+				this->getCurrentTail()->clear();
+				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
+			}
+			return returnValue;
+		}
 	};
 }
 

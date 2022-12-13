@@ -59,26 +59,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void VoiceUser::insertPayload(std::basic_string_view<std::byte> data) noexcept {
-		if (this->payloads.getFreeSpace() == 0) {
-			this->payloads.getCurrentTail()->clear();
-			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
-		}
-		if (data.size() <= this->payloads.getCurrentHead()->getFreeSpace()) {
-			std::copy(data.data(), data.data() + data.size(), this->payloads.getCurrentHead()->getCurrentHead());
-			this->payloads.getCurrentHead()->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, data.size());
-			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, 1);
-		}
+		this->payloads.writeData(data);
 	}
 
 	std::basic_string_view<std::byte> VoiceUser::extractPayload() noexcept {
-		std::basic_string_view<std::byte> string{};
-		if (this->payloads.getUsedSpace() > 0 && this->payloads.getCurrentTail()->getUsedSpace() > 0) {
-			string = std::basic_string_view<std::byte>{ this->payloads.getCurrentTail()->getCurrentTail(),
-				this->payloads.getCurrentTail()->getUsedSpace() };
-			this->payloads.getCurrentTail()->clear();
-			this->payloads.modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
-		}
-		return string;
+		return this->payloads.readData();
 	}
 
 	Snowflake VoiceUser::getUserId() noexcept {
@@ -731,7 +716,7 @@ namespace DiscordCoreAPI {
 								Nanoseconds{ static_cast<uint64_t>(static_cast<double>(this->xferAudioData.currentSize / bytesPerSample) /
 									static_cast<double>(this->sampleRatePerSecond) * static_cast<double>(this->nsPerSecond)) };
 							this->areWePlaying.store(true);
-							this->audioData += this->xferAudioData;
+							this->audioData.writeData(static_cast<std::basic_string_view<std::byte>>(this->xferAudioData.data));
 							this->currentGuildMemberId = this->xferAudioData.guildMemberId;
 						}
 						std::basic_string_view<std::byte> frame{};
@@ -740,8 +725,7 @@ namespace DiscordCoreAPI {
 							case AudioFrameType::RawPCM: {
 								if (this->audioData.getCurrentTail()->getUsedSpace() >=
 									static_cast<uint64_t>(this->samplesPerPacket * bytesPerSample)) {
-									auto encodedFrameData =
-										this->encoder.encodeData(this->audioData.readData(this->samplesPerPacket * bytesPerSample));
+									auto encodedFrameData = this->encoder.encodeData(this->audioData.readData());
 									if (encodedFrameData.data.size() != 0) {
 										frame = this->packetEncrypter.encryptPacket(encodedFrameData);
 									}

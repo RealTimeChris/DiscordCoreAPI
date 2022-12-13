@@ -42,41 +42,6 @@ namespace DiscordCoreAPI {
 		uint32_t ssrc{};
 	};
 
-	struct AudioRingBuffer : public DiscordCoreInternal::RingBuffer<std::byte, 4> {
-		AudioRingBuffer& operator+=(AudioFrameData& data) {
-			if (this->isItFull()) {
-				this->getCurrentTail()->clear();
-				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
-			}
-			size_t writeSize{};
-			if (data.currentSize >= 16384) {
-				writeSize = 16384;
-				std::copy(data.data.data(), data.data.data() + writeSize, this->getCurrentHead()->getCurrentHead());
-				this->getCurrentHead()->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, writeSize);
-				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, 1);
-				std::copy(data.data.data() + writeSize, data.data.data() + data.currentSize - writeSize, data.data.data());
-				data.currentSize -= 16384;
-			} else {
-				writeSize = data.currentSize;
-				std::copy(data.data.data(), data.data.data() + writeSize, this->getCurrentHead()->getCurrentHead());
-				this->getCurrentHead()->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, writeSize);
-				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, 1);
-				data.currentSize = 0;
-			}
-			return *this;
-		}
-
-		std::basic_string_view<std::byte> readData(size_t minimumRead) {
-			std::basic_string_view<std::byte> returnValue{};
-			if (this->getCurrentTail()->getUsedSpace() >= minimumRead) {
-				returnValue = std::basic_string_view<std::byte>{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
-				this->getCurrentTail()->clear();
-				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
-			}
-			return returnValue;
-		}
-	};
-
 	struct DiscordCoreAPI_Dll VoiceUser {
 		VoiceUser() noexcept = default;
 
@@ -234,6 +199,7 @@ namespace DiscordCoreAPI {
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
 		std::unique_ptr<VoiceConnectionBridge> streamSocket{ nullptr };
 		DiscordCoreInternal::WebSocketClient* baseShard{ nullptr };
+		DiscordCoreInternal::RingBuffer<std::byte, 4> audioData{};
 		std::unique_ptr<std::jthread> taskThread01{ nullptr };
 		DiscordCoreInternal::OpusEncoderWrapper encoder{};
 		DiscordCoreClient* discordCoreClient{ nullptr };
@@ -248,7 +214,6 @@ namespace DiscordCoreAPI {
 		Snowflake currentGuildMemberId{};
 		std::atomic_bool areWePlaying{};
 		AudioFrameData xferAudioData{};
-		AudioRingBuffer audioData{};
 		int64_t samplesPerPacket{};
 		std::string externalIp{};
 		int64_t msPerPacket{};
