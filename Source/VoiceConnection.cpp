@@ -155,22 +155,22 @@ namespace DiscordCoreAPI {
 		this->guildId = guildIdNew;
 	}
 
-	__m256i VoiceConnectionBridge::collectEightElements(opus_int32* data) noexcept {
-		__m256 currentSamplesNew256{ _mm256_mul_ps(_mm256_cvtepi32_ps(_mm256_loadu_epi32(data)),
+	void VoiceConnectionBridge::collectEightElements(opus_int32* dataIn, opus_int16 *dataOut) noexcept {
+		__m256 currentSamplesNew256{ _mm256_mul_ps(_mm256_cvtepi32_ps(_mm256_loadu_epi32(dataIn)),
 			_mm256_add_ps(_mm256_set1_ps(this->currentGain),
 				_mm256_mul_ps(_mm256_set1_ps(this->increment), _mm256_set_ps(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f)))) };
-		return _mm256_cvtps_epi32(
+		__m256i currentSamplesNewer256{ _mm256_cvtps_epi32(
 			_mm256_blendv_ps(_mm256_max_ps(currentSamplesNew256, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::min()))),
 				_mm256_min_ps(currentSamplesNew256, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::max()))),
-				_mm256_cmp_ps(currentSamplesNew256, _mm256_set1_ps(0.0f), _CMP_GE_OQ)));
+				_mm256_cmp_ps(currentSamplesNew256, _mm256_set1_ps(0.0f), _CMP_GE_OQ))) };
+		_mm_storeu_epi16(dataOut,
+			_mm_packs_epi32(_mm256_extractf128_si256(currentSamplesNewer256, 0), _mm256_extractf128_si256(currentSamplesNewer256, 1)));
 	}
 
 	void VoiceConnectionBridge::applyGainRamp(int64_t sampleCount) noexcept {
 		this->increment = (this->endGain - this->currentGain) / static_cast<float>(sampleCount);
 		for (int64_t x = 0; x < sampleCount / 8; ++x) {
-			__m256i currentSamplesNew256{ collectEightElements(this->upSampledVector.data() + (x * 8)) };
-			_mm_storeu_epi16(this->downSampledVector.data() + (x * 8),
-				_mm_packs_epi32(_mm256_extractf128_si256(currentSamplesNew256, 0), _mm256_extractf128_si256(currentSamplesNew256, 1)));
+			this->collectEightElements(this->upSampledVector.data() + (x * 8), this->downSampledVector.data() + (x * 8));
 			this->currentGain += (this->increment * 8);
 		}
 	}
@@ -237,9 +237,9 @@ namespace DiscordCoreAPI {
 						decodedSize = std::max(decodedSize, static_cast<int64_t>(decodedData.size()));
 						++voiceUserCountReal;
 						for (size_t x = 0; x < decodedData.size() / 8; ++x) {
-							_mm256_storeu_epi32(&this->upSampledVector[x * 8],
-								_mm256_add_epi32(_mm256_loadu_epi32(&this->upSampledVector[x * 8]),
-									_mm256_cvtepi16_epi32(_mm_loadu_epi16(&decodedData[x * 8]))));
+							_mm256_storeu_epi32(this->upSampledVector.data() + (x * 8),
+								_mm256_add_epi32(_mm256_loadu_epi32(this->upSampledVector.data() + (x * 8)),
+									_mm256_cvtepi16_epi32(_mm_loadu_epi16(decodedData.data() + (x * 8)))));
 						}
 					}
 				}

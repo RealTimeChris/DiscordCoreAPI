@@ -174,7 +174,7 @@ namespace DiscordCoreAPI {
 		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, std::basic_string<std::byte>& encryptionKeyNew, StreamType streamType,
 			Snowflake guildIdNew);
 
-		__m256i collectEightElements(opus_int32* data) noexcept;
+		void collectEightElements(opus_int32* dataIn, opus_int16* dataOut) noexcept;
 
 		void applyGainRamp(int64_t sampleCount) noexcept;
 
