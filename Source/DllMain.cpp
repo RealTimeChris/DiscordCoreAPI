@@ -26,7 +26,7 @@
 #include <discordcoreapi/Index.hpp>
 
 #ifdef _WIN32
-bool __stdcall DllMain(void*, unsigned long fdwReason, void*) {
+bool __stdcall DllMain(void*, uint64_t fdwReason, void*) {
 	switch (fdwReason) {
 		case DLL_PROCESS_ATTACH: {
 			[[fallthrough]];

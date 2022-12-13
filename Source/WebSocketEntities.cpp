@@ -239,15 +239,10 @@ namespace DiscordCoreInternal {
 				 << static_cast<std::string>(dataToSend) << DiscordCoreAPI::reset() << endl
 				 << endl;
 		}
-		ProcessIOResult didWeWrite{};
-		DiscordCoreAPI::StopWatch stopWatch{ 5000ms };
-		do {
-			if (stopWatch.hasTimePassed()) {
-				this->onClosed();
-				return false;
-			}
-			didWeWrite = this->writeData(dataToSend, priority);
-		} while (didWeWrite == ProcessIOResult::Error);
+		if (this->writeData(dataToSend, priority) == ProcessIOResult::Error) {
+			this->onClosed();
+			return false;
+		}
 		return true;
 	}
 
@@ -303,14 +298,18 @@ namespace DiscordCoreInternal {
 			this->messageLength = 0;
 			this->messageOffset = 0;
 			switch (this->dataOpCode) {
-				case WebSocketOpCode::Op_Continuation:
+				case WebSocketOpCode::Op_Continuation: {
 					[[fallthrough]];
-				case WebSocketOpCode::Op_Text:
+				}
+				case WebSocketOpCode::Op_Text: {
 					[[fallthrough]];
-				case WebSocketOpCode::Op_Binary:
+				}
+				case WebSocketOpCode::Op_Binary: {
 					[[fallthrough]];
-				case WebSocketOpCode::Op_Ping:
+				}
+				case WebSocketOpCode::Op_Ping: {
 					[[fallthrough]];
+				}
 				case WebSocketOpCode::Op_Pong: {
 					uint8_t length01 = this->currentMessage[1];
 					this->messageOffset = 2;
@@ -1053,7 +1052,9 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case WebSocketOpCodes::Heartbeat: {
-						this->checkForAndSendHeartBeat(true);
+						if (!this->checkForAndSendHeartBeat(true)) {
+							return false;
+						}
 						break;
 					}
 					case WebSocketOpCodes::Reconnect: {
@@ -1161,7 +1162,7 @@ namespace DiscordCoreInternal {
 
 	void WebSocketClient::disconnect() noexcept {
 		if (this->socket != SOCKET_ERROR) {
-			std::string payload = "\x03\xE8";
+			std::string payload{ "\x03\xE8" };
 			this->createHeader(payload, WebSocketOpCode::Op_Close);
 			this->writeData(payload, true);
 			this->socket = SOCKET_ERROR;
@@ -1255,7 +1256,7 @@ namespace DiscordCoreInternal {
 				if (result == ProcessIOResult::Error) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + packageNew.currentShard << ","
-							 << this->configManager->getTotalShardCount() << "]... reconnecting.0101" << DiscordCoreAPI::reset() << endl
+							 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
 					this->shardMap[packageNew.currentShard]->onClosed();
@@ -1273,7 +1274,7 @@ namespace DiscordCoreInternal {
 				if (result == ProcessIOResult::Error || stopWatch.hasTimePassed()) {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket [" + packageNew.currentShard << ","
-							 << this->configManager->getTotalShardCount() << "]... reconnecting. 0202" << DiscordCoreAPI::reset() << endl
+							 << this->configManager->getTotalShardCount() << "]... reconnecting." << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
 					this->shardMap[packageNew.currentShard]->onClosed();
@@ -1300,18 +1301,13 @@ namespace DiscordCoreInternal {
 					if (this->configManager->doWePrintWebSocketErrorMessages()) {
 						cout << DiscordCoreAPI::shiftToBrightRed() << "Connection lost for WebSocket ["
 							 << static_cast<WebSocketClient*>(valueNew)->shard[0] << "," << this->configManager->getTotalShardCount()
-							 << "]... reconnecting. 0303" << DiscordCoreAPI::reset() << endl
+							 << "]... reconnecting." << DiscordCoreAPI::reset() << endl
 							 << endl;
 					}
 					static_cast<WebSocketClient*>(valueNew)->onClosed();
 				}
 				bool areWeConnected{};
 				for (auto& [key, dValue]: this->shardMap) {
-					if (dValue->connections) {
-						DiscordCoreAPI::ConnectionPackage connectionData = *dValue->connections;
-						dValue->connections.reset(nullptr);
-						this->connect(connectionData);
-					}
 					if (dValue->areWeStillConnected()) {
 						if (dValue->checkForAndSendHeartBeat()) {
 							DiscordCoreAPI::OnGatewayPingData dataNew{};
@@ -1319,6 +1315,11 @@ namespace DiscordCoreInternal {
 							this->discordCoreClient->eventManager.onGatewayPingEvent(dataNew);
 						}
 						areWeConnected = true;
+					}
+					if (dValue->connections) {
+						DiscordCoreAPI::ConnectionPackage connectionData = *dValue->connections;
+						dValue->connections.reset(nullptr);
+						this->connect(connectionData);
 					}
 				}
 				if (!areWeConnected) {
