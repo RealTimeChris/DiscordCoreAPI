@@ -57,7 +57,7 @@ namespace DiscordCoreInternal {
 		}
 		size_t sampleCount = inputFrame.size() / 2 / 2;
 		int32_t count = opus_encode(this->ptr.get(), reinterpret_cast<const opus_int16*>(inputFrame.data()),
-			static_cast<int32_t>(inputFrame.size() / 2 / 2), reinterpret_cast<unsigned char*>(this->encodedData.data()), this->maxBufferSize);
+			static_cast<int32_t>(inputFrame.size() / 2 / 2), reinterpret_cast<uint8_t*>(this->encodedData.data()), this->maxBufferSize);
 		if (count <= 0) {
 			return {};
 		}

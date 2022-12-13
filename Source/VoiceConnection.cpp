@@ -97,9 +97,9 @@ namespace DiscordCoreAPI {
 			for (int8_t x = 0; x < headerSize; ++x) {
 				this->data[x] = static_cast<std::byte>(header[x]);
 			}
-			if (crypto_secretbox_easy(reinterpret_cast<unsigned char*>(this->data.data()) + headerSize,
-					reinterpret_cast<const unsigned char*>(audioData.data.data()), audioData.data.size(), nonceForLibSodium,
-					reinterpret_cast<unsigned char*>(this->keys.data())) != 0) {
+			if (crypto_secretbox_easy(reinterpret_cast<uint8_t*>(this->data.data()) + headerSize,
+					reinterpret_cast<const uint8_t*>(audioData.data.data()), audioData.data.size(), nonceForLibSodium,
+					reinterpret_cast<uint8_t*>(this->keys.data())) != 0) {
 				return {};
 			}
 			return std::basic_string_view<std::byte>{ this->data.data(), numOfBytes };

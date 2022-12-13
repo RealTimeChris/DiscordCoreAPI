@@ -46,7 +46,7 @@ namespace DiscordCoreInternal {
 	}
 
 	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(std::basic_string_view<std::byte> dataToDecode) {
-		const int64_t sampleCount = opus_decode(this->ptr.get(), reinterpret_cast<const unsigned char*>(dataToDecode.data()),
+		const int64_t sampleCount = opus_decode(this->ptr.get(), reinterpret_cast<const uint8_t*>(dataToDecode.data()),
 			static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
 		if (sampleCount > 0) {
 			return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
