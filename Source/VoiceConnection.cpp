@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 		this->guildId = guildIdNew;
 	}
 
-	void VoiceConnectionBridge::collectEightElements(opus_int32* dataIn, opus_int16 *dataOut) noexcept {
+	inline void VoiceConnectionBridge::collectEightElements(opus_int32* dataIn, opus_int16 *dataOut) noexcept {
 		__m256 currentSamplesNew256{ _mm256_mul_ps(_mm256_cvtepi32_ps(_mm256_loadu_epi32(dataIn)),
 			_mm256_add_ps(_mm256_set1_ps(this->currentGain),
 				_mm256_mul_ps(_mm256_set1_ps(this->increment), _mm256_set_ps(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f)))) };
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 			_mm_packs_epi32(_mm256_extractf128_si256(currentSamplesNewer256, 0), _mm256_extractf128_si256(currentSamplesNewer256, 1)));
 	}
 
-	void VoiceConnectionBridge::applyGainRamp(int64_t sampleCount) noexcept {
+	inline void VoiceConnectionBridge::applyGainRamp(int64_t sampleCount) noexcept {
 		this->increment = (this->endGain - this->currentGain) / static_cast<float>(sampleCount);
 		for (int64_t x = 0; x < sampleCount / 8; ++x) {
 			this->collectEightElements(this->upSampledVector.data() + (x * 8), this->downSampledVector.data() + (x * 8));
