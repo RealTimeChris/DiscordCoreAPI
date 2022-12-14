@@ -113,10 +113,10 @@ namespace DiscordCoreInternal {
 	}
 
 	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
-		if (*other != SOCKET_ERROR) {
+		if (*other != INVALID_SOCKET) {
 			shutdown(*other, SHUT_RDWR);
 			close(*other);
-			*other = SOCKET_ERROR;
+			*other = INVALID_SOCKET;
 			delete other;
 		};
 	};
@@ -125,7 +125,7 @@ namespace DiscordCoreInternal {
 		this->ptr.reset(nullptr);
 		this->ptr = std::unique_ptr<SOCKET, SOCKETDeleter>(std::make_unique<SOCKET>().release(), SOCKETDeleter{});
 		*this->ptr = *other.ptr;
-		*other.ptr = SOCKET_ERROR;
+		*other.ptr = INVALID_SOCKET;
 		return *this;
 	}
 
@@ -210,7 +210,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (this->socket = ::socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->socket == SOCKET_ERROR) {
+		if (this->socket = ::socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->socket == INVALID_SOCKET) {
 			if (this->doWePrintErrorMessages) {
 				cout << reportError("TCPSSLClient::connect::socket(), to: " + baseUrl) << endl;
 			}
@@ -421,7 +421,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool TCPSSLClient::areWeStillConnected() noexcept {
-		if (static_cast<SOCKET*>(this->socket) && *this->socket != SOCKET_ERROR && this->ssl) {
+		if (static_cast<SOCKET*>(this->socket) && *this->socket != INVALID_SOCKET && this->ssl) {
 			return true;
 		} else {
 			return false;
@@ -525,7 +525,7 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 
-		if (this->socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); this->socket == SOCKET_ERROR) {
+		if (this->socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); this->socket == INVALID_SOCKET) {
 			if (this->doWePrintErrors) {
 				cout << reportError("UDPConnection::connect::socket(), to: " + baseUrlNew) << endl;
 			}
@@ -579,13 +579,13 @@ namespace DiscordCoreInternal {
 			}
 			std::string connectionString{ "connecting" };
 			int32_t result{};
-			while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
+			while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
 				result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 					static_cast<int32_t>(this->address->ai_addrlen));
 				std::this_thread::sleep_for(1ns);
 			}
 			result = 0;
-			while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
+			while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
 				result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 					reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 				std::this_thread::sleep_for(1ns);
@@ -607,14 +607,14 @@ namespace DiscordCoreInternal {
 			std::string connectionString{};
 			int32_t result{};
 			connectionString.resize(10);
-			while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
+			while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
 				result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 					reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 				std::this_thread::sleep_for(1ns);
 			}
 			connectionString = "connected1";
 			result = 0;
-			while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
+			while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
 				result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
 					static_cast<int32_t>(this->address->ai_addrlen));
 				std::this_thread::sleep_for(1ns);
@@ -625,7 +625,7 @@ namespace DiscordCoreInternal {
 	}
 
 	ProcessIOResult UDPConnection::processIO(ProcessIOType type) noexcept {
-		if (this->socket == SOCKET_ERROR) {
+		if (this->socket == INVALID_SOCKET) {
 			return ProcessIOResult::No_Error;
 		}
 		pollfd readWriteSet{};
@@ -693,7 +693,7 @@ namespace DiscordCoreInternal {
 	}
 
 	bool UDPConnection::areWeStillConnected() noexcept {
-		if (static_cast<SOCKET*>(this->socket) && this->socket != SOCKET_ERROR) {
+		if (static_cast<SOCKET*>(this->socket) && this->socket != INVALID_SOCKET) {
 			return true;
 		} else {
 			return false;
@@ -705,7 +705,7 @@ namespace DiscordCoreInternal {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
 			auto writtenBytes{ sendto(this->socket, reinterpret_cast<const char*>(this->outputBuffer.readData().data()),
 				static_cast<int32_t>(bytesToWrite), 0, this->address->ai_addr, static_cast<int32_t>(this->address->ai_addrlen)) };
-			if (writtenBytes <= 0 && errno != EWOULDBLOCK) {
+			if (writtenBytes <= 0 && errno != EWOULDBLOCK && errno != EINPROGRESS) {
 				return false;
 			} else if (writtenBytes > 0) {
 				return true;
@@ -721,7 +721,7 @@ namespace DiscordCoreInternal {
 				uint64_t bytesToRead{ this->maxBufferSize };
 				readBytes = recvfrom(static_cast<SOCKET>(this->socket), reinterpret_cast<char*>(this->inputBuffer.getCurrentHead()->getCurrentHead()),
 					static_cast<int32_t>(bytesToRead), 0, this->address->ai_addr, reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
-				if (readBytes <= 0 && errno != EWOULDBLOCK) {
+				if (readBytes <= 0 && errno != EWOULDBLOCK && errno != EINPROGRESS) {
 					return false;
 				} else if (readBytes > 0) {
 					this->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, readBytes);
@@ -740,7 +740,7 @@ namespace DiscordCoreInternal {
 			this->writeData(std::basic_string_view<std::byte>{ reinterpret_cast<const std::byte*>("goodbye") });
 			this->processIO(ProcessIOType::Write_Only);
 		}
-		this->socket = SOCKET_ERROR;
+		this->socket = INVALID_SOCKET;
 		this->outputBuffer.clear();
 		this->inputBuffer.clear();
 	}

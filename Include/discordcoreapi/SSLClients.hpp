@@ -73,9 +73,11 @@ namespace DiscordCoreInternal {
 	#define SOCKET_ERROR (-1)
 #endif
 
-#ifdef _WIN32
-	using SOCKET = uint32_t;
-#else
+#ifndef INVALID_SOCKET
+	#define INVALID_SOCKET (~0)
+#endif
+
+#ifndef _WIN32
 	using SOCKET = int32_t;
 #endif
 
@@ -145,7 +147,7 @@ namespace DiscordCoreInternal {
 		SOCKETWrapper() noexcept = default;
 
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> ptr{ std::make_unique<SOCKET>(SOCKET_ERROR).release(), SOCKETDeleter{} };
+		std::unique_ptr<SOCKET, SOCKETDeleter> ptr{ std::make_unique<SOCKET>(INVALID_SOCKET).release(), SOCKETDeleter{} };
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
