@@ -357,21 +357,17 @@ namespace DiscordCoreInternal {
 						return ProcessIOResult::Error;
 					}
 				} else {
-					if (dataToWrite.size() > this->maxBufferSize) {
-						uint64_t remainingBytes{ dataToWrite.size() };
-						while (remainingBytes > 0) {
-							uint64_t amountToCollect{};
-							if (dataToWrite.size() >= this->maxBufferSize) {
-								amountToCollect = this->maxBufferSize;
-							} else {
-								amountToCollect = dataToWrite.size();
-							}
-							this->outputBuffer.writeData({ dataToWrite.data(), amountToCollect });
-							dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
-							remainingBytes = dataToWrite.size();
+					uint64_t remainingBytes{ dataToWrite.size() };
+					while (remainingBytes > 0) {
+						uint64_t amountToCollect{};
+						if (dataToWrite.size() >= this->maxBufferSize) {
+							amountToCollect = this->maxBufferSize;
+						} else {
+							amountToCollect = dataToWrite.size();
 						}
-					} else {
-						this->outputBuffer.writeData(dataToWrite);
+						this->outputBuffer.writeData({ dataToWrite.data(), amountToCollect });
+						dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
+						remainingBytes = dataToWrite.size();
 					}
 				}
 			}
@@ -521,7 +517,7 @@ namespace DiscordCoreInternal {
 		this->streamType = streamTypeNew;
 	}
 
-	bool UDPConnection::connect(const std::string& baseUrlNew, uint16_t portNew, bool haveWeGottenSignaled, std::stop_token token) noexcept {
+	bool UDPConnection::connect(const std::string& baseUrlNew, uint16_t portNew, std::stop_token token) noexcept {
 		this->baseUrl = baseUrlNew;
 		this->port = portNew;
 		addrinfoWrapper hints{};
@@ -581,20 +577,18 @@ namespace DiscordCoreInternal {
 				}
 				return false;
 			}
-			if (!haveWeGottenSignaled) {
-				std::string connectionString{ "connecting" };
-				int32_t result{};
-				while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
-					result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
-						static_cast<int32_t>(this->address->ai_addrlen));
-					std::this_thread::sleep_for(1ns);
-				}
-				result = 0;
-				while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
-					result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
-						reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
-					std::this_thread::sleep_for(1ns);
-				}
+			std::string connectionString{ "connecting" };
+			int32_t result{};
+			while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
+				result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
+					static_cast<int32_t>(this->address->ai_addrlen));
+				std::this_thread::sleep_for(1ns);
+			}
+			result = 0;
+			while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
+				result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
+					reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
+				std::this_thread::sleep_for(1ns);
 			}
 		} else {
 			hints->ai_flags = AI_PASSIVE;
@@ -610,22 +604,20 @@ namespace DiscordCoreInternal {
 				}
 				return false;
 			}
-			if (!haveWeGottenSignaled) {
-				std::string connectionString{};
-				int32_t result{};
-				connectionString.resize(10);
-				while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
-					result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
-						reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
-					std::this_thread::sleep_for(1ns);
-				}
-				connectionString = "connected1";
-				result = 0;
-				while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
-					result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
-						static_cast<int32_t>(this->address->ai_addrlen));
-					std::this_thread::sleep_for(1ns);
-				}
+			std::string connectionString{};
+			int32_t result{};
+			connectionString.resize(10);
+			while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
+				result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
+					reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
+				std::this_thread::sleep_for(1ns);
+			}
+			connectionString = "connected1";
+			result = 0;
+			while ((result == 0 || errno == EWOULDBLOCK) && !token.stop_requested()) {
+				result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
+					static_cast<int32_t>(this->address->ai_addrlen));
+				std::this_thread::sleep_for(1ns);
 			}
 		}
 
@@ -681,21 +673,17 @@ namespace DiscordCoreInternal {
 
 	void UDPConnection::writeData(std::basic_string_view<std::byte> dataToWrite) noexcept {
 		if (this->areWeStillConnected()) {
-			if (dataToWrite.size() > this->maxBufferSize) {
-				uint64_t remainingBytes{ dataToWrite.size() };
-				while (remainingBytes > 0) {
-					uint64_t amountToCollect{};
-					if (dataToWrite.size() >= this->maxBufferSize) {
-						amountToCollect = this->maxBufferSize;
-					} else {
-						amountToCollect = dataToWrite.size();
-					}
-					this->outputBuffer.writeData({ dataToWrite.data(), amountToCollect });
-					dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
-					remainingBytes = dataToWrite.size();
+			uint64_t remainingBytes{ dataToWrite.size() };
+			while (remainingBytes > 0) {
+				uint64_t amountToCollect{};
+				if (dataToWrite.size() >= this->maxBufferSize) {
+					amountToCollect = this->maxBufferSize;
+				} else {
+					amountToCollect = dataToWrite.size();
 				}
-			} else {
-				this->outputBuffer.writeData(dataToWrite);
+				this->outputBuffer.writeData({ dataToWrite.data(), amountToCollect });
+				dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
+				remainingBytes = dataToWrite.size();
 			}
 		}
 	}
@@ -747,9 +735,18 @@ namespace DiscordCoreInternal {
 	}
 
 	void UDPConnection::disconnect() noexcept {
+		if (this->streamType != DiscordCoreAPI::StreamType ::None) {
+			this->outputBuffer.clear();
+			this->writeData(std::basic_string_view<std::byte>{ reinterpret_cast<const std::byte*>("goodbye") });
+			this->processIO(ProcessIOType::Write_Only);
+		}
 		this->socket = SOCKET_ERROR;
 		this->outputBuffer.clear();
 		this->inputBuffer.clear();
+	}
+
+	UDPConnection::~UDPConnection() {
+		this->disconnect();
 	}
 
 	SSL_CTXWrapper SSLConnectionInterface::context{};

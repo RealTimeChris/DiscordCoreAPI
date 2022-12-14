@@ -237,7 +237,7 @@ namespace DiscordCoreInternal {
 
 		UDPConnection(DiscordCoreAPI::StreamType streamType, bool doWePrintErrors) noexcept;
 
-		bool connect(const std::string& baseUrlNew, uint16_t portNew, bool haveWeGottenSignaled, std::stop_token token = std::stop_token{}) noexcept;
+		bool connect(const std::string& baseUrlNew, uint16_t portNew, std::stop_token token = std::stop_token{}) noexcept;
 
 		void writeData(std::basic_string_view<std::byte> dataToWrite) noexcept;
 
@@ -255,7 +255,7 @@ namespace DiscordCoreInternal {
 
 		void disconnect() noexcept;
 
-		virtual ~UDPConnection() noexcept = default;
+		~UDPConnection() noexcept;
 
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) };

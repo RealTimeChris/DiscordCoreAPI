@@ -162,6 +162,10 @@ namespace DiscordCoreAPI {
 
 	void VoiceConnectionBridge::parseOutgoingVoiceData() noexcept {
 		std::basic_string_view<std::byte> buffer = this->getInputBuffer();
+		if (buffer == reinterpret_cast<const std::byte*>("goodbye")) {
+			this->clientPtr->getVoiceConnection(this->guildId)->onClosed();
+			return;
+		}
 		if (buffer.size() > 0) {
 			AudioFrameData frame{};
 			frame += buffer;
@@ -591,22 +595,13 @@ namespace DiscordCoreAPI {
 				this->baseShard->voiceConnectionDataBuffersMap[this->voiceConnectInitData.guildId.operator size_t()]->clearContents();
 				this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 				if (this->voiceConnectInitData.streamInfo.type != StreamType::None) {
-					if (!this->streamSocket) {
-						this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this->encryptionKey,
-							this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
-						if (!this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port,
-								false, token)) {
-							++this->currentReconnectTries;
-							this->onClosed();
-							return;
-						}
-					} else {
-						if (!this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port,
-								true, token)) {
-							++this->currentReconnectTries;
-							this->onClosed();
-							return;
-						}
+					this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this->encryptionKey,
+						this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
+					if (!this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port,
+							token)) {
+						++this->currentReconnectTries;
+						this->onClosed();
+						return;
 					}
 				}
 				this->areWeConnecting.store(false);
@@ -616,8 +611,6 @@ namespace DiscordCoreAPI {
 			}
 		}
 	}
-
-
 
 	void VoiceConnection::runVoice(std::stop_token token) noexcept {
 		StopWatch stopWatch{ 20000ms };
@@ -838,7 +831,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool VoiceConnection::voiceConnect() noexcept {
-		if (!UDPConnection::areWeStillConnected() && UDPConnection::connect(this->voiceIp, this->port, false)) {
+		if (!UDPConnection::areWeStillConnected() && UDPConnection::connect(this->voiceIp, this->port)) {
 			std::byte packet[74]{};
 			const uint16_t val1601{ 0x01 };
 			const uint16_t val1602{ 70 };
