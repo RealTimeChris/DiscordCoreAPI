@@ -76,18 +76,16 @@ namespace DiscordCoreInternal {
 	CoRoutineThreadPool::CoRoutineThreadPool() : threadCount(std::thread::hardware_concurrency()) {
 		for (uint32_t x = 0; x < this->threadCount.load(); ++x) {
 			WorkerThread workerThread{};
-			this->currentIndex.store(this->currentIndex.load() + 1);
 			this->currentCount.store(this->currentCount.load() + 1);
-			int64_t indexNew = this->currentIndex.load();
-			workerThread.thread = std::jthread([=, this](std::stop_token stopToken) {
-				this->threadFunction(stopToken, indexNew);
+			workerThread.thread = std::jthread([=, &workerThread, this](std::stop_token stopToken) {
+				this->threadFunction(stopToken, workerThread);
 			});
-			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
+			this->workerThreads[this->currentCount.load()] = std::move(workerThread);
 		}
 	}
 
 	void CoRoutineThreadPool::submitTask(std::coroutine_handle<> coro) noexcept {
-		std::shared_lock lock01{ this->workerAccessMutex };
+		std::shared_lock lock00{ this->workerAccessMutex };
 		bool areWeAllBusy{ true };
 		for (const auto& [key, value]: this->workerThreads) {
 			if (!value.areWeCurrentlyWorking.load()) {
@@ -97,23 +95,23 @@ namespace DiscordCoreInternal {
 		}
 		if (areWeAllBusy) {
 			WorkerThread workerThread{};
-			this->currentIndex.store(this->currentIndex.load() + 1);
 			this->currentCount.store(this->currentCount.load() + 1);
-			int64_t indexNew = this->currentIndex.load();
-			workerThread.thread = std::jthread([=, this](std::stop_token stopToken) {
-				this->threadFunction(stopToken, indexNew);
+			workerThread.thread = std::jthread([=, &workerThread, this](std::stop_token stopToken) {
+				this->threadFunction(stopToken, workerThread);
 			});
-			lock01.unlock();
-			std::unique_lock lock{ this->workerAccessMutex };
-			this->workerThreads[this->currentIndex.load()] = std::move(workerThread);
+			this->workerThreads[this->currentCount.load()] = std::move(workerThread);
+			lock00.unlock();
 		}
-		std::unique_lock lock{ this->coroHandleAccessMutex };
+		if (lock00.owns_lock()) {
+			lock00.unlock();
+		}
+		std::unique_lock lock01{ this->coroHandleAccessMutex };
 		this->coroutineHandles.emplace_back(coro);
-		lock.unlock();
+		lock01.unlock();
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
 
-	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t index) {
+	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, WorkerThread& worker) {
 		while (!stopToken.stop_requested()) {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock lock{ this->coroHandleAccessMutex, std::defer_lock_t{} };
@@ -122,9 +120,9 @@ namespace DiscordCoreInternal {
 					this->coroHandleCount.store(this->coroHandleCount.load() - 1);
 					this->coroutineHandles.pop_front();
 					lock.unlock();
-					this->workerThreads[index].areWeCurrentlyWorking.store(true);
+					worker.areWeCurrentlyWorking.store(true);
 					coroHandle();
-					this->workerThreads[index].areWeCurrentlyWorking.store(false);
+					worker.areWeCurrentlyWorking.store(false);
 				}
 			}
 			if (this->currentCount.load() > this->threadCount.load()) {
