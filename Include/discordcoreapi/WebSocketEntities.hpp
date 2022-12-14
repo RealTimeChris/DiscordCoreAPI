@@ -153,6 +153,8 @@ namespace DiscordCoreInternal {
 
 		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocket) noexcept;
 
+		void waitForState(DiscordCoreAPI::ConnectionPackage& packageNew, WebSocketState state) noexcept;
+
 		void connect(DiscordCoreAPI::ConnectionPackage) noexcept;
 
 		std::jthread* getTheTask() noexcept;
