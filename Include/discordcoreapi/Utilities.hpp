@@ -1853,8 +1853,8 @@ namespace DiscordCoreInternal {
 		}
 
 		std::basic_string_view<OTy> readData() {
-			std::basic_string_view<std::byte> returnValue{};
-			if (this->getCurrentTail()->getUsedSpace() >= 0) {
+			std::basic_string_view<OTy> returnValue{};
+			if (this->getCurrentTail()->getUsedSpace() > 0) {
 				returnValue = std::basic_string_view<OTy>{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
 				this->getCurrentTail()->clear();
 				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);

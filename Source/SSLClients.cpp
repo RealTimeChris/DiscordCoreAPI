@@ -352,20 +352,13 @@ namespace DiscordCoreInternal {
 			if (dataToWrite.size() > 0 && this->ssl) {
 				if (priority && dataToWrite.size() < this->maxBufferSize) {
 					this->outputBuffer.clear();
-					if (this->outputBuffer.getFreeSpace() == 0) {
-						this->outputBuffer.getCurrentTail()->clear();
-						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-					}
-					std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
-					this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
-					this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+					this->outputBuffer.writeData(dataToWrite);
 					if (!this->processWriteData()) {
 						return ProcessIOResult::Error;
 					}
 				} else {
 					if (dataToWrite.size() > this->maxBufferSize) {
 						uint64_t remainingBytes{ dataToWrite.size() };
-						uint64_t amountCollected{};
 						while (remainingBytes > 0) {
 							uint64_t amountToCollect{};
 							if (dataToWrite.size() >= this->maxBufferSize) {
@@ -373,26 +366,12 @@ namespace DiscordCoreInternal {
 							} else {
 								amountToCollect = dataToWrite.size();
 							}
-							if (this->outputBuffer.getFreeSpace() == 0) {
-								this->outputBuffer.getCurrentTail()->clear();
-								this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-							}
-							std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect,
-								this->outputBuffer.getCurrentHead()->getCurrentHead());
-							this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
-							this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+							this->outputBuffer.writeData({ dataToWrite.data(), amountToCollect });
 							dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
 							remainingBytes = dataToWrite.size();
-							amountCollected += amountToCollect;
 						}
 					} else {
-						if (this->outputBuffer.getFreeSpace() == 0) {
-							this->outputBuffer.getCurrentTail()->clear();
-							this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-						}
-						std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
-						this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
-						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+						this->outputBuffer.writeData(dataToWrite);
 					}
 				}
 			}
@@ -441,14 +420,8 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::No_Error;
 	}
 
-	std::string_view TCPSSLClient::getInputBuffer() noexcept {
-		std::string_view string{};
-		if (this->inputBuffer.getUsedSpace() > 0) {
-			string = std::string_view{ this->inputBuffer.getCurrentTail()->getCurrentTail(), this->inputBuffer.getCurrentTail()->getUsedSpace() };
-			this->inputBuffer.getCurrentTail()->clear();
-			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-		}
-		return string;
+	std::basic_string_view<char> TCPSSLClient::getInputBuffer() noexcept {
+		return this->inputBuffer.readData();
 	}
 
 	bool TCPSSLClient::areWeStillConnected() noexcept {
@@ -464,7 +437,7 @@ namespace DiscordCoreInternal {
 			uint64_t bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
 
 			uint64_t writtenBytes{};
-			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.getCurrentTail()->getCurrentTail(), bytesToWrite, &writtenBytes) };
+			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.readData().data(), bytesToWrite, &writtenBytes) };
 			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
 			switch (errorValue) {
 				case SSL_ERROR_WANT_READ: {
@@ -474,10 +447,6 @@ namespace DiscordCoreInternal {
 					[[fallthrough]];
 				}
 				case SSL_ERROR_NONE: {
-					if (writtenBytes > 0) {
-						this->outputBuffer.getCurrentTail()->clear();
-						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-					}
 					return true;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
@@ -714,7 +683,6 @@ namespace DiscordCoreInternal {
 		if (this->areWeStillConnected()) {
 			if (dataToWrite.size() > this->maxBufferSize) {
 				uint64_t remainingBytes{ dataToWrite.size() };
-				uint64_t amountCollected{};
 				while (remainingBytes > 0) {
 					uint64_t amountToCollect{};
 					if (dataToWrite.size() >= this->maxBufferSize) {
@@ -722,39 +690,18 @@ namespace DiscordCoreInternal {
 					} else {
 						amountToCollect = dataToWrite.size();
 					}
-					if (this->outputBuffer.getFreeSpace() == 0) {
-						this->outputBuffer.getCurrentTail()->clear();
-						this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-					}
-					std::copy(dataToWrite.data() + amountCollected, dataToWrite.data() + amountCollected + amountToCollect,
-						this->outputBuffer.getCurrentHead()->getCurrentHead());
-					this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, amountToCollect);
-					this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+					this->outputBuffer.writeData({ dataToWrite.data(), amountToCollect });
 					dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
 					remainingBytes = dataToWrite.size();
-					amountCollected += amountToCollect;
 				}
 			} else {
-				if (this->outputBuffer.getFreeSpace() == 0) {
-					this->outputBuffer.getCurrentTail()->clear();
-					this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-				}
-				std::copy(dataToWrite.data(), dataToWrite.data() + dataToWrite.size(), this->outputBuffer.getCurrentHead()->getCurrentHead());
-				this->outputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, dataToWrite.size());
-				this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+				this->outputBuffer.writeData(dataToWrite);
 			}
 		}
 	}
 
 	std::basic_string_view<std::byte> UDPConnection::getInputBuffer() noexcept {
-		std::basic_string_view<std::byte> string{};
-		if (this->inputBuffer.getUsedSpace() > 0) {
-			string = std::basic_string_view<std::byte>{ this->inputBuffer.getCurrentTail()->getCurrentTail(),
-				this->inputBuffer.getCurrentTail()->getUsedSpace() };
-			this->inputBuffer.getCurrentTail()->clear();
-			this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-		}
-		return string;
+		return this->inputBuffer.readData();
 	}
 
 	bool UDPConnection::areWeStillConnected() noexcept {
@@ -768,13 +715,11 @@ namespace DiscordCoreInternal {
 	bool UDPConnection::processWriteData() noexcept {
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			auto bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
-			auto writtenBytes{ sendto(this->socket, reinterpret_cast<char*>(this->outputBuffer.getCurrentTail()->getCurrentTail()),
+			auto writtenBytes{ sendto(this->socket, reinterpret_cast<const char*>(this->outputBuffer.readData().data()),
 				static_cast<int32_t>(bytesToWrite), 0, this->address->ai_addr, static_cast<int32_t>(this->address->ai_addrlen)) };
 			if (writtenBytes <= 0 && errno != EWOULDBLOCK) {
 				return false;
 			} else if (writtenBytes > 0) {
-				this->outputBuffer.getCurrentTail()->clear();
-				this->outputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 				return true;
 			}
 		}
@@ -784,10 +729,6 @@ namespace DiscordCoreInternal {
 	bool UDPConnection::processReadData() noexcept {
 		int32_t readBytes{};
 		do {
-			if (this->inputBuffer.isItFull()) {
-				this->inputBuffer.getCurrentTail()->clear();
-				this->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-			}
 			if (!this->inputBuffer.isItFull()) {
 				uint64_t bytesToRead{ this->maxBufferSize };
 				readBytes = recvfrom(static_cast<SOCKET>(this->socket), reinterpret_cast<char*>(this->inputBuffer.getCurrentHead()->getCurrentHead()),
