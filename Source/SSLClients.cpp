@@ -746,10 +746,6 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	int64_t UDPConnection::getBytesRead() noexcept {
-		return this->bytesRead;
-	}
-
 	void UDPConnection::disconnect() noexcept {
 		this->socket = SOCKET_ERROR;
 		this->outputBuffer.clear();

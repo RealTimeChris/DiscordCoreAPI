@@ -1777,10 +1777,10 @@ namespace DiscordCoreInternal {
 	  public:
 		void modifyReadOrWritePosition(RingBufferAccessType type, uint64_t size) noexcept {
 			if (type == RingBufferAccessType::Read) {
-				this->tail += size;
+				this->tail = (this->tail + size) % this->arrayValue.size();
 				this->areWeFull = false;
 			} else {
-				this->head += size;
+				this->head = (this->head + size) % this->arrayValue.size();
 				if (this->head == this->tail) {
 					this->areWeFull = true;
 				}
@@ -1794,10 +1794,10 @@ namespace DiscordCoreInternal {
 			if (this->areWeFull) {
 				return this->arrayValue.size();
 			}
-			if ((this->head % this->arrayValue.size()) >= (this->tail % this->arrayValue.size())) {
-				return (this->head % this->arrayValue.size()) - (this->tail % this->arrayValue.size());
+			if (this->head >= this->tail) {
+				return this->head - this->tail;
 			} else {
-				return this->arrayValue.size() + (this->head % this->arrayValue.size()) - (this->tail % this->arrayValue.size());
+				return this->tail - this->head;
 			}
 		}
 
@@ -1806,11 +1806,11 @@ namespace DiscordCoreInternal {
 		}
 
 		OTy* getCurrentTail() noexcept {
-			return (this->arrayValue.data() + (this->tail % (this->arrayValue.size())));
+			return this->arrayValue.data() + this->tail;
 		}
 
 		OTy* getCurrentHead() noexcept {
-			return (this->arrayValue.data() + (this->head % (this->arrayValue.size())));
+			return this->arrayValue.data() + this->head;
 		}
 
 		bool isItFull() noexcept {

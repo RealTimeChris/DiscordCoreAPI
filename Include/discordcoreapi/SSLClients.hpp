@@ -191,8 +191,6 @@ namespace DiscordCoreInternal {
 
 		virtual std::string_view getInputBuffer() noexcept = 0;
 
-		virtual int64_t getBytesRead() noexcept = 0;
-
 		virtual ~SSLDataInterface() noexcept = default;
 
 	  protected:
@@ -254,8 +252,6 @@ namespace DiscordCoreInternal {
 		bool processWriteData() noexcept;
 
 		bool processReadData() noexcept;
-
-		int64_t getBytesRead() noexcept;
 
 		void disconnect() noexcept;
 
