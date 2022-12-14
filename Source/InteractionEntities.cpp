@@ -490,7 +490,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void SelectMenuCollector::run() {
-		int64_t currentCollectedSelectMenuCount{};
+		int32_t currentCollectedSelectMenuCount{};
 		StopWatch stopWatch{ Milliseconds{ this->maxTimeInMs } };
 		while (!this->doWeQuit && !stopWatch.hasTimePassed()) {
 			if (this->getSelectMenuDataForAll == false) {

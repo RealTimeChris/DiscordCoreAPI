@@ -766,7 +766,7 @@ namespace DiscordCoreAPI {
 						}
 
 						waitTime = targetTime - HRClock::now();
-						waitTimeCount = static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.90l);
+						waitTimeCount = static_cast<int64_t>(static_cast<double>(waitTime.count()) * 0.95l);
 						if (waitTimeCount > 0) {
 							nanoSleep(waitTimeCount);
 						}

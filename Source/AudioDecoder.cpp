@@ -489,7 +489,7 @@ namespace DiscordCoreInternal {
 						for (int32_t x = 0; x < unpadded_linesize; ++x) {
 							rawFrame.data[x] = static_cast<std::byte>(this->newFrame->extended_data[0][x]);
 						}
-						rawFrame.currentSize = static_cast<int64_t>(newFrame->nb_samples * 4);
+						rawFrame.currentSize = static_cast<int64_t>(newFrame->nb_samples) * 4ll;
 						this->outDataBuffer.send(std::move(rawFrame));
 						int64_t sampleCount = swr_get_delay(this->swrContext, this->newFrame->sample_rate);
 						if (sampleCount > 0) {
@@ -503,7 +503,7 @@ namespace DiscordCoreInternal {
 							for (int32_t x = 0; x < *this->newFrame->linesize; ++x) {
 								rawFrame02.data[x] = static_cast<std::byte>(this->newFrame->extended_data[0][x]);
 							}
-							rawFrame02.currentSize = static_cast<int64_t>(newFrame->nb_samples * 4);
+							rawFrame02.currentSize = static_cast<int64_t>(newFrame->nb_samples) * 4ll;
 							this->outDataBuffer.send(std::move(rawFrame02));
 						}
 					}
