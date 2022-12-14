@@ -156,7 +156,7 @@ namespace DiscordCoreAPI {
 		this->increment = (this->endGain - this->currentGain) / static_cast<float>(sampleCount);
 		for (int64_t x = 0; x < sampleCount / 8; ++x) {
 			this->collectEightElements(this->upSampledVector.data() + (x * 8), this->downSampledVector.data() + (x * 8));
-			this->currentGain += (this->increment * 8);
+			this->currentGain += this->increment * 8.0f;
 		}
 	}
 
