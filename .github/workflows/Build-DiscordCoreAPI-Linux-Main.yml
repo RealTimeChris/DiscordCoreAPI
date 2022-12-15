@@ -6,6 +6,7 @@ on:
 
 jobs:
   Build-DiscordCoreAPI:
+    name: Build DiscordCoreAPI Linux Main
     runs-on: ubuntu-22.04
 
     steps:
