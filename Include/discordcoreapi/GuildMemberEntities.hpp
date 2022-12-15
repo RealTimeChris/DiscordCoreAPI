@@ -67,7 +67,8 @@ namespace DiscordCoreAPI {
 	/// \brief For adding a new GuildMember to a chosen Guild.
 	struct DiscordCoreAPI_Dll AddGuildMemberData {
 		std::vector<Snowflake> roles{};///< Array of Role ids the member is assigned.
-		std::string accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
+		std::string
+			accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
 		Snowflake guildId{};///< The Guild to add the new GuildMember to.
 		Snowflake userId{};///< The User id of the user you wish to add.
 		std::string nick{};///< Value to set users nickname to.
@@ -86,7 +87,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For modifying a GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
-		TimeStamp communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
+		TimeStamp
+			communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::vector<Snowflake> roleIds{};///< A collection of Role id's to be applied to them.
 		Snowflake newVoiceChannelId{};///< The new voice Channel to move them into.
 		Snowflake currentChannelId{};///< The current voice Channel, if applicaple.
@@ -118,7 +120,8 @@ namespace DiscordCoreAPI {
 	/// \brief A single GuildMember.
 	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
 	  public:
-		TimeStamp communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
+		TimeStamp
+			communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
 		std::string premiumSince{};///< If applicable, when they first boosted the server.
 
 		GuildMember() noexcept = default;

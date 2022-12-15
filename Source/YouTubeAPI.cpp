@@ -113,8 +113,9 @@ namespace DiscordCoreInternal {
 			responseData = this->httpsClient->submitWorkloadAndGetResult(dataPackage02);
 			if (responseData.responseCode != 204 && responseData.responseCode != 201 && responseData.responseCode != 200 &&
 				this->configManager->doWePrintHttpsErrorMessages()) {
-				cout << DiscordCoreAPI::shiftToBrightRed() << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData.responseCode
-					 << ", " << responseData.responseData << DiscordCoreAPI::reset() << endl
+				cout << DiscordCoreAPI::shiftToBrightRed()
+					 << "YouTubeRequestBuilder::constructDownloadInfo() 01 Error: " << responseData.responseCode << ", "
+					 << responseData.responseData << DiscordCoreAPI::reset() << endl
 					 << endl;
 			}
 			newSong.type = DiscordCoreAPI::SongType::YouTube;
@@ -151,7 +152,8 @@ namespace DiscordCoreInternal {
 			auto videoPlaybackFind = newSong.format.downloadUrl.find("/videoplayback?");
 			if (httpsFind != std::string::npos && videoPlaybackFind != std::string::npos) {
 				std::string newString00 = "https://";
-				downloadBaseUrl = newSong.format.downloadUrl.substr(httpsFind + newString00.length(), videoPlaybackFind - newString00.length());
+				downloadBaseUrl =
+					newSong.format.downloadUrl.substr(httpsFind + newString00.length(), videoPlaybackFind - newString00.length());
 			}
 			std::string requestNew = "GET " + newSong.format.downloadUrl + " HTTP/1.1\n\rHost: " + downloadBaseUrl + "\n\r\n\r";
 			newSong.finalDownloadUrls.resize(2);
@@ -202,7 +204,8 @@ namespace DiscordCoreInternal {
 		return apiKey;
 	}
 
-	YouTubeAPI::YouTubeAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClientNew, const DiscordCoreAPI::Snowflake guildIdNew) {
+	YouTubeAPI::YouTubeAPI(DiscordCoreAPI::ConfigManager* configManagerNew, HttpsClient* httpsClientNew,
+		const DiscordCoreAPI::Snowflake guildIdNew) {
 		this->configManager = configManagerNew;
 		this->httpsClient = httpsClientNew;
 		this->guildId = static_cast<DiscordCoreAPI::Snowflake>(guildIdNew);
@@ -241,7 +244,8 @@ namespace DiscordCoreInternal {
 			auto bytesRead{ static_cast<int32_t>(streamSocket->getBytesRead()) };
 			if (newSong.finalDownloadUrls.size() > 0) {
 				if (!static_cast<TCPSSLClient*>(streamSocket.get())
-						 ->connect(newSong.finalDownloadUrls[0].urlPath, 443, this->configManager->doWePrintWebSocketErrorMessages(), true)) {
+						 ->connect(newSong.finalDownloadUrls[0].urlPath, 443, this->configManager->doWePrintWebSocketErrorMessages(),
+							 true)) {
 					this->weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
 					return;
 				}
@@ -337,10 +341,12 @@ namespace DiscordCoreInternal {
 						}
 						std::string streamBufferReal = static_cast<std::string>(streamSocket->getInputBuffer());
 						if (streamBufferReal.size() > 0) {
-							currentString.insert(currentString.end(), streamBufferReal.data(), streamBufferReal.data() + streamBufferReal.size());
+							currentString.insert(currentString.end(), streamBufferReal.data(),
+								streamBufferReal.data() + streamBufferReal.size());
 							std::string submissionString{};
 							if (currentString.size() >= this->maxBufferSize) {
-								submissionString.insert(submissionString.begin(), currentString.data(), currentString.data() + this->maxBufferSize);
+								submissionString.insert(submissionString.begin(), currentString.data(),
+									currentString.data() + this->maxBufferSize);
 								currentString.erase(currentString.begin(), currentString.begin() + this->maxBufferSize);
 							} else {
 								submissionString = std::move(currentString);
@@ -362,7 +368,8 @@ namespace DiscordCoreInternal {
 						std::string streamBufferReal = static_cast<std::string>(streamSocket->getInputBuffer());
 
 						if (streamBufferReal.size() > 0) {
-							currentString.insert(currentString.end(), streamBufferReal.data(), streamBufferReal.data() + streamBufferReal.size());
+							currentString.insert(currentString.end(), streamBufferReal.data(),
+								streamBufferReal.data() + streamBufferReal.size());
 							while (currentString.size() > 0) {
 								std::string submissionString{};
 								if (currentString.size() >= this->maxBufferSize) {

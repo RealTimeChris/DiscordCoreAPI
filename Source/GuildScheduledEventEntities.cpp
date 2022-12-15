@@ -120,7 +120,8 @@ namespace DiscordCoreAPI {
 		GuildScheduledEvents::httpsClient = client;
 	}
 
-	CoRoutine<std::vector<GuildScheduledEvent>> GuildScheduledEvents::getGuildScheduledEventsAsync(GetGuildScheduledEventsData dataPackage) {
+	CoRoutine<std::vector<GuildScheduledEvent>> GuildScheduledEvents::getGuildScheduledEventsAsync(
+		GetGuildScheduledEventsData dataPackage) {
 		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Guild_Scheduled_Events };
 		co_await NewThreadAwaitable<std::vector<GuildScheduledEvent>>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;

@@ -2943,9 +2943,11 @@ namespace DiscordCoreAPI {
 	}
 
 	Song::Song(simdjson::ondemand::value jsonObjectData) {
-		this->duration = getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData"), "label");
+		this->duration =
+			getString(getObject(getObject(getObject(jsonObjectData, "lengthText"), "accessibility"), "accessibilityData"), "label");
 		std::string newString = getString(
-			getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0), "text");
+			getObject(getArray(getObject(getObject(getArray(jsonObjectData, "detailedMetadataSnippets"), 0), "snippetText"), "runs"), 0),
+			"text");
 		if (newString.size() > 256) {
 			newString = newString.substr(0, 256);
 		}
@@ -3616,8 +3618,8 @@ namespace DiscordCoreAPI {
 		*this = dataPackage;
 	}
 
-	RespondToInputEventData& RespondToInputEventData::addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel,
-		ButtonStyle buttonStyle, const std::string& emojiName, Snowflake emojiId, const std::string& url) {
+	RespondToInputEventData& RespondToInputEventData::addButton(bool disabled, const std::string& customIdNew,
+		const std::string& buttonLabel, ButtonStyle buttonStyle, const std::string& emojiName, Snowflake emojiId, const std::string& url) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3670,8 +3672,8 @@ namespace DiscordCoreAPI {
 	}
 
 	RespondToInputEventData& RespondToInputEventData::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew,
-		const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle,
-		const std::string& label, const std::string& placeholder) {
+		const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength,
+		TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
 		this->title = topTitleNew;
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {
@@ -3798,8 +3800,9 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
-		const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type, std::vector<ChannelType> channelTypes) {
+	MessageResponseBase& MessageResponseBase::addSelectMenu(bool disabled, const std::string& customIdNew,
+		std::vector<SelectOptionData> options, const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
+		std::vector<ChannelType> channelTypes) {
 		if (this->components.size() == 0) {
 			ActionRowData actionRowData;
 			this->components.emplace_back(actionRowData);
@@ -3824,9 +3827,9 @@ namespace DiscordCoreAPI {
 		return *this;
 	}
 
-	MessageResponseBase& MessageResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew, const std::string& titleNew,
-		const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength, TextInputStyle inputStyle, const std::string& label,
-		const std::string& placeholder) {
+	MessageResponseBase& MessageResponseBase::addModal(const std::string& topTitleNew, const std::string& topCustomIdNew,
+		const std::string& titleNew, const std::string& customIdNew, bool required, int32_t minLength, int32_t maxLength,
+		TextInputStyle inputStyle, const std::string& label, const std::string& placeholder) {
 		this->title = topTitleNew;
 		this->customId = topCustomIdNew;
 		if (this->components.size() == 0) {
@@ -4049,7 +4052,8 @@ namespace DiscordCoreAPI {
 		return this->eventData;
 	}
 
-	BaseFunctionArguments::BaseFunctionArguments(CommandData commanddataNew, DiscordCoreClient* discordCoreClientNew) : CommandData(commanddataNew) {
+	BaseFunctionArguments::BaseFunctionArguments(CommandData commanddataNew, DiscordCoreClient* discordCoreClientNew)
+		: CommandData(commanddataNew) {
 		this->discordCoreClient = discordCoreClientNew;
 	}
 

@@ -136,8 +136,8 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class VoiceConnection;
 
-		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, std::basic_string<std::byte>& encryptionKeyNew, StreamType streamType,
-			Snowflake guildIdNew);
+		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, std::basic_string<std::byte>& encryptionKeyNew,
+			StreamType streamType, Snowflake guildIdNew);
 
 		inline void collectEightElements(opus_int32* dataIn, opus_int16* dataOut) noexcept;
 
@@ -178,7 +178,8 @@ namespace DiscordCoreAPI {
 		friend class SongAPI;
 
 		/// The constructor.
-		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketClient* baseShardNew, std::atomic_bool* doWeQuitNew) noexcept;
+		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketClient* baseShardNew,
+			std::atomic_bool* doWeQuitNew) noexcept;
 
 		/// \brief Collects the currently connected-to voice Channel's id.
 		/// \returns Snowflake A Snowflake containing the Channel's id.

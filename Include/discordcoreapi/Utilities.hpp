@@ -167,8 +167,8 @@ namespace DiscordCoreAPI {
 					return;
 				}
 				case 2: {
-					net =
-						_mm256_extract_epi16(_mm256_shuffle_epi8(_mm256_insert_epi16(__m256i{}, net, 0), _mm256_insert_epi16(__m256i{}, 0x01, 0)), 0);
+					net = _mm256_extract_epi16(
+						_mm256_shuffle_epi8(_mm256_insert_epi16(__m256i{}, net, 0), _mm256_insert_epi16(__m256i{}, 0x01, 0)), 0);
 					return;
 				}
 				case 4: {
@@ -178,7 +178,8 @@ namespace DiscordCoreAPI {
 				}
 				case 8: {
 					net = _mm256_extract_epi64(
-						_mm256_shuffle_epi8(_mm256_insert_epi64(__m256i{}, net, 0), _mm256_insert_epi64(__m256i{}, 0x102030405060708, 0)), 0);
+						_mm256_shuffle_epi8(_mm256_insert_epi64(__m256i{}, net, 0), _mm256_insert_epi64(__m256i{}, 0x102030405060708, 0)),
+						0);
 					return;
 				}
 			}
@@ -350,7 +351,8 @@ namespace DiscordCoreAPI {
 			*this = data;
 		}
 
-		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::unordered_map<KTy, OTy>&& data) noexcept {
+		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy>
+		Jsonifier& operator=(std::unordered_map<KTy, OTy>&& data) noexcept {
 			this->setValue(JsonType::Object);
 			for (auto& [key, value]: data) {
 				(*this->jsonValue.object)[key] = std::move(value);
@@ -362,7 +364,8 @@ namespace DiscordCoreAPI {
 			*this = std::move(data);
 		};
 
-		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::unordered_map<KTy, OTy>& data) noexcept {
+		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy>
+		Jsonifier& operator=(std::unordered_map<KTy, OTy>& data) noexcept {
 			this->setValue(JsonType::Object);
 			for (auto& [key, value]: data) {
 				(*this->jsonValue.object)[key] = value;
@@ -511,9 +514,9 @@ namespace DiscordCoreAPI {
 		void writeJsonFloat(const FloatType x);
 
 		template<typename NumberType,
-			std::enable_if_t<
-				std::is_integral<NumberType>::value || std::is_same<NumberType, uint64_t>::value || std::is_same<NumberType, int64_t>::value, int> =
-				0>
+			std::enable_if_t<std::is_integral<NumberType>::value || std::is_same<NumberType, uint64_t>::value ||
+					std::is_same<NumberType, int64_t>::value,
+				int> = 0>
 		void writeJsonInt(NumberType Int) {
 			auto IntNew = std::to_string(Int);
 			this->writeString(IntNew.data(), IntNew.size());
@@ -692,32 +695,38 @@ namespace DiscordCoreInternal {
 			Sharding_Required =
 				1 << 12,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
 			Invalid_API_Version = 1 << 13,///< You sent an invalid version for the gateway.
-			Invalid_Intent = 1 << 14,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
+			Invalid_Intent =
+				1 << 14,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
 			Disallowed_Intent = 1
 				<< 15,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
-			We_Do_Reconnect = Normal_Close | Unknown_Error | Unknown_Opcode | Decode_Error | Not_Authenticated | Already_Authenticated | Invalid_Seq |
-				Rate_Limited | Session_Timed,
-			We_Do_Not_Reconnect = Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
+			We_Do_Reconnect = Normal_Close | Unknown_Error | Unknown_Opcode | Decode_Error | Not_Authenticated | Already_Authenticated |
+				Invalid_Seq | Rate_Limited | Session_Timed,
+			We_Do_Not_Reconnect =
+				Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
 		};
 
-		std::unordered_map<uint16_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset }, { 1000, WebSocketCloseCode::Normal_Close },
-			{ 4000, WebSocketCloseCode::Unknown_Error }, { 4001, WebSocketCloseCode::Unknown_Opcode }, { 4002, WebSocketCloseCode::Decode_Error },
+		std::unordered_map<uint16_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset },
+			{ 1000, WebSocketCloseCode::Normal_Close }, { 4000, WebSocketCloseCode::Unknown_Error },
+			{ 4001, WebSocketCloseCode::Unknown_Opcode }, { 4002, WebSocketCloseCode::Decode_Error },
 			{ 4003, WebSocketCloseCode::Not_Authenticated }, { 4004, WebSocketCloseCode::Authentication_Failed },
 			{ 4005, WebSocketCloseCode::Already_Authenticated }, { 4007, WebSocketCloseCode::Invalid_Seq },
-			{ 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed }, { 4010, WebSocketCloseCode::Invalid_Shard },
-			{ 4011, WebSocketCloseCode::Sharding_Required }, { 4012, WebSocketCloseCode::Invalid_API_Version },
-			{ 4013, WebSocketCloseCode::Invalid_Intent }, { 4014, WebSocketCloseCode::Disallowed_Intent } };
+			{ 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed },
+			{ 4010, WebSocketCloseCode::Invalid_Shard }, { 4011, WebSocketCloseCode::Sharding_Required },
+			{ 4012, WebSocketCloseCode::Invalid_API_Version }, { 4013, WebSocketCloseCode::Invalid_Intent },
+			{ 4014, WebSocketCloseCode::Disallowed_Intent } };
 
 		std::unordered_map<WebSocketCloseCode, std::string> outputErrorValues{ {
 																				   WebSocketCloseCode::Unknown_Error,
 																				   "4000; We're not sure what went wrong.",
 																			   },
-			{ WebSocketCloseCode::Unknown_Opcode, "4001; You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!" },
+			{ WebSocketCloseCode::Unknown_Opcode,
+				"4001; You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!" },
 			{ WebSocketCloseCode::Decode_Error, "4002; You sent an invalid payload to Discord. Don't do that!" },
 			{ WebSocketCloseCode::Not_Authenticated, "4003; You sent us a payload prior to identifying." },
 			{ WebSocketCloseCode::Authentication_Failed, "4004; The account token sent with your identify payload is incorrect." },
 			{ WebSocketCloseCode::Already_Authenticated, "4005; You sent more than one identify payload. Don't do that!" },
-			{ WebSocketCloseCode::Invalid_Seq, "4006; The sequence sent when resuming the session was invalid. Reconnect and start a new session." },
+			{ WebSocketCloseCode::Invalid_Seq,
+				"4006; The sequence sent when resuming the session was invalid. Reconnect and start a new session." },
 			{ WebSocketCloseCode::Rate_Limited,
 				"4008; Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this." },
 			{ WebSocketCloseCode::Session_Timed, "4009; Your session timed out. Reconnect and start a new one." },
@@ -728,7 +737,8 @@ namespace DiscordCoreInternal {
 			{ WebSocketCloseCode::Invalid_Intent,
 				"4013; You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value." },
 			{ WebSocketCloseCode::Disallowed_Intent,
-				"4014; You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are "
+				"4014; You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not "
+				"enabled or are "
 				"not "
 				"approved for." } };
 
@@ -786,7 +796,8 @@ namespace DiscordCoreInternal {
 			{ VoiceWebSocketCloseCode::Server_Not_Found, "4011; We can't find the server you're trying to connect to." },
 			{ VoiceWebSocketCloseCode::Unknown_Protocol, "4012; We didn't recognize the protocol you sent." },
 			{ VoiceWebSocketCloseCode::Disconnected,
-				"4014; Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not reconnect." },
+				"4014; Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not "
+				"reconnect." },
 			{ VoiceWebSocketCloseCode::Voice_Server_Crashed, "4015; The server crashed. Our bad! Try resuming." },
 			{ VoiceWebSocketCloseCode::Unknown_Encryption_Mode, "4016; We didn't recognize your encryption." } };
 
@@ -819,8 +830,8 @@ namespace DiscordCoreInternal {
 			Gatewat_Unavailable = 502,///< There was not a gateway available to process your request. Wait a bit and retry.
 		};
 
-		std::unordered_map<HttpsResponseCodes, std::string> outputErrorValues{ { static_cast<HttpsResponseCodes>(200),
-																				   "200; The request completed successfully" },
+		std::unordered_map<HttpsResponseCodes, std::string> outputErrorValues{
+			{ static_cast<HttpsResponseCodes>(200), "200; The request completed successfully" },
 			{ static_cast<HttpsResponseCodes>(201), "201; The entity was created successfully" },
 			{ static_cast<HttpsResponseCodes>(204), "204; The request completed successfully but returned no content" },
 			{ static_cast<HttpsResponseCodes>(304), "304; The entity was not modified (no action was taken)" },
@@ -830,7 +841,8 @@ namespace DiscordCoreInternal {
 			{ static_cast<HttpsResponseCodes>(404), "404; The resource at the location specified doesn't exist" },
 			{ static_cast<HttpsResponseCodes>(405), "405; The HTTPS method used is not valid for the location specified" },
 			{ static_cast<HttpsResponseCodes>(429), "429; You are being rate limited, see Rate Limits" },
-			{ static_cast<HttpsResponseCodes>(502), "502; There was not a gateway available to process your request.Wait a bit and retry" } };
+			{ static_cast<HttpsResponseCodes>(502), "502; There was not a gateway available to process your request.Wait a bit and retry" }
+		};
 
 		HttpsResponseCodes value{};
 
@@ -931,8 +943,8 @@ namespace DiscordCoreAPI {
 		Message_Content = 1 << 15,///< Intent for receipt of message content.
 		Guild_Scheduled_Events = 1 << 16,///< Scheduled events.
 		Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates |
-			Guild_Messages | Guild_Message_Reactions | Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing |
-			Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
+			Guild_Messages | Guild_Message_Reactions | Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions |
+			Direct_Message_Typing | Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
 		Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
 		All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
 	};
@@ -1218,15 +1230,16 @@ namespace DiscordCoreAPI {
 		std::unique_ptr<char[]> ptr{};
 	};
 
-	DiscordCoreAPI_Dll inline std::basic_ostream<char>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs, const StringWrapper& rhs) {
+	DiscordCoreAPI_Dll inline std::basic_ostream<char>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs,
+		const StringWrapper& rhs) {
 		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(rhs))) {
 			lhs.put(value);
 		}
 		return lhs;
 	}
 
-	DiscordCoreAPI_Dll inline std::basic_string<char> operator+(const std::basic_string<char, std::char_traits<char>, std::allocator<char>>& lhs,
-		StringWrapper rhs) {
+	DiscordCoreAPI_Dll inline std::basic_string<char> operator+(
+		const std::basic_string<char, std::char_traits<char>, std::allocator<char>>& lhs, StringWrapper rhs) {
 		std::stringstream stream{};
 		stream << lhs << rhs;
 		return stream.str();
@@ -1516,7 +1529,8 @@ namespace DiscordCoreAPI {
 	  protected:
 		uint64_t permissions{};
 
-		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, const ChannelData& channel);
+		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember,
+			const ChannelData& channel);
 
 		static std::string computePermissions(const GuildMember& guildMember, const ChannelData& channel);
 
@@ -1526,9 +1540,11 @@ namespace DiscordCoreAPI {
 	/// \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
 	/// \param currentFunctionName A string to display the current function's name.
 	/// \param location For deriving the current file, line, and column - do not set this value.
-	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
+	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName,
+		std::source_location location = std::source_location::current());
 
-	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
+	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName,
+		std::source_location location = std::source_location::current());
 
 	DiscordCoreAPI_Dll std::string constructMultiPartData(const std::string& data, const std::vector<File>& files);
 
@@ -1830,7 +1846,8 @@ namespace DiscordCoreInternal {
 		uint64_t head{};
 	};
 
-	template<typename OTy, uint64_t SliceCount> class RingBuffer : public RingBufferInterface<RingBufferInterface<OTy, 1024 * 16>, SliceCount> {
+	template<typename OTy, uint64_t SliceCount>
+	class RingBuffer : public RingBufferInterface<RingBufferInterface<OTy, 1024 * 16>, SliceCount> {
 	  public:
 		void clear() noexcept override {
 			for (uint64_t x = 0; x < this->arrayValue.size(); ++x) {
@@ -1855,7 +1872,8 @@ namespace DiscordCoreInternal {
 		std::basic_string_view<OTy> readData() {
 			std::basic_string_view<OTy> returnValue{};
 			if (this->getCurrentTail()->getUsedSpace() > 0) {
-				returnValue = std::basic_string_view<OTy>{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
+				returnValue =
+					std::basic_string_view<OTy>{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
 				this->getCurrentTail()->clear();
 				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
 			}

@@ -140,14 +140,14 @@ namespace DiscordCoreAPI {
 		this->guildId = guildIdNew;
 	}
 
-	inline void VoiceConnectionBridge::collectEightElements(opus_int32* dataIn, opus_int16 *dataOut) noexcept {
+	inline void VoiceConnectionBridge::collectEightElements(opus_int32* dataIn, opus_int16* dataOut) noexcept {
 		__m256 currentSamplesNew256{ _mm256_mul_ps(_mm256_cvtepi32_ps(_mm256_loadu_epi32(dataIn)),
 			_mm256_add_ps(_mm256_set1_ps(this->currentGain),
 				_mm256_mul_ps(_mm256_set1_ps(this->increment), _mm256_set_ps(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f)))) };
-		__m256i currentSamplesNewer256{ _mm256_cvtps_epi32(
-			_mm256_blendv_ps(_mm256_max_ps(currentSamplesNew256, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::min()))),
-				_mm256_min_ps(currentSamplesNew256, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::max()))),
-				_mm256_cmp_ps(currentSamplesNew256, _mm256_set1_ps(0.0f), _CMP_GE_OQ))) };
+		__m256i currentSamplesNewer256{ _mm256_cvtps_epi32(_mm256_blendv_ps(
+			_mm256_max_ps(currentSamplesNew256, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::min()))),
+			_mm256_min_ps(currentSamplesNew256, _mm256_set1_ps(static_cast<float>(std::numeric_limits<opus_int16>::max()))),
+			_mm256_cmp_ps(currentSamplesNew256, _mm256_set1_ps(0.0f), _CMP_GE_OQ))) };
 		_mm_storeu_epi16(dataOut,
 			_mm_packs_epi32(_mm256_extractf128_si256(currentSamplesNewer256, 0), _mm256_extractf128_si256(currentSamplesNewer256, 1)));
 	}
@@ -201,8 +201,8 @@ namespace DiscordCoreAPI {
 				}
 
 				if (crypto_secretbox_open_easy(reinterpret_cast<uint8_t*>(this->decryptedDataString.data()),
-						reinterpret_cast<const uint8_t*>(payload.data()) + offsetToData, encryptedDataLength, reinterpret_cast<uint8_t*>(nonce),
-						reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
+						reinterpret_cast<const uint8_t*>(payload.data()) + offsetToData, encryptedDataLength,
+						reinterpret_cast<uint8_t*>(nonce), reinterpret_cast<uint8_t*>(this->encryptionKey.data()))) {
 					continue;
 				}
 
@@ -267,7 +267,8 @@ namespace DiscordCoreAPI {
 		}
 		const uint32_t speakerSsrc{ ntohl(*reinterpret_cast<const uint32_t*>(rawDataBufferNew.data() + 8)) };
 		if (this->voiceUsers.contains(speakerSsrc)) {
-			if (72 <= (static_cast<int8_t>(rawDataBufferNew[1]) & 0b0111'1111) && ((static_cast<int8_t>(rawDataBufferNew[1]) & 0b0111'1111) <= 76)) {
+			if (72 <= (static_cast<int8_t>(rawDataBufferNew[1]) & 0b0111'1111) &&
+				((static_cast<int8_t>(rawDataBufferNew[1]) & 0b0111'1111) <= 76)) {
 				return;
 			}
 			this->voiceUsers[speakerSsrc]->insertPayload(rawDataBufferNew);
@@ -395,8 +396,8 @@ namespace DiscordCoreAPI {
 				auto arrayValue = getArray(value["d"], "secret_key");
 				if (arrayValue.didItSucceed) {
 					std::basic_string<std::byte> secretKey{};
-					for (simdjson::ondemand::array_iterator iterator = arrayValue.arrayValue.begin(); iterator != arrayValue.arrayValue.end();
-						 ++iterator) {
+					for (simdjson::ondemand::array_iterator iterator = arrayValue.arrayValue.begin();
+						 iterator != arrayValue.arrayValue.end(); ++iterator) {
 						secretKey.push_back(static_cast<std::byte>(iterator.operator*().get_uint64().take_value()));
 					}
 					this->encryptionKey = secretKey;
@@ -597,8 +598,8 @@ namespace DiscordCoreAPI {
 				if (this->voiceConnectInitData.streamInfo.type != StreamType::None) {
 					this->streamSocket = std::make_unique<VoiceConnectionBridge>(this->discordCoreClient, this->encryptionKey,
 						this->voiceConnectInitData.streamInfo.type, this->voiceConnectInitData.guildId);
-					if (!this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address, this->voiceConnectInitData.streamInfo.port,
-							token)) {
+					if (!this->streamSocket->connect(this->voiceConnectInitData.streamInfo.address,
+							this->voiceConnectInitData.streamInfo.port, token)) {
 						++this->currentReconnectTries;
 						this->onClosed();
 						return;
@@ -699,7 +700,8 @@ namespace DiscordCoreAPI {
 							this->checkForAndSendHeartBeat(false);
 						}
 						this->checkForConnections(token);
-						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.tryReceive(this->xferAudioData);
+						this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)
+							->audioDataBuffer.tryReceive(this->xferAudioData);
 						AudioFrameType frameType{ this->xferAudioData.type };
 						if (this->xferAudioData.currentSize % 480 != 0 || this->xferAudioData.currentSize == 0) {
 							this->areWePlaying.store(false);
@@ -733,7 +735,8 @@ namespace DiscordCoreAPI {
 										{ .guildMemberId = this->currentGuildMemberId, .guildId = this->voiceConnectInitData.guildId });
 								}
 								completionEventData.wasItAFail = false;
-								DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)->onSongCompletionEvent(completionEventData);
+								DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)
+									->onSongCompletionEvent(completionEventData);
 								this->areWePlaying.store(false);
 								doWeBreak = true;
 								this->xferAudioData.type = AudioFrameType::Unset;
@@ -751,8 +754,10 @@ namespace DiscordCoreAPI {
 						}
 						auto waitTime = targetTime - HRClock::now();
 						auto waitTimeCount = waitTime.count();
-						int64_t minimumFreeTimeForCheckingProcessIO{ static_cast<int64_t>(static_cast<double>(this->intervalCount.count()) * 0.70l) };
-						if (waitTimeCount >= minimumFreeTimeForCheckingProcessIO && !token.stop_requested() && VoiceConnection::areWeConnected()) {
+						int64_t minimumFreeTimeForCheckingProcessIO{ static_cast<int64_t>(
+							static_cast<double>(this->intervalCount.count()) * 0.70l) };
+						if (waitTimeCount >= minimumFreeTimeForCheckingProcessIO && !token.stop_requested() &&
+							VoiceConnection::areWeConnected()) {
 							if (WebSocketCore::processIO(0) == DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
@@ -771,7 +776,8 @@ namespace DiscordCoreAPI {
 						if (frame.size() > 0) {
 							this->xferAudioData.clearData();
 							UDPConnection::writeData(frame);
-							if (UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Both) == DiscordCoreInternal::ProcessIOResult::Error) {
+							if (UDPConnection::processIO(DiscordCoreInternal::ProcessIOType::Both) ==
+								DiscordCoreInternal::ProcessIOResult::Error) {
 								this->onClosed();
 							}
 						} else {

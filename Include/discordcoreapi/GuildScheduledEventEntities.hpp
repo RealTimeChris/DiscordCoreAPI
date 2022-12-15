@@ -42,7 +42,9 @@ namespace DiscordCoreAPI {
 
 	/// \brief For creating a GuildScheduledEvent.
 	struct DiscordCoreAPI_Dll CreateGuildScheduledEventData {
-		GuildScheduledEventPrivacyLevel privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
+		GuildScheduledEventPrivacyLevel privacyLevel{
+			GuildScheduledEventPrivacyLevel::Guild_Only
+		};///< The privacy level of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};/// The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
 		std::string scheduledStartTime{};///< The time to schedule the scheduled event.
@@ -64,7 +66,9 @@ namespace DiscordCoreAPI {
 
 	/// \brief For modifying a single Guild Scheduled Event.
 	struct DiscordCoreAPI_Dll ModifyGuildScheduledEventData {
-		GuildScheduledEventPrivacyLevel privacyLevel{ GuildScheduledEventPrivacyLevel::Guild_Only };///< The privacy level of the scheduled event.
+		GuildScheduledEventPrivacyLevel privacyLevel{
+			GuildScheduledEventPrivacyLevel::Guild_Only
+		};///< The privacy level of the scheduled event.
 		GuildScheduledEventStatus status{ GuildScheduledEventStatus::Active };///< The status of the scheduled event.
 		GuildScheduledEventMetadata entityMetadata{};///< The entity metadata of the scheduled event.
 		GuildScheduledEventEntityType entityType{};///< The entity type of the scheduled event.
@@ -158,7 +162,8 @@ namespace DiscordCoreAPI {
 		/// \brief Collects a list of Users for a given GuildScheduledEvent.
 		/// \param dataPackage A GetGuildScheduledEventUsersData structure.
 		/// \returns A CoRoutine containing a vector<GuildScheduledEventUser>.
-		static CoRoutine<std::vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(GetGuildScheduledEventUsersData dataPackage);
+		static CoRoutine<std::vector<GuildScheduledEventUserData>> getGuildScheduledEventUsersAsync(
+			GetGuildScheduledEventUsersData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;

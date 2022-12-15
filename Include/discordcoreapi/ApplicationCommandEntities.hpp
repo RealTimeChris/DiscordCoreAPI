@@ -162,7 +162,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For batch editing the permissions of a collection of Guild ApplicationCommands.
 	struct DiscordCoreAPI_Dll BatchEditGuildApplicationCommandPermissionsData {
-		std::vector<GuildApplicationCommandPermissionsData> permissions{};///< A vector of edit-Guild-application-permissions responseData to edit.
+		std::vector<GuildApplicationCommandPermissionsData>
+			permissions{};///< A vector of edit-Guild-application-permissions responseData to edit.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Snowflake guildId{};///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
 	};

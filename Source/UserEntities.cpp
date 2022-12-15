@@ -128,7 +128,8 @@ namespace DiscordCoreAPI {
 			string = serializer.operator std::string();
 			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->createHeader(string,
 				this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get()->dataOpCode);
-			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string, false);
+			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string,
+				false);
 		}
 	}
 
@@ -148,7 +149,8 @@ namespace DiscordCoreAPI {
 			string = serializer.operator std::string();
 			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->createHeader(string,
 				this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId].get()->dataOpCode);
-			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string, false);
+			this->baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->shardMap[shardId]->sendMessage(string,
+				false);
 		}
 	}
 

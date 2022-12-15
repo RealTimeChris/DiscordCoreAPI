@@ -83,7 +83,8 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseCode::operator std::string() {
-		return std::string{ "Code: " + std::to_string(static_cast<uint32_t>(this->value)) + ", Message: " + this->outputErrorValues[this->value] };
+		return std::string{ "Code: " + std::to_string(static_cast<uint32_t>(this->value)) +
+			", Message: " + this->outputErrorValues[this->value] };
 	}
 
 	HttpsResponseCode::operator uint32_t() {
@@ -1399,8 +1400,10 @@ namespace DiscordCoreAPI {
 		return stream.str();
 	}
 
-	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, const ChannelData& channel) {
-		if ((stoull(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) == static_cast<uint64_t>(Permission::Administrator)) {
+	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember,
+		const ChannelData& channel) {
+		if ((stoull(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) ==
+			static_cast<uint64_t>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
 
@@ -1490,8 +1493,8 @@ namespace DiscordCoreAPI {
 		} catch (const std::exception& e) {
 			std::stringstream stream{};
 			stream << shiftToBrightRed() << "Error Report: \n"
-				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
-				   << std::to_string(location.column()) << ")"
+				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " ("
+				   << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
 				   << "\nThe Error: \n"
 				   << e.what() << reset() << std::endl
 				   << std::endl;
@@ -1508,8 +1511,8 @@ namespace DiscordCoreAPI {
 		} catch (const std::exception& e) {
 			std::stringstream stream{};
 			stream << shiftToBrightRed() << "Error Report: \n"
-				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
-				   << std::to_string(location.column()) << ")"
+				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " ("
+				   << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
 				   << "\nThe Error: \n"
 				   << e.what() << reset() << std::endl
 				   << std::endl;
@@ -1583,12 +1586,12 @@ namespace DiscordCoreAPI {
 			returnString.push_back(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
 
 			if (static_cast<uint64_t>(pos + 1) < string.size()) {
-				returnString.push_back(
-					base64Chars[((string[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
+				returnString.push_back(base64Chars[((string[static_cast<int64_t>(pos + 0)] & 0x03) << 4) +
+					((string[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
 
 				if (static_cast<uint64_t>(pos + 2) < string.size()) {
-					returnString.push_back(
-						base64Chars[((string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
+					returnString.push_back(base64Chars[((string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) +
+						((string[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
 					returnString.push_back(base64Chars[string[static_cast<int64_t>(pos + 2)] & 0x3f]);
 				} else {
 					returnString.push_back(base64Chars[(string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2]);
@@ -1659,7 +1662,8 @@ namespace DiscordCoreAPI {
 		returnString.resize(16);
 		std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
 		for (int32_t x = 0; x < 16; ++x) {
-			returnString[x] = static_cast<uint8_t>((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * 255.0f);
+			returnString[x] =
+				static_cast<uint8_t>((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * 255.0f);
 		}
 		returnString = base64Encode(returnString, false);
 		return returnString;
@@ -1886,8 +1890,9 @@ namespace DiscordCoreAPI {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				++resultTwo->tm_mday;
 			}
-			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
-				std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), formatNew };
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
+				std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min),
+				std::to_string(resultTwo->tm_sec), formatNew };
 			timeStamp.getISO8601TimeStamp(formatNew);
 			returnString = static_cast<std::string>(timeStamp);
 		} else {
@@ -1895,8 +1900,9 @@ namespace DiscordCoreAPI {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				++resultTwo->tm_mday;
 			}
-			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
-				std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), formatNew };
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
+				std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min),
+				std::to_string(resultTwo->tm_sec), formatNew };
 			timeStamp.getISO8601TimeStamp(formatNew);
 			returnString = static_cast<std::string>(timeStamp);
 		}
@@ -1912,16 +1918,18 @@ namespace DiscordCoreAPI {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				++resultTwo->tm_mday;
 			}
-			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
-				std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), timeFormat };
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
+				std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min),
+				std::to_string(resultTwo->tm_sec), timeFormat };
 			returnString = timeStamp.getISO8601TimeStamp(timeFormat);
 		} else {
 			if (resultTwo->tm_hour + 5 >= 24) {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				++resultTwo->tm_mday;
 			}
-			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
-				std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), timeFormat };
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
+				std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min),
+				std::to_string(resultTwo->tm_sec), timeFormat };
 			returnString = timeStamp.getISO8601TimeStamp(timeFormat);
 		}
 		return returnString;
