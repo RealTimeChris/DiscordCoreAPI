@@ -84,7 +84,7 @@ namespace DiscordCoreAPI {
 		uint32_t ssrc{};
 	};
 
-	struct MovingAverager {
+	struct DiscordCoreAPI_Dll MovingAverager {
 		MovingAverager(size_t collectionCountNew) noexcept;
 
 		void insertValue(int64_t value) noexcept;

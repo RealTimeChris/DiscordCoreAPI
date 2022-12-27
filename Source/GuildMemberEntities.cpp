@@ -376,7 +376,7 @@ namespace DiscordCoreAPI {
 				GuildMembers::cache[guildMember] = std::move(guildMember);
 			}
 			if (GuildMembers::cache.size() % 10000 == 0) {
-				std::cout << "THE GUILDMEMBER COUNT: " << GuildMembers::cache.size() << std::endl;
+				//std::cout << "THE GUILDMEMBER COUNT: " << GuildMembers::cache.size() << std::endl;
 			}
 		}
 	}
@@ -391,6 +391,6 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{ nullptr };
 	ObjectCache<VoiceStateDataLight> GuildMembers::vsCache{};
-	bool GuildMembers::doWeCacheGuildMembersBool{};
 	ObjectCache<GuildMemberData> GuildMembers::cache{};
+	bool GuildMembers::doWeCacheGuildMembersBool{};
 };

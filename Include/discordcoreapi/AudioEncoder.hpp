@@ -30,7 +30,7 @@
 
 namespace DiscordCoreInternal {
 
-	struct EncoderReturnData {
+	struct DiscordCoreAPI_Dll EncoderReturnData {
 		std::basic_string_view<std::byte> data{};
 		size_t sampleCount{};
 	};
