@@ -235,8 +235,7 @@ namespace DiscordCoreInternal {
 
 	void ErlParser::parseNewFloatExt() {
 		uint64_t value = readBitsFromBuffer<uint64_t>();
-		void* ptr{ &value };
-		std::string valueNew = std::to_string(*static_cast<double*>(ptr));
+		std::string valueNew = std::to_string(*reinterpret_cast<double*>(value));
 		this->writeCharacters(valueNew.data(), valueNew.size());
 	}
 

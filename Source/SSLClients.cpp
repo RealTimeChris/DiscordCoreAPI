@@ -136,8 +136,7 @@ namespace DiscordCoreInternal {
 
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) noexcept {
 		this->ptr.reset(nullptr);
-		this->ptr = std::unique_ptr<SOCKET, SOCKETDeleter>(std::make_unique<SOCKET>().release(), SOCKETDeleter{});
-		*this->ptr = other;
+		this->ptr = std::unique_ptr<SOCKET, SOCKETDeleter>(std::make_unique<SOCKET>(other).release(), SOCKETDeleter{});
 		return *this;
 	}
 
@@ -170,7 +169,7 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
-		if (!SSL_CTX_set_min_proto_version(SSLConnectionInterface::context, TLS1_2_VERSION)) {
+		if (!SSL_CTX_set_min_proto_version(SSLConnectionInterface::context, TLS1_3_VERSION)) {
 			return false;
 		}
 
