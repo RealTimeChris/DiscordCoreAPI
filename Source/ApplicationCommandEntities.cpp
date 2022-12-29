@@ -247,7 +247,7 @@ namespace DiscordCoreAPI {
 				isItFound = true;
 			}
 		}
-		if (isItFound == false) {
+		if (!isItFound) {
 			co_return ApplicationCommand();
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -273,7 +273,7 @@ namespace DiscordCoreAPI {
 				isItFound = true;
 			}
 		}
-		if (isItFound == false) {
+		if (!isItFound) {
 			co_return;
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
@@ -361,7 +361,7 @@ namespace DiscordCoreAPI {
 				isItFound = true;
 			}
 		}
-		if (isItFound == false) {
+		if (!isItFound) {
 			co_return ApplicationCommand();
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
@@ -387,7 +387,7 @@ namespace DiscordCoreAPI {
 				isItFound = true;
 			}
 		}
-		if (isItFound == false) {
+		if (!isItFound) {
 			co_return;
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
@@ -454,7 +454,7 @@ namespace DiscordCoreAPI {
 				isItFound = true;
 			}
 		}
-		if (isItFound == false) {
+		if (!isItFound) {
 			co_return GuildApplicationCommandPermissionsData();
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
@@ -481,7 +481,7 @@ namespace DiscordCoreAPI {
 				isItFound = true;
 			}
 		}
-		if (isItFound == false) {
+		if (!isItFound) {
 			co_return GuildApplicationCommandPermissionsData();
 		}
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;

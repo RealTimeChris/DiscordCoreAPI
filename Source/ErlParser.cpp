@@ -30,7 +30,8 @@ namespace DiscordCoreInternal {
 	ErlParseError::ErlParseError(const std::string& message) : DCAException(message){};
 
 	std::string_view ErlParser::parseEtfToJson(std::string_view dataToParse) {
-		this->dataBuffer = dataToParse;
+		this->dataBuffer = dataToParse.data();
+		this->dataSize = dataToParse.size();
 		this->currentSize = 0;
 		this->offSet = 0;
 		if (this->readBitsFromBuffer<uint8_t>() != formatVersion) {
@@ -53,13 +54,13 @@ namespace DiscordCoreInternal {
 			this->writeCharacters("\"\"", 2);
 			return;
 		}
-		if (this->offSet + static_cast<uint64_t>(length) > this->dataBuffer.size()) {
+		if (this->offSet + static_cast<uint64_t>(length) > this->dataSize) {
 			throw ErlParseError{ "ErlParser::writeCharactersFromBuffer() Error: readString() past end of buffer." };
 		}
 		if (this->finalString.size() < this->currentSize + length) {
 			this->finalString.resize((this->finalString.size() + length) * 2);
 		}
-		const char* stringNew = this->dataBuffer.data() + this->offSet;
+		const char* stringNew = this->dataBuffer + this->offSet;
 		this->offSet += length;
 		if (length >= 3 && length <= 5) {
 			if (length == 3 && strncmp(stringNew, "nil", 3) == 0) {
@@ -149,7 +150,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlParser::singleValueETFToJson() {
-		if (this->offSet > this->dataBuffer.size()) {
+		if (this->offSet > this->dataSize) {
 			throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Read past end of ETF buffer." };
 		}
 		uint8_t type = this->readBitsFromBuffer<uint8_t>();
@@ -198,7 +199,7 @@ namespace DiscordCoreInternal {
 	void ErlParser::parseListExt() {
 		uint32_t length = this->readBitsFromBuffer<uint32_t>();
 		this->writeCharacter('[');
-		if (static_cast<uint64_t>(this->offSet) + length > this->dataBuffer.size()) {
+		if (static_cast<uint64_t>(this->offSet) + length > this->dataSize) {
 			throw ErlParseError{ "ErlPacker::parseListExt() Error: List reading past end of buffer." };
 		}
 		for (uint16_t x = 0; x < length; ++x) {
@@ -224,7 +225,7 @@ namespace DiscordCoreInternal {
 	void ErlParser::parseStringExt() {
 		this->writeCharacter('"');
 		uint16_t length = this->readBitsFromBuffer<uint16_t>();
-		if (static_cast<uint64_t>(this->offSet) + length > this->dataBuffer.size()) {
+		if (static_cast<uint64_t>(this->offSet) + length > this->dataSize) {
 			throw ErlParseError{ "ErlParser::parseStringExt() Error: std::string reading past end of buffer." };
 		}
 		for (uint16_t x = 0; x < length; ++x) {

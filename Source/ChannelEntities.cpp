@@ -509,7 +509,7 @@ namespace DiscordCoreAPI {
 				Channels::cache[channel] = std::move(channel);
 			}
 			if (Channels::cache.size() % 10000 == 0) {
-				//std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
+				std::cout << "CHANNEL COUNT: " << Channels::cache.size() << std::endl;
 			}
 		}
 	}

@@ -120,6 +120,7 @@ namespace DiscordCoreInternal {
 	  public:
 		friend struct DiscordCoreAPI::OnVoiceServerUpdateData;
 		friend struct DiscordCoreAPI::OnVoiceStateUpdateData;
+		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
 		friend class BaseSocketAgent;

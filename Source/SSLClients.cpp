@@ -122,18 +122,6 @@ namespace DiscordCoreInternal {
 		};
 	};
 
-	SOCKETWrapper& SOCKETWrapper::operator=(SOCKETWrapper&& other) noexcept {
-		this->ptr.reset(nullptr);
-		this->ptr = std::unique_ptr<SOCKET, SOCKETDeleter>(std::make_unique<SOCKET>().release(), SOCKETDeleter{});
-		*this->ptr = *other.ptr;
-		*other.ptr = INVALID_SOCKET;
-		return *this;
-	}
-
-	SOCKETWrapper::SOCKETWrapper(SOCKETWrapper&& other) noexcept {
-		*this = std::move(other);
-	}
-
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) noexcept {
 		this->ptr.reset(nullptr);
 		this->ptr = std::unique_ptr<SOCKET, SOCKETDeleter>(std::make_unique<SOCKET>().release(), SOCKETDeleter{});

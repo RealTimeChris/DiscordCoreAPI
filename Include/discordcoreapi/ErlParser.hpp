@@ -41,16 +41,17 @@ namespace DiscordCoreInternal {
 		std::string_view parseEtfToJson(std::string_view dataToParse);
 
 	  protected:
-		std::string_view dataBuffer{};
 		std::string finalString{};
+		const char* dataBuffer{};
 		size_t currentSize{};
 		uint64_t offSet{};
+		size_t dataSize{};
 
 		template<typename RTy> RTy readBitsFromBuffer() {
-			if (this->offSet + sizeof(RTy) > this->dataBuffer.size()) {
+			if (this->offSet + sizeof(RTy) > this->dataSize) {
 				throw ErlParseError{ "ErlParser::readBitsFromBuffer() Error: readBitsFromBuffer() past end of the buffer." };
 			}
-			RTy newValue = *reinterpret_cast<const RTy*>(this->dataBuffer.data() + this->offSet);
+			RTy newValue = *reinterpret_cast<const RTy*>(this->dataBuffer + this->offSet);
 			this->offSet += sizeof(RTy);
 			DiscordCoreAPI::reverseByteOrder<RTy>(newValue);
 			return newValue;

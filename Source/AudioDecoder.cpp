@@ -241,7 +241,7 @@ namespace DiscordCoreInternal {
 	int32_t AudioDecoder::ReadBufferData(void* opaque, uint8_t* buf, int32_t) {
 		AudioDecoder* stream = static_cast<AudioDecoder*>(opaque);
 		stream->bytesRead = 0;
-		stream->currentBuffer = std::string();
+		stream->currentBuffer = std::string{};
 		DiscordCoreAPI::AudioFrameData frameData{};
 		if (stream->areWeQuitting.load()) {
 			frameData.currentSize = -5;
@@ -530,11 +530,11 @@ namespace DiscordCoreInternal {
 	void AudioDecoder::cancelMe() {
 		this->refreshTimeForBuffer.store(10);
 		this->inputDataBuffer.clearContents();
-		this->inputDataBuffer.send(std::string());
-		this->inputDataBuffer.send(std::string());
-		this->inputDataBuffer.send(std::string());
-		this->inputDataBuffer.send(std::string());
-		this->inputDataBuffer.send(std::string());
+		this->inputDataBuffer.send(std::string{});
+		this->inputDataBuffer.send(std::string{});
+		this->inputDataBuffer.send(std::string{});
+		this->inputDataBuffer.send(std::string{});
+		this->inputDataBuffer.send(std::string{});
 		this->areWeQuitting.store(true);
 	}
 

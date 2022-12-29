@@ -1215,10 +1215,12 @@ namespace DiscordCoreInternal {
 	}
 
 	void BaseSocketAgent::connect(DiscordCoreAPI::ConnectionPackage packageNew) noexcept {
-		while (!this->discordCoreClient->connectionStopWatch.hasTimePassed()) {
+		std::unique_lock lock{ this->discordCoreClient->connectionMutex };
+		while (!this->discordCoreClient->connectionStopWatch00.hasTimePassed()) {
 			std::this_thread::sleep_for(1ms);
 		}
-		this->discordCoreClient->connectionStopWatch.resetTimer();
+
+		this->discordCoreClient->connectionStopWatch00.resetTimer();
 		if (packageNew.currentShard != -1) {
 			if (!this->shardMap.contains(packageNew.currentShard)) {
 				this->shardMap[packageNew.currentShard] =
@@ -1269,7 +1271,6 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::run(std::stop_token token) noexcept {
 		while (!token.stop_requested() && !this->doWeQuit->load()) {
 			try {
-				
 				std::unique_lock lock{ this->accessMutex };
 				auto result = TCPSSLClient::processIO(this->shardMap);
 				for (auto& valueNew: result) {

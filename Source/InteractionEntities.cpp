@@ -496,7 +496,7 @@ namespace DiscordCoreAPI {
 		int32_t currentCollectedSelectMenuCount{};
 		StopWatch stopWatch{ Milliseconds{ this->maxTimeInMs } };
 		while (!this->doWeQuit && !stopWatch.hasTimePassed()) {
-			if (this->getSelectMenuDataForAll == false) {
+			if (!this->getSelectMenuDataForAll) {
 				auto selectMenuInteractionData = std::make_unique<InteractionData>();
 				if (waitForTimeToPass(this->selectMenuIncomingInteractionBuffer, *selectMenuInteractionData.get(), this->maxTimeInMs)) {
 					this->selectMenuId = "empty";
@@ -628,7 +628,7 @@ namespace DiscordCoreAPI {
 		int64_t currentCollectedButtonCount{};
 		StopWatch stopWatch{ Milliseconds{ this->maxTimeInMs } };
 		while (!this->doWeQuit && !stopWatch.hasTimePassed()) {
-			if (this->getButtonDataForAll == false) {
+			if (!this->getButtonDataForAll) {
 				auto buttonInteractionData = std::make_unique<InteractionData>();
 				if (waitForTimeToPass(this->buttonIncomingInteractionBuffer, *buttonInteractionData.get(), this->maxTimeInMs)) {
 					this->buttonId = "empty";

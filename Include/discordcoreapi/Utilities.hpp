@@ -208,7 +208,12 @@ namespace DiscordCoreAPI {
 
 		StopWatch(TTy maxNumberOfMsNew) {
 			this->maxNumberOfTimeUnits.store(maxNumberOfMsNew);
-			this->startTime.store(std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch()));
+			this->resetTimer();
+		}
+
+		StopWatch(int64_t maxNumberOfMsNew) {
+			this->maxNumberOfTimeUnits.store(TTy{ maxNumberOfMsNew });
+			this->startTime.store(TTy{ 0 });
 		}
 
 		TTy totalTimePassed() {

@@ -768,8 +768,6 @@ namespace DiscordCoreAPI {
 				this->threads.emplace_back(std::move(newData));
 			}
 		}
-
-		;
 		if (getArray(arrayValue, "members", jsonObjectData)) {
 			for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
 				ThreadMemberData newData{ value.value() };

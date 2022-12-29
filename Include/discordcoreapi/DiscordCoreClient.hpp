@@ -161,7 +161,8 @@ namespace DiscordCoreAPI {
 		std::unordered_map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
 		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
-		StopWatch<Milliseconds> connectionStopWatch{ 5250ms };
+		StopWatch<Milliseconds> connectionStopWatch00{ 5000 };
+		StopWatch<Milliseconds> connectionStopWatch01{ 5000 };
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
@@ -169,6 +170,7 @@ namespace DiscordCoreAPI {
 		std::atomic_bool isItSafeToConnect{ true };
 		Milliseconds startupTimeSinceEpoch{};
 		ConfigManager configManager{};
+		std::mutex connectionMutex{};
 		EventManager eventManager{};///< An event-manager, for hooking into Discord-API-Events sent over the Websockets.
 		bool didWeStartCorrectly{};
 

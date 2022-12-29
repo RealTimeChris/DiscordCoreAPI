@@ -95,22 +95,22 @@ namespace DiscordCoreAPI {
 		try {
 			switch (value) {
 				case SIGTERM: {
-					throw SIGTERMError{ "Exiting for: SIGTERM.\n" };
+					throw SIGTERMError{ "Exiting for: SIGTERM." };
 				}
 				case SIGSEGV: {
-					throw SIGSEGVError{ "Exiting for: SIGSEGV.\n" };
+					throw SIGSEGVError{ "Exiting for: SIGSEGV." };
 				}
 				case SIGINT: {
-					throw SIGINTError{ "Exiting for: SIGINT.\n" };
+					throw SIGINTError{ "Exiting for: SIGINT." };
 				}
 				case SIGILL: {
-					throw SIGILLError{ "Exiting for: SIGILL.\n" };
+					throw SIGILLError{ "Exiting for: SIGILL." };
 				}
 				case SIGABRT: {
-					throw SIGABRTError{ "Exiting for: SIGABRT.\n" };
+					throw SIGABRTError{ "Exiting for: SIGABRT." };
 				}
 				case SIGFPE: {
-					throw SIGFPEError{ "Exiting for: SIGFPE.\n" };
+					throw SIGFPEError{ "Exiting for: SIGFPE." };
 				}
 			}
 		} catch (SIGINTError&) {
@@ -297,20 +297,21 @@ namespace DiscordCoreAPI {
 		if (this->configManager.getConnectionPort() == 0) {
 			this->configManager.setConnectionPort(443);
 		}
-		this->connectionStopWatch.resetTimer();
 		for (uint32_t x = 0; x < this->configManager.getTotalShardCount(); ++x) {
 			if (!this->baseSocketAgentsMap.contains(x % theWorkerCount)) {
+				while (!this->connectionStopWatch01.hasTimePassed()) {
+					std::this_thread::sleep_for(1ms);
+				}
+				this->connectionStopWatch01.resetTimer();
 				this->baseSocketAgentsMap[x % theWorkerCount] =
 					std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);
 			}
 			ConnectionPackage data{};
 			data.currentShard = x;
 			data.currentReconnectTries = 0;
-			this->baseSocketAgentsMap[x % theWorkerCount]->connect(data);
-			while (!this->connectionStopWatch.hasTimePassed()) {
-				std::this_thread::sleep_for(1ms);
-			}
-			this->connectionStopWatch.resetTimer();
+			this->baseSocketAgentsMap[x % theWorkerCount]->shardMap[x] =
+				std::make_unique<DiscordCoreInternal::WebSocketClient>(this, data.currentShard, &Globals::doWeQuit);
+			this->baseSocketAgentsMap[x % theWorkerCount]->shardMap[x]->connections = std::make_unique<ConnectionPackage>(data);
 		}
 		DiscordCoreClient::currentUser =
 			BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentsMap[this->configManager.getStartingShard()].get() };

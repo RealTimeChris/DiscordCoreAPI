@@ -350,9 +350,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void HttpsConnection::disconnect() noexcept {
-		if (this->socket != SOCKET_ERROR) {
-			this->socket = SOCKET_ERROR;
-		}
+		this->socket = INVALID_SOCKET;
 		this->resetValues();
 	}
 
