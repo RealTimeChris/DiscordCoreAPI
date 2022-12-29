@@ -101,7 +101,6 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StopWatch<Milliseconds> heartBeatStopWatch{ 20000ms };
 		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic<WebSocketState> currentState{};
-		std::atomic_bool areWeConnecting{ true };
 		bool haveWeReceivedHeartbeatAck{ true };
 		const uint32_t maxReconnectTries{ 10 };
 		uint32_t currentReconnectTries{};

@@ -280,7 +280,6 @@ namespace DiscordCoreAPI {
 		this->connections = std::make_unique<ConnectionPackage>();
 		this->connections->currentReconnectTries = this->currentReconnectTries;
 		this->connections->currentShard = this->shard[0];
-		this->areWeConnecting.store(true);
 		this->activeState.store(VoiceActiveState::Connecting);
 		if (!this->taskThread01) {
 			this->taskThread01 = std::make_unique<std::jthread>([=, this](std::stop_token token) {
@@ -288,7 +287,7 @@ namespace DiscordCoreAPI {
 			});
 		}
 		StopWatch stopWatch{ 15000us };
-		while (this->areWeConnecting.load() && !stopWatch.hasTimePassed()) {
+		while (!WebSocketCore::areWeStillConnected() && !stopWatch.hasTimePassed()) {
 			std::this_thread::sleep_for(1us);
 		}
 	}
@@ -353,7 +352,6 @@ namespace DiscordCoreAPI {
 			}
 			WebSocketCore::socket = SOCKET_ERROR;
 			UDPConnection::disconnect();
-			this->areWeConnecting.store(true);
 			this->closeCode = 0;
 			this->areWeHeartBeating = false;
 			StopWatch stopWatch{ 10000ms };
@@ -605,7 +603,6 @@ namespace DiscordCoreAPI {
 						return;
 					}
 				}
-				this->areWeConnecting.store(false);
 				this->activeState.store(VoiceActiveState::Playing);
 				this->play();
 				return;
@@ -934,7 +931,6 @@ namespace DiscordCoreAPI {
 		this->currentReconnectTries = 0;
 		this->voiceUsers.clear();
 		this->activeState.store(VoiceActiveState::Connecting);
-		this->areWeConnecting.store(true);
 		this->connectionState.store(VoiceConnectionState::Collecting_Init_Data);
 		this->currentState.store(DiscordCoreInternal::WebSocketState::Disconnected);
 		this->discordCoreClient->getSongAPI(this->voiceConnectInitData.guildId)->audioDataBuffer.clearContents();

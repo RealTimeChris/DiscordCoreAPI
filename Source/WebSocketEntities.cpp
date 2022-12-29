@@ -1160,7 +1160,6 @@ namespace DiscordCoreInternal {
 			this->socket = INVALID_SOCKET;
 			this->ssl = nullptr;
 			this->currentState.store(WebSocketState::Disconnected);
-			this->areWeConnecting.store(true);
 			this->outputBuffer.clear();
 			this->inputBuffer.clear();
 			this->closeCode = 0;
@@ -1259,7 +1258,6 @@ namespace DiscordCoreInternal {
 				this->shardMap[packageNew.currentShard]->onClosed();
 				return;
 			}
-			this->shardMap[packageNew.currentShard]->areWeConnecting.store(false);
 			this->shardMap[packageNew.currentShard]->connections.reset(nullptr);
 		}
 	}

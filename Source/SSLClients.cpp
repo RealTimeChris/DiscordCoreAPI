@@ -295,7 +295,7 @@ namespace DiscordCoreInternal {
 		std::vector<TCPSSLClient*> returnValue{};
 		PollFDWrapper readWriteSet{};
 		for (auto& [key, value]: shardMap) {
-			if (value && value->areWeStillConnected() && !value->areWeConnecting.load()) {
+			if (value && value->areWeStillConnected()) {
 				pollfd fdSet{ .fd = static_cast<SOCKET>(value->socket) };
 				if (value->outputBuffer.getUsedSpace() > 0) {
 					fdSet.events = POLLIN | POLLOUT;
