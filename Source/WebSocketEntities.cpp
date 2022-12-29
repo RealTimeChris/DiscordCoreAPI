@@ -202,21 +202,21 @@ namespace DiscordCoreInternal {
 
 	void WebSocketCore::createHeader(std::string& outBuffer, WebSocketOpCode opCode) noexcept {
 		size_t originalSize{ outBuffer.size() };
-		outBuffer.insert(outBuffer.begin(), static_cast<uint8_t>(opCode) | webSocketFinishBit);
+		outBuffer.insert(outBuffer.begin(), static_cast<char>(opCode) | webSocketFinishBit);
 
 		int32_t indexCount{};
 		if (originalSize <= webSocketMaxPayloadLengthSmall) {
-			outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(originalSize));
+			outBuffer.insert(outBuffer.begin() + 1, static_cast<char>(originalSize));
 			indexCount = 0;
 		} else if (originalSize <= webSocketMaxPayloadLengthLarge) {
-			outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(webSocketPayloadLengthMagicLarge));
+			outBuffer.insert(outBuffer.begin() + 1, static_cast<char>(webSocketPayloadLengthMagicLarge));
 			indexCount = 2;
 		} else {
-			outBuffer.insert(outBuffer.begin() + 1, static_cast<uint8_t>(webSocketPayloadLengthMagicHuge));
+			outBuffer.insert(outBuffer.begin() + 1, static_cast<char>(webSocketPayloadLengthMagicHuge));
 			indexCount = 8;
 		}
 		for (int32_t x = indexCount - 1; x >= 0; x--) {
-			outBuffer.insert(outBuffer.begin() + 1 + indexCount - x, static_cast<uint8_t>(originalSize >> (x * 8)));
+			outBuffer.insert(outBuffer.begin() + 1 + indexCount - x, static_cast<char>(originalSize >> (x * 8)));
 		}
 
 		outBuffer[1] |= webSocketMaskBit;
