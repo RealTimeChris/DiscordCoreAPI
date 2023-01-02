@@ -245,6 +245,7 @@ namespace DiscordCoreInternal {
 		auto digits = readBitsFromBuffer<uint8_t>();
 		uint8_t sign = readBitsFromBuffer<uint8_t>();
 
+
 		if (digits > 8) {
 			throw ErlParseError{ "ErlParser::parseSmallBigExt() Error: Big integers larger than 8 bytes not supported." };
 		}

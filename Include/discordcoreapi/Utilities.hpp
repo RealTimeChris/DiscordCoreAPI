@@ -190,7 +190,7 @@ namespace DiscordCoreAPI {
 		const uint8_t byteSize{ 8 };
 		reverseByteOrder<ReturnType>(num);
 		for (int32_t x = 0; x < sizeof(ReturnType); ++x) {
-			to[x] = static_cast<char>(num >> (byteSize * x));
+			to[x] = static_cast<uint8_t>(num >> (byteSize * x));
 		}
 	}
 
@@ -553,23 +553,17 @@ namespace DiscordCoreAPI {
 
 		void appendBinaryExt(const std::string& bytes, const uint32_t sizeNew);
 
+		void appendUnsignedLongLong(const uint64_t value);
+
 		void appendNewFloatExt(const double FloatValue);
+
+		void appendSmallIntegerExt(const uint8_t value);
 
 		void appendListHeader(const uint32_t sizeNew);
 
 		void appendMapHeader(const uint32_t sizeNew);
 
-		void appendUint64(const uint64_t value);
-
-		void appendUint32(const uint32_t value);
-
-		void appendUint8(const uint8_t value);
-
-		void appendInt64(const int64_t value);
-
-		void appendInt32(const int32_t value);
-
-		void appendInt8(const int8_t value);
+		void appendIntegerExt(const uint32_t value);
 
 		void appendBool(bool data);
 

@@ -110,18 +110,13 @@ namespace DiscordCoreInternal {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 
-		CoRoutineThreadPool() noexcept;
+		CoRoutineThreadPool();
 
 		void submitTask(std::coroutine_handle<> coro) noexcept;
-
-		void cancelMe() noexcept;
-
-		~CoRoutineThreadPool() noexcept;
 
 	  protected:
 		std::unordered_map<int64_t, WorkerThread> workerThreads{};
 		std::deque<std::coroutine_handle<>> coroutineHandles{};
-		std::atomic_bool areWeQuitting{ false };
 		const std::atomic_int64_t threadCount{};
 		std::atomic_int64_t coroHandleCount{};
 		std::shared_mutex workerAccessMutex{};

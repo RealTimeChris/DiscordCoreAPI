@@ -331,11 +331,16 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() noexcept {
-		NewThreadAwaiterBase::threadPool.cancelMe();
 		for (auto& value: Guilds::getCache()) {
 			Guild guild = value;
 			if (guild.areWeConnected()) {
 				guild.disconnect();
+			}
+		}
+		for (auto& [key, value]: NewThreadAwaiterBase::threadPool.workerThreads) {
+			if (value.thread.joinable()) {
+				value.thread.request_stop();
+				value.thread.join();
 			}
 		}
 	}
