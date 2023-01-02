@@ -74,7 +74,7 @@ namespace DiscordCoreInternal {
 		return *this;
 	}
 
-	CoRoutineThreadPool::CoRoutineThreadPool() : threadCount(std::thread::hardware_concurrency()) {
+	CoRoutineThreadPool::CoRoutineThreadPool() noexcept : threadCount(std::thread::hardware_concurrency()) {
 		for (uint32_t x = 0; x < this->threadCount.load(); ++x) {
 			WorkerThread workerThread{};
 			this->currentIndex.store(this->currentIndex.load() + 1);
@@ -114,8 +114,12 @@ namespace DiscordCoreInternal {
 		this->coroHandleCount.store(this->coroHandleCount.load() + 1);
 	}
 
+	void CoRoutineThreadPool::cancelMe() noexcept {
+		this->areWeQuitting.store(true);
+	}
+
 	void CoRoutineThreadPool::threadFunction(std::stop_token stopToken, int64_t index) {
-		while (!stopToken.stop_requested()) {
+		while (!stopToken.stop_requested() && !this->areWeQuitting.load()) {
 			if (this->coroHandleCount.load() > 0) {
 				std::unique_lock lock{ this->coroHandleAccessMutex, std::defer_lock_t{} };
 				if (lock.try_lock() && this->coroutineHandles.size() > 0) {
@@ -135,6 +139,7 @@ namespace DiscordCoreInternal {
 					std::unique_lock lock{ this->workerAccessMutex };
 					const auto oldThread = this->workerThreads.begin();
 					if (oldThread->second.thread.joinable() && oldThread->second.areWeCurrentlyWorking.load()) {
+						oldThread->second.thread.request_stop();
 						oldThread->second.thread.detach();
 						this->currentCount.store(this->currentCount.load() - 1);
 						this->workerThreads.erase(oldThread->first);
@@ -143,5 +148,9 @@ namespace DiscordCoreInternal {
 			}
 			std::this_thread::sleep_for(1ms);
 		}
+	}
+
+	CoRoutineThreadPool::~CoRoutineThreadPool() noexcept {
+		this->areWeQuitting.store(true);
 	}
 }

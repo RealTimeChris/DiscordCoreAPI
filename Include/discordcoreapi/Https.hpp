@@ -186,22 +186,19 @@ namespace DiscordCoreInternal {
 						simdjson::ondemand::value object{};
 						if (document.get(object) == simdjson::error_code::SUCCESS) {
 							if (returnValue) {
-								auto returnValueNew = RTy{ object };
-								*returnValue = returnValueNew;
+								*returnValue = RTy{ object };
 								httpsConnection->areWeCheckedOut.store(false);
 								return *returnValue;
 							} else {
-								RTy returnValueNew{ object };
 								httpsConnection->areWeCheckedOut.store(false);
-								return returnValueNew;
+								return RTy{ object };
 							}
 						}
 					}
 				}
 			}
-			RTy returnValueNew{};
 			httpsConnection->areWeCheckedOut.store(false);
-			return returnValueNew;
+			return RTy{};
 		}
 
 		template<SameAsVoid RTy> RTy submitWorkloadAndGetResult(const HttpsWorkloadData& workload, RTy* returnValue = nullptr);
