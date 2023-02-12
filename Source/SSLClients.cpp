@@ -299,34 +299,24 @@ namespace DiscordCoreInternal {
 		}
 		if (auto returnValueNew = poll(readWriteSet.polls.data(), static_cast<u_long>(readWriteSet.polls.size()), 1);
 			returnValueNew == SOCKET_ERROR) {
-			bool didWeFindTheSocket{};
-			for (auto iterator = readWriteSet.polls.begin(); iterator != readWriteSet.polls.end();) {
-				if (iterator->revents & POLLERR || iterator->revents & POLLHUP || iterator->revents & POLLNVAL) {
-					returnValue.emplace_back(shardMap[readWriteSet.indices[iterator - readWriteSet.polls.begin()]].get());
-					readWriteSet.indices.erase(readWriteSet.indices.begin() + (iterator - readWriteSet.polls.begin()));
-					iterator = readWriteSet.polls.erase(iterator);
-					didWeFindTheSocket = true;
-				} else {
-					iterator++;
-				}
+			for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
+				returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
 			}
-			if (!didWeFindTheSocket) {
-				for (auto iterator = readWriteSet.indices.begin(); iterator != readWriteSet.indices.end(); ++iterator) {
-					returnValue.emplace_back(shardMap[*iterator].get());
-				}
-				return returnValue;
-			}
-
+			return returnValue;
 		} else if (returnValueNew == 0) {
 			return returnValue;
 		}
 		for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
+			if (readWriteSet.polls[x].revents& POLLERR || readWriteSet.polls[x].revents & POLLHUP || readWriteSet.polls[x].revents & POLLNVAL) {
+				returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
+				continue;
+			}
 			if (readWriteSet.polls[x].revents & POLLOUT) {
 				if (!shardMap[readWriteSet.indices[x]]->processWriteData()) {
 					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
 					continue;
 				}
-			}
+			} 
 			if (readWriteSet.polls[x].revents & POLLIN) {
 				if (!shardMap[readWriteSet.indices[x]]->processReadData()) {
 					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());

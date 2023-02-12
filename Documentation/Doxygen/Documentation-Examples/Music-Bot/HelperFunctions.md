@@ -134,7 +134,7 @@ Helper Functions {#HelperFunctions}
 		double finalModValue = 0;
 		double newInputModValue = inputModValue;
 		if (newInputModValue == 0) {
-			newInputModValue++;
+			++newInputModValue;
 		}
 		if (newInputModValue <= 0) {
 			double newInputValue = newInputModValue * -1;

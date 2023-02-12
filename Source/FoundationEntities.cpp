@@ -3324,7 +3324,7 @@ namespace DiscordCoreAPI {
 	}
 
 	AudioFrameData& AudioFrameData::operator+=(std::byte character) {
-		this->currentSize++;
+		++this->currentSize;
 		this->data.push_back(character);
 		return *this;
 	}
