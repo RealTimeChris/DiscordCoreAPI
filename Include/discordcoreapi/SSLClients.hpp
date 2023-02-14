@@ -89,10 +89,10 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 	struct DiscordCoreAPI_Dll WSADataWrapper {
 		struct DiscordCoreAPI_Dll WSADataDeleter {
-			void operator()(WSADATA* other);
+			void operator()(WSADATA* other) noexcept;
 		};
 
-		WSADataWrapper();
+		WSADataWrapper() noexcept;
 
 	  protected:
 		std::unique_ptr<WSADATA, WSADataDeleter> ptr{ std::make_unique<WSADATA>().release(), WSADataDeleter{} };
@@ -101,12 +101,12 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
 		struct DiscordCoreAPI_Dll SSL_CTXDeleter {
-			void operator()(SSL_CTX* other);
+			void operator()(SSL_CTX* other) noexcept;
 		};
 
-		SSL_CTXWrapper& operator=(SSL_CTX* other);
+		SSL_CTXWrapper& operator=(SSL_CTX* other) noexcept;
 
-		operator SSL_CTX*();
+		operator SSL_CTX*() noexcept;
 
 	  protected:
 		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> ptr{ nullptr, SSL_CTXDeleter{} };
@@ -114,14 +114,14 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SSLWrapper {
 		struct DiscordCoreAPI_Dll SSLDeleter {
-			void operator()(SSL* other);
+			void operator()(SSL* other) noexcept;
 		};
 
-		SSLWrapper& operator=(nullptr_t other);
+		SSLWrapper& operator=(nullptr_t other) noexcept;
 
-		SSLWrapper& operator=(SSL* other);
+		SSLWrapper& operator=(SSL* other) noexcept;
 
-		operator SSL*();
+		operator SSL*() noexcept;
 
 	  protected:
 		std::unique_ptr<SSL, SSLDeleter> ptr{ nullptr, SSLDeleter{} };
@@ -129,7 +129,7 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
 		struct DiscordCoreAPI_Dll SOCKETDeleter {
-			void operator()(SOCKET* other);
+			void operator()(SOCKET* other) noexcept;
 		};
 
 		SOCKETWrapper& operator=(SOCKET other) noexcept;
@@ -147,11 +147,11 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
-		addrinfo* operator->();
+		addrinfo* operator->() noexcept;
 
-		operator addrinfo**();
+		operator addrinfo**() noexcept;
 
-		operator addrinfo*();
+		operator addrinfo*() noexcept;
 
 	  protected:
 		addrinfo value{};
@@ -179,7 +179,7 @@ namespace DiscordCoreInternal {
 		SSLWrapper ssl{};
 	};
 
-	enum class ProcessIOResult : uint8_t { No_Error = 0, Error = 1 };
+	enum class ProcessIOResult : uint8_t { Success = 0, Error = 1 };
 
 	class DiscordCoreAPI_Dll SSLDataInterface {
 	  public:

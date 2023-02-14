@@ -60,12 +60,12 @@ namespace DiscordCoreInternal {
 	}
 
 #ifdef _WIN32
-	void WSADataWrapper::WSADataDeleter::operator()(WSADATA* other) {
+	void WSADataWrapper::WSADataDeleter::operator()(WSADATA* other) noexcept {
 		WSACleanup();
 		delete other;
 	}
 
-	WSADataWrapper::WSADataWrapper() {
+	WSADataWrapper::WSADataWrapper() noexcept {
 		auto returnValue = WSAStartup(MAKEWORD(2, 2), this->ptr.get());
 		if (returnValue) {
 			reportError("WSADataWrapper::WSADataWrapper()");
@@ -73,24 +73,24 @@ namespace DiscordCoreInternal {
 	}
 #endif
 
-	void SSL_CTXWrapper::SSL_CTXDeleter::operator()(SSL_CTX* other) {
+	void SSL_CTXWrapper::SSL_CTXDeleter::operator()(SSL_CTX* other) noexcept {
 		if (other) {
 			SSL_CTX_free(other);
 			other = nullptr;
 		}
 	}
 
-	SSL_CTXWrapper& SSL_CTXWrapper::operator=(SSL_CTX* other) {
+	SSL_CTXWrapper& SSL_CTXWrapper::operator=(SSL_CTX* other) noexcept {
 		this->ptr.reset(nullptr);
 		this->ptr = std::unique_ptr<SSL_CTX, SSL_CTXDeleter>(other, SSL_CTXDeleter{});
 		return *this;
 	}
 
-	SSL_CTXWrapper::operator SSL_CTX*() {
+	SSL_CTXWrapper::operator SSL_CTX*() noexcept {
 		return this->ptr.get();
 	}
 
-	void SSLWrapper::SSLDeleter::operator()(SSL* other) {
+	void SSLWrapper::SSLDeleter::operator()(SSL* other) noexcept {
 		if (other) {
 			SSL_shutdown(other);
 			SSL_free(other);
@@ -98,22 +98,22 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	SSLWrapper& SSLWrapper::operator=(nullptr_t other) {
+	SSLWrapper& SSLWrapper::operator=(nullptr_t other) noexcept {
 		this->ptr.reset(other);
 		return *this;
 	}
 
-	SSLWrapper& SSLWrapper::operator=(SSL* other) {
+	SSLWrapper& SSLWrapper::operator=(SSL* other) noexcept {
 		this->ptr.reset(nullptr);
 		this->ptr = std::unique_ptr<SSL, SSLDeleter>(other, SSLDeleter{});
 		return *this;
 	}
 
-	SSLWrapper::operator SSL*() {
+	SSLWrapper::operator SSL*() noexcept {
 		return this->ptr.get();
 	}
 
-	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) {
+	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) noexcept {
 		if (*other != INVALID_SOCKET) {
 			shutdown(*other, SHUT_RDWR);
 			close(*other);
@@ -141,15 +141,15 @@ namespace DiscordCoreInternal {
 		return *this->ptr;
 	}
 
-	addrinfo* addrinfoWrapper::operator->() {
+	addrinfo* addrinfoWrapper::operator->() noexcept {
 		return this->ptr;
 	}
 
-	addrinfoWrapper::operator addrinfo**() {
+	addrinfoWrapper::operator addrinfo**() noexcept {
 		return &this->ptr;
 	}
 
-	addrinfoWrapper::operator addrinfo*() {
+	addrinfoWrapper::operator addrinfo*() noexcept {
 		return this->ptr;
 	}
 
@@ -352,7 +352,7 @@ namespace DiscordCoreInternal {
 					}
 				}
 			}
-			return ProcessIOResult::No_Error;
+			return ProcessIOResult::Success;
 		} else {
 			return ProcessIOResult::Error;
 		}
@@ -371,7 +371,7 @@ namespace DiscordCoreInternal {
 			}
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
-			return ProcessIOResult::No_Error;
+			return ProcessIOResult::Success;
 		} else {
 			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLHUP || readWriteSet.revents & POLLNVAL) {
 				if (this->doWePrintErrorMessages) {
@@ -394,7 +394,7 @@ namespace DiscordCoreInternal {
 				}
 			}
 		}
-		return ProcessIOResult::No_Error;
+		return ProcessIOResult::Success;
 	}
 
 	std::basic_string_view<char> TCPSSLClient::getInputBuffer() noexcept {
@@ -607,7 +607,7 @@ namespace DiscordCoreInternal {
 
 	ProcessIOResult UDPConnection::processIO(ProcessIOType type) noexcept {
 		if (this->socket == INVALID_SOCKET) {
-			return ProcessIOResult::No_Error;
+			return ProcessIOResult::Success;
 		}
 		pollfd readWriteSet{};
 		readWriteSet.fd = this->socket;
@@ -619,14 +619,14 @@ namespace DiscordCoreInternal {
 			readWriteSet.events = POLLOUT;
 		}
 
-		ProcessIOResult result{ ProcessIOResult::No_Error };
+		ProcessIOResult result{ ProcessIOResult::Success };
 		if (auto returnValue = poll(&readWriteSet, 1, 0); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintErrors) {
 				cout << reportError("UDPConnection::processIO()") << endl;
 			}
 			return ProcessIOResult::Error;
 		} else if (returnValue == 0) {
-			return ProcessIOResult::No_Error;
+			return ProcessIOResult::Success;
 		} else {
 			if (readWriteSet.revents & POLLIN) {
 				if (!this->processReadData()) {
@@ -635,7 +635,7 @@ namespace DiscordCoreInternal {
 					}
 					result = ProcessIOResult::Error;
 				} else {
-					result = ProcessIOResult::No_Error;
+					result = ProcessIOResult::Success;
 				}
 			}
 			if (readWriteSet.revents & POLLOUT) {
@@ -645,7 +645,7 @@ namespace DiscordCoreInternal {
 					}
 					result = ProcessIOResult::Error;
 				} else {
-					result = ProcessIOResult::No_Error;
+					result = ProcessIOResult::Success;
 				}
 			}
 		}

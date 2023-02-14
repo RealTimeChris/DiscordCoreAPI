@@ -151,8 +151,8 @@ namespace DiscordCoreAPI {
 
 	  protected:
 		std::basic_string<std::byte> decryptedDataString{};
-		std::basic_string<opus_int16> downSampledVector{};
-		std::basic_string<opus_int32> upSampledVector{};
+		std::array<opus_int16, 23040> downSampledVector{};
+		std::array<opus_int32, 23040> upSampledVector{};
 		std::basic_string<std::byte> encryptionKey{};
 		MovingAverager voiceUserCountAverage{ 25 };
 		DiscordCoreClient* clientPtr{ nullptr };
@@ -212,7 +212,6 @@ namespace DiscordCoreAPI {
 		simdjson::ondemand::parser parser{};
 		int64_t nsPerSecond{ 1000000000 };
 		std::string audioEncryptionMode{};
-		Snowflake currentGuildMemberId{};
 		std::atomic_bool areWePlaying{};
 		AudioFrameData xferAudioData{};
 		int64_t samplesPerPacket{};

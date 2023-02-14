@@ -134,8 +134,6 @@ namespace DiscordCoreAPI {
 		StreamType streamType, Snowflake guildIdNew)
 		: UDPConnection(streamType, clientPtrNew->getConfigManager().doWePrintWebSocketErrorMessages()) {
 		this->encryptionKey = encryptionKeyNew;
-		this->downSampledVector.resize(23040);
-		this->upSampledVector.resize(23040);
 		this->clientPtr = clientPtrNew;
 		this->guildId = guildIdNew;
 	}
@@ -709,7 +707,6 @@ namespace DiscordCoreAPI {
 									static_cast<double>(this->sampleRatePerSecond) * static_cast<double>(this->nsPerSecond)) };
 							this->areWePlaying.store(true);
 							this->audioData.writeData(static_cast<std::basic_string_view<std::byte>>(this->xferAudioData.data));
-							this->currentGuildMemberId = this->xferAudioData.guildMemberId;
 						}
 						std::basic_string_view<std::byte> frame{};
 						bool doWeBreak{};
@@ -727,9 +724,9 @@ namespace DiscordCoreAPI {
 							case AudioFrameType::Skip: {
 								SongCompletionEventData completionEventData{};
 								completionEventData.guild = Guilds::getCachedGuild({ .guildId = this->voiceConnectInitData.guildId });
-								if (this->currentGuildMemberId != 0) {
-									completionEventData.guildMember = GuildMembers::getCachedGuildMember(
-										{ .guildMemberId = this->currentGuildMemberId, .guildId = this->voiceConnectInitData.guildId });
+								if (this->xferAudioData.guildMemberId != 0) {
+									completionEventData.guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = this->xferAudioData.guildMemberId,
+											.guildId = this->voiceConnectInitData.guildId });
 								}
 								completionEventData.wasItAFail = false;
 								DiscordCoreClient::getSongAPI(this->voiceConnectInitData.guildId)
