@@ -307,21 +307,22 @@ namespace DiscordCoreInternal {
 			return returnValue;
 		}
 		for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
-			if (readWriteSet.polls[x].revents& POLLERR || readWriteSet.polls[x].revents & POLLHUP || readWriteSet.polls[x].revents & POLLNVAL) {
+			if (readWriteSet.polls[x].revents & POLLOUT || readWriteSet.polls[x].revents & POLLIN) {
+				if (readWriteSet.polls[x].revents & POLLOUT) {
+					if (!shardMap[readWriteSet.indices[x]]->processWriteData()) {
+						returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
+						continue;
+					}
+				}
+				if (readWriteSet.polls[x].revents & POLLIN) {
+					if (!shardMap[readWriteSet.indices[x]]->processReadData()) {
+						returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
+						continue;
+					}
+				}
+			} else {
 				returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
 				continue;
-			}
-			if (readWriteSet.polls[x].revents & POLLOUT) {
-				if (!shardMap[readWriteSet.indices[x]]->processWriteData()) {
-					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
-					continue;
-				}
-			} 
-			if (readWriteSet.polls[x].revents & POLLIN) {
-				if (!shardMap[readWriteSet.indices[x]]->processReadData()) {
-					returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
-					continue;
-				}
 			}
 		}
 		return returnValue;
