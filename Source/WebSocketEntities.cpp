@@ -41,7 +41,6 @@ namespace DiscordCoreInternal {
 	const uint8_t webSocketPayloadLengthMagicHuge{ 127u };
 	const uint8_t maxHeaderSize{ sizeof(uint64_t) + 2u };
 	const uint8_t webSocketMaxPayloadLengthSmall{ 125u };
-	const uint8_t webSocketFinishBit{ (1u << 7u) };
 	const uint8_t webSocketMaskBit{ (1u << 7u) };
 
 	EventConverter::EventConverter(std::string newEvent) {
@@ -202,7 +201,7 @@ namespace DiscordCoreInternal {
 
 	void WebSocketCore::createHeader(std::string& outBuffer, WebSocketOpCode opCode) noexcept {
 		size_t originalSize{ outBuffer.size() };
-		outBuffer.insert(outBuffer.begin(), static_cast<uint8_t>(opCode) | webSocketFinishBit);
+		outBuffer.insert(outBuffer.begin(), static_cast<uint8_t>(opCode) | webSocketMaskBit);
 
 		int32_t indexCount{};
 		if (originalSize <= webSocketMaxPayloadLengthSmall) {
@@ -288,7 +287,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			this->dataOpCode = static_cast<WebSocketOpCode>(this->currentMessage[0] & ~webSocketFinishBit);
+			this->dataOpCode = static_cast<WebSocketOpCode>(this->currentMessage[0] & ~webSocketMaskBit);
 			this->messageLength = 0;
 			this->messageOffset = 0;
 			switch (this->dataOpCode) {

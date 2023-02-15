@@ -55,7 +55,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 		if (this->offSet + static_cast<uint64_t>(length) > this->dataSize) {
-			throw ErlParseError{ "ErlParser::writeCharactersFromBuffer() Error: readString() past end of buffer." };
+			throw ErlParseError{ "ErlPacker::writeCharactersFromBuffer() Error: Read past end of buffer." };
 		}
 		if (this->finalString.size() < this->currentSize + length) {
 			this->finalString.resize((this->finalString.size() + length) * 2);
@@ -151,7 +151,7 @@ namespace DiscordCoreInternal {
 
 	void ErlParser::singleValueETFToJson() {
 		if (this->offSet > this->dataSize) {
-			throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Read past end of ETF buffer." };
+			throw ErlParseError{ "ErlPacker::singleValueETFToJson() Error: Read past end of buffer." };
 		}
 		uint8_t type = this->readBitsFromBuffer<uint8_t>();
 		switch (static_cast<DiscordCoreAPI::EtfType>(type)) {
@@ -189,9 +189,8 @@ namespace DiscordCoreInternal {
 				return this->parseMapExt();
 			}
 			default: {
-				throw ErlParseError{
-					"ErlParser::singleValueETFToJson() Error: Unknown data type in ETF, the type: " + std::to_string(type) + ""
-				};
+				throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Unknown data type in ETF, the type: " +
+					std::to_string(type) };
 			}
 		}
 	}
@@ -200,7 +199,7 @@ namespace DiscordCoreInternal {
 		uint32_t length = this->readBitsFromBuffer<uint32_t>();
 		this->writeCharacter('[');
 		if (static_cast<uint64_t>(this->offSet) + length > this->dataSize) {
-			throw ErlParseError{ "ErlPacker::parseListExt() Error: List reading past end of buffer." };
+			throw ErlParseError{ "ErlPacker::parseListExt() Error: Read past end of buffer." };
 		}
 		for (uint16_t x = 0; x < length; ++x) {
 			this->singleValueETFToJson();
@@ -226,7 +225,7 @@ namespace DiscordCoreInternal {
 		this->writeCharacter('"');
 		uint16_t length = this->readBitsFromBuffer<uint16_t>();
 		if (static_cast<uint64_t>(this->offSet) + length > this->dataSize) {
-			throw ErlParseError{ "ErlParser::parseStringExt() Error: std::string reading past end of buffer." };
+			throw ErlParseError{ "ErlPacker::parseStringExt() Error: Read past end of buffer." };
 		}
 		for (uint16_t x = 0; x < length; ++x) {
 			this->parseSmallIntegerExt();
