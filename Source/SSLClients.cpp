@@ -381,6 +381,9 @@ namespace DiscordCoreInternal {
 			}
 			if (readWriteSet.revents & POLLIN) {
 				if (!this->processReadData()) {
+					if (this->doWePrintErrorMessages) {
+						cout << reportSSLError("TCPSSLClient::processIO()") << endl;
+					}
 					return ProcessIOResult::Error;
 				} else {
 					if (!this->areWeAStandaloneSocket) {
@@ -390,6 +393,9 @@ namespace DiscordCoreInternal {
 			}
 			if (readWriteSet.revents & POLLOUT) {
 				if (!this->processWriteData()) {
+					if (this->doWePrintErrorMessages) {
+						cout << reportSSLError("TCPSSLClient::processIO()") << endl;
+					}
 					return ProcessIOResult::Error;
 				}
 			}
@@ -619,7 +625,6 @@ namespace DiscordCoreInternal {
 			readWriteSet.events = POLLOUT;
 		}
 
-		ProcessIOResult result{ ProcessIOResult::Success };
 		if (auto returnValue = poll(&readWriteSet, 1, 0); returnValue == SOCKET_ERROR) {
 			if (this->doWePrintErrors) {
 				cout << reportError("UDPConnection::processIO()") << endl;
@@ -628,28 +633,30 @@ namespace DiscordCoreInternal {
 		} else if (returnValue == 0) {
 			return ProcessIOResult::Success;
 		} else {
+			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLHUP || readWriteSet.revents & POLLNVAL) {
+				if (this->doWePrintErrors) {
+					cout << reportSSLError("UDPConnection::processIO()") << endl;
+				}
+				return ProcessIOResult::Error;
+			}
 			if (readWriteSet.revents & POLLIN) {
 				if (!this->processReadData()) {
 					if (this->doWePrintErrors) {
-						cout << reportError("UDPConnection::processIO::processReadData()") << endl;
+						cout << reportSSLError("UDPConnection::processIO()") << endl;
 					}
-					result = ProcessIOResult::Error;
-				} else {
-					result = ProcessIOResult::Success;
+					return ProcessIOResult::Error;
 				}
 			}
 			if (readWriteSet.revents & POLLOUT) {
 				if (!this->processWriteData()) {
 					if (this->doWePrintErrors) {
-						cout << reportError("UDPConnection::processIO::processWriteData()") << endl;
+						cout << reportSSLError("UDPConnection::processIO()") << endl;
 					}
-					result = ProcessIOResult::Error;
-				} else {
-					result = ProcessIOResult::Success;
+					return ProcessIOResult::Error;
 				}
 			}
 		}
-		return result;
+		return ProcessIOResult::Success;
 	}
 
 	void UDPConnection::writeData(std::basic_string_view<std::byte> dataToWrite) noexcept {
