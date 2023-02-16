@@ -246,6 +246,7 @@ namespace DiscordCoreInternal {
 				if (!static_cast<TCPSSLClient*>(streamSocket.get())
 						 ->connect(newSong.finalDownloadUrls[0].urlPath, 443, this->configManager->doWePrintWebSocketErrorMessages(),
 							 true)) {
+					std::this_thread::sleep_for(1s);
 					this->weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
 					return;
 				}
@@ -271,7 +272,11 @@ namespace DiscordCoreInternal {
 			std::string string = newSong.finalDownloadUrls[1].urlPath;
 			streamSocket->writeData(string, true);
 			std::vector<DiscordCoreAPI::AudioFrameData> frames{};
-			streamSocket->processIO(1000);
+			if (streamSocket->processIO(1000) != ProcessIOResult::Success) {
+				std::this_thread::sleep_for(1s);
+				this->weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
+				return;
+			}
 			if (!streamSocket->areWeStillConnected()) {
 				audioDecoder.reset(nullptr);
 				streamSocket->disconnect();
@@ -309,7 +314,11 @@ namespace DiscordCoreInternal {
 				} else {
 					if (!areWeDoneHeaders) {
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
-						streamSocket->processIO(10);
+						if (streamSocket->processIO(10) != ProcessIOResult::Success) {
+							std::this_thread::sleep_for(1s);
+							this->weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
+							return;
+						}
 						if (!streamSocket->areWeStillConnected()) {
 							streamSocket->disconnect();
 							audioDecoder.reset(nullptr);
@@ -332,7 +341,11 @@ namespace DiscordCoreInternal {
 						return;
 					}
 					if (counter == 0) {
-						streamSocket->processIO(10);
+						if (streamSocket->processIO(10) != ProcessIOResult::Success) {
+							std::this_thread::sleep_for(1s);
+							this->weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
+							return;
+						}
 						if (!streamSocket->areWeStillConnected()) {
 							streamSocket->disconnect();
 							audioDecoder.reset(nullptr);
@@ -358,7 +371,11 @@ namespace DiscordCoreInternal {
 						audioDecoder->startMe();
 					} else if (counter > 0) {
 						remainingDownloadContentLength = newSong.contentLength - bytesReadTotal;
-						streamSocket->processIO(10);
+						if (streamSocket->processIO(10) != ProcessIOResult::Success) {
+							std::this_thread::sleep_for(1s);
+							this->weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
+							return;
+						}
 						if (!streamSocket->areWeStillConnected()) {
 							streamSocket->disconnect();
 							audioDecoder.reset(nullptr);

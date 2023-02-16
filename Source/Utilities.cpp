@@ -648,22 +648,22 @@ namespace DiscordCoreAPI {
 	}
 
 	void Jsonifier::writeEtfUint(const UintType jsonData) {
-		if (jsonData <= 255) {
-			this->appendSmallIntegerExt(static_cast<uint8_t>(jsonData));
-		} else if (jsonData <= std::numeric_limits<uint32_t>::max()) {
-			this->appendIntegerExt(static_cast<uint32_t>(jsonData));
+		if (jsonData <= std::numeric_limits<uint8_t>::max() && jsonData >= std::numeric_limits<uint8_t>::min()) {
+			this->appendUint8(static_cast<uint8_t>(jsonData));
+		} else if (jsonData <= std::numeric_limits<uint32_t>::max() && jsonData >= std::numeric_limits<uint32_t>::min()) {
+			this->appendUint32(static_cast<uint32_t>(jsonData));
 		} else {
-			this->appendUnsignedLongLong(jsonData);
+			this->appendUint64(jsonData);
 		}
 	}
 
 	void Jsonifier::writeEtfInt(const IntType jsonData) {
-		if (jsonData <= 127 && jsonData >= -127) {
-			this->appendSmallIntegerExt(static_cast<uint8_t>(jsonData));
+		if (jsonData <= std::numeric_limits<int8_t>::max() && jsonData >= std::numeric_limits<int8_t>::min()) {
+			this->appendInt8(static_cast<int8_t>(jsonData));
 		} else if (jsonData <= std::numeric_limits<int32_t>::max() && jsonData >= std::numeric_limits<int32_t>::min()) {
-			this->appendIntegerExt(static_cast<uint32_t>(jsonData));
+			this->appendInt32(static_cast<int32_t>(jsonData));
 		} else {
-			this->appendUnsignedLongLong(static_cast<uint64_t>(jsonData));
+			this->appendInt64(jsonData);
 		}
 	}
 
@@ -745,34 +745,10 @@ namespace DiscordCoreAPI {
 		this->writeString(bytes.data(), bytes.size());
 	}
 
-	void Jsonifier::appendUnsignedLongLong(uint64_t value) {
-		char newBuffer[11]{ static_cast<int8_t>(EtfType::Small_Big_Ext) };
-		char encodedBytes{};
-		while (value > 0) {
-			newBuffer[3 + encodedBytes] = value & 0xFF;
-			value >>= 8;
-			++encodedBytes;
-		}
-		newBuffer[1] = encodedBytes;
-		newBuffer[2] = 0;
-		this->writeString(newBuffer, 1 + 2 + static_cast<size_t>(encodedBytes));
-	}
-
 	void Jsonifier::appendNewFloatExt(const double FloatValue) {
 		char newBuffer[9]{ static_cast<uint8_t>(EtfType::New_Float_Ext) };
 		const void* punner{ &FloatValue };
 		storeBits(newBuffer + 1, *static_cast<const uint64_t*>(punner));
-		this->writeString(newBuffer, std::size(newBuffer));
-	}
-
-	void Jsonifier::appendSmallIntegerExt(const uint8_t value) {
-		char newBuffer[2]{ static_cast<uint8_t>(EtfType::Small_Integer_Ext), static_cast<char>(value) };
-		this->writeString(newBuffer, std::size(newBuffer));
-	}
-
-	void Jsonifier::appendIntegerExt(const uint32_t value) {
-		char newBuffer[5]{ static_cast<uint8_t>(EtfType::Integer_Ext) };
-		storeBits(newBuffer + 1, value);
 		this->writeString(newBuffer, std::size(newBuffer));
 	}
 
@@ -788,6 +764,58 @@ namespace DiscordCoreAPI {
 		this->writeString(newBuffer, std::size(newBuffer));
 	}
 
+	void Jsonifier::appendUint64(uint64_t value) {
+		char newBuffer[11]{ static_cast<int8_t>(EtfType::Small_Big_Ext) };
+		char encodedBytes{};
+		while (value > 0) {
+			newBuffer[3 + encodedBytes] = value & 0xFF;
+			value >>= 8;
+			++encodedBytes;
+		}
+		newBuffer[1] = encodedBytes;
+		newBuffer[2] = 0;
+		this->writeString(newBuffer, 1 + 2 + static_cast<size_t>(encodedBytes));
+	}
+
+	void Jsonifier::appendInt64(int64_t value) {
+		char newBuffer[11]{ static_cast<int8_t>(EtfType::Small_Big_Ext) };
+		char encodedBytes{};
+		while (value > 0) {
+			newBuffer[3 + encodedBytes] = value & 0xFF;
+			value >>= 8;
+			++encodedBytes;
+		}
+		newBuffer[1] = encodedBytes;
+		if (value >= 0) {
+			newBuffer[2] = 0;
+		} else {
+			newBuffer[2] = 1;
+		}
+		this->writeString(newBuffer, 1 + 2 + static_cast<size_t>(encodedBytes));
+	}
+
+	void Jsonifier::appendUint32(const uint32_t value) {
+		char newBuffer[5]{ static_cast<uint8_t>(EtfType::Integer_Ext) };
+		storeBits(newBuffer + 1, value);
+		this->writeString(newBuffer, std::size(newBuffer));
+	}
+
+	void Jsonifier::appendInt32(const int32_t value) {
+		char newBuffer[5]{ static_cast<uint8_t>(EtfType::Integer_Ext) };
+		storeBits(newBuffer + 1, value);
+		this->writeString(newBuffer, std::size(newBuffer));
+	}
+
+	void Jsonifier::appendUint8(const uint8_t value) {
+		char newBuffer[2]{ static_cast<uint8_t>(EtfType::Small_Integer_Ext), static_cast<char>(value) };
+		this->writeString(newBuffer, std::size(newBuffer));
+	}
+
+	void Jsonifier::appendInt8(const int8_t value) {
+		char newBuffer[2]{ static_cast<uint8_t>(EtfType::Small_Integer_Ext), static_cast<char>(value) };
+		this->writeString(newBuffer, std::size(newBuffer));
+	}
+	
 	void Jsonifier::appendBool(bool data) {
 		if (data) {
 			char newBuffer[6]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(4), 't', 'r', 'u', 'e' };
