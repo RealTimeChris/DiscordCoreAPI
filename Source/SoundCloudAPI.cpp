@@ -274,20 +274,26 @@ namespace DiscordCoreInternal {
 				while (amountToSubmitRemaining > 0) {
 					std::this_thread::sleep_for(1ms);
 					std::string newerVector{};
-					if (amountToSubmitRemaining >= this->maxBufferSize) {
-						for (int64_t x = 0; x < this->maxBufferSize; ++x) {
-							newerVector.push_back(result.responseData[amountSubmitted]);
-							++amountSubmitted;
-							--amountToSubmitRemaining;
-						}
+					if (amountToSubmitRemaining >= this->maxBufferSize && result.responseData.size() >= this->maxBufferSize) {
+						auto sizeToSubmit = this->maxBufferSize;
+						newerVector.insert(newerVector.end(), result.responseData.begin(), result.responseData.begin() + sizeToSubmit);
+						result.responseData.erase(result.responseData.begin(), result.responseData.begin() + sizeToSubmit);
+						amountSubmitted += sizeToSubmit;
+						amountToSubmitRemaining -= sizeToSubmit;
+					} else if (result.responseData.size() < this->maxBufferSize || result.responseData.size() < amountToSubmitRemaining) {
+						auto sizeToSubmit = result.responseData.size();
+						newerVector.insert(newerVector.end(), result.responseData.begin(), result.responseData.begin() + sizeToSubmit);
+						result.responseData.erase(result.responseData.begin(), result.responseData.begin() + sizeToSubmit);
+						amountSubmitted += sizeToSubmit;
+						amountToSubmitRemaining -= sizeToSubmit;
 					} else {
-						uint64_t amountToSubmitRemainingFinal{ amountToSubmitRemaining };
-						for (uint64_t x = 0; x < amountToSubmitRemainingFinal; ++x) {
-							newerVector.push_back(result.responseData[amountSubmitted]);
-							++amountSubmitted;
-							--amountToSubmitRemaining;
-						}
+						auto sizeToSubmit = amountToSubmitRemaining;
+						newerVector.insert(newerVector.end(), result.responseData.begin(), result.responseData.begin() + sizeToSubmit);
+						result.responseData.erase(result.responseData.begin(), result.responseData.begin() + sizeToSubmit);
+						amountSubmitted += sizeToSubmit;
+						amountToSubmitRemaining -= sizeToSubmit;
 					}
+					std::this_thread::sleep_for(200ms);
 					audioDecoder->submitDataForDecoding(newerVector);
 				}
 				if (counter == 0) {
