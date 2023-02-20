@@ -271,7 +271,7 @@ namespace DiscordCoreInternal {
 				}
 				uint64_t amountToSubmitRemaining{ result.contentLength };
 				uint64_t amountSubmitted{};
-				while (amountToSubmitRemaining > 0) {
+				while (amountToSubmitRemaining > 0 && result.responseData.size() > 0) {
 					std::this_thread::sleep_for(1ms);
 					std::string newerVector{};
 					if (amountToSubmitRemaining >= this->maxBufferSize && result.responseData.size() >= this->maxBufferSize) {
@@ -293,7 +293,6 @@ namespace DiscordCoreInternal {
 						amountSubmitted += sizeToSubmit;
 						amountToSubmitRemaining -= sizeToSubmit;
 					}
-					std::this_thread::sleep_for(200ms);
 					audioDecoder->submitDataForDecoding(newerVector);
 				}
 				if (counter == 0) {
