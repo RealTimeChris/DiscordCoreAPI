@@ -44,8 +44,7 @@ namespace DiscordCoreAPI {
 		this->theRule = message.processJsonMessage<AutoModerationRule>(data, "d");
 	}
 
-	OnAutoModerationRuleUpdateData::OnAutoModerationRuleUpdateData(DiscordCoreInternal::WebSocketMessage& message,
-		simdjson::ondemand::value data) {
+	OnAutoModerationRuleUpdateData::OnAutoModerationRuleUpdateData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data) {
 		this->theRule = message.processJsonMessage<AutoModerationRule>(data, "d");
 	}
 
@@ -266,8 +265,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	OnGuildIntegrationsUpdateData::OnGuildIntegrationsUpdateData(DiscordCoreInternal::WebSocketMessage& data,
-		simdjson::ondemand::value dataReal) {
+	OnGuildIntegrationsUpdateData::OnGuildIntegrationsUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->guildId = getId(dataReal["d"], "guild_id");
 	}
 
@@ -531,10 +529,9 @@ namespace DiscordCoreAPI {
 					case ComponentType::Button: {
 						eventData->responseType = InputEventResponseType::Unset;
 						*eventData->interactionData = this->interactionData;
-						if (ButtonCollector::buttonInteractionBuffersMap.contains(
-								eventData->getChannelData().id + eventData->getMessageData().id)) {
-							ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]
-								->send(interactionData);
+						if (ButtonCollector::buttonInteractionBuffersMap.contains(eventData->getChannelData().id + eventData->getMessageData().id)) {
+							ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]->send(
+								interactionData);
 						}
 						ButtonCollector::buttonInteractionEventsMap.operator()(*eventData->interactionData);
 						break;
@@ -548,8 +545,7 @@ namespace DiscordCoreAPI {
 						*eventData->interactionData = this->interactionData;
 						if (SelectMenuCollector::selectMenuInteractionBuffersMap.contains(
 								eventData->getChannelData().id + eventData->getMessageData().id)) {
-							SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelData().id +
-								eventData->getMessageData().id]
+							SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]
 								->send(interactionData);
 						}
 						SelectMenuCollector::selectMenuInteractionEventsMap.operator()(*eventData->interactionData);
@@ -649,8 +645,7 @@ namespace DiscordCoreAPI {
 		this->presenceData = data.processJsonMessage<PresenceUpdateData>(dataReal, "d");
 	}
 
-	OnStageInstanceCreationData::OnStageInstanceCreationData(DiscordCoreInternal::WebSocketMessage& data,
-		simdjson::ondemand::value dataReal) {
+	OnStageInstanceCreationData::OnStageInstanceCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->stageInstance = data.processJsonMessage<StageInstance>(dataReal, "d");
 		GuildData guild{};
 		guild.id = this->stageInstance.guildId;
@@ -663,8 +658,7 @@ namespace DiscordCoreAPI {
 		this->stageInstance = data.processJsonMessage<StageInstance>(dataReal, "d");
 	}
 
-	OnStageInstanceDeletionData::OnStageInstanceDeletionData(DiscordCoreInternal::WebSocketMessage& data,
-		simdjson::ondemand::value dataReal) {
+	OnStageInstanceDeletionData::OnStageInstanceDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
 		this->stageInstance = data.processJsonMessage<StageInstance>(dataReal, "d");
 		GuildData guild{};
 		guild.id = this->stageInstance.guildId;
@@ -700,8 +694,7 @@ namespace DiscordCoreAPI {
 		} else if (sslShard->areWeCollectingData && !sslShard->stateUpdateCollected) {
 			sslShard->voiceConnectionData.sessionId = this->voiceStateData.sessionId;
 			if (sslShard->voiceConnectionDataBuffersMap.contains(this->voiceStateData.guildId.operator size_t())) {
-				sslShard->voiceConnectionDataBuffersMap[this->voiceStateData.guildId.operator size_t()]->send(
-					sslShard->voiceConnectionData);
+				sslShard->voiceConnectionDataBuffersMap[this->voiceStateData.guildId.operator size_t()]->send(sslShard->voiceConnectionData);
 			}
 			sslShard->serverUpdateCollected = false;
 			sslShard->stateUpdateCollected = false;

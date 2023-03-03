@@ -62,14 +62,7 @@ namespace DiscordCoreInternal {
 
 	enum class WebSocketType { Normal = 0, Voice = 1 };
 
-	enum class WebSocketState {
-		Connecting = 0,
-		Upgrading = 1,
-		Collecting_Hello = 2,
-		Sending_Identify = 3,
-		Authenticated = 4,
-		Disconnected = 5
-	};
+	enum class WebSocketState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
 	class DiscordCoreAPI_Dll WebSocketCore : public ErlParser, public TCPSSLClient {
 	  public:
@@ -158,8 +151,7 @@ namespace DiscordCoreInternal {
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::BotUser;
 
-		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew,
-			int32_t currentBaseSocket) noexcept;
+		BaseSocketAgent(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, std::atomic_bool* doWeQuitNew, int32_t currentBaseSocket) noexcept;
 
 		bool waitForState(DiscordCoreAPI::ConnectionPackage& packageNew, WebSocketState state) noexcept;
 

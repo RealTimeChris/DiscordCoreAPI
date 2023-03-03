@@ -51,8 +51,7 @@ namespace DiscordCoreAPI {
 		friend class Interactions;
 		friend class WebHooks;
 
-		Snowflake
-			threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{};///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData() noexcept = default;
@@ -69,8 +68,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel,
-			ButtonStyle buttonStyle, const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
+		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
 
 		/// \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -153,8 +152,7 @@ namespace DiscordCoreAPI {
 		friend class WebHooks;
 
 		Snowflake messageId{};///< The Message Id to collect.
-		Snowflake
-			threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{};///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData& setTTSStatus(bool) = delete;
@@ -228,8 +226,7 @@ namespace DiscordCoreAPI {
 		std::string webhookToken{};///< The WebHook token you would like to collect.
 		Snowflake webHookId{};///< The WebHook you would like to collect.
 		Snowflake messageId{};///< The Message Id to collect.
-		Snowflake
-			threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 	};
 
 	/// \brief A single WebHook.

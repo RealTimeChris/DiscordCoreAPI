@@ -96,8 +96,7 @@ namespace DiscordCoreAPI {
 				return false;
 			}
 		} else {
-			if (this->playlist.songQueue.size() > 0 &&
-				(this->playlist.currentSong.songId != "" || this->playlist.currentSong.songId == "")) {
+			if (this->playlist.songQueue.size() > 0 && (this->playlist.currentSong.songId != "" || this->playlist.currentSong.songId == "")) {
 				this->playlist.currentSong = this->playlist.songQueue[0];
 				for (int32_t x = 0; x < this->playlist.songQueue.size() - 1; ++x) {
 					this->playlist.songQueue[x] = this->playlist.songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
@@ -197,8 +196,7 @@ namespace DiscordCoreAPI {
 	}
 
 	bool SongAPI::isThereAnySongs(const Snowflake guildId) {
-		if (DiscordCoreClient::getSongAPI(guildId)->playlist.isLoopAllEnabled ||
-			DiscordCoreClient::getSongAPI(guildId)->playlist.isLoopSongEnabled) {
+		if (DiscordCoreClient::getSongAPI(guildId)->playlist.isLoopAllEnabled || DiscordCoreClient::getSongAPI(guildId)->playlist.isLoopSongEnabled) {
 			if (DiscordCoreClient::getSongAPI(guildId)->playlist.songQueue.size() == 0 &&
 				DiscordCoreClient::getSongAPI(guildId)->playlist.currentSong.songId == "") {
 				return false;
@@ -255,18 +253,16 @@ namespace DiscordCoreAPI {
 		if (DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.currentSong.type == SongType::SoundCloud) {
 			Song newerSong = DiscordCoreClient::getSoundCloudAPI(guildMember.guildId)
 								 ->collectFinalSong(DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.currentSong);
-			DiscordCoreClient::getSongAPI(this->guildId)->taskThread =
-				std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
-					DiscordCoreClient::getSoundCloudAPI(this->guildId)->downloadAndStreamAudio(newerSong, eventToken, 0);
-				});
+			DiscordCoreClient::getSongAPI(this->guildId)->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
+				DiscordCoreClient::getSoundCloudAPI(this->guildId)->downloadAndStreamAudio(newerSong, eventToken, 0);
+			});
 
 		} else if (DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.currentSong.type == SongType::YouTube) {
 			Song newerSong = DiscordCoreClient::getYouTubeAPI(guildMember.guildId)
 								 ->collectFinalSong(DiscordCoreClient::getSongAPI(guildMember.guildId)->playlist.currentSong);
-			DiscordCoreClient::getSongAPI(this->guildId)->taskThread =
-				std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
-					DiscordCoreClient::getYouTubeAPI(this->guildId)->downloadAndStreamAudio(newerSong, eventToken, 0);
-				});
+			DiscordCoreClient::getSongAPI(this->guildId)->taskThread = std::make_unique<std::jthread>([=, this](std::stop_token eventToken) {
+				DiscordCoreClient::getYouTubeAPI(this->guildId)->downloadAndStreamAudio(newerSong, eventToken, 0);
+			});
 		};
 	}
 

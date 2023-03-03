@@ -34,8 +34,7 @@ namespace DiscordCoreAPI {
 			StopWatch stopWatch{ Milliseconds{ timeInterval } };
 			while (true) {
 				stopWatch.resetTimer();
-				std::this_thread::sleep_for(
-					Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<double>(timeInterval) * percentage)) });
+				std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<double>(timeInterval) * percentage)) });
 				while (!stopWatch.hasTimePassed() && !token.stop_requested()) {
 					std::this_thread::sleep_for(1ms);
 				}

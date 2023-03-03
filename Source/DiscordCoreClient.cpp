@@ -211,9 +211,9 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::registerFunctionsInternal() {
-		std::vector<ApplicationCommand> theCommands{ ApplicationCommands::getGlobalApplicationCommandsAsync(
-			{ .applicationId = this->getBotUser().id, .withLocalizations = false })
-														 .get() };
+		std::vector<ApplicationCommand> theCommands{
+			ApplicationCommands::getGlobalApplicationCommandsAsync({ .applicationId = this->getBotUser().id, .withLocalizations = false }).get()
+		};
 		while (this->commandsToRegister.size() > 0) {
 			CreateApplicationCommandData data = this->commandsToRegister.front();
 			this->commandsToRegister.pop_front();
@@ -222,8 +222,7 @@ namespace DiscordCoreAPI {
 				if (data.guildId != 0) {
 					ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data)).get();
 				} else {
-					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data))
-						.get();
+					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
 				}
 			} else {
 				std::vector<ApplicationCommand> guildCommands{};
@@ -245,12 +244,10 @@ namespace DiscordCoreAPI {
 				}
 				if (!doesItExist) {
 					if (data.guildId != 0) {
-						ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data))
-							.get();
+						ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data)).get();
 
 					} else {
-						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data))
-							.get();
+						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
 					}
 				}
 			}
@@ -280,8 +277,7 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		if (this->configManager.getStartingShard() + this->configManager.getShardCountForThisProcess() >
-			this->configManager.getTotalShardCount()) {
+		if (this->configManager.getStartingShard() + this->configManager.getShardCountForThisProcess() > this->configManager.getTotalShardCount()) {
 			if (this->configManager.doWePrintGeneralErrorMessages()) {
 				cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << endl << endl;
 			}

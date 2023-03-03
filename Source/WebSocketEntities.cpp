@@ -178,15 +178,15 @@ namespace DiscordCoreInternal {
 		this->configManager = configManagerNew;
 	}
 
-	bool WebSocketCore::connect(const std::string& baseUrl, const std::string& relativePath, const uint16_t portNew,
-		bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
+	bool WebSocketCore::connect(const std::string& baseUrl, const std::string& relativePath, const uint16_t portNew, bool doWePrintErrorsNew,
+		bool areWeAStandaloneSocketNew) noexcept {
 		if (!TCPSSLClient::connect(baseUrl, portNew, doWePrintErrorsNew, areWeAStandaloneSocket)) {
 			return false;
 		}
 		this->currentState.store(WebSocketState::Upgrading);
 		std::string sendString{ "GET " + relativePath + " HTTP/1.1\r\nHost: " + baseUrl +
-			"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: " +
-			"Upgrade\r\nSec-WebSocket-Key: " + DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n" };
+			"\r\nPragma: no-cache\r\nUser-Agent: DiscordCoreAPI/1.0\r\nUpgrade: WebSocket\r\nConnection: " + "Upgrade\r\nSec-WebSocket-Key: " +
+			DiscordCoreAPI::generateBase64EncodedKey() + "\r\nSec-WebSocket-Version: 13\r\n\r\n" };
 		this->writeData(sendString, true);
 		DiscordCoreAPI::StopWatch stopWatch{ 5s };
 		do {
@@ -325,8 +325,7 @@ namespace DiscordCoreInternal {
 						this->messageLength = 0;
 						for (int64_t x = 2, shift = 56; x < 10; ++x, shift -= 8) {
 							uint8_t lengthNew = static_cast<uint8_t>(this->currentMessage[x]);
-							this->messageLength |= static_cast<uint64_t>(lengthNew & static_cast<uint64_t>(0xff))
-								<< static_cast<uint64_t>(shift);
+							this->messageLength |= static_cast<uint64_t>(lengthNew & static_cast<uint64_t>(0xff)) << static_cast<uint64_t>(shift);
 						}
 						this->messageOffset += 8;
 					}
@@ -457,8 +456,8 @@ namespace DiscordCoreInternal {
 					try {
 						payload = ErlParser::parseEtfToJson(dataNew);
 						payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
-						if (this->parser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity()))
-								.get(dValue) == simdjson::error_code::SUCCESS) {
+						if (this->parser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity())).get(dValue) ==
+							simdjson::error_code::SUCCESS) {
 							message = WebSocketMessage{ dValue };
 						}
 					} catch (...) {
@@ -475,8 +474,8 @@ namespace DiscordCoreInternal {
 				} else {
 					payload = dataNew;
 					payload.reserve(payload.size() + simdjson::SIMDJSON_PADDING);
-					if (this->parser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity()))
-							.get(dValue) == simdjson::error_code::SUCCESS) {
+					if (this->parser.iterate(simdjson::padded_string_view(payload.data(), payload.length(), payload.capacity())).get(dValue) ==
+						simdjson::error_code::SUCCESS) {
 						message = WebSocketMessage{ dValue };
 					}
 				}
@@ -485,8 +484,8 @@ namespace DiscordCoreInternal {
 				}
 				if (this->configManager->doWePrintWebSocketSuccessMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightGreen()
-						 << "Message received from WebSocket [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) +
-							"]" + std::string(": ")
+						 << "Message received from WebSocket [" + std::to_string(this->shard[0]) + "," + std::to_string(this->shard[1]) + "]" +
+							std::string(": ")
 						 << payload << DiscordCoreAPI::reset() << endl
 						 << endl;
 				}
@@ -514,8 +513,7 @@ namespace DiscordCoreInternal {
 									break;
 								}
 								case 3: {
-									if (this->discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent.functions.size() >
-										0) {
+									if (this->discordCoreClient->eventManager.onApplicationCommandPermissionsUpdateEvent.functions.size() > 0) {
 										std::unique_ptr<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData> dataPackage{
 											std::make_unique<DiscordCoreAPI::OnApplicationCommandPermissionsUpdateData>(message, dValue)
 										};
@@ -767,9 +765,8 @@ namespace DiscordCoreInternal {
 									break;
 								}
 								case 31: {
-									std::unique_ptr<DiscordCoreAPI::OnRoleUpdateData> dataPackage{
-										std::make_unique<DiscordCoreAPI::OnRoleUpdateData>(message, dValue)
-									};
+									std::unique_ptr<DiscordCoreAPI::OnRoleUpdateData> dataPackage{ std::make_unique<DiscordCoreAPI::OnRoleUpdateData>(
+										message, dValue) };
 									if (this->discordCoreClient->eventManager.onRoleUpdateEvent.functions.size() > 0) {
 										this->discordCoreClient->eventManager.onRoleUpdateEvent(*dataPackage);
 									}
@@ -858,8 +855,7 @@ namespace DiscordCoreInternal {
 								}
 								case 41: {
 									std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
-										std::make_unique<DiscordCoreAPI::OnInteractionCreationData>(message, dValue,
-											this->discordCoreClient)
+										std::make_unique<DiscordCoreAPI::OnInteractionCreationData>(message, dValue, this->discordCoreClient)
 									};
 									if (this->discordCoreClient->eventManager.onInteractionCreationEvent.functions.size() > 0) {
 										this->discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
@@ -1070,8 +1066,7 @@ namespace DiscordCoreInternal {
 						}
 						std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
 						int32_t numOfMsToWait = static_cast<int32_t>(1000.0f +
-							((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) *
-								static_cast<double>(4000.0f)));
+							((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * static_cast<double>(4000.0f)));
 						if (numOfMsToWait <= 5000 && numOfMsToWait > 0) {
 							std::this_thread::sleep_for(Milliseconds{ numOfMsToWait });
 						}
@@ -1239,8 +1234,8 @@ namespace DiscordCoreInternal {
 			}
 			std::string relativePath{ "/?v=10&encoding=" +
 				std::string{ this->configManager->getTextFormat() == DiscordCoreAPI::TextFormat::Etf ? "etf" : "json" } };
-			bool didWeConnect{ this->shardMap[packageNew.currentShard]->connect(connectionUrl, relativePath,
-				this->configManager->getConnectionPort(), this->configManager->doWePrintWebSocketErrorMessages(), false) };
+			bool didWeConnect{ this->shardMap[packageNew.currentShard]->connect(connectionUrl, relativePath, this->configManager->getConnectionPort(),
+				this->configManager->doWePrintWebSocketErrorMessages(), false) };
 			if (!didWeConnect) {
 				if (this->configManager->doWePrintWebSocketErrorMessages()) {
 					cout << DiscordCoreAPI::shiftToBrightRed() << "Connection failed for WebSocket [" << packageNew.currentShard << ","

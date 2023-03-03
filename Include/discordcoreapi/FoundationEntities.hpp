@@ -1355,10 +1355,9 @@ namespace DiscordCoreAPI {
 		Gateway_Presence = 1 << 12,///< Intent required for bots in 100 or more servers to receive presence_update events.
 		Gateway_Presence_Limited =
 			1 << 13,///< Intent required for bots in under 100 servers to receive presence_update events, found in Bot Settings.
-		Gateway_Guild_Members =
-			1 << 14,///< Intent required for bots in 100 or more servers to receive member-related events like guild_member_add.
-		Gateway_Guild_Members_Limited = 1
-			<< 15,///< Intent required for bots in under 100 servers to receive member-related events like guild_member_add, found in Bot Settings.
+		Gateway_Guild_Members = 1 << 14,///< Intent required for bots in 100 or more servers to receive member-related events like guild_member_add.
+		Gateway_Guild_Members_Limited =
+			1 << 15,///< Intent required for bots in under 100 servers to receive member-related events like guild_member_add, found in Bot Settings.
 		Verificatino_Pending_Guild_Limit = 1 << 16,///< Indicates unusual growth of an app that prevents verification
 		Embedded = 1 << 17,///< Indicates if an app is embedded within the Discord client (currently unavailable publicly)
 		Gateway_Message_Content = 1 << 18,///< Intent required for bots in 100 or more servers to receive message content
@@ -2183,8 +2182,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ApplicationCommandOptionData {
 		std::unordered_map<std::string, std::string> descriptionLocalizations{};///< Dictionary for the description localizations field.
 		std::unordered_map<std::string, std::string> nameLocalizations{};///< Dictionary for the name localizations field.
-		std::vector<ApplicationCommandOptionChoiceData>
-			choices{};///< A vector of possible choices for the current ApplicationCommand option.
+		std::vector<ApplicationCommandOptionChoiceData> choices{};///< A vector of possible choices for the current ApplicationCommand option.
 		std::vector<ApplicationCommandOptionData> options{};///< A vector of possible options for the current ApplicationCommand option.
 		std::vector<ChannelType> channelTypes{};///< Set when the ApplicationCommand option type is set to Channel.
 		ApplicationCommandOptionType type{};///< The type of command option.
@@ -2673,8 +2671,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief Resolved data.
 	struct DiscordCoreAPI_Dll ResolvedData {
-		std::unordered_map<uint64_t, AttachmentData>
-			attachments{};///< std::map of Snowflakes to attachment objects the ids and attachment objects.
+		std::unordered_map<uint64_t, AttachmentData> attachments{};///< std::map of Snowflakes to attachment objects the ids and attachment objects.
 		std::unordered_map<uint64_t, GuildMemberData> members{};///< std::map full of GuildMemeberData.
 		std::unordered_map<uint64_t, MessageData> messages{};///< std::map full of messageData->
 		std::unordered_map<uint64_t, ChannelData> channels{};///< std::map full of ChannelData.
@@ -2994,8 +2991,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel,
-			ButtonStyle buttonStyle, const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
+		RespondToInputEventData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
 
 		/// \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -3108,8 +3105,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
 		/// \returns MessageResponseBase& A reference to this data structure.
-		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel,
-			ButtonStyle buttonStyle, const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
+		MessageResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
 
 		/// \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.

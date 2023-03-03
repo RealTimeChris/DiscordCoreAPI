@@ -48,8 +48,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		InteractionResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel,
-			ButtonStyle buttonStyle, const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
+		InteractionResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
 
 		/// \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -412,8 +412,7 @@ namespace DiscordCoreAPI {
 		/// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
 		/// \returns A vector of SelectMenuResponseData.
 		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
-			int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew,
-			Snowflake targetUserId = Snowflake{});
+			int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{});
 
 		/// \brief Used to collect the select-menu inputs from one or more users.
 		/// \param triggerFunctionNew A std::function<bool(InteractionData)> to decide whether or not to trigger the event's main function.

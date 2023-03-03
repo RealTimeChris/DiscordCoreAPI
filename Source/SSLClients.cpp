@@ -32,8 +32,7 @@ namespace DiscordCoreInternal {
 		std::stringstream stream{};
 		stream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
 		if (ssl) {
-			stream << SSL_get_error(ssl, errorValue) << ", " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl
-				   << endl;
+			stream << SSL_get_error(ssl, errorValue) << ", " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl << endl;
 		} else {
 			stream << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl << endl;
 		}
@@ -46,11 +45,11 @@ namespace DiscordCoreInternal {
 #ifdef _WIN32
 		char string[1024]{};
 	#ifdef UWP
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(),
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), ( LPWSTR )string, 1024, NULL);
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			( LPWSTR )string, 1024, NULL);
 	#else
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(),
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), string, 1024, NULL);
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			string, 1024, NULL);
 	#endif
 		stream << WSAGetLastError() << ", " << string << DiscordCoreAPI::reset() << endl;
 #else
@@ -171,8 +170,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	bool TCPSSLClient::connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorsNew,
-		bool areWeAStandaloneSocketNew) noexcept {
+	bool TCPSSLClient::connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
 		std::string addressString{};
@@ -180,11 +178,11 @@ namespace DiscordCoreInternal {
 		auto comFind = baseUrl.find(".com");
 		auto orgFind = baseUrl.find(".org");
 		if (httpsFind != std::string::npos && comFind != std::string::npos) {
-			addressString = baseUrl.substr(httpsFind + std::string("https://").size(),
-				comFind + std::string(".com").size() - std::string("https://").size());
+			addressString =
+				baseUrl.substr(httpsFind + std::string("https://").size(), comFind + std::string(".com").size() - std::string("https://").size());
 		} else if (httpsFind != std::string::npos && orgFind != std::string::npos) {
-			addressString = baseUrl.substr(httpsFind + std::string("https://").size(),
-				orgFind + std::string(".org").size() - std::string("https://").size());
+			addressString =
+				baseUrl.substr(httpsFind + std::string("https://").size(), orgFind + std::string(".org").size() - std::string("https://").size());
 		} else {
 			addressString = baseUrl;
 		}
@@ -567,14 +565,14 @@ namespace DiscordCoreInternal {
 			std::string connectionString{ "connecting" };
 			int32_t result{};
 			while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
-				result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0,
-					this->address->ai_addr, static_cast<int32_t>(this->address->ai_addrlen));
+				result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
+					static_cast<int32_t>(this->address->ai_addrlen));
 				std::this_thread::sleep_for(1ns);
 			}
 			result = 0;
 			while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
-				result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0,
-					this->address->ai_addr, reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
+				result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
+					reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 				std::this_thread::sleep_for(1ns);
 			}
 		} else {
@@ -595,15 +593,15 @@ namespace DiscordCoreInternal {
 			int32_t result{};
 			connectionString.resize(10);
 			while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
-				result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0,
-					this->address->ai_addr, reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
+				result = recvfrom(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
+					reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 				std::this_thread::sleep_for(1ns);
 			}
 			connectionString = "connected1";
 			result = 0;
 			while ((result == 0 || errno == EWOULDBLOCK || errno == EINPROGRESS) && !token.stop_requested()) {
-				result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0,
-					this->address->ai_addr, static_cast<int32_t>(this->address->ai_addrlen));
+				result = sendto(this->socket, connectionString.data(), static_cast<int32_t>(connectionString.size()), 0, this->address->ai_addr,
+					static_cast<int32_t>(this->address->ai_addrlen));
 				std::this_thread::sleep_for(1ns);
 			}
 		}
@@ -707,9 +705,8 @@ namespace DiscordCoreInternal {
 		do {
 			if (!this->inputBuffer.isItFull()) {
 				uint64_t bytesToRead{ this->maxBufferSize };
-				readBytes = recvfrom(static_cast<SOCKET>(this->socket),
-					reinterpret_cast<char*>(this->inputBuffer.getCurrentHead()->getCurrentHead()), static_cast<int32_t>(bytesToRead), 0,
-					this->address->ai_addr, reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
+				readBytes = recvfrom(static_cast<SOCKET>(this->socket), reinterpret_cast<char*>(this->inputBuffer.getCurrentHead()->getCurrentHead()),
+					static_cast<int32_t>(bytesToRead), 0, this->address->ai_addr, reinterpret_cast<socklen_t*>(&this->address->ai_addrlen));
 				if (readBytes <= 0 && errno != EWOULDBLOCK && errno != EINPROGRESS) {
 					return false;
 				} else if (readBytes > 0) {

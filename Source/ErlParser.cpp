@@ -189,8 +189,7 @@ namespace DiscordCoreInternal {
 				return this->parseMapExt();
 			}
 			default: {
-				throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Unknown data type in ETF, the type: " +
-					std::to_string(type) };
+				throw ErlParseError{ "ErlParser::singleValueETFToJson() Error: Unknown data type in ETF, the type: " + std::to_string(type) };
 			}
 		}
 	}

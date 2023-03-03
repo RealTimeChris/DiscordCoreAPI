@@ -524,8 +524,7 @@ namespace DiscordCoreAPI {
 		return data;
 	}
 
-	void Guilds::initialize(DiscordCoreInternal::HttpsClient* client, DiscordCoreClient* discordCoreClientNew,
-		ConfigManager* configManagerNew) {
+	void Guilds::initialize(DiscordCoreInternal::HttpsClient* client, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
 		Guilds::doWeCacheGuildsBool = configManagerNew->doWeCacheGuilds();
 		Guilds::discordCoreClient = discordCoreClientNew;
 		Guilds::httpsClient = client;

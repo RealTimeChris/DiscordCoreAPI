@@ -284,8 +284,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		auto guildMember =
-			GuildMembers::getCachedGuildMember({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId });
+		auto guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = dataPackage.guildMemberId, .guildId = dataPackage.guildId });
 		co_return GuildMembers::httpsClient->submitWorkloadAndGetResult<void>(workload);
 	}
 
