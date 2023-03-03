@@ -30,4 +30,4 @@ jobs:
          - name: Run vcpkg release builder
            run: git fetch -avt &&
                 cd BuildTools &&
-                php make_vcpkg.php "${{ github.repository_owner }}" "${{ secrets.PersonalAccessToken }}"
+                php make_vcpkg.php "${{ github.repository_owner }}" "${{ secrets.PERSONAL_ACCESS_TOKEN }}"

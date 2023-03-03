@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Automatic CI process for generating new vcpkg releases.
+ * Copied from Dpp: https://github.com/brainboxdotcc/dpp 
+ * CI process for generating new vcpkg releases.
  * Based loosely on RealTimeChris's shell script version.
  * 
  * This updates the content of ./vcpkg directory within the DPP
