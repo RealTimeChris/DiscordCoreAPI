@@ -1,18 +1,18 @@
 <?php
 
 /**
- * Automatic CI process for generating new Vcpkg releases.
+ * Automatic CI process for generating new vcpkg releases.
  * Based loosely on RealTimeChris's shell script version.
  * 
- * This updates the content of ./Vcpkg directory within the DPP
+ * This updates the content of ./vcpkg directory within the DPP
  * repository on the master branch, which can then be diffed into
- * the microsoft/Vcpkg master branch to build a PR for the new
+ * the microsoft/vcpkg master branch to build a PR for the new
  * release.
  * 
  * The procedure for this is:
  * 
  * 1) Generate various configuration files and put them into the
- *    systemwide Vcpkg installation inside the CI container
+ *    systemwide vcpkg installation inside the CI container
  * 2) Attempt to build the package from the release tag,
  *    this will fail due to invalid SHA512 sum and return the
  *    correct SHA512 sum in the error output. Inability to get the
@@ -20,9 +20,9 @@
  *    the CI action.
  * 3) Capture the SHA512 from the error output, switch to master
  * 4) Copy the correct configuration into both the systemwide
- *    Vcpkg install in the container, and into the Vcpkg directory
+ *    vcpkg install in the container, and into the vcpkg directory
  *    of master branch.
- * 5) Rerun the `Vcpkg install` process again to verify it is working.
+ * 5) Rerun the `vcpkg install` process again to verify it is working.
  *    A build failure here will return a nonzero return code from
  *    the script, failing the CI action.
  */
@@ -48,7 +48,7 @@ if (!empty($sha512)) {
     }
 
     /* Attempt second build with the valid SHA512 sum. Program exit
-     * status is the exit status of `Vcpkg install`
+     * status is the exit status of `vcpkg install`
      */
     exit(
         $vcpkg->secondBuild(
