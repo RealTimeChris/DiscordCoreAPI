@@ -100,7 +100,7 @@ class Vcpkg
 
         if (empty($tag)) {
             /* Empty tag means use the main branch */
-            $tag = `{$this->git} config --get init.defaultBranch || echo master`;
+            $tag = `{$this->git} config --get init.defaultBranch || echo main`;
         }
 	$repositoryUrl = 'https://' . urlencode($argv[1]) . ':' . urlencode($argv[2]) . '@github.com/realtimechris/DiscordCoreAPI';
 
@@ -108,8 +108,8 @@ class Vcpkg
 
         chdir(getenv('HOME'));
         system('rm -rf ./discordcoreapi');
-        $this->git('config --global user.email "noreply@discordcoreapi.dev"');
-        $this->git('config --global user.name "DiscordCoreAPI VCPKG Bot"');
+        $this->git('config --global user.email "noreply@discordcoreapi.com"');
+        $this->git('config --global user.name "realtimechris"');
         $this->git('clone ' . escapeshellarg($repositoryUrl) . ' ./discordcoreapi --depth=1');
         
         /* This is noisy, silence it */
@@ -142,14 +142,14 @@ class Vcpkg
     SHA512 ' . $sha512 . '
 )
 
-Vcpkg_cmake_configure(
+vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     DISABLE_PARALLEL_CONFIGURE
 )
 
-Vcpkg_cmake_install()
+vcpkg_cmake_install()
 
-Vcpkg_cmake_config_fixup(NO_PREFIX_CORRECTION)
+vcpkg_cmake_config_fixup(NO_PREFIX_CORRECTION)
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share/discordcoreapi")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
@@ -257,7 +257,7 @@ file(COPY "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}
         /* Note: We commit this in /usr/local, but we never push it (we can't) */
         $this->git('add .', true);
         $this->git('git commit -m "[bot] VCPKG info update"', true);
-        $this->sudo('/usr/local/share/Vcpkg/Vcpkg x-add-version discordcoreapi');
+        $this->sudo('/usr/local/share/Vcpkg/vcpkg x-add-version discordcoreapi');
 
         echo GREEN . "Copy back port files from /usr/local/share...\n" . WHITE;
         chdir(getenv('HOME') . '/discordcoreapi');
