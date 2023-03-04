@@ -95,6 +95,8 @@ namespace DiscordCoreAPI {
 
 		CreateMessageData(InputEventData dataPackage);
 
+		CreateMessageData(MessageData dataPackage);
+
 		Snowflake channelId{};
 
 		CreateMessageData() noexcept = default;

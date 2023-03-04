@@ -218,6 +218,14 @@ namespace DiscordCoreAPI {
 		this->tts = dataPackage.tts;
 	}
 
+	CreateMessageData::CreateMessageData(MessageData dataPackage) {
+		this->channelId = dataPackage.channelId;
+		this->messageReference.channelId = dataPackage.channelId;
+		this->messageReference.messageId = dataPackage.id;
+		this->messageReference.guildId = dataPackage.guildId;
+		this->tts = dataPackage.tts;
+	}
+
 	CreateMessageData::CreateMessageData(InputEventData dataPackage) {
 		this->channelId = dataPackage.getChannelData().id;
 	}

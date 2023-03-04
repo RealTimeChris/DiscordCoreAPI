@@ -167,7 +167,7 @@ file(
         // ./Vcpkg/ports/discordcoreapi/vcpkg.json
         $versionFileContent = '{
   "name": "discordcoreapi",
-  "version-date": "2022-03-03",
+  "version": "1.3.0",
   "description": "A Discord bot library written in C++ using custom asynchronous coroutines.",
   "homepage": "https://discordcoreapi.com",
   "license": "LGPL-2.1-or-later",
