@@ -1,6 +1,6 @@
 <?php
 
-namespace DiscordCoreAPI\Packager;
+namespace discordcoreapi\Packager;
 
 use \RuntimeException;
 
@@ -46,13 +46,12 @@ class Vcpkg
         if (count($argv) < 2) {
             throw new RuntimeException(RED . "Missing github repository owner and access token\n" . WHITE);
         }
-        echo GREEN . "Starting Vcpkg updater...\n" . WHITE;
+        echo GREEN . "Starting vcpkg updater...\n" . WHITE;
             
         /* Get the latest tag from the version of the repository checked out by default into the action */
         $this->latestTag = preg_replace("/\n/", "", shell_exec("git describe --tags `git rev-list --tags --max-count=1`"));
         $this->version = preg_replace('/^v/', '', $this->getTag());
         echo GREEN . "Latest tag: " . $this->getTag() . " version: " . $this->getVersion() . "\n" . WHITE;
-        echo GREEN . trim(`which sudo`) . WHITE;
 
 	$this->git = trim(`which git`);
 	$this->sudo = trim(`which sudo`);
@@ -80,12 +79,12 @@ class Vcpkg
 
     private function git(string $parameters, bool $sudo = false): void
     {
-        system(($sudo ? 'sudo ' : '') . $this->git . ' ' . $parameters);
+        system(($sudo ? $this->sudo . ' ' : '') . $this->git . ' ' . $parameters);
     }
 
-   private function sudo(string $command): void
+    private function sudo(string $command): void
     {
-        system('sudo ' . $command);
+        system($this->sudo . ' ' . $command);
     }
 
     /**
@@ -103,13 +102,13 @@ class Vcpkg
             /* Empty tag means use the main branch */
             $tag = `{$this->git} config --get init.defaultBranch || echo main`;
         }
-	$repositoryUrl = 'https://' . urlencode($argv[1]) . ':' . urlencode($argv[2]) . '@github.com/realtimechris/DiscordCoreAPI';
+	$repositoryUrl = 'https://' . urlencode($argv[1]) . ':' . urlencode($argv[2]) . '@github.com/realtimechris/discordcoreapi';
 
         echo GREEN . "Check out repository: $tag (user: ". $argv[1] . " branch: " . $tag . ")\n" . WHITE;
 
         chdir(getenv('HOME'));
         system('rm -rf ./discordcoreapi');
-        $this->git('config --global user.email "noreply@discordcoreapi.com"');
+        $this->git('config --global user.email "40668522+RealTimeChris@users.noreply.github.com"');
         $this->git('config --global user.name "realtimechris"');
         $this->git('clone ' . escapeshellarg($repositoryUrl) . ' ./discordcoreapi --depth=1');
         
@@ -126,7 +125,7 @@ class Vcpkg
      * build the branch that is cloned at ~/discordcoreapi
      * 
      * @param string $sha512 The SHA512 sum of the tagged download, or initially
-     * zero, which means that the Vcpkg install command should obtain it the
+     * zero, which means that the vcpkg install command should obtain it the
      * second time around.
      * @return string The portfile content
      */
@@ -142,7 +141,8 @@ endif()
 vcpkg_from_github(
 	OUT_SOURCE_PATH SOURCE_PATH
 	REPO RealTimeChris/DiscordCoreAPI
-	REF "v${VERSION}"
+	REF 4e08675
+	SHA512 ' . $sha512 . 'HEAD_REF main
 )
 
 vcpkg_cmake_configure(
@@ -167,7 +167,7 @@ file(
         // ./Vcpkg/ports/discordcoreapi/vcpkg.json
         $versionFileContent = '{
   "name": "discordcoreapi",
-  "version": "1.3.0",
+  "version-date": "2022-03-03",
   "description": "A Discord bot library written in C++ using custom asynchronous coroutines.",
   "homepage": "https://discordcoreapi.com",
   "license": "LGPL-2.1-or-later",
@@ -187,15 +187,14 @@ file(
       "host": true
     }
   ]
-}
-';
+}';
         echo GREEN . "Writing portfile...\n" . WHITE;
         file_put_contents('./Vcpkg/ports/discordcoreapi/vcpkg.json', $versionFileContent);
         return $portFileContent;
     }
 
     /**
-     * Attempt the first build of the Vcpkg port. This will always fail, as it is given
+     * Attempt the first build of the vcpkg port. This will always fail, as it is given
      * an SHA512 sum of 0. When it fails the output contains the SHA512 sum, which is then
      * extracted from the error output using a regular expression, and saved for a second
      * attempt.
@@ -215,7 +214,7 @@ file(
         file_put_contents('/tmp/portfile', $portFileContent);
         $this->sudo('cp -v -R /tmp/portfile /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake');
         unlink('/tmp/portfile');
-        $buildResults = shell_exec('sudo ' . ' /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux');
+        $buildResults = shell_exec($this->sudo . ' /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux');
         $matches = [];
         if (preg_match('/Actual hash:\s+([0-9a-fA-F]+)/', $buildResults, $matches)) {
             echo GREEN . "Obtained SHA512 for first build: " . $matches[1] . "\n" . WHITE;
@@ -228,8 +227,8 @@ file(
 
     /**
      * Second build using a valid SHA512 sum. This attempt should succeed, allowing us to push
-     * the changed Vcpkg portfiles into the master branch, where they can be used in a PR to
-     * microsoft/Vcpkg repository later.
+     * the changed vcpkg portfiles into the master branch, where they can be used in a PR to
+     * microsoft/vcpkg repository later.
      * 
      * @param string $portFileContent the contents of the portfile, containing a valid SHA512
      * sum from the first build attempt.
@@ -250,31 +249,31 @@ file(
         $this->sudo('cp -v -R ./Vcpkg/ports/discordcoreapi/portfile.cmake /usr/local/share/vcpkg/ports/discordcoreapi/portfile.cmake');
         $this->sudo('cp -v -R ./Vcpkg/ports/* /usr/local/share/vcpkg/ports/');
 
-        echo GREEN . "Vcpkg x-add-version...\n" . WHITE;
+        echo GREEN . "vcpkg x-add-version...\n" . WHITE;
         chdir('/usr/local/share/vcpkg');
-        $this->sudo('./Vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json');
+        $this->sudo('./vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json');
         /* Note: We commit this in /usr/local, but we never push it (we can't) */
         $this->git('add .', true);
-        $this->git('git commit -m "[bot] VCPKG info update"', true);
+        $this->git('commit -m "VCPKG info update"', true);
         $this->sudo('/usr/local/share/vcpkg/vcpkg x-add-version discordcoreapi');
 
         echo GREEN . "Copy back port files from /usr/local/share...\n" . WHITE;
         chdir(getenv('HOME') . '/discordcoreapi');
         system('cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json');
         system('cp -v -R /usr/local/share/vcpkg/versions/baseline.json ./Vcpkg/versions/baseline.json');
-        system('cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json');
+        system('cp -v -R /usr/local/share/vcpkg/versions/j-/discordcoreapi.json ./Vcpkg/versions/j-/discordcoreapi.json');
 
-        echo GREEN . "Commit and push changes to master branch\n" . WHITE;
+        echo GREEN . "Commit and push changes to main branch\n" . WHITE;
         $this->git('add .');
-        $this->git('commit -m "[bot] VCPKG info update [skip ci]"');
+        $this->git('commit -m "VCPKG info update [skip ci]"');
         $this->git('config pull.rebase false');
         $this->git('pull');
-        $this->git('push origin master');
+        $this->git('push origin main');
 
-        echo GREEN . "Vcpkg install...\n" . WHITE;
+        echo GREEN . "vcpkg install...\n" . WHITE;
         $resultCode = 0;
         $output = [];
-        exec($this->sudo . ' /usr/local/share/vcpkg/Vcpkg install discordcoreapi:x64-linux', $output, $resultCode);
+        exec($this->sudo . ' /usr/local/share/vcpkg/vcpkg install discordcoreapi:x64-linux', $output, $resultCode);
 
         if ($resultCode != 0) {
             echo RED . "There were build errors!\n\nBuild log:\n" . WHITE;

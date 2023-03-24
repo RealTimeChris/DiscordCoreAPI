@@ -1,7 +1,8 @@
 name: Prepare release for VCPKG
 
 on:
-  push:
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -28,6 +29,7 @@ jobs:
                 sudo vcpkg update
 
          - name: Run vcpkg release builder
-           run: git fetch -avt &&
+           run: dir /home/runner/work/DiscordCoreAPI/DiscordCoreAPI &&
+                git fetch -avt &&
                 cd BuildTools &&
-                php make_vcpkg.php "${{ github.repository_owner }}" "${{ secrets.PERSONAL_ACCESS_TOKEN }}"
+                php make_vcpkg.php "${{ github.repository_owner }}" "${{ secrets.GITHUB_TOKEN }}"

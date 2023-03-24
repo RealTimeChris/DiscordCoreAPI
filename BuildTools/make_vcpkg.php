@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Copied from Dpp: https://github.com/brainboxdotcc/dpp 
- * CI process for generating new vcpkg releases.
+ * Automatic CI process for generating new vcpkg releases.
  * Based loosely on RealTimeChris's shell script version.
  * 
  * This updates the content of ./vcpkg directory within the DPP
@@ -28,7 +27,7 @@
  *    the script, failing the CI action.
  */
 
-require __DIR__ . '/Vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 use DiscordCoreAPI\Packager\Vcpkg;
 
 $vcpkg = new Vcpkg();
