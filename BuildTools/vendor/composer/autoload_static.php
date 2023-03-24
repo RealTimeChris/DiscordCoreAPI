@@ -16,12 +16,12 @@ class ComposerStaticInit0e8415491642f27914717986db49b1db
     public static $prefixDirsPsr4 = array (
         'DiscordCoreAPI\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/Classes',
+            0 => __DIR__ . '/../..' . '/classes',
         ),
     );
 
     public static $classMap = array (
-        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/Composer/InstalledVersions.php',
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

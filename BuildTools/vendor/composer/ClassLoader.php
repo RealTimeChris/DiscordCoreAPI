@@ -17,7 +17,7 @@ namespace Composer\Autoload;
  *
  *     $loader = new \Composer\Autoload\ClassLoader();
  *
- *     // register Classes with namespaces
+ *     // register classes with namespaces
  *     $loader->add('Symfony\Component', __DIR__.'/component');
  *     $loader->add('Symfony',           __DIR__.'/framework');
  *
@@ -43,7 +43,7 @@ namespace Composer\Autoload;
 class ClassLoader
 {
     /** @var ?string */
-    private $VendorDir;
+    private $vendorDir;
 
     // PSR-4
     /**
@@ -101,11 +101,11 @@ class ClassLoader
     private static $registeredLoaders = array();
 
     /**
-     * @param ?string $VendorDir
+     * @param ?string $vendorDir
      */
-    public function __construct($VendorDir = null)
+    public function __construct($vendorDir = null)
     {
-        $this->VendorDir = $VendorDir;
+        $this->vendorDir = $vendorDir;
     }
 
     /**
@@ -325,7 +325,7 @@ class ClassLoader
 
     /**
      * Can be used to check if the autoloader uses the include path to check
-     * for Classes.
+     * for classes.
      *
      * @return bool
      */
@@ -335,7 +335,7 @@ class ClassLoader
     }
 
     /**
-     * Turns off searching the prefix and fallback directories for Classes
+     * Turns off searching the prefix and fallback directories for classes
      * that have not been registered with the class map.
      *
      * @param bool $classMapAuthoritative
@@ -358,7 +358,7 @@ class ClassLoader
     }
 
     /**
-     * APCu prefix to use to cache found/not-found Classes, if the extension is enabled.
+     * APCu prefix to use to cache found/not-found classes, if the extension is enabled.
      *
      * @param string|null $apcuPrefix
      *
@@ -390,15 +390,15 @@ class ClassLoader
     {
         spl_autoload_register(array($this, 'loadClass'), true, $prepend);
 
-        if (null === $this->VendorDir) {
+        if (null === $this->vendorDir) {
             return;
         }
 
         if ($prepend) {
-            self::$registeredLoaders = array($this->VendorDir => $this) + self::$registeredLoaders;
+            self::$registeredLoaders = array($this->vendorDir => $this) + self::$registeredLoaders;
         } else {
-            unset(self::$registeredLoaders[$this->VendorDir]);
-            self::$registeredLoaders[$this->VendorDir] = $this;
+            unset(self::$registeredLoaders[$this->vendorDir]);
+            self::$registeredLoaders[$this->vendorDir] = $this;
         }
     }
 
@@ -411,8 +411,8 @@ class ClassLoader
     {
         spl_autoload_unregister(array($this, 'loadClass'));
 
-        if (null !== $this->VendorDir) {
-            unset(self::$registeredLoaders[$this->VendorDir]);
+        if (null !== $this->vendorDir) {
+            unset(self::$registeredLoaders[$this->vendorDir]);
         }
     }
 
@@ -476,7 +476,7 @@ class ClassLoader
     }
 
     /**
-     * Returns the currently registered loaders indexed by their corresponding Vendor directories.
+     * Returns the currently registered loaders indexed by their corresponding vendor directories.
      *
      * @return self[]
      */
