@@ -1,7 +1,7 @@
 # DiscordCoreAPI
 [![Codacy Badge](https://img.shields.io/codacy/grade/1e5ae970aed34d0b96249cdfd02099cf?color=lightblue&label=Code%20Quality&style=plastic)](https://www.codacy.com/gh/RealTimeChris/DiscordCoreAPI/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RealTimeChris/DiscordCoreAPI&amp;utm_campaign=Badge_Grade)
 [![Discord](https://img.shields.io/discord/931640556814237706?color=red&label=Discord%20Server&style=plastic)](https://discord.gg/adgMqeBuhP)
-[![Build DiscordCoreAPI](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/Build-DiscordCoreAPI-Linux-Main.yml?branch=main&style=plastic&color=purple)](https://github.com/RealTimeChris/DiscordCoreAPI/actions/workflows/Build-DiscordCoreAPI-Linux-Main.yml)
+[![Build DiscordCoreAPI](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/Construct-Vcpkg-Info.yml?color=green&style=plastic)](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/Construct-Vcpkg-Info.yml)
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/realtimechris/discordcoreapi?color=green&label=Commits&style=plastic)
 ![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi?&style=plastic&label=Lines%20of%20Code)
 
@@ -12,7 +12,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 [WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L390), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L247) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
 
 # Documentation/Examples
-[Documentation/Examples](https://discordcoreapi.com/de/d94/a07274.html)
+[Documentation/Examples](https://discordcoreapi.org/d1/d0c/a07495.html)
 
 # Discord Server
 [This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)
