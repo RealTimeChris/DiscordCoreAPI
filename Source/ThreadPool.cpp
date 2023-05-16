@@ -73,7 +73,8 @@ namespace DiscordCoreInternal {
 		return *this;
 	}
 
-	CoRoutineThreadPool::CoRoutineThreadPool() : threadCount(std::thread::hardware_concurrency()) {
+	CoRoutineThreadPool::CoRoutineThreadPool()
+		: threadCount(std::thread::hardware_concurrency() / 2 > 0 ? std::thread::hardware_concurrency() / 2 : 1) {
 		for (uint32_t x = 0; x < this->threadCount.load(); ++x) {
 			WorkerThread workerThread{};
 			this->currentIndex.store(this->currentIndex.load() + 1);

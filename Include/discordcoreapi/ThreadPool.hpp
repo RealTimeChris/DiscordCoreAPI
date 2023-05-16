@@ -75,10 +75,8 @@ namespace DiscordCoreAPI {
 				if (thread.joinable()) {
 					thread.join();
 				}
-			} else {
-				if (thread.joinable()) {
-					thread.detach();
-				}
+			} else if (thread.joinable()) {
+				thread.detach();
 			}
 		}
 
@@ -125,4 +123,4 @@ namespace DiscordCoreInternal {
 		void threadFunction(std::stop_token token, int64_t index);
 	};
 	/**@}*/
-}// namespace DiscordCoreAPI
+}

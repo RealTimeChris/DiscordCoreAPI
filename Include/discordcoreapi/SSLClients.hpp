@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -82,7 +82,7 @@ namespace DiscordCoreInternal {
 #endif
 
 	struct DiscordCoreAPI_Dll PollFDWrapper {
-		std::vector<size_t> indices{};
+		std::vector<uint64_t> indices{};
 		std::vector<pollfd> polls{};
 	};
 
@@ -128,22 +128,18 @@ namespace DiscordCoreInternal {
 	};
 
 	struct DiscordCoreAPI_Dll SOCKETWrapper {
-		struct DiscordCoreAPI_Dll SOCKETDeleter {
-			void operator()(SOCKET* other) noexcept;
-		};
+		SOCKETWrapper() noexcept = default;
 
 		SOCKETWrapper& operator=(SOCKET other) noexcept;
 
 		SOCKETWrapper(SOCKET other) noexcept;
 
-		operator SOCKET*() noexcept;
-
 		operator SOCKET() noexcept;
 
-		SOCKETWrapper() noexcept = default;
+		~SOCKETWrapper() noexcept;
 
 	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> ptr{ std::make_unique<SOCKET>(INVALID_SOCKET).release(), SOCKETDeleter{} };
+		SOCKET ptr{ INVALID_SOCKET };
 	};
 
 	struct DiscordCoreAPI_Dll addrinfoWrapper {
@@ -198,13 +194,13 @@ namespace DiscordCoreInternal {
 		int64_t bytesRead{};
 	};
 
-	class DiscordCoreAPI_Dll TCPSSLClient : public SSLDataInterface, public SSLConnectionInterface {
+	class DiscordCoreAPI_Dll TCPConnection : public SSLDataInterface, public SSLConnectionInterface {
 	  public:
 		virtual void handleBuffer() noexcept = 0;
 
 		bool connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorMessages, bool areWeAStandaloneSocket) noexcept;
 
-		static std::vector<TCPSSLClient*> processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketClient>>& shardMap) noexcept;
+		static std::vector<TCPConnection*> processIO(std::unordered_map<uint32_t, std::unique_ptr<TCPConnection>>& shardMap) noexcept;
 
 		ProcessIOResult writeData(std::string_view dataToWrite, bool priority) noexcept;
 
@@ -220,7 +216,7 @@ namespace DiscordCoreInternal {
 
 		int64_t getBytesRead() noexcept;
 
-		virtual ~TCPSSLClient() noexcept = default;
+		virtual ~TCPConnection() noexcept = default;
 
 	  protected:
 		bool doWePrintErrorMessages{};
@@ -237,9 +233,9 @@ namespace DiscordCoreInternal {
 
 		bool connect(const std::string& baseUrlNew, uint16_t portNew, std::stop_token token = std::stop_token{}) noexcept;
 
-		void writeData(std::basic_string_view<std::byte> dataToWrite) noexcept;
+		void writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept;
 
-		std::basic_string_view<std::byte> getInputBuffer() noexcept;
+		std::basic_string_view<uint8_t> getInputBuffer() noexcept;
 
 		ProcessIOResult processIO(ProcessIOType type) noexcept;
 
@@ -257,8 +253,8 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		const uint64_t maxBufferSize{ (1024 * 16) };
-		RingBuffer<std::byte, 16> outputBuffer{};
-		RingBuffer<std::byte, 16> inputBuffer{};
+		RingBuffer<uint8_t, 16> outputBuffer{};
+		RingBuffer<uint8_t, 16> inputBuffer{};
 		DiscordCoreAPI::StreamType streamType{};
 		addrinfoWrapper address{};
 		bool doWePrintErrors{};

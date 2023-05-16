@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -58,8 +58,6 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild within which to create the AutoModerationRule.
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
-
-		operator Jsonifier();
 	};
 
 	/// \brief For modifying an auto-moderation-rule.
@@ -73,8 +71,6 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The AutoModerationRule within which to modify the auto-moderation-rule.
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled(False by default).
-
-		operator Jsonifier();
 	};
 
 	/// \brief For when an auto-moderation-rule is executed.
@@ -93,8 +89,6 @@ namespace DiscordCoreAPI {
 
 		AutoModerationActionExecutionEventData() noexcept = default;
 
-		AutoModerationActionExecutionEventData(simdjson::ondemand::value jsonObjectData);
-
 		virtual ~AutoModerationActionExecutionEventData() noexcept = default;
 	};
 
@@ -102,30 +96,6 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DeleteAutoModerationRuleData {
 		uint64_t autoModerationRuleId{};///< The id of the auto-moderation-rule you would like to delete.
 		Snowflake guildId{};///< Guild within which to delete the auto-moderation-rule.
-	};
-
-	/// \brief Represents an auto-moderation-rule.
-	class DiscordCoreAPI_Dll AutoModerationRule : public AutoModerationRuleData {
-	  public:
-		AutoModerationRule() noexcept = default;
-
-		AutoModerationRule(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~AutoModerationRule() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll AutoModerationRuleVector {
-	  public:
-		AutoModerationRuleVector() noexcept = default;
-
-		operator std::vector<AutoModerationRule>();
-
-		AutoModerationRuleVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~AutoModerationRuleVector() noexcept = default;
-
-	  protected:
-		std::vector<AutoModerationRule> theAutoModerationRules{};
 	};
 
 	/**@}*/

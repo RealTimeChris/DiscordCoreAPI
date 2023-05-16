@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -71,30 +71,6 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild within which to delete the Sticker.
 	};
 
-	/// \brief A single Sticker.
-	class DiscordCoreAPI_Dll Sticker : public StickerData {
-	  public:
-		Sticker() noexcept = default;
-
-		Sticker(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~Sticker() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll StickerVector {
-	  public:
-		StickerVector() noexcept = default;
-
-		operator std::vector<Sticker>();
-
-		StickerVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~StickerVector() noexcept = default;
-
-	  protected:
-		std::vector<Sticker> stickers{};
-	};
-
 	/**@}*/
 
 	/**
@@ -139,4 +115,4 @@ namespace DiscordCoreAPI {
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 	/**@}*/
-};// namespace DiscordCoreAPI
+};

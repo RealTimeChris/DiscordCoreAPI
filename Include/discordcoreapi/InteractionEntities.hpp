@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -40,6 +40,10 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll InteractionResponseBase {
 	  public:
+		friend struct Jsonifier::Core<InteractionResponseBase>;
+
+		std::unordered_set<std::string_view> excludedKeys{};
+
 		/// \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
 		/// \param customIdNew A custom id to give for identifying the button.
@@ -111,12 +115,15 @@ namespace DiscordCoreAPI {
 
 		InteractionResponseData getInteractionResponseData();
 
+		void generateExcludedKeys() noexcept;
+
 		virtual ~InteractionResponseBase() noexcept = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
 		MessagePackageData messagePackage{};
-		InteractionResponseData data{};
+		InteractionCallbackData data{};
+		InteractionCallbackType type{};
 	};
 
 	/// \brief For creating an ephemeral Interaction response.
@@ -146,6 +153,7 @@ namespace DiscordCoreAPI {
 	/// \brief For creating an Interaction response.
 	class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponseBase {
 	  public:
+		friend struct Jsonifier::Core<CreateInteractionResponseData>;
 		friend class SelectMenuCollector;
 		friend class ButtonCollector;
 		friend class ModalCollector;
@@ -172,18 +180,22 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief For editing an Interaction response.
-	class DiscordCoreAPI_Dll EditInteractionResponseData {
+	class DiscordCoreAPI_Dll EditInteractionResponseData : public EditWebHookData {
 	  public:
+		friend struct Jsonifier::Core<EditInteractionResponseData>;
 		friend class Interactions;
 		friend class InputEvents;
 
+		std::unordered_set<std::string_view> excludedKeys{};
+
 		EditInteractionResponseData(const RespondToInputEventData& dataPackage);
+
+		void generateExcludedKeys() noexcept;
 
 		virtual ~EditInteractionResponseData() noexcept = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
-		EditWebHookData data{};
 	};
 
 	/// \brief For deleting an Interaction response.
@@ -216,14 +228,19 @@ namespace DiscordCoreAPI {
 	/// \brief For creating a follow up Message.
 	class DiscordCoreAPI_Dll CreateFollowUpMessageData : public ExecuteWebHookData {
 	  public:
+		friend struct Jsonifier::Core<CreateFollowUpMessageData>;
 		friend class SelectMenuCollector;
 		friend class ButtonCollector;
 		friend class Interactions;
 		friend class InputEvents;
 
+		std::unordered_set<std::string_view> excludedKeys{};
+
 		CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage);
 
 		CreateFollowUpMessageData(const RespondToInputEventData& dataPackage);
+
+		void generateExcludedKeys() noexcept;
 
 		virtual ~CreateFollowUpMessageData() noexcept = default;
 
@@ -239,10 +256,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief For editing a follow up Message.
-	class DiscordCoreAPI_Dll EditFollowUpMessageData {
+	class DiscordCoreAPI_Dll EditFollowUpMessageData : public EditWebHookData {
 	  public:
+		friend struct Jsonifier::Core<EditFollowUpMessageData>;
 		friend class Interactions;
 		friend class InputEvents;
+
+		std::unordered_set<std::string_view> excludedKeys{};
 
 		EditFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
@@ -251,7 +271,6 @@ namespace DiscordCoreAPI {
 	  protected:
 		InteractionPackageData interactionPackage{};
 		MessagePackageData messagePackage{};
-		EditWebHookData data{};
 	};
 
 	/// \brief For deleting a follow up Message.
@@ -610,4 +629,4 @@ namespace DiscordCoreAPI {
 	};
 
 	/**@}*/
-};// namespace DiscordCoreAPI
+};

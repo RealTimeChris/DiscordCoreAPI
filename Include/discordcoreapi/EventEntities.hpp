@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -144,7 +144,7 @@ namespace DiscordCoreInternal {
 			return eventToken;
 		}
 
-		void remove(EventDelegateToken eventToken) {
+		void erase(EventDelegateToken eventToken) {
 			if (eventToken.eventId == this->eventId) {
 				if (this->functions.contains(eventToken)) {
 					this->functions.erase(eventToken);
@@ -258,7 +258,7 @@ namespace DiscordCoreInternal {
 			return eventToken;
 		}
 
-		void remove(EventDelegateToken eventToken) {
+		void erase(EventDelegateToken eventToken) {
 			if (eventToken.eventId == this->eventId) {
 				if (this->functions.contains(eventToken)) {
 					this->functions.erase(eventToken);
@@ -280,4 +280,4 @@ namespace DiscordCoreInternal {
 		std::string eventId{};
 	};
 
-}// namespace DiscordCoreAPI
+}

@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -48,14 +48,14 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	EncoderReturnData OpusEncoderWrapper::encodeData(std::basic_string_view<std::byte> inputFrame) {
+	EncoderReturnData OpusEncoderWrapper::encodeData(std::basic_string_view<uint8_t> inputFrame) {
 		if (inputFrame.size() == 0) {
 			return {};
 		}
 		if (this->encodedData.size() == 0) {
 			this->encodedData.resize(this->maxBufferSize);
 		}
-		size_t sampleCount = inputFrame.size() / 2 / 2;
+		uint64_t sampleCount = inputFrame.size() / 2 / 2;
 		int32_t count = opus_encode(this->ptr.get(), reinterpret_cast<const opus_int16*>(inputFrame.data()),
 			static_cast<int32_t>(inputFrame.size() / 2 / 2), reinterpret_cast<uint8_t*>(this->encodedData.data()), this->maxBufferSize);
 		if (count <= 0) {
@@ -63,7 +63,7 @@ namespace DiscordCoreInternal {
 		}
 		EncoderReturnData returnData{};
 		returnData.sampleCount = sampleCount;
-		returnData.data = std::basic_string_view<std::byte>{ this->encodedData.data(), this->encodedData.size() };
+		returnData.data = std::basic_string_view<uint8_t>{ this->encodedData.data(), this->encodedData.size() };
 		return returnData;
 	}
 }

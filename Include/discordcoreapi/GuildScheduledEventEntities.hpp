@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -51,8 +51,6 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The Channel id of the scheduled event.
 		Snowflake guildId{};///< The Guild within which to create the event.
 		std::string name{};///< The name of the scheduled event.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For collecting a single Guild scheduled event.
@@ -75,8 +73,6 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The Channel id of the scheduled event, set to null if changing entity type to External.
 		Snowflake guildId{};///< The Guild within which to modify the event.
 		std::string name{};///< The name of the scheduled event.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For deleting a single Guild Scheduled Event.
@@ -93,30 +89,6 @@ namespace DiscordCoreAPI {
 		bool withMember{};///< Include Guild member responseData if it exists.
 		Snowflake after{};///< Consider only users after given user id.
 		uint32_t limit{};///< How many users to receive from the event.
-	};
-
-	/// \brief A single GuildScheduledEvent responseData structure.
-	class DiscordCoreAPI_Dll GuildScheduledEvent : public GuildScheduledEventData {
-	  public:
-		GuildScheduledEvent() noexcept = default;
-
-		GuildScheduledEvent(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~GuildScheduledEvent() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll GuildScheduledEventVector {
-	  public:
-		GuildScheduledEventVector() noexcept = default;
-
-		operator std::vector<GuildScheduledEvent>();
-
-		GuildScheduledEventVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~GuildScheduledEventVector() noexcept = default;
-
-	  protected:
-		std::vector<GuildScheduledEvent> guildScheduledEvents{};
 	};
 
 	/**@}*/
@@ -164,4 +136,4 @@ namespace DiscordCoreAPI {
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 	/**@}*/
-}// namespace DiscordCoreAPI
+}

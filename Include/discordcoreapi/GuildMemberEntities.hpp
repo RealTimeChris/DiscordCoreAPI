@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -31,14 +31,6 @@
 
 namespace DiscordCoreAPI {
 
-	DiscordCoreAPI_Dll inline bool operator==(const VoiceStateDataLight& lhs, const VoiceStateDataLight& rhs) {
-		return (lhs.guildId == rhs.guildId) && (lhs.userId == rhs.userId);
-	}
-
-	DiscordCoreAPI_Dll inline bool operator==(const GuildMemberData& lhs, const GuildMemberData& rhs) {
-		return (lhs.guildId == rhs.guildId) && (lhs.id == rhs.id);
-	}
-
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
@@ -66,15 +58,13 @@ namespace DiscordCoreAPI {
 
 	/// \brief For adding a new GuildMember to a chosen Guild.
 	struct DiscordCoreAPI_Dll AddGuildMemberData {
-		std::vector<Snowflake> roles{};///< Array of Role ids the member is assigned.
+		std::vector<Id> roles{};///< Array of Role ids the member is assigned.
 		std::string accessToken{};///< An oauth2 access token granted with the guilds.join to the bot's application for the user you want to add.
 		Snowflake guildId{};///< The Guild to add the new GuildMember to.
 		Snowflake userId{};///< The User id of the user you wish to add.
 		std::string nick{};///< Value to set users nickname to.
 		bool mute{};///< Whether the user is muted in voice channels.
 		bool deaf{};///< Whether the user is deafened in voice channels.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For modifying the current GuildMember's values.
@@ -87,7 +77,7 @@ namespace DiscordCoreAPI {
 	/// \brief For modifying a GuildMember's values.
 	struct DiscordCoreAPI_Dll ModifyGuildMemberData {
 		TimeStamp communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
-		std::vector<Snowflake> roleIds{};///< A collection of Role id's to be applied to them.
+		std::vector<Id> roleIds{};///< A collection of Role id's to be applied to them.
 		Snowflake newVoiceChannelId{};///< The new voice Channel to move them into.
 		Snowflake currentChannelId{};///< The current voice Channel, if applicaple.
 		Snowflake guildMemberId{};///< The user id of the desired Guild memeber.
@@ -96,8 +86,6 @@ namespace DiscordCoreAPI {
 		std::string nick{};///< Their new display/nick name.
 		bool mute{};///< Whether or not to mute them in voice.
 		bool deaf{};///< Whether or not to deafen them, in voice.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For removing a GuildMember from a chosen Guild.
@@ -115,43 +103,12 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild from which you would like to acquire a member.
 	};
 
-	/// \brief A single GuildMember.
-	class DiscordCoreAPI_Dll GuildMember : public GuildMemberData {
-	  public:
-		TimeStamp communicationDisabledUntil{};///< When the user's timeout will expire and the user will be able to communicate in the guild again.
-		std::string premiumSince{};///< If applicable, when they first boosted the server.
-
-		GuildMember() noexcept = default;
-
-		GuildMember& operator=(GuildMemberData&&) noexcept;
-
-		GuildMember(GuildMemberData&&) noexcept;
-
-		GuildMember& operator=(const GuildMemberData&) noexcept;
-
-		GuildMember(const GuildMemberData&) noexcept;
-
-		GuildMember(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~GuildMember() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll GuildMemberVector {
-	  public:
-		GuildMemberVector() noexcept = default;
-
-		operator std::vector<GuildMember>();
-
-		GuildMemberVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~GuildMemberVector() noexcept = default;
-
-	  protected:
-		std::vector<GuildMember> guildMembers{};
-	};
-
 	/**@}*/
 
+
+	inline bool operator==(const GuildMemberKey& lhs, const GuildMemberKey& rhs) {
+		return lhs.guildId == rhs.guildId && lhs.userId == rhs.userId;
+	}
 
 	/**
 	 * \addtogroup main_endpoints
@@ -165,6 +122,9 @@ namespace DiscordCoreAPI {
 		friend class GuildMemberData;
 		friend class GuildData;
 		friend class Guild;
+
+		inline static GuildMemberData nullGuildMember{ std::numeric_limits<uint64_t>::max() };
+		inline static VoiceStateDataLight nullVoiceData{ std::numeric_limits<uint64_t>::max() };
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
@@ -213,25 +173,25 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing GuildMember.
 		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
-		static ObjectCache<VoiceStateDataLight>& getVsCache();
+		static VoiceStateDataLight getVoiceStateData(const GuildMember& voiceState);
 
-		static ObjectCache<GuildMemberData>& getCache();
+		static void insertVoiceState(VoiceStateDataLight voiceState);
 
-		static void insertVoiceState(VoiceStateData voiceState);
+		static ObjectCache<GuildMemberKey, GuildMemberData>& getCache();
 
-		static void removeVoiceState(VoiceStateData voiceState);
+		static void removeVoiceState(const VoiceStateDataLight& voiceState);
 
 		static void insertGuildMember(GuildMemberData guildMember);
 
-		static void removeGuildMember(GuildMemberData guildMemberId);
+		static void removeGuildMember(const GuildMemberData& guildMemberId);
 
 		static bool doWeCacheGuildMembers();
 
 	  protected:
+		static ObjectCache<GuildMemberKey, VoiceStateDataLight> vsCache;
+		static ObjectCache<GuildMemberKey, GuildMemberData> cache;
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<VoiceStateDataLight> vsCache;
-		static ObjectCache<GuildMemberData> cache;
 		static bool doWeCacheGuildMembersBool;
 	};
 	/**@}*/
-};// namespace DiscordCoreAPI
+};

@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -30,10 +30,6 @@
 
 namespace DiscordCoreAPI {
 
-	DiscordCoreAPI_Dll inline bool operator==(const ChannelData& lhs, const ChannelData& rhs) {
-		return lhs.id == rhs.id;
-	}
-
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
@@ -58,8 +54,6 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< Reason for editing the permission overwrites.
 		std::string allow{};///< The permissions to list as "allowed".
 		std::string deny{};///< The permissions to list as "deny".
-
-		operator Jsonifier();
 	};
 
 	/// \brief For collecting the invites to a given Channel.
@@ -78,8 +72,6 @@ namespace DiscordCoreAPI {
 		int32_t maxAge{};///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
 		bool temporary{};///< Whether this invite only grants temporary membership.
 		bool unique{};///< If true, don't try to reuse a similar invite (useful for creating many unique one time use invites).
-
-		operator Jsonifier();
 	};
 
 	/// \brief For deleting the PermissionTypes overwrites of a given Channel for a given Role or User.
@@ -93,8 +85,6 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll FollowNewsChannelData {
 		Snowflake targetChannelId{};
 		Snowflake channelId{};
-
-		operator Jsonifier();
 	};
 
 	/// \brief For triggering the typing indicator in a given Channel.
@@ -122,8 +112,6 @@ namespace DiscordCoreAPI {
 		ChannelType type{};///< The type of Channel.
 		int32_t bitrate{};///< The bitrate(in bits) of the voice Channel(voice only).
 		bool nsfw{};///<  Whether the Channel is nsfw.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For modifying the Channel position responseData of a single Channel.
@@ -139,8 +127,6 @@ namespace DiscordCoreAPI {
 		std::vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's responseData.
 		std::string reason{};///< Reason for re-ordering the Channel positions.
 		Snowflake guildId{};///< Guild within which to re-order the Channel positions.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For collecting a direct-messaging Channel.
@@ -148,69 +134,13 @@ namespace DiscordCoreAPI {
 		Snowflake userId{};///< The User for whom to collect the direct-messaging Channel to.
 	};
 
-	/// \brief A Channel object.
-	class DiscordCoreAPI_Dll Channel : public ChannelData {
-	  public:
-		std::unordered_map<uint64_t, UserData> recipients{};///< Recipients, in the case of a group DM or m.
-		DefaultReactionData defaultReactionEmoji{};///< The emoji to show in the add reaction button on a thread in a GUILD_FORUM channel.
-		std::vector<ForumTagData> availableTags{};///< The set of tags that can be used in a GUILD_FORUM channel.
-		int32_t defaultThreadRateLimitPerUser{};///< The initial rate_limit_per_user to set on newly created threads in a channel.
-		int32_t defaultAutoArchiveDuration{};///< Default time it takes to archive a thread.
-		std::vector<Snowflake> appliedTags{};///< The IDs of the set of tags that have been applied to a thread in a GUILD_FORUM channel.
-		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
-		StringWrapper lastMessageId{};///< Id of the last Message.
-		TimeStamp lastPinTimestamp{};///< Timestamp of the last pinned Message.
-		StringWrapper permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
-		int32_t videoQualityMode{};///< Video quality mode.
-		int32_t rateLimitPerUser{};///< Amount of seconds a User has to wait before sending another Message.
-		int32_t totalMessageSent{};///< Number of messages ever sent in a thread it's similar to message_count on message creation.
-		Snowflake applicationId{};///< Application id of the current application.
-		StringWrapper rtcRegion{};///< Real-time clock region.
-		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
-		int32_t messageCount{};///< An approximate count of Messages in a Thread stops counting at 50.
-		StringWrapper topic{};///< The Channel's topic.
-		int32_t userLimit{};///< User limit, in the case of voice channels.
-		int32_t bitrate{};///< Bitrate of the Channel, if it is a voice Channel.
-		IconHash icon{};///< Icon for the Channel, if applicable.
-
-		Channel() noexcept = default;
-
-		Channel& operator=(ChannelData&&) noexcept;
-
-		Channel(ChannelData&&) noexcept;
-
-		Channel& operator=(const ChannelData&) noexcept;
-
-		Channel(const ChannelData&) noexcept;
-
-		Channel(simdjson::ondemand::value jsonObjectData);
-
-		~Channel() noexcept = default;
-
-		std::string getIconUrl() noexcept;
-	};
-
-	class DiscordCoreAPI_Dll ChannelVector {
-	  public:
-		ChannelVector() noexcept = default;
-
-		operator std::vector<Channel>();
-
-		ChannelVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~ChannelVector() noexcept = default;
-
-	  protected:
-		std::vector<Channel> channels{};
-	};
+	using ChannelVector = std::vector<Channel>;
 
 	/// \brief For modifying a Channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
 		UpdateChannelData channelData{};///< The responseData of the Channel to be updated.
 		Snowflake channelId{};///< The id of the Channel to modify.
 		std::string reason{};///< A reason for modifying the Channel.
-
-		operator Jsonifier();
 
 		ModifyChannelData(Channel newData);
 	};
@@ -247,7 +177,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<Channel> modifyChannelAsync(ModifyChannelData dataPackage);
 
-		/// \brief Delete a Channel, or close a private message.
+		/// \brief Delete a Channel, or close a protected message.
 		/// \param dataPackage A DeleteOrCloseChannelData structure.
 		/// \returns A CoRoutine containing a Channel.
 		static CoRoutine<void> deleteOrCloseChannelAsync(DeleteOrCloseChannelData dataPackage);
@@ -306,16 +236,19 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a VoiceRegionDataVector.
 		static CoRoutine<std::vector<VoiceRegionData>> getVoiceRegionsAsync();
 
-		static void insertChannel(ChannelData channel);
+		static void insertChannel(const ChannelData& channel);
+
+		static void insertChannel(ChannelData&& channel);
 
 		static void removeChannel(Snowflake channelId);
 
 		static bool doWeCacheChannels();
 
 	  protected:
+		inline static ChannelData nullChannel{ std::numeric_limits<uint64_t>::max() };
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<ChannelData> cache;
+		static ObjectCache<Snowflake, ChannelData> cache;
 		static bool doWeCacheChannelsBool;
 	};
 	/**@}*/
-}// namespace DiscordCoreAPI
+}

@@ -1,18 +1,18 @@
 # DiscordCoreAPI
 [![Codacy Badge](https://img.shields.io/codacy/grade/1e5ae970aed34d0b96249cdfd02099cf?color=lightblue&label=Code%20Quality&style=plastic)](https://www.codacy.com/gh/RealTimeChris/DiscordCoreAPI/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RealTimeChris/DiscordCoreAPI&amp;utm_campaign=Badge_Grade)
 [![Discord](https://img.shields.io/discord/931640556814237706?color=red&label=Discord%20Server&style=plastic)](https://discord.gg/adgMqeBuhP)
-[![Build DiscordCoreAPI](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/Construct-Vcpkg-Info.yml?color=green&style=plastic)](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/Construct-Vcpkg-Info.yml)
+[![Build DiscordCoreAPI](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/Build-DiscordCoreAPI-Linux-Main.yml?branch=main&style=plastic&color=purple)](https://github.com/RealTimeChris/DiscordCoreAPI/actions/workflows/Build-DiscordCoreAPI-Linux-Main.yml)
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/realtimechris/discordcoreapi?color=green&label=Commits&style=plastic)
 ![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi?&style=plastic&label=Lines%20of%20Code)
 
 <p align="center"><a href="http://discordcoreapi.com" target="_blank"><img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true" 
 alt="DiscordCoreAPI WebSite" width="500"/></p>
 
-Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L407),
-[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L379), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L249) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
+Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L412),
+[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L390), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L247) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
 
 # Documentation/Examples
-[Documentation/Examples](https://discordcoreapi.org/d1/d0c/a07495.html)
+[Documentation/Examples](https://discordcoreapi.com/de/d94/a07274.html)
 
 # Discord Server
 [This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)
@@ -25,7 +25,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 - Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ErlParser.cpp) for websocket transfer, and a pool of [kept-alive HTTPS connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L386-L399) - this library offers the snappiest responses to your interactions and user input.
 
 ## Audio-Bridge
-- Connect multiple voice-channels to one-another using the [`DiscordCoreAPI::StreamInfo`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/7749c58ed70dfc8e2efb1839e8a06e1bb9d75dda/Include/discordcoreapi/Utilities.hpp#L648) member of the [`DiscordCoreAPI::VoiceConnectInitData`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/7749c58ed70dfc8e2efb1839e8a06e1bb9d75dda/Include/discordcoreapi/Utilities.hpp#L1316) structure, with the [`DiscordCoreAPI::VoiceConnection`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/7749c58ed70dfc8e2efb1839e8a06e1bb9d75dda/Include/discordcoreapi/VoiceConnection.hpp#L135) class.
+- Connect multiple voice-channels to one-another using the [`DiscordCoreAPI::StreamInfo`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities.hpp#L654) member of the [`DiscordCoreAPI::VoiceConnectInitData`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities.hpp#L1310) structure, with the [`DiscordCoreAPI::VoiceConnection`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/9ff131f6f4e62031802aecd0fad566821064e20a/Include/discordcoreapi/VoiceConnection.hpp#L157) class.
 
 ## CPU Efficient   
 - It only uses about 0.1% of an Intel i7 9750h to stream audio in high quality (Opus 48Khz 16-bit Stereo) to a single server.   

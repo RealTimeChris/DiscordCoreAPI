@@ -1,7 +1,7 @@
 ﻿/*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -38,17 +38,17 @@
 
 namespace DiscordCoreInternal {
 
-	WebSocketClose& WebSocketClose::operator=(uint16_t valueNew) {
-		this->value = static_cast<WebSocketCloseCode>(valueNew);
+	WebSocketClose& WebSocketClose::operator=(uint16_t value) {
+		this->value = static_cast<WebSocketCloseCode>(value);
 		return *this;
 	};
 
-	WebSocketClose::WebSocketClose(uint16_t valueNew) {
-		*this = valueNew;
+	WebSocketClose::WebSocketClose(uint16_t value) {
+		*this = value;
 	};
 
 	WebSocketClose::operator std::string() {
-		return this->outputErrorValues[this->mappingValues[static_cast<uint16_t>(*this)]];
+		return WebSocketClose::outputErrorValues[this->mappingValues[static_cast<uint16_t>(*this)]];
 	}
 
 	WebSocketClose::operator bool() {
@@ -56,34 +56,35 @@ namespace DiscordCoreInternal {
 			static_cast<std::underlying_type_t<decltype(this->value)>>(WebSocketCloseCode::We_Do_Reconnect);
 	}
 
-	VoiceWebSocketClose& VoiceWebSocketClose::operator=(uint16_t valueNew) {
-		this->value = static_cast<VoiceWebSocketCloseCode>(valueNew);
+	VoiceWebSocketClose& VoiceWebSocketClose::operator=(uint16_t value) {
+		this->value = static_cast<VoiceWebSocketCloseCode>(value);
 		return *this;
 	};
 
-	VoiceWebSocketClose::VoiceWebSocketClose(uint16_t valueNew) {
-		*this = valueNew;
+	VoiceWebSocketClose::VoiceWebSocketClose(uint16_t value) {
+		*this = value;
 	};
 
 	VoiceWebSocketClose::operator std::string() {
-		return this->outputErrorValues[this->mappingValues[static_cast<uint16_t>(*this)]];
+		return VoiceWebSocketClose::outputErrorValues[this->mappingValues[static_cast<uint16_t>(*this)]];
 	}
 
 	VoiceWebSocketClose::operator bool() {
 		return true;
 	}
 
-	HttpsResponseCode& HttpsResponseCode::operator=(uint32_t valueNew) {
-		this->value = static_cast<HttpsResponseCodes>(valueNew);
+	HttpsResponseCode& HttpsResponseCode::operator=(uint32_t value) {
+		this->value = static_cast<HttpsResponseCodes>(value);
 		return *this;
 	}
 
-	HttpsResponseCode::HttpsResponseCode(uint32_t valueNew) {
-		*this = valueNew;
+	HttpsResponseCode::HttpsResponseCode(uint32_t value) {
+		*this = value;
 	}
 
 	HttpsResponseCode::operator std::string() {
-		return std::string{ "Code: " + std::to_string(static_cast<uint32_t>(this->value)) + ", Message: " + this->outputErrorValues[this->value] };
+		return std::string{ "Code: " + std::to_string(static_cast<uint32_t>(this->value)) +
+			", Message: " + HttpsResponseCode::outputErrorValues[this->value] };
 	}
 
 	HttpsResponseCode::operator uint32_t() {
@@ -102,44 +103,6 @@ namespace DiscordCoreAPI {
 		*static_cast<std::runtime_error*>(this) = std::runtime_error{ stream.str() };
 	}
 
-	Snowflake& Snowflake::operator=(const std::string& other) noexcept {
-		for (auto& value: other) {
-			if (!std::isdigit(static_cast<uint8_t>(value))) {
-				return *this;
-			}
-		}
-		if (other.size() == 0) {
-			return *this;
-		}
-		this->id = stoull(other);
-		return *this;
-	}
-
-	Snowflake::Snowflake(const std::string& other) noexcept {
-		*this = other;
-	}
-
-	Snowflake& Snowflake::operator=(const uint64_t other) noexcept {
-		this->id = other;
-		return *this;
-	}
-
-	Snowflake::Snowflake(const uint64_t other) noexcept {
-		*this = other;
-	}
-
-	Snowflake::operator std::string() const noexcept {
-		return std::to_string(this->id);
-	}
-
-	Snowflake::operator uint64_t() const noexcept {
-		return this->id;
-	}
-
-	bool Snowflake::operator==(const Snowflake& rhs) const noexcept {
-		return this->id == rhs.id;
-	}
-
 	EnumConverter::operator std::vector<uint64_t>() const noexcept {
 		return this->vector;
 	}
@@ -152,379 +115,378 @@ namespace DiscordCoreAPI {
 		return this->vectorType;
 	}
 
-	Jsonifier& Jsonifier::operator=(Jsonifier&& data) noexcept {
+	EtfSerializer& EtfSerializer::operator=(EtfSerializer&& data) noexcept {
+		this->type = data.type;
+		switch (data.type) {
+			case JsonType::Object: {
+				this->object = data.object;
+				data.object = nullptr;
+				data.type = JsonType::Null;
+				break;
+			}
+			case JsonType::Array: {
+				this->array = data.array;
+				data.array = nullptr;
+				data.type = JsonType::Null;
+				break;
+			}
+			case JsonType::String: {
+				this->string = data.string;
+				data.string = nullptr;
+				data.type = JsonType::Null;
+				break;
+			}
+			case JsonType::Float: {
+				this->numberDouble = data.numberDouble;
+				break;
+			}
+			case JsonType::Uint64: {
+				this->numberUint = data.numberUint;
+				break;
+			}
+			case JsonType::Int64: {
+				this->numberInt = data.numberInt;
+				break;
+			}
+			case JsonType::Bool: {
+				this->boolean = data.boolean;
+				break;
+			}
+		}
+		this->stringReal = std::move(data.stringReal);
+		return *this;
+	}
+
+	EtfSerializer& EtfSerializer::operator=(const EtfSerializer& data) noexcept {
 		switch (data.type) {
 			case JsonType::Object: {
 				this->setValue(JsonType::Object);
-				*this->jsonValue.object = std::move(*data.jsonValue.object);
+				*this->object = *data.object;
 				break;
 			}
 			case JsonType::Array: {
 				this->setValue(JsonType::Array);
-				*this->jsonValue.array = std::move(*data.jsonValue.array);
+				*this->array = *data.array;
 				break;
 			}
 			case JsonType::String: {
 				this->setValue(JsonType::String);
-				*this->jsonValue.string = std::move(*data.jsonValue.string);
+				*this->string = *data.string;
 				break;
 			}
 			case JsonType::Float: {
-				this->jsonValue.numberDouble = data.jsonValue.numberDouble;
+				this->numberDouble = data.numberDouble;
 				break;
 			}
 			case JsonType::Uint64: {
-				this->jsonValue.numberUint = data.jsonValue.numberUint;
+				this->numberUint = data.numberUint;
 				break;
 			}
 			case JsonType::Int64: {
-				this->jsonValue.numberInt = data.jsonValue.numberInt;
+				this->numberInt = data.numberInt;
 				break;
 			}
 			case JsonType::Bool: {
-				this->jsonValue.boolean = data.jsonValue.boolean;
+				this->boolean = data.boolean;
 				break;
 			}
 		}
-		this->string = std::move(data.string);
+		this->stringReal = data.stringReal;
 		this->type = data.type;
 		return *this;
 	}
 
-	Jsonifier& Jsonifier::operator=(const Jsonifier& data) noexcept {
-		switch (data.type) {
-			case JsonType::Object: {
-				this->setValue(JsonType::Object);
-				*this->jsonValue.object = *data.jsonValue.object;
-				break;
-			}
-			case JsonType::Array: {
-				this->setValue(JsonType::Array);
-				*this->jsonValue.array = *data.jsonValue.array;
-				break;
-			}
-			case JsonType::String: {
-				this->setValue(JsonType::String);
-				*this->jsonValue.string = *data.jsonValue.string;
-				break;
-			}
-			case JsonType::Float: {
-				this->jsonValue.numberDouble = data.jsonValue.numberDouble;
-				break;
-			}
-			case JsonType::Uint64: {
-				this->jsonValue.numberUint = data.jsonValue.numberUint;
-				break;
-			}
-			case JsonType::Int64: {
-				this->jsonValue.numberInt = data.jsonValue.numberInt;
-				break;
-			}
-			case JsonType::Bool: {
-				this->jsonValue.boolean = data.jsonValue.boolean;
-				break;
-			}
-		}
-		this->string = data.string;
-		this->type = data.type;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(const Jsonifier& data) noexcept {
+	EtfSerializer::EtfSerializer(const EtfSerializer& data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier::operator std::string&&() noexcept {
-		return std::move(this->string);
+	EtfSerializer::operator std::string&&() noexcept {
+		return std::move(this->stringReal);
 	}
 
-	Jsonifier::operator std::string() noexcept {
-		return this->string;
+	EtfSerializer::operator std::string() noexcept {
+		return this->stringReal;
 	}
 
-	JsonType Jsonifier::getType() noexcept {
+	JsonType EtfSerializer::getType() noexcept {
 		return this->type;
 	}
 
-	void Jsonifier::refreshString(JsonifierSerializeType opCode) {
-		this->string.clear();
-		if (opCode == JsonifierSerializeType::Etf) {
-			this->appendVersion();
-			this->serializeJsonToEtfString(this);
-		} else {
-			this->serializeJsonToJsonString(this);
-		}
+	void EtfSerializer::refreshString(SerializerSerializeType opCode) {
+		this->stringReal.clear();
+		this->appendVersion();
+		this->serializeJsonToEtfString(this);
 	}
 
-	Jsonifier& Jsonifier::operator=(EnumConverter&& data) noexcept {
+	EtfSerializer& EtfSerializer::operator=(EnumConverter&& data) noexcept {
 		if (data.isItAVector()) {
 			this->setValue(JsonType::Array);
 			for (auto& value: data.operator std::vector<uint64_t>()) {
-				this->jsonValue.array->emplace_back(std::move(value));
+				this->array->emplace_back(std::move(value));
 			}
 		} else {
-			this->jsonValue.numberUint = uint64_t{ data };
+			this->numberUint = uint64_t{ data };
 			this->type = JsonType::Uint64;
 		}
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(EnumConverter&& data) noexcept {
+	EtfSerializer::EtfSerializer(EnumConverter&& data) noexcept {
 		*this = std::move(data);
 	}
 
-	Jsonifier& Jsonifier::operator=(const EnumConverter& data) noexcept {
+	EtfSerializer& EtfSerializer::operator=(const EnumConverter& data) noexcept {
 		if (data.isItAVector()) {
 			this->setValue(JsonType::Array);
 			for (auto& value: data.operator std::vector<uint64_t>()) {
-				this->jsonValue.array->emplace_back(value);
+				this->array->emplace_back(value);
 			}
 		} else {
-			this->jsonValue.numberUint = uint64_t{ data };
+			this->numberUint = uint64_t{ data };
 			this->type = JsonType::Uint64;
 		}
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(const EnumConverter& data) noexcept {
+	EtfSerializer::EtfSerializer(const EnumConverter& data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(std::string&& data) noexcept {
+	EtfSerializer& EtfSerializer::operator=(std::string&& data) noexcept {
 		this->setValue(JsonType::String);
-		*this->jsonValue.string = std::move(data);
+		*this->string = std::move(data);
 		this->type = JsonType::String;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(std::string&& data) noexcept {
+	EtfSerializer::EtfSerializer(std::string&& data) noexcept {
 		*this = std::move(data);
 	}
 
-	Jsonifier& Jsonifier::operator=(const std::string& data) noexcept {
+	EtfSerializer& EtfSerializer::operator=(const std::string& data) noexcept {
 		this->setValue(JsonType::String);
-		*this->jsonValue.string = data;
+		*this->string = data;
 		this->type = JsonType::String;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(const std::string& data) noexcept {
+	EtfSerializer::EtfSerializer(const std::string& data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(const char* data) noexcept {
+	EtfSerializer& EtfSerializer::operator=(const char* data) noexcept {
 		this->setValue(JsonType::String);
-		*this->jsonValue.string = data;
+		*this->string = data;
 		this->type = JsonType::String;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(const char* data) noexcept {
+	EtfSerializer::EtfSerializer(const char* data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(double data) noexcept {
-		this->jsonValue.numberDouble = data;
+	EtfSerializer& EtfSerializer::operator=(double data) noexcept {
+		this->numberDouble = data;
 		this->type = JsonType::Float;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(double data) noexcept {
+	EtfSerializer::EtfSerializer(double data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(float data) noexcept {
-		this->jsonValue.numberDouble = data;
+	EtfSerializer& EtfSerializer::operator=(float data) noexcept {
+		this->numberDouble = data;
 		this->type = JsonType::Float;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(float data) noexcept {
+	EtfSerializer::EtfSerializer(float data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(uint64_t data) noexcept {
-		this->jsonValue.numberUint = data;
+	EtfSerializer& EtfSerializer::operator=(uint64_t data) noexcept {
+		this->numberUint = data;
 		this->type = JsonType::Uint64;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(uint64_t data) noexcept {
+	EtfSerializer::EtfSerializer(uint64_t data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(uint32_t data) noexcept {
-		this->jsonValue.numberUint = data;
+	EtfSerializer& EtfSerializer::operator=(uint32_t data) noexcept {
+		this->numberUint = data;
 		this->type = JsonType::Uint64;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(uint32_t data) noexcept {
+	EtfSerializer::EtfSerializer(uint32_t data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(uint16_t data) noexcept {
-		this->jsonValue.numberUint = data;
+	EtfSerializer& EtfSerializer::operator=(uint16_t data) noexcept {
+		this->numberUint = data;
 		this->type = JsonType::Uint64;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(uint16_t data) noexcept {
+	EtfSerializer::EtfSerializer(uint16_t data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(uint8_t data) noexcept {
-		this->jsonValue.numberUint = data;
+	EtfSerializer& EtfSerializer::operator=(uint8_t data) noexcept {
+		this->numberUint = data;
 		this->type = JsonType::Uint64;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(uint8_t data) noexcept {
+	EtfSerializer::EtfSerializer(uint8_t data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(int64_t data) noexcept {
-		this->jsonValue.numberInt = data;
+	EtfSerializer& EtfSerializer::operator=(int64_t data) noexcept {
+		this->numberInt = data;
 		this->type = JsonType::Int64;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(int64_t data) noexcept {
+	EtfSerializer::EtfSerializer(int64_t data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(int32_t data) noexcept {
-		this->jsonValue.numberInt = data;
+	EtfSerializer& EtfSerializer::operator=(int32_t data) noexcept {
+		this->numberInt = data;
 		this->type = JsonType::Int64;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(int32_t data) noexcept {
+	EtfSerializer::EtfSerializer(int32_t data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(int16_t data) noexcept {
-		this->jsonValue.numberInt = data;
+	EtfSerializer& EtfSerializer::operator=(int16_t data) noexcept {
+		this->numberInt = data;
 		this->type = JsonType::Int64;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(int16_t data) noexcept {
+	EtfSerializer::EtfSerializer(int16_t data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(int8_t data) noexcept {
-		this->jsonValue.numberInt = data;
+	EtfSerializer& EtfSerializer::operator=(int8_t data) noexcept {
+		this->numberInt = data;
 		this->type = JsonType::Int64;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(int8_t data) noexcept {
+	EtfSerializer::EtfSerializer(int8_t data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(std::nullptr_t) noexcept {
+	EtfSerializer& EtfSerializer::operator=(std::nullptr_t) noexcept {
 		this->type = JsonType::Null;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(std::nullptr_t data) noexcept {
+	EtfSerializer::EtfSerializer(std::nullptr_t data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(bool data) noexcept {
-		this->jsonValue.boolean = data;
+	EtfSerializer& EtfSerializer::operator=(bool data) noexcept {
+		this->boolean = data;
 		this->type = JsonType::Bool;
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(bool data) noexcept {
+	EtfSerializer::EtfSerializer(bool data) noexcept {
 		*this = data;
 	}
 
-	Jsonifier& Jsonifier::operator=(JsonType typeNew) noexcept {
+	EtfSerializer& EtfSerializer::operator=(JsonType typeNew) noexcept {
 		this->type = typeNew;
 		this->setValue(this->type);
 		return *this;
 	}
 
-	Jsonifier::Jsonifier(JsonType type) noexcept {
+	EtfSerializer::EtfSerializer(JsonType type) noexcept {
 		*this = type;
 	}
 
-	Jsonifier& Jsonifier::operator[](typename ObjectType::key_type key) {
+	EtfSerializer& EtfSerializer::operator[](typename ObjectType::key_type key) {
 		if (this->type == JsonType::Null) {
 			this->setValue(JsonType::Object);
 			this->type = JsonType::Object;
 		}
 
 		if (this->type == JsonType::Object) {
-			auto result = this->jsonValue.object->emplace(std::move(key), Jsonifier{});
+			auto result = this->object->emplace(std::move(key), EtfSerializer{});
 			return result.first->second;
 		}
 		throw DCAException{ "Sorry, but that item-key could not be produced/accessed." };
 	}
 
-	Jsonifier& Jsonifier::operator[](uint64_t index) {
+	EtfSerializer& EtfSerializer::operator[](uint64_t index) {
 		if (this->type == JsonType::Null) {
 			this->setValue(JsonType::Array);
 			this->type = JsonType::Array;
 		}
 
 		if (this->type == JsonType::Array) {
-			if (index >= this->jsonValue.array->size()) {
-				this->jsonValue.array->resize(index + 1);
+			if (index >= this->array->size()) {
+				this->array->resize(index + 1);
 			}
 
-			return this->jsonValue.array->operator[](index);
+			return this->array->operator[](index);
 		}
 		throw DCAException{ "Sorry, but that index could not be produced/accessed." };
 	}
 
-	void Jsonifier::emplaceBack(Jsonifier&& other) noexcept {
+	void EtfSerializer::emplaceBack(EtfSerializer&& other) noexcept {
 		if (this->type == JsonType::Null) {
 			this->setValue(JsonType::Array);
 			this->type = JsonType::Array;
 		}
 
 		if (this->type == JsonType::Array) {
-			this->jsonValue.array->emplace_back(std::move(other));
+			this->array->emplace_back(std::move(other));
 		}
 	}
 
-	void Jsonifier::emplaceBack(Jsonifier& other) noexcept {
+	void EtfSerializer::emplaceBack(EtfSerializer& other) noexcept {
 		if (this->type == JsonType::Null) {
 			this->setValue(JsonType::Array);
 			this->type = JsonType::Array;
 		}
 
 		if (this->type == JsonType::Array) {
-			this->jsonValue.array->emplace_back(other);
+			this->array->emplace_back(other);
 		}
 	}
 
-	void Jsonifier::serializeJsonToEtfString(const Jsonifier* dataToParse) {
+	void EtfSerializer::serializeJsonToEtfString(const EtfSerializer* dataToParse) {
 		switch (dataToParse->type) {
 			case JsonType::Object: {
-				return this->writeEtfObject(*dataToParse->jsonValue.object);
+				return this->writeEtfObject(*dataToParse->object);
 			}
 			case JsonType::Array: {
-				return this->writeEtfArray(*dataToParse->jsonValue.array);
+				return this->writeEtfArray(*dataToParse->array);
 			}
 			case JsonType::String: {
-				return this->writeEtfString(*dataToParse->jsonValue.string);
+				return this->writeEtfString(*dataToParse->string);
 			}
 			case JsonType::Float: {
-				return this->writeEtfFloat(dataToParse->jsonValue.numberDouble);
+				return this->writeEtfFloat(dataToParse->numberDouble);
 			}
 			case JsonType::Uint64: {
-				return this->writeEtfUint(dataToParse->jsonValue.numberUint);
+				return this->writeEtfUint(dataToParse->numberUint);
 			}
 			case JsonType::Int64: {
-				return this->writeEtfInt(dataToParse->jsonValue.numberInt);
+				return this->writeEtfInt(dataToParse->numberInt);
 			}
 			case JsonType::Bool: {
-				return this->writeEtfBool(dataToParse->jsonValue.boolean);
+				return this->writeEtfBool(dataToParse->boolean);
 			}
 			case JsonType::Null: {
 				return this->writeEtfNull();
@@ -532,101 +494,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Jsonifier::serializeJsonToJsonString(const Jsonifier* dataToParse) {
-		switch (dataToParse->type) {
-			case JsonType::Object: {
-				return this->writeJsonObject(*dataToParse->jsonValue.object);
-			}
-			case JsonType::Array: {
-				return this->writeJsonArray(*dataToParse->jsonValue.array);
-			}
-			case JsonType::String: {
-				return this->writeJsonString(*dataToParse->jsonValue.string);
-			}
-			case JsonType::Float: {
-				return this->writeJsonFloat(dataToParse->jsonValue.numberDouble);
-			}
-			case JsonType::Uint64: {
-				return this->writeJsonInt(dataToParse->jsonValue.numberUint);
-			}
-			case JsonType::Int64: {
-				return this->writeJsonInt(dataToParse->jsonValue.numberInt);
-			}
-			case JsonType::Bool: {
-				return this->writeJsonBool(dataToParse->jsonValue.boolean);
-			}
-			case JsonType::Null: {
-				return this->writeJsonNull();
-			}
-		}
-	}
-
-	void Jsonifier::writeJsonObject(const ObjectType& objectNew) {
-		if (objectNew.empty()) {
-			this->writeString("{}", 2);
-			return;
-		}
-		this->writeCharacter('{');
-
-		int32_t index{};
-		for (auto& [key, value]: objectNew) {
-			this->writeJsonString(key);
-			this->writeCharacter(':');
-			this->serializeJsonToJsonString(&value);
-
-			if (index != objectNew.size() - 1) {
-				this->writeCharacter(',');
-			}
-			++index;
-		}
-
-		this->writeCharacter('}');
-	}
-
-	void Jsonifier::writeJsonArray(const ArrayType& arrayNew) {
-		if (arrayNew.empty()) {
-			this->writeString("[]", 2);
-			return;
-		}
-
-		this->writeCharacter('[');
-
-		int32_t index{};
-		for (auto& value: arrayNew) {
-			this->serializeJsonToJsonString(&value);
-			if (index != arrayNew.size() - 1) {
-				this->writeCharacter(',');
-			}
-			++index;
-		}
-
-		this->writeCharacter(']');
-	}
-
-	void Jsonifier::writeJsonString(const StringType& stringNew) {
-		this->writeCharacter('"');
-		this->writeString(stringNew.data(), stringNew.size());
-		this->writeCharacter('"');
-	}
-
-	void Jsonifier::writeJsonFloat(const FloatType x) {
-		auto floatValue = std::to_string(x);
-		this->writeString(floatValue.data(), floatValue.size());
-	}
-
-	void Jsonifier::writeJsonBool(const BoolType jsonValueNew) {
-		if (jsonValueNew) {
-			this->writeString("true", 4);
-		} else {
-			this->writeString("false", 5);
-		}
-	}
-
-	void Jsonifier::writeJsonNull() {
-		this->writeString("null", 4);
-	}
-
-	void Jsonifier::writeEtfObject(const ObjectType& jsonData) {
+	void EtfSerializer::writeEtfObject(const ObjectType& jsonData) {
 		this->appendMapHeader(static_cast<uint32_t>(jsonData.size()));
 		for (auto& [key, value]: jsonData) {
 			this->appendBinaryExt(key, static_cast<uint32_t>(key.size()));
@@ -634,7 +502,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Jsonifier::writeEtfArray(const ArrayType& jsonData) {
+	void EtfSerializer::writeEtfArray(const ArrayType& jsonData) {
 		this->appendListHeader(static_cast<uint32_t>(jsonData.size()));
 		for (auto& value: jsonData) {
 			this->serializeJsonToEtfString(&value);
@@ -642,11 +510,11 @@ namespace DiscordCoreAPI {
 		this->appendNilExt();
 	}
 
-	void Jsonifier::writeEtfString(const StringType& jsonData) {
+	void EtfSerializer::writeEtfString(const StringType& jsonData) {
 		this->appendBinaryExt(jsonData, static_cast<uint32_t>(jsonData.size()));
 	}
 
-	void Jsonifier::writeEtfUint(const UintType jsonData) {
+	void EtfSerializer::writeEtfUint(const UintType jsonData) {
 		if (jsonData <= std::numeric_limits<uint8_t>::max() && jsonData >= std::numeric_limits<uint8_t>::min()) {
 			this->appendUint8(static_cast<uint8_t>(jsonData));
 		} else if (jsonData <= std::numeric_limits<uint32_t>::max() && jsonData >= std::numeric_limits<uint32_t>::min()) {
@@ -656,7 +524,7 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Jsonifier::writeEtfInt(const IntType jsonData) {
+	void EtfSerializer::writeEtfInt(const IntType jsonData) {
 		if (jsonData <= std::numeric_limits<int8_t>::max() && jsonData >= std::numeric_limits<int8_t>::min()) {
 			this->appendInt8(static_cast<int8_t>(jsonData));
 		} else if (jsonData <= std::numeric_limits<int32_t>::max() && jsonData >= std::numeric_limits<int32_t>::min()) {
@@ -666,69 +534,69 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Jsonifier::writeEtfFloat(const FloatType jsonData) {
+	void EtfSerializer::writeEtfFloat(const FloatType jsonData) {
 		this->appendNewFloatExt(jsonData);
 	}
 
-	void Jsonifier::writeEtfBool(const BoolType jsonData) {
+	void EtfSerializer::writeEtfBool(const BoolType jsonData) {
 		this->appendBool(jsonData);
 	}
 
-	void Jsonifier::writeEtfNull() {
+	void EtfSerializer::writeEtfNull() {
 		this->appendNil();
 	}
 
-	void Jsonifier::writeString(const char* data, size_t length) {
-		this->string.append(data, length);
+	void EtfSerializer::writeString(const char* data, uint64_t length) {
+		this->stringReal.append(data, length);
 	}
 
-	void Jsonifier::writeCharacter(const char charValue) {
-		this->string.push_back(charValue);
+	void EtfSerializer::writeCharacter(const char charValue) {
+		this->stringReal.push_back(charValue);
 	}
 
-	bool operator==(const Jsonifier& lhs, const Jsonifier& rhs) {
+	bool operator==(const EtfSerializer& lhs, const EtfSerializer& rhs) {
 		if (lhs.type != rhs.type) {
 			return false;
 		}
 		switch (rhs.type) {
 			case JsonType::Object: {
-				if (*lhs.jsonValue.object != *rhs.jsonValue.object) {
+				if (*lhs.object != *rhs.object) {
 					return false;
 				}
 				break;
 			}
 			case JsonType::Array: {
-				if (*lhs.jsonValue.array != *rhs.jsonValue.array) {
+				if (*lhs.array != *rhs.array) {
 					return false;
 				}
 				break;
 			}
 			case JsonType::String: {
-				if (*lhs.jsonValue.string != *rhs.jsonValue.string) {
+				if (*lhs.string != *rhs.string) {
 					return false;
 				}
 				break;
 			}
 			case JsonType::Float: {
-				if (lhs.jsonValue.numberDouble != rhs.jsonValue.numberDouble) {
+				if (lhs.numberDouble != rhs.numberDouble) {
 					return false;
 				}
 				break;
 			}
 			case JsonType::Uint64: {
-				if (lhs.jsonValue.numberUint != rhs.jsonValue.numberUint) {
+				if (lhs.numberUint != rhs.numberUint) {
 					return false;
 				}
 				break;
 			}
 			case JsonType::Int64: {
-				if (lhs.jsonValue.numberInt != rhs.jsonValue.numberInt) {
+				if (lhs.numberInt != rhs.numberInt) {
 					return false;
 				}
 				break;
 			}
 			case JsonType::Bool: {
-				if (lhs.jsonValue.boolean != rhs.jsonValue.boolean) {
+				if (lhs.boolean != rhs.boolean) {
 					return false;
 				}
 				break;
@@ -737,33 +605,33 @@ namespace DiscordCoreAPI {
 		return true;
 	}
 
-	void Jsonifier::appendBinaryExt(const std::string& bytes, uint32_t sizeNew) {
+	void EtfSerializer::appendBinaryExt(const std::string& bytes, uint32_t sizeNew) {
 		char newBuffer[5]{ static_cast<int8_t>(EtfType::Binary_Ext) };
 		storeBits(newBuffer + 1, sizeNew);
 		this->writeString(newBuffer, std::size(newBuffer));
 		this->writeString(bytes.data(), bytes.size());
 	}
 
-	void Jsonifier::appendNewFloatExt(const double FloatValue) {
+	void EtfSerializer::appendNewFloatExt(const double FloatValue) {
 		char newBuffer[9]{ static_cast<uint8_t>(EtfType::New_Float_Ext) };
 		const void* punner{ &FloatValue };
 		storeBits(newBuffer + 1, *static_cast<const uint64_t*>(punner));
 		this->writeString(newBuffer, std::size(newBuffer));
 	}
 
-	void Jsonifier::appendListHeader(const uint32_t sizeNew) {
+	void EtfSerializer::appendListHeader(const uint32_t sizeNew) {
 		char newBuffer[5]{ static_cast<uint8_t>(EtfType::List_Ext) };
 		storeBits(newBuffer + 1, sizeNew);
 		this->writeString(newBuffer, std::size(newBuffer));
 	}
 
-	void Jsonifier::appendMapHeader(const uint32_t sizeNew) {
+	void EtfSerializer::appendMapHeader(const uint32_t sizeNew) {
 		char newBuffer[5]{ static_cast<uint8_t>(EtfType::Map_Ext) };
 		storeBits(newBuffer + 1, sizeNew);
 		this->writeString(newBuffer, std::size(newBuffer));
 	}
 
-	void Jsonifier::appendUint64(uint64_t value) {
+	void EtfSerializer::appendUint64(uint64_t value) {
 		char newBuffer[11]{ static_cast<int8_t>(EtfType::Small_Big_Ext) };
 		char encodedBytes{};
 		while (value > 0) {
@@ -773,10 +641,10 @@ namespace DiscordCoreAPI {
 		}
 		newBuffer[1] = encodedBytes;
 		newBuffer[2] = 0;
-		this->writeString(newBuffer, 1 + 2 + static_cast<size_t>(encodedBytes));
+		this->writeString(newBuffer, 1 + 2 + static_cast<uint64_t>(encodedBytes));
 	}
 
-	void Jsonifier::appendInt64(int64_t value) {
+	void EtfSerializer::appendInt64(int64_t value) {
 		char newBuffer[11]{ static_cast<int8_t>(EtfType::Small_Big_Ext) };
 		char encodedBytes{};
 		while (value > 0) {
@@ -790,32 +658,32 @@ namespace DiscordCoreAPI {
 		} else {
 			newBuffer[2] = 1;
 		}
-		this->writeString(newBuffer, 1 + 2 + static_cast<size_t>(encodedBytes));
+		this->writeString(newBuffer, 1 + 2 + static_cast<uint64_t>(encodedBytes));
 	}
 
-	void Jsonifier::appendUint32(const uint32_t value) {
+	void EtfSerializer::appendUint32(const uint32_t value) {
 		char newBuffer[5]{ static_cast<uint8_t>(EtfType::Integer_Ext) };
 		storeBits(newBuffer + 1, value);
 		this->writeString(newBuffer, std::size(newBuffer));
 	}
 
-	void Jsonifier::appendInt32(const int32_t value) {
+	void EtfSerializer::appendInt32(const int32_t value) {
 		char newBuffer[5]{ static_cast<uint8_t>(EtfType::Integer_Ext) };
 		storeBits(newBuffer + 1, value);
 		this->writeString(newBuffer, std::size(newBuffer));
 	}
 
-	void Jsonifier::appendUint8(const uint8_t value) {
+	void EtfSerializer::appendUint8(const uint8_t value) {
 		char newBuffer[2]{ static_cast<uint8_t>(EtfType::Small_Integer_Ext), static_cast<char>(value) };
 		this->writeString(newBuffer, std::size(newBuffer));
 	}
 
-	void Jsonifier::appendInt8(const int8_t value) {
+	void EtfSerializer::appendInt8(const int8_t value) {
 		char newBuffer[2]{ static_cast<uint8_t>(EtfType::Small_Integer_Ext), static_cast<char>(value) };
 		this->writeString(newBuffer, std::size(newBuffer));
 	}
 
-	void Jsonifier::appendBool(bool data) {
+	void EtfSerializer::appendBool(bool data) {
 		if (data) {
 			char newBuffer[6]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(4), 't', 'r', 'u', 'e' };
 			this->writeString(newBuffer, std::size(newBuffer));
@@ -826,69 +694,69 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	void Jsonifier::appendVersion() {
+	void EtfSerializer::appendVersion() {
 		char newBuffer[1]{ static_cast<int8_t>(formatVersion) };
 		this->writeString(newBuffer, std::size(newBuffer));
 	}
 
-	void Jsonifier::appendNilExt() {
+	void EtfSerializer::appendNilExt() {
 		this->writeCharacter(static_cast<uint8_t>(EtfType::Nil_Ext));
 	}
 
-	void Jsonifier::appendNil() {
+	void EtfSerializer::appendNil() {
 		char newBuffer[5]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(3), 'n', 'i', 'l' };
 		this->writeString(newBuffer, std::size(newBuffer));
 	}
 
-	void Jsonifier::setValue(JsonType typeNew) {
+	void EtfSerializer::setValue(JsonType typeNew) {
 		this->destroy();
 		this->type = typeNew;
 		switch (this->type) {
 			case JsonType::Object: {
 				AllocatorType<ObjectType> allocator{};
-				this->jsonValue.object = AllocatorTraits<ObjectType>::allocate(allocator, 1);
-				AllocatorTraits<ObjectType>::construct(allocator, this->jsonValue.object);
+				this->object = AllocatorTraits<ObjectType>::allocate(allocator, 1);
+				AllocatorTraits<ObjectType>::construct(allocator, this->object);
 				break;
 			}
 			case JsonType::Array: {
 				AllocatorType<ArrayType> allocator{};
-				this->jsonValue.array = AllocatorTraits<ArrayType>::allocate(allocator, 1);
-				AllocatorTraits<ArrayType>::construct(allocator, this->jsonValue.array);
+				this->array = AllocatorTraits<ArrayType>::allocate(allocator, 1);
+				AllocatorTraits<ArrayType>::construct(allocator, this->array);
 				break;
 			}
 			case JsonType::String: {
 				AllocatorType<StringType> allocator{};
-				this->jsonValue.string = AllocatorTraits<StringType>::allocate(allocator, 1);
-				AllocatorTraits<StringType>::construct(allocator, this->jsonValue.string);
+				this->string = AllocatorTraits<StringType>::allocate(allocator, 1);
+				AllocatorTraits<StringType>::construct(allocator, this->string);
 				break;
 			}
 		}
 	}
 
-	void Jsonifier::destroy() noexcept {
+	void EtfSerializer::destroy() noexcept {
 		switch (this->type) {
 			case JsonType::Object: {
 				AllocatorType<ObjectType> allocator{};
-				AllocatorTraits<ObjectType>::destroy(allocator, this->jsonValue.object);
-				AllocatorTraits<ObjectType>::deallocate(allocator, this->jsonValue.object, 1);
+				AllocatorTraits<ObjectType>::destroy(allocator, this->object);
+				AllocatorTraits<ObjectType>::deallocate(allocator, this->object, 1);
 				break;
 			}
 			case JsonType::Array: {
 				AllocatorType<ArrayType> allocator{};
-				AllocatorTraits<ArrayType>::destroy(allocator, this->jsonValue.array);
-				AllocatorTraits<ArrayType>::deallocate(allocator, this->jsonValue.array, 1);
+				AllocatorTraits<ArrayType>::destroy(allocator, this->array);
+				AllocatorTraits<ArrayType>::deallocate(allocator, this->array, 1);
 				break;
 			}
 			case JsonType::String: {
 				AllocatorType<StringType> allocator{};
-				AllocatorTraits<StringType>::destroy(allocator, this->jsonValue.string);
-				AllocatorTraits<StringType>::deallocate(allocator, this->jsonValue.string, 1);
+				AllocatorTraits<StringType>::destroy(allocator, this->string);
+				AllocatorTraits<StringType>::deallocate(allocator, this->string, 1);
 				break;
 			}
 		}
 	}
 
-	Jsonifier::~Jsonifier() noexcept {
+	EtfSerializer::~EtfSerializer() noexcept {
 		this->destroy();
 	}
 
@@ -989,113 +857,12 @@ namespace DiscordCoreAPI {
 		return this->config.functionsToExecute;
 	}
 
-	const TextFormat ConfigManager::getTextFormat() const {
+	constexpr const TextFormat ConfigManager::getTextFormat() const {
 		return this->config.textFormat;
 	}
 
 	const GatewayIntents ConfigManager::getGatewayIntents() {
 		return this->config.intents;
-	}
-
-	StringWrapper& StringWrapper::operator=(StringWrapper&& other) noexcept {
-		if (this != &other) {
-			this->ptr.reset(nullptr);
-			this->ptr = std::move(other.ptr);
-			other.ptr.reset(nullptr);
-			other.ptr = nullptr;
-		}
-		return *this;
-	}
-
-	StringWrapper& StringWrapper::operator=(const StringWrapper& other) {
-		if (this != &other) {
-			this->ptr.reset(nullptr);
-			std::stringstream stream{};
-			if (other.ptr) {
-				stream << other.ptr;
-			}
-			auto length = stream.str().size();
-			this->ptr = std::make_unique<char[]>(length + 1);
-			for (uint64_t x = 0; x < length; ++x) {
-				this->ptr[x] = other.ptr[x];
-			}
-		}
-		return *this;
-	}
-
-	StringWrapper::StringWrapper(const StringWrapper& other) {
-		*this = other;
-	}
-
-	StringWrapper& StringWrapper::operator=(const std::string& string) {
-		auto length = string.size();
-		this->ptr.reset(nullptr);
-		this->ptr = std::make_unique<char[]>(length + 1);
-		for (uint32_t x = 0; x < length; ++x) {
-			this->ptr[x] = string[x];
-		}
-		return *this;
-	}
-
-	StringWrapper::StringWrapper(const std::string& string) {
-		*this = string;
-	}
-
-	StringWrapper& StringWrapper::operator=(const char* string) {
-		if (string) {
-			this->ptr.reset(nullptr);
-			std::stringstream stream{};
-			stream << string;
-			int64_t length = stream.str().size();
-			this->ptr = std::make_unique<char[]>(length + 1);
-			for (int64_t x = 0; x < length; ++x) {
-				this->ptr[x] = string[x];
-			}
-		}
-		return *this;
-	}
-
-	StringWrapper::StringWrapper(const char* string) {
-		*this = string;
-	}
-
-	StringWrapper::operator std::string() {
-		std::stringstream stream{};
-		if (this->ptr) {
-			stream << this->ptr;
-		}
-		std::string string{};
-		for (int32_t x = 0; x < stream.str().size(); ++x) {
-			string.push_back(stream.str()[x]);
-		}
-		return string;
-	}
-
-	void StringWrapper::emplace_back(char value) {
-		std::stringstream stream{};
-		if (this->ptr) {
-			stream << this->ptr;
-		}
-		auto length = stream.str().size();
-		this->ptr = std::make_unique<char[]>(length + 2);
-
-		for (uint64_t x = 0; x < length; ++x) {
-			this->ptr[x] = stream.str()[x];
-		}
-		this->ptr[length] = value;
-	}
-
-	uint64_t StringWrapper::size() {
-		std::stringstream stream{};
-		if (this->ptr) {
-			stream << this->ptr;
-		}
-		auto length = stream.str().size();
-		return length;
-	}
-
-	const char* StringWrapper::data() {
-		return this->ptr.get();
 	}
 
 	ColorValue::ColorValue(uint32_t colorValue) {
@@ -1153,7 +920,7 @@ namespace DiscordCoreAPI {
 		*this = string;
 	}
 
-	std::string IconHash::getIconHash() noexcept {
+	IconHash::operator std::string() noexcept {
 		if (this->highBits == 0 || this->lowBits == 0) {
 			return {};
 		} else {
@@ -1457,7 +1224,7 @@ namespace DiscordCoreAPI {
 		permissions &= ~deny;
 		permissions |= allow;
 		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.id) {
+			if (channel.permissionOverwrites[x].id == guildMember.user.id) {
 				permissions &= ~channel.permissionOverwrites[x].deny;
 				permissions |= channel.permissionOverwrites[x].allow;
 				break;
@@ -1474,7 +1241,7 @@ namespace DiscordCoreAPI {
 
 	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
 		const GuildData guild = Guilds::getCachedGuild({ .guildId = guildMember.guildId });
-		if (guild.ownerId == guildMember.id) {
+		if (guild.ownerId == guildMember.user.id) {
 			return Permissions::getAllPermissions();
 		}
 		std::vector<RoleData> guildRoles{};
@@ -1646,7 +1413,11 @@ namespace DiscordCoreAPI {
 		for (auto& value: inputString) {
 			if (value >= 128 || value < 0) {
 				int32_t difference = 0 - value;
-				returnString.push_back(value + difference);
+				if (value + difference == '\0') {
+					continue;
+				} else {
+					returnString.push_back(value + difference);
+				}				
 			} else {
 				returnString.push_back(value);
 			}
@@ -1753,88 +1524,7 @@ namespace DiscordCoreAPI {
 		return timeStamp;
 	}
 
-	std::string escapeCharacters(std::string_view string) {
-		std::string stringNew{};
-		if (stringNew.size() <= string.size() * 2) {
-			stringNew.resize(string.size() * 2);
-		}
-		uint64_t index{};
-		for (int32_t x = 0; x < string.size(); ++x) {
-			switch (static_cast<char>(string[x])) {
-				case 0x00: {
-					break;
-				}
-				case 0x22: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('"');
-					index += 2;
-					break;
-				}
-				case 0x5c: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('\\');
-					index += 2;
-					break;
-				}
-				case 0x07: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('a');
-					index += 2;
-					break;
-				}
-				case 0x08: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('b');
-					index += 2;
-					break;
-				}
-				case 0x0C: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('f');
-					index += 2;
-					break;
-				}
-				case 0x0A: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('n');
-					index += 2;
-					break;
-				}
-				case 0x0D: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('r');
-					index += 2;
-					break;
-				}
-				case 0x0B: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('v');
-					index += 2;
-					break;
-				}
-				case 0x09: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('t');
-					index += 2;
-					break;
-				}
-				default: {
-					stringNew[index] = string[x];
-					++index;
-					break;
-				}
-			}
-		}
-		if (stringNew.size() > 1) {
-			if (stringNew[stringNew.size() - 1] == '\0') {
-				stringNew.erase(stringNew.size() - 1);
-			}
-		}
-		stringNew.resize(index);
-		return stringNew;
-	}
-
-	TimeStamp::TimeStamp(TimeFormat formatNew) {
+	constexpr TimeStamp::TimeStamp(TimeFormat formatNew) {
 		this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 	}
 
@@ -1875,12 +1565,12 @@ namespace DiscordCoreAPI {
 		*this = originalTimeStampNew;
 	}
 
-	TimeStamp& TimeStamp::operator=(const TimeStamp& other) {
+	constexpr TimeStamp& TimeStamp::operator=(const TimeStamp& other) {
 		this->timeStampInTimeUnits = other.timeStampInTimeUnits;
 		return *this;
 	}
 
-	TimeStamp::TimeStamp(const TimeStamp& other) {
+	constexpr TimeStamp::TimeStamp(const TimeStamp& other) {
 		*this = other;
 	}
 
@@ -1888,7 +1578,7 @@ namespace DiscordCoreAPI {
 		this->getTimeSinceEpoch(year, month, day, hour, minute, second);
 	};
 
-	TimeStamp::TimeStamp(uint64_t timeInTimeUnits, TimeFormat formatNew) {
+	constexpr TimeStamp::TimeStamp(uint64_t timeInTimeUnits, TimeFormat formatNew) {
 		this->timeStampInTimeUnits = timeInTimeUnits;
 	}
 
@@ -2108,12 +1798,12 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case TimeFormat::LongDateTime: {
-				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%T", &timeInfo);
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%OTy", &timeInfo);
 				timeStamp.resize(sizeResponse);
 				break;
 			}
 			case TimeFormat::LongTime: {
-				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &timeInfo);
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%OTy", &timeInfo);
 				timeStamp.resize(sizeResponse);
 				break;
 			}
@@ -2145,48 +1835,79 @@ namespace DiscordCoreAPI {
 namespace DiscordCoreInternal {
 
 	StringBuffer::StringBuffer() noexcept {
-		this->string.resize(1024 * 16);
+		this->resize(1024 * 16);
 	}
 
-	std::string_view StringBuffer::operator[](LengthData size) {
-		std::string_view string{ this->string.data() + size.offSet, size.length };
+	std::string_view StringBuffer::stringView(uint64_t offSet, uint64_t length) noexcept {
+		std::string_view string{ this->data() + offSet, length };
 		return string;
 	}
 
-	char StringBuffer::operator[](uint64_t index) {
+	StringBuffer::operator std::string_view() noexcept {
+		std::string_view string{ this->data(), sizeVal };
+		return string;
+	}
+
+	char StringBuffer::operator[](uint64_t index) noexcept {
 		return this->string[index];
 	}
 
-	void StringBuffer::writeData(const char* ptr, uint64_t size) {
-		if (this->sizeValue + size > this->string.size()) {
-			this->string.resize(this->string.size() + size);
+	char* StringBuffer::begin() noexcept {
+		return this->string.get();
+	}
+
+	char* StringBuffer::end() noexcept {
+		return this->string.get() + this->sizeVal;
+	}
+
+	void StringBuffer::writeData(const char* ptr, uint64_t size) noexcept {
+		if (this->sizeVal + size > capacityVal) {
+			this->resize(this->size() + size);
 		}
-		std::copy(ptr, ptr + size, this->string.data() + this->sizeValue);
-		this->sizeValue += size;
+		std::copy(ptr, ptr + size, this->data() + this->sizeVal);
+		this->sizeVal += size;
 	}
 
-	std::string::iterator StringBuffer::begin() {
-		return this->string.begin();
+	void StringBuffer::erase(uint64_t amount) noexcept {
+		if (amount <= sizeVal) {
+			std::copy(this->data() + amount, this->data() + this->sizeVal, this->data());
+			this->sizeVal = this->sizeVal - amount;
+		} else {
+			this->sizeVal = 0;
+		}
 	}
 
-	std::string::iterator StringBuffer::end() {
-		return this->string.end();
+	uint64_t StringBuffer::size() noexcept {
+		return this->sizeVal;
 	}
 
-	void StringBuffer::erase(uint64_t amount) {
-		std::copy(this->string.data() + amount, this->string.data() + this->sizeValue, this->string.data());
-		this->sizeValue = this->sizeValue - amount;
+	void StringBuffer::resize(uint64_t newSize) noexcept {
+		if (newSize == 0) {
+			this->string.reset(nullptr);
+			capacityVal = 0;
+			return;
+		} else if (capacityVal == 0) {
+			this->string = std::make_unique<char[]>(newSize);
+			capacityVal = newSize;
+			return;
+		} else {
+			auto oldPtr = std::move(this->string);
+			auto oldCapacity = this->capacityVal;
+			this->string = std::make_unique<char[]>(newSize);
+			if (newSize >= oldCapacity) {
+				std::copy(oldPtr.get(), oldPtr.get() + oldCapacity, string.get());
+			} else {
+				std::copy(oldPtr.get(), oldPtr.get() + newSize, string.get());
+			}
+			capacityVal = newSize;
+		}
 	}
 
-	uint64_t StringBuffer::size() {
-		return this->sizeValue;
+	char* StringBuffer::data() noexcept {
+		return this->string.get();
 	}
 
-	char* StringBuffer::data() {
-		return this->string.data();
-	}
-
-	void StringBuffer::clear() {
-		this->sizeValue = 0;
+	void StringBuffer::clear() noexcept {
+		this->sizeVal = 0;
 	}
 }

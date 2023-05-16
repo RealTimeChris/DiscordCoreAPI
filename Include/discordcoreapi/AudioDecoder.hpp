@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -43,7 +43,7 @@ namespace DiscordCoreInternal {
 
 		OpusDecoderWrapper();
 
-		std::basic_string_view<opus_int16> decodeData(std::basic_string_view<std::byte> dataToDecode);
+		std::basic_string_view<opus_int16> decodeData(std::basic_string_view<uint8_t> dataToDecode);
 
 	  protected:
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> ptr{ nullptr, OpusDecoderDeleter{} };
@@ -222,4 +222,4 @@ namespace DiscordCoreInternal {
 		void cancelMe();
 	};
 
-}// namespace DiscordCoreAPI
+}

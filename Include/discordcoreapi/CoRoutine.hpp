@@ -63,6 +63,10 @@ namespace DiscordCoreAPI {
 				return this->areWeStoppedBool.load();
 			}
 
+			void return_value(const RTy& at) {
+				this->result = at;
+			}
+
 			void return_value(RTy&& at) {
 				this->result = std::move(at);
 			}
@@ -90,8 +94,8 @@ namespace DiscordCoreAPI {
 
 		  protected:
 			UnboundedMessageBlock<std::exception_ptr>* exceptionBuffer{ nullptr };
-			std::atomic_bool areWeStoppedBool{};
 			std::atomic_bool* areWeDone{ nullptr };
+			std::atomic_bool areWeStoppedBool{};
 			RTy result{};
 		};
 
@@ -371,4 +375,4 @@ namespace DiscordCoreAPI {
 	};
 
 	/**@}*/
-};// namespace DiscordCoreAPI
+};

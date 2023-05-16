@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -41,14 +41,14 @@ namespace DiscordCoreInternal {
 		const std::string baseUrl02{ "https://api-v2.soundcloud.com" };
 		DiscordCoreAPI::ConfigManager* configManager{ nullptr };
 		const std::string baseUrl{ "https://soundcloud.com" };
-		const std::string appVersion{ "1654762087" };
+		const std::string appVersion{ "1681464840" };
 		HttpsClient* httpsClient{ nullptr };
+
+		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::Song& newSong);
 
 		std::vector<DiscordCoreAPI::Song> collectSearchResults(const std::string& string);
 
-		DiscordCoreAPI::Song constructDownloadInfo(DiscordCoreAPI::Song& newSong);
-
-		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
+		virtual DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::Song& newSong);
 
 		std::string collectClientId();
 	};
@@ -63,7 +63,7 @@ namespace DiscordCoreInternal {
 
 		std::vector<DiscordCoreAPI::Song> searchForSong(const std::string& searchQuery);
 
-		DiscordCoreAPI::Song collectFinalSong(DiscordCoreAPI::Song& newSong);
+		DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::Song& newSong) override;
 
 	  protected:
 		DiscordCoreAPI::Snowflake guildId{};
@@ -71,4 +71,30 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::Song theSong{};
 	};
 
-};// namespace DiscordCoreAPI
+	struct Transcoding {
+		std::string preset{};
+		std::string url{};
+	};
+
+	struct Media {
+		std::vector<Transcoding> transcodings{};
+	};
+
+	struct SecondDownloadUrl {
+		std::string url{};
+	};
+
+	struct RawSoundCloudSong {
+		std::string trackAuthorization{};
+		std::string description{};
+		std::string artworkUrl{};
+		std::string title{};
+		int32_t duration{};
+		Media media{};
+	};
+
+	struct SoundCloudSearchResults {
+		std::vector<RawSoundCloudSong> collection{};
+	};
+
+};

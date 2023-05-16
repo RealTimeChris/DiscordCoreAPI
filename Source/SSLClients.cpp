@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -32,9 +32,11 @@ namespace DiscordCoreInternal {
 		std::stringstream stream{};
 		stream << DiscordCoreAPI::shiftToBrightRed() << errorPosition << " Error: ";
 		if (ssl) {
-			stream << SSL_get_error(ssl, errorValue) << ", " << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl << endl;
+			stream << ERR_error_string(SSL_get_error(ssl, errorValue), nullptr) << ", " << ERR_error_string(ERR_get_error(), nullptr)
+				   << DiscordCoreAPI::reset() << endl
+				   << endl;
 		} else {
-			stream << ERR_error_string(errorValue, nullptr) << DiscordCoreAPI::reset() << endl << endl;
+			stream << ERR_error_string(ERR_get_error(), nullptr) << DiscordCoreAPI::reset() << endl << endl;
 		}
 		return stream.str();
 	}
@@ -65,8 +67,8 @@ namespace DiscordCoreInternal {
 	}
 
 	WSADataWrapper::WSADataWrapper() noexcept {
-		auto returnValue = WSAStartup(MAKEWORD(2, 2), this->ptr.get());
-		if (returnValue) {
+		auto returnData = WSAStartup(MAKEWORD(2, 2), this->ptr.get());
+		if (returnData) {
 			reportError("WSADataWrapper::WSADataWrapper()");
 		}
 	}
@@ -112,19 +114,8 @@ namespace DiscordCoreInternal {
 		return this->ptr.get();
 	}
 
-	void SOCKETWrapper::SOCKETDeleter::operator()(SOCKET* other) noexcept {
-		if (*other != INVALID_SOCKET) {
-			shutdown(*other, SHUT_RDWR);
-			close(*other);
-			*other = INVALID_SOCKET;
-			delete other;
-		};
-	};
-
 	SOCKETWrapper& SOCKETWrapper::operator=(SOCKET other) noexcept {
-		this->ptr.reset(nullptr);
-		this->ptr = std::unique_ptr<SOCKET, SOCKETDeleter>(std::make_unique<SOCKET>().release(), SOCKETDeleter{});
-		*this->ptr = other;
+		this->ptr = other;
 		return *this;
 	}
 
@@ -132,12 +123,16 @@ namespace DiscordCoreInternal {
 		*this = other;
 	}
 
-	SOCKETWrapper::operator SOCKET*() noexcept {
-		return this->ptr.get();
+	SOCKETWrapper::operator SOCKET() noexcept {
+		return this->ptr;
 	}
 
-	SOCKETWrapper::operator SOCKET() noexcept {
-		return *this->ptr;
+	SOCKETWrapper::~SOCKETWrapper() noexcept {
+		if (ptr != INVALID_SOCKET) {
+			shutdown(ptr, SHUT_RDWR);
+			close(ptr);
+			ptr = INVALID_SOCKET;
+		};
 	}
 
 	addrinfo* addrinfoWrapper::operator->() noexcept {
@@ -170,7 +165,8 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	bool TCPSSLClient::connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorsNew, bool areWeAStandaloneSocketNew) noexcept {
+	bool TCPConnection::connect(const std::string& baseUrl, const uint16_t portNew, bool doWePrintErrorsNew,
+		bool areWeAStandaloneSocketNew) noexcept {
 		this->areWeAStandaloneSocket = areWeAStandaloneSocketNew;
 		this->doWePrintErrorMessages = doWePrintErrorsNew;
 		std::string addressString{};
@@ -193,14 +189,14 @@ namespace DiscordCoreInternal {
 
 		if (getaddrinfo(addressString.c_str(), std::to_string(portNew).c_str(), hints, address)) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("TCPSSLClient::connect::getaddrinfo(), to: " + baseUrl) << endl;
+				cout << reportError("TCPConnection::connect::getaddrinfo(), to: " + baseUrl) << endl;
 			}
 			return false;
 		}
 
 		if (this->socket = ::socket(address->ai_family, address->ai_socktype, address->ai_protocol); this->socket == INVALID_SOCKET) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("TCPSSLClient::connect::socket(), to: " + baseUrl) << endl;
+				cout << reportError("TCPConnection::connect::socket(), to: " + baseUrl) << endl;
 			}
 			return false;
 		}
@@ -208,21 +204,21 @@ namespace DiscordCoreInternal {
 		const char optionValue{ true };
 		if (setsockopt(this->socket, IPPROTO_TCP, TCP_NODELAY, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("TCPSSLClient::connect::setsockopt(), to: " + baseUrl) << endl;
+				cout << reportError("TCPConnection::connect::setsockopt(), to: " + baseUrl) << endl;
 			}
 			return false;
 		}
 
 		if (setsockopt(this->socket, SOL_SOCKET, SO_KEEPALIVE, &optionValue, sizeof(int32_t))) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("TCPSSLClient::connect::setsockopt(), to: " + baseUrl) << endl;
+				cout << reportError("TCPConnection::connect::setsockopt(), to: " + baseUrl) << endl;
 			}
 			return false;
 		}
 
 		if (::connect(this->socket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("TCPSSLClient::connect::connect(), to: " + baseUrl) << endl;
+				cout << reportError("TCPConnection::connect::connect(), to: " + baseUrl) << endl;
 			}
 			return false;
 		}
@@ -230,7 +226,7 @@ namespace DiscordCoreInternal {
 		std::unique_lock lock{ SSLConnectionInterface::mutex };
 		if (this->ssl = SSL_new(this->context); !this->ssl) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("TCPSSLClient::connect::SSL_new(), to: " + baseUrl) << endl;
+				cout << reportSSLError("TCPConnection::connect::SSL_new(), to: " + baseUrl) << endl;
 			}
 			return false;
 		}
@@ -238,7 +234,7 @@ namespace DiscordCoreInternal {
 
 		if (auto result{ SSL_set_fd(this->ssl, this->socket) }; result != 1) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("TCPSSLClient::connect::SSL_set_fd(), to: " + baseUrl, result, this->ssl) << endl;
+				cout << reportSSLError("TCPConnection::connect::SSL_set_fd(), to: " + baseUrl, result, this->ssl) << endl;
 			}
 			return false;
 		}
@@ -246,30 +242,30 @@ namespace DiscordCoreInternal {
 		/* SNI */
 		if (auto result{ SSL_set_tlsext_host_name(this->ssl, addressString.c_str()) }; result != 1) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("TCPSSLClient::connect::SSL_set_tlsext_host_name(), to: " + baseUrl, result, this->ssl) << endl;
+				cout << reportSSLError("TCPConnection::connect::SSL_set_tlsext_host_name(), to: " + baseUrl, result, this->ssl) << endl;
 			}
 			return false;
 		}
 
 		if (auto result{ SSL_connect(this->ssl) }; result != 1) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("TCPSSLClient::connect::SSL_connect(), to: " + baseUrl, result, this->ssl) << endl;
+				cout << reportSSLError("TCPConnection::connect::SSL_connect(), to: " + baseUrl, result, this->ssl) << endl;
 			}
 			return false;
 		}
 
 #ifdef _WIN32
 		u_long value02{ 1 };
-		if (auto returnValue{ ioctlsocket(this->socket, FIONBIO, &value02) }; returnValue == SOCKET_ERROR) {
+		if (auto returnData{ ioctlsocket(this->socket, FIONBIO, &value02) }; returnData == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("TCPSSLClient::connect::ioctlsocket(), to: " + baseUrl) << endl;
+				cout << reportError("TCPConnection::connect::ioctlsocket(), to: " + baseUrl) << endl;
 			}
 			return false;
 		}
 #else
-		if (auto returnValue{ fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK) }; returnValue == SOCKET_ERROR) {
+		if (auto returnData{ fcntl(this->socket, F_SETFL, fcntl(this->socket, F_GETFL, 0) | O_NONBLOCK) }; returnData == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportError("TCPSSLClient::connect::ioctlsocket(), to: " + baseUrl) << endl;
+				cout << reportError("TCPConnection::connect::ioctlsocket(), to: " + baseUrl) << endl;
 			}
 			return false;
 		}
@@ -277,8 +273,8 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	std::vector<TCPSSLClient*> TCPSSLClient::processIO(std::unordered_map<uint32_t, std::unique_ptr<WebSocketClient>>& shardMap) noexcept {
-		std::vector<TCPSSLClient*> returnValue{};
+	std::vector<TCPConnection*> TCPConnection::processIO(std::unordered_map<uint32_t, std::unique_ptr<TCPConnection>>& shardMap) noexcept {
+		std::vector<TCPConnection*> returnData{};
 		PollFDWrapper readWriteSet{};
 		for (auto& [key, value]: shardMap) {
 			if (value && value->areWeStillConnected()) {
@@ -293,40 +289,51 @@ namespace DiscordCoreInternal {
 			}
 		}
 		if (readWriteSet.polls.size() == 0) {
-			return returnValue;
+			return returnData;
 		}
 		if (auto returnValueNew = poll(readWriteSet.polls.data(), static_cast<u_long>(readWriteSet.polls.size()), 1);
 			returnValueNew == SOCKET_ERROR) {
-			for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
-				returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
+			for (uint64_t x = 0; x < readWriteSet.polls.size(); ++x) {
+				if (shardMap[readWriteSet.indices[x]]->doWePrintErrorMessages) {
+					reportError("TCPConnection::processIO()");
+				}
+				returnData.emplace_back(shardMap[readWriteSet.indices[x]].get());
 			}
-			return returnValue;
+			return returnData;
 		} else if (returnValueNew == 0) {
-			return returnValue;
+			return returnData;
 		}
-		for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
-			if (readWriteSet.polls[x].revents & POLLOUT || readWriteSet.polls[x].revents & POLLIN) {
-				if (readWriteSet.polls[x].revents & POLLOUT) {
-					if (!shardMap[readWriteSet.indices[x]]->processWriteData()) {
-						returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
-						continue;
+		for (uint64_t x = 0; x < readWriteSet.polls.size(); ++x) {
+			if (readWriteSet.polls[x].revents & POLLOUT) {
+				if (!shardMap[readWriteSet.indices[x]]->processWriteData()) {
+					if (shardMap[readWriteSet.indices[x]]->doWePrintErrorMessages) {
+						reportError("TCPConnection::processIO()");
 					}
+					returnData.emplace_back(shardMap[readWriteSet.indices[x]].get());
+					continue;
 				}
-				if (readWriteSet.polls[x].revents & POLLIN) {
-					if (!shardMap[readWriteSet.indices[x]]->processReadData()) {
-						returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
-						continue;
+			}
+			if (readWriteSet.polls[x].revents & POLLIN) {
+				if (!shardMap[readWriteSet.indices[x]]->processReadData()) {
+					if (shardMap[readWriteSet.indices[x]]->doWePrintErrorMessages) {
+						reportError("TCPConnection::processIO()");
 					}
+					returnData.emplace_back(shardMap[readWriteSet.indices[x]].get());
+					continue;
 				}
-			} else {
-				returnValue.emplace_back(shardMap[readWriteSet.indices[x]].get());
+			}
+			if (readWriteSet.polls[x].revents & ~(POLLOUT | POLLIN)) {
+				if (shardMap[readWriteSet.indices[x]]->doWePrintErrorMessages) {
+					reportError("TCPConnection::processIO()");
+				}
+				returnData.emplace_back(shardMap[readWriteSet.indices[x]].get());
 				continue;
 			}
 		}
-		return returnValue;
+		return returnData;
 	}
 
-	ProcessIOResult TCPSSLClient::writeData(std::string_view dataToWrite, bool priority) noexcept {
+	ProcessIOResult TCPConnection::writeData(std::string_view dataToWrite, bool priority) noexcept {
 		if (this->areWeStillConnected()) {
 			if (dataToWrite.size() > 0 && this->ssl) {
 				if (priority && dataToWrite.size() < this->maxBufferSize) {
@@ -356,31 +363,31 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	ProcessIOResult TCPSSLClient::processIO(int32_t waitTimeInMs) noexcept {
+	ProcessIOResult TCPConnection::processIO(int32_t waitTimeInMs) noexcept {
 		pollfd readWriteSet{ .fd = static_cast<SOCKET>(this->socket) };
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
 			readWriteSet.events = POLLIN;
 		}
-		if (auto returnValue = poll(&readWriteSet, 1, waitTimeInMs); returnValue == SOCKET_ERROR) {
+		if (auto returnData = poll(&readWriteSet, 1, waitTimeInMs); returnData == SOCKET_ERROR) {
 			if (this->doWePrintErrorMessages) {
-				cout << reportSSLError("TCPSSLClient::processIO()") << endl;
+				cout << reportSSLError("TCPConnection::processIO()") << endl;
 			}
 			return ProcessIOResult::Error;
-		} else if (returnValue == 0) {
+		} else if (returnData == 0) {
 			return ProcessIOResult::Success;
 		} else {
 			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLHUP || readWriteSet.revents & POLLNVAL) {
 				if (this->doWePrintErrorMessages) {
-					cout << reportSSLError("TCPSSLClient::processIO()") << endl;
+					cout << reportSSLError("TCPConnection::processIO()") << endl;
 				}
 				return ProcessIOResult::Error;
 			}
 			if (readWriteSet.revents & POLLIN) {
 				if (!this->processReadData()) {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("TCPSSLClient::processIO()") << endl;
+						cout << reportSSLError("TCPConnection::processIO()") << endl;
 					}
 					return ProcessIOResult::Error;
 				} else {
@@ -392,7 +399,7 @@ namespace DiscordCoreInternal {
 			if (readWriteSet.revents & POLLOUT) {
 				if (!this->processWriteData()) {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("TCPSSLClient::processIO()") << endl;
+						cout << reportSSLError("TCPConnection::processIO()") << endl;
 					}
 					return ProcessIOResult::Error;
 				}
@@ -401,25 +408,25 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::Success;
 	}
 
-	std::basic_string_view<char> TCPSSLClient::getInputBuffer() noexcept {
+	std::basic_string_view<char> TCPConnection::getInputBuffer() noexcept {
 		return this->inputBuffer.readData();
 	}
 
-	bool TCPSSLClient::areWeStillConnected() noexcept {
-		if (static_cast<SOCKET*>(this->socket) && *this->socket != INVALID_SOCKET && this->ssl) {
+	bool TCPConnection::areWeStillConnected() noexcept {
+		if (this->socket.operator size_t() != INVALID_SOCKET) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	bool TCPSSLClient::processWriteData() noexcept {
+	bool TCPConnection::processWriteData() noexcept {
 		if (this->outputBuffer.getUsedSpace() > 0) {
 			uint64_t bytesToWrite{ this->outputBuffer.getCurrentTail()->getUsedSpace() };
 
 			uint64_t writtenBytes{};
-			auto returnValue{ SSL_write_ex(this->ssl, this->outputBuffer.readData().data(), bytesToWrite, &writtenBytes) };
-			auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+			auto returnData{ SSL_write_ex(this->ssl, this->outputBuffer.readData().data(), bytesToWrite, &writtenBytes) };
+			auto errorValue{ SSL_get_error(this->ssl, returnData) };
 			switch (errorValue) {
 				case SSL_ERROR_WANT_READ: {
 					[[fallthrough]];
@@ -431,14 +438,12 @@ namespace DiscordCoreInternal {
 					return true;
 				}
 				case SSL_ERROR_ZERO_RETURN: {
-					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("TCPSSLClient::processWriteData()", errorValue, this->ssl) << endl;
-					}
-					return false;
+					disconnect();
+					return true;
 				}
 				default: {
 					if (this->doWePrintErrorMessages) {
-						cout << reportSSLError("TCPSSLClient::processWriteData()", errorValue, this->ssl) << endl;
+						cout << reportSSLError("TCPConnection::processWriteData()", errorValue, this->ssl) << endl;
 					}
 					return false;
 				}
@@ -447,13 +452,13 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	bool TCPSSLClient::processReadData() noexcept {
+	bool TCPConnection::processReadData() noexcept {
 		if (!this->inputBuffer.isItFull()) {
 			do {
 				uint64_t readBytes{};
 				uint64_t bytesToRead{ this->maxBufferSize };
-				auto returnValue{ SSL_read_ex(this->ssl, this->inputBuffer.getCurrentHead()->getCurrentHead(), bytesToRead, &readBytes) };
-				auto errorValue{ SSL_get_error(this->ssl, returnValue) };
+				auto returnData{ SSL_read_ex(this->ssl, this->inputBuffer.getCurrentHead()->getCurrentHead(), bytesToRead, &readBytes) };
+				auto errorValue{ SSL_get_error(this->ssl, returnData) };
 				switch (errorValue) {
 					case SSL_ERROR_WANT_READ: {
 						[[fallthrough]];
@@ -473,14 +478,12 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					case SSL_ERROR_ZERO_RETURN: {
-						if (this->doWePrintErrorMessages) {
-							cout << reportSSLError("TCPSSLClient::processReadData()", errorValue, this->ssl) << endl;
-						}
-						return false;
+						disconnect();
+						return true;
 					}
 					default: {
 						if (this->doWePrintErrorMessages) {
-							cout << reportSSLError("TCPSSLClient::processReadData()", errorValue, this->ssl) << endl;
+							cout << reportSSLError("TCPConnection::processReadData()", errorValue, this->ssl) << endl;
 						}
 						return false;
 					}
@@ -493,7 +496,7 @@ namespace DiscordCoreInternal {
 		return true;
 	}
 
-	int64_t TCPSSLClient::getBytesRead() noexcept {
+	int64_t TCPConnection::getBytesRead() noexcept {
 		return this->bytesRead;
 	}
 
@@ -518,7 +521,7 @@ namespace DiscordCoreInternal {
 		}
 
 		std::unique_ptr<char> optVal{ std::make_unique<char>(1) };
-		if (auto returnValue = setsockopt(this->socket, SOL_SOCKET, SO_REUSEADDR, optVal.get(), sizeof(optVal)); returnValue < 0) {
+		if (auto returnData = setsockopt(this->socket, SOL_SOCKET, SO_REUSEADDR, optVal.get(), sizeof(optVal)); returnData < 0) {
 			if (this->doWePrintErrors) {
 				cout << reportError("UDPConnection::connect::setsockopt(), to: " + baseUrlNew) << endl;
 			}
@@ -623,12 +626,12 @@ namespace DiscordCoreInternal {
 			readWriteSet.events = POLLOUT;
 		}
 
-		if (auto returnValue = poll(&readWriteSet, 1, 0); returnValue == SOCKET_ERROR) {
+		if (auto returnData = poll(&readWriteSet, 1, 0); returnData == SOCKET_ERROR) {
 			if (this->doWePrintErrors) {
 				cout << reportError("UDPConnection::processIO()") << endl;
 			}
 			return ProcessIOResult::Error;
-		} else if (returnValue == 0) {
+		} else if (returnData == 0) {
 			return ProcessIOResult::Success;
 		} else {
 			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLHUP || readWriteSet.revents & POLLNVAL) {
@@ -657,7 +660,7 @@ namespace DiscordCoreInternal {
 		return ProcessIOResult::Success;
 	}
 
-	void UDPConnection::writeData(std::basic_string_view<std::byte> dataToWrite) noexcept {
+	void UDPConnection::writeData(std::basic_string_view<uint8_t> dataToWrite) noexcept {
 		if (this->areWeStillConnected()) {
 			uint64_t remainingBytes{ dataToWrite.size() };
 			while (remainingBytes > 0) {
@@ -674,12 +677,12 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::basic_string_view<std::byte> UDPConnection::getInputBuffer() noexcept {
+	std::basic_string_view<uint8_t> UDPConnection::getInputBuffer() noexcept {
 		return this->inputBuffer.readData();
 	}
 
 	bool UDPConnection::areWeStillConnected() noexcept {
-		if (static_cast<SOCKET*>(this->socket) && this->socket != INVALID_SOCKET) {
+		if (this->socket.operator size_t() != INVALID_SOCKET) {
 			return true;
 		} else {
 			return false;
@@ -721,9 +724,9 @@ namespace DiscordCoreInternal {
 	}
 
 	void UDPConnection::disconnect() noexcept {
-		if (this->streamType != DiscordCoreAPI::StreamType ::None) {
+		if (this->streamType != DiscordCoreAPI::StreamType::None) {
 			this->outputBuffer.clear();
-			this->writeData(std::basic_string_view<std::byte>{ reinterpret_cast<const std::byte*>("goodbye") });
+			this->writeData(std::basic_string_view<uint8_t>{ reinterpret_cast<const uint8_t*>("goodbye") });
 			this->processIO(ProcessIOType::Write_Only);
 		}
 		this->socket = INVALID_SOCKET;

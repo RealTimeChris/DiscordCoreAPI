@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -29,7 +29,7 @@
 #include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
-
+	/*
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
@@ -56,9 +56,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief For creating a single global ApplicationCommand.
-	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData : public CreateApplicationCommandData {
-		operator Jsonifier();
-	};
+	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData : public CreateApplicationCommandData {};
 
 	/// \brief For editing a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGlobalApplicationCommandData {
@@ -72,8 +70,6 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
 		std::string name{};///< A name for the new command.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For deleting a single global ApplicationCommand.
@@ -96,9 +92,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief For creating a single Guild ApplicationCommand.
-	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateGlobalApplicationCommandData {
-		operator Jsonifier();
-	};
+	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateGlobalApplicationCommandData {};
 
 	/// \brief For acquiring a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandData {
@@ -118,8 +112,6 @@ namespace DiscordCoreAPI {
 		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
 		Snowflake guildId{};///< The id of the Guild which you would like to add the new command to.
 		std::string name{};///< A name for the new command.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For deleting a single Guild ApplicationCommand.
@@ -156,41 +148,14 @@ namespace DiscordCoreAPI {
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		uint64_t commandId{};///< The command id which you would like to edit the permissions of.
 		Snowflake guildId{};///< The Guild id of the Guild for which you would like to edit the command permissions.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For batch editing the permissions of a collection of Guild ApplicationCommands.
 	struct DiscordCoreAPI_Dll BatchEditGuildApplicationCommandPermissionsData {
-		std::vector<GuildApplicationCommandPermissionsData> permissions{};///< A vector of edit-Guild-application-permissions responseData to edit.
+		std::vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>
+			permissions{};///< A vector of edit-Guild-application-permissions responseData to edit.
 		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
 		Snowflake guildId{};///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
-	};
-
-	/// \brief A single ApplicationCommand.
-	class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData {
-	  public:
-		ApplicationCommand() noexcept = default;
-
-		ApplicationCommand(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~ApplicationCommand() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll ApplicationCommandVector {
-	  public:
-		friend class ApplicationCommands;
-
-		ApplicationCommandVector() noexcept = default;
-
-		operator std::vector<ApplicationCommand>();
-
-		ApplicationCommandVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~ApplicationCommandVector() noexcept = default;
-
-	  protected:
-		std::vector<ApplicationCommand> applicationCommands{};
 	};
 
 	/**@}*/
@@ -267,25 +232,26 @@ namespace DiscordCoreAPI {
 
 		/// \brief Gets Guild ApplicationCommand permissions for a single server on this bot.
 		/// \param dataPackage A GetGuildApplicationCommandPermissionsData structure.
-		/// \returns A CoRoutine containing a vector<GuildApplicationCommandPermissionsData>.
+		/// \returns A CoRoutine containing a vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>.
 		static CoRoutine<std::vector<GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(
 			GetGuildApplicationCommandPermissionsData dataPackage);
 
 		/// \brief Get ApplicationCommand permissions for a single command on this bot.
 		/// \param dataPackage A GetApplicationCommandPermissionsData structure.
-		/// \returns A CoRoutine containing a GuildApplicationCommandPermissionsData.
+		/// \returns A CoRoutine containing a DiscordCoreAPI::GuildApplicationCommandPermissionsData.
 		static CoRoutine<GuildApplicationCommandPermissionsData> getApplicationCommandPermissionsAsync(
 			GetApplicationCommandPermissionsData dataPackage);
 
 		/// \brief Edit Guild ApplicationCommand permissions for a server on this bot.
 		/// \param dataPackage An EditGuildApplicationCommandPermissionsData structure.
-		/// \returns A CoRoutine containing a GuildApplicationCommandPermissionsData.
+		/// \returns A CoRoutine containing a DiscordCoreAPI::GuildApplicationCommandPermissionsData.
 		static CoRoutine<GuildApplicationCommandPermissionsData> editGuildApplicationCommandPermissionsAsync(
 			EditGuildApplicationCommandPermissionsData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
+
 	/**@}*/
 
-}// namespace DiscordCoreAPI
+}

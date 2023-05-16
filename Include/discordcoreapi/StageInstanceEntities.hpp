@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -57,16 +57,6 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< Reason for deleting the StageInstance.
 	};
 
-	/// \brief A single StageInstance.
-	class DiscordCoreAPI_Dll StageInstance : public StageInstanceData {
-	  public:
-		StageInstance() noexcept = default;
-
-		StageInstance(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~StageInstance() noexcept = default;
-	};
-
 	/**
 	 * \addtogroup main_endpoints
 	 * @{
@@ -101,4 +91,4 @@ namespace DiscordCoreAPI {
 	};
 
 	/**@}*/
-}// namespace DiscordCoreAPI
+}

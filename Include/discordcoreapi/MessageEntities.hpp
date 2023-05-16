@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -86,6 +86,7 @@ namespace DiscordCoreAPI {
 	/// \brief For creating a Message.
 	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
 	  public:
+		friend struct Jsonifier::Core<CreateMessageData>;
 		friend class InputEvents;
 		friend class Messages;
 
@@ -100,8 +101,6 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};
 
 		CreateMessageData() noexcept = default;
-
-		operator Jsonifier();
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
@@ -129,14 +128,13 @@ namespace DiscordCoreAPI {
 	/// \brief For editing a Message.
 	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
 	  public:
+		friend struct Jsonifier::Core<EditMessageData>;
 		friend class InputEvents;
 		friend class Messages;
 
 		EditMessageData(InputEventData dataPackage);
 
 		EditMessageData(RespondToInputEventData dataPackage);
-
-		operator Jsonifier();
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
@@ -159,11 +157,9 @@ namespace DiscordCoreAPI {
 
 	/// \brief For deleting a bulk of Messages.
 	struct DiscordCoreAPI_Dll DeleteMessagesBulkData {
-		std::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
+		std::vector<Id> messageIds{};///< Array of Message ids to delete.
 		Snowflake channelId{};///< Channel within which to delete the Messages.
 		std::string reason{};///< The reason for deleting the Messages.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For getting a collection of pinned Messages.
@@ -183,30 +179,6 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The Channel within which to unpin the Message.
 		Snowflake messageId{};///< The Message which you would like to unpin.
 		std::string reason{};///< Reason for pinning this Message.
-	};
-
-	/// \brief A single Message.
-	class DiscordCoreAPI_Dll Message : public MessageData {
-	  public:
-		Message() noexcept = default;
-
-		Message(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~Message() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll MessageVector {
-	  public:
-		MessageVector() noexcept = default;
-
-		operator std::vector<Message>();
-
-		MessageVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~MessageVector() noexcept = default;
-
-	  protected:
-		std::vector<Message> messages{};
 	};
 
 	/**@}*/
@@ -282,4 +254,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 
-}// namespace DiscordCoreAPI
+}

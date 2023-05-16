@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -45,11 +45,11 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(std::basic_string_view<std::byte> dataToDecode) {
+	std::basic_string_view<opus_int16> OpusDecoderWrapper::decodeData(std::basic_string_view<uint8_t> dataToDecode) {
 		const int64_t sampleCount = opus_decode(this->ptr.get(), reinterpret_cast<const uint8_t*>(dataToDecode.data()),
 			static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
 		if (sampleCount > 0) {
-			return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<size_t>(sampleCount * 2ull) };
+			return std::basic_string_view<opus_int16>{ this->data.data(), static_cast<uint64_t>(sampleCount * 2ull) };
 		} else {
 			throw DiscordCoreAPI::DCAException{ "Failed to decode a user's voice payload, Reason: " + std::string{ opus_strerror(sampleCount) } };
 		}
@@ -256,9 +256,7 @@ namespace DiscordCoreInternal {
 		if (stream->currentBuffer.size() > 0) {
 			stream->bytesRead = stream->currentBuffer.size();
 		}
-		for (int32_t x = 0; x < stream->bytesRead; ++x) {
-			buf[x] = stream->currentBuffer[x];
-		}
+		std::memcpy(buf, stream->currentBuffer.data(), stream->bytesRead);
 		if (stream->ioContext->buf_ptr - stream->ioContext->buffer >= stream->totalFileSize) {
 			frameData.currentSize = stream->bytesRead;
 			stream->outDataBuffer.send(std::move(frameData));
@@ -287,7 +285,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 
-			this->ioContext = avio_alloc_context(buffer, static_cast<int32_t>(this->bufferMaxSize - 1), 0, this, &AudioDecoder::ReadBufferData, 0, 0);
+			this->ioContext = avio_alloc_context(buffer, static_cast<int32_t>(this->bufferMaxSize), 0, this, &AudioDecoder::ReadBufferData, 0, 0);
 
 			if (!this->ioContext) {
 				this->haveWeFailedBool.store(true);
@@ -450,11 +448,11 @@ namespace DiscordCoreInternal {
 
 			while (!token.stop_requested() && !this->areWeQuitting.load() && av_read_frame(this->formatContext, this->packet) == 0) {
 				if (this->packet->stream_index == this->audioStreamIndex) {
-					int32_t returnValue = avcodec_send_packet(this->audioDecodeContext, this->packet);
-					if (returnValue < 0) {
+					int32_t returnData = avcodec_send_packet(this->audioDecodeContext, this->packet);
+					if (returnData < 0) {
 						char charString[32];
-						av_strerror(returnValue, charString, 32);
-						std::string newString = "AudioDecoder::run() Error: Issue submitting a packet for decoding (" + std::to_string(returnValue) +
+						av_strerror(returnData, charString, 32);
+						std::string newString = "AudioDecoder::run() Error: Issue submitting a packet for decoding (" + std::to_string(returnData) +
 							"), " + charString + ".";
 						this->haveWeFailedBool.store(true);
 						if (this->configManager->doWePrintFFMPEGErrorMessages()) {
@@ -462,9 +460,9 @@ namespace DiscordCoreInternal {
 						}
 						return;
 					} else {
-						returnValue = avcodec_receive_frame(this->audioDecodeContext, this->frame);
-						if (returnValue < 0) {
-							std::string newString = "AudioDecoder::run() Error: Issue during decoding (" + std::to_string(returnValue) + ")";
+						returnData = avcodec_receive_frame(this->audioDecodeContext, this->frame);
+						if (returnData < 0) {
+							std::string newString = "AudioDecoder::run() Error: Issue during decoding (" + std::to_string(returnData) + ")";
 							this->haveWeFailedBool.store(true);
 							if (this->configManager->doWePrintFFMPEGErrorMessages()) {
 								cout << DiscordCoreAPI::shiftToBrightRed() << newString << DiscordCoreAPI::reset() << endl << endl;
@@ -484,10 +482,10 @@ namespace DiscordCoreInternal {
 						int32_t unpadded_linesize =
 							this->newFrame->nb_samples * av_get_bytes_per_sample(static_cast<AVSampleFormat>(this->newFrame->format)) * 2;
 						DiscordCoreAPI::AudioFrameData rawFrame{};
-						rawFrame.type = DiscordCoreAPI ::AudioFrameType::RawPCM;
+						rawFrame.type = DiscordCoreAPI::AudioFrameType::RawPCM;
 						rawFrame.data.resize(unpadded_linesize);
 						for (int32_t x = 0; x < unpadded_linesize; ++x) {
-							rawFrame.data[x] = static_cast<std::byte>(this->newFrame->extended_data[0][x]);
+							rawFrame.data[x] = static_cast<uint8_t>(this->newFrame->extended_data[0][x]);
 						}
 						rawFrame.currentSize = static_cast<int64_t>(newFrame->nb_samples) * 4ll;
 						this->outDataBuffer.send(std::move(rawFrame));
@@ -498,10 +496,10 @@ namespace DiscordCoreInternal {
 							}
 							swr_convert_frame(this->swrContext, this->newFrame, nullptr);
 							DiscordCoreAPI::AudioFrameData rawFrame02{};
-							rawFrame02.type = DiscordCoreAPI ::AudioFrameType::RawPCM;
+							rawFrame02.type = DiscordCoreAPI::AudioFrameType::RawPCM;
 							rawFrame02.data.resize(*this->newFrame->linesize);
 							for (int32_t x = 0; x < *this->newFrame->linesize; ++x) {
-								rawFrame02.data[x] = static_cast<std::byte>(this->newFrame->extended_data[0][x]);
+								rawFrame02.data[x] = static_cast<uint8_t>(this->newFrame->extended_data[0][x]);
 							}
 							rawFrame02.currentSize = static_cast<int64_t>(newFrame->nb_samples) * 4ll;
 							this->outDataBuffer.send(std::move(rawFrame02));

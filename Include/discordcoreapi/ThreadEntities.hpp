@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -44,8 +44,6 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};///< The Message Id to base the Thread off of.
 		Snowflake channelId{};///< The Channel to start the Thread in.
 		std::string reason{};///< Reason for starting the Thread.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For starting a Thread, not based on a Message.
@@ -56,9 +54,7 @@ namespace DiscordCoreAPI {
 		std::string threadName{};///< The name of the new Thread.
 		Snowflake channelId{};///< The Channel to start the Thread in.
 		std::string reason{};///< Reason for starting the Thread.
-		bool invitable{};///< Whether non-moderators can add other non - moderators to a thread; only available when creating a private thread.
-
-		operator Jsonifier();
+		bool invitable{};///< Whether non-moderators can add other non - moderators to a thread; only available when creating a protected thread.
 	};
 
 	/// \brief For starting a Thread, in a forum channel.
@@ -69,8 +65,6 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The id of the channel.
 		std::string reason{};///< Reason for starting the Thread.
 		std::string name{};///< 1-100 character channel name auto_archive_duration.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For joining a Thread.
@@ -118,14 +112,14 @@ namespace DiscordCoreAPI {
 		int32_t limit{};///< Maximum number of threads to return.
 	};
 
-	/// \brief For collecting private archived Threads from a given Channel.
+	/// \brief For collecting protected archived Threads from a given Channel.
 	struct DiscordCoreAPI_Dll GetPrivateArchivedThreadsData {
 		Snowflake channelId{};///< The Channel to acquire the Threads from.
 		std::string before{};///< Returns threads before this timeStamp.
 		int32_t limit{};///< Maximum number of threads to return.
 	};
 
-	/// \brief For collecting joined private archived Threads from a given Channel.
+	/// \brief For collecting joined protected archived Threads from a given Channel.
 	struct DiscordCoreAPI_Dll GetJoinedPrivateArchivedThreadsData {
 		Snowflake channelId{};///< The Channel to acquire the Threads from.
 		std::string before{};///< Returns threads before this timeStamp.
@@ -135,16 +129,6 @@ namespace DiscordCoreAPI {
 	/// \brief For listing the active Threads in a chosen Guild.
 	struct DiscordCoreAPI_Dll GetActiveGuildThreadsData {
 		Snowflake guildId{};///< The Guild from which to list the Threads from.
-	};
-
-	/// \brief Represents a single Thread.
-	class DiscordCoreAPI_Dll Thread : public Channel {
-	  public:
-		Thread() noexcept = default;
-
-		Thread(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~Thread() noexcept = default;
 	};
 
 	/**@}*/
@@ -213,12 +197,12 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a ArchivedThreadsData.
 		static CoRoutine<ArchivedThreadsData> getPublicArchivedThreadsAsync(GetPublicArchivedThreadsData dataPackage);
 
-		/// \brief Collects a list of private archived Threads from a given Channel.
+		/// \brief Collects a list of protected archived Threads from a given Channel.
 		/// \param dataPackage A GetPrivateArchivedThreadsData structure.
 		/// \returns A CoRoutine containing a ArchivedThreadsData.
 		static CoRoutine<ArchivedThreadsData> getPrivateArchivedThreadsAsync(GetPrivateArchivedThreadsData dataPackage);
 
-		/// \brief Collects a list of joined private archived Threads from a given Channel.
+		/// \brief Collects a list of joined protected archived Threads from a given Channel.
 		/// \param dataPackage A GetPrivateArchivedThreadsData structure.
 		/// \returns A CoRoutine containing a ArchivedThreadsData.
 		static CoRoutine<ArchivedThreadsData> getJoinedPrivateArchivedThreadsAsync(GetJoinedPrivateArchivedThreadsData dataPackage);
@@ -232,4 +216,4 @@ namespace DiscordCoreAPI {
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 	/**@}*/
-};// namespace DiscordCoreAPI
+};

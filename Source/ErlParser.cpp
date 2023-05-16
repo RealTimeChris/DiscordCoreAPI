@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@
 /// \file ErlParser.cpp
 
 #include <discordcoreapi/ErlParser.hpp>
+#include <codecvt>
 
 namespace DiscordCoreInternal {
 
@@ -41,12 +42,44 @@ namespace DiscordCoreInternal {
 		return std::string_view{ this->finalString.data(), this->currentSize };
 	}
 
-	void ErlParser::writeCharacters(const char* data, size_t length) {
+	void ErlParser::writeCharacters(const char* data, uint64_t length) {
 		if (this->finalString.size() < this->currentSize + length) {
 			this->finalString.resize((this->finalString.size() + length) * 2);
 		}
-		std::copy(data, data + length, this->finalString.data() + this->currentSize);
+		std::memcpy(this->finalString.data() + this->currentSize, data, length);
 		this->currentSize += length;
+	}
+	
+	unsigned char ErlParser::hex2dec(char hex) {
+		return ((hex & 0xf) + (hex >> 6) * 9);
+	}
+
+	char32_t ErlParser::hex4ToChar32(const char* hex) {
+		uint32_t value = hex2dec(hex[3]);
+		value |= hex2dec(hex[2]) << 4;
+		value |= hex2dec(hex[1]) << 8;
+		value |= hex2dec(hex[0]) << 12;
+		return value;
+	}
+
+	template<typename OTy> void ErlParser::readEscapedUnicode(OTy& value, auto&& it) {
+		char8_t buffer[4];
+		char32_t codepoint = hex4ToChar32(it);
+		auto& facet = std::use_facet<std::codecvt<char32_t, char8_t, mbstate_t>>(std::locale());
+		std::mbstate_t mbstate{};
+		const char32_t* fromNext;
+		char8_t* toNext;
+		const auto result = facet.out(mbstate, &codepoint, &codepoint + 1, fromNext, buffer, buffer + 4, toNext);
+		if (result != std::codecvt_base::ok) {
+			return;
+		}
+
+		if ((toNext - buffer) != 1) [[unlikely]] {
+			return;
+		}
+		*value = static_cast<char>(buffer[0]);
+
+		std::advance(it, 4);
 	}
 
 	void ErlParser::writeCharactersFromBuffer(uint32_t length) {
@@ -77,66 +110,115 @@ namespace DiscordCoreInternal {
 				return;
 			}
 		}
-		this->writeCharacter('"');
-		for (size_t x = 0; x < length; ++x) {
-			switch (stringNew[x]) {
-				case 0x00: {
+		auto handleEscaped = [&,this]() {
+			switch (*stringNew) {
+				case '"':
+				case '\\':
+				case '/':
+					writeCharacter(*stringNew);
+					++stringNew;
 					break;
+				case 'b':
+					writeCharacter('\b');
+					++stringNew;
+					break;
+				case 'f':
+					writeCharacter('\f');
+					++stringNew;
+					break;
+				case 'n':
+					writeCharacter('\n');
+					++stringNew;
+					break;
+				case 'r':
+					writeCharacter('\r');
+					++stringNew;
+					break;
+				case 't':
+					writeCharacter('\t');
+					++stringNew;
+					break;
+				case 'u': {
+					auto newPtr = this->finalString.data() + offSet;
+					readEscapedUnicode(newPtr, stringNew);
+					++stringNew;
+					return;
 				}
-				case 0x27: {
-					this->writeCharacter('\\');
-					this->writeCharacter('\'');
+				default: {
+					++stringNew;
+					return;
+				}
+			}
+		};
+		this->writeCharacter('"');
+		for (auto iter = stringNew; iter != stringNew + length;) {
+			bool doWeBreak{};
+			switch (*iter) {
+				case 0x00: {
+					doWeBreak = true;
 					break;
 				}
 				case 0x22: {
 					this->writeCharacter('\\');
 					this->writeCharacter('"');
+					++iter;
 					break;
 				}
 				case 0x5c: {
-					this->writeCharacter('\\');
-					this->writeCharacter('\\');
+					handleEscaped();
+					++iter;
 					break;
 				}
 				case 0x07: {
 					this->writeCharacter('\\');
 					this->writeCharacter('a');
+					++iter;
 					break;
 				}
 				case 0x08: {
 					this->writeCharacter('\\');
 					this->writeCharacter('b');
+					++iter;
 					break;
 				}
 				case 0x0C: {
 					this->writeCharacter('\\');
 					this->writeCharacter('f');
+					++iter;
 					break;
 				}
 				case 0x0A: {
 					this->writeCharacter('\\');
 					this->writeCharacter('n');
+					++iter;
 					break;
 				}
 				case 0x0D: {
 					this->writeCharacter('\\');
 					this->writeCharacter('r');
+					++iter;
 					break;
 				}
 				case 0x0B: {
 					this->writeCharacter('\\');
 					this->writeCharacter('v');
+					++iter;
 					break;
 				}
 				case 0x09: {
 					this->writeCharacter('\\');
 					this->writeCharacter('t');
+					++iter;
 					break;
 				}
 				default: {
-					this->writeCharacter(stringNew[x]);
-					break;
+					this->writeCharacter(*iter);
+					++iter;
 				}
+					
+			}
+			if (doWeBreak) {
+				break;
 			}
 		}
 		this->writeCharacter('"');
@@ -234,7 +316,8 @@ namespace DiscordCoreInternal {
 
 	void ErlParser::parseNewFloatExt() {
 		uint64_t value = readBitsFromBuffer<uint64_t>();
-		std::string valueNew = std::to_string(*reinterpret_cast<double*>(value));
+		auto newDouble = *reinterpret_cast<double*>(value);
+		std::string valueNew = std::to_string(newDouble);
 		this->writeCharacters(valueNew.data(), valueNew.size());
 	}
 
@@ -276,7 +359,7 @@ namespace DiscordCoreInternal {
 	}
 
 	void ErlParser::parseNilExt() {
-		this->writeCharacters("null", 4);
+		this->writeCharacters("[]", 2);
 	}
 
 	void ErlParser::parseSmallAtomExt() {

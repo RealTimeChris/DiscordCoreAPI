@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -57,8 +57,6 @@ namespace DiscordCoreAPI {
 		ExecuteWebHookData() noexcept = default;
 
 		ExecuteWebHookData(WebHookData dataNew);
-
-		operator Jsonifier();
 
 		/// \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
@@ -160,8 +158,6 @@ namespace DiscordCoreAPI {
 		EditWebHookData() noexcept = default;
 
 		EditWebHookData(WebHookData dataNew);
-
-		operator Jsonifier();
 	};
 
 	/// \brief For collecting a list of WebHooks from a chosen Channel.
@@ -234,24 +230,10 @@ namespace DiscordCoreAPI {
 	  public:
 		WebHook() noexcept = default;
 
-		WebHook(simdjson::ondemand::value jsonObjectData);
-
 		virtual ~WebHook() noexcept = default;
 	};
 
-	class DiscordCoreAPI_Dll WebHookVector {
-	  public:
-		WebHookVector() noexcept = default;
-
-		operator std::vector<WebHook>();
-
-		WebHookVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~WebHookVector() noexcept = default;
-
-	  protected:
-		std::vector<WebHook> webHooks{};
-	};
+	using WebHookVector = std::vector<WebHook>;
 
 	/**@}*/
 
@@ -334,4 +316,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 
-}// namespace DiscordCoreAPI
+}

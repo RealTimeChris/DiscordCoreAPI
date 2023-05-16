@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -38,14 +38,16 @@ namespace DiscordCoreInternal {
 
 	class DiscordCoreAPI_Dll ErlParser {
 	  public:
+		friend class WebSocketClient;
+
 		std::string_view parseEtfToJson(std::string_view dataToParse);
 
 	  protected:
 		std::string finalString{};
 		const char* dataBuffer{};
-		size_t currentSize{};
+		uint64_t currentSize{};
+		uint64_t dataSize{};
 		uint64_t offSet{};
-		size_t dataSize{};
 
 		template<typename RTy> RTy readBitsFromBuffer() {
 			if (this->offSet + sizeof(RTy) > this->dataSize) {
@@ -57,7 +59,19 @@ namespace DiscordCoreInternal {
 			return newValue;
 		}
 
-		void writeCharacters(const char* data, size_t length);
+		unsigned char hex2dec(char hex);
+
+		char32_t hex4ToChar32(const char* hex);
+		
+		template<typename OTy> void readEscapedUnicode(OTy& value, auto&& it);
+
+		bool isThreeByteSequence(unsigned char byte);
+
+		bool isFourByteSequence(unsigned char byte);
+
+		bool isTwoByteSequence(unsigned char byte);
+
+		void writeCharacters(const char* data, uint64_t length);
 
 		void writeCharactersFromBuffer(uint32_t length);
 
