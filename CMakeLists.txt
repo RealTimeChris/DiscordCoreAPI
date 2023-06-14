@@ -1,7 +1,7 @@
 #
 #	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 #
-#	Copyright 2021, 2022 Chris M. (RealTimeChris)
+#	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 #
 #	This library is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU Lesser General Public
@@ -21,17 +21,33 @@
 # CMakeLists.txt - The CMake script for building this library.
 # May 13, 2021
 # https://discordcoreapi.com
-
-# Set this value...
-set(_VCPKG_ROOT_DIR "")
-# OR these values.
-set(FFMPEG_DIR "C:/Vcpkg/installed/x64-windows/share/ffmpeg") # Set this one to the folder location of the file "FindFFMPEG.cmake".
+set(VCPKG_ROOT_DIR "C:/vcpkg")
 set(Opus_DIR "C:/Vcpkg/installed/x64-windows/share/opus") # Set this one to the folder location of the file "OpusConfig.cmake".
-set(simdjson_DIR "C:/Vcpkg/installed/x64-windows/share/simdjson") # Set this one to the folder location of the file "simdjson-config.cmake".
 set(unofficial-sodium_DIR "C:/Vcpkg/installed/x64-windows/share/unofficial-sodium") # Set this one to the folder location of the file "unofficial-sodiumConfig.cmake".
+set(Jsonifier_DIR "C:/Vcpkg/installed/x64-windows/share/jsonifier") # Set this one to the folder location of the file "JsonifierConfig.cmake".
 set(OPENSSL_ROOT_DIR "C:/Vcpkg/installed/x64-windows/") # Set this one to the folder location of the include folder and library folders of OpenSSL.
 
 cmake_minimum_required(VERSION 3.20)
+if (WIN32)
+	set(OS "windows")
+elseif(UNIX)
+	set(OS "linux")
+elseif(APPLE)
+	set(OS "osx")
+endif()
+if (NOT "$ENV{VCPKG_INSTALLATION_ROOT}" STREQUAL "")
+	set(VCPKG_INSTALLATION_ROOT_NEW "$ENV{VCPKG_INSTALLATION_ROOT}")
+	set(OPENSSL_ROOT_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/")
+	set(OpenSSL_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/openssl")
+	set(Jsonifier_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/jsonifier")
+	set(Opus_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/opus")
+	set(unofficial-sodium_DIR "${VCPKG_INSTALLATION_ROOT_NEW}/installed/x64-${OS}/share/unofficial-sodium")
+	include("${VCPKG_INSTALLATION_ROOT_NEW}/scripts/buildsystems/vcpkg.cmake")
+else()
+	message(WARNING "No Vcpkg root folder found, Please make sure that you properly set the library folders.")
+	set(VCPKG_INSTALLATION_ROOT_NEW "${VCPKG_ROOT_DIR}")
+endif()
+
 set(PROJECT_NAME "DiscordCoreAPI")
 set(LIB_NAME "${PROJECT_NAME}")
 set(PRODUCT_VERSION "1.2.0")
@@ -44,36 +60,15 @@ project(
 	HOMEPAGE_URL "https://discordcoreapi.com"
 	DESCRIPTION "${DESCRIPTION}"
 )
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/CMake;${FFMPEG_DIR};${OpenSSL_DIR}")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/CMake;${FFMPEG_DIR};")
 set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}")
+set(CMAKE_CXX_STANDARD 23)
 
 if(EXISTS "${_VCPKG_INSTALLED_DIR}")
 	set(OS_NAME "${CMAKE_SYSTEM_NAME}")
 	string(TOLOWER "${OS_NAME}" OS_NAME)
 	set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${_VCPKG_ROOT_DIR}/installed/x64-${OS_NAME}/share/ffmpeg")
 	set(DEBUG_PREFIX "")
-else()
-	set(DEBUG_PREFIX "debug/")
-	if (WIN32)
-		if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-			cmake_path(GET CMAKE_ROOT ROOT_PATH ROOT_DRIVE)
-			if (DEFINED ENV{EnableASAN})
-				set(CMAKE_INSTALL_PREFIX "${ROOT_DRIVE}Users/$ENV{USERNAME}/CMake/${PROJECT_NAME}/ASAN" CACHE PATH "The CMake install prefix." FORCE)
-			else()
-				set(CMAKE_INSTALL_PREFIX "${ROOT_DRIVE}Users/$ENV{USERNAME}/CMake/${PROJECT_NAME}" CACHE PATH "The CMake install prefix." FORCE)
-			endif()
-		endif()
-	elseif(UNIX)
-		if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-			if (DEFINED ENV{EnableASAN})
-				set(CMAKE_INSTALL_PREFIX "/home/$ENV{USERNAME}/CMake/${PROJECT_NAME}/ASAN" CACHE PATH "The CMake install prefix." FORCE)
-			else()
-				set(CMAKE_INSTALL_PREFIX "/home/$ENV{USERNAME}/CMake/${PROJECT_NAME}" CACHE PATH "The CMake install prefix." FORCE)
-			endif()
-		endif()
-	else()
-		message(FATAL_ERROR "Sorry, but your OS is not supported!")
-	endif()
 endif()
 
 add_subdirectory(Library)

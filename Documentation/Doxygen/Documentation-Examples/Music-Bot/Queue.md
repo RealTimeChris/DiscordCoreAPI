@@ -53,14 +53,14 @@ namespace DiscordCoreAPI {
 	class TheQueue : public BaseFunction {
 	  public:
 		TheQueue() {
-			this->commandName = "queue";
-			this->helpDescription = "View and edit the song queue.";
+			commandName = "queue";
+			helpDescription = "View and edit the song queue.";
 			std::unique_ptr<DiscordCoreAPI::EmbedData> newEmbed{ std::make_unique<DiscordCoreAPI::EmbedData>() };
 			newEmbed->setDescription("------\nSimply enter /queue, and follow the instructions!\n------");
 			newEmbed->setTitle("__**Queue Usage:**__");
 			newEmbed->setTimeStamp(getTimeAndDate());
 			newEmbed->setColor("FeFeFe");
-			this->helpEmbed = *newEmbed;
+			helpEmbed = *newEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

@@ -1,2 +1,6 @@
 .vs/
 Build/
+Documentation/Doxygen/Breathe
+out/
+Output Files/
+Install/

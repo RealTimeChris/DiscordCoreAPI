@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -31,8 +31,8 @@
 namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll EncoderReturnData {
-		std::basic_string_view<std::byte> data{};
-		size_t sampleCount{};
+		std::basic_string_view<uint8_t> data{};
+		uint64_t sampleCount{};
 	};
 
 	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
@@ -42,14 +42,14 @@ namespace DiscordCoreInternal {
 
 		OpusEncoderWrapper();
 
-		EncoderReturnData encodeData(std::basic_string_view<std::byte> inputFrame);
+		EncoderReturnData encodeData(std::basic_string_view<uint8_t> inputFrame);
 
 	  protected:
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> ptr{ nullptr, OpusEncoderDeleter{} };
-		std::basic_string<std::byte> encodedData{};
+		std::basic_string<uint8_t> encodedData{};
 		const int32_t maxBufferSize{ 1276 };
 		const int32_t sampleRate{ 48000 };
 		const int32_t nChannels{ 2 };
 	};
 
-}// namespace DiscordCoreAPI
+}

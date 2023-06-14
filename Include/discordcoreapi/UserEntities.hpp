@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -30,10 +30,6 @@
 
 namespace DiscordCoreAPI {
 
-	DiscordCoreAPI_Dll inline bool operator==(const UserData& lhs, const UserData& rhs) {
-		return lhs.id == rhs.id;
-	}
-
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
@@ -41,18 +37,16 @@ namespace DiscordCoreAPI {
 
 	/// \brief For adding a user to a group DM.
 	struct DiscordCoreAPI_Dll AddRecipientToGroupDMData {
-		Snowflake channelId{};///< The Channel Id of the DM.
+		Snowflake channelId{};///< The Channel Snowflake of the DM.
 		std::string token{};///< The user's access token.
 		std::string nick{};///< The user's nickname.
-		Snowflake userId{};///< The user's Id.
-
-		operator Jsonifier();
+		Snowflake userId{};///< The user's Snowflake.
 	};
 
 	/// \brief For removing a User from a group DM.
 	struct DiscordCoreAPI_Dll RemoveRecipientFromGroupDMData {
-		Snowflake channelId{};///< The Channel Id of the DM.
-		Snowflake userId{};///< The user's Id.
+		Snowflake channelId{};///< The Channel Snowflake of the DM.
+		Snowflake userId{};///< The user's Snowflake.
 	};
 
 	/// \brief For updating the bot's current voice state.
@@ -82,66 +76,6 @@ namespace DiscordCoreAPI {
 		std::string avatar{};///< If passed, modifies the user's avatar.
 	};
 
-	/// \brief A single User.
-	class DiscordCoreAPI_Dll User : public UserData {
-	  public:
-		PremiumType premiumType{};///< The type of Nitro subscription on a user ' s account.
-		int32_t accentColor{};///< The user 's banner color encoded as an integer representation of hexadecimal color code.
-		std::string locale{};///< The user' s chosen language option.
-		std::string email{};///< The user's email.
-		IconHash banner{};///< The user's banner hash.
-
-		User() noexcept = default;
-
-		User& operator=(UserData&& other) noexcept;
-
-		User(UserData&&) noexcept;
-
-		User& operator=(const UserData& other) noexcept;
-
-		User(const UserData&) noexcept;
-
-		User(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~User() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll UserVector {
-	  public:
-		UserVector() noexcept = default;
-
-		operator std::vector<User>();
-
-		UserVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~UserVector() noexcept = default;
-
-	  protected:
-		std::vector<User> users{};
-	};
-
-	/// \brief A type of User, to represent the Bot and some of its associated endpoints.
-	class DiscordCoreAPI_Dll BotUser : public User {
-	  public:
-		friend class DiscordCoreClient;
-
-		BotUser& operator=(const BotUser& other) noexcept = default;
-
-		BotUser(const BotUser& other) noexcept = default;
-
-		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
-
-		/// \brief Updates the bot's current voice-status. Joins/leaves a Channel, and/or self deafens/mutes.
-		void updateVoiceStatus(UpdateVoiceStateData& datdataPackageaPackage);
-
-		/// \brief Updates the bot's current activity status, to be viewed by others in the same server as the bot.
-		void updatePresence(UpdatePresenceData& dataPackage);
-
-	  protected:
-		BotUser() noexcept = default;
-
-		DiscordCoreInternal::BaseSocketAgent* baseSocketAgent{ nullptr };
-	};
 	/**@}*/
 
 	/**
@@ -200,7 +134,7 @@ namespace DiscordCoreAPI {
 
 		/// \brief Collects the User's Connections.
 		/// \returns A CoRoutine containing a vector<ConnectionData>.
-		static CoRoutine<std::vector<ConnectionData>> getUserConnectionsAsync();
+		static CoRoutine<ConnectionDataVector> getUserConnectionsAsync();
 
 		/// \brief Collects the Application responseData associated with the current Bot.
 		/// \returns A CoRoutine containing an ApplicationData.
@@ -210,15 +144,18 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing an AuthorizationInfoData.
 		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
-		static void insertUser(UserData user);
+		static void insertUser(UserData&& user);
+
+		static void insertUser(const UserData& user);
 
 		static bool doWeCacheUsers();
 
 	  protected:
+		inline static UserData nullUser{ std::numeric_limits<uint64_t>::max() };
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<UserData> cache;
+		static ObjectCache<Snowflake, UserData> cache;
 		static bool doWeCacheUsersBool;
 	};
 	/**@}*/
 
-}// namespace DiscordCoreAPI
+}

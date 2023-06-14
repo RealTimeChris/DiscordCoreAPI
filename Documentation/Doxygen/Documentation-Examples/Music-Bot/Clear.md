@@ -9,14 +9,14 @@ namespace DiscordCoreAPI {
 	class Clear : public BaseFunction {
 	  public:
 		Clear() {
-			this->commandName = "clear";
-			this->helpDescription = "Clears the current song queue.";
+			commandName = "clear";
+			helpDescription = "Clears the current song queue.";
 			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter /clear! And that's it!\n------");
 			msgEmbed.setTitle("__**Clear Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

@@ -1,0 +1,69 @@
+
+name: Build-and-Test-CLANG
+
+on:
+  push:
+    branches:
+    - main
+    - dev
+
+jobs:
+  Build:
+    runs-on: ubuntu-22.04
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        clang: [17]
+        build_type: [Debug, Release]
+        std: [23]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Update Vcpkg and install other dependencies.
+      run: |
+            sudo apt-get upgrade
+            sudo apt-get update
+            sudo apt-get install nasm
+            cd /usr/local/share/vcpkg
+            ./bootstrap-vcpkg.sh
+            git stash
+            git pull
+            vcpkg update
+
+    - name: Install Clang17
+      run: |
+            sudo apt remove clang-14
+            wget https://apt.llvm.org/llvm.sh
+            chmod +x llvm.sh
+            sudo ./llvm.sh 17
+
+    - name: Copy the Jsonifier repo over.
+      run: |
+           sudo git clone https://github.com/RealTimeChris/Jsonifier
+           sudo cp -r -v ./Jsonifier/Vcpkg/* /usr/local/share/vcpkg/
+
+    - name: Install the dependencies.
+      run: |
+           vcpkg install jsonifier:x64-linux
+           vcpkg install opus:x64-linux
+           vcpkg install libsodium:x64-linux
+           vcpkg install openssl:x64-linux
+
+    - name: Configure CMake
+      working-directory: Tests
+      run: |
+           cmake -S . -B ./Build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=/usr/bin/clang++-17 -DGITHUB_BRANCH_TYPE=${{github.ref}}
+
+    - name: Build the Test
+      working-directory: Tests/Build
+      run: |
+           cmake --build . --config=${{matrix.build_type}}
+
+    - name: Run the Test
+      working-directory: Tests/Build
+      run: |
+            ./DiscordCoreAPITest
+      continue-on-error: true
+      

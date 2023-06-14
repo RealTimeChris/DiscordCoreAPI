@@ -15,14 +15,14 @@ Instantiating/Creating a Button {#instantiatingcreatingbutton}
 	class Test : public DiscordCoreAPI::BaseFunction {
 	  public:
 		Test() {
-			this->commandName = "test";
-			this->helpDescription = "Testing purposes!";
+			commandName = "test";
+			helpDescription = "Testing purposes!";
 			DiscordCoreAPI::EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<DiscordCoreAPI::BaseFunction> create() {

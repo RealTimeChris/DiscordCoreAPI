@@ -18,14 +18,14 @@ namespace DiscordCoreAPI {
 	class RegisterApplicationCommands : public BaseFunction {
 	  public:
 		RegisterApplicationCommands() {
-			this->commandName = "registerapplicationcommands";
-			this->helpDescription = "Register some application commands.";
+			commandName = "registerapplicationcommands";
+			helpDescription = "Register some application commands.";
 			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter /RegisterApplicationCommandsn------");
 			msgEmbed.setTitle("__**Register Slash Commands Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

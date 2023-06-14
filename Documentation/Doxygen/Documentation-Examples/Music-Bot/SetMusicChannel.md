@@ -10,8 +10,8 @@ namespace DiscordCoreAPI {
 	class SetMusicChannel : public BaseFunction {
 	  public:
 		SetMusicChannel() {
-			this->commandName = "setmusicchannel";
-			this->helpDescription = "Sets the channels from which you can issue music commands!";
+			commandName = "setmusicchannel";
+			helpDescription = "Sets the channels from which you can issue music commands!";
 			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter /setmusichannel add in order to add the current channel.\nAlternatively enter /setmusicchannel "
 									"remove to remove the current channel.\nAlso, enter "
@@ -19,7 +19,7 @@ namespace DiscordCoreAPI {
 			msgEmbed.setTitle("__**Set Music Channel Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

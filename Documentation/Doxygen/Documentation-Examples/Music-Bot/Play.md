@@ -55,14 +55,14 @@ namespace DiscordCoreAPI {
 		static std::unordered_map<int64_t, int64_t> timeOfLastPlay;
 
 		Play() {
-			this->commandName = "play";
-			this->helpDescription = "Add a song to the queue and play it if nothing is playing.";
+			commandName = "play";
+			helpDescription = "Add a song to the queue and play it if nothing is playing.";
 			EmbedData newEmbed;
 			newEmbed.setDescription("------\nSimply enter /play SONGNAME OR Url.\n------");
 			newEmbed.setTitle("__**Play Usage:**__");
 			newEmbed.setTimeStamp(getTimeAndDate());
 			newEmbed.setColor("FeFeFe");
-			this->helpEmbed = newEmbed;
+			helpEmbed = newEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

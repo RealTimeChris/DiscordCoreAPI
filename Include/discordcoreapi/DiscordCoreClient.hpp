@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -42,7 +42,7 @@
 #include <discordcoreapi/MessageEntities.hpp>
 #include <discordcoreapi/ReactionEntities.hpp>
 #include <discordcoreapi/RoleEntities.hpp>
-#include <discordcoreapi/SSLClients.hpp>
+#include <discordcoreapi/TCPConnection.hpp>
 #include <discordcoreapi/SongAPI.hpp>
 #include <discordcoreapi/SoundCloudAPI.hpp>
 #include <discordcoreapi/StageInstanceEntities.hpp>
@@ -54,6 +54,7 @@
 #include <discordcoreapi/WebHookEntities.hpp>
 #include <discordcoreapi/WebSocketEntities.hpp>
 #include <discordcoreapi/YouTubeAPI.hpp>
+#include <discordcoreapi/JsonSpecializations.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -159,9 +160,10 @@ namespace DiscordCoreAPI {
 		static BotUser currentUser;
 
 		std::unordered_map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
-		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{ nullptr };
+		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{};
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
-		StopWatch<Milliseconds> connectionStopWatch{ 5250ms };
+		StopWatch<Milliseconds> connectionStopWatch00{ 5000 };
+		StopWatch<Milliseconds> connectionStopWatch01{ 5000 };
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
@@ -169,6 +171,7 @@ namespace DiscordCoreAPI {
 		std::atomic_bool isItSafeToConnect{ true };
 		Milliseconds startupTimeSinceEpoch{};
 		ConfigManager configManager{};
+		std::mutex connectionMutex{};
 		EventManager eventManager{};///< An event-manager, for hooking into Discord-API-Events sent over the Websockets.
 		bool didWeStartCorrectly{};
 
@@ -179,4 +182,4 @@ namespace DiscordCoreAPI {
 		bool instantiateWebSockets();
 	};
 	/**@}*/
-}// namespace DiscordCoreAPI
+}

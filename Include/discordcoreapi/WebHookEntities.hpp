@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -45,21 +45,19 @@ namespace DiscordCoreAPI {
 	/// \brief For executing a WebHook.
 	class DiscordCoreAPI_Dll ExecuteWebHookData {
 	  public:
+		friend struct Jsonifier::Core<ExecuteWebHookData>;
 		friend class CreateEphemeralFollowUpMessageData;
 		friend class CreateFollowUpMessageData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;
 		friend class WebHooks;
 
-		Snowflake
-			threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{};///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData() noexcept = default;
 
 		ExecuteWebHookData(WebHookData dataNew);
-
-		operator Jsonifier();
 
 		/// \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
@@ -69,8 +67,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel,
-			ButtonStyle buttonStyle, const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
+		ExecuteWebHookData& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
 
 		/// \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -147,14 +145,14 @@ namespace DiscordCoreAPI {
 	/// \brief For editing a WebHook Message.
 	class DiscordCoreAPI_Dll EditWebHookData : public ExecuteWebHookData {
 	  public:
+		friend struct Jsonifier::Core<EditWebHookData>;
 		friend class EditInteractionResponseData;
 		friend class EditFollowUpMessageData;
 		friend class Interactions;
 		friend class WebHooks;
 
-		Snowflake messageId{};///< The Message Id to collect.
-		Snowflake
-			threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		Snowflake messageId{};///< The Message Snowflake to collect.
+		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{};///< Waits for server confirmation of message send before response, and returns the created message body.
 
 		ExecuteWebHookData& setTTSStatus(bool) = delete;
@@ -162,8 +160,6 @@ namespace DiscordCoreAPI {
 		EditWebHookData() noexcept = default;
 
 		EditWebHookData(WebHookData dataNew);
-
-		operator Jsonifier();
 	};
 
 	/// \brief For collecting a list of WebHooks from a chosen Channel.
@@ -178,13 +174,13 @@ namespace DiscordCoreAPI {
 
 	/// \brief Collects a single WebHook.
 	struct DiscordCoreAPI_Dll GetWebHookData {
-		Snowflake webHookId{};///< Id of the desired WebHook to collect.
+		Snowflake webHookId{};///< Snowflake of the desired WebHook to collect.
 	};
 
-	/// \brief Collects a single WebHook, using the Token and Id.
+	/// \brief Collects a single WebHook, using the Token and Snowflake.
 	struct DiscordCoreAPI_Dll GetWebHookWithTokenData {
 		std::string webhookToken{};///< Token of the desired WebHook.
-		Snowflake webHookId{};///< Id of the desired WebHook.
+		Snowflake webHookId{};///< Snowflake of the desired WebHook.
 	};
 
 	/// \brief For modifying a WebHook.
@@ -219,7 +215,7 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GetWebHookMessageData {
 		std::string webhookToken{};///< The WebHook token you would like to collect.
 		Snowflake webHookId{};///< The WebHook you would like to collect.
-		Snowflake messageId{};///< The Message Id to collect.
+		Snowflake messageId{};///< The Message Snowflake to collect.
 		Snowflake threadId{};///< The thread that the Message is in.
 	};
 
@@ -227,9 +223,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DeleteWebHookMessageData {
 		std::string webhookToken{};///< The WebHook token you would like to collect.
 		Snowflake webHookId{};///< The WebHook you would like to collect.
-		Snowflake messageId{};///< The Message Id to collect.
-		Snowflake
-			threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
+		Snowflake messageId{};///< The Message Snowflake to collect.
+		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 	};
 
 	/// \brief A single WebHook.
@@ -237,24 +232,10 @@ namespace DiscordCoreAPI {
 	  public:
 		WebHook() noexcept = default;
 
-		WebHook(simdjson::ondemand::value jsonObjectData);
-
 		virtual ~WebHook() noexcept = default;
 	};
 
-	class DiscordCoreAPI_Dll WebHookVector {
-	  public:
-		WebHookVector() noexcept = default;
-
-		operator std::vector<WebHook>();
-
-		WebHookVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~WebHookVector() noexcept = default;
-
-	  protected:
-		std::vector<WebHook> webHooks{};
-	};
+	using WebHookVector = std::vector<WebHook>;
 
 	/**@}*/
 
@@ -337,4 +318,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 
-}// namespace DiscordCoreAPI
+}

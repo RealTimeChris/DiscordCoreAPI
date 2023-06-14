@@ -28,417 +28,432 @@
 #include <discordcoreapi/CommandController.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 
+namespace Jsonifier {
+
+	template<> struct Core<DiscordCoreAPI::AutoModerationActionExecutionEventData> {
+		using ValueType = DiscordCoreAPI::AutoModerationActionExecutionEventData;
+		static constexpr auto parseValue = object("alert_system_message_id", &ValueType::alertSystemMessageId, "rule_trigger_type",
+			&ValueType::ruleTriggerType, "matched_keyword", &ValueType::matchedKeyword, "matched_content", &ValueType::matchedContent, "content",
+			&ValueType::content, "channel_id", &ValueType::channelId, "message_id", &ValueType::messageId, "action", &ValueType::action, "guild_id",
+			&ValueType::guildId, "rule_id", &ValueType::ruleId, "user_id", &ValueType::userId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::VoiceStateData> {
+		using OTy2 = DiscordCoreAPI::VoiceStateData;
+		static constexpr auto parseValue =
+			object("request_to_speak_timestamp", &OTy2::requestToSpeakTimestamp, "session_id", &OTy2::sessionId, "self_stream", &OTy2::selfStream,
+				"self_video", &OTy2::selfVideo, "self_deaf", &OTy2::selfDeaf, "self_mute", &OTy2::selfMute, "suppress", &OTy2::suppress, "deaf",
+				&OTy2::deaf, "mute", &OTy2::mute, "user_id", &OTy2::id, "channel_id", &OTy2::channelId, "guild_id", &OTy2::guildId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::GuildEmojisUpdateEventData> {
+		using ValueType = DiscordCoreAPI::GuildEmojisUpdateEventData;
+		static constexpr auto parseValue = object("emojis", &ValueType::emojis, "guild_id", &ValueType::guildId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::ChannelPinsUpdateEventData> {
+		using ValueType = DiscordCoreAPI::ChannelPinsUpdateEventData;
+		static constexpr auto parseValue =
+			object("last_pin_timestamp", &ValueType::lastPinTimeStamp, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::TypingStartData> {
+		using ValueType = DiscordCoreAPI::TypingStartData;
+		static constexpr auto parseValue = object("member", &ValueType::member, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId,
+			"timestamp", &ValueType::timeStamp, "user_id", &ValueType::userId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::ReactionRemoveData> {
+		using ValueType = DiscordCoreAPI::ReactionRemoveData;
+		static constexpr auto parseValue = object("channel_id", &ValueType::channelId, "message_id", &ValueType::messageId, "guild_id",
+			&ValueType::guildId, "user_id", &ValueType::userId, "emoji", &ValueType::emoji);
+	};
+
+	template<> struct Core<DiscordCoreAPI::GuildStickersUpdateEventData> {
+		using ValueType = DiscordCoreAPI::GuildStickersUpdateEventData;
+		static constexpr auto parseValue = object("stickers", &ValueType::stickers, "guild_id", &ValueType::guildId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::VoiceServerUpdateData> {
+		using ValueType = DiscordCoreAPI::VoiceServerUpdateData;
+		static constexpr auto parseValue = object("endpoint", &ValueType::endpoint, "guild_id", &ValueType::guildId, "token", &ValueType::token);
+	};
+
+	template<> struct Core<DiscordCoreAPI::GuildMembersChunkEventData> {
+		using ValueType = DiscordCoreAPI::GuildMembersChunkEventData;
+		static constexpr auto parseValue =
+			object("presences", &ValueType::presences, "members", &ValueType::members, "not_found", &ValueType::notFound, "chunk_index",
+				&ValueType::chunkIndex, "chunk_count", &ValueType::chunkCount, "guild_id", &ValueType::guildId, "nonce", &ValueType::nonce);
+	};
+
+	template<> struct Core<DiscordCoreAPI::GuildMemberRemoveData> {
+		using ValueType = DiscordCoreAPI::GuildMemberRemoveData;
+		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "user", &ValueType::user);
+	};
+
+	template<> struct Core<DiscordCoreAPI::GuildBanAddData> {
+		using ValueType = DiscordCoreAPI::GuildBanAddData;
+		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "user", &ValueType::user);
+	};
+
+	template<> struct Core<DiscordCoreAPI::GuildBanRemoveData> {
+		using ValueType = DiscordCoreAPI::GuildBanRemoveData;
+		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "user", &ValueType::user);
+	};
+
+	template<> struct Core<DiscordCoreAPI::RoleCreationData> {
+		using ValueType = DiscordCoreAPI::RoleCreationData;
+		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "role", &ValueType::role);
+	};
+
+	template<> struct Core<DiscordCoreAPI::RoleUpdateData> {
+		using ValueType = DiscordCoreAPI::RoleUpdateData;
+		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "role", &ValueType::role);
+	};
+
+	template<> struct Core<DiscordCoreAPI::RoleDeletionData> {
+		using ValueType = DiscordCoreAPI::RoleDeletionData;
+		static constexpr auto parseValue = object("guild_id", &ValueType::guildId, "role", &ValueType::role);
+	};
+
+	template<> struct Core<DiscordCoreAPI::GuildScheduledEventUserAddData> {
+		using ValueType = DiscordCoreAPI::GuildScheduledEventUserAddData;
+		static constexpr auto parseValue =
+			object("guild_scheduled_event_id", &ValueType::guildScheduledEventId, "guild_id", &ValueType::guildId, "user_id", &ValueType::userId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::GuildScheduledEventUserRemoveData> {
+		using ValueType = DiscordCoreAPI::GuildScheduledEventUserRemoveData;
+		static constexpr auto parseValue =
+			object("guild_scheduled_event_id", &ValueType::guildScheduledEventId, "guild_id", &ValueType::guildId, "user_id", &ValueType::userId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::IntegrationCreationData> {
+		using ValueType = DiscordCoreAPI::IntegrationCreationData;
+		static constexpr auto parseValue = object("integration_data", &ValueType::integrationData, "guild_id", &ValueType::guildId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::IntegrationUpdateData> {
+		using ValueType = DiscordCoreAPI::IntegrationUpdateData;
+		static constexpr auto parseValue = object("integration_data", &ValueType::integrationData, "guild_id", &ValueType::guildId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::IntegrationDeletionData> {
+		using ValueType = DiscordCoreAPI::IntegrationDeletionData;
+		static constexpr auto parseValue = object("application_id", &ValueType::applicationId, "guild_id", &ValueType::guildId, "id", &ValueType::id);
+	};
+
+	template<> struct Core<DiscordCoreAPI::InviteDeletionData> {
+		using ValueType = DiscordCoreAPI::InviteDeletionData;
+		static constexpr auto parseValue = object("channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId, "code", &ValueType::code);
+	};
+
+	template<> struct Core<DiscordCoreAPI::MessageDeletionData> {
+		using ValueType = DiscordCoreAPI::MessageDeletionData;
+		static constexpr auto parseValue =
+			object("message_id", &ValueType::messageId, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::MessageDeletionBulkData> {
+		using ValueType = DiscordCoreAPI::MessageDeletionBulkData;
+		static constexpr auto parseValue = object("ids", &ValueType::ids, "channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::ReactionRemoveAllData> {
+		using ValueType = DiscordCoreAPI::ReactionRemoveAllData;
+		static constexpr auto parseValue =
+			object("channel_id", &ValueType::channelId, "message_id", &ValueType::messageId, "guild_id", &ValueType::guildId);
+	};
+
+	template<> struct Core<DiscordCoreAPI::ReactionRemoveEmojiData> {
+		using ValueType = DiscordCoreAPI::ReactionRemoveEmojiData;
+		static constexpr auto parseValue = object("message_id", &ValueType::messageId, "channel_id", &ValueType::channelId, "guild_id",
+			&ValueType::guildId, "emoji", &ValueType::emoji);
+	};
+
+	template<> struct Core<DiscordCoreAPI::WebHookUpdateData> {
+		using ValueType = DiscordCoreAPI::WebHookUpdateData;
+		static constexpr auto parseValue = object("channel_id", &ValueType::channelId, "guild_id", &ValueType::guildId);
+	};
+
+}
+
 namespace DiscordCoreAPI {
 
-	OnInputEventCreationData::OnInputEventCreationData(DiscordCoreInternal::WebSocketMessage& message, simdjson::ondemand::value data) {
-		this->inputEventData = message.processJsonMessage<InputEventData>(data, "d");
+	OnInputEventCreationData::OnInputEventCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnApplicationCommandPermissionsUpdateData::OnApplicationCommandPermissionsUpdateData(DiscordCoreInternal::WebSocketMessage& message,
-		simdjson::ondemand::value data) {
-		this->permissionData = message.processJsonMessage<GuildApplicationCommandPermissionsData>(data, "d");
+	OnApplicationCommandPermissionsUpdateData::OnApplicationCommandPermissionsUpdateData(Jsonifier::JsonifierCore& parser,
+		std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnAutoModerationRuleCreationData::OnAutoModerationRuleCreationData(DiscordCoreInternal::WebSocketMessage& message,
-		simdjson::ondemand::value data) {
-		this->theRule = message.processJsonMessage<AutoModerationRule>(data, "d");
+	OnAutoModerationRuleCreationData::OnAutoModerationRuleCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnAutoModerationRuleUpdateData::OnAutoModerationRuleUpdateData(DiscordCoreInternal::WebSocketMessage& message,
-		simdjson::ondemand::value data) {
-		this->theRule = message.processJsonMessage<AutoModerationRule>(data, "d");
+	OnAutoModerationRuleUpdateData::OnAutoModerationRuleUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnAutoModerationRuleDeletionData::OnAutoModerationRuleDeletionData(DiscordCoreInternal::WebSocketMessage& message,
-		simdjson::ondemand::value data) {
-		this->theRule = message.processJsonMessage<AutoModerationRule>(data, "d");
+	OnAutoModerationRuleDeletionData::OnAutoModerationRuleDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnAutoModerationActionExecutionData::OnAutoModerationActionExecutionData(DiscordCoreInternal::WebSocketMessage& message,
-		simdjson::ondemand::value data) {
-		this->data = message.processJsonMessage<AutoModerationActionExecutionEventData>(data, "d");
+	OnAutoModerationActionExecutionData::OnAutoModerationActionExecutionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnChannelCreationData::OnChannelCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->channel = std::make_unique<ChannelData>(data.processJsonMessage<ChannelData>(dataReal, "d"));
+	OnChannelCreationData::OnChannelCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 		if (Channels::doWeCacheChannels()) {
-			GuildData guild{};
-			guild.id = this->channel->guildId;
-			if (Guilds::getCache().contains(guild)) {
-				Guilds::getCache()[guild].channels.emplace_back(this->channel->id);
+			if (Guilds::getCache().contains(value.guildId)) {
+				Guilds::getCache()[value.guildId].channels.emplace_back(value.id);
 			}
 			if (Channels::doWeCacheChannels()) {
-				Channels::insertChannel(*this->channel);
+				Channels::insertChannel(value);
 			}
 		}
 	}
 
-	OnChannelCreationData& OnChannelCreationData::operator=(const OnChannelCreationData& other) {
-		*this->channel = *other.channel;
-		return *this;
-	}
-
-	OnChannelCreationData::OnChannelCreationData(const OnChannelCreationData& other) {
-		*this = other;
-	}
-
-	OnChannelUpdateData::OnChannelUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->channel = std::make_unique<ChannelData>(data.processJsonMessage<ChannelData>(dataReal, "d"));
+	OnChannelUpdateData::OnChannelUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
+		oldValue = Channels::getCachedChannel({ .channelId = value.id });
 		if (Channels::doWeCacheChannels()) {
-			Channels::insertChannel(*this->channel);
+			Channels::insertChannel(value);
 		}
 	}
 
-	OnChannelUpdateData& OnChannelUpdateData::operator=(const OnChannelUpdateData& other) {
-		*this->channel = *other.channel;
-		return *this;
-	}
-
-	OnChannelUpdateData::OnChannelUpdateData(const OnChannelUpdateData& other) {
-		*this = other;
-	}
-
-	OnChannelDeletionData::OnChannelDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->channel = std::make_unique<ChannelData>(data.processJsonMessage<ChannelData>(dataReal, "d"));
+	OnChannelDeletionData::OnChannelDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 		if (Channels::doWeCacheChannels()) {
-			GuildData guild{};
-			guild.id = this->channel->guildId;
-			if (Guilds::getCache().contains(guild)) {
-				for (uint64_t x = 0; x < Guilds::getCache()[guild].channels.size(); ++x) {
-					if (Guilds::getCache()[guild].channels[x] == this->channel->id) {
-						Guilds::getCache()[guild].channels.erase(Guilds::getCache()[guild].channels.begin() + x);
+			if (Guilds::getCache().contains(value.guildId)) {
+				for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].channels.size(); ++x) {
+					if (Guilds::getCache()[value.guildId].channels[x] == value.id) {
+						Guilds::getCache()[value.guildId].channels.erase(Guilds::getCache()[value.guildId].channels.begin() + x);
 					}
 				}
 			}
 			if (Channels::doWeCacheChannels()) {
-				Channels::removeChannel(this->channel->id);
+				Channels::removeChannel(value.id);
 			}
 		}
 	}
 
-	OnChannelDeletionData& OnChannelDeletionData::operator=(const OnChannelDeletionData& other) {
-		*this->channel = *other.channel;
-		return *this;
+	OnChannelPinsUpdateData::OnChannelPinsUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnChannelDeletionData::OnChannelDeletionData(const OnChannelDeletionData& other) {
-		*this = other;
-	}
-
-	OnChannelPinsUpdateData::OnChannelPinsUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->dataPackage = data.processJsonMessage<ChannelPinsUpdateEventData>(dataReal, "d");
-	}
-
-	OnThreadCreationData::OnThreadCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->thread = data.processJsonMessage<Thread>(dataReal, "d");
-		GuildData guild{};
-		guild.id = this->thread.guildId;
-		if (Guilds::getCache().contains(guild)) {
-			Guilds::getCache()[guild].threads.emplace_back(this->thread.id);
+	OnThreadCreationData::OnThreadCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		if (Guilds::getCache().contains(value.guildId)) {
+			Guilds::getCache()[value.guildId].threads.emplace_back(value.id);
 		}
 	}
 
-	OnThreadUpdateData::OnThreadUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->thread = data.processJsonMessage<Thread>(dataReal, "d");
+	OnThreadUpdateData::OnThreadUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnThreadDeletionData::OnThreadDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->thread = data.processJsonMessage<Thread>(dataReal, "d");
-		GuildData guild{};
-		guild.id = this->thread.guildId;
-		if (Guilds::getCache().contains(guild)) {
-			for (uint64_t x = 0; x < Guilds::getCache()[guild].threads.size(); ++x) {
-				if (Guilds::getCache()[guild].threads[x] == this->thread.id) {
-					Guilds::getCache()[guild].threads.erase(Guilds::getCache()[guild].threads.begin() + x);
+	OnThreadDeletionData::OnThreadDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		if (Guilds::getCache().contains(value.guildId)) {
+			for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].threads.size(); ++x) {
+				if (Guilds::getCache()[value.guildId].threads[x] == value.id) {
+					Guilds::getCache()[value.guildId].threads.erase(Guilds::getCache()[value.guildId].threads.begin() + x);
 				}
 			}
 		}
 	}
 
-	OnThreadListSyncData::OnThreadListSyncData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->threadListSyncData = data.processJsonMessage<ThreadListSyncData>(dataReal, "d");
+	OnThreadListSyncData::OnThreadListSyncData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnThreadMemberUpdateData::OnThreadMemberUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->threadMember = data.processJsonMessage<ThreadMemberData>(dataReal, "d");
+	OnThreadMemberUpdateData::OnThreadMemberUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnThreadMembersUpdateData::OnThreadMembersUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->threadMembersUpdateData = data.processJsonMessage<ThreadMembersUpdateData>(dataReal, "d");
+	OnThreadMembersUpdateData::OnThreadMembersUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnGuildCreationData::OnGuildCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-		DiscordCoreClient* client) {
-		this->guild = std::make_unique<GuildData>(data.processJsonMessage<GuildData>(dataReal, "d"));
-		this->guild->discordCoreClient = client;
+	OnGuildCreationData::OnGuildCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* client) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		value.discordCoreClient = client;
+		if (GuildMembers::doWeCacheGuildMembers()) {
+			for (auto& valueNew: value.members) {
+				valueNew.guildId = value.id;
+				GuildMembers::insertGuildMember(valueNew);
+				Users::insertUser(valueNew.user);
+			}
+		}
+		if (Channels::doWeCacheChannels()) {
+			for (auto& valueNew: value.channels) {
+				valueNew.guildId = value.id;
+				Channels::insertChannel(valueNew);
+			}
+		}
+		if (Roles::doWeCacheRoles()) {
+			for (auto& valueNew: value.roles) {
+				valueNew.guildId = value.id;
+				Roles::insertRole(valueNew);
+			}
+		}
+		for (auto& valueNew: value.voiceStates) {
+			valueNew.guildId = value.id;
+			GuildMembers::insertVoiceState(valueNew);
+		}
 		if (Guilds::doWeCacheGuilds()) {
 			if (Guilds::doWeCacheGuilds()) {
-				Guilds::insertGuild(*this->guild);
+				Guilds::insertGuild(value);
 			}
 		}
 	}
 
-	OnGuildCreationData& OnGuildCreationData::operator=(const OnGuildCreationData& other) {
-		*this->guild = *other.guild;
-		return *this;
-	}
-
-	OnGuildCreationData::OnGuildCreationData(const OnGuildCreationData& other) {
-		*this = other;
-	}
-
-	OnGuildUpdateData::OnGuildUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-		DiscordCoreClient* clientNew) {
-		this->guild = std::make_unique<GuildData>(data.processJsonMessage<GuildData>(dataReal, "d"));
-		this->guild->discordCoreClient = clientNew;
+	OnGuildUpdateData::OnGuildUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* clientNew) {
+		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
+		value.discordCoreClient = clientNew;
 		if (Guilds::doWeCacheGuilds()) {
-			Guilds::insertGuild(*this->guild);
+			Guilds::insertGuild(value);
 		}
 	}
 
-	OnGuildUpdateData& OnGuildUpdateData::operator=(const OnGuildUpdateData& other) {
-		*this->guild = *other.guild;
-		return *this;
-	}
-
-	OnGuildUpdateData::OnGuildUpdateData(const OnGuildUpdateData& other) {
-		*this = other;
-	}
-
-	OnGuildDeletionData::OnGuildDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-		DiscordCoreClient* clientNew) {
-		this->guild = std::make_unique<GuildData>(data.processJsonMessage<GuildData>(dataReal, "d"));
+	OnGuildDeletionData::OnGuildDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* clientNew) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::doWeCacheGuilds()) {
-			Guilds::removeGuild(this->guild->id);
+			Guilds::removeGuild(value.id);
 		}
-		for (auto& valueNew: this->guild->members) {
-			GuildMemberData guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = valueNew, .guildId = this->guild->id });
+		for (auto& valueNew: value.members) {
+			GuildMemberData guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = valueNew.user.id, .guildId = value.id });
 			GuildMembers::removeGuildMember(guildMember);
 		}
-		for (auto& valueNew: this->guild->channels) {
-			Channels::removeChannel(valueNew);
+		for (auto& valueNew: value.channels) {
+			Channels::removeChannel(valueNew.id);
 		}
-		for (auto& valueNew: this->guild->roles) {
-			Roles::removeRole(valueNew);
+		for (auto& valueNew: value.roles) {
+			Roles::removeRole(valueNew.id);
 		}
 	}
 
-	OnGuildDeletionData& OnGuildDeletionData::operator=(const OnGuildDeletionData& other) {
-		*this->guild = *other.guild;
-		return *this;
+	OnGuildBanAddData::OnGuildBanAddData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnGuildDeletionData::OnGuildDeletionData(const OnGuildDeletionData& other) {
-		*this = other;
+	OnGuildBanRemoveData::OnGuildBanRemoveData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnGuildBanAddData::OnGuildBanAddData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->user = data.processJsonMessage<UserData>(dataReal["d"], "user");
-	}
-
-	OnGuildBanRemoveData::OnGuildBanRemoveData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->user = data.processJsonMessage<UserData>(dataReal["d"], "user");
-	}
-
-	OnGuildEmojisUpdateData::OnGuildEmojisUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->updateData = data.processJsonMessage<GuildEmojisUpdateEventData>(dataReal, "d");
-		GuildData guild{};
-		guild.id = this->updateData.guildId;
-		if (Guilds::getCache().contains(guild)) {
-			Guilds::getCache()[guild].emoji.clear();
-			for (auto& valueNew: this->updateData.emojis) {
-				Guilds::getCache()[guild].emoji.emplace_back(valueNew.id);
+	OnGuildEmojisUpdateData::OnGuildEmojisUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		if (Guilds::getCache().contains(value.guildId)) {
+			Guilds::getCache()[value.guildId].emoji.clear();
+			for (auto& valueNew: value.emojis) {
+				Guilds::getCache()[value.guildId].emoji.emplace_back(valueNew.id);
 			}
 		}
 	}
 
-	OnGuildStickersUpdateData::OnGuildStickersUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->updateData = data.processJsonMessage<GuildStickersUpdateEventData>(dataReal, "d");
-		GuildData guild{};
-		guild.id = this->updateData.guildId;
-		if (Guilds::getCache().contains(guild)) {
-			Guilds::getCache()[guild].stickers.clear();
-			for (auto& valueNew: this->updateData.stickers) {
-				Guilds::getCache()[guild].stickers.emplace_back(valueNew.id);
+	OnGuildStickersUpdateData::OnGuildStickersUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		if (Guilds::getCache().contains(value.guildId)) {
+			Guilds::getCache()[value.guildId].stickers.clear();
+			for (auto& valueNew: value.stickers) {
+				Guilds::getCache()[value.guildId].stickers.emplace_back(valueNew.id);
 			}
 		}
 	}
 
-	OnGuildIntegrationsUpdateData::OnGuildIntegrationsUpdateData(DiscordCoreInternal::WebSocketMessage& data,
-		simdjson::ondemand::value dataReal) {
-		this->guildId = getId(dataReal["d"], "guild_id");
+	OnGuildIntegrationsUpdateData::OnGuildIntegrationsUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnGuildMemberAddData::OnGuildMemberAddData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-		DiscordCoreClient* client) {
-		this->guildMember = std::make_unique<GuildMemberData>(data.processJsonMessage<GuildMemberData>(dataReal, "d"));
-		this->discordCoreClient = client;
+	OnGuildMemberAddData::OnGuildMemberAddData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* client) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		discordCoreClient = client;
 		if (GuildMembers::doWeCacheGuildMembers()) {
-			GuildMembers::insertGuildMember(*this->guildMember);
-			GuildData guild{};
-			guild.id = guildMember->guildId;
-			if (Guilds::getCache().contains(guild)) {
-				++Guilds::getCache()[guild].memberCount;
+			GuildMembers::insertGuildMember(value);
+			if (Guilds::getCache().contains(value.guildId)) {
+				++Guilds::getCache()[value.guildId].memberCount;
 			}
 		}
 	}
 
-	OnGuildMemberAddData& OnGuildMemberAddData::operator=(const OnGuildMemberAddData& other) {
-		this->discordCoreClient = other.discordCoreClient;
-		*this->guildMember = *other.guildMember;
-		return *this;
-	}
-
-	OnGuildMemberAddData::OnGuildMemberAddData(const OnGuildMemberAddData& other) {
-		*this = other;
-	}
-
-	OnGuildMemberRemoveData::OnGuildMemberRemoveData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-		DiscordCoreClient* client) {
-		this->discordCoreClient = client;
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->user = std::make_unique<UserData>(data.processJsonMessage<UserData>(dataReal["d"], "user"));
-		GuildMember guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = this->user->id, .guildId = this->guildId });
+	OnGuildMemberRemoveData::OnGuildMemberRemoveData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* client) {
+		discordCoreClient = client;
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		GuildMember guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 		if (GuildMembers::doWeCacheGuildMembers()) {
-			GuildData guild{};
-			guild.id = this->guildId;
 			GuildMembers::removeGuildMember(guildMember);
-			if (Guilds::getCache().contains(guild)) {
-				for (uint64_t x = 0; x < Guilds::getCache()[guild].members.size(); ++x) {
-					if (Guilds::getCache()[guild].members[x] == this->user->id) {
-						--Guilds::getCache()[guild].memberCount;
-						Guilds::getCache()[guild].members.erase(Guilds::getCache()[guild].members.begin() + x);
+			if (Guilds::getCache().contains(value.guildId)) {
+				for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].members.size(); ++x) {
+					if (Guilds::getCache()[value.guildId].members[x] == value.user.id) {
+						--Guilds::getCache()[value.guildId].memberCount;
+						Guilds::getCache()[value.guildId].members.erase(Guilds::getCache()[value.guildId].members.begin() + x);
 					}
 				}
 			}
 		}
 	}
 
-	OnGuildMemberRemoveData& OnGuildMemberRemoveData::operator=(const OnGuildMemberRemoveData& other) {
-		this->discordCoreClient = other.discordCoreClient;
-		this->guildId = other.guildId;
-		*this->user = *other.user;
-		return *this;
-	}
-
-	OnGuildMemberRemoveData::OnGuildMemberRemoveData(const OnGuildMemberRemoveData& other) {
-		*this = other;
-	}
-
-	OnGuildMemberUpdateData::OnGuildMemberUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-		DiscordCoreClient* client) {
-		this->guildMember = std::make_unique<GuildMemberData>(data.processJsonMessage<GuildMemberData>(dataReal, "d"));
+	OnGuildMemberUpdateData::OnGuildMemberUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* client) {
+		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
+		oldValue = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 		if (GuildMembers::doWeCacheGuildMembers()) {
-			GuildMembers::insertGuildMember(*this->guildMember);
+			GuildMembers::insertGuildMember(value);
 		}
 	}
 
-	OnGuildMemberUpdateData& OnGuildMemberUpdateData::operator=(const OnGuildMemberUpdateData& other) {
-		*this->guildMember = *other.guildMember;
-		return *this;
+	OnGuildMembersChunkData::OnGuildMembersChunkData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnGuildMemberUpdateData::OnGuildMemberUpdateData(const OnGuildMemberUpdateData& other) {
-		*this = other;
-	}
-
-	OnGuildMembersChunkData::OnGuildMembersChunkData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->chunkEventData = data.processJsonMessage<GuildMembersChunkEventData>(dataReal, "d");
-	}
-
-	OnRoleCreationData::OnRoleCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->role = std::make_unique<RoleData>(data.processJsonMessage<RoleData>(dataReal["d"], "role"));
-		GuildData guild{};
-		guild.id = guildId;
-		if (Guilds::getCache().contains(guild)) {
-			Guilds::getCache()[guild].roles.emplace_back(this->role->id);
+	OnRoleCreationData::OnRoleCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		if (Guilds::getCache().contains(value.guildId)) {
+			Guilds::getCache()[value.guildId].roles.emplace_back(std::move(value.role.id));
 		}
 		if (Roles::doWeCacheRoles()) {
-			Roles::insertRole(*this->role);
+			Roles::insertRole(value.role);
 		}
 	}
 
-	OnRoleCreationData& OnRoleCreationData::operator=(const OnRoleCreationData& other) {
-		this->guildId = other.guildId;
-		*this->role = *other.role;
-		return *this;
-	}
-
-	OnRoleCreationData::OnRoleCreationData(const OnRoleCreationData& other) {
-		*this = other;
-	}
-
-	OnRoleUpdateData::OnRoleUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->role = std::make_unique<RoleData>(data.processJsonMessage<RoleData>(dataReal["d"], "role"));
+	OnRoleUpdateData::OnRoleUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
+		oldValue = Roles::getCachedRole({ .guildId = this->value.guildId, .roleId = this->value.role.id });
 		if (Roles::doWeCacheRoles()) {
-			Roles::insertRole(*this->role);
+			Roles::insertRole(value.role);
 		}
 	}
 
-	OnRoleUpdateData& OnRoleUpdateData::operator=(const OnRoleUpdateData& other) {
-		this->guildId = other.guildId;
-		*this->role = *other.role;
-		return *this;
-	}
-
-	OnRoleUpdateData::OnRoleUpdateData(const OnRoleUpdateData& other) {
-		*this = other;
-	}
-
-	OnRoleDeletionData::OnRoleDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->role->id = getId(dataReal["d"], "role_id");
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->role = std::make_unique<RoleData>(Roles::getCachedRole({ .guildId = this->guildId, .roleId = this->role->id }));
-		GuildData guild{};
-		guild.id = this->guildId;
+	OnRoleDeletionData::OnRoleDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 		if (Roles::doWeCacheRoles()) {
-			Roles::removeRole(this->role->id);
-			if (Guilds::getCache().contains(guild)) {
-				for (uint64_t x = 0; x < Guilds::getCache()[guild].roles.size(); ++x) {
-					if (Guilds::getCache()[guild].roles[x] == this->role->id) {
-						Guilds::getCache()[guild].roles.erase(Guilds::getCache()[guild].roles.begin() + x);
+			Roles::removeRole(value.role.id);
+			if (Guilds::getCache().contains(value.guildId)) {
+				for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].roles.size(); ++x) {
+					if (Guilds::getCache()[value.guildId].roles[x] == value.role.id) {
+						Guilds::getCache()[value.guildId].roles.erase(Guilds::getCache()[value.guildId].roles.begin() + x);
 					}
 				}
 			}
 		}
 	}
 
-	OnRoleDeletionData& OnRoleDeletionData::operator=(const OnRoleDeletionData& other) {
-		this->guildId = other.guildId;
-		*this->role = *other.role;
-		return *this;
-	}
-
-	OnRoleDeletionData::OnRoleDeletionData(const OnRoleDeletionData& other) {
-		*this = other;
-	}
-
-	OnUserUpdateData& OnUserUpdateData::operator=(const OnUserUpdateData& other) {
-		*this->user = *other.user;
-		return *this;
-	}
-
-	OnUserUpdateData::OnUserUpdateData(const OnUserUpdateData& other) {
-		*this = other;
-	}
-
-	OnVoiceServerUpdateData::OnVoiceServerUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
+	OnVoiceServerUpdateData::OnVoiceServerUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse,
 		DiscordCoreInternal::WebSocketClient* sslShard) {
-		this->endpoint = getString(dataReal["d"], "endpoint");
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->token = getString(dataReal["d"], "token");
-		sslShard->voiceConnectionData.endPoint = this->endpoint;
-		sslShard->voiceConnectionData.token = this->token;
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 		if (sslShard->areWeCollectingData && !sslShard->serverUpdateCollected && !sslShard->stateUpdateCollected) {
 			sslShard->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
+			sslShard->voiceConnectionData.endPoint = value.endpoint;
+			sslShard->voiceConnectionData.token = value.token;
 			sslShard->serverUpdateCollected = true;
 		} else if (sslShard->areWeCollectingData && !sslShard->serverUpdateCollected) {
-			if (sslShard->voiceConnectionDataBuffersMap.contains(this->guildId.operator size_t())) {
-				sslShard->voiceConnectionDataBuffersMap[this->guildId.operator size_t()]->send(sslShard->voiceConnectionData);
+			sslShard->voiceConnectionData.endPoint = value.endpoint;
+			sslShard->voiceConnectionData.token = value.token;
+			if (sslShard->voiceConnectionDataBufferMap.contains(value.guildId.operator uint64_t())) {
+				sslShard->voiceConnectionDataBufferMap[value.guildId.operator uint64_t()]->send(std::move(sslShard->voiceConnectionData));
 			}
 			sslShard->serverUpdateCollected = false;
 			sslShard->stateUpdateCollected = false;
@@ -446,95 +461,72 @@ namespace DiscordCoreAPI {
 		}
 	};
 
-	OnGuildScheduledEventCreationData::OnGuildScheduledEventCreationData(DiscordCoreInternal::WebSocketMessage& data,
-		simdjson::ondemand::value dataReal) {
-		this->guildScheduledEvent = data.processJsonMessage<GuildScheduledEventData>(dataReal, "d");
-		GuildData guild{};
-		guild.id = this->guildScheduledEvent.guildId;
-		if (Guilds::getCache().contains(guild)) {
-			Guilds::getCache()[guild].guildScheduledEvents.emplace_back(this->guildScheduledEvent.id);
+	OnGuildScheduledEventCreationData::OnGuildScheduledEventCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		if (Guilds::getCache().contains(value.guildId)) {
+			Guilds::getCache()[value.guildId].guildScheduledEvents.emplace_back(value.id);
 		}
 	}
 
-	OnGuildScheduledEventUpdateData::OnGuildScheduledEventUpdateData(DiscordCoreInternal::WebSocketMessage& data,
-		simdjson::ondemand::value dataReal) {
-		this->guildScheduledEvent = data.processJsonMessage<GuildScheduledEventData>(dataReal, "d");
+	OnGuildScheduledEventUpdateData::OnGuildScheduledEventUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnGuildScheduledEventDeletionData::OnGuildScheduledEventDeletionData(DiscordCoreInternal::WebSocketMessage& data,
-		simdjson::ondemand::value dataReal) {
-		this->guildScheduledEvent = data.processJsonMessage<GuildScheduledEventData>(dataReal, "d");
-		GuildData guild{};
-		guild.id = this->guildScheduledEvent.guildId;
-		if (Guilds::getCache().contains(guild)) {
-			for (uint64_t x = 0; x < Guilds::getCache()[guild].guildScheduledEvents.size(); ++x) {
-				if (Guilds::getCache()[guild].guildScheduledEvents[x] == this->guildScheduledEvent.id) {
-					Guilds::getCache()[guild].guildScheduledEvents.erase(Guilds::getCache()[guild].guildScheduledEvents.begin() + x);
+	OnGuildScheduledEventDeletionData::OnGuildScheduledEventDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		if (Guilds::getCache().contains(value.guildId)) {
+			for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].guildScheduledEvents.size(); ++x) {
+				if (Guilds::getCache()[value.guildId].guildScheduledEvents[x] == value.id) {
+					Guilds::getCache()[value.guildId].guildScheduledEvents.erase(Guilds::getCache()[value.guildId].guildScheduledEvents.begin() + x);
 				}
 			}
 		}
 	}
 
-	OnGuildScheduledEventUserAddData::OnGuildScheduledEventUserAddData(DiscordCoreInternal::WebSocketMessage& data,
-		simdjson::ondemand::value dataReal) {
-		this->guildScheduledEventId = getId(dataReal["d"], "guild_scheduled_event_id");
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->userId = getId(dataReal["d"], "user_id");
+	OnGuildScheduledEventUserAddData::OnGuildScheduledEventUserAddData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnGuildScheduledEventUserRemoveData::OnGuildScheduledEventUserRemoveData(DiscordCoreInternal::WebSocketMessage& data,
-		simdjson::ondemand::value dataReal) {
-		this->guildScheduledEventId = getId(dataReal["d"], "guild_scheduled_event_id");
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->userId = getId(dataReal["d"], "user_id");
+	OnGuildScheduledEventUserRemoveData::OnGuildScheduledEventUserRemoveData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnIntegrationCreationData::OnIntegrationCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->guildId = getId(dataReal["d"], "guild_id");
-		simdjson::ondemand::value objectNew{};
-		if (dataReal["d"]["integration"].get(objectNew) == simdjson::error_code::SUCCESS) {
-			this->integrationData = IntegrationData{ objectNew };
-		}
+	OnIntegrationCreationData::OnIntegrationCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnIntegrationUpdateData::OnIntegrationUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->guildId = getId(dataReal["d"], "guild_id");
-		simdjson::ondemand::value objectNew{};
-		if (dataReal["d"]["integration"].get(objectNew) == simdjson::error_code::SUCCESS) {
-			this->integrationData = IntegrationData{ objectNew };
-		}
+	OnIntegrationUpdateData::OnIntegrationUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnIntegrationDeletionData::OnIntegrationDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->applicationId = getId(dataReal["d"], "application_id");
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->id = getId(dataReal["d"], "id");
+	OnIntegrationDeletionData::OnIntegrationDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnInteractionCreationData::OnInteractionCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
-		DiscordCoreClient* clientPtr) {
-		this->interactionData = InteractionData{ data.processJsonMessage<InteractionData>(dataReal, "d") };
-		std::unique_ptr<InputEventData> eventData{ std::make_unique<InputEventData>(interactionData) };
-		switch (interactionData.type) {
+	OnInteractionCreationData::OnInteractionCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse,
+		DiscordCoreClient* discordCoreClient) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		std::unique_ptr<InputEventData> eventData{ std::make_unique<InputEventData>(value) };
+		switch (value.type) {
 			case InteractionType::Application_Command: {
 				eventData->responseType = InputEventResponseType::Unset;
-				*eventData->interactionData = this->interactionData;
+				*eventData->interactionData = value;
 				std::unique_ptr<CommandData> commandData{ std::make_unique<CommandData>(*eventData) };
 				commandData->discordCoreClient = eventData->getGuildData().discordCoreClient;
-				clientPtr->getCommandController().checkForAndRunCommand(*commandData);
-				std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>(data, dataReal) };
-				eventCreationData->inputEventData = *eventData;
+				discordCoreClient->getCommandController().checkForAndRunCommand(*commandData);
+				std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>(parser, dataToParse) };
+				eventCreationData->value = *eventData;
 				break;
 			}
 			case InteractionType::Message_Component: {
-				switch (interactionData.data.componentData.componentType) {
+				switch (value.data.componentType) {
+					case ComponentType::Action_Row:
 					case ComponentType::Button: {
 						eventData->responseType = InputEventResponseType::Unset;
-						*eventData->interactionData = this->interactionData;
-						if (ButtonCollector::buttonInteractionBuffersMap.contains(
-								eventData->getChannelData().id + eventData->getMessageData().id)) {
-							ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]
-								->send(interactionData);
+						*eventData->interactionData = value;
+						if (ButtonCollector::buttonInteractionBuffersMap.contains(eventData->getChannelData().id + eventData->getMessageData().id)) {
+							ButtonCollector::buttonInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]->send(
+								std::move(value));
 						}
 						ButtonCollector::buttonInteractionEventsMap.operator()(*eventData->interactionData);
 						break;
@@ -545,14 +537,16 @@ namespace DiscordCoreAPI {
 					case ComponentType::User_Select:
 					case ComponentType::String_Select: {
 						eventData->responseType = InputEventResponseType::Unset;
-						*eventData->interactionData = this->interactionData;
+						*eventData->interactionData = value;
 						if (SelectMenuCollector::selectMenuInteractionBuffersMap.contains(
 								eventData->getChannelData().id + eventData->getMessageData().id)) {
-							SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelData().id +
-								eventData->getMessageData().id]
-								->send(interactionData);
+							SelectMenuCollector::selectMenuInteractionBuffersMap[eventData->getChannelData().id + eventData->getMessageData().id]
+								->send(std::move(value));
 						}
 						SelectMenuCollector::selectMenuInteractionEventsMap.operator()(*eventData->interactionData);
+						break;
+					}
+					case ComponentType::Text_Input: {
 						break;
 					}
 				}
@@ -560,9 +554,9 @@ namespace DiscordCoreAPI {
 			}
 			case InteractionType::Modal_Submit: {
 				eventData->responseType = InputEventResponseType::Unset;
-				*eventData->interactionData = this->interactionData;
-				std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>(data, dataReal) };
-				eventCreationData->inputEventData = *eventData;
+				*eventData->interactionData = value;
+				std::unique_ptr<OnInputEventCreationData> eventCreationData{ std::make_unique<OnInputEventCreationData>(parser, dataToParse) };
+				eventCreationData->value = *eventData;
 				if (ModalCollector::modalInteractionBuffersMap.contains(eventData->getChannelData().id)) {
 					ModalCollector::modalInteractionBuffersMap[eventData->getChannelData().id]->send(eventData->getInteractionData());
 					ModalCollector::modalInteractionEventsMap.operator()(*eventData->interactionData);
@@ -571,692 +565,671 @@ namespace DiscordCoreAPI {
 			}
 			case InteractionType::Application_Command_Autocomplete: {
 				eventData->responseType = InputEventResponseType::Unset;
-				*eventData->interactionData = this->interactionData;
-				std::unique_ptr<OnAutoCompleteEntryData> autocompleteEntryData{ std::make_unique<OnAutoCompleteEntryData>(data, dataReal) };
-				autocompleteEntryData->inputEvent = *eventData;
-				clientPtr->getEventManager().onAutoCompleteEntryEvent(*autocompleteEntryData);
+				*eventData->interactionData = value;
+				std::unique_ptr<OnAutoCompleteEntryData> autocompleteEntryData{ std::make_unique<OnAutoCompleteEntryData>(parser, dataToParse) };
+				autocompleteEntryData->value = *eventData;
+				discordCoreClient->getEventManager().onAutoCompleteEntryEvent(*autocompleteEntryData);
+				break;
+			}
+			case InteractionType::Ping: {
 				break;
 			}
 		}
 	}
 
-	OnInviteCreationData::OnInviteCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->invite = data.processJsonMessage<InviteData>(dataReal, "d");
+	OnInviteCreationData::OnInviteCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnInviteDeletionData::OnInviteDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->channelId = getId(dataReal["d"], "channel_id");
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->code = getId(dataReal["d"], "code");
+	OnInviteDeletionData::OnInviteDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnMessageCreationData::OnMessageCreationData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->message = data.processJsonMessage<Message>(dataReal, "d");
-		for (auto& [key, dValue]: MessageCollector::objectsBuffersMap) {
-			dValue->send(this->message);
+	OnMessageCreationData::OnMessageCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		for (auto& [key, valueNew]: MessageCollector::objectsBuffersMap) {
+			valueNew->send(std::move(value));
 		}
 	}
 
-	OnMessageUpdateData::OnMessageUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->messageNew = data.processJsonMessage<Message>(dataReal, "d");
-		for (auto& [key, dValue]: MessageCollector::objectsBuffersMap) {
-			dValue->send(this->messageNew);
+	OnMessageUpdateData::OnMessageUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		for (auto& [key, valueNew]: MessageCollector::objectsBuffersMap) {
+			valueNew->send(std::move(value));
 		}
 	}
 
-	OnMessageDeletionData::OnMessageDeletionData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->channelId = getId(dataReal["d"], "channel_id");
-		this->guildId = getId(dataReal["d"], "guild_id");
-		this->messageId = getId(dataReal["d"], "id");
+	OnMessageDeletionData::OnMessageDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnMessageDeleteBulkData::OnMessageDeleteBulkData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->channelId = getId(dataReal["d"], "channel_id");
-		this->guildId = getId(dataReal["d"], "guild_id");
-		simdjson::ondemand::array arrayValue{};
-		if (dataReal["d"]["ids"].get(arrayValue) == simdjson::error_code::SUCCESS) {
-			for (auto dValue: arrayValue) {
-				this->ids.emplace_back(strtoull(dValue.get_string().take_value()));
-			}
+	OnMessageDeleteBulkData::OnMessageDeleteBulkData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+	}
+
+	OnReactionAddData::OnReactionAddData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		for (auto& [key, valueNew]: ReactionCollector::objectsBuffersMap) {
+			valueNew->send(std::move(value));
 		}
 	}
 
-	OnReactionAddData::OnReactionAddData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->reaction = data.processJsonMessage<Reaction>(dataReal, "d");
+	OnReactionRemoveData::OnReactionRemoveData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnReactionRemoveData::OnReactionRemoveData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->reactionRemoveData = data.processJsonMessage<ReactionRemoveData>(dataReal, "d");
+	OnReactionRemoveAllData::OnReactionRemoveAllData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnReactionRemoveAllData::OnReactionRemoveAllData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->messageId = getId(dataReal["d"], "message_id");
-		this->channelId = getId(dataReal["d"], "channel_id");
-		this->guildId = getId(dataReal["d"], "guild_id");
+	OnReactionRemoveEmojiData::OnReactionRemoveEmojiData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnReactionRemoveEmojiData::OnReactionRemoveEmojiData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->channelId = getId(dataReal["d"], "channel_id");
-		this->messageId = getId(dataReal["d"], "message_id");
-		this->guildId = getId(dataReal["d"], "guild_id");
-		simdjson::ondemand::value objectNew{};
-		if (dataReal["d"]["emoji"].get(objectNew) == simdjson::error_code::SUCCESS) {
-			this->emoji = EmojiData{ objectNew };
+	OnPresenceUpdateData::OnPresenceUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+	}
+
+	OnStageInstanceCreationData::OnStageInstanceCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		if (Guilds::getCache().contains(value.guildId)) {
+			Guilds::getCache()[value.guildId].stageInstances.emplace_back(value.id);
 		}
 	}
 
-	OnPresenceUpdateData::OnPresenceUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->presenceData = data.processJsonMessage<PresenceUpdateData>(dataReal, "d");
+	OnStageInstanceUpdateData::OnStageInstanceUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnStageInstanceCreationData::OnStageInstanceCreationData(DiscordCoreInternal::WebSocketMessage& data,
-		simdjson::ondemand::value dataReal) {
-		this->stageInstance = data.processJsonMessage<StageInstance>(dataReal, "d");
-		GuildData guild{};
-		guild.id = this->stageInstance.guildId;
-		if (Guilds::getCache().contains(guild)) {
-			Guilds::getCache()[guild].stageInstances.emplace_back(this->stageInstance.id);
-		}
-	}
-
-	OnStageInstanceUpdateData::OnStageInstanceUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->stageInstance = data.processJsonMessage<StageInstance>(dataReal, "d");
-	}
-
-	OnStageInstanceDeletionData::OnStageInstanceDeletionData(DiscordCoreInternal::WebSocketMessage& data,
-		simdjson::ondemand::value dataReal) {
-		this->stageInstance = data.processJsonMessage<StageInstance>(dataReal, "d");
-		GuildData guild{};
-		guild.id = this->stageInstance.guildId;
-		if (Guilds::getCache().contains(guild)) {
-			for (uint64_t x = 0; x < Guilds::getCache()[guild].stageInstances.size(); ++x) {
-				if (Guilds::getCache()[guild].stageInstances[x] == this->stageInstance.id) {
-					Guilds::getCache()[guild].stageInstances.erase(Guilds::getCache()[guild].stageInstances.begin() + x);
+	OnStageInstanceDeletionData::OnStageInstanceDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		if (Guilds::getCache().contains(value.guildId)) {
+			for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].stageInstances.size(); ++x) {
+				if (Guilds::getCache()[value.guildId].stageInstances[x] == value.id) {
+					Guilds::getCache()[value.guildId].stageInstances.erase(Guilds::getCache()[value.guildId].stageInstances.begin() + x);
 				}
 			}
 		}
 	}
 
-	OnTypingStartData::OnTypingStartData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->typingStartData = data.processJsonMessage<TypingStartData>(dataReal, "d");
+	OnTypingStartData::OnTypingStartData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnUserUpdateData::OnUserUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->user = std::make_unique<UserData>(data.processJsonMessage<UserData>(dataReal, "d"));
+	OnUserUpdateData::OnUserUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
+		oldValue = Users::getCachedUser({ value.id });
 		if (Users::doWeCacheUsers()) {
-			Users::insertUser(*user);
+			Users::insertUser(value);
 		}
 	}
 
-	OnVoiceStateUpdateData::OnVoiceStateUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal,
+	OnVoiceStateUpdateData::OnVoiceStateUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse,
 		DiscordCoreInternal::WebSocketClient* sslShard) {
-		this->voiceStateData = data.processJsonMessage<VoiceStateData>(dataReal, "d");
-		sslShard->voiceConnectionData.sessionId = this->voiceStateData.sessionId;
-		if (sslShard->areWeCollectingData && !sslShard->stateUpdateCollected && !sslShard->serverUpdateCollected &&
-			this->voiceStateData.userId == sslShard->userId) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		if (sslShard->areWeCollectingData && !sslShard->stateUpdateCollected && !sslShard->serverUpdateCollected && value.id == sslShard->userId) {
 			sslShard->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
-			sslShard->voiceConnectionData.sessionId = this->voiceStateData.sessionId;
+			sslShard->voiceConnectionData.sessionId = value.sessionId;
 			sslShard->stateUpdateCollected = true;
-		} else if (sslShard->areWeCollectingData && !sslShard->stateUpdateCollected) {
-			sslShard->voiceConnectionData.sessionId = this->voiceStateData.sessionId;
-			if (sslShard->voiceConnectionDataBuffersMap.contains(this->voiceStateData.guildId.operator size_t())) {
-				sslShard->voiceConnectionDataBuffersMap[this->voiceStateData.guildId.operator size_t()]->send(
-					sslShard->voiceConnectionData);
+		} else if (sslShard->areWeCollectingData && !sslShard->stateUpdateCollected && value.id == sslShard->userId) {
+			sslShard->voiceConnectionData.sessionId = value.sessionId;
+			if (sslShard->voiceConnectionDataBufferMap.contains(value.guildId.operator uint64_t())) {
+				sslShard->voiceConnectionDataBufferMap[value.guildId.operator uint64_t()]->send(std::move(sslShard->voiceConnectionData));
 			}
 			sslShard->serverUpdateCollected = false;
 			sslShard->stateUpdateCollected = false;
 			sslShard->areWeCollectingData = false;
 		}
-		GuildMembers::insertVoiceState(this->voiceStateData);
+		GuildMembers::insertVoiceState(value);
 	}
 
-	OnWebhookUpdateData::OnWebhookUpdateData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->channelId = getId(dataReal["d"], "channel_id");
-		this->guildId = getId(dataReal["d"], "guild_id");
+	OnWebhookUpdateData::OnWebhookUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
-	OnAutoCompleteEntryData::OnAutoCompleteEntryData(DiscordCoreInternal::WebSocketMessage& data, simdjson::ondemand::value dataReal) {
-		this->inputEvent = data.processJsonMessage<InputEventData>(dataReal, "d");
+	OnAutoCompleteEntryData::OnAutoCompleteEntryData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
+		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnApplicationCommandPermissionsUpdateData> handler) {
-		return this->onApplicationCommandPermissionsUpdateEvent.add(std::move(handler));
+		return onApplicationCommandPermissionsUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onApplicationCommandsPermissionsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onApplicationCommandPermissionsUpdateEvent.remove(token);
+		return onApplicationCommandPermissionsUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleCreationData> handler) {
-		return this->onAutoModerationRuleCreationEvent.add(std::move(handler));
+		return onAutoModerationRuleCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onAutoModerationRuleCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onAutoModerationRuleCreationEvent.remove(token);
+		return onAutoModerationRuleCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleUpdateData> handler) {
-		return this->onAutoModerationRuleUpdateEvent.add(std::move(handler));
+		return onAutoModerationRuleUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onAutoModerationRuleUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onAutoModerationRuleUpdateEvent.remove(token);
+		return onAutoModerationRuleUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationRuleDeletion(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationRuleDeletionData> handler) {
-		return this->onAutoModerationRuleDeletionEvent.add(std::move(handler));
+		return onAutoModerationRuleDeletionEvent.add(std::move(handler));
 	}
 
 	void EventManager::onAutoModerationRuleDeletion(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onAutoModerationRuleDeletionEvent.remove(token);
+		return onAutoModerationRuleDeletionEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onAutoModerationActionExecution(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoModerationActionExecutionData> handler) {
-		return this->onAutoModerationActionExecutionEvent.add(std::move(handler));
+		return onAutoModerationActionExecutionEvent.add(std::move(handler));
 	}
 
 	void EventManager::onAutoModerationActionExecution(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onAutoModerationActionExecutionEvent.remove(token);
+		return onAutoModerationActionExecutionEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onAutoCompleteEntry(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnAutoCompleteEntryData> handler) {
-		return this->onAutoCompleteEntryEvent.add(std::move(handler));
+		return onAutoCompleteEntryEvent.add(std::move(handler));
 	}
 
 	void EventManager::onAutoCompleteEntry(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onInputEventCreationEvent.remove(token);
+		return onInputEventCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onInputEventCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInputEventCreationData> handler) {
-		return this->onInputEventCreationEvent.add(std::move(handler));
+		return onInputEventCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onInputEventCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onInputEventCreationEvent.remove(token);
+		return onInputEventCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onChannelCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelCreationData> handler) {
-		return this->onChannelCreationEvent.add(std::move(handler));
+		return onChannelCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onChannelCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		onChannelCreationEvent.remove(token);
+		onChannelCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onChannelUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelUpdateData> handler) {
-		return this->onChannelUpdateEvent.add(std::move(handler));
+		return onChannelUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onChannelUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onChannelUpdateEvent.remove(token);
+		onChannelUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onChannelDeletion(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelDeletionData> handler) {
-		return this->onChannelDeletionEvent.add(std::move(handler));
+		return onChannelDeletionEvent.add(std::move(handler));
 	}
 
 	void EventManager::onChannelDeletion(DiscordCoreInternal::EventDelegateToken& token) {
-		onChannelDeletionEvent.remove(token);
+		onChannelDeletionEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onChannelPinsUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnChannelPinsUpdateData> handler) {
-		return this->onChannelPinsUpdateEvent.add(std::move(handler));
+		return onChannelPinsUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onChannelPinsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onChannelPinsUpdateEvent.remove(token);
+		return onChannelPinsUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onThreadCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadCreationData> handler) {
-		return this->onThreadCreationEvent.add(std::move(handler));
+		return onThreadCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onThreadCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onThreadCreationEvent.remove(token);
+		return onThreadCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onThreadUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadUpdateData> handler) {
-		return this->onThreadUpdateEvent.add(std::move(handler));
+		return onThreadUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onThreadUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onThreadUpdateEvent.remove(token);
+		return onThreadUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onThreadDeletion(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadDeletionData> handler) {
-		return this->onThreadDeletionEvent.add(std::move(handler));
+		return onThreadDeletionEvent.add(std::move(handler));
 	}
 
 	void EventManager::onThreadDeletion(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onThreadDeletionEvent.remove(token);
+		return onThreadDeletionEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onThreadListSync(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadListSyncData> handler) {
-		return this->onThreadListSyncEvent.add(std::move(handler));
+		return onThreadListSyncEvent.add(std::move(handler));
 	}
 
 	void EventManager::onThreadListSync(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onThreadListSyncEvent.remove(token);
+		return onThreadListSyncEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMemberUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMemberUpdateData> handler) {
-		return this->onThreadMemberUpdateEvent.add(std::move(handler));
+		return onThreadMemberUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onThreadMemberUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onThreadMemberUpdateEvent.remove(token);
+		return onThreadMemberUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onThreadMembersUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnThreadMembersUpdateData> handler) {
-		return this->onThreadMembersUpdateEvent.add(std::move(handler));
+		return onThreadMembersUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onThreadMembersUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		return this->onThreadMembersUpdateEvent.remove(token);
+		return onThreadMembersUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildCreationData> handler) {
-		return this->onGuildCreationEvent.add(std::move(handler));
+		return onGuildCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildCreationEvent.remove(token);
+		onGuildCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildUpdateData> handler) {
-		return this->onGuildUpdateEvent.add(std::move(handler));
+		return onGuildUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildUpdateEvent.remove(token);
+		onGuildUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildDeletion(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildDeletionData> handler) {
-		return this->onGuildDeletionEvent.add(std::move(handler));
+		return onGuildDeletionEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildDeletion(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildDeletionEvent.remove(token);
+		onGuildDeletionEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanAdd(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildBanAddData> handler) {
-		return this->onGuildBanAddEvent.add(std::move(handler));
+		return onGuildBanAddEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildBanAdd(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildBanAddEvent.remove(token);
+		onGuildBanAddEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildBanRemove(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildBanRemoveData> handler) {
-		return this->onGuildBanRemoveEvent.add(std::move(handler));
+		return onGuildBanRemoveEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildBanRemove(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildBanRemoveEvent.remove(token);
+		onGuildBanRemoveEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildEmojisUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildEmojisUpdateData> handler) {
-		return this->onGuildEmojisUpdateEvent.add(std::move(handler));
+		return onGuildEmojisUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildEmojisUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildEmojisUpdateEvent.remove(token);
+		onGuildEmojisUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildStickersUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildStickersUpdateData> handler) {
-		return this->onGuildStickersUpdateEvent.add(std::move(handler));
+		return onGuildStickersUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildStickersUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildStickersUpdateEvent.remove(token);
+		onGuildStickersUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildIntegrationsUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildIntegrationsUpdateData> handler) {
-		return this->onGuildIntegrationsUpdateEvent.add(std::move(handler));
+		return onGuildIntegrationsUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildIntegrationsUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildIntegrationsUpdateEvent.remove(token);
+		onGuildIntegrationsUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMembersChunk(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMembersChunkData> handler) {
-		return this->onGuildMembersChunkEvent.add(std::move(handler));
+		return onGuildMembersChunkEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildMembersChunk(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildMembersChunkEvent.remove(token);
+		onGuildMembersChunkEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberAdd(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberAddData> handler) {
-		return this->onGuildMemberAddEvent.add(std::move(handler));
+		return onGuildMemberAddEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildMemberAdd(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildMemberAddEvent.remove(token);
+		onGuildMemberAddEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberRemove(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberRemoveData> handler) {
-		return this->onGuildMemberRemoveEvent.add(std::move(handler));
+		return onGuildMemberRemoveEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildMemberRemove(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildMemberRemoveEvent.remove(token);
+		onGuildMemberRemoveEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildMemberUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildMemberUpdateData> handler) {
-		return this->onGuildMemberUpdateEvent.add(std::move(handler));
+		return onGuildMemberUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildMemberUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildMemberUpdateEvent.remove(token);
+		onGuildMemberUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onRoleCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleCreationData> handler) {
-		return this->onRoleCreationEvent.add(std::move(handler));
+		return onRoleCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onRoleCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		onRoleCreationEvent.remove(token);
+		onRoleCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onRoleUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleUpdateData> handler) {
-		return this->onRoleUpdateEvent.add(std::move(handler));
+		return onRoleUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onRoleUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onRoleUpdateEvent.remove(token);
+		onRoleUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onRoleDeletion(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnRoleDeletionData> handler) {
-		return this->onRoleDeletionEvent.add(std::move(handler));
+		return onRoleDeletionEvent.add(std::move(handler));
 	}
 
 	void EventManager::onRoleDeletion(DiscordCoreInternal::EventDelegateToken& token) {
-		onRoleDeletionEvent.remove(token);
+		onRoleDeletionEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventCreationData> handler) {
-		return this->onGuildScheduledEventCreationEvent.add(std::move(handler));
+		return onGuildScheduledEventCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildScheduledEventCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildScheduledEventCreationEvent.remove(token);
+		onGuildScheduledEventCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUpdateData> handler) {
-		return this->onGuildScheduledEventUpdateEvent.add(std::move(handler));
+		return onGuildScheduledEventUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildScheduledEventUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildScheduledEventUpdateEvent.remove(token);
+		onGuildScheduledEventUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventDeletion(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventDeletionData> handler) {
-		return this->onGuildScheduledEventDeletionEvent.add(std::move(handler));
+		return onGuildScheduledEventDeletionEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildScheduledEventDeletion(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildScheduledEventDeletionEvent.remove(token);
+		onGuildScheduledEventDeletionEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUserAdd(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserAddData> handler) {
-		return this->onGuildScheduledEventUserAddEvent.add(std::move(handler));
+		return onGuildScheduledEventUserAddEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildScheduledEventUserAdd(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildScheduledEventUserAddEvent.remove(token);
+		onGuildScheduledEventUserAddEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onGuildScheduledEventUserRemove(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnGuildScheduledEventUserRemoveData> handler) {
-		return this->onGuildScheduledEventUserRemoveEvent.add(std::move(handler));
+		return onGuildScheduledEventUserRemoveEvent.add(std::move(handler));
 	}
 
 	void EventManager::onGuildScheduledEventUserRemove(DiscordCoreInternal::EventDelegateToken& token) {
-		onGuildScheduledEventUserRemoveEvent.remove(token);
+		onGuildScheduledEventUserRemoveEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationCreationData> handler) {
-		return this->onIntegrationCreationEvent.add(std::move(handler));
+		return onIntegrationCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onIntegrationCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		onIntegrationCreationEvent.remove(token);
+		onIntegrationCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationUpdateData> handler) {
-		return this->onIntegrationUpdateEvent.add(std::move(handler));
+		return onIntegrationUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onIntegrationUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onIntegrationUpdateEvent.remove(token);
+		onIntegrationUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onIntegrationDeletion(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnIntegrationDeletionData> handler) {
-		return this->onIntegrationDeletionEvent.add(std::move(handler));
+		return onIntegrationDeletionEvent.add(std::move(handler));
 	}
 
 	void EventManager::onIntegrationDeletion(DiscordCoreInternal::EventDelegateToken& token) {
-		onIntegrationDeletionEvent.remove(token);
+		onIntegrationDeletionEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onInteractionCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInteractionCreationData> handler) {
-		return this->onInteractionCreationEvent.add(std::move(handler));
+		return onInteractionCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onInteractionCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		onInteractionCreationEvent.remove(token);
+		onInteractionCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onInviteCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInviteCreationData> handler) {
-		return this->onInviteCreationEvent.add(std::move(handler));
+		return onInviteCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onInviteCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		onInviteCreationEvent.remove(token);
+		onInviteCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onInviteDeletion(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnInviteDeletionData> handler) {
-		return this->onInviteDeletionEvent.add(std::move(handler));
+		return onInviteDeletionEvent.add(std::move(handler));
 	}
 
 	void EventManager::onInviteDeletion(DiscordCoreInternal::EventDelegateToken& token) {
-		onInviteDeletionEvent.remove(token);
+		onInviteDeletionEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onMessageCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageCreationData> handler) {
-		return this->onMessageCreationEvent.add(std::move(handler));
+		return onMessageCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onMessageCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		onMessageCreationEvent.remove(token);
+		onMessageCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onMessageUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageUpdateData> handler) {
-		return this->onMessageUpdateEvent.add(std::move(handler));
+		return onMessageUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onMessageUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onMessageUpdateEvent.remove(token);
+		onMessageUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeletion(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeletionData> handler) {
-		return this->onMessageDeletionEvent.add(std::move(handler));
+		return onMessageDeletionEvent.add(std::move(handler));
 	}
 
 	void EventManager::onMessageDeletion(DiscordCoreInternal::EventDelegateToken& token) {
-		onMessageDeletionEvent.remove(token);
+		onMessageDeletionEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onMessageDeleteBulk(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnMessageDeleteBulkData> handler) {
-		return this->onMessageDeleteBulkEvent.add(std::move(handler));
+		return onMessageDeleteBulkEvent.add(std::move(handler));
 	}
 
 	void EventManager::onMessageDeleteBulk(DiscordCoreInternal::EventDelegateToken& token) {
-		onMessageDeleteBulkEvent.remove(token);
+		onMessageDeleteBulkEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onReactionAdd(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionAddData> handler) {
-		return this->onReactionAddEvent.add(std::move(handler));
+		return onReactionAddEvent.add(std::move(handler));
 	}
 
 	void EventManager::onReactionAdd(DiscordCoreInternal::EventDelegateToken& token) {
-		onReactionAddEvent.remove(token);
+		onReactionAddEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemove(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveData> handler) {
-		return this->onReactionRemoveEvent.add(std::move(handler));
+		return onReactionRemoveEvent.add(std::move(handler));
 	}
 
 	void EventManager::onReactionRemove(DiscordCoreInternal::EventDelegateToken& token) {
-		onReactionRemoveEvent.remove(token);
+		onReactionRemoveEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveAll(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveAllData> handler) {
-		return this->onReactionRemoveAllEvent.add(std::move(handler));
+		return onReactionRemoveAllEvent.add(std::move(handler));
 	}
 
 	void EventManager::onReactionRemoveAll(DiscordCoreInternal::EventDelegateToken& token) {
-		onReactionRemoveAllEvent.remove(token);
+		onReactionRemoveAllEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onReactionRemoveEmoji(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnReactionRemoveEmojiData> handler) {
-		return this->onReactionRemoveEmojiEvent.add(std::move(handler));
+		return onReactionRemoveEmojiEvent.add(std::move(handler));
 	}
 
 	void EventManager::onReactionRemoveEmoji(DiscordCoreInternal::EventDelegateToken& token) {
-		onReactionRemoveEmojiEvent.remove(token);
+		onReactionRemoveEmojiEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onPresenceUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnPresenceUpdateData> handler) {
-		return this->onPresenceUpdateEvent.add(std::move(handler));
+		return onPresenceUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onPresenceUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onPresenceUpdateEvent.remove(token);
+		onPresenceUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceCreation(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceCreationData> handler) {
-		return this->onStageInstanceCreationEvent.add(std::move(handler));
+		return onStageInstanceCreationEvent.add(std::move(handler));
 	}
 
 	void EventManager::onStageInstanceCreation(DiscordCoreInternal::EventDelegateToken& token) {
-		onStageInstanceCreationEvent.remove(token);
+		onStageInstanceCreationEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceUpdateData> handler) {
-		return this->onStageInstanceUpdateEvent.add(std::move(handler));
+		return onStageInstanceUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onStageInstanceUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onStageInstanceUpdateEvent.remove(token);
+		onStageInstanceUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onStageInstanceDeletion(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnStageInstanceDeletionData> handler) {
-		return this->onStageInstanceDeletionEvent.add(std::move(handler));
+		return onStageInstanceDeletionEvent.add(std::move(handler));
 	}
 
 	void EventManager::onStageInstanceDeletion(DiscordCoreInternal::EventDelegateToken& token) {
-		onStageInstanceDeletionEvent.remove(token);
+		onStageInstanceDeletionEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onTypingStart(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnTypingStartData> handler) {
-		return this->onTypingStartEvent.add(std::move(handler));
+		return onTypingStartEvent.add(std::move(handler));
 	}
 
 	void EventManager::onTypingStart(DiscordCoreInternal::EventDelegateToken& token) {
-		onTypingStartEvent.remove(token);
+		onTypingStartEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onUserUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnUserUpdateData> handler) {
-		return this->onUserUpdateEvent.add(std::move(handler));
+		return onUserUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onUserUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onUserUpdateEvent.remove(token);
+		onUserUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceStateUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceStateUpdateData> handler) {
-		return this->onVoiceStateUpdateEvent.add(std::move(handler));
+		return onVoiceStateUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onVoiceStateUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onVoiceStateUpdateEvent.remove(token);
+		onVoiceStateUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onVoiceServerUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnVoiceServerUpdateData> handler) {
-		return this->onVoiceServerUpdateEvent.add(std::move(handler));
+		return onVoiceServerUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onVoiceServerUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onVoiceServerUpdateEvent.remove(token);
+		onVoiceServerUpdateEvent.erase(token);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onWebhookUpdate(
 		DiscordCoreInternal::EventDelegate<CoRoutine<void>, OnWebhookUpdateData> handler) {
-		return this->onWebhookUpdateEvent.add(std::move(handler));
+		return onWebhookUpdateEvent.add(std::move(handler));
 	}
 
 	void EventManager::onWebhookUpdate(DiscordCoreInternal::EventDelegateToken& token) {
-		onWebhookUpdateEvent.remove(token);
+		onWebhookUpdateEvent.erase(token);
 	}
+
 
 };

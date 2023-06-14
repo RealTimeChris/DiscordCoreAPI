@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -33,17 +33,17 @@ namespace DiscordCoreAPI {
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
-	 */
+	*/
 
 	/// \brief For getting all of the Global Application Commands.
 	struct DiscordCoreAPI_Dll GetGlobalApplicationCommandsData {
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		bool withLocalizations{};///< Do we collect the name-and-description localizations?
 	};
 
 	/// \brief For collecting a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetGlobalApplicationCommandData {
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		std::string commandId{};///< The id of the command which you would like to collect.
 	};
 
@@ -56,9 +56,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief For creating a single global ApplicationCommand.
-	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData : public CreateApplicationCommandData {
-		operator Jsonifier();
-	};
+	struct DiscordCoreAPI_Dll CreateGlobalApplicationCommandData : public CreateApplicationCommandData {};
 
 	/// \brief For editing a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll EditGlobalApplicationCommandData {
@@ -69,40 +67,36 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		std::string description{};///< A description of the command.
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
 		std::string name{};///< A name for the new command.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For deleting a single global ApplicationCommand.
 	struct DiscordCoreAPI_Dll DeleteGlobalApplicationCommandData {
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		std::string name{};///< The name of the command to delete.
 	};
 
 	/// \brief For bulk-overwriting a collection of global ApplicationCommands.
 	struct DiscordCoreAPI_Dll BulkOverwriteGlobalApplicationCommandsData {
 		std::vector<CreateGlobalApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 	};
 
 	/// \brief For acquiring all of the Guild ApplicationCommands of a single Guild.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandsData {
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		bool withLocalizations{};///< Do we collect the name-and-description localizations?
 		Snowflake guildId{};///< The id of the Guild for which you would like to acquire the ApplicationCommands from.
 	};
 
 	/// \brief For creating a single Guild ApplicationCommand.
-	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateGlobalApplicationCommandData {
-		operator Jsonifier();
-	};
+	struct DiscordCoreAPI_Dll CreateGuildApplicationCommandData : public CreateGlobalApplicationCommandData {};
 
 	/// \brief For acquiring a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandData {
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		uint64_t commandId{};///< The command id which you would like to acquire.
 		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the ApplicationCommand from.
 	};
@@ -114,17 +108,15 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandOptionData> options{};///< The options for the ApplicationCommand.
 		Permissions defaultMemberPermissions{};///< Set of permissions represented as a bit set. only for globally - scoped commands.
 		std::string description{};///< A description of the command.
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		bool dmPermission{};///< Indicates whether the command is available in DMs with the app.
 		Snowflake guildId{};///< The id of the Guild which you would like to add the new command to.
 		std::string name{};///< A name for the new command.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For deleting a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll DeleteGuildApplicationCommandData {
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		Snowflake guildId{};///< The id of the Guild which you would like to delete the command from.
 		std::string name{};///< A name of the command which you would like to delete.
 	};
@@ -132,20 +124,20 @@ namespace DiscordCoreAPI {
 	/// \brief For bulk-overwriting a collection of Guild ApplicationCommands.
 	struct DiscordCoreAPI_Dll BulkOverwriteGuildApplicationCommandsData {
 		std::vector<CreateGuildApplicationCommandData> responseData{};///< A vector of the options for the ApplicationCommands.
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		Snowflake guildId{};///< The id of the Guild which you would like to overwrite the commands of.
 	};
 
 	/// \brief For acquiring the permissions of a collection of Guild ApplicationCommands.
 	struct DiscordCoreAPI_Dll GetGuildApplicationCommandPermissionsData {
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the command permissions.
 	};
 
 	/// \brief For acquiring the permissions of a single Guild ApplicationCommand.
 	struct DiscordCoreAPI_Dll GetApplicationCommandPermissionsData {
 		std::string commandName{};///< The name of the command which you would like to collect the permissions of.
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		Snowflake guildId{};///< The id of the Guild from which you would like to acquire the command permissions.
 	};
 
@@ -153,45 +145,17 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll EditGuildApplicationCommandPermissionsData {
 		std::vector<ApplicationCommandPermissionData> permissions{};///< A vector of ApplicationCommand permissions.
 		std::string commandName{};///< The command name which you would like to edit the permissions of.
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		uint64_t commandId{};///< The command id which you would like to edit the permissions of.
 		Snowflake guildId{};///< The Guild id of the Guild for which you would like to edit the command permissions.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For batch editing the permissions of a collection of Guild ApplicationCommands.
 	struct DiscordCoreAPI_Dll BatchEditGuildApplicationCommandPermissionsData {
-		std::vector<GuildApplicationCommandPermissionsData>
+		std::vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>
 			permissions{};///< A vector of edit-Guild-application-permissions responseData to edit.
-		Snowflake applicationId{};///< The current application's Id (The Bot's User Id).
+		Snowflake applicationId{};///< The current application's Snowflake (The Bot's User Snowflake).
 		Snowflake guildId{};///< The Guild id of the Guild for which you would like to batch edit Guild application permissions.
-	};
-
-	/// \brief A single ApplicationCommand.
-	class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData {
-	  public:
-		ApplicationCommand() noexcept = default;
-
-		ApplicationCommand(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~ApplicationCommand() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll ApplicationCommandVector {
-	  public:
-		friend class ApplicationCommands;
-
-		ApplicationCommandVector() noexcept = default;
-
-		operator std::vector<ApplicationCommand>();
-
-		ApplicationCommandVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~ApplicationCommandVector() noexcept = default;
-
-	  protected:
-		std::vector<ApplicationCommand> applicationCommands{};
 	};
 
 	/**@}*/
@@ -268,25 +232,26 @@ namespace DiscordCoreAPI {
 
 		/// \brief Gets Guild ApplicationCommand permissions for a single server on this bot.
 		/// \param dataPackage A GetGuildApplicationCommandPermissionsData structure.
-		/// \returns A CoRoutine containing a vector<GuildApplicationCommandPermissionsData>.
+		/// \returns A CoRoutine containing a vector<DiscordCoreAPI::GuildApplicationCommandPermissionsData>.
 		static CoRoutine<std::vector<GuildApplicationCommandPermissionsData>> getGuildApplicationCommandPermissionsAsync(
 			GetGuildApplicationCommandPermissionsData dataPackage);
 
 		/// \brief Get ApplicationCommand permissions for a single command on this bot.
 		/// \param dataPackage A GetApplicationCommandPermissionsData structure.
-		/// \returns A CoRoutine containing a GuildApplicationCommandPermissionsData.
+		/// \returns A CoRoutine containing a DiscordCoreAPI::GuildApplicationCommandPermissionsData.
 		static CoRoutine<GuildApplicationCommandPermissionsData> getApplicationCommandPermissionsAsync(
 			GetApplicationCommandPermissionsData dataPackage);
 
 		/// \brief Edit Guild ApplicationCommand permissions for a server on this bot.
 		/// \param dataPackage An EditGuildApplicationCommandPermissionsData structure.
-		/// \returns A CoRoutine containing a GuildApplicationCommandPermissionsData.
+		/// \returns A CoRoutine containing a DiscordCoreAPI::GuildApplicationCommandPermissionsData.
 		static CoRoutine<GuildApplicationCommandPermissionsData> editGuildApplicationCommandPermissionsAsync(
 			EditGuildApplicationCommandPermissionsData dataPackage);
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
+
 	/**@}*/
 
-}// namespace DiscordCoreAPI
+}

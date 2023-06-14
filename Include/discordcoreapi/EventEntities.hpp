@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -44,9 +44,13 @@ namespace DiscordCoreInternal {
 
 		template<typename RTy, typename... ArgTypes> friend class TriggerEvent;
 
-		DiscordCoreAPI_Dll friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
+		friend inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+			return lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId;
+		}
 
-		DiscordCoreAPI_Dll friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs);
+		friend inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
+			return stoll(lhs.handlerId) < stoll(rhs.handlerId);
+		}
 
 		EventDelegateToken() noexcept = default;
 
@@ -55,14 +59,6 @@ namespace DiscordCoreInternal {
 		std::string eventId{};
 	};
 
-	DiscordCoreAPI_Dll inline bool operator==(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
-		return lhs.eventId == rhs.eventId && lhs.handlerId == rhs.handlerId;
-	}
-
-	DiscordCoreAPI_Dll inline bool operator<(const EventDelegateToken& lhs, const EventDelegateToken& rhs) {
-		return stoll(lhs.handlerId) < stoll(rhs.handlerId);
-	}
-
 	/// \brief Event-delegate, for representing an event-function to be executed.
 	template<typename RTy, typename... ArgTypes> class EventDelegate {
 	  public:
@@ -70,7 +66,7 @@ namespace DiscordCoreInternal {
 
 		EventDelegate<RTy, ArgTypes...>& operator=(EventDelegate<RTy, ArgTypes...>&& other) noexcept {
 			if (this != &other) {
-				this->function.swap(other.function);
+				function.swap(other.function);
 				other.function = std::function<RTy(ArgTypes...)>{};
 			}
 			return *this;
@@ -85,7 +81,7 @@ namespace DiscordCoreInternal {
 		EventDelegate(const EventDelegate<RTy, ArgTypes...>& other) = delete;
 
 		EventDelegate<RTy, ArgTypes...>& operator=(std::function<RTy(ArgTypes...)> functionNew) {
-			this->function = functionNew;
+			function = functionNew;
 			return *this;
 		}
 
@@ -95,7 +91,7 @@ namespace DiscordCoreInternal {
 		}
 
 		EventDelegate<RTy, ArgTypes...>& operator=(RTy (*functionNew)(ArgTypes...)) {
-			this->function = functionNew;
+			function = functionNew;
 			return *this;
 		}
 
@@ -116,9 +112,9 @@ namespace DiscordCoreInternal {
 
 		Event<RTy, ArgTypes...>& operator=(Event<RTy, ArgTypes...>&& other) noexcept {
 			if (this != &other) {
-				this->functions = std::move(other.functions);
+				functions = std::move(other.functions);
 				other.functions = std::map<EventDelegateToken, EventDelegate<RTy, ArgTypes...>>{};
-				this->eventId = std::move(other.eventId);
+				eventId = std::move(other.eventId);
 				other.eventId = std::string{};
 			}
 			return *this;
@@ -133,34 +129,39 @@ namespace DiscordCoreInternal {
 		Event(const Event<RTy, ArgTypes...>&) = delete;
 
 		Event() {
-			this->eventId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
+			std::unique_lock lock{ accessMutex };
+			eventId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
 		}
 
 		EventDelegateToken add(EventDelegate<RTy, ArgTypes...> eventDelegate) {
+			std::unique_lock lock{ accessMutex };
 			EventDelegateToken eventToken{};
 			eventToken.handlerId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
-			eventToken.eventId = this->eventId;
-			this->functions[eventToken] = std::move(eventDelegate);
+			eventToken.eventId = eventId;
+			functions[eventToken] = std::move(eventDelegate);
 			return eventToken;
 		}
 
-		void remove(EventDelegateToken eventToken) {
-			if (eventToken.eventId == this->eventId) {
-				if (this->functions.contains(eventToken)) {
-					this->functions.erase(eventToken);
+		void erase(EventDelegateToken eventToken) {
+			std::unique_lock lock{ accessMutex };
+			if (eventToken.eventId == eventId) {
+				if (functions.contains(eventToken)) {
+					functions.erase(eventToken);
 				}
 			}
 		}
 
 		std::vector<RTy> operator()(ArgTypes&... args) {
+			std::unique_lock lock{ accessMutex };
 			std::vector<RTy> vector{};
-			for (auto& [key, value]: this->functions) {
+			for (auto& [key, value]: functions) {
 				vector.emplace_back(value.function(args...));
 			}
 			return vector;
 		}
 
 	  protected:
+		std::mutex accessMutex{};
 		std::string eventId{};
 	};
 
@@ -171,9 +172,9 @@ namespace DiscordCoreInternal {
 
 		TriggerEventDelegate<RTy, ArgTypes...>& operator=(TriggerEventDelegate<RTy, ArgTypes...>&& other) noexcept {
 			if (this != &other) {
-				this->function.swap(other.function);
+				function.swap(other.function);
 				other.function = std::function<RTy(ArgTypes...)>{};
-				this->testFunction.swap(other.testFunction);
+				testFunction.swap(other.testFunction);
 				other.testFunction = std::function<bool(ArgTypes...)>{};
 			}
 			return *this;
@@ -188,7 +189,7 @@ namespace DiscordCoreInternal {
 		TriggerEventDelegate(const TriggerEventDelegate<RTy, ArgTypes...>& other) = delete;
 
 		TriggerEventDelegate<RTy, ArgTypes...>& operator=(std::function<RTy(ArgTypes...)> functionNew) {
-			this->function = functionNew;
+			function = functionNew;
 			return *this;
 		}
 
@@ -198,16 +199,16 @@ namespace DiscordCoreInternal {
 		}
 
 		TriggerEventDelegate<RTy, ArgTypes...>& operator=(RTy (*functionNew)(ArgTypes...)) {
-			this->function = functionNew;
+			function = functionNew;
 			return *this;
 		}
 
 		void setTestFunction(std::function<bool(ArgTypes...)> testFunctionNew) {
-			this->testFunction = testFunctionNew;
+			testFunction = testFunctionNew;
 		}
 
 		void setTestFunction(bool (*testFunctionNew)(ArgTypes...)) {
-			this->testFunction = testFunctionNew;
+			testFunction = testFunctionNew;
 		}
 
 		/// \brief Constructor, taking a pointer to a function of type RTy(*)(ArgTypes...) as an argument.
@@ -230,9 +231,9 @@ namespace DiscordCoreInternal {
 
 		TriggerEvent<RTy, ArgTypes...>& operator=(Event<RTy, ArgTypes...>&& other) noexcept {
 			if (this != &other) {
-				this->functions = std::move(other.functions);
+				functions = std::move(other.functions);
 				other.functions = std::map<EventDelegateToken, TriggerEventDelegate<RTy, ArgTypes...>>{};
-				this->eventId = std::move(other.eventId);
+				eventId = std::move(other.eventId);
 				other.eventId = std::string{};
 			}
 			return *this;
@@ -247,37 +248,42 @@ namespace DiscordCoreInternal {
 		TriggerEvent(const TriggerEvent<RTy, ArgTypes...>&) = delete;
 
 		TriggerEvent() {
-			this->eventId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
+			std::unique_lock lock{ accessMutex };
+			eventId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
 		}
 
 		EventDelegateToken add(TriggerEventDelegate<RTy, ArgTypes...> eventDelegate) {
+			std::unique_lock lock{ accessMutex };
 			EventDelegateToken eventToken{};
 			eventToken.handlerId = std::to_string(std::chrono::duration_cast<Microseconds>(HRClock::now().time_since_epoch()).count());
-			eventToken.eventId = this->eventId;
-			this->functions[eventToken] = std::move(eventDelegate);
+			eventToken.eventId = eventId;
+			functions[eventToken] = std::move(eventDelegate);
 			return eventToken;
 		}
 
-		void remove(EventDelegateToken eventToken) {
-			if (eventToken.eventId == this->eventId) {
-				if (this->functions.contains(eventToken)) {
-					this->functions.erase(eventToken);
+		void erase(EventDelegateToken eventToken) {
+			std::unique_lock lock{ accessMutex };
+			if (eventToken.eventId == eventId) {
+				if (functions.contains(eventToken)) {
+					functions.erase(eventToken);
 				}
 			}
 		}
 
 		void operator()(ArgTypes&... args) {
-			for (auto iterator = this->functions.begin(); iterator != this->functions.end(); ++iterator) {
+			std::unique_lock lock{ accessMutex };
+			for (auto iterator = functions.begin(); iterator != functions.end(); ++iterator) {
 				if (iterator.operator*().second.testFunction(args...)) {
 					iterator.operator*().second.function(args...);
-					this->functions.erase(iterator);
+					functions.erase(iterator);
 				}
 			}
 			return;
 		}
 
 	  protected:
+		std::mutex accessMutex{};
 		std::string eventId{};
 	};
 
-}// namespace DiscordCoreAPI
+}

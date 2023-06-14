@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -38,9 +38,9 @@ namespace DiscordCoreAPI {
 		if (dataPackage.eventType == InteractionType::Message_Component) {
 			CreateInteractionResponseData dataPackage02{ dataPackage };
 			if (dataPackage.type == InputEventResponseType::Deferred_Response) {
-				dataPackage02.data.type = InteractionCallbackType::Deferred_Update_Message;
+				dataPackage02.type = InteractionCallbackType::Deferred_Update_Message;
 			} else {
-				dataPackage02.data.type = InteractionCallbackType::Update_Message;
+				dataPackage02.type = InteractionCallbackType::Update_Message;
 			}
 			InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage02);
 			if (dataPackage.type == InputEventResponseType::Interaction_Response ||
@@ -52,18 +52,18 @@ namespace DiscordCoreAPI {
 				dataPackage.type == InputEventResponseType::Edit_Follow_Up_Message) {
 				newEvent.responseType = InputEventResponseType::Edit_Follow_Up_Message;
 			}
-			co_return std::move(newEvent);
+			co_return newEvent;
 		} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete) {
 			CreateInteractionResponseData dataPackage02{ dataPackage };
-			dataPackage02.data.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
+			dataPackage02.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
 			InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage02);
 			newEvent.responseType = InputEventResponseType::Application_Command_AutoComplete_Result;
-			co_return std::move(newEvent);
+			co_return newEvent;
 		}
 		switch (dataPackage.type) {
 			case InputEventResponseType::Ephemeral_Deferred_Response: {
 				CreateDeferredInteractionResponseData dataPackage02{ dataPackage };
-				dataPackage02.data.data.flags = 64;
+				dataPackage02.data.flags = 64;
 				co_return InputEvents::respondToInputEvent(dataPackage02);
 			}
 			case InputEventResponseType::Deferred_Response: {
@@ -101,6 +101,7 @@ namespace DiscordCoreAPI {
 				co_return InputEventData();
 			}
 		}
+		co_return InputEventData();
 	}
 
 	CoRoutine<void> InputEvents::deleteInputEventResponseAsync(InputEventData& dataPackage, int32_t timeDelayNew) {
@@ -127,6 +128,7 @@ namespace DiscordCoreAPI {
 	}
 
 	InputEventData InputEvents::respondToInputEvent(CreateDeferredInteractionResponseData& dataPackage) {
+		dataPackage.generateExcludedKeys();
 		CreateInteractionResponseData dataPackageNew{ dataPackage };
 		auto result = Interactions::createInteractionResponseAsync(dataPackageNew).get();
 		InputEventData dataPackageNewer{};
@@ -134,13 +136,14 @@ namespace DiscordCoreAPI {
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
 		dataPackageNewer.interactionData->token = dataPackage.interactionPackage.interactionToken;
 		dataPackageNewer.interactionData->channelId = result.channelId;
-		dataPackageNewer.interactionData->message.id = result.referencedMessage->id;
+		dataPackageNewer.interactionData->message.id = result.referencedMessage.id;
 		dataPackageNewer.interactionData->id = dataPackage.interactionPackage.interactionId;
 		dataPackageNewer.interactionData->user = result.author;
 		return dataPackageNewer;
 	}
 
 	InputEventData InputEvents::respondToInputEvent(CreateInteractionResponseData& dataPackage) {
+		dataPackage.generateExcludedKeys();
 		Message messageData = Interactions::createInteractionResponseAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Interaction_Response;
@@ -154,6 +157,7 @@ namespace DiscordCoreAPI {
 	}
 
 	InputEventData InputEvents::respondToInputEvent(EditInteractionResponseData& dataPackage) {
+		dataPackage.generateExcludedKeys();
 		Message messageData = Interactions::editInteractionResponseAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Edit_Interaction_Response;
@@ -167,6 +171,7 @@ namespace DiscordCoreAPI {
 	}
 
 	InputEventData InputEvents::respondToInputEvent(CreateFollowUpMessageData& dataPackage) {
+		dataPackage.generateExcludedKeys();
 		Message messageData = Interactions::createFollowUpMessageAsync(dataPackage).get();
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Follow_Up_Message;
@@ -193,6 +198,7 @@ namespace DiscordCoreAPI {
 	}
 
 	InputEventData InputEvents::respondToInputEvent(CreateEphemeralInteractionResponseData& dataPackage) {
+		dataPackage.generateExcludedKeys();
 		CreateInteractionResponseData dataPackageNew{ dataPackage };
 		Message messageData = Interactions::createInteractionResponseAsync(dataPackageNew).get();
 		InputEventData dataPackageNewer{};
@@ -219,4 +225,5 @@ namespace DiscordCoreAPI {
 		dataPackageNewer.interactionData->message = messageData;
 		return dataPackageNewer;
 	}
+
 }

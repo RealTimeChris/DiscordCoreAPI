@@ -11,14 +11,14 @@ namespace DiscordCoreAPI {
 	class Np : public BaseFunction {
 	  public:
 		Np() {
-			this->commandName = "np";
-			this->helpDescription = "Displays the currently playing song.";
+			commandName = "np";
+			helpDescription = "Displays the currently playing song.";
 			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter /np!\n------");
 			msgEmbed.setTitle("__**Now Playing Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

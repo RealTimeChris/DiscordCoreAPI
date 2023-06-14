@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,7 @@ namespace DiscordCoreAPI {
 	}
 
 	CommandController::CommandController(DiscordCoreClient* discordCoreClientNew) {
-		this->discordCoreClient = discordCoreClientNew;
+		discordCoreClient = discordCoreClientNew;
 	}
 
 	void CommandController::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
@@ -45,8 +45,8 @@ namespace DiscordCoreAPI {
 
 	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
 		co_await NewThreadAwaitable<void>();
-		BaseFunctionArguments theArgsNew{ commandData, this->discordCoreClient };
-		std::unique_ptr<BaseFunction> functionPointer{ this->getCommand(convertToLowerCase(commandData.getCommandName())) };
+		BaseFunctionArguments theArgsNew{ commandData, discordCoreClient };
+		std::unique_ptr<BaseFunction> functionPointer{ getCommand(convertToLowerCase(commandData.getCommandName())) };
 		if (!functionPointer.get()) {
 			co_return;
 		}
@@ -70,7 +70,7 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (isItFound) {
-			std::unique_ptr<BaseFunction> newValue = this->createFunction(functionName);
+			std::unique_ptr<BaseFunction> newValue = createFunction(functionName);
 			return newValue;
 		}
 		return nullptr;

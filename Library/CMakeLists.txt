@@ -1,7 +1,7 @@
 #
 #	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 #
-#	Copyright 2021, 2022 Chris M. (RealTimeChris)
+#	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 #
 #	This library is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
 # May 13, 2021
 # https://discordcoreapi.com
 
-include(GenerateProductVersion)
+include("GenerateProductVersion")
 generate_product_version(
 	PRODUCT_INFO
 	NAME "${LIB_NAME}"
@@ -40,7 +40,7 @@ if (UNIX)
 	set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -O1")
 endif()
 
-file(GLOB SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Source/*.cpp")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Source/*.cpp")
 
 if (WIN32)
 	add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
@@ -51,7 +51,7 @@ endif()
 
 add_library("${PROJECT_NAME}::${LIB_NAME}" ALIAS "${LIB_NAME}")
 
-file(GLOB HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/Include/discordcoreapi/*.hpp")
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/*.hpp")
 
 set_target_properties(
 	"${LIB_NAME}" PROPERTIES
@@ -61,66 +61,58 @@ set_target_properties(
 	CXX_EXTENSIONS OFF
 )
 
-find_package(FFMPEG MODULE REQUIRED)
+target_compile_definitions("${PROJECT_NAME}" INTERFACE INSTRUCTION_SET_TYPE_AVX2)
+
+find_package(Jsonifier CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Opus CONFIG REQUIRED)
-find_package(simdjson CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED)
 
 get_target_property(OpenSSL_INCLUDE OpenSSL::SSL INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(simdjson_INCLUDE simdjson::simdjson INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(unofficial_sodium_INCLUDE unofficial-sodium::sodium INTERFACE_INCLUDE_DIRECTORIES)
 
 target_include_directories(
 	"${LIB_NAME}" PUBLIC
 	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
-	PRIVATE
-	"$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Include/>"
-	"${simdjson_INCLUDE}"
-	"${OpenSSL_INCLUDE}"
-	"${unofficial_sodium_INCLUDE}"
+	"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Include>"
 )
 
 target_link_libraries(
 	"${LIB_NAME}" PUBLIC
-	${FFMPEG_LIBRARIES}
 	$<$<TARGET_EXISTS:OpenSSL::SSL>:OpenSSL::SSL>
 	$<$<TARGET_EXISTS:OpenSSL::Crypto>:OpenSSL::Crypto>
 	$<$<TARGET_EXISTS:Opus::opus>:Opus::opus>
-	$<$<TARGET_EXISTS:simdjson::simdjson>:simdjson::simdjson>
+	$<$<TARGET_EXISTS:Jsonifier::Jsonifier>:Jsonifier::Jsonifier>
 	$<$<TARGET_EXISTS:unofficial-sodium::sodium>:unofficial-sodium::sodium>
 	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
-)
-
-target_compile_features(
-	"${LIB_NAME}" PUBLIC
-	"cxx_std_23"
 )
 
 target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
 	"$<$<STREQUAL:${VCPKG_TARGET_TRIPLET},x64-uwp>:UWP>"
-	"$<$<CXX_COMPILER_ID:MSVC>:SIMDJSON_USING_WINDOWS_DYNAMIC_LIBRARY=1>"
 )
+
+include(ProcessorCount)
+ProcessorCount(N)
+MATH(EXPR THREAD_COUNT "${N} * 1/2")
 
 target_compile_options(
 	"${LIB_NAME}" PUBLIC
-	"$<$<NOT:$<PLATFORM_ID:Linux>>:/bigobj>"
-	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:$ENV{EnableASAN},true>:/fsanitize=address>>"
-	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:$ENV{EnableASAN},true>:/Zi>>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/MP>"
+	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:/fsanitize=address>>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/MP${THREAD_COUNT}>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>"
-	"$<$<CXX_COMPILER_ID:GNU>:$<$<STREQUAL:$ENV{EnableASAN},true>:-fsanitize=address>>"
-	"$<$<CXX_COMPILER_ID:GNU>:-fpermissive>"
-	"$<$<CXX_COMPILER_ID:GNU>:-mavx512f>"
-	"$<$<CXX_COMPILER_ID:GNU>:-march=native>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/EHsc>"
+	"$<$<CXX_COMPILER_ID:GNU>:-march=core-avx2>"
+	"$<$<CXX_COMPILER_ID:CLANG>:-march=core-avx2>"
 )
 
 target_link_options(
 	"${LIB_NAME}" PUBLIC
-	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:$ENV{EnableASAN},true>:/Debug>>"
+	"$<$<CXX_COMPILER_ID:GNU>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:-fsanitize=address>>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/INCREMENTAL:NO>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/DEBUG>"
-	"$<$<CXX_COMPILER_ID:GNU>:$<$<STREQUAL:$ENV{EnableASAN},true>:-fsanitize=address>>"
 )
 
 set(CONFIG_FILE_NAME "${PROJECT_NAME}Config.cmake")
@@ -132,7 +124,7 @@ set(DEBUG_PDB_FILE_PATH "debug/bin/discordcoreapi.pdb")
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
-	"${CMAKE_SOURCE_DIR}/CMake/${CONFIG_FILE_NAME}.in"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../CMake/${CONFIG_FILE_NAME}.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE_NAME}"
 	INSTALL_DESTINATION "share/discordcoreapi"
 	PATH_VARS

@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,7 @@
 
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/Https.hpp>
+#include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -35,35 +36,128 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// \brief MessageCollectorReturnData responseData.
+	/// \brief ObjectCollectorReturnData responseData.
 	struct DiscordCoreAPI_Dll MessageCollectorReturnData {
-		std::vector<MessageData> messages{};///< A vector of collected Objects.
+		std::vector<MessageData> objects{};///< A vector of collected Objects.
 	};
 
-	/// \brief Message collector, for collecting Messages from a Channel.
+	/// \brief ObjectCollectorReturnData responseData.
+	struct DiscordCoreAPI_Dll ReactionCollectorReturnData {
+		std::vector<ReactionData> objects{};///< A vector of collected Objects.
+	};
+
+	/// \brief Object collector, for collecting Objects from a Channel.
 	class DiscordCoreAPI_Dll MessageCollector {
 	  public:
-		static std::unordered_map<std::string, UnboundedMessageBlock<MessageData>*> objectsBuffersMap;
+		inline static std::unordered_map<std::string, UnboundedMessageBlock<MessageData>*> objectsBuffersMap{};
 
-		MessageCollector() noexcept = default;
+		MessageCollector() noexcept {
+			collectorId = std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+			MessageCollector::objectsBuffersMap[collectorId] = &objectsBuffer;
+		};
 
-		/// \brief Begin waiting for Messages.
-		/// \param quantityToCollect Maximum quantity of Messages to collect before returning the results.
-		/// \param msToCollectForNew Maximum number of Milliseconds to wait for Messages before returning the results.
-		/// \param filteringFunctionNew A filter function to apply to new Messages, where returning "true" from the function results in a Message being stored.
+		/// \brief Begin waiting for Objects.
+		/// \param quantityToCollect Maximum quantity of Objects to collect before returning the results.
+		/// \param msToCollectForNew Maximum number of Milliseconds to wait for Objects before returning the results.
+		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
 		/// \returns A ObjectCollectorReturnData structure.
-		CoRoutine<MessageCollectorReturnData> collectMessages(int32_t quantityToCollect, int32_t msToCollectForNew,
-			ObjectFilter<MessageData> filteringFunctionNew);
+		CoRoutine<MessageCollectorReturnData> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew,
+			ObjectFilter<MessageData> filteringFunctionNew) {
+			co_await NewThreadAwaitable<MessageCollectorReturnData>();
+			quantityOfObjectsToCollect = quantityToCollect;
+			filteringFunction = filteringFunctionNew;
+			msToCollectFor = msToCollectForNew;
 
-		void run();
+			run();
+			co_return std::move(objectReturnData);
+		}
 
-		~MessageCollector();
+		void run() {
+			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+			int64_t elapsedTime{};
+			while (elapsedTime < msToCollectFor) {
+				Message message{};
+				waitForTimeToPass<MessageData>(objectsBuffer, message, static_cast<int32_t>(msToCollectFor - elapsedTime));
+				if (filteringFunction(message)) {
+					objectReturnData.objects.emplace_back(message);
+				}
+				if (static_cast<int32_t>(objectReturnData.objects.size()) >= quantityOfObjectsToCollect) {
+					break;
+				}
+
+				elapsedTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count() - startingTime;
+			}
+		}
+
+		~MessageCollector() {
+			if (MessageCollector::objectsBuffersMap.contains(collectorId)) {
+				MessageCollector::objectsBuffersMap.erase(collectorId);
+			}
+		};
 
 	  protected:
-		ObjectFilter<MessageData> filteringFunction{ nullptr };
 		UnboundedMessageBlock<MessageData> objectsBuffer{};
 		MessageCollectorReturnData objectReturnData{};
-		int32_t quantityOfMessageToCollect{};
+		ObjectFilter<MessageData> filteringFunction{};
+		int32_t quantityOfObjectsToCollect{};
+		std::string collectorId{};
+		int32_t msToCollectFor{};
+	};
+
+	/// \brief Object collector, for collecting Objects from a Channel.
+	class DiscordCoreAPI_Dll ReactionCollector {
+	  public:
+		inline static std::unordered_map<std::string, UnboundedMessageBlock<ReactionData>*> objectsBuffersMap{};
+
+		ReactionCollector() noexcept {
+			collectorId = std::to_string(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+			ReactionCollector::objectsBuffersMap[collectorId] = &objectsBuffer;
+		};
+
+		/// \brief Begin waiting for Objects.
+		/// \param quantityToCollect Maximum quantity of Objects to collect before returning the results.
+		/// \param msToCollectForNew Maximum number of Milliseconds to wait for Objects before returning the results.
+		/// \param filteringFunctionNew A filter function to apply to new Objects, where returning "true" from the function results in a Object being stored.
+		/// \returns A ObjectCollectorReturnData structure.
+		CoRoutine<ReactionCollectorReturnData> collectObjects(int32_t quantityToCollect, int32_t msToCollectForNew,
+			ObjectFilter<ReactionData> filteringFunctionNew) {
+			co_await NewThreadAwaitable<ReactionCollectorReturnData>();
+			quantityOfObjectsToCollect = quantityToCollect;
+			filteringFunction = filteringFunctionNew;
+			msToCollectFor = msToCollectForNew;
+
+			run();
+			co_return std::move(objectReturnData);
+		}
+
+		void run() {
+			int64_t startingTime = static_cast<int64_t>(std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count());
+			int64_t elapsedTime{};
+			while (elapsedTime < msToCollectFor) {
+				Reaction Reaction{};
+				waitForTimeToPass<ReactionData>(objectsBuffer, Reaction, static_cast<int32_t>(msToCollectFor - elapsedTime));
+				if (filteringFunction(Reaction)) {
+					objectReturnData.objects.emplace_back(Reaction);
+				}
+				if (static_cast<int32_t>(objectReturnData.objects.size()) >= quantityOfObjectsToCollect) {
+					break;
+				}
+
+				elapsedTime = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()).count() - startingTime;
+			}
+		}
+
+		~ReactionCollector() {
+			if (ReactionCollector::objectsBuffersMap.contains(collectorId)) {
+				ReactionCollector::objectsBuffersMap.erase(collectorId);
+			}
+		};
+
+	  protected:
+		UnboundedMessageBlock<ReactionData> objectsBuffer{};
+		ReactionCollectorReturnData objectReturnData{};
+		ObjectFilter<ReactionData> filteringFunction{};
+		int32_t quantityOfObjectsToCollect{};
 		std::string collectorId{};
 		int32_t msToCollectFor{};
 	};
@@ -86,6 +180,7 @@ namespace DiscordCoreAPI {
 	/// \brief For creating a Message.
 	class DiscordCoreAPI_Dll CreateMessageData : public MessageResponseBase {
 	  public:
+		friend struct Jsonifier::Core<CreateMessageData>;
 		friend class InputEvents;
 		friend class Messages;
 
@@ -95,11 +190,11 @@ namespace DiscordCoreAPI {
 
 		CreateMessageData(InputEventData dataPackage);
 
+		CreateMessageData(MessageData dataPackage);
+
 		Snowflake channelId{};
 
 		CreateMessageData() noexcept = default;
-
-		operator Jsonifier();
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
@@ -120,21 +215,20 @@ namespace DiscordCoreAPI {
 
 	/// \brief For crossposting a Message.
 	struct DiscordCoreAPI_Dll CrosspostMessageData {
-		Snowflake messageId{};///< Id of the message to be crossposted.
+		Snowflake messageId{};///< Snowflake of the message to be crossposted.
 		Snowflake channelId{};///< Channel within which to crosspost the Message from.
 	};
 
 	/// \brief For editing a Message.
 	class DiscordCoreAPI_Dll EditMessageData : public MessageResponseBase {
 	  public:
+		friend struct Jsonifier::Core<EditMessageData>;
 		friend class InputEvents;
 		friend class Messages;
 
 		EditMessageData(InputEventData dataPackage);
 
 		EditMessageData(RespondToInputEventData dataPackage);
-
-		operator Jsonifier();
 
 	  protected:
 		std::vector<AttachmentData> attachments{};
@@ -149,8 +243,8 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DeleteMessageData {
 	  public:
 		TimeStamp timeStamp{};///< The created-at timeStamp of the original message.
-		Snowflake channelId{};///< The channel Id of the Message to delete.
-		Snowflake messageId{};///< The message Id of the Message to delete.
+		Snowflake channelId{};///< The channel Snowflake of the Message to delete.
+		Snowflake messageId{};///< The message Snowflake of the Message to delete.
 		std::string reason{};///< The reason for deleting the Message.
 		int32_t timeDelay{};///< Number of Milliseconds to wait before deleting the Message.
 	};
@@ -160,8 +254,6 @@ namespace DiscordCoreAPI {
 		std::vector<Snowflake> messageIds{};///< Array of Message ids to delete.
 		Snowflake channelId{};///< Channel within which to delete the Messages.
 		std::string reason{};///< The reason for deleting the Messages.
-
-		operator Jsonifier();
 	};
 
 	/// \brief For getting a collection of pinned Messages.
@@ -183,30 +275,6 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< Reason for pinning this Message.
 	};
 
-	/// \brief A single Message.
-	class DiscordCoreAPI_Dll Message : public MessageData {
-	  public:
-		Message() noexcept = default;
-
-		Message(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~Message() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll MessageVector {
-	  public:
-		MessageVector() noexcept = default;
-
-		operator std::vector<Message>();
-
-		MessageVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~MessageVector() noexcept = default;
-
-	  protected:
-		std::vector<Message> messages{};
-	};
-
 	/**@}*/
 
 	/**
@@ -220,7 +288,7 @@ namespace DiscordCoreAPI {
 	 * \addtogroup main_endpoints
 	 * @{
 	 */
-	/// \brief An interface class for the Message related Discord endpoints;
+	/// \brief An interface class for the Message related Discord endpoints.
 	class DiscordCoreAPI_Dll Messages {
 	  public:
 		static void initialize(DiscordCoreInternal::HttpsClient*);
@@ -280,4 +348,4 @@ namespace DiscordCoreAPI {
 	};
 	/**@}*/
 
-}// namespace DiscordCoreAPI
+}

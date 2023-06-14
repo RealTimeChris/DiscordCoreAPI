@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -26,21 +26,23 @@
 #include <discordcoreapi/StageInstanceEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
+namespace Jsonifier {
+
+	template<> struct Core<DiscordCoreAPI::CreateStageInstanceData> {
+		using ValueType = DiscordCoreAPI::CreateStageInstanceData;
+		static constexpr auto parseValue = object("privacyLevel", &ValueType::privacyLevel, "channelId", &ValueType::channelId, "reason",
+			&ValueType::reason, "topic", &ValueType::topic);
+	};
+
+	template<> struct Core<DiscordCoreAPI::ModifyStageInstanceData> {
+		using ValueType = DiscordCoreAPI::ModifyStageInstanceData;
+		static constexpr auto parseValue = object("privacyLevel", &ValueType::privacyLevel, "channelId", &ValueType::channelId, "reason",
+			&ValueType::reason, "topic", &ValueType::topic);
+	};
+
+}
+
 namespace DiscordCoreAPI {
-
-	StageInstance::StageInstance(simdjson::ondemand::value jsonObjectData) {
-		this->id = getId(jsonObjectData, "id");
-
-		this->guildId = getId(jsonObjectData, "guild_id");
-
-		this->channelId = getId(jsonObjectData, "channel_id");
-
-		this->topic = getString(jsonObjectData, "topic");
-
-		this->privacyLevel = static_cast<StageInstancePrivacyLevel>(getUint8(jsonObjectData, "privacy_level"));
-
-		this->discoverableDisabled = getBool(jsonObjectData, "discoverable_disabled");
-	}
 
 	void StageInstances::initialize(DiscordCoreInternal::HttpsClient* client) {
 		StageInstances::httpsClient = client;
@@ -52,17 +54,14 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/stage-instances";
 		workload.callStack = "StageInstances::createStageInstanceAsync()";
-		Jsonifier responseData{};
-		responseData["privacy_level"] = dataPackage.privacyLevel;
-		responseData["topic"] = dataPackage.topic;
-		responseData["channel_id"] = dataPackage.channelId;
-		responseData.refreshString(JsonifierSerializeType::Json);
-		workload.content = responseData.operator std::string();
+		Jsonifier::JsonifierCore parser{};
+		parser.serializeJson(dataPackage, workload.content);
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		StageInstance returnValue{};
-		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(workload, &returnValue);
+		StageInstance returnData{};
+		StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(workload, returnData);
+		co_return returnData;
 	}
 
 	CoRoutine<StageInstance> StageInstances::getStageInstanceAsync(GetStageInstanceData dataPackage) {
@@ -71,8 +70,9 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
 		workload.callStack = "StageInstances::getStageInstanceAsync()";
-		StageInstance returnValue{};
-		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(workload, &returnValue);
+		StageInstance returnData{};
+		StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(workload, returnData);
+		co_return returnData;
 	}
 
 	CoRoutine<StageInstance> StageInstances::modifyStageInstanceAsync(ModifyStageInstanceData dataPackage) {
@@ -80,17 +80,15 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<StageInstance>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/stage-instances/" + dataPackage.channelId;
-		Jsonifier responseData{};
-		responseData["privacy_level"] = dataPackage.privacyLevel;
-		responseData["topic"] = dataPackage.topic;
-		responseData.refreshString(JsonifierSerializeType::Json);
-		workload.content = responseData.operator std::string();
+		Jsonifier::JsonifierCore parser{};
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "StageInstances::modifyStageInstanceAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		StageInstance returnValue{};
-		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(workload, &returnValue);
+		StageInstance returnData{};
+		StageInstances::httpsClient->submitWorkloadAndGetResult<StageInstance>(workload, returnData);
+		co_return returnData;
 	}
 
 	CoRoutine<void> StageInstances::deleteStageInstanceAsync(DeleteStageInstanceData dataPackage) {
@@ -102,7 +100,8 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return StageInstances::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		StageInstances::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return;
 	}
-	DiscordCoreInternal::HttpsClient* StageInstances::httpsClient{ nullptr };
+	DiscordCoreInternal::HttpsClient* StageInstances::httpsClient{};
 }

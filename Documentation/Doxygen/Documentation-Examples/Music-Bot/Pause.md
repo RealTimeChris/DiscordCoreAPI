@@ -11,14 +11,14 @@ namespace DiscordCoreAPI {
 	class Pause : public BaseFunction {
 	  public:
 		Pause() {
-			this->commandName = "pause";
-			this->helpDescription = "Pauses the currently playing music.";
+			commandName = "pause";
+			helpDescription = "Pauses the currently playing music.";
 			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter /pause!\n------");
 			msgEmbed.setTitle("__**Pause Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

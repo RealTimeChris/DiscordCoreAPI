@@ -1,0 +1,57 @@
+name: Build-and-Test-MSVC
+
+on:
+  push:
+    branches:
+    - main
+    - dev
+
+jobs:
+  Build:
+    runs-on: windows-2022
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug, Release]
+        std: [23]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Update Vcpkg and install other dependencies.
+      run: | 
+            cd C:/vcpkg
+            ./bootstrap-vcpkg.bat
+            git stash
+            git pull
+            vcpkg update
+
+    - name: Copy the Jsonifier repo over.
+      run: |
+           git clone https://github.com/RealTimeChris/Jsonifier
+           Copy-Item -Path ./Jsonifier/Vcpkg/* -Destination C:/Vcpkg/ -Recurse -Force
+
+    - name: Install the dependencies.
+      run: |
+           vcpkg install jsonifier:x64-windows
+           vcpkg install opus:x64-windows
+           vcpkg install libsodium:x64-windows
+           vcpkg install openssl:x64-windows
+
+    - name: Configure CMake
+      working-directory: Tests
+      run: |
+           cmake -S . -B ./Build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DGITHUB_BRANCH_TYPE=${{github.ref}}
+
+    - name: Build the Test
+      working-directory: Tests/Build
+      run: |
+           cmake --build . --config=${{matrix.build_type}}
+
+    - name: Run the Test
+      working-directory: Tests/Build/${{matrix.build_type}}/
+      run: |
+            ./DiscordCoreAPITest.exe
+      continue-on-error: true
+  

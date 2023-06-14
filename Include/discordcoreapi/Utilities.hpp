@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -25,65 +25,10 @@
 
 #pragma once
 
-#pragma warning(push)
-#pragma warning(disable : 4275)
-#pragma warning(disable : 4244)
-#pragma warning(disable : 4251)
-#pragma warning(disable : 4996)
+#include <jsonifier/Index.hpp>
 
-#ifdef _WIN32
-	#ifdef DiscordCoreAPI_EXPORTS
-		#define DiscordCoreAPI_Dll __declspec(dllexport)
-	#else
-		#define DiscordCoreAPI_Dll __declspec(dllimport)
-	#endif
-	#ifndef WIN32_LEAN_AND_MEAN
-		#define WIN32_LEAN_AND_MEAN
-	#endif
-	#ifndef WINRT_LEAN_AND_MEAN
-		#define WINRT_LEAN_AND_MEAN
-	#endif
-	#include <WinSock2.h>
-#elif __linux__
-	#ifndef DiscordCoreAPI_Dll
-		#define DiscordCoreAPI_Dll
-	#endif
-	#include <arpa/inet.h>
-	#include <sys/time.h>
-	#include <pthread.h>
-	#include <cstdint>
-	#include <cstring>
-	#include <time.h>
-	#include <ctime>
-#endif
-
-#include <source_location>
-#include <unordered_map>
-#include <unordered_set>
-#include <shared_mutex>
-#include <immintrin.h>
-#include <functional>
-#include <concepts>
-#include <iostream>
-#include <sstream>
-#include <iomanip>
-#include <vector>
-#include <atomic>
-#include <random>
-#include <string>
-#include <thread>
-#include <mutex>
-#include <queue>
-#include <array>
-#include <map>
-
-#ifdef max
-	#undef max
-#endif
-
-#ifdef min
-	#undef min
-#endif
+#include <discordcoreapi/UnorderedSet.hpp>
+#include <discordcoreapi/Etf.hpp>
 
 /**
  * \defgroup main_endpoints Main Endpoints
@@ -122,516 +67,153 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
+	template<typename ValueType>
+	concept CopyableOrMovable = std::copyable<std::decay_t<ValueType>> || std::movable<std::decay_t<ValueType>>;
+
+	/// \brief Time formatting methods.
+	enum class TimeFormat : char {
+		LongDate = 'D',///< "20 April 2021" - Long Date
+		LongDateTime = 'F',///< "Tuesday, 20 April 2021 16:20" - Long Date/Time
+		LongTime = 'T',///< "16:20:30" - Long Time
+		ShortDate = 'd',///< "20/04/2021" - Short Date
+		ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
+		ShortTime = 't',///< "16:20" - Short Time
+	};
+
 	class DiscordCoreAPI_Dll Snowflake {
 	  public:
-		Snowflake() noexcept = default;
+		inline Snowflake() noexcept = default;
 
-		Snowflake& operator=(const std::string&) noexcept;
-		Snowflake(const std::string&) noexcept;
+		inline Snowflake& operator=(const std::string& other) noexcept {
+			for (auto& value: other) {
+				if (!std::isdigit(static_cast<uint8_t>(value))) {
+					return *this;
+				}
+			}
+			if (other.size() == 0) {
+				return *this;
+			}
+			id = stoull(other);
+			return *this;
+		}
 
-		Snowflake& operator=(const uint64_t) noexcept;
-		Snowflake(const uint64_t) noexcept;
+		inline Snowflake(const std::string& other) noexcept {
+			*this = other;
+		}
 
-		operator std::string() const noexcept;
+		inline Snowflake& operator=(uint64_t other) noexcept {
+			id = other;
+			return *this;
+		}
 
-		explicit operator uint64_t() const noexcept;
+		inline Snowflake(uint64_t other) noexcept {
+			*this = other;
+		}
 
-		DiscordCoreAPI_Dll friend inline std::string operator+(const std::string&, const Snowflake&) noexcept;
+		inline operator std::string() const noexcept {
+			return std::to_string(id);
+		}
 
-		DiscordCoreAPI_Dll friend inline std::string operator+(const char*, const Snowflake&) noexcept;
+		inline explicit operator uint64_t() const noexcept {
+			return id;
+		}
 
-		bool operator==(const Snowflake& rhs) const noexcept;
+		/// \brief Converts the
+		/// snowflake-id into a time and date stamp. \returns std::string A
+		/// std::string containing the timeStamp.
+		std::string getCreatedAtTimeStamp(TimeFormat timeFormat);
+
+		inline bool operator==(const Snowflake& rhs) const noexcept {
+			return id == rhs.id;
+		}
+
+		friend inline std::string operator+(const std::string&, const Snowflake&) noexcept;
 
 	  protected:
 		uint64_t id{};
 	};
 
-	DiscordCoreAPI_Dll inline std::string operator+(const char* lhs, const Snowflake& rhs) noexcept {
+	inline std::ostream& operator<<(std::ostream& os, Snowflake sf) {
+		os << sf.operator std::string();
+		return os;
+	}
+
+	inline std::string operator+(const std::string& lhs, const Snowflake& rhs) noexcept {
 		std::string string{};
 		string += lhs;
 		string += std::to_string(rhs.id);
 		return string;
 	}
 
-	DiscordCoreAPI_Dll inline std::string operator+(const std::string& lhs, const Snowflake& rhs) noexcept {
-		std::string string{};
-		string += lhs;
-		string += std::to_string(rhs.id);
-		return string;
-	}
-
-	template<typename RTy> void reverseByteOrder(RTy& net) {
-		if constexpr (std::endian::native == std::endian::little) {
-			switch (sizeof(RTy)) {
-				case 1: {
-					return;
-				}
-				case 2: {
-					net = _mm256_extract_epi16(
-						_mm256_shuffle_epi8(_mm256_insert_epi16(__m256i{}, net, 0), _mm256_insert_epi16(__m256i{}, 0x01, 0)), 0);
-					return;
-				}
-				case 4: {
-					net = _mm256_extract_epi32(
-						_mm256_shuffle_epi8(_mm256_insert_epi32(__m256i{}, net, 0), _mm256_insert_epi32(__m256i{}, 0x10203, 0)), 0);
-					return;
-				}
-				case 8: {
-					net = _mm256_extract_epi64(
-						_mm256_shuffle_epi8(_mm256_insert_epi64(__m256i{}, net, 0), _mm256_insert_epi64(__m256i{}, 0x102030405060708, 0)),
-						0);
-					return;
-				}
-			}
-		}
-	}
-
-	template<typename ReturnType> void storeBits(char* to, ReturnType num) {
-		const uint8_t byteSize{ 8 };
-		reverseByteOrder<ReturnType>(num);
-		for (int32_t x = 0; x < sizeof(ReturnType); ++x) {
-			to[x] = static_cast<uint8_t>(num >> (byteSize * x));
-		}
-	}
-
-	template<typename TTy> class StopWatch {
+	template<typename TimeType> class StopWatch {
 	  public:
 		using HRClock = std::chrono::high_resolution_clock;
 
-		StopWatch() = delete;
+		inline StopWatch() = delete;
 
-		StopWatch<TTy>& operator=(StopWatch<TTy>&& data) noexcept {
-			this->maxNumberOfTimeUnits.store(data.maxNumberOfTimeUnits.load());
-			this->startTime.store(data.startTime.load());
+		inline StopWatch<TimeType>& operator=(StopWatch<TimeType>&& data) noexcept {
+			maxNumberOfTimeUnits.store(data.maxNumberOfTimeUnits.load());
+			startTime.store(data.startTime.load());
 			return *this;
 		}
 
-		StopWatch(TTy maxNumberOfMsNew) {
-			this->maxNumberOfTimeUnits.store(maxNumberOfMsNew);
-			this->startTime.store(std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch()));
+		inline StopWatch(StopWatch<TimeType>&& other) noexcept = default;
+
+		inline StopWatch(TimeType maxNumberOfMsNew) noexcept {
+			maxNumberOfTimeUnits.store(maxNumberOfMsNew);
+			resetTimer();
 		}
 
-		TTy totalTimePassed() {
-			TTy currentTime = std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch());
-			TTy elapsedTime = currentTime - this->startTime.load();
-			return elapsedTime;
+		inline StopWatch(int64_t maxNumberOfMsNew) noexcept {
+			maxNumberOfTimeUnits.store(TimeType{ maxNumberOfMsNew });
+			resetTimer();
 		}
 
-		TTy getTotalWaitTime() {
-			return this->maxNumberOfTimeUnits.load();
+		inline TimeType totalTimePassed() noexcept {
+			return std::chrono::duration_cast<TimeType>(HRClock::now().time_since_epoch()) - startTime.load();
 		}
 
-		bool hasTimePassed() {
-			TTy currentTime = std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch());
-			TTy elapsedTime = currentTime - this->startTime.load();
-			return elapsedTime >= this->maxNumberOfTimeUnits.load();
+		inline TimeType getTotalWaitTime() noexcept {
+			return maxNumberOfTimeUnits.load();
 		}
 
-		void resetTimer() {
-			this->startTime.store(std::chrono::duration_cast<TTy>(HRClock::now().time_since_epoch()));
+		inline bool hasTimePassed() noexcept {
+			if (std::chrono::duration_cast<TimeType>(HRClock::now().time_since_epoch()) - startTime.load() >= maxNumberOfTimeUnits.load()) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		inline void resetTimer() noexcept {
+			startTime.store(std::chrono::duration_cast<TimeType>(HRClock::now().time_since_epoch()));
 		}
 
 	  protected:
-		std::atomic<TTy> maxNumberOfTimeUnits{ TTy{} };
-		std::atomic<TTy> startTime{ TTy{} };
+		std::atomic<TimeType> maxNumberOfTimeUnits{ TimeType{ 0 } };
+		std::atomic<TimeType> startTime{ TimeType{ 0 } };
 	};
 
-	const uint8_t formatVersion{ 131 };
-
-	enum class EtfType : uint8_t {
-		New_Float_Ext = 70,
-		Small_Integer_Ext = 97,
-		Integer_Ext = 98,
-		Atom_Ext = 100,
-		Nil_Ext = 106,
-		String_Ext = 107,
-		List_Ext = 108,
-		Binary_Ext = 109,
-		Small_Big_Ext = 110,
-		Small_Atom_Ext = 115,
-		Map_Ext = 116,
+	/// \brief Activity types.
+	enum class ActivityType : uint8_t {
+		Game = 0,///< Game.
+		Streaming = 1,///< Streaming.
+		Listening = 2,///< Listening.
+		Watching = 3,///< Watching.
+		Custom = 4,///< Custom.
+		Competing = 5///< Competing.
 	};
 
-	template<typename Ty>
-	concept IsEnum = std::is_enum<Ty>::value;
+	/// \brief Activity data.
+	struct DiscordCoreAPI_Dll ActivityData {
+		std::string name{};///< Name of the activity.
+		ActivityType type{};///< Activity data.
+		std::string url{};///< Url associated with the activity.
 
-	struct DiscordCoreAPI_Dll EnumConverter {
-		template<IsEnum EnumType> EnumConverter& operator=(const std::vector<EnumType>& data) {
-			for (auto& value: data) {
-				this->vector.emplace_back(std::move(static_cast<uint64_t>(value)));
-			}
-			return *this;
-		};
+		ActivityData() noexcept = default;
 
-		template<IsEnum EnumType> EnumConverter(const std::vector<EnumType>& data) {
-			*this = data;
-		};
-
-		template<IsEnum EnumType> EnumConverter& operator=(EnumType data) {
-			this->integer = static_cast<uint64_t>(data);
-			return *this;
-		};
-
-		template<IsEnum EnumType> EnumConverter(EnumType data) {
-			*this = data;
-		};
-
-		operator std::vector<uint64_t>() const noexcept;
-
-		operator uint64_t() const noexcept;
-
-		bool isItAVector() const noexcept;
-
-	  protected:
-		std::vector<uint64_t> vector{};
-		bool vectorType{};
-		uint64_t integer{};
+		virtual ~ActivityData() noexcept = default;
 	};
-
-	enum class JsonType : uint8_t { Object = 1, Array = 2, String = 3, Float = 4, Uint64 = 5, Int64 = 6, Bool = 7, Null = 8 };
-
-	enum class JsonifierSerializeType { Etf = 0, Json = 1 };
-
-	class DiscordCoreAPI_Dll Jsonifier;
-
-	template<typename Ty>
-	concept IsConvertibleToJsonifier = std::convertible_to<Ty, Jsonifier>;
-
-	class DiscordCoreAPI_Dll Jsonifier {
-	  public:
-		using MapAllocatorType = std::allocator<std::pair<const std::string, Jsonifier>>;
-		template<typename OTy> using AllocatorType = std::allocator<OTy>;
-		template<typename OTy> using AllocatorTraits = std::allocator_traits<AllocatorType<OTy>>;
-		using ObjectType = std::map<std::string, Jsonifier, std::less<>, MapAllocatorType>;
-		using ArrayType = std::vector<Jsonifier, AllocatorType<Jsonifier>>;
-		using StringType = std::string;
-		using FloatType = double;
-		using UintType = uint64_t;
-		using IntType = int64_t;
-		using BoolType = bool;
-
-		union JsonValue {
-			JsonValue() noexcept = default;
-			JsonValue& operator=(JsonValue&&) noexcept = delete;
-			JsonValue(JsonValue&&) noexcept = delete;
-			JsonValue& operator=(const JsonValue&) noexcept = delete;
-			JsonValue(const JsonValue&) noexcept = delete;
-			ObjectType* object;
-			StringType* string;
-			ArrayType* array;
-			FloatType numberDouble;
-			UintType numberUint;
-			IntType numberInt;
-			BoolType boolean;
-		};
-
-		Jsonifier() noexcept = default;
-
-		template<IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::vector<OTy>&& data) noexcept {
-			this->setValue(JsonType::Array);
-			for (auto& value: data) {
-				this->jsonValue.array->push_back(std::move(value));
-			}
-			return *this;
-		}
-
-		template<IsConvertibleToJsonifier OTy> Jsonifier(std::vector<OTy>&& data) noexcept {
-			*this = std::move(data);
-		}
-
-		template<IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::vector<OTy>& data) noexcept {
-			this->setValue(JsonType::Array);
-			for (auto& value: data) {
-				this->jsonValue.array->push_back(value);
-			}
-			return *this;
-		}
-
-		template<IsConvertibleToJsonifier OTy> Jsonifier(std::vector<OTy>& data) noexcept {
-			*this = data;
-		}
-
-		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy>
-		Jsonifier& operator=(std::unordered_map<KTy, OTy>&& data) noexcept {
-			this->setValue(JsonType::Object);
-			for (auto& [key, value]: data) {
-				(*this->jsonValue.object)[key] = std::move(value);
-			}
-			return *this;
-		}
-
-		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier(std::unordered_map<KTy, OTy>&& data) noexcept {
-			*this = std::move(data);
-		};
-
-		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy>
-		Jsonifier& operator=(std::unordered_map<KTy, OTy>& data) noexcept {
-			this->setValue(JsonType::Object);
-			for (auto& [key, value]: data) {
-				(*this->jsonValue.object)[key] = value;
-			}
-			return *this;
-		}
-
-		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier(std::unordered_map<KTy, OTy>& data) noexcept {
-			*this = data;
-		};
-
-		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::map<KTy, OTy>&& data) noexcept {
-			this->setValue(JsonType::Object);
-			for (auto& [key, value]: data) {
-				(*this->jsonValue.object)[key] = std::move(value);
-			}
-			return *this;
-		}
-
-		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier(std::map<KTy, OTy>&& data) noexcept {
-			*this = std::move(data);
-		};
-
-		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier& operator=(std::map<KTy, OTy>& data) noexcept {
-			this->setValue(JsonType::Object);
-			for (auto& [key, value]: data) {
-				(*this->jsonValue.object)[key] = value;
-			}
-			return *this;
-		}
-
-		template<IsConvertibleToJsonifier KTy, IsConvertibleToJsonifier OTy> Jsonifier(std::map<KTy, OTy>& data) noexcept {
-			*this = data;
-		};
-
-		template<IsEnum Ty> Jsonifier& operator=(Ty data) noexcept {
-			this->jsonValue.numberUint = static_cast<uint64_t>(data);
-			this->type = JsonType::Uint64;
-			return *this;
-		}
-
-		template<IsEnum Ty> Jsonifier(Ty data) noexcept {
-			*this = data;
-		}
-
-		Jsonifier& operator=(Jsonifier&& data) noexcept;
-
-		Jsonifier& operator=(const Jsonifier& data) noexcept;
-
-		Jsonifier(const Jsonifier& data) noexcept;
-
-		operator std::string&&() noexcept;
-
-		operator std::string() noexcept;
-
-		void refreshString(JsonifierSerializeType OpCode);
-
-		Jsonifier& operator=(EnumConverter&& data) noexcept;
-		Jsonifier(EnumConverter&& data) noexcept;
-
-		Jsonifier& operator=(const EnumConverter& data) noexcept;
-		Jsonifier(const EnumConverter& data) noexcept;
-
-		Jsonifier& operator=(std::string&& data) noexcept;
-		Jsonifier(std::string&& data) noexcept;
-
-		Jsonifier& operator=(const std::string& data) noexcept;
-		Jsonifier(const std::string& data) noexcept;
-
-		Jsonifier& operator=(const char* data) noexcept;
-		Jsonifier(const char* data) noexcept;
-
-		Jsonifier& operator=(double data) noexcept;
-		Jsonifier(double data) noexcept;
-
-		Jsonifier& operator=(float data) noexcept;
-		Jsonifier(float data) noexcept;
-
-		Jsonifier& operator=(uint64_t data) noexcept;
-		Jsonifier(uint64_t data) noexcept;
-
-		Jsonifier& operator=(uint32_t data) noexcept;
-		Jsonifier(uint32_t data) noexcept;
-
-		Jsonifier& operator=(uint16_t data) noexcept;
-		Jsonifier(uint16_t data) noexcept;
-
-		Jsonifier& operator=(uint8_t data) noexcept;
-		Jsonifier(uint8_t data) noexcept;
-
-		Jsonifier& operator=(int64_t data) noexcept;
-		Jsonifier(int64_t data) noexcept;
-
-		Jsonifier& operator=(int32_t data) noexcept;
-		Jsonifier(int32_t data) noexcept;
-
-		Jsonifier& operator=(int16_t data) noexcept;
-		Jsonifier(int16_t data) noexcept;
-
-		Jsonifier& operator=(int8_t data) noexcept;
-		Jsonifier(int8_t data) noexcept;
-
-		Jsonifier& operator=(bool data) noexcept;
-		Jsonifier(bool data) noexcept;
-
-		Jsonifier& operator=(JsonType TypeNew) noexcept;
-		Jsonifier(JsonType type) noexcept;
-
-		Jsonifier& operator=(std::nullptr_t) noexcept;
-		Jsonifier(std::nullptr_t data) noexcept;
-
-		Jsonifier& operator[](typename ObjectType::key_type key);
-
-		Jsonifier& operator[](uint64_t index);
-
-		template<typename Ty> const Ty& getValue() const {
-			return Ty{};
-		}
-
-		template<typename Ty> Ty& getValue() {
-			return Ty{};
-		}
-
-		JsonType getType() noexcept;
-
-		void emplaceBack(Jsonifier&& data) noexcept;
-		void emplaceBack(Jsonifier& data) noexcept;
-
-		~Jsonifier() noexcept;
-
-	  protected:
-		JsonType type{ JsonType::Null };
-		JsonValue jsonValue{};
-		std::string string{};
-
-		void serializeJsonToEtfString(const Jsonifier* dataToParse);
-
-		void serializeJsonToJsonString(const Jsonifier* dataToParse);
-
-		void writeJsonObject(const ObjectType& ObjectNew);
-
-		void writeJsonArray(const ArrayType& Array);
-
-		void writeJsonString(const StringType& StringNew);
-
-		void writeJsonFloat(const FloatType x);
-
-		template<typename NumberType,
-			std::enable_if_t<std::is_integral<NumberType>::value || std::is_same<NumberType, uint64_t>::value ||
-					std::is_same<NumberType, int64_t>::value,
-				int> = 0>
-		void writeJsonInt(NumberType Int) {
-			auto IntNew = std::to_string(Int);
-			this->writeString(IntNew.data(), IntNew.size());
-		}
-
-		void writeJsonBool(const BoolType ValueNew);
-
-		void writeJsonNull();
-
-		void writeEtfObject(const ObjectType& jsonData);
-
-		void writeEtfArray(const ArrayType& jsonData);
-
-		void writeEtfString(const StringType& jsonData);
-
-		void writeEtfUint(const UintType jsonData);
-
-		void writeEtfInt(const IntType jsonData);
-
-		void writeEtfFloat(const FloatType jsonData);
-
-		void writeEtfBool(const BoolType jsonData);
-
-		void writeEtfNull();
-
-		void writeString(const char* data, size_t length);
-
-		void writeCharacter(const char Char);
-
-		void appendBinaryExt(const std::string& bytes, const uint32_t sizeNew);
-
-		void appendUnsignedLongLong(const uint64_t value);
-
-		void appendNewFloatExt(const double FloatValue);
-
-		void appendSmallIntegerExt(const uint8_t value);
-
-		void appendListHeader(const uint32_t sizeNew);
-
-		void appendMapHeader(const uint32_t sizeNew);
-
-		void appendIntegerExt(const uint32_t value);
-
-		void appendBool(bool data);
-
-		void appendVersion();
-
-		void appendNilExt();
-
-		void appendNil();
-
-		void setValue(JsonType TypeNew);
-
-		void destroy() noexcept;
-
-		friend bool operator==(const Jsonifier& lhs, const Jsonifier& rhs);
-	};
-
-	template<> inline const Jsonifier::ObjectType& Jsonifier::getValue() const {
-		return *this->jsonValue.object;
-	}
-
-	template<> inline const Jsonifier::ArrayType& Jsonifier::getValue() const {
-		return *this->jsonValue.array;
-	}
-
-	template<> inline const Jsonifier::StringType& Jsonifier::getValue() const {
-		return *this->jsonValue.string;
-	}
-
-	template<> inline const Jsonifier::FloatType& Jsonifier::getValue() const {
-		return this->jsonValue.numberDouble;
-	}
-
-	template<> inline const Jsonifier::UintType& Jsonifier::getValue() const {
-		return this->jsonValue.numberUint;
-	}
-
-	template<> inline const Jsonifier::IntType& Jsonifier::getValue() const {
-		return this->jsonValue.numberInt;
-	}
-
-	template<> inline const Jsonifier::BoolType& Jsonifier::getValue() const {
-		return this->jsonValue.boolean;
-	}
-
-	template<> inline Jsonifier::ObjectType& Jsonifier::getValue() {
-		return *this->jsonValue.object;
-	}
-
-	template<> inline Jsonifier::ArrayType& Jsonifier::getValue() {
-		return *this->jsonValue.array;
-	}
-
-	template<> inline Jsonifier::StringType& Jsonifier::getValue() {
-		return *this->jsonValue.string;
-	}
-
-	template<> inline Jsonifier::FloatType& Jsonifier::getValue() {
-		return this->jsonValue.numberDouble;
-	}
-
-	template<> inline Jsonifier::UintType& Jsonifier::getValue() {
-		return this->jsonValue.numberUint;
-	}
-
-	template<> inline Jsonifier::IntType& Jsonifier::getValue() {
-		return this->jsonValue.numberInt;
-	}
-
-	template<> inline Jsonifier::BoolType& Jsonifier::getValue() {
-		return this->jsonValue.boolean;
-	}
-
-	struct DiscordCoreAPI_Dll ActivityData;
 
 	/// \brief For selecting the type of streamer that the given bot is, one must be one server and one of client per connection.
 	enum class StreamType { None = 0, Client = 1, Server = 2 };
@@ -695,58 +277,53 @@ namespace DiscordCoreInternal {
 			Sharding_Required =
 				1 << 12,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
 			Invalid_API_Version = 1 << 13,///< You sent an invalid version for the gateway.
-			Invalid_Intent =
-				1 << 14,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
+			Invalid_Intent = 1 << 14,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
 			Disallowed_Intent = 1
 				<< 15,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
-			We_Do_Reconnect = Normal_Close | Unknown_Error | Unknown_Opcode | Decode_Error | Not_Authenticated | Already_Authenticated |
-				Invalid_Seq | Rate_Limited | Session_Timed,
-			We_Do_Not_Reconnect =
-				Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
+			We_Do_Reconnect = Normal_Close | Unknown_Error | Unknown_Opcode | Decode_Error | Not_Authenticated | Already_Authenticated | Invalid_Seq |
+				Rate_Limited | Session_Timed,
+			We_Do_Not_Reconnect = Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
 		};
 
-		std::unordered_map<uint16_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset },
-			{ 1000, WebSocketCloseCode::Normal_Close }, { 4000, WebSocketCloseCode::Unknown_Error },
-			{ 4001, WebSocketCloseCode::Unknown_Opcode }, { 4002, WebSocketCloseCode::Decode_Error },
-			{ 4003, WebSocketCloseCode::Not_Authenticated }, { 4004, WebSocketCloseCode::Authentication_Failed },
-			{ 4005, WebSocketCloseCode::Already_Authenticated }, { 4007, WebSocketCloseCode::Invalid_Seq },
-			{ 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed },
+		inline static std::unordered_map<uint16_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset },
+			{ 1000, WebSocketCloseCode::Normal_Close }, { 4000, WebSocketCloseCode::Unknown_Error }, { 4001, WebSocketCloseCode::Unknown_Opcode },
+			{ 4002, WebSocketCloseCode::Decode_Error }, { 4003, WebSocketCloseCode::Not_Authenticated },
+			{ 4004, WebSocketCloseCode::Authentication_Failed }, { 4005, WebSocketCloseCode::Already_Authenticated },
+			{ 4007, WebSocketCloseCode::Invalid_Seq }, { 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed },
 			{ 4010, WebSocketCloseCode::Invalid_Shard }, { 4011, WebSocketCloseCode::Sharding_Required },
 			{ 4012, WebSocketCloseCode::Invalid_API_Version }, { 4013, WebSocketCloseCode::Invalid_Intent },
 			{ 4014, WebSocketCloseCode::Disallowed_Intent } };
 
-		std::unordered_map<WebSocketCloseCode, std::string> outputErrorValues{ {
-																				   WebSocketCloseCode::Unknown_Error,
-																				   "4000; We're not sure what went wrong.",
-																			   },
-			{ WebSocketCloseCode::Unknown_Opcode,
-				"4001; You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!" },
-			{ WebSocketCloseCode::Decode_Error, "4002; You sent an invalid payload to Discord. Don't do that!" },
-			{ WebSocketCloseCode::Not_Authenticated, "4003; You sent us a payload prior to identifying." },
-			{ WebSocketCloseCode::Authentication_Failed, "4004; The account token sent with your identify payload is incorrect." },
-			{ WebSocketCloseCode::Already_Authenticated, "4005; You sent more than one identify payload. Don't do that!" },
-			{ WebSocketCloseCode::Invalid_Seq,
-				"4006; The sequence sent when resuming the session was invalid. Reconnect and start a new session." },
+		inline static std::unordered_map<WebSocketCloseCode, std::string> outputErrorValues{ {
+																								 WebSocketCloseCode::Unknown_Error,
+																								 "We're not sure what went wrong.",
+																							 },
+			{ WebSocketCloseCode::Unknown_Opcode, "You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!" },
+			{ WebSocketCloseCode::Decode_Error, "You sent an invalid payload to Discord. Don't do that!" },
+			{ WebSocketCloseCode::Not_Authenticated, "You sent us a payload prior to identifying." },
+			{ WebSocketCloseCode::Authentication_Failed, "The account token sent with your identify payload is incorrect." },
+			{ WebSocketCloseCode::Already_Authenticated, "You sent more than one identify payload. Don't do that!" },
+			{ WebSocketCloseCode::Invalid_Seq, "The sequence sent when resuming the session was invalid. Reconnect and start a new session." },
 			{ WebSocketCloseCode::Rate_Limited,
-				"4008; Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this." },
-			{ WebSocketCloseCode::Session_Timed, "4009; Your session timed out. Reconnect and start a new one." },
-			{ WebSocketCloseCode::Invalid_Shard, "4010; You sent us an invalid shard when identifying." },
+				"Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this." },
+			{ WebSocketCloseCode::Session_Timed, "Your session timed out. Reconnect and start a new one." },
+			{ WebSocketCloseCode::Invalid_Shard, "You sent us an invalid shard when identifying." },
 			{ WebSocketCloseCode::Sharding_Required,
-				"4011; The session would have handled too many guilds - you are required to shard your connection in order to connect." },
-			{ WebSocketCloseCode::Invalid_API_Version, "4012; You sent an invalid version for the gateway." },
+				"The session would have handled too many guilds - you are required to shard your connection in order to connect." },
+			{ WebSocketCloseCode::Invalid_API_Version, "You sent an invalid version for the gateway." },
 			{ WebSocketCloseCode::Invalid_Intent,
-				"4013; You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value." },
+				"You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value." },
 			{ WebSocketCloseCode::Disallowed_Intent,
-				"4014; You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not "
+				"You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not "
 				"enabled or are "
 				"not "
 				"approved for." } };
 
 		WebSocketCloseCode value{};
 
-		WebSocketClose& operator=(uint16_t valueNew);
+		WebSocketClose& operator=(uint16_t value);
 
-		explicit WebSocketClose(uint16_t valueNew);
+		explicit WebSocketClose(uint16_t value);
 
 		operator std::string();
 
@@ -775,37 +352,36 @@ namespace DiscordCoreInternal {
 			Unknown_Encryption_Mode = 1 << 13///< We didn't recognize your encryption.
 		};
 
-		std::unordered_map<uint16_t, VoiceWebSocketCloseCode> mappingValues{ { 0, VoiceWebSocketCloseCode::Unset },
+		inline static std::unordered_map<uint16_t, VoiceWebSocketCloseCode> mappingValues{ { 0, VoiceWebSocketCloseCode::Unset },
 			{ 1000, VoiceWebSocketCloseCode::Normal_Close }, { 4001, VoiceWebSocketCloseCode::Unknown_Opcode },
 			{ 4002, VoiceWebSocketCloseCode::Failed_To_Decode }, { 4003, VoiceWebSocketCloseCode::Not_Authenticated },
-			{ 4004, VoiceWebSocketCloseCode ::Authentication_Failed }, { 4005, VoiceWebSocketCloseCode::Already_Authenticated },
-			{ 4006, VoiceWebSocketCloseCode ::Session_No_Longer_Valid }, { 4009, VoiceWebSocketCloseCode::Session_Timeout },
+			{ 4004, VoiceWebSocketCloseCode::Authentication_Failed }, { 4005, VoiceWebSocketCloseCode::Already_Authenticated },
+			{ 4006, VoiceWebSocketCloseCode::Session_No_Longer_Valid }, { 4009, VoiceWebSocketCloseCode::Session_Timeout },
 			{ 4011, VoiceWebSocketCloseCode::Server_Not_Found }, { 4012, VoiceWebSocketCloseCode::Unknown_Protocol },
-			{ 4014, VoiceWebSocketCloseCode ::Disconnected }, { 4015, VoiceWebSocketCloseCode ::Voice_Server_Crashed },
-			{ 4016, VoiceWebSocketCloseCode ::Unknown_Encryption_Mode } };
+			{ 4014, VoiceWebSocketCloseCode::Disconnected }, { 4015, VoiceWebSocketCloseCode::Voice_Server_Crashed },
+			{ 4016, VoiceWebSocketCloseCode::Unknown_Encryption_Mode } };
 
-		std::unordered_map<VoiceWebSocketCloseCode, std::string> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "0; Unset." },
-			{ VoiceWebSocketCloseCode::Normal_Close, "1000; Normal close." },
-			{ VoiceWebSocketCloseCode::Unknown_Opcode, "4001; You sent an invalid opcode." },
-			{ VoiceWebSocketCloseCode::Failed_To_Decode, "4002; You sent an invalid payload in your identifying to the Gateway." },
-			{ VoiceWebSocketCloseCode::Not_Authenticated, "4003; You sent a payload before identifying with the Gateway." },
-			{ VoiceWebSocketCloseCode::Authentication_Failed, "4004; The token you sent in your identify payload is incorrect." },
-			{ VoiceWebSocketCloseCode::Already_Authenticated, "4005; You sent more than one identify payload. Stahp." },
-			{ VoiceWebSocketCloseCode::Session_No_Longer_Valid, "4006; Your session is no longer valid." },
-			{ VoiceWebSocketCloseCode::Session_Timeout, "4009; Your session has timed out." },
-			{ VoiceWebSocketCloseCode::Server_Not_Found, "4011; We can't find the server you're trying to connect to." },
-			{ VoiceWebSocketCloseCode::Unknown_Protocol, "4012; We didn't recognize the protocol you sent." },
+		inline static std::unordered_map<VoiceWebSocketCloseCode, std::string> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "Unset." },
+			{ VoiceWebSocketCloseCode::Normal_Close, "Normal close." }, { VoiceWebSocketCloseCode::Unknown_Opcode, "You sent an invalid opcode." },
+			{ VoiceWebSocketCloseCode::Failed_To_Decode, "You sent an invalid payload in your identifying to the Gateway." },
+			{ VoiceWebSocketCloseCode::Not_Authenticated, "You sent a payload before identifying with the Gateway." },
+			{ VoiceWebSocketCloseCode::Authentication_Failed, "The token you sent in your identify payload is incorrect." },
+			{ VoiceWebSocketCloseCode::Already_Authenticated, "You sent more than one identify payload. Stahp." },
+			{ VoiceWebSocketCloseCode::Session_No_Longer_Valid, "Your session is no longer valid." },
+			{ VoiceWebSocketCloseCode::Session_Timeout, "Your session has timed out." },
+			{ VoiceWebSocketCloseCode::Server_Not_Found, "We can't find the server you're trying to connect to." },
+			{ VoiceWebSocketCloseCode::Unknown_Protocol, "We didn't recognize the protocol you sent." },
 			{ VoiceWebSocketCloseCode::Disconnected,
-				"4014; Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not "
+				"Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not "
 				"reconnect." },
-			{ VoiceWebSocketCloseCode::Voice_Server_Crashed, "4015; The server crashed. Our bad! Try resuming." },
-			{ VoiceWebSocketCloseCode::Unknown_Encryption_Mode, "4016; We didn't recognize your encryption." } };
+			{ VoiceWebSocketCloseCode::Voice_Server_Crashed, "The server crashed. Our bad! Try resuming." },
+			{ VoiceWebSocketCloseCode::Unknown_Encryption_Mode, "We didn't recognize your encryption." } };
 
 		VoiceWebSocketCloseCode value{};
 
-		VoiceWebSocketClose& operator=(uint16_t valueNew);
+		VoiceWebSocketClose& operator=(uint16_t value);
 
-		VoiceWebSocketClose(uint16_t valueNew);
+		VoiceWebSocketClose(uint16_t value);
 
 		operator std::string();
 
@@ -830,25 +406,25 @@ namespace DiscordCoreInternal {
 			Gatewat_Unavailable = 502,///< There was not a gateway available to process your request. Wait a bit and retry.
 		};
 
-		std::unordered_map<HttpsResponseCodes, std::string> outputErrorValues{
-			{ static_cast<HttpsResponseCodes>(200), "200; The request completed successfully" },
-			{ static_cast<HttpsResponseCodes>(201), "201; The entity was created successfully" },
-			{ static_cast<HttpsResponseCodes>(204), "204; The request completed successfully but returned no content" },
-			{ static_cast<HttpsResponseCodes>(304), "304; The entity was not modified (no action was taken)" },
-			{ static_cast<HttpsResponseCodes>(400), "400; The request was improperly formatted, or the server couldn't understand it" },
-			{ static_cast<HttpsResponseCodes>(401), "401; The Authorization header was missing or invalid" },
-			{ static_cast<HttpsResponseCodes>(403), "403; The Authorization token you passed did not have permission to the resource" },
-			{ static_cast<HttpsResponseCodes>(404), "404; The resource at the location specified doesn't exist" },
-			{ static_cast<HttpsResponseCodes>(405), "405; The HTTPS method used is not valid for the location specified" },
-			{ static_cast<HttpsResponseCodes>(429), "429; You are being rate limited, see Rate Limits" },
-			{ static_cast<HttpsResponseCodes>(502), "502; There was not a gateway available to process your request.Wait a bit and retry" }
-		};
+		inline static std::unordered_map<HttpsResponseCodes, std::string> outputErrorValues{ { static_cast<HttpsResponseCodes>(200),
+																								 "The request completed successfully." },
+			{ static_cast<HttpsResponseCodes>(201), "The entity was created successfully." },
+			{ static_cast<HttpsResponseCodes>(204), "The request completed successfully but returned no content." },
+			{ static_cast<HttpsResponseCodes>(304), "The entity was not modified (no action was taken)." },
+			{ static_cast<HttpsResponseCodes>(400), "The request was improperly formatted, or the server couldn't understand it." },
+			{ static_cast<HttpsResponseCodes>(401), "The Authorization header was missing or invalid." },
+			{ static_cast<HttpsResponseCodes>(403), "The Authorization token you passed did not have permission to the resource." },
+			{ static_cast<HttpsResponseCodes>(404), "The resource at the location specified doesn't exist." },
+			{ static_cast<HttpsResponseCodes>(405), "The HTTPS method used is not valid for the location specified." },
+			{ static_cast<HttpsResponseCodes>(429), "You are being rate limited, see Rate Limits." },
+			{ static_cast<HttpsResponseCodes>(502), "There was not a gateway available to process your request.Wait a bit and retry." },
+			{ static_cast<HttpsResponseCodes>(500), "The server had an error processing your request(these are rare)." } };
 
 		HttpsResponseCodes value{};
 
-		HttpsResponseCode& operator=(uint32_t valueNew);
+		HttpsResponseCode& operator=(uint32_t value);
 
-		HttpsResponseCode(uint32_t valueNew);
+		HttpsResponseCode(uint32_t value);
 
 		operator uint32_t();
 
@@ -881,29 +457,16 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Reactions;
 	class DiscordCoreAPI_Dll BotUser;
 
-	struct DiscordCoreAPI_Dll DCAException : public std::runtime_error, std::string {
-		DCAException(const std::string&, std::source_location = std::source_location::current()) noexcept;
-	};
-
 	template<typename RTy> class CoRoutine;
-
-	/// \brief Update-presence status types.
-	enum class UpdatePresenceStatusTypes {
-		online = 0,///< Online.
-		dnd = 1,///< Do Not Disturb.
-		idle = 2,///<	AFK.
-		invisible = 3,///< Invisible and shown as offline.
-		offline = 4,///< Offline
-	};
 
 	/// \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
 		std::vector<ActivityData> activities{};///< A vector of activities.
-		UpdatePresenceStatusTypes status{};///< Current status.
+		std::string status{};///< Current status.
 		int64_t since{};///< When was the activity started?
 		bool afk{};///< Are we afk.
 
-		operator Jsonifier();
+		operator DiscordCoreInternal::EtfSerializer();
 	};
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void ));
@@ -943,15 +506,15 @@ namespace DiscordCoreAPI {
 		Message_Content = 1 << 15,///< Intent for receipt of message content.
 		Guild_Scheduled_Events = 1 << 16,///< Scheduled events.
 		Default_Intents = Guilds | Guild_Bans | Guild_Emojis | Guild_Integrations | Guild_Webhooks | Guild_Invites | Guild_VoiceStates |
-			Guild_Messages | Guild_Message_Reactions | Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions |
-			Direct_Message_Typing | Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
+			Guild_Messages | Guild_Message_Reactions | Guild_Message_Typing | Direct_Messages | Direct_Message_Reactions | Direct_Message_Typing |
+			Guild_Scheduled_Events,///< Default intents (all non-privileged intents).
 		Privileged_Intents = Guild_Members | Guild_Presences | Message_Content,///< Privileged intents requiring ID.
 		All_Intents = Default_Intents | Privileged_Intents///< Every single intent.
 	};
 
 	/// \brief Function data for repeated functions to be loaded.
 	struct DiscordCoreAPI_Dll RepeatedFunctionData {
-		std::function<void(DiscordCoreClient*)> function{ nullptr };///< The std::function pointer to be loaded.
+		std::function<void(DiscordCoreClient*)> function{};///< The std::function char* to be loaded.
 		uint32_t intervalInMs{};///< The time interval at which to call the std::function.
 		bool repeated{};///< Whether or not the std::function is repeating.
 		int64_t dummyArg{};
@@ -977,10 +540,8 @@ namespace DiscordCoreAPI {
 		bool logWebSocketSuccessMessages{};///< Do we log the websocket success messages to cout?
 		bool logWebSocketErrorMessages{};///< Do we log the websocket error messages to cout?
 		bool logGeneralSuccessMessages{};///< Do we log general success messages to cout?
-		bool logFFMPEGSuccessMessages{};///< Do we log FFMPEG success messages to cout?
 		bool logGeneralErrorMessages{};///< Do we log general error messages to cout?
 		bool logHttpsSuccessMessages{};///< Do we log Https response success messages to cout?
-		bool logFFMPEGErrorMessages{};///< Do we log FFMPEG error messages to cout?
 		bool logHttpsErrorMessages{};///< Do we log Https response error messages to cout?
 	};
 
@@ -1007,8 +568,8 @@ namespace DiscordCoreAPI {
 	};
 
 	struct DiscordCoreAPI_Dll JsonStringValue {
-		std::string value{};
-		JsonType type{};
+		DiscordCoreInternal::JsonType type{};
+		Jsonifier::RawJsonData value{};
 	};
 
 	class DiscordCoreAPI_Dll ConfigManager {
@@ -1024,10 +585,6 @@ namespace DiscordCoreAPI {
 		const bool doWePrintHttpsSuccessMessages() const;
 
 		const bool doWePrintHttpsErrorMessages() const;
-
-		const bool doWePrintFFMPEGSuccessMessages() const;
-
-		const bool doWePrintFFMPEGErrorMessages() const;
 
 		const bool doWePrintGeneralSuccessMessages() const;
 
@@ -1123,154 +680,6 @@ namespace DiscordCoreAPI {
 			ScarletRed = "FF2400";///< Scarlet red.
 	};
 
-	template<typename OTy> class ObjectCache {
-	  public:
-		ObjectCache() noexcept {};
-
-		void emplace(OTy&& data) noexcept {
-			std::unique_lock lock{ this->accessMutex };
-			this->set.emplace(std::move(data));
-		}
-
-		void emplace(OTy& data) noexcept {
-			std::unique_lock lock{ this->accessMutex };
-			this->set.emplace(data);
-		}
-
-		const OTy& readOnly(OTy& key) noexcept {
-			std::shared_lock lock{ this->accessMutex };
-			return *this->set.find(key);
-		}
-
-		OTy& at(OTy&& key) noexcept {
-			std::shared_lock lock{ this->accessMutex };
-			return ( OTy& )*this->set.find(key);
-		}
-
-		OTy& at(OTy& key) noexcept {
-			std::shared_lock lock{ this->accessMutex };
-			return ( OTy& )*this->set.find(key);
-		}
-
-		auto begin() {
-			std::unique_lock lock{ this->accessMutex };
-			return this->set.begin();
-		}
-
-		auto end() {
-			std::unique_lock lock{ this->accessMutex };
-			return this->set.end();
-		}
-
-		const bool contains(OTy& key) noexcept {
-			std::shared_lock lock{ this->accessMutex };
-			return this->set.contains(key);
-		}
-
-		void erase(OTy& key) {
-			if (this->set.contains(key)) {
-				std::unique_lock lock{ this->accessMutex };
-				this->set.erase(key);
-			}
-		}
-
-		OTy& operator[](OTy& key) {
-			if (!this->contains(key)) {
-				std::shared_lock lock{ this->accessMutex };
-				this->set.emplace(key);
-			}
-			return ( OTy& )*this->set.find(key);
-		}
-
-		OTy& operator[](OTy&& key) {
-			if (!this->contains(key)) {
-				std::shared_lock lock{ this->accessMutex };
-				this->set.emplace(std::move(key));
-			}
-			return ( OTy& )*this->set.find(key);
-		}
-
-		uint64_t size() noexcept {
-			std::unique_lock lock{ this->accessMutex };
-			return this->set.size();
-		}
-
-	  protected:
-		std::shared_mutex accessMutex{};
-		std::unordered_set<OTy> set{};
-	};
-
-	class DiscordCoreAPI_Dll StringWrapper {
-	  public:
-		StringWrapper() noexcept = default;
-
-		StringWrapper& operator=(StringWrapper&& other) noexcept;
-
-		StringWrapper& operator=(const StringWrapper& other);
-
-		StringWrapper(const StringWrapper& other);
-
-		StringWrapper& operator=(const std::string& string);
-
-		explicit StringWrapper(const std::string& string);
-
-		StringWrapper& operator=(const char* string);
-
-		StringWrapper(const char* string);
-
-		operator std::string();
-
-		void emplace_back(char value);
-
-		uint64_t size();
-
-		const char* data();
-
-	  protected:
-		std::unique_ptr<char[]> ptr{};
-	};
-
-	DiscordCoreAPI_Dll inline std::basic_ostream<char>& operator<<(std::basic_ostream<char, std::char_traits<char>>& lhs,
-		const StringWrapper& rhs) {
-		for (auto& value: static_cast<std::string>(static_cast<StringWrapper>(rhs))) {
-			lhs.put(value);
-		}
-		return lhs;
-	}
-
-	DiscordCoreAPI_Dll inline std::basic_string<char> operator+(
-		const std::basic_string<char, std::char_traits<char>, std::allocator<char>>& lhs, StringWrapper rhs) {
-		std::stringstream stream{};
-		stream << lhs << rhs;
-		return stream.str();
-	}
-
-	DiscordCoreAPI_Dll inline std::basic_string<char> operator+(const char* lhs, StringWrapper rhs) {
-		std::stringstream stream{};
-		stream << lhs << rhs;
-		return stream.str();
-	}
-
-	DiscordCoreAPI_Dll inline bool operator==(StringWrapper lhs, const char* rhs) {
-		return static_cast<std::string>(lhs) == static_cast<std::string>(rhs);
-	}
-
-	DiscordCoreAPI_Dll inline bool operator!=(StringWrapper lhs, const char* rhs) {
-		return static_cast<std::string>(lhs) != rhs;
-	}
-
-	DiscordCoreAPI_Dll inline bool operator==(std::string& lhs, StringWrapper& rhs) {
-		if (lhs.size() != rhs.size()) {
-			return false;
-		}
-		for (size_t x = 0; x < lhs.size(); ++x) {
-			if (lhs[x] != rhs.data()[x]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	/**@}*/
 
 	/**
@@ -1282,29 +691,29 @@ namespace DiscordCoreAPI {
 	enum class AudioFrameType : uint8_t {
 		Unset = 0,///< Unset.
 		RawPCM = 1,///< Raw PCM.
-		Skip = 2///< Skip.
+		Encoded = 2,///< Encoded audio data.
 	};
 
 	/// \brief Represents a single frame of audio data.
 	struct DiscordCoreAPI_Dll AudioFrameData {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
-		std::basic_string<std::byte> data{};///< The audio data.
+		std::vector<uint8_t> data{};///< The audio data.
+		int64_t currentSize{ -5 };///< The current size of the allocated memory.
 		uint64_t guildMemberId{};///< GuildMemberId for the sending GuildMember.
-		int64_t currentSize{};///< The current size of the allocated memory.
 
 		AudioFrameData() noexcept = default;
 
-		AudioFrameData& operator=(AudioFrameData&&) noexcept;
+		AudioFrameData& operator=(AudioFrameData&&) noexcept = default;
 
-		AudioFrameData(AudioFrameData&&) noexcept;
+		AudioFrameData(AudioFrameData&&) noexcept = default;
 
-		AudioFrameData& operator=(const AudioFrameData&) noexcept = delete;
+		AudioFrameData& operator=(const AudioFrameData&) noexcept = default;
 
-		AudioFrameData(const AudioFrameData&) noexcept = delete;
+		AudioFrameData(const AudioFrameData&) noexcept = default;
 
-		AudioFrameData& operator+=(std::basic_string_view<std::byte>) noexcept;
+		AudioFrameData& operator+=(std::basic_string_view<uint8_t>) noexcept;
 
-		AudioFrameData& operator+=(std::byte);
+		AudioFrameData& operator+=(uint8_t);
 
 		friend bool operator==(const AudioFrameData& lhs, const AudioFrameData& rhs);
 
@@ -1330,26 +739,17 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	/// \brief Time formatting methods.
-	enum class TimeFormat : char {
-		LongDate = 'D',///< "20 April 2021" - Long Date
-		LongDateTime = 'F',///< "Tuesday, 20 April 2021 16:20" - Long Date/Time
-		LongTime = 'T',///< "16:20:30" - Long Time
-		ShortDate = 'd',///< "20/04/2021" - Short Date
-		ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
-		ShortTime = 't',///< "16:20" - Short Time
-	};
 
 	DiscordCoreAPI_Dll uint64_t strtoull(std::string_view string);
 
-	template<typename RTy> RTy fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
+	template<typename RTy> RTy inline fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
 		RTy value{};
 		std::istringstream stream(string);
 		stream >> type, stream >> value;
 		return value;
 	}
 
-	template<typename RTy> std::string toHex(RTy inputValue) {
+	template<typename RTy> std::string inline toHex(RTy inputValue) {
 		std::stringstream stream{};
 		stream << std::setfill('0') << std::setw(sizeof(RTy) * 2) << std::hex << inputValue;
 		return stream.str();
@@ -1366,6 +766,8 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ColorValue {
 	  public:
+		friend struct Jsonifier::Core<ColorValue>;
+
 		ColorValue(std::string hexColorValue);
 
 		ColorValue(uint32_t colorValue);
@@ -1400,7 +802,7 @@ namespace DiscordCoreAPI {
 
 		bool operator==(const IconHash& other);
 
-		std::string getIconHash() noexcept;
+		operator std::string() noexcept;
 
 		~IconHash() noexcept = default;
 
@@ -1464,6 +866,9 @@ namespace DiscordCoreAPI {
 	/// \brief Permissions class, for representing and manipulating Permission values.
 	class DiscordCoreAPI_Dll Permissions {
 	  public:
+		friend struct JsonifierInternal::ParseWithKeys;
+		friend struct JsonifierInternal::ParseNoKeys;
+
 		Permissions() noexcept = default;
 
 		Permissions& operator=(Permission&& other);
@@ -1484,9 +889,9 @@ namespace DiscordCoreAPI {
 
 		explicit Permissions(const uint64_t permsNew);
 
-		operator uint64_t();
+		explicit operator uint64_t();
 
-		operator std::string();
+		explicit operator std::string();
 
 		/// \brief Returns a string containing all of a given User's Permissions for a given Channel.
 		/// \param guildMember The GuildMember who's Permissions to analyze.
@@ -1529,8 +934,7 @@ namespace DiscordCoreAPI {
 	  protected:
 		uint64_t permissions{};
 
-		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember,
-			const ChannelData& channel);
+		static std::string computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, const ChannelData& channel);
 
 		static std::string computePermissions(const GuildMember& guildMember, const ChannelData& channel);
 
@@ -1540,11 +944,11 @@ namespace DiscordCoreAPI {
 	/// \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
 	/// \param currentFunctionName A string to display the current function's name.
 	/// \param location For deriving the current file, line, and column - do not set this value.
-	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName,
-		std::source_location location = std::source_location::current());
+	/// \param ptr A pointer to the current exception.
+	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location location = std::source_location::current(),
+		std::exception_ptr ptr = nullptr);
 
-	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName,
-		std::source_location location = std::source_location::current());
+	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
 
 	DiscordCoreAPI_Dll std::string constructMultiPartData(const std::string& data, const std::vector<File>& files);
 
@@ -1557,8 +961,6 @@ namespace DiscordCoreAPI {
 	DiscordCoreAPI_Dll std::string utf8MakeValid(const std::string& inputString);
 
 	DiscordCoreAPI_Dll std::string urlEncode(const std::string& inputString);
-
-	DiscordCoreAPI_Dll std::string escapeCharacters(std::string_view string);
 
 	DiscordCoreAPI_Dll void spinLock(uint64_t timeInNsToSpinLockFor);
 
@@ -1581,7 +983,7 @@ namespace DiscordCoreAPI {
 	/// \brief Class for representing a timeStamp, as well as working with time-related values.
 	class DiscordCoreAPI_Dll TimeStamp {
 	  public:
-		explicit TimeStamp(TimeFormat formatNew = TimeFormat::LongDateTime);
+		TimeStamp(TimeFormat formatNew = TimeFormat::LongDateTime);
 
 		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second,
 			TimeFormat formatNew);
@@ -1592,15 +994,20 @@ namespace DiscordCoreAPI {
 
 		TimeStamp& operator=(std::string&& originalTimeStampNew);
 
-		explicit TimeStamp(std::string&& originalTimeStampNew);
+		TimeStamp(std::string&& originalTimeStampNew);
 
 		TimeStamp& operator=(std::string& originalTimeStampNew);
 
-		explicit TimeStamp(std::string& originalTimeStampNew);
+		TimeStamp(std::string& originalTimeStampNew);
 
-		TimeStamp& operator=(const TimeStamp& other);
+		TimeStamp& operator=(const TimeStamp& other) {
+			timeStampInTimeUnits = other.timeStampInTimeUnits;
+			return *this;
+		}
 
-		TimeStamp(const TimeStamp& other);
+		TimeStamp(const TimeStamp& other) {
+			*this = other;
+		}
 
 		TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, TimeFormat formatNew);
 
@@ -1628,7 +1035,8 @@ namespace DiscordCoreAPI {
 	template<typename ITy>
 	concept IsInteger = std::is_integral<ITy>::value;
 
-	template<IsInteger StoredAs, IsEnum OTy> auto setBool(StoredAs theFlags, OTy theFlagToSet, bool enabled) {
+	template<IsInteger StoredAs, DiscordCoreInternal::IsEnumT ValueType>
+	inline auto setBool(StoredAs theFlags, ValueType theFlagToSet, bool enabled) {
 		auto theValue{ theFlags };
 		if (enabled) {
 			theValue |= std::to_underlying(theFlagToSet);
@@ -1638,108 +1046,172 @@ namespace DiscordCoreAPI {
 		return theValue;
 	}
 
-	template<IsEnum OTy> bool getBool(OTy theFlags, OTy theFlagToCheckFor) {
+	template<DiscordCoreInternal::IsEnumT ValueType> inline bool getBool(ValueType theFlags, ValueType theFlagToCheckFor) {
 		return std::to_underlying(theFlags) & std::to_underlying(theFlagToCheckFor);
 	}
 
-	template<typename OTy>
-	concept CopyableOrMovable = std::copyable<OTy> || std::movable<OTy>;
-
-	/// \brief A thread-safe messaging block for data-structures.
-	/// \tparam OTy The type of object that will be sent over
-	///  message block.
-	template<CopyableOrMovable OTy> class UnboundedMessageBlock {
+	template<typename KTy, typename ValueType> class ObjectCache {
 	  public:
-		UnboundedMessageBlock<OTy>& operator=(UnboundedMessageBlock<OTy>&& other) noexcept {
+		using key_type = KTy;
+		using mapped_type = ValueType;
+		using reference = mapped_type&;
+		using pointer = mapped_type*;
+
+		inline ObjectCache& operator=(ObjectCache&& other) noexcept {
 			if (this != &other) {
-				this->queue = std::move(other.queue);
-				other.queue = std::deque<OTy>{};
+				std::unique_lock lock01{ other.cacheMutex };
+				std::unique_lock lock02{ cacheMutex };
+				std::swap(cacheMap, other.cacheMap);
 			}
 			return *this;
 		}
 
-		UnboundedMessageBlock<OTy>& operator=(const UnboundedMessageBlock<OTy>&) = delete;
-
-		UnboundedMessageBlock(const UnboundedMessageBlock<OTy>&) = delete;
-
-		UnboundedMessageBlock() noexcept {};
-
-		/// \brief Sends an object of type OTy to the "recipient", ahead of other already queued items.
-		/// \param object An object of OTy.
-		void sendFront(OTy&& object) {
-			std::unique_lock lock{ this->accessMutex };
-			this->queue.emplace_front(std::move(object));
+		inline ObjectCache(ObjectCache&& other) noexcept {
+			*this = std::move(other);
 		}
 
-		/// \brief Sends an object of type OTy to the "recipient", ahead of other already queued items.
-		/// \param object An object of OTy.
-		void sendFront(OTy& object) {
-			std::unique_lock lock{ this->accessMutex };
-			this->queue.emplace_front(object);
+		inline ObjectCache& operator=(const ObjectCache& other) noexcept {
+			if (this != &other) {
+				cacheMap = other.cacheMap;
+			}
+			return *this;
 		}
 
-		/// \brief Sends an object of type OTy to the "recipient".
-		/// \param object An object of OTy.
-		void send(OTy&& object) {
-			std::unique_lock lock{ this->accessMutex };
-			this->queue.emplace_back(std::move(object));
+		inline ObjectCache(const ObjectCache& other) noexcept {
+			*this = other;
 		}
 
-		/// \brief Sends an object of type OTy to the "recipient".
-		/// \param object An object of OTy.
-		void send(OTy& object) {
-			std::unique_lock lock{ this->accessMutex };
-			this->queue.emplace_back(object);
+		inline constexpr ObjectCache(){};
+
+		inline constexpr void emplace(mapped_type&& object) {
+			std::unique_lock lock(cacheMutex);
+			cacheMap.emplace(std::forward<mapped_type>(object));
 		}
 
-		/// \brief Sends an object of type OTy to the "recipient".
-		/// \param object An object of OTy.
-		void send(const OTy& object) {
-			std::unique_lock lock{ this->accessMutex };
-			this->queue.emplace_back(object);
+		inline constexpr reference operator[](key_type key) {
+			return find(key);
 		}
 
-		/// \brief Clears the contents of the messaging block.
-		void clearContents() {
-			std::unique_lock lock{ this->accessMutex };
-			this->queue.clear();
+		inline constexpr void erase(key_type key) {
+			std::unique_lock lock(cacheMutex);
+			auto existing = cacheMap.find(key);
+			if (existing != cacheMap.end()) {
+				cacheMap.erase(key);
+			}
 		}
 
-		/// \brief Tries to receive an object of type OTy to be placed into a reference.
-		/// \param object A reference of type OTy for placing the potentially received object.
-		/// \returns bool A bool, denoting whether or not we received an object.
-		bool tryReceive(OTy& object) {
-			std::unique_lock lock{ this->accessMutex };
-			if (this->queue.size() > 0) {
-				object = std::move(this->queue.front());
-				this->queue.pop_front();
+		inline constexpr auto begin() const {
+			return cacheMap.begin();
+		}
+
+		inline constexpr auto end() const {
+			return cacheMap.end();
+		}
+
+		inline constexpr auto begin() {
+			return cacheMap.begin();
+		}
+
+		inline constexpr auto end() {
+			return cacheMap.end();
+		}
+
+		inline constexpr bool contains(key_type key) {
+			return cacheMap.contains(key);
+		}
+
+		inline constexpr reference find(key_type key) {
+			std::shared_lock lock(cacheMutex);
+			auto r = cacheMap.find(key);
+			if (r != cacheMap.end()) {
+				return *r;
+			}
+			return *end();
+		}
+
+		inline constexpr uint64_t count() {
+			std::shared_lock lock(cacheMutex);
+			return cacheMap.size();
+		}
+
+		inline constexpr ~ObjectCache(){};
+
+	  protected:
+		UnorderedSet<key_type, mapped_type> cacheMap{};
+		std::shared_mutex cacheMutex{};
+	};
+
+	/// \brief A thread-safe messaging block for data-structures.
+	/// \tparam ValueType The type of object that will be sent over
+	///  message block.
+	template<CopyableOrMovable ValueType> class UnboundedMessageBlock {
+	  public:
+		inline UnboundedMessageBlock() noexcept {};
+
+		inline UnboundedMessageBlock<std::decay_t<ValueType>>& operator=(UnboundedMessageBlock<std::decay_t<ValueType>>&& other) noexcept {
+			if (this != &other) {
+				std::lock(accessMutex, other.accessMutex);
+				std::lock_guard lock{ accessMutex, std::adopt_lock };
+				std::lock_guard otherLock{ other.accessMutex, std::adopt_lock };
+				queue = std::move(other.queue);
+			}
+			return *this;
+		}
+
+		inline UnboundedMessageBlock(UnboundedMessageBlock&& other) noexcept {
+			std::lock_guard lock{ other.accessMutex };
+			queue = std::move(other.queue);
+		}
+
+		inline UnboundedMessageBlock<std::decay_t<ValueType>>& operator=(const UnboundedMessageBlock<std::decay_t<ValueType>>&) = delete;
+		inline UnboundedMessageBlock(const UnboundedMessageBlock&) = delete;
+
+		inline ~UnboundedMessageBlock() = default;
+
+		inline void send(ValueType&& object) {
+			std::lock_guard lock{ accessMutex };
+			queue.emplace_back(std::move(object));
+		}
+
+		inline void clearContents() {
+			std::lock_guard lock{ accessMutex };
+			queue.clear();
+		}
+
+		inline bool tryReceive(ValueType& object) {
+			std::lock_guard lock{ accessMutex };
+			if (queue.size() > 0) {
+				object = std::move(queue.front());
+				queue.pop_front();
 				return true;
 			} else {
 				return false;
 			}
 		}
 
-		size_t size() {
-			return this->queue.size();
+		inline uint64_t size() const {
+			std::lock_guard lock{ accessMutex };
+			return queue.size();
 		}
 
 	  protected:
-		std::deque<OTy> queue{};
-		std::mutex accessMutex{};
+		std::deque<std::decay_t<ValueType>> queue{};
+		mutable std::mutex accessMutex{};
 	};
 
 	template<typename RTy> class NewThreadAwaiter;
 
 	/// \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
 	/// \tparam RTy The type of value returned by the containing CoRoutine.
-	template<typename RTy> auto NewThreadAwaitable() {
+	template<typename RTy> inline auto NewThreadAwaitable() {
 		return NewThreadAwaiter<RTy>{};
 	}
 
 	/// \brief Typedef for the message filter.
-	template<typename OTy> using ObjectFilter = std::function<bool(OTy)>;
+	template<typename ValueType> using ObjectFilter = std::function<bool(ValueType)>;
 
-	template<typename OTy> bool waitForTimeToPass(UnboundedMessageBlock<OTy>& outBuffer, OTy& argOne, int32_t timeInMsNew) {
+	template<typename ValueType>
+	inline bool waitForTimeToPass(UnboundedMessageBlock<std::decay_t<ValueType>>& outBuffer, ValueType& argOne, int32_t timeInMsNew) {
 		StopWatch stopWatch{ Milliseconds{ timeInMsNew } };
 		while (!outBuffer.tryReceive(argOne)) {
 			std::this_thread::sleep_for(1ms);
@@ -1755,135 +1227,102 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll LengthData {
-		uint64_t offSet{};
-		uint64_t length{};
-	};
-
-	class DiscordCoreAPI_Dll StringBuffer {
-	  public:
-		StringBuffer() noexcept;
-
-		std::string_view operator[](LengthData);
-
-		char operator[](uint64_t);
-
-		void writeData(const char* ptr, uint64_t size);
-
-		std::string::iterator begin();
-
-		std::string::iterator end();
-
-		void erase(uint64_t);
-
-		uint64_t size();
-
-		char* data();
-
-		void clear();
-
-	  protected:
-		std::string string{};
-		uint64_t sizeValue{};
-	};
-
 	enum class RingBufferAccessType { Read = 0, Write = 1 };
 
-	template<typename OTy, uint64_t Size> class RingBufferInterface {
+	template<typename ValueType, uint64_t Size> class RingBufferInterface {
 	  public:
-		void modifyReadOrWritePosition(RingBufferAccessType type, uint64_t size) noexcept {
+		template<typename ValueType2, uint64_t SliceCount> friend class RingBuffer;
+
+		inline constexpr void modifyReadOrWritePosition(RingBufferAccessType type, uint64_t size) noexcept {
 			if (type == RingBufferAccessType::Read) {
-				this->tail = (this->tail + size) % this->arrayValue.size();
-				this->areWeFull = false;
+				tail += size;
 			} else {
-				this->head = (this->head + size) % this->arrayValue.size();
-				if (this->head == this->tail) {
-					this->areWeFull = true;
-				}
-				if (this->head != this->tail) {
-					this->areWeFull = false;
-				}
+				head += size;
 			}
 		}
 
-		uint64_t getUsedSpace() noexcept {
-			if (this->areWeFull) {
-				return this->arrayValue.size();
-			}
-			if (this->head >= this->tail) {
-				return this->head - this->tail;
-			} else {
-				return this->tail - this->head;
-			}
+		inline constexpr bool isItEmpty() {
+			return tail == head;
 		}
 
-		uint64_t getFreeSpace() noexcept {
-			return this->arrayValue.size() - this->getUsedSpace();
+		inline constexpr bool isItFull() {
+			return getUsedSpace() == Size;
 		}
 
-		OTy* getCurrentTail() noexcept {
-			return this->arrayValue.data() + this->tail;
+		inline constexpr size_t getUsedSpace() {
+			return head - tail;
 		}
 
-		OTy* getCurrentHead() noexcept {
-			return this->arrayValue.data() + this->head;
+		inline constexpr ValueType* getCurrentTail() noexcept {
+			return arrayValue.data() + (tail % Size);
 		}
 
-		bool isItFull() noexcept {
-			return this->areWeFull;
+		inline constexpr ValueType* getCurrentHead() noexcept {
+			return arrayValue.data() + (head % Size);
 		}
 
-		virtual void clear() noexcept {
-			this->areWeFull = false;
-			this->tail = 0;
-			this->head = 0;
+		inline constexpr virtual void clear() noexcept {
+			tail = 0;
+			head = 0;
 		}
 
 	  protected:
-		std::array<OTy, Size> arrayValue{};
-		bool areWeFull{};
+		std::array<std::decay_t<ValueType>, Size> arrayValue{};
 		uint64_t tail{};
 		uint64_t head{};
 	};
 
-	template<typename OTy, uint64_t SliceCount>
-	class RingBuffer : public RingBufferInterface<RingBufferInterface<OTy, 1024 * 16>, SliceCount> {
+	template<typename ValueType, uint64_t SliceCount> class RingBuffer
+		: public RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount> {
 	  public:
-		void clear() noexcept override {
-			for (uint64_t x = 0; x < this->arrayValue.size(); ++x) {
-				this->arrayValue[x].clear();
+		inline constexpr void clear() noexcept {
+			for (uint64_t x = 0; x < SliceCount; ++x) {
+				RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::arrayValue[x].tail = 0;
+				RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::arrayValue[x].head = 0;
 			}
-			this->areWeFull = false;
-			this->tail = 0;
-			this->head = 0;
+			RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::tail = 0;
+			RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::head = 0;
 		}
 
-		void writeData(std::basic_string_view<OTy> data) {
-			if (this->isItFull()) {
-				this->getCurrentTail()->clear();
-				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
-			}
-			size_t writeSize{ data.size() };
-			std::copy(data.data(), data.data() + writeSize, this->getCurrentHead()->getCurrentHead());
-			this->getCurrentHead()->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, writeSize);
-			this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Write, 1);
+		inline constexpr void modifyReadOrWritePosition(RingBufferAccessType type, uint64_t size) noexcept {
+			RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::modifyReadOrWritePosition(type, size);
 		}
 
-		std::basic_string_view<OTy> readData() {
-			std::basic_string_view<OTy> returnValue{};
-			if (this->getCurrentTail()->getUsedSpace() > 0) {
-				returnValue =
-					std::basic_string_view<OTy>{ this->getCurrentTail()->getCurrentTail(), this->getCurrentTail()->getUsedSpace() };
-				this->getCurrentTail()->clear();
-				this->modifyReadOrWritePosition(DiscordCoreInternal::RingBufferAccessType::Read, 1);
+		inline constexpr uint64_t getUsedSpace() {
+			return RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getUsedSpace();
+		}
+
+		inline constexpr auto getCurrentTail() {
+			return RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail();
+		}
+
+		inline constexpr auto isItFull() {
+			return RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::isItFull();
+		}
+
+		inline constexpr auto getCurrentHead() {
+			return RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentHead();
+		}
+
+		inline constexpr void writeData(std::basic_string_view<std::decay_t<ValueType>> data) {
+			if (isItFull() || data.size() > 16384 - getCurrentHead()->getUsedSpace()) {
+				getCurrentTail()->clear();
+				modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
 			}
-			return returnValue;
+			uint64_t writeSize{ data.size() };
+			std::memcpy(getCurrentHead()->getCurrentHead(), data.data(), data.size());
+			getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, writeSize);
+			modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+		}
+
+		inline constexpr std::basic_string_view<std::decay_t<ValueType>> readData() {
+			std::basic_string_view<std::decay_t<ValueType>> returnData{};
+			if (getCurrentTail()->getUsedSpace() > 0) {
+				returnData = std::basic_string_view<std::decay_t<ValueType>>{ getCurrentTail()->getCurrentTail(), getCurrentTail()->getUsedSpace() };
+				getCurrentTail()->clear();
+				modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+			}
+			return returnData;
 		}
 	};
 }
-
-template<> struct DiscordCoreAPI_Dll std::hash<DiscordCoreAPI::Snowflake> {
-	uint64_t operator()(DiscordCoreAPI::Snowflake const& object) const noexcept {
-		return object.operator size_t();
-	}
-};

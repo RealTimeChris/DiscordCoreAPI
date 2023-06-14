@@ -10,14 +10,14 @@ namespace DiscordCoreAPI {
 	class LoopAll : public BaseFunction {
 	  public:
 		LoopAll() {
-			this->commandName = "loopall";
-			this->helpDescription = "Enables or disables looping of the current queue.";
+			commandName = "loopall";
+			helpDescription = "Enables or disables looping of the current queue.";
 			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter /loopall!\n------");
 			msgEmbed.setTitle("__**Loop-All Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

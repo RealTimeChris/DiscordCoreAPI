@@ -1,7 +1,7 @@
 ﻿/*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -39,7 +39,7 @@
 namespace DiscordCoreInternal {
 
 	WebSocketClose& WebSocketClose::operator=(uint16_t valueNew) {
-		this->value = static_cast<WebSocketCloseCode>(valueNew);
+		value = static_cast<WebSocketCloseCode>(valueNew);
 		return *this;
 	};
 
@@ -48,25 +48,25 @@ namespace DiscordCoreInternal {
 	};
 
 	WebSocketClose::operator std::string() {
-		return this->outputErrorValues[this->mappingValues[static_cast<uint16_t>(*this)]];
+		return WebSocketClose::outputErrorValues[mappingValues[static_cast<uint16_t>(*this)]];
 	}
 
 	WebSocketClose::operator bool() {
-		return static_cast<std::underlying_type_t<decltype(this->value)>>(this->value) &
-			static_cast<std::underlying_type_t<decltype(this->value)>>(WebSocketCloseCode::We_Do_Reconnect);
+		return static_cast<std::underlying_type_t<decltype(value)>>(value) &
+			static_cast<std::underlying_type_t<decltype(value)>>(WebSocketCloseCode::We_Do_Reconnect);
 	}
 
 	VoiceWebSocketClose& VoiceWebSocketClose::operator=(uint16_t valueNew) {
-		this->value = static_cast<VoiceWebSocketCloseCode>(valueNew);
+		value = static_cast<VoiceWebSocketCloseCode>(valueNew);
 		return *this;
 	};
 
-	VoiceWebSocketClose::VoiceWebSocketClose(uint16_t valueNew) {
-		*this = valueNew;
+	VoiceWebSocketClose::VoiceWebSocketClose(uint16_t value) {
+		*this = value;
 	};
 
 	VoiceWebSocketClose::operator std::string() {
-		return this->outputErrorValues[this->mappingValues[static_cast<uint16_t>(*this)]];
+		return VoiceWebSocketClose::outputErrorValues[mappingValues[static_cast<uint16_t>(*this)]];
 	}
 
 	VoiceWebSocketClose::operator bool() {
@@ -74,21 +74,20 @@ namespace DiscordCoreInternal {
 	}
 
 	HttpsResponseCode& HttpsResponseCode::operator=(uint32_t valueNew) {
-		this->value = static_cast<HttpsResponseCodes>(valueNew);
+		value = static_cast<HttpsResponseCodes>(valueNew);
 		return *this;
 	}
 
-	HttpsResponseCode::HttpsResponseCode(uint32_t valueNew) {
-		*this = valueNew;
+	HttpsResponseCode::HttpsResponseCode(uint32_t value) {
+		*this = value;
 	}
 
 	HttpsResponseCode::operator std::string() {
-		return std::string{ "Code: " + std::to_string(static_cast<uint32_t>(this->value)) +
-			", Message: " + this->outputErrorValues[this->value] };
+		return std::string{ "Code: " + std::to_string(static_cast<uint32_t>(value)) + ", Message: " + HttpsResponseCode::outputErrorValues[value] };
 	}
 
 	HttpsResponseCode::operator uint32_t() {
-		return static_cast<uint32_t>(this->value);
+		return static_cast<uint32_t>(value);
 	}
 }
 
@@ -103,989 +102,161 @@ namespace DiscordCoreAPI {
 		*static_cast<std::runtime_error*>(this) = std::runtime_error{ stream.str() };
 	}
 
-	Snowflake& Snowflake::operator=(const std::string& other) noexcept {
-		for (auto& value: other) {
-			if (!std::isdigit(static_cast<uint8_t>(value))) {
-				return *this;
-			}
-		}
-		if (other.size() == 0) {
-			return *this;
-		}
-		this->id = stoull(other);
-		return *this;
-	}
-
-	Snowflake::Snowflake(const std::string& other) noexcept {
-		*this = other;
-	}
-
-	Snowflake& Snowflake::operator=(const uint64_t other) noexcept {
-		this->id = other;
-		return *this;
-	}
-
-	Snowflake::Snowflake(const uint64_t other) noexcept {
-		*this = other;
-	}
-
-	Snowflake::operator std::string() const noexcept {
-		return std::to_string(this->id);
-	}
-
-	Snowflake::operator uint64_t() const noexcept {
-		return this->id;
-	}
-
-	bool Snowflake::operator==(const Snowflake& rhs) const noexcept {
-		return this->id == rhs.id;
-	}
-
-	EnumConverter::operator std::vector<uint64_t>() const noexcept {
-		return this->vector;
-	}
-
-	EnumConverter::operator uint64_t() const noexcept {
-		return this->integer;
-	}
-
-	bool EnumConverter::isItAVector() const noexcept {
-		return this->vectorType;
-	}
-
-	Jsonifier& Jsonifier::operator=(Jsonifier&& data) noexcept {
-		switch (data.type) {
-			case JsonType::Object: {
-				this->setValue(JsonType::Object);
-				*this->jsonValue.object = std::move(*data.jsonValue.object);
-				break;
-			}
-			case JsonType::Array: {
-				this->setValue(JsonType::Array);
-				*this->jsonValue.array = std::move(*data.jsonValue.array);
-				break;
-			}
-			case JsonType::String: {
-				this->setValue(JsonType::String);
-				*this->jsonValue.string = std::move(*data.jsonValue.string);
-				break;
-			}
-			case JsonType::Float: {
-				this->jsonValue.numberDouble = data.jsonValue.numberDouble;
-				break;
-			}
-			case JsonType::Uint64: {
-				this->jsonValue.numberUint = data.jsonValue.numberUint;
-				break;
-			}
-			case JsonType::Int64: {
-				this->jsonValue.numberInt = data.jsonValue.numberInt;
-				break;
-			}
-			case JsonType::Bool: {
-				this->jsonValue.boolean = data.jsonValue.boolean;
-				break;
-			}
-		}
-		this->string = std::move(data.string);
-		this->type = data.type;
-		return *this;
-	}
-
-	Jsonifier& Jsonifier::operator=(const Jsonifier& data) noexcept {
-		switch (data.type) {
-			case JsonType::Object: {
-				this->setValue(JsonType::Object);
-				*this->jsonValue.object = *data.jsonValue.object;
-				break;
-			}
-			case JsonType::Array: {
-				this->setValue(JsonType::Array);
-				*this->jsonValue.array = *data.jsonValue.array;
-				break;
-			}
-			case JsonType::String: {
-				this->setValue(JsonType::String);
-				*this->jsonValue.string = *data.jsonValue.string;
-				break;
-			}
-			case JsonType::Float: {
-				this->jsonValue.numberDouble = data.jsonValue.numberDouble;
-				break;
-			}
-			case JsonType::Uint64: {
-				this->jsonValue.numberUint = data.jsonValue.numberUint;
-				break;
-			}
-			case JsonType::Int64: {
-				this->jsonValue.numberInt = data.jsonValue.numberInt;
-				break;
-			}
-			case JsonType::Bool: {
-				this->jsonValue.boolean = data.jsonValue.boolean;
-				break;
-			}
-		}
-		this->string = data.string;
-		this->type = data.type;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(const Jsonifier& data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier::operator std::string&&() noexcept {
-		return std::move(this->string);
-	}
-
-	Jsonifier::operator std::string() noexcept {
-		return this->string;
-	}
-
-	JsonType Jsonifier::getType() noexcept {
-		return this->type;
-	}
-
-	void Jsonifier::refreshString(JsonifierSerializeType opCode) {
-		this->string.clear();
-		if (opCode == JsonifierSerializeType::Etf) {
-			this->appendVersion();
-			this->serializeJsonToEtfString(this);
-		} else {
-			this->serializeJsonToJsonString(this);
-		}
-	}
-
-	Jsonifier& Jsonifier::operator=(EnumConverter&& data) noexcept {
-		if (data.isItAVector()) {
-			this->setValue(JsonType::Array);
-			for (auto& value: data.operator std::vector<uint64_t>()) {
-				this->jsonValue.array->emplace_back(std::move(value));
-			}
-		} else {
-			this->jsonValue.numberUint = uint64_t{ data };
-			this->type = JsonType::Uint64;
-		}
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(EnumConverter&& data) noexcept {
-		*this = std::move(data);
-	}
-
-	Jsonifier& Jsonifier::operator=(const EnumConverter& data) noexcept {
-		if (data.isItAVector()) {
-			this->setValue(JsonType::Array);
-			for (auto& value: data.operator std::vector<uint64_t>()) {
-				this->jsonValue.array->emplace_back(value);
-			}
-		} else {
-			this->jsonValue.numberUint = uint64_t{ data };
-			this->type = JsonType::Uint64;
-		}
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(const EnumConverter& data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(std::string&& data) noexcept {
-		this->setValue(JsonType::String);
-		*this->jsonValue.string = std::move(data);
-		this->type = JsonType::String;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(std::string&& data) noexcept {
-		*this = std::move(data);
-	}
-
-	Jsonifier& Jsonifier::operator=(const std::string& data) noexcept {
-		this->setValue(JsonType::String);
-		*this->jsonValue.string = data;
-		this->type = JsonType::String;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(const std::string& data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(const char* data) noexcept {
-		this->setValue(JsonType::String);
-		*this->jsonValue.string = data;
-		this->type = JsonType::String;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(const char* data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(double data) noexcept {
-		this->jsonValue.numberDouble = data;
-		this->type = JsonType::Float;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(double data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(float data) noexcept {
-		this->jsonValue.numberDouble = data;
-		this->type = JsonType::Float;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(float data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(uint64_t data) noexcept {
-		this->jsonValue.numberUint = data;
-		this->type = JsonType::Uint64;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(uint64_t data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(uint32_t data) noexcept {
-		this->jsonValue.numberUint = data;
-		this->type = JsonType::Uint64;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(uint32_t data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(uint16_t data) noexcept {
-		this->jsonValue.numberUint = data;
-		this->type = JsonType::Uint64;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(uint16_t data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(uint8_t data) noexcept {
-		this->jsonValue.numberUint = data;
-		this->type = JsonType::Uint64;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(uint8_t data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(int64_t data) noexcept {
-		this->jsonValue.numberInt = data;
-		this->type = JsonType::Int64;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(int64_t data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(int32_t data) noexcept {
-		this->jsonValue.numberInt = data;
-		this->type = JsonType::Int64;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(int32_t data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(int16_t data) noexcept {
-		this->jsonValue.numberInt = data;
-		this->type = JsonType::Int64;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(int16_t data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(int8_t data) noexcept {
-		this->jsonValue.numberInt = data;
-		this->type = JsonType::Int64;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(int8_t data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(std::nullptr_t) noexcept {
-		this->type = JsonType::Null;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(std::nullptr_t data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(bool data) noexcept {
-		this->jsonValue.boolean = data;
-		this->type = JsonType::Bool;
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(bool data) noexcept {
-		*this = data;
-	}
-
-	Jsonifier& Jsonifier::operator=(JsonType typeNew) noexcept {
-		this->type = typeNew;
-		this->setValue(this->type);
-		return *this;
-	}
-
-	Jsonifier::Jsonifier(JsonType type) noexcept {
-		*this = type;
-	}
-
-	Jsonifier& Jsonifier::operator[](typename ObjectType::key_type key) {
-		if (this->type == JsonType::Null) {
-			this->setValue(JsonType::Object);
-			this->type = JsonType::Object;
-		}
-
-		if (this->type == JsonType::Object) {
-			auto result = this->jsonValue.object->emplace(std::move(key), Jsonifier{});
-			return result.first->second;
-		}
-		throw DCAException{ "Sorry, but that item-key could not be produced/accessed." };
-	}
-
-	Jsonifier& Jsonifier::operator[](uint64_t index) {
-		if (this->type == JsonType::Null) {
-			this->setValue(JsonType::Array);
-			this->type = JsonType::Array;
-		}
-
-		if (this->type == JsonType::Array) {
-			if (index >= this->jsonValue.array->size()) {
-				this->jsonValue.array->resize(index + 1);
-			}
-
-			return this->jsonValue.array->operator[](index);
-		}
-		throw DCAException{ "Sorry, but that index could not be produced/accessed." };
-	}
-
-	void Jsonifier::emplaceBack(Jsonifier&& other) noexcept {
-		if (this->type == JsonType::Null) {
-			this->setValue(JsonType::Array);
-			this->type = JsonType::Array;
-		}
-
-		if (this->type == JsonType::Array) {
-			this->jsonValue.array->emplace_back(std::move(other));
-		}
-	}
-
-	void Jsonifier::emplaceBack(Jsonifier& other) noexcept {
-		if (this->type == JsonType::Null) {
-			this->setValue(JsonType::Array);
-			this->type = JsonType::Array;
-		}
-
-		if (this->type == JsonType::Array) {
-			this->jsonValue.array->emplace_back(other);
-		}
-	}
-
-	void Jsonifier::serializeJsonToEtfString(const Jsonifier* dataToParse) {
-		switch (dataToParse->type) {
-			case JsonType::Object: {
-				return this->writeEtfObject(*dataToParse->jsonValue.object);
-			}
-			case JsonType::Array: {
-				return this->writeEtfArray(*dataToParse->jsonValue.array);
-			}
-			case JsonType::String: {
-				return this->writeEtfString(*dataToParse->jsonValue.string);
-			}
-			case JsonType::Float: {
-				return this->writeEtfFloat(dataToParse->jsonValue.numberDouble);
-			}
-			case JsonType::Uint64: {
-				return this->writeEtfUint(dataToParse->jsonValue.numberUint);
-			}
-			case JsonType::Int64: {
-				return this->writeEtfInt(dataToParse->jsonValue.numberInt);
-			}
-			case JsonType::Bool: {
-				return this->writeEtfBool(dataToParse->jsonValue.boolean);
-			}
-			case JsonType::Null: {
-				return this->writeEtfNull();
-			}
-		}
-	}
-
-	void Jsonifier::serializeJsonToJsonString(const Jsonifier* dataToParse) {
-		switch (dataToParse->type) {
-			case JsonType::Object: {
-				return this->writeJsonObject(*dataToParse->jsonValue.object);
-			}
-			case JsonType::Array: {
-				return this->writeJsonArray(*dataToParse->jsonValue.array);
-			}
-			case JsonType::String: {
-				return this->writeJsonString(*dataToParse->jsonValue.string);
-			}
-			case JsonType::Float: {
-				return this->writeJsonFloat(dataToParse->jsonValue.numberDouble);
-			}
-			case JsonType::Uint64: {
-				return this->writeJsonInt(dataToParse->jsonValue.numberUint);
-			}
-			case JsonType::Int64: {
-				return this->writeJsonInt(dataToParse->jsonValue.numberInt);
-			}
-			case JsonType::Bool: {
-				return this->writeJsonBool(dataToParse->jsonValue.boolean);
-			}
-			case JsonType::Null: {
-				return this->writeJsonNull();
-			}
-		}
-	}
-
-	void Jsonifier::writeJsonObject(const ObjectType& objectNew) {
-		if (objectNew.empty()) {
-			this->writeString("{}", 2);
-			return;
-		}
-		this->writeCharacter('{');
-
-		int32_t index{};
-		for (auto& [key, value]: objectNew) {
-			this->writeJsonString(key);
-			this->writeCharacter(':');
-			this->serializeJsonToJsonString(&value);
-
-			if (index != objectNew.size() - 1) {
-				this->writeCharacter(',');
-			}
-			++index;
-		}
-
-		this->writeCharacter('}');
-	}
-
-	void Jsonifier::writeJsonArray(const ArrayType& arrayNew) {
-		if (arrayNew.empty()) {
-			this->writeString("[]", 2);
-			return;
-		}
-
-		this->writeCharacter('[');
-
-		int32_t index{};
-		for (auto& value: arrayNew) {
-			this->serializeJsonToJsonString(&value);
-			if (index != arrayNew.size() - 1) {
-				this->writeCharacter(',');
-			}
-			++index;
-		}
-
-		this->writeCharacter(']');
-	}
-
-	void Jsonifier::writeJsonString(const StringType& stringNew) {
-		this->writeCharacter('"');
-		this->writeString(stringNew.data(), stringNew.size());
-		this->writeCharacter('"');
-	}
-
-	void Jsonifier::writeJsonFloat(const FloatType x) {
-		auto floatValue = std::to_string(x);
-		this->writeString(floatValue.data(), floatValue.size());
-	}
-
-	void Jsonifier::writeJsonBool(const BoolType jsonValueNew) {
-		if (jsonValueNew) {
-			this->writeString("true", 4);
-		} else {
-			this->writeString("false", 5);
-		}
-	}
-
-	void Jsonifier::writeJsonNull() {
-		this->writeString("null", 4);
-	}
-
-	void Jsonifier::writeEtfObject(const ObjectType& jsonData) {
-		this->appendMapHeader(static_cast<uint32_t>(jsonData.size()));
-		for (auto& [key, value]: jsonData) {
-			this->appendBinaryExt(key, static_cast<uint32_t>(key.size()));
-			this->serializeJsonToEtfString(&value);
-		}
-	}
-
-	void Jsonifier::writeEtfArray(const ArrayType& jsonData) {
-		this->appendListHeader(static_cast<uint32_t>(jsonData.size()));
-		for (auto& value: jsonData) {
-			this->serializeJsonToEtfString(&value);
-		}
-		this->appendNilExt();
-	}
-
-	void Jsonifier::writeEtfString(const StringType& jsonData) {
-		this->appendBinaryExt(jsonData, static_cast<uint32_t>(jsonData.size()));
-	}
-
-	void Jsonifier::writeEtfUint(const UintType jsonData) {
-		if (jsonData <= 255) {
-			this->appendSmallIntegerExt(static_cast<uint8_t>(jsonData));
-		} else if (jsonData <= std::numeric_limits<uint32_t>::max()) {
-			this->appendIntegerExt(static_cast<uint32_t>(jsonData));
-		} else {
-			this->appendUnsignedLongLong(jsonData);
-		}
-	}
-
-	void Jsonifier::writeEtfInt(const IntType jsonData) {
-		if (jsonData <= 127 && jsonData >= -127) {
-			this->appendSmallIntegerExt(static_cast<uint8_t>(jsonData));
-		} else if (jsonData <= std::numeric_limits<int32_t>::max() && jsonData >= std::numeric_limits<int32_t>::min()) {
-			this->appendIntegerExt(static_cast<uint32_t>(jsonData));
-		} else {
-			this->appendUnsignedLongLong(static_cast<uint64_t>(jsonData));
-		}
-	}
-
-	void Jsonifier::writeEtfFloat(const FloatType jsonData) {
-		this->appendNewFloatExt(jsonData);
-	}
-
-	void Jsonifier::writeEtfBool(const BoolType jsonData) {
-		this->appendBool(jsonData);
-	}
-
-	void Jsonifier::writeEtfNull() {
-		this->appendNil();
-	}
-
-	void Jsonifier::writeString(const char* data, size_t length) {
-		this->string.append(data, length);
-	}
-
-	void Jsonifier::writeCharacter(const char charValue) {
-		this->string.push_back(charValue);
-	}
-
-	bool operator==(const Jsonifier& lhs, const Jsonifier& rhs) {
-		if (lhs.type != rhs.type) {
-			return false;
-		}
-		switch (rhs.type) {
-			case JsonType::Object: {
-				if (*lhs.jsonValue.object != *rhs.jsonValue.object) {
-					return false;
-				}
-				break;
-			}
-			case JsonType::Array: {
-				if (*lhs.jsonValue.array != *rhs.jsonValue.array) {
-					return false;
-				}
-				break;
-			}
-			case JsonType::String: {
-				if (*lhs.jsonValue.string != *rhs.jsonValue.string) {
-					return false;
-				}
-				break;
-			}
-			case JsonType::Float: {
-				if (lhs.jsonValue.numberDouble != rhs.jsonValue.numberDouble) {
-					return false;
-				}
-				break;
-			}
-			case JsonType::Uint64: {
-				if (lhs.jsonValue.numberUint != rhs.jsonValue.numberUint) {
-					return false;
-				}
-				break;
-			}
-			case JsonType::Int64: {
-				if (lhs.jsonValue.numberInt != rhs.jsonValue.numberInt) {
-					return false;
-				}
-				break;
-			}
-			case JsonType::Bool: {
-				if (lhs.jsonValue.boolean != rhs.jsonValue.boolean) {
-					return false;
-				}
-				break;
-			}
-		}
-		return true;
-	}
-
-	void Jsonifier::appendBinaryExt(const std::string& bytes, uint32_t sizeNew) {
-		char newBuffer[5]{ static_cast<int8_t>(EtfType::Binary_Ext) };
-		storeBits(newBuffer + 1, sizeNew);
-		this->writeString(newBuffer, std::size(newBuffer));
-		this->writeString(bytes.data(), bytes.size());
-	}
-
-	void Jsonifier::appendUnsignedLongLong(uint64_t value) {
-		char newBuffer[11]{ static_cast<int8_t>(EtfType::Small_Big_Ext) };
-		char encodedBytes{};
-		while (value > 0) {
-			newBuffer[3 + encodedBytes] = value & 0xFF;
-			value >>= 8;
-			++encodedBytes;
-		}
-		newBuffer[1] = encodedBytes;
-		newBuffer[2] = 0;
-		this->writeString(newBuffer, 1 + 2 + static_cast<size_t>(encodedBytes));
-	}
-
-	void Jsonifier::appendNewFloatExt(const double FloatValue) {
-		char newBuffer[9]{ static_cast<uint8_t>(EtfType::New_Float_Ext) };
-		const void* punner{ &FloatValue };
-		storeBits(newBuffer + 1, *static_cast<const uint64_t*>(punner));
-		this->writeString(newBuffer, std::size(newBuffer));
-	}
-
-	void Jsonifier::appendSmallIntegerExt(const uint8_t value) {
-		char newBuffer[2]{ static_cast<uint8_t>(EtfType::Small_Integer_Ext), static_cast<char>(value) };
-		this->writeString(newBuffer, std::size(newBuffer));
-	}
-
-	void Jsonifier::appendIntegerExt(const uint32_t value) {
-		char newBuffer[5]{ static_cast<uint8_t>(EtfType::Integer_Ext) };
-		storeBits(newBuffer + 1, value);
-		this->writeString(newBuffer, std::size(newBuffer));
-	}
-
-	void Jsonifier::appendListHeader(const uint32_t sizeNew) {
-		char newBuffer[5]{ static_cast<uint8_t>(EtfType::List_Ext) };
-		storeBits(newBuffer + 1, sizeNew);
-		this->writeString(newBuffer, std::size(newBuffer));
-	}
-
-	void Jsonifier::appendMapHeader(const uint32_t sizeNew) {
-		char newBuffer[5]{ static_cast<uint8_t>(EtfType::Map_Ext) };
-		storeBits(newBuffer + 1, sizeNew);
-		this->writeString(newBuffer, std::size(newBuffer));
-	}
-
-	void Jsonifier::appendBool(bool data) {
-		if (data) {
-			char newBuffer[6]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(4), 't', 'r', 'u', 'e' };
-			this->writeString(newBuffer, std::size(newBuffer));
-
-		} else {
-			char newBuffer[7]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(5), 'f', 'a', 'l', 's', 'e' };
-			this->writeString(newBuffer, std::size(newBuffer));
-		}
-	}
-
-	void Jsonifier::appendVersion() {
-		char newBuffer[1]{ static_cast<int8_t>(formatVersion) };
-		this->writeString(newBuffer, std::size(newBuffer));
-	}
-
-	void Jsonifier::appendNilExt() {
-		this->writeCharacter(static_cast<uint8_t>(EtfType::Nil_Ext));
-	}
-
-	void Jsonifier::appendNil() {
-		char newBuffer[5]{ static_cast<uint8_t>(EtfType::Small_Atom_Ext), static_cast<uint8_t>(3), 'n', 'i', 'l' };
-		this->writeString(newBuffer, std::size(newBuffer));
-	}
-
-	void Jsonifier::setValue(JsonType typeNew) {
-		this->destroy();
-		this->type = typeNew;
-		switch (this->type) {
-			case JsonType::Object: {
-				AllocatorType<ObjectType> allocator{};
-				this->jsonValue.object = AllocatorTraits<ObjectType>::allocate(allocator, 1);
-				AllocatorTraits<ObjectType>::construct(allocator, this->jsonValue.object);
-				break;
-			}
-			case JsonType::Array: {
-				AllocatorType<ArrayType> allocator{};
-				this->jsonValue.array = AllocatorTraits<ArrayType>::allocate(allocator, 1);
-				AllocatorTraits<ArrayType>::construct(allocator, this->jsonValue.array);
-				break;
-			}
-			case JsonType::String: {
-				AllocatorType<StringType> allocator{};
-				this->jsonValue.string = AllocatorTraits<StringType>::allocate(allocator, 1);
-				AllocatorTraits<StringType>::construct(allocator, this->jsonValue.string);
-				break;
-			}
-		}
-	}
-
-	void Jsonifier::destroy() noexcept {
-		switch (this->type) {
-			case JsonType::Object: {
-				AllocatorType<ObjectType> allocator{};
-				AllocatorTraits<ObjectType>::destroy(allocator, this->jsonValue.object);
-				AllocatorTraits<ObjectType>::deallocate(allocator, this->jsonValue.object, 1);
-				break;
-			}
-			case JsonType::Array: {
-				AllocatorType<ArrayType> allocator{};
-				AllocatorTraits<ArrayType>::destroy(allocator, this->jsonValue.array);
-				AllocatorTraits<ArrayType>::deallocate(allocator, this->jsonValue.array, 1);
-				break;
-			}
-			case JsonType::String: {
-				AllocatorType<StringType> allocator{};
-				AllocatorTraits<StringType>::destroy(allocator, this->jsonValue.string);
-				AllocatorTraits<StringType>::deallocate(allocator, this->jsonValue.string, 1);
-				break;
-			}
-		}
-	}
-
-	Jsonifier::~Jsonifier() noexcept {
-		this->destroy();
-	}
-
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void )) {
 		outputSttream << function();
 		return outputSttream;
 	}
 
 	ConfigManager::ConfigManager(const DiscordCoreClientConfig& configNew) {
-		this->config = configNew;
+		config = configNew;
 	}
 
 	const bool ConfigManager::doWePrintWebSocketSuccessMessages() const {
-		return this->config.logOptions.logWebSocketSuccessMessages;
+		return config.logOptions.logWebSocketSuccessMessages;
 	}
 
 	const bool ConfigManager::doWePrintWebSocketErrorMessages() const {
-		return this->config.logOptions.logWebSocketErrorMessages;
+		return config.logOptions.logWebSocketErrorMessages;
 	}
 
 	const bool ConfigManager::doWePrintHttpsSuccessMessages() const {
-		return this->config.logOptions.logHttpsSuccessMessages;
+		return config.logOptions.logHttpsSuccessMessages;
 	}
 
 	const bool ConfigManager::doWePrintHttpsErrorMessages() const {
-		return this->config.logOptions.logHttpsErrorMessages;
-	}
-
-	const bool ConfigManager::doWePrintFFMPEGSuccessMessages() const {
-		return this->config.logOptions.logFFMPEGSuccessMessages;
-	}
-
-	const bool ConfigManager::doWePrintFFMPEGErrorMessages() const {
-		return this->config.logOptions.logFFMPEGErrorMessages;
+		return config.logOptions.logHttpsErrorMessages;
 	}
 
 	const bool ConfigManager::doWePrintGeneralSuccessMessages() const {
-		return this->config.logOptions.logGeneralSuccessMessages;
+		return config.logOptions.logGeneralSuccessMessages;
 	}
 
 	const bool ConfigManager::doWePrintGeneralErrorMessages() const {
-		return this->config.logOptions.logGeneralErrorMessages;
+		return config.logOptions.logGeneralErrorMessages;
 	}
 
 	const bool ConfigManager::doWeCacheChannels() const {
-		return this->config.cacheOptions.cacheChannels;
+		return config.cacheOptions.cacheChannels;
 	}
 
 	const bool ConfigManager::doWeCacheUsers() const {
-		return this->config.cacheOptions.cacheUsers;
+		return config.cacheOptions.cacheUsers;
 	}
 
 	const bool ConfigManager::doWeCacheGuilds() const {
-		return this->config.cacheOptions.cacheGuilds;
+		return config.cacheOptions.cacheGuilds;
 	}
 
 	const bool ConfigManager::doWeCacheRoles() const {
-		return this->config.cacheOptions.cacheRoles;
+		return config.cacheOptions.cacheRoles;
 	}
 
 	const UpdatePresenceData ConfigManager::getPresenceData() const {
-		return this->config.presenceData;
+		return config.presenceData;
 	}
 
 	const std::string ConfigManager::getBotToken() const {
-		return this->config.botToken;
+		return config.botToken;
 	}
 
 	const uint32_t ConfigManager::getTotalShardCount() const {
-		return this->config.shardOptions.totalNumberOfShards;
+		return config.shardOptions.totalNumberOfShards;
 	}
 
 	const uint32_t ConfigManager::getStartingShard() const {
-		return this->config.shardOptions.startingShard;
+		return config.shardOptions.startingShard;
 	}
 
 	const uint32_t ConfigManager::getShardCountForThisProcess() const {
-		return this->config.shardOptions.numberOfShardsForThisProcess;
+		return config.shardOptions.numberOfShardsForThisProcess;
 	}
 
 	const std::string ConfigManager::getConnectionAddress() const {
-		return this->config.connectionAddress;
+		return config.connectionAddress;
 	}
 
 	void ConfigManager::setConnectionAddress(const std::string& connectionAddressNew) {
-		this->config.connectionAddress = connectionAddressNew;
+		config.connectionAddress = connectionAddressNew;
 	}
 
 	const uint16_t ConfigManager::getConnectionPort() const {
-		return this->config.connectionPort;
+		return config.connectionPort;
 	}
 
 	void ConfigManager::setConnectionPort(const uint16_t connectionPortNew) {
-		this->config.connectionPort = connectionPortNew;
+		config.connectionPort = connectionPortNew;
 	}
 
 	const std::vector<RepeatedFunctionData> ConfigManager::getFunctionsToExecute() const {
-		return this->config.functionsToExecute;
+		return config.functionsToExecute;
 	}
 
 	const TextFormat ConfigManager::getTextFormat() const {
-		return this->config.textFormat;
+		return config.textFormat;
 	}
 
 	const GatewayIntents ConfigManager::getGatewayIntents() {
-		return this->config.intents;
+		return config.intents;
 	}
 
-	StringWrapper& StringWrapper::operator=(StringWrapper&& other) noexcept {
-		if (this != &other) {
-			this->ptr.reset(nullptr);
-			this->ptr = std::move(other.ptr);
-			other.ptr.reset(nullptr);
-			other.ptr = nullptr;
-		}
-		return *this;
-	}
-
-	StringWrapper& StringWrapper::operator=(const StringWrapper& other) {
-		if (this != &other) {
-			this->ptr.reset(nullptr);
-			std::stringstream stream{};
-			if (other.ptr) {
-				stream << other.ptr;
+	AudioFrameData& AudioFrameData::operator+=(std::basic_string_view<uint8_t> other) noexcept {
+		if (other.size() > 0) {
+			if (data.size() < other.size()) {
+				data.resize(other.size());
 			}
-			auto length = stream.str().size();
-			this->ptr = std::make_unique<char[]>(length + 1);
-			for (uint64_t x = 0; x < length; ++x) {
-				this->ptr[x] = other.ptr[x];
-			}
+			std::memcpy(data.data(), other.data(), other.size());
 		}
+		currentSize = other.size();
+		type = AudioFrameType::RawPCM;
 		return *this;
 	}
 
-	StringWrapper::StringWrapper(const StringWrapper& other) {
-		*this = other;
-	}
-
-	StringWrapper& StringWrapper::operator=(const std::string& string) {
-		auto length = string.size();
-		this->ptr.reset(nullptr);
-		this->ptr = std::make_unique<char[]>(length + 1);
-		for (uint32_t x = 0; x < length; ++x) {
-			this->ptr[x] = string[x];
+	AudioFrameData& AudioFrameData::operator+=(uint8_t character) {
+		if (data.size() < currentSize + 1) {
+			data.resize((currentSize + 1) * 2);
 		}
+		data[currentSize++] = character;
 		return *this;
 	}
 
-	StringWrapper::StringWrapper(const std::string& string) {
-		*this = string;
+	bool operator==(const AudioFrameData& lhs, const AudioFrameData& rhs) {
+		if (lhs.data != rhs.data) {
+			return false;
+		}
+		if (lhs.currentSize != rhs.currentSize) {
+			return false;
+		}
+		if (lhs.guildMemberId != rhs.guildMemberId) {
+			return false;
+		}
+		if (lhs.type != rhs.type) {
+			return false;
+		}
+		return true;
 	}
 
-	StringWrapper& StringWrapper::operator=(const char* string) {
-		if (string) {
-			this->ptr.reset(nullptr);
-			std::stringstream stream{};
-			stream << string;
-			int64_t length = stream.str().size();
-			this->ptr = std::make_unique<char[]>(length + 1);
-			for (int64_t x = 0; x < length; ++x) {
-				this->ptr[x] = string[x];
-			}
-		}
-		return *this;
-	}
-
-	StringWrapper::StringWrapper(const char* string) {
-		*this = string;
-	}
-
-	StringWrapper::operator std::string() {
-		std::stringstream stream{};
-		if (this->ptr) {
-			stream << this->ptr;
-		}
-		std::string string{};
-		for (int32_t x = 0; x < stream.str().size(); ++x) {
-			string.push_back(stream.str()[x]);
-		}
-		return string;
-	}
-
-	void StringWrapper::emplace_back(char value) {
-		std::stringstream stream{};
-		if (this->ptr) {
-			stream << this->ptr;
-		}
-		auto length = stream.str().size();
-		this->ptr = std::make_unique<char[]>(length + 2);
-
-		for (uint64_t x = 0; x < length; ++x) {
-			this->ptr[x] = stream.str()[x];
-		}
-		this->ptr[length] = value;
-	}
-
-	uint64_t StringWrapper::size() {
-		std::stringstream stream{};
-		if (this->ptr) {
-			stream << this->ptr;
-		}
-		auto length = stream.str().size();
-		return length;
-	}
-
-	const char* StringWrapper::data() {
-		return this->ptr.get();
+	void AudioFrameData::clearData() noexcept {
+		type = AudioFrameType::Unset;
+		guildMemberId = 0;
+		currentSize = 0;
+		data.clear();
 	}
 
 	ColorValue::ColorValue(uint32_t colorValue) {
-		this->color = colorValue;
+		color = colorValue;
 	}
 
 	ColorValue::ColorValue(std::string hexColorValue) {
 		if (hexColorValue == "") {
 			hexColorValue = "fefefe";
 		}
-		this->color = stoull(hexColorValue, nullptr, 16);
+		color = stoull(hexColorValue, nullptr, 16);
 	}
 
 	RGBColorValue ColorValue::getRgbColorValue() {
-		uint8_t red = static_cast<uint8_t>(this->color >> 16);
-		uint8_t green = static_cast<uint8_t>(this->color >> 8);
-		uint8_t blue = static_cast<uint8_t>(this->color);
+		uint8_t red = static_cast<uint8_t>(color >> 16);
+		uint8_t green = static_cast<uint8_t>(color >> 8);
+		uint8_t blue = static_cast<uint8_t>(color);
 		RGBColorValue color{};
 		color.green = green;
 		color.blue = blue;
@@ -1095,19 +266,19 @@ namespace DiscordCoreAPI {
 
 	HexColorValue ColorValue::getHexColorValue() {
 		std::stringstream stream{};
-		stream << std::hex << this->color;
+		stream << std::hex << color;
 		return stream.str();
 	}
 
 	uint32_t ColorValue::getIntColorValue() {
-		return this->color;
+		return color;
 	}
 
 	IconHash& IconHash::operator=(const std::string& string) {
 		std::string newHash{ string };
 		if (newHash.empty() || newHash == "0") {
-			this->highBits = 0;
-			this->lowBits = 0;
+			highBits = 0;
+			lowBits = 0;
 			return *this;
 		}
 		if (newHash.length() == 34 && newHash.substr(0, 2) == "a_") {
@@ -1117,8 +288,8 @@ namespace DiscordCoreAPI {
 			throw std::length_error(
 				"IconHash must be exactly 32 characters in length, passed value is: '" + std::to_string(newHash.size()) + "', in length.");
 		}
-		this->lowBits = fromString<uint64_t>(newHash.substr(0, 16), std::hex);
-		this->highBits = fromString<uint64_t>(newHash.substr(16, 16), std::hex);
+		lowBits = fromString<uint64_t>(newHash.substr(0, 16), std::hex);
+		highBits = fromString<uint64_t>(newHash.substr(16, 16), std::hex);
 		return *this;
 	}
 
@@ -1126,38 +297,29 @@ namespace DiscordCoreAPI {
 		*this = string;
 	}
 
-	std::string IconHash::getIconHash() noexcept {
-		if (this->highBits == 0 || this->lowBits == 0) {
+	IconHash::operator std::string() noexcept {
+		if (highBits == 0 || lowBits == 0) {
 			return {};
 		} else {
-			return std::string{ toHex(this->lowBits) + toHex(this->highBits) };
+			return std::string{ toHex(lowBits) + toHex(highBits) };
 		}
 	}
 
 	bool IconHash::operator==(const IconHash& other) {
-		return this->lowBits == other.lowBits && this->highBits == other.highBits;
+		return lowBits == other.lowBits && highBits == other.highBits;
 	}
 
 	uint64_t strtoull(std::string_view string) {
-		for (auto& value: string) {
-			if (!isdigit(value)) {
-				return 0;
-			}
-		}
-		if (!string.empty() && string != "") {
-			return stoull(std::string{ string });
-		} else {
-			return 0;
-		}
+		return stoull(std::string{ string });
 	}
 
 	Permissions& Permissions::operator=(Permission&& other) {
-		this->permissions = static_cast<uint64_t>(other);
+		permissions = static_cast<uint64_t>(other);
 		return *this;
 	}
 
 	Permissions& Permissions::operator=(const Permission& other) {
-		this->permissions = static_cast<uint64_t>(other);
+		permissions = static_cast<uint64_t>(other);
 		return *this;
 	}
 
@@ -1167,11 +329,9 @@ namespace DiscordCoreAPI {
 
 	Permissions& Permissions::operator=(std::string&& other) {
 		if (other.size() == 0 || other == "") {
-			this->permissions = 0;
+			permissions = 0;
 		} else {
-			for (auto& value: other) {
-				this->permissions = stoull(other);
-			}
+			permissions = stoull(other);
 		}
 		other = "";
 		return *this;
@@ -1183,9 +343,9 @@ namespace DiscordCoreAPI {
 
 	Permissions& Permissions::operator=(const std::string& other) {
 		if (other.size() == 0 || other == "") {
-			this->permissions = 0;
+			permissions = 0;
 		} else {
-			this->permissions = stoull(other);
+			permissions = stoull(other);
 		}
 		return *this;
 	}
@@ -1194,9 +354,8 @@ namespace DiscordCoreAPI {
 		*this = permsNew;
 	}
 
-
 	Permissions& Permissions::operator=(uint64_t other) {
-		this->permissions = other;
+		permissions = other;
 		return *this;
 	}
 
@@ -1205,11 +364,11 @@ namespace DiscordCoreAPI {
 	}
 
 	Permissions::operator uint64_t() {
-		return this->permissions;
+		return permissions;
 	}
 
 	Permissions::operator std::string() {
-		return std::string{ std::to_string(this->permissions) };
+		return std::to_string(permissions);
 	}
 
 	std::string Permissions::getCurrentChannelPermissions(const GuildMember& guildMember, const ChannelData& channel) {
@@ -1232,7 +391,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Permissions::removePermissions(const std::vector<Permission>& permissionsToRemove) {
-		uint64_t permissionsInteger = this->permissions;
+		uint64_t permissionsInteger = permissions;
 		for (auto value: permissionsToRemove) {
 			permissionsInteger &= ~static_cast<uint64_t>(value);
 		}
@@ -1242,7 +401,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void Permissions::addPermissions(const std::vector<Permission>& permissionsToAdd) {
-		uint64_t permissionsInteger = this->permissions;
+		uint64_t permissionsInteger = permissions;
 		for (auto value: permissionsToAdd) {
 			permissionsInteger |= static_cast<uint64_t>(value);
 		}
@@ -1253,7 +412,7 @@ namespace DiscordCoreAPI {
 
 	std::vector<std::string> Permissions::displayPermissions() {
 		std::vector<std::string> returnVector{};
-		uint64_t permissionsInteger = this->permissions;
+		uint64_t permissionsInteger = permissions;
 		if (permissionsInteger & (1ll << 3)) {
 			for (int64_t x = 0; x < 41; ++x) {
 				permissionsInteger |= 1ll << x;
@@ -1386,7 +545,7 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string Permissions::getCurrentPermissionString() {
-		std::string returnString = std::to_string(this->permissions);
+		std::string returnString = std::to_string(permissions);
 		return returnString;
 	}
 
@@ -1400,10 +559,8 @@ namespace DiscordCoreAPI {
 		return stream.str();
 	}
 
-	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember,
-		const ChannelData& channel) {
-		if ((stoull(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) ==
-			static_cast<uint64_t>(Permission::Administrator)) {
+	std::string Permissions::computeOverwrites(const std::string& basePermissions, const GuildMember& guildMember, const ChannelData& channel) {
+		if ((stoull(basePermissions) & static_cast<uint64_t>(Permission::Administrator)) & static_cast<uint64_t>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
 
@@ -1432,7 +589,7 @@ namespace DiscordCoreAPI {
 		permissions &= ~deny;
 		permissions |= allow;
 		for (int32_t x = 0; x < channel.permissionOverwrites.size(); ++x) {
-			if (channel.permissionOverwrites[x].id == guildMember.id) {
+			if (channel.permissionOverwrites[x].id == guildMember.user.id) {
 				permissions &= ~channel.permissionOverwrites[x].deny;
 				permissions |= channel.permissionOverwrites[x].allow;
 				break;
@@ -1449,7 +606,7 @@ namespace DiscordCoreAPI {
 
 	std::string Permissions::computeBasePermissions(const GuildMember& guildMember) {
 		const GuildData guild = Guilds::getCachedGuild({ .guildId = guildMember.guildId });
-		if (guild.ownerId == guildMember.id) {
+		if (guild.ownerId == guildMember.user.id) {
 			return Permissions::getAllPermissions();
 		}
 		std::vector<RoleData> guildRoles{};
@@ -1463,38 +620,39 @@ namespace DiscordCoreAPI {
 			}
 		}
 		uint64_t permissions{};
-		if (roleEveryone.permissions != 0) {
-			permissions = roleEveryone.permissions;
+		if (roleEveryone.permissions.operator uint64_t() != 0) {
+			permissions = roleEveryone.permissions.operator uint64_t();
 		}
 		GetGuildMemberRolesData getRolesData{};
 		getRolesData.guildMember = guildMember;
 		getRolesData.guildId = guildMember.guildId;
 		std::vector<RoleData> guildMemberRoles{};
 		for (auto& value: guildMember.roles) {
-			guildMemberRoles.emplace_back(Roles::getCachedRole({ .guildId = guild.id, .roleId = value }));
+			auto valueNew = Roles::getCachedRole({ .guildId = guild.id, .roleId = value });
+			guildMemberRoles.emplace_back(valueNew);
 		}
 		for (auto& value: guildMemberRoles) {
-			permissions |= value.permissions;
+			permissions |= value.permissions.operator uint64_t();
 		}
 
-		if ((permissions & static_cast<uint64_t>(Permission::Administrator)) == static_cast<uint64_t>(Permission::Administrator)) {
+		if (permissions & static_cast<uint64_t>(Permission::Administrator)) {
 			return Permissions::getAllPermissions();
 		}
 
 		return std::to_string(permissions);
 	}
 
-	void reportException(const std::string& currentFunctionName, std::source_location location) {
+	void reportException(const std::string& currentFunctionName, std::source_location location, std::exception_ptr ptr) {
 		try {
-			auto currentException = std::current_exception();
-			if (currentException) {
-				std::rethrow_exception(currentException);
+			auto exception = std::current_exception();
+			if (exception) {
+				std::rethrow_exception(exception);
 			}
 		} catch (const std::exception& e) {
 			std::stringstream stream{};
 			stream << shiftToBrightRed() << "Error Report: \n"
-				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " ("
-				   << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
+				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
+				   << std::to_string(location.column()) << ")"
 				   << "\nThe Error: \n"
 				   << e.what() << reset() << std::endl
 				   << std::endl;
@@ -1511,8 +669,8 @@ namespace DiscordCoreAPI {
 		} catch (const std::exception& e) {
 			std::stringstream stream{};
 			stream << shiftToBrightRed() << "Error Report: \n"
-				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " ("
-				   << std::to_string(location.line()) << ":" << std::to_string(location.column()) << ")"
+				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
+				   << std::to_string(location.column()) << ")"
 				   << "\nThe Error: \n"
 				   << e.what() << reset() << std::endl
 				   << std::endl;
@@ -1586,12 +744,12 @@ namespace DiscordCoreAPI {
 			returnString.push_back(base64Chars[(string[static_cast<uint64_t>(pos + 0)] & 0xfc) >> 2]);
 
 			if (static_cast<uint64_t>(pos + 1) < string.size()) {
-				returnString.push_back(base64Chars[((string[static_cast<int64_t>(pos + 0)] & 0x03) << 4) +
-					((string[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
+				returnString.push_back(
+					base64Chars[((string[static_cast<int64_t>(pos + 0)] & 0x03) << 4) + ((string[static_cast<int64_t>(pos + 1)] & 0xf0) >> 4)]);
 
 				if (static_cast<uint64_t>(pos + 2) < string.size()) {
-					returnString.push_back(base64Chars[((string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) +
-						((string[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
+					returnString.push_back(
+						base64Chars[((string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2) + ((string[static_cast<int64_t>(pos + 2)] & 0xc0) >> 6)]);
 					returnString.push_back(base64Chars[string[static_cast<int64_t>(pos + 2)] & 0x3f]);
 				} else {
 					returnString.push_back(base64Chars[(string[static_cast<int64_t>(pos + 1)] & 0x0f) << 2]);
@@ -1619,9 +777,13 @@ namespace DiscordCoreAPI {
 	std::string utf8MakeValid(const std::string& inputString) {
 		std::string returnString{};
 		for (auto& value: inputString) {
-			if (value >= 128 || value < 0) {
+			if (static_cast<uint8_t>(value) >= 128 || value < 0) {
 				int32_t difference = 0 - value;
-				returnString.push_back(value + difference);
+				if (value + difference == '\0') {
+					continue;
+				} else {
+					returnString.push_back(value + difference);
+				}
 			} else {
 				returnString.push_back(value);
 			}
@@ -1662,8 +824,7 @@ namespace DiscordCoreAPI {
 		returnString.resize(16);
 		std::mt19937_64 randomEngine{ static_cast<uint64_t>(HRClock::now().time_since_epoch().count()) };
 		for (int32_t x = 0; x < 16; ++x) {
-			returnString[x] =
-				static_cast<uint8_t>((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * 255.0f);
+			returnString[x] = static_cast<uint8_t>((static_cast<double>(randomEngine()) / static_cast<double>(randomEngine.max())) * 255.0f);
 		}
 		returnString = base64Encode(returnString, false);
 		return returnString;
@@ -1729,94 +890,13 @@ namespace DiscordCoreAPI {
 		return timeStamp;
 	}
 
-	std::string escapeCharacters(std::string_view string) {
-		std::string stringNew{};
-		if (stringNew.size() <= string.size() * 2) {
-			stringNew.resize(string.size() * 2);
-		}
-		uint64_t index{};
-		for (int32_t x = 0; x < string.size(); ++x) {
-			switch (static_cast<char>(string[x])) {
-				case 0x00: {
-					break;
-				}
-				case 0x22: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('"');
-					index += 2;
-					break;
-				}
-				case 0x5c: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('\\');
-					index += 2;
-					break;
-				}
-				case 0x07: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('a');
-					index += 2;
-					break;
-				}
-				case 0x08: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('b');
-					index += 2;
-					break;
-				}
-				case 0x0C: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('f');
-					index += 2;
-					break;
-				}
-				case 0x0A: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('n');
-					index += 2;
-					break;
-				}
-				case 0x0D: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('r');
-					index += 2;
-					break;
-				}
-				case 0x0B: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('v');
-					index += 2;
-					break;
-				}
-				case 0x09: {
-					stringNew[index] = static_cast<char>('\\');
-					stringNew[index + 1] = static_cast<char>('t');
-					index += 2;
-					break;
-				}
-				default: {
-					stringNew[index] = string[x];
-					++index;
-					break;
-				}
-			}
-		}
-		if (stringNew.size() > 1) {
-			if (stringNew[stringNew.size() - 1] == '\0') {
-				stringNew.erase(stringNew.size() - 1);
-			}
-		}
-		stringNew.resize(index);
-		return stringNew;
-	}
-
 	TimeStamp::TimeStamp(TimeFormat formatNew) {
-		this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+		timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 	}
 
 	TimeStamp::TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second,
 		TimeFormat formatNew) {
-		this->getTimeSinceEpoch(stoull(year), stoull(month), stoull(day), stoull(hour), stoull(minute), stoull(second));
+		getTimeSinceEpoch(stoull(year), stoull(month), stoull(day), stoull(hour), stoull(minute), stoull(second));
 	}
 
 	TimeStamp::operator std::string() {
@@ -1824,26 +904,26 @@ namespace DiscordCoreAPI {
 	}
 
 	TimeStamp::operator uint64_t() {
-		if (this->timeStampInTimeUnits == 0) {
-			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+		if (timeStampInTimeUnits == 0) {
+			timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 		}
-		return this->timeStampInTimeUnits;
+		return timeStampInTimeUnits;
 	}
 
 	TimeStamp& TimeStamp::operator=(std::string&& originalTimeStampNew) {
-		this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
+		convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
 		return *this;
 	}
 
 	TimeStamp::TimeStamp(std::string&& originalTimeStampNew) {
 		*this = std::move(originalTimeStampNew);
-		if (this->timeStampInTimeUnits == 0) {
-			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+		if (timeStampInTimeUnits == 0) {
+			timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 		}
 	}
 
 	TimeStamp& TimeStamp::operator=(std::string& originalTimeStampNew) {
-		this->convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
+		convertTimeStampToTimeUnits(TimeFormat::LongDateTime, originalTimeStampNew);
 		return *this;
 	}
 
@@ -1851,21 +931,12 @@ namespace DiscordCoreAPI {
 		*this = originalTimeStampNew;
 	}
 
-	TimeStamp& TimeStamp::operator=(const TimeStamp& other) {
-		this->timeStampInTimeUnits = other.timeStampInTimeUnits;
-		return *this;
-	}
-
-	TimeStamp::TimeStamp(const TimeStamp& other) {
-		*this = other;
-	}
-
 	TimeStamp::TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, TimeFormat formatNew) {
-		this->getTimeSinceEpoch(year, month, day, hour, minute, second);
+		getTimeSinceEpoch(year, month, day, hour, minute, second);
 	};
 
 	TimeStamp::TimeStamp(uint64_t timeInTimeUnits, TimeFormat formatNew) {
-		this->timeStampInTimeUnits = timeInTimeUnits;
+		timeStampInTimeUnits = timeInTimeUnits;
 	}
 
 	std::string TimeStamp::convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd,
@@ -1890,9 +961,8 @@ namespace DiscordCoreAPI {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				++resultTwo->tm_mday;
 			}
-			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
-				std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min),
-				std::to_string(resultTwo->tm_sec), formatNew };
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+				std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), formatNew };
 			timeStamp.getISO8601TimeStamp(formatNew);
 			returnString = static_cast<std::string>(timeStamp);
 		} else {
@@ -1900,9 +970,8 @@ namespace DiscordCoreAPI {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				++resultTwo->tm_mday;
 			}
-			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
-				std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min),
-				std::to_string(resultTwo->tm_sec), formatNew };
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+				std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), formatNew };
 			timeStamp.getISO8601TimeStamp(formatNew);
 			returnString = static_cast<std::string>(timeStamp);
 		}
@@ -1918,28 +987,26 @@ namespace DiscordCoreAPI {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				++resultTwo->tm_mday;
 			}
-			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
-				std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min),
-				std::to_string(resultTwo->tm_sec), timeFormat };
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+				std::to_string(resultTwo->tm_hour + 4), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), timeFormat };
 			returnString = timeStamp.getISO8601TimeStamp(timeFormat);
 		} else {
 			if (resultTwo->tm_hour + 5 >= 24) {
 				resultTwo->tm_hour = resultTwo->tm_hour - 24;
 				++resultTwo->tm_mday;
 			}
-			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1),
-				std::to_string(resultTwo->tm_mday), std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min),
-				std::to_string(resultTwo->tm_sec), timeFormat };
+			TimeStamp timeStamp{ std::to_string(resultTwo->tm_year + 1900), std::to_string(resultTwo->tm_mon + 1), std::to_string(resultTwo->tm_mday),
+				std::to_string(resultTwo->tm_hour + 5), std::to_string(resultTwo->tm_min), std::to_string(resultTwo->tm_sec), timeFormat };
 			returnString = timeStamp.getISO8601TimeStamp(timeFormat);
 		}
 		return returnString;
 	}
 
 	bool TimeStamp::hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes) {
-		if (this->timeStampInTimeUnits <= 0) {
-			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+		if (timeStampInTimeUnits <= 0) {
+			timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 		}
-		int64_t startTimeRaw = this->timeStampInTimeUnits;
+		int64_t startTimeRaw = timeStampInTimeUnits;
 		auto currentTime = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 		int64_t secondsPerMinute = 60;
 		int64_t secondsPerHour = secondsPerMinute * 60;
@@ -2054,7 +1121,7 @@ namespace DiscordCoreAPI {
 		if (month > 11) {
 			value += Seconds{ secondsInNov };
 		}
-		this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(value).count();
+		timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(value).count();
 	}
 
 	void TimeStamp::convertTimeStampToTimeUnits(TimeFormat formatNew, std::string originalTimeStamp) {
@@ -2063,9 +1130,9 @@ namespace DiscordCoreAPI {
 				TimeStamp timeValue = TimeStamp{ stoi(originalTimeStamp.substr(0, 4)), stoi(originalTimeStamp.substr(5, 6)),
 					stoi(originalTimeStamp.substr(8, 9)), stoi(originalTimeStamp.substr(11, 12)), stoi(originalTimeStamp.substr(14, 15)),
 					stoi(originalTimeStamp.substr(17, 18)), formatNew };
-				this->timeStampInTimeUnits = static_cast<uint64_t>(timeValue);
+				timeStampInTimeUnits = static_cast<uint64_t>(timeValue);
 			} else {
-				this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+				timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 			}
 		} catch (...) {
 			reportException("TimeStamp::convertTimeStampToTimeUnits()");
@@ -2073,10 +1140,10 @@ namespace DiscordCoreAPI {
 	}
 
 	std::string TimeStamp::getISO8601TimeStamp(TimeFormat timeFormat) {
-		if (this->timeStampInTimeUnits <= 0) {
-			this->timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
+		if (timeStampInTimeUnits <= 0) {
+			timeStampInTimeUnits = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()).count();
 		}
-		uint64_t timeValue = this->timeStampInTimeUnits / 1000;
+		uint64_t timeValue = timeStampInTimeUnits / 1000;
 		time_t rawTime(timeValue);
 		tm timeInfo = *localtime(&rawTime);
 		std::string timeStamp{};
@@ -2088,12 +1155,12 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case TimeFormat::LongDateTime: {
-				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%T", &timeInfo);
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%ValueType", &timeInfo);
 				timeStamp.resize(sizeResponse);
 				break;
 			}
 			case TimeFormat::LongTime: {
-				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &timeInfo);
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%ValueType", &timeInfo);
 				timeStamp.resize(sizeResponse);
 				break;
 			}
@@ -2118,55 +1185,4 @@ namespace DiscordCoreAPI {
 		}
 		return timeStamp;
 	}
-
-	std::unordered_map<std::string, UnboundedMessageBlock<MessageData>*> MessageCollector::objectsBuffersMap{};
 };
-
-namespace DiscordCoreInternal {
-
-	StringBuffer::StringBuffer() noexcept {
-		this->string.resize(1024 * 16);
-	}
-
-	std::string_view StringBuffer::operator[](LengthData size) {
-		std::string_view string{ this->string.data() + size.offSet, size.length };
-		return string;
-	}
-
-	char StringBuffer::operator[](uint64_t index) {
-		return this->string[index];
-	}
-
-	void StringBuffer::writeData(const char* ptr, uint64_t size) {
-		if (this->sizeValue + size > this->string.size()) {
-			this->string.resize(this->string.size() + size);
-		}
-		std::copy(ptr, ptr + size, this->string.data() + this->sizeValue);
-		this->sizeValue += size;
-	}
-
-	std::string::iterator StringBuffer::begin() {
-		return this->string.begin();
-	}
-
-	std::string::iterator StringBuffer::end() {
-		return this->string.end();
-	}
-
-	void StringBuffer::erase(uint64_t amount) {
-		std::copy(this->string.data() + amount, this->string.data() + this->sizeValue, this->string.data());
-		this->sizeValue = this->sizeValue - amount;
-	}
-
-	uint64_t StringBuffer::size() {
-		return this->sizeValue;
-	}
-
-	char* StringBuffer::data() {
-		return this->string.data();
-	}
-
-	void StringBuffer::clear() {
-		this->sizeValue = 0;
-	}
-}

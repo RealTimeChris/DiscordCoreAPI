@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -40,6 +40,10 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll InteractionResponseBase {
 	  public:
+		friend struct Jsonifier::Core<InteractionResponseBase>;
+
+		std::unordered_set<std::string_view> excludedKeys{};
+
 		/// \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
 		/// \param customIdNew A custom id to give for identifying the button.
@@ -48,8 +52,8 @@ namespace DiscordCoreAPI {
 		/// \param emojiName An emoji name, if desired.
 		/// \param emojiId An emoji id, if desired.
 		/// \param url A url, if applicable.
-		InteractionResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel,
-			ButtonStyle buttonStyle, const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
+		InteractionResponseBase& addButton(bool disabled, const std::string& customIdNew, const std::string& buttonLabel, ButtonStyle buttonStyle,
+			const std::string& emojiName = "", Snowflake emojiId = Snowflake{}, const std::string& url = "");
 
 		/// \brief Adds a select-menu to the response Message.
 		/// \param disabled Whether the select-menu is active or not.
@@ -111,12 +115,15 @@ namespace DiscordCoreAPI {
 
 		InteractionResponseData getInteractionResponseData();
 
+		void generateExcludedKeys() noexcept;
+
 		virtual ~InteractionResponseBase() noexcept = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
 		MessagePackageData messagePackage{};
-		InteractionResponseData data{};
+		InteractionCallbackData data{};
+		InteractionCallbackType type{};
 	};
 
 	/// \brief For creating an ephemeral Interaction response.
@@ -146,6 +153,7 @@ namespace DiscordCoreAPI {
 	/// \brief For creating an Interaction response.
 	class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponseBase {
 	  public:
+		friend struct Jsonifier::Core<CreateInteractionResponseData>;
 		friend class SelectMenuCollector;
 		friend class ButtonCollector;
 		friend class ModalCollector;
@@ -172,18 +180,22 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief For editing an Interaction response.
-	class DiscordCoreAPI_Dll EditInteractionResponseData {
+	class DiscordCoreAPI_Dll EditInteractionResponseData : public EditWebHookData {
 	  public:
+		friend struct Jsonifier::Core<EditInteractionResponseData>;
 		friend class Interactions;
 		friend class InputEvents;
 
+		std::unordered_set<std::string_view> excludedKeys{};
+
 		EditInteractionResponseData(const RespondToInputEventData& dataPackage);
+
+		void generateExcludedKeys() noexcept;
 
 		virtual ~EditInteractionResponseData() noexcept = default;
 
 	  protected:
 		InteractionPackageData interactionPackage{};
-		EditWebHookData data{};
 	};
 
 	/// \brief For deleting an Interaction response.
@@ -216,14 +228,19 @@ namespace DiscordCoreAPI {
 	/// \brief For creating a follow up Message.
 	class DiscordCoreAPI_Dll CreateFollowUpMessageData : public ExecuteWebHookData {
 	  public:
+		friend struct Jsonifier::Core<CreateFollowUpMessageData>;
 		friend class SelectMenuCollector;
 		friend class ButtonCollector;
 		friend class Interactions;
 		friend class InputEvents;
 
+		std::unordered_set<std::string_view> excludedKeys{};
+
 		CreateFollowUpMessageData(const CreateEphemeralFollowUpMessageData& dataPackage);
 
 		CreateFollowUpMessageData(const RespondToInputEventData& dataPackage);
+
+		void generateExcludedKeys() noexcept;
 
 		virtual ~CreateFollowUpMessageData() noexcept = default;
 
@@ -239,10 +256,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief For editing a follow up Message.
-	class DiscordCoreAPI_Dll EditFollowUpMessageData {
+	class DiscordCoreAPI_Dll EditFollowUpMessageData : public EditWebHookData {
 	  public:
+		friend struct Jsonifier::Core<EditFollowUpMessageData>;
 		friend class Interactions;
 		friend class InputEvents;
+
+		std::unordered_set<std::string_view> excludedKeys{};
 
 		EditFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
@@ -251,7 +271,6 @@ namespace DiscordCoreAPI {
 	  protected:
 		InteractionPackageData interactionPackage{};
 		MessagePackageData messagePackage{};
-		EditWebHookData data{};
 	};
 
 	/// \brief For deleting a follow up Message.
@@ -345,17 +364,17 @@ namespace DiscordCoreAPI {
 	/// \brief Select menu response data.
 	struct DiscordCoreAPI_Dll SelectMenuResponseData {
 		operator InteractionData() {
-			return *this->interactionData;
+			return *interactionData;
 		}
 
 		SelectMenuResponseData& operator=(const SelectMenuResponseData& other) {
 			if (this != &other) {
-				*this->interactionData = *other.interactionData;
-				this->selectionId = other.selectionId;
-				this->messageId = other.messageId;
-				this->channelId = other.channelId;
-				this->values = other.values;
-				this->userId = other.userId;
+				*interactionData = *other.interactionData;
+				selectionId = other.selectionId;
+				messageId = other.messageId;
+				channelId = other.channelId;
+				values = other.values;
+				userId = other.userId;
 			}
 			return *this;
 		}
@@ -366,12 +385,12 @@ namespace DiscordCoreAPI {
 
 		SelectMenuResponseData& operator=(SelectMenuResponseData& other) {
 			if (this != &other) {
-				*this->interactionData = *other.interactionData;
-				this->selectionId = other.selectionId;
-				this->messageId = other.messageId;
-				this->channelId = other.channelId;
-				this->values = other.values;
-				this->userId = other.userId;
+				*interactionData = *other.interactionData;
+				selectionId = other.selectionId;
+				messageId = other.messageId;
+				channelId = other.channelId;
+				values = other.values;
+				userId = other.userId;
 			}
 			return *this;
 		}
@@ -412,8 +431,7 @@ namespace DiscordCoreAPI {
 		/// \param targetUserId The id of the single User to collect inputs from, if getSelectMenuDataForAllNew is set to false.
 		/// \returns A vector of SelectMenuResponseData.
 		CoRoutine<std::vector<SelectMenuResponseData>> collectSelectMenuData(bool getSelectMenuDataForAllNew, int32_t maxWaitTimeInMsNew,
-			int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew,
-			Snowflake targetUserId = Snowflake{});
+			int32_t maxCollectedSelectMenuCountNew, CreateInteractionResponseData errorMessageDataNew, Snowflake targetUserId = Snowflake{});
 
 		/// \brief Used to collect the select-menu inputs from one or more users.
 		/// \param triggerFunctionNew A std::function<bool(InteractionData)> to decide whether or not to trigger the event's main function.
@@ -446,17 +464,17 @@ namespace DiscordCoreAPI {
 	/// \brief Button response data.
 	struct DiscordCoreAPI_Dll ButtonResponseData {
 		operator InteractionData() {
-			return *this->interactionData;
+			return *interactionData;
 		}
 
 		ButtonResponseData& operator=(const ButtonResponseData& other) {
 			if (this != &other) {
-				*this->interactionData = *other.interactionData;
-				this->messageId = other.messageId;
-				this->channelId = other.channelId;
-				this->emojiName = other.emojiName;
-				this->buttonId = other.buttonId;
-				this->userId = other.userId;
+				*interactionData = *other.interactionData;
+				messageId = other.messageId;
+				channelId = other.channelId;
+				emojiName = other.emojiName;
+				buttonId = other.buttonId;
+				userId = other.userId;
 			}
 			return *this;
 		}
@@ -467,12 +485,12 @@ namespace DiscordCoreAPI {
 
 		ButtonResponseData& operator=(ButtonResponseData& other) {
 			if (this != &other) {
-				*this->interactionData = *other.interactionData;
-				this->messageId = other.messageId;
-				this->channelId = other.channelId;
-				this->emojiName = other.emojiName;
-				this->buttonId = other.buttonId;
-				this->userId = other.userId;
+				*interactionData = *other.interactionData;
+				messageId = other.messageId;
+				channelId = other.channelId;
+				emojiName = other.emojiName;
+				buttonId = other.buttonId;
+				userId = other.userId;
 			}
 			return *this;
 		}
@@ -544,17 +562,17 @@ namespace DiscordCoreAPI {
 	/// \brief Button response data.
 	struct DiscordCoreAPI_Dll ModalResponseData {
 		operator InteractionData() {
-			return *this->interactionData;
+			return *interactionData;
 		}
 
 		ModalResponseData& operator=(const ModalResponseData& other) {
 			if (this != &other) {
-				*this->interactionData = *other.interactionData;
-				this->customIdSmall = other.customIdSmall;
-				this->channelId = other.channelId;
-				this->customId = other.customId;
-				this->userId = other.userId;
-				this->value = other.value;
+				*interactionData = *other.interactionData;
+				customIdSmall = other.customIdSmall;
+				channelId = other.channelId;
+				customId = other.customId;
+				userId = other.userId;
+				value = other.value;
 			}
 			return *this;
 		}
@@ -611,4 +629,4 @@ namespace DiscordCoreAPI {
 	};
 
 	/**@}*/
-};// namespace DiscordCoreAPI
+};

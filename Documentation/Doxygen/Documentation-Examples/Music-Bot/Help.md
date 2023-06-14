@@ -11,14 +11,14 @@ namespace DiscordCoreAPI {
 	class Help : public BaseFunction {
 	  public:
 		Help() {
-			this->commandName = "help";
-			this->helpDescription = "A help command for this bot!";
+			commandName = "help";
+			helpDescription = "A help command for this bot!";
 			EmbedData msgEmbed{};
 			msgEmbed.setDescription("------\nSimply enter /help, and follow the instructions!\n------");
 			msgEmbed.setTitle("__**Help Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

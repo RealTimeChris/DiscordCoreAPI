@@ -10,14 +10,14 @@ namespace DiscordCoreAPI {
 	class PlayRN : public BaseFunction {
 	  public:
 		PlayRN() {
-			this->commandName = "playrn";
-			this->helpDescription = "Add a song to the front of the queue and play it if nothing is playing.";
+			commandName = "playrn";
+			helpDescription = "Add a song to the front of the queue and play it if nothing is playing.";
 			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter /playrn SONGNAME OR Url.\n------");
 			msgEmbed.setTitle("__**PlayRN Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

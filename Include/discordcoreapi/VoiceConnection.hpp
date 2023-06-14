@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -30,16 +30,33 @@
 #include <discordcoreapi/AudioDecoder.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/WebSocketEntities.hpp>
+#include <discordcoreapi/UDPConnection.hpp>
 #include <sodium.h>
 
 namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll VoiceSocketReadyData {
-		VoiceSocketReadyData(simdjson::ondemand::value);
-		std::string mode{};
+		std::vector<std::string> modes{};
 		std::string ip{};
 		uint64_t port{};
 		uint32_t ssrc{};
+	};
+
+	struct DiscordCoreAPI_Dll VoiceSessionDescriptionData {
+		std::vector<uint8_t> secretKey{};
+	};
+
+	struct DiscordCoreAPI_Dll SpeakingData {
+		Snowflake userId{};
+		uint32_t ssrc{};
+	};
+
+	struct DiscordCoreAPI_Dll VoiceConnectionHelloData {
+		uint32_t heartBeatInterval{};
+	};
+
+	struct DiscordCoreAPI_Dll VoiceUserDisconnectData {
+		Snowflake userId{};
 	};
 
 	struct DiscordCoreAPI_Dll VoiceUser {
@@ -55,14 +72,14 @@ namespace DiscordCoreAPI {
 
 		DiscordCoreInternal::OpusDecoderWrapper& getDecoder() noexcept;
 
-		std::basic_string_view<std::byte> extractPayload() noexcept;
+		std::basic_string_view<uint8_t> extractPayload() noexcept;
 
-		void insertPayload(std::basic_string_view<std::byte>) noexcept;
+		void insertPayload(std::basic_string_view<uint8_t>) noexcept;
 
 		Snowflake getUserId() noexcept;
 
 	  protected:
-		DiscordCoreInternal::RingBuffer<std::byte, 4> payloads{};
+		DiscordCoreInternal::RingBuffer<uint8_t, 4> payloads{};
 		DiscordCoreInternal::OpusDecoderWrapper decoder{};
 		Snowflake userId{};
 	};
@@ -70,13 +87,13 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll RTPPacketEncrypter {
 		RTPPacketEncrypter() noexcept = default;
 
-		RTPPacketEncrypter(uint32_t ssrcNew, const std::basic_string<std::byte>& keysNew) noexcept;
+		RTPPacketEncrypter(uint32_t ssrcNew, const std::basic_string<uint8_t>& keysNew) noexcept;
 
-		std::basic_string_view<std::byte> encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData) noexcept;
+		std::basic_string_view<uint8_t> encryptPacket(DiscordCoreInternal::EncoderReturnData& audioData) noexcept;
 
 	  protected:
-		std::basic_string<std::byte> data{};
-		std::basic_string<std::byte> keys{};
+		std::basic_string<uint8_t> data{};
+		std::basic_string<uint8_t> keys{};
 		uint8_t version{ 0x80 };
 		uint8_t flags{ 0x78 };
 		uint32_t timeStamp{};
@@ -87,9 +104,9 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll MovingAverager {
 		MovingAverager(size_t collectionCountNew) noexcept;
 
-		void insertValue(int64_t value) noexcept;
+		MovingAverager operator+=(int64_t value) noexcept;
 
-		float getCurrentValue() noexcept;
+		operator float() noexcept;
 
 	  protected:
 		std::deque<int64_t> values{};
@@ -136,8 +153,8 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class VoiceConnection;
 
-		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionPtrNew, std::basic_string<std::byte>& encryptionKeyNew,
-			StreamType streamType, Snowflake guildIdNew);
+		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionNew, std::basic_string<uint8_t>& encryptionKeyNew, StreamType streamType,
+			const std::string& baseUrlNew, const uint16_t portNew, Snowflake guildIdNew, std::stop_token* tokenNew);
 
 		inline void collectEightElements(opus_int32* dataIn, opus_int16* dataOut) noexcept;
 
@@ -150,16 +167,28 @@ namespace DiscordCoreAPI {
 		void mixAudio() noexcept;
 
 	  protected:
-		std::basic_string<std::byte> decryptedDataString{};
-		std::basic_string<opus_int16> downSampledVector{};
-		std::basic_string<opus_int32> upSampledVector{};
-		std::basic_string<std::byte> encryptionKey{};
+		std::array<opus_int16, 23040> downSampledVector{};
+		std::basic_string<uint8_t> decryptedDataString{};
+		std::array<opus_int32, 23040> upSampledVector{};
+		std::basic_string<uint8_t> encryptionKey{};
 		MovingAverager voiceUserCountAverage{ 25 };
-		DiscordCoreClient* clientPtr{ nullptr };
+		DiscordCoreClient* discordCoreClient{};
+		std::stop_token* token{};
 		Snowflake guildId{};
 		float currentGain{};
 		float increment{};
 		float endGain{};
+	};
+
+	class DiscordCoreAPI_Dll VoiceUDPConnection : public DiscordCoreInternal::UDPConnection {
+	  public:
+		VoiceUDPConnection(const std::string& baseUrlNew, uint16_t portNew, DiscordCoreAPI::StreamType streamType, bool doWePrintErrors,
+			VoiceConnection* ptrNew);
+
+		void handleAudioBuffer() noexcept;
+
+	  protected:
+		VoiceConnection* voiceConnection{};
 	};
 
 	/**
@@ -167,19 +196,19 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 	/// \brief VoiceConnection class - represents the connection to a given voice Channel.
-	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketCore, public DiscordCoreInternal::UDPConnection {
+	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketCore {
 	  public:
 		friend class DiscordCoreInternal::BaseSocketAgent;
 		friend class DiscordCoreInternal::SoundCloudAPI;
 		friend class DiscordCoreInternal::YouTubeAPI;
 		friend class VoiceConnectionBridge;
+		friend class VoiceUDPConnection;
 		friend class DiscordCoreClient;
 		friend class GuildData;
 		friend class SongAPI;
 
 		/// The constructor.
-		VoiceConnection(DiscordCoreClient* clientPtrNew, DiscordCoreInternal::WebSocketClient* baseShardNew,
-			std::atomic_bool* doWeQuitNew) noexcept;
+		VoiceConnection(DiscordCoreClient* discordCoreClientNew, DiscordCoreInternal::WebSocketClient* baseShardNew, std::atomic_bool* doWeQuitNew) noexcept;
 
 		/// \brief Collects the currently connected-to voice Channel's id.
 		/// \returns Snowflake A Snowflake containing the Channel's id.
@@ -198,54 +227,57 @@ namespace DiscordCoreAPI {
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
 		std::unordered_map<uint64_t, std::unique_ptr<VoiceUser>> voiceUsers{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		std::unique_ptr<VoiceConnectionBridge> streamSocket{ nullptr };
-		DiscordCoreInternal::WebSocketClient* baseShard{ nullptr };
-		DiscordCoreInternal::RingBuffer<std::byte, 4> audioData{};
-		std::unique_ptr<std::jthread> taskThread01{ nullptr };
+		std::unique_ptr<VoiceConnectionBridge> streamSocket{};
+		std::unique_ptr<VoiceUDPConnection> udpConnection{};
 		DiscordCoreInternal::OpusEncoderWrapper encoder{};
-		DiscordCoreClient* discordCoreClient{ nullptr };
-		std::basic_string<std::byte> encryptionKey{};
+		DiscordCoreInternal::WebSocketClient* baseShard{};
+		std::unique_ptr<std::jthread> taskThread{};
 		VoiceConnectInitData voiceConnectInitData{};
-		std::atomic_bool* doWeQuit{ nullptr };
+		std::basic_string<uint8_t> encryptionKey{};
+		DiscordCoreClient* discordCoreClient{};
+		std::atomic_bool haveWeConstructed{};
 		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};
-		simdjson::ondemand::parser parser{};
+		Jsonifier::JsonifierCore parser{};
 		int64_t nsPerSecond{ 1000000000 };
 		std::string audioEncryptionMode{};
-		Snowflake currentGuildMemberId{};
 		std::atomic_bool areWePlaying{};
+		std::atomic_bool doWeSkipNow{};
 		AudioFrameData xferAudioData{};
+		std::atomic_bool* doWeQuit{};
+		std::atomic_bool doWeSkip{};
 		int64_t samplesPerPacket{};
 		std::string externalIp{};
+		std::stop_token* token{};
 		int64_t msPerPacket{};
 		std::string voiceIp{};
 		std::string baseUrl{};
 		uint32_t audioSSRC{};
 		uint16_t port{};
 
-		void parseIncomingVoiceData(std::basic_string_view<std::byte> rawDataBufferNew) noexcept;
+		void parseIncomingVoiceData(std::basic_string_view<uint8_t> rawDataBufferNew) noexcept;
 
 		UnboundedMessageBlock<AudioFrameData>& getAudioBuffer() noexcept;
 
-		void checkForAndSendHeartBeat(const bool isItImmediage) noexcept;
+		void checkForAndSendHeartBeat(const bool isImmedate) noexcept;
 
 		void sendSpeakingMessage(const bool isSpeaking) noexcept;
 
-		void checkForConnections(std::stop_token token) noexcept;
-
 		bool onMessageReceived(std::string_view data) noexcept;
 
-		void connectInternal(std::stop_token token) noexcept;
+		void sendVoiceConnectionData() noexcept;
 
 		void runVoice(std::stop_token) noexcept;
 
 		bool areWeCurrentlyPlaying() noexcept;
 
-		void handleAudioBuffer() noexcept;
+		void checkForConnections() noexcept;
 
-		void clearAudioData() noexcept;
+		void connectInternal() noexcept;
 
 		bool areWeConnected() noexcept;
+
+		void skipInternal() noexcept;
 
 		bool voiceConnect() noexcept;
 
@@ -259,10 +291,12 @@ namespace DiscordCoreAPI {
 
 		void onClosed() noexcept;
 
+		void skip() noexcept;
+
 		bool stop() noexcept;
 
 		bool play() noexcept;
 	};
 	/**@}*/
 
-};// namespace DiscordCoreAPI
+};

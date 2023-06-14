@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Guild Emoji.
 	struct DiscordCoreAPI_Dll CreateGuildEmojiData {
-		friend Reactions;
+		friend class Reactions;
 
 		std::vector<Snowflake> roles{};///< Roles that can use this Emoji.
 		std::string imageFilePath{};///< The image responseData.
@@ -109,8 +109,6 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild within which to create the Emoji.
 		std::string name{};///< Name of the emoji.
 		ImageType type{};///< The type of image being uploaded.
-
-		operator Jsonifier();
 
 	  protected:
 		std::string imageDataFinal{};
@@ -123,8 +121,6 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The Guild within which to modify the Emoji.
 		Snowflake emojiId{};///< The id of the Emoji to modify.
 		std::string name{};///< Name of the Emoji.
-
-		operator Jsonifier();
 	};
 
 	/// For deleting a Guild Emoji.
@@ -132,30 +128,6 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< Reason for deleting the Emoji.
 		Snowflake guildId{};///< The Guild within which to delete the Emoji.
 		Snowflake emojiId{};///< The id of the Emoji to delete.
-	};
-
-	/// \brief A single Reaction.
-	class DiscordCoreAPI_Dll Reaction : public ReactionData {
-	  public:
-		Reaction() noexcept = default;
-
-		Reaction(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~Reaction() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll ReactionVector {
-	  public:
-		ReactionVector() noexcept = default;
-
-		operator std::vector<Reaction>();
-
-		ReactionVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~ReactionVector() noexcept = default;
-
-	  protected:
-		std::vector<Reaction> reactions{};
 	};
 
 	/**@}*/
@@ -228,4 +200,4 @@ namespace DiscordCoreAPI {
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 	};
 	/**@}*/
-}// namespace DiscordCoreAPI
+}

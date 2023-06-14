@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -144,12 +144,12 @@ namespace DiscordCoreAPI {
 		/// \param guildId The id for which Guild to set the current Song of.
 		static void setCurrentSong(const Song& song, const Snowflake guildId);
 
-		~SongAPI() noexcept = default;
+		~SongAPI() noexcept;
 
 	  protected:
 		static std::mutex accessMutex;
 
-		std::unique_ptr<std::jthread> taskThread{ nullptr };
+		std::unique_ptr<std::jthread> taskThread{};
 		bool areWeInstantiated{};
 		Snowflake guildId{};
 
@@ -160,4 +160,4 @@ namespace DiscordCoreAPI {
 		bool sendNextSong();
 	};
 	/**@}*/
-};// namespace DiscordCoreAPI
+};

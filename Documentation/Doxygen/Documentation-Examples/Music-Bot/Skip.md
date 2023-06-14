@@ -11,14 +11,14 @@ namespace DiscordCoreAPI {
 		static std::unordered_map<uint64_t, int64_t> timeOfLastSkip;
 
 		Skip() {
-			this->commandName = "skip";
-			this->helpDescription = "Skips to the next song in the queue.";
+			commandName = "skip";
+			helpDescription = "Skips to the next song in the queue.";
 			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter /skip.\n------");
 			msgEmbed.setTitle("__**Skip Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -30,10 +30,6 @@
 #include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
-
-	DiscordCoreAPI_Dll inline bool operator==(const RoleData& lhs, const RoleData& rhs) {
-		return lhs.id == rhs.id;
-	}
 
 	/**
 	 * \addtogroup foundation_entities
@@ -73,8 +69,6 @@ namespace DiscordCoreAPI {
 		int32_t position{};///< The position amongst the other roles.
 		std::string name{};///< The name of the Role.
 		bool hoist{};///< Is this Role hoisted above the rest of them?
-
-		operator Jsonifier();
 	};
 
 	/// \brief For updating the positions of the roles.
@@ -85,14 +79,13 @@ namespace DiscordCoreAPI {
 
 	/// \brief For updating the Role positions.
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
+		friend struct Jsonifier::Core<ModifyGuildRolePositionsData>;
 		friend class Roles;
 
 		int32_t newPosition{};///< The new position of the Role.
 		std::string reason{};///< Reason for modifying the Role positions.
 		Snowflake guildId{};///< The Guild within which to move the Role.
 		Snowflake roleId{};///< The id of the Role to move.
-
-		operator Jsonifier();
 
 	  protected:
 		std::vector<RolePositionData> rolePositions;
@@ -110,8 +103,6 @@ namespace DiscordCoreAPI {
 		Snowflake roleId{};///< The id of the Role to update.
 		std::string name{};///< What the name of the Role is going to be.
 		bool hoist{};///< Is this Role hoisted above the others?
-
-		operator Jsonifier();
 	};
 
 	/// \brief For removing a Role from a chosen Guild.
@@ -131,41 +122,6 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GetRoleData {
 		Snowflake guildId{};///< Which Guild to collect the Role from.
 		Snowflake roleId{};///< Which Role to collect.
-	};
-
-	/// A single Role.
-	class DiscordCoreAPI_Dll Role : public RoleData {
-	  public:
-		RoleTagsData tags{};///< Role tags for the Role.
-		IconHash icon{};///< Icon representing the Role.
-
-		Role() noexcept = default;
-
-		Role& operator=(RoleData&& other) noexcept;
-
-		Role(RoleData&& other) noexcept;
-
-		Role& operator=(const RoleData& other) noexcept;
-
-		Role(const RoleData& other) noexcept;
-
-		Role(simdjson::ondemand::value jsonObjectData);
-
-		~Role() noexcept = default;
-	};
-
-	class DiscordCoreAPI_Dll RoleVector {
-	  public:
-		RoleVector() noexcept = default;
-
-		operator std::vector<Role>();
-
-		RoleVector(simdjson::ondemand::value jsonObjectData);
-
-		virtual ~RoleVector() noexcept = default;
-
-	  protected:
-		std::vector<Role> roles{};
 	};
 
 	/**@}*/
@@ -235,17 +191,20 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a Role.
 		static RoleData getCachedRole(GetRoleData dataPackage);
 
-		static void insertRole(RoleData role);
+		static void insertRole(const RoleData& role);
+
+		static void insertRole(RoleData&& role);
 
 		static void removeRole(const Snowflake roleId);
 
 		static bool doWeCacheRoles();
 
 	  protected:
+		inline static RoleData nullRole{ std::numeric_limits<uint64_t>::max() };
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<RoleData> cache;
+		static ObjectCache<Snowflake, RoleData> cache;
 		static bool doWeCacheRolesBool;
 	};
 	/**@}*/
 
-}// namespace DiscordCoreAPI
+}

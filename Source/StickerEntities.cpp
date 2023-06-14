@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -26,53 +26,23 @@
 #include <discordcoreapi/StickerEntities.hpp>
 #include <discordcoreapi/Https.hpp>
 
+namespace Jsonifier {
+
+	template<> struct Core<DiscordCoreAPI::CreateGuildStickerData> {
+		using ValueType = DiscordCoreAPI::CreateGuildStickerData;
+		static constexpr auto parseValue = object("description", &ValueType::description, "reason", &ValueType::reason, "guildId",
+			&ValueType::guildId, "file", &ValueType::file, "name", &ValueType::name, "tags", &ValueType::tags);
+	};
+
+	template<> struct Core<DiscordCoreAPI::ModifyGuildStickerData> {
+		using ValueType = DiscordCoreAPI::ModifyGuildStickerData;
+		static constexpr auto parseValue = object("description", &ValueType::description, "stickerId", &ValueType::stickerId, "reason",
+			&ValueType::reason, "guildId", &ValueType::guildId, "name", &ValueType::name, "tags", &ValueType::tags);
+	};
+
+}
+
 namespace DiscordCoreAPI {
-
-	Sticker::Sticker(simdjson::ondemand::value jsonObjectData) {
-		this->asset = getString(jsonObjectData, "asset");
-
-		this->description = getString(jsonObjectData, "description");
-
-		this->formatType = static_cast<StickerFormatType>(getUint8(jsonObjectData, "format_type"));
-
-		uint8_t newFlags{};
-		newFlags = setBool(newFlags, StickerFlags::Available, getBool(jsonObjectData, "available"));
-
-		this->flags = static_cast<StickerFlags>(newFlags);
-
-		this->guildId = getId(jsonObjectData, "guild_id");
-
-		this->packId = getString(jsonObjectData, "pack_id");
-
-		this->type = static_cast<StickerType>(getUint8(jsonObjectData, "type"));
-
-		this->sortValue = getUint32(jsonObjectData, "sort_value");
-
-		this->name = getString(jsonObjectData, "name");
-
-		this->id = getId(jsonObjectData, "id");
-
-		simdjson::ondemand::value object{};
-		if (getObject(object, "user", jsonObjectData)) {
-			this->user = UserData{ object };
-		}
-	}
-
-	StickerVector::StickerVector(simdjson::ondemand::value jsonObjectData) {
-		if (jsonObjectData.type() != simdjson::ondemand::json_type::null) {
-			simdjson::ondemand::array arrayValue{};
-			if (getArray(arrayValue, jsonObjectData)) {
-				for (simdjson::simdjson_result<simdjson::ondemand::value> value: arrayValue) {
-					Sticker newData{ value.value() };
-					this->stickers.emplace_back(std::move(newData));
-				}
-			}
-		}
-	}
-
-	StickerVector::operator std::vector<Sticker>() {
-		return this->stickers;
-	}
 
 	void Stickers::initialize(DiscordCoreInternal::HttpsClient* client) {
 		Stickers::httpsClient = client;
@@ -84,8 +54,9 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/stickers/" + dataPackage.stickerId;
 		workload.callStack = "Stickers::getStickerAsync()";
-		Sticker returnValue{};
-		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload, &returnValue);
+		Sticker returnData{};
+		Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload, returnData);
+		co_return returnData;
 	}
 
 	CoRoutine<std::vector<StickerPackData>> Stickers::getNitroStickerPacksAsync() {
@@ -94,8 +65,9 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/sticker-packs";
 		workload.callStack = "Stickers::getNitroStickerPacksAsync()";
-		StickerPackDataVector returnValue{};
-		co_return Stickers::httpsClient->submitWorkloadAndGetResult<StickerPackDataVector>(workload, &returnValue);
+		StickerPackDataVector returnData{};
+		Stickers::httpsClient->submitWorkloadAndGetResult<StickerPackDataVector>(workload, returnData);
+		co_return returnData;
 	}
 
 	CoRoutine<std::vector<Sticker>> Stickers::getGuildStickersAsync(GetGuildStickersData dataPackage) {
@@ -104,8 +76,9 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers";
 		workload.callStack = "Stickers::getGuildStickersAsync()";
-		StickerVector returnValue{};
-		co_return Stickers::httpsClient->submitWorkloadAndGetResult<StickerVector>(workload, &returnValue);
+		StickerVector returnData{};
+		Stickers::httpsClient->submitWorkloadAndGetResult<StickerVector>(workload, returnData);
+		co_return returnData;
 	}
 
 	CoRoutine<Sticker> Stickers::createGuildStickerAsync(CreateGuildStickerData dataPackage) {
@@ -113,19 +86,15 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers";
-		Jsonifier data{};
-		data["description"] = dataPackage.description;
-		data["name"] = dataPackage.name;
-		data["tags"] = dataPackage.tags;
-		data["file"] = dataPackage.file;
-		data.refreshString(JsonifierSerializeType::Json);
-		workload.content = data.operator std::string();
+		Jsonifier::JsonifierCore parser{};
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Stickers::createGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Sticker returnValue{};
-		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload, &returnValue);
+		Sticker returnData{};
+		Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload, returnData);
+		co_return returnData;
 	}
 
 	CoRoutine<Sticker> Stickers::modifyGuildStickerAsync(ModifyGuildStickerData dataPackage) {
@@ -133,18 +102,15 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Sticker>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/stickers/" + dataPackage.stickerId;
-		Jsonifier data{};
-		data["description"] = dataPackage.description;
-		data["name"] = dataPackage.name;
-		data["tags"] = dataPackage.tags;
-		data.refreshString(JsonifierSerializeType::Json);
-		workload.content = data.operator std::string();
+		Jsonifier::JsonifierCore parser{};
+		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Stickers::modifyGuildStickerAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Sticker returnValue{};
-		co_return Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload, &returnValue);
+		Sticker returnData{};
+		Stickers::httpsClient->submitWorkloadAndGetResult<Sticker>(workload, returnData);
+		co_return returnData;
 	}
 
 	CoRoutine<void> Stickers::deleteGuildStickerAsync(DeleteGuildStickerData dataPackage) {
@@ -156,7 +122,9 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		co_return Stickers::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Stickers::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		co_return;
 	}
-	DiscordCoreInternal::HttpsClient* Stickers::httpsClient{ nullptr };
+
+	DiscordCoreInternal::HttpsClient* Stickers::httpsClient{};
 };

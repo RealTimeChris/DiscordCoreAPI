@@ -1,18 +1,22 @@
 # DiscordCoreAPI
 [![Codacy Badge](https://img.shields.io/codacy/grade/1e5ae970aed34d0b96249cdfd02099cf?color=lightblue&label=Code%20Quality&style=plastic)](https://www.codacy.com/gh/RealTimeChris/DiscordCoreAPI/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RealTimeChris/DiscordCoreAPI&amp;utm_campaign=Badge_Grade)
 [![Discord](https://img.shields.io/discord/931640556814237706?color=red&label=Discord%20Server&style=plastic)](https://discord.gg/adgMqeBuhP)
-[![Build DiscordCoreAPI](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/Build-DiscordCoreAPI-Linux-Main.yml?branch=main&style=plastic&color=purple)](https://github.com/RealTimeChris/DiscordCoreAPI/actions/workflows/Build-DiscordCoreAPI-Linux-Main.yml)
-![Commit Activity](https://img.shields.io/github/commit-activity/m/realtimechris/discordcoreapi?color=green&label=Commits&style=plastic)
+![Commit Activity](https://img.shields.io/github/commit-activity/y/realtimechris/discordcoreapi?color=green&label=Commits&style=plastic)
 ![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi?&style=plastic&label=Lines%20of%20Code)
 
 <p align="center"><a href="http://discordcoreapi.com" target="_blank"><img src="https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Documentation/Images/TheLogo.png?raw=true" 
 alt="DiscordCoreAPI WebSite" width="500"/></p>
 
-Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L412),
-[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L390), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L247) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
+Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L394),
+[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L419), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L283) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
+
+## Compiler Support
+![MSVC_20922](https://img.shields.io/github/actions/workflow/status/realtimechris/discordcoreapi/MSVC_2022.yml?color=00ff90&label=MSVC_2022)
+![GCC_12](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/GCC_12.yml?color=00ff90&label=GCC_12)
+![CLANG_17](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_17.yml?color=00ff90&label=CLANG_17)
 
 # Documentation/Examples
-[Documentation/Examples](https://discordcoreapi.com/de/d94/a07274.html)
+[Documentation/Examples](https://discordcoreapi.com/d4/d3a/a08610.html)
 
 # Discord Server
 [This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)
@@ -22,7 +26,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 # Features   
 
 ## Performant
-- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ErlParser.cpp) for websocket transfer, and a pool of [kept-alive HTTPS connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L386-L399) - this library offers the snappiest responses to your interactions and user input.
+- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Etf.cpp) for websocket transfer, and a pool of [kept-alive HTTPS connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L369-L382) - this library offers the snappiest responses to your interactions and user input.
 
 ## Audio-Bridge
 - Connect multiple voice-channels to one-another using the [`DiscordCoreAPI::StreamInfo`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities.hpp#L654) member of the [`DiscordCoreAPI::VoiceConnectInitData`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities.hpp#L1310) structure, with the [`DiscordCoreAPI::VoiceConnection`](https://github.com/RealTimeChris/DiscordCoreAPI/blob/9ff131f6f4e62031802aecd0fad566821064e20a/Include/discordcoreapi/VoiceConnection.hpp#L157) class.
@@ -34,7 +38,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 - All of the Discord API endpoints are covered in this library, including voice communication.
 
 ## Concurrent Discord API Access   
-- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp) along with a [thread pool](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ThreadPool.cpp#L77), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.   
+- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp) along with a [thread pool](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ThreadPool.cpp#L76), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.   
 
 ## Advanced Rate-Limiting System
 - Guarantees that the order in which HTTPS requests are executed is the same that they were submitted in - despite being launched across different threads, while never infracting on any of the Discord API's rate-limits and while running concurrently across all of the endpoints.
@@ -103,8 +107,7 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 # Dependencies
 - [CMake](https://cmake.org/) (Version 3.20 or greater)
 - NOTE: I installed these using the [vcpkg](https://github.com/microsoft/vcpkg) installer.
-- [FFMPEG](https://github.com/FFmpeg/FFmpeg) (.\\vcpkg install ffmpeg:x64-windows_OR_linux)
-- [SimdJson](https://github.com/simdjson/simdjson) (.\\vcpkg install simdjson:x64-windows_OR_linux)
+- [Jsonifier](https://github.com/RealTimeChris/Jsonifier) (.\\vcpkg install jsonifier:x64-windows_OR_linux)
 - [OpenSSL](https://github.com/openssl/openssl) (.\\vcpkg install openssl:x64-windows_OR_linux)
 - [Opus](https://github.com/xiph/opus) (.\\vcpkg install opus:x64-windows_OR_linux)
 - [Sodium](https://github.com/jedisct1/libsodium) (.\\vcpkg install libsodium:x64-windows_OR_linux)

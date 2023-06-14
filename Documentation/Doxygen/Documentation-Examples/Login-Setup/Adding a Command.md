@@ -1,6 +1,7 @@
 Adding a Command {#addingcommand}
 ============
-- First, create an instance of `DiscordCoreAPI::DiscordCoreClient`, and then use from it the `DiscordCoreAPI::DiscordCoreClient::registerFunction` function. Passing into it an instance of a `std::vector` of `std::string`, which will act as the command names to be triggering the commands, a `std::unique_ptr` containing a command function derived from the `DiscordCoreAPI::BaseFunction` class, and an instance of either `DiscordCoreAPI::CreateGlobalApplicationCommandData` or `DiscordCoreAPI::CreateGuildApplicationCommandData`.
+- First, create an instance of `DiscordCoreAPI::Discord
+`, and then use from it the `DiscordCoreAPI::DiscordCoreClient::registerFunction` function. Passing into it an instance of a `std::vector` of `std::string`, which will act as the command names to be triggering the commands, a `std::unique_ptr` containing a command function derived from the `DiscordCoreAPI::BaseFunction` class, and an instance of either `DiscordCoreAPI::CreateGlobalApplicationCommandData` or `DiscordCoreAPI::CreateGuildApplicationCommandData`.
 - Note that these functions will be registered with the Discord API if any of their properties change.
 
 ```cpp

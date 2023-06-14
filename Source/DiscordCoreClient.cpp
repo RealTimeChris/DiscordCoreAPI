@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -39,40 +39,40 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreInternal::SoundCloudAPI* DiscordCoreClient::getSoundCloudAPI(Snowflake guildId) {
 		GuildData guild = Guilds::getCachedGuild({ .guildId = guildId });
-		if (!Globals::soundCloudAPIMap.contains(guildId.operator size_t())) {
-			Globals::soundCloudAPIMap[guildId.operator size_t()] = std::make_unique<DiscordCoreInternal::SoundCloudAPI>(
-				&guild.discordCoreClient->configManager, guild.discordCoreClient->httpsClient.get(), guildId);
+		if (!Globals::soundCloudAPIMap.contains(guildId.operator uint64_t())) {
+			Globals::soundCloudAPIMap[guildId.operator uint64_t()] =
+				std::make_unique<DiscordCoreInternal::SoundCloudAPI>(guild.discordCoreClient, guild.discordCoreClient->httpsClient.get(), guildId);
 		}
-		return Globals::soundCloudAPIMap[guildId.operator size_t()].get();
+		return Globals::soundCloudAPIMap[guildId.operator uint64_t()].get();
 	}
 
 	DiscordCoreInternal::YouTubeAPI* DiscordCoreClient::getYouTubeAPI(Snowflake guildId) {
 		GuildData guild = Guilds::getCachedGuild({ .guildId = guildId });
-		if (!Globals::youtubeAPIMap.contains(guildId.operator size_t())) {
-			Globals::youtubeAPIMap[guildId.operator size_t()] = std::make_unique<DiscordCoreInternal::YouTubeAPI>(
-				&guild.discordCoreClient->configManager, guild.discordCoreClient->httpsClient.get(), guildId);
+		if (!Globals::youtubeAPIMap.contains(guildId.operator uint64_t())) {
+			Globals::youtubeAPIMap[guildId.operator uint64_t()] =
+				std::make_unique<DiscordCoreInternal::YouTubeAPI>(guild.discordCoreClient, guild.discordCoreClient->httpsClient.get(), guildId);
 		}
-		return Globals::youtubeAPIMap[guildId.operator size_t()].get();
+		return Globals::youtubeAPIMap[guildId.operator uint64_t()].get();
 	}
 
 	VoiceConnection* DiscordCoreClient::getVoiceConnection(Snowflake guildId) {
 		GuildData guild = Guilds::getCachedGuild({ .guildId = guildId });
-		if (!Globals::voiceConnectionMap.contains(guildId.operator size_t())) {
-			uint64_t theShardId{ (guildId.operator size_t() >> 22) % guild.discordCoreClient->configManager.getTotalShardCount() };
+		if (!Globals::voiceConnectionMap.contains(guildId.operator uint64_t())) {
+			uint64_t theShardId{ (guildId.operator uint64_t() >> 22) % guild.discordCoreClient->configManager.getTotalShardCount() };
 			uint64_t baseSocketIndex{ theShardId % guild.discordCoreClient->baseSocketAgentsMap.size() };
 			auto baseSocketAgent = guild.discordCoreClient->baseSocketAgentsMap[baseSocketIndex].get();
-			Globals::voiceConnectionMap[guildId.operator size_t()] =
-				std::make_unique<VoiceConnection>(guild.discordCoreClient, baseSocketAgent->shardMap[theShardId].get(), &Globals::doWeQuit);
+			Globals::voiceConnectionMap[guildId.operator uint64_t()] = std::make_unique<VoiceConnection>(guild.discordCoreClient,
+				static_cast<DiscordCoreInternal::WebSocketClient*>(baseSocketAgent->shardMap[theShardId].get()), &Globals::doWeQuit);
 		}
-		guild.voiceConnectionPtr = Globals::voiceConnectionMap[guildId.operator size_t()].get();
-		return guild.voiceConnectionPtr;
+		guild.voiceConnection = Globals::voiceConnectionMap[guildId.operator uint64_t()].get();
+		return guild.voiceConnection;
 	}
 
 	SongAPI* DiscordCoreClient::getSongAPI(Snowflake guildId) {
-		if (!Globals::songAPIMap.contains(guildId.operator size_t())) {
-			Globals::songAPIMap[guildId.operator size_t()] = std::make_unique<SongAPI>(guildId);
+		if (!Globals::songAPIMap.contains(guildId.operator uint64_t())) {
+			Globals::songAPIMap[guildId.operator uint64_t()] = std::make_unique<SongAPI>(guildId);
 		}
-		return Globals::songAPIMap[guildId.operator size_t()].get();
+		return Globals::songAPIMap[guildId.operator uint64_t()].get();
 	}
 
 	void atexitHandler() {
@@ -95,22 +95,22 @@ namespace DiscordCoreAPI {
 		try {
 			switch (value) {
 				case SIGTERM: {
-					throw SIGTERMError{ "Exiting for: SIGTERM.\n" };
+					throw SIGTERMError{ "Exiting for: SIGTERM." };
 				}
 				case SIGSEGV: {
-					throw SIGSEGVError{ "Exiting for: SIGSEGV.\n" };
+					throw SIGSEGVError{ "Exiting for: SIGSEGV." };
 				}
 				case SIGINT: {
-					throw SIGINTError{ "Exiting for: SIGINT.\n" };
+					throw SIGINTError{ "Exiting for: SIGINT." };
 				}
 				case SIGILL: {
-					throw SIGILLError{ "Exiting for: SIGILL.\n" };
+					throw SIGILLError{ "Exiting for: SIGILL." };
 				}
 				case SIGABRT: {
-					throw SIGABRTError{ "Exiting for: SIGABRT.\n" };
+					throw SIGABRTError{ "Exiting for: SIGABRT." };
 				}
 				case SIGFPE: {
-					throw SIGFPEError{ "Exiting for: SIGFPE.\n" };
+					throw SIGFPEError{ "Exiting for: SIGFPE." };
 				}
 			}
 		} catch (SIGINTError&) {
@@ -130,66 +130,40 @@ namespace DiscordCoreAPI {
 		std::signal(SIGILL, &signalHandler);
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
-		this->configManager = ConfigManager{ configData };
+		configManager = ConfigManager{ configData };
 		if (!DiscordCoreInternal::SSLConnectionInterface::initialize()) {
-			if (this->configManager.doWePrintGeneralErrorMessages()) {
+			if (configManager.doWePrintGeneralErrorMessages()) {
 				cout << shiftToBrightRed() << "Failed to initialize the SSL_CTX structure!" << reset() << endl << endl;
 			}
 			return;
 		}
-		if (this->configManager.doWePrintFFMPEGSuccessMessages()) {
-			av_log_set_level(AV_LOG_INFO);
-		} else if (this->configManager.doWePrintFFMPEGErrorMessages()) {
-			av_log_set_level(AV_LOG_ERROR);
-		} else if (!this->configManager.doWePrintFFMPEGErrorMessages() && !this->configManager.doWePrintFFMPEGSuccessMessages()) {
-			av_log_set_level(AV_LOG_QUIET);
-		}
 		if (sodium_init() == -1) {
-			if (this->configManager.doWePrintGeneralErrorMessages()) {
+			if (configManager.doWePrintGeneralErrorMessages()) {
 				cout << shiftToBrightRed() << "LibSodium failed to initialize!" << reset() << endl << endl;
 			}
 			return;
 		}
-		this->httpsClient = std::make_unique<DiscordCoreInternal::HttpsClient>(&this->configManager);
-		ApplicationCommands::initialize(this->httpsClient.get());
-		AutoModerationRules::initialize(this->httpsClient.get());
-		Channels::initialize(this->httpsClient.get(), &this->configManager);
-		Guilds::initialize(this->httpsClient.get(), this, &this->configManager);
-		GuildMembers::initialize(this->httpsClient.get(), &this->configManager);
-		GuildScheduledEvents::initialize(this->httpsClient.get());
-		Interactions::initialize(this->httpsClient.get());
-		Messages::initialize(this->httpsClient.get());
-		Reactions::initialize(this->httpsClient.get());
-		Roles::initialize(this->httpsClient.get(), &this->configManager);
-		Stickers::initialize(this->httpsClient.get());
-		StageInstances::initialize(this->httpsClient.get());
-		Threads::initialize(this->httpsClient.get());
-		Users::initialize(this->httpsClient.get(), &this->configManager);
-		WebHooks::initialize(this->httpsClient.get());
-		this->didWeStartCorrectly = true;
-	}
-
-	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction,
-		CreateApplicationCommandData commandData, bool alwaysRegister) {
-		commandData.alwaysRegister = alwaysRegister;
-		this->commandController.registerFunction(functionNames, std::move(baseFunction));
-		this->commandsToRegister.emplace_back(commandData);
-	}
-
-	CommandController& DiscordCoreClient::getCommandController() {
-		return this->commandController;
+		httpsClient = std::make_unique<DiscordCoreInternal::HttpsClient>(&configManager);
+		ApplicationCommands::initialize(httpsClient.get());
+		AutoModerationRules::initialize(httpsClient.get());
+		Channels::initialize(httpsClient.get(), &configManager);
+		Guilds::initialize(httpsClient.get(), this, &configManager);
+		GuildMembers::initialize(httpsClient.get(), &configManager);
+		GuildScheduledEvents::initialize(httpsClient.get());
+		Interactions::initialize(httpsClient.get());
+		Messages::initialize(httpsClient.get());
+		Reactions::initialize(httpsClient.get());
+		Roles::initialize(httpsClient.get(), &configManager);
+		Stickers::initialize(httpsClient.get());
+		StageInstances::initialize(httpsClient.get());
+		Threads::initialize(httpsClient.get());
+		WebHooks::initialize(httpsClient.get());
+		Users::initialize(httpsClient.get(), &configManager);
+		didWeStartCorrectly = true;
 	}
 
 	ConfigManager& DiscordCoreClient::getConfigManager() {
-		return this->configManager;
-	}
-
-	EventManager& DiscordCoreClient::getEventManager() {
-		return this->eventManager;
-	}
-
-	Milliseconds DiscordCoreClient::getTotalUpTime() {
-		return std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()) - this->startupTimeSinceEpoch;
+		return configManager;
 	}
 
 	BotUser DiscordCoreClient::getBotUser() {
@@ -197,39 +171,57 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
-		if (!this->didWeStartCorrectly) {
+		if (!didWeStartCorrectly) {
 			return;
 		}
-		if (!this->instantiateWebSockets()) {
+		if (!instantiateWebSockets()) {
 			Globals::doWeQuit.store(true);
 			return;
 		}
-		this->registerFunctionsInternal();
 		while (!Globals::doWeQuit.load()) {
 			std::this_thread::sleep_for(1ms);
 		}
 	}
 
+
+	void DiscordCoreClient::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction,
+		CreateApplicationCommandData commandData, bool alwaysRegister) {
+		commandData.alwaysRegister = alwaysRegister;
+		commandController.registerFunction(functionNames, std::move(baseFunction));
+		commandsToRegister.emplace_back(commandData);
+	}
+
+	CommandController& DiscordCoreClient::getCommandController() {
+		return commandController;
+	}
+
+	EventManager& DiscordCoreClient::getEventManager() {
+		return eventManager;
+	}
+
+	Milliseconds DiscordCoreClient::getTotalUpTime() {
+		return std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()) - startupTimeSinceEpoch;
+	}
+
 	void DiscordCoreClient::registerFunctionsInternal() {
-		std::vector<ApplicationCommand> theCommands{ ApplicationCommands::getGlobalApplicationCommandsAsync(
-			{ .applicationId = this->getBotUser().id, .withLocalizations = false })
-														 .get() };
-		while (this->commandsToRegister.size() > 0) {
-			CreateApplicationCommandData data = this->commandsToRegister.front();
-			this->commandsToRegister.pop_front();
-			data.applicationId = this->getBotUser().id;
+		std::vector<ApplicationCommand> theCommands{
+			ApplicationCommands::getGlobalApplicationCommandsAsync({ .applicationId = getBotUser().id, .withLocalizations = false }).get()
+		};
+		while (commandsToRegister.size() > 0) {
+			CreateApplicationCommandData data = commandsToRegister.front();
+			commandsToRegister.pop_front();
+			data.applicationId = getBotUser().id;
 			if (data.alwaysRegister) {
 				if (data.guildId != 0) {
 					ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data)).get();
 				} else {
-					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data))
-						.get();
+					ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
 				}
 			} else {
 				std::vector<ApplicationCommand> guildCommands{};
 				if (data.guildId != 0) {
 					guildCommands = ApplicationCommands::getGuildApplicationCommandsAsync(
-						{ .applicationId = this->getBotUser().id, .withLocalizations = false, .guildId = data.guildId })
+						{ .applicationId = getBotUser().id, .withLocalizations = false, .guildId = data.guildId })
 										.get();
 				}
 				bool doesItExist{};
@@ -245,12 +237,10 @@ namespace DiscordCoreAPI {
 				}
 				if (!doesItExist) {
 					if (data.guildId != 0) {
-						ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data))
-							.get();
+						ApplicationCommands::createGuildApplicationCommandAsync(*static_cast<CreateGuildApplicationCommandData*>(&data)).get();
 
 					} else {
-						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data))
-							.get();
+						ApplicationCommands::createGlobalApplicationCommandAsync(*static_cast<CreateGlobalApplicationCommandData*>(&data)).get();
 					}
 				}
 			}
@@ -258,19 +248,27 @@ namespace DiscordCoreAPI {
 	}
 
 	GatewayBotData DiscordCoreClient::getGateWayBot() {
-		DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Gateway_Bot };
-		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
-		workload.relativePath = "/gateway/bot";
-		workload.callStack = "DiscordCoreClient::getGateWayBot()";
-		GatewayBotData data{};
-		return this->httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload, &data);
+		try {
+			DiscordCoreInternal::HttpsWorkloadData workload{ DiscordCoreInternal::HttpsWorkloadType::Get_Gateway_Bot };
+			workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Get;
+			workload.relativePath = "/gateway/bot";
+			workload.callStack = "DiscordCoreClient::getGateWayBot()";
+			GatewayBotData data{};
+			httpsClient->submitWorkloadAndGetResult<GatewayBotData>(workload, data);
+			return data;
+		} catch (...) {
+			if (configManager.doWePrintGeneralErrorMessages()) {
+				reportException("DiscordCoreClient::getGateWayBot()");
+			}
+		}
+		return {};
 	}
 
 	bool DiscordCoreClient::instantiateWebSockets() {
-		GatewayBotData gatewayData{ this->getGateWayBot() };
+		GatewayBotData gatewayData{ getGateWayBot() };
 
 		if (gatewayData.url == "") {
-			if (this->configManager.doWePrintGeneralErrorMessages()) {
+			if (configManager.doWePrintGeneralErrorMessages()) {
 				cout << shiftToBrightRed()
 					 << "Failed to collect the connection URL! Closing! Did you remember to "
 						"properly set your bot token?"
@@ -280,42 +278,39 @@ namespace DiscordCoreAPI {
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		if (this->configManager.getStartingShard() + this->configManager.getShardCountForThisProcess() >
-			this->configManager.getTotalShardCount()) {
-			if (this->configManager.doWePrintGeneralErrorMessages()) {
+		if (configManager.getStartingShard() + configManager.getShardCountForThisProcess() > configManager.getTotalShardCount()) {
+			if (configManager.doWePrintGeneralErrorMessages()) {
 				cout << shiftToBrightRed() << "Your sharding options are incorrect! Please fix it!" << reset() << endl << endl;
 			}
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
-		uint32_t theWorkerCount = this->configManager.getTotalShardCount() <= std::thread::hardware_concurrency()
-			? this->configManager.getTotalShardCount()
-			: std::thread::hardware_concurrency();
-		if (this->configManager.getConnectionAddress() == "") {
-			this->configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
+		uint32_t theWorkerCount = configManager.getTotalShardCount() <= std::thread::hardware_concurrency() ? configManager.getTotalShardCount()
+																											: std::thread::hardware_concurrency();
+		if (configManager.getConnectionAddress() == "") {
+			configManager.setConnectionAddress(gatewayData.url.substr(gatewayData.url.find("wss://") + std::string("wss://").size()));
 		}
-		if (this->configManager.getConnectionPort() == 0) {
-			this->configManager.setConnectionPort(443);
+		if (configManager.getConnectionPort() == 0) {
+			configManager.setConnectionPort(443);
 		}
-		this->connectionStopWatch.resetTimer();
-		for (uint32_t x = 0; x < this->configManager.getTotalShardCount(); ++x) {
-			if (!this->baseSocketAgentsMap.contains(x % theWorkerCount)) {
-				this->baseSocketAgentsMap[x % theWorkerCount] =
+		for (uint32_t x = 0; x < configManager.getTotalShardCount(); ++x) {
+			if (!baseSocketAgentsMap.contains(x % theWorkerCount)) {
+				while (!connectionStopWatch01.hasTimePassed()) {
+					std::this_thread::sleep_for(1ms);
+				}
+				connectionStopWatch01.resetTimer();
+				baseSocketAgentsMap[x % theWorkerCount] =
 					std::make_unique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);
 			}
 			ConnectionPackage data{};
 			data.currentShard = x;
 			data.currentReconnectTries = 0;
-			this->baseSocketAgentsMap[x % theWorkerCount]->connect(data);
-			while (!this->connectionStopWatch.hasTimePassed()) {
-				std::this_thread::sleep_for(1ms);
-			}
-			this->connectionStopWatch.resetTimer();
+			baseSocketAgentsMap[x % theWorkerCount]->shardMap[x] =
+				std::make_unique<DiscordCoreInternal::WebSocketClient>(this, data.currentShard, &Globals::doWeQuit, false);
+			baseSocketAgentsMap[x % theWorkerCount]->getClient(x).connections = std::make_unique<ConnectionPackage>(data);
 		}
-		DiscordCoreClient::currentUser =
-			BotUser{ Users::getCurrentUserAsync().get(), this->baseSocketAgentsMap[this->configManager.getStartingShard()].get() };
 
-		for (auto& value: this->configManager.getFunctionsToExecute()) {
+		for (auto& value: configManager.getFunctionsToExecute()) {
 			if (value.repeated) {
 				TimeElapsedHandlerNoArgs onSend = [=, this]() -> void {
 					value.function(this);
@@ -325,21 +320,15 @@ namespace DiscordCoreAPI {
 				ThreadPool::executeFunctionAfterTimePeriod(value.function, value.intervalInMs, false, this);
 			}
 		}
-		this->startupTimeSinceEpoch = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch());
+		startupTimeSinceEpoch = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch());
 		return true;
 	}
 
 	DiscordCoreClient::~DiscordCoreClient() noexcept {
-		for (auto& value: Guilds::getCache()) {
-			Guild guild = value;
-			if (guild.areWeConnected()) {
-				guild.disconnect();
-			}
-		}
 		for (auto& [key, value]: NewThreadAwaiterBase::threadPool.workerThreads) {
 			if (value.thread.joinable()) {
 				value.thread.request_stop();
-				value.thread.join();
+				value.thread.detach();
 			}
 		}
 	}

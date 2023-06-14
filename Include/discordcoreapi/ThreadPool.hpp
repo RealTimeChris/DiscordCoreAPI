@@ -51,16 +51,14 @@ namespace DiscordCoreAPI {
 
 		static std::string storeThread(TimeElapsedHandlerNoArgs timeElapsedHandler, int64_t timeInterval);
 
-		template<typename... ArgTypes>
-		static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler, int64_t timeDelay,
-			bool blockForCompletion, ArgTypes... args) {
+		template<typename... ArgTypes> static void executeFunctionAfterTimePeriod(TimeElapsedHandler<ArgTypes...> timeElapsedHandler,
+			int64_t timeDelay, bool blockForCompletion, ArgTypes... args) {
 			std::jthread thread = std::jthread([=](std::stop_token token) {
 				StopWatch stopWatch{ Milliseconds{ timeDelay } };
 				stopWatch.resetTimer();
 				if (static_cast<int64_t>(std::ceil(static_cast<double>(timeDelay) * percentage)) <= timeDelay &&
 					static_cast<int64_t>(std::ceil(static_cast<double>(timeDelay) * percentage)) > 0) {
-					std::this_thread::sleep_for(
-						Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<double>(timeDelay) * percentage)) });
+					std::this_thread::sleep_for(Milliseconds{ static_cast<int64_t>(std::ceil(static_cast<double>(timeDelay) * percentage)) });
 				}
 				while (!stopWatch.hasTimePassed() && !token.stop_requested()) {
 					std::this_thread::sleep_for(1ms);
@@ -77,10 +75,8 @@ namespace DiscordCoreAPI {
 				if (thread.joinable()) {
 					thread.join();
 				}
-			} else {
-				if (thread.joinable()) {
-					thread.detach();
-				}
+			} else if (thread.joinable()) {
+				thread.detach();
 			}
 		}
 
@@ -127,4 +123,4 @@ namespace DiscordCoreInternal {
 		void threadFunction(std::stop_token token, int64_t index);
 	};
 	/**@}*/
-}// namespace DiscordCoreAPI
+}

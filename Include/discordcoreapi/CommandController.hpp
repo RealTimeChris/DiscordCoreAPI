@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -47,11 +47,11 @@ namespace DiscordCoreAPI {
 		CoRoutine<void> checkForAndRunCommand(CommandData commandData);
 
 	  protected:
-		DiscordCoreClient* discordCoreClient{ nullptr };
+		DiscordCoreClient* discordCoreClient{};
 
 		std::unique_ptr<BaseFunction> createFunction(const std::string& functionName);
 
 		std::unique_ptr<BaseFunction> getCommand(const std::string& commandName);
 	};
 
-};// namespace DiscordCoreAPI
+};

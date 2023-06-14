@@ -10,14 +10,14 @@ namespace DiscordCoreAPI {
 	class Stop : public BaseFunction {
 	  public:
 		Stop() {
-			this->commandName = "stop";
-			this->helpDescription = "Stops the current song from playing.";
+			commandName = "stop";
+			helpDescription = "Stops the current song from playing.";
 			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter /stop!\n------");
 			msgEmbed.setTitle("__**Stop Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

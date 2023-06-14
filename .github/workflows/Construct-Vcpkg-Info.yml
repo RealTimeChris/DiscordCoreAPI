@@ -1,0 +1,34 @@
+name: Prepare release for VCPKG
+
+on:
+  release:
+    types: [published,edited]
+  workflow_dispatch:
+
+jobs:
+  Collect-Vcpkg-Info:
+    runs-on: ubuntu-latest
+    steps:
+         - name: Setup PHP
+           uses: shivammathur/setup-php@v2
+           with:
+             php-version: '8.1'
+
+         - name: Checkout DiscordCoreAPI
+           uses: actions/checkout@v2
+           with:
+             submodules: recursive
+
+         - name: Update vcpkg and install other dependencies
+           run: sudo apt-get update &&
+                sudo apt-get install nasm linux-headers-$(uname -r) &&
+                cd /usr/local/share/vcpkg &&
+                sudo ./bootstrap-vcpkg.sh &&
+                sudo git stash &&
+                sudo git pull &&
+                sudo vcpkg update
+
+         - name: Run vcpkg release builder
+           run: git fetch -avt &&
+                cd BuildTools &&
+                php make_vcpkg.php "${{ github.repository_owner }}" "${{ secrets.GITHUB_TOKEN }}"

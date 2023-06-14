@@ -11,14 +11,14 @@ namespace DiscordCoreAPI {
 	class Disconnect : public BaseFunction {
 	  public:
 		Disconnect() {
-			this->commandName = "disconnect";
-			this->helpDescription = "Disconnect the bot from voice chat.";
+			commandName = "disconnect";
+			helpDescription = "Disconnect the bot from voice chat.";
 			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter /disconnect!\n------");
 			msgEmbed.setTitle("__**Disconnect Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {

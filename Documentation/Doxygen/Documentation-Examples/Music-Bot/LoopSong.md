@@ -10,14 +10,14 @@ namespace DiscordCoreAPI {
 	class LoopSong : public BaseFunction {
 	  public:
 		LoopSong() {
-			this->commandName = "LoopSong";
-			this->helpDescription = "Enables or disables looping of the current song.";
+			commandName = "LoopSong";
+			helpDescription = "Enables or disables looping of the current song.";
 			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter /loopsong!\n------");
 			msgEmbed.setTitle("__**Loop-Song Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
 			msgEmbed.setColor("FeFeFe");
-			this->helpEmbed = msgEmbed;
+			helpEmbed = msgEmbed;
 		}
 
 		std::unique_ptr<BaseFunction> create() {
