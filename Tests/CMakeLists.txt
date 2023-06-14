@@ -40,7 +40,7 @@ else()
     set(BRANCH "dev")
 endif()
 
-set(STATIC_TRUE TRUE)
+set(BUILD_SHARED_LIBS FALSE)
 
 include(FetchContent)
 FetchContent_Declare(

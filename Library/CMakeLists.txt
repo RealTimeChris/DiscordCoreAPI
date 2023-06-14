@@ -98,7 +98,7 @@ target_link_libraries(
 target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
 	"$<$<STREQUAL:${VCPKG_TARGET_TRIPLET},x64-uwp>:UWP>"
-	"$<$<BOOL:${STATIC_TRUE}>:DiscordCoreAPI_EXPORTS_NOPE>"
+	"$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:DiscordCoreAPI_EXPORTS_NOPE>"
 )
 
 include(ProcessorCount)

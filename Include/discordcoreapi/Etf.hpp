@@ -167,27 +167,27 @@ namespace DiscordCoreInternal {
 	class EtfSerializer;
 
 	template<typename ValueType>
-	concept IsEtfSerializer = std::same_as<ValueType, EtfSerializeError>;
+	concept EtfSerializerT = std::same_as<ValueType, EtfSerializeError>;
 
 	template<typename ValueType>
-	concept IsEnumT = std::is_enum<std::decay_t<ValueType>>::value && !IsEtfSerializer<ValueType>;
+	concept EnumT = std::is_enum<std::decay_t<ValueType>>::value && !EtfSerializerT<ValueType>;
 
 	template<typename ValueType>
-	concept IsBoolT = std::same_as<std::decay_t<ValueType>, bool> && !IsEtfSerializer<ValueType>;
+	concept BoolT = std::same_as<std::decay_t<ValueType>, bool> && !EtfSerializerT<ValueType>;
 
 	template<typename ValueType>
-	concept IsFloatingPointT = std::floating_point<std::decay_t<ValueType>> && !IsEtfSerializer<ValueType>;
+	concept FloatT = std::floating_point<std::decay_t<ValueType>> && !EtfSerializerT<ValueType>;
 
 	template<typename ValueType>
-	concept IsSignedT = std::signed_integral<std::decay_t<ValueType>> && !IsBoolT<std::decay_t<ValueType>> && !IsEtfSerializer<ValueType>;
+	concept SignedT = std::signed_integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>> && !EtfSerializerT<ValueType>;
 
 	template<typename ValueType>
-	concept IsUnsignedT =
-		std::unsigned_integral<std::decay_t<ValueType>> && !IsBoolT<std::decay_t<ValueType>> && !IsSignedT<ValueType> && !IsEtfSerializer<ValueType>;
+	concept UnsignedT =
+		std::unsigned_integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>> && !SignedT<ValueType> && !EtfSerializerT<ValueType>;
 
 	template<typename ValueType>
-	concept IsStringT = std::same_as<std::decay_t<ValueType>, std::string> ||
-		std::convertible_to<ValueType, std::string> && !std::same_as<std::decay_t<ValueType>, char> && !IsEtfSerializer<ValueType>;
+	concept StringT = std::same_as<std::decay_t<ValueType>, std::string> ||
+		std::convertible_to<ValueType, std::string> && !std::same_as<std::decay_t<ValueType>, char> && !EtfSerializerT<ValueType>;
 
 	template<typename ValueType>
 	concept HasEmplaceBack = requires(ValueType data) {
@@ -206,7 +206,7 @@ namespace DiscordCoreInternal {
 	};
 
 	template<typename ValueType>
-	concept IsNullT = std::same_as<std::decay_t<ValueType>, std::nullptr_t> && !IsEtfSerializer<ValueType>;
+	concept NullT = std::same_as<std::decay_t<ValueType>, std::nullptr_t> && !EtfSerializerT<ValueType>;
 
 	template<typename ValueType>
 	concept VectorSubscriptable = requires(ValueType data) {
@@ -214,14 +214,14 @@ namespace DiscordCoreInternal {
 	};
 
 	template<typename ValueType>
-	concept IsArrayT = HasRange<ValueType> && HasResize<std::decay_t<ValueType>> && HasEmplaceBack<std::decay_t<ValueType>> &&
-		VectorSubscriptable<std::decay_t<ValueType>> && requires(ValueType data) { typename ValueType::value_type; } && !IsEtfSerializer<ValueType>;
+	concept ArrayT = HasRange<ValueType> && HasResize<std::decay_t<ValueType>> && HasEmplaceBack<std::decay_t<ValueType>> &&
+		VectorSubscriptable<std::decay_t<ValueType>> && requires(ValueType data) { typename ValueType::value_type; } && !EtfSerializerT<ValueType>;
 
 	template<typename ValueType>
-	concept IsObjectT = requires(ValueType data) {
+	concept ObjectT = requires(ValueType data) {
 		typename ValueType::mapped_type;
 		typename ValueType::key_type;
-	} && HasRange<ValueType> && !IsEtfSerializer<ValueType>;
+	} && HasRange<ValueType> && !EtfSerializerT<ValueType>;
 
 	class DiscordCoreAPI_Dll EtfSerializer {
 	  public:
@@ -236,16 +236,16 @@ namespace DiscordCoreInternal {
 		using IntType = int64_t;
 		using BoolType = bool;
 
-		EtfSerializer() noexcept = default;
+		inline EtfSerializer() noexcept = default;
 
 #ifdef _WIN32
-		template<typename ValueType> EtfSerializer& operator=(ValueType&&) noexcept;
-		template<typename ValueType> EtfSerializer(ValueType&&) noexcept;
-		template<typename ValueType> EtfSerializer& operator=(const ValueType&) noexcept;
-		template<typename ValueType> EtfSerializer(const ValueType&) noexcept;
+		template<typename ValueType> inline EtfSerializer& operator=(ValueType&&) noexcept;
+		template<typename ValueType> inline EtfSerializer(ValueType&&) noexcept;
+		template<typename ValueType> inline EtfSerializer& operator=(const ValueType&) noexcept;
+		template<typename ValueType> inline EtfSerializer(const ValueType&) noexcept;
 #endif
 
-		EtfSerializer& operator=(EtfSerializer&& data) noexcept {
+		inline EtfSerializer& operator=(EtfSerializer&& data) noexcept {
 			type = data.type;
 			value = data.value;
 			data.value = nullptr;
@@ -253,11 +253,11 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		EtfSerializer(EtfSerializer&& data) noexcept {
+		inline EtfSerializer(EtfSerializer&& data) noexcept {
 			*this = std::move(data);
 		}
 
-		EtfSerializer& operator=(const EtfSerializer& data) noexcept {
+		inline EtfSerializer& operator=(const EtfSerializer& data) noexcept {
 			switch (data.type) {
 				case JsonType::Object: {
 					setValue(JsonType::Object);
@@ -303,11 +303,11 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		EtfSerializer(const EtfSerializer& data) noexcept {
+		inline EtfSerializer(const EtfSerializer& data) noexcept {
 			*this = data;
 		}
 
-		EtfSerializer& operator=(EtfSerializer& data) noexcept {
+		inline EtfSerializer& operator=(EtfSerializer& data) noexcept {
 			switch (data.type) {
 				case JsonType::Object: {
 					setValue(JsonType::Object);
@@ -353,11 +353,11 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		EtfSerializer(EtfSerializer& data) noexcept {
+		inline EtfSerializer(EtfSerializer& data) noexcept {
 			*this = data;
 		}
 
-		EtfSerializer& operator=(IsObjectT auto&& data) noexcept {
+		template<ObjectT ValueType> inline EtfSerializer& operator=(ValueType&& data) noexcept {
 			setValue(JsonType::Object);
 			for (auto& [key, value]: data) {
 				getObject()[key] = std::move(value);
@@ -365,11 +365,24 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		EtfSerializer(IsObjectT auto&& data) noexcept {
+		template<ObjectT ValueType> inline EtfSerializer(ValueType&& data) noexcept {
 			*this = std::move(data);
 		};
 
-		EtfSerializer& operator=(const IsObjectT auto& data) noexcept {
+		template<size_t StrLength> inline EtfSerializer& operator=(const char (&str)[StrLength]) {
+			setValue(JsonType::String);
+			std::string theString{};
+			theString.resize(std::char_traits<char>::length(str));
+			std::copy(str, str + StrLength, theString.data());
+			getString() = theString;
+			return *this;
+		}
+
+		template<size_t StrLength> inline EtfSerializer(const char (&str)[StrLength]) {
+			*this = str;
+		}
+
+		template<ObjectT ValueType> inline EtfSerializer& operator=(const ValueType& data) noexcept {
 			setValue(JsonType::Object);
 			for (auto& [key, value]: data) {
 				getObject()[key] = value;
@@ -377,11 +390,11 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		EtfSerializer(const IsObjectT auto& data) noexcept {
+		template<ObjectT ValueType> inline EtfSerializer(const ValueType& data) noexcept {
 			*this = data;
 		}
 
-		EtfSerializer& operator=(IsArrayT auto&& data) noexcept {
+		template<ArrayT ValueType> inline EtfSerializer& operator=(ValueType&& data) noexcept {
 			setValue(JsonType::Array);
 			for (auto& value: data) {
 				getArray().emplace_back(std::move(value));
@@ -389,11 +402,11 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		EtfSerializer(IsArrayT auto&& data) noexcept {
+		template<ArrayT ValueType> inline EtfSerializer(ValueType&& data) noexcept {
 			*this = std::move(data);
 		}
 
-		EtfSerializer& operator=(const IsArrayT auto& data) noexcept {
+		template<ArrayT ValueType> inline EtfSerializer& operator=(const ValueType& data) noexcept {
 			setValue(JsonType::Array);
 			for (auto& value: data) {
 				getArray().emplace_back(value);
@@ -401,86 +414,86 @@ namespace DiscordCoreInternal {
 			return *this;
 		}
 
-		EtfSerializer(const IsArrayT auto& data) noexcept {
+		template<ArrayT ValueType> inline EtfSerializer(const ValueType& data) noexcept {
 			*this = data;
 		}
 
-		EtfSerializer& operator=(IsStringT auto&& data) noexcept {
+		template<StringT ValueType> inline EtfSerializer& operator=(ValueType&& data) noexcept {
 			setValue(JsonType::String);
 			getString() = std::move(data);
 			return *this;
 		}
 
-		EtfSerializer(IsStringT auto&& data) noexcept {
+		template<StringT ValueType> inline EtfSerializer(ValueType&& data) noexcept {
 			*this = std::move(data);
 		}
 
-		EtfSerializer& operator=(const IsStringT auto& data) noexcept {
+		template<StringT ValueType> inline EtfSerializer& operator=(ValueType& data) noexcept {
 			setValue(JsonType::String);
 			getString() = data;
 			return *this;
 		}
 
-		EtfSerializer(const IsStringT auto& data) noexcept {
+		template<StringT ValueType> inline EtfSerializer(ValueType& data) noexcept {
 			*this = data;
 		}
 
-		EtfSerializer& operator=(IsFloatingPointT auto data) noexcept {
+		template<FloatT ValueType> inline EtfSerializer& operator=(ValueType data) noexcept {
 			setValue(JsonType::Float);
 			getFloat() = data;
 			return *this;
 		}
 
-		EtfSerializer(IsFloatingPointT auto data) noexcept {
+		template<FloatT ValueType> inline EtfSerializer(ValueType data) noexcept {
 			*this = data;
 		}
 
-		EtfSerializer& operator=(IsUnsignedT auto data) noexcept {
-			setValue(JsonType::Uint);
-			getUint() = data;
-			return *this;
-		}
-
-		EtfSerializer(IsUnsignedT auto data) noexcept {
-			*this = data;
-		}
-
-		EtfSerializer& operator=(IsSignedT auto data) noexcept {
+		template<SignedT ValueType> inline EtfSerializer& operator=(ValueType data) noexcept {
 			setValue(JsonType::Int);
 			getUint() = data;
 			return *this;
 		}
 
-		EtfSerializer(IsSignedT auto data) noexcept {
+		template<SignedT ValueType> inline EtfSerializer(ValueType data) noexcept {
 			*this = data;
 		}
 
-		EtfSerializer& operator=(IsEnumT auto data) noexcept {
+		template<UnsignedT ValueType> inline EtfSerializer& operator=(ValueType data) noexcept {
 			setValue(JsonType::Uint);
 			getUint() = static_cast<uint64_t>(data);
 			return *this;
 		}
 
-		EtfSerializer(IsEnumT auto data) noexcept {
+		template<UnsignedT ValueType> inline EtfSerializer(ValueType data) noexcept {
 			*this = data;
 		}
 
-		EtfSerializer& operator=(IsBoolT auto data) noexcept {
+		template<BoolT ValueType> inline EtfSerializer& operator=(ValueType data) noexcept {
 			setValue(JsonType::Bool);
 			getBool() = data;
 			return *this;
 		}
 
-		EtfSerializer(IsBoolT auto data) noexcept {
+		template<BoolT ValueType> inline EtfSerializer(ValueType data) noexcept {
 			*this = data;
 		}
 
-		EtfSerializer& operator=(JsonType data) noexcept {
-			setValue(data);
+		template<EnumT ValueType> inline EtfSerializer& operator=(ValueType data) noexcept {
+			setValue(JsonType::Int);
+			getInt() = static_cast<int64_t>(data);
 			return *this;
 		}
 
-		EtfSerializer(JsonType data) noexcept {
+		template<EnumT ValueType> inline EtfSerializer(ValueType data) noexcept {
+			*this = data;
+		}
+
+		inline EtfSerializer& operator=(JsonType data) noexcept {
+			setValue(data);
+			return *this;
+		} 
+
+		inline EtfSerializer(JsonType data) noexcept {
 			*this = data;
 		}
 

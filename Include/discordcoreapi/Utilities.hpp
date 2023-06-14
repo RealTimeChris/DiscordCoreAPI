@@ -1032,7 +1032,7 @@ namespace DiscordCoreAPI {
 	template<typename ITy>
 	concept IsInteger = std::is_integral<ITy>::value;
 
-	template<IsInteger StoredAs, DiscordCoreInternal::IsEnumT ValueType>
+	template<IsInteger StoredAs, DiscordCoreInternal::EnumT ValueType>
 	inline auto setBool(StoredAs theFlags, ValueType theFlagToSet, bool enabled) {
 		auto theValue{ theFlags };
 		if (enabled) {
@@ -1043,7 +1043,7 @@ namespace DiscordCoreAPI {
 		return theValue;
 	}
 
-	template<DiscordCoreInternal::IsEnumT ValueType> inline bool getBool(ValueType theFlags, ValueType theFlagToCheckFor) {
+	template<DiscordCoreInternal::EnumT ValueType> inline bool getBool(ValueType theFlags, ValueType theFlagToCheckFor) {
 		return std::to_underlying(theFlags) & std::to_underlying(theFlagToCheckFor);
 	}
 

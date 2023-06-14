@@ -464,7 +464,7 @@ namespace DiscordCoreAPI {
 
 		UserData(const UserData&) noexcept = default;
 
-		template<DiscordCoreInternal::IsEnumT ETy> bool getFlagValue(ETy theEnum) {
+		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
 		}
 
@@ -822,7 +822,7 @@ namespace DiscordCoreAPI {
 
 		RoleData(const RoleData&) noexcept = default;
 
-		template<DiscordCoreInternal::IsEnumT ETy> bool getFlagValue(ETy theEnum) {
+		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
 		}
 
@@ -943,7 +943,7 @@ namespace DiscordCoreAPI {
 
 		GuildMemberData(const GuildMemberCacheData&) noexcept;
 
-		template<DiscordCoreInternal::IsEnumT ETy> bool getFlagValue(ETy theEnum) {
+		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
 		}
 
@@ -991,7 +991,7 @@ namespace DiscordCoreAPI {
 
 		GuildMemberCacheData(const GuildMemberCacheData&) noexcept = default;
 
-		template<DiscordCoreInternal::IsEnumT ETy> bool getFlagValue(ETy theEnum) {
+		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
 		}
 
@@ -1074,7 +1074,7 @@ namespace DiscordCoreAPI {
 
 		ChannelData(const ChannelData&) noexcept = default;
 
-		template<DiscordCoreInternal::IsEnumT ETy> bool getFlagValue(ETy theEnum) {
+		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
 		}
 
@@ -1820,7 +1820,7 @@ namespace DiscordCoreAPI {
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{}, bool selfDeaf = false,
 			bool selfMute = false, StreamInfo streamInfo = StreamInfo{});
 
-		template<DiscordCoreInternal::IsEnumT ETy> bool getFlagValue(ETy theEnum) {
+		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
 		}
 
@@ -3082,7 +3082,7 @@ namespace DiscordCoreAPI {
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{}, bool selfDeaf = false,
 			bool selfMute = false, StreamInfo streamInfo = StreamInfo{});
 
-		template<DiscordCoreInternal::IsEnumT ETy> bool getFlagValue(ETy theEnum) {
+		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
 		}
 
