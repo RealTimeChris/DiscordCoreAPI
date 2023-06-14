@@ -40,10 +40,12 @@ else()
     set(BRANCH "dev")
 endif()
 
+set(STATIC_TRUE TRUE)
+
 include(FetchContent)
 FetchContent_Declare(
     DiscordCoreAPI
-    GIT_REPOSITORY https://github.com/RealTimeChris/DiscordCoreAPI.git
+    GIT_REPOSITORY https://github.com/RealTimeChris/DiscordCoreAPI
     GIT_TAG "${BRANCH}"
 )
 FetchContent_MakeAvailable(DiscordCoreAPI)
@@ -55,5 +57,5 @@ add_executable(
 
 target_link_libraries(
     "${PROJECT_NAME}" PUBLIC
-    DiscordCoreAPI
+    DiscordCoreAPI::DiscordCoreAPI
 )

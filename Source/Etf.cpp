@@ -57,13 +57,13 @@ namespace DiscordCoreInternal {
 
 	char32_t EtfParser::hex4ToChar32(const char* hex) {
 		uint32_t value = hex2dec(hex[3]);
-		value |= hex2dec(hex[2]) << 4;
-		value |= hex2dec(hex[1]) << 8;
-		value |= hex2dec(hex[0]) << 12;
+		value |= hex2dec(hex[2]) << 8;
+		value |= hex2dec(hex[1]) << 16;
+		value |= hex2dec(hex[0]) << 24;
 		return value;
 	}
 
-	template<typename ValueType> void EtfParser::readEscapedUnicode(ValueType& value, auto&& it) {
+	template<typename ValueType> void EtfParser::readEscapedUnicode(ValueType& value, auto& it) {
 		char8_t buffer[4];
 		char32_t codepoint = hex4ToChar32(it);
 		auto& facet = std::use_facet<std::codecvt<char32_t, char8_t, mbstate_t>>(std::locale());
@@ -79,8 +79,7 @@ namespace DiscordCoreInternal {
 			return;
 		}
 		*value = static_cast<char>(buffer[0]);
-
-		std::advance(it, 4);
+		it += 4;
 	}
 
 	void EtfParser::writeCharactersFromBuffer(uint32_t length) {
@@ -111,42 +110,42 @@ namespace DiscordCoreInternal {
 				return;
 			}
 		}
-		auto handleEscaped = [&, this]() {
-			switch (*stringNew) {
+		auto handleEscaped = [&, this](const char*& iter) {
+			switch (*iter) {
 				case '"':
 				case '\\':
 				case '/':
-					writeCharacter(*stringNew);
-					++stringNew;
-					break;
+					writeCharacter(*iter);
+					++iter;
+					return;
 				case 'b':
 					writeCharacter('\b');
-					++stringNew;
-					break;
+					++iter;
+					return;
 				case 'f':
 					writeCharacter('\f');
-					++stringNew;
-					break;
+					++iter;
+					return;
 				case 'n':
 					writeCharacter('\n');
-					++stringNew;
-					break;
+					++iter;
+					return;
 				case 'r':
 					writeCharacter('\r');
-					++stringNew;
-					break;
+					++iter;
+					return;
 				case 't':
 					writeCharacter('\t');
-					++stringNew;
-					break;
+					++iter;
+					return;
 				case 'u': {
 					auto newVal = finalString.data() + offSet;
-					readEscapedUnicode(newVal, stringNew);
-					++stringNew;
+					readEscapedUnicode(newVal, iter);
+					writeCharacter(*newVal);
 					return;
 				}
 				default: {
-					++stringNew;
+					++iter;
 					return;
 				}
 			}
@@ -154,69 +153,54 @@ namespace DiscordCoreInternal {
 		writeCharacter('"');
 		for (auto iter = stringNew; iter != stringNew + length;) {
 			bool doWeBreak{};
+
 			switch (*iter) {
-				case 0x00: {
-					doWeBreak = true;
+				case '\\': {
+					switch (*++iter) {
+						case '\"':
+							writeCharacter('\\');
+							writeCharacter('\\');
+							writeCharacter('\"');
+							break;
+						case '\\':
+							break;
+						case '/':
+							writeCharacter('/');
+							break;
+						case 'b':
+							writeCharacter('\b');
+							break;
+						case 'f':
+							writeCharacter('\f');
+							break;
+						case 'n':
+							writeCharacter('\n');
+							break;
+						case 'r':
+							writeCharacter('\r');
+							break;
+						case 't':
+							writeCharacter('\t');
+							break;
+
+						default: {
+							writeCharacter(*iter);
+							break;
+						}
+					}
 					break;
 				}
-				case 0x22: {
+				case '"': {
 					writeCharacter('\\');
-					writeCharacter('"');
-					++iter;
-					break;
-				}
-				case 0x5c: {
-					handleEscaped();
-					++iter;
-					break;
-				}
-				case 0x07: {
-					writeCharacter('\\');
-					writeCharacter('a');
-					++iter;
-					break;
-				}
-				case 0x08: {
-					writeCharacter('\\');
-					writeCharacter('b');
-					++iter;
-					break;
-				}
-				case 0x0C: {
-					writeCharacter('\\');
-					writeCharacter('f');
-					++iter;
-					break;
-				}
-				case 0x0A: {
-					writeCharacter('\\');
-					writeCharacter('n');
-					++iter;
-					break;
-				}
-				case 0x0D: {
-					writeCharacter('\\');
-					writeCharacter('r');
-					++iter;
-					break;
-				}
-				case 0x0B: {
-					writeCharacter('\\');
-					writeCharacter('v');
-					++iter;
-					break;
-				}
-				case 0x09: {
-					writeCharacter('\\');
-					writeCharacter('t');
-					++iter;
+					writeCharacter('\"');
 					break;
 				}
 				default: {
 					writeCharacter(*iter);
-					++iter;
+					break;
 				}
 			}
+			++iter;
 			if (doWeBreak) {
 				break;
 			}
@@ -469,10 +453,10 @@ namespace DiscordCoreInternal {
 			case JsonType::Float: {
 				return writeEtfFloat(dataToParse->getFloat());
 			}
-			case JsonType::Uint64: {
+			case JsonType::Uint: {
 				return writeEtfUint(dataToParse->getUint());
 			}
-			case JsonType::Int64: {
+			case JsonType::Int: {
 				return writeEtfInt(dataToParse->getInt());
 			}
 			case JsonType::Bool: {
@@ -573,13 +557,13 @@ namespace DiscordCoreInternal {
 				}
 				break;
 			}
-			case JsonType::Uint64: {
+			case JsonType::Uint: {
 				if (lhs.getUint() != rhs.getUint()) {
 					return false;
 				}
 				break;
 			}
-			case JsonType::Int64: {
+			case JsonType::Int: {
 				if (lhs.getInt() != rhs.getInt()) {
 					return false;
 				}
@@ -726,14 +710,14 @@ namespace DiscordCoreInternal {
 				allocator.construct(alloc, &getString());
 				break;
 			}
-			case JsonType::Uint64: {
+			case JsonType::Uint: {
 				allocator<UintType> alloc{};
 				AllocatorType<UintType> allocator{};
 				value = allocator.allocate(alloc, 1);
 				allocator.construct(alloc, &getUint());
 				break;
 			}
-			case JsonType::Int64: {
+			case JsonType::Int: {
 				allocator<IntType> alloc{};
 				AllocatorType<IntType> allocator{};
 				value = allocator.allocate(alloc, 1);
@@ -784,14 +768,14 @@ namespace DiscordCoreInternal {
 					allocator.deallocate(alloc, static_cast<StringType*>(value), 1);
 					break;
 				}
-				case JsonType::Uint64: {
+				case JsonType::Uint: {
 					allocator<UintType> alloc{};
 					AllocatorType<UintType> allocator{};
 					allocator.destroy(alloc, &getUint());
 					allocator.deallocate(alloc, static_cast<UintType*>(value), 1);
 					break;
 				}
-				case JsonType::Int64: {
+				case JsonType::Int: {
 					allocator<IntType> alloc{};
 					AllocatorType<IntType> allocator{};
 					allocator.destroy(alloc, &getInt());

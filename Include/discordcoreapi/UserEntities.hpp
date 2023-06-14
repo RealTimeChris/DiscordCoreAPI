@@ -144,9 +144,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing an AuthorizationInfoData.
 		static CoRoutine<AuthorizationInfoData> getCurrentUserAuthorizationInfoAsync();
 
-		static void insertUser(UserData&& user);
-
-		static void insertUser(const UserData& user);
+		static UserData& insertUser(UserData&& user);
 
 		static bool doWeCacheUsers();
 

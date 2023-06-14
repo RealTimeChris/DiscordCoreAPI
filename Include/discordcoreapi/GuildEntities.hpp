@@ -481,9 +481,7 @@ namespace DiscordCoreAPI {
 
 		static ObjectCache<Snowflake, GuildData>& getCache();
 
-		static void insertGuild(const GuildData& guild);
-
-		static void insertGuild(GuildData&& guild);
+		static GuildData& insertGuild(GuildData&& guild);
 
 		static void removeGuild(const Snowflake GuildId);
 

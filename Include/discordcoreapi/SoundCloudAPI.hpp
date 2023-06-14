@@ -69,9 +69,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{};
 		std::atomic_bool areWeWorkingBool{ false };
-		DiscordCoreAPI::LightString<char> buffer{};
 		DiscordCoreAPI::Snowflake guildId{};
-		const int32_t maxBufferSize{ 8192 };
 	};
 
 	struct DiscordCoreAPI_Dll Transcoding {

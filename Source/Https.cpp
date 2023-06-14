@@ -51,6 +51,8 @@ namespace DiscordCoreInternal {
 					if (ptr->data.responseCode == 400 || ptr->data.responseCode == 204) {
 						ptr->areWeDoneTheRequest = true;
 						return;
+					} else if (ptr->data.responseCode == 302) {
+						ptr->currentBaseUrl = ptr->data.responseHeaders["Location"];
 					}
 					handleBuffer();
 					return;

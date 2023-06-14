@@ -33,6 +33,7 @@
 #pragma warning(disable : 4996)
 
 #ifdef _WIN32
+#ifndef DiscordCoreAPI_EXPORTS_NOPE
 	#ifdef DiscordCoreAPI_EXPORTS
 		#ifndef DiscordCoreAPI_Dll
 			#define DiscordCoreAPI_Dll __declspec(dllexport)
@@ -41,7 +42,10 @@
 		#ifndef DiscordCoreAPI_Dll
 			#define DiscordCoreAPI_Dll __declspec(dllimport)
 		#endif
-	#endif
+		#endif 
+#else
+		#define DiscordCoreAPI_Dll
+#endif
 	#ifndef WIN32_LEAN_AND_MEAN
 		#define WIN32_LEAN_AND_MEAN
 	#endif

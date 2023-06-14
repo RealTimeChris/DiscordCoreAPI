@@ -239,8 +239,7 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Users::getCurrentUserAsync()";
 		User returnData{};
 		Users::httpsClient->submitWorkloadAndGetResult<UserData>(workload, returnData);
-		Users::insertUser(returnData);
-		co_return returnData;
+		co_return Users::insertUser(std::move(returnData));
 	}
 
 	UserData Users::getCachedUser(GetUserData dataPackage) {
@@ -319,28 +318,19 @@ namespace DiscordCoreAPI {
 		return Users::doWeCacheUsersBool;
 	}
 
-	void Users::insertUser(const UserData& user) {
+	UserData& Users::insertUser(UserData&& user) {
 		if (user.id == 0) {
-			return;
+			return *cache.end();
 		}
 		if (Users::doWeCacheUsers()) {
-			Users::cache.emplace(UserData{ user });
-			if (Users::cache.count() % 10 == 0) {
-				std::cout << "USERS COUNT: " << Users::cache.count() << std::endl;
-			}
-		}
-	}
-
-	void Users::insertUser(UserData&& user) {
-		if (user.id == 0) {
-			return;
-		}
-		if (Users::doWeCacheUsers()) {
+			auto id = user.id;
 			Users::cache.emplace(UserData{ std::move(user) });
 			if (Users::cache.count() % 10 == 0) {
 				std::cout << "USERS COUNT: " << Users::cache.count() << std::endl;
 			}
+			return cache.find(id);
 		}
+		return *cache.end();
 	}
 
 	DiscordCoreInternal::HttpsClient* Users::httpsClient{};

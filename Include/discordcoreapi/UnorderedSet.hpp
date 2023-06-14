@@ -61,7 +61,7 @@ namespace DiscordCoreAPI {
 	};
 
 	template<typename KTy, typename ValueType> struct KeyAccessor {
-		inline KTy& operator()(ValueType& other) {
+		inline const KTy& operator()(const ValueType& other) {
 			return other.id;
 		}
 

@@ -288,58 +288,57 @@ namespace DiscordCoreInternal {
 		try {
 			areWeWorkingBool.store(true);
 			int32_t counter{};
-			bool areWeConnected{ true };
-			OggDemuxer demuxer{ configManager->doWePrintGeneralErrorMessages() };
-			Milliseconds waitPoint{ std::chrono::duration_cast<Milliseconds>(DiscordCoreAPI::HRClock::now().time_since_epoch()) };
-			while (counter < newSong.finalDownloadUrls.size()) {
-				std::this_thread::sleep_for(1ms);
-				if (token.stop_requested()) {
-					areWeWorkingBool.store(false);
-					return;
-				}
+			std::vector<HttpsWorkloadData> workloadVector{};
+			for (size_t x = 0; x < newSong.finalDownloadUrls.size(); ++x) {
 				HttpsWorkloadData dataPackage03{ HttpsWorkloadType::SoundCloudGetSearchResults };
 				if (counter < newSong.finalDownloadUrls.size()) {
 					std::string baseUrl =
-						newSong.finalDownloadUrls[counter].urlPath.substr(0, std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
+						newSong.finalDownloadUrls[x].urlPath.substr(0, std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
 					std::string relativeUrl =
-						newSong.finalDownloadUrls[counter].urlPath.substr(std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
+						newSong.finalDownloadUrls[x].urlPath.substr(std::string{ "https://cf-hls-opus-media.sndcdn.com/media/" }.size());
 					dataPackage03.baseUrl = baseUrl;
 					dataPackage03.relativePath = relativeUrl;
 				}
 				dataPackage03.workloadClass = HttpsWorkloadClass::Get;
-				HttpsResponseData result{};
-				if (areWeConnected && counter < newSong.finalDownloadUrls.size()) {
-					try {
-						result = httpsClient->submitWorkloadAndGetResult(dataPackage03);
+				workloadVector.emplace_back(std::move(dataPackage03));
+			}
 
-					} catch (...) {
-						if (configManager->doWePrintHttpsErrorMessages()) {
-							DiscordCoreAPI::reportException("SoundCloudAPI::downloadAndStreamAudio()");
-						}
-						areWeConnected = false;
+			std::vector<std::string> buffer{};
+			OggDemuxer demuxer{ configManager->doWePrintGeneralErrorMessages() };
+			for (size_t x = 0; x < newSong.finalDownloadUrls.size(); ++x) {
+				HttpsResponseData result{};
+				try {
+					result = httpsClient->submitWorkloadAndGetResult(std::move(workloadVector[x]));
+				} catch (...) {
+					if (configManager->doWePrintHttpsErrorMessages()) {
+						DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 					}
 				}
+
 				if (result.responseData.size() > 0) {
-					demuxer.writeData(result.responseData);
+					buffer.emplace_back(std::move(result.responseData));
+					demuxer.writeData({ reinterpret_cast<char*>(buffer.back().data()), buffer.back().size() });
 					demuxer.proceedDemuxing();
-					DiscordCoreAPI::AudioFrameData frameData{};
-					while (demuxer.collectFrame(frameData)) {
-						if (token.stop_requested()) {
-							areWeWorkingBool.store(false);
-							return;
-						}
-						if (frameData.currentSize != 0) {
-							std::this_thread::sleep_for(1ms);
-							DiscordCoreAPI::DiscordCoreClient::getSongAPI(guildId)->audioDataBuffer.send(std::move(frameData));
-						}
-					}
+				}
+				if (token.stop_requested()) {
+					areWeWorkingBool.store(false);
+					return;
+				}
+				DiscordCoreAPI::AudioFrameData frameData{};
+				while (demuxer.collectFrame(frameData)) {
 					if (token.stop_requested()) {
 						areWeWorkingBool.store(false);
 						return;
 					}
+					if (frameData.currentSize != 0) {
+						DiscordCoreAPI::DiscordCoreClient::getSongAPI(guildId)->audioDataBuffer.send(std::move(frameData));
+					}
+				}
+				if (token.stop_requested()) {
+					areWeWorkingBool.store(false);
+					return;
 				}
 				std::this_thread::sleep_for(1ms);
-				++counter;
 			}
 			areWeWorkingBool.store(false);
 			DiscordCoreAPI::DiscordCoreClient::getVoiceConnection(guildId)->doWeSkip.store(true);

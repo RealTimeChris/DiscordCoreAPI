@@ -799,7 +799,7 @@ namespace DiscordCoreAPI {
 		for (std::string::const_iterator x = inputString.begin(), n = inputString.end(); x != n; ++x) {
 			std::string::value_type c = (*x);
 
-			if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+			if (isalnum(static_cast<unsigned char>(c)) || c == '-' || c == '_' || c == '.' || c == '~') {
 				escaped << c;
 				continue;
 			}

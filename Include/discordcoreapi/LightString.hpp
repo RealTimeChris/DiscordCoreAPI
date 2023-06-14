@@ -29,9 +29,13 @@
 
 namespace DiscordCoreAPI {
 
-	inline static constexpr size_t BufSize = 16 / sizeof(char) < 1 ? 1 : 16 / sizeof(char);
+	inline static constexpr size_t BufferSize = 16 / sizeof(char) < 1 ? 1 : 16 / sizeof(char);
 
-	inline static constexpr size_t AllocMask = sizeof(char) <= 1 ? 15 : sizeof(char) <= 2 ? 7 : sizeof(char) <= 4 ? 3 : sizeof(char) <= 8 ? 1 : 0;
+	inline static constexpr size_t AllocationMask = sizeof(char) <= 1 ? 15
+		: sizeof(char) <= 2											  ? 7
+		: sizeof(char) <= 4											  ? 3
+		: sizeof(char) <= 8											  ? 1
+																	  : 0;
 
 	template<typename OTy> class LightString {
 	  public:
@@ -287,7 +291,7 @@ namespace DiscordCoreAPI {
 		}
 
 		inline constexpr size_type calculateGrowth(const size_type requested) noexcept {
-			const size_type masked = requested | AllocMask;
+			const size_type masked = requested | AllocationMask;
 			if (masked > maxSize()) {
 				return maxSize();
 			}
@@ -320,7 +324,7 @@ namespace DiscordCoreAPI {
 			sizeVal = newSize;
 			capacityVal = newCapacity;
 			pointer const rawNew = newVal;
-			if (BufSize <= oldCapacity) {
+			if (BufferSize <= oldCapacity) {
 				const pointer old = values;
 				function(rawNew, old, oldSize, args...);
 				allocator{}.deallocate(old, oldCapacity + 1);

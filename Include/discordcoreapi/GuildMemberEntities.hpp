@@ -175,13 +175,13 @@ namespace DiscordCoreAPI {
 
 		static VoiceStateDataLight getVoiceStateData(const GuildMember& voiceState);
 
-		static void insertVoiceState(VoiceStateDataLight voiceState);
+		static VoiceStateDataLight& insertVoiceState(VoiceStateDataLight&& voiceState);
 
 		static ObjectCache<GuildMemberKey, GuildMemberData>& getCache();
 
 		static void removeVoiceState(const VoiceStateDataLight& voiceState);
 
-		static void insertGuildMember(GuildMemberData guildMember);
+		static GuildMemberData& insertGuildMember(GuildMemberData&& guildMember);
 
 		static void removeGuildMember(const GuildMemberData& guildMemberId);
 

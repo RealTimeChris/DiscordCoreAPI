@@ -236,9 +236,7 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing a VoiceRegionDataVector.
 		static CoRoutine<std::vector<VoiceRegionData>> getVoiceRegionsAsync();
 
-		static void insertChannel(const ChannelData& channel);
-
-		static void insertChannel(ChannelData&& channel);
+		static ChannelData& insertChannel(ChannelData&& channel);
 
 		static void removeChannel(Snowflake channelId);
 

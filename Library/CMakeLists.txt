@@ -35,6 +35,10 @@ generate_product_version(
 	VERSION_REVISION "0"
 )
 
+if (NOT DEFINED BUILD_SHARED_LIBS)
+	set(BUILD_SHARED_LIBS TRUE)
+endif()
+
 if (UNIX)
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast")
 	set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -O1")
@@ -43,7 +47,11 @@ endif()
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Source/*.cpp")
 
 if (WIN32)
-	add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
+	if (BUILD_SHARED_LIBS)
+		add_library("${LIB_NAME}" SHARED "${SOURCES}" "${PRODUCT_INFO}")
+	else()
+		add_library("${LIB_NAME}" STATIC "${SOURCES}" "${PRODUCT_INFO}")
+	endif()
 elseif (UNIX)
 	add_library("${LIB_NAME}" STATIC "${SOURCES}")
 	find_package(Threads REQUIRED)
@@ -90,6 +98,7 @@ target_link_libraries(
 target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
 	"$<$<STREQUAL:${VCPKG_TARGET_TRIPLET},x64-uwp>:UWP>"
+	"$<$<BOOL:${STATIC_TRUE}>:DiscordCoreAPI_EXPORTS_NOPE>"
 )
 
 include(ProcessorCount)
@@ -99,11 +108,10 @@ MATH(EXPR THREAD_COUNT "${N} * 1/2")
 target_compile_options(
 	"${LIB_NAME}" PUBLIC
 	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:/fsanitize=address>>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/MP${THREAD_COUNT}>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/EHsc>"
 	"$<$<CXX_COMPILER_ID:GNU>:-march=core-avx2>"
 	"$<$<CXX_COMPILER_ID:CLANG>:-march=core-avx2>"
 )
@@ -163,7 +171,7 @@ install(
 	DESTINATION "share/discordcoreapi"
 )
 
-if (WIN32)
+if (WIN32 AND "${BUILD_SHARED_LIBS}")
 	install(
 		FILES 
 		"$<TARGET_PDB_FILE:${LIB_NAME}>"

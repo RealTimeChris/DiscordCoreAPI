@@ -104,7 +104,7 @@ namespace DiscordCoreInternal {
 
 		char32_t hex4ToChar32(const char* hex);
 
-		template<typename ValueType> void readEscapedUnicode(ValueType& value, auto&& it);
+		template<typename ValueType> void readEscapedUnicode(ValueType& value, auto& it);
 
 		bool isThreeByteSequence(uint8_t byte);
 
@@ -162,7 +162,7 @@ namespace DiscordCoreInternal {
 		explicit EtfSerializeError(const std::string& message, std::source_location = std::source_location::current());
 	};
 
-	enum class JsonType : uint8_t { Null = 0, Object = 1, Array = 2, String = 3, Float = 4, Uint64 = 5, Int64 = 6, Bool = 7 };
+	enum class JsonType : uint8_t { Null = 0, Object = 1, Array = 2, String = 3, Float = 4, Uint = 5, Int = 6, Bool = 7 };
 
 	class EtfSerializer;
 
@@ -279,13 +279,13 @@ namespace DiscordCoreInternal {
 					getFloat() = data.getFloat();
 					break;
 				}
-				case JsonType::Uint64: {
-					setValue(JsonType::Uint64);
+				case JsonType::Uint: {
+					setValue(JsonType::Uint);
 					getUint() = data.getUint();
 					break;
 				}
-				case JsonType::Int64: {
-					setValue(JsonType::Int64);
+				case JsonType::Int: {
+					setValue(JsonType::Int);
 					getInt() = data.getInt();
 					break;
 				}
@@ -329,13 +329,13 @@ namespace DiscordCoreInternal {
 					getFloat() = data.getFloat();
 					break;
 				}
-				case JsonType::Uint64: {
-					setValue(JsonType::Uint64);
+				case JsonType::Uint: {
+					setValue(JsonType::Uint);
 					getUint() = data.getUint();
 					break;
 				}
-				case JsonType::Int64: {
-					setValue(JsonType::Int64);
+				case JsonType::Int: {
+					setValue(JsonType::Int);
 					getInt() = data.getInt();
 					break;
 				}
@@ -436,7 +436,7 @@ namespace DiscordCoreInternal {
 		}
 
 		EtfSerializer& operator=(IsUnsignedT auto data) noexcept {
-			setValue(JsonType::Uint64);
+			setValue(JsonType::Uint);
 			getUint() = data;
 			return *this;
 		}
@@ -446,7 +446,7 @@ namespace DiscordCoreInternal {
 		}
 
 		EtfSerializer& operator=(IsSignedT auto data) noexcept {
-			setValue(JsonType::Int64);
+			setValue(JsonType::Int);
 			getUint() = data;
 			return *this;
 		}
@@ -456,7 +456,7 @@ namespace DiscordCoreInternal {
 		}
 
 		EtfSerializer& operator=(IsEnumT auto data) noexcept {
-			setValue(JsonType::Uint64);
+			setValue(JsonType::Uint);
 			getUint() = static_cast<uint64_t>(data);
 			return *this;
 		}
@@ -498,9 +498,6 @@ namespace DiscordCoreInternal {
 		void emplaceBack(EtfSerializer& data);
 
 		JsonType getType() noexcept;
-
-		template<typename ValueType> const ValueType& getValue() const;
-		template<typename ValueType> ValueType& getValue();
 
 		~EtfSerializer() noexcept;
 
@@ -621,103 +618,5 @@ namespace DiscordCoreInternal {
 
 		friend bool operator==(const EtfSerializer& lhs, const EtfSerializer& rhs);
 	};
-
-	template<> inline const EtfSerializer::ObjectType& EtfSerializer::getValue() const {
-		if (type != JsonType::Object) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Object." };
-		}
-		return *static_cast<ObjectType*>(value);
-	}
-
-	template<> inline const EtfSerializer::ArrayType& EtfSerializer::getValue() const {
-		if (type != JsonType::Array) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Array." };
-		}
-		return *static_cast<ArrayType*>(value);
-	}
-
-	template<> inline const EtfSerializer::StringType& EtfSerializer::getValue() const {
-		if (type != JsonType::String) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not String." };
-		}
-		return *static_cast<StringType*>(value);
-	}
-
-	template<> inline const EtfSerializer::FloatType& EtfSerializer::getValue() const {
-		if (type != JsonType::Float) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Float." };
-		}
-		return *static_cast<FloatType*>(value);
-	}
-
-	template<> inline const EtfSerializer::UintType& EtfSerializer::getValue() const {
-		if (type != JsonType::Uint64) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Uint." };
-		}
-		return *static_cast<UintType*>(value);
-	}
-
-	template<> inline const EtfSerializer::IntType& EtfSerializer::getValue() const {
-		if (type != JsonType::Int64) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Int." };
-		}
-		return *static_cast<IntType*>(value);
-	}
-
-	template<> inline const EtfSerializer::BoolType& EtfSerializer::getValue() const {
-		if (type != JsonType::Bool) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Bool." };
-		}
-		return *static_cast<BoolType*>(value);
-	}
-
-	template<> inline EtfSerializer::ObjectType& EtfSerializer::getValue() {
-		if (type != JsonType::Object) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Object." };
-		}
-		return *static_cast<ObjectType*>(value);
-	}
-
-	template<> inline EtfSerializer::ArrayType& EtfSerializer::getValue() {
-		if (type != JsonType::Array) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Array." };
-		}
-		return *static_cast<ArrayType*>(value);
-	}
-
-	template<> inline EtfSerializer::StringType& EtfSerializer::getValue() {
-		if (type != JsonType::String) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not String." };
-		}
-		return *static_cast<StringType*>(value);
-	}
-
-	template<> inline EtfSerializer::FloatType& EtfSerializer::getValue() {
-		if (type != JsonType::Float) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Float." };
-		}
-		return *static_cast<FloatType*>(value);
-	}
-
-	template<> inline EtfSerializer::UintType& EtfSerializer::getValue() {
-		if (type != JsonType::Uint64) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Uint." };
-		}
-		return *static_cast<UintType*>(value);
-	}
-
-	template<> inline EtfSerializer::IntType& EtfSerializer::getValue() {
-		if (type != JsonType::Int64) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Int." };
-		}
-		return *static_cast<IntType*>(value);
-	}
-
-	template<> inline EtfSerializer::BoolType& EtfSerializer::getValue() {
-		if (type != JsonType::Bool) {
-			throw EtfSerializeError{ "Sorry, but this value's type is not Bool." };
-		}
-		return *static_cast<BoolType*>(value);
-	}
 
 }// namespace DiscordCoreInternal

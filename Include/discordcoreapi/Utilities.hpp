@@ -739,9 +739,6 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-
-	DiscordCoreAPI_Dll uint64_t strtoull(std::string_view string);
-
 	template<typename RTy> RTy inline fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
 		RTy value{};
 		std::istringstream stream(string);
@@ -1088,7 +1085,16 @@ namespace DiscordCoreAPI {
 			cacheMap.emplace(std::forward<mapped_type>(object));
 		}
 
-		inline constexpr reference operator[](key_type key) {
+		inline constexpr void emplace(const mapped_type& object) {
+			std::unique_lock lock(cacheMutex);
+			cacheMap.emplace(object);
+		}
+
+		inline constexpr reference operator[](key_type&& key) {
+			return find(std::forward<key_type>(key));
+		}
+
+		inline constexpr reference operator[](const key_type& key) {
 			return find(key);
 		}
 

@@ -356,29 +356,19 @@ namespace DiscordCoreAPI {
 		co_return returnData;
 	}
 
-	void Channels::insertChannel(const ChannelData& channel) {
+	ChannelData& Channels::insertChannel(ChannelData&& channel) {
 		if (channel.id == 0) {
-			return;
-		}
-		if (Channels::doWeCacheChannels()) {
-			ChannelData newChannel{ channel };
-			Channels::cache.emplace(std::move(newChannel));
-			if (Channels::cache.count() % 10 == 0) {
-				std::cout << "CHANNEL COUNT: " << Channels::cache.count() << std::endl;
-			}
-		}
-	}
-
-	void Channels::insertChannel(ChannelData&& channel) {
-		if (channel.id == 0) {
-			return;
+			return *Channels::cache.end();
 		}
 		if (Channels::doWeCacheChannelsBool) {
+			auto id = channel.id;
 			Channels::cache.emplace(std::forward<ChannelData>(channel));
 			if (Channels::cache.count() % 10 == 0) {
 				std::cout << "CHANNEL COUNT: " << Channels::cache.count() << std::endl;
 			}
+			return cache.find(id);
 		}
+		return *cache.end();
 	}
 
 	void Channels::removeChannel(Snowflake channelId) {

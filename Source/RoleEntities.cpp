@@ -278,29 +278,20 @@ namespace DiscordCoreAPI {
 	}
 
 	StopWatch<Milliseconds> stopWatchNew{ 5ms };
-	void Roles::insertRole(const RoleData& role) {
-		if (role.id == 0) {
-			return;
-		}
-		if (Roles::doWeCacheRoles()) {
-			RoleData newRole{ role };
-			Roles::cache.emplace(std::move(newRole));
-			if (Roles::cache.count() % 10 == 0) {
-				std::cout << "ROLE COUNT: " << Roles::cache.count() << ", AFTER: " << stopWatchNew.totalTimePassed().count() << "s" << std::endl;
-			}
-		}
-	}
 
-	void Roles::insertRole(RoleData&& role) {
+	RoleData& Roles::insertRole(RoleData&& role) {
 		if (role.id == 0) {
-			return;
+			return *cache.end();
 		}
 		if (Roles::doWeCacheRoles()) {
+			auto id = role.id;
 			Roles::cache.emplace(std::forward<RoleData>(role));
 			if (Roles::cache.count() % 10 == 0) {
 				std::cout << "ROLE COUNT: " << Roles::cache.count() << ", AFTER: " << stopWatchNew.totalTimePassed().count() << "s" << std::endl;
 			}
+			return cache.find(id);
 		}
+		return *cache.end();
 	}
 
 	void Roles::removeRole(const Snowflake roleId) {

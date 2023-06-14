@@ -52,7 +52,7 @@ namespace DiscordCoreInternal {
 
 		bool collectFrame(DiscordCoreAPI::AudioFrameData& frameNew) noexcept;
 
-		void writeData(std::basic_string_view<uint8_t> inputData) noexcept;
+		void writeData(std::basic_string_view<uint8_t> stringNew) noexcept;
 
 		void proceedDemuxing() noexcept;
 
@@ -60,9 +60,10 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		std::deque<DiscordCoreAPI::AudioFrameData> frames{};
-		std::basic_string<uint8_t> data{};
+		std::basic_string_view<uint8_t> data{};
 		bool doWeHaveTotalSize{ false };
 		bool doWePrintErrors{ false };
+		bool areWeDoneVal{ false };
 		size_t currentPosition{};
 		size_t currentSize{};
 		size_t totalSize{};

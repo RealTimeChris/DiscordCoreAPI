@@ -277,10 +277,8 @@ namespace DiscordCoreInternal {
 					downloadBaseUrl =
 						potentialFormats[maxIndex].url.substr(httpsFind + newString00.length(), videoPlaybackFind - newString00.length());
 				}
-				std::string requestNew = "GET " + potentialFormats[maxIndex].url + " HTTP/1.1\n\rHost: " + downloadBaseUrl + "\n\r" +
-					"Connection: Keep-Alive\n\r" + "User-Agent: com.google.android.youtube/17.10.35 (Linux; U; Android 12; US) gzip\n\r" +
-					"Origin: https://music.youtube.com" + "\n\r\n\r";
-				newerSong.finalDownloadUrls.resize(2);
+				std::string requestNew = potentialFormats[maxIndex].url.substr(potentialFormats[maxIndex].url.find(".com") + 4);
+				newerSong.finalDownloadUrls.resize(3);
 				DiscordCoreAPI::DownloadUrl downloadUrl01{};
 				downloadUrl01.contentSize = stoull(potentialFormats[maxIndex].contentLength);
 				downloadUrl01.urlPath = downloadBaseUrl;
@@ -315,7 +313,8 @@ namespace DiscordCoreInternal {
 		return newerSong;
 	}
 
-	YouTubeAPI::YouTubeAPI(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, HttpsClient* httpsClientNew, const DiscordCoreAPI::Snowflake guildIdNew) {
+	YouTubeAPI::YouTubeAPI(DiscordCoreAPI::DiscordCoreClient* discordCoreClientNew, HttpsClient* httpsClientNew,
+		const DiscordCoreAPI::Snowflake guildIdNew) {
 		configManager = &discordCoreClientNew->getConfigManager();
 		discordCoreClient = discordCoreClientNew;
 		httpsClient = httpsClientNew;
@@ -334,162 +333,90 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	template<typename FTy> bool tryFunction(FTy function, DiscordCoreAPI::ConfigManager& configManager) noexcept {
-		try {
-			function();
-			return true;
-		} catch (ConnectionError& e) {
-			if (configManager.doWePrintWebSocketErrorMessages()) {
-				DiscordCoreAPI::reportException("downloadAndStreamAudio()");
-			}
-			switch (e.getType()) {
-				case ConnectionErrorType::POLLHUP_Error: {
-					return true;
-				}
-				case ConnectionErrorType::POLLERR_Error: {
-					return true;
-				}
-				default: {
-					return false;
-				}
-			}
-		}
-	}
-
 	void YouTubeAPI::downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token& token, int32_t currentReconnectTries) {
 		try {
 			areWeWorkingBool.store(true);
-			std::unique_ptr<WebSocketClient> streamSocket{};
-			if (newSong.finalDownloadUrls.size() > 0) {
-				try {
-					streamSocket = std::make_unique<WebSocketClient>(discordCoreClient, 0, &DiscordCoreAPI::Globals::doWeQuit, true);
-					streamSocket->tcpConnection =
-						std::make_unique<WebSocketTCPConnection>(newSong.finalDownloadUrls[0].urlPath, 443, true, nullptr, true);
-				} catch (...) {
-					if (configManager->doWePrintWebSocketErrorMessages()) {
-						DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
-					}
+			size_t intervalCount{ newSong.contentLength / (1024 * 1024) + 1 };
+			size_t remainder{ newSong.contentLength % (1024 * 1024) };
+			size_t currentStart{};
+			size_t currentEnd{ intervalCount > 1 ? (1024 * 1024) : remainder };
+			std::vector<HttpsWorkloadData> workloadVector{};
+			for (size_t x = 0; x < intervalCount; ++x) {
+				HttpsWorkloadData workloadData{ HttpsWorkloadType::YouTubeGetSearchResults };
+				if (newSong.finalDownloadUrls.size() > 0) {
+					workloadData.baseUrl = newSong.finalDownloadUrls[0].urlPath;
+				} else {
 					weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
 					areWeWorkingBool.store(false);
 					return;
 				}
-			} else {
-				weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
-				areWeWorkingBool.store(false);
-				return;
+				workloadData.workloadClass = HttpsWorkloadClass::Get;
+				workloadData.headersToInsert["User-Agent"] = "com.google.android.youtube/17.10.35 (Linux; U; Android 12; US) gzip";
+				workloadData.headersToInsert["Connection"] = "Keep-Alive";
+				workloadData.headersToInsert["Host"] = newSong.finalDownloadUrls[0].urlPath;
+				workloadData.headersToInsert["Origin"] = "https://music.youtube.com";
+				workloadData.relativePath =
+					newSong.finalDownloadUrls[1].urlPath + "&range=" + std::to_string(currentStart) + "-" + std::to_string(currentEnd);
+				workloadVector.emplace_back(std::move(workloadData));
+				currentStart = currentEnd;
+				currentEnd += x == intervalCount - 2 ? remainder : (1024 * 1024);
 			}
-			auto bytesRead{ streamSocket->tcpConnection->getBytesRead() };
-			bool areWeDoneHeaders{};
-			int64_t totalDownloadSize{ static_cast<int64_t>(newSong.contentLength) };
-			int64_t remainingDownloadContentLength{ totalDownloadSize };
-			uint32_t counter{ 1 };
-			size_t headerSize{};
-			std::string string = newSong.finalDownloadUrls[1].urlPath;
-			if (!tryFunction(
-					[&]() {
-						streamSocket->tcpConnection->writeData(string, true);
-					},
-					*configManager)) {
-				std::this_thread::sleep_for(1s);
-				weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
-				areWeWorkingBool.store(false);
-				return;
-			}
-			if (!tryFunction(
-					[&]() {
-						streamSocket->tcpConnection->processIO(1000);
-					},
-					*configManager)) {
-				std::this_thread::sleep_for(1s);
-				weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
-				areWeWorkingBool.store(false);
-				return;
-			}
-			if (!streamSocket->tcpConnection->areWeStillConnected()) {
-				weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
-				areWeWorkingBool.store(false);
-				return;
-			}
-			MatroskaDemuxer demuxer{ configManager->doWePrintGeneralErrorMessages() };
-			size_t sameAsLastTimeCount{};
-			while (sameAsLastTimeCount < 20 && !demuxer.areWeDone()) {
-				int64_t bytesReadCurrent{};
-				int64_t bytesReadPrevious{ streamSocket->tcpConnection->getBytesRead() };
-				if (token.stop_requested()) {
+			if (intervalCount == 0 && remainder > 0) {
+				HttpsWorkloadData workloadData{ HttpsWorkloadType::YouTubeGetSearchResults };
+				if (newSong.finalDownloadUrls.size() > 0) {
+					workloadData.baseUrl = newSong.finalDownloadUrls[0].urlPath;
+				} else {
+					weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
 					areWeWorkingBool.store(false);
 					return;
-				} else {
-					while (!areWeDoneHeaders) {
-						if (!tryFunction(
-								[&]() {
-									streamSocket->tcpConnection->processIO(1000);
-									headerSize = streamSocket->tcpConnection->getBytesRead();
-								},
-								*configManager)) {
-							weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
-							areWeWorkingBool.store(false);
-							return;
+				}
+				workloadData.workloadClass = HttpsWorkloadClass::Get;
+				workloadData.headersToInsert["User-Agent"] = "com.google.android.youtube/17.10.35 (Linux; U; Android 12; US) gzip";
+				workloadData.headersToInsert["Connection"] = "Keep-Alive";
+				workloadData.headersToInsert["Host"] = newSong.finalDownloadUrls[0].urlPath;
+				workloadData.headersToInsert["Origin"] = "https://music.youtube.com";
+				workloadData.relativePath =
+					newSong.finalDownloadUrls[1].urlPath + "&range=" + std::to_string(currentStart) + "-" + std::to_string(currentEnd);
+				workloadVector.emplace_back(std::move(workloadData));
+				currentStart = currentEnd;
+				intervalCount = 1;
+				currentEnd += remainder;
+			}
+			std::basic_string<uint8_t> buffer{};
+			MatroskaDemuxer demuxer{ configManager->doWePrintGeneralErrorMessages() };
+			size_t index{};
+			while (index < intervalCount || !demuxer.areWeDone()) {
+				HttpsResponseData result{};
+				if (index < intervalCount) {
+					try {
+						result = httpsClient->submitWorkloadAndGetResult(std::move(workloadVector[index]));
+
+					} catch (HttpsError& e) {
+						if (configManager->doWePrintHttpsErrorMessages()) {
+							DiscordCoreAPI::reportException("YouTubeAPI::downloadAndStreamAudio()");
 						}
-						if (!token.stop_requested()) {
-							if (streamSocket->tcpConnection->areWeStillConnected()) {
-								std::basic_string_view<uint8_t> newString = streamSocket->tcpConnection->getInputBuffer();
-								if (newString.find(reinterpret_cast<const uint8_t*>("Content-Length: ")) != std::string::npos) {
-									newString = newString.substr(newString.find(reinterpret_cast<const uint8_t*>("Content-Length: ")) +
-										std::string{ "Content-Length: " }.size());
-									newString = newString.substr(0, newString.find_first_of(reinterpret_cast<const uint8_t*>("\n\r")));
-									remainingDownloadContentLength = totalDownloadSize - streamSocket->tcpConnection->getBytesRead();
-									areWeDoneHeaders = true;
-								}
-							} else {
-								weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
-								areWeWorkingBool.store(false);
-								return;
-							}
-						}
-					}
-					if (token.stop_requested()) {
-						streamSocket->tcpConnection->disconnect();
-						areWeWorkingBool.store(false);
-						return;
-					}
-					if (!tryFunction(
-							[&]() {
-								streamSocket->tcpConnection->processIO(1000);
-								bytesReadCurrent = streamSocket->tcpConnection->getBytesRead();
-								if (bytesReadCurrent > bytesReadPrevious) {
-									remainingDownloadContentLength = totalDownloadSize - streamSocket->tcpConnection->getBytesRead();
-									sameAsLastTimeCount = 0;
-								} else if (bytesReadCurrent == bytesReadPrevious) {
-									++sameAsLastTimeCount;
-								}
-							},
-							*configManager)) {
 						weFailedToDownloadOrDecode(newSong, token, currentReconnectTries);
 						areWeWorkingBool.store(false);
 						return;
 					}
-					std::basic_string_view<uint8_t> streamBufferReal = streamSocket->tcpConnection->getInputBuffer();
-					if (streamBufferReal.size() > 0) {
-						demuxer.writeData(streamBufferReal);
-						demuxer.proceedDemuxing();
-					}
-					DiscordCoreAPI::AudioFrameData frameData{};
-					while (demuxer.collectFrame(frameData)) {
-						if (token.stop_requested()) {
-							areWeWorkingBool.store(false);
-							return;
-						}
-						if (frameData.currentSize != 0) {
-							DiscordCoreAPI::DiscordCoreClient::getSongAPI(guildId)->audioDataBuffer.send(std::move(frameData));
-						}
-					}
-					if (token.stop_requested()) {
-						areWeWorkingBool.store(false);
-						return;
+				}
+				if (result.responseData.size() > 0) {
+					++index;
+					auto oldSize = buffer.size();
+					buffer.resize(buffer.size() + result.responseData.size());
+					std::memcpy(buffer.data() + oldSize, result.responseData.data(), result.responseData.size());
+					demuxer.writeData({ reinterpret_cast<uint8_t*>(buffer.data()), buffer.size() });
+					demuxer.proceedDemuxing();
+				}
+
+
+				DiscordCoreAPI::AudioFrameData frameData{};
+				while (demuxer.collectFrame(frameData)) {
+					if (frameData.currentSize != 0) {
+						DiscordCoreAPI::DiscordCoreClient::getSongAPI(guildId)->audioDataBuffer.send(std::move(frameData));
 					}
 				}
 				std::this_thread::sleep_for(1ms);
-				++counter;
 			}
 			areWeWorkingBool.store(false);
 			DiscordCoreAPI::DiscordCoreClient::getVoiceConnection(guildId)->doWeSkip.store(true);

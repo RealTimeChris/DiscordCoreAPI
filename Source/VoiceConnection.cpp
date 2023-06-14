@@ -160,8 +160,8 @@ namespace DiscordCoreAPI {
 		}
 	}
 
-	VoiceConnectionBridge::VoiceConnectionBridge(DiscordCoreClient* discordCoreClientNew, std::basic_string<uint8_t>& encryptionKeyNew, StreamType streamType,
-		const std::string& baseUrlNew, const uint16_t portNew, Snowflake guildIdNew, std::stop_token* tokenNew)
+	VoiceConnectionBridge::VoiceConnectionBridge(DiscordCoreClient* discordCoreClientNew, std::basic_string<uint8_t>& encryptionKeyNew,
+		StreamType streamType, const std::string& baseUrlNew, const uint16_t portNew, Snowflake guildIdNew, std::stop_token* tokenNew)
 		: UDPConnection{ baseUrlNew, portNew, streamType, discordCoreClientNew->getConfigManager().doWePrintWebSocketErrorMessages() } {
 		encryptionKey = encryptionKeyNew;
 		discordCoreClient = discordCoreClientNew;

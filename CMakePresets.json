@@ -79,7 +79,7 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
       "description": "Target Linux (64-bit) with the Visual Studio development environment. (Release)",
       "inherits": "Linux-Base",
-      "name": "linux-Release"
+      "name": "Linux-Release"
     },
     {
       "architecture": {
@@ -89,7 +89,7 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
       "description": "Target Linux (64-bit) with the Visual Studio development environment. (Debug)",
       "inherits": "Linux-Base",
-      "name": "linux-Debug"
+      "name": "Linux-Debug"
     },
     {
       "architecture": {
@@ -102,7 +102,7 @@
       },
       "description": "Target Linux (64-bit) with the Visual Studio development environment. (Release)",
       "inherits": "Linux-Base",
-      "name": "linux-Release-Asan"
+      "name": "Linux-Release-Asan"
     },
     {
       "architecture": {
@@ -115,18 +115,20 @@
       },
       "description": "Target Linux (64-bit) with the Visual Studio development environment. (Debug)",
       "inherits": "Linux-Base",
-      "name": "linux-Debug-Asan"
+      "name": "Linux-Debug-Asan"
     }
   ],
   "buildPresets": [
     {
       "configurePreset": "Windows-Release",
+      "configuration": "Release",
       "inheritConfigureEnvironment": true,
       "name": "Windows-Release",
       "verbose": true
     },
     {
       "configurePreset": "Windows-Debug",
+      "configuration": "Debug",
       "inheritConfigureEnvironment": true,
       "name": "Windows-Debug",
       "verbose": true
@@ -134,36 +136,42 @@
     {
       "configurePreset": "Windows-Release-Asan",
       "inheritConfigureEnvironment": true,
+      "configuration": "Release",
       "name": "Windows-Release-Asan",
       "verbose": true
     },
     {
       "configurePreset": "Windows-Debug-Asan",
       "inheritConfigureEnvironment": true,
+      "configuration": "Debug",
       "name": "Windows-Debug-Asan",
       "verbose": true
     },
     {
-      "configurePreset": "linux-Release",
+      "configurePreset": "Linux-Release",
       "inheritConfigureEnvironment": true,
+      "configuration": "Release",
       "name": "Linux-Release",
       "verbose": true
     },
     {
-      "configurePreset": "linux-Debug",
+      "configurePreset": "Linux-Debug",
       "inheritConfigureEnvironment": true,
+      "configuration": "Debug",
       "name": "Linux-Debug",
       "verbose": true
     },
     {
-      "configurePreset": "linux-Release-Asan",
+      "configurePreset": "Linux-Release-Asan",
       "inheritConfigureEnvironment": true,
+      "configuration": "Release",
       "name": "Linux-Release-Asan",
       "verbose": true
     },
     {
-      "configurePreset": "linux-Debug-Asan",
+      "configurePreset": "Linux-Debug-Asan",
       "inheritConfigureEnvironment": true,
+      "configuration": "Debug",
       "name": "Linux-Debug-Asan",
       "verbose": true
     }

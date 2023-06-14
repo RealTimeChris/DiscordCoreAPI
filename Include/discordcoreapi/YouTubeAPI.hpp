@@ -65,9 +65,7 @@ namespace DiscordCoreInternal {
 	  protected:
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{};
 		std::atomic_bool areWeWorkingBool{ false };
-		std::basic_string<uint8_t> buffer{};
 		DiscordCoreAPI::Snowflake guildId{};
-		const int32_t maxBufferSize{ 8192 };
 	};
 
 	struct DiscordCoreAPI_Dll YouTubeRequestClient {

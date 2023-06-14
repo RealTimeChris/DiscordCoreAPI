@@ -23,8 +23,8 @@ jobs:
 
     - name: Update Vcpkg and install other dependencies.
       run: |
-            sudo apt-get upgrade
-            sudo apt-get update
+            sudo apt-get update --fix-missing
+            sudo apt-get upgrade --fix-missing
             sudo apt-get install nasm
             cd /usr/local/share/vcpkg
             ./bootstrap-vcpkg.sh

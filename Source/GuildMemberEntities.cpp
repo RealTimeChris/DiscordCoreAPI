@@ -57,8 +57,8 @@ namespace DiscordCoreAPI {
 		roles = std::move(other.roles);
 		nick = std::move(other.nick);
 		guildId = other.guildId;
-		flags = other.flags;
 		user.id = other.user.id;
+		flags = other.flags;
 		return *this;
 	};
 
@@ -89,9 +89,9 @@ namespace DiscordCoreAPI {
 			avatar = std::move(other.avatar);
 			roles = std::move(other.roles);
 			nick = std::move(other.nick);
+			user.id = other.user.id;
 			guildId = other.guildId;
 			flags = other.flags;
-			user.id = other.user.id;
 		}
 		return *this;
 	};
@@ -104,12 +104,12 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			permissions = other.permissions;
 			joinedAt = other.joinedAt;
+			user.id = other.user.id;
 			guildId = other.guildId;
 			avatar = other.avatar;
 			roles = other.roles;
 			flags = other.flags;
 			nick = other.nick;
-			user.id = other.user.id;
 		}
 		return *this;
 	};
@@ -133,12 +133,11 @@ namespace DiscordCoreAPI {
 		data.guildId = dataPackage.guildId;
 		data.user.id = dataPackage.guildMemberId;
 		GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, data);
-		if (GuildMembers::getCache().contains(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId })) {
-			data = GuildMembers::getCache().find(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId });
+		if (GuildMembers::cache.contains(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId })) {
+			data = GuildMembers::cache.find(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId });
 		} else {
-			GuildMembers::insertGuildMember(data);
+			data = GuildMembers::insertGuildMember(std::move(data));
 		}
-		data.guildId = dataPackage.guildId;
 		co_return data;
 	}
 
@@ -146,8 +145,8 @@ namespace DiscordCoreAPI {
 		GuildMemberData key{};
 		key.user.id = dataPackage.guildMemberId;
 		key.guildId = dataPackage.guildId;
-		if (GuildMembers::getCache().contains(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId })) {
-			return GuildMembers::getCache().find(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId });
+		if (GuildMembers::cache.contains(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId })) {
+			return GuildMembers::cache.find(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId });
 		} else {
 		}
 		return GuildMembers::getGuildMemberAsync(dataPackage).get();
@@ -235,12 +234,11 @@ namespace DiscordCoreAPI {
 		data.guildId = dataPackage.guildId;
 		data.user.id = dataPackage.guildMemberId;
 		GuildMembers::httpsClient->submitWorkloadAndGetResult<GuildMember>(workload, data);
-		if (GuildMembers::getCache().contains(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId })) {
-			data = GuildMembers::getCache().find(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId });
+		if (GuildMembers::cache.contains(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId })) {
+			data = GuildMembers::cache.find(GuildMemberKey{ .guildId = dataPackage.guildId, .userId = dataPackage.guildMemberId });
 		} else {
-			GuildMembers::insertGuildMember(data);
+			data = GuildMembers::insertGuildMember(std::move(data));
 		}
-		data.guildId = dataPackage.guildId;
 		co_return data;
 	}
 
@@ -314,11 +312,14 @@ namespace DiscordCoreAPI {
 		co_return guildMember;
 	}
 
-	void GuildMembers::insertVoiceState(VoiceStateDataLight voiceState) {
+	VoiceStateDataLight& GuildMembers::insertVoiceState(VoiceStateDataLight&& voiceState) {
 		if (voiceState.id == 0) {
-			return;
+			return *vsCache.end();
 		}
-		GuildMembers::vsCache.emplace(VoiceStateDataLight{ voiceState });
+		auto id = voiceState.id;
+		auto guildId = voiceState.guildId;
+		GuildMembers::vsCache.emplace(std::forward<VoiceStateDataLight>(voiceState));
+		return vsCache.find(GuildMemberKey{ .guildId = guildId, .userId = id });
 	}
 
 	void GuildMembers::removeVoiceState(const VoiceStateDataLight& voiceState) {
@@ -337,17 +338,19 @@ namespace DiscordCoreAPI {
 		return GuildMembers::cache;
 	}
 
-	void GuildMembers::insertGuildMember(GuildMemberData guildMember) {
-		if (guildMember.guildId == 0) {
-			return;
+	GuildMemberData& GuildMembers::insertGuildMember(GuildMemberData&& guildMember) {
+		if (guildMember.guildId == 0 || guildMember.user.id == 0) {
+			return *GuildMembers::cache.end();
 		}
+		GuildMemberKey key{ .guildId = guildMember.guildId, .userId = guildMember.user.id };
 		if (GuildMembers::doWeCacheGuildMembersBool) {
-			GuildMembers::getCache().emplace(std::forward<GuildMemberData>(guildMember));
+			GuildMembers::cache.emplace(std::forward<GuildMemberData>(guildMember));
 		}
+		return GuildMembers::cache.find(key);
 	}
 
 	void GuildMembers::removeGuildMember(const GuildMemberData& guildMember) {
-		GuildMembers::getCache().erase(GuildMemberKey{ .guildId = guildMember.guildId, .userId = guildMember.user.id });
+		GuildMembers::cache.erase(GuildMemberKey{ .guildId = guildMember.guildId, .userId = guildMember.user.id });
 	};
 
 	bool GuildMembers::doWeCacheGuildMembers() {
@@ -355,7 +358,7 @@ namespace DiscordCoreAPI {
 	}
 
 	ObjectCache<GuildMemberKey, VoiceStateDataLight> GuildMembers::vsCache{};
-	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{};
 	ObjectCache<GuildMemberKey, GuildMemberData> GuildMembers::cache{};
+	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{};
 	bool GuildMembers::doWeCacheGuildMembersBool{};
 };

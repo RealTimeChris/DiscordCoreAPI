@@ -462,7 +462,7 @@ namespace DiscordCoreAPI {
 	CoRoutine<GuildDataVector> Guilds::getAllGuildsAsync() {
 		co_await NewThreadAwaitable<GuildDataVector>();
 		GuildDataVector guildVector{};
-		for (auto& value: Guilds::getCache()) {
+		for (auto& value: Guilds::cache) {
 			value.discordCoreClient = Guilds::discordCoreClient;
 			guildVector.emplace_back(value);
 		}
@@ -477,8 +477,8 @@ namespace DiscordCoreAPI {
 		workload.callStack = "Guilds::getGuildAsync()";
 		GuildData data{};
 		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(workload, data);
-		if (Guilds::getCache().contains(dataPackage.guildId)) {
-			data = Guilds::getCache().find(dataPackage.guildId);
+		if (Guilds::cache.contains(dataPackage.guildId)) {
+			data = Guilds::cache.find(dataPackage.guildId);
 		} else {
 			Guilds::insertGuild(std::move(data));
 		}
@@ -489,12 +489,12 @@ namespace DiscordCoreAPI {
 	GuildData Guilds::getCachedGuild(GetGuildData dataPackage) {
 		Guild data{};
 		data.id = dataPackage.guildId;
-		if (!Guilds::getCache().contains(dataPackage.guildId)) {
+		if (!Guilds::cache.contains(dataPackage.guildId)) {
 			auto guild = Guilds::getGuildAsync({ .guildId = dataPackage.guildId }).get();
 			guild.discordCoreClient = Guilds::discordCoreClient;
 			return guild;
 		} else {
-			return Guilds::getCache().find(dataPackage.guildId);
+			return Guilds::cache.find(dataPackage.guildId);
 		}
 	}
 
@@ -523,8 +523,8 @@ namespace DiscordCoreAPI {
 		Guild data{};
 		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(workload, data);
 		data.discordCoreClient = Guilds::discordCoreClient;
-		if (Guilds::getCache().contains(dataPackage.guildId)) {
-			data = Guilds::getCache().find(dataPackage.guildId);
+		if (Guilds::cache.contains(dataPackage.guildId)) {
+			data = Guilds::cache.find(dataPackage.guildId);
 		} else {
 			Guilds::insertGuild(std::move(data));
 		}
@@ -974,39 +974,25 @@ namespace DiscordCoreAPI {
 	}
 
 	StopWatch stopWatch{ 5s };
-	void Guilds::insertGuild(const GuildData& guild) {
+
+	GuildData& Guilds::insertGuild(GuildData&& guild) {
 		if (guild.id == 0) {
-			return;
+			return *cache.end();
 		}
 		if (Guilds::doWeCacheGuilds()) {
-			GuildData newGuild{ guild };
-			newGuild.discordCoreClient = Guilds::discordCoreClient;
-			Guilds::getCache().emplace(std::forward<GuildData>(newGuild));
-
-			if (Guilds::getCache().count() % 1 == 0) {
-				std::cout << "THE GUILD COUNT: " << Guilds::getCache().count() << ", TOTAL TIME: " << stopWatch.totalTimePassed().count()
-						  << std::endl;
-			}
-		}
-	}
-
-	void Guilds::insertGuild(GuildData&& guild) {
-		if (guild.id == 0) {
-			return;
-		}
-		if (Guilds::doWeCacheGuilds()) {
+			auto id = guild.id;
 			guild.discordCoreClient = Guilds::discordCoreClient;
-			Guilds::getCache().emplace(std::forward<GuildData>(guild));
-
-			if (Guilds::getCache().count() % 1 == 0) {
-				std::cout << "THE GUILD COUNT: " << Guilds::getCache().count() << ", TOTAL TIME: " << stopWatch.totalTimePassed().count()
-						  << std::endl;
+			Guilds::cache.emplace(std::forward<GuildData>(guild));
+			if (Guilds::cache.count() % 1 == 0) {
+				std::cout << "THE GUILD COUNT: " << Guilds::cache.count() << ", TOTAL TIME: " << stopWatch.totalTimePassed().count() << std::endl;
 			}
+			return cache.find(id);
 		}
+		return *cache.end();
 	}
 
 	void Guilds::removeGuild(const Snowflake guildId) {
-		Guilds::getCache().erase(guildId);
+		Guilds::cache.erase(guildId);
 	};
 
 	ObjectCache<Snowflake, GuildData>& Guilds::getCache() {
@@ -1018,8 +1004,8 @@ namespace DiscordCoreAPI {
 	}
 
 	DiscordCoreInternal::HttpsClient* Guilds::httpsClient{};
-	DiscordCoreClient* Guilds::discordCoreClient{};
 	ObjectCache<Snowflake, GuildData> Guilds::cache{};
+	DiscordCoreClient* Guilds::discordCoreClient{};
 	bool Guilds::doWeCacheGuildsBool{};
 
 }

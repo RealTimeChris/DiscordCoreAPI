@@ -33,6 +33,10 @@ namespace DiscordCoreInternal {
 		doWePrintErrors = doWePrintErrorsNew;
 	}
 
+	void MatroskaDemuxer::writeData(std::basic_string_view<uint8_t> dataNew) noexcept {
+		data = dataNew;
+	}
+
 	bool MatroskaDemuxer::collectFrame(DiscordCoreAPI::AudioFrameData& frameNew) noexcept {
 		if (frames.size() > 0) {
 			frameNew = std::move(frames[0]);
@@ -43,16 +47,16 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void MatroskaDemuxer::writeData(std::basic_string_view<uint8_t> dataNew) noexcept {
-		auto oldSize = data.size();
-		data.resize(data.size() + dataNew.size());
-		std::memcpy(data.data() + oldSize, dataNew.data(), dataNew.size());
+	void MatroskaDemuxer::proceedDemuxing() noexcept {
 		if (!doWeHaveTotalSize) {
 			if (reverseBytes<uint32_t>() != SEGMENT_ID) {
 				if (doWePrintErrors) {
 					std::cout << "Missing a Segment, which was expected at index: " << currentPosition << "..." << std::endl;
 				}
 				if (!findNextId(SEGMENT_ID)) {
+					if ((totalSize > 0 && currentPosition >= totalSize)) {
+						areWeDoneVal = true;
+					}
 					return;
 				}
 				if (doWePrintErrors) {
@@ -64,11 +68,11 @@ namespace DiscordCoreInternal {
 			totalSize = collectElementSize();
 			doWeHaveTotalSize = true;
 		}
-	}
-
-	void MatroskaDemuxer::proceedDemuxing() noexcept {
 		while (currentPosition + 3 < data.size() && data.find(0xa3) != std::string::npos) {
 			if (currentPosition >= data.size() - 8) {
+				if ((totalSize > 0 && currentPosition >= totalSize)) {
+					areWeDoneVal = true;
+				}
 				return;
 			}
 			if (data[currentPosition] == SIMPLEBLOCK_ID &&
@@ -81,6 +85,9 @@ namespace DiscordCoreInternal {
 						currentSize = 0;
 						continue;
 					} else if (currentSize == -1 || currentPosition + currentSize >= data.size()) {
+						if ((totalSize > 0 && currentPosition >= totalSize)) {
+							areWeDoneVal = true;
+						}
 						return;
 					} else {
 						parseOpusFrame();
@@ -92,11 +99,14 @@ namespace DiscordCoreInternal {
 				++currentPosition;
 			}
 		}
+		if ((totalSize > 0 && currentPosition >= totalSize)) {
+			areWeDoneVal = true;
+		}
 		return;
 	}
 
 	bool MatroskaDemuxer::areWeDone() noexcept {
-		return (totalSize > 0 && currentPosition >= totalSize);
+		return areWeDoneVal;
 	}
 
 	template<typename ObjectType> bool MatroskaDemuxer::findNextId(ObjectType value) noexcept {
@@ -117,9 +127,10 @@ namespace DiscordCoreInternal {
 		if (data.size() <= currentPosition + sizeof(ObjectType)) {
 			return -1;
 		}
-		ObjectType newValue{ *reinterpret_cast<ObjectType*>(&data[currentPosition]) };
-		reverseByteOrder(newValue);
-		return newValue;
+		const ObjectType newValue{ *reinterpret_cast<const ObjectType*>(&data[currentPosition]) };
+		ObjectType newerValue{ newValue };
+		reverseByteOrder(newerValue);
+		return newerValue;
 	}
 
 	int64_t MatroskaDemuxer::collectElementSize() noexcept {

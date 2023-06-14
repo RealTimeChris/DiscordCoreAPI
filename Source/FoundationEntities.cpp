@@ -34,12 +34,13 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
+#include <discordcoreapi/Etf.hpp>
 
 namespace DiscordCoreInternal {
 
 	WebSocketResumeData::operator EtfSerializer() {
 		EtfSerializer data{};
-		data["op"] = uint64_t{ 6 };
+		data["op"] = 6;
 		data["d"]["seq"] = lastNumberReceived;
 		data["d"]["session_id"] = sessionId;
 		data["d"]["token"] = botToken;
@@ -91,6 +92,10 @@ namespace DiscordCoreInternal {
 			payloadType = other.payloadType;
 		}
 		return *this;
+	}
+
+	HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadData&& other) noexcept {
+		*this = std::move(other);
 	}
 
 	HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadType type) noexcept {
@@ -572,14 +577,11 @@ namespace DiscordCoreAPI {
 	}
 
 	ChannelData InputEventData::getChannelData() const {
-		ChannelData returnData{};
 		if (interactionData->channelId != 0) {
-			returnData.id = interactionData->channelId;
+			return Channels::getCachedChannel({ interactionData->channelId });
 		} else {
-			returnData.id = interactionData->channel.id;
+			return Channels::getCachedChannel({ interactionData->channel.id });
 		}
-		returnData = Channels::getCachedChannel({ returnData.id });
-		return returnData;
 	}
 
 	GuildMemberData InputEventData::getGuildMemberData() const {
@@ -913,12 +915,12 @@ namespace DiscordCoreAPI {
 				choiceData.type = DiscordCoreInternal::JsonType::Float;
 				break;
 			}
-			case DiscordCoreInternal::JsonType::Uint64: {
-				choiceData.type = DiscordCoreInternal::JsonType::Uint64;
+			case DiscordCoreInternal::JsonType::Uint: {
+				choiceData.type = DiscordCoreInternal::JsonType::Uint;
 				break;
 			}
-			case DiscordCoreInternal::JsonType::Int64: {
-				choiceData.type = DiscordCoreInternal::JsonType::Int64;
+			case DiscordCoreInternal::JsonType::Int: {
+				choiceData.type = DiscordCoreInternal::JsonType::Int;
 				break;
 			}
 			case DiscordCoreInternal::JsonType::Bool: {

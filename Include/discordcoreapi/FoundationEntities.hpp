@@ -297,6 +297,8 @@ namespace DiscordCoreInternal {
 
 		HttpsWorkloadData& operator=(HttpsWorkloadData&& other) noexcept;
 
+		HttpsWorkloadData(HttpsWorkloadData&& other) noexcept;
+
 		HttpsWorkloadData& operator=(const HttpsWorkloadData& other) noexcept = delete;
 
 		HttpsWorkloadData(const HttpsWorkloadData& other) noexcept = delete;
@@ -2482,13 +2484,13 @@ namespace DiscordCoreAPI {
 
 	/// \brief Resolved data.
 	struct DiscordCoreAPI_Dll ResolvedData {
-		std::unordered_map<uint64_t, AttachmentData>
+		std::unordered_map<std::string, AttachmentData>
 			attachments{};///< std::unordered_map of Snowflakes to attachment objects the ids and attachment objects.
-		std::unordered_map<uint64_t, GuildMemberData> members{};///< std::unordered_map full of GuildMemeberData.
-		std::unordered_map<uint64_t, MessageData> messages{};///< std::unordered_map full of messageData->
-		std::unordered_map<uint64_t, ChannelData> channels{};///< std::unordered_map full of ChannelData.
-		std::unordered_map<uint64_t, UserData> users{};///< std::unordered_map full of UserData.
-		std::unordered_map<uint64_t, RoleData> roles{};///< std::unordered_map full of RoleData.
+		std::unordered_map<std::string, GuildMemberData> members{};///< std::unordered_map full of GuildMemeberData.
+		std::unordered_map<std::string, MessageData> messages{};///< std::unordered_map full of messageData->
+		std::unordered_map<std::string, ChannelData> channels{};///< std::unordered_map full of ChannelData.
+		std::unordered_map<std::string, UserData> users{};///< std::unordered_map full of UserData.
+		std::unordered_map<std::string, RoleData> roles{};///< std::unordered_map full of RoleData.
 
 		ResolvedData() noexcept = default;
 	};

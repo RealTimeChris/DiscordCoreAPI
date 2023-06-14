@@ -212,7 +212,7 @@ namespace DiscordCoreAPI {
 				Guilds::getCache()[value.guildId].channels.emplace_back(value.id);
 			}
 			if (Channels::doWeCacheChannels()) {
-				Channels::insertChannel(value);
+				Channels::insertChannel(std::move(value));
 			}
 		}
 	}
@@ -221,7 +221,7 @@ namespace DiscordCoreAPI {
 		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
 		oldValue = Channels::getCachedChannel({ .channelId = value.id });
 		if (Channels::doWeCacheChannels()) {
-			Channels::insertChannel(value);
+			Channels::insertChannel(std::move(value));
 		}
 	}
 
@@ -286,24 +286,24 @@ namespace DiscordCoreAPI {
 			for (auto& valueNew: value.members) {
 				valueNew.guildId = value.id;
 				GuildMembers::insertGuildMember(valueNew);
-				Users::insertUser(valueNew.user);
+				Users::insertUser(std::move(valueNew.user));
 			}
 		}
 		if (Channels::doWeCacheChannels()) {
 			for (auto& valueNew: value.channels) {
 				valueNew.guildId = value.id;
-				Channels::insertChannel(valueNew);
+				Channels::insertChannel(std::move(valueNew));
 			}
 		}
 		if (Roles::doWeCacheRoles()) {
 			for (auto& valueNew: value.roles) {
 				valueNew.guildId = value.id;
-				Roles::insertRole(valueNew);
+				Roles::insertRole(std::move(valueNew));
 			}
 		}
 		for (auto& valueNew: value.voiceStates) {
 			valueNew.guildId = value.id;
-			GuildMembers::insertVoiceState(valueNew);
+			GuildMembers::insertVoiceState(std::move(valueNew));
 		}
 		if (Guilds::doWeCacheGuilds()) {
 			if (Guilds::doWeCacheGuilds()) {
@@ -415,7 +415,7 @@ namespace DiscordCoreAPI {
 			Guilds::getCache()[value.guildId].roles.emplace_back(std::move(value.role.id));
 		}
 		if (Roles::doWeCacheRoles()) {
-			Roles::insertRole(value.role);
+			Roles::insertRole(std::move(value.role));
 		}
 	}
 
@@ -423,7 +423,7 @@ namespace DiscordCoreAPI {
 		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
 		oldValue = Roles::getCachedRole({ .guildId = this->value.guildId, .roleId = this->value.role.id });
 		if (Roles::doWeCacheRoles()) {
-			Roles::insertRole(value.role);
+			Roles::insertRole(std::move(value.role));
 		}
 	}
 
@@ -660,7 +660,7 @@ namespace DiscordCoreAPI {
 		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
 		oldValue = Users::getCachedUser({ value.id });
 		if (Users::doWeCacheUsers()) {
-			Users::insertUser(value);
+			Users::insertUser(std::move(value));
 		}
 	}
 
@@ -680,7 +680,7 @@ namespace DiscordCoreAPI {
 			sslShard->stateUpdateCollected = false;
 			sslShard->areWeCollectingData = false;
 		}
-		GuildMembers::insertVoiceState(value);
+		GuildMembers::insertVoiceState(std::move(value));
 	}
 
 	OnWebhookUpdateData::OnWebhookUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
