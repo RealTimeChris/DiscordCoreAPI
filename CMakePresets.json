@@ -21,7 +21,7 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
       "description": "Target Windows (64-bit) with the Visual Studio development environment. (Release)",
       "inherits": "Windows-Base",
-      "name": "windows-release"
+      "name": "Windows-Release"
     },
     {
       "architecture": {
@@ -31,7 +31,7 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
       "description": "Target Windows (64-bit) with the Visual Studio development environment. (Debug)",
       "inherits": "Windows-Base",
-      "name": "windows-debug"
+      "name": "Windows-Debug"
     },
     {
       "architecture": {
@@ -44,7 +44,7 @@
       },
       "description": "Target Windows (64-bit) with the Visual Studio development environment. (Release)",
       "inherits": "Windows-Base",
-      "name": "windows-release-asan"
+      "name": "Windows-Release-Asan"
     },
     {
       "architecture": {
@@ -57,7 +57,7 @@
       },
       "description": "Target Windows (64-bit) with the Visual Studio development environment. (Debug)",
       "inherits": "Windows-Base",
-      "name": "windows-debug-asan"
+      "name": "Windows-Debug-Asan"
     },
     {
       "binaryDir": "${sourceDir}/Build/${presetName}",
@@ -79,7 +79,7 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
       "description": "Target Linux (64-bit) with the Visual Studio development environment. (Release)",
       "inherits": "Linux-Base",
-      "name": "linux-release"
+      "name": "linux-Release"
     },
     {
       "architecture": {
@@ -89,7 +89,7 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
       "description": "Target Linux (64-bit) with the Visual Studio development environment. (Debug)",
       "inherits": "Linux-Base",
-      "name": "linux-debug"
+      "name": "linux-Debug"
     },
     {
       "architecture": {
@@ -102,7 +102,7 @@
       },
       "description": "Target Linux (64-bit) with the Visual Studio development environment. (Release)",
       "inherits": "Linux-Base",
-      "name": "linux-release-asan"
+      "name": "linux-Release-Asan"
     },
     {
       "architecture": {
@@ -115,54 +115,54 @@
       },
       "description": "Target Linux (64-bit) with the Visual Studio development environment. (Debug)",
       "inherits": "Linux-Base",
-      "name": "linux-debug-asan"
+      "name": "linux-Debug-Asan"
     }
   ],
   "buildPresets": [
     {
-      "configurePreset": "windows-release",
+      "configurePreset": "Windows-Release",
       "inheritConfigureEnvironment": true,
       "name": "Windows-Release",
       "verbose": true
     },
     {
-      "configurePreset": "windows-debug",
+      "configurePreset": "Windows-Debug",
       "inheritConfigureEnvironment": true,
       "name": "Windows-Debug",
       "verbose": true
     },
     {
-      "configurePreset": "windows-release-asan",
+      "configurePreset": "Windows-Release-Asan",
       "inheritConfigureEnvironment": true,
       "name": "Windows-Release-Asan",
       "verbose": true
     },
     {
-      "configurePreset": "windows-debug-asan",
+      "configurePreset": "Windows-Debug-Asan",
       "inheritConfigureEnvironment": true,
       "name": "Windows-Debug-Asan",
       "verbose": true
     },
     {
-      "configurePreset": "linux-release",
+      "configurePreset": "linux-Release",
       "inheritConfigureEnvironment": true,
       "name": "Linux-Release",
       "verbose": true
     },
     {
-      "configurePreset": "linux-debug",
+      "configurePreset": "linux-Debug",
       "inheritConfigureEnvironment": true,
       "name": "Linux-Debug",
       "verbose": true
     },
     {
-      "configurePreset": "linux-release-asan",
+      "configurePreset": "linux-Release-Asan",
       "inheritConfigureEnvironment": true,
       "name": "Linux-Release-Asan",
       "verbose": true
     },
     {
-      "configurePreset": "linux-debug-asan",
+      "configurePreset": "linux-Debug-Asan",
       "inheritConfigureEnvironment": true,
       "name": "Linux-Debug-Asan",
       "verbose": true
