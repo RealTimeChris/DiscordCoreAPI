@@ -172,7 +172,7 @@ file(
   "description": "A Discord bot library written in C++ using custom asynchronous coroutines.",
   "homepage": "https://discordcoreapi.com",
   "license": "LGPL-2.1-or-later",
-  "supports": "(windows & x64 & !static) | (linux & x64)",
+  "supports": "(windows & x64 & !xbox) | (linux & x64)",
   "dependencies": [
     "jsonifier",
     "libsodium",
