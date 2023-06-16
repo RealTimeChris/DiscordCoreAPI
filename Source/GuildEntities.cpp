@@ -977,18 +977,15 @@ namespace DiscordCoreAPI {
 
 	GuildData& Guilds::insertGuild(GuildData&& guild) {
 		if (guild.id == 0) {
-			return *cache.end();
+			throw DCAException{ "Sorry, but there was no id set for that guild." };
 		}
-		if (Guilds::doWeCacheGuilds()) {
-			auto id = guild.id;
-			guild.discordCoreClient = Guilds::discordCoreClient;
-			Guilds::cache.emplace(std::forward<GuildData>(guild));
-			if (Guilds::cache.count() % 1 == 0) {
-				std::cout << "THE GUILD COUNT: " << Guilds::cache.count() << ", TOTAL TIME: " << stopWatch.totalTimePassed().count() << std::endl;
-			}
-			return cache.find(id);
+		auto id = guild.id;
+		guild.discordCoreClient = Guilds::discordCoreClient;
+		Guilds::cache.emplace(std::forward<GuildData>(guild));
+		if (Guilds::cache.count() % 1 == 0) {
+			std::cout << "THE GUILD COUNT: " << Guilds::cache.count() << ", TOTAL TIME: " << stopWatch.totalTimePassed().count() << std::endl;
 		}
-		return *cache.end();
+		return cache.find(id);
 	}
 
 	void Guilds::removeGuild(const Snowflake guildId) {

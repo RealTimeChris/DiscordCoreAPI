@@ -358,17 +358,14 @@ namespace DiscordCoreAPI {
 
 	ChannelData& Channels::insertChannel(ChannelData&& channel) {
 		if (channel.id == 0) {
-			return *Channels::cache.end();
+			throw DCAException{ "Sorry, but there was no id set for that channel." };
 		}
-		if (Channels::doWeCacheChannelsBool) {
-			auto id = channel.id;
-			Channels::cache.emplace(std::forward<ChannelData>(channel));
-			if (Channels::cache.count() % 10 == 0) {
-				std::cout << "CHANNEL COUNT: " << Channels::cache.count() << std::endl;
-			}
-			return cache.find(id);
+		auto id = channel.id;
+		Channels::cache.emplace(std::forward<ChannelData>(channel));
+		if (Channels::cache.count() % 10 == 0) {
+			std::cout << "CHANNEL COUNT: " << Channels::cache.count() << std::endl;
 		}
-		return *cache.end();
+		return cache.find(id);
 	}
 
 	void Channels::removeChannel(Snowflake channelId) {

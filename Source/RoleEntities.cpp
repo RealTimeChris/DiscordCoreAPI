@@ -281,17 +281,14 @@ namespace DiscordCoreAPI {
 
 	RoleData& Roles::insertRole(RoleData&& role) {
 		if (role.id == 0) {
-			return *cache.end();
+			throw DCAException{ "Sorry, but there was no id set for that role." };
 		}
-		if (Roles::doWeCacheRoles()) {
-			auto id = role.id;
-			Roles::cache.emplace(std::forward<RoleData>(role));
-			if (Roles::cache.count() % 10 == 0) {
-				std::cout << "ROLE COUNT: " << Roles::cache.count() << ", AFTER: " << stopWatchNew.totalTimePassed().count() << "s" << std::endl;
-			}
-			return cache.find(id);
+		auto id = role.id;
+		Roles::cache.emplace(std::forward<RoleData>(role));
+		if (Roles::cache.count() % 10 == 0) {
+			std::cout << "ROLE COUNT: " << Roles::cache.count() << ", AFTER: " << stopWatchNew.totalTimePassed().count() << "s" << std::endl;
 		}
-		return *cache.end();
+		return cache.find(id);
 	}
 
 	void Roles::removeRole(const Snowflake roleId) {
