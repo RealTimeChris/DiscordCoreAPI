@@ -106,12 +106,6 @@ namespace DiscordCoreInternal {
 
 		template<typename ValueType> void readEscapedUnicode(ValueType& value, auto& it);
 
-		bool isThreeByteSequence(uint8_t byte);
-
-		bool isFourByteSequence(uint8_t byte);
-
-		bool isTwoByteSequence(uint8_t byte);
-
 		void writeCharacters(const char* data, uint64_t length);
 
 		void writeCharactersFromBuffer(uint32_t length);
@@ -369,19 +363,6 @@ namespace DiscordCoreInternal {
 			*this = std::move(data);
 		};
 
-		template<size_t StrLength> inline EtfSerializer& operator=(const char (&str)[StrLength]) {
-			setValue(JsonType::String);
-			std::string theString{};
-			theString.resize(std::char_traits<char>::length(str));
-			std::copy(str, str + StrLength, theString.data());
-			getString() = theString;
-			return *this;
-		}
-
-		template<size_t StrLength> inline EtfSerializer(const char (&str)[StrLength]) {
-			*this = str;
-		}
-
 		template<ObjectT ValueType> inline EtfSerializer& operator=(const ValueType& data) noexcept {
 			setValue(JsonType::Object);
 			for (auto& [key, value]: data) {
@@ -428,14 +409,25 @@ namespace DiscordCoreInternal {
 			*this = std::move(data);
 		}
 
-		template<StringT ValueType> inline EtfSerializer& operator=(ValueType& data) noexcept {
+		template<StringT ValueType> inline EtfSerializer& operator=(const ValueType& data) noexcept {
 			setValue(JsonType::String);
 			getString() = data;
 			return *this;
 		}
 
-		template<StringT ValueType> inline EtfSerializer(ValueType& data) noexcept {
+		template<StringT ValueType> inline EtfSerializer(const ValueType& data) noexcept {
 			*this = data;
+		}	
+
+		template<size_t StrLength> inline EtfSerializer& operator=(const char (&str)[StrLength]) {
+			setValue(JsonType::String);
+			this->getString().resize(StrLength);
+			std::memcpy(this->getString().data(), str, StrLength);
+			return *this;
+		}
+
+		template<size_t StrLength> inline EtfSerializer(const char (&str)[StrLength]) {
+			*this = str;
 		}
 
 		template<FloatT ValueType> inline EtfSerializer& operator=(ValueType data) noexcept {
@@ -450,7 +442,7 @@ namespace DiscordCoreInternal {
 
 		template<SignedT ValueType> inline EtfSerializer& operator=(ValueType data) noexcept {
 			setValue(JsonType::Int);
-			getUint() = data;
+			getInt() = data;
 			return *this;
 		}
 
