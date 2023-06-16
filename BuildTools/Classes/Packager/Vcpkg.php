@@ -188,75 +188,10 @@ file(
     }
   ]
 }
+
 ';
         echo GREEN . "Writing portfile...\n" . WHITE;
         file_put_contents('./Vcpkg/ports/discordcoreapi/vcpkg.json', $versionFileContent);
-        return $portFileContent;
-    }
-
-
-     function constructPortAndVersionFile2(string $sha512 = "0"): string
-    {
-        echo GREEN . "Construct portfile for " . $this->getVersion() . ", sha512: $sha512\n" . WHITE;
-        chdir(getenv("HOME") . '/discordcoreapi');
-        $date=date_create();
-        ;
-        $portFileContent = 'if(VCPKG_TARGET_IS_LINUX)
-    message(WARNING "DiscordCoreAPI only supports g++ 11 on linux.")
-endif()
-
-vcpkg_from_github(
-	OUT_SOURCE_PATH SOURCE_PATH
-	REPO RealTimeChris/DiscordCoreAPI
-	REF "v${VERSION}"
-    SHA512 ' . $sha512 . '
-)
-
-vcpkg_cmake_configure(
-    SOURCE_PATH "${SOURCE_PATH}"
-)
-
-vcpkg_cmake_install()
-
-vcpkg_cmake_config_fixup(NO_PREFIX_CORRECTION)
-
-file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include" "${CURRENT_PACKAGES_DIR}/debug/share")
-
-if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
-    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
-endif()
-
-file(
-	INSTALL "${SOURCE_PATH}/License.md"
-	DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
-	RENAME copyright
-)';
-        // ./Vcpkg/ports/discordcoreapi/vcpkg.json
-        $versionFileContent = '{
-  "name": "discordcoreapi",
-  "version-date": ' . date_format($date,"Y-m-d") . ',
-  "description": "A Discord bot library written in C++ using custom asynchronous coroutines.",
-  "homepage": "https://discordcoreapi.com",
-  "license": "LGPL-2.1-or-later",
-  "supports": "(windows & x64 & !static) | (linux & x64)",
-  "dependencies": [
-    "jsonifier",
-    "libsodium",
-    "openssl",
-    "opus",
-    {
-      "name": "vcpkg-cmake",
-      "host": true
-    },
-    {
-      "name": "vcpkg-cmake-config",
-      "host": true
-    }
-  ]
-}
-';
-        echo GREEN . "Writing portfile...\n" . WHITE;
-        file_put_contents('./Vcpkg/ports/discordcoreapi/vcpkg02.json', $versionFileContent);
         return $portFileContent;
     }
 
@@ -326,8 +261,6 @@ file(
 
         echo GREEN . "Copy back port files from /usr/local/share...\n" . WHITE;
         chdir(getenv('HOME') . '/discordcoreapi');
-        system('cp -v -R ./Vcpkg/ports/discordcoreapi/vcpkg02.json ./Vcpkg/ports/discordcoreapi/vcpkg.json');
-        system('rm -rf ./Vcpkg/ports/discordcoreapi/vcpkg02.json');
         system('cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json');
 
         echo GREEN . "Commit and push changes to main branch\n" . WHITE;

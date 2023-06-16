@@ -357,8 +357,8 @@ namespace DiscordCoreAPI {
 		return GuildMembers::doWeCacheGuildMembersBool;
 	}
 
-	ObjectCache<GuildMemberKey, VoiceStateDataLight> vsCache{};
-	ObjectCache<GuildMemberKey, GuildMemberData> cache{};
+	ObjectCache<GuildMemberKey, VoiceStateDataLight> GuildMembers::vsCache{};
+	ObjectCache<GuildMemberKey, GuildMemberData> GuildMembers::cache{};
 	DiscordCoreInternal::HttpsClient* GuildMembers::httpsClient{};
 	bool GuildMembers::doWeCacheGuildMembersBool{};
 };

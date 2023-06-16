@@ -982,7 +982,7 @@ namespace DiscordCoreAPI {
 		auto id = guild.id;
 		guild.discordCoreClient = Guilds::discordCoreClient;
 		Guilds::cache.emplace(std::forward<GuildData>(guild));
-		if (Guilds::cache.count() % 1 == 0) {
+		if (Guilds::cache.count() % 100 == 0) {
 			std::cout << "THE GUILD COUNT: " << Guilds::cache.count() << ", TOTAL TIME: " << stopWatch.totalTimePassed().count() << std::endl;
 		}
 		return cache.find(id);

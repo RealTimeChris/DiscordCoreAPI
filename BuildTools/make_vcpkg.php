@@ -46,7 +46,6 @@ if (!empty($sha512)) {
     if (!$vcpkg->checkoutRepository()) {
         exit(1);
     }
-    $vcpkg->constructPortAndVersionFile2($sha512);
     /* Attempt second build with the valid SHA512 sum. Program exit
      * status is the exit status of `vcpkg install`
      */

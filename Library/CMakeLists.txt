@@ -71,7 +71,18 @@ set_target_properties(
 
 target_compile_definitions("${PROJECT_NAME}" INTERFACE INSTRUCTION_SET_TYPE_AVX2)
 
-find_package(Jsonifier CONFIG REQUIRED)
+if("${DEV}")
+	include(FetchContent)	
+	FetchContent_Declare(
+	   Jsonifier
+	   GIT_REPOSITORY https://github.com/RealTimeChris/Jsonifier.git
+	   GIT_TAG dev
+	)
+	FetchContent_MakeAvailable(Jsonifier)
+else()
+	find_package(Jsonifier CONFIG REQUIRED)
+endif()
+
 find_package(OpenSSL REQUIRED)
 find_package(Opus CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED)

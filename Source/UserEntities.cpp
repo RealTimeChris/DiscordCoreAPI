@@ -324,7 +324,7 @@ namespace DiscordCoreAPI {
 		}
 		auto id = user.id;
 		Users::cache.emplace(UserData{ std::move(user) });
-		if (Users::cache.count() % 10 == 0) {
+		if (Users::cache.count() % 1000 == 0) {
 			std::cout << "USERS COUNT: " << Users::cache.count() << std::endl;
 		}
 		return cache.find(id);
