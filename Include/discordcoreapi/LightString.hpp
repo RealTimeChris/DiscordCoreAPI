@@ -256,7 +256,7 @@ namespace DiscordCoreAPI {
 				newBuffer[sizeVal] = '\0';
 				allocator{}.deallocate(values, capacityVal);
 				values = newBuffer;
-				capacityVal = newCapacity;
+				capacityVal = newCapacity + 1;
 			}
 		}
 
