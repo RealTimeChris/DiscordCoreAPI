@@ -362,7 +362,7 @@ namespace DiscordCoreAPI {
 		}
 		auto id = channel.id;
 		Channels::cache.emplace(std::forward<ChannelData>(channel));
-		if (Channels::cache.count() % 100 == 0) {
+		if (Channels::cache.count() % 1000 == 0) {
 			std::cout << "CHANNEL COUNT: " << Channels::cache.count() << std::endl;
 		}
 		return cache.find(id);

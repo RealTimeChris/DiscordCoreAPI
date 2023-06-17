@@ -25,12 +25,13 @@
 
 #pragma once
 
+#include <discordcoreapi/Utilities/AudioEncoder.hpp>
+#include <discordcoreapi/Utilities/AudioDecoder.hpp>
+#include <discordcoreapi/Utilities/RingBuffer.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/AudioEncoder.hpp>
-#include <discordcoreapi/AudioDecoder.hpp>
-#include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/WebSocketEntities.hpp>
 #include <discordcoreapi/UDPConnection.hpp>
+#include <discordcoreapi/CoRoutine.hpp>
 #include <sodium.h>
 
 namespace DiscordCoreAPI {

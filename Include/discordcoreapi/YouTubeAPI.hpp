@@ -25,8 +25,8 @@
 
 #pragma once
 
+#include <discordcoreapi/Utilities/AudioDecoder.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/AudioDecoder.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 
 namespace DiscordCoreInternal {

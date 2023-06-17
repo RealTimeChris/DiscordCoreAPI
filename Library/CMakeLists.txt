@@ -59,7 +59,7 @@ endif()
 
 add_library("${PROJECT_NAME}::${LIB_NAME}" ALIAS "${LIB_NAME}")
 
-file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/*.hpp")
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/../Include/discordcoreapi/Utilities/*.hpp")
 
 set_target_properties(
 	"${LIB_NAME}" PROPERTIES
@@ -121,8 +121,8 @@ target_compile_options(
 	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:/fsanitize=address>>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/MP${THREAD_COUNT}>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>"
-	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
 	"$<$<CXX_COMPILER_ID:GNU>:-march=core-avx2>"
 	"$<$<CXX_COMPILER_ID:CLANG>:-march=core-avx2>"
 )
@@ -168,11 +168,16 @@ install(
 )
 
 install(
+	DIRECTORY
+	"${CMAKE_SOURCE_DIR}/Include/"
+	DESTINATION "include"
+)
+
+install(
 	TARGETS "${LIB_NAME}"
 	EXPORT "${EXPORTED_TARGETS_NAME}"
 	RUNTIME DESTINATION "$<$<NOT:$<PLATFORM_ID:Linux>>:$<IF:$<CONFIG:Debug>,${DEBUG_PREFIX}bin,bin>>"
 	ARCHIVE DESTINATION "$<IF:$<CONFIG:Debug>,${DEBUG_PREFIX}lib,lib>"
-	PUBLIC_HEADER DESTINATION "include/discordcoreapi"
 )
 
 install(

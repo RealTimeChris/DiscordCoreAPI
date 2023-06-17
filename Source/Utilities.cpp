@@ -93,7 +93,8 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-	DCAException::DCAException(const std::string& error, std::source_location location) noexcept : std::runtime_error(error) {
+	DCAException::DCAException(const std::string& error, std::source_location location) noexcept
+		: std::runtime_error(error) {
 		std::stringstream stream{};
 		stream << shiftToBrightRed() << "Thrown From: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
 			   << std::to_string(location.column()) << ")\n"

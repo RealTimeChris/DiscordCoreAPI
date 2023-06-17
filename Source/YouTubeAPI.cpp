@@ -27,9 +27,9 @@
 #include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/TCPConnection.hpp>
-#include <discordcoreapi/AudioEncoder.hpp>
+#include <discordcoreapi/Utilities/AudioEncoder.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
-#include <discordcoreapi/Demuxers.hpp>
+#include <discordcoreapi/Utilities/Demuxers.hpp>
 
 namespace DiscordCoreAPI {
 
@@ -416,7 +416,9 @@ namespace DiscordCoreInternal {
 						DiscordCoreAPI::DiscordCoreClient::getSongAPI(guildId)->audioDataBuffer.send(std::move(frameData));
 					}
 				}
-				std::this_thread::sleep_for(1ms);
+				while (DiscordCoreAPI::DiscordCoreClient::getSongAPI(guildId)->audioDataBuffer.size() >= 20) {
+					std::this_thread::sleep_for(1ms);
+				}
 			}
 			areWeWorkingBool.store(false);
 			DiscordCoreAPI::DiscordCoreClient::getVoiceConnection(guildId)->doWeSkip.store(true);

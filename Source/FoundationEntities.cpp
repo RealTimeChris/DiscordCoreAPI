@@ -34,7 +34,7 @@
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/InputEvents.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
-#include <discordcoreapi/Etf.hpp>
+#include <discordcoreapi/Utilities/Etf.hpp>
 
 namespace DiscordCoreInternal {
 

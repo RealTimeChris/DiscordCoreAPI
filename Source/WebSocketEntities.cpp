@@ -412,8 +412,7 @@ namespace DiscordCoreInternal {
 			auto inputBuffer = getInputBuffer();
 			ptr->currentMessage.writeData(reinterpret_cast<const char*>(inputBuffer.data()), inputBuffer.size());
 			while (ptr->parseMessage()) {
-				std::this_thread::sleep_for(1us);
-			}
+			};
 		}
 	}
 
@@ -931,10 +930,10 @@ namespace DiscordCoreInternal {
 									break;
 								}
 								case 41: {
-									std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
-										std::make_unique<DiscordCoreAPI::OnInteractionCreationData>(parser, payload, discordCoreClient)
-									};
 									if (discordCoreClient->eventManager.onInteractionCreationEvent.functions.size() > 0) {
+										std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
+											std::make_unique<DiscordCoreAPI::OnInteractionCreationData>(parser, payload, discordCoreClient)
+										};
 										discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 									}
 									break;
@@ -1365,7 +1364,7 @@ namespace DiscordCoreInternal {
 	void BaseSocketAgent::run(std::stop_token token) noexcept {
 		while (!token.stop_requested() && !doWeQuit->load()) {
 			try {
-				std::unique_lock lock{ accessMutex };
+				//std::unique_lock lock{ accessMutex };
 				std::unordered_map<uint32_t, WebSocketTCPConnection*> shardMapNew{};
 				for (auto& [key, value]: shardMap) {
 					shardMapNew.emplace(key, value.get()->tcpConnection.get());

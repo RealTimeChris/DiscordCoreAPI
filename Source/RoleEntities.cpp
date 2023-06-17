@@ -285,7 +285,7 @@ namespace DiscordCoreAPI {
 		}
 		auto id = role.id;
 		Roles::cache.emplace(std::forward<RoleData>(role));
-		if (Roles::cache.count() % 100 == 0) {
+		if (Roles::cache.count() % 1000 == 0) {
 			std::cout << "ROLE COUNT: " << Roles::cache.count() << ", AFTER: " << stopWatchNew.totalTimePassed().count() << "s" << std::endl;
 		}
 		return cache.find(id);

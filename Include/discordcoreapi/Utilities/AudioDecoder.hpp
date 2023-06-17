@@ -30,14 +30,34 @@
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll OpusDecoderWrapper {
-		struct DiscordCoreAPI_Dll OpusDecoderDeleter {
-			void operator()(OpusDecoder*) noexcept;
+	struct OpusDecoderWrapper {
+		struct OpusDecoderDeleter {
+			inline void operator()(OpusDecoder* other) noexcept {
+				if (other) {
+					opus_decoder_destroy(other);
+					other = nullptr;
+				}
+			}
 		};
 
-		OpusDecoderWrapper();
+		inline OpusDecoderWrapper() {
+			int32_t error{};
+			data.resize(23040);
+			ptr.reset(opus_decoder_create(48000, 2, &error));
+			if (error != OPUS_OK) {
+				throw DiscordCoreAPI::DCAException{ "Failed to create the Opus decoder, Reason: " + std::string{ opus_strerror(error) } };
+			}
+		}
 
-		std::basic_string_view<opus_int16> decodeData(std::basic_string_view<uint8_t> dataToDecode);
+		inline std::basic_string_view<opus_int16> decodeData(std::basic_string_view<uint8_t> dataToDecode) {
+			const int64_t sampleCount =
+				opus_decode(ptr.get(), dataToDecode.data(), static_cast<opus_int32>(dataToDecode.length() & 0x7FFFFFFF), data.data(), 5760, 0);
+			if (sampleCount > 0) {
+				return std::basic_string_view<opus_int16>{ data.data(), static_cast<size_t>(sampleCount * 2ull) };
+			} else {
+				throw DiscordCoreAPI::DCAException{ "Failed to decode a user's voice payload, Reason: " + std::string{ opus_strerror(sampleCount) } };
+			}
+		}
 
 	  protected:
 		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> ptr{ nullptr, OpusDecoderDeleter{} };

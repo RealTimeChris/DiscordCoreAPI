@@ -37,12 +37,45 @@ namespace DiscordCoreInternal {
 
 	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
 		struct DiscordCoreAPI_Dll OpusEncoderDeleter {
-			void operator()(OpusEncoder*) noexcept;
-		};
+			inline void operator()(OpusEncoder* other) noexcept {
+				if (other) {
+					opus_encoder_destroy(other);
+					other = nullptr;
+				}
+			}
+		};		
 
-		OpusEncoderWrapper();
+		inline OpusEncoderWrapper() {
+			int32_t error{};
+			ptr.reset(opus_encoder_create(sampleRate, nChannels, OPUS_APPLICATION_AUDIO, &error));
+			auto result = opus_encoder_ctl(ptr.get(), OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
+			if (result != OPUS_OK) {
+				throw DiscordCoreAPI::DCAException{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) } };
+			}
+			result = opus_encoder_ctl(ptr.get(), OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
+			if (result != OPUS_OK) {
+				throw DiscordCoreAPI::DCAException{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) } };
+			}
+		}
 
-		EncoderReturnData encodeData(std::basic_string_view<uint8_t> inputFrame);
+		inline EncoderReturnData encodeData(std::basic_string_view<uint8_t> inputFrame) {
+			if (inputFrame.size() == 0) {
+				return {};
+			}
+			if (encodedData.size() == 0) {
+				encodedData.resize(maxBufferSize);
+			}
+			uint64_t sampleCount = inputFrame.size() / 2 / 2;
+			int32_t count = opus_encode(ptr.get(), reinterpret_cast<const opus_int16*>(inputFrame.data()),
+				static_cast<int32_t>(inputFrame.size() / 2 / 2), reinterpret_cast<uint8_t*>(encodedData.data()), maxBufferSize);
+			if (count <= 0) {
+				throw DiscordCoreAPI::DCAException{ "Failed to encode the bitstream, Reason: " + std::string{ opus_strerror(count) } };
+			}
+			EncoderReturnData returnData{};
+			returnData.sampleCount = sampleCount;
+			returnData.data = std::basic_string_view<uint8_t>{ encodedData.data(), encodedData.size() };
+			return returnData;
+		}
 
 	  protected:
 		std::unique_ptr<OpusEncoder, OpusEncoderDeleter> ptr{ nullptr, OpusEncoderDeleter{} };

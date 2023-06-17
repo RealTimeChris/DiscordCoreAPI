@@ -25,9 +25,9 @@
 
 #include <discordcoreapi/SoundCloudAPI.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
-#include <discordcoreapi/AudioEncoder.hpp>
+#include <discordcoreapi/Utilities/AudioEncoder.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
-#include <discordcoreapi/Demuxers.hpp>
+#include <discordcoreapi/Utilities/Demuxers.hpp>
 
 namespace Jsonifier {
 
@@ -210,12 +210,11 @@ namespace DiscordCoreInternal {
 	std::string SoundCloudRequestBuilder::collectClientId() {
 		std::string clientIdNew{};
 		try {
-			std::unordered_map<std::string, std::string> theHeaders{ std::pair{ "User-Agent",
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36" } };
 			HttpsWorkloadData dataPackage02{ HttpsWorkloadType::SoundCloudGetSearchResults };
 			dataPackage02.baseUrl = baseUrl;
 			dataPackage02.relativePath = "/search?q=testValue";
-			dataPackage02.headersToInsert = theHeaders;
+			dataPackage02.headersToInsert["User-Agent"] =
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36";
 			dataPackage02.workloadClass = HttpsWorkloadClass::Get;
 			HttpsResponseData returnData = httpsClient->submitWorkloadAndGetResult(dataPackage02);
 			std::vector<std::string> assetPaths{};
@@ -338,7 +337,9 @@ namespace DiscordCoreInternal {
 					areWeWorkingBool.store(false);
 					return;
 				}
-				std::this_thread::sleep_for(1ms);
+				while (DiscordCoreAPI::DiscordCoreClient::getSongAPI(guildId)->audioDataBuffer.size() >= 20) {
+					std::this_thread::sleep_for(1ms);
+				}
 			}
 			areWeWorkingBool.store(false);
 			DiscordCoreAPI::DiscordCoreClient::getVoiceConnection(guildId)->doWeSkip.store(true);

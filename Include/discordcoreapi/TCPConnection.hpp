@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <discordcoreapi/Utilities/RingBuffer.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/EventEntities.hpp>
 

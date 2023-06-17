@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <discordcoreapi/JsonSpecializations.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/Https.hpp>

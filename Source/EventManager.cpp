@@ -181,32 +181,32 @@ namespace Jsonifier {
 namespace DiscordCoreAPI {
 
 	OnInputEventCreationData::OnInputEventCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnApplicationCommandPermissionsUpdateData::OnApplicationCommandPermissionsUpdateData(Jsonifier::JsonifierCore& parser,
 		std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnAutoModerationRuleCreationData::OnAutoModerationRuleCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnAutoModerationRuleUpdateData::OnAutoModerationRuleUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnAutoModerationRuleDeletionData::OnAutoModerationRuleDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnAutoModerationActionExecutionData::OnAutoModerationActionExecutionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnChannelCreationData::OnChannelCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Channels::doWeCacheChannels()) {
 			if (Guilds::getCache().contains(value.guildId)) {
 				Guilds::getCache()[value.guildId].channels.emplace_back(value.id);
@@ -218,7 +218,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnChannelUpdateData::OnChannelUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<UpdatedEventData*>(this), dataToParse);
 		oldValue = Channels::getCachedChannel({ .channelId = value.id });
 		if (Channels::doWeCacheChannels()) {
 			Channels::insertChannel(std::move(value));
@@ -226,7 +226,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnChannelDeletionData::OnChannelDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Channels::doWeCacheChannels()) {
 			if (Guilds::getCache().contains(value.guildId)) {
 				for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].channels.size(); ++x) {
@@ -242,22 +242,22 @@ namespace DiscordCoreAPI {
 	}
 
 	OnChannelPinsUpdateData::OnChannelPinsUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnThreadCreationData::OnThreadCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::getCache().contains(value.guildId)) {
 			Guilds::getCache()[value.guildId].threads.emplace_back(value.id);
 		}
 	}
 
 	OnThreadUpdateData::OnThreadUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnThreadDeletionData::OnThreadDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::getCache().contains(value.guildId)) {
 			for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].threads.size(); ++x) {
 				if (Guilds::getCache()[value.guildId].threads[x] == value.id) {
@@ -268,19 +268,19 @@ namespace DiscordCoreAPI {
 	}
 
 	OnThreadListSyncData::OnThreadListSyncData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnThreadMemberUpdateData::OnThreadMemberUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnThreadMembersUpdateData::OnThreadMembersUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnGuildCreationData::OnGuildCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* client) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		value.discordCoreClient = client;
 		if (GuildMembers::doWeCacheGuildMembers()) {
 			for (auto& valueNew: value.members) {
@@ -313,7 +313,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildUpdateData::OnGuildUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* clientNew) {
-		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<UpdatedEventData*>(this), dataToParse);
 		value.discordCoreClient = clientNew;
 		if (Guilds::doWeCacheGuilds()) {
 			Guilds::insertGuild(value);
@@ -321,7 +321,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildDeletionData::OnGuildDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* clientNew) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::doWeCacheGuilds()) {
 			Guilds::removeGuild(value.id);
 		}
@@ -338,15 +338,15 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildBanAddData::OnGuildBanAddData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnGuildBanRemoveData::OnGuildBanRemoveData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnGuildEmojisUpdateData::OnGuildEmojisUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::getCache().contains(value.guildId)) {
 			Guilds::getCache()[value.guildId].emoji.clear();
 			for (auto& valueNew: value.emojis) {
@@ -356,7 +356,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildStickersUpdateData::OnGuildStickersUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::getCache().contains(value.guildId)) {
 			Guilds::getCache()[value.guildId].stickers.clear();
 			for (auto& valueNew: value.stickers) {
@@ -366,11 +366,11 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildIntegrationsUpdateData::OnGuildIntegrationsUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnGuildMemberAddData::OnGuildMemberAddData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* client) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		discordCoreClient = client;
 		if (GuildMembers::doWeCacheGuildMembers()) {
 			GuildMembers::insertGuildMember(value);
@@ -382,7 +382,7 @@ namespace DiscordCoreAPI {
 
 	OnGuildMemberRemoveData::OnGuildMemberRemoveData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* client) {
 		discordCoreClient = client;
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		GuildMember guildMember = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 		if (GuildMembers::doWeCacheGuildMembers()) {
 			GuildMembers::removeGuildMember(guildMember);
@@ -398,7 +398,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildMemberUpdateData::OnGuildMemberUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse, DiscordCoreClient* client) {
-		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<UpdatedEventData*>(this), dataToParse);
 		oldValue = GuildMembers::getCachedGuildMember({ .guildMemberId = value.user.id, .guildId = value.guildId });
 		if (GuildMembers::doWeCacheGuildMembers()) {
 			GuildMembers::insertGuildMember(value);
@@ -406,11 +406,11 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildMembersChunkData::OnGuildMembersChunkData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnRoleCreationData::OnRoleCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::getCache().contains(value.guildId)) {
 			Guilds::getCache()[value.guildId].roles.emplace_back(std::move(value.role.id));
 		}
@@ -420,7 +420,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnRoleUpdateData::OnRoleUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<UpdatedEventData*>(this), dataToParse);
 		oldValue = Roles::getCachedRole({ .guildId = this->value.guildId, .roleId = this->value.role.id });
 		if (Roles::doWeCacheRoles()) {
 			Roles::insertRole(std::move(value.role));
@@ -428,7 +428,7 @@ namespace DiscordCoreAPI {
 	}
 
 	OnRoleDeletionData::OnRoleDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Roles::doWeCacheRoles()) {
 			Roles::removeRole(value.role.id);
 			if (Guilds::getCache().contains(value.guildId)) {
@@ -443,7 +443,7 @@ namespace DiscordCoreAPI {
 
 	OnVoiceServerUpdateData::OnVoiceServerUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse,
 		DiscordCoreInternal::WebSocketClient* sslShard) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (sslShard->areWeCollectingData && !sslShard->serverUpdateCollected && !sslShard->stateUpdateCollected) {
 			sslShard->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
 			sslShard->voiceConnectionData.endPoint = value.endpoint;
@@ -462,18 +462,18 @@ namespace DiscordCoreAPI {
 	};
 
 	OnGuildScheduledEventCreationData::OnGuildScheduledEventCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::getCache().contains(value.guildId)) {
 			Guilds::getCache()[value.guildId].guildScheduledEvents.emplace_back(value.id);
 		}
 	}
 
 	OnGuildScheduledEventUpdateData::OnGuildScheduledEventUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnGuildScheduledEventDeletionData::OnGuildScheduledEventDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::getCache().contains(value.guildId)) {
 			for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].guildScheduledEvents.size(); ++x) {
 				if (Guilds::getCache()[value.guildId].guildScheduledEvents[x] == value.id) {
@@ -484,28 +484,28 @@ namespace DiscordCoreAPI {
 	}
 
 	OnGuildScheduledEventUserAddData::OnGuildScheduledEventUserAddData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnGuildScheduledEventUserRemoveData::OnGuildScheduledEventUserRemoveData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnIntegrationCreationData::OnIntegrationCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnIntegrationUpdateData::OnIntegrationUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnIntegrationDeletionData::OnIntegrationDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnInteractionCreationData::OnInteractionCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse,
 		DiscordCoreClient* discordCoreClient) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		std::unique_ptr<InputEventData> eventData{ std::make_unique<InputEventData>(value) };
 		switch (value.type) {
 			case InteractionType::Application_Command: {
@@ -578,71 +578,71 @@ namespace DiscordCoreAPI {
 	}
 
 	OnInviteCreationData::OnInviteCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnInviteDeletionData::OnInviteDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnMessageCreationData::OnMessageCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		for (auto& [key, valueNew]: MessageCollector::objectsBuffersMap) {
 			valueNew->send(std::move(value));
 		}
 	}
 
 	OnMessageUpdateData::OnMessageUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		for (auto& [key, valueNew]: MessageCollector::objectsBuffersMap) {
 			valueNew->send(std::move(value));
 		}
 	}
 
 	OnMessageDeletionData::OnMessageDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnMessageDeleteBulkData::OnMessageDeleteBulkData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnReactionAddData::OnReactionAddData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		for (auto& [key, valueNew]: ReactionCollector::objectsBuffersMap) {
 			valueNew->send(std::move(value));
 		}
 	}
 
 	OnReactionRemoveData::OnReactionRemoveData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnReactionRemoveAllData::OnReactionRemoveAllData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnReactionRemoveEmojiData::OnReactionRemoveEmojiData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnPresenceUpdateData::OnPresenceUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnStageInstanceCreationData::OnStageInstanceCreationData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::getCache().contains(value.guildId)) {
 			Guilds::getCache()[value.guildId].stageInstances.emplace_back(value.id);
 		}
 	}
 
 	OnStageInstanceUpdateData::OnStageInstanceUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnStageInstanceDeletionData::OnStageInstanceDeletionData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (Guilds::getCache().contains(value.guildId)) {
 			for (uint64_t x = 0; x < Guilds::getCache()[value.guildId].stageInstances.size(); ++x) {
 				if (Guilds::getCache()[value.guildId].stageInstances[x] == value.id) {
@@ -653,11 +653,11 @@ namespace DiscordCoreAPI {
 	}
 
 	OnTypingStartData::OnTypingStartData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnUserUpdateData::OnUserUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<UpdatedEventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<UpdatedEventData*>(this), dataToParse);
 		oldValue = Users::getCachedUser({ value.id });
 		if (Users::doWeCacheUsers()) {
 			Users::insertUser(std::move(value));
@@ -666,7 +666,7 @@ namespace DiscordCoreAPI {
 
 	OnVoiceStateUpdateData::OnVoiceStateUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse,
 		DiscordCoreInternal::WebSocketClient* sslShard) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 		if (sslShard->areWeCollectingData && !sslShard->stateUpdateCollected && !sslShard->serverUpdateCollected && value.id == sslShard->userId) {
 			sslShard->voiceConnectionData = DiscordCoreInternal::VoiceConnectionData{};
 			sslShard->voiceConnectionData.sessionId = value.sessionId;
@@ -684,11 +684,11 @@ namespace DiscordCoreAPI {
 	}
 
 	OnWebhookUpdateData::OnWebhookUpdateData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	OnAutoCompleteEntryData::OnAutoCompleteEntryData(Jsonifier::JsonifierCore& parser, std::string_view dataToParse) {
-		parser.parseJson<true>(*static_cast<EventData*>(this), dataToParse);
+		parser.parseJson<false>(*static_cast<EventData*>(this), dataToParse);
 	}
 
 	DiscordCoreInternal::EventDelegateToken EventManager::onApplicationCommandsPermissionsUpdate(

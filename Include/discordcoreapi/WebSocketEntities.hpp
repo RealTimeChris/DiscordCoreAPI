@@ -25,13 +25,13 @@
 
 #pragma once
 
+#include <discordcoreapi/Utilities/AudioDecoder.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/AudioDecoder.hpp>
 #include <discordcoreapi/CommandController.hpp>
-#include <discordcoreapi/Etf.hpp>
 #include <discordcoreapi/EventEntities.hpp>
 #include <discordcoreapi/TCPConnection.hpp>
 #include <discordcoreapi/ThreadPool.hpp>
+#include <discordcoreapi/Utilities/Etf.hpp>
 
 namespace DiscordCoreInternal {
 
