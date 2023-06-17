@@ -27,7 +27,7 @@ namespace DiscordCoreAPI {
 		}
 
 		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return std::make_unique<Test>();
+			return DiscordCoreAPI::makeUnique<Test>();
 		}
 
 		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {

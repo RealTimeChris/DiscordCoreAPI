@@ -85,11 +85,11 @@ namespace DiscordCoreAPI {
 	/// \brief An interface class for the User related Discord endpoints.
 	class DiscordCoreAPI_Dll Users {
 	  public:
-		friend class DiscordCoreInternal::WebSocketClient;
-		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreClient;
-		friend class UserData;
-		friend class Guild;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::WebSocketClient;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreAPI_Dll DiscordCoreClient;
+		friend class DiscordCoreAPI_Dll UserData;
+		friend class DiscordCoreAPI_Dll Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
@@ -149,7 +149,6 @@ namespace DiscordCoreAPI {
 		static bool doWeCacheUsers();
 
 	  protected:
-		inline static UserData nullUser{ std::numeric_limits<uint64_t>::max() };
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<Snowflake, UserData> cache;
 		static bool doWeCacheUsersBool;

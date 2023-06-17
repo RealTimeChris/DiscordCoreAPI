@@ -27,6 +27,7 @@
 
 #include <jsonifier/Index.hpp>
 
+#include <discordcoreapi/Base.hpp>
 #include <discordcoreapi/Utilities/UnorderedSet.hpp>
 #include <discordcoreapi/Utilities/Etf.hpp>
 
@@ -62,10 +63,33 @@
 
 namespace DiscordCoreAPI {
 
+	inline thread_local Jsonifier::JsonifierCore parser{};
+
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
+
+	template<typename Derived> struct Relational {
+		inline friend bool operator>(const Derived& data1, const Derived& data2) {
+			return data2 < data1;
+		}
+		inline friend bool operator==(const Derived& data1, const Derived& data2) {
+			return !(data1 < data2) && !(data2 < data1);
+		}
+		inline friend bool operator!=(const Derived& data1, const Derived& data2) {
+			return !(data1 == data2);
+		}
+		inline friend bool operator<=(const Derived& data1, const Derived& data2) {
+			return (data1 < data2) || (data1 == data2);
+		}
+		inline friend bool operator>=(const Derived& data1, const Derived& data2) {
+			return (data1 > data2) || (data1 == data2);
+		}
+
+	  protected:
+		inline Relational() noexcept = default;
+	};
 
 	template<typename ValueType>
 	concept CopyableOrMovable = std::copyable<std::decay_t<ValueType>> || std::movable<std::decay_t<ValueType>>;
@@ -80,7 +104,7 @@ namespace DiscordCoreAPI {
 		ShortTime = 't',///< "16:20" - Short Time
 	};
 
-	class DiscordCoreAPI_Dll Snowflake {
+	class DiscordCoreAPI_Dll Snowflake : public Relational<Snowflake> {
 	  public:
 		inline Snowflake() noexcept = default;
 
@@ -123,8 +147,8 @@ namespace DiscordCoreAPI {
 		/// std::string containing the timeStamp.
 		std::string getCreatedAtTimeStamp(TimeFormat timeFormat);
 
-		inline bool operator==(const Snowflake& rhs) const noexcept {
-			return id == rhs.id;
+		inline friend bool operator<(const Snowflake& lhs, const Snowflake& rhs) noexcept {
+			return lhs.id < rhs.id;
 		}
 
 		friend inline std::string operator+(const std::string&, const Snowflake&) noexcept;
@@ -149,15 +173,20 @@ namespace DiscordCoreAPI {
 	  public:
 		using HRClock = std::chrono::high_resolution_clock;
 
-		inline StopWatch() = delete;
+		inline StopWatch() noexcept = default;
 
-		inline StopWatch<TimeType>& operator=(StopWatch<TimeType>&& data) noexcept {
+		inline StopWatch& operator=(StopWatch<TimeType>&& data) noexcept {
 			maxNumberOfTimeUnits.store(data.maxNumberOfTimeUnits.load());
 			startTime.store(data.startTime.load());
 			return *this;
 		}
 
-		inline StopWatch(StopWatch<TimeType>&& other) noexcept = default;
+		inline StopWatch(StopWatch<TimeType>&& other) noexcept {
+			*this = std::move(other);
+		}
+
+		inline StopWatch<TimeType>& operator=(const StopWatch<TimeType>& data) noexcept = delete;
+		inline StopWatch(const StopWatch<TimeType>& other) noexcept = delete;
 
 		inline StopWatch(TimeType maxNumberOfMsNew) noexcept {
 			maxNumberOfTimeUnits.store(maxNumberOfMsNew);
@@ -229,6 +258,8 @@ namespace DiscordCoreAPI {
 };
 
 namespace DiscordCoreInternal {
+
+	inline thread_local Jsonifier::JsonifierCore parser{};
 
 	using HRClock = std::chrono::high_resolution_clock;
 	using Milliseconds = std::chrono::milliseconds;
@@ -457,7 +488,7 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Reactions;
 	class DiscordCoreAPI_Dll BotUser;
 
-	template<typename RTy> class CoRoutine;
+	template<typename ReturnType, bool timeOut = true> class CoRoutine;
 
 	/// \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
@@ -695,13 +726,15 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief Represents a single frame of audio data.
-	struct DiscordCoreAPI_Dll AudioFrameData {
+	struct DiscordCoreAPI_Dll AudioFrameData : public Relational<AudioFrameData> {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
 		std::vector<uint8_t> data{};///< The audio data.
 		int64_t currentSize{ -5 };///< The current size of the allocated memory.
 		uint64_t guildMemberId{};///< GuildMemberId for the sending GuildMember.
 
 		AudioFrameData() noexcept = default;
+
+		AudioFrameData(AudioFrameType frameType) noexcept;
 
 		AudioFrameData& operator=(AudioFrameData&&) noexcept = default;
 
@@ -713,9 +746,9 @@ namespace DiscordCoreAPI {
 
 		AudioFrameData& operator+=(std::basic_string_view<uint8_t>) noexcept;
 
-		AudioFrameData& operator+=(uint8_t);
-
-		friend bool operator==(const AudioFrameData& lhs, const AudioFrameData& rhs);
+		inline friend bool operator<(const AudioFrameData& lhs, const AudioFrameData& rhs) noexcept {
+			return lhs.currentSize < rhs.currentSize;
+		}
 
 		void clearData() noexcept;
 	};
@@ -723,7 +756,7 @@ namespace DiscordCoreAPI {
 	/// For connecting to a voice-channel. "streamInfo" is used when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
 	/// \brief For connecting to a voice-channel. "streamInfo" is used when a socket is created to connect this bot to another bot, for transmitting audio back and forth.
 	struct DiscordCoreAPI_Dll VoiceConnectInitData {
-		StreamInfo streamInfo{};///< The info for the stream-socekt, if applicable.
+		StreamInfo streamInfo{};///< The info for the stream-socket, if applicable.
 		int32_t currentShard{};///< The current websocket shard, if applicable.
 		Snowflake channelId{};///< The channel id to connect to.
 		Snowflake guildId{};///< The guild id to connect to.
@@ -739,16 +772,16 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	template<typename RTy> RTy inline fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
-		RTy value{};
+	template<typename ReturnType> ReturnType inline fromString(const std::string& string, std::ios_base& (*type)( std::ios_base& )) {
+		ReturnType value{};
 		std::istringstream stream(string);
 		stream >> type, stream >> value;
 		return value;
 	}
 
-	template<typename RTy> std::string inline toHex(RTy inputValue) {
+	template<typename ReturnType> std::string inline toHex(ReturnType inputValue) {
 		std::stringstream stream{};
-		stream << std::setfill('0') << std::setw(sizeof(RTy) * 2) << std::hex << inputValue;
+		stream << std::setfill('0') << std::setw(sizeof(ReturnType) * 2) << std::hex << inputValue;
 		return stream.str();
 	}
 
@@ -763,7 +796,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ColorValue {
 	  public:
-		friend struct Jsonifier::Core<ColorValue>;
+		friend struct DiscordCoreAPI_Dll Jsonifier::Core<ColorValue>;
 
 		ColorValue(std::string hexColorValue);
 
@@ -789,7 +822,7 @@ namespace DiscordCoreAPI {
 		Guild_Discovery = 6
 	};
 
-	class DiscordCoreAPI_Dll IconHash {
+	class DiscordCoreAPI_Dll IconHash : public Relational<IconHash> {
 	  public:
 		IconHash() noexcept = default;
 
@@ -797,7 +830,9 @@ namespace DiscordCoreAPI {
 
 		IconHash(const std::string& string) noexcept;
 
-		bool operator==(const IconHash& other);
+		inline friend bool operator<(const IconHash& lhs, const IconHash& rhs) noexcept {
+			return lhs.highBits < rhs.highBits && lhs.lowBits < rhs.lowBits;
+		}
 
 		operator std::string() noexcept;
 
@@ -863,8 +898,8 @@ namespace DiscordCoreAPI {
 	/// \brief Permissions class, for representing and manipulating Permission values.
 	class DiscordCoreAPI_Dll Permissions {
 	  public:
-		friend struct JsonifierInternal::ParseWithKeys;
-		friend struct JsonifierInternal::ParseNoKeys;
+		friend struct DiscordCoreAPI_Dll JsonifierInternal::ParseWithKeys;
+		friend struct DiscordCoreAPI_Dll JsonifierInternal::ParseNoKeys;
 
 		Permissions() noexcept = default;
 
@@ -942,8 +977,7 @@ namespace DiscordCoreAPI {
 	/// \param currentFunctionName A string to display the current function's name.
 	/// \param location For deriving the current file, line, and column - do not set this value.
 	/// \param ptr A pointer to the current exception.
-	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location location = std::source_location::current(),
-		std::exception_ptr ptr = nullptr);
+	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
 
 	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
 
@@ -963,15 +997,7 @@ namespace DiscordCoreAPI {
 
 	DiscordCoreAPI_Dll std::string generateBase64EncodedKey();
 
-	DiscordCoreAPI_Dll std::string shiftToBrightGreen();
-
-	DiscordCoreAPI_Dll std::string shiftToBrightBlue();
-
-	DiscordCoreAPI_Dll std::string shiftToBrightRed();
-
 	DiscordCoreAPI_Dll bool nanoSleep(int64_t ns);
-
-	DiscordCoreAPI_Dll std::string reset();
 
 	/// \brief Acquires a timeStamp with the current time and date - suitable for use in message-embeds.
 	/// \returns std::string A string containing the current date-time stamp.
@@ -1032,8 +1058,7 @@ namespace DiscordCoreAPI {
 	template<typename ITy>
 	concept IsInteger = std::is_integral<ITy>::value;
 
-	template<IsInteger StoredAs, DiscordCoreInternal::EnumT ValueType>
-	inline auto setBool(StoredAs theFlags, ValueType theFlagToSet, bool enabled) {
+	template<IsInteger StoredAs, DiscordCoreInternal::EnumT ValueType> inline auto setBool(StoredAs theFlags, ValueType theFlagToSet, bool enabled) {
 		auto theValue{ theFlags };
 		if (enabled) {
 			theValue |= std::to_underlying(theFlagToSet);
@@ -1047,11 +1072,12 @@ namespace DiscordCoreAPI {
 		return std::to_underlying(theFlags) & std::to_underlying(theFlagToCheckFor);
 	}
 
-	template<typename KTy, typename ValueType> class ObjectCache {
+	template<typename KeyType, typename ValueType> class ObjectCache {
 	  public:
-		using key_type = KTy;
+		using key_type = KeyType;
 		using mapped_type = ValueType;
 		using reference = mapped_type&;
+		using const_reference = const mapped_type&;
 		using pointer = mapped_type*;
 
 		inline ObjectCache& operator=(ObjectCache&& other) noexcept {
@@ -1061,10 +1087,6 @@ namespace DiscordCoreAPI {
 				std::swap(cacheMap, other.cacheMap);
 			}
 			return *this;
-		}
-
-		inline ObjectCache(ObjectCache&& other) noexcept {
-			*this = std::move(other);
 		}
 
 		inline ObjectCache& operator=(const ObjectCache& other) noexcept {
@@ -1082,7 +1104,7 @@ namespace DiscordCoreAPI {
 
 		inline constexpr void emplace(mapped_type&& object) {
 			std::unique_lock lock(cacheMutex);
-			cacheMap.emplace(std::forward<mapped_type>(object));
+			cacheMap.emplace(std::move(object));
 		}
 
 		inline constexpr void emplace(const mapped_type& object) {
@@ -1091,7 +1113,7 @@ namespace DiscordCoreAPI {
 		}
 
 		inline constexpr reference operator[](key_type&& key) {
-			return find(std::forward<key_type>(key));
+			return find(std::move(key));
 		}
 
 		inline constexpr reference operator[](const key_type& key) {
@@ -1135,6 +1157,15 @@ namespace DiscordCoreAPI {
 			return *end();
 		}
 
+		inline constexpr const_reference find(key_type key) const {
+			std::shared_lock lock(cacheMutex);
+			auto r = cacheMap.find(key);
+			if (r != cacheMap.end()) {
+				return *r;
+			}
+			return *end();
+		}
+
 		inline constexpr uint64_t count() {
 			std::shared_lock lock(cacheMutex);
 			return cacheMap.size();
@@ -1157,35 +1188,35 @@ namespace DiscordCoreAPI {
 		inline UnboundedMessageBlock<std::decay_t<ValueType>>& operator=(UnboundedMessageBlock<std::decay_t<ValueType>>&& other) noexcept {
 			if (this != &other) {
 				std::lock(accessMutex, other.accessMutex);
-				std::lock_guard lock{ accessMutex, std::adopt_lock };
-				std::lock_guard otherLock{ other.accessMutex, std::adopt_lock };
+				std::unique_lock lock{ accessMutex, std::adopt_lock };
+				std::unique_lock otherLock{ other.accessMutex, std::adopt_lock };
 				queue = std::move(other.queue);
 			}
 			return *this;
 		}
 
-		inline UnboundedMessageBlock(UnboundedMessageBlock&& other) noexcept {
-			std::lock_guard lock{ other.accessMutex };
-			queue = std::move(other.queue);
-		}
-
 		inline UnboundedMessageBlock<std::decay_t<ValueType>>& operator=(const UnboundedMessageBlock<std::decay_t<ValueType>>&) = delete;
 		inline UnboundedMessageBlock(const UnboundedMessageBlock&) = delete;
 
-		inline ~UnboundedMessageBlock() = default;
+		inline ~UnboundedMessageBlock() {
+			std::unique_lock lock{ accessMutex, std::defer_lock_t{} };
+			if (lock.owns_lock()) {
+				lock.unlock();
+			}
+		};
 
 		inline void send(ValueType&& object) {
-			std::lock_guard lock{ accessMutex };
+			std::unique_lock lock{ accessMutex };
 			queue.emplace_back(std::move(object));
 		}
 
 		inline void clearContents() {
-			std::lock_guard lock{ accessMutex };
+			std::unique_lock lock{ accessMutex };
 			queue.clear();
 		}
 
 		inline bool tryReceive(ValueType& object) {
-			std::lock_guard lock{ accessMutex };
+			std::unique_lock lock{ accessMutex };
 			if (queue.size() > 0) {
 				object = std::move(queue.front());
 				queue.pop_front();
@@ -1195,22 +1226,22 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		inline uint64_t size() const {
-			std::lock_guard lock{ accessMutex };
+		inline uint64_t size() {
+			std::unique_lock lock{ accessMutex };
 			return queue.size();
 		}
 
 	  protected:
 		std::deque<std::decay_t<ValueType>> queue{};
-		mutable std::mutex accessMutex{};
+		std::mutex accessMutex{};
 	};
 
-	template<typename RTy> class NewThreadAwaiter;
+	template<typename ReturnType, bool timeOut = true> class NewThreadAwaiter;
 
 	/// \brief An awaitable that can be used to launch the CoRoutine onto a new thread - as well as return the handle for stoppping its execution.
-	/// \tparam RTy The type of value returned by the containing CoRoutine.
-	template<typename RTy> inline auto NewThreadAwaitable() {
-		return NewThreadAwaiter<RTy>{};
+	/// \tparam ReturnType The type of value returned by the containing CoRoutine.
+	template<typename ReturnType, bool timeOut = true> inline auto NewThreadAwaitable() {
+		return NewThreadAwaiter<ReturnType, timeOut>{};
 	}
 
 	/// \brief Typedef for the message filter.

@@ -28,41 +28,43 @@
 #include <discordcoreapi/TCPConnection.hpp>
 #include <discordcoreapi/JsonSpecializations.hpp>
 #include <semaphore>
-#include <stack>
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll HttpsConnectionManager;
-	class DiscordCoreAPI_Dll HttpsConnection;
-	struct DiscordCoreAPI_Dll RateLimitData;
+	class RateLimitManager;
+	class HttpsConnection;
+	struct RateLimitData;
 
-	enum class HttpsState { Collecting_Code = 0, Collecting_Headers = 1, Collecting_Contents = 3, Collecting_Size = 4 };
+	enum class HttpsState { Collecting_Headers = 0, Collecting_Contents = 1, Collecting_Chunked_Contents = 2, Complete = 3 };
 
-	class DiscordCoreAPI_Dll HttpsError : public DiscordCoreAPI::DCAException {
+	class HttpsError : public DiscordCoreAPI::DCAException {
 	  public:
 		int32_t errorCode{};
 		explicit HttpsError(std::string message, std::source_location = std::source_location::current());
 	};
 
-	struct DiscordCoreAPI_Dll HttpsResponseData {
+	struct HttpsResponseData {
 		friend class HttpsRnRBuilder;
 		friend class HttpsConnection;
 		friend class HttpsClient;
 
 		std::unordered_map<std::string, std::string> responseHeaders{};
 		HttpsResponseCode responseCode{ static_cast<uint32_t>(-1) };
-		HttpsState currentState{ HttpsState::Collecting_Code };
+		HttpsState currentState{ HttpsState::Collecting_Headers };
 		std::string responseData{};
 		uint64_t contentLength{};
-		bool isThereJsonData{};
 
 	  protected:
 		bool isItChunked{};
 	};
 
-	class DiscordCoreAPI_Dll HttpsTCPConnection : public TCPConnection {
+	class HttpsConnection;
+
+	class HttpsTCPConnection : public TCPConnection<HttpsTCPConnection>, public SSLDataInterface<HttpsTCPConnection> {
 	  public:
-		HttpsTCPConnection(const std::string& baseUrlNew, const uint16_t portNew, bool doWePrintErrorsNew, HttpsConnection* ptrNew);
+		HttpsTCPConnection() noexcept = default;
+
+		HttpsTCPConnection(const std::string& baseUrlNew, const uint16_t portNew, HttpsConnection* ptrNew);
 
 		void handleBuffer() noexcept;
 
@@ -72,45 +74,33 @@ namespace DiscordCoreInternal {
 		HttpsConnection* ptr{};
 	};
 
-	class DiscordCoreAPI_Dll HttpsRnRBuilder {
+	class HttpsRnRBuilder {
 	  public:
 		friend class HttpsClient;
 
-		HttpsRnRBuilder(bool doWePrintErrors);
+		HttpsRnRBuilder() noexcept;
 
-		void updateRateLimitData(RateLimitData& connection, std::unordered_map<std::string, std::string>& headers);
+		void updateRateLimitData(RateLimitData& connection, std::unordered_map<std::string, std::string>& headers) noexcept;
 
-		HttpsResponseData finalizeReturnValues(RateLimitData& rateLimitData);
+		HttpsResponseData finalizeReturnValues(RateLimitData& rateLimitData) noexcept;
 
-		std::string buildRequest(const HttpsWorkloadData& workload);
+		std::string buildRequest(const HttpsWorkloadData& workload) noexcept;
 
-		uint64_t parseHeaders();
+		bool parseHeaders() noexcept;
 
 		virtual ~HttpsRnRBuilder() noexcept = default;
 
 	  protected:
-		bool doWePrintErrors{};
-		bool doWeHaveContentSize{};
-		bool doWeHaveHeaders{};
-		bool isItChunked{};
+		bool parseContents() noexcept;
 
-		void parseChunkHeaders();
+		bool parseChunk() noexcept;
 
-		void parseChunkSize();
-
-		void parseContents();
-
-		void parseChunk();
-
-		void parseSize();
-
-		void parseCode();
-
-		void clearCRLF();
+		bool parseSize() noexcept;
 	};
 
-	struct DiscordCoreAPI_Dll RateLimitData {
-		friend class HttpsConnectionManager;
+	struct RateLimitData {
+		friend class RateLimitStackHolder;
+		friend class RateLimitManager;
 		friend class HttpsRnRBuilder;
 		friend class HttpsClient;
 
@@ -127,127 +117,172 @@ namespace DiscordCoreInternal {
 		std::string bucket{};
 	};
 
-	inline thread_local Jsonifier::JsonifierCore httpsParser{};
-
-	class DiscordCoreAPI_Dll HttpsConnection : public HttpsRnRBuilder {
+	class HttpsConnection : public HttpsRnRBuilder {
 	  public:
 		friend class HttpsTCPConnection;
 
-		std::unique_ptr<HttpsTCPConnection> tcpConnection{};
 		DiscordCoreAPI::String inputBufferReal{};
-		const int32_t maxReconnectTries{ 10 };
-		std::atomic_bool areWeCheckedOut{};
+		const int32_t maxReconnectTries{ 3 };
+		HttpsTCPConnection tcpConnection{};
 		int32_t currentReconnectTries{};
+		HttpsWorkloadData workload{};
 		std::string currentBaseUrl{};
-		bool areWeDoneTheRequest{};
 		HttpsResponseData data{};
-		bool doWeConnect{ true };
 
-		HttpsConnection(bool doWePrintErrors);
+		HttpsConnection() noexcept;
+
+		void resetValues(HttpsWorkloadData&& workloadNew) noexcept;
+
+		bool areWeConnected() noexcept;
 
 		void disconnect() noexcept;
-
-		void resetValues();
 
 		virtual ~HttpsConnection() noexcept = default;
 	};
 
-	class DiscordCoreAPI_Dll HttpsConnectionManager {
+	inline thread_local std::unordered_map<HttpsWorkloadType, DiscordCoreAPI::UniquePtr<HttpsConnection>> httpsConnections{};
+
+	class RateLimitManager {
 	  public:
-		HttpsConnectionManager() noexcept = default;
+		friend class HttpsClient;
 
-		HttpsConnectionManager(DiscordCoreAPI::ConfigManager*);
+		RateLimitManager() noexcept = default;
 
-		std::unordered_map<std::string, std::unique_ptr<RateLimitData>>& getRateLimitValues();
+		HttpsConnection& getConnection(HttpsWorkloadType workloadType) noexcept;
 
-		std::unordered_map<HttpsWorkloadType, std::string>& getRateLimitValueBuckets();
+		RateLimitData& getRateLimitData(HttpsWorkloadType workloadType) noexcept;
 
-		HttpsConnection* getConnection();
-
-		void initialize();
+		void initialize() noexcept;
 
 	  protected:
-		std::unordered_map<std::string, std::unique_ptr<RateLimitData>> rateLimitValues{};
-		std::unordered_map<int64_t, std::unique_ptr<HttpsConnection>> httpsConnections{};
+		std::unordered_map<std::string, DiscordCoreAPI::UniquePtr<RateLimitData>> rateLimitValues{};
 		std::unordered_map<HttpsWorkloadType, std::string> rateLimitValueBuckets{};
-		DiscordCoreAPI::ConfigManager* configManager{};
 		std::mutex accessMutex{};
-		int64_t currentIndex{};
+
+		std::unordered_map<std::string, DiscordCoreAPI::UniquePtr<RateLimitData>>& getRateLimitValues() noexcept;
+
+		std::unordered_map<HttpsWorkloadType, std::string>& getRateLimitValueBuckets() noexcept;
+	};
+
+	class HttpsConnectionStackHolder {
+	  public:
+		HttpsConnectionStackHolder(RateLimitManager& connectionManager, HttpsWorkloadData&& workload) noexcept;
+
+		HttpsConnection& getConnection() noexcept;
+
+		~HttpsConnectionStackHolder() noexcept;
+
+	  protected:
+		HttpsConnection* connection{};
+	};
+
+	class RateLimitStackHolder {
+	  public:
+		RateLimitStackHolder(RateLimitManager& connectionManager, HttpsWorkloadType workload) noexcept;
+
+		RateLimitData& getRateLimitData() noexcept;
+
+		~RateLimitStackHolder() noexcept;
+
+	  protected:
+		RateLimitData* rateLimitData{};
 	};
 
 	template<typename ObjectType>
-	concept IsVoid = std::same_as<ObjectType, void>;
+	concept VoidT = std::same_as<ObjectType, void>;
 
-	class DiscordCoreAPI_Dll HttpsClient {
+	class HttpsClientCore {
 	  public:
-		HttpsClient(DiscordCoreAPI::ConfigManager* configManager);
+		HttpsClientCore& operator=(HttpsClientCore&& other) noexcept = default;
+		HttpsClientCore(HttpsClientCore&& other) noexcept = default;
 
-		template<typename... Args> void SubmitWorkloadAndGetResult(Args... args);
+		HttpsClientCore(const std::string& botTokenNew) noexcept;
 
-		template<typename RTy> void submitWorkloadAndGetResult(const HttpsWorkloadData& workload, RTy& returnData) {
-			workload.headersToInsert["Authorization"] = "Bot " + configManager->getBotToken();
-			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
-			if (workload.payloadType == PayloadType::Application_Json) {
-				workload.headersToInsert["Content-Type"] = "application/json";
-			} else if (workload.payloadType == PayloadType::Multipart_Form) {
-				workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
+		inline HttpsResponseData submitWorkloadAndGetResult(HttpsWorkloadData&& workloadNew) {
+			HttpsConnection connection{};
+			RateLimitData rateLimitData{};
+			connection.resetValues(std::move(workloadNew));
+			auto returnData = httpsRequestInternal(connection, rateLimitData);
+			if (returnData.responseCode != 200 && returnData.responseCode != 204 && returnData.responseCode != 201) {
+				std::string errorMessage{};
+				if (connection.workload.callStack != "") {
+					errorMessage += connection.workload.callStack + " ";
+				}
+				errorMessage += "Https Error: " + returnData.responseCode.operator std::string() +
+					"\nThe Request: Base Url: " + connection.workload.baseUrl + "\nRelative Url: " + connection.workload.relativePath +
+					"\nContent: " + connection.workload.content + "\nThe Response: " + returnData.responseData;
+				HttpsError theError{ errorMessage };
+				theError.errorCode = returnData.responseCode;
+				throw theError;
 			}
-			auto httpsConnection = connectionManager.getConnection();
-			HttpsResponseData returnDataNew = httpsRequest(httpsConnection, workload);
+			return returnData;
+		}
+
+	  protected:
+		std::string botToken{};
+
+		HttpsResponseData httpsRequestInternal(HttpsConnection& connection, RateLimitData& rateLimitData) noexcept;
+
+		HttpsResponseData getResponse(HttpsConnection& connection, RateLimitData& rateLimitData) noexcept;
+	};
+
+	class HttpsClient : public HttpsClientCore {
+	  public:
+		HttpsClient(const std::string& botTokenNew) noexcept;
+
+		template<typename... Args> void submitWorkloadAndGetResult(Args... args);
+
+		template<typename ReturnType> void submitWorkloadAndGetResult(HttpsWorkloadData&& workload, ReturnType& returnData) {
+			HttpsConnectionStackHolder stackHolder{ connectionManager, std::move(workload) };
+			auto& connection = stackHolder.getConnection();
+			HttpsResponseData returnDataNew = httpsRequest(connection);
 
 			if (static_cast<uint32_t>(returnDataNew.responseCode) != 200 && static_cast<uint32_t>(returnDataNew.responseCode) != 204 &&
 				static_cast<uint32_t>(returnDataNew.responseCode) != 201) {
-				HttpsError theError{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack +
-					" Https Error: " + returnDataNew.responseCode.operator std::string() + "\nThe Request: " + workload.baseUrl +
-					workload.relativePath + "\n" + workload.content + DiscordCoreAPI::reset() + "\nThe Response: " + returnDataNew.responseData };
+				std::string errorMessage{};
+				if (connection.workload.callStack != "") {
+					errorMessage += connection.workload.callStack + " ";
+				}
+				errorMessage += "Https Error: " + returnDataNew.responseCode.operator std::string() +
+					"\nThe Request: Base Url: " + connection.workload.baseUrl + "\nRelative Url: " + connection.workload.relativePath +
+					"\nContent: " + connection.workload.content + "\nThe Response: " + returnDataNew.responseData;
+				HttpsError theError{ errorMessage };
 				theError.errorCode = returnDataNew.responseCode;
-				httpsConnection->areWeCheckedOut.store(false);
 				throw theError;
 			}
 			if (returnDataNew.responseData.size() > 0) {
-				httpsParser.parseJson<true>(returnData, returnDataNew.responseData);
+				parser.parseJson<true, true>(returnData, returnDataNew.responseData);
 			}
-			httpsConnection->areWeCheckedOut.store(false);
 			return;
 		}
 
-		template<IsVoid RTy> void submitWorkloadAndGetResult(const HttpsWorkloadData& workload) {
-			workload.headersToInsert["Authorization"] = "Bot " + configManager->getBotToken();
-			workload.headersToInsert["User-Agent"] = "DiscordBot (https://discordcoreapi.com/ 1.0)";
-			if (workload.payloadType == PayloadType::Application_Json) {
-				workload.headersToInsert["Content-Type"] = "application/json";
-			} else if (workload.payloadType == PayloadType::Multipart_Form) {
-				workload.headersToInsert["Content-Type"] = "multipart/form-data; boundary=boundary25";
-			}
-			auto httpsConnection = connectionManager.getConnection();
-			HttpsResponseData returnDataNew = httpsRequest(httpsConnection, workload);
+		template<VoidT ReturnType> void submitWorkloadAndGetResult(HttpsWorkloadData&& workload) {
+			HttpsConnectionStackHolder stackHolder{ connectionManager, std::move(workload) };
+			auto& connection = stackHolder.getConnection();
+			HttpsResponseData returnDataNew = httpsRequest(connection);
 
 			if (static_cast<uint32_t>(returnDataNew.responseCode) != 200 && static_cast<uint32_t>(returnDataNew.responseCode) != 204 &&
 				static_cast<uint32_t>(returnDataNew.responseCode) != 201) {
-				HttpsError theError{ DiscordCoreAPI::shiftToBrightRed() + workload.callStack +
-					" Https Error: " + returnDataNew.responseCode.operator std::string() + "\nThe Request: " + workload.baseUrl +
-					workload.relativePath + "\n" + workload.content + DiscordCoreAPI::reset() + "\nThe Response: " + returnDataNew.responseData };
+				std::string errorMessage{};
+				if (connection.workload.callStack != "") {
+					errorMessage += connection.workload.callStack + " ";
+				}
+				errorMessage += "Https Error: " + returnDataNew.responseCode.operator std::string() +
+					"\nThe Request: Base Url: " + connection.workload.baseUrl + "\nRelative Url: " + connection.workload.relativePath +
+					"\nContent: " + connection.workload.content + "\nThe Response: " + returnDataNew.responseData;
+				HttpsError theError{ errorMessage };
 				theError.errorCode = returnDataNew.responseCode;
-				httpsConnection->areWeCheckedOut.store(false);
 				throw theError;
 			}
-			httpsConnection->areWeCheckedOut.store(false);
 			return;
 		}
 
-		HttpsResponseData submitWorkloadAndGetResult(const HttpsWorkloadData& workloadNew);
-
-		HttpsResponseData httpsRequest(HttpsConnection* httpsConnection, const HttpsWorkloadData& workload);
-
 	  protected:
-		DiscordCoreAPI::ConfigManager* configManager{};
-		HttpsConnectionManager connectionManager{};
+		RateLimitManager connectionManager{};
 
-		HttpsResponseData httpsRequestInternal(HttpsConnection* connection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
+		HttpsResponseData executeByRateLimitData(HttpsConnection& connection, RateLimitData& rateLimitData) noexcept;
 
-		HttpsResponseData executeByRateLimitData(HttpsConnection* httpsConnection, const HttpsWorkloadData& workload, RateLimitData& rateLimitData);
-
-		HttpsResponseData getResponse(HttpsConnection* connection, RateLimitData& rateLimitData);
+		HttpsResponseData httpsRequest(HttpsConnection& connection) noexcept;
 	};
 
 }// namespace DiscordCoreInternal

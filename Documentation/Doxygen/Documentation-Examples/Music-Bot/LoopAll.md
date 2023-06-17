@@ -20,8 +20,8 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<BaseFunction> create() {
-			return std::make_unique<LoopAll>();
+		DiscordCoreAPI::UniquePtr<BaseFunction> create() {
+			return DiscordCoreAPI::makeUnique<LoopAll>();
 		}
 
 		void execute(BaseFunctionArguments& newArgs) {

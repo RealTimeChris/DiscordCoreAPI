@@ -28,6 +28,7 @@
 #include <string_view>
 #include <cstring>
 #include <cstdint>
+#include <vector>
 #include <array>
 
 namespace DiscordCoreInternal {
@@ -36,9 +37,17 @@ namespace DiscordCoreInternal {
 
 	template<typename ValueType, uint64_t Size> class RingBufferInterface {
 	  public:
-		template<typename ValueType2, uint64_t SliceCount> friend class RingBuffer;
+		using value_type = ValueType;
+		using pointer = value_type*;
+		using size_type = size_t;
 
-		inline constexpr void modifyReadOrWritePosition(RingBufferAccessType type, uint64_t size) noexcept {
+		inline RingBufferInterface() noexcept {
+			arrayValue.resize(Size);
+		}
+
+		template<typename ValueType2, size_type SliceCount> friend class RingBuffer;
+
+		inline void modifyReadOrWritePosition(RingBufferAccessType type, size_type size) noexcept {
 			if (type == RingBufferAccessType::Read) {
 				tail += size;
 			} else {
@@ -46,86 +55,72 @@ namespace DiscordCoreInternal {
 			}
 		}
 
-		inline constexpr bool isItEmpty() {
-			return tail == head;
-		}
-
-		inline constexpr bool isItFull() {
-			return getUsedSpace() == Size;
-		}
-
-		inline constexpr size_t getUsedSpace() {
+		inline size_type getUsedSpace() noexcept {
 			return head - tail;
 		}
 
-		inline constexpr ValueType* getCurrentTail() noexcept {
+		inline pointer getCurrentTail() noexcept {
 			return arrayValue.data() + (tail % Size);
 		}
 
-		inline constexpr ValueType* getCurrentHead() noexcept {
+		inline pointer getCurrentHead() noexcept {
 			return arrayValue.data() + (head % Size);
 		}
 
-		inline constexpr virtual void clear() noexcept {
+		inline bool isItEmpty() noexcept {
+			return tail == head;
+		}
+
+		inline bool isItFull() noexcept {
+			return getUsedSpace() == Size;
+		}
+
+		inline void clear() noexcept {
 			tail = 0;
 			head = 0;
 		}
 
 	  protected:
-		std::array<std::decay_t<ValueType>, Size> arrayValue{};
-		uint64_t tail{};
-		uint64_t head{};
+		std::vector<std::decay_t<value_type>> arrayValue{};
+		size_type tail{};
+		size_type head{};
 	};
 
 	template<typename ValueType, uint64_t SliceCount> class RingBuffer
 		: public RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount> {
 	  public:
-		inline constexpr void clear() noexcept {
-			for (uint64_t x = 0; x < SliceCount; ++x) {
-				RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::arrayValue[x].tail = 0;
-				RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::arrayValue[x].head = 0;
+		using value_type = RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>::value_type;
+		using const_pointer = const value_type*;
+		using pointer = value_type*;
+		using size_type = size_t;
+
+		inline void writeData(const_pointer data, size_type size) noexcept {
+			if (RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::isItFull() ||
+				size > 16384 -
+						RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentHead()->getUsedSpace()) {
+				RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->clear();
+				RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::modifyReadOrWritePosition(
+					RingBufferAccessType::Read, 1);
 			}
-			RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::tail = 0;
-			RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::head = 0;
+			size_type writeSize{ size };
+			std::memcpy(RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentHead()->getCurrentHead(),
+				data, size);
+			RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentHead()->modifyReadOrWritePosition(
+				RingBufferAccessType::Write, writeSize);
+			RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::modifyReadOrWritePosition(
+				RingBufferAccessType::Write, 1);
 		}
 
-		inline constexpr void modifyReadOrWritePosition(RingBufferAccessType type, uint64_t size) noexcept {
-			RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::modifyReadOrWritePosition(type, size);
-		}
-
-		inline constexpr uint64_t getUsedSpace() {
-			return RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getUsedSpace();
-		}
-
-		inline constexpr auto getCurrentTail() {
-			return RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail();
-		}
-
-		inline constexpr auto isItFull() {
-			return RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::isItFull();
-		}
-
-		inline constexpr auto getCurrentHead() {
-			return RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentHead();
-		}
-
-		inline constexpr void writeData(std::basic_string_view<std::decay_t<ValueType>> data) {
-			if (isItFull() || data.size() > 16384 - getCurrentHead()->getUsedSpace()) {
-				getCurrentTail()->clear();
-				modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
-			}
-			uint64_t writeSize{ data.size() };
-			std::memcpy(getCurrentHead()->getCurrentHead(), data.data(), data.size());
-			getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write, writeSize);
-			modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
-		}
-
-		inline constexpr std::basic_string_view<std::decay_t<ValueType>> readData() {
-			std::basic_string_view<std::decay_t<ValueType>> returnData{};
-			if (getCurrentTail()->getUsedSpace() > 0) {
-				returnData = std::basic_string_view<std::decay_t<ValueType>>{ getCurrentTail()->getCurrentTail(), getCurrentTail()->getUsedSpace() };
-				getCurrentTail()->clear();
-				modifyReadOrWritePosition(RingBufferAccessType::Read, 1);
+		inline std::basic_string_view<std::decay_t<value_type>> readData() noexcept {
+			std::basic_string_view<std::decay_t<value_type>> returnData{};
+			if (RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->getUsedSpace() > 0) {
+				returnData = std::basic_string_view<std::decay_t<value_type>>{
+					RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->getCurrentTail(),
+					RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->getUsedSpace()
+				};
+				RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::getCurrentTail()->clear();
+				RingBufferInterface<RingBufferInterface<std::decay_t<ValueType>, 1024 * 16>, SliceCount>::modifyReadOrWritePosition(
+					RingBufferAccessType::Read, 1);
 			}
 			return returnData;
 		}

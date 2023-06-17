@@ -48,7 +48,7 @@ namespace DiscordCoreInternal {
 	};
 
 	WebSocketClose::operator std::string() {
-		return WebSocketClose::outputErrorValues[mappingValues[static_cast<uint16_t>(*this)]];
+		return WebSocketClose::outputErrorValues[mappingValues[static_cast<uint16_t>(value)]];
 	}
 
 	WebSocketClose::operator bool() {
@@ -66,7 +66,7 @@ namespace DiscordCoreInternal {
 	};
 
 	VoiceWebSocketClose::operator std::string() {
-		return VoiceWebSocketClose::outputErrorValues[mappingValues[static_cast<uint16_t>(*this)]];
+		return VoiceWebSocketClose::outputErrorValues[mappingValues[static_cast<uint16_t>(value)]];
 	}
 
 	VoiceWebSocketClose::operator bool() {
@@ -93,12 +93,11 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-	DCAException::DCAException(const std::string& error, std::source_location location) noexcept
-		: std::runtime_error(error) {
+	DCAException::DCAException(const std::string& error, std::source_location location) noexcept : std::runtime_error(error) {
 		std::stringstream stream{};
-		stream << shiftToBrightRed() << "Thrown From: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
-			   << std::to_string(location.column()) << ")\n"
-			   << error << reset() << std::endl
+		stream << "Thrown From: " << location.file_name() << " (" << std::to_string(location.line()) << ":" << std::to_string(location.column())
+			   << ")\n"
+			   << error << std::endl
 			   << std::endl;
 		*static_cast<std::runtime_error*>(this) = std::runtime_error{ stream.str() };
 	}
@@ -200,6 +199,10 @@ namespace DiscordCoreAPI {
 		return config.intents;
 	}
 
+	AudioFrameData::AudioFrameData(AudioFrameType frameTypeNew) noexcept {
+		type = frameTypeNew;
+	}
+
 	AudioFrameData& AudioFrameData::operator+=(std::basic_string_view<uint8_t> other) noexcept {
 		if (other.size() > 0) {
 			if (data.size() < other.size()) {
@@ -208,32 +211,7 @@ namespace DiscordCoreAPI {
 			std::memcpy(data.data(), other.data(), other.size());
 		}
 		currentSize = other.size();
-		type = AudioFrameType::RawPCM;
 		return *this;
-	}
-
-	AudioFrameData& AudioFrameData::operator+=(uint8_t character) {
-		if (data.size() < currentSize + 1) {
-			data.resize((currentSize + 1) * 2);
-		}
-		data[currentSize++] = character;
-		return *this;
-	}
-
-	bool operator==(const AudioFrameData& lhs, const AudioFrameData& rhs) {
-		if (lhs.data != rhs.data) {
-			return false;
-		}
-		if (lhs.currentSize != rhs.currentSize) {
-			return false;
-		}
-		if (lhs.guildMemberId != rhs.guildMemberId) {
-			return false;
-		}
-		if (lhs.type != rhs.type) {
-			return false;
-		}
-		return true;
 	}
 
 	void AudioFrameData::clearData() noexcept {
@@ -304,10 +282,6 @@ namespace DiscordCoreAPI {
 		} else {
 			return std::string{ toHex(lowBits) + toHex(highBits) };
 		}
-	}
-
-	bool IconHash::operator==(const IconHash& other) {
-		return lowBits == other.lowBits && highBits == other.highBits;
 	}
 
 	uint64_t strtoull(std::string_view string) {
@@ -643,21 +617,14 @@ namespace DiscordCoreAPI {
 		return std::to_string(permissions);
 	}
 
-	void reportException(const std::string& currentFunctionName, std::source_location location, std::exception_ptr ptr) {
+	void reportException(const std::string& currentFunctionName, std::source_location location) {
 		try {
 			auto exception = std::current_exception();
 			if (exception) {
 				std::rethrow_exception(exception);
 			}
 		} catch (const std::exception& e) {
-			std::stringstream stream{};
-			stream << shiftToBrightRed() << "Error Report: \n"
-				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
-				   << std::to_string(location.column()) << ")"
-				   << "\nThe Error: \n"
-				   << e.what() << reset() << std::endl
-				   << std::endl;
-			cout << stream.str();
+			Globals::MessagePrinter::printError<Globals::MessageType::General>(e.what(), location);
 		}
 	}
 
@@ -668,14 +635,7 @@ namespace DiscordCoreAPI {
 				std::rethrow_exception(currentException);
 			}
 		} catch (const std::exception& e) {
-			std::stringstream stream{};
-			stream << shiftToBrightRed() << "Error Report: \n"
-				   << "Caught At: " << currentFunctionName << ", in File: " << location.file_name() << " (" << std::to_string(location.line()) << ":"
-				   << std::to_string(location.column()) << ")"
-				   << "\nThe Error: \n"
-				   << e.what() << reset() << std::endl
-				   << std::endl;
-			cout << stream.str();
+			Globals::MessagePrinter::printError<Globals::MessageType::General>(e.what(), location);
 			if (std::current_exception()) {
 				std::rethrow_exception(std::current_exception());
 			}
@@ -831,18 +791,6 @@ namespace DiscordCoreAPI {
 		return returnString;
 	}
 
-	std::string shiftToBrightGreen() {
-		return std::string("\033[1;40;92m");
-	}
-
-	std::string shiftToBrightBlue() {
-		return std::string("\033[1;40;96m");
-	}
-
-	std::string shiftToBrightRed() {
-		return std::string("\033[1;40;91m");
-	}
-
 	bool nanoSleep(int64_t ns) {
 #ifdef _WIN32
 		HANDLE timer = CreateWaitableTimerExW(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
@@ -861,10 +809,6 @@ namespace DiscordCoreAPI {
 		std::this_thread::sleep_for(Nanoseconds{ ns });
 #endif
 		return true;
-	}
-
-	std::string reset() {
-		return std::string("\033[0m");
 	}
 
 	std::string getTimeAndDate() {
@@ -1156,12 +1100,12 @@ namespace DiscordCoreAPI {
 				break;
 			}
 			case TimeFormat::LongDateTime: {
-				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%ValueType", &timeInfo);
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%FT%T", &timeInfo);
 				timeStamp.resize(sizeResponse);
 				break;
 			}
 			case TimeFormat::LongTime: {
-				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%ValueType", &timeInfo);
+				uint64_t sizeResponse = strftime(timeStamp.data(), 48, "%T", &timeInfo);
 				timeStamp.resize(sizeResponse);
 				break;
 			}

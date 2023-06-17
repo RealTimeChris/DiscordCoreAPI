@@ -30,7 +30,7 @@ int32_t main() {
 	std::string botToken = "YOUR_BOT_TOKEN_HERE";
 	DiscordCoreAPI::DiscordCoreClient client{ botToken };
 	client.eventManager.onAutoCompleteEntry(&theAutoCompleteFunction);
-	client.registerFunction(std::vector<std::string>{ "test" }, std::make_unique<DiscordCoreAPI::Test>());
+	client.registerFunction(std::vector<std::string>{ "test" }, DiscordCoreAPI::makeUnique<DiscordCoreAPI::Test>());
 	client.runBot();
 	return 0;
 }

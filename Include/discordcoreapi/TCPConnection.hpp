@@ -37,10 +37,21 @@
 #include <openssl/ssl.h>
 
 #ifdef _WIN32
+	#define connect(x, y, z) WSAConnect(x, y, z, nullptr, nullptr, nullptr, nullptr)
+	#ifdef errno
+		#undef errno
+		#define errno WSAGetLastError()
+	#endif
+	#ifdef EWOULDBLOCK
+		#undef EWOULDBLOCK
+		#define EWOULDBLOCK WSAEWOULDBLOCK
+	#endif
+	#define close closesocket
+	#define SHUT_RDWR SD_BOTH
 	#pragma comment(lib, "Ws2_32.lib")
 	#include <WinSock2.h>
 	#include <WS2tcpip.h>
-	#define poll(fd_set, fd_count, timeout) WSAPoll(fd_set, fd_count, timeout)
+	#define poll(x, y, z) WSAPoll(x, y, z)
 	#define pollfd WSAPOLLFD
 	#ifdef max
 		#undef max
@@ -56,138 +67,276 @@
 	#include <netdb.h>
 	#include <fcntl.h>
 	#include <poll.h>
+using SOCKET = int32_t;
 #endif
 
-namespace DiscordCoreInternal {
-
 #ifndef SOCKET_ERROR
-	#define SOCKET_ERROR (-1)
+	#define SOCKET_ERROR SOCKET(-1)
 #endif
 
 #ifndef INVALID_SOCKET
 	#define INVALID_SOCKET SOCKET(~0)
 #endif
 
-#ifndef _WIN32
-	using SOCKET = int32_t;
-#endif
+namespace DiscordCoreInternal {
 
-	enum class ConnectionErrorType { POLLHUP_Error = 0, POLLNVAL_Error = 1, POLLERR_Error = 2, READ_Error = 3, WRITE_Error = 4, SOCKET_Error = 5 };
-
-	struct DiscordCoreAPI_Dll ConnectionError : public DiscordCoreAPI::DCAException {
-		ConnectionError(const std::string&, ConnectionErrorType, std::source_location = std::source_location::current()) noexcept;
-
-		ConnectionErrorType getType() noexcept;
-
-	  protected:
-		ConnectionErrorType errorType{};
+	enum class ConnectionStatus {
+		NO_Error = 0,
+		CONNECTION_Error = 1,
+		POLLHUP_Error = 2,
+		POLLNVAL_Error = 3,
+		POLLERR_Error = 4,
+		READ_Error = 5,
+		WRITE_Error = 6,
+		SOCKET_Error = 7
 	};
 
-	std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept;
+	inline std::string reportSSLError(const std::string& errorPosition, int32_t errorValue = 0, SSL* ssl = nullptr) noexcept {
+		std::stringstream stream{};
+		stream << errorPosition << " Error: ";
+		if (ssl) {
+			stream << ERR_error_string(SSL_get_error(ssl, errorValue), nullptr) << ", " << ERR_error_string(ERR_get_error(), nullptr) << endl << endl;
+		} else {
+			stream << ERR_error_string(ERR_get_error(), nullptr) << endl << endl;
+		}
+		return stream.str();
+	}
 
-	std::string reportError(const std::string& errorPosition) noexcept;
+	inline std::string reportError(const std::string& errorPosition) noexcept {
+		std::stringstream stream{};
+		stream << errorPosition << " Error: ";
+#ifdef _WIN32
+		char string[1024]{};
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, WSAGetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			( LPTSTR )string, 1024, NULL);
+		stream << WSAGetLastError() << ", " << string << endl;
+#else
+		stream << strerror(errno) << endl;
+#endif
+		return stream.str();
+	}
 
-	struct DiscordCoreAPI_Dll PollFDWrapper {
+#ifdef _WIN32
+	struct WSADataWrapper {
+		struct WSADataDeleter {
+			inline void operator()(WSADATA* other) noexcept {
+				WSACleanup();
+				delete other;
+			}
+		};
+
+		inline WSADataWrapper() {
+			auto returnData = WSAStartup(MAKEWORD(2, 2), ptr.get());
+			if (returnData) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(reportError("WSADataWrapper::WSADataWrapper()"));
+			}
+		}
+
+	  protected:
+		DiscordCoreAPI::UniquePtr<WSADATA, WSADataDeleter> ptr{ DiscordCoreAPI::makeUnique<WSADATA, WSADataDeleter>() };
+	};
+#endif
+
+	struct PollFDWrapper {
 		std::vector<uint32_t> indices{};
 		std::vector<pollfd> polls{};
 	};
 
-#ifdef _WIN32
-	struct DiscordCoreAPI_Dll WSADataWrapper {
-		struct DiscordCoreAPI_Dll WSADataDeleter {
-			void operator()(WSADATA* other) noexcept;
+	struct SSL_CTXWrapper {
+		struct SSL_CTXDeleter {
+			inline void operator()(SSL_CTX* other) noexcept {
+				if (other) {
+					SSL_CTX_free(other);
+					other = nullptr;
+				}
+			}
 		};
 
-		WSADataWrapper();
+		inline SSL_CTXWrapper& operator=(SSL_CTX* other) noexcept {
+			ptr.reset(other);
+			return *this;
+		}
+
+		inline operator SSL_CTX*() noexcept {
+			return ptr.get();
+		}
 
 	  protected:
-		std::unique_ptr<WSADATA, WSADataDeleter> ptr{ std::make_unique<WSADATA>().release(), WSADataDeleter{} };
+		DiscordCoreAPI::UniquePtr<SSL_CTX, SSL_CTXDeleter> ptr{};
 	};
-#endif
 
-	struct DiscordCoreAPI_Dll SSL_CTXWrapper {
-		struct DiscordCoreAPI_Dll SSL_CTXDeleter {
-			void operator()(SSL_CTX* other) noexcept;
+	struct SSLWrapper {
+		struct SSLDeleter {
+			inline void operator()(SSL* other) noexcept {
+				if (other) {
+					SSL_shutdown(other);
+					SSL_free(other);
+					other = nullptr;
+				}
+			}
 		};
 
-		SSL_CTXWrapper& operator=(SSL_CTX* other) noexcept;
+		inline SSLWrapper& operator=(std::nullptr_t other) noexcept {
+			if (ptr) {
+				ptr.reset(other);
+			}
+			return *this;
+		}
 
-		operator SSL_CTX*() noexcept;
+		inline SSLWrapper& operator=(SSL* other) noexcept {
+			ptr.reset(other);
+			return *this;
+		}
+
+		inline explicit operator bool() noexcept {
+			return ptr;
+		}
+
+		inline operator SSL*() noexcept {
+			return ptr.get();
+		}
 
 	  protected:
-		std::unique_ptr<SSL_CTX, SSL_CTXDeleter> ptr{ nullptr, SSL_CTXDeleter{} };
+		DiscordCoreAPI::UniquePtr<SSL, SSLDeleter> ptr{};
 	};
 
-	struct DiscordCoreAPI_Dll SSLWrapper {
-		struct DiscordCoreAPI_Dll SSLDeleter {
-			void operator()(SSL* other) noexcept;
+	struct SOCKETWrapper {
+		struct SOCKETDeleter {
+			inline void operator()(SOCKET* ptr) noexcept {
+				if (ptr && *ptr != INVALID_SOCKET) {
+					shutdown(*ptr, SHUT_RDWR);
+					close(*ptr);
+					*ptr = INVALID_SOCKET;
+					delete ptr;
+					ptr = nullptr;
+				};
+			}
 		};
 
-		SSLWrapper& operator=(std::nullptr_t other) noexcept;
+		inline SOCKETWrapper() noexcept = default;
 
-		SSLWrapper& operator=(SSL* other) noexcept;
+		inline SOCKETWrapper& operator=(SOCKET other) noexcept {
+			ptr.reset(new SOCKET{ other });
+			return *this;
+		}
 
-		operator SSL*() noexcept;
+		inline SOCKETWrapper(SOCKET other) noexcept {
+			*this = other;
+		}
+
+		inline explicit operator bool() noexcept {
+			return ptr;
+		}
+
+		inline operator SOCKET() noexcept {
+			if (ptr) {
+				return *ptr;
+			} else {
+				return INVALID_SOCKET;
+			}
+		}
 
 	  protected:
-		std::unique_ptr<SSL, SSLDeleter> ptr{ nullptr, SSLDeleter{} };
+		DiscordCoreAPI::UniquePtr<SOCKET, SOCKETDeleter> ptr{};
 	};
 
-	struct DiscordCoreAPI_Dll SOCKETWrapper {
-		struct DiscordCoreAPI_Dll SOCKETDeleter {
-			void operator()(SOCKET* other) noexcept;
-		};
-		SOCKETWrapper() noexcept = default;
+	struct addrinfoWrapper {
+		inline addrinfo* operator->() noexcept {
+			return ptr;
+		}
 
-		SOCKETWrapper& operator=(SOCKET other) noexcept;
+		inline operator addrinfo**() noexcept {
+			return &ptr;
+		}
 
-		SOCKETWrapper(SOCKET other) noexcept;
-
-		operator SOCKET() noexcept;
-
-		~SOCKETWrapper() noexcept = default;
-
-	  protected:
-		std::unique_ptr<SOCKET, SOCKETDeleter> ptr{};
-	};
-
-	struct DiscordCoreAPI_Dll addrinfoWrapper {
-		addrinfo* operator->() noexcept;
-
-		operator addrinfo**() noexcept;
-
-		operator addrinfo*() noexcept;
+		inline operator addrinfo*() noexcept {
+			return ptr;
+		}
 
 	  protected:
 		addrinfo value{};
 		addrinfo* ptr{ &value };
 	};
 
-	class DiscordCoreAPI_Dll SSLConnectionInterface {
+	class SSLContextHolder {
 	  public:
-		virtual bool areWeStillConnected() noexcept = 0;
+		inline static SSL_CTXWrapper context{};
+		inline static std::mutex accessMutex{};
 
-		virtual void disconnect() noexcept = 0;
+		inline static bool initialize() noexcept {
+			if (SSLContextHolder::context = SSL_CTX_new(TLS_client_method()); !SSLContextHolder::context) {
+				return false;
+			}
 
-		static bool initialize() noexcept;
+			if (!SSL_CTX_set_min_proto_version(SSLContextHolder::context, TLS1_2_VERSION)) {
+				return false;
+			}
 
-		virtual ~SSLConnectionInterface() noexcept = default;
-
-	  protected:
-		static SSL_CTXWrapper context;
-		static std::mutex mutex;
-
-		SOCKETWrapper socket{};
-		SSLWrapper ssl{};
+#ifdef SSL_OP_IGNORE_UNEXPECTED_EOF
+			auto originalOptions{ SSL_CTX_get_options(SSLContextHolder::context) | SSL_OP_IGNORE_UNEXPECTED_EOF };
+			if (SSL_CTX_set_options(SSLContextHolder::context, SSL_OP_IGNORE_UNEXPECTED_EOF) != originalOptions) {
+				return false;
+			}
+#endif
+			return true;
+		}
 	};
 
-	class DiscordCoreAPI_Dll SSLDataInterface {
+	template<typename ValueType> class SSLDataInterface {
 	  public:
+		template<typename ValueType2> friend class TCPConnection;
 		friend class HttpsClient;
 
-		virtual void writeData(std::string_view dataToWrite, bool priority) = 0;
+		inline SSLDataInterface& operator=(SSLDataInterface&& other) noexcept {
+			this->outputBuffer = std::move(other.outputBuffer);
+			this->inputBuffer = std::move(other.inputBuffer);
+			this->bytesRead = other.bytesRead;
+			return *this;
+		}
+		inline SSLDataInterface(SSLDataInterface&& other) noexcept {
+			*this = std::move(other);
+		}
 
-		virtual std::basic_string_view<uint8_t> getInputBuffer() noexcept = 0;
+		inline void writeData(std::string_view dataToWrite, bool priority) {
+			if (static_cast<ValueType*>(this)->areWeStillConnected()) {
+				if (dataToWrite.size() > 0 && static_cast<ValueType*>(this)->ssl) {
+					if (priority && dataToWrite.size() < maxBufferSize) {
+						outputBuffer.clear();
+						outputBuffer.writeData(reinterpret_cast<const uint8_t*>(dataToWrite.data()), dataToWrite.size());
+						static_cast<ValueType*>(this)->processWriteData();
+					} else {
+						uint64_t remainingBytes{ dataToWrite.size() };
+						while (remainingBytes > 0) {
+							uint64_t amountToCollect{ dataToWrite.size() >= maxBufferSize ? maxBufferSize : dataToWrite.size() };
+							outputBuffer.writeData(reinterpret_cast<const uint8_t*>(dataToWrite.data()), amountToCollect);
+							dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
+							remainingBytes = dataToWrite.size();
+						}
+					}
+				}
+				return;
+			} else {
+				return;
+			}
+		}
+
+		inline std::string getInputBuffer() noexcept {
+			auto newReturnString{ inputBuffer.readData() };
+			std::string newString{};
+			newString.resize(newReturnString.size());
+			std::memcpy(newString.data(), newReturnString.data(), newReturnString.size());
+			return newString;
+		}
+
+		inline int64_t getBytesRead() noexcept {
+			return bytesRead;
+		}
+
+		inline void reset() noexcept {
+			outputBuffer.clear();
+			inputBuffer.clear();
+			bytesRead = 0;
+		}
 
 		virtual ~SSLDataInterface() noexcept = default;
 
@@ -196,16 +345,302 @@ namespace DiscordCoreInternal {
 		RingBuffer<uint8_t, 16> outputBuffer{};
 		RingBuffer<uint8_t, 64> inputBuffer{};
 		int64_t bytesRead{};
+
+		inline SSLDataInterface() noexcept = default;
 	};
 
-	class DiscordCoreAPI_Dll TCPConnection : public SSLDataInterface, public SSLConnectionInterface {
+	template<typename ValueType> class TCPConnection {
 	  public:
-		TCPConnection() noexcept = default;
+		ConnectionStatus currentStatus{ ConnectionStatus::NO_Error };
+		SOCKETWrapper socket{};
+		bool writeWantWrite{};
+		bool writeWantRead{};
+		bool readWantWrite{};
+		bool readWantRead{};
+		SSLWrapper ssl{};
 
-		TCPConnection(const std::string& baseUrlNew, const uint16_t portNew, bool doWePrintErrors, bool areWeAStandaloneSocket);
+		inline TCPConnection& operator=(TCPConnection&& other) noexcept {
+			this->writeWantWrite = other.writeWantWrite;
+			this->currentStatus = other.currentStatus;
+			this->readWantWrite = other.readWantWrite;
+			this->writeWantRead = other.writeWantRead;
+			this->readWantRead = other.readWantRead;
+			this->socket = std::move(other.socket);
+			this->ssl = std::move(other.ssl);
+			return *this;
+		}
 
-		template<typename ValueType> static std::unordered_map<uint32_t, ValueType*> processIO(std::unordered_map<uint32_t, ValueType*>& shardMap) {
-			std::unordered_map<uint32_t, ValueType*> returnData{};
+		inline TCPConnection(TCPConnection&& other) noexcept {
+			*this = std::move(other);
+		}
+
+		inline TCPConnection(const std::string& baseUrlNew, const uint16_t portNew) {
+			std::string addressString{};
+			auto httpsFind = baseUrlNew.find("https://");
+			auto comFind = baseUrlNew.find(".com");
+			auto orgFind = baseUrlNew.find(".org");
+			if (httpsFind != std::string::npos && comFind != std::string::npos) {
+				addressString = baseUrlNew.substr(httpsFind + std::string_view{ "https://" }.size(),
+					comFind + std::string_view{ ".com" }.size() - std::string_view{ "https://" }.size());
+			} else if (httpsFind != std::string::npos && orgFind != std::string::npos) {
+				addressString = baseUrlNew.substr(httpsFind + std::string_view{ "https://" }.size(),
+					orgFind + std::string_view{ ".org" }.size() - std::string_view{ "https://" }.size());
+			} else {
+				addressString = baseUrlNew;
+			}
+			addrinfoWrapper hints{}, address{};
+			hints->ai_family = AF_INET;
+			hints->ai_socktype = SOCK_STREAM;
+			hints->ai_protocol = IPPROTO_TCP;
+
+			if (getaddrinfo(addressString.c_str(), std::to_string(portNew).c_str(), hints, address)) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(reportError("TCPConnection::getaddrinfo(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				return;
+			}
+
+			if (socket = ::socket(address->ai_family, address->ai_socktype, address->ai_protocol); socket.operator SOCKET() == INVALID_SOCKET) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(reportError("TCPConnection::socket(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				return;
+			}
+
+			bool boolOptionVal{ true };
+			if (setsockopt(socket, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<const char*>(&boolOptionVal), sizeof(int32_t))) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(reportError("TCPConnection::setsockopt(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				return;
+			}
+
+			if (::connect(socket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(reportError("TCPConnection::connect(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				return;
+			}
+
+			std::unique_lock lock{ SSLContextHolder::accessMutex };
+			if (ssl = SSL_new(SSLContextHolder::context); !ssl) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportSSLError("TCPConnection::connect::SSL_new(), to: " + baseUrlNew) +
+					reportError("TCPConnection::connect::SSL_new(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				ssl = nullptr;
+				return;
+			}
+			lock.unlock();
+
+			if (auto result{ SSL_set_fd(ssl, socket) }; result != 1) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportSSLError("TCPConnection::connect::SSL_set_fd(), to: " + baseUrlNew) +
+					reportError("TCPConnection::connect::SSL_set_fd(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				ssl = nullptr;
+				return;
+			}
+
+			/* SNI */
+			if (auto result{ SSL_set_tlsext_host_name(ssl, addressString.c_str()) }; result != 1) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportSSLError("TCPConnection::connect::SSL_set_tlsext_host_name(), to: " + baseUrlNew) +
+					reportError("TCPConnection::connect::SSL_set_tlsext_host_name(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				ssl = nullptr;
+				return;
+			}
+
+			if (auto result{ SSL_connect(ssl) }; result != 1) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportSSLError("TCPConnection::connect::SSL_connect(), to: " + baseUrlNew) +
+					reportError("TCPConnection::connect::SSL_connect(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				ssl = nullptr;
+				return;
+			}
+
+#ifdef _WIN32
+			u_long value02{ 1 };
+			if (auto returnData{ ioctlsocket(socket, FIONBIO, &value02) }; returnData == SOCKET_ERROR) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportError("TCPConnection::connect::ioctlsocket(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				ssl = nullptr;
+				return;
+			}
+#else
+			if (auto returnData{ fcntl(socket, F_SETFL, fcntl(socket, F_GETFL, 0) | O_NONBLOCK) }; returnData == SOCKET_ERROR) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportError("TCPConnection::connect::fcntl(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				ssl = nullptr;
+				return;
+			}
+#endif
+			currentStatus = ConnectionStatus::NO_Error;
+		}
+
+		inline ConnectionStatus processIO(int32_t waitTimeInMs) {
+			if (!areWeStillConnected()) {
+				return currentStatus;
+			};
+			pollfd readWriteSet{ .fd = static_cast<SOCKET>(socket) };
+			if ((static_cast<ValueType*>(this)->outputBuffer.getUsedSpace() > 0 || writeWantWrite || readWantWrite) && !readWantRead &&
+				!writeWantRead) {
+				readWriteSet.events = POLLIN | POLLOUT;
+			} else if (!writeWantWrite && !readWantWrite) {
+				readWriteSet.events = POLLIN;
+			}
+			if (auto returnValue = poll(&readWriteSet, 1, waitTimeInMs); returnValue == SOCKET_ERROR) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportSSLError("TCPConnection::processIO() 00") + reportError("TCPConnection::processIO() 00"));
+				socket = INVALID_SOCKET;
+				ssl = nullptr;
+				currentStatus = ConnectionStatus::SOCKET_Error;
+				return currentStatus;
+			} else if (returnValue == 0) {
+				return currentStatus;
+			} else {
+				if (readWriteSet.revents & POLLOUT || (POLLIN && writeWantRead)) {
+					if (!processWriteData()) {
+						Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+							reportSSLError("TCPConnection::processIO() 01") + reportError("TCPConnection::processIO() 01"));
+						currentStatus = ConnectionStatus::WRITE_Error;
+						socket = INVALID_SOCKET;
+						ssl = nullptr;
+						return currentStatus;
+					}
+				}
+				if (readWriteSet.revents & POLLIN || (POLLOUT && readWantWrite)) {
+					if (!processReadData()) {
+						Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+							reportSSLError("TCPConnection::processIO() 02") + reportError("TCPConnection::processIO() 02"));
+						currentStatus = ConnectionStatus::READ_Error;
+						socket = INVALID_SOCKET;
+						ssl = nullptr;
+						return currentStatus;
+					}
+				}
+				if (readWriteSet.revents & POLLERR) {
+					Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+						reportSSLError("TCPConnection::processIO() 03") + reportError("TCPConnection::processIO() 03"));
+					currentStatus = ConnectionStatus::POLLERR_Error;
+					socket = INVALID_SOCKET;
+					ssl = nullptr;
+				}
+				if (readWriteSet.revents & POLLNVAL) {
+					Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+						reportSSLError("TCPConnection::processIO() 04") + reportError("TCPConnection::processIO() 04"));
+					currentStatus = ConnectionStatus::POLLNVAL_Error;
+					socket = INVALID_SOCKET;
+					ssl = nullptr;
+				}
+				if (readWriteSet.revents & POLLHUP) {
+					currentStatus = ConnectionStatus::POLLHUP_Error;
+					socket = INVALID_SOCKET;
+					ssl = nullptr;
+				}
+			}
+			return currentStatus;
+		}
+
+		inline bool areWeStillConnected() noexcept {
+			if (socket.operator bool() && socket.operator SOCKET() != INVALID_SOCKET && currentStatus == ConnectionStatus::NO_Error &&
+				ssl.operator bool()) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		inline bool processWriteData() {
+			writeWantRead = false;
+			writeWantWrite = false;
+			if (static_cast<ValueType*>(this)->outputBuffer.getUsedSpace() > 0 && areWeStillConnected()) {
+				uint64_t bytesToWrite{ static_cast<ValueType*>(this)->outputBuffer.getCurrentTail()->getUsedSpace() };
+
+				uint64_t writtenBytes{};
+				auto returnData{ SSL_write_ex(ssl, static_cast<ValueType*>(this)->outputBuffer.readData().data(), bytesToWrite, &writtenBytes) };
+				auto errorValue{ SSL_get_error(ssl, returnData) };
+				switch (errorValue) {
+					case SSL_ERROR_WANT_READ: {
+						writeWantRead = true;
+						return true;
+					}
+					case SSL_ERROR_WANT_WRITE: {
+						writeWantWrite = true;
+						return true;
+					}
+					case SSL_ERROR_NONE: {
+						return true;
+					}
+					case SSL_ERROR_ZERO_RETURN: {
+						socket = INVALID_SOCKET;
+						ssl = nullptr;
+						return false;
+					}
+					default: {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
+		inline bool processReadData() {
+			readWantRead = false;
+			readWantWrite = false;
+			if (!static_cast<ValueType*>(this)->inputBuffer.isItFull() && areWeStillConnected()) {
+				do {
+					uint64_t readBytes{};
+					uint64_t bytesToRead{ static_cast<ValueType*>(this)->maxBufferSize };
+					auto returnData{ SSL_read_ex(ssl, static_cast<ValueType*>(this)->inputBuffer.getCurrentHead()->getCurrentHead(), bytesToRead,
+						&readBytes) };
+					auto errorValue{ SSL_get_error(ssl, returnData) };
+					if (static_cast<int64_t>(readBytes) > 0) {
+						static_cast<ValueType*>(this)->inputBuffer.getCurrentHead()->modifyReadOrWritePosition(RingBufferAccessType::Write,
+							readBytes);
+						static_cast<ValueType*>(this)->inputBuffer.modifyReadOrWritePosition(RingBufferAccessType::Write, 1);
+						static_cast<ValueType*>(this)->bytesRead += readBytes;
+						static_cast<ValueType*>(this)->handleBuffer();
+					}
+					switch (errorValue) {
+						case SSL_ERROR_WANT_READ: {
+							readWantRead = true;
+							return true;
+						}
+						case SSL_ERROR_WANT_WRITE: {
+							readWantWrite = true;
+							return true;
+						}
+						case SSL_ERROR_NONE: {
+							break;
+						}
+						case SSL_ERROR_ZERO_RETURN: {
+							socket = INVALID_SOCKET;
+							ssl = nullptr;
+							return true;
+						}
+						default: {
+							return false;
+						}
+					}
+				} while (areWeStillConnected() && SSL_pending(ssl) && !static_cast<ValueType*>(this)->inputBuffer.isItFull() && !readWantRead);
+			}
+			return true;
+		}
+
+		template<typename ValueType2>
+		inline static std::unordered_map<uint32_t, ValueType2*> processIO(std::unordered_map<uint32_t, ValueType2*>& shardMap) {
+			std::unordered_map<uint32_t, ValueType2*> returnData{};
 			PollFDWrapper readWriteSet{};
 			for (auto& [key, value]: shardMap) {
 				if (value && value->areWeStillConnected()) {
@@ -218,6 +653,8 @@ namespace DiscordCoreInternal {
 					}
 					readWriteSet.indices.emplace_back(key);
 					readWriteSet.polls.emplace_back(fdSet);
+				} else {
+					returnData.emplace(key, value);
 				}
 			}
 
@@ -230,6 +667,7 @@ namespace DiscordCoreInternal {
 				for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
 					if (readWriteSet.polls[x].revents & POLLERR || readWriteSet.polls[x].revents & POLLHUP ||
 						readWriteSet.polls[x].revents & POLLNVAL) {
+						shardMap[readWriteSet.indices[x]]->currentStatus = ConnectionStatus::SOCKET_Error;
 						returnData.emplace(readWriteSet.indices[x], shardMap[readWriteSet.indices[x]]);
 						readWriteSet.indices.erase(readWriteSet.indices.begin() + x);
 						readWriteSet.polls.erase(readWriteSet.polls.begin() + x);
@@ -238,6 +676,7 @@ namespace DiscordCoreInternal {
 				}
 				if (!didWeFindTheSocket) {
 					for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
+						shardMap[readWriteSet.indices[x]]->currentStatus = ConnectionStatus::SOCKET_Error;
 						returnData.emplace(readWriteSet.indices[x], shardMap[readWriteSet.indices[x]]);
 					}
 					return returnData;
@@ -249,17 +688,36 @@ namespace DiscordCoreInternal {
 			for (size_t x = 0; x < readWriteSet.polls.size(); ++x) {
 				if (readWriteSet.polls[x].revents & POLLOUT || (POLLIN && shardMap[readWriteSet.indices[x]]->writeWantRead)) {
 					if (!shardMap[readWriteSet.indices[x]]->processWriteData()) {
+						shardMap[readWriteSet.indices[x]]->currentStatus = ConnectionStatus::WRITE_Error;
 						returnData.emplace(readWriteSet.indices[x], shardMap[readWriteSet.indices[x]]);
 						continue;
 					}
 				}
 				if (readWriteSet.polls[x].revents & POLLIN || (POLLOUT && shardMap[readWriteSet.indices[x]]->readWantWrite)) {
 					if (!shardMap[readWriteSet.indices[x]]->processReadData()) {
+						shardMap[readWriteSet.indices[x]]->currentStatus = ConnectionStatus::READ_Error;
 						returnData.emplace(readWriteSet.indices[x], shardMap[readWriteSet.indices[x]]);
 						continue;
 					}
 				}
-				if (readWriteSet.polls[x].revents & POLLERR || readWriteSet.polls[x].revents & POLLNVAL || readWriteSet.polls[x].revents & POLLHUP) {
+				if (readWriteSet.polls[x].revents & POLLERR) {
+					shardMap[readWriteSet.indices[x]]->currentStatus = ConnectionStatus::POLLERR_Error;
+					shardMap[readWriteSet.indices[x]]->socket = INVALID_SOCKET;
+					shardMap[readWriteSet.indices[x]]->ssl = nullptr;
+					returnData.emplace(readWriteSet.indices[x], shardMap[readWriteSet.indices[x]]);
+					continue;
+				}
+				if (readWriteSet.polls[x].revents & POLLNVAL) {
+					shardMap[readWriteSet.indices[x]]->currentStatus = ConnectionStatus::POLLNVAL_Error;
+					shardMap[readWriteSet.indices[x]]->socket = INVALID_SOCKET;
+					shardMap[readWriteSet.indices[x]]->ssl = nullptr;
+					returnData.emplace(readWriteSet.indices[x], shardMap[readWriteSet.indices[x]]);
+					continue;
+				}
+				if (readWriteSet.polls[x].revents & POLLHUP) {
+					shardMap[readWriteSet.indices[x]]->currentStatus = ConnectionStatus::POLLHUP_Error;
+					shardMap[readWriteSet.indices[x]]->socket = INVALID_SOCKET;
+					shardMap[readWriteSet.indices[x]]->ssl = nullptr;
 					returnData.emplace(readWriteSet.indices[x], shardMap[readWriteSet.indices[x]]);
 					continue;
 				}
@@ -267,33 +725,13 @@ namespace DiscordCoreInternal {
 			return returnData;
 		}
 
-		void writeData(std::string_view dataToWrite, bool priority);
-
-		std::basic_string_view<uint8_t> getInputBuffer() noexcept;
-
-		virtual void handleBuffer() noexcept = 0;
-
-		void processIO(int32_t waitTimeInMs);
-
-		bool areWeStillConnected() noexcept;
-
-		int64_t getBytesRead() noexcept;
-
-		bool processWriteData();
-
-		bool processReadData();
-
-		void reset() noexcept;
-
-		virtual ~TCPConnection() noexcept = default;
+		inline virtual ~TCPConnection() noexcept = default;
 
 	  protected:
-		inline static DiscordCoreAPI::StopWatch<std::chrono::milliseconds> stopWatch{ 10ms };
-		bool areWeAStandaloneSocket{};
-		bool doWePrintErrors{};
-		bool writeWantWrite{};
-		bool writeWantRead{};
-		bool readWantWrite{};
-		bool readWantRead{};
+		inline TCPConnection() noexcept = default;
 	};
 }
+
+#ifdef connect
+	#undef connect
+#endif

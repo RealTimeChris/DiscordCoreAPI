@@ -29,7 +29,7 @@ int32_t main() {
 	functionVector.push_back(function01);
 	DiscordCoreAPI::DiscordCoreClientConfig clientConfig{};
 	clientConfig.functionsToExecute = functionVector;
-	auto ptr = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
+	auto ptr = DiscordCoreAPI::makeUnique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
 	ptr->runBot();
 	return 0;
 }

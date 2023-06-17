@@ -18,8 +18,8 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
 	USA
 */
-/// FoundationEntities.hpp - Header for all of the Discord/Support API data
-/// structures. May 12, 2021 Chris M.
+/// FoundationEntities.hpp - Header for all of the Discord/Support API data structures.
+/// May 12, 2021 Chris M.
 /// https://discordcoreapi.com
 /// \file FoundationEntities.hpp
 
@@ -61,8 +61,6 @@ namespace DiscordCoreInternal {
 		int32_t largeThreshold{ 250 };
 		std::string botToken{};
 		int64_t intents{};
-
-		WebSocketIdentifyData() noexcept = default;
 
 		operator DiscordCoreInternal::EtfSerializer();
 	};
@@ -274,15 +272,17 @@ namespace DiscordCoreInternal {
 		Delete_Auto_Moderation_Rule = 167,
 		YouTubeGetSearchResults = 168,
 		SoundCloudGetSearchResults = 169,
-		LAST = 170
+		SoundCloudGetClientId = 170,
+		SoundCloudGetDownloadLinks = 171,
+		LAST = 172
 	};
 
 	class DiscordCoreAPI_Dll HttpsWorkloadData {
 	  public:
-		friend class HttpsClient;
+		friend class DiscordCoreAPI_Dll HttpsClient;
 
-		static std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> workloadIdsExternal;
-		static std::unordered_map<HttpsWorkloadType, std::unique_ptr<std::atomic_int64_t>> workloadIdsInternal;
+		static std::unordered_map<HttpsWorkloadType, DiscordCoreAPI::UniquePtr<std::atomic_int64_t>> workloadIdsExternal;
+		static std::unordered_map<HttpsWorkloadType, DiscordCoreAPI::UniquePtr<std::atomic_int64_t>> workloadIdsInternal;
 
 		mutable std::unordered_map<std::string, std::string> headersToInsert{};
 		PayloadType payloadType{ PayloadType::Application_Json };
@@ -306,6 +306,8 @@ namespace DiscordCoreInternal {
 		HttpsWorkloadData& operator=(HttpsWorkloadType type) noexcept;
 
 		HttpsWorkloadData(HttpsWorkloadType type) noexcept;
+
+		const HttpsWorkloadType getWorkloadType() const noexcept;
 
 	  protected:
 		static int64_t incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept;
@@ -331,13 +333,12 @@ namespace DiscordCoreInternal {
 		int64_t s{};
 	};
 
-	template<typename ValueType> struct DiscordCoreAPI_Dll WebSocketMessageData {
+	template<typename ValueType> struct WebSocketMessageData {
 		std::unordered_set<std::string> excludedKeys{};
-		using type = ValueType;
 		int64_t op{ -1 };
 		std::string t{};
-		int64_t s{};
 		ValueType d{};
+		int64_t s{};
 	};
 
 	struct DiscordCoreAPI_Dll InvalidSessionData {
@@ -359,7 +360,6 @@ namespace DiscordCoreAPI {
 
 	template<typename ValueType, typename ValueType02> struct UpdatedEventData;
 	template<typename ValueType> struct EventData;
-
 
 	/**
 	 * \addtogroup foundation_entities
@@ -384,7 +384,7 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief Base class for all Discord entities.
-	class DiscordCoreAPI_Dll DiscordEntity {
+	class DiscordCoreAPI_Dll DiscordEntity : public Relational<DiscordEntity> {
 	  public:
 		Snowflake id{};///< The identifier "snowflake" of the given entity.
 
@@ -392,9 +392,13 @@ namespace DiscordCoreAPI {
 
 		DiscordEntity(Snowflake value);
 
-		bool operator==(const DiscordEntity& other) const noexcept;
+		inline friend bool operator<(const DiscordEntity& lhs, const DiscordEntity& rhs) noexcept {
+			return lhs.id < rhs.id;
+		}
 
-		bool operator==(const Snowflake& other) const noexcept;
+		inline friend bool operator<(const DiscordEntity& lhs, const Snowflake& rhs) noexcept {
+			return lhs.id < rhs.operator size_t();
+		}
 
 		virtual ~DiscordEntity() noexcept = default;
 	};
@@ -405,9 +409,7 @@ namespace DiscordCoreAPI {
 		std::string integrationId{};///< What is the integration id?
 		std::string botId{};///< What is the bot id?
 
-		RoleTagsData() noexcept = default;
-
-		virtual ~RoleTagsData() noexcept = default;
+		~RoleTagsData() noexcept = default;
 	};
 
 	/// \brief User flags.
@@ -440,11 +442,11 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief Data structure representing a single User.
-	class DiscordCoreAPI_Dll UserData : public DiscordEntity {
+	class DiscordCoreAPI_Dll UserData : public DiscordEntity, public Relational<UserData> {
 	  public:
 		template<typename ValueType> friend struct Jsonifier::Core;
-		friend class GuildData;
-		friend class User;
+		friend class DiscordCoreAPI_Dll GuildData;
+		friend class DiscordCoreAPI_Dll User;
 
 		std::string discriminator{};///< The user's 4-digit discord-tag	identify.
 		std::string userName{};///< The user's userName, not unique across the platform identify.
@@ -456,16 +458,12 @@ namespace DiscordCoreAPI {
 			id = data;
 		}
 
-		UserData& operator=(UserData&&) noexcept = default;
-
-		UserData(UserData&&) noexcept = default;
-
-		UserData& operator=(const UserData&) noexcept = default;
-
-		UserData(const UserData&) noexcept = default;
-
 		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
+		}
+
+		inline friend bool operator<(const UserData& lhs, const UserData& rhs) noexcept {
+			return lhs.id < rhs.id;
 		}
 
 		std::string getAvatarUrl();
@@ -488,10 +486,6 @@ namespace DiscordCoreAPI {
 		int32_t height{};///< The height of the attachment.
 		int32_t width{};///< The width of the attachment.
 		int32_t size{};///< The size of the attachment.
-
-		AttachmentData() noexcept = default;
-
-		virtual ~AttachmentData() noexcept = default;
 	};
 
 	/// \brief Sticker format types.
@@ -506,10 +500,6 @@ namespace DiscordCoreAPI {
 		std::string proxyIconUrl{};///< Proxy icon url.
 		std::string iconUrl{};///< Icon url.
 		std::string text{};///< Footer text.
-
-		EmbedFooterData() noexcept = default;
-
-		virtual ~EmbedFooterData() noexcept = default;
 	};
 
 	/// \brief Embed image data.
@@ -521,10 +511,6 @@ namespace DiscordCoreAPI {
 		int32_t width{};///< Image width.
 
 		void generateExcludedKeys() noexcept;
-
-		EmbedImageData() noexcept = default;
-
-		virtual ~EmbedImageData() noexcept = default;
 	};
 
 	/// \brief Embed thumbnail data.
@@ -533,10 +519,6 @@ namespace DiscordCoreAPI {
 		std::string url{};///< Image url.
 		int32_t height{};///< Image height.
 		int32_t width{};///< Image width.
-
-		EmbedThumbnailData() noexcept = default;
-
-		virtual ~EmbedThumbnailData() noexcept = default;
 	};
 
 	/// \brief Embed video data.
@@ -545,32 +527,24 @@ namespace DiscordCoreAPI {
 		std::string url{};///< Image url.
 		int32_t height{};///< Image height.
 		int32_t width{};///< Image width.
-
-		EmbedVideoData() noexcept = default;
-
-		virtual ~EmbedVideoData() noexcept = default;
 	};
 
 	/// \brief Embed provider data.
 	struct DiscordCoreAPI_Dll EmbedProviderData {
 		std::string name{};///< Name.
 		std::string url{};///< Url.
-
-		EmbedProviderData() noexcept = default;
-
-		virtual ~EmbedProviderData() noexcept = default;
 	};
 
 	/// \brief Embed author data.
 	struct DiscordCoreAPI_Dll EmbedAuthorData {
+		std::unordered_set<std::string_view> excludedKeys{};///< For excluding certain keys from parsing/serialization.
+
 		std::string proxyIconUrl{};///< Proxy icon url.
 		std::string iconUrl{};///< Icon url.
 		std::string name{};///< Name.
 		std::string url{};///< Url.
 
-		EmbedAuthorData() noexcept = default;
-
-		virtual ~EmbedAuthorData() noexcept = default;
+		void generateExcludedKeys() noexcept;
 	};
 
 	/// \brief Embed field data.
@@ -578,10 +552,6 @@ namespace DiscordCoreAPI {
 		std::string value{};///< The text on the field.
 		std::string name{};///< The title of the field.
 		bool Inline{};///< Is the field inline with the rest of them?
-
-		EmbedFieldData() noexcept = default;
-
-		virtual ~EmbedFieldData() noexcept = default;
 	};
 
 	/// \brief Embed types.
@@ -674,10 +644,6 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};///< Snowflake of the Message to reference.
 		Snowflake channelId{};///< Snowflake of the Channel that the referenced Message was sent in.
 		Snowflake guildId{};///< Snowflake of the Guild that the referenced Message was sent in.
-
-		MessageReferenceData() noexcept = default;
-
-		virtual ~MessageReferenceData() noexcept = default;
 	};
 
 	enum class MediaType : uint8_t { png = 0, gif = 1, jpeg = 2, mpeg = 3, mp3 = 4 };
@@ -718,10 +684,6 @@ namespace DiscordCoreAPI {
 		bool invitable{};///< The id of the individual who archived this Thread.
 		bool archived{};///< Whether or not this Thread is currently archived.
 		bool locked{};///< Whether or not this Thread is currently locked.
-
-		ThreadMetadataData() noexcept = default;
-
-		virtual ~ThreadMetadataData() noexcept = default;
 	};
 
 	/// \brief Data for a single member of a Thread.
@@ -730,10 +692,6 @@ namespace DiscordCoreAPI {
 		TimeStamp joinTimestamp{};///< The time at which the member joined this Thread.
 		Snowflake userId{};///< The User's id.
 		int32_t flags{};///< Flags.
-
-		ThreadMemberData() noexcept = default;
-
-		virtual ~ThreadMemberData() noexcept = default;
 	};
 
 	using ThreadMemberDataVector = std::vector<ThreadMemberData>;
@@ -746,17 +704,13 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief Voice state data.
-	struct DiscordCoreAPI_Dll VoiceStateDataLight {
+	struct DiscordCoreAPI_Dll VoiceStateDataLight : public Relational<VoiceStateDataLight> {
 		Snowflake channelId{};///< The Channel id this User is connected to.
 		Snowflake guildId{};///< The Guild id this voice state is for.
 		Snowflake id{};///< The User id this voice state is for.
 
-		VoiceStateDataLight() noexcept = default;
-
-		VoiceStateDataLight(uint64_t data) noexcept {
-			channelId = data;
-			guildId = data;
-			id = data;
+		inline friend bool operator<(const VoiceStateDataLight& lhs, const VoiceStateDataLight& rhs) noexcept {
+			return (lhs.id < rhs.id) && (lhs.guildId < rhs.guildId) && (lhs.channelId < rhs.channelId);
 		}
 
 		virtual ~VoiceStateDataLight() noexcept = default;
@@ -779,10 +733,6 @@ namespace DiscordCoreAPI {
 		bool suppress{};///< Whether this User is muted by the current User.
 		bool deaf{};///< Whether this User is deafened by the server.
 		bool mute{};///< Whether this User is muted by the server.
-
-		VoiceStateData() noexcept = default;
-
-		virtual ~VoiceStateData() noexcept = default;
 	};
 
 	/// \brief Automatic Thread archiving durations.
@@ -796,17 +746,17 @@ namespace DiscordCoreAPI {
 	enum class RoleFlags : uint8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
 
 	/// \brief Data structure representing a single Role.
-	class DiscordCoreAPI_Dll RoleData : public DiscordEntity {
+	class DiscordCoreAPI_Dll RoleData : public DiscordEntity, public Relational<RoleData> {
 	  public:
-		friend class GuildData;
+		friend class DiscordCoreAPI_Dll GuildData;
 
+		std::string unicodeEmoji{};///< Emoji representing the Role.
 		Permissions permissions{};///< The Role's base Guild Permissions.
-		String unicodeEmoji{};///< Emoji representing the Role.
 		Snowflake guildId{};///< The id of the Guild that this Role is from.
+		std::string name{};///< The Role's name.
 		int16_t position{};///< Its position amongst the rest of the Guild's roles.
 		RoleFlags flags{};///< Role flags.
 		int32_t color{};///< The Role's color.
-		String name{};///< The Role's name.
 
 		RoleData() noexcept = default;
 
@@ -814,16 +764,12 @@ namespace DiscordCoreAPI {
 			id = snowFlake;
 		}
 
-		RoleData& operator=(RoleData&&) noexcept = default;
-
-		RoleData(RoleData&&) noexcept = default;
-
-		RoleData& operator=(const RoleData&) noexcept = default;
-
-		RoleData(const RoleData&) noexcept = default;
-
-		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
+		template<DiscordCoreInternal::EnumT ETy> inline bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
+		}
+
+		inline friend bool operator<(const RoleData& lhs, const RoleData& rhs) noexcept {
+			return lhs.id < rhs.id;
 		}
 
 		virtual ~RoleData() noexcept = default;
@@ -837,10 +783,6 @@ namespace DiscordCoreAPI {
 		bool animated{};///< Is it animated?
 
 		void generateExcludedKeys() noexcept;
-
-		PartialEmojiData() noexcept = default;
-
-		virtual ~PartialEmojiData() noexcept = default;
 	};
 
 	/// \brief Data structure representing a single emoji.
@@ -855,10 +797,6 @@ namespace DiscordCoreAPI {
 		bool managed{};///< Is it managed?
 
 		void generateExcludedKeys() noexcept;
-
-		EmojiData() noexcept = default;
-
-		virtual ~EmojiData() noexcept = default;
 	};
 
 	enum class PresenceUpdateFlags : uint8_t {
@@ -889,51 +827,39 @@ namespace DiscordCoreAPI {
 		std::string status{};///< Either "idle", "dnd", "online", or "offline".
 		Snowflake guildId{};///< Snowflake ID of the guild.
 		UserData user{};///< User object User whose presence is being updated.
-
-		PresenceUpdateData() noexcept = default;
-
-		virtual ~PresenceUpdateData() noexcept = default;
 	};
 
 	enum class GuildMemberFlags : uint8_t { Pending = 1 << 0, Deaf = 1 << 1, Mute = 1 << 2 };
 
 	struct DiscordCoreAPI_Dll UserIdBase : public DiscordEntity {};
 
-	class GuildMemberCacheData;
-	class GuildData;
+	class DiscordCoreAPI_Dll GuildMemberCacheData;
+	class DiscordCoreAPI_Dll GuildData;
 
 	/// \brief Data structure representing a single GuildMember.
 	/// \brief Data structure representing a single Guild.
-	class DiscordCoreAPI_Dll GuildMemberData {
+	class DiscordCoreAPI_Dll GuildMemberData : public Relational<GuildMemberData> {
 	  public:
-		friend struct Jsonifier::Core<GuildMemberData>;
-		friend struct Jsonifier::Core<GuildMember>;
-		friend struct std::hash<GuildMemberData>;
-		friend struct EventData<GuildData>;
-		friend class GuildMember;
-		friend class GuildData;
+		friend struct DiscordCoreAPI_Dll Jsonifier::Core<GuildMemberData>;
+		friend struct DiscordCoreAPI_Dll Jsonifier::Core<GuildMember>;
+		friend struct DiscordCoreAPI_Dll std::hash<GuildMemberData>;
+		friend struct DiscordCoreAPI_Dll EventData<GuildData>;
+		friend class DiscordCoreAPI_Dll GuildMember;
+		friend class DiscordCoreAPI_Dll GuildData;
 
 		std::vector<Snowflake> roles{};///< The Guild roGuildMemberDatales that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		GuildMemberFlags flags{};///< GuildMember flags.
 		TimeStamp joinedAt{};///< When they joined the Guild.
 		Snowflake guildId{};///< The current Guild's id.
+		std::string nick{};///< Their nick/display name.
 		UserIdBase user{};
-		String nick{};///< Their nick/display name.
 
 		GuildMemberData() noexcept = default;
 
 		GuildMemberData(Snowflake snowFlake) noexcept {
 			user.id = snowFlake;
 		}
-
-		GuildMemberData& operator=(GuildMemberData&&) noexcept;
-
-		GuildMemberData(GuildMemberData&&) noexcept = default;
-
-		GuildMemberData& operator=(const GuildMemberData&) noexcept = default;
-
-		GuildMemberData(const GuildMemberData&) noexcept = default;
 
 		GuildMemberData& operator=(GuildMemberCacheData&&) noexcept;
 
@@ -945,6 +871,10 @@ namespace DiscordCoreAPI {
 
 		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
+		}
+
+		inline friend bool operator<(const GuildMemberData& lhs, const GuildMemberData& rhs) noexcept {
+			return (lhs.user.id < rhs.user.id) && (lhs.guildId < rhs.guildId);
 		}
 
 		VoiceStateDataLight getVoiceStateData() noexcept;
@@ -963,12 +893,12 @@ namespace DiscordCoreAPI {
 	/// \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildMemberCacheData {
 	  public:
-		friend struct Jsonifier::Core<GuildMemberData>;
-		friend struct Jsonifier::Core<GuildMember>;
-		friend struct std::hash<GuildMemberData>;
-		friend struct EventData<GuildData>;
-		friend class GuildMember;
-		friend class GuildData;
+		friend struct DiscordCoreAPI_Dll Jsonifier::Core<GuildMemberData>;
+		friend struct DiscordCoreAPI_Dll Jsonifier::Core<GuildMember>;
+		friend struct DiscordCoreAPI_Dll std::hash<GuildMemberData>;
+		friend struct DiscordCoreAPI_Dll EventData<GuildData>;
+		friend class DiscordCoreAPI_Dll GuildMember;
+		friend class DiscordCoreAPI_Dll GuildData;
 
 		std::vector<Snowflake> roles{};///< The Guild roGuildMemberDatales that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
@@ -977,19 +907,13 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The current Guild's id.
 		IconHash avatar{};///< This GuildMember's Guild Avatar.
 		UserData user{};
-		String nick{};///< Their nick/display name.
+		std::string nick{};///< Their nick/display name.
 
 		GuildMemberCacheData() noexcept = default;
 
 		GuildMemberCacheData(uint64_t snowFlake) noexcept {
 			user.id = snowFlake;
 		}
-
-		GuildMemberCacheData& operator=(GuildMemberCacheData&&) noexcept = default;
-
-		GuildMemberCacheData& operator=(const GuildMemberCacheData&) noexcept = default;
-
-		GuildMemberCacheData(const GuildMemberCacheData&) noexcept = default;
 
 		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
@@ -1016,10 +940,6 @@ namespace DiscordCoreAPI {
 		PermissionOverwritesType type{};///< Role or User type.
 		uint64_t allow{};///< Collection of Permissions to allow.
 		uint64_t deny{};///< Collection of Permissions to deny.
-
-		OverWriteData() noexcept = default;
-
-		virtual ~OverWriteData() noexcept = default;
 	};
 
 	enum class ChannelFlags : uint8_t { NSFW = 1 << 0 };
@@ -1027,8 +947,6 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll DefaultReactionData {
 		std::string emojiName{};///< The unicode character of the emoji.
 		Snowflake emojiId{};///< The id of a guild's custom emoji.
-
-		DefaultReactionData() noexcept = default;
 	};
 
 	struct DiscordCoreAPI_Dll ForumTagData {
@@ -1037,16 +955,12 @@ namespace DiscordCoreAPI {
 		std::string name{};///< The name of the tag(0 - 20 characters).
 		bool moderated{};///< Whether this tag can only be added to or removed from threads by a member with the MANAGE_THREADS permission.
 		Snowflake id{};///< Snowflake of the tag.
-
-		ForumTagData() noexcept = default;
-
-		virtual ~ForumTagData() noexcept = default;
 	};
 
 	/// \brief Data structure representing a single Channel.
-	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity {
+	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity, public Relational<ChannelData> {
 	  public:
-		friend class GuildData;
+		friend class DiscordCoreAPI_Dll GuildData;
 
 		std::vector<OverWriteData> permissionOverwrites{};///< Permission overwrites.
 		ChannelType type{ ChannelType::DM };///< The type of the Channel.
@@ -1057,8 +971,8 @@ namespace DiscordCoreAPI {
 		uint16_t position{};///< The position of the Channel, in the Guild's Channel list.
 		Snowflake ownerId{};///< Snowflake of the Channel's owner.
 		Snowflake guildId{};///< Snowflake of the Channel's Guild, if applicable.
-		String topic{};///< Channel topic.
-		String name{};///< Name of the Channel.
+		std::string topic{};///< Channel topic.
+		std::string name{};///< Name of the Channel.
 
 		ChannelData() noexcept = default;
 
@@ -1066,16 +980,12 @@ namespace DiscordCoreAPI {
 			id = snowFlake;
 		}
 
-		ChannelData& operator=(ChannelData&&) noexcept = default;
-
-		ChannelData(ChannelData&&) noexcept = default;
-
-		ChannelData& operator=(const ChannelData&) noexcept = default;
-
-		ChannelData(const ChannelData&) noexcept = default;
-
 		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
 			return getBool(flags, theEnum);
+		}
+
+		inline friend bool operator<(const ChannelData& lhs, const ChannelData& rhs) noexcept {
+			return lhs.id < rhs.id;
 		}
 
 		~ChannelData() noexcept = default;
@@ -1083,24 +993,16 @@ namespace DiscordCoreAPI {
 
 	/// \brief Data representing an active Thread.
 	struct DiscordCoreAPI_Dll ActiveThreadsData {
-		std::vector<ThreadMemberData> members{};
 		std::vector<ChannelData> threads{};
+		ThreadMemberDataVector members{};
 		bool hasMore{};
-
-		ActiveThreadsData() noexcept = default;
-
-		virtual ~ActiveThreadsData() noexcept = default;
 	};
 
 	/// \brief Data representing an archived Thread.
 	struct DiscordCoreAPI_Dll ArchivedThreadsData {
-		std::vector<ThreadMemberData> members{};
 		std::vector<ChannelData> threads{};
+		ThreadMemberDataVector members{};
 		bool hasMore{};
-
-		ArchivedThreadsData() noexcept = default;
-
-		virtual ~ArchivedThreadsData() noexcept = default;
 	};
 
 	/// \brief Application command-option types.
@@ -1156,10 +1058,6 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll ActionMetaData {
 		int64_t durationSeconds{};///< Timeout duration in seconds.
 		Snowflake channelId{};///< Channel to which user content should be logged.
-
-		ActionMetaData() noexcept = default;
-
-		virtual ~ActionMetaData() noexcept = default;
 	};
 
 	/// \brief Trigger metadata for auto-moderation-rules.
@@ -1168,20 +1066,12 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> keywordFilter{};///< Substrings which will be searched for in content.keyword_filter	array of strings.
 		std::vector<std::string> allowList{};///< Substrings which will be exempt from triggering the preset trigger type.
 		int32_t mentionTotalLimit{};///< Total number of unique role and user mentions allowed per message (Maximum of 50).
-
-		TriggerMetaData() noexcept = default;
-
-		virtual ~TriggerMetaData() noexcept = default;
 	};
 
 	/// \brief For representing a single auto-moderation-rule-action.
 	struct DiscordCoreAPI_Dll ActionData {
 		ActionMetaData metadata{};///< Additional metadata needed during execution for this specific action type.
 		ActionType type{};///< The type of action.
-
-		ActionData() noexcept = default;
-
-		virtual ~ActionData() noexcept = default;
 	};
 
 	/// \brief Represents an auto-moderation-rule.
@@ -1197,10 +1087,6 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The guild which this rule belongs to.
 		std::string name{};///< The rule name.
 		bool enabled{};///< Whether the rule is enabled.
-
-		AutoModerationRuleData() noexcept = default;
-
-		virtual ~AutoModerationRuleData() noexcept = default;
 	};
 
 	/// \brief Permissions data for an ApplicationCommand.
@@ -1208,10 +1094,6 @@ namespace DiscordCoreAPI {
 	  public:
 		ApplicationCommandPermissionType type{ ApplicationCommandPermissionType::Role };///< The type of PermissionTypes.
 		bool permission{};///< Whether the PermissionTypes is active or not.
-
-		ApplicationCommandPermissionData() noexcept = default;
-
-		virtual ~ApplicationCommandPermissionData() noexcept = default;
 	};
 
 	/// \brief Represents the Permissions for accessing an ApplicationCommand from within a Guild.
@@ -1220,10 +1102,6 @@ namespace DiscordCoreAPI {
 		std::vector<ApplicationCommandPermissionData> permissions{};///< The Permissions.
 		Snowflake applicationId{};///< The application's id.
 		Snowflake guildId{};///< The Guild's id.
-
-		GuildApplicationCommandPermissionsData() noexcept = default;
-
-		virtual ~GuildApplicationCommandPermissionsData() noexcept = default;
 	};
 
 	using GuildApplicationCommandPermissionsDataVector = std::vector<GuildApplicationCommandPermissionsData>;
@@ -1259,8 +1137,6 @@ namespace DiscordCoreAPI {
 		int32_t count{};///< The number of times this particular emoji was placed as a reaction to the given Message.
 		bool me{};///< Whether or not I (The bot) placed it.
 
-		ReactionData() noexcept = default;
-
 		virtual ~ReactionData() noexcept = default;
 	};
 
@@ -1271,10 +1147,6 @@ namespace DiscordCoreAPI {
 		Snowflake id{};///< Unique ID for the region.
 		bool optimal{};///< True for a single server that is closest to the current User's client.
 		bool custom{};///< Whether this is a custom voice region(used for events / etc).
-
-		VoiceRegionData() noexcept = default;
-
-		virtual ~VoiceRegionData() noexcept = default;
 	};
 
 	using VoiceRegionDataVector = std::vector<VoiceRegionData>;
@@ -1291,11 +1163,6 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll MessageActivityData {
 		MessageActivityType type{ MessageActivityType::Join };///< Message activity type.
 		std::string partyId{};///< Party id.
-
-		MessageActivityData() noexcept = default;
-
-		virtual ~MessageActivityData() noexcept {
-		}
 	};
 
 	/// \brief Ban data.
@@ -1303,10 +1170,6 @@ namespace DiscordCoreAPI {
 		bool failedDueToPerms{};///< Failed due to perms?
 		std::string reason{};///< Reason for the ban.
 		UserData user{};///< User that was banned.
-
-		BanData() noexcept = default;
-
-		virtual ~BanData() noexcept = default;
 	};
 
 	using BanDataVector = std::vector<BanData>;
@@ -1317,10 +1180,6 @@ namespace DiscordCoreAPI {
 		int32_t membershipState{};///< Current state.
 		Snowflake teamId{};///< Snowflake of the current team.
 		UserData user{};///< User data of the current User.
-
-		TeamMembersObjectData() noexcept = default;
-
-		virtual ~TeamMembersObjectData() noexcept = default;
 	};
 
 	/// \brief For updating the current voice state.
@@ -1349,10 +1208,6 @@ namespace DiscordCoreAPI {
 		std::vector<TeamMembersObjectData> members{};///< Array of team members object data.
 		Snowflake ownerUserId{};///< User id of the team owner.
 		std::string icon{};///< Icon for the team.
-
-		TeamObjectData() noexcept = default;
-
-		virtual ~TeamObjectData() noexcept = default;
 	};
 
 	/// Application flags, for the ApplicationData structure.
@@ -1374,10 +1229,6 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll InstallParamsData {
 		std::vector<std::string> scopes{};///< The scopes to add the application to the server with.
 		Permissions permissions{};///< The permissions to request for the bot role.
-
-		InstallParamsData() noexcept = default;
-
-		virtual ~InstallParamsData() noexcept = default;
 	};
 
 	/// \brief Application data.
@@ -1403,10 +1254,6 @@ namespace DiscordCoreAPI {
 		std::string icon{};///< Application's icon.
 		bool botPublic{};///< Is the bot public?
 		UserData owner{};///< Application's owner.
-
-		ApplicationData() noexcept = default;
-
-		virtual ~ApplicationData() noexcept = default;
 	};
 
 	/// \brief Authorization info structure.
@@ -1415,30 +1262,18 @@ namespace DiscordCoreAPI {
 		ApplicationData application{};///< Partial application object the current application.
 		std::string expires{};///< When the access token expires.
 		UserData user{};/// The User who has authorized, if the User has authorized with the identify scope.
-
-		AuthorizationInfoData() noexcept = default;
-
-		virtual ~AuthorizationInfoData() noexcept = default;
 	};
 
 	/// \brief Account data.
 	class DiscordCoreAPI_Dll AccountData : public DiscordEntity {
 	  public:
 		std::string name{};///< Name of the account.
-
-		AccountData() noexcept = default;
-
-		virtual ~AccountData() noexcept = default;
 	};
 
 	/// \brief Guild Widget Data.
 	struct DiscordCoreAPI_Dll GuildWidgetData {
 		Snowflake channelId{};///< The widget Channel id.
 		bool enabled{};///< Whether the widget is enabled.
-
-		GuildWidgetData() noexcept = default;
-
-		virtual ~GuildWidgetData() noexcept = default;
 	};
 
 	/// \brief Get Guild Widget Data.
@@ -1462,10 +1297,6 @@ namespace DiscordCoreAPI {
 	/// \brief Guild widget image data.
 	struct DiscordCoreAPI_Dll GuildWidgetImageData {
 		std::string url{};
-
-		GuildWidgetImageData() noexcept = default;
-
-		virtual ~GuildWidgetImageData() noexcept = default;
 	};
 
 	/// \brief Integration data.
@@ -1485,10 +1316,6 @@ namespace DiscordCoreAPI {
 		bool revoked{};///< Has it been revoked?
 		bool enabled{};///< Enabled?
 		bool syncing{};///< Is it syncing?
-
-		IntegrationData() noexcept = default;
-
-		virtual ~IntegrationData() noexcept = default;
 	};
 
 	using IntegrationDataVector = std::vector<IntegrationData>;
@@ -1560,10 +1387,6 @@ namespace DiscordCoreAPI {
 		Snowflake messageId{};///< Message Snowflake.
 		std::string count{};///< Count.
 		std::string type{};///< Type.
-
-		OptionalAuditEntryInfoData() noexcept = default;
-
-		virtual ~OptionalAuditEntryInfoData() noexcept = default;
 	};
 
 	/// \brief Audit log change data.
@@ -1571,19 +1394,11 @@ namespace DiscordCoreAPI {
 		std::string newValue{};///< New value.
 		std::string oldValue{};///< Old value.
 		std::string key{};///< The key of the audit log change.
-
-		AuditLogChangeData() noexcept = default;
-
-		virtual ~AuditLogChangeData() noexcept = default;
 	};
 
 	/// \brief Guild prune count data.
 	struct DiscordCoreAPI_Dll GuildPruneCountData {
 		int32_t count{};
-
-		GuildPruneCountData() noexcept = default;
-
-		virtual ~GuildPruneCountData() noexcept = default;
 	};
 
 	/// \brief Audit log entry data.
@@ -1596,10 +1411,6 @@ namespace DiscordCoreAPI {
 		std::string reason{};///< The reason that was entered for the given change.
 		Snowflake targetId{};///< Snowflake of the target User.
 		Snowflake userId{};///< Snowflake of the executing User.
-
-		AuditLogEntryData() noexcept = default;
-
-		virtual ~AuditLogEntryData() noexcept = default;
 	};
 
 	/// \brief Premium tier levels.
@@ -1645,20 +1456,12 @@ namespace DiscordCoreAPI {
 		std::string emojiName{};///< Emoji name for the Channel.
 		Snowflake channelId{};///< Snowflake of the welcome Channel.
 		Snowflake emojiId{};///< Emoji id for the Channel.
-
-		WelcomeScreenChannelData() noexcept = default;
-
-		virtual ~WelcomeScreenChannelData() noexcept = default;
 	};
 
 	/// \brief Welcome screen data.
 	struct DiscordCoreAPI_Dll WelcomeScreenData {
 		std::vector<WelcomeScreenChannelData> welcomeChannels{};///< Welcome screen Channel data.
 		std::string description{};///< Description of the welcome screen.
-
-		WelcomeScreenData() noexcept = default;
-
-		virtual ~WelcomeScreenData() noexcept = default;
 	};
 
 	/// \brief Stage instance privacy levels.
@@ -1675,8 +1478,6 @@ namespace DiscordCoreAPI {
 		Snowflake channelId{};///< The Channel's id.
 		Snowflake guildId{};///< The Guild id for which the Channel exists in.
 		std::string topic{};///< The topic of the StageInstance.
-
-		StageInstanceData() noexcept = default;
 
 		virtual ~StageInstanceData() noexcept = default;
 	};
@@ -1703,10 +1504,7 @@ namespace DiscordCoreAPI {
 		StickerType type{};///< The type of Sticker.
 		std::string name{};///< The Sticker's name.
 		std::string tags{};///< Tags for the Sticker to use.
-
 		UserData user{};///< The User that uploaded the Guild Sticker.
-
-		StickerData() noexcept = default;
 
 		virtual ~StickerData() noexcept = default;
 	};
@@ -1724,10 +1522,6 @@ namespace DiscordCoreAPI {
 		std::string name{};
 		std::string icon{};
 		Snowflake id{};
-
-		GuildPreviewData() noexcept = default;
-
-		virtual ~GuildPreviewData() noexcept = default;
 	};
 
 	/// \brief Afk timeout durations.
@@ -1767,14 +1561,13 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildCacheData;
 
 	/// \brief Data structure representing a single Guild.
-	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
+	class DiscordCoreAPI_Dll GuildData : public DiscordEntity, public Relational<GuildData> {
 	  public:
 		std::vector<Snowflake> guildScheduledEvents{};///< Array of Guild channels.
 		std::vector<PresenceUpdateData> presences{};///< Presence states for each of the GuildMembers.
 		std::vector<Snowflake> stageInstances{};///< Array of Guild channels.
 		DiscordCoreClient* discordCoreClient{};///< A pointer to the DiscordCoreClient.
 		std::vector<Snowflake> voiceStates{};///< Voice states for each of the guild members.
-		VoiceConnection* voiceConnection{};///< A pointer to the VoiceConnection, if present.
 		std::vector<Snowflake> stickers{};///< Array of Guild channels.
 		std::vector<Snowflake> channels{};///< Array of Guild channels.
 		std::vector<Snowflake> members{};///< Array of GuildMembers.
@@ -1786,21 +1579,13 @@ namespace DiscordCoreAPI {
 		Snowflake ownerId{};///< User id of the Guild's owner.
 		GuildFlags flags{};///< Guild flags.
 		IconHash icon{};///< Url to the Guild's icon.
-		String name{};///< The Guild's name.
+		std::string name{};///< The Guild's name.
 
 		GuildData() noexcept = default;
 
 		GuildData(uint64_t snowFlake) noexcept {
 			id = snowFlake;
 		}
-
-		GuildData& operator=(GuildData&&) noexcept = default;
-
-		GuildData(GuildData&&) noexcept = default;
-
-		GuildData& operator=(const GuildData&) noexcept = default;
-
-		GuildData(const GuildData&) noexcept = default;
 
 		GuildData& operator=(GuildCacheData&&) noexcept;
 
@@ -1817,7 +1602,7 @@ namespace DiscordCoreAPI {
 		/// \param selfMute Whether or not to self-mute the bot.
 		/// \param streamInfo For usage with the Vc-to-Vc audio streaming option.
 		/// \returns VoiceConnection* A pointer to the currently held voice connection, or nullptr if it failed to connect.
-		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{}, bool selfDeaf = false,
+		VoiceConnection& connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{}, bool selfDeaf = false,
 			bool selfMute = false, StreamInfo streamInfo = StreamInfo{});
 
 		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
@@ -1827,6 +1612,12 @@ namespace DiscordCoreAPI {
 		std::string getBannerUrl() noexcept;
 
 		std::string getIconUrl() noexcept;
+
+		inline friend bool operator<(const GuildData& lhs, const GuildData& rhs) noexcept {
+			return lhs.id < rhs.id;
+		}
+
+		VoiceConnection& getVoiceConnection() noexcept;
 
 		bool areWeConnected();
 
@@ -1862,10 +1653,6 @@ namespace DiscordCoreAPI {
 	/// \brief Guild scheduled event entity metadata.
 	struct DiscordCoreAPI_Dll GuildScheduledEventMetadata {
 		std::string location{};
-
-		GuildScheduledEventMetadata() noexcept = default;
-
-		virtual ~GuildScheduledEventMetadata() noexcept = default;
 	};
 
 	/// \brief Data representing a Guild Scheduled Event.
@@ -1886,8 +1673,6 @@ namespace DiscordCoreAPI {
 		UserData creator{};///< The User that created the scheduled event.
 		std::string name{};///< The name of the scheduled event(1 - 100 characters).
 
-		GuildScheduledEventData() noexcept = default;
-
 		virtual ~GuildScheduledEventData() noexcept = default;
 	};
 
@@ -1896,25 +1681,11 @@ namespace DiscordCoreAPI {
 		Snowflake guildScheduledEventId{};///< The scheduled event id which the User subscribed to/
 		GuildMemberData member{};///< Guild member data for this User for the Guild which this event belongs to, if any.
 		UserData user{};///< User which subscribed to an event.
-
-		GuildScheduledEventUserData() noexcept = default;
-
-		virtual ~GuildScheduledEventUserData() noexcept = default;
 	};
 
 	using GuildScheduledEventUserDataVector = std::vector<GuildScheduledEventUserData>;
 
-	class DiscordCoreAPI_Dll GuildScheduledEventDataVector {
-	  public:
-		GuildScheduledEventDataVector() noexcept = default;
-
-		operator std::vector<GuildScheduledEventData>();
-
-		virtual ~GuildScheduledEventDataVector() noexcept = default;
-
-	  protected:
-		std::vector<GuildScheduledEventData> guildScheduledEvents{};
-	};
+	using GuildScheduledEventDataVector = std::vector<GuildScheduledEventData>;
 
 	/// \brief Invite data.
 	struct DiscordCoreAPI_Dll InviteData {
@@ -1936,10 +1707,6 @@ namespace DiscordCoreAPI {
 		int32_t maxAge{};///< Maximum age of the invite.
 		bool temporary{};///< Is it temporary?
 		int32_t uses{};///< The current number of uses.
-
-		InviteData() noexcept = default;
-
-		virtual ~InviteData() noexcept = default;
 	};
 
 	using InviteDataVector = std::vector<InviteData>;
@@ -1957,10 +1724,6 @@ namespace DiscordCoreAPI {
 		std::string code{};///< The template code(unique ID).
 		std::string name{};///< Template name.
 		bool isDirty{};///< Whether the template has unsynced changes.
-
-		GuildTemplateData() noexcept = default;
-
-		virtual ~GuildTemplateData() noexcept = default;
 	};
 
 	using GuildTemplateDataVector = std::vector<GuildTemplateData>;
@@ -1993,22 +1756,10 @@ namespace DiscordCoreAPI {
 		std::string url{};///< Url of the WebHook.
 		UserData user{};///< User which create the WebHook.
 
-		WebHookData() noexcept = default;
-
 		virtual ~WebHookData() noexcept = default;
 	};
 
-	class DiscordCoreAPI_Dll WebHookDataVector {
-	  public:
-		WebHookDataVector() noexcept = default;
-
-		operator std::vector<WebHookData>();
-
-		virtual ~WebHookDataVector() noexcept = default;
-
-	  protected:
-		std::vector<WebHookData> webHooks{};
-	};
+	using WebHookDataVector = std::vector<WebHookData>();
 
 	/// \brief Audit log data.
 	class DiscordCoreAPI_Dll AuditLogData {
@@ -2024,10 +1775,6 @@ namespace DiscordCoreAPI {
 		auto getAuditLogData(const Snowflake userIdOfChanger, AuditLogEvent auditLogType);
 
 		auto getAuditLogData(AuditLogEvent auditLogType, const Snowflake userIdOfTarget);
-
-		AuditLogData() noexcept = default;
-
-		virtual ~AuditLogData() noexcept = default;
 	};
 
 	/// \brief For removing a reaction.
@@ -2037,10 +1784,6 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};
 		Snowflake userId{};
 		EmojiData emoji{};
-
-		ReactionRemoveData() noexcept = default;
-
-		virtual ~ReactionRemoveData() noexcept = default;
 	};
 
 	/// \brief For storing Interaction-related values.
@@ -2061,21 +1804,10 @@ namespace DiscordCoreAPI {
 	  public:
 		std::unordered_map<std::string, std::string>
 			nameLocalizations{};///< Dictionary with keys in available locales Localization dictionary for the name.
-		DiscordCoreInternal::JsonType type{};///< The type of the option.
 		Jsonifier::RawJsonData value{};///< The value of the option.
 		std::string name{};///< The name of the current choice.
 
-		ApplicationCommandOptionChoiceData() noexcept = default;
-
-		ApplicationCommandOptionChoiceData& operator=(ApplicationCommandOptionChoiceData&&) noexcept = default;
-		ApplicationCommandOptionChoiceData(ApplicationCommandOptionChoiceData&&) noexcept = default;
-
-		ApplicationCommandOptionChoiceData& operator=(const ApplicationCommandOptionChoiceData&) noexcept = default;
-		ApplicationCommandOptionChoiceData(const ApplicationCommandOptionChoiceData&) noexcept = default;
-
-		friend bool operator==(const ApplicationCommandOptionChoiceData&, const ApplicationCommandOptionChoiceData&);
-
-		virtual ~ApplicationCommandOptionChoiceData() noexcept = default;
+		friend bool operator==(const ApplicationCommandOptionChoiceData&, const ApplicationCommandOptionChoiceData&) noexcept;
 	};
 
 	/// \brief Data structure representing an ApplicationCommand's option.
@@ -2093,11 +1825,7 @@ namespace DiscordCoreAPI {
 		std::string name{};///< Name of the current ApplicationCommand option.
 		bool required{};///< If the parameter is required or optional-- default false.
 
-		ApplicationCommandOptionData() noexcept = default;
-
-		friend bool operator==(const ApplicationCommandOptionData&, const ApplicationCommandOptionData&);
-
-		virtual ~ApplicationCommandOptionData() noexcept = default;
+		friend bool operator==(const ApplicationCommandOptionData&, const ApplicationCommandOptionData&) noexcept;
 	};
 
 	/// \brief Representing "TypingStart" data.
@@ -2107,10 +1835,6 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};
 		int32_t timeStamp{};
 		Snowflake userId{};
-
-		TypingStartData() noexcept = default;
-
-		virtual ~TypingStartData() noexcept = default;
 	};
 
 	struct DiscordCoreAPI_Dll YouTubeFormat {
@@ -2130,22 +1854,9 @@ namespace DiscordCoreAPI {
 		int32_t width{};
 		int32_t itag{};
 		int32_t fps{};
-
-		YouTubeFormat() noexcept = default;
 	};
 
-	/// \brief YouTube format data.
-	class DiscordCoreAPI_Dll YouTubeFormatVector {
-	  public:
-		YouTubeFormatVector() noexcept = default;
-
-		operator std::vector<YouTubeFormat>();
-
-		virtual ~YouTubeFormatVector() noexcept = default;
-
-	  protected:
-		std::vector<YouTubeFormat> formats{};
-	};
+	using YouTubeFormatVector = std::vector<YouTubeFormat>;
 
 	/// \brief Application command types.
 	enum class ApplicationCommandType : uint8_t {
@@ -2175,10 +1886,6 @@ namespace DiscordCoreAPI {
 		std::vector<std::string> parse{};///< A vector of allowed mention types to parse from the content.
 		std::vector<std::string> roles{};///< Array of role_ids to mention (Max size of 100)
 		std::vector<std::string> users{};///< Array of user_ids to mention (Max size of 100)
-
-		AllowedMentionsData() noexcept = default;
-
-		virtual ~AllowedMentionsData() noexcept = default;
 	};
 
 	/// \brief Interaction types.
@@ -2194,14 +1901,10 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll SelectOptionData {
 	  public:
 		std::string description{};///< Description of the select-menu-option.
+		PartialEmojiData emoji{};///< An optional emoji to put on it.
 		std::string label{};///< A visible label for the select-menu-option.
 		std::string value{};///< A value for identifying the option.
-		PartialEmojiData emoji{};///< An optional emoji to put on it.
 		bool _default{};///< Is it the default option?
-
-		SelectOptionData() noexcept = default;
-
-		virtual ~SelectOptionData() noexcept = default;
 	};
 
 	/// \brief Button styles.
@@ -2234,8 +1937,6 @@ namespace DiscordCoreAPI {
 		bool required{};
 
 		void generateExcludedKeys() noexcept;
-
-		virtual ~ComponentData() noexcept = default;
 	};
 
 	/// \brief Action row data of Message components.
@@ -2243,10 +1944,6 @@ namespace DiscordCoreAPI {
 	  public:
 		ComponentType type{ ComponentType::Action_Row };
 		std::vector<ComponentData> components{};///< Array of components to make up the action-row.
-
-		ActionRowData() noexcept = default;
-
-		virtual ~ActionRowData() noexcept = default;
 	};
 
 	/// \brief Interaction callback types.
@@ -2296,11 +1993,7 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< (Where applicable) a Guild id for which guild to assign this ApplicationCommand to.
 		std::string name{};///< Name of the current ApplicationCommand.
 
-		ApplicationCommandData() noexcept = default;
-
-		friend bool operator==(const ApplicationCommandData&, const ApplicationCommandData&);
-
-		virtual ~ApplicationCommandData() noexcept = default;
+		friend bool operator==(const ApplicationCommandData&, const ApplicationCommandData&) noexcept;
 	};
 
 	/// \brief Channel mention data.
@@ -2309,10 +2002,6 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The id of the Guild where it took place.
 		std::string name{};///< The name of the Channel that was mentioned.
 		ChannelType type{};///< The type of Channel that was mentioned.
-
-		ChannelMentionData() noexcept = default;
-
-		virtual ~ChannelMentionData() noexcept = default;
 	};
 
 	/// \brief Data for when some Channel pins are updated.
@@ -2320,35 +2009,23 @@ namespace DiscordCoreAPI {
 		TimeStamp lastPinTimeStamp{};///< The time of the last pinned Message.
 		Snowflake channelId{};///< The id of the Channel within which the Message was pinned.
 		Snowflake guildId{};///< The id of the Guild within which the Message was pinned.
-
-		ChannelPinsUpdateEventData() noexcept = default;
-
-		virtual ~ChannelPinsUpdateEventData() noexcept = default;
 	};
 
 	/// \brief Data for when threads are synced.
 	struct DiscordCoreAPI_Dll ThreadListSyncData {
-		std::vector<ThreadMemberData> members{};///< Array of members that are a part of the Thread.
 		std::vector<std::string> channelIds{};///< The parent Channel ids whose threads are being synced.
 		std::vector<ChannelData> threads{};///< All active threads in the given channels that the current User can access.
+		ThreadMemberDataVector members{};///< Array of members that are a part of the Thread.
 		Snowflake guildId{};///< The id of the Guild for which the threads are being synced.
-
-		ThreadListSyncData() noexcept = default;
-
-		virtual ~ThreadListSyncData() noexcept = default;
 	};
 
 	/// \brief Represents a Thread-members-update.
 	class DiscordCoreAPI_Dll ThreadMembersUpdateData : public DiscordEntity {
 	  public:
-		std::vector<ThreadMemberData> addedMembers{};///< New members added to the Thread.
 		std::vector<std::string> removedMemberIds{};///< Members who have been removed.
+		ThreadMemberDataVector addedMembers{};///< New members added to the Thread.
 		uint32_t memberCount{};///< Number of Guild-members in the Thread.
 		Snowflake guildId{};///< Guild id of the Thread.
-
-		ThreadMembersUpdateData() noexcept = default;
-
-		virtual ~ThreadMembersUpdateData() noexcept = default;
 	};
 
 	/// \brief Message Interaction data.
@@ -2358,11 +2035,6 @@ namespace DiscordCoreAPI {
 		InteractionType type{};
 		std::string name{};
 		UserData user{};
-
-		MessageInteractionData() noexcept = default;
-
-		virtual ~MessageInteractionData() noexcept {
-		}
 	};
 
 	/// \brief Message types.
@@ -2428,10 +2100,6 @@ namespace DiscordCoreAPI {
 	  public:
 		StickerItemType formatType{};///< Message Sticker item type.
 		std::string name{};///< The name of the Sticker.
-
-		StickerItemData() noexcept = default;
-
-		virtual ~StickerItemData() noexcept = default;
 	};
 
 	/// \brief The core of a Message's data structure.
@@ -2467,8 +2135,6 @@ namespace DiscordCoreAPI {
 		bool pinned{};///< Is it pinned?
 		bool tts{};///< Is it a text-to-speech Message?
 
-		MessageDataOld() noexcept = default;
-
 		virtual ~MessageDataOld() noexcept = default;
 	};
 
@@ -2491,8 +2157,6 @@ namespace DiscordCoreAPI {
 		std::unordered_map<std::string, ChannelData> channels{};///< std::unordered_map full of ChannelData.
 		std::unordered_map<std::string, UserData> users{};///< std::unordered_map full of UserData.
 		std::unordered_map<std::string, RoleData> roles{};///< std::unordered_map full of RoleData.
-
-		ResolvedData() noexcept = default;
 	};
 
 	/// \brief Represents a Sticker pack.
@@ -2504,10 +2168,6 @@ namespace DiscordCoreAPI {
 		std::string skuId{};///< Snowflake of the pack's SKU.
 		std::string name{};///< Name of the Sticker pack.
 		Snowflake snowflake{};///< Snowflake of the Sticker pack.
-
-		StickerPackData() noexcept = default;
-
-		virtual ~StickerPackData() noexcept = default;
 	};
 
 	using StickerPackDataVector = std::vector<StickerPackData>;
@@ -2529,10 +2189,6 @@ namespace DiscordCoreAPI {
 		bool verified{};///< Whether the connection is verified.
 		bool revoked{};///< Whether the connection is revoked.
 		Snowflake id{};///< Snowflake of the connection account.
-
-		ConnectionData() noexcept = default;
-
-		virtual ~ConnectionData() noexcept = default;
 	};
 
 	using ConnectionDataVector = std::vector<ConnectionData>;
@@ -2550,8 +2206,6 @@ namespace DiscordCoreAPI {
 		ApplicationCommandInteractionDataOption() noexcept = default;
 
 		ApplicationCommandInteractionDataOption(Jsonifier::JsonifierCore parser, const std::string& jsonDataToParse);
-
-		virtual ~ApplicationCommandInteractionDataOption() noexcept = default;
 	};
 
 	/// \brief Interaction data data.
@@ -2567,10 +2221,6 @@ namespace DiscordCoreAPI {
 		Snowflake targetId{};///< The target Message's id.
 		Snowflake guildId{};///< The guild that the command took place in.
 		std::string name{};///< The name of the command.
-
-		InteractionDataData() noexcept = default;
-
-		virtual ~InteractionDataData() noexcept = default;
 	};
 
 	/// \brief Interaction data.
@@ -2590,10 +2240,6 @@ namespace DiscordCoreAPI {
 		std::string token{};///< The Interaction token.
 		int32_t version{};///< The Interaction version.
 		UserData user{};///< The User data of the sender of the Interaction.
-
-		InteractionData() noexcept = default;
-
-		virtual ~InteractionData() noexcept = default;
 	};
 
 	/// \brief Data from the SessionStart info.
@@ -2602,10 +2248,6 @@ namespace DiscordCoreAPI {
 		uint32_t resetAfter{};///< The number of Milliseconds after which the limit resets.
 		uint32_t remaining{};///< The remaining number of session starts the current User is allowed.
 		uint32_t total{};///< The total number of session starts the current User is allowed.
-
-		SessionStartData() noexcept = default;
-
-		virtual ~SessionStartData() noexcept = default;
 	};
 
 	/// \brief Data from the GetGatewayBot endpoint.
@@ -2613,10 +2255,6 @@ namespace DiscordCoreAPI {
 		SessionStartData sessionStartLimit{};///< Information on the current session start limit.
 		uint32_t shards{};///< The recommended number of shards to use when connecting.
 		std::string url{};///< The WSS Url that can be used for connecting to the gateway.
-
-		GatewayBotData() noexcept = default;
-
-		virtual ~GatewayBotData() noexcept = default;
 	};
 
 	/// \brief Text input style for modals.
@@ -2629,20 +2267,12 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll GuildEmojisUpdateEventData {
 		std::vector<EmojiData> emojis{};
 		Snowflake guildId{};
-
-		GuildEmojisUpdateEventData() noexcept = default;
-
-		virtual ~GuildEmojisUpdateEventData() noexcept = default;
 	};
 
 	/// \brief Data representing a Guild Stickers Update event.
 	struct DiscordCoreAPI_Dll GuildStickersUpdateEventData {
 		std::vector<StickerData> stickers{};
 		Snowflake guildId{};
-
-		GuildStickersUpdateEventData() noexcept = default;
-
-		virtual ~GuildStickersUpdateEventData() noexcept = default;
 	};
 
 	/// \brief A single GuildMember.
@@ -2674,17 +2304,11 @@ namespace DiscordCoreAPI {
 		int32_t chunkCount{};
 		Snowflake guildId{};
 		std::string nonce{};
-
-		GuildMembersChunkEventData() noexcept = default;
-
-		virtual ~GuildMembersChunkEventData() noexcept = default;
 	};
 
 	/// \brief A single ApplicationCommand.
 	class DiscordCoreAPI_Dll ApplicationCommand : public ApplicationCommandData {
 	  public:
-		ApplicationCommand() noexcept = default;
-
 		virtual ~ApplicationCommand() noexcept = default;
 	};
 
@@ -2693,9 +2317,6 @@ namespace DiscordCoreAPI {
 	/// \brief Represents an auto-moderation-rule.
 	class DiscordCoreAPI_Dll AutoModerationRule : public AutoModerationRuleData {
 	  public:
-		AutoModerationRule() noexcept = default;
-
-		virtual ~AutoModerationRule() noexcept = default;
 	};
 
 
@@ -2732,11 +2353,7 @@ namespace DiscordCoreAPI {
 	/// \brief A type of User, to represent the Bot and some of its associated endpoints.
 	class DiscordCoreAPI_Dll BotUser : public User {
 	  public:
-		friend class DiscordCoreClient;
-
-		BotUser& operator=(const BotUser& other) noexcept = default;
-
-		BotUser(const BotUser& other) noexcept = default;
+		friend class DiscordCoreAPI_Dll DiscordCoreClient;
 
 		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
@@ -2764,15 +2381,15 @@ namespace DiscordCoreAPI {
 		int32_t defaultAutoArchiveDuration{};///< Default time it takes to archive a thread.
 		std::vector<Snowflake> appliedTags{};///< The IDs of the set of tags that have been applied to a thread in a GUILD_FORUM channel.
 		ThreadMetadataData threadMetadata{};///< Metadata in the case that this Channel is a Thread.
-		std::string lastMessageId{};///< Snowflake of the last Message.
 		TimeStamp lastPinTimestamp{};///< Timestamp of the last pinned Message.
-		std::string permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
+		std::string lastMessageId{};///< Snowflake of the last Message.
 		int32_t videoQualityMode{};///< Video quality mode.
 		int32_t rateLimitPerUser{};///< Amount of seconds a User has to wait before sending another Message.
 		int32_t totalMessageSent{};///< Number of messages ever sent in a thread it's similar to message_count on message creation.
+		std::string permissions{};///< Computed permissions for the invoking user in the channel, including overwrites.
 		Snowflake applicationId{};///< Application id of the current application.
-		std::string rtcRegion{};///< Real-time clock region.
 		ThreadMemberData member{};///< Thread member object for the current User, if they have joined the Thread.
+		std::string rtcRegion{};///< Real-time clock region.
 		int32_t messageCount{};///< An approximate count of Messages in a Thread stops counting at 50.
 		std::string topic{};///< The Channel's topic.
 		int32_t userLimit{};///< User limit, in the case of voice channels.
@@ -2797,9 +2414,6 @@ namespace DiscordCoreAPI {
 	/// \brief A single Sticker.
 	class DiscordCoreAPI_Dll Sticker : public StickerData {
 	  public:
-		Sticker() noexcept = default;
-
-		virtual ~Sticker() noexcept = default;
 	};
 
 	using StickerVector = std::vector<Sticker>;
@@ -2828,25 +2442,16 @@ namespace DiscordCoreAPI {
 	/// \brief A single StageInstance.
 	class DiscordCoreAPI_Dll StageInstance : public StageInstanceData {
 	  public:
-		StageInstance() noexcept = default;
-
-		virtual ~StageInstance() noexcept = default;
 	};
 
 	/// \brief A single GuildScheduledEvent responseData structure.
 	class DiscordCoreAPI_Dll GuildScheduledEvent : public GuildScheduledEventData {
 	  public:
-		GuildScheduledEvent() noexcept = default;
-
-		virtual ~GuildScheduledEvent() noexcept = default;
 	};
 
 	/// \brief A single Reaction.
 	class DiscordCoreAPI_Dll Reaction : public ReactionData {
 	  public:
-		Reaction() noexcept = default;
-
-		virtual ~Reaction() noexcept = default;
 	};
 
 	using ReactionVector = std::vector<Reaction>;
@@ -2854,10 +2459,9 @@ namespace DiscordCoreAPI {
 	/// \brief A single Message.
 	class DiscordCoreAPI_Dll Message : public MessageData {
 	  public:
-		Message() noexcept = default;
-
-		virtual ~Message() noexcept = default;
 	};
+
+	using ChannelVector = std::vector<Channel>;
 
 	using MessageVector = std::vector<Message>;
 
@@ -2866,7 +2470,7 @@ namespace DiscordCoreAPI {
 	/// \brief A discord Guild. Used to connect to/disconnect from voice.
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	  public:
-		friend class Guilds;
+		friend class DiscordCoreAPI_Dll Guilds;
 
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
 		std::unordered_map<uint64_t, PresenceUpdateData> presences{};///< std::unordered_map of presences for each GuildMember.
@@ -2884,27 +2488,27 @@ namespace DiscordCoreAPI {
 		WelcomeScreenData welcomeScreen{};///< Welcome screen for the Guild.
 		AfkTimeOutDurations afkTimeOut{};///< Time for an individual to time out as afk.
 		int32_t approximateMemberCount{};///< Approximate member count.
-		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
 		std::vector<Sticker> stickers{};///< Stickers of the Guild.
-		std::vector<Channel> channels{};///< Channels of the Guild.
-		std::vector<Channel> threads{};///< Threads of the Guild.
 		std::vector<EmojiData> emoji{};///< Emoji of the Guild.
 		int32_t maxVideoChannelUsers{};///< Maximum quantity of users per video Channel.
+		std::string preferredLocale{};///< Preferred locale, for voice chat servers.
 		std::string vanityUrlCode{};///< Vanity Url code, if applicable.
-		std::string description{};///< Description of the Guild.
 		Snowflake widgetChannelId{};///< Channel id for the Guild's widget.
 		Snowflake systemChannelId{};///< Channel id for the Guild's system Channel.
 		IconHash discoverySplash{};///< Link to the discovery image's splash.
 		Snowflake rulesChannelId{};///< Channel id for the Guild's rules Channel.
-		std::vector<Role> roles{};///< Roles of the Guild.
 		Snowflake applicationId{};///< The current application id.
 		Permissions permissions{};///< Current Permissions for the bot in the Guild.
 		PremiumTier premiumTier{};///< What is the premium tier?
+		std::string description{};///< Description of the Guild.
 		Snowflake afkChannelId{};///< Channel if of the "afk" Channel.
-		std::string region{};///< Region of the world where the Guild's servers are.
+		ChannelVector channels{};///< Channels of the Guild.
+		ChannelVector threads{};///< Threads of the Guild.
 		int32_t maxPresences{};///< Max number of presences allowed.
+		std::string region{};///< Region of the world where the Guild's servers are.
 		int32_t maxMembers{};///< Max quantity of members.
 		MFALevel mfaLevel{};///< MFA level.
+		RoleVector roles{};///< Roles of the Guild.
 		IconHash banner{};///< Url to the Guild's banner.
 		IconHash splash{};///< Url to the Guild's splash.
 
@@ -2932,17 +2536,11 @@ namespace DiscordCoreAPI {
 	/// \brief Represents a single Thread.
 	class DiscordCoreAPI_Dll ThreadData : public ChannelData {
 	  public:
-		ThreadData() noexcept = default;
-
-		virtual ~ThreadData() noexcept = default;
 	};
 
 	/// \brief Represents a single Thread.
 	class DiscordCoreAPI_Dll Thread : public Channel {
 	  public:
-		Thread() noexcept = default;
-
-		virtual ~Thread() noexcept = default;
 	};
 
 }
@@ -2955,7 +2553,14 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> struct KeyAccessor<GuildMemberKey, VoiceStateDataLight> {
-		GuildMemberKey operator()(VoiceStateDataLight& other) {
+		inline const GuildMemberKey operator()(const VoiceStateDataLight& other) const {
+			GuildMemberKey returnData{};
+			returnData.guildId = other.guildId;
+			returnData.userId = other.id;
+			return returnData;
+		}
+
+		inline GuildMemberKey operator()(VoiceStateDataLight&& other) {
 			GuildMemberKey returnData{};
 			returnData.guildId = other.guildId;
 			returnData.userId = other.id;
@@ -2964,7 +2569,14 @@ namespace DiscordCoreAPI {
 	};
 
 	template<> struct KeyAccessor<GuildMemberKey, GuildMemberData> {
-		GuildMemberKey operator()(GuildMemberData& other) {
+		inline const GuildMemberKey operator()(const GuildMemberData& other) const {
+			GuildMemberKey returnData{};
+			returnData.guildId = other.guildId;
+			returnData.userId = other.user.id;
+			return returnData;
+		}
+
+		inline GuildMemberKey operator()(GuildMemberData&& other) {
 			GuildMemberKey returnData{};
 			returnData.guildId = other.guildId;
 			returnData.userId = other.user.id;
@@ -2972,11 +2584,66 @@ namespace DiscordCoreAPI {
 		}
 	};
 
+	template<> struct KeyAccessor<Snowflake, ChannelData> {
+		inline const Snowflake& operator()(const ChannelData& other) const {
+			return other.id;
+		}
+
+		inline Snowflake& operator()(ChannelData&& other) {
+			return other.id;
+		}
+	};
+
+	template<> struct KeyAccessor<Snowflake, UserData> {
+		inline const Snowflake& operator()(const UserData& other) const {
+			return other.id;
+		}
+
+		inline Snowflake& operator()(UserData&& other) {
+			return other.id;
+		}
+	};
+
+	template<> struct KeyAccessor<Snowflake, GuildData> {
+		inline const Snowflake& operator()(const GuildData& other) const {
+			return other.id;
+		}
+
+		inline Snowflake& operator()(UserData&& other) {
+			return other.id;
+		}
+	};
+
+	template<> struct KeyAccessor<Snowflake, RoleData> {
+		inline const Snowflake& operator()(const RoleData& other) const {
+			return other.id;
+		}
+
+		inline Snowflake& operator()(RoleData&& other) {
+			return other.id;
+		}
+	};
+
+	struct DiscordCoreAPI_Dll RateLimitBucketKey {
+		int64_t workloadType{};
+		std::string bucket{};
+	};
+
+	template<> struct KeyAccessor<int64_t, RateLimitBucketKey> {
+		inline const int64_t& operator()(const RateLimitBucketKey& other) const {
+			return other.workloadType;
+		}
+
+		inline int64_t& operator()(RateLimitBucketKey&& other) {
+			return other.workloadType;
+		}
+	};
+
 	template<> struct Fnv1aHash<GuildMemberKey> {
 		uint64_t operator()(const GuildMemberKey& data) const {
 			uint64_t newArray[2]{};
 			newArray[0] = data.guildId.operator uint64_t();
-			newArray[1] = data.guildId.operator uint64_t();
+			newArray[1] = data.userId.operator uint64_t();
 			return internalHashFunction(reinterpret_cast<const uint8_t*>(newArray), sizeof(uint64_t) * std::size(newArray));
 		}
 
@@ -3015,30 +2682,6 @@ namespace DiscordCoreAPI {
 			return other.user.id;
 		}
 	};
-
-	inline bool operator==(const UserData& lhs, const UserData& rhs) {
-		return lhs.id == rhs.id;
-	}
-
-	inline bool operator==(const GuildData& lhs, const GuildData& rhs) {
-		return lhs.id == rhs.id;
-	}
-
-	inline bool operator==(const VoiceStateDataLight& lhs, const VoiceStateDataLight& rhs) {
-		return (lhs.guildId == rhs.guildId) && (lhs.id == rhs.id);
-	}
-
-	inline bool operator==(const GuildMemberData& lhs, const GuildMemberData& rhs) {
-		return (lhs.guildId == rhs.guildId) && (lhs.user.id == rhs.user.id);
-	}
-
-	inline bool operator==(const RoleData& lhs, const RoleData& rhs) {
-		return lhs.id == rhs.id;
-	}
-
-	inline bool operator==(const ChannelData& lhs, const ChannelData& rhs) {
-		return lhs.id == rhs.id;
-	}
 
 	/// \brief Data structure representing a single Guild, for the purposes of populating the cache.
 	class DiscordCoreAPI_Dll GuildCacheData : public DiscordEntity {
@@ -3100,17 +2743,17 @@ namespace DiscordCoreAPI {
 	/// \brief Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input.
 	class DiscordCoreAPI_Dll InputEventData {
 	  public:
-		friend struct Jsonifier::Core<InputEventData>;
-		friend struct EventData<InteractionData>;
-		friend struct OnInteractionCreationData;
-		friend struct BaseFunctionArguments;
+		friend struct DiscordCoreAPI_Dll Jsonifier::Core<InputEventData>;
+		friend struct DiscordCoreAPI_Dll EventData<InteractionData>;
+		friend struct DiscordCoreAPI_Dll OnInteractionCreationData;
+		friend struct DiscordCoreAPI_Dll BaseFunctionArguments;
 
-		friend class DiscordCoreInternal::WebSocketClient;
-		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class RespondToInputEventData;
-		friend class DiscordCoreClient;
-		friend class CommandData;
-		friend class InputEvents;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::WebSocketClient;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreAPI_Dll RespondToInputEventData;
+		friend class DiscordCoreAPI_Dll DiscordCoreClient;
+		friend class DiscordCoreAPI_Dll CommandData;
+		friend class DiscordCoreAPI_Dll InputEvents;
 
 		InputEventResponseType responseType{};///< The type of response that this input value represents.
 
@@ -3155,7 +2798,7 @@ namespace DiscordCoreAPI {
 		virtual ~InputEventData() noexcept = default;
 
 	  protected:
-		std::unique_ptr<InteractionData> interactionData{ std::make_unique<InteractionData>() };
+		UniquePtr<InteractionData> interactionData{ makeUnique<InteractionData>() };
 	};
 
 	struct DiscordCoreAPI_Dll MoveThroughMessagePagesData;
@@ -3163,24 +2806,24 @@ namespace DiscordCoreAPI {
 	/// \brief Data for responding to an input-event.
 	class DiscordCoreAPI_Dll RespondToInputEventData {
 	  public:
-		friend struct DeleteInteractionResponseData;
-		friend struct DeleteFollowUpMessageData;
-		friend struct InteractionResponseData;
+		friend struct DiscordCoreAPI_Dll DeleteInteractionResponseData;
+		friend struct DiscordCoreAPI_Dll DeleteFollowUpMessageData;
+		friend struct DiscordCoreAPI_Dll InteractionResponseData;
 
 		friend DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent,
 			uint32_t currentPageIndex, const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult);
 
-		friend class CreateEphemeralInteractionResponseData;
-		friend class CreateDeferredInteractionResponseData;
-		friend class CreateEphemeralFollowUpMessageData;
-		friend class CreateInteractionResponseData;
-		friend class EditInteractionResponseData;
-		friend class CreateFollowUpMessageData;
-		friend class EditFollowUpMessageData;
-		friend class CreateMessageData;
-		friend class EditMessageData;
-		friend class InputEvents;
-		friend class SendDMData;
+		friend class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData;
+		friend class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData;
+		friend class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData;
+		friend class DiscordCoreAPI_Dll CreateInteractionResponseData;
+		friend class DiscordCoreAPI_Dll EditInteractionResponseData;
+		friend class DiscordCoreAPI_Dll CreateFollowUpMessageData;
+		friend class DiscordCoreAPI_Dll EditFollowUpMessageData;
+		friend class DiscordCoreAPI_Dll CreateMessageData;
+		friend class DiscordCoreAPI_Dll EditMessageData;
+		friend class DiscordCoreAPI_Dll InputEvents;
+		friend class DiscordCoreAPI_Dll SendDMData;
 
 		operator InteractionCallbackData() const noexcept;
 
@@ -3214,7 +2857,7 @@ namespace DiscordCoreAPI {
 		/// \param type The type of select-menu that this is.
 		/// \param channelTypes Types of channels that can be accepted if this is of the type ChannelType.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, std::vector<SelectOptionData> options,
+		RespondToInputEventData& addSelectMenu(bool disabled, const std::string& customIdNew, const std::vector<SelectOptionData>& options,
 			const std::string& placeholder, int32_t maxValues, int32_t minValues, SelectMenuType type,
 			std::vector<ChannelType> channelTypes = std::vector<ChannelType>{});
 
@@ -3237,12 +2880,12 @@ namespace DiscordCoreAPI {
 		/// \brief Adds a file to the current collection of files for this message response.
 		/// \param theFile The file to be added.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addFile(File theFile);
+		RespondToInputEventData& addFile(const File& theFile);
 
 		/// \brief For setting the allowable mentions in a response.
 		/// \param dataPackage An AllowedMentionsData structure.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addAllowedMentions(AllowedMentionsData dataPackage);
+		RespondToInputEventData& addAllowedMentions(const AllowedMentionsData& dataPackage);
 
 		/// \brief For setting the type of response to make.
 		/// \param typeNew An InputEventResponseType.
@@ -3252,12 +2895,12 @@ namespace DiscordCoreAPI {
 		/// \brief For setting the components in a response.
 		/// \param dataPackage An ActionRowData structure.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addComponentRow(ActionRowData dataPackage);
+		RespondToInputEventData& addComponentRow(const ActionRowData& dataPackage);
 
 		/// \brief For setting the embeds in a response.
 		/// \param dataPackage An EmbedData structure.
 		/// \returns RespondToInputEventData& A reference to this data structure.
-		RespondToInputEventData& addMessageEmbed(EmbedData dataPackage);
+		RespondToInputEventData& addMessageEmbed(const EmbedData& dataPackage);
 
 		/// \brief For setting the Message content in a response.
 		/// \param dataPackage A string, containing the content.
@@ -3306,7 +2949,7 @@ namespace DiscordCoreAPI {
 	/// \brief Message response base, for responding to messages.
 	class DiscordCoreAPI_Dll MessageResponseBase {
 	  public:
-		friend struct Jsonifier::Core<MessageResponseBase>;
+		friend struct DiscordCoreAPI_Dll Jsonifier::Core<MessageResponseBase>;
 		/// \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
 		/// \param customIdNew A custom id to give for identifying the button.
@@ -3433,21 +3076,21 @@ namespace DiscordCoreAPI {
 	 * @{
 	 */
 
-	class Song {
+	class DiscordCoreAPI_Dll Song {
 	  public:
-		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
-		friend class DiscordCoreInternal::YouTubeRequestBuilder;
-		friend class DiscordCoreInternal::SoundCloudAPI;
-		friend class DiscordCoreInternal::YouTubeAPI;
-		friend class SongAPI;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudRequestBuilder;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeRequestBuilder;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudAPI;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeAPI;
+		friend class DiscordCoreAPI_Dll SongAPI;
 
 		std::vector<DownloadUrl> finalDownloadUrls{};
 		SongType type{ SongType::SoundCloud };///< The type of song.
 		std::string secondDownloadUrl{};
 		std::string firstDownloadUrl{};
-		std::string addedByUserName{};///< The User name of the individual who added this Song to the playlist.
+		std::string addedByUserName{};///< The User name of the individual who added this Song to the this->
 		std::string thumbnailUrl{};///< The Url of the thumbnail image of this Song.
-		Snowflake addedByUserId{};///< The User id of the individual who added this Song to the playlist.
+		Snowflake addedByUserId{};///< The User id of the individual who added this Song to the this->
 		std::string description{};///< A description of the Song.
 		uint64_t contentLength{};
 		std::string songTitle{};///< The title of the Song.
@@ -3463,7 +3106,6 @@ namespace DiscordCoreAPI {
 	/// \brief Song completion event data.
 	struct DiscordCoreAPI_Dll SongCompletionEventData {
 		GuildMemberData guildMember{};///< The sending GuildMember.
-		Song previousSong{};///< The previously played Song.
 		bool wasItAFail{};///< Is this a replay? (Did a track recently fail to play?)
 		GuildData guild{};///< The sending Guild.
 	};
@@ -3471,9 +3113,91 @@ namespace DiscordCoreAPI {
 	/// \brief Playlist of songs and other variables.
 	struct DiscordCoreAPI_Dll Playlist {
 		std::vector<Song> songQueue{};///< The list of Songs that are stored to be played.
-		Song currentSong{};///< The current Song that is playing.
 		bool isLoopSongEnabled{};///< Is looping of Songs currently enabled?
 		bool isLoopAllEnabled{};///< Is looping of the entire Playlist currently enabled?
+		Song currentSong{};///< The current Song that is playing.
+
+		inline bool areThereAnySongs() noexcept {
+			return this->songQueue.size() && currentSong.songId != "";
+		}
+
+		inline bool sendNextSong() {
+			if (this->isLoopSongEnabled) {
+				if (this->songQueue.size() > 1 && this->currentSong.songId == "") {
+					this->currentSong = this->songQueue[0];
+					for (int32_t x = 0; x < this->songQueue.size(); ++x) {
+						if (x == this->songQueue.size() - 1) {
+							break;
+						}
+						this->songQueue[x] = this->songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+					}
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					return true;
+				} else if (this->songQueue.size() > 0 && this->currentSong.songId == "") {
+					return true;
+				} else if (this->currentSong.songId != "" && this->songQueue.size() == 0) {
+					return true;
+				} else if (this->songQueue.size() == 1 && this->currentSong.songId == "") {
+					this->currentSong = this->songQueue[0];
+					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					return true;
+				} else if (this->currentSong.songId == "") {
+					return false;
+				}
+			} else if (this->isLoopAllEnabled) {
+				if (this->songQueue.size() > 1 && this->currentSong.songId == "") {
+					this->currentSong = this->songQueue[0];
+					for (int32_t x = 0; x < this->songQueue.size(); ++x) {
+						if (x == this->songQueue.size() - 1) {
+							break;
+						}
+						this->songQueue[x] = this->songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+					}
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					return true;
+				} else if (this->songQueue.size() > 0 && this->currentSong.songId != "") {
+					Song tempSong02 = this->currentSong;
+					this->currentSong = this->songQueue[0];
+					for (int32_t x = 0; x < this->songQueue.size(); ++x) {
+						if (x == this->songQueue.size() - 1) {
+							break;
+						}
+						this->songQueue[x] = this->songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+					}
+					this->songQueue[this->songQueue.size() - 1] = tempSong02;
+					return true;
+				} else if (this->currentSong.songId != "" && this->songQueue.size() == 0) {
+					return true;
+				} else if (this->songQueue.size() == 1 && this->currentSong.songId == "") {
+					this->currentSong = this->songQueue[0];
+					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+					return true;
+				} else if (this->currentSong.songId == "") {
+					return false;
+				}
+			} else {
+				if (this->songQueue.size() > 0 && (this->currentSong.songId != "" || this->currentSong.songId == "")) {
+					this->currentSong = this->songQueue[0];
+					for (int32_t x = 0; x < this->songQueue.size() - 1; ++x) {
+						this->songQueue[x] = this->songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+					}
+					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					return true;
+				} else if (this->currentSong.songId != "" && this->songQueue.size() == 0) {
+					this->currentSong = Song();
+					return true;
+				} else if (this->currentSong.songId == "") {
+					return false;
+				}
+			}
+			return false;
+		}
+
+		inline void modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition) {
+			Song tempSong = this->songQueue[firstSongPosition];
+			this->songQueue[firstSongPosition] = this->songQueue[secondSongPosition];
+			this->songQueue[secondSongPosition] = tempSong;
+		}
 	};
 
 	/**@}*/
@@ -3490,8 +3214,8 @@ namespace DiscordCoreAPI {
 	/// \brief Command data, for functions executed by the CommandController.
 	class DiscordCoreAPI_Dll CommandData {
 	  public:
-		friend struct EventData<InteractionData>;
-		friend struct OnInteractionCreationData;
+		friend struct DiscordCoreAPI_Dll EventData<InteractionData>;
+		friend struct DiscordCoreAPI_Dll OnInteractionCreationData;
 
 		CommandData() noexcept = default;
 
@@ -3503,7 +3227,7 @@ namespace DiscordCoreAPI {
 
 		CommandData(const CommandData&) noexcept;
 
-		CommandData(InputEventData inputEventData);
+		CommandData(const InputEventData& inputEventData) noexcept;
 
 		/// \brief Returns the Interaction data, if appplicable, of this input-event.
 		/// \returns InteractionData A Snowflake containing the Interaction data.
@@ -3556,7 +3280,6 @@ namespace DiscordCoreAPI {
 		virtual ~CommandData() noexcept = default;
 
 	  protected:
-		DiscordCoreClient* discordCoreClient{};
 		std::string subCommandGroupName{};
 		std::string subCommandName{};
 		SerializerValue optionsArgs{};
@@ -3570,7 +3293,7 @@ namespace DiscordCoreAPI {
 
 		BaseFunctionArguments() noexcept = default;
 
-		BaseFunctionArguments(CommandData commandData, DiscordCoreClient* discordCoreClientNew);
+		BaseFunctionArguments(const CommandData& commandData, DiscordCoreClient* discordCoreClientNew) noexcept;
 
 		virtual ~BaseFunctionArguments() noexcept = default;
 	};
@@ -3586,7 +3309,7 @@ namespace DiscordCoreAPI {
 		/// \brief The base function for the command's execute function.
 		/// \param args A reference to an instance of BaseFunctionArguments.
 		virtual void execute(BaseFunctionArguments& args) = 0;
-		virtual std::unique_ptr<BaseFunction> create() = 0;
+		virtual UniquePtr<BaseFunction> create() = 0;
 		virtual ~BaseFunction() noexcept = default;
 	};
 
@@ -3605,7 +3328,7 @@ namespace DiscordCoreAPI {
 
 namespace DiscordCoreInternal {
 
-	template<DiscordCoreAPI::TextFormat ValueType> struct DiscordCoreAPI_Dll ReadyData;
+	template<DiscordCoreAPI::TextFormat ValueType> struct ReadyData;
 
 	template<> struct ReadyData<DiscordCoreAPI::TextFormat::Etf> {
 		DiscordCoreAPI::ApplicationData application{};

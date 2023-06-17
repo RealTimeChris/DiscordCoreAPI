@@ -48,7 +48,7 @@
 #include <discordcoreapi/StageInstanceEntities.hpp>
 #include <discordcoreapi/StickerEntities.hpp>
 #include <discordcoreapi/ThreadEntities.hpp>
-#include <discordcoreapi/ThreadPool.hpp>
+#include <discordcoreapi/Utilities/ThreadPool.hpp>
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
 #include <discordcoreapi/WebHookEntities.hpp>
@@ -60,41 +60,41 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll SIGTERMError : public DCAException {
 	  public:
-		SIGTERMError(const std::string& string);
+		SIGTERMError(const std::string& message, std::source_location location = std::source_location::current());
 	};
 
 	class DiscordCoreAPI_Dll SIGSEGVError : public DCAException {
 	  public:
-		SIGSEGVError(const std::string& string);
+		SIGSEGVError(const std::string& message, std::source_location location = std::source_location::current());
 	};
 
 	class DiscordCoreAPI_Dll SIGINTError : public DCAException {
 	  public:
-		SIGINTError(const std::string& string);
+		SIGINTError(const std::string& message, std::source_location location = std::source_location::current());
 	};
 
 	class DiscordCoreAPI_Dll SIGILLError : public DCAException {
 	  public:
-		SIGILLError(const std::string& string);
+		SIGILLError(const std::string& message, std::source_location location = std::source_location::current());
 	};
 
 	class DiscordCoreAPI_Dll SIGABRTError : public DCAException {
 	  public:
-		SIGABRTError(const std::string& string);
+		SIGABRTError(const std::string& message, std::source_location location = std::source_location::current());
 	};
 
 	class DiscordCoreAPI_Dll SIGFPEError : public DCAException {
 	  public:
-		SIGFPEError(const std::string& string);
+		SIGFPEError(const std::string& message, std::source_location location = std::source_location::current());
 	};
 
-	using SoundCloudAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::SoundCloudAPI>>;
+	using SoundCloudAPIMap = std::unordered_map<uint64_t, UniquePtr<DiscordCoreInternal::SoundCloudAPI>>;
 
-	using YouTubeAPIMap = std::unordered_map<uint64_t, std::unique_ptr<DiscordCoreInternal::YouTubeAPI>>;
+	using YouTubeAPIMap = std::unordered_map<uint64_t, UniquePtr<DiscordCoreInternal::YouTubeAPI>>;
 
-	using VoiceConnectionsMap = std::unordered_map<uint64_t, std::unique_ptr<VoiceConnection>>;
+	using VoiceConnectionsMap = std::unordered_map<uint64_t, UniquePtr<VoiceConnection>>;
 
-	using SongAPIMap = std::unordered_map<uint64_t, std::unique_ptr<SongAPI>>;
+	using SongAPIMap = std::unordered_map<uint64_t, UniquePtr<SongAPI>>;
 
 	/**
 	 * \addtogroup main_endpoints
@@ -103,21 +103,21 @@ namespace DiscordCoreAPI {
 	/// \brief DiscordCoreClient - The main class for this library.
 	class DiscordCoreAPI_Dll DiscordCoreClient {
 	  public:
-		friend class DiscordCoreInternal::WebSocketClient;
-		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreInternal::WebSocketCore;
-		friend class VoiceConnection;
-		friend class GuildData;
-		friend class BotUser;
-		friend class Guilds;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::WebSocketClient;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::WebSocketCore;
+		friend class DiscordCoreAPI_Dll VoiceConnection;
+		friend class DiscordCoreAPI_Dll GuildData;
+		friend class DiscordCoreAPI_Dll BotUser;
+		friend class DiscordCoreAPI_Dll Guilds;
 
-		static DiscordCoreInternal::SoundCloudAPI* getSoundCloudAPI(Snowflake guildId);
+		static DiscordCoreInternal::SoundCloudAPI& getSoundCloudAPI(Snowflake guildId);
 
-		static DiscordCoreInternal::YouTubeAPI* getYouTubeAPI(Snowflake guildId);
+		static DiscordCoreInternal::YouTubeAPI& getYouTubeAPI(Snowflake guildId);
 
-		static VoiceConnection* getVoiceConnection(Snowflake guildId);
+		static VoiceConnection& getVoiceConnection(Snowflake guildId);
 
-		static SongAPI* getSongAPI(Snowflake guildId);
+		static SongAPI& getSongAPI(Snowflake guildId);
 
 		/// \brief DiscordCoreClient constructor.
 		/// \param configData A DiscordCoreClientConfig structure to select various library options.
@@ -128,7 +128,7 @@ namespace DiscordCoreAPI {
 		/// \param baseFunction A unique_ptr to the command to be registered.
 		/// \param commandData A CreateApplicationCommandData structure describing the current function.
 		/// \param alwaysRegister Whether or not it gets registered every time the bot boots up, or only when it's missing from the bot's list of registered commands.
-		void registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction,
+		void registerFunction(const std::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction,
 			CreateApplicationCommandData commandData, bool alwaysRegister = false);
 
 		/// \brief For collecting a reference to the CommandController.
@@ -159,16 +159,16 @@ namespace DiscordCoreAPI {
 	  protected:
 		static BotUser currentUser;
 
-		std::unordered_map<uint32_t, std::unique_ptr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
-		std::unique_ptr<DiscordCoreInternal::HttpsClient> httpsClient{};
+		std::unordered_map<uint32_t, UniquePtr<DiscordCoreInternal::BaseSocketAgent>> baseSocketAgentsMap{};
+		UniquePtr<DiscordCoreInternal::HttpsClient> httpsClient{};
 		std::deque<CreateApplicationCommandData> commandsToRegister{};
 		StopWatch<Milliseconds> connectionStopWatch00{ 5000 };
 		StopWatch<Milliseconds> connectionStopWatch01{ 5000 };
 #ifdef _WIN32
 		DiscordCoreInternal::WSADataWrapper theWSAData{};
 #endif
+		std::counting_semaphore<1> theSemaphore{ 1 };
 		CommandController commandController{ this };
-		std::atomic_bool isItSafeToConnect{ true };
 		Milliseconds startupTimeSinceEpoch{};
 		ConfigManager configManager{};
 		std::mutex connectionMutex{};

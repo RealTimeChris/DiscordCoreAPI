@@ -1,6 +1,6 @@
 Creating a Follow-Up Message {#creatingafollowupmessage}
 ============
-- Execute the, `DiscordCoreAPI::InputEvents::respondToInputEventAsync()` function, while passing in a data structure of type `DiscordCoreAPI::RespondToInputEventData` with a type set	to `DiscordCoreAPI::InputEventResponseType::Follow_Up_Message`, with a return value of type `auto` or `std::unique_ptr<DiscordCoreAPI::InputEventData>`.
+- Execute the, `DiscordCoreAPI::InputEvents::respondToInputEventAsync()` function, while passing in a data structure of type `DiscordCoreAPI::RespondToInputEventData` with a type set	to `DiscordCoreAPI::InputEventResponseType::Follow_Up_Message`, with a return value of type `auto` or `DiscordCoreAPI::UniquePtr<DiscordCoreAPI::InputEventData>`.
 
 ```cpp
 /// Test.hpp-Header for the "test" command.
@@ -25,8 +25,8 @@ Creating a Follow-Up Message {#creatingafollowupmessage}
 			helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return std::make_unique<Test>();
+		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
+			return DiscordCoreAPI::makeUnique<Test>();
 		}
 
 		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {

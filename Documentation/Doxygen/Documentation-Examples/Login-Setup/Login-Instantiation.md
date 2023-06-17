@@ -25,6 +25,6 @@ int main()
 	clientConfig.presenceData.afk = false;
 	clientConfig.presenceData.since = 0;
 	clientConfig.presenceData.status = "online";
-	auto ptr = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
+	auto ptr = DiscordCoreAPI::makeUnique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
 }
 ```

@@ -30,12 +30,12 @@
 #include <discordcoreapi/CommandController.hpp>
 #include <discordcoreapi/Utilities/EventEntities.hpp>
 #include <discordcoreapi/TCPConnection.hpp>
-#include <discordcoreapi/ThreadPool.hpp>
+#include <discordcoreapi/Utilities/ThreadPool.hpp>
 #include <discordcoreapi/Utilities/Etf.hpp>
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll EventConverter {
+	class EventConverter {
 	  public:
 		EventConverter(std::string eventNew);
 
@@ -62,11 +62,13 @@ namespace DiscordCoreInternal {
 
 	class WebSocketCore;
 
-	class DiscordCoreAPI_Dll WebSocketTCPConnection : public TCPConnection {
+	class WebSocketTCPConnection : public TCPConnection<WebSocketTCPConnection>, public SSLDataInterface<WebSocketTCPConnection> {
 	  public:
 		friend class WebSocketCore;
-		WebSocketTCPConnection(const std::string& baseUrlNew, uint16_t portNew, bool doWePrintErrors, WebSocketCore* ptrNew,
-			bool areWeAStandaloneSocket);
+
+		WebSocketTCPConnection() noexcept = default;
+
+		WebSocketTCPConnection(const std::string& baseUrlNew, uint16_t portNew, WebSocketCore* ptrNew);
 
 		void handleBuffer() noexcept;
 
@@ -76,20 +78,23 @@ namespace DiscordCoreInternal {
 		WebSocketCore* ptr{};
 	};
 
-	inline thread_local Jsonifier::JsonifierCore parser{};
-
 	enum class WebSocketType { Normal = 0, Voice = 1 };
 
 	enum class WebSocketState { Connecting = 0, Upgrading = 1, Collecting_Hello = 2, Sending_Identify = 3, Authenticated = 4, Disconnected = 5 };
 
-	class DiscordCoreAPI_Dll WebSocketCore : public EtfParser {
+	class WebSocketCore : public EtfParser {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class WebSocketTCPConnection;
 
-		WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, WebSocketType typeOfWebSocketNew, bool areWeAStandaloneSocketNew);
+		WebSocketCore() noexcept = default;
 
-		bool connect(const std::string& baseUrlNew, const std::string& relativePath, const uint16_t portNew, bool doWePrintErrorsNew) noexcept;
+		WebSocketCore& operator=(WebSocketCore&& other) noexcept;
+		WebSocketCore(WebSocketCore&& other) noexcept;
+
+		WebSocketCore(DiscordCoreAPI::ConfigManager* configManagerNew, WebSocketType typeOfWebSocketNew);
+
+		bool connect(const std::string& baseUrlNew, const std::string& relativePath, const uint16_t portNew) noexcept;
 
 		void createHeader(std::string& outBuffer, WebSocketOpCode opCode) noexcept;
 
@@ -111,39 +116,41 @@ namespace DiscordCoreInternal {
 
 	  protected:
 		DiscordCoreAPI::StopWatch<Milliseconds> heartBeatStopWatch{ 20000ms };
-		std::unique_ptr<DiscordCoreAPI::ConnectionPackage> connections{};
-		std::unique_ptr<WebSocketTCPConnection> tcpConnection{};
 		DiscordCoreAPI::ConfigManager* configManager{};
 		std::atomic<WebSocketState> currentState{};
 		DiscordCoreAPI::String currentMessage{};
 		bool haveWeReceivedHeartbeatAck{ true };
-		const uint32_t maxReconnectTries{ 10 };
+		WebSocketTCPConnection tcpConnection{};
+		uint32_t maxReconnectTries{ 10 };
 		uint32_t currentReconnectTries{};
-		bool areWeAStandaloneSocket{};
 		uint32_t lastNumberReceived{};
-		WebSocketClose closeCode{ 0 };
 		WebSocketOpCode dataOpCode{};
 		bool areWeHeartBeating{};
 		WebSocketType wsType{};
+		size_t currentIndex{};
 		bool areWeResuming{};
 		uint32_t shard[2]{};
 	};
 
-	class DiscordCoreAPI_Dll WebSocketClient : public WebSocketCore {
+	class WebSocketClient : public WebSocketCore {
 	  public:
 		friend struct DiscordCoreAPI::OnVoiceServerUpdateData;
 		friend struct DiscordCoreAPI::OnVoiceStateUpdateData;
+		friend class TCPConnection<WebSocketTCPConnection>;
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::VoiceConnection;
 		friend class DiscordCoreAPI::BotUser;
 		friend class BaseSocketAgent;
 		friend class SoundCloudAPI;
 		friend class WebSocketCore;
-		friend class TCPConnection;
 		friend class YouTubeAPI;
 
-		WebSocketClient(DiscordCoreAPI::DiscordCoreClient* client, int32_t currentShardNew, std::atomic_bool* doWeQuitNew,
-			bool areWeAStandaloneSocket);
+		WebSocketClient() noexcept = default;
+
+		WebSocketClient& operator=(WebSocketClient&& other) noexcept = default;
+		WebSocketClient(WebSocketClient&& other) noexcept = default;
+
+		WebSocketClient(DiscordCoreAPI::DiscordCoreClient* client, int32_t currentShardNew, std::atomic_bool* doWeQuitNew);
 
 		void getVoiceConnectionData(const DiscordCoreAPI::VoiceConnectInitData& doWeCollect) noexcept;
 
@@ -168,7 +175,7 @@ namespace DiscordCoreInternal {
 		std::string sessionId{};
 	};
 
-	class DiscordCoreAPI_Dll BaseSocketAgent {
+	class BaseSocketAgent {
 	  public:
 		friend class DiscordCoreAPI::DiscordCoreClient;
 		friend class DiscordCoreAPI::BotUser;
@@ -186,15 +193,13 @@ namespace DiscordCoreInternal {
 		~BaseSocketAgent() noexcept;
 
 	  protected:
-		std::unordered_map<uint32_t, std::unique_ptr<WebSocketClient>> shardMap{};
+		std::unordered_map<uint32_t, WebSocketClient> shardMap{};
 		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{};
-		DiscordCoreAPI::ConfigManager* configManager{};
-		std::unique_ptr<std::jthread> taskThread{};
+		DiscordCoreAPI::UniquePtr<std::jthread> taskThread{};
 		uint32_t currentBaseSocketAgent{};
 		std::atomic_bool* doWeQuit{};
-		std::mutex accessMutex{};
 
 		void run(std::stop_token) noexcept;
 	};
 
-}// namespace DiscordCoreInternal
+}// namespace

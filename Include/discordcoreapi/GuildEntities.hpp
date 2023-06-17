@@ -58,11 +58,11 @@ namespace DiscordCoreAPI {
 		int32_t systemChannelFlags{};///< System Channel flags.
 		Snowflake systemChannelId{};///< The id of the Channel where Guild notices such as welcome messages and boost events are posted.
 		int32_t verificationLevel{};///< Verification level.
-		std::vector<Role> roles{};///< Array of Role objects.
 		Snowflake afkChannelId{};///< Snowflake for afk Channel.
 		std::string region{};///< The region that the servers are in.
 		std::string icon{};///< base64 128x128 image for the Guild icon.
 		std::string name{};///< The name of the new Guild.
+		RoleVector roles{};///< Array of Role objects.
 	};
 
 	/// \brief For getting a Guild from the library's cache or a Discord server.
@@ -296,8 +296,6 @@ namespace DiscordCoreAPI {
 	/// \brief An interface class for the Guild related Discord endpoints.
 	class DiscordCoreAPI_Dll Guilds {
 	  public:
-		inline static GuildData nullGuild{ std::numeric_limits<uint64_t>::max() };
-
 		static void initialize(DiscordCoreInternal::HttpsClient* client, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManager);
 
 		/// \brief Gets an audit log from the Discord servers.

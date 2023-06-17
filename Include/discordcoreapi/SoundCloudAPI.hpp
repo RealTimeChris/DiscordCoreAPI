@@ -31,17 +31,18 @@
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll SoundCloudRequestBuilder {
+	class SoundCloudRequestBuilder : public HttpsClientCore {
 	  public:
-		SoundCloudRequestBuilder() noexcept = default;
+		SoundCloudRequestBuilder& operator=(SoundCloudRequestBuilder&& other) noexcept = default;
+		SoundCloudRequestBuilder(SoundCloudRequestBuilder&& other) noexcept = default;
+
+		SoundCloudRequestBuilder(DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
 
 	  protected:
 		static std::string clientId;
-		inline static constexpr std::string_view baseUrl02{ "https://api-v2.soundcloud.com" };
-		inline static constexpr std::string_view baseUrl{ "https://soundcloud.com" };
-		inline static constexpr std::string_view appVersion{ "1681464840" };
-		DiscordCoreAPI::ConfigManager* configManager{};
-		HttpsClient* httpsClient{};
+		inline static std::string_view baseUrl02{ "https://api-v2.soundcloud.com" };
+		inline static std::string_view baseUrl{ "https://soundcloud.com" };
+		inline static std::string_view appVersion{ "1681464840" };
 
 		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::Song& newSong);
 
@@ -52,9 +53,12 @@ namespace DiscordCoreInternal {
 		std::string collectClientId();
 	};
 
-	class DiscordCoreAPI_Dll SoundCloudAPI : public SoundCloudRequestBuilder {
+	class SoundCloudAPI : public SoundCloudRequestBuilder {
 	  public:
-		SoundCloudAPI(DiscordCoreAPI::DiscordCoreClient* configManagerNew, HttpsClient* httpsClient, const DiscordCoreAPI::Snowflake guildId);
+		SoundCloudAPI& operator=(SoundCloudAPI&& other) noexcept = default;
+		SoundCloudAPI(SoundCloudAPI&& other) noexcept = default;
+
+		SoundCloudAPI(DiscordCoreAPI::ConfigManager* configManagerNew, const DiscordCoreAPI::Snowflake guildId);
 
 		void weFailedToDownloadOrDecode(const DiscordCoreAPI::Song& newSong, std::stop_token stopToken, int32_t currentRetries);
 
@@ -67,25 +71,24 @@ namespace DiscordCoreInternal {
 		bool areWeWorking() noexcept;
 
 	  protected:
-		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{};
 		std::atomic_bool areWeWorkingBool{ false };
 		DiscordCoreAPI::Snowflake guildId{};
 	};
 
-	struct DiscordCoreAPI_Dll Transcoding {
+	struct Transcoding {
 		std::string preset{};
 		std::string url{};
 	};
 
-	struct DiscordCoreAPI_Dll Media {
+	struct Media {
 		std::vector<Transcoding> transcodings{};
 	};
 
-	struct DiscordCoreAPI_Dll SecondDownloadUrl {
+	struct SecondDownloadUrl {
 		std::string url{};
 	};
 
-	struct DiscordCoreAPI_Dll RawSoundCloudSong {
+	struct RawSoundCloudSong {
 		std::string trackAuthorization{};
 		std::string description{};
 		std::string artworkUrl{};
@@ -95,7 +98,7 @@ namespace DiscordCoreInternal {
 		Media media{};
 	};
 
-	struct DiscordCoreAPI_Dll SoundCloudSearchResults {
+	struct SoundCloudSearchResults {
 		std::vector<RawSoundCloudSong> collection{};
 	};
 

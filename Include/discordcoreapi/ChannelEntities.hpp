@@ -134,8 +134,6 @@ namespace DiscordCoreAPI {
 		Snowflake userId{};///< The User for whom to collect the direct-messaging Channel to.
 	};
 
-	using ChannelVector = std::vector<Channel>;
-
 	/// \brief For modifying a Channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
 		UpdateChannelData channelData{};///< The responseData of the Channel to be updated.
@@ -154,11 +152,11 @@ namespace DiscordCoreAPI {
 	/// \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	  public:
-		friend class DiscordCoreInternal::WebSocketClient;
-		friend class DiscordCoreClient;
-		friend class ChannelData;
-		friend class GuildData;
-		friend class Guild;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::WebSocketClient;
+		friend class DiscordCoreAPI_Dll DiscordCoreClient;
+		friend class DiscordCoreAPI_Dll ChannelData;
+		friend class DiscordCoreAPI_Dll GuildData;
+		friend class DiscordCoreAPI_Dll Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManager);
 
@@ -215,7 +213,7 @@ namespace DiscordCoreAPI {
 		/// \brief Collects a list of Channels from a chosen Guild.
 		/// \param dataPackage A GetGuildChannelsData structure.
 		/// \returns A CoRoutine containing a ChannelVector.
-		static CoRoutine<std::vector<Channel>> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
+		static CoRoutine<ChannelVector> getGuildChannelsAsync(GetGuildChannelsData dataPackage);
 
 		/// \brief Creates a new Channel within a chosen Guild.
 		/// \param dataPackage A CreateGuildChannelData structure.
@@ -243,7 +241,6 @@ namespace DiscordCoreAPI {
 		static bool doWeCacheChannels();
 
 	  protected:
-		inline static ChannelData nullChannel{ std::numeric_limits<uint64_t>::max() };
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<Snowflake, ChannelData> cache;
 		static bool doWeCacheChannelsBool;

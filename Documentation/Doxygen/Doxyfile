@@ -932,6 +932,7 @@ INPUT                  = ./Documentation-Examples \
                          ./Documentation-Examples/User-Stuff \
                          ./Documentation-Examples/WebHook-Stuff \
                          ../../Include/discordcoreapi \
+                         ../../Include/discordcoreapi/Utilities \
                          ../../Source
 
 # This tag can be used to specify the character encoding of the source files

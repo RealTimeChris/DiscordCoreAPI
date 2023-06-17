@@ -29,26 +29,18 @@
 
 namespace DiscordCoreAPI {
 
-	inline static constexpr size_t BufferSize = 16 / sizeof(char) < 1 ? 1 : 16 / sizeof(char);
-
-	inline static constexpr size_t AllocationMask = sizeof(char) <= 1 ? 15
-		: sizeof(char) <= 2											  ? 7
-		: sizeof(char) <= 4											  ? 3
-		: sizeof(char) <= 8											  ? 1
-																	  : 0;
-
-	template<typename OTy> class LightString {
+	template<typename ValueType> class LightString {
 	  public:
-		using value_type = OTy;
+		using value_type = ValueType;
 		using size_type = size_t;
-		using traits_type = std::char_traits<OTy>;
-		using pointer = OTy*;
-		using const_pointer = const OTy*;
-		using allocator = std::allocator<OTy>;
+		using traits_type = std::char_traits<value_type>;
+		using pointer = ValueType*;
+		using const_pointer = const value_type*;
+		using allocator = Globals::AllocWrapper<value_type>;
 
 		inline constexpr LightString() noexcept = default;
 
-		inline static size_t npos{ std::numeric_limits<size_t>::max() };
+		inline static size_type npos{ std::numeric_limits<size_type>::max() };
 
 		inline constexpr LightString& operator=(LightString&& other) noexcept {
 			if (this != &other) {
@@ -59,57 +51,32 @@ namespace DiscordCoreAPI {
 			return *this;
 		}
 
-		inline constexpr LightString(LightString&& other) noexcept {
-			*this = std::move(other);
-		}
-
 		inline constexpr LightString& operator=(const LightString& other) noexcept {
 			if (this != &other) {
-				if (other.size() > 0) {
-					reserve(other.size());
-					std::memcpy(values, other.values, capacityVal);
-					sizeVal = other.size();
+				auto sizeNew = other.size();
+				if (sizeNew) [[likely]] {
+					reserve(sizeNew);
+					std::memcpy(values, other.data(), sizeNew);
+					sizeVal = sizeNew;
 				}
 			}
 			return *this;
 		}
 
-		inline constexpr LightString(const LightString& other) noexcept {
+		inline LightString(const LightString& other) noexcept {
 			*this = other;
 		}
 
-		inline constexpr LightString& operator=(OTy other) noexcept {
-			if (other == '\0') {
-				push_back(' ');
-			} else {
-				push_back(other);
-			}
-			return *this;
-		}
-
-		inline constexpr void insert(const OTy* newValues, size_t position) {
-			auto amount = traits_type::length(newValues);
-			if (position > 0 && amount > 0) {
-				size_t newSize = sizeVal + amount;
-				if (newSize + 1 >= capacityVal) {
-					reserve(newSize + 1);
-				}
-				std::memcpy(values + amount + position, values + position, sizeVal - position);
-				std::memcpy(values + position, newValues, amount);
-				sizeVal = newSize;
-				values[sizeVal] = '\0';
-			}
-		}
-
-		inline constexpr LightString(OTy other) noexcept {
+		inline LightString(value_type other) noexcept {
 			*this = other;
 		}
 
-		inline LightString& operator=(const std::string& other) noexcept {
-			if (other.size() > 0) {
-				reserve(other.size());
-				std::memcpy(values, other.data(), capacityVal);
-				sizeVal = other.size();
+		inline constexpr LightString& operator=(const std::string& other) noexcept {
+			auto sizeNew = other.size();
+			if (sizeNew) [[likely]] {
+				reserve(sizeNew);
+				std::memcpy(values, other.data(), sizeNew);
+				sizeVal = sizeNew;
 			}
 			return *this;
 		}
@@ -119,49 +86,105 @@ namespace DiscordCoreAPI {
 		}
 
 		inline constexpr LightString& operator=(const std::string_view& other) noexcept {
-			if (other.size() > 0) {
-				reserve(other.size());
-				std::memcpy(values, other.data(), capacityVal);
-				sizeVal = other.size();
+			auto sizeNew = other.size();
+			if (sizeNew) [[likely]] {
+				reserve(sizeNew);
+				std::memcpy(values, other.data(), sizeNew);
+				sizeVal = sizeNew;
 			}
 			return *this;
 		}
 
-		inline constexpr LightString(const std::string_view& other) noexcept {
+		inline LightString(const std::string_view& other) noexcept {
 			*this = other;
 		}
 
-		inline constexpr LightString& operator=(const OTy* other) noexcept {
-			auto newSize = std::char_traits<OTy>::length(other);
-			if (newSize > 0) {
-				reserve(newSize);
-				std::memcpy(values, other, capacityVal);
-				sizeVal = newSize;
+		template<size_t strLength> inline constexpr LightString(const char (&other)[strLength]) {
+			if (strLength) [[likely]] {
+				reserve(strLength);
+				std::memcpy(values, other, strLength);
+				sizeVal = strLength;
+			}
+		}
+
+		inline constexpr LightString& operator=(const_pointer other) noexcept {
+			auto sizeNew = traits_type::length(other);
+			if (sizeNew) [[likely]] {
+				reserve(sizeNew);
+				std::memcpy(values, other, sizeNew);
+				sizeVal = sizeNew;
 			}
 			return *this;
 		}
 
-		inline constexpr explicit LightString(const OTy* other) noexcept {
+		inline LightString(const_pointer other) noexcept {
 			*this = other;
 		}
 
-		inline constexpr OTy& operator[](size_t index) const noexcept {
+		inline LightString(const_pointer other, size_t sizeNew) noexcept {
+			if (sizeNew) [[likely]] {
+				reserve(sizeNew);
+				std::memcpy(values, other, sizeNew);
+				sizeVal = sizeNew;
+			}
+		}
+
+		inline constexpr void insert(const value_type* newValues, size_type position) {
+			auto amount = traits_type::length(newValues);
+			if (position > 0 && amount > 0) {
+				size_type sizeNew = sizeVal + amount;
+				if (sizeNew + 1 >= capacityVal) {
+					reserve(sizeNew + 1);
+				}
+				std::memcpy(values + amount + position, values + position, sizeVal - position);
+				std::memcpy(values + position, newValues, amount);
+				sizeVal = sizeNew;
+				allocator alloc{};
+				alloc.construct(&values[sizeVal], '\0');
+			}
+		}
+
+		inline constexpr value_type& operator[](size_type index) const noexcept {
 			return values[index];
 		}
 
-		inline constexpr const OTy* c_str() const noexcept {
+		inline constexpr const value_type* c_str() const noexcept {
 			return values;
 		}
 
-		inline constexpr size_t capacity() const noexcept {
+		inline constexpr size_type capacity() const noexcept {
 			return capacityVal;
 		}
 
-		inline constexpr size_t size() const noexcept {
+		inline constexpr void writeData(const value_type* valuesNew, uint64_t sizeNew) noexcept {
+			if (sizeVal + sizeNew > capacityVal) {
+				reserve(sizeVal + sizeNew + 1);
+			}
+			std::memcpy(values + sizeVal, valuesNew, sizeNew);
+			sizeVal += sizeNew;
+		}
+
+		inline constexpr void erase(size_type count, size_type pos = 0) {
+			if (pos >= sizeVal) {
+				return;
+			}
+			count = std::min(count, sizeVal - pos);
+			if (count > 0) {
+				traits_type::move(values + pos, values + pos + count, sizeVal - pos - count);
+				sizeVal -= count;
+				values[sizeVal] = '\0';
+			}
+		}
+
+		inline std::string_view stringView(size_t offset, size_t size) {
+			return { values + offset, size };
+		}
+
+		inline constexpr size_type size() const noexcept {
 			return sizeVal;
 		}
 
-		inline constexpr size_t maxSize() const noexcept {
+		inline constexpr size_type maxSize() const noexcept {
 			return std::numeric_limits<uint64_t>::max();
 		}
 
@@ -169,7 +192,7 @@ namespace DiscordCoreAPI {
 			return { values, sizeVal };
 		}
 
-		inline constexpr OTy* data() const noexcept {
+		inline constexpr value_type* data() const noexcept {
 			return values;
 		}
 
@@ -177,8 +200,9 @@ namespace DiscordCoreAPI {
 			if (sizeVal + 1 >= capacityVal) {
 				reserve(capacityVal * 2 + 2);
 			}
-			values[sizeVal++] = c;
-			values[sizeVal] = '\0';
+			allocator alloc{};
+			alloc.construct(&values[sizeVal++], c);
+			alloc.construct(&values[sizeVal], '\0');
 		}
 
 		inline constexpr void clear() {
@@ -189,155 +213,93 @@ namespace DiscordCoreAPI {
 			return { values, sizeVal };
 		}
 
-		inline constexpr LightString& append(const_pointer chars, size_type count) {
-			if (count > 0) {
-				if (size() + count >= capacity()) {
-					reserve(capacity() + count);
+		inline constexpr void resize(size_type sizeNew) {
+			if (sizeNew > 0) {
+				if (sizeNew > capacityVal) {
+					allocator alloc{};
+					pointer newPtr = alloc.allocate(sizeNew + 1);
+					try {
+						if (values) {
+							std::uninitialized_move(values, values + sizeVal, newPtr);
+							alloc.deallocate(values, capacityVal + 1);
+						}
+					} catch (...) {
+						alloc.deallocate(newPtr, sizeNew + 1);
+						throw;
+					}
+					capacityVal = sizeNew;
+					values = newPtr;
+					std::uninitialized_default_construct(values + sizeVal, values + sizeVal + (sizeNew - sizeVal));
+				} else if (sizeNew > sizeVal) {
+					std::uninitialized_default_construct(values + sizeVal, values + sizeVal + (sizeNew - sizeVal));
 				}
-				std::memcpy(values + size(), chars, count);
-				sizeVal += count;
-				values[sizeVal++] = '\0';
+				sizeVal = sizeNew;
+				values[sizeVal] = '\0';
+			} else {
+				sizeVal = 0;
 			}
+		}
+
+		inline constexpr void reserve(size_type capacityNew) {
+			if (capacityNew > capacityVal) {
+				allocator alloc{};
+				pointer newPtr = alloc.allocate(capacityNew + 1);
+				try {
+					if (values) {
+						std::uninitialized_move(values, values + sizeVal, newPtr);
+						alloc.deallocate(values, capacityVal + 1);
+					}
+				} catch (...) {
+					alloc.deallocate(newPtr, capacityNew + 1);
+					throw;
+				}
+				capacityVal = capacityNew;
+				values = newPtr;
+			}
+		}
+
+		template<typename ValueType02> inline constexpr bool operator==(const ValueType02& rhs) const noexcept {
+			if (rhs.size() != size()) {
+				return false;
+			}
+			return JsonifierInternal::JsonifierCoreInternal::compare(rhs.data(), data(), rhs.size());
+		}
+
+		template<typename ValueType02> inline constexpr bool operator!=(const ValueType02& rhs) const noexcept {
+			return !(*this == rhs);
+		}
+
+		inline constexpr LightString& operator+=(const LightString& rhs) noexcept {
+			auto oldSize = size();
+			resize(oldSize + rhs.size());
+			std::copy(rhs.data(), rhs.data() + rhs.size(), data() + oldSize);
 			return *this;
 		}
 
-		inline constexpr LightString& append(const size_type count, const value_type newChar) {
-			const size_type oldSize = size();
-			if (count <= capacity() - oldSize) {
-				sizeVal = oldSize + count;
-				pointer const old = values;
-				traits_type::assign(old + oldSize, count, newChar);
-				traits_type::assign(old[oldSize + count], value_type{});
-				return *this;
+		inline constexpr LightString& operator+=(const value_type* rhs) noexcept {
+			auto rhsSize = traits_type::length(rhs);
+			auto oldSize = size();
+			resize(oldSize + rhsSize);
+			std::copy(rhs, rhs + rhsSize, data() + oldSize);
+			return *this;
+		}
+
+		inline constexpr ~LightString() {
+			if (values && capacityVal) {
+				allocator alloc{};
+				alloc.deallocate(values, capacityVal + 1);
+				values = nullptr;
+				capacityVal = 0;
 			}
-			return reallocateGrowBy(
-				count,
-				[](pointer const newVal, const pointer old, const size_type oldSize, const size_type count, const value_type newChar) {
-					traits_type::copy(newVal, old, oldSize);
-					traits_type::assign(newVal + oldSize, count, newChar);
-					traits_type::assign(newVal[oldSize + count], value_type{});
-				},
-				count, newChar);
-		}
-
-		inline constexpr auto begin() noexcept {
-			return values;
-		}
-
-		inline constexpr auto end() noexcept {
-			return values + sizeVal;
-		}
-
-		inline constexpr void resize(const size_type newSize) {
-			const size_type oldSize = size();
-			if (newSize <= oldSize) {
-				traits_type::assign(values[sizeVal = newSize], value_type{});
-			} else {
-				append(newSize - oldSize, value_type{});
-			}
-		}
-
-		inline constexpr void writeData(const OTy* values, uint64_t sizeNew) noexcept {
-			if (sizeVal + sizeNew > capacityVal) {
-				reserve(capacityVal + sizeNew);
-			}
-			std::memcpy(data() + sizeVal, values, sizeNew);
-			sizeVal += sizeNew;
-		}
-
-		inline constexpr std::basic_string_view<OTy> stringView(size_t offSet, size_t length) {
-			return std::basic_string_view<OTy>{ values + offSet, length };
-		}
-
-		inline constexpr void reserve(size_t newCapacity) {
-			if (newCapacity > capacityVal) {
-				pointer newBuffer = allocator{}.allocate(newCapacity + 1);
-				std::memcpy(newBuffer, values, sizeVal);
-				newBuffer[sizeVal] = '\0';
-				allocator{}.deallocate(values, capacityVal);
-				values = newBuffer;
-				capacityVal = newCapacity + 1;
-			}
-		}
-
-		inline constexpr void erase(size_type count, size_type pos = 0) {
-			if (pos >= sizeVal) {
-				return;
-			}
-
-			count = (std::min)(count, sizeVal - pos);
-
-			if (count > 0) {
-				traits_type::move(values + pos, values + pos + count, sizeVal - pos - count);
-				sizeVal -= count;
-				values[sizeVal] = '\0';
-			}
-		}
-
-		inline constexpr ~LightString(){};
+		};
 
 	  protected:
 		size_type capacityVal{};
 		size_type sizeVal{};
 		pointer values{};
-
-		template<class ValueType, class... Types>
-		inline constexpr void constructInPlace(ValueType& object, Types&&... args) noexcept(std::is_nothrow_constructible_v<ValueType, Types...>) {
-			if (std::is_constant_evaluated()) {
-				std::construct_at(std::addressof(object), std::forward<Types>(args)...);
-			} else {
-				::new (static_cast<void*>(std::addressof(object))) ValueType(std::forward<Types>(args)...);
-			}
-		}
-
-		inline constexpr size_type calculateGrowth(const size_type requested) noexcept {
-			const size_type masked = requested | AllocationMask;
-			if (masked > maxSize()) {
-				return maxSize();
-			}
-
-			if (capacity() > maxSize() - capacity() / 2) {
-				return maxSize();
-			}
-
-			return (std::max)(masked, capacity() + capacity() / 2);
-		}
-
-		template<class FTy, class... ArgTypes>
-		inline constexpr LightString& reallocateGrowBy(const size_type sizeIncrease, FTy function, ArgTypes... args) {
-			auto& myData = values;
-			const size_type oldSize = size();
-			if (maxSize() - oldSize < sizeIncrease) {
-				throw "String too long.";
-			}
-
-			const size_type newSize = oldSize + sizeIncrease;
-			const size_type oldCapacity = capacityVal;
-			const size_type newCapacity = calculateGrowth(newSize);
-			auto alloc = allocator{};
-			const pointer newVal = allocator{}.allocate(newCapacity + 1);
-
-			if (std::is_constant_evaluated()) {
-				traits_type::assign(newVal, newCapacity + 1, value_type{});
-			}
-
-			sizeVal = newSize;
-			capacityVal = newCapacity;
-			pointer const rawNew = newVal;
-			if (BufferSize <= oldCapacity) {
-				const pointer old = values;
-				function(rawNew, old, oldSize, args...);
-				allocator{}.deallocate(old, oldCapacity + 1);
-				values = newVal;
-			} else {
-				function(rawNew, values, oldSize, args...);
-				constructInPlace(values, newVal);
-			}
-			return *this;
-		}
 	};
 
-	template<typename OTy> inline std::ostream& operator<<(std::ostream& os, const LightString<OTy>& string) {
+	template<typename value_type> inline std::ostream& operator<<(std::ostream& os, const LightString<value_type>& string) {
 		os << string.operator typename std::string();
 		return os;
 	}

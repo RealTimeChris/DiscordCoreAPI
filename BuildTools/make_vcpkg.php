@@ -4,7 +4,7 @@
  * Automatic CI process for generating new vcpkg releases.
  * Based loosely on RealTimeChris's shell script version.
  * 
- * This updates the content of ./vcpkg directory within the DiscordCoreAPI
+ * This updates the content of ./Vcpkg directory within the DiscordCoreAPI
  * repository on the main branch, which can then be diffed into
  * the microsoft/vcpkg main branch to build a PR for the new
  * release.
@@ -46,6 +46,7 @@ if (!empty($sha512)) {
     if (!$vcpkg->checkoutRepository()) {
         exit(1);
     }
+
     /* Attempt second build with the valid SHA512 sum. Program exit
      * status is the exit status of `vcpkg install`
      */

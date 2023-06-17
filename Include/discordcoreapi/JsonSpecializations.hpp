@@ -1,7 +1,7 @@
 /*
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022 Chris M. (RealTimeChris)
+	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -29,17 +29,15 @@
 
 namespace DiscordCoreInternal {
 
-	template<typename ValueType> struct HttpsDataNew {
-		ValueType data{};
-	};
-
 	template<> struct WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateData> {
 		WebSocketMessageData() noexcept = default;
 		WebSocketMessageData(const DiscordCoreAPI::UpdateVoiceStateData& data) noexcept;
 		std::unordered_set<std::string> excludedKeys{};
 		using type = DiscordCoreAPI::UpdateVoiceStateData;
 		int64_t op{ -1 };
-		DiscordCoreAPI::UpdateVoiceStateData d{};
+		std::string t{};
+		int32_t s{};
+		type d{};
 		operator EtfSerializer() noexcept;
 	};
 
@@ -49,7 +47,9 @@ namespace DiscordCoreInternal {
 		std::unordered_set<std::string> excludedKeys{};
 		using type = DiscordCoreAPI::UpdateVoiceStateDataDC;
 		int64_t op{ -1 };
-		DiscordCoreAPI::UpdateVoiceStateDataDC d{};
+		std::string t{};
+		int32_t s{};
+		type d{};
 		operator EtfSerializer() noexcept;
 	};
 }
@@ -64,11 +64,6 @@ namespace Jsonifier {
 			"session_id", &ValueType::sessionId, "user", &ValueType::user, "application", &ValueType::application);
 	};
 
-	template<> struct Core<DiscordCoreInternal::WebSocketMessageData<DiscordCoreInternal::InvalidSessionData>> {
-		using ValueType = DiscordCoreInternal::WebSocketMessageData<DiscordCoreInternal::InvalidSessionData>;
-		constexpr static auto parseValue = object("d", &ValueType::d);
-	};
-
 	template<> struct Core<DiscordCoreInternal::WebSocketMessage> {
 		using ValueType = DiscordCoreInternal::WebSocketMessage;
 		constexpr static auto parseValue = object("op", &ValueType::op, "s", &ValueType::s, "t", &ValueType::t);
@@ -79,27 +74,8 @@ namespace Jsonifier {
 		constexpr static auto parseValue = object("d", &ValueType::d, "op", &ValueType::op, "s", &ValueType::s, "t", &ValueType::t);
 	};
 
-	template<> struct Core<DiscordCoreInternal::WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateData>> {
-		using ValueType = DiscordCoreInternal::WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateData>;
-		constexpr static auto parseValue = object("op", &ValueType::op, "d", &ValueType::d);
-	};
-
-	template<> struct Core<DiscordCoreInternal::WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateDataDC>> {
-		using ValueType = DiscordCoreInternal::WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateDataDC>;
-		constexpr static auto parseValue = object("op", &ValueType::op, "d", &ValueType::d);
-	};
-
-	template<> struct Core<DiscordCoreInternal::WebSocketMessageData<DiscordCoreInternal::WebSocketIdentifyData>> {
-		using ValueType = DiscordCoreInternal::WebSocketMessageData<DiscordCoreInternal::WebSocketIdentifyData>;
-		constexpr static auto parseValue = object("d", &ValueType::d, "op", &ValueType::op, "s", &ValueType::s);
-	};
-
-	template<> struct Core<DiscordCoreInternal::WebSocketMessageData<DiscordCoreInternal::WebSocketResumeData>> {
-		using ValueType = DiscordCoreInternal::WebSocketMessageData<DiscordCoreInternal::WebSocketResumeData>;
-		constexpr static auto parseValue = object("d", &ValueType::d, "op", &ValueType::op);
-	};
-
 }
+
 namespace JsonifierInternal {
 
 	template<> inline void SerializeWithKeys::op<DiscordCoreAPI::Snowflake, Jsonifier::String>(DiscordCoreAPI::Snowflake& value,
@@ -207,7 +183,7 @@ namespace JsonifierInternal {
 	template<> inline void ParseNoKeys::op<true, DiscordCoreAPI::String>(DiscordCoreAPI::String& value, StructuralIterator& it) {
 		std::string newString{};
 		ParseNoKeys::op<true>(newString, it);
-		value = newString;
+		value = static_cast<DiscordCoreAPI::String>(newString);
 		return;
 	}
 
@@ -241,7 +217,7 @@ namespace JsonifierInternal {
 	template<> inline void ParseNoKeys::op<false, DiscordCoreAPI::String>(DiscordCoreAPI::String& value, StructuralIterator& it) {
 		std::string newString{};
 		ParseNoKeys::op<false>(newString, it);
-		value = newString;
+		value = static_cast<DiscordCoreAPI::String>(newString);
 		return;
 	}
 
@@ -261,11 +237,6 @@ namespace JsonifierInternal {
 }
 
 namespace Jsonifier {
-
-	template<typename ValueType> struct Core<DiscordCoreInternal::HttpsDataNew<ValueType>> {
-		using ValueType02 = DiscordCoreInternal::HttpsDataNew<ValueType>;
-		constexpr static auto parseValue = object("d", &ValueType02::data);
-	};
 
 	template<> struct Core<DiscordCoreAPI::ApplicationCommandPermissionData> {
 		using ValueType = DiscordCoreAPI::ApplicationCommandPermissionData;
@@ -1013,7 +984,7 @@ namespace Jsonifier {
 	template<> struct Core<DiscordCoreAPI::ApplicationCommandOptionChoiceData> {
 		using ValueType = DiscordCoreAPI::ApplicationCommandOptionChoiceData;
 		constexpr static auto parseValue =
-			object("name", &ValueType::name, "value", &ValueType::value, "type", &ValueType::type, "name_localized", &ValueType::nameLocalizations);
+			object("name", &ValueType::name, "value", &ValueType::value, "name_localized", &ValueType::nameLocalizations);
 	};
 
 	template<> struct Core<DiscordCoreAPI::RoleTagsData> {

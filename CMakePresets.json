@@ -8,9 +8,10 @@
         "rhs": "Windows",
         "type": "equals"
       },
-      "installDir": "${sourceDir}/Install/${presetName}",
       "description": "Target Windows with the Visual Studio development environment.",
+      "generator": "Visual Studio 17 2022",
       "hidden": true,
+      "installDir": "${sourceDir}/Install/${presetName}",
       "name": "Windows-Base"
     },
     {
@@ -25,10 +26,13 @@
     },
     {
       "architecture": {
-        "value": "x64",
-        "strategy": "external"
+        "strategy": "external",
+        "value": "x64"
       },
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "DEV": true },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "DEV": true
+      },
       "description": "Target Windows (64-bit) with the Visual Studio development environment. (Release)",
       "inherits": "Windows-Base",
       "name": "Windows-Release-Dev"
@@ -45,10 +49,13 @@
     },
     {
       "architecture": {
-        "value": "x64",
-        "strategy": "external"
+        "strategy": "external",
+        "value": "x64"
       },
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug", "DEV": true },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "DEV": true
+      },
       "description": "Target Windows (64-bit) with the Visual Studio development environment. (Debug)",
       "inherits": "Windows-Base",
       "name": "Windows-Debug-Dev"
@@ -60,7 +67,8 @@
       },
       "cacheVariables": {
         "ASAN_ENABLED": "TRUE",
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "DEV": true
       },
       "description": "Target Windows (64-bit) with the Visual Studio development environment. (Release)",
       "inherits": "Windows-Base",
@@ -73,7 +81,8 @@
       },
       "cacheVariables": {
         "ASAN_ENABLED": "TRUE",
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "DEV": true
       },
       "description": "Target Windows (64-bit) with the Visual Studio development environment. (Debug)",
       "inherits": "Windows-Base",
@@ -165,6 +174,20 @@
       "inheritConfigureEnvironment": true,
       "configuration": "Debug",
       "name": "Windows-Debug-Asan",
+      "verbose": true
+    },
+    {
+      "configurePreset": "Windows-Release-Dev",
+      "inheritConfigureEnvironment": true,
+      "configuration": "Release",
+      "name": "Windows-Release-Dev",
+      "verbose": true
+    },
+    {
+      "configurePreset": "Windows-Debug-Dev",
+      "inheritConfigureEnvironment": true,
+      "configuration": "Debug",
+      "name": "Windows-Debug-Dev",
       "verbose": true
     },
     {

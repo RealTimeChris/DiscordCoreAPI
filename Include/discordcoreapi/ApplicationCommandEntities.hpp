@@ -49,7 +49,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief For creating an application command.
 	struct DiscordCoreAPI_Dll CreateApplicationCommandData : public ApplicationCommandData {
-		friend class DiscordCoreClient;
+		friend class DiscordCoreAPI_Dll DiscordCoreClient;
 
 	  protected:
 		bool alwaysRegister{};

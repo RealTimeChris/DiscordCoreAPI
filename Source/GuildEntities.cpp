@@ -108,7 +108,6 @@ namespace DiscordCoreAPI {
 
 	Guild& Guild::operator=(GuildData&& other) noexcept {
 		if (this != &other) {
-			voiceConnection = other.voiceConnection;
 			discordCoreClient = other.discordCoreClient;
 			for (auto& value: other.channels) {
 				Channel data{};
@@ -173,7 +172,6 @@ namespace DiscordCoreAPI {
 
 	Guild& Guild::operator=(const GuildData& other) noexcept {
 		if (this != &other) {
-			voiceConnection = other.voiceConnection;
 			discordCoreClient = other.discordCoreClient;
 			for (auto& value: other.channels) {
 				Channel data{};
@@ -237,7 +235,6 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildData& GuildData::operator=(GuildCacheData&& other) noexcept {
-		voiceConnection = other.voiceConnection;
 		discordCoreClient = other.discordCoreClient;
 		for (auto& value: other.voiceStates) {
 			voiceStates.emplace_back(std::move(value.id));
@@ -300,7 +297,6 @@ namespace DiscordCoreAPI {
 	}
 
 	GuildData& GuildData::operator=(const GuildCacheData& other) noexcept {
-		voiceConnection = other.voiceConnection;
 		discordCoreClient = other.discordCoreClient;
 		for (auto& value: other.voiceStates) {
 			voiceStates.emplace_back(std::move(value.id));
@@ -401,6 +397,8 @@ namespace DiscordCoreAPI {
 		name = dataPackage.name;
 	}
 
+
+
 	void Guilds::initialize(DiscordCoreInternal::HttpsClient* client, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
 		Guilds::doWeCacheGuildsBool = configManagerNew->doWeCacheGuilds();
 		Guilds::discordCoreClient = discordCoreClientNew;
@@ -441,8 +439,8 @@ namespace DiscordCoreAPI {
 		}
 		workload.callStack = "Guilds::getAuditLogDataAsync()";
 		AuditLogData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<AuditLogData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<AuditLogData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<Guild> Guilds::createGuildAsync(CreateGuildData dataPackage) {
@@ -450,23 +448,22 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds";
-		Jsonifier::JsonifierCore parser{};
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Guilds::createGuildAsync()";
 		Guild returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(workload, returnData);
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(std::move(workload), returnData);
 		returnData.discordCoreClient = Guilds::discordCoreClient;
-		co_return returnData;
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<GuildDataVector> Guilds::getAllGuildsAsync() {
 		co_await NewThreadAwaitable<GuildDataVector>();
-		GuildDataVector guildVector{};
+		GuildDataVector returnData{};
 		for (auto& value: Guilds::cache) {
 			value.discordCoreClient = Guilds::discordCoreClient;
-			guildVector.emplace_back(value);
+			returnData.emplace_back(value);
 		}
-		co_return guildVector;
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<Guild> Guilds::getGuildAsync(GetGuildData dataPackage) {
@@ -476,14 +473,14 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "?with_counts=true";
 		workload.callStack = "Guilds::getGuildAsync()";
 		GuildData data{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(workload, data);
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(std::move(workload), data);
 		if (Guilds::cache.contains(dataPackage.guildId)) {
 			data = Guilds::cache.find(dataPackage.guildId);
 		} else {
 			Guilds::insertGuild(std::move(data));
 		}
 		data.discordCoreClient = Guilds::discordCoreClient;
-		co_return data;
+		co_return std::move(data);
 	}
 
 	GuildData Guilds::getCachedGuild(GetGuildData dataPackage) {
@@ -505,8 +502,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/preview";
 		workload.callStack = "Guilds::getGuildPreviewAsync()";
 		GuildPreviewData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildPreviewData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildPreviewData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<Guild> Guilds::modifyGuildAsync(ModifyGuildData dataPackage) {
@@ -514,21 +511,20 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId;
-		Jsonifier::JsonifierCore parser{};
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Guilds::modifyGuildAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		Guild data{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(workload, data);
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(std::move(workload), data);
 		data.discordCoreClient = Guilds::discordCoreClient;
 		if (Guilds::cache.contains(dataPackage.guildId)) {
 			data = Guilds::cache.find(dataPackage.guildId);
 		} else {
 			Guilds::insertGuild(std::move(data));
 		}
-		co_return data;
+		co_return std::move(data);
 	}
 
 	CoRoutine<void> Guilds::deleteGuildAsync(DeleteGuildData dataPackage) {
@@ -537,7 +533,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + dataPackage.guildId;
 		workload.callStack = "Guilds::deleteGuildAsync()";
-		Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Guilds::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
 		co_return;
 	}
 
@@ -564,8 +560,8 @@ namespace DiscordCoreAPI {
 		}
 		workload.callStack = "Guilds::getGuildBansAsync()";
 		BanDataVector returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<BanDataVector>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<BanDataVector>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<BanData> Guilds::getGuildBanAsync(GetGuildBanData dataPackage) {
@@ -575,8 +571,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/bans/" + dataPackage.userId;
 		workload.callStack = "Guilds::getGuildBanAsync()";
 		BanData data{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<BanData>(workload, data);
-		co_return data;
+		Guilds::httpsClient->submitWorkloadAndGetResult<BanData>(std::move(workload), data);
+		co_return std::move(data);
 	}
 
 	CoRoutine<void> Guilds::createGuildBanAsync(CreateGuildBanData dataPackage) {
@@ -584,13 +580,12 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/bans/" + dataPackage.guildMemberId;
-		Jsonifier::JsonifierCore parser{};
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Guilds::createGuildBanAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Guilds::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
 		co_return;
 	}
 
@@ -603,7 +598,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Guilds::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
 		co_return;
 	}
 
@@ -634,8 +629,8 @@ namespace DiscordCoreAPI {
 			}
 		}
 		GuildPruneCountData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildPruneCountData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildPruneCountData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<GuildPruneCountData> Guilds::beginGuildPruneAsync(BeginGuildPruneData dataPackage) {
@@ -643,15 +638,14 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildPruneCountData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/prune";
-		Jsonifier::JsonifierCore parser{};
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Guilds::beginGuildPruneAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		GuildPruneCountData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildPruneCountData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildPruneCountData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<std::vector<VoiceRegionData>> Guilds::getGuildVoiceRegionsAsync(GetGuildVoiceRegionsData dataPackage) {
@@ -661,8 +655,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/regions";
 		workload.callStack = "Guilds::getGuildVoiceRegionsAsync()";
 		VoiceRegionDataVector returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<VoiceRegionDataVector>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<VoiceRegionDataVector>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<std::vector<InviteData>> Guilds::getGuildInvitesAsync(GetGuildInvitesData dataPackage) {
@@ -672,8 +666,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/invites";
 		workload.callStack = "Guilds::getGuildInvitesAsync()";
 		InviteDataVector returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<InviteDataVector>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<InviteDataVector>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<std::vector<IntegrationData>> Guilds::getGuildIntegrationsAsync(GetGuildIntegrationsData dataPackage) {
@@ -683,8 +677,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/integrations";
 		workload.callStack = "Guilds::getGuildIntegrationsAsync()";
 		IntegrationDataVector returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<IntegrationDataVector>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<IntegrationDataVector>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<void> Guilds::deleteGuildIntegrationAsync(DeleteGuildIntegrationData dataPackage) {
@@ -696,7 +690,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Guilds::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
 		co_return;
 	}
 
@@ -707,8 +701,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/widget";
 		workload.callStack = "Guilds::getGuildWidgetSettingsAsync()";
 		GuildWidgetData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildWidgetData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildWidgetData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<GuildWidgetData> Guilds::modifyGuildWidgetAsync(ModifyGuildWidgetData dataPackage) {
@@ -716,15 +710,14 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildWidgetData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/widget";
-		Jsonifier::JsonifierCore parser{};
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Guilds::modifyGuildWidgetAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		GuildWidgetData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildWidgetData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildWidgetData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<GuildWidgetData> Guilds::getGuildWidgetAsync(GetGuildWidgetData dataPackage) {
@@ -734,8 +727,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/widget.json";
 		workload.callStack = "Guilds::getGuildWidgetAsync()";
 		GuildWidgetData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildWidgetData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildWidgetData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<InviteData> Guilds::getGuildVanityInviteAsync(GetGuildVanityInviteData dataPackage) {
@@ -745,8 +738,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/vanity-url";
 		workload.callStack = "Guilds::getGuildVanityInviteAsync()";
 		InviteData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<InviteData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<InviteData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<GuildWidgetImageData> Guilds::getGuildWidgetImageAsync(GetGuildWidgetImageData dataPackage) {
@@ -778,8 +771,8 @@ namespace DiscordCoreAPI {
 		}
 		workload.callStack = "Guilds::getGuildWidgetImageAsync()";
 		GuildWidgetImageData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildWidgetImageData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildWidgetImageData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<WelcomeScreenData> Guilds::getGuildWelcomeScreenAsync(GetGuildWelcomeScreenData dataPackage) {
@@ -789,8 +782,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/welcome-screen";
 		workload.callStack = "Guilds::getGuildWelcomeScreenAsync()";
 		WelcomeScreenData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<WelcomeScreenData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<WelcomeScreenData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<WelcomeScreenData> Guilds::modifyGuildWelcomeScreenAsync(ModifyGuildWelcomeScreenData dataPackage) {
@@ -798,15 +791,14 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<WelcomeScreenData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/welcome-screen";
-		Jsonifier::JsonifierCore parser{};
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Guilds::modifyGuildWelcomeScreenAsync()";
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
 		WelcomeScreenData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<WelcomeScreenData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<WelcomeScreenData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	};
 
 	CoRoutine<GuildTemplateData> Guilds::getGuildTemplateAsync(GetGuildTemplateData dataPackage) {
@@ -816,8 +808,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/templates/" + dataPackage.templateCode;
 		workload.callStack = "Guilds::getGuildTemplateAsync()";
 		GuildTemplateData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<Guild> Guilds::createGuildFromGuildTemplateAsync(CreateGuildFromGuildTemplateData dataPackage) {
@@ -825,11 +817,10 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<Guild>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/templates/" + dataPackage.templateCode;
-		Jsonifier::JsonifierCore parser{};
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Guilds::createGuildFromGuildTemplateAsync()";
 		Guild returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(workload, returnData);
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(std::move(workload), returnData);
 		returnData.discordCoreClient = Guilds::discordCoreClient;
 		co_return std::move(returnData);
 	}
@@ -841,8 +832,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/templates";
 		workload.callStack = "Guilds::getGuildTemplatesAsync()";
 		GuildTemplateDataVector returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateDataVector>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateDataVector>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<GuildTemplateData> Guilds::createGuildTemplateAsync(CreateGuildTemplateData dataPackage) {
@@ -850,12 +841,11 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildTemplateData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Post;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/templates";
-		Jsonifier::JsonifierCore parser{};
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Guilds::createGuildTemplateAsync()";
 		GuildTemplateData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<GuildTemplateData> Guilds::syncGuildTemplateAsync(SyncGuildTemplateData dataPackage) {
@@ -865,8 +855,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/templates/" + dataPackage.templateCode;
 		workload.callStack = "Guilds::syncGuildTemplateAsync()";
 		GuildTemplateData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<GuildTemplateData> Guilds::modifyGuildTemplateAsync(ModifyGuildTemplateData dataPackage) {
@@ -874,12 +864,11 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<GuildTemplateData>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/templates/" + dataPackage.templateCode;
-		Jsonifier::JsonifierCore parser{};
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Guilds::modifyGuildTemplateAsync()";
 		GuildTemplateData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildTemplateData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<void> Guilds::deleteGuildTemplateAsync(DeleteGuildTemplateData dataPackage) {
@@ -888,7 +877,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/templates/" + dataPackage.templateCode;
 		workload.callStack = "Guilds::deleteGuildTemplateAsync()";
-		Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Guilds::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
 		co_return;
 	}
 
@@ -916,8 +905,8 @@ namespace DiscordCoreAPI {
 
 		workload.callStack = "Guilds::getInviteAsync()";
 		InviteData returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<InviteData>(workload, returnData);
-		co_return returnData;
+		Guilds::httpsClient->submitWorkloadAndGetResult<InviteData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<void> Guilds::deleteInviteAsync(DeleteInviteData dataPackage) {
@@ -929,7 +918,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Guilds::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
 		co_return;
 	}
 
@@ -956,7 +945,7 @@ namespace DiscordCoreAPI {
 		}
 		workload.callStack = "Users::getCurrentUserGuildsAsync()";
 		GuildDataVector returnData{};
-		Guilds::httpsClient->submitWorkloadAndGetResult<GuildDataVector>(workload, returnData);
+		Guilds::httpsClient->submitWorkloadAndGetResult<GuildDataVector>(std::move(workload), returnData);
 		for (auto& value: returnData) {
 			value.discordCoreClient = Guilds::discordCoreClient;
 		}
@@ -969,7 +958,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/users/@me/guilds/" + dataPackage.guildId;
 		workload.callStack = "Guilds::leaveGuildAsync()";
-		Guilds::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Guilds::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
 		co_return;
 	}
 
@@ -977,11 +966,11 @@ namespace DiscordCoreAPI {
 
 	GuildData& Guilds::insertGuild(GuildData&& guild) {
 		if (guild.id == 0) {
-			throw DCAException{ "Sorry, but there was no id set for that guild." };
+			throw DCAException{ "Sorry, but there was no id set for that guild.", std::source_location::current() };
 		}
 		auto id = guild.id;
 		guild.discordCoreClient = Guilds::discordCoreClient;
-		Guilds::cache.emplace(std::forward<GuildData>(guild));
+		Guilds::cache.emplace(std::move(guild));
 		if (Guilds::cache.count() % 500 == 0) {
 			std::cout << "THE GUILD COUNT: " << Guilds::cache.count() << ", TOTAL TIME: " << stopWatch.totalTimePassed().count() << std::endl;
 		}

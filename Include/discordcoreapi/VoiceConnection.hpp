@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll VoiceConnectionBridge : public DiscordCoreInternal::UDPConnection {
 	  public:
-		friend class VoiceConnection;
+		friend class DiscordCoreAPI_Dll VoiceConnection;
 
 		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionNew, std::basic_string<uint8_t>& encryptionKeyNew, StreamType streamType,
 			const std::string& baseUrlNew, const uint16_t portNew, Snowflake guildIdNew, std::stop_token* tokenNew);
@@ -183,8 +183,9 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll VoiceUDPConnection : public DiscordCoreInternal::UDPConnection {
 	  public:
-		VoiceUDPConnection(const std::string& baseUrlNew, uint16_t portNew, DiscordCoreAPI::StreamType streamType, bool doWePrintErrors,
-			VoiceConnection* ptrNew);
+		VoiceUDPConnection() noexcept = default;
+
+		VoiceUDPConnection(const std::string& baseUrlNew, uint16_t portNew, DiscordCoreAPI::StreamType streamType, VoiceConnection* ptrNew);
 
 		void handleAudioBuffer() noexcept;
 
@@ -196,21 +197,23 @@ namespace DiscordCoreAPI {
 	 * \addtogroup voice_connection
 	 * @{
 	 */
-	/// \brief VoiceConnection class - represents the connection to a given voice Channel.
+	/// \brief VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice Channel.
 	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketCore {
 	  public:
-		friend class DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreInternal::SoundCloudAPI;
-		friend class DiscordCoreInternal::YouTubeAPI;
-		friend class VoiceConnectionBridge;
-		friend class VoiceUDPConnection;
-		friend class DiscordCoreClient;
-		friend class GuildData;
-		friend class SongAPI;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudAPI;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeAPI;
+		friend class DiscordCoreAPI_Dll VoiceConnectionBridge;
+		friend class DiscordCoreAPI_Dll VoiceUDPConnection;
+		friend class DiscordCoreAPI_Dll DiscordCoreClient;
+		friend class DiscordCoreAPI_Dll GuildData;
+		friend class DiscordCoreAPI_Dll SongAPI;
 
 		/// The constructor.
 		VoiceConnection(DiscordCoreClient* discordCoreClientNew, DiscordCoreInternal::WebSocketClient* baseShardNew,
 			std::atomic_bool* doWeQuitNew) noexcept;
+
+		bool areWeConnected() noexcept;
 
 		/// \brief Collects the currently connected-to voice Channel's id.
 		/// \returns Snowflake A Snowflake containing the Channel's id.
@@ -227,20 +230,20 @@ namespace DiscordCoreAPI {
 		UnboundedMessageBlock<DiscordCoreInternal::VoiceConnectionData> voiceConnectionDataBuffer{};
 		Nanoseconds intervalCount{ static_cast<int64_t>(960.0l / 48000.0l * 1000000000.0l) };
 		std::atomic<VoiceActiveState> activeState{ VoiceActiveState::Connecting };
-		std::unordered_map<uint64_t, std::unique_ptr<VoiceUser>> voiceUsers{};
+		std::unordered_map<uint64_t, UniquePtr<VoiceUser>> voiceUsers{};
 		DiscordCoreInternal::VoiceConnectionData voiceConnectionData{};
-		std::unique_ptr<VoiceConnectionBridge> streamSocket{};
-		std::unique_ptr<VoiceUDPConnection> udpConnection{};
 		DiscordCoreInternal::OpusEncoderWrapper encoder{};
 		DiscordCoreInternal::WebSocketClient* baseShard{};
-		std::unique_ptr<std::jthread> taskThread{};
+		UniquePtr<VoiceConnectionBridge> streamSocket{};
 		VoiceConnectInitData voiceConnectInitData{};
 		std::basic_string<uint8_t> encryptionKey{};
 		DiscordCoreClient* discordCoreClient{};
-		std::atomic_bool haveWeConstructed{};
 		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};
-		Jsonifier::JsonifierCore parser{};
+		UniquePtr<std::jthread> taskThread{};
+		std::atomic_bool areWeStillActive{};
+		VoiceUDPConnection udpConnection{};
+		UniquePtr<std::stop_token> token{};
 		int64_t nsPerSecond{ 1000000000 };
 		std::string audioEncryptionMode{};
 		std::atomic_bool areWePlaying{};
@@ -250,7 +253,6 @@ namespace DiscordCoreAPI {
 		std::atomic_bool doWeSkip{};
 		int64_t samplesPerPacket{};
 		std::string externalIp{};
-		std::stop_token* token{};
 		int64_t msPerPacket{};
 		std::string voiceIp{};
 		std::string baseUrl{};
@@ -269,15 +271,11 @@ namespace DiscordCoreAPI {
 
 		void sendVoiceConnectionData() noexcept;
 
-		void runVoice(std::stop_token) noexcept;
-
 		bool areWeCurrentlyPlaying() noexcept;
 
 		void checkForConnections() noexcept;
 
 		void connectInternal() noexcept;
-
-		bool areWeConnected() noexcept;
 
 		void skipInternal() noexcept;
 
@@ -290,6 +288,8 @@ namespace DiscordCoreAPI {
 		void disconnect() noexcept;
 
 		void reconnect() noexcept;
+
+		void runVoice() noexcept;
 
 		void onClosed() noexcept;
 

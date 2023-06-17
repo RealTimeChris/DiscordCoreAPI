@@ -22,8 +22,8 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<BaseFunction> create() {
-			return std::make_unique<SetMusicChannel>();
+		DiscordCoreAPI::UniquePtr<BaseFunction> create() {
+			return DiscordCoreAPI::makeUnique<SetMusicChannel>();
 		}
 
 		void execute(BaseFunctionArguments& newArgs) {

@@ -91,7 +91,6 @@ namespace DiscordCoreInternal {
 
 namespace DiscordCoreAPI {
 
-
 	BotUser::BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* baseSocketAgentNew) : User(dataPackage) {
 		baseSocketAgent = baseSocketAgentNew;
 	}
@@ -130,8 +129,9 @@ namespace DiscordCoreAPI {
 		if (baseSocketAgent) {
 			DiscordCoreInternal::EtfSerializer serializer{};
 			std::string string{};
-			uint32_t shardId = (dataPackage.guildId.operator uint64_t() >> 22) % baseSocketAgent->configManager->getTotalShardCount();
-			uint32_t basesocketAgentIndex{ shardId % baseSocketAgent->configManager->getTotalShardCount() };
+			uint32_t shardId =
+				(dataPackage.guildId.operator uint64_t() >> 22) % baseSocketAgent->discordCoreClient->configManager.getTotalShardCount();
+			uint32_t basesocketAgentIndex{ shardId % baseSocketAgent->discordCoreClient->configManager.getTotalShardCount() };
 			if (dataPackage.channelId == 0) {
 				DiscordCoreInternal::WebSocketMessageData<UpdateVoiceStateDataDC> data{ dataPackage };
 				if (static_cast<DiscordCoreInternal::WebSocketOpCode>(
@@ -141,7 +141,6 @@ namespace DiscordCoreAPI {
 					serializer.refreshString();
 					string = serializer.operator std::string();
 				} else {
-					Jsonifier::JsonifierCore parser{};
 					parser.serializeJson(data, string);
 				}
 			} else {
@@ -153,7 +152,6 @@ namespace DiscordCoreAPI {
 					serializer.refreshString();
 					string = serializer.operator std::string();
 				} else {
-					Jsonifier::JsonifierCore parser{};
 					parser.serializeJson(data, string);
 				}
 			}
@@ -175,7 +173,6 @@ namespace DiscordCoreAPI {
 				serializer.refreshString();
 				string = serializer.operator std::string();
 			} else {
-				Jsonifier::JsonifierCore parser{};
 				parser.serializeJson(dataPackage, string);
 			}
 			baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).createHeader(string,
@@ -194,10 +191,9 @@ namespace DiscordCoreAPI {
 		co_await NewThreadAwaitable<void>();
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Put;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
-		Jsonifier::JsonifierCore parser{};
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Users::addRecipientToGroupDMAsync()";
-		Users::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Users::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
 		co_return;
 	}
 
@@ -207,7 +203,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Delete;
 		workload.relativePath = "/channels/" + dataPackage.channelId + "/recipients/" + dataPackage.userId;
 		workload.callStack = "Users::removeRecipientToGroupDMAsync()";
-		Users::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Users::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
 		co_return;
 	}
 
@@ -217,7 +213,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/@me";
 		workload.callStack = "Users::modifyCurrentUserVoiceStateAsync()";
-		Users::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Users::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
 		co_return;
 	}
 
@@ -227,7 +223,7 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/guilds/" + dataPackage.guildId + "/voice-states/" + dataPackage.userId;
 		workload.callStack = "Users::modifyUserVoiceStateAsync()";
-		Users::httpsClient->submitWorkloadAndGetResult<void>(workload);
+		Users::httpsClient->submitWorkloadAndGetResult<void>(std::move(workload));
 		co_return;
 	}
 
@@ -238,7 +234,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/users/@me";
 		workload.callStack = "Users::getCurrentUserAsync()";
 		User returnData{};
-		Users::httpsClient->submitWorkloadAndGetResult<UserData>(workload, returnData);
+		Users::httpsClient->submitWorkloadAndGetResult<UserData>(std::move(workload), returnData);
 		co_return Users::insertUser(std::move(returnData));
 	}
 
@@ -259,13 +255,13 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/users/" + dataPackage.userId;
 		workload.callStack = "Users::getUserAsync()";
 		User data{};
-		Users::httpsClient->submitWorkloadAndGetResult<User>(workload, data);
+		Users::httpsClient->submitWorkloadAndGetResult<User>(std::move(workload), data);
 		if (Users::cache.contains(dataPackage.userId)) {
 			data = Users::cache.find(dataPackage.userId);
 		} else {
 			Users::insertUser(std::move(data));
 		}
-		co_return data;
+		co_return std::move(data);
 	}
 
 	CoRoutine<User> Users::modifyCurrentUserAsync(ModifyCurrentUserData dataPackage) {
@@ -274,11 +270,10 @@ namespace DiscordCoreAPI {
 		workload.workloadClass = DiscordCoreInternal::HttpsWorkloadClass::Patch;
 		workload.relativePath = "/users/@me";
 		workload.callStack = "Users::modifyCurrentUserAsync()";
-		Jsonifier::JsonifierCore parser{};
 		parser.serializeJson(dataPackage, workload.content);
 		User returnData{};
-		Users::httpsClient->submitWorkloadAndGetResult<User>(workload, returnData);
-		co_return returnData;
+		Users::httpsClient->submitWorkloadAndGetResult<User>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<ConnectionDataVector> Users::getUserConnectionsAsync() {
@@ -288,8 +283,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/users/@me/connections";
 		workload.callStack = "Users::getUserConnectionsAsync()";
 		ConnectionDataVector returnData{};
-		Users::httpsClient->submitWorkloadAndGetResult<ConnectionDataVector>(workload, returnData);
-		co_return returnData;
+		Users::httpsClient->submitWorkloadAndGetResult<ConnectionDataVector>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<ApplicationData> Users::getCurrentUserApplicationInfoAsync() {
@@ -299,8 +294,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/oauth2/applications/@me";
 		workload.callStack = "Users::getApplicationDataAsync()";
 		ApplicationData returnData{};
-		Users::httpsClient->submitWorkloadAndGetResult<ApplicationData>(workload, returnData);
-		co_return returnData;
+		Users::httpsClient->submitWorkloadAndGetResult<ApplicationData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	CoRoutine<AuthorizationInfoData> Users::getCurrentUserAuthorizationInfoAsync() {
@@ -310,8 +305,8 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/oauth2/@me";
 		workload.callStack = "Users::getCurrentUserAuthorizationInfoAsync()";
 		AuthorizationInfoData returnData{};
-		Users::httpsClient->submitWorkloadAndGetResult<AuthorizationInfoData>(workload, returnData);
-		co_return returnData;
+		Users::httpsClient->submitWorkloadAndGetResult<AuthorizationInfoData>(std::move(workload), returnData);
+		co_return std::move(returnData);
 	}
 
 	bool Users::doWeCacheUsers() {
@@ -320,7 +315,7 @@ namespace DiscordCoreAPI {
 
 	UserData& Users::insertUser(UserData&& user) {
 		if (user.id == 0) {
-			throw DCAException{ "Sorry, but there was no id set for that user." };
+			throw DCAException{ "Sorry, but there was no id set for that user.", std::source_location::current() };
 		}
 		auto id = user.id;
 		Users::cache.emplace(UserData{ std::move(user) });

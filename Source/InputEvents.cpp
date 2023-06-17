@@ -52,13 +52,13 @@ namespace DiscordCoreAPI {
 				dataPackage.type == InputEventResponseType::Edit_Follow_Up_Message) {
 				newEvent.responseType = InputEventResponseType::Edit_Follow_Up_Message;
 			}
-			co_return newEvent;
+			co_return std::move(newEvent);
 		} else if (dataPackage.eventType == InteractionType::Application_Command_Autocomplete) {
 			CreateInteractionResponseData dataPackage02{ dataPackage };
 			dataPackage02.type = InteractionCallbackType::Application_Command_Autocomplete_Result;
 			InputEventData newEvent = InputEvents::respondToInputEvent(dataPackage02);
 			newEvent.responseType = InputEventResponseType::Application_Command_AutoComplete_Result;
-			co_return newEvent;
+			co_return std::move(newEvent);
 		}
 		switch (dataPackage.type) {
 			case InputEventResponseType::Ephemeral_Deferred_Response: {
@@ -130,7 +130,7 @@ namespace DiscordCoreAPI {
 	InputEventData InputEvents::respondToInputEvent(CreateDeferredInteractionResponseData& dataPackage) {
 		dataPackage.generateExcludedKeys();
 		CreateInteractionResponseData dataPackageNew{ dataPackage };
-		auto result = Interactions::createInteractionResponseAsync(dataPackageNew).get();
+		auto result = Interactions::createInteractionResponse(dataPackageNew);
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Deferred_Response;
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
@@ -144,7 +144,7 @@ namespace DiscordCoreAPI {
 
 	InputEventData InputEvents::respondToInputEvent(CreateInteractionResponseData& dataPackage) {
 		dataPackage.generateExcludedKeys();
-		Message messageData = Interactions::createInteractionResponseAsync(dataPackage).get();
+		Message messageData = Interactions::createInteractionResponse(dataPackage);
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Interaction_Response;
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
@@ -158,7 +158,7 @@ namespace DiscordCoreAPI {
 
 	InputEventData InputEvents::respondToInputEvent(EditInteractionResponseData& dataPackage) {
 		dataPackage.generateExcludedKeys();
-		Message messageData = Interactions::editInteractionResponseAsync(dataPackage).get();
+		Message messageData = Interactions::editInteractionResponse(dataPackage);
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Edit_Interaction_Response;
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
@@ -172,7 +172,7 @@ namespace DiscordCoreAPI {
 
 	InputEventData InputEvents::respondToInputEvent(CreateFollowUpMessageData& dataPackage) {
 		dataPackage.generateExcludedKeys();
-		Message messageData = Interactions::createFollowUpMessageAsync(dataPackage).get();
+		Message messageData = Interactions::createFollowUpMessage(dataPackage);
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Follow_Up_Message;
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 	}
 
 	InputEventData InputEvents::respondToInputEvent(EditFollowUpMessageData& dataPackage) {
-		Message messageData = Interactions::editFollowUpMessageAsync(dataPackage).get();
+		Message messageData = Interactions::editFollowUpMessage(dataPackage);
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Edit_Follow_Up_Message;
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
@@ -200,7 +200,7 @@ namespace DiscordCoreAPI {
 	InputEventData InputEvents::respondToInputEvent(CreateEphemeralInteractionResponseData& dataPackage) {
 		dataPackage.generateExcludedKeys();
 		CreateInteractionResponseData dataPackageNew{ dataPackage };
-		Message messageData = Interactions::createInteractionResponseAsync(dataPackageNew).get();
+		Message messageData = Interactions::createInteractionResponse(dataPackageNew);
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Ephemeral_Interaction_Response;
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;
@@ -214,7 +214,7 @@ namespace DiscordCoreAPI {
 
 	InputEventData InputEvents::respondToInputEvent(CreateEphemeralFollowUpMessageData& dataPackage) {
 		CreateFollowUpMessageData dataPackageNew{ dataPackage };
-		Message messageData = Interactions::createFollowUpMessageAsync(dataPackageNew).get();
+		Message messageData = Interactions::createFollowUpMessage(dataPackageNew);
 		InputEventData dataPackageNewer{};
 		dataPackageNewer.responseType = InputEventResponseType::Ephemeral_Follow_Up_Message;
 		dataPackageNewer.interactionData->applicationId = dataPackage.interactionPackage.applicationId;

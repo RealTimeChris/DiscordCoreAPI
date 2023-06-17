@@ -4,8 +4,8 @@
 ![Commit Activity](https://img.shields.io/github/commit-activity/y/realtimechris/discordcoreapi?color=green&label=Commits&style=plastic)
 ![Lines of code](https://img.shields.io/tokei/lines/github/realtimechris/discordcoreapi?&style=plastic&label=Lines%20of%20Code)
 
-Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L394),
-[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L420), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L285) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
+Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in C++, that leverages custom asynchronous [CoRoutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp), as well as a home-brew set of [Https](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L369),
+[WebSocket](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/WebSocketEntities.cpp#L414), and [Datagram](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/VoiceConnection.cpp#L285) socket clients - all to deliver the utmost performance and efficiency for your bot. It uses roughly 0.1% of an Intel i7 9750h CPU to stream audio in high quality (Opus @ 48Khz, 16-bit) to a single server.
 
 ![imageDiscordCoreAPI](./TheLogo.png "A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.")
 
@@ -15,7 +15,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 ![CLANG_17](https://img.shields.io/github/actions/workflow/status/RealTimeChris/DiscordCoreAPI/CLANG_17.yml?color=00ff90&label=CLANG_17)
 
 # Documentation/Examples
-\subpage Examples
+[Documentation/Examples](https://discordcoreapi.com/d8/dad/a08642.html)
 
 # Discord Server
 [This is a link to the Discord server!](https://discord.gg/adgMqeBuhP)
@@ -26,7 +26,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 # Features   
 
 ## Performant
-- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Etf.cpp) for websocket transfer, and a pool of [kept-alive HTTPS connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/Https.cpp#L369-L382) - this library offers the snappiest responses to your interactions and user input.
+- Thanks to utilizing [Erlang Text Format](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/Etf.hpp) for websocket transfer, and a pool of [kept-alive HTTPS connections](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Https.hpp#L141) - this library offers the snappiest responses to your interactions and user input.
 
 ## Audio-Bridge
 - Connect multiple voice-channels to one-another using the `DiscordCoreAPI::StreamInfo` member of the `DiscordCoreAPI::VoiceConnectInitData` structure, with the `DiscordCoreAPI::VoiceConnection` class.
@@ -38,7 +38,7 @@ Hello, and welcome to DiscordCoreAPI! This is a Discord bot library, written in 
 - All of the Discord API endpoints are covered in this library, including voice communication.
 
 ## Concurrent Discord API Access   
-- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp) along with a [thread pool](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Source/ThreadPool.cpp#LL76C1-L76C1), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.  
+- As a result of using [custom asynchronous coroutines](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/CoRoutine.hpp) along with a [thread pool](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/Include/discordcoreapi/Utilities/ThreadPool.hpp#L146), this library has the ability to make fully    asynchronous/concurrent requests to the Discord API.  
 
 ## Advanced Rate-Limiting System
 - Guarantees that the order in which HTTPS requests are executed is the same that they were submitted in - despite being launched across different threads, while never infracting on any of the Discord API's rate-limits and while running concurrently across all of the endpoints.
@@ -114,10 +114,8 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 # Build Instructions (Non-Vcpkg) - The Library   
 - Install the [dependencies](https://github.com/RealTimeChris/DiscordCoreAPI/blob/main/ReadMe.md#dependencies).   
 - Clone [this](https://github.com/RealTimeChris/DiscordCoreAPI) git repository into a folder.   
-- Set, in CMakeLists.txt, the `_VCPKG_ROOT_DIR`, or the `FFMPEG_DIR`, `Opus_DIR`, `simdjson_DIR`, and `unofficial-sodium_DIR` paths to wherever each of the respective dependency files are located and they are as follows:   
-	- FFMPEG_DIR # Set this one to the folder location of the file "FindFFMPEG.cmake".   
+- Set, in CMakeLists.txt, the `_VCPKG_ROOT_DIR`, or the `Opus_DIR`, `unofficial-sodium_DIR` paths to wherever each of the respective dependency files are located and they are as follows:     
 	- Opus_DIR # Set this one to the folder location of the file "OpusConfig.cmake".   
-	- simdjson_DIR # Set this one to the folder location of the file "simdjson-config.cmake".   
 	- unofficial-sodium_DIR # Set this one to the folder location of the file "unofficial-sodiumConfig.cmake".   
 	- OPENSSL_ROOT_DIR # Set this one to the folder location of the include folder and library folders of OpenSSL.   
 - Open a terminal inside the git repo's folder.   
@@ -130,14 +128,12 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 - By running `cmake --install ./Build/Debug_OR_Release`, you will be given a cmake package, which can be used to build from this library, using other cmake projects.
 - It is used by setting `DiscordCoreAPI_DIR` to wherever the DiscordCoreAPIConfig.cmake file would have been installed on your system by having run the `cmake --install` command, and then using `find_package()` on `DiscordCoreAPI`.
 - When found, you will be granted the following cmake "variables"; `DiscordCoreAPI::DiscordCoreAPI` - this is the library target which can be linked to from other targets in cmake, and on Windows; `$<TARGET_RUNTIME_DLLS:DiscordCoreAPI-Bot>` - which is a list of dll files to be copied into your executable's final location after building. As well as `RELEASE_PDB_FILE_PATH`, `DEBUG_PDB_FILE_PATH`, `RELEASE_PDB_FILE_NAME`, and `DEBUG_PDB_FILE_NAME`, which are full file/directory paths/filenames to the library's PDB files.
-- [Here](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/CMakeLists.txt) and [here](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/Executable/CMakeLists.txt) is an example of building an executable from this library with this method.
+- [Here](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/CMakeLists.txt) is an example of building an executable from this library with this method.
 
 # Build Instructions (Non-Vcpkg) - The Executable
-- Download the [bot template](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI) or create your own with the same [imports](https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI/blob/main/CMakeLists.txt#L49), and set within it either the `VCPKG_ROOT_DIR`, or the `CMAKE_CONFIG_FILE_DIR`, `FFMPEG_DIR`, `Opus_DIR`, `simdjson_DIR`, and `unofficial-sodium_DIR` paths to wherever each of the respective dependency files are located and they are as follows:   
-	- CMAKE_CONFIG_FILE_DIR # Set this one to the folder location of the DiscordCoreAPIConfig.cmake generated while running CMake --install.   
-	- FFMPEG_DIR # Set this one to the folder location of the file "FindFFMPEG.cmake".   
+- Download the [bot template](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI) or create your own with the same [imports](https://github.com/RealTimeChris/Bot-Template-For-DiscordCoreAPI/blob/main/CMakeLists.txt#L49), and set within it either the `VCPKG_ROOT_DIR`, or the `CMAKE_CONFIG_FILE_DIR`, `Opus_DIR`, and `unofficial-sodium_DIR` paths to wherever each of the respective dependency files are located and they are as follows:   
+	- CMAKE_CONFIG_FILE_DIR # Set this one to the folder location of the DiscordCoreAPIConfig.cmake generated while running CMake --install.  
 	- Opus_DIR # Set this one to the folder location of the file "OpusConfig.cmake".   
-	- simdjson_DIR # Set this one to the folder location of the file "simdjson-config.cmake".   
 	- unofficial-sodium_DIR # Set this one to the folder location of the file "unofficial-sodiumConfig.cmake".   
 	- OPENSSL_ROOT_DIR # Set this one to the folder location of the include folder and library folders of OpenSSL.   
 - Set up a main.cpp like [this one](https://github.com/RealTimeChris/Bot-Template-for-DiscordCoreAPI/blob/main/main.cpp), including the header `discordcoreapi/Index.hpp`.
@@ -145,9 +141,3 @@ DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(newEvent, 20000).get(
 - Then run `cmake --build --preset Linux_OR_Windows-Debug_OR_Release`.
 - Run within the same terminal and folder `cmake --install ./Build/Debug_OR_Release`.
 - The default installation paths are: Windows = "ROOT_DRIVE:/Users/USERNAME/CMake/Bot-Template-For-DiscordCoreAPI", Linux = "/home/USERNAME/CMake/Bot-Template-For-DiscordCoreAPI"
-	
-# Roadmap
-I am currently working on getting this thing to be used by people like you! So, if you have any suggestions for the library that would make it more usable - don't hesitate to let me know! I can be
-easily found on the Discord server that is linked to above! Cheers and thanks for your time.
-
-- \subpage Guides

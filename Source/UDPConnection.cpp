@@ -23,28 +23,30 @@
 /// https://discordcoreapi.com
 /// \file UDPConnection.cpp
 
-#include <discordcoreapi/TCPConnection.hpp>
 #include <discordcoreapi/UDPConnection.hpp>
+#include <discordcoreapi/TCPConnection.hpp>
 #include <discordcoreapi/WebSocketEntities.hpp>
-
-#ifdef _WIN32
-	#ifdef errno
-		#undef errno
-		#define errno WSAGetLastError()
-	#endif
-	#ifdef EWOULDBLOCK
-		#undef EWOULDBLOCK
-		#define EWOULDBLOCK WSAEWOULDBLOCK
-	#endif
-	#define close closesocket
-	#define SHUT_RDWR SD_BOTH
-#endif
 
 namespace DiscordCoreInternal {
 
-	UDPConnection::UDPConnection(const std::string& baseUrlNew, uint16_t portNew, DiscordCoreAPI::StreamType streamTypeNew, bool doWePrintErrorsNew,
-		std::stop_token token) {
-		doWePrintErrors = doWePrintErrorsNew;
+	UDPConnection& UDPConnection::operator=(UDPConnection&& other) noexcept {
+		this->outputBuffer = std::move(other.outputBuffer);
+		this->inputBuffer = std::move(other.inputBuffer);
+		this->currentStatus = other.currentStatus;
+		this->address = std::move(other.address);
+		this->baseUrl = std::move(other.baseUrl);
+		this->socket = std::move(other.socket);
+		this->streamType = other.streamType;
+		this->bytesRead = other.bytesRead;
+		this->port = other.port;
+		return *this;
+	};
+
+	UDPConnection::UDPConnection(UDPConnection&& other) noexcept {
+		*this = std::move(other);
+	};
+
+	UDPConnection::UDPConnection(const std::string& baseUrlNew, uint16_t portNew, DiscordCoreAPI::StreamType streamTypeNew, std::stop_token token) {
 		streamType = streamTypeNew;
 		baseUrl = baseUrlNew;
 		port = portNew;
@@ -53,36 +55,63 @@ namespace DiscordCoreInternal {
 		hints->ai_socktype = SOCK_DGRAM;
 		hints->ai_protocol = IPPROTO_UDP;
 
-		if (socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); socket == INVALID_SOCKET) {
-			throw DiscordCoreAPI::DCAException{ reportError("UDPConnection::connect::socket(), to: " + baseUrlNew) };
+		if (socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); socket.operator SOCKET() == INVALID_SOCKET) {
+			Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(reportError("UDPConnection::connect::socket(), to: " + baseUrlNew));
+			currentStatus = ConnectionStatus::CONNECTION_Error;
+			socket = INVALID_SOCKET;
+			return;
 		}
 
-		std::unique_ptr<char> optVal{ std::make_unique<char>(1) };
+		DiscordCoreAPI::UniquePtr<char> optVal{ DiscordCoreAPI::makeUnique<char>(static_cast<char>(1)) };
 		if (auto returnData = setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, optVal.get(), sizeof(optVal)); returnData < 0) {
-			throw DiscordCoreAPI::DCAException{ reportError("UDPConnection::connect::setsockopt(), to: " + baseUrlNew) };
+			Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+				reportError("UDPConnection::connect::setsockopt(), to: " + baseUrlNew));
+			currentStatus = ConnectionStatus::CONNECTION_Error;
+			socket = INVALID_SOCKET;
+			return;
 		}
 
 #ifdef _WIN32
 		u_long value02{ 1 };
 		if (ioctlsocket(socket, FIONBIO, &value02)) {
-			throw DiscordCoreAPI::DCAException{ reportError("UDPConnection::connect::ioctlsocket(), to: " + baseUrlNew) };
+			Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+				reportError("UDPConnection::connect::ioctlsocket(), to: " + baseUrlNew));
+			currentStatus = ConnectionStatus::CONNECTION_Error;
+			socket = INVALID_SOCKET;
+			return;
 		}
 #else
 		if (fcntl(socket, F_SETFL, fcntl(socket, F_GETFL, 0) | O_NONBLOCK)) {
-			throw DiscordCoreAPI::DCAException{ reportError("UDPConnection::connect::ioctlsocket(), to: " + baseUrlNew) };
+			Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+				reportError("UDPConnection::connect::ioctlsocket(), to: " + baseUrlNew));
+			currentStatus = ConnectionStatus::CONNECTION_Error;
+			socket = INVALID_SOCKET;
+			return;
 		}
 #endif
 
 		if (streamType == DiscordCoreAPI::StreamType::None) {
 			if (getaddrinfo(baseUrlNew.c_str(), std::to_string(portNew).c_str(), hints, address)) {
-				throw DiscordCoreAPI::DCAException{ reportError("UDPConnection::connect::getaddrinfo(), to: " + baseUrlNew) };
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportError("UDPConnection::connect::getaddrinfo(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				return;
 			}
 			if (::connect(socket, address->ai_addr, static_cast<uint32_t>(address->ai_addrlen)) == SOCKET_ERROR) {
-				throw DiscordCoreAPI::DCAException{ reportError("UDPConnection::connect::connect(), to: " + baseUrlNew) };
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportError("UDPConnection::connect::connect(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				return;
 			}
 		} else if (streamType == DiscordCoreAPI::StreamType::Client) {
 			if (getaddrinfo(baseUrlNew.c_str(), std::to_string(portNew).c_str(), hints, address)) {
-				throw DiscordCoreAPI::DCAException{ reportError("UDPConnection::connect::getaddrinfo(), to: " + baseUrlNew) };
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportError("UDPConnection::connect::getaddrinfo(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				return;
 			}
 			std::string connectionString{ "connecting" };
 			int32_t result{};
@@ -100,10 +129,18 @@ namespace DiscordCoreInternal {
 		} else {
 			hints->ai_flags = AI_PASSIVE;
 			if (getaddrinfo(nullptr, std::to_string(portNew).c_str(), hints, address)) {
-				throw DiscordCoreAPI::DCAException{ reportError("UDPConnection::connect::getaddrinfo(), to: " + baseUrlNew) };
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportError("UDPConnection::connect::getaddrinfo(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				return;
 			}
 			if (auto result = bind(socket, address->ai_addr, static_cast<int32_t>(address->ai_addrlen)); result != 0) {
-				throw DiscordCoreAPI::DCAException{ reportError("UDPConnection::connect::bind(), to: " + baseUrlNew) };
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportError("UDPConnection::connect::bind(), to: " + baseUrlNew));
+				currentStatus = ConnectionStatus::CONNECTION_Error;
+				socket = INVALID_SOCKET;
+				return;
 			}
 			std::string connectionString{};
 			int32_t result{};
@@ -123,37 +160,61 @@ namespace DiscordCoreInternal {
 		}
 	}
 
-	void UDPConnection::processIO() {
+	ConnectionStatus UDPConnection::processIO() noexcept {
+		if (!areWeStillConnected()) {
+			return currentStatus;
+		};
 		pollfd readWriteSet{ .fd = static_cast<SOCKET>(socket) };
 		if (outputBuffer.getUsedSpace() > 0) {
 			readWriteSet.events = POLLIN | POLLOUT;
 		} else {
 			readWriteSet.events = POLLIN;
 		}
-		if (auto returnData = poll(&readWriteSet, 1, 0); returnData == SOCKET_ERROR) {
-			throw DiscordCoreAPI::DCAException{ reportSSLError("UDPConnection::processIO()") };
-		} else if (returnData == 0) {
-			return;
+		if (auto returnValue = poll(&readWriteSet, 1, 0); returnValue == SOCKET_ERROR) {
+			Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+				reportSSLError("UDPConnection::processIO() 00") + reportError("UDPConnection::processIO() 00"));
+			currentStatus = ConnectionStatus::SOCKET_Error;
+			socket = INVALID_SOCKET;
+			return currentStatus;
+		} else if (returnValue == 0) {
+			return currentStatus;
 		} else {
-			if (readWriteSet.revents & POLLERR || readWriteSet.revents & POLLHUP || readWriteSet.revents & POLLNVAL) {
-				throw DiscordCoreAPI::DCAException{ reportSSLError("UDPConnection::processIO()") };
+			if (readWriteSet.revents & POLLOUT) {
+				if (!processWriteData()) {
+					Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+						reportSSLError("UDPConnection::processIO() 01") + reportError("UDPConnection::processIO() 01"));
+					currentStatus = ConnectionStatus::WRITE_Error;
+					socket = INVALID_SOCKET;
+					return currentStatus;
+				}
 			}
 			if (readWriteSet.revents & POLLIN) {
 				if (!processReadData()) {
-					throw DiscordCoreAPI::DCAException{ reportSSLError("UDPConnection::processIO()") };
-				} else {
-					if (!doWePrintErrors) {
-						handleAudioBuffer();
-					}
+					Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+						reportSSLError("UDPConnection::processIO() 02") + reportError("UDPConnection::processIO() 02"));
+					currentStatus = ConnectionStatus::READ_Error;
+					socket = INVALID_SOCKET;
+					return currentStatus;
 				}
 			}
-			if (readWriteSet.revents & POLLOUT) {
-				if (!processWriteData()) {
-					throw DiscordCoreAPI::DCAException{ reportSSLError("UDPConnection::processIO()") };
-				}
+			if (readWriteSet.revents & POLLERR) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportSSLError("UDPConnection::processIO() 03") + reportError("UDPConnection::processIO() 03"));
+				currentStatus = ConnectionStatus::POLLERR_Error;
+				socket = INVALID_SOCKET;
+			}
+			if (readWriteSet.revents & POLLNVAL) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(
+					reportSSLError("UDPConnection::processIO() 04") + reportError("UDPConnection::processIO() 04"));
+				currentStatus = ConnectionStatus::POLLNVAL_Error;
+				socket = INVALID_SOCKET;
+			}
+			if (readWriteSet.revents & POLLHUP) {
+				currentStatus = ConnectionStatus::POLLHUP_Error;
+				socket = INVALID_SOCKET;
 			}
 		}
-		return;
+		return currentStatus;
 	}
 
 	void UDPConnection::writeData(std::basic_string_view<uint8_t> dataToWrite) {
@@ -166,7 +227,7 @@ namespace DiscordCoreInternal {
 				} else {
 					amountToCollect = dataToWrite.size();
 				}
-				outputBuffer.writeData({ dataToWrite.data(), amountToCollect });
+				outputBuffer.writeData(dataToWrite.data(), amountToCollect);
 				dataToWrite = std::basic_string_view{ dataToWrite.data() + amountToCollect, dataToWrite.size() - amountToCollect };
 				remainingBytes = dataToWrite.size();
 			}
@@ -225,10 +286,8 @@ namespace DiscordCoreInternal {
 			writeData(std::basic_string_view<uint8_t>{ reinterpret_cast<const uint8_t*>("goodbye") });
 			try {
 				processIO();
-			} catch (...) {
-				if (doWePrintErrors) {
-					DiscordCoreAPI::reportException("UDPConnection::disconnect()");
-				}
+			} catch (const DiscordCoreAPI::DCAException& error) {
+				Globals::MessagePrinter::printError<Globals::MessageType::WebSocket>(error.what());
 			}
 		}
 		socket = INVALID_SOCKET;

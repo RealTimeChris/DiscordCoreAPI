@@ -31,11 +31,16 @@
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll UDPConnection {
+	class UDPConnection {
 	  public:
 		friend class DiscordCoreAPI::VoiceConnection;
 
-		UDPConnection(const std::string& baseUrlNew, uint16_t portNew, DiscordCoreAPI::StreamType streamType, bool doWePrintErrors,
+		UDPConnection() noexcept = default;
+
+		UDPConnection& operator=(UDPConnection&& other) noexcept;
+		UDPConnection(UDPConnection&& other) noexcept;
+
+		UDPConnection(const std::string& baseUrlNew, uint16_t portNew, DiscordCoreAPI::StreamType streamType,
 			std::stop_token token = std::stop_token{});
 
 		void writeData(std::basic_string_view<uint8_t> dataToWrite);
@@ -43,6 +48,8 @@ namespace DiscordCoreInternal {
 		std::basic_string_view<uint8_t> getInputBuffer() noexcept;
 
 		virtual void handleAudioBuffer() noexcept = 0;
+
+		ConnectionStatus processIO() noexcept;
 
 		bool areWeStillConnected() noexcept;
 
@@ -52,8 +59,6 @@ namespace DiscordCoreInternal {
 
 		bool processReadData();
 
-		void processIO();
-
 		~UDPConnection() noexcept;
 
 	  protected:
@@ -61,8 +66,8 @@ namespace DiscordCoreInternal {
 		DiscordCoreAPI::StreamType streamType{};
 		RingBuffer<uint8_t, 16> outputBuffer{};
 		RingBuffer<uint8_t, 16> inputBuffer{};
+		ConnectionStatus currentStatus{};
 		addrinfoWrapper address{};
-		bool doWePrintErrors{};
 		SOCKETWrapper socket{};
 		std::string baseUrl{};
 		int64_t bytesRead{};

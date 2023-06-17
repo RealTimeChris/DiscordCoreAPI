@@ -28,25 +28,25 @@
 namespace DiscordCoreAPI {
 
 	namespace Globals {
-		std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>> functions{};
+		std::map<std::vector<std::string>, UniquePtr<BaseFunction>> functions{};
 	}
 
 	CommandController::CommandController(DiscordCoreClient* discordCoreClientNew) {
 		discordCoreClient = discordCoreClientNew;
 	}
 
-	void CommandController::registerFunction(const std::vector<std::string>& functionNames, std::unique_ptr<BaseFunction> baseFunction) {
+	void CommandController::registerFunction(const std::vector<std::string>& functionNames, UniquePtr<BaseFunction> baseFunction) {
 		Globals::functions[functionNames] = std::move(baseFunction);
 	}
 
-	std::map<std::vector<std::string>, std::unique_ptr<BaseFunction>>& CommandController::getFunctions() {
+	std::map<std::vector<std::string>, UniquePtr<BaseFunction>>& CommandController::getFunctions() {
 		return Globals::functions;
 	};
 
 	CoRoutine<void> CommandController::checkForAndRunCommand(CommandData commandData) {
 		co_await NewThreadAwaitable<void>();
 		BaseFunctionArguments theArgsNew{ commandData, discordCoreClient };
-		std::unique_ptr<BaseFunction> functionPointer{ getCommand(convertToLowerCase(commandData.getCommandName())) };
+		UniquePtr<BaseFunction> functionPointer{ getCommand(convertToLowerCase(commandData.getCommandName())) };
 		if (!functionPointer.get()) {
 			co_return;
 		}
@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		co_return;
 	}
 
-	std::unique_ptr<BaseFunction> CommandController::getCommand(const std::string& commandName) {
+	UniquePtr<BaseFunction> CommandController::getCommand(const std::string& commandName) {
 		std::string functionName{};
 		bool isItFound{};
 		if (commandName.size() > 0) {
@@ -70,13 +70,13 @@ namespace DiscordCoreAPI {
 			}
 		}
 		if (isItFound) {
-			std::unique_ptr<BaseFunction> newValue = createFunction(functionName);
+			UniquePtr<BaseFunction> newValue = createFunction(functionName);
 			return newValue;
 		}
 		return nullptr;
 	}
 
-	std::unique_ptr<BaseFunction> CommandController::createFunction(const std::string& functionName) {
+	UniquePtr<BaseFunction> CommandController::createFunction(const std::string& functionName) {
 		for (auto& [key01, value01]: Globals::functions) {
 			for (auto& value02: key01) {
 				if (functionName == value02) {

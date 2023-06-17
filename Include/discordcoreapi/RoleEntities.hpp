@@ -79,8 +79,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For updating the Role positions.
 	struct DiscordCoreAPI_Dll ModifyGuildRolePositionsData {
-		friend struct Jsonifier::Core<ModifyGuildRolePositionsData>;
-		friend class Roles;
+		friend struct DiscordCoreAPI_Dll Jsonifier::Core<ModifyGuildRolePositionsData>;
+		friend class DiscordCoreAPI_Dll Roles;
 
 		int32_t newPosition{};///< The new position of the Role.
 		std::string reason{};///< Reason for modifying the Role positions.
@@ -133,11 +133,11 @@ namespace DiscordCoreAPI {
 	/// \brief An interface class for the Role related Discord endpoints.
 	class DiscordCoreAPI_Dll Roles {
 	  public:
-		friend class DiscordCoreInternal::WebSocketClient;
-		friend class DiscordCoreClient;
-		friend class RoleData;
-		friend class GuildData;
-		friend class Guild;
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::WebSocketClient;
+		friend class DiscordCoreAPI_Dll DiscordCoreClient;
+		friend class DiscordCoreAPI_Dll RoleData;
+		friend class DiscordCoreAPI_Dll GuildData;
+		friend class DiscordCoreAPI_Dll Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
@@ -154,7 +154,7 @@ namespace DiscordCoreAPI {
 		/// \brief Collects the Roles that a Guild has.
 		/// \param dataPackage A GetGuildRolesData structure.
 		/// \returns A CoRoutine containing a RoleVector.
-		static CoRoutine<std::vector<Role>> getGuildRolesAsync(GetGuildRolesData dataPackage);
+		static CoRoutine<RoleVector> getGuildRolesAsync(GetGuildRolesData dataPackage);
 
 		/// \brief Creates a new Role within the given Guild.
 		/// \param dataPackage A CreateGuildRoleData structure.
@@ -164,7 +164,7 @@ namespace DiscordCoreAPI {
 		/// \brief Updates a Role's positions.
 		/// \param dataPackage A ModifyGuildRolePositionsData structure.
 		/// \returns A CoRoutine containing a RoleVector.
-		static CoRoutine<std::vector<Role>> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
+		static CoRoutine<RoleVector> modifyGuildRolePositionsAsync(ModifyGuildRolePositionsData dataPackage);
 
 		/// \brief Updates a given Role's properties.
 		/// \param dataPackage A ModifyGuildRoleData structure.
@@ -179,7 +179,7 @@ namespace DiscordCoreAPI {
 		/// \brief Collects the Roles that a GuildMember has.
 		/// \param dataPackage A GetGuildMemberRolesData structure.
 		/// \returns A CoRoutine containing a RoleVector.
-		static CoRoutine<std::vector<Role>> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
+		static CoRoutine<RoleVector> getGuildMemberRolesAsync(GetGuildMemberRolesData dataPackage);
 
 		/// \brief Collects a Role from the Discord servers.
 		/// \param dataPackage A GetRoleData structure.
@@ -198,7 +198,6 @@ namespace DiscordCoreAPI {
 		static bool doWeCacheRoles();
 
 	  protected:
-		inline static RoleData nullRole{ std::numeric_limits<uint64_t>::max() };
 		static DiscordCoreInternal::HttpsClient* httpsClient;
 		static ObjectCache<Snowflake, RoleData> cache;
 		static bool doWeCacheRolesBool;

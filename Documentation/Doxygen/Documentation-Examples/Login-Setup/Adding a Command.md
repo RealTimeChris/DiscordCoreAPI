@@ -1,7 +1,7 @@
 Adding a Command {#addingcommand}
 ============
 - First, create an instance of `DiscordCoreAPI::Discord
-`, and then use from it the `DiscordCoreAPI::DiscordCoreClient::registerFunction` function. Passing into it an instance of a `std::vector` of `std::string`, which will act as the command names to be triggering the commands, a `std::unique_ptr` containing a command function derived from the `DiscordCoreAPI::BaseFunction` class, and an instance of either `DiscordCoreAPI::CreateGlobalApplicationCommandData` or `DiscordCoreAPI::CreateGuildApplicationCommandData`.
+`, and then use from it the `DiscordCoreAPI::DiscordCoreClient::registerFunction` function. Passing into it an instance of a `std::vector` of `std::string`, which will act as the command names to be triggering the commands, a `DiscordCoreAPI::UniquePtr` containing a command function derived from the `DiscordCoreAPI::BaseFunction` class, and an instance of either `DiscordCoreAPI::CreateGlobalApplicationCommandData` or `DiscordCoreAPI::CreateGuildApplicationCommandData`.
 - Note that these functions will be registered with the Discord API if any of their properties change.
 
 ```cpp
@@ -24,7 +24,7 @@ int32_t main() {
 	clientConfig.presenceData.afk = false;
 	clientConfig.presenceData.since = 0;
 	clientConfig.presenceData.status = "online";
-	auto ptr = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
+	auto ptr = DiscordCoreAPI::makeUnique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
 	DiscordCoreAPI::CreateGlobalApplicationCommandData createBotInfoCommandData{};
 	createBotInfoCommandData.dmPermission = true;
 	createBotInfoCommandData.applicationId = ptr->getBotUser().id;
@@ -52,9 +52,9 @@ int32_t main() {
 	playCommandDataOptionOne.description = "The name of the song that you would like to search.";
 	playCommandDataOptionOne.required = false;
 	playCommandData.options.push_back(playCommandDataOptionOne);
-	ptr->registerFunction(std::vector<std::string>{ "play" }, std::make_unique<DiscordCoreAPI::Play>(), playCommandData);
-	ptr->registerFunction(std::vector<std::string>{ "botinfo" }, std::make_unique<DiscordCoreAPI::BotInfo>(), createBotInfoCommandData);
-	ptr->registerFunction(std::vector<std::string>{ "help" }, std::make_unique<DiscordCoreAPI::Help>(), createHelpData);
+	ptr->registerFunction(std::vector<std::string>{ "play" }, DiscordCoreAPI::makeUnique<DiscordCoreAPI::Play>(), playCommandData);
+	ptr->registerFunction(std::vector<std::string>{ "botinfo" }, DiscordCoreAPI::makeUnique<DiscordCoreAPI::BotInfo>(), createBotInfoCommandData);
+	ptr->registerFunction(std::vector<std::string>{ "help" }, DiscordCoreAPI::makeUnique<DiscordCoreAPI::Help>(), createHelpData);
 	ptr->runBot();
 	return 0;
 };

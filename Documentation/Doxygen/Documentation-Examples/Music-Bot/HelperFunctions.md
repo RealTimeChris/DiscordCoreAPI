@@ -10,13 +10,13 @@ Helper Functions {#HelperFunctions}
 		if (currentChannelType == ChannelType::DM) {
 			if (displayResponse) {
 				std::string msgString = "------\n**Sorry, but we can't do that in a direct message!**\n------";
-				std::unique_ptr<EmbedData> msgEmbed(std::make_unique<EmbedData>());
+				DiscordCoreAPI::UniquePtr<EmbedData> msgEmbed(DiscordCoreAPI::makeUnique<EmbedData>());
 				msgEmbed->setAuthor(eventData.getMessageData().interaction.user.userName, eventData.getMessageData().author.avatar);
 				msgEmbed->setColor("FEFEFE");
 				msgEmbed->setDescription(msgString);
 				msgEmbed->setTimeStamp(getTimeAndDate());
 				msgEmbed->setTitle("__**Direct Message Issue:**__");
-				std::unique_ptr<RespondToInputEventData> responseData(std::make_unique<RespondToInputEventData>(eventData));
+				DiscordCoreAPI::UniquePtr<RespondToInputEventData> responseData(DiscordCoreAPI::makeUnique<RespondToInputEventData>(eventData));
 				responseData->setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
 				responseData->addMessageEmbed(*msgEmbed);
 				auto event01 = InputEvents::respondToInputEventAsync(*responseData);
@@ -31,7 +31,7 @@ Helper Functions {#HelperFunctions}
 		if (discordGuild.data.musicChannelIds.size() > 0) {
 			isItFound = false;
 			std::string msgString = "------\n**Sorry, but please do that in one of the following channels:**\n------\n";
-			std::unique_ptr<EmbedData> msgEmbed(std::make_unique<EmbedData>());
+			DiscordCoreAPI::UniquePtr<EmbedData> msgEmbed(DiscordCoreAPI::makeUnique<EmbedData>());
 			for (auto& value: discordGuild.data.musicChannelIds) {
 				if (eventData.getChannelId() == value) {
 					isItFound = true;
@@ -46,7 +46,7 @@ Helper Functions {#HelperFunctions}
 				msgEmbed->setColor(discordGuild.data.borderColor);
 				msgEmbed->setDescription(msgString);
 				msgEmbed->setTitle("__**Permissions Issue:**__");
-				std::unique_ptr<RespondToInputEventData> replyMessageData(std::make_unique<RespondToInputEventData>(eventData));
+				DiscordCoreAPI::UniquePtr<RespondToInputEventData> replyMessageData(DiscordCoreAPI::makeUnique<RespondToInputEventData>(eventData));
 				replyMessageData->addMessageEmbed(*msgEmbed);
 				;
 				replyMessageData->setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
@@ -73,13 +73,13 @@ Helper Functions {#HelperFunctions}
 
 		if (!doWeHaveControl) {
 			std::string msgString = "------\n**Sorry, but you lack the permissions to do that!**\n------";
-			std::unique_ptr<EmbedData> msgEmbed(std::make_unique<EmbedData>());
+			DiscordCoreAPI::UniquePtr<EmbedData> msgEmbed(DiscordCoreAPI::makeUnique<EmbedData>());
 			msgEmbed->setAuthor(guildMember.user.userName, guildMember.user.avatar);
 			msgEmbed->setDescription(msgString);
 			msgEmbed->setColor(guildData.data.borderColor);
 			msgEmbed->setTimeStamp(getTimeAndDate());
 			msgEmbed->setTitle("Permissions Issue");
-			std::unique_ptr<RespondToInputEventData> dataPackage(std::make_unique<RespondToInputEventData>(eventData));
+			DiscordCoreAPI::UniquePtr<RespondToInputEventData> dataPackage(DiscordCoreAPI::makeUnique<RespondToInputEventData>(eventData));
 			dataPackage->addMessageEmbed(*msgEmbed);
 			dataPackage->setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
 			InputEvents::respondToInputEventAsync(*dataPackage);
@@ -116,13 +116,13 @@ Helper Functions {#HelperFunctions}
 
 		if (displayResponse) {
 			std::string msgString = "------\n**Sorry, but you don't have the permissions required for that!**\n------";
-			std::unique_ptr<EmbedData> msgEmbed(std::make_unique<EmbedData>());
+			DiscordCoreAPI::UniquePtr<EmbedData> msgEmbed(DiscordCoreAPI::makeUnique<EmbedData>());
 			msgEmbed->setAuthor(guildMember.user.userName, guildMember.user.avatar);
 			msgEmbed->setColor(discordGuild.data.borderColor);
 			msgEmbed->setDescription(msgString);
 			msgEmbed->setTimeStamp(getTimeAndDate());
 			msgEmbed->setTitle("__**Permissions Issue:**__");
-			std::unique_ptr<RespondToInputEventData> dataPackage(std::make_unique<RespondToInputEventData>(eventData));
+			DiscordCoreAPI::UniquePtr<RespondToInputEventData> dataPackage(DiscordCoreAPI::makeUnique<RespondToInputEventData>(eventData));
 			dataPackage->addMessageEmbed(*msgEmbed);
 			dataPackage->setResponseType(InputEventResponseType::Ephemeral_Interaction_Response);
 			InputEvents::respondToInputEventAsync(*dataPackage);

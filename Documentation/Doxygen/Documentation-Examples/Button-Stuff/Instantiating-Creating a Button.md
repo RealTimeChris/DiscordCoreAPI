@@ -25,8 +25,8 @@ Instantiating/Creating a Button {#instantiatingcreatingbutton}
 			helpEmbed = msgEmbed;
 		}
 
-		std::unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return std::make_unique<Test>();
+		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
+			return DiscordCoreAPI::makeUnique<Test>();
 		}
 
 		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {

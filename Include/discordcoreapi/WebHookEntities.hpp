@@ -45,12 +45,12 @@ namespace DiscordCoreAPI {
 	/// \brief For executing a WebHook.
 	class DiscordCoreAPI_Dll ExecuteWebHookData {
 	  public:
-		friend struct Jsonifier::Core<ExecuteWebHookData>;
-		friend class CreateEphemeralFollowUpMessageData;
-		friend class CreateFollowUpMessageData;
-		friend class EditFollowUpMessageData;
-		friend class Interactions;
-		friend class WebHooks;
+		friend struct DiscordCoreAPI_Dll Jsonifier::Core<ExecuteWebHookData>;
+		friend class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData;
+		friend class DiscordCoreAPI_Dll CreateFollowUpMessageData;
+		friend class DiscordCoreAPI_Dll EditFollowUpMessageData;
+		friend class DiscordCoreAPI_Dll Interactions;
+		friend class DiscordCoreAPI_Dll WebHooks;
 
 		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.
 		bool wait{};///< Waits for server confirmation of message send before response, and returns the created message body.
@@ -145,11 +145,11 @@ namespace DiscordCoreAPI {
 	/// \brief For editing a WebHook Message.
 	class DiscordCoreAPI_Dll EditWebHookData : public ExecuteWebHookData {
 	  public:
-		friend struct Jsonifier::Core<EditWebHookData>;
-		friend class EditInteractionResponseData;
-		friend class EditFollowUpMessageData;
-		friend class Interactions;
-		friend class WebHooks;
+		friend struct DiscordCoreAPI_Dll Jsonifier::Core<EditWebHookData>;
+		friend class DiscordCoreAPI_Dll EditInteractionResponseData;
+		friend class DiscordCoreAPI_Dll EditFollowUpMessageData;
+		friend class DiscordCoreAPI_Dll Interactions;
+		friend class DiscordCoreAPI_Dll WebHooks;
 
 		Snowflake messageId{};///< The Message Snowflake to collect.
 		Snowflake threadId{};///< Send a message to the specified thread within a webhook's Channel. The thread will automatically be unarchived.

@@ -101,7 +101,7 @@ namespace DiscordCoreAPI {
 
 	/// For creating a new Guild Emoji.
 	struct DiscordCoreAPI_Dll CreateGuildEmojiData {
-		friend class Reactions;
+		friend class DiscordCoreAPI_Dll Reactions;
 
 		std::vector<Snowflake> roles{};///< Roles that can use this Emoji.
 		std::string imageFilePath{};///< The image responseData.

@@ -39,11 +39,6 @@ if (NOT DEFINED BUILD_SHARED_LIBS)
 	set(BUILD_SHARED_LIBS TRUE)
 endif()
 
-if (UNIX)
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast")
-	set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -O1")
-endif()
-
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Source/*.cpp")
 
 if (WIN32)
@@ -63,13 +58,10 @@ file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../Incl
 
 set_target_properties(
 	"${LIB_NAME}" PROPERTIES
-	PUBLIC_HEADER "${HEADERS}"
 	OUTPUT_NAME "discordcoreapi"
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF
 )
-
-target_compile_definitions("${PROJECT_NAME}" INTERFACE INSTRUCTION_SET_TYPE_AVX2)
 
 if("${DEV}")
 	include(FetchContent)	
@@ -86,9 +78,6 @@ endif()
 find_package(OpenSSL REQUIRED)
 find_package(Opus CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED)
-
-get_target_property(OpenSSL_INCLUDE OpenSSL::SSL INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(unofficial_sodium_INCLUDE unofficial-sodium::sodium INTERFACE_INCLUDE_DIRECTORIES)
 
 target_include_directories(
 	"${LIB_NAME}" PUBLIC
@@ -114,13 +103,14 @@ target_compile_definitions(
 
 include(ProcessorCount)
 ProcessorCount(N)
-MATH(EXPR THREAD_COUNT "${N} * 1/2")
+MATH(EXPR THREAD_COUNT "${N} / 3")
 
 target_compile_options(
 	"${LIB_NAME}" PUBLIC
 	"$<$<CXX_COMPILER_ID:MSVC>:$<$<STREQUAL:${ASAN_ENABLED},TRUE>:/fsanitize=address>>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/MP${THREAD_COUNT}>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/EHsc>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
 	"$<$<CXX_COMPILER_ID:GNU>:-march=core-avx2>"

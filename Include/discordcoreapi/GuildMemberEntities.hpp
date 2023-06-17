@@ -107,7 +107,7 @@ namespace DiscordCoreAPI {
 	/**@}*/
 
 
-	inline bool operator==(const GuildMemberKey& lhs, const GuildMemberKey& rhs) {
+	inline bool operator==(const GuildMemberKey& lhs, const GuildMemberKey& rhs) noexcept {
 		return lhs.guildId == rhs.guildId && lhs.userId == rhs.userId;
 	}
 
@@ -118,14 +118,11 @@ namespace DiscordCoreAPI {
 	/// \brief An interface class for the GuildMember related Discord endpoints.
 	class DiscordCoreAPI_Dll GuildMembers {
 	  public:
-		friend class DiscordCoreInternal::WebSocketClient;
-		friend class DiscordCoreClient;
-		friend class GuildMemberData;
-		friend class GuildData;
-		friend class Guild;
-
-		inline static GuildMemberData nullGuildMember{ Snowflake{ std::numeric_limits<uint64_t>::max() } };
-		inline static VoiceStateDataLight nullVoiceData{ std::numeric_limits<uint64_t>::max() };
+		friend class DiscordCoreAPI_Dll DiscordCoreInternal::WebSocketClient;
+		friend class DiscordCoreAPI_Dll DiscordCoreClient;
+		friend class DiscordCoreAPI_Dll GuildMemberData;
+		friend class DiscordCoreAPI_Dll GuildData;
+		friend class DiscordCoreAPI_Dll Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManagerNew);
 
@@ -174,17 +171,17 @@ namespace DiscordCoreAPI {
 		/// \returns A CoRoutine containing GuildMember.
 		static CoRoutine<GuildMember> timeoutGuildMemberAsync(TimeoutGuildMemberData dataPackage);
 
-		static VoiceStateDataLight getVoiceStateData(const GuildMember& voiceState);
+		static VoiceStateDataLight getVoiceStateData(const GuildMemberKey& voiceState);
 
 		static VoiceStateDataLight& insertVoiceState(VoiceStateDataLight&& voiceState);
 
 		static ObjectCache<GuildMemberKey, GuildMemberData>& getCache();
 
-		static void removeVoiceState(const VoiceStateDataLight& voiceState);
+		static void removeVoiceState(const GuildMemberKey& voiceState);
 
 		static GuildMemberData& insertGuildMember(GuildMemberData&& guildMember);
 
-		static void removeGuildMember(const GuildMemberData& guildMemberId);
+		static void removeGuildMember(const GuildMemberKey& guildMemberId);
 
 		static bool doWeCacheGuildMembers();
 

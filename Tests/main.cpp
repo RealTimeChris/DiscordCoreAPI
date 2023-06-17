@@ -41,14 +41,14 @@ int32_t main() {
 	clientConfig.presenceData.status = "online";
 	clientConfig.textFormat = DiscordCoreAPI::TextFormat::Etf;
 	clientConfig.presenceData.since = 0;
-	auto the = std::make_unique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
+	auto the = DiscordCoreAPI::makeUnique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
 	DiscordCoreAPI::CreateGlobalApplicationCommandData createBotInfoCommandData{};
 	createBotInfoCommandData.dmPermission = true;
 	createBotInfoCommandData.type = DiscordCoreAPI::ApplicationCommandType::Chat_Input;
 	createBotInfoCommandData.defaultMemberPermissions = DiscordCoreAPI::Permission::Use_Application_Commands;
 	createBotInfoCommandData.description = "Displays info about the current bot.";
 	createBotInfoCommandData.name = "botinfo";
-	the->registerFunction(std::vector<std::string>{ "botinfo" }, std::make_unique<DiscordCoreAPI::BotInfo>(), createBotInfoCommandData);
+	the->registerFunction(std::vector<std::string>{ "botinfo" }, DiscordCoreAPI::makeUnique<DiscordCoreAPI::BotInfo>(), createBotInfoCommandData);
 	the->runBot();
 	return 0;
 };

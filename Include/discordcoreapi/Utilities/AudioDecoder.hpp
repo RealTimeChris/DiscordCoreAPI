@@ -45,7 +45,8 @@ namespace DiscordCoreInternal {
 			data.resize(23040);
 			ptr.reset(opus_decoder_create(48000, 2, &error));
 			if (error != OPUS_OK) {
-				throw DiscordCoreAPI::DCAException{ "Failed to create the Opus decoder, Reason: " + std::string{ opus_strerror(error) } };
+				throw DiscordCoreAPI::DCAException{ "Failed to create the Opus decoder, Reason: " + std::string{ opus_strerror(error) },
+					std::source_location::current() };
 			}
 		}
 
@@ -55,12 +56,13 @@ namespace DiscordCoreInternal {
 			if (sampleCount > 0) {
 				return std::basic_string_view<opus_int16>{ data.data(), static_cast<size_t>(sampleCount * 2ull) };
 			} else {
-				throw DiscordCoreAPI::DCAException{ "Failed to decode a user's voice payload, Reason: " + std::string{ opus_strerror(sampleCount) } };
+				throw DiscordCoreAPI::DCAException{ "Failed to decode a user's voice payload, Reason: " + std::string{ opus_strerror(sampleCount) },
+					std::source_location::current() };
 			}
 		}
 
 	  protected:
-		std::unique_ptr<OpusDecoder, OpusDecoderDeleter> ptr{ nullptr, OpusDecoderDeleter{} };
+		DiscordCoreAPI::UniquePtr<OpusDecoder, OpusDecoderDeleter> ptr{};
 		std::vector<opus_int16> data{};
 	};
 }

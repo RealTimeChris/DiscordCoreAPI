@@ -26,53 +26,54 @@
 #pragma once
 
 #include <discordcoreapi/Utilities/LightString.hpp>
+#include <discordcoreapi/Utilities/UniquePtr.hpp>
 
 namespace DiscordCoreAPI {
 
 	struct DCAException : public std::runtime_error {
 		DCAException(const std::string& error, std::source_location location = std::source_location::current()) noexcept;
 	};
-
 }
 
 namespace DiscordCoreInternal {
 
-	template<typename RTy> inline void reverseByteOrder(RTy& net) {
+	template<typename ReturnType> inline ReturnType reverseByteOrder(ReturnType& net) {
 		if constexpr (std::endian::native == std::endian::little) {
-			switch (sizeof(RTy)) {
-				case 1: {
-					return;
-				}
+			switch (sizeof(ReturnType)) {
 				case 2: {
-					net =
-						_mm256_extract_epi16(_mm256_shuffle_epi8(_mm256_insert_epi16(__m256i{}, net, 0), _mm256_insert_epi16(__m256i{}, 0x01, 0)), 0);
-					return;
+					net = _mm_extract_epi16(_mm_shuffle_epi8(_mm_insert_epi16(__m128i{}, net, 0), _mm_insert_epi16(__m128i{}, 0x01, 0)), 0);
+					return net;
 				}
 				case 4: {
-					net = _mm256_extract_epi32(
-						_mm256_shuffle_epi8(_mm256_insert_epi32(__m256i{}, net, 0), _mm256_insert_epi32(__m256i{}, 0x10203, 0)), 0);
-					return;
+					net = _mm_extract_epi32(_mm_shuffle_epi8(_mm_insert_epi32(__m128i{}, net, 0), _mm_insert_epi32(__m128i{}, 0x10203, 0)), 0);
+					return net;
 				}
 				case 8: {
-					net = _mm256_extract_epi64(
-						_mm256_shuffle_epi8(_mm256_insert_epi64(__m256i{}, net, 0), _mm256_insert_epi64(__m256i{}, 0x102030405060708, 0)), 0);
-					return;
+					net = _mm_extract_epi64(_mm_shuffle_epi8(_mm_insert_epi64(__m128i{}, net, 0), _mm_insert_epi64(__m128i{}, 0x102030405060708, 0)),
+						0);
+					return net;
+				}
+				default: {
+					return net;
 				}
 			}
+		} else {
+			return net;
 		}
 	}
 
 	template<typename ReturnType> inline void storeBits(char* to, ReturnType num) {
 		const uint8_t byteSize{ 8 };
-		reverseByteOrder<ReturnType>(num);
+		num = reverseByteOrder<ReturnType>(num);
 		for (int32_t x = 0; x < sizeof(ReturnType); ++x) {
 			to[x] = static_cast<uint8_t>(num >> (byteSize * x));
 		}
 	}
-	
+
 	struct EtfParseError : public DiscordCoreAPI::DCAException {
 	  public:
-		inline explicit EtfParseError(const std::string& message) : DCAException(message){};
+		inline explicit EtfParseError(const std::string& message, std::source_location location = std::source_location::current())
+			: DCAException(message, location){};
 	};
 
 	enum class EtfType : uint8_t {
@@ -115,13 +116,13 @@ namespace DiscordCoreInternal {
 		uint64_t dataSize{};
 		uint64_t offSet{};
 
-		template<typename RTy> inline RTy readBitsFromBuffer() {
-			if (offSet + sizeof(RTy) > dataSize) {
+		template<typename ReturnType> inline ReturnType readBitsFromBuffer() {
+			if (offSet + sizeof(ReturnType) > dataSize) {
 				throw EtfParseError{ "EtfParser::readBitsFromBuffer() Error: readBitsFromBuffer() past end of the buffer." };
 			}
-			RTy newValue = *reinterpret_cast<const RTy*>(dataBuffer + offSet);
-			offSet += sizeof(RTy);
-			reverseByteOrder<RTy>(newValue);
+			ReturnType newValue = *reinterpret_cast<const ReturnType*>(dataBuffer + offSet);
+			offSet += sizeof(ReturnType);
+			newValue = reverseByteOrder<ReturnType>(newValue);
 			return newValue;
 		}
 
@@ -233,12 +234,12 @@ namespace DiscordCoreInternal {
 				}
 			};
 			writeCharacter('"');
-			for (auto iter = stringNew; iter != stringNew + length;) {
+			for (size_t x = 0; x < length; ++x) {
 				bool doWeBreak{};
 
-				switch (*iter) {
+				switch (stringNew[x]) {
 					case '\\': {
-						switch (*++iter) {
+						switch (stringNew[++x]) {
 							case '\"':
 								writeCharacter('\\');
 								writeCharacter('\\');
@@ -266,7 +267,7 @@ namespace DiscordCoreInternal {
 								break;
 
 							default: {
-								writeCharacter(*iter);
+								writeCharacter(stringNew[x]);
 								break;
 							}
 						}
@@ -278,11 +279,10 @@ namespace DiscordCoreInternal {
 						break;
 					}
 					default: {
-						writeCharacter(*iter);
+						writeCharacter(stringNew[x]);
 						break;
 					}
 				}
-				++iter;
 				if (doWeBreak) {
 					break;
 				}
@@ -477,7 +477,7 @@ namespace DiscordCoreInternal {
 		std::unsigned_integral<std::decay_t<ValueType>> && !BoolT<std::decay_t<ValueType>> && !SignedT<ValueType> && !EtfSerializerT<ValueType>;
 
 	template<typename ValueType>
-	concept StringT = std::same_as<std::decay_t<ValueType>, std::string> ||
+	concept StringT = std::same_as<std::decay_t<ValueType>, std::string> || std::same_as<std::decay_t<ValueType>, std::string_view> ||
 		std::convertible_to<ValueType, std::string> && !std::same_as<std::decay_t<ValueType>, char> && !EtfSerializerT<ValueType>;
 
 	template<typename ValueType>
@@ -516,9 +516,9 @@ namespace DiscordCoreInternal {
 
 	class EtfSerializer {
 	  public:
-		using MapAllocatorType = std::allocator<std::pair<const std::string, EtfSerializer>>;
-		template<typename ValueType> using allocator = std::allocator<std::decay_t<ValueType>>;
-		template<typename ValueType> using AllocatorType = std::allocator_traits<allocator<ValueType>>;
+		template<typename ValueType> using allocator = std::allocator<ValueType>;
+		template<typename ValueType> using allocator_traits = std::allocator_traits<allocator<ValueType>>;
+		using MapAllocatorType = allocator<std::pair<const std::string, EtfSerializer>>;
 		using ObjectType = std::map<std::string, EtfSerializer, std::less<>, MapAllocatorType>;
 		using ArrayType = std::vector<EtfSerializer, allocator<EtfSerializer>>;
 		using StringType = std::string;
@@ -590,7 +590,6 @@ namespace DiscordCoreInternal {
 				}
 			}
 			stringReal = data.stringReal;
-			type = data.type;
 			return *this;
 		}
 
@@ -640,7 +639,6 @@ namespace DiscordCoreInternal {
 				}
 			}
 			stringReal = data.stringReal;
-			type = data.type;
 			return *this;
 		}
 
@@ -714,12 +712,12 @@ namespace DiscordCoreInternal {
 
 		template<StringT ValueType> inline EtfSerializer(const ValueType& data) noexcept {
 			*this = data;
-		}	
+		}
 
 		template<size_t StrLength> inline EtfSerializer& operator=(const char (&str)[StrLength]) {
 			setValue(JsonType::String);
-			this->getString().resize(StrLength);
-			std::memcpy(this->getString().data(), str, StrLength);
+			getString().resize(StrLength);
+			std::memcpy(getString().data(), str, StrLength);
 			return *this;
 		}
 
@@ -780,7 +778,7 @@ namespace DiscordCoreInternal {
 		inline EtfSerializer& operator=(JsonType data) noexcept {
 			setValue(data);
 			return *this;
-		} 
+		}
 
 		inline EtfSerializer(JsonType data) noexcept {
 			*this = data;
@@ -801,13 +799,12 @@ namespace DiscordCoreInternal {
 		inline void refreshString() {
 			stringReal.clear();
 			appendVersion();
-			serializeJsonToEtfString(this);
+			serializeJsonToEtfString(*this);
 		}
 
-		inline EtfSerializer& operator[](typename ObjectType::key_type key) {
+		inline EtfSerializer& operator[](typename ObjectType::key_type&& key) {
 			if (type == JsonType::Null) {
 				setValue(JsonType::Object);
-				type = JsonType::Object;
 			}
 
 			if (type == JsonType::Object) {
@@ -817,10 +814,21 @@ namespace DiscordCoreInternal {
 			throw EtfSerializeError{ "Sorry, but this value's type is not Object." };
 		}
 
+		inline EtfSerializer& operator[](const typename ObjectType::key_type& key) {
+			if (type == JsonType::Null) {
+				setValue(JsonType::Object);
+			}
+
+			if (type == JsonType::Object) {
+				auto result = getObject().emplace(key, EtfSerializer{});
+				return result.first->second;
+			}
+			throw EtfSerializeError{ "Sorry, but this value's type is not Object." };
+		}
+
 		inline EtfSerializer& operator[](uint64_t index) {
 			if (type == JsonType::Null) {
 				setValue(JsonType::Array);
-				type = JsonType::Array;
 			}
 
 			if (type == JsonType::Array) {
@@ -836,7 +844,6 @@ namespace DiscordCoreInternal {
 		inline void emplaceBack(EtfSerializer&& other) {
 			if (type == JsonType::Null) {
 				setValue(JsonType::Array);
-				type = JsonType::Array;
 			}
 
 			if (type == JsonType::Array) {
@@ -849,7 +856,6 @@ namespace DiscordCoreInternal {
 		inline void emplaceBack(EtfSerializer& other) {
 			if (type == JsonType::Null) {
 				setValue(JsonType::Array);
-				type = JsonType::Array;
 			}
 
 			if (type == JsonType::Array) {
@@ -857,7 +863,7 @@ namespace DiscordCoreInternal {
 				return;
 			}
 			throw EtfSerializeError{ "Sorry, but this value's type is not Array." };
-		}		
+		}
 
 		inline ~EtfSerializer() noexcept {
 			destroy();
@@ -924,28 +930,28 @@ namespace DiscordCoreInternal {
 			return *static_cast<BoolType*>(value);
 		}
 
-		inline void serializeJsonToEtfString(const EtfSerializer* dataToParse) {
-			switch (dataToParse->type) {
+		inline void serializeJsonToEtfString(const EtfSerializer& dataToParse) {
+			switch (dataToParse.type) {
 				case JsonType::Object: {
-					return writeEtfObject(dataToParse->getObject());
+					return writeEtfObject(dataToParse.getObject());
 				}
 				case JsonType::Array: {
-					return writeEtfArray(dataToParse->getArray());
+					return writeEtfArray(dataToParse.getArray());
 				}
 				case JsonType::String: {
-					return writeEtfString(dataToParse->getString());
+					return writeEtfString(dataToParse.getString());
 				}
 				case JsonType::Float: {
-					return writeEtfFloat(dataToParse->getFloat());
+					return writeEtfFloat(dataToParse.getFloat());
 				}
 				case JsonType::Uint: {
-					return writeEtfUint(dataToParse->getUint());
+					return writeEtfUint(dataToParse.getUint());
 				}
 				case JsonType::Int: {
-					return writeEtfInt(dataToParse->getInt());
+					return writeEtfInt(dataToParse.getInt());
 				}
 				case JsonType::Bool: {
-					return writeEtfBool(dataToParse->getBool());
+					return writeEtfBool(dataToParse.getBool());
 				}
 				case JsonType::Null: {
 					return writeEtfNull();
@@ -957,14 +963,14 @@ namespace DiscordCoreInternal {
 			appendMapHeader(static_cast<uint32_t>(jsonData.size()));
 			for (auto& [key, value]: jsonData) {
 				appendBinaryExt(key, static_cast<uint32_t>(key.size()));
-				serializeJsonToEtfString(&value);
+				serializeJsonToEtfString(value);
 			}
 		}
 
 		inline void writeEtfArray(const ArrayType& jsonData) {
 			appendListHeader(static_cast<uint32_t>(jsonData.size()));
 			for (auto& value: jsonData) {
-				serializeJsonToEtfString(&value);
+				serializeJsonToEtfString(value);
 			}
 			appendNilExt();
 		}
@@ -1013,7 +1019,7 @@ namespace DiscordCoreInternal {
 			stringReal.push_back(charValue);
 		}
 
-		inline friend bool operator==(const EtfSerializer& lhs, const EtfSerializer& rhs) {
+		inline friend bool operator==(const EtfSerializer& lhs, const EtfSerializer& rhs) noexcept {
 			if (lhs.type != rhs.type) {
 				return false;
 			}
@@ -1175,52 +1181,45 @@ namespace DiscordCoreInternal {
 			type = typeNew;
 			switch (type) {
 				case JsonType::Object: {
-					allocator<ObjectType> alloc{};
-					AllocatorType<ObjectType> allocator{};
-					value = allocator.allocate(alloc, 1);
-					allocator.construct(alloc, &getObject());
+					Globals::AllocWrapper<ObjectType> alloc{};
+					value = alloc.allocate(1);
+					alloc.construct(&getObject());
 					break;
 				}
 				case JsonType::Array: {
-					allocator<ArrayType> alloc{};
-					AllocatorType<ArrayType> allocator{};
-					value = allocator.allocate(alloc, 1);
-					allocator.construct(alloc, &getArray());
+					Globals::AllocWrapper<ArrayType> alloc{};
+					value = alloc.allocate(1);
+					alloc.construct(&getArray());
 					break;
 				}
 				case JsonType::String: {
-					allocator<StringType> alloc{};
-					AllocatorType<StringType> allocator{};
-					value = allocator.allocate(alloc, 1);
-					allocator.construct(alloc, &getString());
-					break;
-				}
-				case JsonType::Uint: {
-					allocator<UintType> alloc{};
-					AllocatorType<UintType> allocator{};
-					value = allocator.allocate(alloc, 1);
-					allocator.construct(alloc, &getUint());
-					break;
-				}
-				case JsonType::Int: {
-					allocator<IntType> alloc{};
-					AllocatorType<IntType> allocator{};
-					value = allocator.allocate(alloc, 1);
-					allocator.construct(alloc, &getInt());
-					break;
-				}
-				case JsonType::Bool: {
-					allocator<BoolType> alloc{};
-					AllocatorType<BoolType> allocator{};
-					value = allocator.allocate(alloc, 1);
-					allocator.construct(alloc, &getBool());
+					Globals::AllocWrapper<StringType> alloc{};
+					value = alloc.allocate(1);
+					alloc.construct(&getString());
 					break;
 				}
 				case JsonType::Float: {
-					allocator<FloatType> alloc{};
-					AllocatorType<FloatType> allocator{};
-					value = allocator.allocate(alloc, 1);
-					allocator.construct(alloc, &getFloat());
+					Globals::AllocWrapper<FloatType> alloc{};
+					value = alloc.allocate(1);
+					alloc.construct(&getFloat());
+					break;
+				}
+				case JsonType::Uint: {
+					Globals::AllocWrapper<UintType> alloc{};
+					value = alloc.allocate(1);
+					alloc.construct(&getUint());
+					break;
+				}
+				case JsonType::Int: {
+					Globals::AllocWrapper<IntType> alloc{};
+					value = alloc.allocate(1);
+					alloc.construct(&getInt());
+					break;
+				}
+				case JsonType::Bool: {
+					Globals::AllocWrapper<BoolType> alloc{};
+					value = alloc.allocate(1);
+					alloc.construct(&getBool());
 					break;
 				}
 				case JsonType::Null: {
@@ -1233,52 +1232,45 @@ namespace DiscordCoreInternal {
 			if (value) {
 				switch (type) {
 					case JsonType::Object: {
-						allocator<ObjectType> alloc{};
-						AllocatorType<ObjectType> allocator{};
-						allocator.destroy(alloc, &getObject());
-						allocator.deallocate(alloc, static_cast<ObjectType*>(value), 1);
+						Globals::AllocWrapper<ObjectType> alloc{};
+						alloc.destroy(&getObject());
+						alloc.deallocate(static_cast<ObjectType*>(value), 1);
 						break;
 					}
 					case JsonType::Array: {
-						allocator<ArrayType> alloc{};
-						AllocatorType<ArrayType> allocator{};
-						allocator.destroy(alloc, &getArray());
-						allocator.deallocate(alloc, static_cast<ArrayType*>(value), 1);
+						Globals::AllocWrapper<ArrayType> alloc{};
+						alloc.destroy(&getArray());
+						alloc.deallocate(static_cast<ArrayType*>(value), 1);
 						break;
 					}
 					case JsonType::String: {
-						allocator<StringType> alloc{};
-						AllocatorType<StringType> allocator{};
-						allocator.destroy(alloc, &getString());
-						allocator.deallocate(alloc, static_cast<StringType*>(value), 1);
-						break;
-					}
-					case JsonType::Uint: {
-						allocator<UintType> alloc{};
-						AllocatorType<UintType> allocator{};
-						allocator.destroy(alloc, &getUint());
-						allocator.deallocate(alloc, static_cast<UintType*>(value), 1);
-						break;
-					}
-					case JsonType::Int: {
-						allocator<IntType> alloc{};
-						AllocatorType<IntType> allocator{};
-						allocator.destroy(alloc, &getInt());
-						allocator.deallocate(alloc, static_cast<IntType*>(value), 1);
+						Globals::AllocWrapper<StringType> alloc{};
+						alloc.destroy(&getString());
+						alloc.deallocate(static_cast<StringType*>(value), 1);
 						break;
 					}
 					case JsonType::Float: {
-						allocator<FloatType> alloc{};
-						AllocatorType<FloatType> allocator{};
-						allocator.destroy(alloc, &getFloat());
-						allocator.deallocate(alloc, static_cast<FloatType*>(value), 1);
+						Globals::AllocWrapper<FloatType> alloc{};
+						alloc.destroy(&getFloat());
+						alloc.deallocate(static_cast<FloatType*>(value), 1);
+						break;
+					}
+					case JsonType::Uint: {
+						Globals::AllocWrapper<UintType> alloc{};
+						alloc.destroy(&getUint());
+						alloc.deallocate(static_cast<UintType*>(value), 1);
+						break;
+					}
+					case JsonType::Int: {
+						Globals::AllocWrapper<IntType> alloc{};
+						alloc.destroy(&getInt());
+						alloc.deallocate(static_cast<IntType*>(value), 1);
 						break;
 					}
 					case JsonType::Bool: {
-						allocator<BoolType> alloc{};
-						AllocatorType<BoolType> allocator{};
-						allocator.destroy(alloc, &getBool());
-						allocator.deallocate(alloc, static_cast<BoolType*>(value), 1);
+						Globals::AllocWrapper<BoolType> alloc{};
+						alloc.destroy(&getBool());
+						alloc.deallocate(static_cast<BoolType*>(value), 1);
 						break;
 					}
 					case JsonType::Null: {

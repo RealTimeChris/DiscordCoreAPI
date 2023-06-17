@@ -31,8 +31,11 @@
 
 namespace DiscordCoreInternal {
 
-	inline static constexpr uint32_t SEEKHEAD_ID{ 0x114d9b74 };
-	inline static constexpr uint32_t CLUSTER_ID{ 0x1f43b675 };
+	/**
+	* \addtogroup utilities
+	* @{
+	*/
+
 	inline static constexpr uint32_t SEGMENT_ID{ 0x18538067 };
 	inline static constexpr uint8_t SIMPLEBLOCK_ID{ 0xA3 };
 	inline static constexpr uint8_t OPUS_TRACK_ID{ 0x81 };
@@ -43,17 +46,23 @@ namespace DiscordCoreInternal {
 		6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
 		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
 		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
-		
+
+	/// \brief For demuxing Matroska-contained audio data.
 	class MatroskaDemuxer {
 	  public:
-		inline MatroskaDemuxer(bool doWePrintErrorsNew) noexcept {
-			doWePrintErrors = doWePrintErrorsNew;
-		}
+		/// \brief Constructor for MatroskaDemuxer.
+		/// \param doWePrintErrorsNew Flag indicating whether to print errors or not.
+		inline MatroskaDemuxer() noexcept = default;
 
+		/// \brief Writes data to the Matroska demuxer.
+		/// \param dataNew The data to be written.
 		inline void writeData(std::basic_string_view<uint8_t> dataNew) noexcept {
 			data = dataNew;
 		}
 
+		/// \brief Collects the next frame from the demuxer.
+		/// \param frameNew The reference to store the collected frame.
+		/// \return True if a frame was collected, false otherwise.
 		inline bool collectFrame(DiscordCoreAPI::AudioFrameData& frameNew) noexcept {
 			if (frames.size() > 0) {
 				frameNew = std::move(frames[0]);
@@ -64,21 +73,21 @@ namespace DiscordCoreInternal {
 			}
 		}
 
+		/// \brief Proceed with the demuxing process.
+		/// \return void.
 		inline void proceedDemuxing() noexcept {
 			if (!doWeHaveTotalSize) {
 				if (reverseBytes<uint32_t>() != SEGMENT_ID) {
-					if (doWePrintErrors) {
-						std::cout << "Missing a Segment, which was expected at index: " << currentPosition << "..." << std::endl;
-					}
+					Globals::MessagePrinter::printError<Globals::MessageType::General>(
+						"Missing a Segment, which was expected at index: " + std::to_string(currentPosition) + std::string{ "..." });
 					if (!findNextId(SEGMENT_ID)) {
 						if ((totalSize > 0 && currentPosition >= totalSize)) {
 							areWeDoneVal = true;
 						}
 						return;
 					}
-					if (doWePrintErrors) {
-						std::cout << "Missing Segment, found at index: " << currentPosition << "." << std::endl;
-					}
+					Globals::MessagePrinter::printError<Globals::MessageType::General>(
+						"Missing Segment, found at index: " + std::to_string(currentPosition) + ".");
 				} else {
 					currentPosition += sizeof(uint32_t);
 				}
@@ -122,20 +131,25 @@ namespace DiscordCoreInternal {
 			return;
 		}
 
+		/// \brief Checks if the demuxing process is complete.
+		/// \return True if demuxing is complete, false otherwise.
 		inline bool areWeDone() noexcept {
 			return areWeDoneVal;
 		}
 
 	  protected:
-		std::deque<DiscordCoreAPI::AudioFrameData> frames{};
-		std::basic_string_view<uint8_t> data{};
-		bool doWeHaveTotalSize{ false };
-		bool doWePrintErrors{ false };
-		bool areWeDoneVal{ false };
-		size_t currentPosition{};
-		size_t currentSize{};
-		size_t totalSize{};
+		std::deque<DiscordCoreAPI::AudioFrameData> frames{};///< Queue to store collected frames. */
+		std::basic_string_view<uint8_t> data{};///< Input data for demuxing. */
+		bool doWeHaveTotalSize{ false };///< Flag indicating if total size has been determined. */
+		bool areWeDoneVal{ false };///< Flag indicating if demuxing is complete. */
+		size_t currentPosition{};///< Current position in the data. */
+		size_t currentSize{};///< Current size of the element being processed. */
+		size_t totalSize{};///< Total size of the segment. */
 
+		/// \brief Finds the next occurrence of the specified value in the data.
+		/// \tparam ObjectType The type of value to search for.
+		/// \param value The value to search for.
+		/// \return True if the value was found, false otherwise.
 		template<typename ObjectType> inline bool findNextId(ObjectType value) noexcept {
 			if (currentPosition + sizeof(ObjectType) >= data.size()) {
 				return false;
@@ -150,16 +164,21 @@ namespace DiscordCoreInternal {
 			return false;
 		}
 
+		/// \brief Reverses the byte order of the current element being processed.
+		/// \tparam ObjectType The type of the current element.
+		/// \return The current element with reversed byte order.
 		template<typename ObjectType> inline ObjectType reverseBytes() noexcept {
 			if (data.size() <= currentPosition + sizeof(ObjectType)) {
 				return -1;
 			}
 			const ObjectType newValue{ *reinterpret_cast<const ObjectType*>(&data[currentPosition]) };
 			ObjectType newerValue{ newValue };
-			reverseByteOrder(newerValue);
+			newerValue = reverseByteOrder(newerValue);
 			return newerValue;
 		}
 
+		/// \brief Collects the size of the current element being processed.
+		/// \return The size of the current element.
 		inline int64_t collectElementSize() noexcept {
 			if (currentPosition >= data.size() - 8) {
 				return -1;
@@ -167,6 +186,8 @@ namespace DiscordCoreInternal {
 			return collectNumber();
 		}
 
+		/// \brief Collects a number from the data.
+		/// \return The collected number.
 		inline int64_t collectNumber() noexcept {
 			int32_t read{}, n{ 1 };
 			uint64_t total{};
@@ -181,6 +202,7 @@ namespace DiscordCoreInternal {
 			return static_cast<int64_t>(total);
 		}
 
+		/// \brief Parses an Opus frame.
 		inline void parseOpusFrame() noexcept {
 			DiscordCoreAPI::AudioFrameData frameNew{};
 			frameNew.currentSize = currentSize - 4;
@@ -198,15 +220,23 @@ namespace DiscordCoreInternal {
 		inline OpusPacket() noexcept = default;
 
 		inline OpusPacket(std::basic_string_view<uint8_t> newData) noexcept {
-			data = newData;
+			dataVal = newData;
 		};
 
-		std::basic_string_view<uint8_t> data{};
+		inline size_t size() {
+			return dataVal.size();
+		}
+
+		inline auto data() {
+			return dataVal.data();
+		}
+
+	  protected:
+		std::basic_string_view<uint8_t> dataVal{};
 	};
 
 	class OggPage {
 	  public:
-
 		inline OggPage(std::basic_string_view<uint8_t>& newData) noexcept {
 			data = std::move(newData);
 			verifyAsOggPage();
@@ -265,10 +295,7 @@ namespace DiscordCoreInternal {
 
 	class OggDemuxer {
 	  public:
-
-		inline OggDemuxer(bool doWePrintErrorsNew) noexcept {
-			doWePrintErrors = doWePrintErrorsNew;
-		}
+		inline OggDemuxer() noexcept = default;
 
 		inline bool collectFrame(DiscordCoreAPI::AudioFrameData& frameNew) noexcept {
 			if (frames.size() > 0) {
@@ -323,10 +350,9 @@ namespace DiscordCoreInternal {
 		std::deque<DiscordCoreAPI::AudioFrameData> frames{};
 		DiscordCoreAPI::LightString<uint8_t> data{};
 		std::deque<OpusPacket> packets{};
-		bool doWePrintErrors{ false };
 		std::deque<OggPage> pages{};
 
-		
+
 		inline bool processOggPage() noexcept {
 			if (pages.empty()) {
 				return false;
@@ -343,8 +369,8 @@ namespace DiscordCoreInternal {
 				auto newPacket = packets.front();
 				packets.pop_front();
 				DiscordCoreAPI::AudioFrameData newFrame{};
-				newFrame += std::basic_string_view<uint8_t>{ newPacket.data.data(), newPacket.data.size() };
-				newFrame.currentSize = newPacket.data.size();
+				newFrame += std::basic_string_view<uint8_t>{ newPacket.data(), newPacket.size() };
+				newFrame.currentSize = newPacket.size();
 				newFrame.type = DiscordCoreAPI::AudioFrameType::Encoded;
 				frames.emplace_back(std::move(newFrame));
 			}
@@ -361,4 +387,5 @@ namespace DiscordCoreInternal {
 			}
 		}
 	};
+	/**@}*/
 }

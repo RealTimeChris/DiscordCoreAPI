@@ -31,15 +31,15 @@
 
 namespace DiscordCoreInternal {
 
-	class DiscordCoreAPI_Dll YouTubeRequestBuilder {
+	class YouTubeRequestBuilder : public HttpsClientCore {
 	  public:
-		YouTubeRequestBuilder() noexcept = default;
+		YouTubeRequestBuilder& operator=(YouTubeRequestBuilder&& other) noexcept = default;
+		YouTubeRequestBuilder(YouTubeRequestBuilder&& other) noexcept = default;
+
+		YouTubeRequestBuilder(DiscordCoreAPI::ConfigManager* configManagerNew) noexcept;
 
 	  protected:
 		std::string baseUrl{ "https://www.youtube.com" };
-		DiscordCoreAPI::ConfigManager* configManager{};
-		Jsonifier::JsonifierCore parser{};
-		HttpsClient* httpsClient{};
 
 		DiscordCoreAPI::Song constructDownloadInfo(const DiscordCoreAPI::Song& newSong, int32_t currentRecursionDepth);
 
@@ -48,9 +48,12 @@ namespace DiscordCoreInternal {
 		virtual DiscordCoreAPI::Song collectFinalSong(const DiscordCoreAPI::Song& newSong);
 	};
 
-	class DiscordCoreAPI_Dll YouTubeAPI : public YouTubeRequestBuilder {
+	class YouTubeAPI : public YouTubeRequestBuilder {
 	  public:
-		YouTubeAPI(DiscordCoreAPI::DiscordCoreClient*, HttpsClient* httpsClient, const DiscordCoreAPI::Snowflake guildId);
+		YouTubeAPI& operator=(YouTubeAPI&& other) noexcept = default;
+		YouTubeAPI(YouTubeAPI&& other) noexcept = default;
+
+		YouTubeAPI(DiscordCoreAPI::ConfigManager* configManagerNew, const DiscordCoreAPI::Snowflake guildId);
 
 		void downloadAndStreamAudio(const DiscordCoreAPI::Song& newSong, std::stop_token& token, int32_t currentReconnectTries);
 
@@ -63,12 +66,11 @@ namespace DiscordCoreInternal {
 		bool areWeWorking() noexcept;
 
 	  protected:
-		DiscordCoreAPI::DiscordCoreClient* discordCoreClient{};
 		std::atomic_bool areWeWorkingBool{ false };
 		DiscordCoreAPI::Snowflake guildId{};
 	};
 
-	struct DiscordCoreAPI_Dll YouTubeRequestClient {
+	struct YouTubeRequestClient {
 		std::string clientVersion{ "17.10.35" };
 		std::string androidSdkVersion{ "31" };
 		std::string clientName{ "ANDROID" };
@@ -79,22 +81,22 @@ namespace DiscordCoreInternal {
 		std::string gl{ "US" };
 	};
 
-	struct DiscordCoreAPI_Dll Request {
+	struct Request {
 		const bool useSsl{ true };
 	};
 
-	struct DiscordCoreAPI_Dll User {
+	struct User {
 		const bool lockedSafetyMode{};
 	};
 
-	struct DiscordCoreAPI_Dll YouTubeRequestContext {
+	struct YouTubeRequestContext {
 		std::unordered_map<std::string, std::string> captionParams{};
 		YouTubeRequestClient client{};
 		Request request{};
 		User user{};
 	};
 
-	struct DiscordCoreAPI_Dll YouTubeRequest {
+	struct YouTubeRequest {
 		const bool contentCheckOk{ true };
 		YouTubeRequestContext context{};
 		const std::string playlistId{};
@@ -103,66 +105,66 @@ namespace DiscordCoreInternal {
 		std::string videoId{};
 	};
 
-	struct DiscordCoreAPI_Dll Format {
+	struct Format {
 		std::string contentLength{};
 		std::string mimeType{};
 		std::string url{};
 		int32_t bitrate{};
 	};
 
-	struct DiscordCoreAPI_Dll StreamingData {
+	struct StreamingData {
 		std::vector<Format> adaptiveFormats{};
 		std::vector<Format> formats{};
 	};
 
-	struct DiscordCoreAPI_Dll Data {
+	struct Data {
 		StreamingData streamingData{};
 	};
 
-	struct DiscordCoreAPI_Dll YouTubeSearchResult {
+	struct YouTubeSearchResult {
 		DiscordCoreAPI::SongType type{};
 		std::string description{};
 		std::string viewUrl{};
 		std::string songId{};
 	};
 
-	struct DiscordCoreAPI_Dll Thumbnail {
+	struct Thumbnail {
 		std::string url{};
 	};
 
-	struct DiscordCoreAPI_Dll ThumbNails {
+	struct ThumbNails {
 		std::vector<Thumbnail> thumbNails{};
 	};
 
-	struct DiscordCoreAPI_Dll AccessibilityData {
+	struct AccessibilityData {
 		std::string label{};
 	};
 
-	struct DiscordCoreAPI_Dll Accessibility {
+	struct Accessibility {
 		AccessibilityData accessibilityData{};
 	};
 
-	struct DiscordCoreAPI_Dll LengthText {
+	struct LengthText {
 		Accessibility accessibility{};
 	};
 
-	struct DiscordCoreAPI_Dll Text {
+	struct Text {
 		std::string text{};
 	};
 
-	struct DiscordCoreAPI_Dll Title {
+	struct Title {
 		std::vector<Text> runs{};
 	};
 
-	struct DiscordCoreAPI_Dll SnippetText {
+	struct SnippetText {
 		std::vector<Text> runs{};
 	};
 
-	struct DiscordCoreAPI_Dll SnippetTextValue {
+	struct SnippetTextValue {
 		SnippetText snippetText{};
 	};
 
-	struct DiscordCoreAPI_Dll VideoRenderer {
+	struct VideoRenderer {
 		std::vector<SnippetTextValue> detailedMetadataSnippets{};
 		ThumbNails thumbnails{};
 		LengthText lengthText{};
@@ -170,31 +172,35 @@ namespace DiscordCoreInternal {
 		Title title{};
 	};
 
-	struct DiscordCoreAPI_Dll VideoRendererType {
+	struct VideoRendererType {
 		VideoRenderer videoRenderer{};
 	};
 
-	struct DiscordCoreAPI_Dll ItemSectionRenderer {
-		std::vector<VideoRendererType> contents{};
+	struct ItemSectionRendererContents {
+		std::vector<DiscordCoreInternal::VideoRendererType> contents{};
 	};
 
-	struct DiscordCoreAPI_Dll SectionListRenderer {
+	struct ItemSectionRenderer {
+		ItemSectionRendererContents itemSectionRendererContents{};
+	};
+
+	struct SectionListRenderer {
 		std::vector<ItemSectionRenderer> contents{};
 	};
 
-	struct DiscordCoreAPI_Dll PrimaryContents {
+	struct PrimaryContents {
 		SectionListRenderer sectionListRenderer{};
 	};
 
-	struct DiscordCoreAPI_Dll TwoColumnSearchResultsRenderer {
+	struct TwoColumnSearchResultsRenderer {
 		PrimaryContents primaryContents{};
 	};
 
-	struct DiscordCoreAPI_Dll Contents01 {
+	struct Contents01 {
 		TwoColumnSearchResultsRenderer twoColumnSearchResultsRenderer{};
 	};
 
-	struct DiscordCoreAPI_Dll YouTubeSearchResults {
+	struct YouTubeSearchResults {
 		Contents01 contents{};
 	};
 }

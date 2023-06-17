@@ -109,7 +109,7 @@ class Vcpkg
         chdir(getenv('HOME'));
         system('rm -rf ./discordcoreapi');
         $this->git('config --global user.email "40668522+RealTimeChris@users.noreply.github.com"');
-        $this->git('config --global user.name "realtimechris"');
+        $this->git('config --global user.name "RealTimeChris"');
         $this->git('clone ' . escapeshellarg($repositoryUrl) . ' ./discordcoreapi --depth=1');
         
         /* This is noisy, silence it */
@@ -133,8 +133,7 @@ class Vcpkg
     {
         echo GREEN . "Construct portfile for " . $this->getVersion() . ", sha512: $sha512\n" . WHITE;
         chdir(getenv("HOME") . '/discordcoreapi');
-        $date=date_create();
-        ;
+
         $portFileContent = 'if(VCPKG_TARGET_IS_LINUX)
     message(WARNING "DiscordCoreAPI only supports g++ 11 on linux.")
 endif()
@@ -144,6 +143,7 @@ vcpkg_from_github(
 	REPO RealTimeChris/DiscordCoreAPI
 	REF "v${VERSION}"
     SHA512 ' . $sha512 . '
+    HEAD_REF main
 )
 
 vcpkg_cmake_configure(
@@ -188,9 +188,7 @@ file(
       "host": true
     }
   ]
-}
-
-';
+}';
         echo GREEN . "Writing portfile...\n" . WHITE;
         file_put_contents('./Vcpkg/ports/discordcoreapi/vcpkg.json', $versionFileContent);
         return $portFileContent;
@@ -257,16 +255,17 @@ file(
         $this->sudo('./vcpkg format-manifest ./ports/discordcoreapi/vcpkg.json');
         /* Note: We commit this in /usr/local, but we never push it (we can't) */
         $this->git('add .', true);
-        $this->git('commit -m "[bot] VCPKG info update"', true);
+        $this->git('commit -m "VCPKG info update"', true);
         $this->sudo('/usr/local/share/vcpkg/vcpkg x-add-version discordcoreapi');
 
         echo GREEN . "Copy back port files from /usr/local/share...\n" . WHITE;
         chdir(getenv('HOME') . '/discordcoreapi');
+        system('cp -v -R /usr/local/share/vcpkg/ports/discordcoreapi/vcpkg.json ./Vcpkg/ports/discordcoreapi/vcpkg.json');
         system('cp -v -R /usr/local/share/vcpkg/versions/d-/discordcoreapi.json ./Vcpkg/versions/d-/discordcoreapi.json');
 
         echo GREEN . "Commit and push changes to main branch\n" . WHITE;
         $this->git('add .');
-        $this->git('commit -m "[bot] VCPKG info update [skip ci]"');
+        $this->git('commit -m "VCPKG info update [skip ci]"');
         $this->git('config pull.rebase false');
         $this->git('pull');
         $this->git('push origin main');
