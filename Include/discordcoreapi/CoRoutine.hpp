@@ -26,7 +26,7 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/ThreadPool.hpp>
+#include <discordcoreapi/Utilities/ThreadPool.hpp>
 
 namespace DiscordCoreAPI {
 	/**

@@ -930,10 +930,10 @@ namespace DiscordCoreInternal {
 									break;
 								}
 								case 41: {
+									std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
+										std::make_unique<DiscordCoreAPI::OnInteractionCreationData>(parser, payload, discordCoreClient)
+									};
 									if (discordCoreClient->eventManager.onInteractionCreationEvent.functions.size() > 0) {
-										std::unique_ptr<DiscordCoreAPI::OnInteractionCreationData> dataPackage{
-											std::make_unique<DiscordCoreAPI::OnInteractionCreationData>(parser, payload, discordCoreClient)
-										};
 										discordCoreClient->eventManager.onInteractionCreationEvent(*dataPackage);
 									}
 									break;

@@ -26,7 +26,7 @@
 #include <discordcoreapi/Https.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
-#include <discordcoreapi/ThreadPool.hpp>
+#include <discordcoreapi/Utilities/ThreadPool.hpp>
 
 namespace DiscordCoreInternal {
 

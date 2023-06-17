@@ -30,7 +30,7 @@
 #include <discordcoreapi/CommandController.hpp>
 #include <discordcoreapi/Utilities/EventEntities.hpp>
 #include <discordcoreapi/TCPConnection.hpp>
-#include <discordcoreapi/ThreadPool.hpp>
+#include <discordcoreapi/Utilities/ThreadPool.hpp>
 #include <discordcoreapi/Utilities/Etf.hpp>
 
 namespace DiscordCoreInternal {

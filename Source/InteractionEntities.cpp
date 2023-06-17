@@ -25,7 +25,7 @@
 
 #include <discordcoreapi/InteractionEntities.hpp>
 #include <discordcoreapi/Utilities/EventEntities.hpp>
-#include <discordcoreapi/ThreadPool.hpp>
+#include <discordcoreapi/Utilities/ThreadPool.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Https.hpp>
 

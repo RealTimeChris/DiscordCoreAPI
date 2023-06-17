@@ -48,7 +48,7 @@
 #include <discordcoreapi/StageInstanceEntities.hpp>
 #include <discordcoreapi/StickerEntities.hpp>
 #include <discordcoreapi/ThreadEntities.hpp>
-#include <discordcoreapi/ThreadPool.hpp>
+#include <discordcoreapi/Utilities/ThreadPool.hpp>
 #include <discordcoreapi/UserEntities.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
 #include <discordcoreapi/WebHookEntities.hpp>
