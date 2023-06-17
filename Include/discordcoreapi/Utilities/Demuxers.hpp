@@ -44,7 +44,7 @@ namespace DiscordCoreInternal {
 		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
 		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
 		
-	class DiscordCoreAPI_Dll MatroskaDemuxer {
+	class MatroskaDemuxer {
 	  public:
 		inline MatroskaDemuxer(bool doWePrintErrorsNew) noexcept {
 			doWePrintErrors = doWePrintErrorsNew;
@@ -193,7 +193,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	class DiscordCoreAPI_Dll OpusPacket {
+	class OpusPacket {
 	  public:
 		inline OpusPacket() noexcept = default;
 
@@ -204,7 +204,7 @@ namespace DiscordCoreInternal {
 		std::basic_string_view<uint8_t> data{};
 	};
 
-	class DiscordCoreAPI_Dll OggPage {
+	class OggPage {
 	  public:
 
 		inline OggPage(std::basic_string_view<uint8_t>& newData) noexcept {
@@ -263,7 +263,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	class DiscordCoreAPI_Dll OggDemuxer {
+	class OggDemuxer {
 	  public:
 
 		inline OggDemuxer(bool doWePrintErrorsNew) noexcept {

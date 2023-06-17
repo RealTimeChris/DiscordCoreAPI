@@ -30,13 +30,13 @@
 
 namespace DiscordCoreInternal {
 
-	struct DiscordCoreAPI_Dll EncoderReturnData {
+	struct EncoderReturnData {
 		std::basic_string_view<uint8_t> data{};
 		uint64_t sampleCount{};
 	};
 
-	struct DiscordCoreAPI_Dll OpusEncoderWrapper {
-		struct DiscordCoreAPI_Dll OpusEncoderDeleter {
+	struct OpusEncoderWrapper {
+		struct OpusEncoderDeleter {
 			inline void operator()(OpusEncoder* other) noexcept {
 				if (other) {
 					opus_encoder_destroy(other);

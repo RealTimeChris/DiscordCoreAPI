@@ -24,7 +24,7 @@
 /// \file InteractionEntities.cpp
 
 #include <discordcoreapi/InteractionEntities.hpp>
-#include <discordcoreapi/EventEntities.hpp>
+#include <discordcoreapi/Utilities/EventEntities.hpp>
 #include <discordcoreapi/ThreadPool.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/Https.hpp>

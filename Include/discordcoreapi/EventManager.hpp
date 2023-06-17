@@ -29,7 +29,7 @@
 #include <discordcoreapi/ApplicationCommandEntities.hpp>
 #include <discordcoreapi/AutoModerationEntities.hpp>
 #include <discordcoreapi/ChannelEntities.hpp>
-#include <discordcoreapi/EventEntities.hpp>
+#include <discordcoreapi/Utilities/EventEntities.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/MessageEntities.hpp>

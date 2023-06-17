@@ -164,7 +164,8 @@ file(
 	INSTALL "${SOURCE_PATH}/License.md"
 	DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
 	RENAME copyright
-)';
+)
+';
         // ./Vcpkg/ports/discordcoreapi/vcpkg.json
         $versionFileContent = '{
   "name": "discordcoreapi",

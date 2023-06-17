@@ -31,7 +31,7 @@
 #include <discordcoreapi/ChannelEntities.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
 #include <discordcoreapi/CommandController.hpp>
-#include <discordcoreapi/EventEntities.hpp>
+#include <discordcoreapi/Utilities/EventEntities.hpp>
 #include <discordcoreapi/EventManager.hpp>
 #include <discordcoreapi/GuildEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>

@@ -29,7 +29,7 @@
 
 namespace DiscordCoreAPI {
 
-	struct DiscordCoreAPI_Dll DCAException : public std::runtime_error {
+	struct DCAException : public std::runtime_error {
 		DCAException(const std::string& error, std::source_location location = std::source_location::current()) noexcept;
 	};
 
@@ -70,7 +70,7 @@ namespace DiscordCoreInternal {
 		}
 	}
 	
-	struct DiscordCoreAPI_Dll EtfParseError : public DiscordCoreAPI::DCAException {
+	struct EtfParseError : public DiscordCoreAPI::DCAException {
 	  public:
 		inline explicit EtfParseError(const std::string& message) : DCAException(message){};
 	};
@@ -91,7 +91,7 @@ namespace DiscordCoreInternal {
 
 	constexpr uint8_t formatVersion{ 131 };
 
-	class DiscordCoreAPI_Dll EtfParser {
+	class EtfParser {
 	  public:
 		friend class WebSocketClient;
 
@@ -447,7 +447,7 @@ namespace DiscordCoreInternal {
 		}
 	};
 
-	struct DiscordCoreAPI_Dll EtfSerializeError : public DiscordCoreAPI::DCAException {
+	struct EtfSerializeError : public DiscordCoreAPI::DCAException {
 	  public:
 		inline EtfSerializeError(const std::string& message, std::source_location location = std::source_location::current())
 			: DCAException(message, location){};
@@ -514,7 +514,7 @@ namespace DiscordCoreInternal {
 		typename ValueType::key_type;
 	} && HasRange<ValueType> && !EtfSerializerT<ValueType>;
 
-	class DiscordCoreAPI_Dll EtfSerializer {
+	class EtfSerializer {
 	  public:
 		using MapAllocatorType = std::allocator<std::pair<const std::string, EtfSerializer>>;
 		template<typename ValueType> using allocator = std::allocator<std::decay_t<ValueType>>;

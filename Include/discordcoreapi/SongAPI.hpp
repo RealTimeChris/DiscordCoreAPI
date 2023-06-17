@@ -26,7 +26,7 @@
 #pragma once
 
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/EventEntities.hpp>
+#include <discordcoreapi/Utilities/EventEntities.hpp>
 #include <discordcoreapi/GuildMemberEntities.hpp>
 #include <discordcoreapi/VoiceConnection.hpp>
 

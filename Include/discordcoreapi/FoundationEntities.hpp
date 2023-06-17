@@ -800,13 +800,13 @@ namespace DiscordCoreAPI {
 	  public:
 		friend class GuildData;
 
-		String unicodeEmoji{};///< Emoji representing the Role.
 		Permissions permissions{};///< The Role's base Guild Permissions.
-		String name{};///< The Role's name.
+		String unicodeEmoji{};///< Emoji representing the Role.
 		Snowflake guildId{};///< The id of the Guild that this Role is from.
 		int16_t position{};///< Its position amongst the rest of the Guild's roles.
 		RoleFlags flags{};///< Role flags.
 		int32_t color{};///< The Role's color.
+		String name{};///< The Role's name.
 
 		RoleData() noexcept = default;
 
@@ -917,9 +917,9 @@ namespace DiscordCoreAPI {
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		GuildMemberFlags flags{};///< GuildMember flags.
 		TimeStamp joinedAt{};///< When they joined the Guild.
-		String nick{};///< Their nick/display name.
 		Snowflake guildId{};///< The current Guild's id.
 		UserIdBase user{};
+		String nick{};///< Their nick/display name.
 
 		GuildMemberData() noexcept = default;
 
@@ -974,10 +974,10 @@ namespace DiscordCoreAPI {
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		GuildMemberFlags flags{};///< GuildMember flags.
 		TimeStamp joinedAt{};///< When they joined the Guild.
-		String nick{};///< Their nick/display name.
 		Snowflake guildId{};///< The current Guild's id.
 		IconHash avatar{};///< This GuildMember's Guild Avatar.
 		UserData user{};
+		String nick{};///< Their nick/display name.
 
 		GuildMemberCacheData() noexcept = default;
 
@@ -1052,13 +1052,13 @@ namespace DiscordCoreAPI {
 		ChannelType type{ ChannelType::DM };///< The type of the Channel.
 		SortOrderTypes defaultSortOrder{};///< Default sorting order for a forum thread.
 		uint32_t memberCount{};///< Count of members active in the Channel.
-		String topic{};///< Channel topic.
 		Snowflake parentId{};///< Snowflake of the Channel's parent Channel/category.
-		String name{};///< Name of the Channel.
 		ChannelFlags flags{};///< Flags combined as a bitmask.
 		uint16_t position{};///< The position of the Channel, in the Guild's Channel list.
 		Snowflake ownerId{};///< Snowflake of the Channel's owner.
 		Snowflake guildId{};///< Snowflake of the Channel's Guild, if applicable.
+		String topic{};///< Channel topic.
+		String name{};///< Name of the Channel.
 
 		ChannelData() noexcept = default;
 
@@ -1769,24 +1769,24 @@ namespace DiscordCoreAPI {
 	/// \brief Data structure representing a single Guild.
 	class DiscordCoreAPI_Dll GuildData : public DiscordEntity {
 	  public:
-		DiscordCoreClient* discordCoreClient{};///< A pointer to the DiscordCoreClient.
-		VoiceConnection* voiceConnection{};///< A pointer to the VoiceConnection, if present.
-		std::vector<PresenceUpdateData> presences{};///< Presence states for each of the GuildMembers.
 		std::vector<Snowflake> guildScheduledEvents{};///< Array of Guild channels.
-		std::vector<Snowflake> voiceStates{};///< Voice states for each of the guild members.
-		std::vector<Snowflake> members{};///< Array of GuildMembers.
+		std::vector<PresenceUpdateData> presences{};///< Presence states for each of the GuildMembers.
 		std::vector<Snowflake> stageInstances{};///< Array of Guild channels.
+		DiscordCoreClient* discordCoreClient{};///< A pointer to the DiscordCoreClient.
+		std::vector<Snowflake> voiceStates{};///< Voice states for each of the guild members.
+		VoiceConnection* voiceConnection{};///< A pointer to the VoiceConnection, if present.
 		std::vector<Snowflake> stickers{};///< Array of Guild channels.
 		std::vector<Snowflake> channels{};///< Array of Guild channels.
+		std::vector<Snowflake> members{};///< Array of GuildMembers.
 		std::vector<Snowflake> threads{};///< Array of Guild channels.
 		std::vector<Snowflake> roles{};///< Array of Guild roles.
 		std::vector<Snowflake> emoji{};///< Array of Guild channels.
 		uint32_t memberCount{};///< Member count.
 		TimeStamp joinedAt{};///< When the bot joined this Guild.
-		String name{};///< The Guild's name.
 		Snowflake ownerId{};///< User id of the Guild's owner.
 		GuildFlags flags{};///< Guild flags.
 		IconHash icon{};///< Url to the Guild's icon.
+		String name{};///< The Guild's name.
 
 		GuildData() noexcept = default;
 

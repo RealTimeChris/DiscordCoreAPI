@@ -27,7 +27,7 @@
 
 #include <discordcoreapi/Utilities/RingBuffer.hpp>
 #include <discordcoreapi/FoundationEntities.hpp>
-#include <discordcoreapi/EventEntities.hpp>
+#include <discordcoreapi/Utilities/EventEntities.hpp>
 
 #ifndef OPENSSL_NO_DEPRECATED
 	#define OPENSSL_NO_DEPRECATED

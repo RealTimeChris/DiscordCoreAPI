@@ -26,7 +26,7 @@
 #include <discordcoreapi/MessageEntities.hpp>
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/CoRoutine.hpp>
-#include <discordcoreapi/EventEntities.hpp>
+#include <discordcoreapi/Utilities/EventEntities.hpp>
 
 namespace Jsonifier {
 
