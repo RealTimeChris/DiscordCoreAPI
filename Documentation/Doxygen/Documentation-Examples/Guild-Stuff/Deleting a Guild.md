@@ -1,6 +1,6 @@
 Deleting a Guild {#deletingaguild}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::deleteGuildAsync()` function, while passing in a value of type `DiscordCoreAPI::DeleteGuildData`, with a return value of type `void`.
+- Execute the, `Guilds::deleteGuildAsync()` function, while passing in a value of type `DeleteGuildData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Deleting a Guild {#deletingaguild}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				vector<DiscordCoreAPI::Guild> guilds = DiscordCoreAPI::Guilds::getAllGuildsAsync().get();
+				vector<Guild> guilds = Guilds::getAllGuildsAsync().get();
 				for (auto value: guilds) {
 					if (value.name == "NEWER TEST GUILD TWO!") {
-						DiscordCoreAPI::DeleteGuildData dataPackage;
+						DeleteGuildData dataPackage;
 						dataPackage.guildId = value.id;
-						DiscordCoreAPI::Guilds::deleteGuildAsync(dataPackage).get();
+						Guilds::deleteGuildAsync(dataPackage).get();
 					};
 				}
 

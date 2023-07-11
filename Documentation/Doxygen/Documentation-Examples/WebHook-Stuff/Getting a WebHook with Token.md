@@ -1,6 +1,6 @@
 Getting a WebHook with Token {#gettingawebhookwithtoken}
 ============
-- Execute the, `DiscordCoreAPI::WebHooks::getWebHookWithTokenAsync()` function, while passing in a value of type `DiscordCoreAPI::GetWebHookWithTokenData`, with a return value of type `auto` or `DiscordCoreAPI::WebHook`.
+- Execute the, `WebHooks::getWebHookWithTokenAsync()` function, while passing in a value of type `GetWebHookWithTokenData`, with a return value of type `auto` or `WebHook`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a WebHook with Token {#gettingawebhookwithtoken}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,22 +26,22 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildWebHooksData dataPackage;
+				GetGuildWebHooksData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto newWebHooks = DiscordCoreAPI::WebHooks::getGuildWebHooksAsync(dataPackage).get();
+				auto newWebHooks = WebHooks::getGuildWebHooksAsync(dataPackage).get();
 
-				DiscordCoreAPI::GetWebHookWithTokenData dataPackage01;
+				GetWebHookWithTokenData dataPackage01;
 				dataPackage01.webHookId = newWebHooks[0].id;
 				dataPackage01.webhookToken = newWebHooks[0].token;
 
-				auto newWebHook = DiscordCoreAPI::WebHooks::getWebHookWithTokenAsync(dataPackage01).get();
+				auto newWebHook = WebHooks::getWebHookWithTokenAsync(dataPackage01).get();
 
 
 			} catch (...) {

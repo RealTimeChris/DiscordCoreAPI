@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// VoiceConnection.hpp - Header for the voice connection class.
 /// Jul 15, 2021
@@ -152,7 +157,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll VoiceConnectionBridge : public DiscordCoreInternal::UDPConnection {
 	  public:
-		friend class DiscordCoreAPI_Dll VoiceConnection;
+		friend class VoiceConnection;
 
 		VoiceConnectionBridge(DiscordCoreClient* voiceConnectionNew, std::basic_string<uint8_t>& encryptionKeyNew, StreamType streamType,
 			const std::string& baseUrlNew, const uint16_t portNew, Snowflake guildIdNew, std::stop_token* tokenNew);
@@ -185,7 +190,7 @@ namespace DiscordCoreAPI {
 	  public:
 		VoiceUDPConnection() noexcept = default;
 
-		VoiceUDPConnection(const std::string& baseUrlNew, uint16_t portNew, DiscordCoreAPI::StreamType streamType, VoiceConnection* ptrNew);
+		VoiceUDPConnection(const std::string& baseUrlNew, uint16_t portNew, StreamType streamType, VoiceConnection* ptrNew);
 
 		void handleAudioBuffer() noexcept;
 
@@ -200,14 +205,14 @@ namespace DiscordCoreAPI {
 	/// \brief VoiceConnection class DiscordCoreAPI_Dll - represents the connection to a given voice Channel.
 	class DiscordCoreAPI_Dll VoiceConnection : public DiscordCoreInternal::WebSocketCore {
 	  public:
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudAPI;
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeAPI;
-		friend class DiscordCoreAPI_Dll VoiceConnectionBridge;
-		friend class DiscordCoreAPI_Dll VoiceUDPConnection;
-		friend class DiscordCoreAPI_Dll DiscordCoreClient;
-		friend class DiscordCoreAPI_Dll GuildData;
-		friend class DiscordCoreAPI_Dll SongAPI;
+		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreInternal::SoundCloudAPI;
+		friend class DiscordCoreInternal::YouTubeAPI;
+		friend class VoiceConnectionBridge;
+		friend class VoiceUDPConnection;
+		friend class DiscordCoreClient;
+		friend class GuildData;
+		friend class SongAPI;
 
 		/// The constructor.
 		VoiceConnection(DiscordCoreClient* discordCoreClientNew, DiscordCoreInternal::WebSocketClient* baseShardNew,
@@ -223,7 +228,7 @@ namespace DiscordCoreAPI {
 		/// \param initData A DiscordCoerAPI::VoiceConnectInitDat structure.
 		void connect(const VoiceConnectInitData& initData) noexcept;
 
-		~VoiceConnection() noexcept;
+		~VoiceConnection() noexcept = default;
 
 	  protected:
 		std::atomic<VoiceConnectionState> connectionState{ VoiceConnectionState::Collecting_Init_Data };
@@ -241,14 +246,12 @@ namespace DiscordCoreAPI {
 		int64_t sampleRatePerSecond{ 48000 };
 		RTPPacketEncrypter packetEncrypter{};
 		UniquePtr<std::jthread> taskThread{};
-		std::atomic_bool areWeStillActive{};
 		VoiceUDPConnection udpConnection{};
 		UniquePtr<std::stop_token> token{};
 		int64_t nsPerSecond{ 1000000000 };
 		std::string audioEncryptionMode{};
-		std::atomic_bool areWePlaying{};
-		std::atomic_bool doWeSkipNow{};
 		AudioFrameData xferAudioData{};
+		std::atomic_bool wasItAFail{};
 		std::atomic_bool* doWeQuit{};
 		std::atomic_bool doWeSkip{};
 		int64_t samplesPerPacket{};
@@ -275,6 +278,8 @@ namespace DiscordCoreAPI {
 
 		void checkForConnections() noexcept;
 
+		bool skip(bool wasItAFail) noexcept;
+
 		void connectInternal() noexcept;
 
 		void skipInternal() noexcept;
@@ -283,7 +288,7 @@ namespace DiscordCoreAPI {
 
 		void sendSilence() noexcept;
 
-		void pauseToggle() noexcept;
+		bool pauseToggle() noexcept;
 
 		void disconnect() noexcept;
 
@@ -292,8 +297,6 @@ namespace DiscordCoreAPI {
 		void runVoice() noexcept;
 
 		void onClosed() noexcept;
-
-		void skip() noexcept;
 
 		bool stop() noexcept;
 

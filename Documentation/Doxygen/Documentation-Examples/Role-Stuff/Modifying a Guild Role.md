@@ -1,6 +1,6 @@
 Modifying a Guild Role {#modifyingaguildrole}
 =============
-- Execute the, `DiscordCoreAPI::Roles::modifyGuildRoleAsync()` function, while passing in a value of type `DiscordCoreAPI::ModifyGuildRoleData`, with a return value of type `auto` or `DiscordCoreAPI::Role`.
+- Execute the, `Roles::modifyGuildRoleAsync()` function, while passing in a value of type `ModifyGuildRoleData`, with a return value of type `auto` or `Role`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Modifying a Guild Role {#modifyingaguildrole}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,13 +26,13 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		unique_ptr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::ModifyGuildRoleData dataPackage01;
+				ModifyGuildRoleData dataPackage01;
 				dataPackage01.name = "TEST ROLE";
 				dataPackage01.roleId = "886366417316896799";
 				dataPackage01.reason = "TESTING!";
@@ -41,9 +41,9 @@ namespace DiscordCoreAPI {
 				dataPackage01.mentionable = false;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto newRole = DiscordCoreAPI::Roles::modifyGuildRoleAsync(dataPackage01).get();
+				auto newRole = Roles::modifyGuildRoleAsync(dataPackage01).get();
 
-				cout << "ROLE NAME: " << newRole.name << endl;
+				std::cout << "ROLE NAME: " << newRole.name << std::endl;
 
 
 			} catch (...) {

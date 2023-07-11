@@ -1,6 +1,6 @@
 Creating an Interaction Response {#creatinganinputeventresponse}
 ============ 
-- Execute the, from the `DiscordCoreAPI::InputEvents::respondToInputEventAsync()` function, while passing in a data structure of type `DiscordCoreAPI::RespondToInputEventData` with a type set to either `DiscordCoreAPI::InputEventResponseType::Deferred_Response`, `DiscordCoreAPI::InputEventResponseType::Ephemeral_Deferred_Response`, `DiscordCoreAPI::InputEventResponseType::Interaction_Response`, `DiscordCoreAPI::InputEventResponseType::Follow_Up_Message`, `DiscordCoreAPI::InputEventResponseType::Ephemeral_Interaction_Response`, or `DiscordCoreAPI::InputEventResponseType::Ephemeral_Follow_Up_Message`, with a return value of type `auto` or `DiscordCoreAPI::InputEventData`.
+- Execute the, from the `InputEvents::respondToInputEventAsync()` function, while passing in a data structure of type `RespondToInputEventData` with a type set to either `InputEventResponseType::Deferred_Response`, `InputEventResponseType::Ephemeral_Deferred_Response`, `InputEventResponseType::Interaction_Response`, `InputEventResponseType::Follow_Up_Message`, `InputEventResponseType::Ephemeral_Interaction_Response`, or `InputEventResponseType::Ephemeral_Follow_Up_Message`, with a return value of type `auto` or `InputEventData`.
 
 ```cpp
 /// Test.hpp-Header for the "test" command.
@@ -12,12 +12,12 @@ Creating an Interaction Response {#creatinganinputeventresponse}
 
 										  namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -25,24 +25,24 @@ Creating an Interaction Response {#creatinganinputeventresponse}
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
+		virtual void execute(BaseFunctionArguments& args) {
+			InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
-			DiscordCoreAPI::RespondToInputEventData dataPackage {args.eventData};
-			dataPackage.type = DiscordCoreAPI::InputEventResponseType::Deferred_Response;
+			RespondToInputEventData dataPackage {args.eventData};
+			dataPackage.type = InputEventResponseType::Deferred_Response;
 			InputEvents::respondToInputEventAsync(dataPackage);
 
-			DiscordCoreAPI::RespondToInputEventData dataPackage01 {args.eventData};
-			dataPackage01.type = DiscordCoreAPI::InputEventResponseType::Interaction_Response;
+			RespondToInputEventData dataPackage01 {args.eventData};
+			dataPackage01.type = InputEventResponseType::Interaction_Response;
 			dataPackage01.addContent("Test Response");
 			InputEvents::respondToInputEventAsync(dataPackage01);
 
-			DiscordCoreAPI::RespondToInputEventData dataPackage02 {args.eventData};
-			dataPackage02.type = DiscordCoreAPI::InputEventResponseType::Ephemeral_Interaction_Response;
+			RespondToInputEventData dataPackage02 {args.eventData};
+			dataPackage02.type = InputEventResponseType::Ephemeral_Interaction_Response;
 			dataPackage02.addContent("Test Response");
 			InputEvents::respondToInputEventAsync(dataPackage02);
 		}

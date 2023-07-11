@@ -1,6 +1,6 @@
 Removing a Guild Ban {#removingaguildban}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::removeGuildBanAsync()` function, while passing in a value of type `DiscordCoreAPI::RemoveGuildBanData`, with a return value of type `void`.
+- Execute the, `Guilds::removeGuildBanAsync()` function, while passing in a value of type `RemoveGuildBanData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Removing a Guild Ban {#removingaguildban}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::RemoveGuildBanData dataPackage01;
+				RemoveGuildBanData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.userId = "869276807394902066";
 				dataPackage01.reason = "TESTING PURPOSES!";
 
-				DiscordCoreAPI::Guilds::removeGuildBanAsync(dataPackage01).get();
+				Guilds::removeGuildBanAsync(dataPackage01).get();
 
 
 			} catch (...) {

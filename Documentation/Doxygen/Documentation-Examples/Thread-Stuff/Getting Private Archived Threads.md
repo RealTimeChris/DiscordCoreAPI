@@ -1,6 +1,6 @@
 Getting Private Archived Threads {#gettingprivatearchivedthreads}
 ============
-- Execute the, `DiscordCoreAPI::Threads::getPrivateArchivedThreadsAsync()` function, while passing in a value of type `DiscordCoreAPI::GetPrivateArchivedThreadsData`, with a return value of type `auto` or `DiscordCoreAPI::ArchivedThreadsData`.
+- Execute the, `Threads::getPrivateArchivedThreadsAsync()` function, while passing in a value of type `GetPrivateArchivedThreadsData`, with a return value of type `auto` or `ArchivedThreadsData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Private Archived Threads {#gettingprivatearchivedthreads}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,17 +26,17 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetPrivateArchivedThreadsData dataPackage;
+				GetPrivateArchivedThreadsData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.limit = 2;
 
-				auto newActiveThreads = DiscordCoreAPI::Threads::getPrivateArchivedThreadsAsync(dataPackage).get();
+				auto newActiveThreads = Threads::getPrivateArchivedThreadsAsync(dataPackage).get();
 
 
 			} catch (...) {

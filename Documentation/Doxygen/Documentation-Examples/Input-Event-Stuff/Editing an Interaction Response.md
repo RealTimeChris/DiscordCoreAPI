@@ -1,6 +1,6 @@
 Editing an Interaction Response {#editinganinputeventresponse}
 ============
-- Execute the, `DiscordCoreAPI::InputEvents::respondToInputEventAsync()` function, while passing in a data structure of type `DiscordCoreAPI::RespondToInputEventData` with a type set	to `DiscordCoreAPI::InputEventResponseType::Edit_Interaction_Response`, or `DiscordCoreAPI::InputEventResponseType::Edit_Follow_Up_Message` with a return value of type `auto` or `DiscordCoreAPI::InputEventData`.
+- Execute the, `InputEvents::respondToInputEventAsync()` function, while passing in a data structure of type `RespondToInputEventData` with a type set	to `InputEventResponseType::Edit_Interaction_Response`, or `InputEventResponseType::Edit_Follow_Up_Message` with a return value of type `auto` or `InputEventData`.
 
 ```cpp
 /// Test.hpp-Header for the "test" command.
@@ -12,12 +12,12 @@ Editing an Interaction Response {#editinganinputeventresponse}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -25,22 +25,22 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
+		virtual void execute(BaseFunctionArguments& args) {
+			InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
-			DiscordCoreAPI::RespondToInputEventData dataPackage02 {args.eventData};
-			dataPackage02.type = DiscordCoreAPI::InputEventResponseType::Edit_Interaction_Response;
+			RespondToInputEventData dataPackage02 {args.eventData};
+			dataPackage02.type = InputEventResponseType::Edit_Interaction_Response;
 			dataPackage02.addContent("Test Response");
-			auto inputEventData = DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage02);
+			auto inputEventData = InputEvents::respondToInputEventAsync(dataPackage02);
 
-			DiscordCoreAPI::RespondToInputEventData dataPackage03 {inputEventData};
+			RespondToInputEventData dataPackage03 {inputEventData};
 			dataPackage03.type = InputEventResponseType::Edit_Follow_Up_Message;
 			dataPackage03.addContent("Test Response, Edited!");
-			DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage03);
+			InputEvents::respondToInputEventAsync(dataPackage03);
 		}
 	};
 }

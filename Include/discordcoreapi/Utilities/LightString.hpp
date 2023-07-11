@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// LightString.hpp - Header for the LightString class.
 /// Nov 8, 2021
@@ -36,7 +41,7 @@ namespace DiscordCoreAPI {
 		using traits_type = std::char_traits<value_type>;
 		using pointer = ValueType*;
 		using const_pointer = const value_type*;
-		using allocator = Globals::AllocWrapper<value_type>;
+		using allocator = AllocWrapper<value_type>;
 
 		inline constexpr LightString() noexcept = default;
 
@@ -258,7 +263,23 @@ namespace DiscordCoreAPI {
 			}
 		}
 
-		template<typename ValueType02> inline constexpr bool operator==(const ValueType02& rhs) const noexcept {
+		inline constexpr bool operator==(const pointer rhs) const noexcept {
+			if (traits_type::length(rhs) != size()) {
+				return false;
+			}
+			return JsonifierInternal::JsonifierCoreInternal::compare(rhs, data(), size());
+		}
+
+		template<size_t strLength> inline constexpr bool operator==(const char (&other)[strLength]) {
+			if (strLength != size()) {
+				return false;
+			}
+			return JsonifierInternal::JsonifierCoreInternal::compare(other, data(), size());
+		}
+
+		template<typename ValueType02> inline constexpr std::enable_if_t<
+			std::convertible_to<ValueType02, LightString> && !std::is_pointer_v<ValueType02> && !std::is_array_v<ValueType02>, bool>
+		operator==(const ValueType02& rhs) const noexcept {
 			if (rhs.size() != size()) {
 				return false;
 			}
@@ -302,6 +323,18 @@ namespace DiscordCoreAPI {
 	template<typename value_type> inline std::ostream& operator<<(std::ostream& os, const LightString<value_type>& string) {
 		os << string.operator typename std::string();
 		return os;
+	}
+
+	inline LightString<char> operator+(const char* lhs, const LightString<char>& rhs) noexcept {
+		LightString<char> newString(lhs);
+		newString += rhs;
+		return newString;
+	}
+
+	template<typename ValueType> inline LightString<char> operator+(const ValueType& lhs, const LightString<char>& rhs) noexcept {
+		LightString<char> newString(lhs);
+		newString += rhs;
+		return newString;
 	}
 
 	using String = LightString<char>;

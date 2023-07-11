@@ -1,6 +1,6 @@
 Creating a WebHook {#creatingawebhook}
 ============
-- Execute the, `DiscordCoreAPI::WebHooks::createWebHookAsync()` function, while passing in a value of type `DiscordCoreAPI::CreateWebHookData`, with a return value of type `auto` or `DiscordCoreAPI::WebHook`.
+- Execute the, `WebHooks::createWebHookAsync()` function, while passing in a value of type `CreateWebHookData`, with a return value of type `auto` or `WebHook`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Creating a WebHook {#creatingawebhook}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::CreateWebHookData dataPackage;
+				CreateWebHookData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.name = "TEST_WEBHOOK";
 
-				auto newWebHook = DiscordCoreAPI::WebHooks::createWebHookAsync(dataPackage).get();
+				auto newWebHook = WebHooks::createWebHookAsync(dataPackage).get();
 
-				cout << "THE NAME: " << newWebHook.name << endl;
+				std::cout << "THE NAME: " << newWebHook.name << std::endl;
 
 
 			} catch (...) {

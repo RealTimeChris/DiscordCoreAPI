@@ -1,6 +1,6 @@
 Getting a Role {#gettingarole}
 =============
-- Execute the, `DiscordCoreAPI::Roles::getCachedRole()` (which collects it from the cache), or `DiscordCoreAPI::Roles::getRoleAsync()` (which collects it from the Discord servers) function, while passing in a value of type `DiscordCoreAPI::GetRoleData`.
+- Execute the, `Roles::getCachedRole()` (which collects it from the cache), or `Roles::getRoleAsync()` (which collects it from the Discord servers) function, while passing in a value of type `GetRoleData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Role {#gettingarole}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		unique_ptr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::GetRoleData dataPackage;
+		virtual void execute(BaseFunctionArguments& args) {
+			GetRoleData dataPackage;
 			dataPackage.guildId = args.eventData.getGuildId();
 			dataPackage.roleId = "YOUR_ROLE_ID_HERE";
 
-			Role role = DiscordCoreAPI::Roles::getRoleAsync(dataPackage).get();
+			Role role = Roles::getRoleAsync(dataPackage).get();
 
-			Role role = DiscordCoreAPI::Roles::getCachedRole(dataPackage).get();
+			Role role = Roles::getCachedRole(dataPackage).get();
 		}
 	};
 }

@@ -1,6 +1,6 @@
 Creating a Channel Invite {#creatingchannelinvite}
 ============
-- Execute the `DiscordCoreAPI::Channels::createChannelInviteAsync()` function, while passing in a data structure of type `DiscordCoreAPI::CreateChannelInviteData`, with a return value of `auto` or `DiscordCoreAPI::InviteData`.
+- Execute the `Channels::createChannelInviteAsync()` function, while passing in a data structure of type `CreateChannelInviteData`, with a return value of `auto` or `InviteData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Creating a Channel Invite {#creatingchannelinvite}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::CreateChannelInviteData dataPackage;
+				CreateChannelInviteData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
-				dataPackage.targetType = DiscordCoreAPI::InviteTargetTypes::Embedded_Application;
+				dataPackage.targetType = InviteTargetTypes::Embedded_Application;
 				dataPackage.temporary = true;
 
-				DiscordCoreAPI::InviteData channelInvite = Channels::createChannelInviteAsync(dataPackage).get();
-				cout << "CHANNEL INVITE: " << channelInvite.inviter.userName << endl;
+				InviteData channelInvite = Channels::createChannelInviteAsync(dataPackage).get();
+				std::cout << "CHANNEL INVITE: " << channelInvite.inviter.userName << std::endl;
 
 			} catch (...) {
 				rethrowException("Test::execute()");

@@ -19,7 +19,7 @@ namespace DiscordCoreAPI {
 					auto song = SongAPI::addSongToQueue(guildMember, searchResults[value]);
 				}
 			}
-			DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+			UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 			std::string descriptionString{};
 			currentQueue = SongAPI::getPlaylist(guildMember.guildId);
 			descriptionString = "------\n__**Added the following songs to the queue:\n";
@@ -65,8 +65,8 @@ namespace DiscordCoreAPI {
 			helpEmbed = newEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Play>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Play>();
 		}
 
 		void execute(BaseFunctionArguments& newArgs) {
@@ -100,7 +100,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (currentTime - previousPlayedTime < 5000) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Sorry, but please wait a total of 5 seconds in between plays!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -125,7 +125,7 @@ namespace DiscordCoreAPI {
 				if (guild.voiceStates.contains(guildMember.id)) {
 					voiceStateData = guild.voiceStates.at(guildMember.id);
 				} else {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -143,7 +143,7 @@ namespace DiscordCoreAPI {
 				}
 				VoiceConnection* voiceConnection = guild.connectToVoice(guildMember.id, 0, false, false);
 				if (voiceConnection == nullptr) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Sorry, but there is no voice connection that is currently held by me!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -162,7 +162,7 @@ namespace DiscordCoreAPI {
 				loadPlaylist(discordGuild);
 
 				if (voiceStateData.channelId == 0 || voiceStateData.channelId != voiceConnection->getChannelId()) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -185,7 +185,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (searchResults.size() <= 0 && newArgs.optionsArgs.size() > 0) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setDescription("------\n__**No songs could be found as a result of your search!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -206,7 +206,7 @@ namespace DiscordCoreAPI {
 				int32_t x = 0;
 				for (Song& value: searchResults) {
 					x += 1;
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setDescription("__**Title:**__ [" + value.songTitle + "](" + value.viewUrl + ")" + "\n__**Description:**__ " + value.description +
 						"\n__**Duration:**__ " + value.duration);
@@ -236,7 +236,7 @@ namespace DiscordCoreAPI {
 						co_await NewThreadAwaitable<void>();
 						std::this_thread::sleep_for(150ms);
 						if (SongAPI::isThereAnySongs(guild.id)) {
-							DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+							UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 							if (!eventData.wasItAFail) {
 								if (!SongAPI::sendNextSong(guildMember)) {
 									InputEvents::deleteInputEventResponseAsync(newEvent);
@@ -329,7 +329,7 @@ namespace DiscordCoreAPI {
 							}
 							savePlaylist(discordGuild);
 						} else {
-							DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+							UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 							newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 							newEmbed->setDescription("------\n__**Sorry, but there's nothing left to play here!**__\n------");
 							newEmbed->setTimeStamp(getTimeAndDate());
@@ -355,7 +355,7 @@ namespace DiscordCoreAPI {
 							InputEvents::deleteInputEventResponseAsync(newEvent);
 							SongAPI::play(guild.id);
 						}
-						DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+						UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 						newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 						newEmbed->setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewUrl + ")" +
 							"\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " + SongAPI::getCurrentSong(guild.id).duration +
@@ -382,7 +382,7 @@ namespace DiscordCoreAPI {
 						SongAPI::play(guild.id);
 
 					} else {
-						DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+						UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 						newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 						newEmbed->setDescription("------\n__**Sorry, but there's nothing to play!**__\n------");
 						newEmbed->setTimeStamp(getTimeAndDate());
@@ -400,7 +400,7 @@ namespace DiscordCoreAPI {
 					}
 					SongAPI::onSongCompletion(theTask, guild.id);
 				} else if (newArgs.optionsArgs.size() == 0 && SongAPI::areWeCurrentlyPlaying(guild.id)) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Sorry, but there's already something playing!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -419,7 +419,7 @@ namespace DiscordCoreAPI {
 				} else if (returnData.currentPageIndex != -1 && arrayOfIndices.size() < 2) {
 					discordGuild.data.playlist = SongAPI::getPlaylist(guild.id);
 					discordGuild.writeDataToDB();
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Song Title:**__ [" + searchResults[returnData.currentPageIndex].songTitle + "](" +
 						searchResults[returnData.currentPageIndex].viewUrl + ")\n__**Duration:**__ " + searchResults[returnData.currentPageIndex].duration +

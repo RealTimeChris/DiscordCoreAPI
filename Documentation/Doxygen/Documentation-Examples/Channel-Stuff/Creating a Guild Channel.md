@@ -1,6 +1,6 @@
 Creating a Guild Channel {#creatingguildchannel}
 ============
-- Execute the, `DiscordCoreAPI::Channels::createGuildChannelAsync()` function, while passing in a data structure of type `DiscordCoreAPI::CreateGuildChannelData`, with a return value of type `auto` or `DiscordCoreAPI::Channel`.
+- Execute the, `Channels::createGuildChannelAsync()` function, while passing in a data structure of type `CreateGuildChannelData`, with a return value of type `auto` or `Channel`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Creating a Guild Channel {#creatingguildchannel}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::CreateGuildChannelData dataPackage;
-				dataPackage.type = DiscordCoreAPI::ChannelType::Guild_Text;
+				CreateGuildChannelData dataPackage;
+				dataPackage.type = ChannelType::Guild_Text;
 				dataPackage.name = "TEST CHANNEL";
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.reason = "TESTING PURPOSES!";
 
-				vector<DiscordCoreAPI::Channel> channels = DiscordCoreAPI::Channels::getGuildChannelsAsync({.guildId = args.eventData.getGuildId()}).get();
+				vector<Channel> channels = Channels::getGuildChannelsAsync({.guildId = args.eventData.getGuildId()}).get();
 
 				for (auto value: channels) {
 					if (value.type == ChannelType::GUILD_CATEGORY) {
@@ -47,9 +47,9 @@ namespace DiscordCoreAPI {
 					}
 				}
 
-				DiscordCoreAPI::Channel channel = DiscordCoreAPI::Channels::createGuildChannelAsync(dataPackage).get();
+				Channel channel = Channels::createGuildChannelAsync(dataPackage).get();
 
-				cout << "THE NAME: " << channel.name << endl;
+				std::cout << "THE NAME: " << channel.name << std::endl;
 
 
 			} catch (...) {

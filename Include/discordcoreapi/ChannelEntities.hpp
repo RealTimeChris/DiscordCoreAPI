@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// ChannelEntities.hpp - Header for the classes related classes and structs.
 /// May 13, 2021
@@ -37,20 +42,20 @@ namespace DiscordCoreAPI {
 
 	/// \brief For collecting a Channel from Discord's servers.
 	struct DiscordCoreAPI_Dll GetChannelData {
-		Snowflake channelId{};///< The id of the Channel to acquire.
+		DiscordCoreAPI::Snowflake channelId{};///< The id of the Channel to acquire.
 	};
 
 	/// \brief For deleting or closing a Channel.
 	struct DiscordCoreAPI_Dll DeleteOrCloseChannelData {
-		Snowflake channelId{};///< The id of the Channel to close/delete.
+		DiscordCoreAPI::Snowflake channelId{};///< The id of the Channel to close/delete.
 		std::string reason{};///< The reason for deleting/closing the Channel.
 	};
 
 	/// \brief For editing the PermissionTypes overwrites of a given Channel, for a given Role or User.
 	struct DiscordCoreAPI_Dll EditChannelPermissionOverwritesData {
 		PermissionOverwritesType type{};///< The type of overwrite.
-		Snowflake roleOrUserId{};///< The Role or User Snowflake to modify the permissions for.
-		Snowflake channelId{};///< The Channel id of the desired Channel to modify the permissions for.
+		DiscordCoreAPI::Snowflake roleOrUserId{};///< The Role or User DiscordCoreAPI::Snowflake to modify the permissions for.
+		DiscordCoreAPI::Snowflake channelId{};///< The Channel id of the desired Channel to modify the permissions for.
 		std::string reason{};///< Reason for editing the permission overwrites.
 		std::string allow{};///< The permissions to list as "allowed".
 		std::string deny{};///< The permissions to list as "deny".
@@ -58,15 +63,16 @@ namespace DiscordCoreAPI {
 
 	/// \brief For collecting the invites to a given Channel.
 	struct DiscordCoreAPI_Dll GetChannelInvitesData {
-		Snowflake channelId{};
+		DiscordCoreAPI::Snowflake channelId{};
 	};
 
 	/// \brief For creating an invite to a given Channel.
 	struct DiscordCoreAPI_Dll CreateChannelInviteData {
-		Snowflake targetApplicationId{};///< The id of the embedded application to open for this invite, required if target_type is 2.
+		DiscordCoreAPI::Snowflake targetApplicationId{};///< The id of the embedded application to open for this invite, required if target_type is 2.
 		InviteTargetTypes targetType{};///<	The type of target for this voice Channel invite.
-		Snowflake targetUserId{};///< Snowflake of the user whose stream to display for this invite, required if target_type is 1.
-		Snowflake channelId{};///< The id of the Channel to create the invite for.
+		DiscordCoreAPI::Snowflake
+			targetUserId{};///< DiscordCoreAPI::Snowflake of the user whose stream to display for this invite, required if target_type is 1.
+		DiscordCoreAPI::Snowflake channelId{};///< The id of the Channel to create the invite for.
 		std::string reason{};///< Reason for creating the invite.
 		int32_t maxUses{};///< Max number of uses or 0 for unlimited.between 0 and 100.
 		int32_t maxAge{};///< Duration of invite in seconds before expiry, or 0 for never.between 0 and 604800 (7 days)	86400 (24 hours).
@@ -76,25 +82,25 @@ namespace DiscordCoreAPI {
 
 	/// \brief For deleting the PermissionTypes overwrites of a given Channel for a given Role or User.
 	struct DiscordCoreAPI_Dll DeleteChannelPermissionOverwritesData {
-		Snowflake roleOrUserId{};///< The Role or User id for whom to delete the PermissionTypes overwrites.
-		Snowflake channelId{};///< The id of the Channel to modify permissions for.
+		DiscordCoreAPI::Snowflake roleOrUserId{};///< The Role or User id for whom to delete the PermissionTypes overwrites.
+		DiscordCoreAPI::Snowflake channelId{};///< The id of the Channel to modify permissions for.
 		std::string reason{};///< Reason for deleting these permission overwrites.
 	};
 
 	/// \brief For following a news Channel.
 	struct DiscordCoreAPI_Dll FollowNewsChannelData {
-		Snowflake targetChannelId{};
-		Snowflake channelId{};
+		DiscordCoreAPI::Snowflake targetChannelId{};
+		DiscordCoreAPI::Snowflake channelId{};
 	};
 
 	/// \brief For triggering the typing indicator in a given Channel.
 	struct DiscordCoreAPI_Dll TriggerTypingIndicatorData {
-		Snowflake channelId{};
+		DiscordCoreAPI::Snowflake channelId{};
 	};
 
 	/// \brief For acquiring a list of Channels from a chosen Guild.
 	struct DiscordCoreAPI_Dll GetGuildChannelsData {
-		Snowflake guildId{};///< The Guild from which to collect the Channels from.
+		DiscordCoreAPI::Snowflake guildId{};///< The Guild from which to collect the Channels from.
 	};
 
 	/// \brief For creating a new Channel within a chosen Guild.
@@ -103,10 +109,10 @@ namespace DiscordCoreAPI {
 		int32_t defaultAutoArchiveDuration{};///< Defualt duration of time before archiving a thread.
 		int32_t rateLimitPerUser{};///< Amount of seconds a user has to wait before sending another message(0 - 21600).
 		std::string reason{};///< Reason for creating the Channel.
-		Snowflake parentId{};///< Snowflake of the parent category for a Channel.
+		DiscordCoreAPI::Snowflake parentId{};///< DiscordCoreAPI::Snowflake of the parent category for a Channel.
 		std::string topic{};///< Channel topic(0 - 1024 characters).
 		int32_t userLimit{};///< The user limit of the voice Channel(voice only).
-		Snowflake guildId{};///< The Guild within which to create the Channel.
+		DiscordCoreAPI::Snowflake guildId{};///< The Guild within which to create the Channel.
 		int32_t position{};///< Sorting position of the Channel.
 		std::string name{};///< The name of the Channel.
 		ChannelType type{};///< The type of Channel.
@@ -117,27 +123,27 @@ namespace DiscordCoreAPI {
 	/// \brief For modifying the Channel position responseData of a single Channel.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionData {
 		bool lockPermissions{};///< Syncs the permission overwrites with the new parent, if moving to a new category.
-		Snowflake parentId{};///< The new parent ID for the Channel that is moved.
+		DiscordCoreAPI::Snowflake parentId{};///< The new parent ID for the Channel that is moved.
 		int32_t position{};///< Sorting position of the Channel.
-		Snowflake id{};///< Channel id.
+		DiscordCoreAPI::Snowflake id{};///< Channel id.
 	};
 
 	/// \brief For modifying the current positions of one or more Channels in the Guild.
 	struct DiscordCoreAPI_Dll ModifyGuildChannelPositionsData {
 		std::vector<ModifyGuildChannelPositionData> modifyChannelData{};///< Array of new Channel position's responseData.
 		std::string reason{};///< Reason for re-ordering the Channel positions.
-		Snowflake guildId{};///< Guild within which to re-order the Channel positions.
+		DiscordCoreAPI::Snowflake guildId{};///< Guild within which to re-order the Channel positions.
 	};
 
 	/// \brief For collecting a direct-messaging Channel.
 	struct DiscordCoreAPI_Dll CreateDMChannelData {
-		Snowflake userId{};///< The User for whom to collect the direct-messaging Channel to.
+		DiscordCoreAPI::Snowflake userId{};///< The User for whom to collect the direct-messaging Channel to.
 	};
 
 	/// \brief For modifying a Channel's properties.
 	struct DiscordCoreAPI_Dll ModifyChannelData {
 		UpdateChannelData channelData{};///< The responseData of the Channel to be updated.
-		Snowflake channelId{};///< The id of the Channel to modify.
+		DiscordCoreAPI::Snowflake channelId{};///< The id of the Channel to modify.
 		std::string reason{};///< A reason for modifying the Channel.
 
 		ModifyChannelData(Channel newData);
@@ -152,11 +158,11 @@ namespace DiscordCoreAPI {
 	/// \brief An interface class for the Channel-related endpoints.
 	class DiscordCoreAPI_Dll Channels {
 	  public:
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::WebSocketClient;
-		friend class DiscordCoreAPI_Dll DiscordCoreClient;
-		friend class DiscordCoreAPI_Dll ChannelData;
-		friend class DiscordCoreAPI_Dll GuildData;
-		friend class DiscordCoreAPI_Dll Guild;
+		friend class DiscordCoreInternal::WebSocketClient;
+		friend class DiscordCoreClient;
+		friend class ChannelData;
+		friend class GuildData;
+		friend class Guild;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*, ConfigManager* configManager);
 
@@ -236,13 +242,13 @@ namespace DiscordCoreAPI {
 
 		static ChannelData& insertChannel(ChannelData&& channel);
 
-		static void removeChannel(Snowflake channelId);
+		static void removeChannel(DiscordCoreAPI::Snowflake channelId);
 
 		static bool doWeCacheChannels();
 
 	  protected:
 		static DiscordCoreInternal::HttpsClient* httpsClient;
-		static ObjectCache<Snowflake, ChannelData> cache;
+		static ObjectCache<DiscordCoreAPI::Snowflake, ChannelData> cache;
 		static bool doWeCacheChannelsBool;
 	};
 	/**@}*/

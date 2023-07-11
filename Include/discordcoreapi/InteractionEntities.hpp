@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// InteractionEntities.hpp - Header for the interaction related classes and
 /// structs. May 28, 2021 Chris M.
@@ -40,7 +45,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll InteractionResponseBase {
 	  public:
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<InteractionResponseBase>;
+		friend struct Jsonifier::Core<InteractionResponseBase>;
 
 		std::unordered_set<std::string_view> excludedKeys{};
 
@@ -129,9 +134,9 @@ namespace DiscordCoreAPI {
 	/// \brief For creating an ephemeral Interaction response.
 	class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData : public InteractionResponseBase {
 	  public:
-		friend class DiscordCoreAPI_Dll CreateInteractionResponseData;
-		friend class DiscordCoreAPI_Dll Interactions;
-		friend class DiscordCoreAPI_Dll InputEvents;
+		friend class CreateInteractionResponseData;
+		friend class Interactions;
+		friend class InputEvents;
 
 		CreateEphemeralInteractionResponseData(const RespondToInputEventData& dataPackage);
 
@@ -141,9 +146,9 @@ namespace DiscordCoreAPI {
 	/// \brief For creating a deferred Interaction response.
 	class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData : public InteractionResponseBase {
 	  public:
-		friend class DiscordCoreAPI_Dll CreateInteractionResponseData;
-		friend class DiscordCoreAPI_Dll Interactions;
-		friend class DiscordCoreAPI_Dll InputEvents;
+		friend class CreateInteractionResponseData;
+		friend class Interactions;
+		friend class InputEvents;
 
 		CreateDeferredInteractionResponseData(const RespondToInputEventData& dataPackage);
 
@@ -153,12 +158,12 @@ namespace DiscordCoreAPI {
 	/// \brief For creating an Interaction response.
 	class DiscordCoreAPI_Dll CreateInteractionResponseData : public InteractionResponseBase {
 	  public:
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<CreateInteractionResponseData>;
-		friend class DiscordCoreAPI_Dll SelectMenuCollector;
-		friend class DiscordCoreAPI_Dll ButtonCollector;
-		friend class DiscordCoreAPI_Dll ModalCollector;
-		friend class DiscordCoreAPI_Dll Interactions;
-		friend class DiscordCoreAPI_Dll InputEvents;
+		friend struct Jsonifier::Core<CreateInteractionResponseData>;
+		friend class SelectMenuCollector;
+		friend class ButtonCollector;
+		friend class ModalCollector;
+		friend class Interactions;
+		friend class InputEvents;
 
 		CreateInteractionResponseData(const CreateEphemeralInteractionResponseData& dataPackage);
 
@@ -182,9 +187,9 @@ namespace DiscordCoreAPI {
 	/// \brief For editing an Interaction response.
 	class DiscordCoreAPI_Dll EditInteractionResponseData : public EditWebHookData {
 	  public:
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<EditInteractionResponseData>;
-		friend class DiscordCoreAPI_Dll Interactions;
-		friend class DiscordCoreAPI_Dll InputEvents;
+		friend struct Jsonifier::Core<EditInteractionResponseData>;
+		friend class Interactions;
+		friend class InputEvents;
 
 		std::unordered_set<std::string_view> excludedKeys{};
 
@@ -200,8 +205,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For deleting an Interaction response.
 	struct DiscordCoreAPI_Dll DeleteInteractionResponseData {
-		friend class DiscordCoreAPI_Dll Interactions;
-		friend class DiscordCoreAPI_Dll InputEvents;
+		friend class Interactions;
+		friend class InputEvents;
 
 		DeleteInteractionResponseData(const RespondToInputEventData& dataPackage);
 
@@ -213,9 +218,9 @@ namespace DiscordCoreAPI {
 	/// \brief For creating an ephemeral follow up Message.
 	class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData : public ExecuteWebHookData {
 	  public:
-		friend class DiscordCoreAPI_Dll CreateFollowUpMessageData;
-		friend class DiscordCoreAPI_Dll Interactions;
-		friend class DiscordCoreAPI_Dll InputEvents;
+		friend class CreateFollowUpMessageData;
+		friend class Interactions;
+		friend class InputEvents;
 
 		CreateEphemeralFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
@@ -228,11 +233,11 @@ namespace DiscordCoreAPI {
 	/// \brief For creating a follow up Message.
 	class DiscordCoreAPI_Dll CreateFollowUpMessageData : public ExecuteWebHookData {
 	  public:
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<CreateFollowUpMessageData>;
-		friend class DiscordCoreAPI_Dll SelectMenuCollector;
-		friend class DiscordCoreAPI_Dll ButtonCollector;
-		friend class DiscordCoreAPI_Dll Interactions;
-		friend class DiscordCoreAPI_Dll InputEvents;
+		friend struct Jsonifier::Core<CreateFollowUpMessageData>;
+		friend class SelectMenuCollector;
+		friend class ButtonCollector;
+		friend class Interactions;
+		friend class InputEvents;
 
 		std::unordered_set<std::string_view> excludedKeys{};
 
@@ -258,9 +263,9 @@ namespace DiscordCoreAPI {
 	/// \brief For editing a follow up Message.
 	class DiscordCoreAPI_Dll EditFollowUpMessageData : public EditWebHookData {
 	  public:
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<EditFollowUpMessageData>;
-		friend class DiscordCoreAPI_Dll Interactions;
-		friend class DiscordCoreAPI_Dll InputEvents;
+		friend struct Jsonifier::Core<EditFollowUpMessageData>;
+		friend class Interactions;
+		friend class InputEvents;
 
 		std::unordered_set<std::string_view> excludedKeys{};
 
@@ -275,8 +280,8 @@ namespace DiscordCoreAPI {
 
 	/// \brief For deleting a follow up Message.
 	struct DiscordCoreAPI_Dll DeleteFollowUpMessageData {
-		friend class DiscordCoreAPI_Dll Interactions;
-		friend class DiscordCoreAPI_Dll InputEvents;
+		friend class Interactions;
+		friend class InputEvents;
 
 		DeleteFollowUpMessageData(const RespondToInputEventData& dataPackage);
 
@@ -304,9 +309,9 @@ namespace DiscordCoreAPI {
 	/// \brief An interface class for the Interaction related Discord endpoints.
 	class DiscordCoreAPI_Dll Interactions {
 	  public:
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreAPI_Dll DiscordCoreClient;
-		friend class DiscordCoreAPI_Dll EventManager;
+		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class DiscordCoreClient;
+		friend class EventManager;
 
 		static void initialize(DiscordCoreInternal::HttpsClient*);
 
@@ -422,7 +427,7 @@ namespace DiscordCoreAPI {
 	/// or more Users.
 	class DiscordCoreAPI_Dll SelectMenuCollector {
 	  public:
-		friend class DiscordCoreAPI_Dll DiscordCoreClient;
+		friend class DiscordCoreClient;
 
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> selectMenuInteractionBuffersMap;
 		static DiscordCoreInternal::TriggerEvent<void, InteractionData> selectMenuInteractionEventsMap;
@@ -520,7 +525,7 @@ namespace DiscordCoreAPI {
 	/// \brief ButtonCollector, for collecting button input from one or more Users.
 	class DiscordCoreAPI_Dll ButtonCollector {
 	  public:
-		friend class DiscordCoreAPI_Dll DiscordCoreClient;
+		friend class DiscordCoreClient;
 
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> buttonInteractionBuffersMap;
 		static DiscordCoreInternal::TriggerEvent<void, InteractionData> buttonInteractionEventsMap;
@@ -602,7 +607,7 @@ namespace DiscordCoreAPI {
 	/// \brief ModalCollector, for collecting modal text input from one or more Users.
 	class DiscordCoreAPI_Dll ModalCollector {
 	  public:
-		friend class DiscordCoreAPI_Dll DiscordCoreClient;
+		friend class DiscordCoreClient;
 
 		static std::unordered_map<std::string, UnboundedMessageBlock<InteractionData>*> modalInteractionBuffersMap;
 		static DiscordCoreInternal::TriggerEvent<void, InteractionData> modalInteractionEventsMap;

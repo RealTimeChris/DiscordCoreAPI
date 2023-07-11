@@ -1,6 +1,6 @@
 Getting the Current User {#gettingthecurrentuser}
 ============
-- Execute the, `DiscordCoreAPI::Users::getCurrentUserAsync()` function, with a return value of type `auto` or `DiscordCoreAPI::User`.
+- Execute the, `Users::getCurrentUserAsync()` function, with a return value of type `auto` or `User`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting the Current User {#gettingthecurrentuser}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,15 +26,15 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				auto currentUser = DiscordCoreAPI::Users::getCurrentUserAsync().get();
+				auto currentUser = Users::getCurrentUserAsync().get();
 
-				cout << currentUser.userName << endl;
+				std::cout << currentUser.userName << std::endl;
 
 
 			} catch (...) {

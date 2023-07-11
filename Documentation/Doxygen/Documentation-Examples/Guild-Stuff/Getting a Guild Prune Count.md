@@ -1,6 +1,6 @@
 Getting a Guild Prune Count {#gettingaguildprunecount}
 ============
-- Select, from the `DiscordCoreAPI::Guilds::getGuildPruneCountAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildPruneCountData`, with a return value of type `auto` or `DiscordCoreAPI::GuildPruneCountData`.
+- Select, from the `Guilds::getGuildPruneCountAsync()` function, while passing in a value of type `GetGuildPruneCountData`, with a return value of type `auto` or `GuildPruneCountData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Guild Prune Count {#gettingaguildprunecount}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,20 +26,20 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildPruneCountData dataPackage01;
+				GetGuildPruneCountData dataPackage01;
 				dataPackage01.days = 28;
 				dataPackage01.roles.emplace_back("860075141818744853");
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto responseData = DiscordCoreAPI::Guilds::getGuildPruneCountAsync(dataPackage01).get();
+				auto responseData = Guilds::getGuildPruneCountAsync(dataPackage01).get();
 
-				cout << responseData.count << endl;
+				std::cout << responseData.count << std::endl;
 
 
 			} catch (...) {

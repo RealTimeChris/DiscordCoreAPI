@@ -1,6 +1,6 @@
 Adding a Guild Member {#addingaguildmember}
 ============
-- Execute the, `DiscordCoreAPI::GuildMembers::addGuildMemberAsync()` function, while passing in a value of type `DiscordCoreAPI::AddGuildMemberData`, with a return value of type `auto` or `DiscordCoreAPI::GuildMember`.
+- Execute the, `GuildMembers::addGuildMemberAsync()` function, while passing in a value of type `AddGuildMemberData`, with a return value of type `auto` or `GuildMember`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Adding a Guild Member {#addingaguildmember}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,21 +26,21 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::AddGuildMemberData dataPackage;
+				AddGuildMemberData dataPackage;
 				dataPackage.accessToken = "YOUR_ACCESS_TOKEN_HERE";
 				dataPackage.userId = args.eventData.getAuthorId();
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.nick = "RealTime Chris";
 
-				auto guildMember = DiscordCoreAPI::GuildMembers::addGuildMemberAsync(dataPackage).get();
+				auto guildMember = GuildMembers::addGuildMemberAsync(dataPackage).get();
 
-				cout << "THE NAME: " << guildMember.user.userName << endl;
+				std::cout << "THE NAME: " << guildMember.user.userName << std::endl;
 
 
 			} catch (...) {

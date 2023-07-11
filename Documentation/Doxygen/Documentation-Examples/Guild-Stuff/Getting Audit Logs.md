@@ -1,6 +1,6 @@
 Getting Audit Logs {#gettingauditlogs}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::getGuildAuditLogsAsync()` function, while passing in a data structure of type `DiscordCoreAPI::GetGuildAuditLogsData` with a return value of type `auto` or `DiscordCoreAPI::AuditLogData`.
+- Execute the, `Guilds::getGuildAuditLogsAsync()` function, while passing in a data structure of type `GetGuildAuditLogsData` with a return value of type `auto` or `AuditLogData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Audit Logs {#gettingauditlogs}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::GetGuildAuditLogsData dataPackage;
+		virtual void execute(BaseFunctionArguments& args) {
+			GetGuildAuditLogsData dataPackage;
 			dataPackage.actionType = AuditLogEvent::MEMBER_BAN_ADD;
 			dataPackage.guildId = args.eventData.getGuildId();
 			dataPackage.limit = 25;
 			dataPackage.userId = args.eventData.getAuthorId();
 
-			DiscordCoreAPI::AuditLogData auditLogData = DiscordCoreAPI::Guilds::getGuildAuditLogsAsync(dataPackage).get(;
+			AuditLogData auditLogData = Guilds::getGuildAuditLogsAsync(dataPackage).get(;
 		}
 	};
 }

@@ -1,6 +1,6 @@
 Deleting a Guild Emoji {#deletingaguildemoji}
 ============
-- Execute the, `DiscordCoreAPI::Reactions::deleteGuildEmojiAsync()` function, while passing in a value of type `DiscordCoreAPI::DeleteGuildEmojiData`, with a return value of type `void`.
+- Execute the, `Reactions::deleteGuildEmojiAsync()` function, while passing in a value of type `DeleteGuildEmojiData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Deleting a Guild Emoji {#deletingaguildemoji}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,22 +26,22 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetEmojiListData dataPackage00 { };
+				GetEmojiListData dataPackage00 { };
 				dataPackage00.guildId = args.eventData.getGuildId();
 
-				auto emojiList = DiscordCoreAPI::Reactions::getEmojiListAsync(dataPackage00).get();
+				auto emojiList = Reactions::getEmojiListAsync(dataPackage00).get();
 
-				DiscordCoreAPI::DeleteGuildEmojiData dataPackage;
+				DeleteGuildEmojiData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.emojiId = emojiList[0].id;
 				dataPackage.reason = "REASON FOR DELETING!";
-				DiscordCoreAPI::Reactions::deleteGuildEmojiAsync(dataPackage).get();
+				Reactions::deleteGuildEmojiAsync(dataPackage).get();
 
 
 			} catch (...) {

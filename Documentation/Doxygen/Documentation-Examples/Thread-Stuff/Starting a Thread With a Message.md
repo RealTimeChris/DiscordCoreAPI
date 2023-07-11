@@ -1,6 +1,6 @@
 Starting a Thread with a Message {#startingathreadwithamessage}
 ============
-- Execute the, `DiscordCoreAPI::Threads::startThreadWithMessageAsync()` function, while passing in a value of type `DiscordCoreAPI::StartThreadWithMessageData`, with a return value of type `auto` or `DiscordCoreAPI::Channel`.
+- Execute the, `Threads::startThreadWithMessageAsync()` function, while passing in a value of type `StartThreadWithMessageData`, with a return value of type `auto` or `Channel`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Starting a Thread with a Message {#startingathreadwithamessage}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,23 +26,23 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GuildMember guildMember = DiscordCoreAPI::GuildMembers::getCachedGuildMember(
+				GuildMember guildMember = GuildMembers::getCachedGuildMember(
 															  {.guildMemberId = args.eventData.getAuthorId(), .guildId = args.eventData.getGuildId()})
 															  .get();
 
-				DiscordCoreAPI::StartThreadWithMessageData dataPackage;
+				StartThreadWithMessageData dataPackage;
 				dataPackage.messageId = args.eventData.getMessageId();
 				dataPackage.reason = "TESTING REASONS!";
 				dataPackage.autoArchiveDuration = ThreadAutoArchiveDuration::SHORTEST;
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				DiscordCoreAPI::Channel newThread = DiscordCoreAPI::Threads::startThreadWithMessageAsync(dataPackage).get();
+				Channel newThread = Threads::startThreadWithMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

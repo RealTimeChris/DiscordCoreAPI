@@ -1,6 +1,6 @@
 Creating a Follow-Up Message {#creatingafollowupmessage}
 ============
-- Execute the, `DiscordCoreAPI::InputEvents::respondToInputEventAsync()` function, while passing in a data structure of type `DiscordCoreAPI::RespondToInputEventData` with a type set	to `DiscordCoreAPI::InputEventResponseType::Follow_Up_Message`, with a return value of type `auto` or `DiscordCoreAPI::UniquePtr<DiscordCoreAPI::InputEventData>`.
+- Execute the, `InputEvents::respondToInputEventAsync()` function, while passing in a data structure of type `RespondToInputEventData` with a type set	to `InputEventResponseType::Follow_Up_Message`, with a return value of type `auto` or `UniquePtr<InputEventData>`.
 
 ```cpp
 /// Test.hpp-Header for the "test" command.
@@ -12,12 +12,12 @@ Creating a Follow-Up Message {#creatingafollowupmessage}
 
 										  namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -25,16 +25,16 @@ Creating a Follow-Up Message {#creatingafollowupmessage}
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::RespondToInputEventData dataPackage {args.eventData};
-				dataPackage.type = DiscordCoreAPI::InputEventResponseType::Follow_Up_Message;
+				RespondToInputEventData dataPackage {args.eventData};
+				dataPackage.type = InputEventResponseType::Follow_Up_Message;
 				dataPackage.addContent("THIS IS A TEST RESPONSE MESSAGE!");
-				auto responseData = DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage);
+				auto responseData = InputEvents::respondToInputEventAsync(dataPackage);
 
 			} catch (...) {
 				rethrowException("Test::execute() Error: ");

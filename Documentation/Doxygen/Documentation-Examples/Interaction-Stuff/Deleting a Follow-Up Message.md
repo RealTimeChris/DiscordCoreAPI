@@ -1,6 +1,6 @@
 Deleting a Follow-Up Message {#deletingafollowupmessage}
 ============
-- Execute the, `DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync()` function, while passing in a data structure of type `DiscordCoreAPI::InputEventData`, with a return value of type `void`.
+- Execute the, `InputEvents::deleteInputEventResponseAsync()` function, while passing in a data structure of type `InputEventData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -13,12 +13,12 @@ Deleting a Follow-Up Message {#deletingafollowupmessage}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,17 +26,17 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::RespondToInputEventData dataPackage {args.eventData};
-				dataPackage.type = DiscordCoreAPI::InputEventResponseType::Follow_Up_Message;
+				RespondToInputEventData dataPackage {args.eventData};
+				dataPackage.type = InputEventResponseType::Follow_Up_Message;
 				dataPackage.addContent("TEST CONTENT");
 				auto result = InputEvents::respondToInputEventAsync(dataPackage);
-				auto responseData = DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(result);
+				auto responseData = InputEvents::deleteInputEventResponseAsync(result);
 
 			} catch (...) {
 				rethrowException("Test::execute() Error: ");

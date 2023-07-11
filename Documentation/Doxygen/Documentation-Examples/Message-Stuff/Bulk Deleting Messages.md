@@ -1,6 +1,6 @@
 Bulk Deleting Messages {#bulkdeletingmessages}
 ============
-- Execute the, `DiscordCoreAPI::Messages::deleteMessagesBulkAsync()` function, while passing in a data structure of type `DiscordCoreAPI::DeleteMessagesBulkData`, with a return value of type `void`.
+- Execute the, `Messages::deleteMessagesBulkAsync()` function, while passing in a data structure of type `DeleteMessagesBulkData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -13,12 +13,12 @@ Bulk Deleting Messages {#bulkdeletingmessages}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::DeleteMessagesBulkData dataPackage;
+				DeleteMessagesBulkData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				vector<string> messageIds { };
 				messageIds.emplace_back(args.eventData.getMessageId());
 				dataPackage.messageIds = messageIds;
 
-				DiscordCoreAPI::Messages::deleteMessagesBulkAsync(dataPackage).get();
+				Messages::deleteMessagesBulkAsync(dataPackage).get();
 
 
 			} catch (...) {

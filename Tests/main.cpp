@@ -3,10 +3,6 @@
 // Chris M.
 // https://github.com/RealTimeChris
 
-#ifndef INSTRUCTION_SET_TYPE_AVX2
-	#define INSTRUCTION_SET_TYPE_AVX2
-#endif
-
 #include "Commands/BotInfo.hpp"
 
 int32_t main() {
@@ -38,10 +34,10 @@ int32_t main() {
 	activities.push_back(activity);
 	clientConfig.presenceData.activities = activities;
 	clientConfig.presenceData.afk = false;
-	clientConfig.presenceData.status = "online";
+	clientConfig.presenceData.status = DiscordCoreAPI::PresenceUpdateState::Online;
 	clientConfig.textFormat = DiscordCoreAPI::TextFormat::Etf;
 	clientConfig.presenceData.since = 0;
-	auto the = DiscordCoreAPI::makeUnique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
+	auto the = makeUnique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
 	DiscordCoreAPI::CreateGlobalApplicationCommandData createBotInfoCommandData{};
 	createBotInfoCommandData.dmPermission = true;
 	createBotInfoCommandData.type = DiscordCoreAPI::ApplicationCommandType::Chat_Input;

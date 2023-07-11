@@ -1,9 +1,9 @@
 Running a Function on a Timer {#runningfunctiontimer}
 ============
-- Create a function who's argument is of type `DiscordCoreAPI::DiscordCoreClient*`, with a return type of `void`.
-- Create a data value of type `std::vector<DiscordCoreAPI::RepeatedFunctionData>`.
-- Create a data value of type `DiscordCoreAPI::RepeatedFunctionData`, and fill out its members, and stuff it inside the vector. Be sure to set `repeated` to true if you would like the function call to be recurring.
-- Pass this vector as a member that is a part of the `DiscordCoreAPI::DiscordCoreClientConfig` structure as an argument to the `DiscordCoreAPI::DiscordCoreClient` constructor - now the functions it contains will run on a schedule defined by the `intervalInMs` member of the data structure.
+- Create a function who's argument is of type `DiscordCoreClient*`, with a return type of `void`.
+- Create a data value of type `std::vector<RepeatedFunctionData>`.
+- Create a data value of type `RepeatedFunctionData`, and fill out its members, and stuff it inside the vector. Be sure to set `repeated` to true if you would like the function call to be recurring.
+- Pass this vector as a member that is a part of the `DiscordCoreClientConfig` structure as an argument to the `DiscordCoreClient` constructor - now the functions it contains will run on a schedule defined by the `intervalInMs` member of the data structure.
 - Do this with as many functions as you would like!
 
 ```cpp
@@ -14,22 +14,22 @@ Running a Function on a Timer {#runningfunctiontimer}
 
 #include "Commands/CommandsList.hpp"
 
-void onBoot00(DiscordCoreAPI::DiscordCoreClient* args) {
+void onBoot00(DiscordCoreClient* args) {
 	auto botUser = args->getBotUser();
-	DiscordCoreAPI::DatabaseManagerAgent::initialize(botUser.id);
-	DiscordCoreAPI::DiscordUser user{ botUser.userName, botUser.id };
+	DatabaseManagerAgent::initialize(botUser.id);
+	DiscordUser user{ botUser.userName, botUser.id };
 }
 
 int32_t main() {
-	std::vector<DiscordCoreAPI::RepeatedFunctionData> functionVector{};
-	DiscordCoreAPI::RepeatedFunctionData function01{};
+	std::vector<RepeatedFunctionData> functionVector{};
+	RepeatedFunctionData function01{};
 	function01.function = &onBoot00;
 	function01.intervalInMs = 150;
 	function01.repeated = false;
 	functionVector.push_back(function01);
-	DiscordCoreAPI::DiscordCoreClientConfig clientConfig{};
+	DiscordCoreClientConfig clientConfig{};
 	clientConfig.functionsToExecute = functionVector;
-	auto ptr = DiscordCoreAPI::makeUnique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
+	auto ptr = makeUnique<DiscordCoreClient>(clientConfig);
 	ptr->runBot();
 	return 0;
 }

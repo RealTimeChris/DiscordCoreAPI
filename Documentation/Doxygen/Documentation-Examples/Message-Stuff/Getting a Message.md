@@ -1,6 +1,6 @@
 Getting a Message {#gettingamessage}
 ============
-- Execute the, `DiscordCoreAPI::Messages::getMessageAsync()` function, while passing in a data structure of type `DiscordCoreAPI::GetMessageData`, with a return value of type `auto`, or, `DiscordCoreAPI::Message`.
+- Execute the, `Messages::getMessageAsync()` function, while passing in a data structure of type `GetMessageData`, with a return value of type `auto`, or, `Message`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Message {#gettingamessage}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,17 +26,17 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetMessageData dataPackage;
+				GetMessageData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.id = args.eventData.getMessageId();
 
-				DiscordCoreAPI::Message responseMessages = DiscordCoreAPI::Messages::getMessageAsync(dataPackage).get();
+				Message responseMessages = Messages::getMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

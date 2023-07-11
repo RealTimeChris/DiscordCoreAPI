@@ -1,6 +1,6 @@
 Deleting a Message {#deletingamessage}
 ============
-- Execute the, from the `DiscordCoreAPI::Messages::deleteMessageAsync()` function, while passing in a data structure of type `DiscordCoreAPI::DeleteMessageData`, with a return value of type `void`.
+- Execute the, from the `Messages::deleteMessageAsync()` function, while passing in a data structure of type `DeleteMessageData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -13,12 +13,12 @@ Deleting a Message {#deletingamessage}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,17 +26,17 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::DeleteMessageData dataPackage;
+				DeleteMessageData dataPackage;
 				dataPackage.timeDelay = 500;
 				dataPackage.messageData = args.eventData.getMessageData();
 
-				DiscordCoreAPI::Messages::deleteMessageAsync(dataPackage).get();
+				Messages::deleteMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

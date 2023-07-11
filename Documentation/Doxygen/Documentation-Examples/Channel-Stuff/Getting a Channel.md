@@ -1,6 +1,6 @@
 Getting a Channel {#gettingchannel}
 ============
-- Execute the `DiscordCoreAPI::Channels::getCachedChannel()` (which collects it from the cache), or `getChannelAsync()` (which collects it from the Discord servers) function, while passing to it a data structure of type `DiscordCoreAPI::GetChannelData`, with a return type of `auto` or `DiscordCoreAPI::Channel`.
+- Execute the `Channels::getCachedChannel()` (which collects it from the cache), or `getChannelAsync()` (which collects it from the Discord servers) function, while passing to it a data structure of type `GetChannelData`, with a return type of `auto` or `Channel`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 ```cpp
 /// Test.hpp-Header for the "test" command.
@@ -12,12 +12,12 @@ Getting a Channel {#gettingchannel}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -25,11 +25,11 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			Channel channel = Channels::getCachedChannel({args.eventData.getChannelId()}).get();
 
 			Channel channel = Channels::getChannelAsync({args.eventData.getChannelId()}).get();

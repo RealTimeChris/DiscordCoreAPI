@@ -1,6 +1,6 @@
 Editing a Global Application Command {#editglobalcommand}
 ============
-- Execute the `DiscordCoreAPI::ApplicationCommands::editGlobalApplicationCommandAsync()` function, while passing in a data structure of type `DiscordCoreAPI::EditGlobalApplicationCommandData`, with a return value of type `auto` or `DiscordCoreAPI::ApplicationCommand`.
+- Execute the `ApplicationCommands::editGlobalApplicationCommandAsync()` function, while passing in a data structure of type `EditGlobalApplicationCommandData`, with a return value of type `auto` or `ApplicationCommand`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Editing a Global Application Command {#editglobalcommand}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::EditGlobalApplicationCommandData dataPackage;
+		virtual void execute(BaseFunctionArguments& args) {
+			EditGlobalApplicationCommandData dataPackage;
 			dataPackage.description = "Displays info about the current bot.";
 			dataPackage.name = "botinfo";
 
-			auto globalApplicationCommand = DiscordCoreAPI::ApplicationCommands::editGlobalApplicationCommandAsync(dataPackage).get();
+			auto globalApplicationCommand = ApplicationCommands::editGlobalApplicationCommandAsync(dataPackage).get();
 
-			cout << globalApplicationCommand.data.name << endl;
+			std::cout << globalApplicationCommand.data.name << std::endl;
 		}
 	};
 }

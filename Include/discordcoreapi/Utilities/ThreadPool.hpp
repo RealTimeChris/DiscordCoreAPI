@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// ThreadPool.hpp - Header for the "Thread-Pool" related stuff.
 /// Dec 18, 2021
@@ -30,10 +35,11 @@
 #include <coroutine>
 
 namespace DiscordCoreAPI {
+
 	/**
-	 * \addtogroup utilities
-	 * @{
-	 */
+	* \addtogroup utilities
+	* @{
+	*/
 
 	template<typename... ArgTypes> using TimeElapsedHandler = std::function<void(ArgTypes...)>;
 
@@ -116,116 +122,117 @@ namespace DiscordCoreAPI {
 	  protected:
 		inline static std::unordered_map<std::string, std::jthread> threads{};
 	};
-}
 
-namespace DiscordCoreInternal {
 
-	struct WorkerThread {
-		inline WorkerThread& operator=(WorkerThread&& other) noexcept {
-			if (this != &other) {
-				areWeCurrentlyWorking.store(other.areWeCurrentlyWorking.load());
-				tasks = std::move(other.tasks);
-				thread.swap(other.thread);
+	namespace DiscordCoreInternal {
+
+		struct WorkerThread {
+			inline WorkerThread& operator=(WorkerThread&& other) noexcept {
+				if (this != &other) {
+					areWeCurrentlyWorking.store(other.areWeCurrentlyWorking.load());
+					tasks = std::move(other.tasks);
+					thread.swap(other.thread);
+				}
+				return *this;
 			}
-			return *this;
-		}
 
-		inline WorkerThread() noexcept = default;
+			inline WorkerThread() noexcept = default;
 
-		inline ~WorkerThread() noexcept = default;
+			inline ~WorkerThread() noexcept = default;
 
-		DiscordCoreAPI::UnboundedMessageBlock<std::coroutine_handle<>> tasks{};
-		std::atomic_bool areWeCurrentlyWorking{};
-		std::jthread thread{};
-	};
+			UnboundedMessageBlock<std::coroutine_handle<>> tasks{};
+			std::atomic_bool areWeCurrentlyWorking{};
+			std::jthread thread{};
+		};
 
-	class CoRoutineThreadPool {
-	  public:
-		friend class DiscordCoreAPI::DiscordCoreClient;
+		class CoRoutineThreadPool {
+		  public:
+			friend class DiscordCoreAPI::DiscordCoreClient;
 
-		inline CoRoutineThreadPool() : threadCount(std::thread::hardware_concurrency()) {
-			for (uint32_t x = 0; x < threadCount; ++x) {
-				WorkerThread workerThread{};
-				currentIndex.store(currentIndex.load() + 1);
-				currentCount.store(currentCount.load() + 1);
-				int64_t indexNew = currentIndex.load();
-				workerThread.thread = std::jthread([=, this](std::stop_token stopToken) {
-					threadFunction(stopToken, indexNew);
-				});
-				workerThreads[currentIndex.load()] = std::move(workerThread);
-			}
-		}
-
-		inline void submitTask(std::coroutine_handle<> coro) noexcept {
-			bool areWeAllBusy{ true };
-			size_t currentLowestValue{ std::numeric_limits<size_t>::max() };
-			size_t currentLowestIndex{ std::numeric_limits<size_t>::max() };
-			std::shared_lock lock01{ workerAccessMutex };
-			for (auto& [key, value]: workerThreads) {
-				if (!value.areWeCurrentlyWorking.load()) {
-					areWeAllBusy = false;
-					if (value.tasks.size() < currentLowestValue) {
-						currentLowestValue = value.tasks.size();
-						currentLowestIndex = key;
-					}
-					break;
+			inline CoRoutineThreadPool() : threadCount(std::thread::hardware_concurrency()) {
+				for (uint32_t x = 0; x < threadCount; ++x) {
+					WorkerThread workerThread{};
+					currentIndex.store(currentIndex.load() + 1);
+					currentCount.store(currentCount.load() + 1);
+					int64_t indexNew = currentIndex.load();
+					workerThread.thread = std::jthread([=, this](std::stop_token stopToken) {
+						threadFunction(stopToken, indexNew);
+					});
+					workerThreads[currentIndex.load()] = std::move(workerThread);
 				}
 			}
-			if (areWeAllBusy) {
-				WorkerThread workerThread{};
-				currentIndex.store(currentIndex.load() + 1);
-				currentCount.store(currentCount.load() + 1);
-				int64_t indexNew = currentIndex.load();
-				workerThread.thread = std::jthread([=, this](std::stop_token stopToken) {
-					threadFunction(stopToken, indexNew);
-				});
-				lock01.unlock();
-				std::unique_lock lock02{ workerAccessMutex };
-				workerThreads[currentIndex.load()] = std::move(workerThread);
-				lock02.unlock();
-			} else {
-				workerThreads[currentLowestIndex].tasks.send(std::move(coro));
-			}
-		}
 
-	  protected:
-		std::unordered_map<int64_t, WorkerThread> workerThreads{};
-		std::shared_mutex workerAccessMutex{};
-		std::atomic_int64_t currentCount{};
-		std::atomic_int64_t currentIndex{};
-		const int64_t threadCount{};
-
-		inline void threadFunction(std::stop_token stopToken, int64_t index) {
-			while (!stopToken.stop_requested()) {
-				std::coroutine_handle<> coroHandle{};
-				if (workerThreads[index].tasks.tryReceive(coroHandle)) {
-					workerThreads[index].areWeCurrentlyWorking.store(true);
-					try {
-						coroHandle();
-					} catch (const HttpsError& error) {
-						Globals::MessagePrinter::printError<Globals::MessageType::Https>(error.what());
-					} catch (const DiscordCoreAPI::DCAException& error) {
-						Globals::MessagePrinter::printError<Globals::MessageType::General>(error.what());
+			inline void submitTask(std::coroutine_handle<> coro) noexcept {
+				bool areWeAllBusy{ true };
+				size_t currentLowestValue{ std::numeric_limits<size_t>::max() };
+				size_t currentLowestIndex{ std::numeric_limits<size_t>::max() };
+				std::shared_lock lock01{ workerAccessMutex };
+				for (auto& [key, value]: workerThreads) {
+					if (!value.areWeCurrentlyWorking.load()) {
+						areWeAllBusy = false;
+						if (value.tasks.size() < currentLowestValue) {
+							currentLowestValue = value.tasks.size();
+							currentLowestIndex = key;
+						}
+						break;
 					}
-					workerThreads[index].areWeCurrentlyWorking.store(false);
 				}
-				if (currentCount.load() > threadCount) {
-					int64_t extraWorkers{ currentCount.load() - threadCount };
-					while (extraWorkers > 0) {
-						--extraWorkers;
-						std::unique_lock lock{ workerAccessMutex };
-						const auto oldThread = workerThreads.begin();
-						if (oldThread->second.thread.joinable() && oldThread->second.areWeCurrentlyWorking.load()) {
-							oldThread->second.thread.request_stop();
-							oldThread->second.thread.detach();
-							currentCount.store(currentCount.load() - 1);
-							workerThreads.erase(oldThread->first);
+				if (areWeAllBusy) {
+					WorkerThread workerThread{};
+					currentIndex.store(currentIndex.load() + 1);
+					currentCount.store(currentCount.load() + 1);
+					int64_t indexNew = currentIndex.load();
+					workerThread.thread = std::jthread([=, this](std::stop_token stopToken) {
+						threadFunction(stopToken, indexNew);
+					});
+					lock01.unlock();
+					std::unique_lock lock02{ workerAccessMutex };
+					workerThreads[currentIndex.load()] = std::move(workerThread);
+					lock02.unlock();
+				} else {
+					workerThreads[currentLowestIndex].tasks.send(std::move(coro));
+				}
+			}
+
+		  protected:
+			std::unordered_map<int64_t, WorkerThread> workerThreads{};
+			std::shared_mutex workerAccessMutex{};
+			std::atomic_int64_t currentCount{};
+			std::atomic_int64_t currentIndex{};
+			const int64_t threadCount{};
+
+			inline void threadFunction(std::stop_token stopToken, int64_t index) {
+				while (!stopToken.stop_requested()) {
+					std::coroutine_handle<> coroHandle{};
+					if (workerThreads[index].tasks.tryReceive(coroHandle)) {
+						workerThreads[index].areWeCurrentlyWorking.store(true);
+						try {
+							coroHandle();
+						} catch (const HttpsError& error) {
+							MessagePrinter::printError<PrintMessageType::Https>(error.what());
+						} catch (const DCAException& error) {
+							MessagePrinter::printError<PrintMessageType::General>(error.what());
+						}
+						workerThreads[index].areWeCurrentlyWorking.store(false);
+					}
+					if (currentCount.load() > threadCount) {
+						int64_t extraWorkers{ currentCount.load() - threadCount };
+						while (extraWorkers > 0) {
+							--extraWorkers;
+							std::unique_lock lock{ workerAccessMutex };
+							const auto oldThread = workerThreads.begin();
+							if (oldThread->second.thread.joinable() && oldThread->second.areWeCurrentlyWorking.load()) {
+								oldThread->second.thread.request_stop();
+								oldThread->second.thread.detach();
+								currentCount.store(currentCount.load() - 1);
+								workerThreads.erase(oldThread->first);
+							}
 						}
 					}
+					std::this_thread::sleep_for(100000ns);
 				}
-				std::this_thread::sleep_for(100000ns);
 			}
-		}
-	};
-	/**@}*/
+		};
+		/**@}*/
+	}
 }

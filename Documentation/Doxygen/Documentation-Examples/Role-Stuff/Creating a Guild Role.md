@@ -1,6 +1,6 @@
 Creating a Guild Role {#creatingaguildrole}
 ============
-- Execute the, `DiscordCoreAPI::Roles::createGuildRoleAsync()` function, while passing in a value of type `DiscordCoreAPI::CreateGuildRoleData`, with a return value of type `auto` or `DiscordCoreAPI::Role`.
+- Execute the, `Roles::createGuildRoleAsync()` function, while passing in a value of type `CreateGuildRoleData`, with a return value of type `auto` or `Role`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Creating a Guild Role {#creatingaguildrole}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,22 +26,22 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		unique_ptr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::CreateGuildRoleData dataPackage01;
+				CreateGuildRoleData dataPackage01;
 				dataPackage01.name = "TEST ROLE";
 				dataPackage01.hexColorValue = "Fefe23";
 				dataPackage01.hoist = false;
 				dataPackage01.reason = "TESTING!";
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto newRole = DiscordCoreAPI::Roles::createGuildRoleAsync(dataPackage01).get();
+				auto newRole = Roles::createGuildRoleAsync(dataPackage01).get();
 
-				cout << "ROLE NAME: " << newRole.name << endl;
+				std::cout << "ROLE NAME: " << newRole.name << std::endl;
 
 
 			} catch (...) {

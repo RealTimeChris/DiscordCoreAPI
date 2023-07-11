@@ -1,6 +1,6 @@
 Starting a Thread without a Message {#startingathreadwithoutamessage}
 ============
-- Execute the, from the `DiscordCoreAPI::Threads::startThreadWithoutMessageAsync()` function, while passing in a value of type `DiscordCoreAPI::StartThreadWithoutMessageData`, with a return value of type `auto` or `DiscordCoreAPI::Thread`.
+- Execute the, from the `Threads::startThreadWithoutMessageAsync()` function, while passing in a value of type `StartThreadWithoutMessageData`, with a return value of type `auto` or `Thread`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Starting a Thread without a Message {#startingathreadwithoutamessage}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,21 +26,21 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::StartThreadWithoutMessageData dataPackage;
+				StartThreadWithoutMessageData dataPackage;
 				dataPackage.invitable = true;
 				dataPackage.type = ThreadType::GUILD_PUBLIC_THREAD;
 				dataPackage.reason = "TESTING REASONS!";
-				dataPackage.autoArchiveDuration = DiscordCoreAPI::ThreadAutoArchiveDuration::SHORT;
+				dataPackage.autoArchiveDuration = ThreadAutoArchiveDuration::SHORT;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.threadName = "NEW THREAD";
 
-				DiscordCoreAPI::Channel newThread = DiscordCoreAPI::Threads::startThreadWithoutMessageAsync(dataPackage).get();
+				Channel newThread = Threads::startThreadWithoutMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

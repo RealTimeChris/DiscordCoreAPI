@@ -1,6 +1,6 @@
 Triggering the Typing Indicator {#triggeringthetypingindicator}
 ============
-- Execute the, `DiscordCoreAPI::Channels::triggerTypingIndicatorAsync()` function, while passing in a data structure of type `DiscordCoreAPI::TriggerTypingIndicatorData` with a return value of `void`.
+- Execute the, `Channels::triggerTypingIndicatorAsync()` function, while passing in a data structure of type `TriggerTypingIndicatorData` with a return value of `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Triggering the Typing Indicator {#triggeringthetypingindicator}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,16 +26,16 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::TriggerTypingIndicatorData dataPackage;
+				TriggerTypingIndicatorData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				DiscordCoreAPI::Channels::triggerTypingIndicatorAsync(dataPackage).get();
+				Channels::triggerTypingIndicatorAsync(dataPackage).get();
 
 			} catch (...) {
 				rethrowException("Test::execute()");

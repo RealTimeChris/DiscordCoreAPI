@@ -1,10 +1,10 @@
 Login/Instantiation {#logininstantiation}
 ============
-- <U><B>NOTE FOR SHARDING:</B></U> Make sure to set the `DiscordCoreAPI::ShardingOptions` options of the `DiscordCoreAPI::DiscordCoreClientConfig` structure.
+- <U><B>NOTE FOR SHARDING:</B></U> Make sure to set the `ShardingOptions` options of the `DiscordCoreClientConfig` structure.
 - Install the dependencies, and `#include <Index.hpp>`.
 - Create a string with your bot's token.
-- Create an object of type `DiscordCoreAPI::DiscordCoreClient`, using an instance of `DiscordCoreAPI::DiscordCoreClientConfig` as the argument - being sure to at least set the `DiscordCoreAPI::DiscordCoreClientConfig::botToken` member of it.
-- Run the `DiscordCoreAPI::DiscordCoreClient::runBot()` function.
+- Create an object of type `DiscordCoreClient`, using an instance of `DiscordCoreClientConfig` as the argument - being sure to at least set the `DiscordCoreClientConfig::botToken` member of it.
+- Run the `DiscordCoreClient::runBot()` function.
 
 ```cpp
 /// main.cpp-Main entry point.
@@ -14,17 +14,17 @@ Login/Instantiation {#logininstantiation}
 
 int main()
 {
-	DiscordCoreAPI::DiscordCoreClientConfig clientConfig{};
+	DiscordCoreClientConfig clientConfig{};
 	clientConfig.botToken = "YOUR_BOT_TOKEN_HERE";
-	std::vector<DiscordCoreAPI::ActivityData> activities{};
-	DiscordCoreAPI::ActivityData activity{};
+	std::vector<ActivityData> activities{};
+	ActivityData activity{};
 	activity.name = "/help for my commands!";
-	activity.type = DiscordCoreAPI::ActivityType::Game;
+	activity.type = ActivityType::Game;
 	activities.push_back(activity);
 	clientConfig.presenceData.activities = activities;
 	clientConfig.presenceData.afk = false;
 	clientConfig.presenceData.since = 0;
 	clientConfig.presenceData.status = "online";
-	auto ptr = DiscordCoreAPI::makeUnique<DiscordCoreAPI::DiscordCoreClient>(clientConfig);
+	auto ptr = makeUnique<DiscordCoreClient>(clientConfig);
 }
 ```

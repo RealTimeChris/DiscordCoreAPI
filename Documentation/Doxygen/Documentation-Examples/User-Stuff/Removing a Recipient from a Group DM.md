@@ -1,6 +1,6 @@
 Removing a Recipient from a Group DM {#removingarecipientfromagroupdm}
 ============
-- Execute the, `DiscordCoreAPI::Users::removeRecipientFromGroupDMAsync()` function, while passing in a value of type `DiscordCoreAPI::RemoveRecipientFromGroupDMData`, with a return value of type `void`.
+- Execute the, `Users::removeRecipientFromGroupDMAsync()` function, while passing in a value of type `RemoveRecipientFromGroupDMData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Removing a Recipient from a Group DM {#removingarecipientfromagroupdm}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,21 +26,21 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GuildMember guildMember = DiscordCoreAPI::GuildMembers::getCachedGuildMember(
+				GuildMember guildMember = GuildMembers::getCachedGuildMember(
 															  {.guildMemberId = args.eventData.getAuthorId(), .guildId = args.eventData.getGuildId()})
 															  .get();
 
-				DiscordCoreAPI::RemoveRecipientFromGroupDMData dataPackage;
+				RemoveRecipientFromGroupDMData dataPackage;
 				dataPackage.userId = args.eventData.getAuthorId();
 				dataPackage.channelId = "DM_CHANNEL_ID_HERE";
 
-				DiscordCoreAPI::Users::removeRecipientFromGroupDMAsync(dataPackage).get();
+				Users::removeRecipientFromGroupDMAsync(dataPackage).get();
 
 
 			} catch (...) {

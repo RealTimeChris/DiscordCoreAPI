@@ -1,6 +1,6 @@
 Getting a Guild Preview {#gettingaguildpreview}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::getGuildPreviewAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildPreviewData`, with a return value of type `auto` or `DiscordCoreAPI::GuildPreviewData`.
+- Execute the, `Guilds::getGuildPreviewAsync()` function, while passing in a value of type `GetGuildPreviewData`, with a return value of type `auto` or `GuildPreviewData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Guild Preview {#gettingaguildpreview}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildPreviewData dataPackage00;
+				GetGuildPreviewData dataPackage00;
 				dataPackage00.guildId = args.eventData.getGuildId();
 
-				auto guild = DiscordCoreAPI::Guilds::getGuildPreviewAsync(dataPackage00).get();
+				auto guild = Guilds::getGuildPreviewAsync(dataPackage00).get();
 
-				cout << "THE NAME: " << guild.name << endl;
+				std::cout << "THE NAME: " << guild.name << std::endl;
 
 
 			} catch (...) {

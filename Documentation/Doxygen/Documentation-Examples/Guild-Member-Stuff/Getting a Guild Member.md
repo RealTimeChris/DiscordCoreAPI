@@ -1,6 +1,6 @@
 Getting a Guild Member {#gettingaguildmember}
 ============
-- Execute the, from the `DiscordCoreAPI::GuildMembers::getCachedGuildMember()` (which collects it from the cache), or `DiscordCoreAPI::GuildMembers::getGuildMemberAsync()` (which collects it from the Discord servers) function, while passing to it a value of type `DiscordCoreAPI::GetGuildMemberData`.
+- Execute the, from the `GuildMembers::getCachedGuildMember()` (which collects it from the cache), or `GuildMembers::getGuildMemberAsync()` (which collects it from the Discord servers) function, while passing to it a value of type `GetGuildMemberData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Guild Member {#gettingaguildmember}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildMemberData dataPackage;
+				GetGuildMemberData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.guildMemberId = args.eventData.getAuthorId();
 
-				auto guildMember01 = DiscordCoreAPI::GuildMembers::getCachedGuildMember(dataPackage).get();
+				auto guildMember01 = GuildMembers::getCachedGuildMember(dataPackage).get();
 
-				auto guildMember02 = DiscordCoreAPI::GuildMembers::getGuildMemberAsync(dataPackage).get();
+				auto guildMember02 = GuildMembers::getGuildMemberAsync(dataPackage).get();
 
 
 			} catch (...) {

@@ -1,6 +1,6 @@
 Modifying a Guild Member {#modifyingaguildmember}
 ============
-- Execute the, from the `DiscordCoreAPI::GuildMembers::modifyGuildMemberAsync()` function, while passing in a value of type `DiscordCoreAPI::ModifyGuildMemberData`, with a return value of type `DiscordCoreAPI::GuildMember`.
+- Execute the, from the `GuildMembers::modifyGuildMemberAsync()` function, while passing in a value of type `ModifyGuildMemberData`, with a return value of type `GuildMember`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Modifying a Guild Member {#modifyingaguildmember}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,12 +26,12 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::ModifyGuildMemberData dataPackage01;
+		virtual void execute(BaseFunctionArguments& args) {
+			ModifyGuildMemberData dataPackage01;
 			dataPackage01.currentChannelId = "";
 			dataPackage01.deaf = false;
 			dataPackage01.mute = false;
@@ -41,7 +41,7 @@ namespace DiscordCoreAPI {
 			dataPackage01.guildId = args.eventData.getGuildId();
 			dataPackage01.guildMemberId = args.eventData.getAuthorId();
 
-			DiscordCoreAPI::GuildMember guildMember01 = DiscordCoreAPI::GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
+			GuildMember guildMember01 = GuildMembers::modifyGuildMemberAsync(dataPackage01).get();
 		}
 	};
 }

@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// DiscordCoreClient01.cpp - Source file for the main/exposed DiscordCoreClient class.
 /// May 12, 2021
@@ -27,55 +32,53 @@
 #include <csignal>
 #include <atomic>
 
-namespace Globals {
-	DiscordCoreAPI::SongAPIMap songAPIMap{};
-	DiscordCoreAPI::VoiceConnectionsMap voiceConnectionMap{};
-	DiscordCoreAPI::SoundCloudAPIMap soundCloudAPIMap{};
-	DiscordCoreAPI::YouTubeAPIMap youtubeAPIMap{};
-	std::atomic_bool doWeQuit{};
-}
-
 namespace DiscordCoreAPI {
+
+	VoiceConnectionsMap voiceConnectionMap{};
+	SoundCloudAPIMap soundCloudAPIMap{};
+	YouTubeAPIMap youtubeAPIMap{};
+	SongAPIMap songAPIMap{};
+	std::atomic_bool doWeQuit{};
 
 	DiscordCoreInternal::SoundCloudAPI& DiscordCoreClient::getSoundCloudAPI(Snowflake guildId) {
 		GuildData guild = Guilds::getCachedGuild({ .guildId = guildId });
-		if (!Globals::soundCloudAPIMap.contains(guildId.operator uint64_t())) {
-			Globals::soundCloudAPIMap[guildId.operator uint64_t()] =
+		if (!soundCloudAPIMap.contains(guildId.operator uint64_t())) {
+			soundCloudAPIMap[guildId.operator uint64_t()] =
 				makeUnique<DiscordCoreInternal::SoundCloudAPI>(&guild.discordCoreClient->configManager, guildId);
 		}
-		return *Globals::soundCloudAPIMap[guildId.operator uint64_t()].get();
+		return *soundCloudAPIMap[guildId.operator uint64_t()].get();
 	}
 
 	DiscordCoreInternal::YouTubeAPI& DiscordCoreClient::getYouTubeAPI(Snowflake guildId) {
 		GuildData guild = Guilds::getCachedGuild({ .guildId = guildId });
-		if (!Globals::youtubeAPIMap.contains(guildId.operator uint64_t())) {
-			Globals::youtubeAPIMap[guildId.operator uint64_t()] =
+		if (!youtubeAPIMap.contains(guildId.operator uint64_t())) {
+			youtubeAPIMap[guildId.operator uint64_t()] =
 				makeUnique<DiscordCoreInternal::YouTubeAPI>(&guild.discordCoreClient->configManager, guildId);
 		}
-		return *Globals::youtubeAPIMap[guildId.operator uint64_t()].get();
+		return *youtubeAPIMap[guildId.operator uint64_t()].get();
 	}
 
 	VoiceConnection& DiscordCoreClient::getVoiceConnection(Snowflake guildId) {
 		GuildData guild = Guilds::getCachedGuild({ .guildId = guildId });
-		if (!Globals::voiceConnectionMap.contains(guildId.operator uint64_t())) {
+		if (!voiceConnectionMap.contains(guildId.operator uint64_t())) {
 			uint64_t theShardId{ (guildId.operator uint64_t() >> 22) % guild.discordCoreClient->configManager.getTotalShardCount() };
 			uint64_t baseSocketIndex{ theShardId % guild.discordCoreClient->baseSocketAgentsMap.size() };
 			auto baseSocketAgent = guild.discordCoreClient->baseSocketAgentsMap[baseSocketIndex].get();
-			Globals::voiceConnectionMap[guildId.operator uint64_t()] = makeUnique<VoiceConnection>(guild.discordCoreClient,
-				static_cast<DiscordCoreInternal::WebSocketClient*>(&baseSocketAgent->shardMap[theShardId]), &Globals::doWeQuit);
+			voiceConnectionMap[guildId.operator uint64_t()] = makeUnique<VoiceConnection>(guild.discordCoreClient,
+				static_cast<DiscordCoreInternal::WebSocketClient*>(&baseSocketAgent->shardMap[theShardId]), &doWeQuit);
 		}
-		return *Globals::voiceConnectionMap[guildId.operator uint64_t()].get();
+		return *voiceConnectionMap[guildId.operator uint64_t()].get();
 	}
 
 	SongAPI& DiscordCoreClient::getSongAPI(Snowflake guildId) {
-		if (!Globals::songAPIMap.contains(guildId.operator uint64_t())) {
-			Globals::songAPIMap[guildId.operator uint64_t()] = makeUnique<SongAPI>(guildId);
+		if (!songAPIMap.contains(guildId.operator uint64_t())) {
+			songAPIMap[guildId.operator uint64_t()] = makeUnique<SongAPI>(guildId);
 		}
-		return *Globals::songAPIMap[guildId.operator uint64_t()].get();
+		return *songAPIMap[guildId.operator uint64_t()].get();
 	}
 
 	void atexitHandler() {
-		Globals::doWeQuit.store(true);
+		doWeQuit.store(true);
 	}
 
 	SIGTERMError::SIGTERMError(const std::string& message, std::source_location location) : DCAException(message, location){};
@@ -114,7 +117,7 @@ namespace DiscordCoreAPI {
 			}
 		} catch (SIGINTError&) {
 			reportException("signalHandler()");
-			Globals::doWeQuit.store(true);
+			doWeQuit.store(true);
 		} catch (...) {
 			reportException("signalHandler()");
 			std::exit(EXIT_FAILURE);
@@ -130,13 +133,13 @@ namespace DiscordCoreAPI {
 		std::signal(SIGABRT, &signalHandler);
 		std::signal(SIGFPE, &signalHandler);
 		configManager = ConfigManager{ configData };
-		::Globals::MessagePrinter::initialize(configManager);
+		MessagePrinter::initialize(configManager);
 		if (!DiscordCoreInternal::SSLContextHolder::initialize()) {
-			Globals::MessagePrinter::printError<::Globals::MessageType::General>("Failed to initialize the SSL_CTX structure!");
+			MessagePrinter::printError<PrintMessageType::General>("Failed to initialize the SSL_CTX structure!");
 			return;
 		}
 		if (sodium_init() == -1) {
-			Globals::MessagePrinter::printError<::Globals::MessageType::General>("LibSodium failed to initialize!");
+			MessagePrinter::printError<PrintMessageType::General>("LibSodium failed to initialize!");
 			return;
 		}
 		httpsClient = makeUnique<DiscordCoreInternal::HttpsClient>(configManager.getBotToken());
@@ -155,7 +158,6 @@ namespace DiscordCoreAPI {
 		Threads::initialize(httpsClient.get());
 		WebHooks::initialize(httpsClient.get());
 		Users::initialize(httpsClient.get(), &configManager);
-		didWeStartCorrectly = true;
 	}
 
 	ConfigManager& DiscordCoreClient::getConfigManager() {
@@ -167,14 +169,11 @@ namespace DiscordCoreAPI {
 	}
 
 	void DiscordCoreClient::runBot() {
-		if (!didWeStartCorrectly) {
-			return;
-		}
 		if (!instantiateWebSockets()) {
-			Globals::doWeQuit.store(true);
+			doWeQuit.store(true);
 			return;
 		}
-		while (!Globals::doWeQuit.load()) {
+		while (!doWeQuit.load()) {
 			std::this_thread::sleep_for(1ms);
 		}
 	}
@@ -195,7 +194,7 @@ namespace DiscordCoreAPI {
 	}
 
 	Milliseconds DiscordCoreClient::getTotalUpTime() {
-		return std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch()) - startupTimeSinceEpoch;
+		return std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) - startupTimeSinceEpoch;
 	}
 
 	void DiscordCoreClient::registerFunctionsInternal() {
@@ -252,7 +251,7 @@ namespace DiscordCoreAPI {
 			httpsClient->submitWorkloadAndGetResult<GatewayBotData>(std::move(workload), data);
 			return data;
 		} catch (const DiscordCoreInternal::HttpsError& error) {
-			Globals::MessagePrinter::printError<Globals::MessageType::Https>(error.what());
+			MessagePrinter::printError<PrintMessageType::Https>(error.what());
 		}
 		return {};
 	}
@@ -261,13 +260,13 @@ namespace DiscordCoreAPI {
 		GatewayBotData gatewayData{ getGateWayBot() };
 
 		if (gatewayData.url == "") {
-			Globals::MessagePrinter::printError<Globals::MessageType::General>("Failed to collect the connection URL! Closing! Did you remember to "
-																			   "properly set your bot token?");
+			MessagePrinter::printError<PrintMessageType::General>("Failed to collect the connection URL! Closing! Did you remember to "
+																  "properly set your bot token?");
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
 		if (configManager.getStartingShard() + configManager.getShardCountForThisProcess() > configManager.getTotalShardCount()) {
-			Globals::MessagePrinter::printError<Globals::MessageType::General>("Your sharding options are incorrect! Please fix it!");
+			MessagePrinter::printError<PrintMessageType::General>("Your sharding options are incorrect! Please fix it!");
 			std::this_thread::sleep_for(5s);
 			return false;
 		}
@@ -286,10 +285,9 @@ namespace DiscordCoreAPI {
 					std::this_thread::sleep_for(1ms);
 				}
 				connectionStopWatch01.resetTimer();
-				baseSocketAgentsMap[x % theWorkerCount] =
-					makeUnique<DiscordCoreInternal::BaseSocketAgent>(this, &Globals::doWeQuit, x % theWorkerCount);
+				baseSocketAgentsMap[x % theWorkerCount] = makeUnique<DiscordCoreInternal::BaseSocketAgent>(this, &doWeQuit, x % theWorkerCount);
 			}
-			baseSocketAgentsMap[x % theWorkerCount]->shardMap[x] = DiscordCoreInternal::WebSocketClient{ this, x, &Globals::doWeQuit };
+			baseSocketAgentsMap[x % theWorkerCount]->shardMap[x] = DiscordCoreInternal::WebSocketClient{ this, x, &doWeQuit };
 		}
 
 		for (auto& value: configManager.getFunctionsToExecute()) {
@@ -302,7 +300,7 @@ namespace DiscordCoreAPI {
 				ThreadPool::executeFunctionAfterTimePeriod(value.function, value.intervalInMs, false, this);
 			}
 		}
-		startupTimeSinceEpoch = std::chrono::duration_cast<Milliseconds>(SysClock::now().time_since_epoch());
+		startupTimeSinceEpoch = std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch());
 		return true;
 	}
 

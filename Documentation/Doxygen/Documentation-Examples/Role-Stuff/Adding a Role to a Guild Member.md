@@ -1,6 +1,6 @@
 Adding a Role to a Guild Member {#addingaroletoaguildmember}
 ============
-- Execute the, `DiscordCoreAPI::Roles::addGuildMemberRoleAsync()` function, while passing in a value of type `DiscordCoreAPI::AddGuildMemberRoleData`, with a return value of type `void`.
+- Execute the, `Roles::addGuildMemberRoleAsync()` function, while passing in a value of type `AddGuildMemberRoleData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Adding a Role to a Guild Member {#addingaroletoaguildmember}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::AddGuildMemberRoleData dataPackage01;
+				AddGuildMemberRoleData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.userId = args.eventData.getAuthorId();
 				dataPackage01.reason = "TESTING PURPOSES!";
 				dataPackage01.roleId = "866124519303020554";
 
-				DiscordCoreAPI::Roles::addGuildMemberRoleAsync(dataPackage01).get();
+				Roles::addGuildMemberRoleAsync(dataPackage01).get();
 
 
 			} catch (...) {

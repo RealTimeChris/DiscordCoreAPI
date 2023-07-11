@@ -1,6 +1,6 @@
 Editing a Guild Application Command's Permissions {#editguildcommandpermissions}
 ============
-- Execute the `DiscordCoreAPI::ApplicationCommands::editGuildApplicationCommandPermissionsAsync()` function, while passing in a data structure of type `DiscordCoreAPI::EditGuildApplicationCommandPermissionsData`, with a return value of type `auto` or `DiscordCoreAPI::GuildApplicationCommandPermissionsData`.
+- Execute the `ApplicationCommands::editGuildApplicationCommandPermissionsAsync()` function, while passing in a data structure of type `EditGuildApplicationCommandPermissionsData`, with a return value of type `auto` or `GuildApplicationCommandPermissionsData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Editing a Guild Application Command's Permissions {#editguildcommandpermissions}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,25 +26,25 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
+		virtual void execute(BaseFunctionArguments& args) {
+			InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
-			DiscordCoreAPI::EditGuildApplicationCommandPermissionsData dataPackage;
-			DiscordCoreAPI::ApplicationCommandPermissionData dataPackage02;
-			dataPackage02.type = DiscordCoreAPI::ApplicationCommandPermissionType::User;
+			EditGuildApplicationCommandPermissionsData dataPackage;
+			ApplicationCommandPermissionData dataPackage02;
+			dataPackage02.type = ApplicationCommandPermissionType::User;
 			dataPackage02.permission = true;
 			dataPackage02.id = "859853159115259905";
 			dataPackage.commandName = "botinfo";
 			dataPackage.permissions.emplace_back(dataPackage02);
 			dataPackage.guildId = args.eventData.getGuildId();
 
-			auto returnValue = DiscordCoreAPI::ApplicationCommands::editGuildApplicationCommandPermissionsAsync(dataPackage).get();
+			auto returnValue = ApplicationCommands::editGuildApplicationCommandPermissionsAsync(dataPackage).get();
 
-			cout << returnValue.applicationId << endl;
+			std::cout << returnValue.applicationId << std::endl;
 		}
 	};
 }

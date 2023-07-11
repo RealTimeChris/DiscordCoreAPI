@@ -1,6 +1,6 @@
 Getting Guild Roles {#gettingguildroles}
 =============
-- Execute the, `DiscordCoreAPI::Roles::getGuildRolesAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildRolesData`, with a return value of type `auto` or `vector<DiscordCoreAPI::Role>`.
+- Execute the, `Roles::getGuildRolesAsync()` function, while passing in a value of type `GetGuildRolesData`, with a return value of type `auto` or `vector<Role>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Guild Roles {#gettingguildroles}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		unique_ptr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildRolesData dataPackage01;
+				GetGuildRolesData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto rolesVector = DiscordCoreAPI::Roles::getGuildRolesAsync(dataPackage01).get();
+				auto rolesVector = Roles::getGuildRolesAsync(dataPackage01).get();
 
 				for (auto value: rolesVector) {
-					cout << "ROLE NAME: " << value.name << endl;
+					std::cout << "ROLE NAME: " << value.name << std::endl;
 				}
 
 

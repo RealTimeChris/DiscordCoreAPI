@@ -1,6 +1,6 @@
 Searching Guild Members {#searchingguildmembers}
 ============
-- Execute the, `DiscordCoreAPI::GuildMembers::searchGuildMembersAsync()` function, while passing in a value of type `DiscordCoreAPI::SearchGuildMembersData`, with a return value of type `auto` or `vector<DiscordCoreAPI::GuildMember>`.
+- Execute the, `GuildMembers::searchGuildMembersAsync()` function, while passing in a value of type `SearchGuildMembersData`, with a return value of type `auto` or `vector<GuildMember>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Searching Guild Members {#searchingguildmembers}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,21 +26,21 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::SearchGuildMembersData dataPackage;
+				SearchGuildMembersData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.limit = 20;
 				dataPackage.query = "Real";
 
-				auto guildMembers = DiscordCoreAPI::GuildMembers::searchGuildMembersAsync(dataPackage).get();
+				auto guildMembers = GuildMembers::searchGuildMembersAsync(dataPackage).get();
 
 				for (auto value: guildMembers) {
-					cout << "THE NAME: " << value.user.userName << endl;
+					std::cout << "THE NAME: " << value.user.userName << std::endl;
 				}
 
 

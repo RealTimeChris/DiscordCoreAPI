@@ -29,7 +29,7 @@ namespace DiscordCoreAPI {
 		msgEmbedFieldsPage = 0;
 		std::vector<EmbedData> newMsgEmbeds{};
 		for (int32_t y = 0; y < msgEmbedFields.size(); y += 1) {
-			DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+			UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 			newEmbed->setAuthor(user.userName, user.avatar);
 			newEmbed->setColor(discordGuild->data.borderColor);
 			newEmbed->setTimeStamp(getTimeAndDate());
@@ -55,7 +55,7 @@ namespace DiscordCoreAPI {
 		TheQueue() {
 			commandName = "queue";
 			helpDescription = "View and edit the song queue.";
-			DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+			UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 			newEmbed->setDescription("------\nSimply enter /queue, and follow the instructions!\n------");
 			newEmbed->setTitle("__**Queue Usage:**__");
 			newEmbed->setTimeStamp(getTimeAndDate());
@@ -63,17 +63,17 @@ namespace DiscordCoreAPI {
 			helpEmbed = *newEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<TheQueue>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<TheQueue>();
 		}
 
 		void execute(BaseFunctionArguments& newArgs) {
 			try {
 
-				DiscordCoreAPI::UniquePtr<Channel> channel{ DiscordCoreAPI::makeUnique<Channel>(Channels::getCachedChannel({ newArgs.eventData.getChannelId() }).get()) };
+				UniquePtr<Channel> channel{ makeUnique<Channel>(Channels::getCachedChannel({ newArgs.eventData.getChannelId() }).get()) };
 
-				DiscordCoreAPI::UniquePtr<Guild> guild{ DiscordCoreAPI::makeUnique<Guild>(Guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get()) };
-				DiscordCoreAPI::UniquePtr<DiscordGuild> discordGuild(DiscordCoreAPI::makeUnique<DiscordGuild>(*guild));
+				UniquePtr<Guild> guild{ makeUnique<Guild>(Guilds::getCachedGuild({ .guildId = newArgs.eventData.getGuildId() }).get()) };
+				UniquePtr<DiscordGuild> discordGuild(makeUnique<DiscordGuild>(*guild));
 
 				bool checkIfAllowedInChannel = checkIfAllowedPlayingInChannel(newArgs.eventData, *discordGuild);
 
@@ -94,7 +94,7 @@ namespace DiscordCoreAPI {
 				loadPlaylist(*discordGuild);
 
 				if (SongAPI::getPlaylist(guild->id).songQueue.size() == 0) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setColor(discordGuild->data.borderColor);
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -131,7 +131,7 @@ namespace DiscordCoreAPI {
 				std::vector<EmbedData> msgEmbeds;
 				msgEmbedFieldsPage = 0;
 				for (int32_t y = 0; y < msgEmbedFields.size(); y += 1) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setColor(discordGuild->data.borderColor)
 						.setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl())
 						.setTimeStamp(getTimeAndDate())
@@ -152,7 +152,7 @@ namespace DiscordCoreAPI {
 				newEvent = InputEvents::respondToInputEventAsync(dataPackage0).get();
 				for (int32_t y = 0; y < 1; y) {
 					bool doWeQuit{};
-					DiscordCoreAPI::UniquePtr<ButtonCollector> button{ DiscordCoreAPI::makeUnique<ButtonCollector>(newEvent) };
+					UniquePtr<ButtonCollector> button{ makeUnique<ButtonCollector>(newEvent) };
 					auto buttonCollectedData = button->collectButtonData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					newEvent = *buttonCollectedData[0].interactionData;
 					uint64_t userID = newArgs.eventData.getAuthorId();
@@ -165,7 +165,7 @@ namespace DiscordCoreAPI {
 						break;
 					} else if (buttonCollectedData.at(0).buttonId == "next" && (currentPageIndex == (msgEmbeds.size() - 1))) {
 						currentPageIndex = 0;
-						DiscordCoreAPI::UniquePtr<RespondToInputEventData> dataPackage02{ DiscordCoreAPI::makeUnique<RespondToInputEventData>(*buttonCollectedData.at(0).interactionData) };
+						UniquePtr<RespondToInputEventData> dataPackage02{ makeUnique<RespondToInputEventData>(*buttonCollectedData.at(0).interactionData) };
 						dataPackage02->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						dataPackage02->addMessageEmbed(msgEmbeds[currentPageIndex]);
 						dataPackage02->addContent("");
@@ -177,7 +177,7 @@ namespace DiscordCoreAPI {
 						continue;
 					} else if (buttonCollectedData.at(0).buttonId == "next" && (currentPageIndex < msgEmbeds.size())) {
 						currentPageIndex += 1;
-						DiscordCoreAPI::UniquePtr<RespondToInputEventData> dataPackage02{ DiscordCoreAPI::makeUnique<RespondToInputEventData>(*buttonCollectedData.at(0).interactionData) };
+						UniquePtr<RespondToInputEventData> dataPackage02{ makeUnique<RespondToInputEventData>(*buttonCollectedData.at(0).interactionData) };
 						dataPackage02->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						dataPackage02->addMessageEmbed(msgEmbeds[currentPageIndex]);
 						dataPackage02->addContent("");
@@ -189,7 +189,7 @@ namespace DiscordCoreAPI {
 						continue;
 					} else if (buttonCollectedData.at(0).buttonId == "back" && (currentPageIndex > 0)) {
 						currentPageIndex -= 1;
-						DiscordCoreAPI::UniquePtr<RespondToInputEventData> dataPackage02{ DiscordCoreAPI::makeUnique<RespondToInputEventData>(*buttonCollectedData.at(0).interactionData) };
+						UniquePtr<RespondToInputEventData> dataPackage02{ makeUnique<RespondToInputEventData>(*buttonCollectedData.at(0).interactionData) };
 						dataPackage02->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						dataPackage02->addMessageEmbed(msgEmbeds[currentPageIndex]);
 						dataPackage02->addContent("");
@@ -201,7 +201,7 @@ namespace DiscordCoreAPI {
 						continue;
 					} else if (buttonCollectedData.at(0).buttonId == "back" && (currentPageIndex == 0)) {
 						currentPageIndex = ( int32_t )msgEmbeds.size() - 1;
-						DiscordCoreAPI::UniquePtr<RespondToInputEventData> dataPackage02{ DiscordCoreAPI::makeUnique<RespondToInputEventData>(*buttonCollectedData.at(0).interactionData) };
+						UniquePtr<RespondToInputEventData> dataPackage02{ makeUnique<RespondToInputEventData>(*buttonCollectedData.at(0).interactionData) };
 						dataPackage02->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						dataPackage02->addMessageEmbed(msgEmbeds[currentPageIndex]);
 						dataPackage02->addContent("");
@@ -219,13 +219,13 @@ namespace DiscordCoreAPI {
 							"Type 'remove <trackNumber>' to remove a track.\nType 'swap <sourceTrackNumber> <destinationTrackNumber>' to swap tracks.\nType "
 							"'shuffle' to shuffle the playlist.\nType 'exit' to exit.");
 						newEvent = *buttonCollectedData.at(0).interactionData;
-						DiscordCoreAPI::UniquePtr<RespondToInputEventData> dataPackage03{ DiscordCoreAPI::makeUnique<RespondToInputEventData>(*buttonCollectedData.at(0).interactionData) };
+						UniquePtr<RespondToInputEventData> dataPackage03{ makeUnique<RespondToInputEventData>(*buttonCollectedData.at(0).interactionData) };
 						dataPackage03->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						dataPackage03->addMessageEmbed(msgEmbeds[currentPageIndex]);
 						dataPackage03->addContent("");
 						newEvent = InputEvents::respondToInputEventAsync(*dataPackage03).get();
 						while (!doWeQuit) {
-							DiscordCoreAPI::UniquePtr<RespondToInputEventData> dataPackage02{ DiscordCoreAPI::makeUnique<RespondToInputEventData>(newEvent) };
+							UniquePtr<RespondToInputEventData> dataPackage02{ makeUnique<RespondToInputEventData>(newEvent) };
 							dataPackage02->setResponseType(InputEventResponseType::Edit_Interaction_Response);
 							dataPackage02->addMessageEmbed(msgEmbeds[currentPageIndex]);
 							dataPackage02->addContent("");
@@ -239,7 +239,7 @@ namespace DiscordCoreAPI {
 								}
 							};
 							User user = Users::getCachedUser({ newArgs.eventData.getAuthorId() }).get();
-							DiscordCoreAPI::UniquePtr<MessageCollector> messageCollector{ DiscordCoreAPI::makeUnique<MessageCollector>() };
+							UniquePtr<MessageCollector> messageCollector{ makeUnique<MessageCollector>() };
 							auto returnedMessagesOld = messageCollector->collectMessages(1, 120000, messageFilter);
 							auto returnedMessages = returnedMessagesOld.get();
 							if (returnedMessages.messages.size() == 0) {

@@ -1,6 +1,6 @@
 Deleting an Interaction Response {#deletinganinputeventresponse}
 ============
-- Execute the, `DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync()` function, while passing in a data structure of type `DiscordCoreAPI::InputEventData`, with a return value of type `void`.
+- Execute the, `InputEvents::deleteInputEventResponseAsync()` function, while passing in a data structure of type `InputEventData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -13,12 +13,12 @@ Deleting an Interaction Response {#deletinganinputeventresponse}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
+		virtual void execute(BaseFunctionArguments& args) {
+			InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
-			DiscordCoreAPI::RespondToInputEventData dataPackage02 {args.eventData};
+			RespondToInputEventData dataPackage02 {args.eventData};
 			dataPackage02.addContent("Test Response");
 			auto inputEventData = InputEvents::respondToInputEventAsync(dataPackage02);
 
-			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(inputEventData).get();
+			InputEvents::deleteInputEventResponseAsync(inputEventData).get();
 		}
 	};
 }

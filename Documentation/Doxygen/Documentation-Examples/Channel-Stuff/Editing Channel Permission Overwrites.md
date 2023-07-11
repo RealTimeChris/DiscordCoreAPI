@@ -1,6 +1,6 @@
 Edit Channel Permission Overwrites {#editingpermissionoverwrites}
 =============
-- Execute the `DiscordCoreAPI::Channels::editChannelPermissionOverwritesAsync()` function, while passing it a data structure of type `DiscordCoreAPI::EditChannelPermissionOverwritesData`.
+- Execute the `Channels::editChannelPermissionOverwritesAsync()` function, while passing it a data structure of type `EditChannelPermissionOverwritesData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Edit Channel Permission Overwrites {#editingpermissionoverwrites}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::EditChannelPermissionOverwritesData dataPackage;
+		virtual void execute(BaseFunctionArguments& args) {
+			EditChannelPermissionOverwritesData dataPackage;
 			dataPackage.allow = PermissionsConverter::addPermissionsToString(
-				dataPackage.allow, vector<DiscordCoreAPI::Permission> {DiscordCoreAPI::Permission::Add_Reactions, DiscordCoreAPI::Permission::Manage_Messages});
+				dataPackage.allow, vector<Permission> {Permission::Add_Reactions, Permission::Manage_Messages});
 			dataPackage.deny = PermissionsConverter::removePermissionsFromString(
-				dataPackage.deny, vector<DiscordCoreAPI::Permission> {DiscordCoreAPI::Permission::Attach_Files, DiscordCoreAPI::Permission::Embed_Links});
+				dataPackage.deny, vector<Permission> {Permission::Attach_Files, Permission::Embed_Links});
 			dataPackage.channelId = args.eventData.getChannelId();
-			dataPackage.type = DiscordCoreAPI::PermissionOverwritesType::User;
+			dataPackage.type = PermissionOverwritesType::User;
 			dataPackage.roleOrUserId = args.eventData.getAuthorId();
 
 			Channels::editChannelPermissionOverwritesAsync(dataPackage).get();

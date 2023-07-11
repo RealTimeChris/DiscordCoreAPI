@@ -1,6 +1,6 @@
 Getting Guild Bans {#gettingguildbans}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::getGuildBansAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildBansData`, with a return value of type `auto` or `vector<DiscordCoreAPI::BanData>`.
+- Execute the, `Guilds::getGuildBansAsync()` function, while passing in a value of type `GetGuildBansData`, with a return value of type `auto` or `vector<BanData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Guild Bans {#gettingguildbans}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildBansData dataPackage01;
+				GetGuildBansData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto guildBans = DiscordCoreAPI::Guilds::getGuildBansAsync(dataPackage01).get();
+				auto guildBans = Guilds::getGuildBansAsync(dataPackage01).get();
 
 				for (auto value: guildBans) {
-					cout << "THE BAN NAME: " << value.user.userName << endl;
+					std::cout << "THE BAN NAME: " << value.user.userName << std::endl;
 				}
 
 

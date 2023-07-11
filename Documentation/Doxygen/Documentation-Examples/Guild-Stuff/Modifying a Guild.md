@@ -1,6 +1,6 @@
 Modifying a Guild {#modifyingaguild}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::modifyGuildAsync()` function, while passing in a value of type `DiscordCoreAPI::ModifyGuildData`, with a return value of type `auto` or `DiscordCoreAPI::Guild`.
+- Execute the, `Guilds::modifyGuildAsync()` function, while passing in a value of type `ModifyGuildData`, with a return value of type `auto` or `Guild`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Modifying a Guild {#modifyingaguild}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,22 +26,22 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				vector<DiscordCoreAPI::Guild> guilds = DiscordCoreAPI::Guilds::getAllGuildsAsync().get();
+				vector<Guild> guilds = Guilds::getAllGuildsAsync().get();
 				for (auto value: guilds) {
 					if (value.name == "TEST GUILD") {
-						DiscordCoreAPI::ModifyGuildData dataPackage00 {value};
+						ModifyGuildData dataPackage00 {value};
 						dataPackage00.name = "NEWER TEST GUILD!";
 						dataPackage00.reason = "TESTING PURPOSES!";
 
-						auto guild = DiscordCoreAPI::Guilds::modifyGuildAsync(dataPackage00).get();
+						auto guild = Guilds::modifyGuildAsync(dataPackage00).get();
 
-						cout << "THE NAME: " << guild.name << endl;
+						std::cout << "THE NAME: " << guild.name << std::endl;
 					}
 				}
 

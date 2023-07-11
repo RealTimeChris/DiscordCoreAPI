@@ -1,6 +1,6 @@
 Editing a WebHook Message {#editingawebhookmessage}
 ============
-- Execute the, `DiscordCoreAPI::WebHooks::editWebHookMessageAsync()` function, while passing in a value of type `DiscordCoreAPI::EditWebHookMessageData`, with a return value of type `auto` or `DiscordCoreAPI::Message`.
+- Execute the, `WebHooks::editWebHookMessageAsync()` function, while passing in a value of type `EditWebHookMessageData`, with a return value of type `auto` or `Message`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Editing a WebHook Message {#editingawebhookmessage}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,37 +26,37 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildWebHooksData dataPackage;
+				GetGuildWebHooksData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto newWebHooks = DiscordCoreAPI::WebHooks::getGuildWebHooksAsync(dataPackage).get();
+				auto newWebHooks = WebHooks::getGuildWebHooksAsync(dataPackage).get();
 
-				DiscordCoreAPI::ExecuteWebHookData dataPackage01 {newWebHooks[0]};
+				ExecuteWebHookData dataPackage01 {newWebHooks[0]};
 				dataPackage01.addContent("TEST CONTENT");
 				dataPackage01.wait = true;
 
-				auto newMessage = DiscordCoreAPI::WebHooks::executeWebHookAsync(dataPackage01).get();
+				auto newMessage = WebHooks::executeWebHookAsync(dataPackage01).get();
 
-				DiscordCoreAPI::GetWebHookMessageData dataPackage02;
+				GetWebHookMessageData dataPackage02;
 				dataPackage02.webHookId = newWebHooks[0].id;
 				dataPackage02.webhookToken = newWebHooks[0].token;
 				dataPackage02.messageId = newMessage.id;
 
-				auto newMessage02 = DiscordCoreAPI::WebHooks::getWebHookMessageAsync(dataPackage02).get();
+				auto newMessage02 = WebHooks::getWebHookMessageAsync(dataPackage02).get();
 
-				cout << "MESSAGE ID: " << newMessage02.id << endl;
+				std::cout << "MESSAGE ID: " << newMessage02.id << std::endl;
 
-				DiscordCoreAPI::EditWebHookMessageData dataPackage03 {newWebHooks[0]};
+				EditWebHookMessageData dataPackage03 {newWebHooks[0]};
 				dataPackage03.addContent("NEWER CONTENTS!");
 				dataPackage03.messageId = newMessage02.id;
 
-				auto newMessage03 = DiscordCoreAPI::WebHooks::editWebHookMessageAsync(dataPackage03).get();
+				auto newMessage03 = WebHooks::editWebHookMessageAsync(dataPackage03).get();
 
 
 			} catch (...) {

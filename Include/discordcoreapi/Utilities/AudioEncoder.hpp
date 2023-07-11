@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// AudioEncoder.hpp - Header for the audio encoder class.
 /// Aug 22, 2021
@@ -28,64 +33,67 @@
 #include <discordcoreapi/FoundationEntities.hpp>
 #include <opus/opus.h>
 
-namespace DiscordCoreInternal {
+namespace DiscordCoreAPI {
 
-	struct EncoderReturnData {
-		std::basic_string_view<uint8_t> data{};
-		uint64_t sampleCount{};
-	};
+	namespace DiscordCoreInternal {
 
-	struct OpusEncoderWrapper {
-		struct OpusEncoderDeleter {
-			inline void operator()(OpusEncoder* other) noexcept {
-				if (other) {
-					opus_encoder_destroy(other);
-					other = nullptr;
-				}
-			}
+		struct EncoderReturnData {
+			std::basic_string_view<uint8_t> data{};
+			uint64_t sampleCount{};
 		};
 
-		inline OpusEncoderWrapper() {
-			int32_t error{};
-			ptr.reset(opus_encoder_create(sampleRate, nChannels, OPUS_APPLICATION_AUDIO, &error));
-			auto result = opus_encoder_ctl(ptr.get(), OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
-			if (result != OPUS_OK) {
-				throw DiscordCoreAPI::DCAException{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) },
-					std::source_location::current() };
-			}
-			result = opus_encoder_ctl(ptr.get(), OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
-			if (result != OPUS_OK) {
-				throw DiscordCoreAPI::DCAException{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) },
-					std::source_location::current() };
-			}
-		}
+		struct OpusEncoderWrapper {
+			struct OpusEncoderDeleter {
+				inline void operator()(OpusEncoder* other) noexcept {
+					if (other) {
+						opus_encoder_destroy(other);
+						other = nullptr;
+					}
+				}
+			};
 
-		inline EncoderReturnData encodeData(std::basic_string_view<uint8_t> inputFrame) {
-			if (inputFrame.size() == 0) {
-				return {};
+			inline OpusEncoderWrapper() {
+				int32_t error{};
+				ptr.reset(opus_encoder_create(sampleRate, nChannels, OPUS_APPLICATION_AUDIO, &error));
+				auto result = opus_encoder_ctl(ptr.get(), OPUS_SET_SIGNAL(OPUS_SIGNAL_MUSIC));
+				if (result != OPUS_OK) {
+					throw DCAException{ "Failed to set the Opus signal type, Reason: " + std::string{ opus_strerror(result) },
+						std::source_location::current() };
+				}
+				result = opus_encoder_ctl(ptr.get(), OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
+				if (result != OPUS_OK) {
+					throw DCAException{ "Failed to set the Opus bitrate, Reason: " + std::string{ opus_strerror(result) },
+						std::source_location::current() };
+				}
 			}
-			if (encodedData.size() == 0) {
-				encodedData.resize(maxBufferSize);
-			}
-			uint64_t sampleCount = inputFrame.size() / 2 / 2;
-			int32_t count = opus_encode(ptr.get(), reinterpret_cast<const opus_int16*>(inputFrame.data()),
-				static_cast<int32_t>(inputFrame.size() / 2 / 2), reinterpret_cast<uint8_t*>(encodedData.data()), maxBufferSize);
-			if (count <= 0) {
-				throw DiscordCoreAPI::DCAException{ "Failed to encode the bitstream, Reason: " + std::string{ opus_strerror(count) },
-					std::source_location::current() };
-			}
-			EncoderReturnData returnData{};
-			returnData.sampleCount = sampleCount;
-			returnData.data = std::basic_string_view<uint8_t>{ encodedData.data(), encodedData.size() };
-			return returnData;
-		}
 
-	  protected:
-		DiscordCoreAPI::UniquePtr<OpusEncoder, OpusEncoderDeleter> ptr{};
-		std::basic_string<uint8_t> encodedData{};
-		const int32_t maxBufferSize{ 1276 };
-		const int32_t sampleRate{ 48000 };
-		const int32_t nChannels{ 2 };
-	};
+			inline EncoderReturnData encodeData(std::basic_string_view<uint8_t> inputFrame) {
+				if (inputFrame.size() == 0) {
+					return {};
+				}
+				if (encodedData.size() == 0) {
+					encodedData.resize(maxBufferSize);
+				}
+				uint64_t sampleCount = inputFrame.size() / 2 / 2;
+				int32_t count = opus_encode(ptr.get(), reinterpret_cast<const opus_int16*>(inputFrame.data()),
+					static_cast<int32_t>(inputFrame.size() / 2 / 2), reinterpret_cast<uint8_t*>(encodedData.data()), maxBufferSize);
+				if (count <= 0) {
+					throw DCAException{ "Failed to encode the bitstream, Reason: " + std::string{ opus_strerror(count) },
+						std::source_location::current() };
+				}
+				EncoderReturnData returnData{};
+				returnData.sampleCount = sampleCount;
+				returnData.data = std::basic_string_view<uint8_t>{ encodedData.data(), encodedData.size() };
+				return returnData;
+			}
 
+		  protected:
+			UniquePtr<OpusEncoder, OpusEncoderDeleter> ptr{};
+			std::basic_string<uint8_t> encodedData{};
+			const int32_t maxBufferSize{ 1276 };
+			const int32_t sampleRate{ 48000 };
+			const int32_t nChannels{ 2 };
+		};
+
+	}
 }

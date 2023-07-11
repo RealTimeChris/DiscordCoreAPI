@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// InteractionEntities.hpp - Header for the Jsonifier::Core specializations.
 /// Mar 24, 2023 Chris M.
@@ -27,51 +32,52 @@
 
 #include <discordcoreapi/FoundationEntities.hpp>
 
-namespace DiscordCoreInternal {
+namespace DiscordCoreAPI {
 
-	template<> struct WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateData> {
-		WebSocketMessageData() noexcept = default;
-		WebSocketMessageData(const DiscordCoreAPI::UpdateVoiceStateData& data) noexcept;
-		std::unordered_set<std::string> excludedKeys{};
-		using type = DiscordCoreAPI::UpdateVoiceStateData;
-		int64_t op{ -1 };
-		std::string t{};
-		int32_t s{};
-		type d{};
-		operator EtfSerializer() noexcept;
-	};
+	namespace DiscordCoreInternal {
 
-	template<> struct WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateDataDC> {
-		WebSocketMessageData() noexcept = default;
-		WebSocketMessageData(const DiscordCoreAPI::UpdateVoiceStateData& data) noexcept;
-		std::unordered_set<std::string> excludedKeys{};
-		using type = DiscordCoreAPI::UpdateVoiceStateDataDC;
-		int64_t op{ -1 };
-		std::string t{};
-		int32_t s{};
-		type d{};
-		operator EtfSerializer() noexcept;
-	};
+		template<> struct WebSocketMessageData<UpdateVoiceStateData> {
+			WebSocketMessageData() noexcept = default;
+			WebSocketMessageData(const UpdateVoiceStateData& data) noexcept;
+			std::unordered_set<std::string> excludedKeys{};
+			using type = UpdateVoiceStateData;
+			int64_t op{ -1 };
+			std::string t{};
+			int32_t s{};
+			type d{};
+			operator EtfSerializer() noexcept;
+		};
+
+		template<> struct WebSocketMessageData<UpdateVoiceStateDataDC> {
+			WebSocketMessageData() noexcept = default;
+			WebSocketMessageData(const UpdateVoiceStateData& data) noexcept;
+			std::unordered_set<std::string> excludedKeys{};
+			using type = UpdateVoiceStateDataDC;
+			int64_t op{ -1 };
+			std::string t{};
+			int32_t s{};
+			type d{};
+			operator EtfSerializer() noexcept;
+		};
+	}
 }
 
 namespace Jsonifier {
 
-	class IconHash;
-
-	template<DiscordCoreAPI::TextFormat textFormat> struct Core<DiscordCoreInternal::ReadyData<textFormat>> {
-		using ValueType = DiscordCoreInternal::ReadyData<textFormat>;
+	template<DiscordCoreAPI::TextFormat textFormat> struct Core<DiscordCoreAPI::ReadyData<textFormat>> {
+		using ValueType = DiscordCoreAPI::ReadyData<textFormat>;
 		constexpr static auto parseValue = object("resume_gateway_url", &ValueType::resumeGatewayUrl, "shard", &ValueType::shard, "v", &ValueType::v,
 			"session_id", &ValueType::sessionId, "user", &ValueType::user, "application", &ValueType::application);
 	};
 
-	template<> struct Core<DiscordCoreInternal::WebSocketMessage> {
-		using ValueType = DiscordCoreInternal::WebSocketMessage;
+	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::WebSocketMessage> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::WebSocketMessage;
 		constexpr static auto parseValue = object("op", &ValueType::op, "s", &ValueType::s, "t", &ValueType::t);
 	};
 
-	template<typename OTy2> struct Core<DiscordCoreInternal::WebSocketMessageData<OTy2>> {
-		using ValueType = DiscordCoreInternal::WebSocketMessageData<OTy2>;
-		constexpr static auto parseValue = object("d", &ValueType::d, "op", &ValueType::op, "s", &ValueType::s, "t", &ValueType::t);
+	template<typename OTy2> struct Core<DiscordCoreAPI::DiscordCoreInternal::WebSocketMessageData<OTy2>> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::WebSocketMessageData<OTy2>;
+		constexpr static auto parseValue = object("d", &ValueType::d, "op", &ValueType::op, "s", &ValueType::s);
 	};
 
 }
@@ -993,53 +999,53 @@ namespace Jsonifier {
 			object("premium_subscriber", &ValueType::premiumSubscriber, "integration_id", &ValueType::integrationId, "bot_id", &ValueType::botId);
 	};
 
-	template<> struct Core<DiscordCoreInternal::ConnectProperties> {
-		using ValueType = DiscordCoreInternal::ConnectProperties;
+	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::ConnectProperties> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::ConnectProperties;
 		constexpr static auto parseValue = object("os", &ValueType::os, "device", &ValueType::device, "browser", &ValueType::browser);
 	};
 
-	template<> struct Core<DiscordCoreInternal::WebSocketIdentifyData> {
-		using ValueType = DiscordCoreInternal::WebSocketIdentifyData;
+	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::WebSocketIdentifyData> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::WebSocketIdentifyData;
 		constexpr static auto parseValue = object("token", &ValueType::botToken, "shard", &ValueType::shard, "intents", &ValueType::intents,
 			"large_threshold", &ValueType::largeThreshold, "presence", &ValueType::presence, "properties", &ValueType::properties);
 	};
 
-	template<> struct Core<DiscordCoreInternal::WebSocketResumeData> {
-		using ValueType = DiscordCoreInternal::WebSocketResumeData;
+	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::WebSocketResumeData> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::WebSocketResumeData;
 		constexpr static auto parseValue =
 			object("token", &ValueType::botToken, "session_id", &ValueType::sessionId, "seq", &ValueType::lastNumberReceived);
 	};
 
-	template<> struct Core<DiscordCoreInternal::VoiceSocketProtocolPayloadDataData> {
-		using ValueType = DiscordCoreInternal::VoiceSocketProtocolPayloadDataData;
+	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::VoiceSocketProtocolPayloadDataData> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::VoiceSocketProtocolPayloadDataData;
 		static constexpr auto parseValue = object("address", &ValueType::address, "mode", &ValueType::mode, "port", &ValueType::port);
 	};
 
-	template<> struct Core<DiscordCoreInternal::VoiceSocketProtocolPayloadData> {
-		using ValueType = DiscordCoreInternal::VoiceSocketProtocolPayloadData;
+	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::VoiceSocketProtocolPayloadData> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::VoiceSocketProtocolPayloadData;
 		static constexpr auto parseValue = object("data", &ValueType::data, "protocol", &ValueType::protocol);
 	};
 
-	template<> struct Core<DiscordCoreInternal::VoiceIdentifyData> {
-		using ValueType = DiscordCoreInternal::VoiceIdentifyData;
+	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::VoiceIdentifyData> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::VoiceIdentifyData;
 		static constexpr auto parseValue =
 			object("session_id", &ValueType::sessionId, "user_id", &ValueType::userId, "token", &ValueType::token, "server_id", &ValueType::serverId);
 	};
 
-	template<> struct Core<DiscordCoreInternal::SendSpeakingData> {
-		using ValueType = DiscordCoreInternal::SendSpeakingData;
+	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::SendSpeakingData> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::SendSpeakingData;
 		static constexpr auto parseValue = object("speaking", &ValueType::type, "delay", &ValueType::delay, "ssrc", &ValueType::ssrc);
 	};
 
-	template<> struct Core<DiscordCoreInternal::HelloData> {
-		using ValueType = DiscordCoreInternal::HelloData;
+	template<> struct Core<DiscordCoreAPI::DiscordCoreInternal::HelloData> {
+		using ValueType = DiscordCoreAPI::DiscordCoreInternal::HelloData;
 		constexpr static auto parseValue = object("heartbeat_interval", &ValueType::heartbeatInterval, "_trace", &ValueType::_trace);
 	};
 
 	template<> struct Core<DiscordCoreAPI::UpdatePresenceData> {
 		using ValueType = DiscordCoreAPI::UpdatePresenceData;
 		constexpr static auto parseValue =
-			object("afk", &ValueType::afk, "since", &ValueType::since, "status", &ValueType::status, "activities", &ValueType::activities);
+			object("afk", &ValueType::afk, "since", &ValueType::since, "status", &ValueType::statusReal, "activities", &ValueType::activities);
 	};
 
 	template<typename ValueType> struct Core<DiscordCoreAPI::EventData<ValueType>> {

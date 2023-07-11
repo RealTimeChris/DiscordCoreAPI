@@ -1,6 +1,6 @@
 Getting Voice Regions {#gettingvoiceregions}
 ============
-- Execute the, `DiscordCoreAPI::Channels::getVoiceRegionsAsync()` function, with a return value of type `auto` or `vector<DiscordCoreAPI::VoiceRegionData>`.
+- Execute the, `Channels::getVoiceRegionsAsync()` function, with a return value of type `auto` or `vector<VoiceRegionData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Voice Regions {#gettingvoiceregions}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,16 +26,16 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				auto responseData = DiscordCoreAPI::Channels::getVoiceRegionsAsync().get();
+				auto responseData = Channels::getVoiceRegionsAsync().get();
 
 				for (auto& value: responseData) {
-					cout << "THE REGION: " << value.name << endl;
+					std::cout << "THE REGION: " << value.name << std::endl;
 				}
 
 

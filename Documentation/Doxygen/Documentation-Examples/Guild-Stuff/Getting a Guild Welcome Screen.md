@@ -1,6 +1,6 @@
 Getting a Guild Welcome Screen {#gettingaguildwelcomescreen}
 =============
-- Execute the, `DiscordCoreAPI::Guilds::getGuildWelcomeScreenAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildWelcomeScreenData`, with a return value of type `auto` or `DiscordCoreAPI::WelcomeScreenData`.
+- Execute the, `Guilds::getGuildWelcomeScreenAsync()` function, while passing in a value of type `GetGuildWelcomeScreenData`, with a return value of type `auto` or `WelcomeScreenData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Guild Welcome Screen {#gettingaguildwelcomescreen}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildWelcomeScreenData dataPackage01;
+				GetGuildWelcomeScreenData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto responseData = DiscordCoreAPI::Guilds::getGuildWelcomeScreenAsync(dataPackage01).get();
+				auto responseData = Guilds::getGuildWelcomeScreenAsync(dataPackage01).get();
 
-				cout << Boolalpha << responseData.welcomeChannels.at(0).channelId << endl;
+				std::cout << Boolalpha << responseData.welcomeChannels.at(0).channelId << std::endl;
 
 			} catch (...) {
 				rethrowException("Test::execute()");

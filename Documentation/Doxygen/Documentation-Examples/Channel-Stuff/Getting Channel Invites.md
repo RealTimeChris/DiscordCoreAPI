@@ -1,6 +1,6 @@
 Getting Channel Invites {#gettingchannelinvites}
 ============
-- Execute the `DiscordCoreAPI::Channels::getChannelInvitesAsync()` function, while passing in a data structure of type `DiscordCoreAPI::GetChannelInvitesData`, with a return value of `auto` or `std::vector<DiscordCoreAPI::InviteData>`.
+- Execute the `Channels::getChannelInvitesAsync()` function, while passing in a data structure of type `GetChannelInvitesData`, with a return value of `auto` or `std::vector<InviteData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Channel Invites {#gettingchannelinvites}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,20 +26,20 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetChannelInvitesData dataPackage;
+				GetChannelInvitesData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				vector<DiscordCoreAPI::InviteData> channelInvites = Channels::getChannelInvitesAsync(dataPackage).get();
+				vector<InviteData> channelInvites = Channels::getChannelInvitesAsync(dataPackage).get();
 
-				cout << "THE INVITES: " << endl;
+				std::cout << "THE INVITES: " << std::endl;
 				for (auto value: channelInvites) {
-					cout << value.inviter.userName << endl;
+					std::cout << value.inviter.userName << std::endl;
 				}
 
 

@@ -1,6 +1,6 @@
 Getting a Guild Scheduled Event {#gettingaguildscheduledevent}
 ============
-- Execute the, from the `DiscordCoreAPI::GuildScheduledEvents::getGuildScheduledEventAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildScheduledEventData`, with a return value of type `auto` or `DiscordCoreAPI::GuildScheduledEvent`.
+- Execute the, from the `GuildScheduledEvents::getGuildScheduledEventAsync()` function, while passing in a value of type `GetGuildScheduledEventData`, with a return value of type `auto` or `GuildScheduledEvent`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Guild Scheduled Event {#gettingaguildscheduledevent}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,20 +26,20 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		unique_ptr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildScheduledEventData dataPackage;
+				GetGuildScheduledEventData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.withUserCount = true;
 				dataPackage.guildScheduledEventId = "914726482365009931";
 
-				auto responseData = DiscordCoreAPI::GuildScheduledEvents::getGuildScheduledEventAsync(dataPackage).get();
+				auto responseData = GuildScheduledEvents::getGuildScheduledEventAsync(dataPackage).get();
 
-				cout << "THE NAME: " << responseData.name << endl;
+				std::cout << "THE NAME: " << responseData.name << std::endl;
 
 
 			} catch (...) {

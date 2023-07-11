@@ -1,6 +1,6 @@
 Creating a Direct-Message {#creatingadm}
 ============
-- Execute the, `DiscordCoreAPI::Channels::createDMChannelAsync()` function, while passing in a data structure of type `DiscordCoreAPI::CreateDMChannelData`, with a return value of type `auto` or `DiscordCoreAPI::Channel`.
+- Execute the, `Channels::createDMChannelAsync()` function, while passing in a data structure of type `CreateDMChannelData`, with a return value of type `auto` or `Channel`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Creating a Direct-Message {#creatingadm}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,16 +26,16 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::CreateDMChannelData dataPackage;
+				CreateDMChannelData dataPackage;
 				dataPackage.userId = args.eventData.getAuthorId();
 
-				DiscordCoreAPI::Channel dmChannel = DiscordCoreAPI::Channels::createDMChannelAsync(dataPackage).get();
+				Channel dmChannel = Channels::createDMChannelAsync(dataPackage).get();
 
 
 			} catch (...) {

@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// UniquePtr.hpp - Header for the "UniquePtr" related stuff.
 /// Dec 18, 2021
@@ -47,7 +52,6 @@ namespace DiscordCoreAPI {
 		using pointer = element_type*;
 		using deleter_type = Deleter;
 		using reference = element_type&;
-		using const_reference = const element_type&;
 
 		inline constexpr UniquePtr() noexcept = default;
 
@@ -56,12 +60,14 @@ namespace DiscordCoreAPI {
 
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02>>
 		inline UniquePtr& operator=(UniquePtr<ValueType02, OtherDeleter>&& other) {
-			reset(nullptr);
-			try {
-				commit(other.release());
-			} catch (...) {
+			if (this != static_cast<void*>(&other)) {
 				reset(nullptr);
-				throw;
+				try {
+					commit(other.release());
+				} catch (...) {
+					reset(nullptr);
+					throw;
+				}
 			}
 			return *this;
 		}
@@ -127,7 +133,7 @@ namespace DiscordCoreAPI {
 
 		inline void reset(pointer newPtr) noexcept {
 			pointer oldPtr = std::exchange(ptr, newPtr);
-			Deleter{}(oldPtr);
+			deleter_type{}(oldPtr);
 		}
 
 		inline void swap(UniquePtr& other) noexcept {
@@ -138,13 +144,13 @@ namespace DiscordCoreAPI {
 			reset(nullptr);
 		}
 
-	  private:
+	  protected:
+		pointer ptr{ nullptr };
+
 		inline void commit(pointer other) noexcept {
 			pointer tempPtr = other;
 			reset(tempPtr);
 		}
-
-		pointer ptr{ nullptr };
 	};
 
 	template<typename ValueType, typename Deleter> class UniquePtr<ValueType[], Deleter> {
@@ -153,7 +159,6 @@ namespace DiscordCoreAPI {
 		using pointer = element_type*;
 		using deleter_type = Deleter;
 		using reference = element_type&;
-		using const_reference = const element_type&;
 
 		inline constexpr UniquePtr() noexcept = default;
 
@@ -162,12 +167,14 @@ namespace DiscordCoreAPI {
 
 		template<IsRelatedPtr<element_type> ValueType02, typename OtherDeleter = std::default_delete<ValueType02[]>>
 		inline UniquePtr& operator=(UniquePtr<ValueType02[], OtherDeleter>&& other) {
-			reset(nullptr);
-			try {
-				commit(other.release());
-			} catch (...) {
+			if (this != static_cast<void*>(&other)) {
 				reset(nullptr);
-				throw;
+				try {
+					commit(other.release());
+				} catch (...) {
+					reset(nullptr);
+					throw;
+				}
 			}
 			return *this;
 		}
@@ -238,7 +245,7 @@ namespace DiscordCoreAPI {
 
 		inline void reset(pointer newPtr) noexcept {
 			pointer oldPtr = std::exchange(ptr, newPtr);
-			Deleter{}(oldPtr);
+			deleter_type{}(oldPtr);
 		}
 
 		inline void swap(UniquePtr& other) noexcept {
@@ -249,23 +256,23 @@ namespace DiscordCoreAPI {
 			reset(nullptr);
 		}
 
-	  private:
+	  protected:
+		pointer ptr{ nullptr };
+
 		inline void commit(pointer other) noexcept {
 			pointer tempPtr = other;
 			reset(tempPtr);
 		}
-
-		pointer ptr{ nullptr };
 	};
 
 	template<class ValueType, typename Deleter = std::default_delete<ValueType>, typename... Args,
-		std::enable_if_t<!std::is_array_v<ValueType>, int> = 0>
+		std::enable_if_t<!std::is_array_v<ValueType>, int32_t> = 0>
 	inline constexpr UniquePtr<ValueType, Deleter> makeUnique(Args&&... args) {
 		return UniquePtr<ValueType, Deleter>(new ValueType(std::forward<Args>(args)...));
 	}
 
 	template<class ValueType, typename Deleter = std::default_delete<ValueType>,
-		std::enable_if_t<std::is_array_v<ValueType> && std::extent_v<ValueType> == 0, int> = 0>
+		std::enable_if_t<std::is_array_v<ValueType> && std::extent_v<ValueType> == 0, int32_t> = 0>
 	inline constexpr UniquePtr<ValueType, Deleter> makeUnique(const size_t count) {
 		using element_type = std::remove_extent_t<ValueType>;
 		return UniquePtr<ValueType, Deleter>(new element_type[count]());

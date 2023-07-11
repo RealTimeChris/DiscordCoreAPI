@@ -1,6 +1,6 @@
 Creating a Global Application Command {#createglobalcommand}
 ============
-- Execute the `DiscordCoreAPI::ApplicationCommands::createGlobalApplicationCommandAsync()`, while passing in a data structure of type `DiscordCoreAPI::CreateGlobalApplicationCommandData` (IMPORTANT #1: Notes on which kind of types to set can be found [here](https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups).), with a return value of type `auto` or `DiscordCoreAPI::ApplicationCommand`.
+- Execute the `ApplicationCommands::createGlobalApplicationCommandAsync()`, while passing in a data structure of type `CreateGlobalApplicationCommandData` (IMPORTANT #1: Notes on which kind of types to set can be found [here](https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups).), with a return value of type `auto` or `ApplicationCommand`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -28,8 +28,8 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<RegisterApplicationCommands>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<RegisterApplicationCommands>();
 		}
 
 		virtual void execute(BaseFunctionArguments& argsNew) {
@@ -42,13 +42,13 @@ namespace DiscordCoreAPI {
 					return;
 				}
 
-				DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(argsNew.eventData).get();
+				InputEvents::deleteInputEventResponseAsync(argsNew.eventData).get();
 
-				DiscordCoreAPI::RespondToInputEventData dataPackage(argsNew.eventData);
+				RespondToInputEventData dataPackage(argsNew.eventData);
 				dataPackage.setResponseType(InputEventResponseType::Deferred_Response);
-				auto newEvent = DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage).get();
+				auto newEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
 				
-				DiscordCoreAPI::CreateGlobalApplicationCommandData registerApplicationCommandsCommandData;
+				CreateGlobalApplicationCommandData registerApplicationCommandsCommandData;
 				registerApplicationCommandsCommandData.dmPermission = true;
 				registerApplicationCommandsCommandData.applicationId = argsNew.discordCoreClient->getBotUser().id;
 				registerApplicationCommandsCommandData.type = ApplicationCommandType::Chat_Input;
@@ -56,7 +56,7 @@ namespace DiscordCoreAPI {
 				registerApplicationCommandsCommandData.name = "registerapplicationcommands";
 				ApplicationCommands::createGlobalApplicationCommandAsync(registerApplicationCommandsCommandData);
 
-				DiscordCoreAPI::CreateGlobalApplicationCommandData createTestData;
+				CreateGlobalApplicationCommandData createTestData;
 				createTestData.dmPermission = true;
 				createTestData.applicationId = argsNew.discordCoreClient->getBotUser().id;
 				createTestData.type = ApplicationCommandType::Chat_Input;
@@ -64,7 +64,7 @@ namespace DiscordCoreAPI {
 				createTestData.description = "Test command.";
 				ApplicationCommands::createGlobalApplicationCommandAsync(createTestData).get();
 
-				DiscordCoreAPI::EmbedData msgEmbed;
+				EmbedData msgEmbed;
 				msgEmbed.setAuthor(argsNew.eventData.getUserName(), argsNew.eventData.getAvatarUrl());
 				msgEmbed.setColor("fefefe");
 				msgEmbed.setDescription("------\nNicely done, you've registered some commands!\n------");

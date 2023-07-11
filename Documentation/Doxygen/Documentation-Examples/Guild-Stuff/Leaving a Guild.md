@@ -1,6 +1,6 @@
 Leaving a Guild {#leavingaguild}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::leaveGuildAsync()` function, while passing in a value of type `DiscordCoreAPI::LeaveGuildData`, with a return value of type `void`.
+- Execute the, `Guilds::leaveGuildAsync()` function, while passing in a value of type `LeaveGuildData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Leaving a Guild {#leavingaguild}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,16 +26,16 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::LeaveGuildData dataPackage;
+				LeaveGuildData dataPackage;
 				dataPackage.guildId = "GUIILD_ID_HERE";
 
-				DiscordCoreAPI::Guilds::leaveGuildAsync(dataPackage).get();
+				Guilds::leaveGuildAsync(dataPackage).get();
 
 
 			} catch (...) {

@@ -1,6 +1,6 @@
 Getting Guild Widget Settings {#gettingguildwidgetsettings}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::getGuildWidgetSettingsAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildWidgetSettingsData`, with a return value of type `auto` or `DiscordCoreAPI::GuildWidgetData`.
+- Execute the, `Guilds::getGuildWidgetSettingsAsync()` function, while passing in a value of type `GetGuildWidgetSettingsData`, with a return value of type `auto` or `GuildWidgetData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Guild Widget Settings {#gettingguildwidgetsettings}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildWidgetSettingsData dataPackage01;
+				GetGuildWidgetSettingsData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto responseData = DiscordCoreAPI::Guilds::getGuildWidgetSettingsAsync(dataPackage01).get();
+				auto responseData = Guilds::getGuildWidgetSettingsAsync(dataPackage01).get();
 
-				cout << Boolalpha << responseData.enabled << endl;
+				std::cout << Boolalpha << responseData.enabled << std::endl;
 
 			} catch (...) {
 				rethrowException("Test::execute()");

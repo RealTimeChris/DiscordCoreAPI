@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// UserEntities.cpp - Source file for user related classes and structs.
 /// May 13, 2021
@@ -41,55 +46,54 @@ namespace Jsonifier {
 		static constexpr auto parseValue = object("username", &ValueType::userName, "avatar", &ValueType::avatar);
 	};
 }
-
-namespace DiscordCoreInternal {
-
-	WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateData>::WebSocketMessageData(const DiscordCoreAPI::UpdateVoiceStateData& other) noexcept {
-		d.channelId = other.channelId;
-		d.guildId = other.guildId;
-		d.selfDeaf = other.selfDeaf;
-		d.selfMute = other.selfMute;
-		excludedKeys.emplace("t");
-		excludedKeys.emplace("s");
-		op = 4;
-	}
-
-	WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateData>::operator EtfSerializer() noexcept {
-		EtfSerializer data{};
-		data["op"] = 4;
-		if (d.channelId == 0) {
-			data["d"]["channel_id"] = DiscordCoreInternal::JsonType::Null;
-		} else {
-			data["d"]["channel_id"] = d.channelId.operator std::string();
-		}
-		data["d"]["self_deaf"] = d.selfDeaf;
-		data["d"]["self_mute"] = d.selfMute;
-		data["d"]["guild_id"] = d.guildId.operator std::string();
-		return data;
-	}
-
-	WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateDataDC>::WebSocketMessageData(const DiscordCoreAPI::UpdateVoiceStateData& other) noexcept {
-		d.channelId = nullptr;
-		d.guildId = other.guildId;
-		d.selfDeaf = other.selfDeaf;
-		d.selfMute = other.selfMute;
-		excludedKeys.emplace("t");
-		excludedKeys.emplace("s");
-		op = 4;
-	}
-
-	WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateDataDC>::operator EtfSerializer() noexcept {
-		EtfSerializer data{};
-		data["op"] = 4;
-		data["d"]["channel_id"] = DiscordCoreInternal::JsonType::Null;
-		data["d"]["self_deaf"] = d.selfDeaf;
-		data["d"]["self_mute"] = d.selfMute;
-		data["d"]["guild_id"] = d.guildId.operator std::string();
-		return data;
-	}
-}
-
 namespace DiscordCoreAPI {
+	namespace DiscordCoreInternal {
+
+		WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateData>::WebSocketMessageData(const DiscordCoreAPI::UpdateVoiceStateData& other) noexcept {
+			d.channelId = other.channelId;
+			d.guildId = other.guildId;
+			d.selfDeaf = other.selfDeaf;
+			d.selfMute = other.selfMute;
+			excludedKeys.emplace("t");
+			excludedKeys.emplace("s");
+			op = 4;
+		}
+
+		WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateData>::operator EtfSerializer() noexcept {
+			EtfSerializer data{};
+			data["op"] = 4;
+			if (d.channelId == 0) {
+				data["d"]["channel_id"] = DiscordCoreInternal::JsonType::Null;
+			} else {
+				data["d"]["channel_id"] = d.channelId.operator std::string();
+			}
+			data["d"]["self_deaf"] = d.selfDeaf;
+			data["d"]["self_mute"] = d.selfMute;
+			data["d"]["guild_id"] = d.guildId.operator std::string();
+			return data;
+		}
+
+		WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateDataDC>::WebSocketMessageData(
+			const DiscordCoreAPI::UpdateVoiceStateData& other) noexcept {
+			d.channelId = nullptr;
+			d.guildId = other.guildId;
+			d.selfDeaf = other.selfDeaf;
+			d.selfMute = other.selfMute;
+			excludedKeys.emplace("t");
+			excludedKeys.emplace("s");
+			op = 4;
+		}
+
+		WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateDataDC>::operator EtfSerializer() noexcept {
+			EtfSerializer data{};
+			data["op"] = 4;
+			data["d"]["channel_id"] = DiscordCoreInternal::JsonType::Null;
+			data["d"]["self_deaf"] = d.selfDeaf;
+			data["d"]["self_mute"] = d.selfMute;
+			data["d"]["guild_id"] = d.guildId.operator std::string();
+			return data;
+		}
+	}
 
 	BotUser::BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* baseSocketAgentNew) : User(dataPackage) {
 		baseSocketAgent = baseSocketAgentNew;
@@ -138,8 +142,7 @@ namespace DiscordCoreAPI {
 						baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).dataOpCode) ==
 					DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 					serializer = data.operator DiscordCoreInternal::EtfSerializer();
-					serializer.refreshString();
-					string = serializer.operator std::string();
+					string = serializer.refreshString();
 				} else {
 					parser.serializeJson(data, string);
 				}
@@ -149,8 +152,7 @@ namespace DiscordCoreAPI {
 						baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).dataOpCode) ==
 					DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 					serializer = data.operator DiscordCoreInternal::EtfSerializer();
-					serializer.refreshString();
-					string = serializer.operator std::string();
+					string = serializer.refreshString();
 				} else {
 					parser.serializeJson(data, string);
 				}
@@ -166,12 +168,12 @@ namespace DiscordCoreAPI {
 			std::string string{};
 			uint32_t shardId = 0;
 			uint32_t basesocketAgentIndex{};
+			dataPackage = UpdatePresenceData{ dataPackage.status };
 			if (static_cast<DiscordCoreInternal::WebSocketOpCode>(
 					baseSocketAgent->discordCoreClient->baseSocketAgentsMap[basesocketAgentIndex]->getClient(shardId).dataOpCode) ==
 				DiscordCoreInternal::WebSocketOpCode::Op_Binary) {
 				auto serializer = dataPackage.operator DiscordCoreInternal::EtfSerializer();
-				serializer.refreshString();
-				string = serializer.operator std::string();
+				string = serializer.refreshString();
 			} else {
 				parser.serializeJson(dataPackage, string);
 			}

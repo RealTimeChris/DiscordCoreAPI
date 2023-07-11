@@ -1,6 +1,6 @@
 Getting Global Application Commands {#getglobalcommands}
 =============
-- Execute the `DiscordCoreAPI::ApplicationCommands::getGlobalApplicationCommandsAsync()` function, with a return value of type `auto` or `std::vector<DiscordCoreAPI::ApplicationCommand>`.
+- Execute the `ApplicationCommands::getGlobalApplicationCommandsAsync()` function, with a return value of type `auto` or `std::vector<ApplicationCommand>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Global Application Commands {#getglobalcommands}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,15 +26,15 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			auto globalApplicationCommands = DiscordCoreAPI::ApplicationCommands::getGlobalApplicationCommandsAsync().get();
+		virtual void execute(BaseFunctionArguments& args) {
+			auto globalApplicationCommands = ApplicationCommands::getGlobalApplicationCommandsAsync().get();
 
 			for (auto value: globalApplicationCommands) {
-				cout << value.data.name << endl;
+				std::cout << value.data.name << std::endl;
 			}
 		}
 	};

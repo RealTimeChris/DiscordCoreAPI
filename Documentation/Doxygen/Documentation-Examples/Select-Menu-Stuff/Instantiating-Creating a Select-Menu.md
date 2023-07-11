@@ -1,8 +1,8 @@
 Instantiating/Creating a Select-Menu {#instantiatingcreatingselectmenu}
 ============
-- Create a data structure of type `DiscordCoreAPI::RespondToInputEventData`, and add either some content or a message embed.
-- Add one or more select-menus by using the `DiscordCoreAPI::RespondToInputEventData::addSelectMenu` function of the `DiscordCoreAPI::RespondToInputEventData` structure.
-- Call the `DiscordCoreAPI::InputEvents::respondToInputEventAsync()` function, passing it the `DiscordCoreAPI::RespondToInputEventData` structure.
+- Create a data structure of type `RespondToInputEventData`, and add either some content or a message embed.
+- Add one or more select-menus by using the `RespondToInputEventData::addSelectMenu` function of the `RespondToInputEventData` structure.
+- Call the `InputEvents::respondToInputEventAsync()` function, passing it the `RespondToInputEventData` structure.
 ```cpp
 /// Test.hpp-Header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -13,12 +13,12 @@ Instantiating/Creating a Select-Menu {#instantiatingcreatingselectmenu}
 
 	namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,27 +26,27 @@ Instantiating/Creating a Select-Menu {#instantiatingcreatingselectmenu}
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
+		virtual void execute(BaseFunctionArguments& args) {
+			InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
-			DiscordCoreAPI::SelectOptionData selectOption;
+			SelectOptionData selectOption;
 			selectOption.label = "Select Menu";
 			selectOption._default = true;
 			selectOption.description = "Select Menu";
 			selectOption.emoji.name = "🏁";
 			selectOption.value = "select_menu";
-			std::vector<DiscordCoreAPI::SelectOptionData> selectMenuOptions {selectOption};
-			DiscordCoreAPI::RespondToInputEventData dataPackage {args.eventData};
+			std::vector<SelectOptionData> selectMenuOptions {selectOption};
+			RespondToInputEventData dataPackage {args.eventData};
 			dataPackage.addSelectMenu(false, "test_button", selectMenuOptions, "Select-Menu", 1, 1);
 			dataPackage.addContent("Test Response");
 			dataPackage.addMessageEmbed(EmbedData {.description = "TESTING!", .title = "Test Title"});
-			dataPackage.type = DiscordCoreAPI::InputEventResponseType::Interaction_Response;
+			dataPackage.type = InputEventResponseType::Interaction_Response;
 
-			auto inputEventData = DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage);
+			auto inputEventData = InputEvents::respondToInputEventAsync(dataPackage);
 		}
 	};
 }

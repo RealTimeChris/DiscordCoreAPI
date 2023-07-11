@@ -1,6 +1,6 @@
 Deleting a WebHook with Token {#deletingawebhookwithtoken}
 =============
-- Execute the, `DiscordCoreAPI::WebHooks::deleteWebHookWithTokenAsync()` function, while passing in a value of type `DiscordCoreAPI::DeleteWebHookWithTokenData`, with a return value of type `void`.
+- Execute the, `WebHooks::deleteWebHookWithTokenAsync()` function, while passing in a value of type `DeleteWebHookWithTokenData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Deleting a WebHook with Token {#deletingawebhookwithtoken}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,22 +26,22 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildWebHooksData dataPackage;
+				GetGuildWebHooksData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto newWebHooks = DiscordCoreAPI::WebHooks::getGuildWebHooksAsync(dataPackage).get();
+				auto newWebHooks = WebHooks::getGuildWebHooksAsync(dataPackage).get();
 
-				DiscordCoreAPI::DeleteWebHookWithTokenData dataPackage01;
+				DeleteWebHookWithTokenData dataPackage01;
 				dataPackage01.webHookId = newWebHooks[0].id;
 				dataPackage01.webhookToken = newWebHooks[0].token;
 
-				DiscordCoreAPI::WebHooks::deleteWebHookWithTokenAsync(dataPackage01).get();
+				WebHooks::deleteWebHookWithTokenAsync(dataPackage01).get();
 
 
 			} catch (...) {

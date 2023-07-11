@@ -1,6 +1,6 @@
 Modifying Guild Channel Positions {#modifyingguildchannelpositions}
 =============
-- Execute the, `DiscordCoreAPI::Channels::modifyGuildChannelPositionsAsync()` function, while passing in a data structure of type `DiscordCoreAPI::ModifyGuildChannelPositionsData`, with a return value of type `void`.
+- Execute the, `Channels::modifyGuildChannelPositionsAsync()` function, while passing in a data structure of type `ModifyGuildChannelPositionsData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Modifying Guild Channel Positions {#modifyingguildchannelpositions}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,17 +26,17 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				vector<DiscordCoreAPI::Channel> channels = DiscordCoreAPI::Channels::getGuildChannelsAsync({.guildId = args.eventData.getGuildId()}).get();
+				vector<Channel> channels = Channels::getGuildChannelsAsync({.guildId = args.eventData.getGuildId()}).get();
 
-				vector<DiscordCoreAPI::ModifyGuildChannelPositionData> dataPackage00;
+				vector<ModifyGuildChannelPositionData> dataPackage00;
 
-				DiscordCoreAPI::ModifyGuildChannelPositionData dataPackage01;
+				ModifyGuildChannelPositionData dataPackage01;
 				dataPackage01.id = channels.at(1).id;
 				dataPackage01.lockPermissions = false;
 				dataPackage01.parentId = channels.at(1).parentId;
@@ -44,12 +44,12 @@ namespace DiscordCoreAPI {
 
 				dataPackage00.emplace_back(dataPackage01);
 
-				DiscordCoreAPI::ModifyGuildChannelPositionsData dataPackage;
+				ModifyGuildChannelPositionsData dataPackage;
 				dataPackage.reason = "TESTING PURPOSES!";
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.modifyChannelData = dataPackage00;
 
-				DiscordCoreAPI::Channels::modifyGuildChannelPositionsAsync(dataPackage).get();
+				Channels::modifyGuildChannelPositionsAsync(dataPackage).get();
 
 
 			} catch (...) {

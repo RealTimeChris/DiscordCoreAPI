@@ -1,6 +1,6 @@
 Getting a Direct-Message Channel {#gettingdmchannel}
 ============
-- Execute the `DiscordCoreAPI::Channels::createDMChannelAsync()` (which collects it from the Discord servers)function, while passing to it a data structure of type `DiscordCoreAPI::CreateDMChannelData`, or simply `{ .userId = TARGETUSERIDHERE}`, with a return value of `auto` or `DiscordCoreAPI:Channel`.
+- Execute the `Channels::createDMChannelAsync()` (which collects it from the Discord servers)function, while passing to it a data structure of type `CreateDMChannelData`, or simply `{ .userId = TARGETUSERIDHERE}`, with a return value of `auto` or `DiscordCoreAPI:Channel`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Direct-Message Channel {#gettingdmchannel}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,11 +26,11 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(std::unique_pt<DiscordCoreAPI::BarseFunctionArguments> args) {
+		virtual void execute(std::unique_pt<BarseFunctionArguments> args) {
 			Channel channel = Channels::createDMChannelAsync({.userId = args.eventData.getAuthorId()}).get();
 		}
 	};

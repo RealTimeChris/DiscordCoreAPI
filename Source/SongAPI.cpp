@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// SongAPI.cpp - Source file for the song api related stuff.
 /// Sep 17, 2021
@@ -36,77 +41,17 @@ namespace DiscordCoreAPI {
 	}
 
 	void SongAPI::onSongCompletion(std::function<CoRoutine<void>(SongCompletionEventData)> handler, const Snowflake guildId) noexcept {
-		if (onSongCompletionEvent.functions.size() == 0 && !areWeCurrentlyPlaying()) {
-			eventToken = onSongCompletionEvent.add(handler);
-		} else {
-			onSongCompletionEvent.functions.clear();
-			eventToken = onSongCompletionEvent.add(handler);
-		}
+		onSongCompletionEvent.functions.clear();
+		eventToken = onSongCompletionEvent.add(handler);
 	}
 
-	bool SongAPI::play(Snowflake guildId) noexcept {
-		return DiscordCoreClient::getVoiceConnection(guildId).play();
-	}
-
-	bool SongAPI::play(Song songNew, const GuildMember& guildId) noexcept {
-		if (DiscordCoreClient::getVoiceConnection(guildId.guildId).activeState.load() != VoiceActiveState::Playing) {
-			DiscordCoreClient::getVoiceConnection(guildId.guildId).activeState.store(VoiceActiveState::Playing);
-
-			std::unique_lock lock{ accessMutex };
-			if (this->taskThread) {
-				this->taskThread->request_stop();
-				if (this->taskThread->joinable()) {
-					this->taskThread->detach();
-					this->taskThread.reset(nullptr);
-				}
-			}
-			if (songNew.type == SongType::SoundCloud) {
-				Song newerSong{ DiscordCoreClient::getSoundCloudAPI(guildId.guildId).collectFinalSong(songNew) };
-				taskThread = makeUnique<std::jthread>([=, this](std::stop_token eventToken) {
-					DiscordCoreClient::getSoundCloudAPI(guildId.guildId).downloadAndStreamAudio(newerSong, eventToken, 0);
-				});
-
-			} else if (songNew.type == SongType::YouTube) {
-				Song newerSong{ DiscordCoreClient::getYouTubeAPI(guildId.guildId).collectFinalSong(songNew) };
-				taskThread = makeUnique<std::jthread>([=, this](std::stop_token eventToken) {
-					DiscordCoreClient::getYouTubeAPI(guildId.guildId).downloadAndStreamAudio(newerSong, eventToken, 0);
-				});
-			};
-			return DiscordCoreClient::getVoiceConnection(guildId.guildId).play();
-		} else {
-			return DiscordCoreClient::getVoiceConnection(guildId.guildId).play();
-		}
-	}
-
-	void SongAPI::pauseToggle() noexcept {
-		if (DiscordCoreClient::getVoiceConnection(guildId).activeState.load() == VoiceActiveState::Stopped) {
-			return;
-		}
-		if (DiscordCoreClient::getVoiceConnection(guildId).activeState.load() == VoiceActiveState::Paused) {
-			DiscordCoreClient::getVoiceConnection(guildId).activeState.store(VoiceActiveState::Playing);
-		} else {
-			DiscordCoreClient::getVoiceConnection(guildId).activeState.store(VoiceActiveState::Paused);
-		}
-		DiscordCoreClient::getVoiceConnection(guildId).pauseToggle();
-	}
-
-	bool SongAPI::areWeCurrentlyPlaying() const noexcept {
-		return DiscordCoreClient::getVoiceConnection(guildId).areWeCurrentlyPlaying();
-	}
-
-	void SongAPI::skip(Song songNew, const GuildMember& guildId) noexcept {
-		std::unique_lock lock{ accessMutex };
-		if (DiscordCoreClient::getVoiceConnection(guildId.guildId).activeState.load() == VoiceActiveState::Stopped) {
-			return;
-		}
-		DiscordCoreClient::getVoiceConnection(guildId.guildId).skip();
-	}
-
-	void SongAPI::stop() noexcept {
-		std::unique_lock lock{ accessMutex };
-		this->audioDataBuffer.clearContents();
-		DiscordCoreClient::getVoiceConnection(guildId).stop();
-		DiscordCoreClient::getVoiceConnection(guildId).doWeSkip.store(false);
+	bool SongAPI::skip(const GuildMember& guildMember, bool wasItAFail) noexcept {
+		AudioFrameData dataFrame{};
+		audioDataBuffer.clearContents();
+		auto returnValue = DiscordCoreClient::getVoiceConnection(guildId).skip(wasItAFail);
+		dataFrame.guildMemberId = guildMember.user.id.operator size_t();
+		audioDataBuffer.send(std::move(dataFrame));
+		return returnValue;
 	}
 
 	std::vector<Song> SongAPI::searchForSong(const std::string& searchQuery) noexcept {
@@ -131,15 +76,57 @@ namespace DiscordCoreAPI {
 		return newVector;
 	}
 
-	void SongAPI::disconnect() noexcept {
-		if (this->taskThread) {
-			this->taskThread->request_stop();
-			if (this->taskThread->joinable()) {
-				this->taskThread->detach();
-				this->taskThread.reset(nullptr);
+	bool SongAPI::play(Song songNew, const GuildMember& guildMember) noexcept {
+		songNew.addedByUserId = guildMember.user.id;
+		std::unique_lock lock{ accessMutex };
+		if (taskThread) {
+			taskThread->request_stop();
+			if (taskThread->joinable()) {
+				taskThread.reset(nullptr);
 			}
 		}
-		this->onSongCompletionEvent.erase(this->eventToken);
+		if (songNew.type == SongType::SoundCloud) {
+			Song newerSong{ DiscordCoreClient::getSoundCloudAPI(guildMember.guildId).collectFinalSong(songNew) };
+			taskThread = makeUnique<std::jthread>([=, this](std::stop_token eventToken) {
+				DiscordCoreClient::getSoundCloudAPI(guildMember.guildId).downloadAndStreamAudio(newerSong, eventToken, 0);
+			});
+
+		} else if (songNew.type == SongType::YouTube) {
+			Song newerSong{ DiscordCoreClient::getYouTubeAPI(guildMember.guildId).collectFinalSong(songNew) };
+			taskThread = makeUnique<std::jthread>([=, this](std::stop_token eventToken) {
+				DiscordCoreClient::getYouTubeAPI(guildMember.guildId).downloadAndStreamAudio(newerSong, eventToken, 0);
+			});
+		};
+		return DiscordCoreClient::getVoiceConnection(guildMember.guildId).play();
+	}
+
+	bool SongAPI::areWeCurrentlyPlaying() const noexcept {
+		return DiscordCoreClient::getVoiceConnection(guildId).areWeCurrentlyPlaying();
+	}
+
+	bool SongAPI::play(Snowflake guildId) noexcept {
+		return DiscordCoreClient::getVoiceConnection(guildId).play();
+	}
+
+	bool SongAPI::pauseToggle() noexcept {
+		return DiscordCoreClient::getVoiceConnection(guildId).pauseToggle();
+	}
+
+	bool SongAPI::stop() noexcept {
+		bool returnValue = DiscordCoreClient::getVoiceConnection(guildId).stop();
+		audioDataBuffer.clearContents();
+		return returnValue;
+	}
+
+	void SongAPI::disconnect() noexcept {
+		if (taskThread) {
+			taskThread->request_stop();
+			if (taskThread->joinable()) {
+				taskThread->detach();
+				taskThread.reset(nullptr);
+			}
+		}
+		onSongCompletionEvent.erase(eventToken);
 		audioDataBuffer.clearContents();
 		StopWatch stopWatch{ 10000ms };
 		while (DiscordCoreClient::getSoundCloudAPI(guildId).areWeWorking() || DiscordCoreClient::getYouTubeAPI(guildId).areWeWorking()) {

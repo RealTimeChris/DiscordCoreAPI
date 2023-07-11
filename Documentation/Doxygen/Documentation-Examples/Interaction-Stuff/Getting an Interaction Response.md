@@ -1,6 +1,6 @@
 Getting an Interaction Response {#gettinganinteractionresponse}
 ============
-- Execute the, `DiscordCoreAPI::Interactions::getInteractionResponseAsync()` function, while passing in a data structure of type `DiscordCoreAPI::GetInteractionResponseData`, with a return type of `DiscordCoreAPI::Message`.
+- Execute the, `Interactions::getInteractionResponseAsync()` function, while passing in a data structure of type `GetInteractionResponseData`, with a return type of `Message`.
 
 ```cpp
 /// Test.hpp-Header for the "test" command.
@@ -12,12 +12,12 @@ Getting an Interaction Response {#gettinganinteractionresponse}
 
 	namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -25,17 +25,17 @@ Getting an Interaction Response {#gettinganinteractionresponse}
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetInteractionResponseData dataPackage;
+				GetInteractionResponseData dataPackage;
 				dataPackage.applicationId = getBotUser().id;
 				dataPackage.interactionToken = args.eventData.getInteractionToken();
 
-				auto interactionResponse = DiscordCoreAPI::Interactions::getInteractionResponseAsync(dataPackage).get();
+				auto interactionResponse = Interactions::getInteractionResponseAsync(dataPackage).get();
 
 
 			} catch (...) {

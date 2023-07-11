@@ -1,6 +1,6 @@
 Getting Guild WebHooks {#gettingguildwebhooks}
 ============
-- Execute the, `DiscordCoreAPI::WebHooks::getGuildWebHooksAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildWebHooksData`, with a return value of type `auto` or `vector<DiscordCoreAPI::WebHook>`.
+- Execute the, `WebHooks::getGuildWebHooksAsync()` function, while passing in a value of type `GetGuildWebHooksData`, with a return value of type `auto` or `vector<WebHook>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Guild WebHooks {#gettingguildwebhooks}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildWebHooksData dataPackage;
+				GetGuildWebHooksData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto newWebHooks = DiscordCoreAPI::WebHooks::getGuildWebHooksAsync(dataPackage).get();
+				auto newWebHooks = WebHooks::getGuildWebHooksAsync(dataPackage).get();
 
 				for (auto& value: newWebHooks) {
-					cout << "THE NAME: " << value.name << endl;
+					std::cout << "THE NAME: " << value.name << std::endl;
 				}
 
 

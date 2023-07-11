@@ -1,6 +1,6 @@
 Bulk Overwriting Guild Application Commands {#bulkoverwriteguildcommands}
 ============
-- Execute the `DiscordCoreAPI::ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync()` function and execute it, while passing in a data structure of type `DiscordCoreAPI::BulkOverwriteGuildApplicationCommandsData`, with a return value of `auto` or `std::vector<DiscordCoreAPI::ApplicationCommand>`.
+- Execute the `ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync()` function and execute it, while passing in a data structure of type `BulkOverwriteGuildApplicationCommandsData`, with a return value of `auto` or `std::vector<ApplicationCommand>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Bulk Overwriting Guild Application Commands {#bulkoverwriteguildcommands}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,32 +26,32 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			vector<DiscordCoreAPI::CreateGuildApplicationCommandData> newVector;
-			DiscordCoreAPI::CreateGuildApplicationCommandData createSellDrugsCommandData;
+		virtual void execute(BaseFunctionArguments& args) {
+			vector<CreateGuildApplicationCommandData> newVector;
+			CreateGuildApplicationCommandData createSellDrugsCommandData;
 			createSellDrugsCommandData.description = "Sell drugs in exchange for some currency!";
 			createSellDrugsCommandData.name = "selldrugs";
-			createSellDrugsCommandData.type = DiscordCoreAPI::ApplicationCommandType::Chat_Input;
+			createSellDrugsCommandData.type = ApplicationCommandType::Chat_Input;
 			newVector.emplace_back(createSellDrugsCommandData);
 
-			DiscordCoreAPI::CreateGuildApplicationCommandData registerSlashCommandsCommandData;
+			CreateGuildApplicationCommandData registerSlashCommandsCommandData;
 			registerSlashCommandsCommandData.description = "Register the programmatically designated slash commands.";
 			registerSlashCommandsCommandData.name = "registerslashcommands";
-			registerSlashCommandsCommandData.type = DiscordCoreAPI::ApplicationCommandType::Chat_Input;
+			registerSlashCommandsCommandData.type = ApplicationCommandType::Chat_Input;
 			newVector.emplace_back(registerSlashCommandsCommandData);
 
-			DiscordCoreAPI::BulkOverwriteGuildApplicationCommandsData dataPackage;
+			BulkOverwriteGuildApplicationCommandsData dataPackage;
 			dataPackage.responseData = newVector;
 			dataPackage.guildId = args.eventData.getGuildId();
 
-			auto returnValue = DiscordCoreAPI::ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync(dataPackage).get();
+			auto returnValue = ApplicationCommands::bulkOverwriteGuildApplicationCommandsAsync(dataPackage).get();
 
 			for (auto value: returnValue) {
-				cout << "Command Name: " << value.name << endl;
+				std::cout << "Command Name: " << value.name << std::endl;
 			}
 		}
 	};

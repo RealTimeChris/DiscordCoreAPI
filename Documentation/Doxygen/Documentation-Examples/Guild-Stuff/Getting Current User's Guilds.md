@@ -1,6 +1,6 @@
 Getting Current User's Guilds {#gettingcurrentusersguilds}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::getCurrentUserGuildsAsync()` function, while passing in a value of type `DiscordCoreAPI::GetCurrentUserGuildsData`, with a return value of type `auto` or `vector<DiscordCoreAPI::Guild>`.
+- Execute the, `Guilds::getCurrentUserGuildsAsync()` function, while passing in a value of type `GetCurrentUserGuildsData`, with a return value of type `auto` or `vector<Guild>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Current User's Guilds {#gettingcurrentusersguilds}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetCurrentUserGuildsData dataPackage;
+				GetCurrentUserGuildsData dataPackage;
 				dataPackage.limit = 2;
 
-				auto currentOutput = DiscordCoreAPI::Guilds::getCurrentUserGuildsAsync(dataPackage).get();
+				auto currentOutput = Guilds::getCurrentUserGuildsAsync(dataPackage).get();
 
 				for (auto& value: currentOutput) {
-					cout << "GUILD NAME: " << value.name << endl;
+					std::cout << "GUILD NAME: " << value.name << std::endl;
 				}
 
 

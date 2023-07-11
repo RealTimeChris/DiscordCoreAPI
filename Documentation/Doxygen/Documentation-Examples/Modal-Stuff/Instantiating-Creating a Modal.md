@@ -1,8 +1,8 @@
 Instantiating/Creating a Modal-Input {#instantiatingcreatingmodal}
 ============
-- Create a data structure of type `DiscordCoreAPI::RespondToInputEventData`.
-- Add a modal-text-input using the `DiscordCoreAPI::RespondToInputEventData::addModal` function of the `DiscordCoreAPI::RespondToInputEventData` structure.
-- Call the `DiscordCoreAPI::InputEvents::respondToInputEventAsync` function, passing it the `DiscordCoreAPI::RespondToInputEventData` structure.
+- Create a data structure of type `RespondToInputEventData`.
+- Add a modal-text-input using the `RespondToInputEventData::addModal` function of the `RespondToInputEventData` structure.
+- Call the `InputEvents::respondToInputEventAsync` function, passing it the `RespondToInputEventData` structure.
 ```cpp
 /// Test.hpp-Header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -13,12 +13,12 @@ Instantiating/Creating a Modal-Input {#instantiatingcreatingmodal}
 
 	namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,17 +26,17 @@ Instantiating/Creating a Modal-Input {#instantiatingcreatingmodal}
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::RespondToInputEventData dataPackage {args.eventData};
+				RespondToInputEventData dataPackage {args.eventData};
 				dataPackage.addModal("Test Modal", "test_modal", "Test Modal Small", "test_modal", true, 1, 46, TextInputStyle::Paragraph, "TEST MODAL",
 									 "TestModal");
-				dataPackage.type = DiscordCoreAPI::InputEventResponseType::Interaction_Response;
-				auto newEvent = DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage);
+				dataPackage.type = InputEventResponseType::Interaction_Response;
+				auto newEvent = InputEvents::respondToInputEventAsync(dataPackage);
 
 
 			} catch (...) {

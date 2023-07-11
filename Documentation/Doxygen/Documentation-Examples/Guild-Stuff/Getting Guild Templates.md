@@ -1,6 +1,6 @@
 Getting Guild Templates {#gettingguildtemplates}
 ==============
-- Execute the, `DiscordCoreAPI::Guilds::getGuildTemplatesAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildTemplatesData`, with a return value of type `auto` or `vector<DiscordCoreAPI::GuildTemplateData>`.
+- Execute the, `Guilds::getGuildTemplatesAsync()` function, while passing in a value of type `GetGuildTemplatesData`, with a return value of type `auto` or `vector<GuildTemplateData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Guild Templates {#gettingguildtemplates}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildTemplatesData dataPackage01;
+				GetGuildTemplatesData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto responseData = DiscordCoreAPI::Guilds::getGuildTemplatesAsync(dataPackage01).get();
+				auto responseData = Guilds::getGuildTemplatesAsync(dataPackage01).get();
 
 				for (auto& value: responseData) {
-					cout << "THE NAME: " << value.name << endl;
+					std::cout << "THE NAME: " << value.name << std::endl;
 				}
 
 

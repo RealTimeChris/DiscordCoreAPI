@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// FoundationEntities.hpp - Header for all of the Discord/Support API data structures.
 /// May 12, 2021 Chris M.
@@ -28,335 +33,324 @@
 #include <discordcoreapi/Utilities.hpp>
 #include <set>
 
-namespace DiscordCoreInternal {
-
-	struct DiscordCoreAPI_Dll VoiceConnectionData {
-		std::string sessionId{};
-		std::string endPoint{};
-		std::string token{};
-	};
-
-	struct DiscordCoreAPI_Dll WebSocketResumeData {
-		int32_t lastNumberReceived{};
-		std::string sessionId{};
-		std::string botToken{};
-
-		operator DiscordCoreInternal::EtfSerializer();
-	};
-
-	struct DiscordCoreAPI_Dll ConnectProperties {
-		std::string browser{ "DiscordCoreAPI" };
-		std::string device{ "DiscordCoreAPI" };
-#ifdef _WIN32
-		std::string os{ "Windows" };
-#elif __linux__
-		std::string os{ "Linux" };
-#endif
-	};
-
-	struct DiscordCoreAPI_Dll WebSocketIdentifyData {
-		DiscordCoreAPI::UpdatePresenceData presence{};
-		ConnectProperties properties{};
-		std::array<int32_t, 2> shard{};
-		int32_t largeThreshold{ 250 };
-		std::string botToken{};
-		int64_t intents{};
-
-		operator DiscordCoreInternal::EtfSerializer();
-	};
-
-	struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadDataData {
-		std::string address{};
-		std::string mode{};
-		uint16_t port{};
-	};
-
-	struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadData {
-		VoiceSocketProtocolPayloadDataData data{};
-		std::string protocol{};
-	};
-
-	struct DiscordCoreAPI_Dll VoiceIdentifyData {
-		DiscordCoreAPI::Snowflake userId{};
-		std::string sessionId{};
-		std::string serverId{};
-		std::string token{};
-	};
-
-	enum class SendSpeakingType : uint8_t {
-		None = 0,
-		Microphone = 1 << 0,
-		Soundshare = 1 << 1,
-		Priority = 1 << 2,
-		Priority_And_Voice = Microphone | Priority,
-	};
-
-	struct DiscordCoreAPI_Dll SendSpeakingData {
-		SendSpeakingType type{};
-		int32_t delay{};
-		int32_t ssrc{};
-	};
-
-	enum class HttpsWorkloadClass : uint8_t { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
-
-	enum class PayloadType : uint8_t { Application_Json = 1, Multipart_Form = 2 };
-
-	enum class HttpsWorkloadType : uint8_t {
-		Unset = 0,
-		Get_Global_Application_Commands = 1,
-		Post_Global_Application_Command = 2,
-		Get_Global_Application_Command = 3,
-		Patch_Global_Application_Command = 4,
-		Delete_Global_Application_Command = 5,
-		Bulk_Put_Global_Application_Commands = 6,
-		Get_Guild_Application_Commands = 7,
-		Post_Guild_Application_Command = 8,
-		Get_Guild_Application_Command = 9,
-		Patch_Guild_Application_Command = 10,
-		Delete_Guild_Application_Command = 11,
-		Bulk_Put_Guild_Application_Commands = 12,
-		Get_Guild_Application_Commands_Permissions = 13,
-		Get_Guild_Application_Command_Permissions = 14,
-		Put_Guild_Application_Command_Permissions = 15,
-		Batch_Put_Guild_Application_Command_Permissions = 16,
-		Post_Interaction_Response = 17,
-		Get_Interaction_Response = 18,
-		Patch_Interaction_Response = 19,
-		Delete_Interaction_Response = 20,
-		Post_Followup_Message = 21,
-		Get_Followup_Message = 22,
-		Patch_Followup_Message = 23,
-		Delete_Followup_Message = 24,
-		Get_Guild_Audit_Logs = 25,
-		Get_Channel = 26,
-		Patch_Channel = 27,
-		Delete_Channel = 28,
-		Get_Messages = 29,
-		Get_Message = 30,
-		Post_Message = 31,
-		Crosspost_Message = 32,
-		Put_Reaction = 33,
-		Delete_Own_Reaction = 34,
-		Delete_User_Reaction = 35,
-		Get_Reactions = 36,
-		Delete_All_Reactions = 37,
-		Delete_Reactions_By_Emoji = 38,
-		Patch_Message = 39,
-		Delete_Message = 40,
-		Delete_Message_Old = 41,
-		Bulk_Delete_Messages = 42,
-		Put_Channel_Permission_Overwrites = 43,
-		Get_Channel_Invites = 44,
-		Post_Channel_Invite = 45,
-		Delete_Channel_Permission_Overwrites = 46,
-		Post_Follow_News_Channel = 47,
-		Post_Trigger_Typing_Indicator = 48,
-		Get_Pinned_Messages = 49,
-		Put_Pin_Message = 50,
-		Delete_Pin_Message = 51,
-		Put_Recipient_To_Group_Dm = 52,
-		Delete_Recipient_From_Group_Dm = 53,
-		Post_Thread_With_Message = 54,
-		Post_Thread_Without_Message = 55,
-		Put_Self_In_Thread = 56,
-		Put_Thread_Member = 57,
-		Delete_Self_From_Thread = 58,
-		Delete_Thread_Member = 59,
-		Get_Thread_Member = 60,
-		Get_Thread_Members = 61,
-		Get_Active_Threads = 62,
-		Get_Public_Archived_Threads = 63,
-		Get_Private_Archived_Threads = 64,
-		Get_Joined_Private_Archived_Threads = 65,
-		Get_Emoji_List = 66,
-		Get_Guild_Emoji = 67,
-		Post_Guild_Emoji = 68,
-		Patch_Guild_Emoji = 69,
-		Delete_Guild_Emoji = 70,
-		Post_Guild = 71,
-		Get_Guild = 72,
-		Get_Guild_Preview = 73,
-		Patch_Guild = 74,
-		Delete_Guild = 75,
-		Get_Guild_Channels = 76,
-		Post_Guild_Channel = 77,
-		Patch_Guild_Channel_Positions = 78,
-		Get_Guild_Active_Threads = 79,
-		Get_Guild_Member = 80,
-		Get_Guild_Members = 81,
-		Get_Search_Guild_Members = 82,
-		Put_Guild_Member = 83,
-		Patch_Guild_Member = 84,
-		Patch_Current_Guild_Member = 85,
-		Put_Guild_Member_Role = 86,
-		Delete_Guild_Member_Role = 87,
-		Delete_Guild_Member = 88,
-		Get_Guild_Bans = 89,
-		Get_Guild_Ban = 90,
-		Put_Guild_Ban = 91,
-		Delete_Guild_Ban = 92,
-		Get_Guild_Roles = 93,
-		Post_Guild_Role = 94,
-		Patch_Guild_Role_Positions = 95,
-		Patch_Guild_Role = 96,
-		Delete_Guild_Role = 97,
-		Get_Guild_Prune_Count = 98,
-		Post_Guild_Prune = 99,
-		Get_Guild_Voice_Regions = 100,
-		Get_Guild_Invites = 101,
-		Get_Guild_Integrations = 102,
-		Delete_Guild_Integration = 103,
-		Get_Guild_Widget_Settings = 104,
-		Patch_Guild_Widget = 105,
-		Get_Guild_Widget = 106,
-		Get_Vanity_Invite = 107,
-		Get_Guild_Widget_Image = 108,
-		Get_Guild_Welcome_Screen = 109,
-		Patch_Guild_Welcome_Screen = 110,
-		Patch_Current_User_Voice_State = 111,
-		Patch_User_Voice_State = 112,
-		Get_Guild_Scheduled_Events = 113,
-		Post_Guild_Scheduled_Event = 114,
-		Get_Guild_Scheduled_Event = 115,
-		Patch_Guild_Scheduled_Event = 116,
-		Delete_Guild_Scheduled_Event = 117,
-		Get_Guild_Scheduled_Event_Users = 118,
-		Get_Guild_Template = 119,
-		Post_Guild_From_Guild_Template = 120,
-		Get_Guild_Templates = 121,
-		Post_Guild_Template = 122,
-		Put_Guild_Template = 123,
-		Patch_Guild_Template = 124,
-		Delete_Guild_Template = 125,
-		Get_Invite = 126,
-		Delete_Invite = 127,
-		Post_Stage_Instance = 128,
-		Get_Stage_Instance = 129,
-		Patch_Stage_Instance = 130,
-		Delete_Stage_Instance = 131,
-		Get_Sticker = 132,
-		Get_Nitro_Sticker_Packs = 133,
-		Get_Guild_Stickers = 134,
-		Post_Guild_Sticker = 135,
-		Patch_Guild_Sticker = 136,
-		Delete_Guild_Sticker = 137,
-		Get_Current_User = 138,
-		Get_User = 139,
-		Patch_Current_User = 140,
-		Get_Current_User_Guilds = 141,
-		Delete_Leave_Guild = 142,
-		Post_Create_User_Dm = 143,
-		Get_User_Connections = 144,
-		Get_Voice_Regions = 145,
-		Post_Webhook = 146,
-		Get_Channel_Webhooks = 147,
-		Get_Guild_Webhooks = 148,
-		Get_Webhook = 149,
-		Get_Webhook_With_Token = 150,
-		Patch_Webhook = 151,
-		Patch_Webhook_With_Token = 152,
-		Delete_Webhook = 153,
-		Delete_Webhook_With_Token = 154,
-		Post_Execute_Webhook = 155,
-		Get_Webhook_Message = 156,
-		Patch_Webhook_Message = 157,
-		Delete_Webhook_Message = 158,
-		Get_Application_Info = 159,
-		Get_Authorization_Info = 160,
-		Get_Gateway_Bot = 161,
-		Post_Thread_In_Forum_Channel = 162,
-		Get_Auto_Moderation_Rules = 163,
-		Get_Auto_Moderation_Rule = 164,
-		Post_Auto_Moderation_Rule = 165,
-		Patch_Auto_Moderation_Rule = 166,
-		Delete_Auto_Moderation_Rule = 167,
-		YouTubeGetSearchResults = 168,
-		SoundCloudGetSearchResults = 169,
-		SoundCloudGetClientId = 170,
-		SoundCloudGetDownloadLinks = 171,
-		LAST = 172
-	};
-
-	class DiscordCoreAPI_Dll HttpsWorkloadData {
-	  public:
-		friend class DiscordCoreAPI_Dll HttpsClient;
-
-		static std::unordered_map<HttpsWorkloadType, DiscordCoreAPI::UniquePtr<std::atomic_int64_t>> workloadIdsExternal;
-		static std::unordered_map<HttpsWorkloadType, DiscordCoreAPI::UniquePtr<std::atomic_int64_t>> workloadIdsInternal;
-
-		mutable std::unordered_map<std::string, std::string> headersToInsert{};
-		PayloadType payloadType{ PayloadType::Application_Json };
-		mutable std::atomic_int64_t thisWorkerId{};
-		HttpsWorkloadClass workloadClass{};
-		mutable std::string baseUrl{};
-		std::string relativePath{};
-		std::string callStack{};
-		std::string content{};
-
-		HttpsWorkloadData() noexcept = default;
-
-		HttpsWorkloadData& operator=(HttpsWorkloadData&& other) noexcept;
-
-		HttpsWorkloadData(HttpsWorkloadData&& other) noexcept;
-
-		HttpsWorkloadData& operator=(const HttpsWorkloadData& other) noexcept = delete;
-
-		HttpsWorkloadData(const HttpsWorkloadData& other) noexcept = delete;
-
-		HttpsWorkloadData& operator=(HttpsWorkloadType type) noexcept;
-
-		HttpsWorkloadData(HttpsWorkloadType type) noexcept;
-
-		const HttpsWorkloadType getWorkloadType() const noexcept;
-
-	  protected:
-		static int64_t incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept;
-
-		HttpsWorkloadType workloadType{};
-	};
-
-	struct DiscordCoreAPI_Dll HelloData {
-		HelloData() noexcept = default;
-		HelloData(Jsonifier::JsonifierCore&, std::string_view);
-		std::vector<std::string> _trace{};
-		int32_t heartbeatInterval{};
-	};
-
-
-}
-
-namespace DiscordCoreInternal {
-
-	struct DiscordCoreAPI_Dll WebSocketMessage {
-		int64_t op{ -1 };
-		std::string t{};
-		int64_t s{};
-	};
-
-	template<typename ValueType> struct WebSocketMessageData {
-		std::unordered_set<std::string> excludedKeys{};
-		int64_t op{ -1 };
-		std::string t{};
-		ValueType d{};
-		int64_t s{};
-	};
-
-	struct DiscordCoreAPI_Dll InvalidSessionData {
-		bool d{};
-	};
-
-	template<> struct WebSocketMessageData<InvalidSessionData> {
-		int64_t op{ -1 };
-		std::string t{};
-		int64_t s{};
-		bool d{};
-	};
-}
-
-
-/// \brief The main namespace for this
-/// library.
 namespace DiscordCoreAPI {
+
+	namespace DiscordCoreInternal {
+
+		struct DiscordCoreAPI_Dll VoiceConnectionData {
+			std::string sessionId{};
+			std::string endPoint{};
+			std::string token{};
+		};
+
+		struct DiscordCoreAPI_Dll WebSocketResumeData {
+			int32_t lastNumberReceived{};
+			std::string sessionId{};
+			std::string botToken{};
+
+			operator DiscordCoreInternal::EtfSerializer();
+		};
+
+		struct DiscordCoreAPI_Dll ConnectProperties {
+			std::string_view browser{ "DiscordCoreAPI" };
+			std::string_view device{ "DiscordCoreAPI" };
+#ifdef _WIN32
+			std::string_view os{ "Windows" };
+#elif __linux__
+			std::string_view os{ "Linux" };
+#endif
+		};
+
+		struct DiscordCoreAPI_Dll WebSocketIdentifyData {
+			UpdatePresenceData presence{ PresenceUpdateState::Online };
+			ConnectProperties properties{};
+			std::array<int32_t, 2> shard{};
+			int32_t largeThreshold{ 250 };
+			std::string botToken{};
+			int64_t intents{};
+
+			operator DiscordCoreInternal::EtfSerializer();
+		};
+
+		struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadDataData {
+			std::string address{};
+			std::string mode{};
+			uint16_t port{};
+		};
+
+		struct DiscordCoreAPI_Dll VoiceSocketProtocolPayloadData {
+			VoiceSocketProtocolPayloadDataData data{};
+			std::string_view protocol{ "udp" };
+		};
+
+		struct DiscordCoreAPI_Dll VoiceIdentifyData {
+			std::string sessionId{};
+			std::string serverId{};
+			std::string token{};
+			Snowflake userId{};
+		};
+
+		enum class SendSpeakingType : uint8_t {
+			None = 0,
+			Microphone = 1 << 0,
+			Soundshare = 1 << 1,
+			Priority = 1 << 2,
+			Priority_And_Voice = Microphone | Priority,
+		};
+
+		struct DiscordCoreAPI_Dll SendSpeakingData {
+			SendSpeakingType type{};
+			int32_t delay{};
+			int32_t ssrc{};
+		};
+
+		enum class HttpsWorkloadClass : uint8_t { Get = 0, Put = 1, Post = 2, Patch = 3, Delete = 4 };
+
+		enum class PayloadType : uint8_t { Application_Json = 1, Multipart_Form = 2 };
+
+		enum class HttpsWorkloadType : uint8_t {
+			Unset = 0,
+			Get_Global_Application_Commands = 1,
+			Post_Global_Application_Command = 2,
+			Get_Global_Application_Command = 3,
+			Patch_Global_Application_Command = 4,
+			Delete_Global_Application_Command = 5,
+			Bulk_Put_Global_Application_Commands = 6,
+			Get_Guild_Application_Commands = 7,
+			Post_Guild_Application_Command = 8,
+			Get_Guild_Application_Command = 9,
+			Patch_Guild_Application_Command = 10,
+			Delete_Guild_Application_Command = 11,
+			Bulk_Put_Guild_Application_Commands = 12,
+			Get_Guild_Application_Commands_Permissions = 13,
+			Get_Guild_Application_Command_Permissions = 14,
+			Put_Guild_Application_Command_Permissions = 15,
+			Batch_Put_Guild_Application_Command_Permissions = 16,
+			Post_Interaction_Response = 17,
+			Get_Interaction_Response = 18,
+			Patch_Interaction_Response = 19,
+			Delete_Interaction_Response = 20,
+			Post_Followup_Message = 21,
+			Get_Followup_Message = 22,
+			Patch_Followup_Message = 23,
+			Delete_Followup_Message = 24,
+			Get_Guild_Audit_Logs = 25,
+			Get_Channel = 26,
+			Patch_Channel = 27,
+			Delete_Channel = 28,
+			Get_Messages = 29,
+			Get_Message = 30,
+			Post_Message = 31,
+			Crosspost_Message = 32,
+			Put_Reaction = 33,
+			Delete_Own_Reaction = 34,
+			Delete_User_Reaction = 35,
+			Get_Reactions = 36,
+			Delete_All_Reactions = 37,
+			Delete_Reactions_By_Emoji = 38,
+			Patch_Message = 39,
+			Delete_Message = 40,
+			Delete_Message_Old = 41,
+			Bulk_Delete_Messages = 42,
+			Put_Channel_Permission_Overwrites = 43,
+			Get_Channel_Invites = 44,
+			Post_Channel_Invite = 45,
+			Delete_Channel_Permission_Overwrites = 46,
+			Post_Follow_News_Channel = 47,
+			Post_Trigger_Typing_Indicator = 48,
+			Get_Pinned_Messages = 49,
+			Put_Pin_Message = 50,
+			Delete_Pin_Message = 51,
+			Put_Recipient_To_Group_Dm = 52,
+			Delete_Recipient_From_Group_Dm = 53,
+			Post_Thread_With_Message = 54,
+			Post_Thread_Without_Message = 55,
+			Put_Self_In_Thread = 56,
+			Put_Thread_Member = 57,
+			Delete_Self_From_Thread = 58,
+			Delete_Thread_Member = 59,
+			Get_Thread_Member = 60,
+			Get_Thread_Members = 61,
+			Get_Active_Threads = 62,
+			Get_Public_Archived_Threads = 63,
+			Get_Private_Archived_Threads = 64,
+			Get_Joined_Private_Archived_Threads = 65,
+			Get_Emoji_List = 66,
+			Get_Guild_Emoji = 67,
+			Post_Guild_Emoji = 68,
+			Patch_Guild_Emoji = 69,
+			Delete_Guild_Emoji = 70,
+			Post_Guild = 71,
+			Get_Guild = 72,
+			Get_Guild_Preview = 73,
+			Patch_Guild = 74,
+			Delete_Guild = 75,
+			Get_Guild_Channels = 76,
+			Post_Guild_Channel = 77,
+			Patch_Guild_Channel_Positions = 78,
+			Get_Guild_Active_Threads = 79,
+			Get_Guild_Member = 80,
+			Get_Guild_Members = 81,
+			Get_Search_Guild_Members = 82,
+			Put_Guild_Member = 83,
+			Patch_Guild_Member = 84,
+			Patch_Current_Guild_Member = 85,
+			Put_Guild_Member_Role = 86,
+			Delete_Guild_Member_Role = 87,
+			Delete_Guild_Member = 88,
+			Get_Guild_Bans = 89,
+			Get_Guild_Ban = 90,
+			Put_Guild_Ban = 91,
+			Delete_Guild_Ban = 92,
+			Get_Guild_Roles = 93,
+			Post_Guild_Role = 94,
+			Patch_Guild_Role_Positions = 95,
+			Patch_Guild_Role = 96,
+			Delete_Guild_Role = 97,
+			Get_Guild_Prune_Count = 98,
+			Post_Guild_Prune = 99,
+			Get_Guild_Voice_Regions = 100,
+			Get_Guild_Invites = 101,
+			Get_Guild_Integrations = 102,
+			Delete_Guild_Integration = 103,
+			Get_Guild_Widget_Settings = 104,
+			Patch_Guild_Widget = 105,
+			Get_Guild_Widget = 106,
+			Get_Vanity_Invite = 107,
+			Get_Guild_Widget_Image = 108,
+			Get_Guild_Welcome_Screen = 109,
+			Patch_Guild_Welcome_Screen = 110,
+			Patch_Current_User_Voice_State = 111,
+			Patch_User_Voice_State = 112,
+			Get_Guild_Scheduled_Events = 113,
+			Post_Guild_Scheduled_Event = 114,
+			Get_Guild_Scheduled_Event = 115,
+			Patch_Guild_Scheduled_Event = 116,
+			Delete_Guild_Scheduled_Event = 117,
+			Get_Guild_Scheduled_Event_Users = 118,
+			Get_Guild_Template = 119,
+			Post_Guild_From_Guild_Template = 120,
+			Get_Guild_Templates = 121,
+			Post_Guild_Template = 122,
+			Put_Guild_Template = 123,
+			Patch_Guild_Template = 124,
+			Delete_Guild_Template = 125,
+			Get_Invite = 126,
+			Delete_Invite = 127,
+			Post_Stage_Instance = 128,
+			Get_Stage_Instance = 129,
+			Patch_Stage_Instance = 130,
+			Delete_Stage_Instance = 131,
+			Get_Sticker = 132,
+			Get_Nitro_Sticker_Packs = 133,
+			Get_Guild_Stickers = 134,
+			Post_Guild_Sticker = 135,
+			Patch_Guild_Sticker = 136,
+			Delete_Guild_Sticker = 137,
+			Get_Current_User = 138,
+			Get_User = 139,
+			Patch_Current_User = 140,
+			Get_Current_User_Guilds = 141,
+			Delete_Leave_Guild = 142,
+			Post_Create_User_Dm = 143,
+			Get_User_Connections = 144,
+			Get_Voice_Regions = 145,
+			Post_Webhook = 146,
+			Get_Channel_Webhooks = 147,
+			Get_Guild_Webhooks = 148,
+			Get_Webhook = 149,
+			Get_Webhook_With_Token = 150,
+			Patch_Webhook = 151,
+			Patch_Webhook_With_Token = 152,
+			Delete_Webhook = 153,
+			Delete_Webhook_With_Token = 154,
+			Post_Execute_Webhook = 155,
+			Get_Webhook_Message = 156,
+			Patch_Webhook_Message = 157,
+			Delete_Webhook_Message = 158,
+			Get_Application_Info = 159,
+			Get_Authorization_Info = 160,
+			Get_Gateway_Bot = 161,
+			Post_Thread_In_Forum_Channel = 162,
+			Get_Auto_Moderation_Rules = 163,
+			Get_Auto_Moderation_Rule = 164,
+			Post_Auto_Moderation_Rule = 165,
+			Patch_Auto_Moderation_Rule = 166,
+			Delete_Auto_Moderation_Rule = 167,
+			YouTubeGetSearchResults = 168,
+			SoundCloudGetSearchResults = 169,
+			SoundCloudGetClientId = 170,
+			SoundCloudGetDownloadLinks = 171,
+			LAST = 172
+		};
+
+		class DiscordCoreAPI_Dll HttpsWorkloadData {
+		  public:
+			friend class HttpsClient;
+
+			static std::unordered_map<HttpsWorkloadType, UniquePtr<std::atomic_int64_t>> workloadIdsExternal;
+			static std::unordered_map<HttpsWorkloadType, UniquePtr<std::atomic_int64_t>> workloadIdsInternal;
+
+			mutable std::unordered_map<std::string, std::string> headersToInsert{};
+			PayloadType payloadType{ PayloadType::Application_Json };
+			mutable std::atomic_int64_t thisWorkerId{};
+			HttpsWorkloadClass workloadClass{};
+			mutable std::string baseUrl{};
+			std::string relativePath{};
+			std::string callStack{};
+			std::string content{};
+
+			HttpsWorkloadData() noexcept = default;
+
+			HttpsWorkloadData& operator=(HttpsWorkloadData&& other) noexcept;
+
+			HttpsWorkloadData(HttpsWorkloadData&& other) noexcept;
+
+			HttpsWorkloadData& operator=(const HttpsWorkloadData& other) noexcept = delete;
+
+			HttpsWorkloadData(const HttpsWorkloadData& other) noexcept = delete;
+
+			HttpsWorkloadData& operator=(HttpsWorkloadType type) noexcept;
+
+			HttpsWorkloadData(HttpsWorkloadType type) noexcept;
+
+			const HttpsWorkloadType getWorkloadType() const noexcept;
+
+		  protected:
+			static int64_t incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept;
+
+			HttpsWorkloadType workloadType{};
+		};
+
+		struct DiscordCoreAPI_Dll HelloData {
+			HelloData() noexcept = default;
+			HelloData(Jsonifier::JsonifierCore&, std::string_view);
+			std::vector<std::string> _trace{};
+			int32_t heartbeatInterval{};
+		};
+
+		struct DiscordCoreAPI_Dll WebSocketMessage {
+			int64_t op{ -1 };
+			std::string t{};
+			int64_t s{};
+		};
+
+		template<typename ValueType> struct WebSocketMessageData {
+			std::unordered_set<std::string> excludedKeys{};
+			ValueType d{};
+			int64_t op{};
+			int64_t s{};
+		};
+
+		struct DiscordCoreAPI_Dll InvalidSessionData {};
+
+		template<> struct WebSocketMessageData<InvalidSessionData> {
+			int64_t op{ -1 };
+			std::string t{};
+			int64_t s{};
+			bool d{};
+		};
+	}
 
 	template<typename ValueType, typename ValueType02> struct UpdatedEventData;
 	template<typename ValueType> struct EventData;
@@ -441,25 +435,28 @@ namespace DiscordCoreAPI {
 		Nitro = 2///< Nitro.
 	};
 
+	template<typename ValueType> class FlagEntity {
+	  public:
+		template<DiscordCoreInternal::EnumT EnumType> bool getFlagValue(EnumType theEnum) {
+			return getBool(static_cast<ValueType*>(this)->flags, theEnum);
+		}
+	};
+
 	/// \brief Data structure representing a single User.
-	class DiscordCoreAPI_Dll UserData : public DiscordEntity, public Relational<UserData> {
+	class DiscordCoreAPI_Dll UserData : public DiscordEntity, public Relational<UserData>, public FlagEntity<UserData> {
 	  public:
 		template<typename ValueType> friend struct Jsonifier::Core;
-		friend class DiscordCoreAPI_Dll GuildData;
-		friend class DiscordCoreAPI_Dll User;
+		friend class GuildData;
+		friend class User;
 
-		std::string discriminator{};///< The user's 4-digit discord-tag	identify.
-		std::string userName{};///< The user's userName, not unique across the platform identify.
+		String discriminator{};///< The user's 4-digit discord-tag	identify.
+		String userName{};///< The user's userName, not unique across the platform identify.
 		UserFlags flags{};///< The public flags on a user' s account.
 
 		UserData() noexcept = default;
 
 		UserData(uint64_t data) noexcept {
 			id = data;
-		}
-
-		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
-			return getBool(flags, theEnum);
 		}
 
 		inline friend bool operator<(const UserData& lhs, const UserData& rhs) noexcept {
@@ -746,26 +743,22 @@ namespace DiscordCoreAPI {
 	enum class RoleFlags : uint8_t { Mentionable = 1 << 0, Managed = 1 << 1, Hoist = 1 << 2 };
 
 	/// \brief Data structure representing a single Role.
-	class DiscordCoreAPI_Dll RoleData : public DiscordEntity, public Relational<RoleData> {
+	class DiscordCoreAPI_Dll RoleData : public DiscordEntity, public Relational<RoleData>, public FlagEntity<UserData> {
 	  public:
-		friend class DiscordCoreAPI_Dll GuildData;
+		friend class GuildData;
 
-		std::string unicodeEmoji{};///< Emoji representing the Role.
 		Permissions permissions{};///< The Role's base Guild Permissions.
+		String unicodeEmoji{};///< Emoji representing the Role.
 		Snowflake guildId{};///< The id of the Guild that this Role is from.
-		std::string name{};///< The Role's name.
 		int16_t position{};///< Its position amongst the rest of the Guild's roles.
 		RoleFlags flags{};///< Role flags.
 		int32_t color{};///< The Role's color.
+		String name{};///< The Role's name.
 
 		RoleData() noexcept = default;
 
 		RoleData(uint64_t snowFlake) noexcept {
 			id = snowFlake;
-		}
-
-		template<DiscordCoreInternal::EnumT ETy> inline bool getFlagValue(ETy theEnum) {
-			return getBool(flags, theEnum);
 		}
 
 		inline friend bool operator<(const RoleData& lhs, const RoleData& rhs) noexcept {
@@ -774,6 +767,8 @@ namespace DiscordCoreAPI {
 
 		virtual ~RoleData() noexcept = default;
 	};
+
+	using RoleDataVector = std::vector<RoleData>;
 
 	/// \brief Data structure representing a single emoji.
 	class DiscordCoreAPI_Dll PartialEmojiData : public DiscordEntity {
@@ -838,22 +833,22 @@ namespace DiscordCoreAPI {
 
 	/// \brief Data structure representing a single GuildMember.
 	/// \brief Data structure representing a single Guild.
-	class DiscordCoreAPI_Dll GuildMemberData : public Relational<GuildMemberData> {
+	class DiscordCoreAPI_Dll GuildMemberData : public Relational<GuildMemberData>, public FlagEntity<UserData> {
 	  public:
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<GuildMemberData>;
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<GuildMember>;
-		friend struct DiscordCoreAPI_Dll std::hash<GuildMemberData>;
-		friend struct DiscordCoreAPI_Dll EventData<GuildData>;
-		friend class DiscordCoreAPI_Dll GuildMember;
-		friend class DiscordCoreAPI_Dll GuildData;
+		friend struct Jsonifier::Core<GuildMemberData>;
+		friend struct Jsonifier::Core<GuildMember>;
+		friend struct std::hash<GuildMemberData>;
+		friend struct EventData<GuildData>;
+		friend class GuildMember;
+		friend class GuildData;
 
 		std::vector<Snowflake> roles{};///< The Guild roGuildMemberDatales that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
 		GuildMemberFlags flags{};///< GuildMember flags.
 		TimeStamp joinedAt{};///< When they joined the Guild.
 		Snowflake guildId{};///< The current Guild's id.
-		std::string nick{};///< Their nick/display name.
-		UserIdBase user{};
+		UserIdBase user{};///< The user id of this GuildMember.
+		String nick{};///< Their nick/display name.
 
 		GuildMemberData() noexcept = default;
 
@@ -868,10 +863,6 @@ namespace DiscordCoreAPI {
 		GuildMemberData& operator=(const GuildMemberCacheData&) noexcept;
 
 		GuildMemberData(const GuildMemberCacheData&) noexcept;
-
-		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
-			return getBool(flags, theEnum);
-		}
 
 		inline friend bool operator<(const GuildMemberData& lhs, const GuildMemberData& rhs) noexcept {
 			return (lhs.user.id < rhs.user.id) && (lhs.guildId < rhs.guildId);
@@ -891,14 +882,14 @@ namespace DiscordCoreAPI {
 
 	/// \brief Data structure representing a single GuildMember.
 	/// \brief Data structure representing a single Guild.
-	class DiscordCoreAPI_Dll GuildMemberCacheData {
+	class DiscordCoreAPI_Dll GuildMemberCacheData : public FlagEntity<UserData> {
 	  public:
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<GuildMemberData>;
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<GuildMember>;
-		friend struct DiscordCoreAPI_Dll std::hash<GuildMemberData>;
-		friend struct DiscordCoreAPI_Dll EventData<GuildData>;
-		friend class DiscordCoreAPI_Dll GuildMember;
-		friend class DiscordCoreAPI_Dll GuildData;
+		friend struct Jsonifier::Core<GuildMemberData>;
+		friend struct Jsonifier::Core<GuildMember>;
+		friend struct std::hash<GuildMemberData>;
+		friend struct EventData<GuildData>;
+		friend class GuildMember;
+		friend class GuildData;
 
 		std::vector<Snowflake> roles{};///< The Guild roGuildMemberDatales that they have.
 		Permissions permissions{};///< Their base-level Permissions in the Guild.
@@ -907,16 +898,12 @@ namespace DiscordCoreAPI {
 		Snowflake guildId{};///< The current Guild's id.
 		IconHash avatar{};///< This GuildMember's Guild Avatar.
 		UserData user{};
-		std::string nick{};///< Their nick/display name.
+		String nick{};///< Their nick/display name.
 
 		GuildMemberCacheData() noexcept = default;
 
 		GuildMemberCacheData(uint64_t snowFlake) noexcept {
 			user.id = snowFlake;
-		}
-
-		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
-			return getBool(flags, theEnum);
 		}
 
 		VoiceStateDataLight getVoiceStateData() noexcept;
@@ -958,9 +945,9 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief Data structure representing a single Channel.
-	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity, public Relational<ChannelData> {
+	class DiscordCoreAPI_Dll ChannelData : public DiscordEntity, public Relational<ChannelData>, public FlagEntity<UserData> {
 	  public:
-		friend class DiscordCoreAPI_Dll GuildData;
+		friend class GuildData;
 
 		std::vector<OverWriteData> permissionOverwrites{};///< Permission overwrites.
 		ChannelType type{ ChannelType::DM };///< The type of the Channel.
@@ -978,10 +965,6 @@ namespace DiscordCoreAPI {
 
 		ChannelData(uint64_t snowFlake) noexcept {
 			id = snowFlake;
-		}
-
-		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
-			return getBool(flags, theEnum);
 		}
 
 		inline friend bool operator<(const ChannelData& lhs, const ChannelData& rhs) noexcept {
@@ -1561,25 +1544,25 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll GuildCacheData;
 
 	/// \brief Data structure representing a single Guild.
-	class DiscordCoreAPI_Dll GuildData : public DiscordEntity, public Relational<GuildData> {
+	class DiscordCoreAPI_Dll GuildData : public DiscordEntity, public Relational<GuildData>, public FlagEntity<UserData> {
 	  public:
-		std::vector<Snowflake> guildScheduledEvents{};///< Array of Guild channels.
+		std::vector<DiscordEntity> guildScheduledEvents{};///< Array of Guild channels.
 		std::vector<PresenceUpdateData> presences{};///< Presence states for each of the GuildMembers.
-		std::vector<Snowflake> stageInstances{};///< Array of Guild channels.
+		std::vector<DiscordEntity> stageInstances{};///< Array of Guild channels.
+		std::vector<DiscordEntity> voiceStates{};///< Voice states for each of the guild members.
 		DiscordCoreClient* discordCoreClient{};///< A pointer to the DiscordCoreClient.
-		std::vector<Snowflake> voiceStates{};///< Voice states for each of the guild members.
-		std::vector<Snowflake> stickers{};///< Array of Guild channels.
-		std::vector<Snowflake> channels{};///< Array of Guild channels.
-		std::vector<Snowflake> members{};///< Array of GuildMembers.
-		std::vector<Snowflake> threads{};///< Array of Guild channels.
-		std::vector<Snowflake> roles{};///< Array of Guild roles.
-		std::vector<Snowflake> emoji{};///< Array of Guild channels.
+		std::vector<DiscordEntity> stickers{};///< Array of Guild channels.
+		std::vector<DiscordEntity> channels{};///< Array of Guild channels.
+		std::vector<DiscordEntity> threads{};///< Array of Guild channels.
+		std::vector<DiscordEntity> roles{};///< Array of Guild roles.
+		std::vector<DiscordEntity> emoji{};///< Array of Guild channels.
+		std::vector<UserIdBase> members{};///< Array of GuildMembers.
 		uint32_t memberCount{};///< Member count.
 		TimeStamp joinedAt{};///< When the bot joined this Guild.
 		Snowflake ownerId{};///< User id of the Guild's owner.
 		GuildFlags flags{};///< Guild flags.
 		IconHash icon{};///< Url to the Guild's icon.
-		std::string name{};///< The Guild's name.
+		String name{};///< The Guild's name.
 
 		GuildData() noexcept = default;
 
@@ -1604,10 +1587,6 @@ namespace DiscordCoreAPI {
 		/// \returns VoiceConnection* A pointer to the currently held voice connection, or nullptr if it failed to connect.
 		VoiceConnection& connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{}, bool selfDeaf = false,
 			bool selfMute = false, StreamInfo streamInfo = StreamInfo{});
-
-		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
-			return getBool(flags, theEnum);
-		}
 
 		std::string getBannerUrl() noexcept;
 
@@ -2204,8 +2183,6 @@ namespace DiscordCoreAPI {
 		bool focused{};///< True if this option is the currently focused option for autocomplete.
 
 		ApplicationCommandInteractionDataOption() noexcept = default;
-
-		ApplicationCommandInteractionDataOption(Jsonifier::JsonifierCore parser, const std::string& jsonDataToParse);
 	};
 
 	/// \brief Interaction data data.
@@ -2353,7 +2330,7 @@ namespace DiscordCoreAPI {
 	/// \brief A type of User, to represent the Bot and some of its associated endpoints.
 	class DiscordCoreAPI_Dll BotUser : public User {
 	  public:
-		friend class DiscordCoreAPI_Dll DiscordCoreClient;
+		friend class DiscordCoreClient;
 
 		BotUser(UserData dataPackage, DiscordCoreInternal::BaseSocketAgent* pBaseBaseSocketAgentNew);
 
@@ -2470,7 +2447,7 @@ namespace DiscordCoreAPI {
 	/// \brief A discord Guild. Used to connect to/disconnect from voice.
 	class DiscordCoreAPI_Dll Guild : public GuildData {
 	  public:
-		friend class DiscordCoreAPI_Dll Guilds;
+		friend class Guilds;
 
 		DefaultMessageNotificationLevel defaultMessageNotifications{};///< Default Message notification level.
 		std::unordered_map<uint64_t, PresenceUpdateData> presences{};///< std::unordered_map of presences for each GuildMember.
@@ -2542,10 +2519,6 @@ namespace DiscordCoreAPI {
 	class DiscordCoreAPI_Dll Thread : public Channel {
 	  public:
 	};
-
-}
-
-namespace DiscordCoreAPI {
 
 	struct DiscordCoreAPI_Dll GuildMemberKey {
 		Snowflake guildId{};
@@ -2684,25 +2657,25 @@ namespace DiscordCoreAPI {
 	};
 
 	/// \brief Data structure representing a single Guild, for the purposes of populating the cache.
-	class DiscordCoreAPI_Dll GuildCacheData : public DiscordEntity {
+	class DiscordCoreAPI_Dll GuildCacheData : public DiscordEntity, public FlagEntity<UserData> {
 	  public:
 		std::vector<GuildScheduledEventData> guildScheduledEvents{};///< Array of Guild channels.
-		std::vector<VoiceStateDataLight> voiceStates{};
-		DiscordCoreClient* discordCoreClient{};///< A pointer to the DiscordCoreClient.
 		std::vector<StageInstanceData> stageInstances{};///< Array of Guild channels.
-		VoiceConnection* voiceConnection{};///< A pointer to the VoiceConnection, if present.
-		std::vector<PresenceUpdateData> presences{};///< Presence states for each of the GuildMembers..
+		std::vector<VoiceStateDataLight> voiceStates{};///< Voice states of the GuildMembers.
+		std::vector<PresenceUpdateData> presences{};///< Presence states for each of the GuildMembers.
 		std::vector<GuildMemberCacheData> members{};///< Array of GuildMembers.
+		DiscordCoreClient* discordCoreClient{};///< A pointer to the DiscordCoreClient.
 		std::vector<ChannelData> channels{};///< Array of Guild channels.
-		std::vector<RoleData> roles{};///< Array of Guild roles.
 		std::vector<StickerData> stickers{};///< Array of Guild channels.
+		VoiceConnection* voiceConnection{};///< A pointer to the VoiceConnection, if present.
 		std::vector<ThreadData> threads{};///< Array of Guild channels.
 		std::vector<EmojiData> emoji{};///< Array of Guild channels.
+		std::vector<RoleData> roles{};///< Array of Guild roles.
 		uint32_t memberCount{};///< Member count.
 		TimeStamp joinedAt{};///< When the bot joined this Guild.
-		std::string name{};///< The Guild's name.
 		Snowflake ownerId{};///< User id of the Guild's owner.
 		GuildFlags flags{};///< Guild flags.
+		std::string name{};///< The Guild's name.
 		IconHash icon{};///< Url to the Guild's icon.
 
 		GuildCacheData() noexcept = default;
@@ -2725,10 +2698,6 @@ namespace DiscordCoreAPI {
 		VoiceConnection* connectToVoice(const Snowflake guildMemberId, const Snowflake channelId = Snowflake{}, bool selfDeaf = false,
 			bool selfMute = false, StreamInfo streamInfo = StreamInfo{});
 
-		template<DiscordCoreInternal::EnumT ETy> bool getFlagValue(ETy theEnum) {
-			return getBool(flags, theEnum);
-		}
-
 		std::string getBannerUrl() noexcept;
 
 		std::string getIconUrl() noexcept;
@@ -2743,17 +2712,17 @@ namespace DiscordCoreAPI {
 	/// \brief Data representing an input-event, which is any Message or Interaction that is coming into the bot as an input.
 	class DiscordCoreAPI_Dll InputEventData {
 	  public:
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<InputEventData>;
-		friend struct DiscordCoreAPI_Dll EventData<InteractionData>;
-		friend struct DiscordCoreAPI_Dll OnInteractionCreationData;
-		friend struct DiscordCoreAPI_Dll BaseFunctionArguments;
+		friend struct Jsonifier::Core<InputEventData>;
+		friend struct EventData<InteractionData>;
+		friend struct OnInteractionCreationData;
+		friend struct BaseFunctionArguments;
 
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::WebSocketClient;
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::BaseSocketAgent;
-		friend class DiscordCoreAPI_Dll RespondToInputEventData;
-		friend class DiscordCoreAPI_Dll DiscordCoreClient;
-		friend class DiscordCoreAPI_Dll CommandData;
-		friend class DiscordCoreAPI_Dll InputEvents;
+		friend class DiscordCoreInternal::WebSocketClient;
+		friend class DiscordCoreInternal::BaseSocketAgent;
+		friend class RespondToInputEventData;
+		friend class DiscordCoreClient;
+		friend class CommandData;
+		friend class InputEvents;
 
 		InputEventResponseType responseType{};///< The type of response that this input value represents.
 
@@ -2806,24 +2775,24 @@ namespace DiscordCoreAPI {
 	/// \brief Data for responding to an input-event.
 	class DiscordCoreAPI_Dll RespondToInputEventData {
 	  public:
-		friend struct DiscordCoreAPI_Dll DeleteInteractionResponseData;
-		friend struct DiscordCoreAPI_Dll DeleteFollowUpMessageData;
-		friend struct DiscordCoreAPI_Dll InteractionResponseData;
+		friend struct DeleteInteractionResponseData;
+		friend struct DeleteFollowUpMessageData;
+		friend struct InteractionResponseData;
 
 		friend DiscordCoreAPI_Dll MoveThroughMessagePagesData moveThroughMessagePages(const std::string& userID, InputEventData originalEvent,
 			uint32_t currentPageIndex, const std::vector<EmbedData>& messageEmbeds, bool deleteAfter, uint32_t waitForMaxMs, bool returnResult);
 
-		friend class DiscordCoreAPI_Dll CreateEphemeralInteractionResponseData;
-		friend class DiscordCoreAPI_Dll CreateDeferredInteractionResponseData;
-		friend class DiscordCoreAPI_Dll CreateEphemeralFollowUpMessageData;
-		friend class DiscordCoreAPI_Dll CreateInteractionResponseData;
-		friend class DiscordCoreAPI_Dll EditInteractionResponseData;
-		friend class DiscordCoreAPI_Dll CreateFollowUpMessageData;
-		friend class DiscordCoreAPI_Dll EditFollowUpMessageData;
-		friend class DiscordCoreAPI_Dll CreateMessageData;
-		friend class DiscordCoreAPI_Dll EditMessageData;
-		friend class DiscordCoreAPI_Dll InputEvents;
-		friend class DiscordCoreAPI_Dll SendDMData;
+		friend class CreateEphemeralInteractionResponseData;
+		friend class CreateDeferredInteractionResponseData;
+		friend class CreateEphemeralFollowUpMessageData;
+		friend class CreateInteractionResponseData;
+		friend class EditInteractionResponseData;
+		friend class CreateFollowUpMessageData;
+		friend class EditFollowUpMessageData;
+		friend class CreateMessageData;
+		friend class EditMessageData;
+		friend class InputEvents;
+		friend class SendDMData;
 
 		operator InteractionCallbackData() const noexcept;
 
@@ -2949,7 +2918,7 @@ namespace DiscordCoreAPI {
 	/// \brief Message response base, for responding to messages.
 	class DiscordCoreAPI_Dll MessageResponseBase {
 	  public:
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<MessageResponseBase>;
+		friend struct Jsonifier::Core<MessageResponseBase>;
 		/// \brief Adds a button to the response Message.
 		/// \param disabled Whether the button is active or not.
 		/// \param customIdNew A custom id to give for identifying the button.
@@ -3078,19 +3047,19 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll Song {
 	  public:
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudRequestBuilder;
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeRequestBuilder;
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::SoundCloudAPI;
-		friend class DiscordCoreAPI_Dll DiscordCoreInternal::YouTubeAPI;
-		friend class DiscordCoreAPI_Dll SongAPI;
+		friend class DiscordCoreInternal::SoundCloudRequestBuilder;
+		friend class DiscordCoreInternal::YouTubeRequestBuilder;
+		friend class DiscordCoreInternal::SoundCloudAPI;
+		friend class DiscordCoreInternal::YouTubeAPI;
+		friend class SongAPI;
 
 		std::vector<DownloadUrl> finalDownloadUrls{};
 		SongType type{ SongType::SoundCloud };///< The type of song.
 		std::string secondDownloadUrl{};
 		std::string firstDownloadUrl{};
-		std::string addedByUserName{};///< The User name of the individual who added this Song to the this->
+		std::string addedByUserName{};///< The User name of the individual who added this Song to the
 		std::string thumbnailUrl{};///< The Url of the thumbnail image of this Song.
-		Snowflake addedByUserId{};///< The User id of the individual who added this Song to the this->
+		Snowflake addedByUserId{};///< The User id of the individual who added this Song to the
 		std::string description{};///< A description of the Song.
 		uint64_t contentLength{};
 		std::string songTitle{};///< The title of the Song.
@@ -3118,75 +3087,75 @@ namespace DiscordCoreAPI {
 		Song currentSong{};///< The current Song that is playing.
 
 		inline bool areThereAnySongs() noexcept {
-			return this->songQueue.size() && currentSong.songId != "";
+			return songQueue.size() && currentSong.songId != "";
 		}
 
 		inline bool sendNextSong() {
-			if (this->isLoopSongEnabled) {
-				if (this->songQueue.size() > 1 && this->currentSong.songId == "") {
-					this->currentSong = this->songQueue[0];
-					for (int32_t x = 0; x < this->songQueue.size(); ++x) {
-						if (x == this->songQueue.size() - 1) {
+			if (isLoopSongEnabled) {
+				if (songQueue.size() > 1 && currentSong.songId == "") {
+					currentSong = songQueue[0];
+					for (int32_t x = 0; x < songQueue.size(); ++x) {
+						if (x == songQueue.size() - 1) {
 							break;
 						}
-						this->songQueue[x] = this->songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+						songQueue[x] = songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 					}
-					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					songQueue.erase(songQueue.end() - 1, songQueue.end());
 					return true;
-				} else if (this->songQueue.size() > 0 && this->currentSong.songId == "") {
+				} else if (songQueue.size() > 0 && currentSong.songId == "") {
 					return true;
-				} else if (this->currentSong.songId != "" && this->songQueue.size() == 0) {
+				} else if (currentSong.songId != "" && songQueue.size() == 0) {
 					return true;
-				} else if (this->songQueue.size() == 1 && this->currentSong.songId == "") {
-					this->currentSong = this->songQueue[0];
-					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+				} else if (songQueue.size() == 1 && currentSong.songId == "") {
+					currentSong = songQueue[0];
+					songQueue.erase(songQueue.begin(), songQueue.begin() + 1);
 					return true;
-				} else if (this->currentSong.songId == "") {
+				} else if (currentSong.songId == "") {
 					return false;
 				}
-			} else if (this->isLoopAllEnabled) {
-				if (this->songQueue.size() > 1 && this->currentSong.songId == "") {
-					this->currentSong = this->songQueue[0];
-					for (int32_t x = 0; x < this->songQueue.size(); ++x) {
-						if (x == this->songQueue.size() - 1) {
+			} else if (isLoopAllEnabled) {
+				if (songQueue.size() > 1 && currentSong.songId == "") {
+					currentSong = songQueue[0];
+					for (int32_t x = 0; x < songQueue.size(); ++x) {
+						if (x == songQueue.size() - 1) {
 							break;
 						}
-						this->songQueue[x] = this->songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+						songQueue[x] = songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 					}
-					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					songQueue.erase(songQueue.end() - 1, songQueue.end());
 					return true;
-				} else if (this->songQueue.size() > 0 && this->currentSong.songId != "") {
-					Song tempSong02 = this->currentSong;
-					this->currentSong = this->songQueue[0];
-					for (int32_t x = 0; x < this->songQueue.size(); ++x) {
-						if (x == this->songQueue.size() - 1) {
+				} else if (songQueue.size() > 0 && currentSong.songId != "") {
+					Song tempSong02 = currentSong;
+					currentSong = songQueue[0];
+					for (int32_t x = 0; x < songQueue.size(); ++x) {
+						if (x == songQueue.size() - 1) {
 							break;
 						}
-						this->songQueue[x] = this->songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+						songQueue[x] = songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 					}
-					this->songQueue[this->songQueue.size() - 1] = tempSong02;
+					songQueue[songQueue.size() - 1] = tempSong02;
 					return true;
-				} else if (this->currentSong.songId != "" && this->songQueue.size() == 0) {
+				} else if (currentSong.songId != "" && songQueue.size() == 0) {
 					return true;
-				} else if (this->songQueue.size() == 1 && this->currentSong.songId == "") {
-					this->currentSong = this->songQueue[0];
-					this->songQueue.erase(this->songQueue.begin(), this->songQueue.begin() + 1);
+				} else if (songQueue.size() == 1 && currentSong.songId == "") {
+					currentSong = songQueue[0];
+					songQueue.erase(songQueue.begin(), songQueue.begin() + 1);
 					return true;
-				} else if (this->currentSong.songId == "") {
+				} else if (currentSong.songId == "") {
 					return false;
 				}
 			} else {
-				if (this->songQueue.size() > 0 && (this->currentSong.songId != "" || this->currentSong.songId == "")) {
-					this->currentSong = this->songQueue[0];
-					for (int32_t x = 0; x < this->songQueue.size() - 1; ++x) {
-						this->songQueue[x] = this->songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
+				if (songQueue.size() > 0 && (currentSong.songId != "" || currentSong.songId == "")) {
+					currentSong = songQueue[0];
+					for (int32_t x = 0; x < songQueue.size() - 1; ++x) {
+						songQueue[x] = songQueue[static_cast<int64_t>(x + static_cast<int64_t>(1))];
 					}
-					this->songQueue.erase(this->songQueue.end() - 1, this->songQueue.end());
+					songQueue.erase(songQueue.end() - 1, songQueue.end());
 					return true;
-				} else if (this->currentSong.songId != "" && this->songQueue.size() == 0) {
-					this->currentSong = Song();
+				} else if (currentSong.songId != "" && songQueue.size() == 0) {
+					currentSong = Song();
 					return true;
-				} else if (this->currentSong.songId == "") {
+				} else if (currentSong.songId == "") {
 					return false;
 				}
 			}
@@ -3194,18 +3163,18 @@ namespace DiscordCoreAPI {
 		}
 
 		inline void modifyQueue(int32_t firstSongPosition, int32_t secondSongPosition) {
-			Song tempSong = this->songQueue[firstSongPosition];
-			this->songQueue[firstSongPosition] = this->songQueue[secondSongPosition];
-			this->songQueue[secondSongPosition] = tempSong;
+			Song tempSong = songQueue[firstSongPosition];
+			songQueue[firstSongPosition] = songQueue[secondSongPosition];
+			songQueue[secondSongPosition] = tempSong;
 		}
 	};
 
 	/**@}*/
 
 	/**
-	 * \addtogroup utilities
-	 * @{
-	 */
+	* \addtogroup utilities
+	* @{
+	*/
 
 	struct DiscordCoreAPI_Dll SerializerValue {
 		std::unordered_map<std::string, JsonStringValue> values{};
@@ -3214,8 +3183,8 @@ namespace DiscordCoreAPI {
 	/// \brief Command data, for functions executed by the CommandController.
 	class DiscordCoreAPI_Dll CommandData {
 	  public:
-		friend struct DiscordCoreAPI_Dll EventData<InteractionData>;
-		friend struct DiscordCoreAPI_Dll OnInteractionCreationData;
+		friend struct EventData<InteractionData>;
+		friend struct OnInteractionCreationData;
 
 		CommandData() noexcept = default;
 
@@ -3324,15 +3293,13 @@ namespace DiscordCoreAPI {
 
 	/**@}*/
 
-};
 
-namespace DiscordCoreInternal {
 
-	template<DiscordCoreAPI::TextFormat ValueType> struct ReadyData;
+	template<TextFormat ValueType> struct ReadyData;
 
-	template<> struct ReadyData<DiscordCoreAPI::TextFormat::Etf> {
-		DiscordCoreAPI::ApplicationData application{};
-		DiscordCoreAPI::UserData user{};
+	template<> struct ReadyData<TextFormat::Etf> {
+		ApplicationData application{};
+		UserData user{};
 		std::string resumeGatewayUrl{};
 		std::string sessionId{};
 		std::string shard{};
@@ -3340,10 +3307,10 @@ namespace DiscordCoreInternal {
 		ReadyData() noexcept = default;
 	};
 
-	template<> struct ReadyData<DiscordCoreAPI::TextFormat::Json> {
-		DiscordCoreAPI::ApplicationData application{};
+	template<> struct ReadyData<TextFormat::Json> {
+		ApplicationData application{};
 		std::array<uint32_t, 2> shard{};
-		DiscordCoreAPI::UserData user{};
+		UserData user{};
 		std::string resumeGatewayUrl{};
 		std::string sessionId{};
 		int32_t v{};

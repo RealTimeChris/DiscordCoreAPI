@@ -1,6 +1,6 @@
 Creating a Guild Template {#creatingaguildtemplate}
 =============
-- Execute the, `DiscordCoreAPI::Guilds::createGuildTemplateAsync()` function, while passing in a value of type `DiscordCoreAPI::CreateGuildTemplateData`, with a return value of type `auto` or `DiscordCoreAPI::GuildTemplateData`.
+- Execute the, `Guilds::createGuildTemplateAsync()` function, while passing in a value of type `CreateGuildTemplateData`, with a return value of type `auto` or `GuildTemplateData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Creating a Guild Template {#creatingaguildtemplate}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,20 +26,20 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::CreateGuildTemplateData dataPackage01;
+				CreateGuildTemplateData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.description = "TESTING TEMPLATE!";
 				dataPackage01.name = "TEST TEMPLATE!";
 
-				auto responseData = DiscordCoreAPI::Guilds::createGuildTemplateAsync(dataPackage01).get();
+				auto responseData = Guilds::createGuildTemplateAsync(dataPackage01).get();
 
-				cout << "THE NAME: " << responseData.name << endl;
+				std::cout << "THE NAME: " << responseData.name << std::endl;
 
 
 			} catch (...) {

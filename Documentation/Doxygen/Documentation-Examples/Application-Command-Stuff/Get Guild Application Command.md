@@ -1,6 +1,6 @@
 Getting a Guild Application Command {#getguildcommand}
 ============
-- Execute the `DiscordCoreAPI::ApplicationCommands::getGuildApplicationCommandAsync()` function, while passing in a data structure of type `DiscordCoreAPI::GetGuildApplicationCommandData`, with a return value of type `auto` or `DiscordCoreAPI::ApplicationCommand`.
+- Execute the `ApplicationCommands::getGuildApplicationCommandAsync()` function, while passing in a data structure of type `GetGuildApplicationCommandData`, with a return value of type `auto` or `ApplicationCommand`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Guild Application Command {#getguildcommand}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,29 +26,29 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::InputEvents::deleteInputEventResponseAsync(args.eventData).get();
+		virtual void execute(BaseFunctionArguments& args) {
+			InputEvents::deleteInputEventResponseAsync(args.eventData).get();
 
-			DiscordCoreAPI::GetGuildApplicationCommandsData dataPackage;
+			GetGuildApplicationCommandsData dataPackage;
 			dataPackage.guildId = args.eventData.getGuildId();
 
-			auto returnVector = DiscordCoreAPI::ApplicationCommands::getGuildApplicationCommandsAsync(dataPackage).get();
+			auto returnVector = ApplicationCommands::getGuildApplicationCommandsAsync(dataPackage).get();
 
 			for (auto value: returnVector) {
-				cout << value.name << endl;
+				std::cout << value.name << std::endl;
 			}
 
-			DiscordCoreAPI::GetGuildApplicationCommandData dataPackage02;
+			GetGuildApplicationCommandData dataPackage02;
 			dataPackage02.commandId = returnVector[0].id;
 			dataPackage02.guildId = args.eventData.getGuildId();
 
-			auto returnValue = DiscordCoreAPI::ApplicationCommands::getGuildApplicationCommandAsync(dataPackage02).get();
+			auto returnValue = ApplicationCommands::getGuildApplicationCommandAsync(dataPackage02).get();
 
-			cout << returnValue.name << endl;
+			std::cout << returnValue.name << std::endl;
 		}
 	};
 }

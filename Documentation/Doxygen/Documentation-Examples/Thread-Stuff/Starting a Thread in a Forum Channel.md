@@ -1,6 +1,6 @@
 Starting a Thread in a Forum Channel {#startingathreadinaforumchannel}
 ============
-- Execute the, `DiscordCoreAPI::Threads::startThreadInForumChannelAsync()` function, while passing in a value of type `DiscordCoreAPI::StartThreadInForumChannelData`, with a return value of type `auto` or `DiscordCoreAPI::Thread`.
+- Execute the, `Threads::startThreadInForumChannelAsync()` function, while passing in a value of type `StartThreadInForumChannelData`, with a return value of type `auto` or `Thread`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Starting a Thread in a Forum Channel {#startingathreadinaforumchannel}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed{};
+			EmbedData msgEmbed{};
 			msgEmbed.setDescription("------\nSimply enter /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& newArgs) {
+		virtual void execute(BaseFunctionArguments& newArgs) {
 			try {
 				
-				DiscordCoreAPI::StartThreadInForumChannelData dataPackage;
+				StartThreadInForumChannelData dataPackage;
 				dataPackage.channelId = newArgs.eventData.getChannelId();
 				dataPackage.message.content = "TESTING";
 				dataPackage.name = "THE TEST THREAD";
-				DiscordCoreAPI::Threads::startThreadInForumChannelAsync(dataPackage).get();
+				Threads::startThreadInForumChannelAsync(dataPackage).get();
 				
 				return;
 			} catch (...) {

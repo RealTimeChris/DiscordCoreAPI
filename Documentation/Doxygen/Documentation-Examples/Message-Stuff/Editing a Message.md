@@ -1,6 +1,6 @@
 Editing a Message {#editingamessage}
 ============
-- Execute the, `DiscordCoreAPI::Messages::editMessageAsync()` function, while passing in a data structure of type `DiscordCoreAPI::EditMessageData`, with a return value of type `DiscordCoreAPI::Message`.
+- Execute the, `Messages::editMessageAsync()` function, while passing in a data structure of type `EditMessageData`, with a return value of type `Message`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -13,12 +13,12 @@ Editing a Message {#editingamessage}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,16 +26,16 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::EditMessageData dataPackage {args.eventData};
+				EditMessageData dataPackage {args.eventData};
 				dataPackage.addContent("TEST EDITING CONTENT!");
 
-				DiscordCoreAPI::Message newMessage = DiscordCoreAPI::Messages::editMessageAsync(dataPackage).get();
+				Message newMessage = Messages::editMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

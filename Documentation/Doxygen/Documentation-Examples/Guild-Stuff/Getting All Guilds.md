@@ -1,6 +1,6 @@
 Getting All Guilds {#gettingallguilds}
 ============
-- Execute the `DiscordCoreAPI::Guilds::getAllGuildsAsync()` function and execute it, with a return value of type `auto` or `vector<DiscordCoreAPI::Guild>`.
+- Execute the `Guilds::getAllGuildsAsync()` function and execute it, with a return value of type `auto` or `vector<Guild>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting All Guilds {#gettingallguilds}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,12 +26,12 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			vector<DiscordCoreAPI::Guild> guilds = DiscordCoreAPI::Guilds::getAllGuildsAsync().get();
+		virtual void execute(BaseFunctionArguments& args) {
+			vector<Guild> guilds = Guilds::getAllGuildsAsync().get();
 		}
 	};
 }

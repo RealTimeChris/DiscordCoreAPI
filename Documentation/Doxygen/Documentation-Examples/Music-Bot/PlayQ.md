@@ -24,8 +24,8 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<PlayQ>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<PlayQ>();
 		}
 
 		void execute(BaseFunctionArguments& newArgs) {
@@ -59,7 +59,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (currentTime - previousPlayedTime < 5000) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Sorry, but please wait a total of 5 seconds in between plays!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -83,7 +83,7 @@ namespace DiscordCoreAPI {
 				if (guild.voiceStates.contains(guildMember.id)) {
 					voiceStateData = guild.voiceStates.at(guildMember.id);
 				} else {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -104,7 +104,7 @@ namespace DiscordCoreAPI {
 
 				loadPlaylist(discordGuild);
 				if (voiceConnection == nullptr) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newArgs.eventData.getUserName(), newArgs.eventData.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Sorry, but there is no voice connection that is currently held by me!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -122,7 +122,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (voiceStateData.channelId == 0 || voiceStateData.channelId != voiceConnection->getChannelId()) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newEvent.getUserName(), newEvent.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Sorry, but you need to be in a correct voice channel to issue those commands!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -140,7 +140,7 @@ namespace DiscordCoreAPI {
 				}
 
 				if (!SongAPI::isThereAnySongs(guild.id)) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newEvent.getUserName(), newEvent.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Sorry, but there's nothing to play!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -160,7 +160,7 @@ namespace DiscordCoreAPI {
 				int32_t trackNumber = stoi(newArgs.optionsArgs[0]) - 1;
 
 				if (trackNumber >= SongAPI::getPlaylist(guild.id).songQueue.size()) {
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newEvent.getUserName(), newEvent.getAvatarUrl());
 					newEmbed->setDescription("------\n__**Sorry, but that number is out of the range of the current track list!**__\n------");
 					newEmbed->setTimeStamp(getTimeAndDate());
@@ -198,7 +198,7 @@ namespace DiscordCoreAPI {
 					std::function<CoRoutine<void>(SongCompletionEventData)> theTask = [=](SongCompletionEventData eventData) mutable noexcept -> CoRoutine<void> {
 						co_await NewThreadAwaitable<void>();
 						if (SongAPI::isThereAnySongs(guild.id)) {
-							DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+							UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 							if (!eventData.wasItAFail) {
 								if (!SongAPI::sendNextSong(guildMember)) {
 									InputEvents::deleteInputEventResponseAsync(newEvent);
@@ -291,7 +291,7 @@ namespace DiscordCoreAPI {
 							}
 							savePlaylist(discordGuild);
 						} else {
-							DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+							UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 							newEmbed->setAuthor(eventData.guildMember.userName, eventData.guildMember.avatar);
 							newEmbed->setDescription("------\n__**Sorry, but there's nothing left to play here!**__\n------");
 							newEmbed->setTimeStamp(getTimeAndDate());
@@ -321,7 +321,7 @@ namespace DiscordCoreAPI {
 					}
 					savePlaylist(discordGuild);
 
-					DiscordCoreAPI::UniquePtr<DiscordCoreAPI::EmbedData> newEmbed{ DiscordCoreAPI::makeUnique<DiscordCoreAPI::EmbedData>() };
+					UniquePtr<EmbedData> newEmbed{ makeUnique<EmbedData>() };
 					newEmbed->setAuthor(newEvent.getUserName(), newEvent.getAvatarUrl());
 					newEmbed->setDescription("__**Title:**__ [" + SongAPI::getCurrentSong(guild.id).songTitle + "](" + SongAPI::getCurrentSong(guild.id).viewUrl + ")" +
 						"\n__**Description:**__ " + SongAPI::getCurrentSong(guild.id).description + "\n__**Duration:**__ " + SongAPI::getCurrentSong(guild.id).duration +

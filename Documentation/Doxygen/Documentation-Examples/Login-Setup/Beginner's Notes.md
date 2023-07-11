@@ -4,40 +4,40 @@ Beginner's Notes {#beginnernotes}
 - <B><U>IMPORTANT:</U></B> You will need to enable the following settings in your bot's control panel: Enter your "Developer Control Panel" and select a bot, then go to the "Bot" section-in here, enable "Presence Intent", "Server Members Intent", "Message Content Intent" - and hit "Save".   
 <BR>
 - All of the central class managers are classes that are filled with static methods that are a part of the `DiscordCoreAPI` namespace, they are as Follows:   
-    `DiscordCoreAPI::ApplicationCommands`
+    `ApplicationCommands`
 
-    `DiscordCoreAPI::AutoModerationRules`
+    `AutoModerationRules`
   
-    `DiscordCoreAPI::Channels`
+    `Channels`
     
-    `DiscordCoreAPI::EventManager`
+    `EventManager`
     
-    `DiscordCoreAPI::Guilds`
+    `Guilds`
     
-    `DiscordCoreAPI::GuildMembers`
+    `GuildMembers`
     
-    `DiscordCoreAPI::GuildScheduledEvents`
+    `GuildScheduledEvents`
     
-    `DiscordCoreAPI::InputEvents`
+    `InputEvents`
     
-    `DiscordCoreAPI::Interactions`
+    `Interactions`
     
-    `DiscordCoreAPI::Messages`
+    `Messages`
     
-    `DiscordCoreAPI::Reactions`
+    `Reactions`
     
-    `DiscordCoreAPI::Roles`
+    `Roles`
     
-    `DiscordCoreAPI::StageInstances`
+    `StageInstances`
     
-    `DiscordCoreAPI::Stickers`
+    `Stickers`
     
-    `DiscordCoreAPI::Threads`
+    `Threads`
     
-    `DiscordCoreAPI::Users`
+    `Users`
     
-    `DiscordCoreAPI::WebHooks`   
+    `WebHooks`   
 <BR>
-- Each of the functions in this library takes an argument that is of a type who's name is derived from the function-for example, the data structure that gets passed into `DiscordCoreAPI::Guilds::getGuildAsync()` is `DiscordCoreAPI::GetGuildData`.   
+- Each of the functions in this library takes an argument that is of a type who's name is derived from the function-for example, the data structure that gets passed into `Guilds::getGuildAsync()` is `GetGuildData`.   
 <BR>
-- Most of the functions in this library are `Async`, meaning that they return a value of type `DiscordCoreAPI::CoRoutine<TaskType>`, which you call `.get()` on to retrieve the returned value, and to suspend the current thread in the process of waiting for it. Alternatively, you have the option of leaving the task's completion up to the background thread that is handling it, by not calling `.get()`.
+- Most of the functions in this library are `Async`, meaning that they return a value of type `CoRoutine<TaskType>`, which you call `.get()` on to retrieve the returned value, and to suspend the current thread in the process of waiting for it. Alternatively, you have the option of leaving the task's completion up to the background thread that is handling it, by not calling `.get()`.

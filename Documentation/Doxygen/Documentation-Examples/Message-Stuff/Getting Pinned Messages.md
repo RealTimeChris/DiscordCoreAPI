@@ -1,7 +1,7 @@
 Getting Pinned Messages {#gettingpinnedmessages}
 ============
 
-- Execute the, `DiscordCoreAPI::Messages::getPinnedMessagesAsync()` function, while passing in a value of type `DiscordCoreAPI::GetPinnedMessagesData`, with a return value of type `auto` or `vector<DiscordCoreAPI::Message>`.
+- Execute the, `Messages::getPinnedMessagesAsync()` function, while passing in a value of type `GetPinnedMessagesData`, with a return value of type `auto` or `vector<Message>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -14,12 +14,12 @@ Getting Pinned Messages {#gettingpinnedmessages}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -27,19 +27,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetPinnedMessagesData dataPackage;
+				GetPinnedMessagesData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				vector<DiscordCoreAPI::Message> messagesVector = DiscordCoreAPI::Messages::getPinnedMessagesAsync(dataPackage).get();
+				vector<Message> messagesVector = Messages::getPinnedMessagesAsync(dataPackage).get();
 
 				for (auto value: messagesVector) {
-					cout << "THE ID: " << value.id << endl;
+					std::cout << "THE ID: " << value.id << std::endl;
 				}
 
 

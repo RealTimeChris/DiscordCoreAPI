@@ -1,6 +1,6 @@
 Adding a Recipient to a Group DM {#addingarecipienttoagroupdm}
 ============
-- Execute the, `DiscordCoreAPI::Users::addRecipientToGroupDMAsync()` function, while passing in a value of type `DiscordCoreAPI::AddRecipientToGroupDMData`, with a return value of type `void`.
+- Execute the, `Users::addRecipientToGroupDMAsync()` function, while passing in a value of type `AddRecipientToGroupDMData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Adding a Recipient to a Group DM {#addingarecipienttoagroupdm}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,23 +26,23 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GuildMember guildMember = DiscordCoreAPI::GuildMembers::getCachedGuildMember(
+				GuildMember guildMember = GuildMembers::getCachedGuildMember(
 															  {.guildMemberId = args.eventData.getAuthorId(), .guildId = args.eventData.getGuildId()})
 															  .get();
 
-				DiscordCoreAPI::AddRecipientToGroupDMData dataPackage;
+				AddRecipientToGroupDMData dataPackage;
 				dataPackage.userId = args.eventData.getAuthorId();
 				dataPackage.channelId = "DM_CHANNEL_ID_HERE";
 				dataPackage.token = "YOUR_ACCESS_TOKEN_HERE";
 				dataPackage.nick = guildMember.nick;
 
-				DiscordCoreAPI::Users::addRecipientToGroupDMAsync(dataPackage).get();
+				Users::addRecipientToGroupDMAsync(dataPackage).get();
 
 
 			} catch (...) {

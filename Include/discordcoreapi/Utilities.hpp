@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// Utilities.cpp - Header file for the Utilities.
 /// Jun 28, 2022
@@ -24,8 +29,6 @@
 /// \file Utilities.hpp
 
 #pragma once
-
-#include <jsonifier/Index.hpp>
 
 #include <discordcoreapi/Base.hpp>
 #include <discordcoreapi/Utilities/UnorderedSet.hpp>
@@ -63,165 +66,10 @@
 
 namespace DiscordCoreAPI {
 
-	inline thread_local Jsonifier::JsonifierCore parser{};
-
 	/**
 	 * \addtogroup foundation_entities
 	 * @{
 	 */
-
-	template<typename Derived> struct Relational {
-		inline friend bool operator>(const Derived& data1, const Derived& data2) {
-			return data2 < data1;
-		}
-		inline friend bool operator==(const Derived& data1, const Derived& data2) {
-			return !(data1 < data2) && !(data2 < data1);
-		}
-		inline friend bool operator!=(const Derived& data1, const Derived& data2) {
-			return !(data1 == data2);
-		}
-		inline friend bool operator<=(const Derived& data1, const Derived& data2) {
-			return (data1 < data2) || (data1 == data2);
-		}
-		inline friend bool operator>=(const Derived& data1, const Derived& data2) {
-			return (data1 > data2) || (data1 == data2);
-		}
-
-	  protected:
-		inline Relational() noexcept = default;
-	};
-
-	template<typename ValueType>
-	concept CopyableOrMovable = std::copyable<std::decay_t<ValueType>> || std::movable<std::decay_t<ValueType>>;
-
-	/// \brief Time formatting methods.
-	enum class TimeFormat : char {
-		LongDate = 'D',///< "20 April 2021" - Long Date
-		LongDateTime = 'F',///< "Tuesday, 20 April 2021 16:20" - Long Date/Time
-		LongTime = 'T',///< "16:20:30" - Long Time
-		ShortDate = 'd',///< "20/04/2021" - Short Date
-		ShortDateTime = 'f',///< "20 April 2021 16:20" - Short Date/Time
-		ShortTime = 't',///< "16:20" - Short Time
-	};
-
-	class DiscordCoreAPI_Dll Snowflake : public Relational<Snowflake> {
-	  public:
-		inline Snowflake() noexcept = default;
-
-		inline Snowflake& operator=(const std::string& other) noexcept {
-			for (auto& value: other) {
-				if (!std::isdigit(static_cast<uint8_t>(value))) {
-					return *this;
-				}
-			}
-			if (other.size() == 0) {
-				return *this;
-			}
-			id = stoull(other);
-			return *this;
-		}
-
-		inline Snowflake(const std::string& other) noexcept {
-			*this = other;
-		}
-
-		inline Snowflake& operator=(uint64_t other) noexcept {
-			id = other;
-			return *this;
-		}
-
-		inline Snowflake(uint64_t other) noexcept {
-			*this = other;
-		}
-
-		inline operator std::string() const noexcept {
-			return std::to_string(id);
-		}
-
-		inline explicit operator uint64_t() const noexcept {
-			return id;
-		}
-
-		/// \brief Converts the
-		/// snowflake-id into a time and date stamp. \returns std::string A
-		/// std::string containing the timeStamp.
-		std::string getCreatedAtTimeStamp(TimeFormat timeFormat);
-
-		inline friend bool operator<(const Snowflake& lhs, const Snowflake& rhs) noexcept {
-			return lhs.id < rhs.id;
-		}
-
-		friend inline std::string operator+(const std::string&, const Snowflake&) noexcept;
-
-	  protected:
-		uint64_t id{};
-	};
-
-	inline std::ostream& operator<<(std::ostream& os, Snowflake sf) {
-		os << sf.operator std::string();
-		return os;
-	}
-
-	inline std::string operator+(const std::string& lhs, const Snowflake& rhs) noexcept {
-		std::string string{};
-		string += lhs;
-		string += std::to_string(rhs.id);
-		return string;
-	}
-
-	template<typename TimeType> class StopWatch {
-	  public:
-		using HRClock = std::chrono::high_resolution_clock;
-
-		inline StopWatch() noexcept = default;
-
-		inline StopWatch& operator=(StopWatch<TimeType>&& data) noexcept {
-			maxNumberOfTimeUnits.store(data.maxNumberOfTimeUnits.load());
-			startTime.store(data.startTime.load());
-			return *this;
-		}
-
-		inline StopWatch(StopWatch<TimeType>&& other) noexcept {
-			*this = std::move(other);
-		}
-
-		inline StopWatch<TimeType>& operator=(const StopWatch<TimeType>& data) noexcept = delete;
-		inline StopWatch(const StopWatch<TimeType>& other) noexcept = delete;
-
-		inline StopWatch(TimeType maxNumberOfMsNew) noexcept {
-			maxNumberOfTimeUnits.store(maxNumberOfMsNew);
-			resetTimer();
-		}
-
-		inline StopWatch(int64_t maxNumberOfMsNew) noexcept {
-			maxNumberOfTimeUnits.store(TimeType{ maxNumberOfMsNew });
-			resetTimer();
-		}
-
-		inline TimeType totalTimePassed() noexcept {
-			return std::chrono::duration_cast<TimeType>(HRClock::now().time_since_epoch()) - startTime.load();
-		}
-
-		inline TimeType getTotalWaitTime() noexcept {
-			return maxNumberOfTimeUnits.load();
-		}
-
-		inline bool hasTimePassed() noexcept {
-			if (std::chrono::duration_cast<TimeType>(HRClock::now().time_since_epoch()) - startTime.load() >= maxNumberOfTimeUnits.load()) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		inline void resetTimer() noexcept {
-			startTime.store(std::chrono::duration_cast<TimeType>(HRClock::now().time_since_epoch()));
-		}
-
-	  protected:
-		std::atomic<TimeType> maxNumberOfTimeUnits{ TimeType{ 0 } };
-		std::atomic<TimeType> startTime{ TimeType{ 0 } };
-	};
 
 	/// \brief Activity types.
 	enum class ActivityType : uint8_t {
@@ -255,227 +103,203 @@ namespace DiscordCoreAPI {
 		uint16_t port{};///< The port to connect to.
 	};
 
-};
+	namespace DiscordCoreInternal {
 
-namespace DiscordCoreInternal {
+		class DiscordCoreAPI_Dll SoundCloudRequestBuilder;
+		class DiscordCoreAPI_Dll YouTubeRequestBuilder;
+		class DiscordCoreAPI_Dll WebSocketClient;
+		class DiscordCoreAPI_Dll BaseSocketAgent;
+		class DiscordCoreAPI_Dll SoundCloudAPI;
+		class DiscordCoreAPI_Dll YouTubeAPI;
 
-	inline thread_local Jsonifier::JsonifierCore parser{};
+		enum class WebSocketOpCode : uint8_t {
+			Op_Continuation = 0x00,
+			Op_Text = 0x01,
+			Op_Binary = 0x02,
+			Op_Close = 0x08,
+			Op_Ping = 0x09,
+			Op_Pong = 0x0a
+		};
 
-	using HRClock = std::chrono::high_resolution_clock;
-	using Milliseconds = std::chrono::milliseconds;
-	using Microseconds = std::chrono::microseconds;
-	using Nanoseconds = std::chrono::nanoseconds;
-	using SysClock = std::chrono::system_clock;
-	using Seconds = std::chrono::seconds;
-	using namespace std::literals;
-	using std::cout;
-	using std::endl;
-
-	class DiscordCoreAPI_Dll SoundCloudRequestBuilder;
-	class DiscordCoreAPI_Dll YouTubeRequestBuilder;
-	class DiscordCoreAPI_Dll WebSocketClient;
-	class DiscordCoreAPI_Dll BaseSocketAgent;
-	class DiscordCoreAPI_Dll SoundCloudAPI;
-	class DiscordCoreAPI_Dll YouTubeAPI;
-
-	enum class WebSocketOpCode : uint8_t {
-		Op_Continuation = 0x00,
-		Op_Text = 0x01,
-		Op_Binary = 0x02,
-		Op_Close = 0x08,
-		Op_Ping = 0x09,
-		Op_Pong = 0x0a
-	};
-
-	/// \brief Websocket close codes.
-	class DiscordCoreAPI_Dll WebSocketClose {
-	  public:
 		/// \brief Websocket close codes.
-		enum class WebSocketCloseCode : uint16_t {
-			Unset = 1 << 0,///< Unset.
-			Normal_Close = 1 << 1,///< Normal close.
-			Unknown_Error = 1 << 2,///< We're not sure what went wrong. Try reconnecting?
-			Unknown_Opcode = 1 << 3,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!
-			Decode_Error = 1 << 4,///< You sent an invalid payload to us. Don't do that!
-			Not_Authenticated = 1 << 5,///< You sent us a payload prior to identifying.
-			Authentication_Failed = 1 << 6,///< The account token sent with your identify payload is incorrect.
-			Already_Authenticated = 1 << 7,///< You sent more than one identify payload. Don't do that!
-			Invalid_Seq = 1 << 8,///<	The sequence sent when resuming the session was invalid. Reconnect and start a new session.
-			Rate_Limited =
-				1 << 9,///< Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
-			Session_Timed = 1 << 10,///< Your session timed out. Reconnect and start a new one.
-			Invalid_Shard = 1 << 11,///< You sent us an invalid shard when identifying.
-			Sharding_Required =
-				1 << 12,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
-			Invalid_API_Version = 1 << 13,///< You sent an invalid version for the gateway.
-			Invalid_Intent = 1 << 14,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
-			Disallowed_Intent = 1
-				<< 15,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
-			We_Do_Reconnect = Normal_Close | Unknown_Error | Unknown_Opcode | Decode_Error | Not_Authenticated | Already_Authenticated | Invalid_Seq |
-				Rate_Limited | Session_Timed,
-			We_Do_Not_Reconnect = Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
+		class DiscordCoreAPI_Dll WebSocketClose {
+		  public:
+			/// \brief Websocket close codes.
+			enum class WebSocketCloseCode : uint16_t {
+				Unset = 1 << 0,///< Unset.
+				Normal_Close = 1 << 1,///< Normal close.
+				Unknown_Error = 1 << 2,///< We're not sure what went wrong. Try reconnecting?
+				Unknown_Opcode = 1 << 3,///< You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!
+				Decode_Error = 1 << 4,///< You sent an invalid payload to us. Don't do that!
+				Not_Authenticated = 1 << 5,///< You sent us a payload prior to identifying.
+				Authentication_Failed = 1 << 6,///< The account token sent with your identify payload is incorrect.
+				Already_Authenticated = 1 << 7,///< You sent more than one identify payload. Don't do that!
+				Invalid_Seq = 1 << 8,///<	The sequence sent when resuming the session was invalid. Reconnect and start a new session.
+				Rate_Limited =
+					1 << 9,///< Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
+				Session_Timed = 1 << 10,///< Your session timed out. Reconnect and start a new one.
+				Invalid_Shard = 1 << 11,///< You sent us an invalid shard when identifying.
+				Sharding_Required =
+					1 << 12,///< The session would have handled too many guilds - you are required to shard your connection in order to connect.
+				Invalid_API_Version = 1 << 13,///< You sent an invalid version for the gateway.
+				Invalid_Intent = 1 << 14,///< You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value.
+				Disallowed_Intent = 1
+					<< 15,///< You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not enabled or are not approved for.
+				We_Do_Reconnect = Normal_Close | Unknown_Error | Unknown_Opcode | Decode_Error | Not_Authenticated | Already_Authenticated |
+					Invalid_Seq | Rate_Limited | Session_Timed,
+				We_Do_Not_Reconnect =
+					Authentication_Failed | Invalid_Shard | Sharding_Required | Invalid_API_Version | Invalid_Intent | Disallowed_Intent
+			};
+
+			inline static std::unordered_map<uint16_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset },
+				{ 1000, WebSocketCloseCode::Normal_Close }, { 4000, WebSocketCloseCode::Unknown_Error }, { 4001, WebSocketCloseCode::Unknown_Opcode },
+				{ 4002, WebSocketCloseCode::Decode_Error }, { 4003, WebSocketCloseCode::Not_Authenticated },
+				{ 4004, WebSocketCloseCode::Authentication_Failed }, { 4005, WebSocketCloseCode::Already_Authenticated },
+				{ 4007, WebSocketCloseCode::Invalid_Seq }, { 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed },
+				{ 4010, WebSocketCloseCode::Invalid_Shard }, { 4011, WebSocketCloseCode::Sharding_Required },
+				{ 4012, WebSocketCloseCode::Invalid_API_Version }, { 4013, WebSocketCloseCode::Invalid_Intent },
+				{ 4014, WebSocketCloseCode::Disallowed_Intent } };
+
+			inline static std::unordered_map<WebSocketCloseCode, std::string_view> outputErrorValues{ {
+																										  WebSocketCloseCode::Unknown_Error,
+																										  "We're not sure what went wrong.",
+																									  },
+				{ WebSocketCloseCode::Unknown_Opcode, "You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!" },
+				{ WebSocketCloseCode::Decode_Error, "You sent an invalid payload to Discord. Don't do that!" },
+				{ WebSocketCloseCode::Not_Authenticated, "You sent us a payload prior to identifying." },
+				{ WebSocketCloseCode::Authentication_Failed, "The account token sent with your identify payload is incorrect." },
+				{ WebSocketCloseCode::Already_Authenticated, "You sent more than one identify payload. Don't do that!" },
+				{ WebSocketCloseCode::Invalid_Seq, "The sequence sent when resuming the session was invalid. Reconnect and start a new session." },
+				{ WebSocketCloseCode::Rate_Limited,
+					"Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this." },
+				{ WebSocketCloseCode::Session_Timed, "Your session timed out. Reconnect and start a new one." },
+				{ WebSocketCloseCode::Invalid_Shard, "You sent us an invalid shard when identifying." },
+				{ WebSocketCloseCode::Sharding_Required,
+					"The session would have handled too many guilds - you are required to shard your connection in order to connect." },
+				{ WebSocketCloseCode::Invalid_API_Version, "You sent an invalid version for the gateway." },
+				{ WebSocketCloseCode::Invalid_Intent,
+					"You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value." },
+				{ WebSocketCloseCode::Disallowed_Intent,
+					"You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not "
+					"enabled or are "
+					"not "
+					"approved for." } };
+
+			WebSocketCloseCode value{};
+
+			WebSocketClose& operator=(uint16_t value);
+
+			explicit WebSocketClose(uint16_t value);
+
+			operator std::string_view();
+
+			operator bool();
 		};
 
-		inline static std::unordered_map<uint16_t, WebSocketCloseCode> mappingValues{ { 0, WebSocketCloseCode::Unset },
-			{ 1000, WebSocketCloseCode::Normal_Close }, { 4000, WebSocketCloseCode::Unknown_Error }, { 4001, WebSocketCloseCode::Unknown_Opcode },
-			{ 4002, WebSocketCloseCode::Decode_Error }, { 4003, WebSocketCloseCode::Not_Authenticated },
-			{ 4004, WebSocketCloseCode::Authentication_Failed }, { 4005, WebSocketCloseCode::Already_Authenticated },
-			{ 4007, WebSocketCloseCode::Invalid_Seq }, { 4008, WebSocketCloseCode::Rate_Limited }, { 4009, WebSocketCloseCode::Session_Timed },
-			{ 4010, WebSocketCloseCode::Invalid_Shard }, { 4011, WebSocketCloseCode::Sharding_Required },
-			{ 4012, WebSocketCloseCode::Invalid_API_Version }, { 4013, WebSocketCloseCode::Invalid_Intent },
-			{ 4014, WebSocketCloseCode::Disallowed_Intent } };
-
-		inline static std::unordered_map<WebSocketCloseCode, std::string> outputErrorValues{ {
-																								 WebSocketCloseCode::Unknown_Error,
-																								 "We're not sure what went wrong.",
-																							 },
-			{ WebSocketCloseCode::Unknown_Opcode, "You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!" },
-			{ WebSocketCloseCode::Decode_Error, "You sent an invalid payload to Discord. Don't do that!" },
-			{ WebSocketCloseCode::Not_Authenticated, "You sent us a payload prior to identifying." },
-			{ WebSocketCloseCode::Authentication_Failed, "The account token sent with your identify payload is incorrect." },
-			{ WebSocketCloseCode::Already_Authenticated, "You sent more than one identify payload. Don't do that!" },
-			{ WebSocketCloseCode::Invalid_Seq, "The sequence sent when resuming the session was invalid. Reconnect and start a new session." },
-			{ WebSocketCloseCode::Rate_Limited,
-				"Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this." },
-			{ WebSocketCloseCode::Session_Timed, "Your session timed out. Reconnect and start a new one." },
-			{ WebSocketCloseCode::Invalid_Shard, "You sent us an invalid shard when identifying." },
-			{ WebSocketCloseCode::Sharding_Required,
-				"The session would have handled too many guilds - you are required to shard your connection in order to connect." },
-			{ WebSocketCloseCode::Invalid_API_Version, "You sent an invalid version for the gateway." },
-			{ WebSocketCloseCode::Invalid_Intent,
-				"You sent an invalid intent for a Gateway Intent. You may have incorrectly calculated the bitwise value." },
-			{ WebSocketCloseCode::Disallowed_Intent,
-				"You sent a disallowed intent for a Gateway Intent. You may have tried to specify an intent that you have not "
-				"enabled or are "
-				"not "
-				"approved for." } };
-
-		WebSocketCloseCode value{};
-
-		WebSocketClose& operator=(uint16_t value);
-
-		explicit WebSocketClose(uint16_t value);
-
-		operator std::string();
-
-		operator bool();
-	};
-
-	/// \brief Voice Websocket close codes.
-	class DiscordCoreAPI_Dll VoiceWebSocketClose {
-	  public:
 		/// \brief Voice Websocket close codes.
-		enum class VoiceWebSocketCloseCode : uint16_t {
-			Unset = 1 << 0,///< Unset.
-			Normal_Close = 1 << 1,///< Normal close.
-			Unknown_Opcode = 1 << 2,///< You sent an invalid opcode.
-			Failed_To_Decode = 1 << 3,///< You sent an invalid payload in your identifying to the Gateway.
-			Not_Authenticated = 1 << 4,///< You sent a payload before identifying with the Gateway.
-			Authentication_Failed = 1 << 5,///<	The token you sent in your identify payload is incorrect.
-			Already_Authenticated = 1 << 6,///<	You sent more than one identify payload. Stahp.
-			Session_No_Longer_Valid = 1 << 7,///< Your session is no longer valid.
-			Session_Timeout = 1 << 8,///< Your session has timed out.
-			Server_Not_Found = 1 << 9,///< We can't find the server you're trying to connect to.
-			Unknown_Protocol = 1 << 10,///< We didn't recognize the protocol you sent.
-			Disconnected = 1
-				<< 11,///< Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not reconnect.
-			Voice_Server_Crashed = 1 << 12,///< The server crashed. Our bad! Try resuming.
-			Unknown_Encryption_Mode = 1 << 13///< We didn't recognize your encryption.
+		class DiscordCoreAPI_Dll VoiceWebSocketClose {
+		  public:
+			/// \brief Voice Websocket close codes.
+			enum class VoiceWebSocketCloseCode : uint16_t {
+				Unset = 1 << 0,///< Unset.
+				Normal_Close = 1 << 1,///< Normal close.
+				Unknown_Opcode = 1 << 2,///< You sent an invalid opcode.
+				Failed_To_Decode = 1 << 3,///< You sent an invalid payload in your identifying to the Gateway.
+				Not_Authenticated = 1 << 4,///< You sent a payload before identifying with the Gateway.
+				Authentication_Failed = 1 << 5,///<	The token you sent in your identify payload is incorrect.
+				Already_Authenticated = 1 << 6,///<	You sent more than one identify payload. Stahp.
+				Session_No_Longer_Valid = 1 << 7,///< Your session is no longer valid.
+				Session_Timeout = 1 << 8,///< Your session has timed out.
+				Server_Not_Found = 1 << 9,///< We can't find the server you're trying to connect to.
+				Unknown_Protocol = 1 << 10,///< We didn't recognize the protocol you sent.
+				Disconnected = 1
+					<< 11,///< Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not reconnect.
+				Voice_Server_Crashed = 1 << 12,///< The server crashed. Our bad! Try resuming.
+				Unknown_Encryption_Mode = 1 << 13///< We didn't recognize your encryption.
+			};
+
+			inline static std::unordered_map<uint16_t, VoiceWebSocketCloseCode> mappingValues{ { 0, VoiceWebSocketCloseCode::Unset },
+				{ 1000, VoiceWebSocketCloseCode::Normal_Close }, { 4001, VoiceWebSocketCloseCode::Unknown_Opcode },
+				{ 4002, VoiceWebSocketCloseCode::Failed_To_Decode }, { 4003, VoiceWebSocketCloseCode::Not_Authenticated },
+				{ 4004, VoiceWebSocketCloseCode::Authentication_Failed }, { 4005, VoiceWebSocketCloseCode::Already_Authenticated },
+				{ 4006, VoiceWebSocketCloseCode::Session_No_Longer_Valid }, { 4009, VoiceWebSocketCloseCode::Session_Timeout },
+				{ 4011, VoiceWebSocketCloseCode::Server_Not_Found }, { 4012, VoiceWebSocketCloseCode::Unknown_Protocol },
+				{ 4014, VoiceWebSocketCloseCode::Disconnected }, { 4015, VoiceWebSocketCloseCode::Voice_Server_Crashed },
+				{ 4016, VoiceWebSocketCloseCode::Unknown_Encryption_Mode } };
+
+			inline static std::unordered_map<VoiceWebSocketCloseCode, std::string_view> outputErrorValues{
+				{ VoiceWebSocketCloseCode::Unset, "Unset." }, { VoiceWebSocketCloseCode::Normal_Close, "Normal close." },
+				{ VoiceWebSocketCloseCode::Unknown_Opcode, "You sent an invalid opcode." },
+				{ VoiceWebSocketCloseCode::Failed_To_Decode, "You sent an invalid payload in your identifying to the Gateway." },
+				{ VoiceWebSocketCloseCode::Not_Authenticated, "You sent a payload before identifying with the Gateway." },
+				{ VoiceWebSocketCloseCode::Authentication_Failed, "The token you sent in your identify payload is incorrect." },
+				{ VoiceWebSocketCloseCode::Already_Authenticated, "You sent more than one identify payload. Stahp." },
+				{ VoiceWebSocketCloseCode::Session_No_Longer_Valid, "Your session is no longer valid." },
+				{ VoiceWebSocketCloseCode::Session_Timeout, "Your session has timed out." },
+				{ VoiceWebSocketCloseCode::Server_Not_Found, "We can't find the server you're trying to connect to." },
+				{ VoiceWebSocketCloseCode::Unknown_Protocol, "We didn't recognize the protocol you sent." },
+				{ VoiceWebSocketCloseCode::Disconnected,
+					"Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not "
+					"reconnect." },
+				{ VoiceWebSocketCloseCode::Voice_Server_Crashed, "The server crashed. Our bad! Try resuming." },
+				{ VoiceWebSocketCloseCode::Unknown_Encryption_Mode, "We didn't recognize your encryption." }
+			};
+
+			VoiceWebSocketCloseCode value{};
+
+			VoiceWebSocketClose& operator=(uint16_t value);
+
+			VoiceWebSocketClose(uint16_t value);
+
+			operator std::string_view();
+
+			operator bool();
 		};
 
-		inline static std::unordered_map<uint16_t, VoiceWebSocketCloseCode> mappingValues{ { 0, VoiceWebSocketCloseCode::Unset },
-			{ 1000, VoiceWebSocketCloseCode::Normal_Close }, { 4001, VoiceWebSocketCloseCode::Unknown_Opcode },
-			{ 4002, VoiceWebSocketCloseCode::Failed_To_Decode }, { 4003, VoiceWebSocketCloseCode::Not_Authenticated },
-			{ 4004, VoiceWebSocketCloseCode::Authentication_Failed }, { 4005, VoiceWebSocketCloseCode::Already_Authenticated },
-			{ 4006, VoiceWebSocketCloseCode::Session_No_Longer_Valid }, { 4009, VoiceWebSocketCloseCode::Session_Timeout },
-			{ 4011, VoiceWebSocketCloseCode::Server_Not_Found }, { 4012, VoiceWebSocketCloseCode::Unknown_Protocol },
-			{ 4014, VoiceWebSocketCloseCode::Disconnected }, { 4015, VoiceWebSocketCloseCode::Voice_Server_Crashed },
-			{ 4016, VoiceWebSocketCloseCode::Unknown_Encryption_Mode } };
-
-		inline static std::unordered_map<VoiceWebSocketCloseCode, std::string> outputErrorValues{ { VoiceWebSocketCloseCode::Unset, "Unset." },
-			{ VoiceWebSocketCloseCode::Normal_Close, "Normal close." }, { VoiceWebSocketCloseCode::Unknown_Opcode, "You sent an invalid opcode." },
-			{ VoiceWebSocketCloseCode::Failed_To_Decode, "You sent an invalid payload in your identifying to the Gateway." },
-			{ VoiceWebSocketCloseCode::Not_Authenticated, "You sent a payload before identifying with the Gateway." },
-			{ VoiceWebSocketCloseCode::Authentication_Failed, "The token you sent in your identify payload is incorrect." },
-			{ VoiceWebSocketCloseCode::Already_Authenticated, "You sent more than one identify payload. Stahp." },
-			{ VoiceWebSocketCloseCode::Session_No_Longer_Valid, "Your session is no longer valid." },
-			{ VoiceWebSocketCloseCode::Session_Timeout, "Your session has timed out." },
-			{ VoiceWebSocketCloseCode::Server_Not_Found, "We can't find the server you're trying to connect to." },
-			{ VoiceWebSocketCloseCode::Unknown_Protocol, "We didn't recognize the protocol you sent." },
-			{ VoiceWebSocketCloseCode::Disconnected,
-				"Channel was deleted, you were kicked, voice server changed, or the main gateway session was dropped. Should not "
-				"reconnect." },
-			{ VoiceWebSocketCloseCode::Voice_Server_Crashed, "The server crashed. Our bad! Try resuming." },
-			{ VoiceWebSocketCloseCode::Unknown_Encryption_Mode, "We didn't recognize your encryption." } };
-
-		VoiceWebSocketCloseCode value{};
-
-		VoiceWebSocketClose& operator=(uint16_t value);
-
-		VoiceWebSocketClose(uint16_t value);
-
-		operator std::string();
-
-		operator bool();
-	};
-
-	/// \brief Voice Websocket close codes.
-	class DiscordCoreAPI_Dll HttpsResponseCode {
-	  public:
 		/// \brief Voice Websocket close codes.
-		enum class HttpsResponseCodes : uint32_t {
-			Ok = 200,///< The request completed successfully.
-			Created = 201,///< The entity was created successfully.
-			No_Content = 204,///< The request completed successfully but returned no content.
-			Not_Modifies = 304,///< The entity was not modified (no action was taken).
-			Bad_Request = 400,///< The request was improperly formatted, or the server couldn't understand it.
-			Unauthorized = 401,///< The Authorization header was missing or invalid.
-			Forbidden = 403,///< The Authorization token you passed did not have permission to the resource.
-			Not_Found = 404,///< The resource at the location specified doesn't exist.
-			Method_Not_Allowed = 405,///< The HTTPS method used is not valid for the location specified.
-			Too_Many_Requests = 429,///< You are being rate limited, see Rate Limits.
-			Gatewat_Unavailable = 502,///< There was not a gateway available to process your request. Wait a bit and retry.
+		class DiscordCoreAPI_Dll HttpsResponseCode {
+		  public:
+			/// \brief Voice Websocket close codes.
+			enum class HttpsResponseCodes : uint32_t {
+				Ok = 200,///< The request completed successfully.
+				Created = 201,///< The entity was created successfully.
+				No_Content = 204,///< The request completed successfully but returned no content.
+				Not_Modifies = 304,///< The entity was not modified (no action was taken).
+				Bad_Request = 400,///< The request was improperly formatted, or the server couldn't understand it.
+				Unauthorized = 401,///< The Authorization header was missing or invalid.
+				Forbidden = 403,///< The Authorization token you passed did not have permission to the resource.
+				Not_Found = 404,///< The resource at the location specified doesn't exist.
+				Method_Not_Allowed = 405,///< The HTTPS method used is not valid for the location specified.
+				Too_Many_Requests = 429,///< You are being rate limited, see Rate Limits.
+				Gatewat_Unavailable = 502,///< There was not a gateway available to process your request. Wait a bit and retry.
+			};
+
+			inline static std::unordered_map<HttpsResponseCodes, std::string_view> outputErrorValues{ { static_cast<HttpsResponseCodes>(200),
+																										  "The request completed successfully" },
+				{ static_cast<HttpsResponseCodes>(201), "The entity was created successfully" },
+				{ static_cast<HttpsResponseCodes>(204), "The request completed successfully but returned no content" },
+				{ static_cast<HttpsResponseCodes>(304), "The entity was not modified (no action was taken)" },
+				{ static_cast<HttpsResponseCodes>(400), "The request was improperly formatted, or the server couldn't understand it" },
+				{ static_cast<HttpsResponseCodes>(401), "The Authorization header was missing or invalid" },
+				{ static_cast<HttpsResponseCodes>(403), "The Authorization token you passed did not have permission to the resource" },
+				{ static_cast<HttpsResponseCodes>(404), "The resource at the location specified doesn't exist" },
+				{ static_cast<HttpsResponseCodes>(405), "The HTTPS method used is not valid for the location specified" },
+				{ static_cast<HttpsResponseCodes>(429), "You are being rate limited, see Rate Limits" },
+				{ static_cast<HttpsResponseCodes>(502), "There was not a gateway available to process your request.Wait a bit and retry" },
+				{ static_cast<HttpsResponseCodes>(500), "The server had an error processing your request(these are rare)" } };
+
+			HttpsResponseCodes value{};
+
+			HttpsResponseCode& operator=(uint32_t value);
+
+			HttpsResponseCode(uint32_t value);
+
+			operator std::string();
+
+			operator uint32_t();
 		};
 
-		inline static std::unordered_map<HttpsResponseCodes, std::string> outputErrorValues{ { static_cast<HttpsResponseCodes>(200),
-																								 "The request completed successfully." },
-			{ static_cast<HttpsResponseCodes>(201), "The entity was created successfully." },
-			{ static_cast<HttpsResponseCodes>(204), "The request completed successfully but returned no content." },
-			{ static_cast<HttpsResponseCodes>(304), "The entity was not modified (no action was taken)." },
-			{ static_cast<HttpsResponseCodes>(400), "The request was improperly formatted, or the server couldn't understand it." },
-			{ static_cast<HttpsResponseCodes>(401), "The Authorization header was missing or invalid." },
-			{ static_cast<HttpsResponseCodes>(403), "The Authorization token you passed did not have permission to the resource." },
-			{ static_cast<HttpsResponseCodes>(404), "The resource at the location specified doesn't exist." },
-			{ static_cast<HttpsResponseCodes>(405), "The HTTPS method used is not valid for the location specified." },
-			{ static_cast<HttpsResponseCodes>(429), "You are being rate limited, see Rate Limits." },
-			{ static_cast<HttpsResponseCodes>(502), "There was not a gateway available to process your request.Wait a bit and retry." },
-			{ static_cast<HttpsResponseCodes>(500), "The server had an error processing your request(these are rare)." } };
-
-		HttpsResponseCodes value{};
-
-		HttpsResponseCode& operator=(uint32_t value);
-
-		HttpsResponseCode(uint32_t value);
-
-		operator uint32_t();
-
-		operator std::string();
-	};
-
-}// namespace DiscordCoreInternal
-
-
-namespace DiscordCoreAPI {
-
-	using HRClock = std::chrono::high_resolution_clock;
-	using Milliseconds = std::chrono::milliseconds;
-	using Microseconds = std::chrono::microseconds;
-	using Nanoseconds = std::chrono::nanoseconds;
-	using SysClock = std::chrono::system_clock;
-	using Seconds = std::chrono::seconds;
-	using namespace std::literals;
-	using std::cout;
-	using std::endl;
+	}// namespace DiscordCoreInternal
 
 	struct DiscordCoreAPI_Dll OnVoiceServerUpdateData;
 	struct DiscordCoreAPI_Dll OnVoiceStateUpdateData;
@@ -490,14 +314,22 @@ namespace DiscordCoreAPI {
 
 	template<typename ReturnType, bool timeOut = true> class CoRoutine;
 
+	enum class PresenceUpdateState { Online = 0, Do_Not_Disturb = 1, Idle = 2, Invisible = 3, Offline = 4 };
+
 	/// \brief For updating a User's presence.
 	struct DiscordCoreAPI_Dll UpdatePresenceData {
+		friend class Jsonifier::Core<UpdatePresenceData>;
+
+		UpdatePresenceData(PresenceUpdateState updateState) noexcept;
 		std::vector<ActivityData> activities{};///< A vector of activities.
-		std::string status{};///< Current status.
+		PresenceUpdateState status{};///< Current status.
 		int64_t since{};///< When was the activity started?
 		bool afk{};///< Are we afk.
 
 		operator DiscordCoreInternal::EtfSerializer();
+
+	  protected:
+		std::string statusReal{};
 	};
 
 	std::basic_ostream<char>& operator<<(std::basic_ostream<char>& outputSttream, const std::string& (*function)( void ));
@@ -568,12 +400,12 @@ namespace DiscordCoreAPI {
 
 	/// \brief Loggin options for the library.
 	struct DiscordCoreAPI_Dll LoggingOptions {
-		bool logWebSocketSuccessMessages{};///< Do we log the websocket success messages to cout?
-		bool logWebSocketErrorMessages{};///< Do we log the websocket error messages to cout?
-		bool logGeneralSuccessMessages{};///< Do we log general success messages to cout?
-		bool logGeneralErrorMessages{};///< Do we log general error messages to cout?
-		bool logHttpsSuccessMessages{};///< Do we log Https response success messages to cout?
-		bool logHttpsErrorMessages{};///< Do we log Https response error messages to cout?
+		bool logWebSocketSuccessMessages{};///< Do we log the websocket success messages to std::cout?
+		bool logWebSocketErrorMessages{};///< Do we log the websocket error messages to std::cout?
+		bool logGeneralSuccessMessages{};///< Do we log general success messages to std::cout?
+		bool logGeneralErrorMessages{};///< Do we log general error messages to std::cout?
+		bool logHttpsSuccessMessages{};///< Do we log Https response success messages to std::cout?
+		bool logHttpsErrorMessages{};///< Do we log Https response error messages to std::cout?
 	};
 
 	/// \brief For selecting the caching style of the library.
@@ -586,10 +418,10 @@ namespace DiscordCoreAPI {
 
 	/// \brief Configuration data for the library's main class, DiscordCoreClient.
 	struct DiscordCoreAPI_Dll DiscordCoreClientConfig {
+		UpdatePresenceData presenceData{ PresenceUpdateState::Online };///< Presence data to initialize your bot with.
 		std::vector<RepeatedFunctionData> functionsToExecute{};///< Functions to execute after a timer, or on a repetition.
 		GatewayIntents intents{ GatewayIntents::All_Intents };///< The gateway intents to be used for this instance.
 		TextFormat textFormat{ TextFormat::Etf };///< Use ETF or JSON format for websocket transfer?
-		UpdatePresenceData presenceData{};///< Presence data to initialize your bot with.
 		std::string connectionAddress{};///< A potentially alternative connection address for the websocket.
 		ShardingOptions shardOptions{};///< Options for the sharding of your bot.
 		LoggingOptions logOptions{};///< Options for the output/logging of the library.
@@ -664,7 +496,7 @@ namespace DiscordCoreAPI {
 
 	/// \brief Color constants for use in the EmbedData color values.
 	namespace Colors {
-		const std::string White = "FFFFFF",///< White.
+		const std::string_view White = "FFFFFF",///< White.
 			DiscordWhite = "FFFFFE",///< Discord white.
 			LightGray = "C0C0C0",///< Light gray.
 			Gray = "808080",///< Gray.
@@ -729,20 +561,12 @@ namespace DiscordCoreAPI {
 	struct DiscordCoreAPI_Dll AudioFrameData : public Relational<AudioFrameData> {
 		AudioFrameType type{ AudioFrameType::Unset };///< The type of audio frame.
 		std::vector<uint8_t> data{};///< The audio data.
-		int64_t currentSize{ -5 };///< The current size of the allocated memory.
 		uint64_t guildMemberId{};///< GuildMemberId for the sending GuildMember.
+		int64_t currentSize{};///< The current size of the allocated memory.
 
 		AudioFrameData() noexcept = default;
 
 		AudioFrameData(AudioFrameType frameType) noexcept;
-
-		AudioFrameData& operator=(AudioFrameData&&) noexcept = default;
-
-		AudioFrameData(AudioFrameData&&) noexcept = default;
-
-		AudioFrameData& operator=(const AudioFrameData&) noexcept = default;
-
-		AudioFrameData(const AudioFrameData&) noexcept = default;
 
 		AudioFrameData& operator+=(std::basic_string_view<uint8_t>) noexcept;
 
@@ -796,7 +620,7 @@ namespace DiscordCoreAPI {
 
 	class DiscordCoreAPI_Dll ColorValue {
 	  public:
-		friend struct DiscordCoreAPI_Dll Jsonifier::Core<ColorValue>;
+		friend struct Jsonifier::Core<ColorValue>;
 
 		ColorValue(std::string hexColorValue);
 
@@ -898,8 +722,8 @@ namespace DiscordCoreAPI {
 	/// \brief Permissions class, for representing and manipulating Permission values.
 	class DiscordCoreAPI_Dll Permissions {
 	  public:
-		friend struct DiscordCoreAPI_Dll JsonifierInternal::ParseWithKeys;
-		friend struct DiscordCoreAPI_Dll JsonifierInternal::ParseNoKeys;
+		friend struct JsonifierInternal::ParseWithKeys;
+		friend struct JsonifierInternal::ParseNoKeys;
 
 		Permissions() noexcept = default;
 
@@ -976,7 +800,6 @@ namespace DiscordCoreAPI {
 	/// \brief Prints the current file, line, and column from which the function is being called - typically from within an exception's "catch" block.
 	/// \param currentFunctionName A string to display the current function's name.
 	/// \param location For deriving the current file, line, and column - do not set this value.
-	/// \param ptr A pointer to the current exception.
 	DiscordCoreAPI_Dll void reportException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
 
 	DiscordCoreAPI_Dll void rethrowException(const std::string& currentFunctionName, std::source_location location = std::source_location::current());
@@ -1003,73 +826,18 @@ namespace DiscordCoreAPI {
 	/// \returns std::string A string containing the current date-time stamp.
 	DiscordCoreAPI_Dll std::string getTimeAndDate();
 
-	/// \brief Class for representing a timeStamp, as well as working with time-related values.
-	class DiscordCoreAPI_Dll TimeStamp {
-	  public:
-		TimeStamp(TimeFormat formatNew = TimeFormat::LongDateTime);
-
-		TimeStamp(std::string year, std::string month, std::string day, std::string hour, std::string minute, std::string second,
-			TimeFormat formatNew);
-
-		operator std::string();
-
-		operator uint64_t();
-
-		TimeStamp& operator=(std::string&& originalTimeStampNew);
-
-		TimeStamp(std::string&& originalTimeStampNew);
-
-		TimeStamp& operator=(std::string& originalTimeStampNew);
-
-		TimeStamp(std::string& originalTimeStampNew);
-
-		TimeStamp& operator=(const TimeStamp& other) {
-			timeStampInTimeUnits = other.timeStampInTimeUnits;
-			return *this;
-		}
-
-		TimeStamp(const TimeStamp& other) {
-			*this = other;
-		}
-
-		TimeStamp(int32_t year, int32_t month, int32_t day, int32_t hour, int32_t minute, int32_t second, TimeFormat formatNew);
-
-		TimeStamp(uint64_t timeInTimeUnits, TimeFormat formatNew);
-
-		static std::string convertToFutureISO8601TimeStamp(int32_t minutesToAdd, int32_t hoursToAdd, int32_t daysToAdd, int32_t monthsToAdd,
-			int32_t yearsToAdd, TimeFormat formatNew);
-
-		static std::string convertToCurrentISO8601TimeStamp(TimeFormat timeFormat);
-
-		bool hasTimeElapsed(uint64_t days, uint64_t hours, uint64_t minutes);
-
-		static std::string convertMsToDurationString(uint64_t durationInMs);
-
-	  protected:
-		uint64_t timeStampInTimeUnits{};
-
-		void getTimeSinceEpoch(int64_t year, int64_t month, int64_t day, int64_t hour, int64_t minute, int64_t second);
-
-		void convertTimeStampToTimeUnits(TimeFormat formatNew, std::string originalTimeStamp);
-
-		std::string getISO8601TimeStamp(TimeFormat timeFormat);
-	};
-
-	template<typename ITy>
-	concept IsInteger = std::is_integral<ITy>::value;
-
-	template<IsInteger StoredAs, DiscordCoreInternal::EnumT ValueType> inline auto setBool(StoredAs theFlags, ValueType theFlagToSet, bool enabled) {
-		auto theValue{ theFlags };
+	template<DiscordCoreInternal::IntegerT StoredAs, DiscordCoreInternal::EnumT ValueType>
+	inline auto setBool(StoredAs theFlags, ValueType theFlagToSet, bool enabled) {
 		if (enabled) {
-			theValue |= std::to_underlying(theFlagToSet);
+			theFlags |= static_cast<StoredAs>(theFlagToSet);
 		} else {
-			theValue &= ~std::to_underlying(theFlagToSet);
+			theFlags &= ~static_cast<StoredAs>(theFlagToSet);
 		}
-		return theValue;
+		return theFlags;
 	}
 
 	template<DiscordCoreInternal::EnumT ValueType> inline bool getBool(ValueType theFlags, ValueType theFlagToCheckFor) {
-		return std::to_underlying(theFlags) & std::to_underlying(theFlagToCheckFor);
+		return static_cast<int64_t>(theFlags) & static_cast<int64_t>(theFlagToCheckFor);
 	}
 
 	template<typename KeyType, typename ValueType> class ObjectCache {

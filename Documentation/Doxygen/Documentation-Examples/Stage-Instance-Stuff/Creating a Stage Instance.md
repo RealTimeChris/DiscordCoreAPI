@@ -1,6 +1,6 @@
 Creating a Stage Instance {#creatingastageinstance}
 =============
-- Execute the, `DiscordCoreAPI::StageInstances::createStageInstanceAsync()` function, while passing in a value of type `DiscordCoreAPI::CreateStageInstanceData`, with a return value of type `auto` or `DiscordCoreAPI::StageInstance`.
+- Execute the, `StageInstances::createStageInstanceAsync()` function, while passing in a value of type `CreateStageInstanceData`, with a return value of type `auto` or `StageInstance`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Creating a Stage Instance {#creatingastageinstance}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,21 +26,21 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		unique_ptr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::CreateStageInstanceData dataPackage;
+				CreateStageInstanceData dataPackage;
 				dataPackage.privacyLevel = StageInstancePrivacyLevel::GUILD_ONLY;
 				dataPackage.channelId = "914726178022101052";
 				dataPackage.reason = "TESTING PURPOSES!";
 				dataPackage.topic = "TESTING!";
 
-				auto responseData = DiscordCoreAPI::StageInstances::createStageInstanceAsync(dataPackage).get();
+				auto responseData = StageInstances::createStageInstanceAsync(dataPackage).get();
 
-				cout << "THE NAME: " << responseData.topic << endl;
+				std::cout << "THE NAME: " << responseData.topic << std::endl;
 
 
 			} catch (...) {

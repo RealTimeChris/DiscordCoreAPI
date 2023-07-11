@@ -1,6 +1,6 @@
 Deleting a Global Application Command {#deleteglobalcommand}
 ============
-- Execute the `DiscordCoreAPI::ApplicationCommands::deleteGlobalApplicationCommandAsync()` function, while passing in a data structure of type `DiscordCoreAPI::DeleteGlobalApplicationCommandData`, with no return value.
+- Execute the `ApplicationCommands::deleteGlobalApplicationCommandAsync()` function, while passing in a data structure of type `DeleteGlobalApplicationCommandData`, with no return value.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Deleting a Global Application Command {#deleteglobalcommand}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,12 +26,12 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::DeleteGlobalApplicationCommandData dataPackage;
+		virtual void execute(BaseFunctionArguments& args) {
+			DeleteGlobalApplicationCommandData dataPackage;
 			dataPackage.name = "testcommandname";
 			ApplicationCommands::deleteGlobalApplicationCommandAsync(dataPackage).get();
 		}

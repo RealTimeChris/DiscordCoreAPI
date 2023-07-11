@@ -1,6 +1,6 @@
 Creating a Guild From a Guild Template {#creatingaguildfromaguildtemplate}
 ============
-- Execue the, `DiscordCoreAPI::Guilds::createGuildFromGuildTemplateAsync()` function, while passing in a value of type `DiscordCoreAPI::CreateGuildFromGuildTemplateData`, with a return value of type `auto` or `DiscordCoreAPI::Guild`.
+- Execue the, `Guilds::createGuildFromGuildTemplateAsync()` function, while passing in a value of type `CreateGuildFromGuildTemplateData`, with a return value of type `auto` or `Guild`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Creating a Guild From a Guild Template {#creatingaguildfromaguildtemplate}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::CreateGuildFromGuildTemplateData dataPackage01;
+				CreateGuildFromGuildTemplateData dataPackage01;
 				dataPackage01.templateCode = "YmRr2bj5NyYX";
 				dataPackage01.name = "TEST GUILD!";
 
-				auto responseData = DiscordCoreAPI::Guilds::createGuildFromGuildTemplateAsync(dataPackage01).get();
+				auto responseData = Guilds::createGuildFromGuildTemplateAsync(dataPackage01).get();
 
-				cout << "Guild Name: " << responseData.name << endl;
+				std::cout << "Guild Name: " << responseData.name << std::endl;
 
 
 			} catch (...) {

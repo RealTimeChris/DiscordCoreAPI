@@ -13,7 +13,7 @@ namespace DiscordCoreAPI {
 		BotInfo() {
 			commandName = "botinfo";
 			helpDescription = "Displays some info about this bot.";
-			EmbedData msgEmbed;
+			EmbedData msgEmbed{};
 			msgEmbed.setDescription("------\nEnter /botinfo.\n------");
 			msgEmbed.setTitle("__**Bot Info Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -21,8 +21,8 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<BotInfo>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<BotInfo>();
 		}
 
 		void execute(BaseFunctionArguments& argsNew) {
@@ -39,7 +39,8 @@ namespace DiscordCoreAPI {
 				messageEmbed.setTitle("__**Bot Info:**__");
 				messageEmbed.setTimeStamp(getTimeAndDate());
 				messageEmbed.addField("__Bot Name:__",
-					argsNew.discordCoreClient->getBotUser().userName + "#" + std::string{ argsNew.discordCoreClient->getBotUser().discriminator },
+					std::string{ argsNew.discordCoreClient->getBotUser().userName } + "#" +
+						std::string{ argsNew.discordCoreClient->getBotUser().discriminator },
 					true);
 				messageEmbed.addField("__Bot ID:__", std::to_string(argsNew.discordCoreClient->getBotUser().id.operator size_t()), true);
 				messageEmbed.addField("__Guild Count:__", std::to_string(guilds.size()), true);
@@ -47,7 +48,7 @@ namespace DiscordCoreAPI {
 					true);
 				messageEmbed.addField("__Serving Users:__", std::to_string(userCount), true);
 				messageEmbed.addField("__Running On:__", "[DiscordCoreAPI Bot Library](https://discordcoreapi.com)", true);
-				messageEmbed.addField("__Created By:__", "RealTime Chris#3627", true);
+				messageEmbed.addField("__Created By:__", "<@931311002702737418>", true);
 				auto timePassed = argsNew.discordCoreClient->getTotalUpTime().count() > 0 ? argsNew.discordCoreClient->getTotalUpTime().count() : 0;
 				int64_t millisecondsPerSecond{ 1000 };
 				int64_t millisecondsPerMinute{ millisecondsPerSecond * 60 };

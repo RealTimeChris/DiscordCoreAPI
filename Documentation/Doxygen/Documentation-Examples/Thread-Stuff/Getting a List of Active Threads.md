@@ -1,6 +1,6 @@
 Getting a List of Active Threads {#gettingalistofactivethreads}
 ============
-- Execute the, `DiscordCoreAPI::Threads::getActiveThreadsAsync()` function, while passing in a value of type `DiscordCoreAPI::GetActiveThreadsData`, with a return value of type `auto` or `DiscordCoreAPI::ActiveThreadsData`.
+- Execute the, `Threads::getActiveThreadsAsync()` function, while passing in a value of type `GetActiveThreadsData`, with a return value of type `auto` or `ActiveThreadsData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a List of Active Threads {#gettingalistofactivethreads}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,16 +26,16 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetActiveThreadsData dataPackage;
+				GetActiveThreadsData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 
-				auto newActiveThreads = DiscordCoreAPI::Threads::getActiveThreadsAsync(dataPackage).get();
+				auto newActiveThreads = Threads::getActiveThreadsAsync(dataPackage).get();
 
 
 			} catch (...) {

@@ -1,6 +1,6 @@
 Modifying a Channel {#modifyingchannel}
 ============
-- Execute the `DiscordCoreAPI::Channels::modifyChannelAsync()` function, while passing to it a completed data structure `DiscordCoreAPI::ModifyChannelData`, with a return value of `auto` or `DiscordCoreAPI::Channel`.
+- Execute the `Channels::modifyChannelAsync()` function, while passing to it a completed data structure `ModifyChannelData`, with a return value of `auto` or `Channel`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Modifying a Channel {#modifyingchannel}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,14 +26,14 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
 				Channel channel = Channels::getCachedChannel({.channelId = args.eventData.getChannelId()}).get();
-				DiscordCoreAPI::ModifyChannelData dataPackage {channel};
+				ModifyChannelData dataPackage {channel};
 				dataPackage.channelData.name = "TEST UPDATE";
 				Channel channelNew = Channels::modifyChannelAsync(dataPackage).get();
 

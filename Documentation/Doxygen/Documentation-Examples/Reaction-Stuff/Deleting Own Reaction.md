@@ -1,6 +1,6 @@
 Deleting Own Reaction {#deletingownreaction}
 ============
-- Execute the, `DiscordCoreAPI::Reactions::deleteOwnReactionAsync()` function, while passing in a data structure of type `DiscordCoreAPI::DeleteOwnReactionData`, with a return value of type `void`.
+- Execute the, `Reactions::deleteOwnReactionAsync()` function, while passing in a data structure of type `DeleteOwnReactionData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -13,12 +13,12 @@ Deleting Own Reaction {#deletingownreaction}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::DeleteOwnReactionData dataPackage;
+				DeleteOwnReactionData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.messageId = args.eventData.getMessageId();
 				dataPackage.emojiName = "😆";
 
-				DiscordCoreAPI::Reactions::deleteOwnReactionAsync(dataPackage).get();
+				Reactions::deleteOwnReactionAsync(dataPackage).get();
 
 
 			} catch (...) {

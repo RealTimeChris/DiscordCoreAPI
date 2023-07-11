@@ -1,7 +1,7 @@
 Collecting Modal Input {#collectingmodalinput}
 =============
-- After creating a modal-text-input, create an object of the `DiscordCoreAPI::ModalCollector` class, passing into its constructor the `DiscordCoreAPI::InputEventData` that resulted from the call to `DiscordCoreAPI::InputEvents::respondToInputEventAsync`, when the modal was created.- Call the `DiscordCoreAPI::ModalCollector::collectModalData` function, from the instance of ModalCollector.
-- Collect a result of type `DiscordCoreAPI::ModalResponseData` and deal with the modal response as you see fit!
+- After creating a modal-text-input, create an object of the `ModalCollector` class, passing into its constructor the `InputEventData` that resulted from the call to `InputEvents::respondToInputEventAsync`, when the modal was created.- Call the `ModalCollector::collectModalData` function, from the instance of ModalCollector.
+- Collect a result of type `ModalResponseData` and deal with the modal response as you see fit!
 ```cpp
 /// Test.hpp-Header for the "test" command.
 /// https://github.com/RealTimeChris/DiscordCoreAPI
@@ -12,12 +12,12 @@ Collecting Modal Input {#collectingmodalinput}
 
 	namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -25,23 +25,23 @@ Collecting Modal Input {#collectingmodalinput}
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::RespondToInputEventData dataPackage {args.eventData};
+				RespondToInputEventData dataPackage {args.eventData};
 				dataPackage.addModal("Test Modal", "test_modal", "Test Modal Small", "test_modal", true, 1, 46, TextInputStyle::Paragraph, "TEST MODAL",
 									 "TestModal");
-				dataPackage.type = DiscordCoreAPI::InputEventResponseType::Interaction_Response;
+				dataPackage.type = InputEventResponseType::Interaction_Response;
 				auto newEvent = InputEvents::respondToInputEventAsync(dataPackage).get();
-				DiscordCoreAPI::ModalCollector modalCollector {newEvent};
+				ModalCollector modalCollector {newEvent};
 				auto modalReturnData = modalCollector.collectModalData(120000).get();
-				DiscordCoreAPI::RespondToInputEventData dataPackage03 {modalReturnData};
+				RespondToInputEventData dataPackage03 {modalReturnData};
 				dataPackage03.addContent(modalReturnData.value);
-				dataPackage03.type = DiscordCoreAPI::InputEventResponseType::Interaction_Response;
-				DiscordCoreAPI::InputEvents::respondToInputEventAsync(dataPackage03);
+				dataPackage03.type = InputEventResponseType::Interaction_Response;
+				InputEvents::respondToInputEventAsync(dataPackage03);
 
 
 			} catch (...) {

@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// GuildEntities.hpp - Header for the Guild classes and structs.
 /// May 12, 2021
@@ -110,29 +115,29 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			discordCoreClient = other.discordCoreClient;
 			for (auto& value: other.channels) {
-				Channel data{};
-				data.id = value;
+				ChannelData data{};
+				data.id = value.id;
 				channels.emplace_back(std::move(data));
 			}
 			for (auto& value: other.members) {
-				GuildMember data{};
+				GuildMemberData data{};
 				data.guildId = id;
-				data.user.id = value;
+				data.user.id = value.id;
 				members.emplace_back(std::move(data));
 			}
 			for (auto& value: other.roles) {
-				Role data{};
-				data.id = value;
+				RoleData data{};
+				data.id = value.id;
 				roles.emplace_back(std::move(data));
 			}
 			for (auto& value: other.emoji) {
 				EmojiData data{};
-				data.id = value;
+				data.id = value.id;
 				emoji.emplace_back(std::move(data));
 			}
 			for (auto& value: other.guildScheduledEvents) {
 				GuildScheduledEvent data{};
-				data.id = value;
+				data.id = value.id;
 				guildScheduledEvents.emplace_back(std::move(data));
 			}
 			for (auto& value: other.presences) {
@@ -142,17 +147,17 @@ namespace DiscordCoreAPI {
 			}
 			for (auto& value: other.stageInstances) {
 				StageInstance data{};
-				data.id = value;
+				data.id = value.id;
 				stageInstances.emplace_back(std::move(data));
 			}
 			for (auto& value: other.stickers) {
 				Sticker data{};
-				data.id = value;
+				data.id = value.id;
 				stickers.emplace_back(std::move(data));
 			}
 			for (auto& value: other.threads) {
-				Thread data{};
-				data.id = value;
+				ThreadData data{};
+				data.id = value.id;
 				threads.emplace_back(std::move(data));
 			}
 			joinedAt = std::move(other.joinedAt);
@@ -174,50 +179,50 @@ namespace DiscordCoreAPI {
 		if (this != &other) {
 			discordCoreClient = other.discordCoreClient;
 			for (auto& value: other.channels) {
-				Channel data{};
-				data.id = value;
-				channels.emplace_back(data);
+				ChannelData data{};
+				data.id = value.id;
+				channels.emplace_back(std::move(data));
 			}
 			for (auto& value: other.members) {
-				GuildMember data{};
+				GuildMemberData data{};
 				data.guildId = id;
-				data.user.id = value;
-				members.emplace_back(data);
+				data.user.id = value.id;
+				members.emplace_back(std::move(data));
 			}
 			for (auto& value: other.roles) {
-				Role data{};
-				data.id = value;
-				roles.emplace_back(data);
+				RoleData data{};
+				data.id = value.id;
+				roles.emplace_back(std::move(data));
 			}
 			for (auto& value: other.emoji) {
 				EmojiData data{};
-				data.id = value;
-				emoji.emplace_back(data);
+				data.id = value.id;
+				emoji.emplace_back(std::move(data));
 			}
 			for (auto& value: other.guildScheduledEvents) {
 				GuildScheduledEvent data{};
-				data.id = value;
-				guildScheduledEvents.emplace_back(data);
+				data.id = value.id;
+				guildScheduledEvents.emplace_back(std::move(data));
 			}
 			for (auto& value: other.presences) {
 				PresenceUpdateData data{};
 				data.user.id = value.user.id;
-				presences.emplace(data.user.id, data);
+				presences.emplace(data.user.id, std::move(data));
 			}
 			for (auto& value: other.stageInstances) {
 				StageInstance data{};
-				data.id = value;
-				stageInstances.emplace_back(data);
+				data.id = value.id;
+				stageInstances.emplace_back(std::move(data));
 			}
 			for (auto& value: other.stickers) {
 				Sticker data{};
-				data.id = value;
-				stickers.emplace_back(data);
+				data.id = value.id;
+				stickers.emplace_back(std::move(data));
 			}
 			for (auto& value: other.threads) {
-				Thread data{};
-				data.id = value;
-				threads.emplace_back(data);
+				ThreadData data{};
+				data.id = value.id;
+				threads.emplace_back(std::move(data));
 			}
 			memberCount = other.memberCount;
 			joinedAt = other.joinedAt;
@@ -240,46 +245,48 @@ namespace DiscordCoreAPI {
 			voiceStates.emplace_back(std::move(value.id));
 		}
 		for (auto& value: other.channels) {
-			Snowflake data{};
-			data = value.id;
+			DiscordEntity data{};
+			data.id = value.id;
 			channels.emplace_back(std::move(data));
 		}
 		for (auto& value: other.members) {
-			members.emplace_back(std::move(value.user.id));
+			UserIdBase valueNew{};
+			valueNew.id = value.user.id;
+			members.emplace_back(std::move(valueNew));
 		}
 		for (auto& value: other.roles) {
-			Snowflake data{};
-			data = value.id;
+			DiscordEntity data{};
+			data.id = value.id;
 			roles.emplace_back(std::move(data));
 		}
 		for (auto& value: other.emoji) {
-			Snowflake data{};
-			data = value.id;
+			DiscordEntity data{};
+			data.id = value.id;
 			emoji.emplace_back(std::move(data));
 		}
 		for (auto& value: other.guildScheduledEvents) {
-			Snowflake data{};
-			data = value.id;
+			DiscordEntity data{};
+			data.id = value.id;
 			guildScheduledEvents.emplace_back(std::move(data));
 		}
 		for (auto& value: other.presences) {
 			PresenceUpdateData data{};
 			data.user.id = value.user.id;
-			presences.emplace_back(std::move(data));
+			presences.emplace_back(data);
 		}
 		for (auto& value: other.stageInstances) {
-			Snowflake data{};
-			data = value.id;
+			DiscordEntity data{};
+			data.id = value.id;
 			stageInstances.emplace_back(std::move(data));
 		}
 		for (auto& value: other.stickers) {
-			Snowflake data{};
-			data = value.id;
+			DiscordEntity data{};
+			data.id = value.id;
 			stickers.emplace_back(std::move(data));
 		}
 		for (auto& value: other.threads) {
-			Snowflake data{};
-			data = value.id;
+			DiscordEntity data{};
+			data.id = value.id;
 			threads.emplace_back(std::move(data));
 		}
 		joinedAt = std::move(other.joinedAt);
@@ -302,27 +309,29 @@ namespace DiscordCoreAPI {
 			voiceStates.emplace_back(std::move(value.id));
 		}
 		for (auto& value: other.channels) {
-			Snowflake data{};
-			data = value.id;
+			DiscordEntity data{};
+			data.id = value.id;
 			channels.emplace_back(std::move(data));
 		}
 		for (auto& value: other.members) {
-			members.emplace_back(std::move(value.user.id));
+			UserIdBase valueNew{};
+			valueNew.id = value.user.id;
+			members.emplace_back(std::move(valueNew));
 		}
 		for (auto& value: other.roles) {
-			Snowflake data{};
-			data = value.id;
-			roles.emplace_back(data);
+			DiscordEntity data{};
+			data.id = value.id;
+			roles.emplace_back(std::move(data));
 		}
 		for (auto& value: other.emoji) {
-			Snowflake data{};
-			data = value.id;
-			emoji.emplace_back(data);
+			DiscordEntity data{};
+			data.id = value.id;
+			emoji.emplace_back(std::move(data));
 		}
 		for (auto& value: other.guildScheduledEvents) {
-			Snowflake data{};
-			data = value.id;
-			guildScheduledEvents.emplace_back(data);
+			DiscordEntity data{};
+			data.id = value.id;
+			guildScheduledEvents.emplace_back(std::move(data));
 		}
 		for (auto& value: other.presences) {
 			PresenceUpdateData data{};
@@ -330,19 +339,19 @@ namespace DiscordCoreAPI {
 			presences.emplace_back(data);
 		}
 		for (auto& value: other.stageInstances) {
-			Snowflake data{};
-			data = value.id;
-			stageInstances.emplace_back(data);
+			DiscordEntity data{};
+			data.id = value.id;
+			stageInstances.emplace_back(std::move(data));
 		}
 		for (auto& value: other.stickers) {
-			Snowflake data{};
-			data = value.id;
-			stickers.emplace_back(data);
+			DiscordEntity data{};
+			data.id = value.id;
+			stickers.emplace_back(std::move(data));
 		}
 		for (auto& value: other.threads) {
-			Snowflake data{};
-			data = value.id;
-			threads.emplace_back(data);
+			DiscordEntity data{};
+			data.id = value.id;
+			threads.emplace_back(std::move(data));
 		}
 		joinedAt = other.joinedAt;
 		ownerId = other.ownerId;
@@ -397,8 +406,6 @@ namespace DiscordCoreAPI {
 		name = dataPackage.name;
 	}
 
-
-
 	void Guilds::initialize(DiscordCoreInternal::HttpsClient* client, DiscordCoreClient* discordCoreClientNew, ConfigManager* configManagerNew) {
 		Guilds::doWeCacheGuildsBool = configManagerNew->doWeCacheGuilds();
 		Guilds::discordCoreClient = discordCoreClientNew;
@@ -450,7 +457,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds";
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Guilds::createGuildAsync()";
-		Guild returnData{};
+		GuildData returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(std::move(workload), returnData);
 		returnData.discordCoreClient = Guilds::discordCoreClient;
 		co_return std::move(returnData);
@@ -516,7 +523,7 @@ namespace DiscordCoreAPI {
 		if (dataPackage.reason != "") {
 			workload.headersToInsert["X-Audit-Log-Reason"] = dataPackage.reason;
 		}
-		Guild data{};
+		GuildData data{};
 		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(std::move(workload), data);
 		data.discordCoreClient = Guilds::discordCoreClient;
 		if (Guilds::cache.contains(dataPackage.guildId)) {
@@ -819,7 +826,7 @@ namespace DiscordCoreAPI {
 		workload.relativePath = "/guilds/templates/" + dataPackage.templateCode;
 		parser.serializeJson(dataPackage, workload.content);
 		workload.callStack = "Guilds::createGuildFromGuildTemplateAsync()";
-		Guild returnData{};
+		GuildData returnData{};
 		Guilds::httpsClient->submitWorkloadAndGetResult<GuildData>(std::move(workload), returnData);
 		returnData.discordCoreClient = Guilds::discordCoreClient;
 		co_return std::move(returnData);

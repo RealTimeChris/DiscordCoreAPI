@@ -1,6 +1,6 @@
 Creating a Guild {#creatingaguild}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::createGuildAsync()` function, while passing in a data structure of type `DiscordCoreAPI::CreateGuildData` with a return value of type `auto` or `DiscordCoreAPI::Guild`.
+- Execute the, `Guilds::createGuildAsync()` function, while passing in a data structure of type `CreateGuildData` with a return value of type `auto` or `Guild`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Creating a Guild {#creatingaguild}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::CreateGuildData dataPackage00;
+				CreateGuildData dataPackage00;
 				dataPackage00.name = "TEST GUILD";
 
-				auto guild = DiscordCoreAPI::Guilds::createGuildAsync(dataPackage00).get();
+				auto guild = Guilds::createGuildAsync(dataPackage00).get();
 
-				cout << "THE NAME: " << guild.name << endl;
+				std::cout << "THE NAME: " << guild.name << std::endl;
 
 
 			} catch (...) {

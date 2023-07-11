@@ -1,6 +1,6 @@
 Getting an Invite {#gettinganinvite}
 ============
-- Execute the, `DiscordCoreAPI::Guilds::getInviteAsync()` function, while passing in a value of type `DiscordCoreAPI::GetInviteData`, with a return value of type `auto` or `DiscordCoreAPI::InviteData`.
+- Execute the, `Guilds::getInviteAsync()` function, while passing in a value of type `GetInviteData`, with a return value of type `auto` or `InviteData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting an Invite {#gettinganinvite}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,25 +26,25 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildInvitesData dataPackage;
+				GetGuildInvitesData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto responseVector = DiscordCoreAPI::Guilds::getGuildInvitesAsync(dataPackage).get();
+				auto responseVector = Guilds::getGuildInvitesAsync(dataPackage).get();
 
-				DiscordCoreAPI::GetInviteData dataPackage01;
+				GetInviteData dataPackage01;
 				dataPackage01.withExpiration = true;
 				dataPackage01.withCount = true;
 				dataPackage01.inviteId = responseVector[0].code;
 
-				auto responseData = DiscordCoreAPI::Guilds::getInviteAsync(dataPackage01).get();
+				auto responseData = Guilds::getInviteAsync(dataPackage01).get();
 
-				cout << "THE CODE: " << responseData.code << endl;
+				std::cout << "THE CODE: " << responseData.code << std::endl;
 
 
 			} catch (...) {

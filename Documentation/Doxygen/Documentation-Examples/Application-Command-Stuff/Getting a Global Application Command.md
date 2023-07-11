@@ -1,6 +1,6 @@
 Getting a Global Application Command {#getglobalcommand}
 ============
-- Execute the `DiscordCoreAPI::ApplicationCommands::getGlobalApplicationCommandAsync()` function, while passing in a data structure of type `DiscordCoreAPI::GetGlobalApplicationCommandData`, with a return value of type `auto` or `DiscordCoreAPI::ApplicationCommand`.
+- Execute the `ApplicationCommands::getGlobalApplicationCommandAsync()` function, while passing in a data structure of type `GetGlobalApplicationCommandData`, with a return value of type `auto` or `ApplicationCommand`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Global Application Command {#getglobalcommand}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,19 +26,19 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			auto globalApplicationCommands = DiscordCoreAPI::ApplicationCommands::getGlobalApplicationCommandsAsync().get();
+		virtual void execute(BaseFunctionArguments& args) {
+			auto globalApplicationCommands = ApplicationCommands::getGlobalApplicationCommandsAsync().get();
 
-			DiscordCoreAPI::GetGlobalApplicationCommandData dataPackage;
+			GetGlobalApplicationCommandData dataPackage;
 			dataPackage.commandId = globalApplicationCommands.at(0).data.id;
 
-			auto globalApplicationCommand = DiscordCoreAPI::ApplicationCommands::getGlobalApplicationCommandAsync(dataPackage).get();
+			auto globalApplicationCommand = ApplicationCommands::getGlobalApplicationCommandAsync(dataPackage).get();
 
-			cout << globalApplicationCommand.data.name << endl;
+			std::cout << globalApplicationCommand.data.name << std::endl;
 		}
 	};
 }

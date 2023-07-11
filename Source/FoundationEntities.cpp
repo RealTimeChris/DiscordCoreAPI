@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// FoundationEntities.cpp - Source file for the foundation entities.
 /// Oct 1, 2021
@@ -36,102 +41,100 @@
 #include <discordcoreapi/DiscordCoreClient.hpp>
 #include <discordcoreapi/Utilities/Etf.hpp>
 
-namespace DiscordCoreInternal {
-
-	WebSocketResumeData::operator EtfSerializer() {
-		EtfSerializer data{};
-		data["op"] = 6;
-		data["d"]["seq"] = lastNumberReceived;
-		data["d"]["session_id"] = sessionId;
-		data["d"]["token"] = botToken;
-		return data;
-	}
-
-	WebSocketIdentifyData::operator EtfSerializer() {
-		EtfSerializer serializer{};
-		serializer["d"]["intents"] = intents;
-		serializer["d"]["large_threshold"] = 250;
-		for (auto& value: presence.activities) {
-			EtfSerializer serializer01{};
-			if (value.url != "") {
-				serializer01["url"] = value.url;
-			}
-			serializer01["name"] = value.name;
-			serializer01["type"] = value.type;
-			serializer["d"]["presence"]["activities"].emplaceBack(serializer01);
-		}
-		serializer["d"]["presence"]["afk"] = presence.afk;
-		if (presence.since != 0) {
-			serializer["d"]["presence"]["since"] = presence.since;
-		}
-		serializer["d"]["presence"]["status"] = presence.status;
-		serializer["d"]["properties"]["browser"] = "DiscordCoreAPI";
-		serializer["d"]["properties"]["device"] = "DiscordCoreAPI";
-#ifdef _WIN32
-		serializer["d"]["properties"]["os"] = "Windows";
-#elif __linux__
-		serializer["d"]["properties"]["os"] = "Linux";
-#endif
-		serializer["d"]["shard"].emplaceBack(shard[0]);
-		serializer["d"]["shard"].emplaceBack(shard[1]);
-		serializer["d"]["token"] = botToken;
-		serializer["op"] = 2;
-		return serializer;
-	}
-
-	HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadData&& other) noexcept {
-		if (this != &other) {
-			headersToInsert = std::move(other.headersToInsert);
-			relativePath = std::move(other.relativePath);
-			thisWorkerId.store(thisWorkerId.load());
-			callStack = std::move(other.callStack);
-			workloadClass = other.workloadClass;
-			baseUrl = std::move(other.baseUrl);
-			content = std::move(other.content);
-			workloadType = other.workloadType;
-			payloadType = other.payloadType;
-		}
-		return *this;
-	}
-
-	HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadData&& other) noexcept {
-		*this = std::move(other);
-	}
-
-	HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadType type) noexcept {
-		if (!HttpsWorkloadData::workloadIdsExternal.contains(type)) {
-			HttpsWorkloadData::workloadIdsExternal[type] = DiscordCoreAPI::makeUnique<std::atomic_int64_t>();
-			HttpsWorkloadData::workloadIdsInternal[type] = DiscordCoreAPI::makeUnique<std::atomic_int64_t>();
-		}
-		thisWorkerId.store(HttpsWorkloadData::incrementAndGetWorkloadId(type));
-		workloadType = type;
-		return *this;
-	}
-
-	const HttpsWorkloadType HttpsWorkloadData::getWorkloadType() const noexcept {
-		return workloadType;
-	}
-
-	HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadType type) noexcept {
-		*this = type;
-	}
-
-	int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept {
-		int64_t value{ HttpsWorkloadData::workloadIdsExternal[workloadType]->load() };
-		HttpsWorkloadData::workloadIdsExternal[workloadType]->store(value + 1);
-		return value;
-	}
-
-	std::unordered_map<HttpsWorkloadType, DiscordCoreAPI::UniquePtr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsExternal{};
-	std::unordered_map<HttpsWorkloadType, DiscordCoreAPI::UniquePtr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsInternal{};
-
-}
-
 namespace DiscordCoreAPI {
 
-	std::string Snowflake::getCreatedAtTimeStamp(TimeFormat timeFormat) {
-		TimeStamp timeStamp{ (id >> 22) + 1420070400000, timeFormat };
-		return timeStamp.operator std::string();
+	namespace DiscordCoreInternal {
+
+		WebSocketResumeData::operator EtfSerializer() {
+			EtfSerializer data{};
+			data["op"] = 6;
+			data["d"]["seq"] = lastNumberReceived;
+			data["d"]["session_id"] = sessionId;
+			data["d"]["token"] = botToken;
+			return data;
+		}
+
+		WebSocketIdentifyData::operator EtfSerializer() {
+			EtfSerializer serializer{};
+			serializer["d"]["intents"] = intents;
+			serializer["d"]["large_threshold"] = 250;
+			for (auto& value: presence.activities) {
+				EtfSerializer serializer01{};
+				if (value.url != "") {
+					serializer01["url"] = value.url;
+				}
+				serializer01["name"] = value.name;
+				serializer01["type"] = value.type;
+				serializer["d"]["presence"]["activities"].emplaceBack(serializer01);
+			}
+			serializer["d"]["presence"]["afk"] = presence.afk;
+			if (presence.since != 0) {
+				serializer["d"]["presence"]["since"] = presence.since;
+			}
+			serializer["d"]["presence"]["status"] = presence.status;
+			serializer["d"]["properties"]["browser"] = "DiscordCoreAPI";
+			serializer["d"]["properties"]["device"] = "DiscordCoreAPI";
+#ifdef _WIN32
+			serializer["d"]["properties"]["os"] = "Windows";
+#elif __linux__
+			serializer["d"]["properties"]["os"] = "Linux";
+#endif
+			serializer["d"]["shard"].emplaceBack(shard[0]);
+			serializer["d"]["shard"].emplaceBack(shard[1]);
+			serializer["d"]["token"] = botToken;
+			serializer["op"] = 2;
+			return serializer;
+		}
+
+		HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadData&& other) noexcept {
+			if (this != &other) {
+				headersToInsert = std::move(other.headersToInsert);
+				relativePath = std::move(other.relativePath);
+				thisWorkerId.store(thisWorkerId.load());
+				callStack = std::move(other.callStack);
+				workloadClass = other.workloadClass;
+				baseUrl = std::move(other.baseUrl);
+				content = std::move(other.content);
+				workloadType = other.workloadType;
+				payloadType = other.payloadType;
+			}
+			return *this;
+		}
+
+		HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadData&& other) noexcept {
+			*this = std::move(other);
+		}
+
+		HttpsWorkloadData& HttpsWorkloadData::operator=(HttpsWorkloadType type) noexcept {
+			if (!HttpsWorkloadData::workloadIdsExternal.contains(type)) {
+				HttpsWorkloadData::workloadIdsExternal[type] = makeUnique<std::atomic_int64_t>();
+				HttpsWorkloadData::workloadIdsInternal[type] = makeUnique<std::atomic_int64_t>();
+			}
+			thisWorkerId.store(HttpsWorkloadData::incrementAndGetWorkloadId(type));
+			workloadType = type;
+			return *this;
+		}
+
+		const HttpsWorkloadType HttpsWorkloadData::getWorkloadType() const noexcept {
+			return workloadType;
+		}
+
+		HttpsWorkloadData::HttpsWorkloadData(HttpsWorkloadType type) noexcept {
+			*this = type;
+		}
+
+		int64_t HttpsWorkloadData::incrementAndGetWorkloadId(HttpsWorkloadType workloadType) noexcept {
+			int64_t value{ HttpsWorkloadData::workloadIdsExternal[workloadType]->load() };
+			HttpsWorkloadData::workloadIdsExternal[workloadType]->store(value + 1);
+			return value;
+		}
+
+		std::unordered_map<HttpsWorkloadType, UniquePtr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsExternal{};
+		std::unordered_map<HttpsWorkloadType, UniquePtr<std::atomic_int64_t>> HttpsWorkloadData::workloadIdsInternal{};
+	}
+
+	DiscordEntity::DiscordEntity(Snowflake value) {
+		id = value;
 	}
 
 	UpdatePresenceData::operator DiscordCoreInternal::EtfSerializer() {
@@ -146,7 +149,28 @@ namespace DiscordCoreAPI {
 			newData["type"] = value.type;
 			data["d"]["activities"].emplaceBack(newData);
 		}
-		data["status"] = status;
+		switch (status) {
+			case PresenceUpdateState::Online: {
+				data["status"] = "online";
+				break;
+			}
+			case PresenceUpdateState::Idle: {
+				data["status"] = "idle";
+				break;
+			}
+			case PresenceUpdateState::Invisible: {
+				data["status"] = "invisible";
+				break;
+			}
+			case PresenceUpdateState::Do_Not_Disturb: {
+				data["status"] = "dnd";
+				break;
+			}
+			case PresenceUpdateState::Offline: {
+				data["status"] = "offline";
+				break;
+			}
+		}
 		if (since != 0) {
 			data["since"] = since;
 		}
@@ -253,7 +277,7 @@ namespace DiscordCoreAPI {
 	}
 
 	void GuildData::disconnect() {
-		DiscordCoreInternal::WebSocketMessageData<DiscordCoreAPI::UpdateVoiceStateData> data{};
+		DiscordCoreInternal::WebSocketMessageData<UpdateVoiceStateData> data{};
 		data.excludedKeys.emplace("t");
 		data.excludedKeys.emplace("s");
 		data.d.channelId = 0;
@@ -897,8 +921,7 @@ namespace DiscordCoreAPI {
 		ApplicationCommandOptionChoiceData choiceData{};
 		choiceData.nameLocalizations = theNameLocalizations;
 		choiceData.name = theName;
-		value.refreshString();
-		choiceData.value = Jsonifier::RawJsonData{ value.operator std::string() };
+		choiceData.value = Jsonifier::RawJsonData{ value.refreshString() };
 		choices.emplace_back(choiceData);
 		return *this;
 	}

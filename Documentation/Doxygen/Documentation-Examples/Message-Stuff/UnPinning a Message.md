@@ -1,6 +1,6 @@
 Unpinning a Message {#unpinningamessage}
 ============
-- Execute the, `DiscordCoreAPI::Messages::unpinMessageAsync()` function, while passing in a value of type `DiscordCoreAPI::UnpinMessageData`, with a return value of type `void`.
+- Execute the, `Messages::unpinMessageAsync()` function, while passing in a value of type `UnpinMessageData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Unpinning a Message {#unpinningamessage}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::UnpinMessageData dataPackage;
+				UnpinMessageData dataPackage;
 				dataPackage.reason = "TESTING PURPOSES!";
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.messageId = "909216949471428659";
 
-				DiscordCoreAPI::Messages::unpinMessageAsync(dataPackage).get();
+				Messages::unpinMessageAsync(dataPackage).get();
 
 
 			} catch (...) {

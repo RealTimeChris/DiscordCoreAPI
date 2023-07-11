@@ -1,22 +1,27 @@
 /*
+	MIT License
+
 	DiscordCoreAPI, A bot library for Discord, written in C++, and featuring explicit multithreading through the usage of custom, asynchronous C++ CoRoutines.
 
-	Copyright 2021, 2022, 2023 Chris M. (RealTimeChris)
+	Copyright 2022, 2023 Chris M. (RealTimeChris)
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
 
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-	USA
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 /// CoRoutine.hpp - Header for the coroutine class.
 /// Oct 23, 2021
@@ -30,10 +35,11 @@
 #include <discordcoreapi/Https.hpp>
 
 namespace DiscordCoreAPI {
+
 	/**
-	 * \addtogroup utilities
-	 * @{
-	 */
+	* \addtogroup utilities
+	* @{
+	*/
 
 	/// \brief The current status of the associated CoRoutine.
 	enum class CoRoutineStatus {
@@ -154,10 +160,12 @@ namespace DiscordCoreAPI {
 		/// \brief Gets the resulting value of the CoRoutine.
 		inline ReturnType get() {
 			if (coroutineHandle) {
-				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+				DiscordCoreAPI::Milliseconds startTime{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
+					DiscordCoreAPI::HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
 					while (!resultBuffer.tryReceive(result)) {
-						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+						DiscordCoreAPI::Milliseconds now{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
+							DiscordCoreAPI::HRClock::now().time_since_epoch()) };
 						if (timeOut && (now - startTime).count() >= 15000) {
 							return std::move(result);
 						}
@@ -180,11 +188,13 @@ namespace DiscordCoreAPI {
 		/// \brief Cancels the currently executing CoRoutine and returns the current result.
 		inline ReturnType cancel() {
 			if (coroutineHandle) {
-				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+				DiscordCoreAPI::Milliseconds startTime{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
+					DiscordCoreAPI::HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
 					coroutineHandle.promise().requestStop();
 					while (!resultBuffer.tryReceive(result)) {
-						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+						DiscordCoreAPI::Milliseconds now{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
+							DiscordCoreAPI::HRClock::now().time_since_epoch()) };
 						if (timeOut && (now - startTime).count() >= 15000) {
 							return std::move(result);
 						}
@@ -315,11 +325,13 @@ namespace DiscordCoreAPI {
 		/// \brief Gets the resulting value of the CoRoutine.
 		inline void get() {
 			if (coroutineHandle) {
-				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+				DiscordCoreAPI::Milliseconds startTime{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
+					DiscordCoreAPI::HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
 					bool result{};
 					while (!resultBuffer.tryReceive(result)) {
-						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+						DiscordCoreAPI::Milliseconds now{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
+							DiscordCoreAPI::HRClock::now().time_since_epoch()) };
 						if (timeOut && (now - startTime).count() >= 15000) {
 							return;
 						}
@@ -342,12 +354,14 @@ namespace DiscordCoreAPI {
 		/// \brief Cancels the currently executing CoRoutine and returns the current result.
 		inline void cancel() {
 			if (coroutineHandle) {
-				Milliseconds startTime{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+				DiscordCoreAPI::Milliseconds startTime{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
+					DiscordCoreAPI::HRClock::now().time_since_epoch()) };
 				if (!coroutineHandle.done()) {
 					coroutineHandle.promise().requestStop();
 					bool result{};
 					while (!resultBuffer.tryReceive(result)) {
-						Milliseconds now{ std::chrono::duration_cast<Milliseconds>(HRClock::now().time_since_epoch()) };
+						DiscordCoreAPI::Milliseconds now{ std::chrono::duration_cast<DiscordCoreAPI::Milliseconds>(
+							DiscordCoreAPI::HRClock::now().time_since_epoch()) };
 						if (timeOut && (now - startTime).count() >= 15000) {
 							return;
 						}

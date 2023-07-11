@@ -1,6 +1,6 @@
 Deleting a Guild Scheduled Event {#deletingaguildscheduledevent}
 ============
-- Execute the, from the `DiscordCoreAPI::GuildScheduledEvents::deleteGuildScheduledEventAsync()` function, while passing in a value of type `DiscordCoreAPI::DeleteGuildScheduledEventData`, with a return value of type `void`.
+- Execute the, from the `GuildScheduledEvents::deleteGuildScheduledEventAsync()` function, while passing in a value of type `DeleteGuildScheduledEventData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Deleting a Guild Scheduled Event {#deletingaguildscheduledevent}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,22 +26,22 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		unique_ptr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildScheduledEventsData dataPackage01;
+				GetGuildScheduledEventsData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
 				dataPackage01.withUserCount = true;
-				auto responseData01 = DiscordCoreAPI::GuildScheduledEvents::getGuildScheduledEventsAsync(dataPackage01).get();
+				auto responseData01 = GuildScheduledEvents::getGuildScheduledEventsAsync(dataPackage01).get();
 
-				DiscordCoreAPI::DeleteGuildScheduledEventData dataPackage;
+				DeleteGuildScheduledEventData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.guildScheduledEventId = responseData01[0].id;
 
-				DiscordCoreAPI::GuildScheduledEvents::deleteGuildScheduledEventAsync(dataPackage).get();
+				GuildScheduledEvents::deleteGuildScheduledEventAsync(dataPackage).get();
 
 
 			} catch (...) {

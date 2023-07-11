@@ -1,6 +1,6 @@
 Deleting Permission Overwrites {#deletingpermissionoverwrites}
 ============
-- Execute the `DiscordCoreAPI::Channels::deleteChannelPermissionOverwritesAsync()` function, while having passed in a data structure of type `DiscordCoreAPI::DeleteChannelPermissionOverwritesData`.
+- Execute the `Channels::deleteChannelPermissionOverwritesAsync()` function, while having passed in a data structure of type `DeleteChannelPermissionOverwritesData`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -13,12 +13,12 @@ Deleting Permission Overwrites {#deletingpermissionoverwrites}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,16 +26,16 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-			DiscordCoreAPI::DeleteChannelPermissionOverwritesData dataPackage;
+		virtual void execute(BaseFunctionArguments& args) {
+			DeleteChannelPermissionOverwritesData dataPackage;
 			dataPackage.channelId = args.eventData.getChannelId();
 			dataPackage.roleOrUserId = args.eventData.getAuthorId();
 
-			DiscordCoreAPI::Channels::deleteChannelPermissionOverwritesAsync(dataPackage).get();
+			Channels::deleteChannelPermissionOverwritesAsync(dataPackage).get();
 		}
 	};
 }

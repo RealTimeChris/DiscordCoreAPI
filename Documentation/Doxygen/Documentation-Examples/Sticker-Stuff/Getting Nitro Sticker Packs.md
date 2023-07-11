@@ -1,6 +1,6 @@
 Getting Nitro Sticker Packs {#gettingnitrostickerpacks}
 ============
-- Execute the, `DiscordCoreAPI::Stickers::getNitroStickerPacksAsync()` function, with a return value of type `auto` or `vector<DiscordCoreAPI::StickerPackData>`.
+- Execute the, `Stickers::getNitroStickerPacksAsync()` function, with a return value of type `auto` or `vector<StickerPackData>`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting Nitro Sticker Packs {#gettingnitrostickerpacks}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,16 +26,16 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		unique_ptr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				auto responseData = DiscordCoreAPI::Stickers::getNitroStickerPacksAsync().get();
+				auto responseData = Stickers::getNitroStickerPacksAsync().get();
 
 				for (auto& value: responseData) {
-					cout << "THE NAME: " << value.name << endl;
+					std::cout << "THE NAME: " << value.name << std::endl;
 				}
 
 

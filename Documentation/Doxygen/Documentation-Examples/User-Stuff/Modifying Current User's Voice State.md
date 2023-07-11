@@ -1,6 +1,6 @@
 Modifying Current User's Voice State {#modifyingcurrentusersvoicestate}
 ============
-- Execute the, `DiscordCoreAPI::Users::modifyCurrentUserVoiceStateAsync()` function, while passing in a value of type `DiscordCoreAPI::ModifyCurrentUserVoiceStateData`, with a return value of type `void`.
+- Execute the, `Users::modifyCurrentUserVoiceStateAsync()` function, while passing in a value of type `ModifyCurrentUserVoiceStateData`, with a return value of type `void`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Modifying Current User's Voice State {#modifyingcurrentusersvoicestate}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		unique_ptr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::ModifyCurrentUserVoiceStateData dataPackage;
+				ModifyCurrentUserVoiceStateData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.suppress = false;
 
-				DiscordCoreAPI::Users::modifyCurrentUserVoiceStateAsync(dataPackage).get();
+				Users::modifyCurrentUserVoiceStateAsync(dataPackage).get();
 
 
 			} catch (...) {

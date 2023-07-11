@@ -1,6 +1,6 @@
 Getting a Guild Emoji {#gettingaguildemoji}
 ============
-- Execute the, `DiscordCoreAPI::Reactions::getGuildEmojiAsync()` function, while passing in a value of type `DiscordCoreAPI::GetGuildEmojiData`, with a return value of type `auto` or `DiscordCoreAPI::EmojiData`.
+- Execute the, `Reactions::getGuildEmojiAsync()` function, while passing in a value of type `GetGuildEmojiData`, with a return value of type `auto` or `EmojiData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Guild Emoji {#gettingaguildemoji}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,24 +26,24 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetEmojiListData dataPackage;
+				GetEmojiListData dataPackage;
 				dataPackage.guildId = args.eventData.getGuildId();
 
-				auto emojiList = DiscordCoreAPI::Reactions::getEmojiListAsync(dataPackage).get();
+				auto emojiList = Reactions::getEmojiListAsync(dataPackage).get();
 
-				DiscordCoreAPI::GetGuildEmojiData dataPackage01;
+				GetGuildEmojiData dataPackage01;
 				dataPackage01.emojiId = emojiList[0].id;
 				dataPackage01.guildId = args.eventData.getGuildId();
 
-				auto emoji = DiscordCoreAPI::Reactions::getGuildEmojiAsync(dataPackage).get();
+				auto emoji = Reactions::getGuildEmojiAsync(dataPackage).get();
 
-				cout << "THE NAME: " << emoji.name << endl;
+				std::cout << "THE NAME: " << emoji.name << std::endl;
 
 
 			} catch (...) {

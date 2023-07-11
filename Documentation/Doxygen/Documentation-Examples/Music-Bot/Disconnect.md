@@ -21,8 +21,8 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Disconnect>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Disconnect>();
 		}
 
 		void execute(BaseFunctionArguments& newArgs) {

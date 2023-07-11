@@ -12,12 +12,12 @@ Running a Command {#runningcommand}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -25,14 +25,14 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
-				DiscordCoreAPI::RespondToInputEventData dataPackage {args.eventData};
+		virtual void execute(BaseFunctionArguments& args) {
+				RespondToInputEventData dataPackage {args.eventData};
 				dataPackage.addContent("Test Message!");
-				dataPackage.setResponseType(DiscordCoreAPI::InputEventResponseType::Ephemeral_Interaction_Response)
+				dataPackage.setResponseType(InputEventResponseType::Ephemeral_Interaction_Response)
 				InputEvents::respondToInputEventAsync(dataPackage);
 		}
 	};

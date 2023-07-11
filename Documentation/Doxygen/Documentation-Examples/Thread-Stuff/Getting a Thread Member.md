@@ -1,6 +1,6 @@
 Getting a Thread Member {#gettingathreadmember}
 ============
-- Execute the, `DiscordCoreAPI::Threads::getThreadMemberAsync()` function, while passing in a value of type `DiscordCoreAPI::GetThreadMemberData`, with a return value of type `auto` or `DiscordCoreAPI::ThreadMemberData`.
+- Execute the, `Threads::getThreadMemberAsync()` function, while passing in a value of type `GetThreadMemberData`, with a return value of type `auto` or `ThreadMemberData`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Thread Member {#gettingathreadmember}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,17 +26,17 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetThreadMemberData dataPackage;
+				GetThreadMemberData dataPackage;
 				dataPackage.channelId = "909435143561809953";
 				dataPackage.userId = args.eventData.getAuthorId();
 
-				auto newThreadMember = DiscordCoreAPI::Threads::getThreadMemberAsync(dataPackage).get();
+				auto newThreadMember = Threads::getThreadMemberAsync(dataPackage).get();
 
 
 			} catch (...) {

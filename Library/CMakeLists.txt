@@ -64,7 +64,7 @@ set_target_properties(
 )
 
 if("${DEV}")
-	include(FetchContent)	
+	include(FetchContent)
 	FetchContent_Declare(
 	   Jsonifier
 	   GIT_REPOSITORY https://github.com/RealTimeChris/Jsonifier.git
@@ -87,17 +87,16 @@ target_include_directories(
 
 target_link_libraries(
 	"${LIB_NAME}" PUBLIC
-	$<$<TARGET_EXISTS:OpenSSL::SSL>:OpenSSL::SSL>
-	$<$<TARGET_EXISTS:OpenSSL::Crypto>:OpenSSL::Crypto>
-	$<$<TARGET_EXISTS:Opus::opus>:Opus::opus>
-	$<$<TARGET_EXISTS:Jsonifier::Jsonifier>:Jsonifier::Jsonifier>
 	$<$<TARGET_EXISTS:unofficial-sodium::sodium>:unofficial-sodium::sodium>
+	$<$<TARGET_EXISTS:Jsonifier::Jsonifier>:Jsonifier::Jsonifier>
 	$<$<TARGET_EXISTS:Threads::Threads>:Threads::Threads>
+	$<$<TARGET_EXISTS:OpenSSL::Crypto>:OpenSSL::Crypto>
+	$<$<TARGET_EXISTS:OpenSSL::SSL>:OpenSSL::SSL>
+	$<$<TARGET_EXISTS:Opus::opus>:Opus::opus>
 )
 
 target_compile_definitions(
 	"${LIB_NAME}" PUBLIC 
-	"$<$<STREQUAL:${VCPKG_TARGET_TRIPLET},x64-uwp>:UWP>"
 	"$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:DiscordCoreAPI_EXPORTS_NOPE>"
 )
 
@@ -112,6 +111,7 @@ target_compile_options(
 	"$<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/EHsc>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/std:c++latest>"
 	"$<$<CXX_COMPILER_ID:MSVC>:/Zi>"
 	"$<$<CXX_COMPILER_ID:GNU>:-march=core-avx2>"
 	"$<$<CXX_COMPILER_ID:CLANG>:-march=core-avx2>"

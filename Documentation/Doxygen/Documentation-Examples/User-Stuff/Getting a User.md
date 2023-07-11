@@ -1,6 +1,6 @@
 Getting a User {#gettingauser}
 ============
-- Execute the, `DiscordCoreAPI::Users::getCachedUser()` (which collects it from the cache), or `DiscordCoreAPI::Users::getUserAsync()` (which collects it from the Discord servers) function, while passing in a value of type `DiscordCoreAPI::GetUserData`, with a return value of `auto` or `DiscordCoreAPI::User`.
+- Execute the, `Users::getCachedUser()` (which collects it from the cache), or `Users::getUserAsync()` (which collects it from the Discord servers) function, while passing in a value of type `GetUserData`, with a return value of `auto` or `User`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a User {#gettingauser}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetUserData dataPackage;
+				GetUserData dataPackage;
 				dataPackage.userId = args.eventData.getAuthorId();
 
-				auto currentUser = DiscordCoreAPI::Users::getUserAsync(dataPackage).get();
+				auto currentUser = Users::getUserAsync(dataPackage).get();
 
-				cout << currentUser.userName << endl;
+				std::cout << currentUser.userName << std::endl;
 
 
 			} catch (...) {

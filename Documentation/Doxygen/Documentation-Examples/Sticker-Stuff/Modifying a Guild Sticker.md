@@ -1,6 +1,6 @@
 Modifying a Guild Sticker {#modifyingaguildsticker}
 ============
-- Execute the, `DiscordCoreAPI::Stickers::modifyGuildStickerAsync()` function, while passing in a value of type `DiscordCoreAPI::ModifyGuildStickerData`, with a return value of type `auto` or `DiscordCoreAPI::Sticker`.
+- Execute the, `Stickers::modifyGuildStickerAsync()` function, while passing in a value of type `ModifyGuildStickerData`, with a return value of type `auto` or `Sticker`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Modifying a Guild Sticker {#modifyingaguildsticker}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,17 +26,17 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetGuildStickersData dataPackage01;
+				GetGuildStickersData dataPackage01;
 				dataPackage01.guildId = args.eventData.getGuildId();
-				auto resultVector = DiscordCoreAPI::Stickers::getGuildStickersAsync(dataPackage01).get();
+				auto resultVector = Stickers::getGuildStickersAsync(dataPackage01).get();
 
-				DiscordCoreAPI::ModifyGuildStickerData dataPackage;
+				ModifyGuildStickerData dataPackage;
 				dataPackage.reason = "TESTING PURPOSES!";
 				dataPackage.description = "TESTING STICKER";
 				dataPackage.guildId = args.eventData.getGuildId();
@@ -44,9 +44,9 @@ namespace DiscordCoreAPI {
 				dataPackage.tags = "testing";
 				dataPackage.stickerId = resultVector[0].id;
 
-				auto responseData = DiscordCoreAPI::Stickers::modifyGuildStickerAsync(dataPackage).get();
+				auto responseData = Stickers::modifyGuildStickerAsync(dataPackage).get();
 
-				cout << "THE NAME: " << responseData.name << endl;
+				std::cout << "THE NAME: " << responseData.name << std::endl;
 
 
 			} catch (...) {

@@ -1,6 +1,6 @@
 Following a News Channel {#followingnewschannel}
 =============
-- Execute, the `DiscordCoreAPI::Channels::followNewsChannelAsync()` function, while having passed in a data structure of type `DiscordCoreAPI::FollowNewsChannelData` with a return value of `auto` or `DiscordCoreAPI::Channel`.
+- Execute, the `Channels::followNewsChannelAsync()` function, while having passed in a data structure of type `FollowNewsChannelData` with a return value of `auto` or `Channel`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Following a News Channel {#followingnewschannel}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed;
+			EmbedData msgEmbed;
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,17 +26,17 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::FollowNewsChannelData dataPackage;
+				FollowNewsChannelData dataPackage;
 				dataPackage.targetChannelId = args.eventData.getChannelId();
 				dataPackage.channelId = "34565656332236657533";
 
-				DiscordCoreAPI::Channel followChannel = Channels::followNewsChannelAsync(dataPackage).get();
+				Channel followChannel = Channels::followNewsChannelAsync(dataPackage).get();
 
 			} catch (...) {
 				rethrowException("Test::execute()");

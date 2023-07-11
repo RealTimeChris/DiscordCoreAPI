@@ -21,8 +21,8 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Help>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Help>();
 		}
 
 		void execute(BaseFunctionArguments& newArgs) {
@@ -112,7 +112,7 @@ namespace DiscordCoreAPI {
 						responseData.setResponseType(InputEventResponseType::Edit_Interaction_Response);
 						newEvent01 = InputEvents::respondToInputEventAsync(responseData).get();
 					}
-					DiscordCoreAPI::UniquePtr<ButtonCollector> button{ DiscordCoreAPI::makeUnique<ButtonCollector>(newEvent01) };
+					UniquePtr<ButtonCollector> button{ makeUnique<ButtonCollector>(newEvent01) };
 					auto buttonData = button->collectButtonData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					int32_t counter03{};
 					std::vector<RespondToInputEventData> editInteractionResponseData00;
@@ -157,7 +157,7 @@ namespace DiscordCoreAPI {
 					} else {
 						break;
 					}
-					DiscordCoreAPI::UniquePtr<SelectMenuCollector> selectMenu{ DiscordCoreAPI::makeUnique<SelectMenuCollector>(newEvent01) };
+					UniquePtr<SelectMenuCollector> selectMenu{ makeUnique<SelectMenuCollector>(newEvent01) };
 					auto selectMenuReturnData = selectMenu->collectSelectMenuData(false, 120000, 1, newArgs.eventData.getAuthorId()).get();
 					EmbedData newEmbed{};
 					for (auto& [key, value]: newArgs.discordCoreClient->getCommandController().getFunctions()) {

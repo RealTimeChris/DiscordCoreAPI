@@ -1,6 +1,6 @@
 Getting a Follow-Up Message {#gettingafollowupmessage}
 ============
-- Execute the, `DiscordCoreAPI::Interactions::getFollowUpMessageAsync()` function and execute it, while passing in a data structure of type `DiscordCoreAPI::GetFollowUpMessageData`, with a return value of type `auto` or `DiscordCoreAPI::Message`.
+- Execute the, `Interactions::getFollowUpMessageAsync()` function and execute it, while passing in a data structure of type `GetFollowUpMessageData`, with a return value of type `auto` or `Message`.
 
 ```cpp
 /// Test.hpp-Header for the "test" command.
@@ -12,12 +12,12 @@ Getting a Follow-Up Message {#gettingafollowupmessage}
 
 										  namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -25,17 +25,17 @@ Getting a Follow-Up Message {#gettingafollowupmessage}
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetFollowUpMessageData dataPackage;
+				GetFollowUpMessageData dataPackage;
 				dataPackage.applicationId = getBotUser().id;
 				dataPackage.interactionToken = args.eventData.getInteractionToken();
 				dataPackage.interactionToken = args.eventData.getMessageId();
-				auto responseData = DiscordCoreAPI::Interactions::getFollowUpMessageAsync(dataPackage);
+				auto responseData = Interactions::getFollowUpMessageAsync(dataPackage);
 
 			} catch (...) {
 				rethrowException("Test::execute() Error: ");

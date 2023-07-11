@@ -1,6 +1,6 @@
 Creating a Reaction {#creatingareaction}
 ============
-- Execute the, `DiscordCoreAPI::Reactions::createReactionAsync()` function, while passing in a data structure of type `DiscordCoreAPI::CreateReactionData`, with a return value of type `auto`, or, `DiscordCoreAPI::Reaction`.
+- Execute the, `Reactions::createReactionAsync()` function, while passing in a data structure of type `CreateReactionData`, with a return value of type `auto`, or, `Reaction`.
 - Call the function with `.get()` added to the end in order to wait for its return value now.
 
 ```cpp
@@ -13,12 +13,12 @@ Creating a Reaction {#creatingareaction}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::CreateReactionData dataPackage;
+				CreateReactionData dataPackage;
 				dataPackage.channelId = args.eventData.getChannelId();
 				dataPackage.messageId = args.eventData.getMessageId();
 				dataPackage.emojiName = "😆";
 
-				DiscordCoreAPI::Reaction responseMessages = DiscordCoreAPI::Reactions::createReactionAsync(dataPackage).get();
+				Reaction responseMessages = Reactions::createReactionAsync(dataPackage).get();
 
 
 			} catch (...) {

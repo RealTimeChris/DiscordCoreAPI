@@ -1,6 +1,6 @@
 Getting a Stage Instance {#gettingastageinstance}
 ============
-- Execute the, `DiscordCoreAPI::StageInstances::getStageInstanceAsync()` function, while passing in a value of type `DiscordCoreAPI::GetStageInstanceData`, with a return value of type `auto` or `DiscordCoreAPI::StageInstance`.
+- Execute the, `StageInstances::getStageInstanceAsync()` function, while passing in a value of type `GetStageInstanceData`, with a return value of type `auto` or `StageInstance`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Getting a Stage Instance {#gettingastageinstance}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,18 +26,18 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		unique_ptr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		unique_ptr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::GetStageInstanceData dataPackage;
+				GetStageInstanceData dataPackage;
 				dataPackage.channelId = "914726178022101052";
 
-				auto responseData = DiscordCoreAPI::StageInstances::getStageInstanceAsync(dataPackage).get();
+				auto responseData = StageInstances::getStageInstanceAsync(dataPackage).get();
 
-				cout << "THE TOPIC: " << responseData.topic << endl;
+				std::cout << "THE TOPIC: " << responseData.topic << std::endl;
 
 
 			} catch (...) {

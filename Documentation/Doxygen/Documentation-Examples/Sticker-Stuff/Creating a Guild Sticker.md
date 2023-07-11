@@ -1,6 +1,6 @@
 Creating a Guild Sticker {#creatingaguildsticker}
 ============
-- Execute the, `DiscordCoreAPI::Stickers::createGuildStickerAsync()` function, while passing in a value of type `DiscordCoreAPI::CreateGuildStickerData`, with a return value of type `auto` or `DiscordCoreAPI::Sticker`.
+- Execute the, `Stickers::createGuildStickerAsync()` function, while passing in a value of type `CreateGuildStickerData`, with a return value of type `auto` or `Sticker`.
 - Call the function with `.get()` added to the end in order to wait for the results now.
 
 ```cpp
@@ -13,12 +13,12 @@ Creating a Guild Sticker {#creatingaguildsticker}
 
 namespace DiscordCoreAPI {
 
-	class Test : public DiscordCoreAPI::BaseFunction {
+	class Test : public BaseFunction {
 	  public:
 		Test() {
 			commandName = "test";
 			helpDescription = "Testing purposes!";
-			DiscordCoreAPI::EmbedData msgEmbed { };
+			EmbedData msgEmbed { };
 			msgEmbed.setDescription("------\nSimply enter !test or /test!\n------");
 			msgEmbed.setTitle("__**Test Usage:**__");
 			msgEmbed.setTimeStamp(getTimeAndDate());
@@ -26,13 +26,13 @@ namespace DiscordCoreAPI {
 			helpEmbed = msgEmbed;
 		}
 
-		DiscordCoreAPI::UniquePtr<DiscordCoreAPI::BaseFunction> create() {
-			return DiscordCoreAPI::makeUnique<Test>();
+		UniquePtr<BaseFunction> create() {
+			return makeUnique<Test>();
 		}
 
-		virtual void execute(DiscordCoreAPI::BaseFunctionArguments& args) {
+		virtual void execute(BaseFunctionArguments& args) {
 			try {
-				DiscordCoreAPI::CreateGuildStickerData dataPackage;
+				CreateGuildStickerData dataPackage;
 				dataPackage.reason = "TESTING PURPOSES!";
 				dataPackage.description = "TESTING STICKER";
 				dataPackage.guildId = args.eventData.getGuildId();
@@ -45,9 +45,9 @@ namespace DiscordCoreAPI {
 				}
 				dataPackage.file = fileData;
 
-				auto responseData = DiscordCoreAPI::Stickers::createGuildStickerAsync(dataPackage).get();
+				auto responseData = Stickers::createGuildStickerAsync(dataPackage).get();
 
-				cout << "THE NAME: " << responseData.name << endl;
+				std::cout << "THE NAME: " << responseData.name << std::endl;
 
 
 			} catch (...) {
